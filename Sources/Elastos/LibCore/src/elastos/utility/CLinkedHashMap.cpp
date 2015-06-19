@@ -157,12 +157,12 @@ ECode CLinkedHashMap::Get(
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
-    for (AutoPtr<HashMapEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
+    for (HashMapEntry * e = (*tab)[hash & (tab->GetLength() - 1)];
             e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
         if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             if (mAccessOrder) {
-                MakeTail((LinkedEntry*)e.Get());
+                MakeTail((LinkedEntry*)e);
             }
             *value = e->mValue;
             REFCOUNT_ADD(*value)

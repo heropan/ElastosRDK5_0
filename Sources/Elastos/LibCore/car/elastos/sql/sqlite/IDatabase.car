@@ -2,11 +2,14 @@ module
 {
     interface Elastos.Sql.SQLite.IBusyHandler;
     interface Elastos.Sql.SQLite.IBlob;
+    interface Elastos.Sql.SQLite.ICallback;
+    interface Elastos.Sql.SQLite.IProgressHandler;
 
     namespace Elastos {
     namespace Sql {
     namespace SQLite {
 
+    [deprecated]
     interface IDatabase {
         /**
         * Open an SQLite database file.
@@ -76,7 +79,7 @@ module
          */
         Exec(
             [in] String sql,
-            [in] Elastos.Sql.SQLite.ICallback* cb);
+            [in] ICallback* cb);
 
         /**
          * Execute an SQL statement and invoke callback methods
@@ -102,8 +105,8 @@ module
          */
         Exec(
             [in] String sql,
-            [in] Elastos.Sql.SQLite.ICallback* cb,
-            [in] ArrayOf<String> args);
+            [in] ICallback* cb,
+            [in] ArrayOf<String>* args);
 
         /**
          * Return the row identifier of the last inserted
@@ -177,7 +180,7 @@ module
         GetTable(
             [in] String sql,
             [in] Int32 maxrows,
-            [in] ArrayOf<String> args,
+            [in] ArrayOf<String>* args,
             [out] ITableResult** tableresult);
 
         /**
@@ -190,7 +193,7 @@ module
          */
         GetTable(
             [in] String sql,
-            [in] ArrayOf<String> args,
+            [in] ArrayOf<String>* args,
             [out] ITableResult** tableresult);
 
         /**
@@ -203,7 +206,7 @@ module
          */
         GetTable(
             [in] String sql,
-            [in] ArrayOf<String> args,
+            [in] ArrayOf<String>* args,
             [in] ITableResult* tbl);
 
         /**
@@ -336,7 +339,7 @@ module
          */
         DbStatus(
             [in] Int32 op,
-            [in] ArrayOf<Int32> info,
+            [in] ArrayOf<Int32>* info,
             [in] Boolean flag,
             [out] Int32* code);
 
@@ -361,7 +364,7 @@ module
          */
         Compile(
             [in] String sql,
-            [in] ArrayOf<String> args,
+            [in] ArrayOf<String>* args,
             [out] IVm** vm);
 
         /**
@@ -408,7 +411,7 @@ module
          */
         ProgressHandler(
             [in] Int32 n,
-            [in] Elastos.Sql.SQLite.IProgressHandler* p);
+            [in] IProgressHandler* p);
 
         /**
          * Specify key for encrypted database. To be called
@@ -418,7 +421,7 @@ module
          * @param ekey the key as byte array
          */
         Key(
-            [in] ArrayOf<Byte> ekey);
+            [in] ArrayOf<Byte>* ekey);
 
         /**
          * Specify key for encrypted database. To be called
@@ -431,6 +434,7 @@ module
             [in] String skey);
     }
 
+    [deprecated]
     interface IDatabaseHelper {
         /**
          * See if an SQL statement is complete.
@@ -474,7 +478,7 @@ module
          */
         Status(
             [in] Int32 op,
-            [in] ArrayOf<Int32> info,
+            [in] ArrayOf<Int32>* info,
             [in] Boolean flag,
             [out] Int32 * value);
 

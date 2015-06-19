@@ -809,12 +809,14 @@ ECode BerInputStream::Put(
 
     Int32 i = 0, length0;
     (*mPool)[0]->GetLength(&length0);
-    for (AutoPtr<IInterface> tmp; i < length0 && ((*mPool)[0]->Get(i, (IInterface**)&tmp), tmp) != NULL; i++) {
-        tmp = NULL;
-        if (((*mPool)[0]->Get(i, (IInterface**)&tmp), tmp) == key) {
+    AutoPtr<IInterface> tmp;
+    for (; i < length0 && ((*mPool)[0]->Get(i, (IInterface**)&tmp), tmp) != NULL; i++) {
+        if (tmp == key) {
             (*mPool)[1]->Put(i, entry);
             return NOERROR;
         }
+
+        tmp = NULL;
     }
 
     //Todo
@@ -844,9 +846,9 @@ ECode BerInputStream::Get(
     (*mPool)[0]->GetLength(&length0);
     for (Int32 i = 0; i < length0; i++) {
         AutoPtr<IInterface> tmp;
-        if (((*mPool)[0]->Get(i, (IInterface**)&tmp), tmp) == key) {
-            tmp = NULL;
-            *entry = ((*mPool)[1]->Get(i, (IInterface**)&tmp), tmp);
+        (*mPool)[0]->Get(i, (IInterface**)&tmp);
+        if (tmp == key) {
+            *entry = tmp;
             REFCOUNT_ADD(*entry)
             return NOERROR;
         }

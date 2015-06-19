@@ -1,6 +1,6 @@
 
-#ifndef __CDBDUMP_H__
-#define __CDBDUMP_H__
+#ifndef __ELASTOS_SQL_SQLITE_CDBDUMP_H__
+#define __ELASTOS_SQL_SQLITE_CDBDUMP_H__
 
 #include "_Elastos_Sql_SQLite_CDBDump.h"
 #include "CShell.h"
@@ -20,18 +20,18 @@ public:
     CAR_INTERFACE_DECL();
 
     CARAPI Columns(
-        /* [in] */ const ArrayOf<String> & coldata);
+        /* [in] */ ArrayOf<String> * coldata);
 
     CARAPI Types(
-        /* [in] */ const ArrayOf<String> & types);
+        /* [in] */ ArrayOf<String> * types);
 
     CARAPI Newrow(
-        /* [in] */ const ArrayOf<String> & args,
+        /* [in] */ ArrayOf<String> * args,
         /* [out] */ Boolean * value);
 
     CARAPI constructor(
         /* [in] */ IShell * ms,
-        /* [in] */ const ArrayOf<String> & tables);
+        /* [in] */ ArrayOf<String> * tables);
 
 private:
     AutoPtr<CShell> s;
@@ -41,4 +41,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDBDUMP_H__
+#endif // __ELASTOS_SQL_SQLITE_CDBDUMP_H__

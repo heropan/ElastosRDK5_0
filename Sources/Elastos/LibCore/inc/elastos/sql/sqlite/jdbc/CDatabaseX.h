@@ -27,16 +27,16 @@ public:
     CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ ICallback * cb,
-        /* [in] */ const ArrayOf<String>& args);
+        /* [in] */ ArrayOf<String> * args);
 
     CARAPI GetTable(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& args,
+        /* [in] */ ArrayOf<String> * args,
         /* [out] */ ITableResult ** tbl);
 
     CARAPI GetTable(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& args,
+        /* [in] */ ArrayOf<String> * args,
         /* [in] */ ITableResult * tbl);
 
 protected:

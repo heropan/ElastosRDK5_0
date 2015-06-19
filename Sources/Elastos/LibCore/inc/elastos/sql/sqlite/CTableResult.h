@@ -14,11 +14,6 @@ CarClass(CTableResult) , public TableResult
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 maxrows);
 };
 
 } // namespace SQLite

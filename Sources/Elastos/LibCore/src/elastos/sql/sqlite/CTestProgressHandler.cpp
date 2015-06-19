@@ -22,21 +22,22 @@ ECode CTestProgressHandler::Progress(
 }
 
 ECode CTestProgressHandler::Columns(
-    /* [in] */ const ArrayOf<String>& coldata)
+    /* [in] */ ArrayOf<String> * coldata)
 {
     return NOERROR;
 }
 
 ECode CTestProgressHandler::Types(
-    /* [in] */ const ArrayOf<String>& types)
+    /* [in] */ ArrayOf<String> * types)
 {
     return NOERROR;
 }
 
 ECode CTestProgressHandler::Newrow(
-    /* [in] */ const ArrayOf<String>& rowdata,
+    /* [in] */ ArrayOf<String> * rowdata,
     /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value)
     *value = FALSE;
     return NOERROR;
 }

@@ -223,7 +223,7 @@ ECode HashMap::Get(
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
-    for (AutoPtr<HashMapEntry> e = (*tab)[hash & (tab->GetLength() - 1)]; e != NULL; e = e->mNext) {
+    for (HashMapEntry * e = (*tab)[hash & (tab->GetLength() - 1)]; e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
         if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             *value = e->mValue;
@@ -252,7 +252,7 @@ ECode HashMap::ContainsKey(
     hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
-    for (AutoPtr<HashMapEntry> e = (*tab)[hash & (tab->GetLength() - 1)]; e != NULL; e = e->mNext) {
+    for (HashMapEntry * e = (*tab)[hash & (tab->GetLength() - 1)]; e != NULL; e = e->mNext) {
         AutoPtr<IInterface> eKey = e->mKey;
         if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
             *result = TRUE;
@@ -273,7 +273,7 @@ ECode HashMap::ContainsValue(
     Int32 len = tab->GetLength();
     if (value == NULL) {
         for (Int32 i = 0; i < len; i++) {
-            for (AutoPtr<HashMapEntry> e = (*tab)[i]; e != NULL; e = e->mNext) {
+            for (HashMapEntry * e = (*tab)[i]; e != NULL; e = e->mNext) {
                 if (e->mValue == NULL) {
                     *result = TRUE;
                     return NOERROR;
@@ -286,7 +286,7 @@ ECode HashMap::ContainsValue(
 
     // value is non-null
     for (Int32 i = 0; i < len; i++) {
-        for (AutoPtr<HashMapEntry> e = (*tab)[i]; e != NULL; e = e->mNext) {
+        for (HashMapEntry * e = (*tab)[i]; e != NULL; e = e->mNext) {
             if (value == e->mValue) {
                 *result = TRUE;
                 return NOERROR;
@@ -318,7 +318,7 @@ ECode HashMap::Put(
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
-    for (AutoPtr<HashMapEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
+    for (HashMapEntry * e = (*tab)[index]; e != NULL; e = e->mNext) {
         if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             PreModify(e);
             if (oldValue) {
@@ -388,7 +388,7 @@ ECode HashMap::ConstructorPut(
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashMapEntry> first = (*tab)[index];
-    for (AutoPtr<HashMapEntry> e = first; e != NULL; e = e->mNext) {
+    for (HashMapEntry * e = first; e != NULL; e = e->mNext) {
         if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             e->mValue = value;
             return NOERROR;
@@ -458,7 +458,7 @@ ECode HashMap::EnsureCapacity(
     if (mSize != 0) {
         Int32 newMask = newCapacity - 1;
         for (Int32 i = 0; i < oldCapacity; i++) {
-            for (AutoPtr<HashMapEntry> e = (*oldTable)[i]; e != NULL;) {
+            for (HashMapEntry * e = (*oldTable)[i]; e != NULL;) {
                 AutoPtr<HashMapEntry> oldNext = e->mNext;
                 Int32 newIndex = e->mHash & newMask;
                 AutoPtr<HashMapEntry> newNext = (*newTable)[newIndex];
@@ -505,7 +505,7 @@ AutoPtr< ArrayOf<HashMap::HashMapEntry*> > HashMap::DoubleCapacity()
         Int32 highBit = e->mHash & oldCapacity;
         AutoPtr<HashMapEntry> broken;
         newTable->Set(j | highBit, e);
-        for (AutoPtr<HashMapEntry> n = e->mNext; n != NULL; e = n, n = n->mNext) {
+        for (HashMapEntry * n = e->mNext; n != NULL; e = n, n = n->mNext) {
             Int32 nextHighBit = n->mHash & oldCapacity;
             if (nextHighBit != highBit) {
                 if (broken == NULL) {
@@ -656,7 +656,7 @@ Boolean HashMap::ContainsMapping(
     Int32 hash = SecondaryHash(keyhash);
     AutoPtr< ArrayOf<HashMapEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
-    for (AutoPtr<HashMapEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
+    for (HashMapEntry * e = (*tab)[index]; e != NULL; e = e->mNext) {
         if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             return value == e->mValue;
         }

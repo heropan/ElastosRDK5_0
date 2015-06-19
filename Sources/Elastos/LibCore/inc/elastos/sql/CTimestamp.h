@@ -78,7 +78,7 @@ private:
     CARAPI_(void) Format(
         /* [in] */ Int32 date,
         /* [in] */ Int32 digits,
-        /* [in] */ AutoPtr<StringBuilder> sb);
+        /* [in] */ StringBuilder* sb);
 
     CARAPI_(void) SetTimeImpl(
         /* [in] */ Int64 theTime);

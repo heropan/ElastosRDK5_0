@@ -210,7 +210,7 @@ ECode CJDBCPreparedStatement::Execute(
 {
     VALIDATE_NOT_NULL(value);
     AutoPtr<IResultSet> set;
-    JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE, (IResultSet**)&set);
+    JDBCStatement::ExecuteQuery(Fixup2(sql), mArgs, FALSE, (IResultSet**)&set);
     *value = set != NULL;
     return NOERROR;
 }
@@ -218,7 +218,7 @@ ECode CJDBCPreparedStatement::Execute(
 ECode CJDBCPreparedStatement::ExecuteQuery(
     /* [out] */ IResultSet ** resultset)
 {
-    return JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, FALSE, resultset);
+    return JDBCStatement::ExecuteQuery(Fixup2(sql), mArgs, FALSE, resultset);
 }
 
 ECode CJDBCPreparedStatement::ExecuteUpdate(
@@ -226,7 +226,7 @@ ECode CJDBCPreparedStatement::ExecuteUpdate(
 {
     VALIDATE_NOT_NULL(value);
     AutoPtr<IResultSet> set;
-    ECode ec = JDBCStatement::ExecuteQuery(Fixup2(sql), *mArgs, TRUE, (IResultSet**)&set);
+    ECode ec = JDBCStatement::ExecuteQuery(Fixup2(sql), mArgs, TRUE, (IResultSet**)&set);
     *value = updcnt;
     return ec;
 }

@@ -649,20 +649,20 @@ public:
 
     static CARAPI_(String) MapTypeName(Int32 type);
 
-    static CARAPI_(Int32) MapSqlType(String type);
+    static CARAPI_(Int32) MapSqlType(const String& type);
 
-    static CARAPI_(Int32) GetM(String typeStr, Int32 type);
+    static CARAPI_(Int32) GetM(const String& typeStr, Int32 type);
 
-    static CARAPI_(Int32) GetD(String typeStr, Int32 type);
+    static CARAPI_(Int32) GetD(const String& typeStr, Int32 type);
 
-    CARAPI_(IResultSet *) GetSchemas(String cat, String schema);
+    CARAPI_(AutoPtr<IResultSet>) GetSchemas(const String& cat, const String& schema);
 
-    CARAPI_(Boolean) IsWrapperFor(AutoPtr<IInterface> iface);
+    CARAPI_(Boolean) IsWrapperFor(IInterface* iface);
 
     // <T> T unwrap(java.lang.Class<T> iface);
 
 private:
-    CARAPI_(void) InternalImportedKeys(String table, String pktable,
+    CARAPI_(void) InternalImportedKeys(const String& table, const String& pktable,
                                         CJDBCResultSet * in, CTableResultX * out);
 
 private:

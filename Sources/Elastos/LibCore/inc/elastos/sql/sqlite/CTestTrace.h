@@ -26,13 +26,13 @@ public:
         /* [in] */ const String& stmt);
 
     CARAPI Columns(
-        /* [in] */ const ArrayOf<String>& coldata);
+        /* [in] */ ArrayOf<String> * coldata);
 
     CARAPI Types(
-        /* [in] */ const ArrayOf<String>& types);
+        /* [in] */ ArrayOf<String> * types);
 
     CARAPI Newrow(
-        /* [in] */ const ArrayOf<String>& rowdata,
+        /* [in] */ ArrayOf<String> * rowdata,
         /* [out] */ Boolean* value);
 
     CARAPI constructor();

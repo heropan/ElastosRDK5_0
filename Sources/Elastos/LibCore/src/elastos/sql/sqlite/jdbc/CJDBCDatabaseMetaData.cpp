@@ -134,23 +134,23 @@ ECode CJDBCDatabaseMetaData::GetBestRowIdentifier(
     (*types)[7] = ITypes::SMALLINT;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0 &&
-        rs1 != NULL && rs1->tr != NULL && rs1->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0 &&
+        rs1 != NULL && rs1->tr != NULL && rs1->tr->mNrows > 0) {
 
         HashMap<String, Int32> h0;
-        for (Int32 i = 0; i < rs0->tr->ncolumns; i++) {
-            h0.Insert(Pair<String,Int32>((*rs0->tr->column)[i], i));
+        for (Int32 i = 0; i < rs0->tr->mNcolumns; i++) {
+            h0.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[i], i));
         }
         HashMap<String, Int32> h1;
-        for (Int32 i = 0; i < rs1->tr->ncolumns; i++) {
-            h1.Insert(Pair<String,Int32>((*rs0->tr->column)[i], i)); // android-changed
+        for (Int32 i = 0; i < rs1->tr->mNcolumns; i++) {
+            h1.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[i], i)); // android-changed
         }
-        for (Int32 i = 0; i < rs0->tr->nrows; i++) {
-            AutoPtr<ArrayOf<String> > r0 = rs0->tr->rows[i];
+        for (Int32 i = 0; i < rs0->tr->mNrows; i++) {
+            AutoPtr<ArrayOf<String> > r0 = rs0->tr->mRows[i];
             Int32 col = h0[String("unique")];
             String uniq = (*r0)[col];
             col = h0[String("name")];
@@ -169,19 +169,19 @@ ECode CJDBCDatabaseMetaData::GetBestRowIdentifier(
             // } finally {
             //     s2.close();
             // }
-            if (rs2 == NULL || rs2->tr == NULL || rs2->tr->nrows <= 0) {
+            if (rs2 == NULL || rs2->tr == NULL || rs2->tr->mNrows <= 0) {
                 continue;
             }
             HashMap<String, Int32> h2 ;
-            for (Int32 k = 0; k < rs2->tr->ncolumns; k++) {
-                h2.Insert(Pair<String,Int32>((*rs0->tr->column)[k], k));
+            for (Int32 k = 0; k < rs2->tr->mNcolumns; k++) {
+                h2.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[k], k));
             }
-            for (Int32 k = 0; k < rs2->tr->nrows; k++) {
-                AutoPtr<ArrayOf<String> > r2 = rs2->tr->rows[k];
+            for (Int32 k = 0; k < rs2->tr->mNrows; k++) {
+                AutoPtr<ArrayOf<String> > r2 = rs2->tr->mRows[k];
                 col = h2[String("name")];
                 String cname = (*r2)[col];
-                for (Int32 m = 0; m < rs1->tr->nrows; m++) {
-                    AutoPtr<ArrayOf<String> > r1 = rs1->tr->rows[m];
+                for (Int32 m = 0; m < rs1->tr->mNrows; m++) {
+                    AutoPtr<ArrayOf<String> > r1 = rs1->tr->mRows[m];
                     col = h1[String("name")];
                     if (cname.Compare((*r1)[col]) == 0) {
                         AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(cols->GetLength());
@@ -194,13 +194,13 @@ ECode CJDBCDatabaseMetaData::GetBestRowIdentifier(
                         (*row)[6] = String("0");
                         (*row)[7] = String("") + StringUtils::ToString(IDatabaseMetaData::bestRowNotPseudo);
                         Boolean rowflag = FALSE;
-                        tr->Newrow(*row,&rowflag);
+                        tr->Newrow(row, &rowflag);
                     }
                 }
             }
         }
     }
-    if (tr->nrows <= 0) {
+    if (tr->mNrows <= 0) {
         AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(cols->GetLength());
         (*row)[0] = String("") + StringUtils::ToString(scope);
         (*row)[1] = String("_ROWID_");
@@ -211,7 +211,7 @@ ECode CJDBCDatabaseMetaData::GetBestRowIdentifier(
         (*row)[6] = String("0");
         (*row)[7] = String("") + StringUtils::ToString(IDatabaseMetaData::bestRowPseudo);
         Boolean rowflag = FALSE;
-        tr->Newrow(*row,&rowflag);
+        tr->Newrow(row, &rowflag);
     }
     *resultSet = (IResultSet *)rs.Get();
     return NOERROR;
@@ -220,15 +220,18 @@ ECode CJDBCDatabaseMetaData::GetBestRowIdentifier(
 ECode CJDBCDatabaseMetaData::GetCatalogs(
     /* [out] */ IResultSet ** resultSet)
 {
+    VALIDATE_NOT_NULL(resultSet)
+    *resultSet = NULL;
+
     AutoPtr<ArrayOf<String> > cols = ArrayOf<String>::Alloc(1);
     (*cols)[0] = String("TABLE_CAT");
     AutoPtr<CTableResult> tr;
     FAIL_RETURN(CTableResult::New((ITableResult **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(1) ;
     (*row)[0] = String("");
     Boolean flag = FALSE;
-    tr->Newrow(*row,&flag);
+    tr->Newrow(row, &flag);
     FAIL_RETURN(CJDBCResultSet::New(tr,NULL,(IJDBCResultSet **)resultSet));
 
     return NOERROR;
@@ -280,7 +283,7 @@ ECode CJDBCDatabaseMetaData::GetColumnPrivileges(
 
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<IJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL ,(IJDBCResultSet **)&rs));
@@ -317,7 +320,7 @@ ECode CJDBCDatabaseMetaData::GetColumns(
     // } finally {
     //     s.close();
     // }
-    if (rs0->tr->nrows < 1) {
+    if (rs0->tr->mNrows < 1) {
         //throw new SQLException("no such table: " + tableNamePattern);
     }
     AutoPtr<ArrayOf<String> > cols = ArrayOf<String>::Alloc(18);
@@ -361,20 +364,20 @@ ECode CJDBCDatabaseMetaData::GetColumns(
     (*types)[17] = ITypes::VARCHAR;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr,NULL,(IJDBCResultSet **)&rs));
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0) {
         HashMap<String, Int32> h ;
-        for (Int32 i = 0; i < rs0->tr->ncolumns; i++) {
-        h.Insert(Pair<String,Int32>((*rs0->tr->column)[i], i)); // android-changed
+        for (Int32 i = 0; i < rs0->tr->mNcolumns; i++) {
+        h.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[i], i)); // android-changed
         }
         if (columnNamePattern != NULL && columnNamePattern.GetChar(0) == '%') {
             *(const_cast<String *>(&columnNamePattern)) = String(NULL);
         }
-        for (Int32 i = 0; i < rs0->tr->nrows; i++) {
-            AutoPtr<ArrayOf<String> > r0 = rs0->tr->rows[i];
+        for (Int32 i = 0; i < rs0->tr->mNrows; i++) {
+            AutoPtr<ArrayOf<String> > r0 = rs0->tr->mRows[i];
             Int32 col =  h[String("name")];
             if (columnNamePattern != NULL) {
                 if ((*r0)[col].Compare(columnNamePattern) != 0) {
@@ -409,7 +412,7 @@ ECode CJDBCDatabaseMetaData::GetColumns(
                         String("") + StringUtils::ToString(Elastos::Sql::IDatabaseMetaData::columnNullable) :
                         String("") + StringUtils::ToString(Elastos::Sql::IDatabaseMetaData::columnNoNulls);
             Boolean rowflag = FALSE;
-                        tr->Newrow(*row,&rowflag);
+            tr->Newrow(row,&rowflag);
         }
     }
     *resultSet = (IResultSet *)rs.Get();
@@ -485,11 +488,11 @@ ECode CJDBCDatabaseMetaData::GetCrossReference(
     (*types)[13] = ITypes::SMALLINT;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0) {
         String pktable = String(NULL);
         if (!primaryTable.IsNull() && primaryTable.GetChar(0) != '%') {
             pktable = primaryTable;
@@ -604,7 +607,7 @@ ECode CJDBCDatabaseMetaData::GetExportedKeys(
     (*types)[13] = ITypes::SMALLINT;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
@@ -684,11 +687,11 @@ ECode CJDBCDatabaseMetaData::GetImportedKeys(
     (*types)[13] = ITypes::SMALLINT;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0) {
         InternalImportedKeys(table, String(NULL), rs0, tr);
     }
     *resultSet = (IResultSet *)rs.Get();
@@ -751,17 +754,17 @@ ECode CJDBCDatabaseMetaData::GetIndexInfo(
     (*types)[12] = ITypes::VARCHAR;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0) {
         HashMap<String, Int32> h0 ;
-        for (Int32 i = 0; i < rs0->tr->ncolumns; i++) {
-            h0.Insert(Pair<String,Int32>((*rs0->tr->column)[i], i)); // android-changed
+        for (Int32 i = 0; i < rs0->tr->mNcolumns; i++) {
+            h0.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[i], i)); // android-changed
         }
-        for (Int32 i = 0; i < rs0->tr->nrows; i++) {
-            AutoPtr<ArrayOf<String> > r0 = rs0->tr->rows[i];
+        for (Int32 i = 0; i < rs0->tr->mNrows; i++) {
+            AutoPtr<ArrayOf<String> > r0 = rs0->tr->mRows[i];
             Int32 col = h0[String("unique")];
             String uniq = (*r0)[col];
             col = h0[String("name")];
@@ -780,15 +783,15 @@ ECode CJDBCDatabaseMetaData::GetIndexInfo(
             // } finally {
             //     s1.close();
             // }
-            if (rs1 == NULL || rs1->tr == NULL || rs1->tr->nrows <= 0) {
+            if (rs1 == NULL || rs1->tr == NULL || rs1->tr->mNrows <= 0) {
                 continue;
             }
             HashMap<String, Int32> h1;
-            for (Int32 k = 0; k < rs1->tr->ncolumns; k++) {
-                h1.Insert(Pair<String,Int32>((*rs1->tr->column)[k], k)); // android-changed
+            for (Int32 k = 0; k < rs1->tr->mNcolumns; k++) {
+                h1.Insert(Pair<String,Int32>((*rs1->tr->mColumn)[k], k)); // android-changed
             }
-            for (Int32 k = 0; k < rs1->tr->nrows; k++) {
-                AutoPtr<ArrayOf<String> > r1 = rs1->tr->rows[k];
+            for (Int32 k = 0; k < rs1->tr->mNrows; k++) {
+                AutoPtr<ArrayOf<String> > r1 = rs1->tr->mRows[k];
                 AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(cols->GetLength());
                 (*row)[0]  = String("");
                 (*row)[1]  = String("");
@@ -808,7 +811,7 @@ ECode CJDBCDatabaseMetaData::GetIndexInfo(
                 (*row)[11] = String("0");
                 (*row)[12] = String(NULL);
                 Boolean rowflag = FALSE;
-                        tr->Newrow(*row,&rowflag);
+                tr->Newrow(row,&rowflag);
             }
         }
     }
@@ -1016,18 +1019,18 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
     (*types)[5] = ITypes::VARCHAR;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
 
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0) {
         HashMap<String, Int32> h0;
-        for (Int32 i = 0; i < rs0->tr->ncolumns; i++) {
-            h0.Insert(Pair<String,Int32>((*rs0->tr->column)[i], i));
+        for (Int32 i = 0; i < rs0->tr->mNcolumns; i++) {
+            h0.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[i], i));
         }
-        for (Int32 i = 0; i < rs0->tr->nrows; i++) {
-            AutoPtr<ArrayOf<String> > r0 = rs0->tr->rows[i];
+        for (Int32 i = 0; i < rs0->tr->mNrows; i++) {
+            AutoPtr<ArrayOf<String> > r0 = rs0->tr->mRows[i];
             Int32 col = h0[String("unique")];
             String uniq = (*r0)[col];
             col = h0[String("name")];
@@ -1046,15 +1049,15 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
             // } finally {
             //     s2.close();
             // }
-            if (rs1 == NULL || rs1->tr == NULL || rs1->tr->nrows <= 0) {
+            if (rs1 == NULL || rs1->tr == NULL || rs1->tr->mNrows <= 0) {
                 continue;
             }
             HashMap<String, Int32> h1 ;
-            for (Int32 k = 0; k < rs1->tr->ncolumns; k++) {
-                h1.Insert(Pair<String,Int32>((*rs0->tr->column)[k], k));
+            for (Int32 k = 0; k < rs1->tr->mNcolumns; k++) {
+                h1.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[k], k));
             }
-            for (Int32 k = 0; k < rs1->tr->nrows; k++) {
-                AutoPtr<ArrayOf<String> > r1 = rs1->tr->rows[k];
+            for (Int32 k = 0; k < rs1->tr->mNrows; k++) {
+                AutoPtr<ArrayOf<String> > r1 = rs1->tr->mRows[k];
                 AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(cols->GetLength());
                 (*row)[0]  = String("");
                 (*row)[1]  = String("");
@@ -1065,11 +1068,11 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
                 (*row)[4]  = StringUtils::ToString(StringUtils::ParseInt32((*r1)[col]) + 1);
                 (*row)[5]  = iname;
                 Boolean rowflag = FALSE;
-                        tr->Newrow(*row,&rowflag);
+                        tr->Newrow(row,&rowflag);
             }
         }
     }
-    if (tr->nrows > 0) {
+    if (tr->mNrows > 0) {
 
         *resultSet = (IResultSet *)rs.Get();
         REFCOUNT_ADD(*resultSet);
@@ -1086,13 +1089,13 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
     // } finally {
     //     s1.close();
     // }
-    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->nrows > 0) {
+    if (rs0 != NULL && rs0->tr != NULL && rs0->tr->mNrows > 0) {
         HashMap<String, Int32> h0 ;
-        for (Int32 i = 0; i < rs0->tr->ncolumns; i++) {
-            h0.Insert(Pair<String,Int32>((*rs0->tr->column)[i], i));
+        for (Int32 i = 0; i < rs0->tr->mNcolumns; i++) {
+            h0.Insert(Pair<String,Int32>((*rs0->tr->mColumn)[i], i));
         }
-        for (Int32 i = 0; i < rs0->tr->nrows; i++) {
-            AutoPtr<ArrayOf<String> > r0 = rs0->tr->rows[i];
+        for (Int32 i = 0; i < rs0->tr->mNrows; i++) {
+            AutoPtr<ArrayOf<String> > r0 = rs0->tr->mRows[i];
             Int32 col = h0[String("type")];
             String type = (*r0)[col];
             if (!type.EqualsIgnoreCase("integer")) {
@@ -1113,7 +1116,7 @@ ECode CJDBCDatabaseMetaData::GetPrimaryKeys(
             (*row)[4] = StringUtils::ToString(StringUtils::ParseInt32((*r0)[col]) + 1);
             (*row)[5] = String("");
             Boolean rowflag = FALSE;
-                        tr->Newrow(*row,&rowflag);
+                        tr->Newrow(row,&rowflag);
         }
     }
     *resultSet = (IResultSet *)rs.Get();
@@ -1163,11 +1166,11 @@ ECode CJDBCDatabaseMetaData::GetSchemas(
     (*cols)[0] = String("TABLE_SCHEM");
     AutoPtr<CTableResult> tr;
     FAIL_RETURN(CTableResult::New((ITableResult **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(1) ;
     (*row)[0] = String("");
     Boolean flag = FALSE;
-    tr->Newrow(*row,&flag);
+    tr->Newrow(row,&flag);
     FAIL_RETURN(CJDBCResultSet::New(tr,NULL,(IJDBCResultSet **)resultSet));
     return NOERROR;
 }
@@ -1262,7 +1265,7 @@ ECode CJDBCDatabaseMetaData::GetTablePrivileges(
 
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<IJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL ,(IJDBCResultSet **)&rs));
@@ -1326,13 +1329,13 @@ ECode CJDBCDatabaseMetaData::GetTableTypes(
     (*cols)[0] = String("TABLE_TYPE");
     AutoPtr<CTableResult> tr;
     FAIL_RETURN(CTableResult::New((ITableResult **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     AutoPtr<ArrayOf<String> > row = ArrayOf<String>::Alloc(1) ;
     (*row)[0] = String("TABLE");
     Boolean flag = FALSE;
-    tr->Newrow(*row,&flag);
+    tr->Newrow(row,&flag);
     (*row)[0] = String("VIEW");
-    tr->Newrow(*row,&flag);
+    tr->Newrow(row,&flag);
     FAIL_RETURN(CJDBCResultSet::New(tr,NULL,(IJDBCResultSet **)resultSet));
     return NOERROR;
 }
@@ -1387,7 +1390,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*types)[17] = ITypes::INTEGER;
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<CJDBCResultSet> rs ;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL,(IJDBCResultSet **)&rs));
@@ -1411,7 +1414,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row1)[16] = String("0");
     (*row1)[17] = String("0");
     Boolean rowflag = FALSE;
-    tr->Newrow(*row1,&rowflag);
+    tr->Newrow(row1,&rowflag);
     AutoPtr<ArrayOf<String> > row2 = ArrayOf<String>::Alloc(18);
     (*row2)[0] = String("INTEGER");
     (*row2)[1] = String("") + StringUtils::ToString(ITypes::INTEGER);
@@ -1431,7 +1434,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row2)[15] = String("0");
     (*row2)[16] = String("0");
     (*row2)[17] = String("2");
-    tr->Newrow(*row2,&rowflag);
+    tr->Newrow(row2,&rowflag);
     AutoPtr<ArrayOf<String> > row3 = ArrayOf<String>::Alloc(18);
     (*row3)[0] = String("DOUBLE");
     (*row3)[1] = String("") + StringUtils::ToString(ITypes::DOUBLE);
@@ -1451,7 +1454,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row3)[15] = String("0");
     (*row3)[16] = String("0");
     (*row3)[17] = String("10");
-    tr->Newrow(*row3,&rowflag);
+    tr->Newrow(row3,&rowflag);
     AutoPtr<ArrayOf<String> > row4 = ArrayOf<String>::Alloc(18);
     (*row4)[0] = String("FLOAT");
     (*row4)[1] = String("") + StringUtils::ToString(ITypes::FLOAT);
@@ -1471,7 +1474,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row4)[15] = String("0");
     (*row4)[16] = String("0");
     (*row4)[17] = String("10");
-    tr->Newrow(*row4,&rowflag);
+    tr->Newrow(row4,&rowflag);
     AutoPtr<ArrayOf<String> > row5 = ArrayOf<String>::Alloc(18);
     (*row5)[0] = String("SMALLINT");
     (*row5)[1] = String("") + StringUtils::ToString(ITypes::SMALLINT);
@@ -1491,7 +1494,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row5)[15] = String("0");
     (*row5)[16] = String("0");
     (*row5)[17] = String("2");
-    tr->Newrow(*row5,&rowflag);
+    tr->Newrow(row5,&rowflag);
     AutoPtr<ArrayOf<String> > row6 = ArrayOf<String>::Alloc(18);
     (*row6)[0] = String("BIT");
     (*row6)[1] = String("") + StringUtils::ToString(ITypes::BIT);
@@ -1511,7 +1514,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row6)[15] = String("0");
     (*row6)[16] = String("0");
     (*row6)[17] = String("2");
-    tr->Newrow(*row6,&rowflag);
+    tr->Newrow(row6,&rowflag);
     AutoPtr<ArrayOf<String> > row7 = ArrayOf<String>::Alloc(18);
     (*row7)[0] = String("TIMESTAMP");
     (*row7)[1] = String("") + StringUtils::ToString(ITypes::TIMESTAMP);
@@ -1531,7 +1534,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row7)[15] = String("0");
     (*row7)[16] = String("0");
     (*row7)[17] = String("0");
-    tr->Newrow(*row7,&rowflag);
+    tr->Newrow(row7,&rowflag);
     AutoPtr<ArrayOf<String> > row8 = ArrayOf<String>::Alloc(18);
     (*row8)[0] = String("DATE");
     (*row8)[1] = String("") + StringUtils::ToString(ITypes::DATE);
@@ -1551,7 +1554,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row8)[15] = String("0");
     (*row8)[16] = String("0");
     (*row8)[17] = String("0");
-    tr->Newrow(*row8,&rowflag);
+    tr->Newrow(row8,&rowflag);
     AutoPtr<ArrayOf<String> > row9 = ArrayOf<String>::Alloc(18);
     (*row9)[0] = String("TIME");
     (*row9)[1] = String("") + StringUtils::ToString(ITypes::TIME);
@@ -1571,7 +1574,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row9)[15] = String("0");
     (*row9)[16] = String("0");
     (*row9)[17] = String("0");
-    tr->Newrow(*row9,&rowflag);
+    tr->Newrow(row9,&rowflag);
     AutoPtr<ArrayOf<String> > row10 = ArrayOf<String>::Alloc(18);
     (*row10)[0] = String("BINARY");
     (*row10)[1] = String("") + StringUtils::ToString(ITypes::BINARY);
@@ -1591,7 +1594,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row10)[15] = String("0");
     (*row10)[16] = String("0");
     (*row10)[17] = String("0");
-    tr->Newrow(*row10,&rowflag);
+    tr->Newrow(row10,&rowflag);
     AutoPtr<ArrayOf<String> > row11 = ArrayOf<String>::Alloc(18);
     (*row11)[0] = String("VARBINARY");
     (*row11)[1] = String("") + StringUtils::ToString(ITypes::VARBINARY);
@@ -1611,7 +1614,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row11)[15] = String("0");
     (*row11)[16] = String("0");
     (*row11)[17] = String("0");
-    tr->Newrow(*row11,&rowflag);
+    tr->Newrow(row11,&rowflag);
     AutoPtr<ArrayOf<String> > row12 = ArrayOf<String>::Alloc(18);
     (*row12)[0] = String("REAL");
     (*row12)[1] = String("") + StringUtils::ToString(ITypes::REAL);
@@ -1631,7 +1634,7 @@ ECode CJDBCDatabaseMetaData::GetTypeInfo(
     (*row12)[15] = String("0");
     (*row12)[16] = String("0");
     (*row12)[17] = String("10");
-    tr->Newrow(*row12,&rowflag);
+    tr->Newrow(row12,&rowflag);
 
     *resultSet = (IResultSet *)rs.Get();
     REFCOUNT_ADD(*resultSet);
@@ -1691,7 +1694,7 @@ ECode CJDBCDatabaseMetaData::GetVersionColumns(
 
     AutoPtr<CTableResultX> tr;
     FAIL_RETURN(CTableResultX::New((ITableResultX **)&tr));
-    tr->Columns(*cols);
+    tr->Columns(cols);
     tr->Sql_types(types);
     AutoPtr<IJDBCResultSet> rs;
     FAIL_RETURN(CJDBCResultSet::New((ITableResult *)tr, NULL ,(IJDBCResultSet **)&rs));
@@ -2467,7 +2470,8 @@ String CJDBCDatabaseMetaData::MapTypeName(Int32 type)
     return String("varchar");
 }
 
-Int32 CJDBCDatabaseMetaData::MapSqlType(String inType)
+Int32 CJDBCDatabaseMetaData::MapSqlType(
+    const String& inType)
 {
     if (inType.IsNull()) {
         return ITypes::VARCHAR;
@@ -2515,7 +2519,9 @@ Int32 CJDBCDatabaseMetaData::MapSqlType(String inType)
     return ITypes::VARCHAR;
 }
 
-Int32 CJDBCDatabaseMetaData::GetM(String inTypeStr, Int32 type)
+Int32 CJDBCDatabaseMetaData::GetM(
+    const String& inTypeStr,
+    Int32 type)
 {
     Int32 m = 65536;
     switch (type) {
@@ -2544,7 +2550,9 @@ Int32 CJDBCDatabaseMetaData::GetM(String inTypeStr, Int32 type)
     return m;
 }
 
-Int32 CJDBCDatabaseMetaData::GetD(String typeStr, Int32 type)
+Int32 CJDBCDatabaseMetaData::GetD(
+    const String& typeStr,
+    Int32 type)
 {
     Int32 d = 0;
     switch (type) {
@@ -2573,15 +2581,18 @@ Int32 CJDBCDatabaseMetaData::GetD(String typeStr, Int32 type)
     return d;
 }
 
-void CJDBCDatabaseMetaData::InternalImportedKeys(String table, String pktable,
-                                        CJDBCResultSet * in, CTableResultX * out)
+void CJDBCDatabaseMetaData::InternalImportedKeys(
+    const String& table,
+    const String& pktable,
+    CJDBCResultSet * in,
+    CTableResultX * out)
 {
     HashMap<String, Int32> h0 ;
-    for (Int32 i = 0; i < in->tr->ncolumns; i++) {
-        h0.Insert(Pair<String,Int32>((*in->tr->column)[i], i)); // android-changed
+    for (Int32 i = 0; i < in->tr->mNcolumns; i++) {
+        h0.Insert(Pair<String,Int32>((*in->tr->mColumn)[i], i)); // android-changed
     }
-    for (Int32 i = 0; i < in->tr->nrows; i++) {
-        AutoPtr<ArrayOf<String> > r0 = in->tr->rows[i];
+    for (Int32 i = 0; i < in->tr->mNrows; i++) {
+        AutoPtr<ArrayOf<String> > r0 = in->tr->mRows[i];
         Int32 col = h0[String("table")];
         String pktab = (*r0)[col];
         if (pktable != NULL && !pktable.EqualsIgnoreCase(pktab)) {
@@ -2609,17 +2620,20 @@ void CJDBCDatabaseMetaData::InternalImportedKeys(String table, String pktable,
         (*row)[12] = String(NULL);
         (*row)[13] = String("") + StringUtils::ToString(IDatabaseMetaData::importedKeyNotDeferrable);
         Boolean rowflag =FALSE;
-        out->Newrow(*row,&rowflag);
+        out->Newrow(row, &rowflag);
     }
 }
 
-IResultSet * CJDBCDatabaseMetaData::GetSchemas(String cat, String schema)
+AutoPtr<IResultSet> CJDBCDatabaseMetaData::GetSchemas(
+    const String& cat,
+    const String& schema)
 {
+    assert(0);
     //throw new SQLException("not supported");
     return NULL;
 }
 
-Boolean CJDBCDatabaseMetaData::IsWrapperFor(AutoPtr<IInterface> iface)
+Boolean CJDBCDatabaseMetaData::IsWrapperFor(IInterface* iface)
 {
     return FALSE;
 }

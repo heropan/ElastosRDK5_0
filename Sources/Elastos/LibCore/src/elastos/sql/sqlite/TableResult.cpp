@@ -11,33 +11,39 @@ namespace SQLite {
 CAR_INTERFACE_IMPL_2(TableResult, Object, ITableResult, ICallback)
 
 ECode TableResult::Columns(
-    /* [in] */ const ArrayOf<String> & coldata)
+    /* [in] */ ArrayOf<String> * coldata)
 {
-    column = const_cast<ArrayOf<String> * >(&coldata);
-    ncolumns = column->GetLength();
+    VALIDATE_NOT_NULL(coldata)
+
+    mColumn = coldata;
+    mNcolumns = mColumn->GetLength();
     return NOERROR;
 }
 
 ECode TableResult::Types(
-    /* [in] */ const ArrayOf<String> & intypes)
+    /* [in] */ ArrayOf<String> * intypes)
 {
-    types = const_cast<ArrayOf<String> * >(&intypes);
+    VALIDATE_NOT_NULL(intypes)
+    mTypes = intypes;
     return NOERROR;
 }
 
 ECode TableResult::Newrow(
-    /* [in] */ const ArrayOf<String> & rowdata,
+    /* [in] */ ArrayOf<String> * rowdata,
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    if (rowdata.GetLength()>0) {
-        if (maxrows > 0 && nrows >= maxrows) {
-            atmaxrows = TRUE;
+    *value = FALSE;
+    VALIDATE_NOT_NULL(rowdata)
+
+    if (rowdata && rowdata->GetLength()>0) {
+        if (mMaxRows > 0 && mNrows >= mMaxRows) {
+            mAtMaxRows = TRUE;
             *value = TRUE;
             return NOERROR;
         }
-        rows.PushBack(const_cast<ArrayOf<String> *>(&rowdata));
-        nrows++;
+        mRows.PushBack(rowdata);
+        mNrows++;
     }
 
     *value = FALSE;
@@ -50,15 +56,15 @@ ECode TableResult::ToString(
     VALIDATE_NOT_NULL(value);
     StringBuffer sb;
     Int32 i = 0;
-    for (i = 0; i < ncolumns; i++) {
-        sb.Append((*column)[i].IsNull() ? String("NULL") : (*column)[i]);
+    for (i = 0; i < mNcolumns; i++) {
+        sb.Append((*mColumn)[i].IsNull() ? String("NULL") : (*mColumn)[i]);
         sb.AppendChar('|');
     }
     sb.AppendChar('\n');
-    for (i = 0; i < nrows; i++) {
+    for (i = 0; i < mNrows; i++) {
         Int32 k = 0;
-        AutoPtr<ArrayOf<String> > row = rows[i];
-        for (k = 0; k < ncolumns; k++) {
+        AutoPtr<ArrayOf<String> > row = mRows[i];
+        for (k = 0; k < mNcolumns; k++) {
             sb.Append((*row)[k].IsNull() ? String("NULL") : (*row)[k]);
             sb.AppendChar('|');
         }
@@ -69,40 +75,41 @@ ECode TableResult::ToString(
 }
 
 TableResult::TableResult()
-    : ncolumns(0)
-    , nrows(0)
-    , maxrows(0)
-    , atmaxrows(FALSE)
+    : mNcolumns(0)
+    , mNrows(0)
+    , mMaxRows(0)
+    , mAtMaxRows(FALSE)
 {
 }
 
 TableResult::TableResult(
     /* [in] */ Int32 maxrows)
-    : ncolumns(0)
-    , nrows(0)
-    , maxrows(0)
-    , atmaxrows(FALSE)
+    : mNcolumns(0)
+    , mNrows(0)
+    , mMaxRows(maxrows)
+    , mAtMaxRows(FALSE)
 {
 }
 
 ECode TableResult::Clear()
 {
-    column = ArrayOf<String>::Alloc(1);
-    types = NULL;
+    mColumn = ArrayOf<String>::Alloc(1);
+    mTypes = NULL;
     // rows = new Vector<AutoPtr<ArrayOf<String> > >();
-    ncolumns = nrows = 0;
-    atmaxrows = FALSE;
+    mRows.Clear();
+    mNcolumns = mNrows = 0;
+    mAtMaxRows = FALSE;
     return NOERROR;
 }
 
-ECode TableResult::Init()
+ECode TableResult::constructor()
 {
     return Clear();
 }
 
-ECode TableResult::Init(Int32 maxrows)
+ECode TableResult::constructor(Int32 maxrows)
 {
-    maxrows = maxrows;
+    mMaxRows = maxrows;
     return Clear();
 }
 

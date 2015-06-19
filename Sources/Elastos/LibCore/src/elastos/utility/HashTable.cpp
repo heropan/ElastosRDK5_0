@@ -953,7 +953,7 @@ ECode HashTable::Get(
         hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
         AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-        for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
+        for (HashtableEntry * e= (*tab)[hash & (tab->GetLength() - 1)];
                 e != NULL; e = e->mNext) {
             AutoPtr<IInterface> eKey = e->mKey;
             if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
@@ -981,7 +981,7 @@ ECode HashTable::ContainsKey(
         hash ^= ((UInt32)hash >> 7) ^ ((UInt32)hash >> 4);
 
         AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
-        for (AutoPtr<HashtableEntry> e = (*tab)[hash & (tab->GetLength() - 1)];
+        for (HashtableEntry * e = (*tab)[hash & (tab->GetLength() - 1)];
                 e != NULL; e = e->mNext) {
             AutoPtr<IInterface> eKey = e->mKey;
             if (eKey.Get() == key || (e->mHash == hash && Object::Equals(key, eKey))) {
@@ -1012,7 +1012,7 @@ ECode HashTable::ContainsValue(
         Int32 len = tab->GetLength();
 
         for (Int32 i = 0; i < len; i++) {
-            for (AutoPtr<HashtableEntry> e = (*tab)[i]; e != NULL; e = e->mNext) {
+            for (HashtableEntry * e = (*tab)[i]; e != NULL; e = e->mNext) {
                 if (value == e->mValue) {
                     *result = TRUE;
                     return NOERROR;
@@ -1048,7 +1048,7 @@ ECode HashTable::Put(
         AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
         Int32 index = hash & (tab->GetLength() - 1);
         AutoPtr<HashtableEntry> first = (*tab)[index];
-        for (AutoPtr<HashtableEntry> e = first; e != NULL; e = e->mNext) {
+        for (HashtableEntry * e = first; e != NULL; e = e->mNext) {
             if (e->mHash == hash && Object::Equals(key, e->mKey)) {
                 if (outface) {
                     *outface = e->mValue;;
@@ -1100,7 +1100,7 @@ ECode HashTable::ConstructorPut(
     AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
     Int32 index = hash & (tab->GetLength() - 1);
     AutoPtr<HashtableEntry> first = (*tab)[index];
-    for (AutoPtr<HashtableEntry> e = first; e != NULL; e = e->mNext) {
+    for (HashtableEntry * e = first; e != NULL; e = e->mNext) {
         if (e->mHash == hash && Object::Equals(key, e->mKey)) {
             e->mValue = value;
             return NOERROR;
@@ -1160,7 +1160,7 @@ ECode HashTable::EnsureCapacity(
     if (mSize != 0) {
         Int32 newMask = newCapacity - 1;
         for (Int32 i = 0; i < oldCapacity; i++) {
-            for (AutoPtr<HashtableEntry> e = (*oldTable)[i]; e != NULL;) {
+            for (HashtableEntry * e = (*oldTable)[i]; e != NULL;) {
                 AutoPtr<HashtableEntry> oldNext = e->mNext;
                 Int32 newIndex = e->mHash & newMask;
                 AutoPtr<HashtableEntry> newNext = (*newTable)[newIndex];
@@ -1284,8 +1284,8 @@ ECode HashTable::Clear()
             mModCount++;
             mSize = 0;
         }
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::GetKeySet(
@@ -1297,8 +1297,8 @@ ECode HashTable::GetKeySet(
         AutoPtr<ISet> ks = mKeySet;
         *keySet = ks != NULL ? ks : (mKeySet = (ISet*) new _KeySet(this));
         REFCOUNT_ADD(*keySet);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::GetValues(
@@ -1310,8 +1310,8 @@ ECode HashTable::GetValues(
         AutoPtr<ICollection> vs = mValues;
         *value = vs != NULL ? vs : (mValues = (ICollection*) new _Values(this));
         REFCOUNT_ADD(*value);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::GetEntrySet(
@@ -1323,8 +1323,8 @@ ECode HashTable::GetEntrySet(
         AutoPtr<ISet> es = mEntrySet;
         *entries = (es != NULL) ? es : (mEntrySet = (ISet*) new _EntrySet(this));
         REFCOUNT_ADD(*entries);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::GetKeys(
@@ -1362,15 +1362,15 @@ Boolean HashTable::ContainsMapping(
         Int32 hash = SecondaryHash(keycode);
         AutoPtr<ArrayOf<HashtableEntry*> > tab = mTable;
         Int32 index = hash & (tab->GetLength() - 1);
-        for (AutoPtr<HashtableEntry> e = (*tab)[index]; e != NULL; e = e->mNext) {
+        for (HashtableEntry * e = (*tab)[index]; e != NULL; e = e->mNext) {
             if (e->mHash == hash && Object::Equals((e->mKey).Get(), key)) {
                 Boolean res = FALSE;
                 (IObject::Probe(e->mValue))->Equals(value, &res);
                 return res;
             }
         }
-        return FALSE; // No entry for key
     }
+    return FALSE; // No entry for key
 }
 
 Boolean HashTable::RemoveMapping(
@@ -1399,8 +1399,8 @@ Boolean HashTable::RemoveMapping(
                 return TRUE;
             }
         }
-        return FALSE; // No entry for key
     }
+    return FALSE; // No entry for key
 }
 
 ECode HashTable::Equals(
@@ -1416,8 +1416,8 @@ ECode HashTable::Equals(
         GetEntrySet((ISet**)&outarr);
         Boolean isflag = FALSE;
         *result = (res != NULL) && ((ICollection::Probe(outarr))->Equals((res->GetEntrySet((ISet**)&outarr2), outarr2), &isflag), isflag);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::GetHashCode(
@@ -1446,8 +1446,8 @@ ECode HashTable::GetHashCode(
                     ^ (value != NULL ? valuehash : 0);
         }
         *hashCode = result;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode HashTable::ToString(
@@ -1455,9 +1455,10 @@ ECode HashTable::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
+    StringBuilder result;
+    result.AppendChar('{');
+
     synchronized(this) {
-        StringBuilder result;
-        result.AppendChar('{');
         AutoPtr<ISet> outarr;
         GetEntrySet((ISet**)&outarr);
         AutoPtr<IIterator> i;
@@ -1487,10 +1488,10 @@ ECode HashTable::ToString(
                 result.Append(", ");
             }
         }
-
-        result.AppendChar('}');
-        return result.ToString(str);
     }
+
+    result.AppendChar('}');
+    return result.ToString(str);
 }
 
 Int32 HashTable::SecondaryHash(

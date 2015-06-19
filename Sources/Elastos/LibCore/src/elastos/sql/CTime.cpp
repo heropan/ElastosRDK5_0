@@ -127,7 +127,7 @@ AutoPtr<ITime> CTime::ValueOf(
 void CTime::Format(
     /* [in] */ Int32 date,
     /* [in] */ Int32 digits,
-    /* [in] */ AutoPtr<StringBuilder> sb)
+    /* [in] */ StringBuilder* sb)
 {
     String str = StringUtils::ToString(date);
     if (digits - str.GetLength() > 0) {

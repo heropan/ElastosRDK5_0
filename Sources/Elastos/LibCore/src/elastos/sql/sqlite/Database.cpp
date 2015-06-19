@@ -56,7 +56,7 @@ static Int32 Callback(void *udata, int ncol, char **data, char **cols)
                 }
             }
             h->row1 = 0;
-            h->cb->Columns(*arr);
+            h->cb->Columns(arr);
 
 #if HAVE_BOTH_SQLITE
         if (h->is3) {
@@ -213,7 +213,7 @@ static Int32 Callback(void *udata, int ncol, char **data, char **cols)
                     (*arr)[i] = String(ctype);
                 }
             }
-            h->cb->Types(*arr);
+            h->cb->Types(arr);
         }
 #endif
 #endif
@@ -226,7 +226,7 @@ static Int32 Callback(void *udata, int ncol, char **data, char **cols)
                 (*arr)[i] = String(data[i]);
             }
         }
-        h->cb->Newrow(*arr,&rc);
+        h->cb->Newrow(arr,&rc);
         return rc != FALSE;
         }
     }
@@ -346,7 +346,7 @@ ECode Database::Exec(
 ECode Database::Exec(
     /* [in] */ const String& sql,
     /* [in] */ ICallback* cb,
-    /* [in] */ const ArrayOf<String> & args)
+    /* [in] */ ArrayOf<String> * args)
 {
     Autolock lock(this);
     return _Exec(sql, cb, args);
@@ -395,15 +395,16 @@ ECode Database::GetTable(
     /* [in] */ Int32 maxrows,
     /* [out] */ ITableResult ** tableresult)
 {
-    VALIDATE_NOT_NULL(*tableresult);
+    VALIDATE_NOT_NULL(tableresult);
     *tableresult = NULL;
+
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
     Boolean is3 = FALSE;
     if (Is3(&is3), !is3) {
         ECode ec = Exec(sql, ICallback::Probe(ret));
         if (ec != NOERROR) {
-            if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
+            if (maxrows <= 0 || !((CTableResult *)ret.Get())->mAtMaxRows) {
                 return NOERROR;
             }
         }
@@ -415,8 +416,8 @@ ECode Database::GetTable(
             SetLastError(((CVm *)vm.Get())->mError_code);
             Boolean vmflag = FALSE;
             ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
-            if (((CTableResult *)ret.Get())->maxrows > 0) {
-               while (((CTableResult *)ret.Get())->nrows < ((CTableResult *)ret.Get())->maxrows
+            if (((CTableResult *)ret.Get())->mMaxRows > 0) {
+               while (((CTableResult *)ret.Get())->mNrows < ((CTableResult *)ret.Get())->mMaxRows
                         && vmflag) {
                     SetLastError(((CVm *)vm.Get())->mError_code);
                 }
@@ -445,18 +446,19 @@ ECode Database::GetTable(
 ECode Database::GetTable(
     /* [in] */ const String& sql,
     /* [in] */ Int32 maxrows,
-    /* [in] */ const ArrayOf<String> & args,
+    /* [in] */ ArrayOf<String> * args,
     /* [out] */ ITableResult ** tableresult)
 {
-    VALIDATE_NOT_NULL(*tableresult);
+    VALIDATE_NOT_NULL(tableresult);
     *tableresult = NULL;
+
     AutoPtr<ITableResult> ret ;
     CTableResult::New(maxrows,(ITableResult **)&ret);
     Boolean is3 = FALSE;
     if (Is3(&is3), !is3) {
         ECode ec = Exec(sql, (ICallback *)ret.Get(), args);
         if (ec != NOERROR) {
-            if (maxrows <= 0 || !((CTableResult *)ret.Get())->atmaxrows) {
+            if (maxrows <= 0 || !((CTableResult *)ret.Get())->mAtMaxRows) {
                 return NOERROR;
             }
         }
@@ -467,9 +469,9 @@ ECode Database::GetTable(
         Compile(sql, args, (IVm**)&vm);
         SetLastError(((CVm *)vm.Get())->mError_code);
         Boolean vmflag = FALSE;
-        if (((CTableResult *)ret.Get())->maxrows > 0) {
+        if (((CTableResult *)ret.Get())->mMaxRows > 0) {
             ((CVm *)vm.Get())->Step((ICallback *)ret.Get(),&vmflag);
-            while (((CTableResult *)ret.Get())->nrows < ((CTableResult *)ret.Get())->maxrows
+            while (((CTableResult *)ret.Get())->mNrows < ((CTableResult *)ret.Get())->mMaxRows
                     && vmflag) {
                 SetLastError(((CVm *)vm.Get())->mError_code);
             }
@@ -490,7 +492,7 @@ ECode Database::GetTable(
 
 ECode Database::GetTable(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String> & args,
+    /* [in] */ ArrayOf<String> * args,
     /* [out] */ ITableResult ** tableresult)
 {
     return GetTable(sql, 0, args, tableresult);
@@ -498,7 +500,7 @@ ECode Database::GetTable(
 
 ECode Database::GetTable(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String> & args,
+    /* [in] */ ArrayOf<String> * args,
     /* [in] */ ITableResult* tbl)
 {
     ((CTableResult* )tbl)->Clear();
@@ -506,7 +508,7 @@ ECode Database::GetTable(
     if (Is3(&is3), !is3) {
         ECode ec = Exec(sql, ICallback::Probe(tbl), args);
         if (ec != NOERROR) {
-            if (((CTableResult *)tbl)->maxrows <= 0 || !((CTableResult *)tbl)->atmaxrows) {
+            if (((CTableResult *)tbl)->mMaxRows <= 0 || !((CTableResult *)tbl)->mAtMaxRows) {
                 return E_SQL_EXCEPTION;
             }
         }
@@ -516,9 +518,9 @@ ECode Database::GetTable(
         AutoPtr<IVm> vm;
         Compile(sql, args, (IVm**)&vm);
         Boolean vmflag = FALSE;
-        if (((CTableResult* )tbl)->maxrows > 0) {
+        if (((CTableResult* )tbl)->mMaxRows > 0) {
             ((CVm *)vm.Get())->Step((ICallback *)tbl,&vmflag);
-            while (((CTableResult* )tbl)->nrows < ((CTableResult* )tbl)->maxrows
+            while (((CTableResult* )tbl)->mNrows < ((CTableResult* )tbl)->mMaxRows
                         && vmflag) {
                 SetLastError(((CVm *)vm.Get())->mError_code);
             }
@@ -668,7 +670,7 @@ ECode Database::Backup(
     /* [in] */ const String& srcName,
     /* [out] */ IBackup ** backup)
 {
-    VALIDATE_NOT_NULL(*backup);
+    VALIDATE_NOT_NULL(backup);
     synchronized(this) {
         AutoPtr<IBackup> b;
         CBackup::New((IBackup **)&b);
@@ -692,13 +694,13 @@ ECode Database::Profile(
 
 ECode Database::DbStatus(
     /* [in] */ Int32 op,
-    /* [in] */ const ArrayOf<Int32> & info,
+    /* [in] */ ArrayOf<Int32> * info,
     /* [in] */ Boolean flag,
     /* [out] */ Int32 * status)
 {
     VALIDATE_NOT_NULL(status);
     synchronized(this) {
-        *status = _DbStatus(op, const_cast<ArrayOf<Int32> *>(&info), flag);
+        *status = _DbStatus(op, info, flag);
     }
     return NOERROR;
 }
@@ -707,7 +709,7 @@ ECode Database::Compile(
     /* [in] */ const String& sql,
     /* [out] */ IVm ** ivm)
 {
-    VALIDATE_NOT_NULL(*ivm);
+    VALIDATE_NOT_NULL(ivm);
     synchronized(this) {
         AutoPtr<IVm> vm;
         CVm::New((IVm **)&vm);
@@ -721,10 +723,10 @@ ECode Database::Compile(
 
 ECode Database::Compile(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String> & args,
+    /* [in] */ ArrayOf<String> * args,
     /* [out] */ IVm ** ivm)
 {
-    VALIDATE_NOT_NULL(*ivm);
+    VALIDATE_NOT_NULL(ivm);
     synchronized(this) {
         AutoPtr<IVm> vm;
         CVm::New((IVm **)&vm);
@@ -739,7 +741,7 @@ ECode Database::Prepare(
     /* [in] */ const String& sql,
     /* [out] */ IStmt ** st)
 {
-    VALIDATE_NOT_NULL(*st);
+    VALIDATE_NOT_NULL(st);
     ECode ec = NOERROR;
     synchronized(this) {
         AutoPtr<IStmt> stmt;
@@ -760,7 +762,7 @@ ECode Database::OpenBlob(
     /* [in] */ Boolean rw,
     /* [out] */ IBlob ** blob)
 {
-    VALIDATE_NOT_NULL(*blob);
+    VALIDATE_NOT_NULL(blob);
 
     synchronized(this) {
         AutoPtr<CBlob> bl;
@@ -813,7 +815,7 @@ ECode Database::ProgressHandler(
 }
 
 ECode Database::Key(
-    /* [in] */ const ArrayOf<Byte> & ekey)
+    /* [in] */ ArrayOf<Byte> * ekey)
 {
     Autolock lock(this);
     return _Key(ekey);
@@ -833,7 +835,7 @@ ECode Database::Key(
             (*ekey)[i] = (Byte) ((c & 0xff) ^ (c >> 8));
         }
     }
-    return _Key(*ekey);
+    return _Key(ekey);
 }
 ECode Database::_Open(
     /* [in] */ const String& filename,
@@ -1044,6 +1046,7 @@ ECode Database::_Open4(
     sqlite_freemem(err);
     }
 #endif
+    return NOERROR;
 }
 
 ECode Database::_OpenAuxFile(
@@ -1087,11 +1090,13 @@ ECode Database::_OpenAuxFile(
     if (err) {
         sqlite_freemem(err);
     }
+    return NOERROR;
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 #endif
-    return NOERROR;
     }
+
+    return NOERROR;
 }
 
 ECode Database::doclose(
@@ -1272,7 +1277,7 @@ ECode Database::_Exec(
 ECode Database::_Exec(
     /* [in] */ const String& sql,
     /* [in] */ AutoPtr<ICallback> cb,
-    /* [in] */ const ArrayOf<String>& argsstr)
+    /* [in] */ ArrayOf<String> * argsstr)
 {
     handle *h = (handle *)mHandle;
     freemem *freeproc = 0;
@@ -1338,10 +1343,13 @@ ECode Database::_Exec(
             argv[i].obj = 0;
             argv[i].trans = 0;
         }
-        for (i = 0; i < nargs; i++) {
-            if (i < argsstr.GetLength()) {
-                argv[i].obj = argsstr[i];
-                argv[i].arg = cargv[i] = const_cast<char *>(argsstr[i].string());
+
+        if (argsstr) {
+            for (i = 0; i < nargs; i++) {
+                if (i < argsstr->GetLength()) {
+                    argv[i].obj = (*argsstr)[i];
+                    argv[i].arg = cargv[i] = const_cast<char *>((*argsstr)[i].string());
+                }
             }
         }
         // if (exc) {
@@ -2114,7 +2122,7 @@ Int32 Database::_Status(
 
 Int32 Database::_DbStatus(
     /* [in] */ Int32 op,
-    /* [in] */ AutoPtr<ArrayOf<Int32> > info,
+    /* [in] */ ArrayOf<Int32> * info,
     /* [in] */ Boolean flag)
 {
     Int32 ret = SQLITE_ERROR;
@@ -2289,7 +2297,7 @@ ECode Database::Vm_compile(
 ECode Database::Vm_compile_args(
     /* [in] */ const String& sql,
     /* [in] */ AutoPtr<IVm> vm,
-    /* [in] */ const ArrayOf<String>& argsstr)
+    /* [in] */ ArrayOf<String>* argsstr)
 {
 #if HAVE_SQLITE_COMPILE
 #if HAVE_SQLITE3
@@ -2348,12 +2356,13 @@ ECode Database::Vm_compile_args(
     for (i = 0; i < MAX_PARAMS; i++) {
         cargv[i] = NULL;
     }
-    for (i = 0; i < nargs; i++) {
-        if (i<argsstr.GetLength())
-        {
-            cargv[i] = const_cast<char *>(argsstr[i].string());
-        }
+    if (argsstr) {
+        for (i = 0; i < nargs; i++) {
+            if (i < argsstr->GetLength()) {
+                cargv[i] = const_cast<char *>((*argsstr)[i].string());
+            }
 
+    }
     }
     h->row1 = 1;
 #if defined(_WIN32) || !defined(CANT_PASS_VALIST_AS_CHARPTR)
@@ -2694,7 +2703,7 @@ ECode Database::_ProgressHandler(
 }
 
 ECode Database::_Key(
-    /* [in] */ const ArrayOf<Byte>& ekey)
+    /* [in] */ ArrayOf<Byte> * ekey)
 {
     Int32 len(0);
     AutoPtr<ArrayOf<Byte> > data;
@@ -2702,11 +2711,13 @@ ECode Database::_Key(
     handle *h = gethandle(env, obj);
 #endif
 
-    len = ekey.GetLength();
-    data = const_cast<ArrayOf<Byte> *>(&ekey);
-    if (len == 0) {
-        data = 0;
+    if (ekey) {
+        len = ekey->GetLength();
     }
+    if (len != 0) {
+        data = ekey;
+    }
+
     if (!data) {
         len = 0;
     }

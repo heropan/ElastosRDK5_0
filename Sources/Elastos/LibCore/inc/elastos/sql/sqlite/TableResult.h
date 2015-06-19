@@ -19,17 +19,17 @@ class TableResult
 public:
     CAR_INTERFACE_DECL();
 
-    virtual CARAPI Columns(
-        /* [in] */ const ArrayOf<String> & coldata);
+    CARAPI Columns(
+        /* [in] */ ArrayOf<String> * coldata);
 
-    virtual CARAPI Types(
-        /* [in] */ const ArrayOf<String> & intypes);
+    CARAPI Types(
+        /* [in] */ ArrayOf<String> * intypes);
 
-    virtual CARAPI Newrow(
-        /* [in] */ const ArrayOf<String> & rowdata,
+    CARAPI Newrow(
+        /* [in] */ ArrayOf<String> * rowdata,
         /* [out] */ Boolean* value);
 
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* value);
 
     TableResult();
@@ -37,21 +37,21 @@ public:
     TableResult(
         /* [in] */ Int32 maxrows);
 
-    virtual CARAPI Clear();
+    CARAPI Clear();
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 maxrows);
 
 public:
-    Int32 ncolumns;
-    Int32 nrows;
-    AutoPtr<ArrayOf<String> > column;
-    AutoPtr<ArrayOf<String> > types;
-    Int32 maxrows;
-    Vector<AutoPtr<ArrayOf<String> > > rows;
-    Boolean atmaxrows;
+    Int32 mNcolumns;
+    Int32 mNrows;
+    AutoPtr<ArrayOf<String> > mColumn;
+    AutoPtr<ArrayOf<String> > mTypes;
+    Int32 mMaxRows;
+    Vector<AutoPtr<ArrayOf<String> > > mRows;
+    Boolean mAtMaxRows;
 };
 
 } // namespace SQLite

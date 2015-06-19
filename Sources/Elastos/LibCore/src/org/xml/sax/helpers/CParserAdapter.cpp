@@ -552,7 +552,7 @@ CParserAdapter::AttributeListAdapter::AttributeListAdapter(
 }
 
 ECode CParserAdapter::AttributeListAdapter::SetAttributeList(
-    /* [in] */ AutoPtr<IAttributeList> qAtts)
+    /* [in] */ IAttributeList* qAtts)
 {
     mQAtts = qAtts;
     return NOERROR;

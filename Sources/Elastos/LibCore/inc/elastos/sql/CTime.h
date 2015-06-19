@@ -62,7 +62,7 @@ private:
     CARAPI_(void) Format(
         /* [in] */ Int32 date,
         /* [in] */ Int32 digits,
-        /* [in] */ AutoPtr<StringBuilder> sb);
+        /* [in] */ StringBuilder* sb);
 
 private:
     const static String PADDING;

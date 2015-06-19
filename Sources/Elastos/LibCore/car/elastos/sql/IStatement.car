@@ -11,6 +11,7 @@ module
       * @Involve
       * interface Elastos.Sql.IWrapper;
       */
+    [deprecated]
     interface IStatement {
         /**
          * Passing this constant to {@link #getMoreResults} implies that all {@code
@@ -181,7 +182,7 @@ module
          */
         Execute(
             [in] String sql,
-            [in] ArrayOf<Int32> columnIndexes,
+            [in] ArrayOf<Int32> * columnIndexes,
             [out] Boolean* value);
 
         /**
@@ -207,7 +208,7 @@ module
          */
         Execute(
             [in] String sql,
-            [in] ArrayOf<String> columnNames,
+            [in] ArrayOf<String> * columnNames,
             [out] Boolean* value);
 
         /**
@@ -320,7 +321,7 @@ module
          */
         ExecuteUpdate(
             [in] String sql,
-            [in] ArrayOf<Int32> columnIndexes,
+            [in] ArrayOf<Int32> * columnIndexes,
             [out] Int32* value);
 
         /**
@@ -342,7 +343,7 @@ module
          */
         ExecuteUpdate(
             [in] String sql,
-            [in] ArrayOf<String> columnNames,
+            [in] ArrayOf<String> * columnNames,
             [out] Int32* value);
 
         /**

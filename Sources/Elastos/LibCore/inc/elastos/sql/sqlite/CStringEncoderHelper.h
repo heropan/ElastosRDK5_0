@@ -3,15 +3,14 @@
 #define __CSTRINGENCODERHELPER_H__
 
 #include "_Elastos_Sql_SQLite_CStringEncoderHelper.h"
-#include <elastos/core/Object.h>
-
+#include "Singleton.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CStringEncoderHelper)
-    , public Object
+    , public Singleton
     , public IStringEncoderHelper
 {
 public:

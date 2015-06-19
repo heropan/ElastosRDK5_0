@@ -26,7 +26,7 @@ public:
     JDBCStatement();
 
     JDBCStatement(
-        /* [in] */ AutoPtr<IJDBCConnection> conn);
+        /* [in] */ IJDBCConnection* conn);
 
     virtual CARAPI AddBatch(
         /* [in] */ const String& sql);
@@ -50,12 +50,12 @@ public:
 
     virtual CARAPI Execute(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<Int32>& columnIndexes,
+        /* [in] */ ArrayOf<Int32> * columnIndexes,
         /* [out] */ Boolean* value);
 
     virtual CARAPI Execute(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& columnNames,
+        /* [in] */ ArrayOf<String> * columnNames,
         /* [out] */ Boolean* value);
 
     virtual CARAPI ExecuteBatch(
@@ -76,12 +76,12 @@ public:
 
     virtual CARAPI ExecuteUpdate(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<Int32>& columnIndexes,
+        /* [in] */ ArrayOf<Int32> * columnIndexes,
         /* [out] */ Int32* value);
 
     virtual CARAPI ExecuteUpdate(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& columnNames,
+        /* [in] */ ArrayOf<String> * columnNames,
         /* [out] */ Int32* value);
 
     virtual CARAPI GetConnection(
@@ -162,7 +162,7 @@ public:
 
     virtual CARAPI ExecuteQuery(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& args,
+        /* [in] */ ArrayOf<String> * args,
         /* [in] */ Boolean updonly,
         /* [out] */ IResultSet** resultset);
 
@@ -174,8 +174,8 @@ public:
         /* [in] */ IInterface* iface,
         /* [out] */ Boolean* value);
 
-    CARAPI Init(
-        /* [in] */ AutoPtr<IJDBCConnection> iconn);
+    CARAPI constructor(
+        /* [in] */ IJDBCConnection* iconn);
 
 public:
     AutoPtr<IJDBCConnection> conn;

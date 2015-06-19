@@ -34,7 +34,7 @@ Boolean StringEncoder::initflag = Init();
 AutoPtr<ArrayOf<Char32> > StringEncoder::xdigits;
 
 String StringEncoder::Encode(
-    /* [in] */ AutoPtr<ArrayOf<Byte> > a)
+    /* [in] */ ArrayOf<Byte> * a)
 {
     // check input
     if (*a == NULL || a->GetLength() ==0)
@@ -89,7 +89,7 @@ String StringEncoder::Encode(
 }
 
 String StringEncoder::EncodeX(
-    /* [in] */ AutoPtr<ArrayOf<Byte> > a)
+    /* [in] */ ArrayOf<Byte> * a)
 {
     // check input
     if (*a == NULL || a->GetLength() ==0) {
@@ -207,10 +207,10 @@ AutoPtr<ArrayOf<Byte> > StringEncoder::Decode(
 }
 
 AutoPtr<ArrayOf<Byte> > StringEncoder::ByteCopy(
-    /* [in] */ AutoPtr<ArrayOf<Byte> > source,
+    /* [in] */ ArrayOf<Byte> * source,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
-    /* [in] */ AutoPtr<ArrayOf<Byte> > target)
+    /* [in] */ ArrayOf<Byte> * target)
 {
     for (Int32 i = offset, j = 0; i < offset + count; i++, j++) {
         (*target)[j] = (*source)[i];

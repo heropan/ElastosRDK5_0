@@ -67,7 +67,7 @@ static Int32 Callback(void *udata, int ncol, char **data, char **cols)
                 }
             }
             h->row1 = 0;
-            ((ICallback *)h->cb)->Columns(*arr);
+            ((ICallback *)h->cb)->Columns(arr);
 
 #if HAVE_BOTH_SQLITE
         if (h->is3) {
@@ -225,7 +225,7 @@ static Int32 Callback(void *udata, int ncol, char **data, char **cols)
                     (*arr)[i] = String(ctype);
                 }
             }
-            ((ICallback *)h->cb)->Types(*arr);
+            ((ICallback *)h->cb)->Types(arr);
         }
 #endif
 #endif
@@ -238,7 +238,7 @@ static Int32 Callback(void *udata, int ncol, char **data, char **cols)
                     (*arr)[i] = String(data[i]);
                 }
             }
-            ((ICallback *)h->cb)->Newrow(*arr,&rc);
+            ((ICallback *)h->cb)->Newrow(arr,&rc);
             return rc != FALSE;
         }
     }

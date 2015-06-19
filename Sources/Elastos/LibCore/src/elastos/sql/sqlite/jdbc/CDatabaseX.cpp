@@ -29,7 +29,7 @@ ECode CDatabaseX::Exec(
 ECode CDatabaseX::Exec(
     /* [in] */ const String& sql,
     /* [in] */ ICallback * cb,
-    /* [in] */ const ArrayOf<String>& args)
+    /* [in] */ ArrayOf<String> * args)
 {
     ECode ec = NOERROR;
     ec = Exec(sql, cb, args);
@@ -41,7 +41,7 @@ ECode CDatabaseX::Exec(
 
 ECode CDatabaseX::GetTable(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String>& args,
+    /* [in] */ ArrayOf<String> * args,
     /* [out] */ ITableResult ** tbl)
 {
     ECode ec = NOERROR;
@@ -54,7 +54,7 @@ ECode CDatabaseX::GetTable(
 
 ECode CDatabaseX::GetTable(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String>& args,
+    /* [in] */ ArrayOf<String> * args,
     /* [in] */ ITableResult * tbl)
 {
     ECode ec = NOERROR;

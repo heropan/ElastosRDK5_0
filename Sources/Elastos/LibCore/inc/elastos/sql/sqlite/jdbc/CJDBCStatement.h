@@ -14,9 +14,6 @@ CarClass(CJDBCStatement) , public JDBCStatement
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI constructor(
-        /* [in] */ AutoPtr<IJDBCConnection> conn);
 };
 
 } // namespace JDBC

@@ -54,21 +54,24 @@ void CShell::Clone(
 }
 
 ECode CShell::Columns(
-    /* [in] */ const ArrayOf<String> & args)
+    /* [in] */ ArrayOf<String> * args)
 {
-    cols=args.Clone();
+    cols = NULL;
+    if (args) {
+        cols = args->Clone();
+    }
     return NOERROR;
 }
 
 ECode CShell::Types(
-    /* [in] */ const ArrayOf<String> & types)
+    /* [in] */ ArrayOf<String> * types)
 {
     /* Empty body to satisfy SQLite.Callback Int32erface. */
     return NOERROR;
 }
 
 ECode CShell::Newrow(
-    /* [in] */ const ArrayOf<String> & args,
+    /* [in] */ ArrayOf<String> * args,
     /* [out] */ Boolean * pValue)
 {
     Int32 i = 0;
@@ -76,14 +79,14 @@ ECode CShell::Newrow(
     switch (mode) {
     case MODE_Line:
         {
-            if (args.GetLength() == 0) {
+            if (args == NULL || args->GetLength() == 0) {
                 break;
             }
             if (count++ > 0) {
                 pw->Print(String(""));
             }
-            for (i = 0; i < args.GetLength(); i++) {
-                pw->Print((*cols)[i] + String(" = ") + (args[i] == NULL ? String("NULL") : args[i]));
+            for (i = 0; i < args->GetLength(); i++) {
+                pw->Print((*cols)[i] + String(" = ") + ((*args)[i] == NULL ? String("NULL") : (*args)[i]));
             }
             break;
         }
@@ -92,8 +95,8 @@ ECode CShell::Newrow(
         {
             String csep(NULL);
             if (count++ == 0) {
-                colwidth = ArrayOf<Int32>::Alloc(args.GetLength());
-                for (i = 0; i < args.GetLength(); i++) {
+                colwidth = ArrayOf<Int32>::Alloc(args->GetLength());
+                for (i = 0; i < args->GetLength(); i++) {
                     Int32 w = 0 ;
                     w = ((*cols)[i]).GetLength();
                     if (w < 10) {
@@ -109,12 +112,12 @@ ECode CShell::Newrow(
                     pw->Print(String(""));
                 }
             }
-            if (args.GetLength() == 0) {
+            if (args->GetLength() == 0) {
                 break;
             }
             csep = String("");
-            for (i = 0; i < args.GetLength(); i++) {
-                pw->Print(csep + (args[i] == NULL ? "NULL" : args[i]));
+            for (i = 0; i < args->GetLength(); i++) {
+                pw->Print(csep + ((*args)[i] == NULL ? "NULL" : (*args)[i]));
                 csep = String(" ");
             }
             pw->Print(String(""));
@@ -125,19 +128,19 @@ ECode CShell::Newrow(
     case MODE_List:
         {
             if (count++ == 0 && showHeader) {
-            for (i = 0; i < args.GetLength(); i++) {
+            for (i = 0; i < args->GetLength(); i++) {
                 pw->Print((*cols)[i] +
-                     (i == args.GetLength() - 1 ? "\n" : sep));
+                     (i == args->GetLength() - 1 ? "\n" : sep));
             }
             }
-            if (args.GetLength() == 0) {
+            if (args->GetLength() == 0) {
             break;
             }
-            for (i = 0; i < args.GetLength(); i++) {
-            pw->Print(args[i] == NULL ? String("NULL") : args[i]);
+            for (i = 0; i < args->GetLength(); i++) {
+            pw->Print((*args)[i] == NULL ? String("NULL") : (*args)[i]);
             if (mode == MODE_Semi) {
             pw->Print(String(";"));
-            } else if (i < args.GetLength() - 1) {
+            } else if (i < args->GetLength() - 1) {
                 pw->Print(sep);
             }
             }
@@ -149,24 +152,24 @@ ECode CShell::Newrow(
         {
             if (count++ == 0 && showHeader) {
                 pw->Print(String("<TR>"));
-                for (i = 0; i < args.GetLength(); i++) {
+                for (i = 0; i < args->GetLength(); i++) {
                     pw->Print(String("<TH>") + HtmlQuote((*cols)[i]) + String("</TH>"));
             }
             pw->Print(String("</TR>"));
             }
-            if (args.GetLength() == 0) {
+            if (args->GetLength() == 0) {
             break;
             }
             pw->Print(String("<TR>"));
-            for (i = 0; i < args.GetLength(); i++) {
-                pw->Print(String("<TD>") + HtmlQuote(args[i]) + String("</TD>"));
+            for (i = 0; i < args->GetLength(); i++) {
+                pw->Print(String("<TD>") + HtmlQuote((*args)[i]) + String("</TD>"));
             }
             pw->Print(String("</TR>"));
             break;
         }
     case MODE_Insert:
         {
-            if (args.GetLength() == 0) {
+            if (args->GetLength() == 0) {
             break;
             }
             tname = tableName;
@@ -174,16 +177,16 @@ ECode CShell::Newrow(
                 tname = destTable;
             }
             pw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
-            for (i = 0; i < args.GetLength(); i++) {
+            for (i = 0; i < args->GetLength(); i++) {
                 String tsep = i > 0 ? String(",") : String("");
-            if (args[i] == NULL) {
+            if ((*args)[i] == NULL) {
                 pw->Print(tsep + String("NULL"));
             }
-            else if (IsNumeric(args[i])) {
-                 pw->Print(tsep + args[i]);
+            else if (IsNumeric((*args)[i])) {
+                 pw->Print(tsep + (*args)[i]);
             }
             else {
-                pw->Print(tsep + SqlQuote(args[i]));
+                pw->Print(tsep + SqlQuote((*args)[i]));
             }
             }
             pw->Print(String(");"));
@@ -192,7 +195,7 @@ ECode CShell::Newrow(
 
     case MODE_Insert2:
         {
-            if (args.GetLength() == 0) {
+            if (args->GetLength() == 0) {
             break;
             }
             tname = tableName;
@@ -200,9 +203,9 @@ ECode CShell::Newrow(
                 tname = destTable;
             }
             pw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
-            for (i = 0; i < args.GetLength(); i++) {
+            for (i = 0; i < args->GetLength(); i++) {
                 String tsep = i > 0 ? String(",") : String("");
-            pw->Print(tsep + args[i]);
+            pw->Print(tsep + (*args)[i]);
             }
             pw->Print(String(");"));
             break;

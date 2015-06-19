@@ -19,16 +19,16 @@ public:
     NetworkInterface(
         /* [in] */ const String& name,
         /* [in] */ Int32 interfaceIndex,
-        /* [in] */ AutoPtr<IList> addresses,
-        /* [in] */ AutoPtr<IList> interfaceAddresses);
+        /* [in] */ IList * addresses,
+        /* [in] */ IList * interfaceAddresses);
 
     ~NetworkInterface();
 
     CARAPI constructor(
         /* [in] */ const String& name,
         /* [in] */ Int32 interfaceIndex,
-        /* [in] */ AutoPtr<IList> addresses,
-        /* [in] */ AutoPtr<IList> interfaceAddresses);
+        /* [in] */ IList * addresses,
+        /* [in] */ IList * interfaceAddresses);
 
     CARAPI GetIndex(
         /* [out] */ Int32* index);

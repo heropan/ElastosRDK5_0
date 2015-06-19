@@ -193,7 +193,7 @@ AutoPtr<IBigInteger> Logical::AndNegative(
 
     // Does shorter matter?
     if (iLonger >= shorter->mNumberLength) {
-        return (AutoPtr<IBigInteger>)longer;
+        return (IBigInteger *)longer->Probe(EIID_IBigInteger);
     }
 
     AutoPtr<IBigInteger> result;

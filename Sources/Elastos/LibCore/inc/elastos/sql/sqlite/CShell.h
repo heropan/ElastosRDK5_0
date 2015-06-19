@@ -25,13 +25,13 @@ public:
     CAR_INTERFACE_DECL();
 
     CARAPI Columns(
-        /* [in] */ const ArrayOf<String> & args);
+        /* [in] */ ArrayOf<String> * args);
 
     CARAPI Types(
-        /* [in] */ const ArrayOf<String> & types);
+        /* [in] */ ArrayOf<String> * types);
 
     CARAPI Newrow(
-        /* [in] */ const ArrayOf<String> & args,
+        /* [in] */ ArrayOf<String> * args,
         /* [out] */ Boolean * pValue);
 
     CARAPI constructor(

@@ -1,6 +1,6 @@
 
-#ifndef __CDATABASE_H__
-#define __CDATABASE_H__
+#ifndef __ELASTOS_SQL_SQLITE_CDATABASE_H__
+#define __ELASTOS_SQL_SQLITE_CDATABASE_H__
 
 #include "_Elastos_Sql_SQLite_CDatabase.h"
 #include "Database.h"
@@ -19,4 +19,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDATABASE_H__
+#endif // __ELASTOS_SQL_SQLITE_CDATABASE_H__

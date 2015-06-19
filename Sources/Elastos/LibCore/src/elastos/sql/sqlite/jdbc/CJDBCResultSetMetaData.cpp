@@ -26,7 +26,7 @@ ECode CJDBCResultSetMetaData::GetColumnClassName(
 {
     column--;
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        if (column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->ncolumns) {
+        if (column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->mNcolumns) {
             *str = String(NULL);
             return NOERROR;
         }
@@ -68,7 +68,7 @@ ECode CJDBCResultSetMetaData::GetColumnCount(
     /* [out] */ Int32 * value)
 {
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        *value = ((CJDBCResultSet *)r.Get())->tr->ncolumns;
+        *value = ((CJDBCResultSet *)r.Get())->tr->mNcolumns;
     }else {
         *value = 0;
     }
@@ -90,8 +90,8 @@ ECode CJDBCResultSetMetaData::GetColumnLabel(
     column--;
     String c = String(NULL);
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->ncolumns)) {
-            c = (*((CJDBCResultSet *)r.Get())->tr->column)[column];
+        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->mNcolumns)) {
+            c = (*((CJDBCResultSet *)r.Get())->tr->mColumn)[column];
         }
     }
     *str = c;
@@ -105,8 +105,8 @@ ECode CJDBCResultSetMetaData::GetColumnName(
     column--;
     String c = String(NULL);
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->ncolumns)) {
-            c = (*((CJDBCResultSet *)r.Get())->tr->column)[column];
+        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->mNcolumns)) {
+            c = (*((CJDBCResultSet *)r.Get())->tr->mColumn)[column];
             if (c != NULL) {
                 Int32 i = c.IndexOf('.');
                 if (i > 0) {
@@ -126,7 +126,7 @@ ECode CJDBCResultSetMetaData::GetColumnType(
 {
     column--;
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->ncolumns)) {
+        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->mNcolumns)) {
             AutoPtr<ITableResultX > arr = (ITableResultX * )(((CJDBCResultSet *)r.Get())->tr)->Probe(EIID_ITableResultX);
             if (arr) {
                 *value = (*((CTableResultX *) ((CJDBCResultSet *)r.Get())->tr.Get())->sql_type)[column];
@@ -146,7 +146,7 @@ ECode CJDBCResultSetMetaData::GetColumnTypeName(
 {
     column--;
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        if (column < 0 || column < ((CJDBCResultSet *)r.Get())->tr->ncolumns) {
+        if (column < 0 || column < ((CJDBCResultSet *)r.Get())->tr->mNcolumns) {
         AutoPtr<ITableResultX > arr = (ITableResultX * )(((CJDBCResultSet *)r.Get())->tr)->Probe(EIID_ITableResultX);
         if (arr) {
             switch ((*((CTableResultX *) ((CJDBCResultSet *)r.Get())->tr.Get())->sql_type)[column]) {
@@ -215,8 +215,8 @@ ECode CJDBCResultSetMetaData::GetTableName(
     column--;
     String c = String(NULL);
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->ncolumns)) {
-            c = (*((CJDBCResultSet *)r.Get())->tr->column)[column];
+        if (!(column < 0 || column >= ((CJDBCResultSet *)r.Get())->tr->mNcolumns)) {
+            c = (*((CJDBCResultSet *)r.Get())->tr->mColumn)[column];
             if (c != NULL) {
                 Int32 i = c.IndexOf('.');
                 if (i > 0) {
@@ -332,8 +332,8 @@ ECode CJDBCResultSetMetaData::FindColByName(
 {
     String c = String(NULL);
     if (r != NULL && ((CJDBCResultSet *)r.Get())->tr != NULL) {
-        for (Int32 i = 0; i < ((CJDBCResultSet *)r.Get())->tr->ncolumns; i++) {
-            c = (*((CJDBCResultSet *)r.Get())->tr->column)[i];
+        for (Int32 i = 0; i < ((CJDBCResultSet *)r.Get())->tr->mNcolumns; i++) {
+            c = (*((CJDBCResultSet *)r.Get())->tr->mColumn)[i];
             if (c != NULL) {
                 if (c.EqualsIgnoreCase(columnName) == 0) {
                     *value = i + 1;

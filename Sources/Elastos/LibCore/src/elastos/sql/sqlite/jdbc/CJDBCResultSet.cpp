@@ -48,14 +48,14 @@ ECode CJDBCResultSet::Absolute(
         return NOERROR;
     }
     if (row < 0) {
-        row = tr->nrows + 1 + row;
+        row = tr->mNrows + 1 + row;
     }
     row--;
-    if (row < 0 || row > tr->nrows) {
+    if (row < 0 || row > tr->mNrows) {
         *value = FALSE;
         return NOERROR;
     }
-    this->row = row;
+    this->mRow = row;
     *value = TRUE;
     return NOERROR;
 }
@@ -65,7 +65,7 @@ ECode CJDBCResultSet::AfterLast()
     if (tr == NULL) {
         return NOERROR;
     }
-    row = tr->nrows;
+    mRow = tr->mNrows;
     return NOERROR;
 }
 
@@ -74,7 +74,7 @@ ECode CJDBCResultSet::BeforeFirst()
     if (tr == NULL) {
         return NOERROR;
     }
-    row = -1;
+    mRow = -1;
     return NOERROR;
 }
 
@@ -97,7 +97,7 @@ ECode CJDBCResultSet::Close()
     lastg = NULL;
     oninsrow = FALSE;
     rowbuf = NULL;
-    row = -1;
+    mRow = -1;
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode CJDBCResultSet::DeleteRow()
         }
         (*args)[i] = (*rowbuf)[(*pkcoli)[i]];
     }
-    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL,*args);
+    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL, args);
     if (ec != NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -144,10 +144,10 @@ ECode CJDBCResultSet::FindColumn(
 ECode CJDBCResultSet::First(
     /* [out] */ Boolean *value)
 {
-    if (tr == NULL || tr->nrows <= 0) {
+    if (tr == NULL || tr->mNrows <= 0) {
         *value = FALSE;
     }
-    row = 0;
+    mRow = 0;
     *value = TRUE;
     return NOERROR;
 }
@@ -289,11 +289,11 @@ ECode CJDBCResultSet::GetBytes(
     VALIDATE_NOT_NULL(oarray)
     *oarray = NULL;
 
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
 
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     if (lastg != NULL) {
         AutoPtr<ArrayOf<Byte> > array = SQLite::StringEncoder::Decode(lastg);
@@ -499,10 +499,10 @@ ECode CJDBCResultSet::GetObject(
     VALIDATE_NOT_NULL(obj);
     *obj = NULL;
 
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     assert(0 && "TODO error");
     AutoPtr<IInterface> temp = (IInterface *)&lastg;
@@ -565,7 +565,7 @@ ECode CJDBCResultSet::GetRow(
     if (tr == NULL) {
         return E_SQL_EXCEPTION;
     }
-    *value = row + 1;
+    *value = mRow + 1;
     return NOERROR;
 }
 
@@ -606,10 +606,10 @@ ECode CJDBCResultSet::GetString(
     /* [in] */ Int32 colIndex,
     /* [out] */ String * value)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     *value = lastg;
     return NOERROR;
@@ -740,28 +740,27 @@ ECode CJDBCResultSet::InsertRow()
     sb.Append("INSERT INTO ");
     sb.Append(SQLite::CShell::SqlQuoteDbl(uptable));
     sb.Append("(");
-    for (Int32 i = 0; i < tr->ncolumns; i++) {
+    for (Int32 i = 0; i < tr->mNcolumns; i++) {
         String str = String(NULL);
         m->GetColumnName(i + 1,&str);
         sb.Append(SQLite::CShell::SqlQuoteDbl(str));
-        if (i < tr->ncolumns - 1) {
+        if (i < tr->mNcolumns - 1) {
             sb.Append(",");
         }
     }
     sb.Append(") VALUES(");
-    for (Int32 i = 0; i < tr->ncolumns; i++) {
+    for (Int32 i = 0; i < tr->mNcolumns; i++) {
         sb.Append(nullrepl ? "'%q'" : "%Q");
-        if (i < tr->ncolumns - 1) {
+        if (i < tr->mNcolumns - 1) {
             sb.Append(",");
         }
     }
     sb.Append(")");
-    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL,*rowbuf);
-    if (ec != NOERROR)
-    {
+    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL, rowbuf);
+    if (ec != NOERROR) {
         return E_SQL_EXCEPTION;
     }
-    tr->Newrow(*rowbuf,&isupdate);
+    tr->Newrow(rowbuf, &isupdate);
     rowbuf = NULL;
     oninsrow = FALSE;
     Last(&isupdate);
@@ -771,20 +770,20 @@ ECode CJDBCResultSet::InsertRow()
 ECode CJDBCResultSet::IsAfterLast(
     /* [out] */ Boolean * value)
 {
-    if (tr == NULL || tr->nrows <= 0) {
+    if (tr == NULL || tr->mNrows <= 0) {
         *value = FALSE;
     }
-    *value = row >= tr->nrows;
+    *value = mRow >= tr->mNrows;
     return NOERROR;
 }
 
 ECode CJDBCResultSet::IsBeforeFirst(
     /* [out] */ Boolean * value)
 {
-    if (tr == NULL || tr->nrows <= 0) {
+    if (tr == NULL || tr->mNrows <= 0) {
         *value = FALSE;
     }
-    *value = row < 0;
+    *value = mRow < 0;
     return NOERROR;
 }
 
@@ -794,7 +793,7 @@ ECode CJDBCResultSet::IsFirst(
     if (tr == NULL) {
         *value = TRUE;
     }
-    *value = row == 0;
+    *value = mRow == 0;
     return NOERROR;
 }
 
@@ -804,17 +803,17 @@ ECode CJDBCResultSet::IsLast(
     if (tr == NULL) {
         *value = TRUE;
     }
-    *value = row == (tr->nrows - 1);
+    *value = mRow == (tr->mNrows - 1);
     return NOERROR;
 }
 
 ECode CJDBCResultSet::Last(
     /* [out] */ Boolean * value)
 {
-    if (tr == NULL || tr->nrows <= 0) {
+    if (tr == NULL || tr->mNrows <= 0) {
         *value = FALSE;
     }
-    row = tr->nrows -1;
+    mRow = tr->mNrows -1;
     *value = TRUE;
     return NOERROR;
 }
@@ -834,7 +833,7 @@ ECode CJDBCResultSet::MoveToInsertRow()
     IsUpdatable(&isupdate);
     if (!oninsrow) {
         oninsrow = TRUE;
-        rowbuf = ArrayOf<String>::Alloc(tr->nrows);
+        rowbuf = ArrayOf<String>::Alloc(tr->mNrows);
     }
     return NOERROR;
 }
@@ -845,8 +844,8 @@ ECode CJDBCResultSet::Next(
     if (tr == NULL) {
         *value = FALSE;
     }
-    row++;
-    *value = row < tr->nrows;
+    mRow++;
+    *value = mRow < tr->mNrows;
     return NOERROR;
 }
 
@@ -856,10 +855,10 @@ ECode CJDBCResultSet::Previous(
     if (tr == NULL) {
         return E_SQL_EXCEPTION;
     }
-    if (row >= 0) {
-        row--;
+    if (mRow >= 0) {
+        mRow--;
     }
-    *value = row >= 0;
+    *value = mRow >= 0;
     return NOERROR;
 }
 
@@ -876,13 +875,13 @@ ECode CJDBCResultSet::RefreshRow()
     AutoPtr<CJDBCResultSetMetaData> m;
     GetMetaData((IResultSetMetaData **)&m);
     StringBuffer sb;
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     sb.Append("SELECT ");
-    for (Int32 i = 0; i < tr->ncolumns; i++) {
+    for (Int32 i = 0; i < tr->mNcolumns; i++) {
         String str = String(NULL);
         m->GetColumnName(i + 1,&str);
         sb.Append(SQLite::CShell::SqlQuoteDbl(str));
-        if (i < tr->ncolumns - 1) {
+        if (i < tr->mNcolumns - 1) {
             sb.Append(",");
         }
     }
@@ -899,16 +898,15 @@ ECode CJDBCResultSet::RefreshRow()
         (*args)[i] = (*rd)[(*pkcoli)[i]];
     }
     AutoPtr<ITableResult> trnew ;
-    ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->GetTable(sb.ToString(),*args,(ITableResult **)&trnew);
-    if (trnew == NULL)
-    {
+    ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->GetTable(sb.ToString(), args,(ITableResult **)&trnew);
+    if (trnew == NULL) {
         return E_SQL_EXCEPTION;
     }
-    if (((CTableResult *)trnew.Get())->nrows != 1) {
+    if (((CTableResult *)trnew.Get())->mNrows != 1) {
         return E_SQL_EXCEPTION;
     }
     rowbuf = NULL;
-    tr->rows[row] = ((CTableResult *)trnew.Get())->rows[0];
+    tr->mRows[mRow] = ((CTableResult *)trnew.Get())->mRows[0];
     return NOERROR;
 }
 
@@ -920,11 +918,11 @@ ECode CJDBCResultSet::Relative(
         *value = FALSE;
         return NOERROR;
     }
-    if (row + rows < 0 || row + rows >= tr->nrows) {
+    if (mRow + rows < 0 || mRow + rows >= tr->mNrows) {
         *value = FALSE;
         return NOERROR;
     }
-    row += rows;
+    mRow += rows;
     *value = TRUE;
     return NOERROR;
 }
@@ -1094,7 +1092,7 @@ ECode CJDBCResultSet::UpdateBytes(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1158,7 +1156,7 @@ ECode CJDBCResultSet::UpdateDate(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1183,7 +1181,7 @@ ECode CJDBCResultSet::UpdateDouble(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1206,7 +1204,7 @@ ECode CJDBCResultSet::UpdateFloat(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1229,7 +1227,7 @@ ECode CJDBCResultSet::UpdateInt(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1252,7 +1250,7 @@ ECode CJDBCResultSet::UpdateLong(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1274,7 +1272,7 @@ ECode CJDBCResultSet::UpdateNull(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1357,21 +1355,21 @@ ECode CJDBCResultSet::UpdateRow()
     if (updatable < UPD_INSUPDDEL) {
         return E_SQL_EXCEPTION;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     AutoPtr<CJDBCResultSetMetaData> m;
     GetMetaData((IResultSetMetaData **)&m);
-    AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(tr->ncolumns + pkcols->GetLength());
+    AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(tr->mNcolumns + pkcols->GetLength());
     StringBuffer sb;
     sb.Append("UPDATE ");
     sb.Append(SQLite::CShell::SqlQuoteDbl(uptable));
     sb.Append(" SET ");
     Int32 i = 0;
-    for (i = 0; i < tr->ncolumns; i++) {
+    for (i = 0; i < tr->mNcolumns; i++) {
         String str = String(NULL);
         m->GetColumnName(i + 1,&str);
         sb.Append(SQLite::CShell::SqlQuoteDbl(str));
         sb.Append(String(" = ") + (nullrepl ? String("'%q'") : String("%Q")));
-        if (i < tr->ncolumns - 1) {
+        if (i < tr->mNcolumns - 1) {
             sb.Append(",");
         }
         (*args)[i] = (*rowbuf)[i];
@@ -1385,7 +1383,7 @@ ECode CJDBCResultSet::UpdateRow()
         }
         (*args)[i] = (*rd)[(*pkcoli)[k]];
     }
-    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL,*args);
+    ECode ec = ((CDatabaseX *)((CJDBCConnection *)((JDBCStatement *)s.Get())->conn.Get())->mDb.Get())->Exec(sb.ToString(),NULL, args);
     if (ec != NOERROR)
     {
         return E_SQL_EXCEPTION;
@@ -1401,7 +1399,7 @@ ECode CJDBCResultSet::UpdateShort(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1424,7 +1422,7 @@ ECode CJDBCResultSet::UpdateString(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1447,7 +1445,7 @@ ECode CJDBCResultSet::UpdateTime(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1472,7 +1470,7 @@ ECode CJDBCResultSet::UpdateTimestamp(
 {
     Boolean isupdate = FALSE;
     IsUpdatable(&isupdate);
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
     FillRowbuf();
@@ -1905,7 +1903,7 @@ ECode CJDBCResultSet::constructor(
     s = pS;
     md = NULL;
     lastg = NULL;
-    row = -1;
+    mRow = -1;
     updatable = UPD_UNKNOWN;
     oninsrow = FALSE;
     rowbuf = NULL;
@@ -2004,10 +2002,10 @@ ECode CJDBCResultSet::GetURL(
     /* [in] */ Int32 colIndex,
     /* [out] */ IURL** url)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return E_SQL_EXCEPTION;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     if (lastg == NULL) {
         *url = NULL;
@@ -2046,7 +2044,7 @@ ECode CJDBCResultSet::IsUpdatable(
         GetMetaData((IResultSetMetaData **)&m);
         HashSet<String> h;
         String lastt = String(NULL);
-        for (Int32 i = 1; i <= tr->ncolumns; i++) {
+        for (Int32 i = 1; i <= tr->mNcolumns; i++) {
             m->GetTableName(i,&lastt);
             h.Insert(lastt);
         }
@@ -2060,12 +2058,12 @@ ECode CJDBCResultSet::IsUpdatable(
         AutoPtr<IDatabaseMetaData> mdatabase;
         ECode ec1 = IConnection::Probe(((JDBCStatement *)s.Get())->conn)->GetMetaData((IDatabaseMetaData **)&mdatabase);
         ECode ec2 = mdatabase->GetPrimaryKeys(String(NULL), String(NULL), uptable, (IResultSet**)&pk);
-        if (pk->tr->nrows > 0) {
+        if (pk->tr->mNrows > 0) {
             Boolean colnotfound = FALSE;
-            pkcols = ArrayOf<String>::Alloc(pk->tr->nrows);
-            pkcoli = ArrayOf<Int32>::Alloc(pk->tr->nrows);
-            for (Int32 i = 0; i < pk->tr->nrows; i++) {
-                AutoPtr<ArrayOf<String> > rd = pk->tr->rows[i];
+            pkcols = ArrayOf<String>::Alloc(pk->tr->mNrows);
+            pkcoli = ArrayOf<Int32>::Alloc(pk->tr->mNrows);
+            for (Int32 i = 0; i < pk->tr->mNrows; i++) {
+                AutoPtr<ArrayOf<String> > rd = pk->tr->mRows[i];
                 (*pkcols)[i] = (*rd)[3];
                 Int32 midvalue = 0;
                 ECode ec = FindColumn((*pkcols)[i],&midvalue);
@@ -2095,11 +2093,11 @@ ECode CJDBCResultSet::IsUpdatable(
 ECode CJDBCResultSet::FillRowbuf()
 {
     if (rowbuf == NULL) {
-        if (row < 0) {
+        if (mRow < 0) {
             return E_SQL_EXCEPTION;
         }
-        rowbuf = ArrayOf<String>::Alloc(tr->ncolumns);
-        rowbuf->Copy(tr->rows[row],tr->ncolumns);
+        rowbuf = ArrayOf<String>::Alloc(tr->mNcolumns);
+        rowbuf->Copy(tr->mRows[mRow],tr->mNcolumns);
     }
     return NOERROR;
 }
@@ -2117,10 +2115,10 @@ ECode CJDBCResultSet::FindColumn(
 AutoPtr<IInteger32> CJDBCResultSet::InternalGetInt(
     /* [in] */ Int32 colIndex)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     // try {
     // AutoPtr<IInteger32> out;
@@ -2134,10 +2132,10 @@ AutoPtr<IInteger32> CJDBCResultSet::InternalGetInt(
 AutoPtr<IInteger16> CJDBCResultSet::InternalGetShort(
     /* [in] */ Int32 colIndex)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     // try {
     //     return Short.valueOf(lastg);
@@ -2151,10 +2149,10 @@ AutoPtr<ITime> CJDBCResultSet::InternalGetTime(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * cal)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     AutoPtr<ITime> otime;
     ECode ec = NOERROR;
     lastg = (*rd)[colIndex - 1];
@@ -2188,10 +2186,10 @@ AutoPtr<ITimestamp> CJDBCResultSet::InternalGetTimestamp(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * cal)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     AutoPtr<ITimestamp> otime;
     ECode ec = NOERROR;
@@ -2222,10 +2220,10 @@ AutoPtr<ISQLDate> CJDBCResultSet::InternalGetDate(
     /* [in] */ Int32 colIndex,
     /* [in] */ ICalendar * cal)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     AutoPtr<ISQLDate> otime;
     ECode ec = NOERROR;
@@ -2255,10 +2253,10 @@ AutoPtr<ISQLDate> CJDBCResultSet::InternalGetDate(
 AutoPtr<IDouble> CJDBCResultSet::InternalGetDouble(
     /* [in] */ Int32 colIndex)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     // try {
     //     return Double.valueOf(lastg);
@@ -2271,10 +2269,10 @@ AutoPtr<IDouble> CJDBCResultSet::InternalGetDouble(
 AutoPtr<IFloat> CJDBCResultSet::InternalGetFloat(
     /* [in] */ Int32 colIndex)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     // try {
     //     return Float.valueOf(lastg);
@@ -2287,10 +2285,10 @@ AutoPtr<IFloat> CJDBCResultSet::InternalGetFloat(
 AutoPtr<IInteger64> CJDBCResultSet::InternalGetLong(
     /* [in] */ Int32 colIndex)
 {
-    if (tr == NULL || colIndex < 1 || colIndex > tr->ncolumns) {
+    if (tr == NULL || colIndex < 1 || colIndex > tr->mNcolumns) {
         return NULL;
     }
-    AutoPtr<ArrayOf<String> > rd = tr->rows[row];
+    AutoPtr<ArrayOf<String> > rd = tr->mRows[mRow];
     lastg = (*rd)[colIndex - 1];
     // try {
     //     return Long.valueOf(lastg);

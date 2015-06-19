@@ -10,16 +10,6 @@ namespace SQLite {
 
 CAR_OBJECT_IMPL(CTableResult);
 
-ECode CTableResult::constructor()
-{
-    return TableResult::Init();
-}
-
-ECode CTableResult::constructor(
-    /* [in] */ Int32 maxrows)
-{
-    return TableResult::Init(maxrows);
-}
 
 } // namespace SQLite
 } // namespace Sql

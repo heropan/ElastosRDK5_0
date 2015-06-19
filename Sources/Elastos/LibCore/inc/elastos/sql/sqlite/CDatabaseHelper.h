@@ -3,15 +3,14 @@
 #define __CDATABASEHELPER_H__
 
 #include "_Elastos_Sql_SQLite_CDatabaseHelper.h"
-#include "Object.h"
-
+#include "Singleton.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
 CarClass(CDatabaseHelper)
-    , public Object
+    , public Singleton
     , public IDatabaseHelper
 {
 public:
@@ -32,7 +31,7 @@ public:
 
     CARAPI Status(
         /* [in] */ Int32 op,
-        /* [in] */ const ArrayOf<Int32>& info,
+        /* [in] */ ArrayOf<Int32>* info,
         /* [in] */ Boolean flag,
         /* [out] */ Int32 * value);
 

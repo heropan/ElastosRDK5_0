@@ -818,7 +818,7 @@ public:
     AutoPtr<CTableResult> tr;
 
 private:
-    Int32 row;
+    Int32 mRow;
     AutoPtr<IJDBCStatement> s;
     AutoPtr<IJDBCResultSetMetaData> md;
     String lastg;

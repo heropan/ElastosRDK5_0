@@ -47,7 +47,7 @@ public:
     CARAPI Exec(
         /* [in] */ const String& sql,
         /* [in] */ ICallback* cb,
-        /* [in] */ const ArrayOf<String> & argsstr);
+        /* [in] */ ArrayOf<String> * argsstr);
 
     CARAPI LastInsertRowid(
         /* [out] */ Int64* id);
@@ -75,17 +75,17 @@ public:
     virtual CARAPI GetTable(
         /* [in] */ const String& sql,
         /* [in] */ Int32 maxrows,
-        /* [in] */ const ArrayOf<String> & args,
+        /* [in] */ ArrayOf<String> * args,
         /* [out] */ ITableResult ** tableresult);
 
     virtual CARAPI GetTable(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String> & args,
+        /* [in] */ ArrayOf<String> * args,
         /* [out] */ ITableResult ** tableresult);
 
     virtual CARAPI GetTable(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String> & args,
+        /* [in] */ ArrayOf<String> * args,
         /* [in] */ ITableResult* tbl);
 
     virtual CARAPI Dbversion(
@@ -134,7 +134,7 @@ public:
 
     virtual CARAPI DbStatus(
         /* [in] */ Int32 op,
-        /* [in] */ const ArrayOf<Int32> & info,
+        /* [in] */ ArrayOf<Int32> * info,
         /* [in] */ Boolean flag,
         /* [out] */ Int32 * status);
 
@@ -144,7 +144,7 @@ public:
 
     virtual CARAPI Compile(
         /* [in] */ const String& sql,
-        /* [in] */ const ArrayOf<String>& args,
+        /* [in] */ ArrayOf<String> * args,
         /* [out] */ IVm ** ivm);
 
     virtual CARAPI Prepare(
@@ -167,7 +167,7 @@ public:
         /* [in] */ IProgressHandler* p);
 
     CARAPI Key(
-        /* [in] */ const ArrayOf<Byte> & ekey);
+        /* [in] */ ArrayOf<Byte> * ekey);
 
     CARAPI Key(
         /* [in] */ const String& skey);
@@ -219,7 +219,7 @@ private:
     CARAPI _Exec(
         /* [in] */ const String& sql,
         /* [in] */ AutoPtr<ICallback> cb,
-        /* [in] */ const ArrayOf<String>& args);
+        /* [in] */ ArrayOf<String> * args);
 
     CARAPI_(Int64) _LastInsertRowid();
 
@@ -263,7 +263,7 @@ private:
 
     CARAPI_(Int32) _DbStatus(
         /* [in] */ Int32 op,
-        /* [in] */ AutoPtr<ArrayOf<Int32> > info,
+        /* [in] */ ArrayOf<Int32> * info,
         /* [in] */ Boolean flag);
 
     CARAPI Vm_compile(
@@ -273,7 +273,7 @@ private:
     CARAPI Vm_compile_args(
         /* [in] */ const String& sql,
         /* [in] */ AutoPtr<IVm> vm,
-        /* [in] */ const ArrayOf<String>& argsstr);
+        /* [in] */ ArrayOf<String> * argsstr);
 
     CARAPI Stmt_prepare(
         /* [in] */ const String& sql,
@@ -292,7 +292,7 @@ private:
         /* [in] */ AutoPtr<IProgressHandler> ph);
 
     CARAPI _Key(
-        /* [in] */ const ArrayOf<Byte>& ekey);
+        /* [in] */ ArrayOf<Byte> * ekey);
 
     CARAPI _Rekey(
         /* [in] */ ArrayOf<Byte> * ekey);

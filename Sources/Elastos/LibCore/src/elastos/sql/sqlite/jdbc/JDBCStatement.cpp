@@ -19,12 +19,12 @@ JDBCStatement::JDBCStatement()
     rs = NULL ;
 }
 
-JDBCStatement::JDBCStatement(AutoPtr<IJDBCConnection> iconn)
+JDBCStatement::JDBCStatement(IJDBCConnection* iconn)
 {
-    Init(iconn);
+    constructor(iconn);
 }
 
-ECode JDBCStatement::Init(AutoPtr<IJDBCConnection> iconn)
+ECode JDBCStatement::constructor(IJDBCConnection* iconn)
 {
     conn = iconn;
     updcnt = 0;
@@ -96,7 +96,7 @@ ECode JDBCStatement::Execute(
 
 ECode JDBCStatement::Execute(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<Int32>& columnIndexes,
+    /* [in] */ ArrayOf<Int32> * columnIndexes,
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -107,7 +107,7 @@ ECode JDBCStatement::Execute(
 
 ECode JDBCStatement::Execute(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String>& columnNames,
+    /* [in] */ ArrayOf<String> * columnNames,
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -159,13 +159,12 @@ ECode JDBCStatement::ExecuteQuery(
     /* [in] */ const String& sql,
     /* [out] */ IResultSet** resultset)
 {
-    AutoPtr<ArrayOf<String> > args = NULL ;
-    return ExecuteQuery(sql, *args, FALSE, resultset);
+    return ExecuteQuery(sql, NULL, FALSE, resultset);
 }
 
 ECode JDBCStatement::ExecuteQuery(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String>& args,
+    /* [in] */ ArrayOf<String> * args,
     /* [in] */ Boolean updonly,
     /* [out] */ IResultSet** resultset)
 {
@@ -196,7 +195,7 @@ ECode JDBCStatement::ExecuteQuery(
                 }
                 ((CJDBCConnection *)&conn)->mIntrans = TRUE;
             }
-            if (args.GetLength()) {
+            if (args && args->GetLength() > 0) {
                 if (updonly) {
                     ecreturn = ((CJDBCConnection *)&conn)->mDb->Exec(sql, NULL);
                     if (ecreturn != NOERROR)
@@ -219,7 +218,7 @@ ECode JDBCStatement::ExecuteQuery(
                         flagreturn = TRUE;
                     }
                 } else {
-                    ecreturn = ((CJDBCConnection *)&conn)->mDb->GetTable(sql, maxrows, args,(ITableResult **)&tr);
+                    ecreturn = ((CJDBCConnection *)&conn)->mDb->GetTable(sql, maxrows, args, (ITableResult **)&tr);
                     if (ecreturn != NOERROR)
                     {
                         flagreturn = TRUE;
@@ -304,7 +303,7 @@ ECode JDBCStatement::ExecuteUpdate(
 
 ECode JDBCStatement::ExecuteUpdate(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<Int32>& columnIndexes,
+    /* [in] */ ArrayOf<Int32> * columnIndexes,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -315,7 +314,7 @@ ECode JDBCStatement::ExecuteUpdate(
 
 ECode JDBCStatement::ExecuteUpdate(
     /* [in] */ const String& sql,
-    /* [in] */ const ArrayOf<String>& columnNames,
+    /* [in] */ ArrayOf<String> * columnNames,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);

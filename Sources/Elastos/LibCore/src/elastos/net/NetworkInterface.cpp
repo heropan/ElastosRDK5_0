@@ -51,8 +51,8 @@ NetworkInterface::NetworkInterface()
 NetworkInterface::NetworkInterface(
     /* [in] */ const String& name,
     /* [in] */ Int32 interfaceIndex,
-    /* [in] */ AutoPtr<IList> addresses,
-    /* [in] */ AutoPtr<IList> interfaceAddresses)
+    /* [in] */ IList * addresses,
+    /* [in] */ IList * interfaceAddresses)
     : mName(name)
     , mInterfaceIndex(interfaceIndex)
 {
@@ -67,8 +67,8 @@ NetworkInterface::~NetworkInterface()
 ECode NetworkInterface::constructor(
     /* [in] */ const String& name,
     /* [in] */ Int32 interfaceIndex,
-    /* [in] */ AutoPtr<IList> addresses,
-    /* [in] */ AutoPtr<IList> interfaceAddresses)
+    /* [in] */ IList * addresses,
+    /* [in] */ IList * interfaceAddresses)
 {
     mName = name;
     mInterfaceIndex = interfaceIndex;

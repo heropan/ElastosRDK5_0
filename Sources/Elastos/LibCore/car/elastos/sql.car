@@ -66,9 +66,28 @@ module
     merge("sql/sqlite/jdbc/IJDBCResultSet.car");
 
     interface Elastos.Utility.IDate;
+    interface Elastos.IO.IPrintWriter;
+    interface Elastos.IO.ISerializable;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IPrintStream;
+    interface Elastos.Sql.ISQLWarning;
+    interface Elastos.Sql.IDriver;
+    interface Elastos.Sql.IConnection;
+    interface Elastos.Sql.IWrapper;
+    interface Elastos.Sql.IStatement;
+    interface Elastos.Sql.IPreparedStatement;
+    interface Elastos.Sql.IResultSetMetaData;
+    interface Elastos.Sql.IDatabaseMetaData;
+    interface Elastos.Sql.IResultSet;
+    interface Elastos.Sql.SQLite.ICallback;
+    interface Elastos.Sql.SQLite.ITableResult;
+    interface Elastos.Sql.SQLite.IBusyHandler;
+    interface Elastos.Sql.SQLite.IDatabase;
 
     namespace Elastos {
     namespace Sql {
+
         class CSQLWarning {
             constructor();
 
@@ -173,8 +192,8 @@ module
             //     [in] IThrowable * cause);
 
             interface IDataTruncation;
-            interface Elastos.Sql.ISQLWarning;
-            interface Elastos.IO.ISerializable;
+            interface ISQLWarning;
+            interface ISerializable;
         }
 
         singleton class CDriverManager{
@@ -206,17 +225,17 @@ module
                 [in] Int32 maxrows);
 
             interface ITableResult;
-            interface Elastos.Sql.SQLite.ICallback;
+            interface ICallback;
         }
 
         class CShell {
             constructor(
-                [in] Elastos.IO.IPrintWriter* pw,
-                [in] Elastos.IO.IPrintWriter* err);
+                [in] IPrintWriter* pw,
+                [in] IPrintWriter* err);
 
             constructor(
-                [in] Elastos.IO.IPrintStream* pw,
-                [in] Elastos.IO.IPrintStream* errs);
+                [in] IPrintStream* pw,
+                [in] IPrintStream* errs);
 
             interface IShell;
             interface ICallback;
@@ -243,14 +262,14 @@ module
             constructor(
                 [in] IBlob* blob);
             interface IBlobR;
-            interface Elastos.IO.IInputStream;
+            interface IInputStream;
         }
 
         class CBlobW{
             constructor(
                 [in] IBlob* blob);
             interface IBlobW;
-            interface Elastos.IO.IOutputStream;
+            interface IOutputStream;
         }
 
         class CDatabase {
@@ -264,7 +283,7 @@ module
         class CJDBCDriver {
             constructor();
 
-            interface Elastos.Sql.IDriver;
+            interface IDriver;
         }
 
         class CBackup {
@@ -342,9 +361,9 @@ module
                 [in] String vfs);
 
             interface IJDBCConnection;
-            interface Elastos.Sql.IConnection;
-            interface Elastos.Sql.IWrapper;
-            interface Elastos.Sql.SQLite.IBusyHandler;
+            interface IConnection;
+            interface IWrapper;
+            interface IBusyHandler;
         }
 
         class CJDBCPreparedStatement {
@@ -353,10 +372,10 @@ module
                 [in] String sql);
 
             interface IJDBCPreparedStatement;
-            interface Elastos.Sql.SQLite.JDBC.IJDBCStatement;
-            interface Elastos.Sql.IStatement;
-            interface Elastos.Sql.IWrapper;
-            interface Elastos.Sql.IPreparedStatement;
+            interface IJDBCStatement;
+            interface IStatement;
+            interface IWrapper;
+            interface IPreparedStatement;
         }
 
         class CJDBCStatement {
@@ -364,8 +383,8 @@ module
                 [in] IJDBCConnection* conn);
 
             interface IJDBCStatement;
-            interface Elastos.Sql.IStatement;
-            interface Elastos.Sql.IWrapper;
+            interface IStatement;
+            interface IWrapper;
         }
 
         class CJDBCResultSetMetaData {
@@ -373,8 +392,8 @@ module
                 [in] IJDBCResultSet* r);
 
             interface IJDBCResultSetMetaData;
-            interface Elastos.Sql.IResultSetMetaData;
-            interface Elastos.Sql.IWrapper;
+            interface IResultSetMetaData;
+            interface IWrapper;
         }
 
         class CTableResultX {
@@ -384,11 +403,11 @@ module
                 [in] Int32 maxrows);
 
             constructor(
-                [in] Elastos.Sql.SQLite.ITableResult* tr);
+                [in] ITableResult* tr);
 
             interface ITableResultX;
-            interface Elastos.Sql.SQLite.ITableResult;
-            interface Elastos.Sql.SQLite.ICallback;
+            interface ITableResult;
+            interface ICallback;
         }
 
         class CJDBCDatabaseMetaData {
@@ -396,22 +415,22 @@ module
                 [in] IJDBCConnection* conn);
 
             interface IJDBCDatabaseMetaData;
-            interface Elastos.Sql.IDatabaseMetaData;
-            interface Elastos.Sql.IWrapper;
+            interface IDatabaseMetaData;
+            interface IWrapper;
         }
 
         class CJDBCResultSet {
             constructor(
-                [in] Elastos.Sql.SQLite.ITableResult* tr,
+                [in] ITableResult* tr,
                 [in] IJDBCStatement* s);
 
             interface IJDBCResultSet;
-            interface Elastos.Sql.IResultSet;
-            interface Elastos.Sql.IWrapper;
+            interface IResultSet;
+            interface IWrapper;
         }
 
         class CDatabaseX {
-            interface Elastos.Sql.SQLite.IDatabase;
+            interface IDatabase;
         }
 
 

@@ -297,7 +297,7 @@ public:
          * @param The SAX1 attribute list (with qnames).
          */
         CARAPI SetAttributeList(
-            /* [in] */ AutoPtr<IAttributeList> qAtts);
+            /* [in] */ IAttributeList* qAtts);
 
         /**
          * Return the length of the attribute list.

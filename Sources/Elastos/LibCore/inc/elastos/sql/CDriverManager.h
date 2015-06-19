@@ -3,8 +3,7 @@
 #define __CDRIVERMANAGER_H__
 
 #include "_Elastos_Sql_CDriverManager.h"
-#include "Object.h"
-#include <elastos.h>
+#include "Singleton.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IClassLoader;
@@ -18,7 +17,7 @@ namespace Elastos {
 namespace Sql {
 
 CarClass(CDriverManager)
-    , public Object
+    , public Singleton
     , public IDriverManagerHelper
 {
 public:
