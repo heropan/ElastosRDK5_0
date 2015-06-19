@@ -363,7 +363,7 @@ public:
 
     CARAPI GetBytes(
         /* [in] */ const String& parameterName,
-        /* [out,callee] */ ArrayOf<Byte> ** outarray);
+        /* [out, callee] */ ArrayOf<Byte> ** outarray);
 
     CARAPI GetDate(
         /* [in] */ const String& parameterName,

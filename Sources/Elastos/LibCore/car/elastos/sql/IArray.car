@@ -6,6 +6,9 @@ module
     namespace Elastos {
     namespace Sql {
 
+    /**
+     * A Java representation of the SQL {@code ARRAY} type.
+     */
     interface IArray {
         /**
          * Retrieves the contents of the SQL {@code ARRAY} value as a Java array

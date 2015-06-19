@@ -41,7 +41,7 @@ module
          */
         GetZoneStrings(
             [in] ILocale * locale,
-            [out,callee] ArrayOf<IArrayOf*> * outarray);
+            [out, callee] ArrayOf<IArrayOf*> * outarray);
 
         /**
          * Returns an array containing the time zone ids in use in the country corresponding to
@@ -52,7 +52,7 @@ module
          */
         ForLocale(
             [in] ILocale * locale ,
-            [out,callee] ArrayOf<String> * outarray);
+            [out, callee] ArrayOf<String> * outarray);
 
         GetExemplarLocation(
             [in] String locale,

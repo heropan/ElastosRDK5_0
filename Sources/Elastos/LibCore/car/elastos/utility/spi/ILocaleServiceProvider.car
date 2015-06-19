@@ -16,7 +16,7 @@ module
          * Returns all locales for which this locale service provider has localized objects or names.
          */
         GetAvailableLocales(
-            [out,callee] ArrayOf<ILocale*>* outarr);
+            [out, callee] ArrayOf<ILocale*>* outarr);
     }
 
     } // namespace Spi

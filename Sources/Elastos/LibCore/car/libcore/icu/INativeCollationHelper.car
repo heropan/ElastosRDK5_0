@@ -34,7 +34,7 @@ module
         GetSortKey(
             [in] Int64 address,
             [in] String source,
-            [out,callee] ArrayOf<Byte> * outarray);
+            [out, callee] ArrayOf<Byte> * outarray);
 
         OpenCollator(
             [in] ILocale* locale,

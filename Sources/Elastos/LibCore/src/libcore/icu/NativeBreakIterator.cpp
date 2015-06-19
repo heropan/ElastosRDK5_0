@@ -1,11 +1,11 @@
 
 #include "NativeBreakIterator.h"
-#include "unicode/ubrk.h"
-#include "ElStringByteSink.h"
+#include "Autolock.h"
 #include "CStringCharacterIterator.h"
-#include "elastos/core/StringBuilder.h"
+#include "StringBuilder.h"
+#include "ElStringByteSink.h"
 #include "unicode/brkiter.h"
-#include <Autolock.h>
+#include "unicode/ubrk.h"
 
 using Elastos::Core::StringBuilder;
 using Libcore::ICU::EIID_INativeBreakIterator;

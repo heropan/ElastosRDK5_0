@@ -34,17 +34,19 @@ public:
 
 public:
 
-    CARAPI_(Int32) Write(
-        /* [in] */ ArrayOf<Byte>* b ,
-        /* [in] */ Int32 off ,
-        /* [in] */ Int32 pos ,
-        /* [in] */ Int32 len );
+    CARAPI Write(
+        /* [in] */ ArrayOf<Byte>* b,
+        /* [in] */ Int32 off,
+        /* [in] */ Int32 pos,
+        /* [in] */ Int32 len,
+        /* [out] */ Int32 * count);
 
-    CARAPI_(Int32) Read(
-        /* [in] */ ArrayOf<Byte>* b ,
-        /* [in] */ Int32 off ,
-        /* [in] */ Int32 pos ,
-        /* [in] */ Int32 len );
+    CARAPI Read(
+        /* [in] */ ArrayOf<Byte>* b,
+        /* [in] */ Int32 off,
+        /* [in] */ Int32 pos,
+        /* [in] */ Int32 len,
+        /* [out] */ Int32 * count);
 public:
     Int32 size;
 

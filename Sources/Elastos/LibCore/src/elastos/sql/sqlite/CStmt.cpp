@@ -531,7 +531,7 @@ ECode CStmt::ColumnDouble(
 
 ECode CStmt::ColumnBytes(
     /* [in] */ Int32 col,
-    /* [out,callee] */ ArrayOf<unsigned char>** array)
+    /* [out, callee] */ ArrayOf<unsigned char>** array)
 {
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;

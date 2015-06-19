@@ -33,8 +33,12 @@ ECode CBlobR::Mark(
 ECode CBlobR::Read(
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = 0;
+
     AutoPtr<ArrayOf<Byte> > b = ArrayOf<Byte>::Alloc(1);
-    Int32 n = mBlob->Read(b, 0, pos, b->GetLength());
+    Int32 n;
+    FAIL_RETURN(mBlob->Read(b, 0, pos, b->GetLength(), &n))
     if (n > 0) {
         pos += n;
         *value = (*b)[0];
@@ -47,7 +51,12 @@ ECode CBlobR::ReadBytes(
     /* [out] */ ArrayOf<Byte> * buffer,
     /* [out] */ Int32* number)
 {
-    Int32 n = mBlob->Read(buffer, 0, pos, buffer->GetLength());
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(buffer)
+
+    Int32 n;
+    FAIL_RETURN(mBlob->Read(buffer, 0, pos, buffer->GetLength(), &n))
     if (n > 0) {
         pos += n;
         *number = n;
@@ -62,6 +71,10 @@ ECode CBlobR::ReadBytes(
     /* [in] */ Int32 len,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+    *number = 0;
+    VALIDATE_NOT_NULL(b)
+
     if (off + len > b->GetLength()) {
         len = b->GetLength() - off;
     }
@@ -71,7 +84,8 @@ ECode CBlobR::ReadBytes(
     if (len == 0) {
         *number = 0;
     }
-    Int32 n = mBlob->Read(b, off, pos, len);
+    Int32 n;
+    FAIL_RETURN(mBlob->Read(b, off, pos, len, &n))
     if (n > 0) {
         pos += n;
         *number = n;

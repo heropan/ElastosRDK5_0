@@ -83,63 +83,69 @@ ECode CBlob::Close()
     return NOERROR;
 }
 
-CARAPI_(Int32) CBlob::Write(
-    /* [in] */ ArrayOf<Byte>* b ,
-    /* [in] */ Int32 off ,
-    /* [in] */ Int32 pos ,
-    /* [in] */ Int32 len )
+ECode CBlob::Write(
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 off,
+    /* [in] */ Int32 pos,
+    /* [in] */ Int32 len,
+    /* [out] */ Int32 * count)
 {
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
 #if HAVE_SQLITE3 && HAVE_SQLITE3_INCRBLOBIO
     hbl *bl = mHandle;
 
     if (bl && bl->h && bl->blob) {
-    Int32 ret;
+        Int32 ret;
 
-    if (len <= 0) {
+        if (len <= 0) {
+            return NOERROR;
+        }
+
+        ret = sqlite3_blob_write(bl->blob, b, len, pos);
+        if (ret != SQLITE_OK) {
+            return NOERROR;
+        }
+
+        *count = len;
         return NOERROR;
-    }
-
-    ret = sqlite3_blob_write(bl->blob, b, len, pos);
-
-    if (ret != SQLITE_OK) {
-
-        return NOERROR;
-    }
-    return len;
     }
 #else
    return E_SQL_SQLITE_THROWEX_EXCEPTION;
 #endif
-
-    return NOERROR;
 }
 
-CARAPI_(Int32) CBlob::Read(
-    /* [in] */ ArrayOf<Byte>* b ,
-    /* [in] */ Int32 off ,
-    /* [in] */ Int32 pos ,
-    /* [in] */ Int32 len )
+ECode CBlob::Read(
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 off,
+    /* [in] */ Int32 pos,
+    /* [in] */ Int32 len,
+    /* [out] */ Int32 * count)
 {
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
 #if HAVE_SQLITE3 && HAVE_SQLITE3_INCRBLOBIO
     hbl *bl = mHandle;
 
     if (bl && bl->h && bl->blob) {
-    Int32 ret;
+        Int32 ret;
 
-    if (len <= 0) {
+        if (len <= 0) {
+            return NOERROR;
+        }
+        ret = sqlite3_blob_read(bl->blob, b, len, pos);
+        if (ret != SQLITE_OK) {
+            return NOERROR;
+        }
+        *count = len;
         return NOERROR;
-    }
-    ret = sqlite3_blob_read(bl->blob, b, len, pos);
-    if (ret != SQLITE_OK) {
-        return NOERROR;
-    }
-    return len;
     }
     return E_SQL_SQLITE_THROWEX_EXCEPTION;
 #else
     return E_SQL_SQLITE_THROWEX_EXCEPTION;
 #endif
-    return NOERROR;
 }
 
 } // namespace SQLite

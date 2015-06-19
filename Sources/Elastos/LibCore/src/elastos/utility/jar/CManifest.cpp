@@ -199,7 +199,7 @@ AutoPtr<IManifest> CManifest::Create(
 
 ECode CManifest::ExposeByteArrayInputStreamBytes(
     /* [in] */ IByteArrayInputStream* bais,
-    /* [out,callee] */ ArrayOf<Byte>** ret)
+    /* [out, callee] */ ArrayOf<Byte>** ret)
 {
     AutoPtr<ArrayOf<Byte> > buffer;
     {

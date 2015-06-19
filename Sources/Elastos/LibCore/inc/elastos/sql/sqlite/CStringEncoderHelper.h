@@ -24,7 +24,7 @@ public:
 
     CARAPI Decode(
         /* [in] */ const String& s,
-        /* [out,callee] */ ArrayOf<Byte> ** outarray);
+        /* [out, callee] */ ArrayOf<Byte> ** outarray);
 
     CARAPI EncodeX(
         /* [in] */ const ArrayOf<Byte>& a,

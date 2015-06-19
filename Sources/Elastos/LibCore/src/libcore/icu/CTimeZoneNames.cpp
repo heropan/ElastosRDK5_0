@@ -23,14 +23,14 @@ ECode CTimeZoneNames::GetDisplayName(
 
 ECode CTimeZoneNames::GetZoneStrings(
     /* [in] */ ILocale * locale,
-    /* [out,callee] */ ArrayOf<IArrayOf*> ** outarray)
+    /* [out, callee] */ ArrayOf<IArrayOf*> ** outarray)
 {
     return TimeZoneNames::GetZoneStrings(locale, outarray);
 }
 
 ECode CTimeZoneNames::ForLocale(
     /* [in] */ ILocale * locale ,
-    /* [out,callee] */ ArrayOf<String> ** outarray)
+    /* [out, callee] */ ArrayOf<String> ** outarray)
 {
     return TimeZoneNames::ForLocale(locale, outarray);
 }

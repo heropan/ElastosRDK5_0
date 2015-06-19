@@ -432,7 +432,7 @@ module
          */
         GetBytes(
             [in] Int32 columnIndex,
-            [out,callee] ArrayOf<Byte>* value);
+            [out, callee] ArrayOf<Byte>* value);
 
         /**
          * Gets the value of a column specified by column name as a byte array.
@@ -446,7 +446,7 @@ module
          */
         GetBytes(
             [in] String columnName,
-            [out,callee] ArrayOf<Byte>* value);
+            [out, callee] ArrayOf<Byte>* value);
 
         /**
          * Gets the value of a column specified by column index as a {@code

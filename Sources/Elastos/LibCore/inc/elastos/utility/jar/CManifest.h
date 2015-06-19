@@ -115,7 +115,7 @@ private:
     */
     static CARAPI ExposeByteArrayInputStreamBytes(
         /* [in] */ IByteArrayInputStream* bais,
-        /* [out,callee] */ ArrayOf<Byte>** ret);
+        /* [out, callee] */ ArrayOf<Byte>** ret);
 
     static CARAPI WriteEntry(
         /* [in] */ IOutputStream* os,

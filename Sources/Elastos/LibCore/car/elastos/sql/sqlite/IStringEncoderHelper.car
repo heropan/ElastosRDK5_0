@@ -38,7 +38,7 @@ module
          */
         Decode(
             [in] String s,
-            [out,callee] ArrayOf<Byte> * outarray);
+            [out, callee] ArrayOf<Byte> * outarray);
 
         /**
          * Encodes the given byte array into SQLite3 blob notation, ie X'..'

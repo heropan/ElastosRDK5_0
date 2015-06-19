@@ -86,7 +86,7 @@ module
         GetPropertyInfo(
             [in] String url,
             [in] IProperties* info,
-            [out,callee] ArrayOf<IDriverPropertyInfo*>* array);
+            [out, callee] ArrayOf<IDriverPropertyInfo*>* array);
 
         /**
          * Reports whether this driver is a genuine JDBC CompliantTM driver. The

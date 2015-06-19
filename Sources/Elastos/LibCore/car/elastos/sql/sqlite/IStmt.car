@@ -186,7 +186,7 @@ module
          */
         ColumnBytes(
             [in] Int32 col,
-            [out,callee] ArrayOf<Byte>* array);
+            [out, callee] ArrayOf<Byte>* array);
 
         /**
          * Retrieve string column from exec'ed SQLite3 statement.

@@ -35,7 +35,7 @@ public:
      */
     CARAPI GetZoneStrings(
         /* [in] */ ILocale * locale,
-        /* [out,callee] */ ArrayOf<IArrayOf*> ** outarray);
+        /* [out, callee] */ ArrayOf<IArrayOf*> ** outarray);
 
     /**
      * Returns an array containing the time zone ids in use in the country corresponding to
@@ -46,7 +46,7 @@ public:
      */
     CARAPI ForLocale(
         /* [in] */ ILocale * locale ,
-        /* [out,callee] */ ArrayOf<String> ** outarray);
+        /* [out, callee] */ ArrayOf<String> ** outarray);
 
     CARAPI GetExemplarLocation(
         /* [in] */ const String& locale,

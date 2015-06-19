@@ -29,7 +29,7 @@ module
          *             if a database error occurs.
          */
         GetAttributes(
-            [out,callee] ArrayOf<IInterface * > * interarray);
+            [out, callee] ArrayOf<IInterface * > * interarray);
 
         /**
          * Gets the values of the attributes of this SQL structured type. This
@@ -47,7 +47,7 @@ module
          */
         GetAttributes(
             [in] IMap * theMap,
-            [out,callee] ArrayOf<IInterface * > * interarray);
+            [out, callee] ArrayOf<IInterface * > * interarray);
     }
 
     } // namespace Sql

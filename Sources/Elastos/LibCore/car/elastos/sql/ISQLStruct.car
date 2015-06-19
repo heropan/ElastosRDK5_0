@@ -47,7 +47,7 @@ module
          */
         GetAttributes(
             [in] IMap * theMap,
-            [out,callee] ArrayOf<IInterface* >* intface);
+            [out, callee] ArrayOf<IInterface* >* intface);
     }
 
     } // namespace Sql

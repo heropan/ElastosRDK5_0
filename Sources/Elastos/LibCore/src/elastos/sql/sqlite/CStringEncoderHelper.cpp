@@ -19,7 +19,7 @@ ECode CStringEncoderHelper::Encode(
 
 ECode CStringEncoderHelper::Decode(
     /* [in] */ const String& s,
-    /* [out,callee] */ ArrayOf<Byte> ** outarray)
+    /* [out, callee] */ ArrayOf<Byte> ** outarray)
 {
     *outarray = StringEncoder::Decode(s);
     return NOERROR;

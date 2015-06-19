@@ -211,7 +211,7 @@ module
          */
         GetBytes(
             [in] Int32 parameterIndex,
-            [out,callee] ArrayOf<Byte> * obyte);
+            [out, callee] ArrayOf<Byte> * obyte);
 
         /**
          * Returns a byte array representation of the named JDBC {@code BINARY} or
@@ -226,7 +226,7 @@ module
          */
         GetBytes(
             [in] String parameterName,
-            [out,callee] ArrayOf<Byte> * obyte);
+            [out, callee] ArrayOf<Byte> * obyte);
 
         /**
          * Gets the value of a specified JDBC {@code CLOB} parameter as a {@code

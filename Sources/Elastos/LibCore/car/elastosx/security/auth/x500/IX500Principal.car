@@ -38,7 +38,7 @@ module
              * @return the ASN.1 DER-encoded representation
              */
             GetEncoded(
-                [out,callee] ArrayOf<Byte>* encodedName);
+                [out, callee] ArrayOf<Byte>* encodedName);
 
             GetNameEx(
                 [in] String format,

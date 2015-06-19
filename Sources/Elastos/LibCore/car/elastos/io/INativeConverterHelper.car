@@ -47,7 +47,7 @@ module
 
         GetSubstitutionBytes(
             [in] Int64 converterHandle,
-            [out,callee] ArrayOf<Byte> * outarray);
+            [out, callee] ArrayOf<Byte> * outarray);
 
         GetMaxBytesPerChar(
             [in] Int64 converterHandle,
@@ -71,7 +71,7 @@ module
             [out] Boolean * value);
 
         GetAvailableCharsetNames(
-            [out,callee] ArrayOf<String> * outarray);
+            [out, callee] ArrayOf<String> * outarray);
 
         CharsetForName(
             [in] String charsetName,

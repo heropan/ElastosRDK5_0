@@ -66,6 +66,7 @@ module
     merge("sql/sqlite/jdbc/IJDBCResultSet.car");
 
     interface Elastos.Utility.IDate;
+    interface Elastos.IO.ICloseable;
     interface Elastos.IO.IPrintWriter;
     interface Elastos.IO.ISerializable;
     interface Elastos.IO.IInputStream;
@@ -364,6 +365,7 @@ module
             interface IConnection;
             interface IWrapper;
             interface IBusyHandler;
+            interface ICloseable;
         }
 
         class CJDBCPreparedStatement {

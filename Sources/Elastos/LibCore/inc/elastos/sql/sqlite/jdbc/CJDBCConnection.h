@@ -18,6 +18,7 @@ using Elastos::Sql::IBlob;
 using Elastos::Sql::INClob;
 using Elastos::Sql::ISQLXML;
 using Elastos::Sql::IPreparedStatement;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Sql {
@@ -30,6 +31,7 @@ CarClass(CJDBCConnection)
     , public IConnection
     , public IWrapper
     , public IBusyHandler
+    , public ICloseable
 {
 public:
     CAR_OBJECT_DECL();

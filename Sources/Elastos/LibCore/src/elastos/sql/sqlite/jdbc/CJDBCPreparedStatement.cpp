@@ -1230,7 +1230,7 @@ ECode CJDBCPreparedStatement::GetDouble(
 
 ECode CJDBCPreparedStatement::GetBytes(
     /* [in] */ const String& parameterName,
-        /* [out,callee] */ ArrayOf<Byte> ** outarray)
+        /* [out, callee] */ ArrayOf<Byte> ** outarray)
 {
     return E_SQL_EXCEPTION;
 }

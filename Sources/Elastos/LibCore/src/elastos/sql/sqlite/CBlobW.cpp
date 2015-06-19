@@ -25,31 +25,40 @@ ECode CBlobW::Write(
 {
     AutoPtr<ArrayOf<Byte> > b = ArrayOf<Byte>::Alloc(1);
     (*b)[0] = (Byte) oneByte;
-    mPos += mBlob->Write(b, 0, mPos, 1);
+    Int32 n;
+    FAIL_RETURN(mBlob->Write(b, 0, mPos, 1, &n))
+    mPos += n;
     return NOERROR;
 }
 
 ECode CBlobW::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    if (buffer.GetLength() > 0) {
-        mPos += mBlob->Write(const_cast<ArrayOf<Byte> *>(&buffer), 0, mPos, buffer.GetLength());
+    if (buffer && buffer->GetLength() > 0) {
+        Int32 n;
+        FAIL_RETURN(mBlob->Write(buffer, 0, mPos, buffer->GetLength(), &n))
+        mPos += n;
     }
     return NOERROR;
 }
 
 ECode CBlobW::WriteBytes(
-    /* [in] */ const ArrayOf<Byte>& b,
+    /* [in] */ ArrayOf<Byte> * b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    if (off + len > b.GetLength()) {
-        len = b.GetLength() - off;
+    VALIDATE_NOT_NULL(b)
+
+    if (off + len > b->GetLength()) {
+        len = b->GetLength() - off;
     }
     if (len <= 0) {
        return NOERROR;
     }
-    mPos += mBlob->Write(const_cast<ArrayOf<Byte> *>(&b), off, mPos, len);
+
+    Int32 n;
+    FAIL_RETURN(mBlob->Write(b, off, mPos, len, &n))
+    mPos += n;
 
     return NOERROR;
 }

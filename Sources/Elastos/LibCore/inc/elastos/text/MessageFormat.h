@@ -148,10 +148,10 @@ public:
         /* [out] */ Int32* maxOffset);
 
     CARAPI GetArgumentNumbers(
-        /* [out,callee] */ ArrayOf<Int32>** argumentNumbers);
+        /* [out, callee] */ ArrayOf<Int32>** argumentNumbers);
 
     CARAPI GetStrings(
-        /* [out,callee] */ ArrayOf<String>** strings);
+        /* [out, callee] */ ArrayOf<String>** strings);
 
 private:
 

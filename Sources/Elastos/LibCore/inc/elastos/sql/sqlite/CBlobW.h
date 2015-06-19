@@ -27,10 +27,10 @@ public:
         /* [in] */ Int32 oneByte);
 
     CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
+        /* [in] */ ArrayOf<Byte>* buffer);
 
     CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& b,
+        /* [in] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len);
 

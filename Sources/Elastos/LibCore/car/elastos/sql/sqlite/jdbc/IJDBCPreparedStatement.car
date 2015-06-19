@@ -187,7 +187,7 @@ module
 
         GetBytes(
             [in] String parameterName,
-            [out,callee] ArrayOf<Byte> * outarray);
+            [out, callee] ArrayOf<Byte> * outarray);
 
         GetDate(
             [in] String parameterName,

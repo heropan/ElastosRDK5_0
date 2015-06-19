@@ -990,7 +990,7 @@ ECode MessageFormat::GetMaxOffset(
 }
 
 ECode MessageFormat::GetArgumentNumbers(
-    /* [out,callee] */ ArrayOf<Int32>** argumentNumbers)
+    /* [out, callee] */ ArrayOf<Int32>** argumentNumbers)
 {
     VALIDATE_NOT_NULL(*argumentNumbers)
     *argumentNumbers = mArgumentNumbers->Clone();
@@ -999,7 +999,7 @@ ECode MessageFormat::GetArgumentNumbers(
 }
 
 ECode MessageFormat::GetStrings(
-    /* [out,callee] */ ArrayOf<String>** strings)
+    /* [out, callee] */ ArrayOf<String>** strings)
 {
     VALIDATE_NOT_NULL(*strings)
     *strings = mStrings->Clone();

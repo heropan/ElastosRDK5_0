@@ -6,6 +6,17 @@ module
     namespace Elastos {
     namespace Sql {
 
+    /**
+     * A Java interface representing the SQL {@code BLOB} type.
+     * <p>
+     * An SQL {@code BLOB} type stores a large array of binary data (bytes) as the
+     * value in a column of a database.
+     * <p>
+     * The {@code java.sql.Blob} interface provides methods for setting and
+     * retrieving data in the {@code Blob}, for querying {@code Blob} data length,
+     * and for searching for data within the {@code Blob}.
+     */
+    [deprecated]
     interface IBlob {
         /**
          * Retrieves this {@code Blob} object as a binary stream.
@@ -98,7 +109,7 @@ module
          *             if an error occurs accessing the {@code Blob}.
          */
         GetPosition(
-            [in] ArrayOf<Byte> pattern,
+            [in] ArrayOf<Byte> * pattern,
             [in] Int64 start,
             [out] Int64* position);
 
@@ -135,7 +146,7 @@ module
          */
         SetBytes(
             [in] Int64 pos,
-            [in] ArrayOf<Byte> theBytes,
+            [in] ArrayOf<Byte> * theBytes,
             [out] Int32* size);
 
         /**
@@ -160,7 +171,7 @@ module
          */
         SetBytes(
             [in] Int64 pos,
-            [in] ArrayOf<Byte> theBytes,
+            [in] ArrayOf<Byte> * theBytes,
             [in] Int32 offset,
             [in] Int32 len,
             [out] Int32* size);

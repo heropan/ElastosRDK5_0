@@ -83,7 +83,7 @@ public:
 
     CARAPI ColumnBytes(
         /* [in] */ Int32 col,
-        /* [out,callee] */ ArrayOf<Byte>** array);
+        /* [out, callee] */ ArrayOf<Byte>** array);
 
     CARAPI ColumnString(
         /* [in] */ Int32 col,
