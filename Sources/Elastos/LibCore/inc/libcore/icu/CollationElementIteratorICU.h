@@ -9,7 +9,7 @@ using Elastos::Text::ICharacterIterator;
 namespace Libcore {
 namespace ICU {
 
-extern "C" const _ELASTOS ClassID ECLSID_CCollationElementIteratorICU;
+extern "C" const _ELASTOS ClassID ECLSID_CollationElementIteratorICU;
 
 class CollationElementIteratorICU
     : public Object

@@ -3,7 +3,8 @@
 #include "unicode/ubrk.h"
 #include "ElStringByteSink.h"
 #include "CStringCharacterIterator.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/core/StringBuilder.h"
+#include "unicode/brkiter.h"
 
 using Elastos::Core::StringBuilder;
 using Libcore::ICU::EIID_INativeBreakIterator;
@@ -15,15 +16,22 @@ using Elastos::Text::EIID_ICharacterIterator;
 namespace Libcore {
 namespace ICU {
 
+extern "C" const _ELASTOS ClassID ECLSID_NativeBreakIterator = {
+    { 0xf969b4e7, 0xecc2, 0x483a, { 0x94, 0x7e, 0x2d, 0x3b, 0xc4, 0x57, 0x39, 0xf6 } },
+    (char *)c_pElastos_CoreLibraryUunm,
+    0xf6f1637e };
+
 const Int32 NativeBreakIterator::BI_CHAR_INSTANCE = 1;
 const Int32 NativeBreakIterator::BI_WORD_INSTANCE = 2;
 const Int32 NativeBreakIterator::BI_LINE_INSTANCE = 3;
 const Int32 NativeBreakIterator::BI_SENT_INSTANCE = 4;
 
-CAR_INTERFACE_IMPL(NativeBreakIterator, INativeBreakIterator)
+CAR_INTERFACE_IMPL(NativeBreakIterator, Object, INativeBreakIterator)
+
+Object NativeBreakIterator::mLock;
 
 NativeBreakIterator::NativeBreakIterator(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int32 type)
     : mAddress(address)
     , mType(type)
@@ -31,25 +39,26 @@ NativeBreakIterator::NativeBreakIterator(
     AutoPtr<CStringCharacterIterator> stringCharIter;
     ASSERT_SUCCEEDED(CStringCharacterIterator::NewByFriend(String(""),
             (CStringCharacterIterator**)&stringCharIter));
-    mCharIter = (ICharacterIterator*)stringCharIter->Probe(EIID_ICharacterIterator);
+    mCharIterator = (ICharacterIterator*)stringCharIter->Probe(EIID_ICharacterIterator);
 }
 
 NativeBreakIterator::~NativeBreakIterator()
 {
-    CloseBreakIteratorImpl(mAddress);
+    CloseImpl(mAddress);
 }
 
 
 ECode NativeBreakIterator::Clone(
-    /* [out] */ INativeBreakIterator ** outiter)
+    /* [out] */ IInterface ** outiter)
 {
     VALIDATE_NOT_NULL(outiter);
 
-    Int32 cloneAddr = CloneImpl(mAddress);
-    AutoPtr<INativeBreakIterator> clone = new NativeBreakIterator(cloneAddr, mType);
+    Int64 cloneAddr = CloneImpl(mAddress);
+    AutoPtr<NativeBreakIterator> clone = new NativeBreakIterator(cloneAddr, mType);
+    clone->mString = mString;
     // The RI doesn't clone the CharacterIterator.
-    clone->SetText(mCharIter);
-    *outiter = clone;
+    clone->mCharIterator = mCharIterator;
+    *outiter = clone->Probe(EIID_INativeBreakIterator);
     REFCOUNT_ADD(*outiter);
 
     return NOERROR;
@@ -73,7 +82,7 @@ ECode NativeBreakIterator::Equals(
     }
     // TODO: is this sufficient? shouldn't we be checking the underlying rules?
     assert(0 && "TODO");
-    // *value = mType == ((NativeBreakIterator*)rhs.Get())->mType && mCharIter.equals(rhs.charIter);
+    // *value = mType == ((NativeBreakIterator*)rhs.Get())->mType && mCharIterator.equals(rhs.charIter);
     return NOERROR;
 }
 
@@ -91,7 +100,7 @@ ECode NativeBreakIterator::Current(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = CurrentImpl(mAddress);
+    *value = CurrentImpl(mAddress, mString);
     return NOERROR;
 }
 
@@ -100,7 +109,7 @@ ECode NativeBreakIterator::First(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = FirstImpl(mAddress);
+    *value = FirstImpl(mAddress, mString);
     return NOERROR;
 }
 
@@ -110,7 +119,7 @@ ECode NativeBreakIterator::Following(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = FollowingImpl(mAddress, offset);
+    *value = FollowingImpl(mAddress, mString, offset);
     return NOERROR;
 }
 
@@ -119,10 +128,10 @@ ECode NativeBreakIterator::GetText(
 {
     VALIDATE_NOT_NULL(outiter)
 
-    Int32 newLoc = CurrentImpl(mAddress);
+    Int32 newLocation = CurrentImpl(mAddress, mString);
     Char32 c;
-    mCharIter->SetIndex(newLoc, &c);
-    *outiter = mCharIter;
+    mCharIterator->SetIndex(newLocation, &c);
+    *outiter = mCharIterator;
     REFCOUNT_ADD(*outiter);
 
     return NOERROR;
@@ -133,26 +142,26 @@ ECode NativeBreakIterator::Last(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = LastImpl(mAddress);
+    *value = LastImpl(mAddress, mString);
     return NOERROR;
 }
 
-ECode NativeBreakIterator::GetNext(
+ECode NativeBreakIterator::Next(
     /* [in] */ Int32 n,
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = NextImpl(mAddress, n);
+    *value = NextImpl(mAddress, mString, n);
     return NOERROR;
 }
 
-ECode NativeBreakIterator::GetNext(
+ECode NativeBreakIterator::Next(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = NextImpl(mAddress, 1);
+    *value = NextImpl(mAddress, mString, 1);
     return NOERROR;
 }
 
@@ -161,7 +170,7 @@ ECode NativeBreakIterator::Previous(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = PreviousImpl(mAddress);
+    *value = PreviousImpl(mAddress, mString);
     return NOERROR;
 }
 
@@ -170,7 +179,7 @@ ECode NativeBreakIterator::SetText(
 {
     StringBuilder sb;
     Char32 c;
-    for (newText->First(&c); c != ICharacterIterator::DONE; newText->Next(&c)) {
+    for (newText->GetFirst(&c); c != ICharacterIterator::DONE; newText->GetNext(&c)) {
         sb += c;
     }
     SetText(sb.ToString(), newText);
@@ -182,7 +191,7 @@ ECode NativeBreakIterator::SetText(
 {
     AutoPtr<IStringCharacterIterator> stringCharIter;
     ASSERT_SUCCEEDED(CStringCharacterIterator::New(newText, (IStringCharacterIterator**)&stringCharIter));
-    SetText(newText, (ICharacterIterator*)stringCharIter);
+    SetText(newText, (ICharacterIterator*)stringCharIter->Probe(EIID_ICharacterIterator));
     return NOERROR;
 }
 
@@ -190,8 +199,16 @@ void NativeBreakIterator::SetText(
     /* [in] */ const String& s,
     /* [in] */ ICharacterIterator* it)
 {
-    mCharIter = it;
-    SetTextImpl(mAddress, s);
+    mString = s;
+    mCharIterator = it;
+    SetTextImpl(mAddress, mString);
+}
+
+ECode NativeBreakIterator::HasText(
+    /* [out] */ Boolean* hasText)
+{
+    *hasText = (mString != NULL);
+    return NOERROR;
 }
 
 ECode NativeBreakIterator::IsBoundary(
@@ -200,7 +217,7 @@ ECode NativeBreakIterator::IsBoundary(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = IsBoundaryImpl(mAddress, offset);
+    *value = IsBoundaryImpl(mAddress, mString, offset);
     return NOERROR;
 }
 
@@ -210,320 +227,314 @@ ECode NativeBreakIterator::Preceding(
 {
     VALIDATE_NOT_NULL(value)
 
-    *value = PrecedingImpl(mAddress, offset);
+    *value = PrecedingImpl(mAddress, mString, offset);
     return NOERROR;
 }
 
 AutoPtr<INativeBreakIterator> NativeBreakIterator::GetCharacterInstance(
-    /* [in] */ ILocale* where)
+    /* [in] */ ILocale* locale)
 {
     String str;
-    where->ToString(&str);
+    locale->ToLanguageTag(&str);
     AutoPtr<INativeBreakIterator> nbi = new NativeBreakIterator(GetCharacterInstanceImpl(str), BI_CHAR_INSTANCE);
     return nbi;
 }
 
 AutoPtr<INativeBreakIterator> NativeBreakIterator::GetLineInstance(
-    /* [in] */ ILocale* where)
+    /* [in] */ ILocale* locale)
 {
     String str;
-    where->ToString(&str);
+    locale->ToLanguageTag(&str);
     AutoPtr<INativeBreakIterator> nbi = new NativeBreakIterator(GetLineInstanceImpl(str), BI_LINE_INSTANCE);
     return nbi;
 }
 
 AutoPtr<INativeBreakIterator> NativeBreakIterator::GetSentenceInstance(
-    /* [in] */ ILocale* where)
+    /* [in] */ ILocale* locale)
 {
     String str;
-    where->ToString(&str);
+    locale->ToLanguageTag(&str);
     AutoPtr<INativeBreakIterator> nbi = new NativeBreakIterator(GetSentenceInstanceImpl(str), BI_SENT_INSTANCE);
     return nbi;
 }
 
 AutoPtr<INativeBreakIterator> NativeBreakIterator::GetWordInstance(
-    /* [in] */ ILocale* where)
+    /* [in] */ ILocale* locale)
 {
     String str;
-    where->ToString(&str);
+    locale->ToLanguageTag(&str);
     AutoPtr<INativeBreakIterator> nbi = new NativeBreakIterator(GetWordInstanceImpl(str), BI_WORD_INSTANCE);
     return nbi;
 }
 
+// ICU documentation: http://icu-project.org/apiref/icu4c/classBreakIterator.html
+
+static BreakIterator* toBreakIterator(Int64 address) {
+  return reinterpret_cast<BreakIterator*>(static_cast<uintptr_t>(address));
+}
+
 /**
- * ICU4C 4.6 doesn't let us update the pointers inside a UBreakIterator to track our char[] as it
- * moves around the heap. This class pins the char[] for the lifetime of the
- * java.text.BreakIterator. It also holds a global reference to the java.lang.String that owns the
- * char[] so that the char[] can't be GCed.
+ * We use ICU4C's BreakIterator class, but our input is on the Java heap and potentially moving
+ * around between calls. This wrapper class ensures that our RegexMatcher is always pointing at
+ * the current location of the char[]. Earlier versions of Android simply copied the data to the
+ * native heap, but that's wasteful and hides allocations from the garbage collector.
  */
-class BreakIteratorPeer : ElRefBase
+class BreakIteratorAccessor
 {
 public:
-
-    UInt32 AddRef()
+    BreakIteratorAccessor(Int64 address, const String& javaInput, Boolean reset)
     {
-        return ElRefBase::AddRef();
-    }
+        init(address);
+        mJavaInput = javaInput;
 
-    UInt32 Release()
-    {
-        return ElRefBase::Release();
-    }
-
-    static AutoPtr<BreakIteratorPeer> fromAddress(
-        /* [in] */ Int32 address)
-    {
-        return reinterpret_cast<BreakIteratorPeer*>(static_cast<uintptr_t>(address));
-    }
-
-    uintptr_t toAddress()
-    {
-        AddRef();
-        return reinterpret_cast<uintptr_t>(this);
-    }
-
-    BreakIteratorPeer(
-        /* [in] */ UBreakIterator* it)
-        : mIt(it)
-        , mString(String(NULL))
-        , mChars(NULL)
-    {}
-
-    ECode setText(
-        /* [in] */ const String& s)
-    {
-        releaseString();
-
-        mString = s;
-        mChars = mString.string();
-        if (mChars == NULL) {
-            return NOERROR;
+        if (mJavaInput == NULL) {
+            return;
         }
 
-        size_t charCount = mString.GetLength();
-        UErrorCode status = U_ZERO_ERROR;
-        ubrk_setText(mIt, (const UChar*)mChars, charCount, &status);
-        return maybeThrowIcuException(status);
-    }
-
-    AutoPtr<BreakIteratorPeer> clone()
-    {
-        UErrorCode status = U_ZERO_ERROR;
-        Int32 bufferSize = U_BRK_SAFECLONE_BUFFERSIZE;
-        UBreakIterator* it = ubrk_safeClone(mIt, NULL, &bufferSize, &status);
-        if (FAILED(maybeThrowIcuException(status))) {
-            return NULL;
+        UnicodeString us = UnicodeString::fromUTF8(mJavaInput.string());
+        utext_openUnicodeString(mUText, &us, &mStatus);
+        if (mUText == NULL) {
+            return;
         }
-        AutoPtr<BreakIteratorPeer> result = new BreakIteratorPeer(it);
-        if (!mString.IsNull()) {
-            result->setText(mString);
-        }
-        return result;
-    }
 
-    void close() {
-        if (mIt != NULL) {
-            ubrk_close(mIt);
-            mIt = NULL;
-        }
-        releaseString();
-    }
-
-    ~BreakIteratorPeer() {
-        if (mIt != NULL || mString != NULL) {
-            // LOG_ALWAYS_FATAL("BreakIteratorPeer deleted but not closed");
-            Release();
+        if (reset) {
+            mBreakIterator->setText(mUText, mStatus);
+        } else {
+            mBreakIterator->refreshInputText(mUText, mStatus);
         }
     }
 
-    UBreakIterator* breakIterator()
+    BreakIteratorAccessor(Int64 address)
     {
-        return mIt;
+        init(address);
+    }
+
+    ~BreakIteratorAccessor()
+    {
+        utext_close(mUText);
+    }
+
+    BreakIterator* operator->()
+    {
+        return mBreakIterator;
+    }
+
+    UErrorCode& status()
+    {
+        return mStatus;
     }
 
 private:
-    UBreakIterator* mIt;
-
-    String mString;
-    const char* mChars;
-
-    /**
-    * Checks if an error has occurred, throwing a suitable exception if so.
-    * @param env JNI environment
-    * @param errorCode code to determine if it is an error
-    * @return 0 if errorCode is not an error, 1 if errorCode is an error, but the
-    *         creation of the exception to be thrown fails
-     * @exception thrown if errorCode represents an error
-    */
-    ECode maybeThrowIcuException(UErrorCode errorCode)
+    void init(Int64 address)
     {
-    //    const char* message = u_errorName(errorCode);
-        if (errorCode <= U_ZERO_ERROR || errorCode >= U_ERROR_LIMIT) {
-            return NOERROR;
-        }
-
-        switch (errorCode) {
-        case U_ILLEGAL_ARGUMENT_ERROR:
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        case U_INDEX_OUTOFBOUNDS_ERROR:
-        case U_BUFFER_OVERFLOW_ERROR:
-            return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-        case U_UNSUPPORTED_ERROR:
-            return E_UNSUPPORTED_OPERATION_EXCEPTION;
-        default:
-            return E_RUNTIME_EXCEPTION;
-        }
+        mJavaInput = NULL;
+        mBreakIterator = toBreakIterator(address);
+        mStatus = U_ZERO_ERROR;
+        mUText = NULL;
     }
 
-    void releaseString()
-    {
-        if (!mString.IsNull()) {
-            mString = String(NULL);
-            mChars = NULL;
-        }
-    }
+    String mJavaInput;
+    BreakIterator* mBreakIterator;
+    UErrorCode mStatus;
+    UText* mUText;
 
     // Disallow copy and assignment.
-    BreakIteratorPeer(const BreakIteratorPeer&);
-    void operator=(const BreakIteratorPeer&);
+    BreakIteratorAccessor(const BreakIteratorAccessor&);
+    void operator=(const BreakIteratorAccessor&);
 };
 
-static UBreakIterator* breakIterator(
-    /* [in] */ Int32 address)
+#define MAKE_BREAK_ITERATOR_INSTANCE(F) \
+  Locale icuLocale; \
+  icuLocale.setToBogus(); \
+  if (locale == NULL) return 0; \
+  icuLocale = Locale::createFromName(locale); \
+  if (icuLocale.isBogus()) return 0; \
+  UErrorCode status = U_ZERO_ERROR; \
+  BreakIterator* it = F(icuLocale, status); \
+  if(!U_SUCCESS(status)) return 0; \
+  return reinterpret_cast<uintptr_t>(it)
+
+Int64 NativeBreakIterator::GetCharacterInstanceImpl(
+    /* [in] */ const String& locale)
 {
-    AutoPtr<BreakIteratorPeer> peer = BreakIteratorPeer::fromAddress(address);
-    return peer->breakIterator();
+    MAKE_BREAK_ITERATOR_INSTANCE(BreakIterator::createCharacterInstance);
 }
 
-static Int32 makeIterator(
-    /* [in] */ const String& locale,
-    /* [in] */ UBreakIteratorType type)
+Int64 NativeBreakIterator::GetWordInstanceImpl(
+    /* [in] */ const String& locale)
 {
-    UErrorCode status = U_ZERO_ERROR;
-    if (locale.IsNull()) {
-        return 0;
+    MAKE_BREAK_ITERATOR_INSTANCE(BreakIterator::createWordInstance);
+}
+
+Int64 NativeBreakIterator::GetLineInstanceImpl(
+    /* [in] */ const String& locale)
+{
+    MAKE_BREAK_ITERATOR_INSTANCE(BreakIterator::createLineInstance);
+}
+
+Int64 NativeBreakIterator::GetSentenceInstanceImpl(
+    /* [in] */ const String& locale)
+{
+    MAKE_BREAK_ITERATOR_INSTANCE(BreakIterator::createSentenceInstance);
+}
+
+void NativeBreakIterator::CloseImpl(
+    /* [in] */ Int64 address)
+{
+    synchronized(mLock) {
+        delete toBreakIterator(address);
     }
-    UBreakIterator* it = ubrk_open(type, locale.string(), NULL, 0, &status);
-    // if (FAILED(MaybeThrowIcuException(status))) {
-    if (U_ZERO_ERROR < status && status < U_ERROR_LIMIT) {
-        return 0;
+}
+
+Int64 NativeBreakIterator::CloneImpl(
+    /* [in] */ Int64 address)
+{
+    Int64 rev=0;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address);
+        rev = reinterpret_cast<uintptr_t>(it->clone());
     }
-    return (new BreakIteratorPeer(it))->toAddress();
-}
-
-Int32 NativeBreakIterator::GetCharacterInstanceImpl(
-    /* [in] */ const String& locale)
-{
-    return makeIterator(locale, UBRK_CHARACTER);
-}
-
-Int32 NativeBreakIterator::GetWordInstanceImpl(
-    /* [in] */ const String& locale)
-{
-    return makeIterator(locale, UBRK_WORD);
-}
-
-Int32 NativeBreakIterator::GetLineInstanceImpl(
-    /* [in] */ const String& locale)
-{
-    return makeIterator(locale, UBRK_LINE);
-}
-
-Int32 NativeBreakIterator::GetSentenceInstanceImpl(
-    /* [in] */ const String& locale)
-{
-    return makeIterator(locale, UBRK_SENTENCE);
-}
-
-void NativeBreakIterator::CloseBreakIteratorImpl(
-    /* [in] */ Int32 address)
-{
-    AutoPtr<BreakIteratorPeer> peer = BreakIteratorPeer::fromAddress(address);
-    peer->close();
-    //delete peer;
-}
-
-Int32 NativeBreakIterator::CloneImpl(
-    /* [in] */ Int32 address)
-{
-    AutoPtr<BreakIteratorPeer> peer = BreakIteratorPeer::fromAddress(address);
-    return peer->clone()->toAddress();
+    return rev;
 }
 
 void NativeBreakIterator::SetTextImpl(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ const String& text)
 {
-    AutoPtr<BreakIteratorPeer> peer = BreakIteratorPeer::fromAddress(address);
-    peer->setText(text);
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, true);
+    }
 }
 
 Boolean NativeBreakIterator::IsBoundaryImpl(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
+    /* [in] */ const String& text,
     /* [in] */ Int32 offset)
 {
-    return ubrk_isBoundary(breakIterator(address), offset);
+    Boolean rev = false;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->isBoundary(offset);
+    }
+    return rev;
 }
 
 Int32 NativeBreakIterator::NextImpl(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
+    /* [in] */ const String& text,
     /* [in] */ Int32 n)
 {
-    UBreakIterator* bi = breakIterator(address);
-    if (n < 0) {
-        while (n++ < -1) {
-            ubrk_previous(bi);
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        if (n < 0) {
+            while (n++ < -1) {
+                it->previous();
+            }
+            return it->previous();
         }
-        return ubrk_previous(bi);
-    }
-    else if (n == 0) {
-        return ubrk_current(bi);
-    }
-    else {
-        while (n-- > 1) {
-            ubrk_next(bi);
+        else if (n == 0) {
+            return it->current();
         }
-        return ubrk_next(bi);
+        else {
+            while (n-- > 1) {
+                it->next();
+            }
+            return it->next();
+        }
     }
     return -1;
 }
 
 Int32 NativeBreakIterator::PrecedingImpl(
-    /* [in] */ Int32 address,
-    /* [in] */ Int32 offset)
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text,
+        /* [in] */ Int32 offset)
 {
-    return ubrk_preceding(breakIterator(address), offset);
+    Int32 rev = 0;
+    synchronized(mLock){
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->preceding(offset);
+    }
+    return rev;
 }
 
 Int32 NativeBreakIterator::CurrentImpl(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address,
+    /* [in] */ const String& text)
 {
-    return ubrk_current(breakIterator(address));
+    Int32 rev = 0;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->current();
+    }
+    return rev;
 }
 
 Int32 NativeBreakIterator::FirstImpl(
-    /* [in] */ Int32 address)
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text)
 {
-    return ubrk_first(breakIterator(address));
+    Int32 rev = 0;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->first();
+    }
+    return rev;
 }
 
 Int32 NativeBreakIterator::FollowingImpl(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
+    /* [in] */ const String& text,
     /* [in] */ Int32 offset)
 {
-    return ubrk_following(breakIterator(address), offset);
+    Int32 rev = 0;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->following(offset);
+    }
+    return rev;
 }
 
 Int32 NativeBreakIterator::PreviousImpl(
-    /* [in] */ Int32 address)
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text)
 {
-    return ubrk_previous(breakIterator(address));
+    Int32 rev = 0;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->previous();
+    }
+    return rev;
 }
 
 Int32 NativeBreakIterator::LastImpl(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address,
+    /* [in] */ const String& text)
 {
-    return ubrk_last(breakIterator(address));
+    Int32 rev;
+    synchronized(mLock) {
+        BreakIteratorAccessor it(address, text, false);
+        rev = it->last();
+    }
+    return rev;
+}
+
+ECode NativeBreakIterator::ToString(
+        /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info)
+
+    *info = String("CollationElementIteratorICU");
+    return NOERROR;
+}
+
+ECode NativeBreakIterator::GetClassID(
+    /* [out] */ ClassID *pCLSID)
+{
+    VALIDATE_NOT_NULL(pCLSID)
+
+    *pCLSID = ECLSID_NativeBreakIterator;
+    return NOERROR;
 }
 
 } // namespace ICU

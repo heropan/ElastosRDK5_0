@@ -5,6 +5,10 @@
 namespace Libcore {
 namespace ICU {
 
+CAR_SINGLETON_IMPL(CNativeBreakIteratorHelper)
+
+CAR_INTERFACE_IMPL(CNativeBreakIteratorHelper, Singleton, INativeBreakIteratorHelper)
+
 ECode CNativeBreakIteratorHelper::GetCharacterInstance(
     /* [in] */ ILocale * where,
     /* [out] */ INativeBreakIterator ** outiter)

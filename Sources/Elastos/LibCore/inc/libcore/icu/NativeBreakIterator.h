@@ -1,31 +1,40 @@
 
-#ifndef __ICU_NATIVEBREAKITERATOR_H__
-#define __ICU_NATIVEBREAKITERATOR_H__
+#ifndef __LIBCORE_ICU_NATIVEBREAKITERATOR_H__
+#define __LIBCORE_ICU_NATIVEBREAKITERATOR_H__
 
-#include <cmdef.h>
+#include <Object.h>
 #include <elastos.h>
 #include <eltypes.h>
 
 #include <Elastos.CoreLibrary_server.h>
 
-using Elastos::ElRefBase;
+using Elastos::Core::Object;
+using Elastos::Utility::ILocale;
 using Libcore::ICU::INativeBreakIterator;
 using Elastos::Text::ICharacterIterator;
 
 namespace Libcore {
 namespace ICU {
 
+extern "C" const _ELASTOS ClassID ECLSID_NativeBreakIterator;
+
 class NativeBreakIterator
-    : public ElRefBase
+    : public Object
     , public INativeBreakIterator
 {
 public:
-    CAR_INTERFACE_DECL();
+    CAR_INTERFACE_DECL()
 
     ~NativeBreakIterator();
 
     CARAPI Clone(
-        /* [out] */ INativeBreakIterator ** outiter);
+        /* [out] */ IInterface ** outiter);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
+
+    CARAPI GetClassID(
+        /* [out] */ ClassID *pCLSID);
 
     CARAPI Equals(
         /* [in] */ IInterface * object,
@@ -66,6 +75,9 @@ public:
     CARAPI SetText(
         /* [in] */ const String& newText);
 
+    CARAPI HasText(
+        /* [out] */ Boolean* hasText);
+
     CARAPI IsBoundary(
         /* [in] */ Int32 offset,
         /* [out] */ Boolean * value);
@@ -88,62 +100,70 @@ public:
 
 private:
     NativeBreakIterator(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int32 type);
 
     CARAPI_(void) SetText(
         /* [in] */ const String& s,
         /* [in] */ ICharacterIterator* it);
 
-    static CARAPI_(Int32) GetCharacterInstanceImpl(
+    static CARAPI_(Int64) GetCharacterInstanceImpl(
         /* [in] */ const String& locale);
 
-    static CARAPI_(Int32) GetWordInstanceImpl(
+    static CARAPI_(Int64) GetWordInstanceImpl(
         /* [in] */ const String& locale);
 
-    static CARAPI_(Int32) GetLineInstanceImpl(
+    static CARAPI_(Int64) GetLineInstanceImpl(
         /* [in] */ const String& locale);
 
-    static CARAPI_(Int32) GetSentenceInstanceImpl(
+    static CARAPI_(Int64) GetSentenceInstanceImpl(
         /* [in] */ const String& locale);
 
-    static CARAPI_(void) CloseBreakIteratorImpl(
-        /* [in] */ Int32 address);
+    static CARAPI_(void) CloseImpl(
+        /* [in] */ Int64 address);
 
     static CARAPI_(void) SetTextImpl(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ const String& text);
 
-    static CARAPI_(Int32) CloneImpl(
-        /* [in] */ Int32 address);
+    static CARAPI_(Int64) CloneImpl(
+        /* [in] */ Int64 address);
 
     static CARAPI_(Int32) PrecedingImpl(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text,
         /* [in] */ Int32 offset);
 
     static CARAPI_(Boolean) IsBoundaryImpl(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text,
         /* [in] */ Int32 offset);
 
     static CARAPI_(Int32) NextImpl(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text,
         /* [in] */ Int32 n);
 
     static CARAPI_(Int32) PreviousImpl(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text);
 
     static CARAPI_(Int32) CurrentImpl(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text);
 
     static CARAPI_(Int32) FirstImpl(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text);
 
     static CARAPI_(Int32) FollowingImpl(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text,
         /* [in] */ Int32 offset);
 
     static CARAPI_(Int32) LastImpl(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address,
+        /* [in] */ const String& text);
 
 private:
     // Acceptable values for the 'type' field.
@@ -152,13 +172,17 @@ private:
     static const Int32 BI_LINE_INSTANCE;
     static const Int32 BI_SENT_INSTANCE;
 
-    Int32 mAddress;
+    // The address of the native peer.
+    // Uses of this must be manually synchronized to avoid native crashes.
+    Int64 mAddress;
+    String mString;
     Int32 mType;
-    AutoPtr<ICharacterIterator> mCharIter;
+    AutoPtr<ICharacterIterator> mCharIterator;
+
+    static Object mLock;
 };
 
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_NATIVEBREAKITERATOR_H__
-
+#endif //__LIBCORE_ICU_NATIVEBREAKITERATOR_H__

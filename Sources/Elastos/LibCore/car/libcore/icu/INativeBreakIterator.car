@@ -4,14 +4,13 @@ module
     interface Elastos.Text.ICharacterIterator;
     interface Elastos.Utility.ILocale;
 
+    namespace Libcore {
+    namespace ICU {
+
     /**
      * @Involve
      * interface ICloneable;
      */
-
-    namespace Libcore {
-    namespace ICU {
-
     interface INativeBreakIterator {
         Current(
             [out] Int32 * value);

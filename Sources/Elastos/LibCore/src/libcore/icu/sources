@@ -33,3 +33,5 @@ SOURCES += CNativeNormalizerHelper.cpp
 SOURCES += CNativePluralRules.cpp
 SOURCES += CNativePluralRulesHelper.cpp
 SOURCES += CRuleBasedCollatorICU.cpp
+SOURCES += NativeBreakIterator.cpp
+SOURCES += CNativeBreakIteratorHelper.cpp

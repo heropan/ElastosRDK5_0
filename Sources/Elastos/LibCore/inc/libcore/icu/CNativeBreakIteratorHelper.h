@@ -1,15 +1,25 @@
 
-#ifndef __ICU_CNATIVEBREAKITERATORHELPER_H__
-#define __ICU_CNATIVEBREAKITERATORHELPER_H__
+#ifndef __LIBCORE_ICU_CNATIVEBREAKITERATORHELPER_H__
+#define __LIBCORE_ICU_CNATIVEBREAKITERATORHELPER_H__
 
-#include "_CNativeBreakIteratorHelper.h"
+#include <Singleton.h>
+#include "_Libcore_ICU_CNativeBreakIteratorHelper.h"
+
+using Elastos::Core::Singleton;
+using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeBreakIteratorHelper)
+    , public Singleton
+    , public INativeBreakIteratorHelper
 {
+    CAR_SINGLETON_DECL()
+
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI GetCharacterInstance(
         /* [in] */ ILocale * where,
         /* [out] */ INativeBreakIterator ** outiter);
@@ -30,5 +40,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_CNATIVEBREAKITERATORHELPER_H__
-
+#endif //__LIBCORE_ICU_CNATIVEBREAKITERATORHELPER_H__

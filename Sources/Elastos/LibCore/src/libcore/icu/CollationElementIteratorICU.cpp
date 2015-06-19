@@ -5,7 +5,7 @@
 namespace Libcore {
 namespace ICU {
 
-extern "C" const _ELASTOS ClassID ECLSID_CCollationElementIteratorICU = {
+extern "C" const _ELASTOS ClassID ECLSID_CollationElementIteratorICU = {
     { 0x015e3ac6, 0x25b8, 0x4982, { 0xa2, 0xb9, 0x24, 0x2f, 0x8f, 0xf1, 0x15, 0xde } },
     (char *)c_pElastos_CoreLibraryUunm,
     0xf6f1637e };
@@ -129,12 +129,12 @@ ECode CollationElementIteratorICU::ToString(
     return NOERROR;
 }
 
-CARAPI CollationElementIteratorICU::GetClassID(
+ECode CollationElementIteratorICU::GetClassID(
     /* [out] */ ClassID *pCLSID)
 {
     VALIDATE_NOT_NULL(pCLSID)
 
-    *pCLSID = Libcore::ICU::ECLSID_CCollationElementIteratorICU;
+    *pCLSID = ECLSID_CollationElementIteratorICU;
     return NOERROR;
 }
 
