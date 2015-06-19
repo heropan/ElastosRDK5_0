@@ -3,6 +3,7 @@
 #include <Thread.h>
 //#include "CForkJoinWorkerThread.h"
 #include "CSystem.h"
+#include "Autolock.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::ISystem;
