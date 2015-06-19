@@ -1,10 +1,19 @@
 
 #include "AbstractPreferences.h"
 #include "CLinkedList.h"
+#include "CTreeSet.h"
+#include "CStringWrapper.h"
+#include <elastos/core/Autolock.h>
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CStringWrapper;
 
 namespace Elastos {
 namespace Utility {
 namespace Prefs {
+
+extern "C" const InterfaceID EIID_AbstractPreferences =
+        { 0x65b26745, 0x85b5, 0x425a, { 0x9a, 0xef, 0x85, 0xab, 0x0b, 0x42, 0xb7, 0x1f } };
 
 const Int64 AbstractPreferences::NodeAddEvent::serialVersionUID = 1L;
 AbstractPreferences::NodeAddEvent::NodeAddEvent(
@@ -23,6 +32,8 @@ AbstractPreferences::NodeRemoveEvent::NodeRemoveEvent(
 Boolean AbstractPreferences::sStaticInit = AbstractPreferences::staticInit();
 AutoPtr<IList> AbstractPreferences::sEvents;
 // AutoPtr<EventDispatcher> AbstractPreferences::sDispatcher;
+
+CAR_INTERFACE_IMPL_WITH_CPP_CAST(AbstractPreferences, Preferences, IAbstractPreferences);
 
 Boolean AbstractPreferences::staticInit()
 {
@@ -100,7 +111,6 @@ ECode AbstractPreferences::GetChild(
     /* [out] */ AbstractPreferences** apfs)
 {
     VALIDATE_NOT_NULL(apfs);
-    ECode ec = NOERROR;
     *apfs = NULL;
     synchronized (mLock) {
         FAIL_RETURN(CheckState());
@@ -142,14 +152,14 @@ ECode AbstractPreferences::AbsolutePath(
 
     String tmp;
     mParentPref->AbsolutePath(&tmp);
-    *path = tmp + String("/") + mNodeName
+    *path = tmp + String("/") + mNodeName;
     return NOERROR;
 }
 
 ECode AbstractPreferences::ChildrenNames(
-    /* [out, callee] */ ArrayOf<String>** names) /*throws BackingStoreException*/
+    /* [out, callee] */ ArrayOf<String>** values) /*throws BackingStoreException*/
 {
-    VALIDATE_NOT_NULL(names);
+    VALIDATE_NOT_NULL(values);
     synchronized (mLock) {
         FAIL_RETURN(CheckState());
         AutoPtr<ITreeSet> result;
@@ -160,7 +170,7 @@ ECode AbstractPreferences::ChildrenNames(
         for (Int32 i = 0; iter != mCachedNode.End(); ++iter, i++) {
             AutoPtr<ICharSequence> name;
             CStringWrapper::New(iter->mFirst, (ICharSequence**)&name);
-            result->Add(name, &modified);
+            ICollection::Probe(result)->Add(name, &modified);
         }
 
         AutoPtr<ArrayOf<String> > names;
@@ -168,23 +178,41 @@ ECode AbstractPreferences::ChildrenNames(
         for (Int32 i = 0; i < names->GetLength(); i++) {
             AutoPtr<ICharSequence> name;
             CStringWrapper::New((*names)[i], (ICharSequence**)&name);
-            result->Add(name, &modified);
+            ICollection::Probe(result)->Add(name, &modified);
         }
 
-        for (Int32 i = 0; i < names.length; i++) {
-            result.add(names[i]);
+        Int32 size = 0;
+        ICollection::Probe(result)->GetSize(&size);
+        *values = ArrayOf<String>::Alloc(size);
+        String str;
+        AutoPtr<IIterator> iter;
+        IIterable::Probe(result)->GetIterator((IIterator**)&iter);
+        Boolean has = FALSE;
+        Int32 pos = 0;
+        while (iter->HasNext(&has), has) {
+            AutoPtr<IInterface> value;
+            iter->GetNext((IInterface**)&value);
+            ICharSequence::Probe(value)->ToString(&str);
+            (*values)->Set(pos, str);
+            pos++;
         }
-        return result.toArray(new String[result.size()]);
+        REFCOUNT_ADD(*values);
     }
+
+    return NOERROR;
 }
 
 ECode AbstractPreferences::Clear() /*throws BackingStoreException */
 {
-    synchronized (lock) {
-        for (String key : keys()) {
-            remove(key);
+    synchronized (mLock) {
+        AutoPtr<ArrayOf<String> > keys;
+        FAIL_RETURN(Keys((ArrayOf<String>**)&keys));
+        String key;
+        for (Int32 i = 0; i < keys->GetLength(); i++) {
+            FAIL_RETURN(Remove((*keys)[i]));
         }
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::ExportNode(
@@ -194,7 +222,7 @@ ECode AbstractPreferences::ExportNode(
         // throw new NullPointerException("ostream == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    checkState();
+    FAIL_RETURN(CheckState());
     XMLParser.exportPrefs(this, ostream, false);
 }
 
@@ -580,11 +608,13 @@ ECode AbstractPreferences::PutInt64(
 ECode AbstractPreferences::Remove(
     /* [in] */ const String& key)
 {
-    synchronized (lock) {
-        checkState();
-        removeSpi(key);
+    ECode ec = NOERROR;
+    synchronized (mLock) {
+        FAIL_RETURN(CheckState());
+        FAIL_RETURN(RemoveSpi(key));
     }
-    notifyPreferenceChange(key, NULL);
+    NotifyPreferenceChange(key, NULL);
+    return NOERROR;
 }
 
 ECode AbstractPreferences::RemoveNode() /*throws BackingStoreException */
