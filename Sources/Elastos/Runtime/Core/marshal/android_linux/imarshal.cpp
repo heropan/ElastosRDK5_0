@@ -1,9 +1,8 @@
 
 #include <binder/Parcel.h>
 #include <pthread.h>
-#include "prxstub.h"
-#include "rot.h"
-#include "elasys_server.h"
+#include <prxstub.h>
+#include <rot.h>
 
 _ELASTOS_NAMESPACE_USING
 

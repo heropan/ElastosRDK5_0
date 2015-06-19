@@ -1,6 +1,6 @@
 
 #include <pthread.h>
-#include "rot.h"
+#include <rot.h>
 
 namespace Elastos {
 namespace IPC {

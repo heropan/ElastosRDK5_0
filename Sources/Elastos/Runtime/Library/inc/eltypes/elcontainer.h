@@ -21,7 +21,7 @@
 // definition and implementation of ObjectContainer is suplied with CAR
 // aspect class AObjectContainer in elastos.dll.
 //
-#include <eltypes.h>
+#include <elastos.h>
 
 #ifndef ForEachDLinkNode
 

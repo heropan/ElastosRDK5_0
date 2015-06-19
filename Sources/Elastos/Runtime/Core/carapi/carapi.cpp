@@ -1,14 +1,11 @@
 //==========================================================================
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
-#include <elasys_server.h>
+#include <elapi.h>
 #include <locmod.h>
 #include <stdio.h>
-#include <elapi.h>
 #include <stdlib.h>
-
 #include <_pubcrt.h>
-#include <stdio.h>
 #include <utils/Log.h>
 
 #define STATUS_WIN32_ERROR(u) ((ECode)((u)|0x80070000))

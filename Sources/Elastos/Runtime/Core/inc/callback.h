@@ -9,13 +9,6 @@
 ELAPI_(void) _Impl_CallbackSink_FreeCallbackEvent(
             _ELASTOS PVoid pCallbackEvent);
 
-#define THREAD_STACK_LIMIT  (0x80000000 - 0x400000)
-#ifdef _neptune
-#define THREAD_STACK_BASE   0x77D00000
-#else
-#define THREAD_STACK_BASE   0x60000000
-#endif
-
 #include <semaphore.h>
 #include <time.h>
 #include <elaatomics.h>
@@ -191,7 +184,6 @@ ELAPI _Impl_CallbackSink_AcquireCallbackContext(
 
 ELAPI_(PCallbackEvent) _Impl_CallbackSink_AllocCallbackEvent(
             _ELASTOS MemorySize size);
-
 
 ELAPI _Impl_CallbackSink_GetThreadEvent(
             PInterface pCallbackContext, sem_t* ppEvent);

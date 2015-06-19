@@ -1,5 +1,5 @@
-#ifndef _ELAATOMICS_H
-#define _ELAATOMICS_H
+#ifndef __ELAATOMICS_H__
+#define __ELAATOMICS_H__
 
 extern "C" {
 
@@ -14,4 +14,4 @@ extern int atomic_or(int value, volatile int *ptr);
 
 }
 
-#endif /* _ELAATOMICS_H */
+#endif /* __ELAATOMICS_H__ */

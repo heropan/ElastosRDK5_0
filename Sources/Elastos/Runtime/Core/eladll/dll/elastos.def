@@ -92,7 +92,6 @@ EXPORTS
     _CarQuintet_Release                             @204    NONAME
     _CarQuintet_Clone                               @205    NONAME
     _CarQuintet_Free                                @206    NONAME
-    _CarQuintet_GetNullValue                        @207    NONAME
 
     _ArrayOf_Copy                                   @209    NONAME
     _ArrayOf_CopyEx                                 @210    NONAME
@@ -100,11 +99,8 @@ EXPORTS
     _ArrayOf_Alloc_Box                              @212    NONAME
     _ArrayOf_Replace                                @213    NONAME
 
-    _String_Char32_ToLowerCase                      @283    NONAME
-    _String_Char32_ToUpperCase                      @285    NONAME
-    _String_GetHashCode                             @291    NONAME
-    _String_Duplicate                               @292    NONAME
-    _String_Free                                    @296    NONAME
+    _String_ToLowerCase                             @283    NONAME
+    _String_ToUpperCase                             @284    NONAME
 
     atomic_swap                                     @454    NONAME
     atomic_cmpxchg                                  @455    NONAME

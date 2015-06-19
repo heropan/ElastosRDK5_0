@@ -5,6 +5,8 @@
 #ifndef __CAR_UUID_H__
 #define __CAR_UUID_H__
 
+#include <string.h>
+
 #ifdef _UNDEFDLLEXP
 #define DLLEXP
 #else

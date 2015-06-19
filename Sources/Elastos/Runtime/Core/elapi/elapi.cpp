@@ -2,21 +2,18 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <elcontainer.h>
 #include <elapi.h>
-#include <eladef.h>
 #include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
-#include <new>
 #include <pthread.h>
 
 #ifdef _win32
 #include <e_time.h>
 #endif
 
-EXTERN_C const InterfaceID EIID_IProxy;
+using namespace Elastos;
 
+EXTERN_C const InterfaceID EIID_IProxy;
 
 class CCallbackRendezvous : public ICallbackRendezvous
 {

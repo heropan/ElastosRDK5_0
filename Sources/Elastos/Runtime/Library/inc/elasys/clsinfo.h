@@ -2,10 +2,6 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef _CLSINFO_H_
 #define _CLSINFO_H_
 

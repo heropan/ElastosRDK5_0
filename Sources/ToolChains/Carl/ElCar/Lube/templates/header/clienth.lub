@@ -32,13 +32,8 @@ $
 $TEMPLATE "decltype.lub"
 $
 
-#ifdef __cplusplus
 #include <_${name}.h>
 $TEMPLATE "classobj.lub"
-
-#else // !__cplusplus
-#error // doesn't support C compiler
-#endif // __cplusplus
 
 #endif // __CAR_${Upper(name)}_H__
 $

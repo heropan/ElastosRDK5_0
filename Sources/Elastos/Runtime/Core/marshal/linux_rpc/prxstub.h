@@ -4,13 +4,8 @@
 
 #include <utils/List.h>
 #include <utils/Mutex.h>
-#include "CRemoteParcel.h"
-#include "threadpoolexecutor.h"
-// #include <semaphore.h>
-// #include <pthread.h>
-
-#include "eltypes.h"
-#include "car.h"
+#include <CRemoteParcel.h>
+#include <threadpoolexecutor.h>
 
 #define GET_LENGTH(a) ((a) & 0x3f)
 #define GET_IN_INTERFACE_MARK(a) ((a) & 0x80)

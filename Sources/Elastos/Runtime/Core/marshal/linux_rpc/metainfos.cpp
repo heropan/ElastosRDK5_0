@@ -2,10 +2,7 @@
 #include <pthread.h>
 #include <dlfcn.h>
 #include <stdio.h>
-#include "prxstub.h"
-#include <elastos.h>
-#include "marshal_rpc.h"
-#include "DataBuffer.h"
+#include <prxstub.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

@@ -2,7 +2,6 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <elaobj.h>
 #include <clsbase.h>
 
 static int s_nBase;

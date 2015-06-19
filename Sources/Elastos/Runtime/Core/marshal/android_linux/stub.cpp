@@ -1,11 +1,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <elaatomics.h>
-#include "prxstub.h"
-#include "rot.h"
+#include <prxstub.h>
+#include <rot.h>
 #include <binder/ProcessState.h>
-
 #include <unistd.h>
 
 #ifdef _x86

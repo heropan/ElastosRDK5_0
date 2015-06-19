@@ -2,18 +2,11 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELDEBUGDEF_H__
 #define __ELDEBUGDEF_H__
 
 #include <elstring.h>
-
-#if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
 #include <stdio.h>
-#endif
 
 _ELASTOS_NAMESPACE_BEGIN
 

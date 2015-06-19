@@ -2,7 +2,6 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <elatypes.h>
 #include <elapi.h>
 
 extern "C" {

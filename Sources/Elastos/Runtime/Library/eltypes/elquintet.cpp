@@ -8,38 +8,6 @@ extern "C" {
 
 _ELASTOS_NAMESPACE_USING
 
-static CarQuintet s_nullCq[] = {
-    {0, 0, 0, 0, NULL},
-    {1, 0, 0, 0, NULL},
-    {2, 0, 0, 0, NULL},
-    {3, 0, 0, 0, NULL},
-    {4, 0, 0, 0, NULL},
-    {5, 0, 0, 0, NULL},
-    {6, 0, 0, 0, NULL},
-    {7, 0, 0, 0, NULL},
-    {8, 0, 0, 0, NULL},
-    {9, 0, 0, 0, NULL},
-    {10, 0, 0, 0, NULL},
-    {11, 0, 0, 0, NULL},
-    {12, 0, 0, 0, NULL},
-    {13, 0, 0, 0, NULL},
-    {14, 0, 0, 0, NULL},
-    {15, 0, 0, 0, NULL},
-    {16, 0, 0, 0, NULL},
-    {17, 0, 0, 0, NULL},
-    {18, 0, 0, 0, NULL},
-};
-
-PCarQuintet __cdecl _CarQuintet_GetNullValue(CarQuintetFlags flag)
-{
-    flag = flag & CarQuintetFlag_TypeMask;
-    if (flag < 1 || flag > 18) {
-        flag = 0;
-    }
-
-    return &s_nullCq[flag];
-}
-
 PCarQuintet __cdecl _CarQuintet_Init(PCarQuintet pCq,
     PVoid pBuf, Int32 size, Int32 used, CarQuintetFlags flags)
 {

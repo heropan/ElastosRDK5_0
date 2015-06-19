@@ -2,9 +2,7 @@
 #ifndef __ELAUTOPTR_H__
 #define __ELAUTOPTR_H__
 
-#ifndef __ELATYPES_H__
-#include <elatypes.h>
-#endif
+#include <eladef.h>
 
 _ELASTOS_NAMESPACE_BEGIN
 

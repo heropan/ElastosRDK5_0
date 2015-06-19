@@ -2,11 +2,7 @@
 #ifndef __ELREFBASE_H__
 #define __ELREFBASE_H__
 
-#include <elaatomics.h>
-#include <elatypes.h>
 #include <car.h>
-#include <eladef.h>
-#include <assert.h>
 #include <stdio.h>
 
 _ELASTOS_NAMESPACE_BEGIN

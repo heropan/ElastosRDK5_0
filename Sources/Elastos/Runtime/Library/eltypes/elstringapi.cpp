@@ -1,8 +1,6 @@
 
 #include <sys/types.h>
 #include <eltypes.h>
-#include <elsharedbuf.h>
-#include <elstring.h>
 #include <stdlib.h>
 #include <ctype.h>
 
@@ -52,49 +50,14 @@ static LibUtilsFirstStatics gFirstStatics;
 
 extern "C" {
 
-char* __cdecl _String_Duplicate(const char *strSource)
-{
-    size_t len;
-    char * copy;
-
-    if (!strSource) {
-        return NULL;
-    }
-
-    len = strlen(strSource) + 1;
-    if ((copy = (char *)malloc(len)) == NULL) return NULL;
-    memcpy(copy, strSource, len);
-    return(copy);
-}
-
-void __cdecl _String_Free(char * str)
-{
-    if (str) {
-        free((void *)str);
-    }
-}
-
-Char32 __cdecl _String_Char32_ToLowerCase(Char32 ch)
+Char32 __cdecl _String_ToLowerCase(Char32 ch)
 {
     return u_tolower(ch);
 }
 
-Char32 __cdecl _String_Char32_ToUpperCase(_ELASTOS Char32 ch)
+Char32 __cdecl _String_ToUpperCase(_ELASTOS Char32 ch)
 {
     return u_toupper(ch);
-}
-
-//---- HashCode ----
-Int32 _String_GetHashCode(const char *string)
-{
-    Int64 h = 0;
-
-    if (string) {
-        for ( ; *string; ++string) {
-            h = 5 * h + *string;
-        }
-    }
-    return (Int32)h;
 }
 
 }

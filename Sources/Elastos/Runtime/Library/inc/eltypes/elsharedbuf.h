@@ -3,13 +3,7 @@
 #define __ELSHAREDBUF_H__
 
 #include <eladef.h>
-#include <elatypes.h>
-#include <malloc.h>
-#include <elaatomics.h>
-
-#if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
 #include <stdio.h>
-#endif
 
 _ELASTOS_NAMESPACE_BEGIN
 

@@ -5,14 +5,14 @@
 #ifndef __CCALLBACKCONTEXT_H__
 #define __CCALLBACKCONTEXT_H__
 
-#include <elastos.h>
+#include <elapi.h>
 #include <clsdef.h>
 #include <semaphore.h>
 #include <sys/time.h>
 
-_ELASTOS_NAMESPACE_USING
-
 EXTERN void _Impl_CallbackSink_FreeCallbackEvent(PCallbackEvent pCallbackEvent);
+
+_ELASTOS_NAMESPACE_BEGIN
 
 class CCallbackContext : public IInterface
 {
@@ -126,5 +126,7 @@ public:
 private:
     Int32                       m_cRef;
 };
+
+_ELASTOS_NAMESPACE_END
 
 #endif // __CCALLBACKCONTEXT_H__

@@ -2,8 +2,7 @@
 #ifndef __LOOPER_H__
 #define __LOOPER_H__
 
-#include "eltypes.h"
-#include "car.h"
+#include <eltypes.h>
 #include <utils/KeyedVector.h>
 #include <utils/Mutex.h>
 #include <sys/epoll.h>

@@ -3,17 +3,11 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELSTRING_H__
 #define __ELSTRING_H__
 
-#include <elstringapi.h>
 #include <elautoptr.h>
 #include <elsharedbuf.h>
-#include <assert.h>
 
 _ELASTOS_NAMESPACE_BEGIN
 
@@ -35,7 +29,7 @@ public:
 
     ~String();
 
-    inline Int32 GetHashCode() const;
+    Int32 GetHashCode() const;
 
     inline Boolean IsNull() const;
     inline Boolean IsEmpty() const;
@@ -354,12 +348,6 @@ private:
 //=============================================================================
 //              Getter
 //=============================================================================
-
-inline Int32 String::GetHashCode() const
-{
-    return _String_GetHashCode(mString);
-}
-
 inline Boolean String::IsNull() const
 {
     return mString == NULL;

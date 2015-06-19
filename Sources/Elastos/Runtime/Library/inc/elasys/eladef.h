@@ -2,36 +2,31 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELADEF_H__
 #define __ELADEF_H__
 
+#include <elaatomics.h>
+#include <elalloc.h>
+#include <elans.h>
 #include <elatypes.h>
 #include <elaerror.h>
-
 #ifndef _devtools
 #include <pthread.h>
 #endif
-
-#if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
 #include <assert.h>
-#endif
 
 #define DECL_ASMLINKAGE         EXTERN_C
 #define DECL_LINKERSYMBOL       EXTERN_C
 
 // Version parsed out into numeric values
 //
-#define ELASTOS_MAJOR_VERSION   2
-#define ELASTOS_MINOR_VERSION   1
+#define ELASTOS_MAJOR_VERSION   5
+#define ELASTOS_MINOR_VERSION   0
 #define ELASTOS_BUILD_NUMBER    0
 
 // Version as a string
 //
-#define ELASTOS_VERSION         "2.1"
+#define ELASTOS_VERSION         "5.0"
 
 // Version as a single 4-byte hex number, which can be used for numeric
 // comparisons, e.g. #if ELASTOS_VERSION_HEX >= ...
@@ -49,50 +44,6 @@
 #if defined(_RELEASE) && !defined(_PRERELEASE) && !defined(_TEST_TYPE)
 //#define ELASTOS_RC
 #endif
-
-#ifndef _RELEASE
-
-// macros for mutex & crital section deadlock detection in test
-#if (_TEST_TYPE == 9) /* Test for Deadlock Detection */
-#define MUTEX_DEADLOCK_DETECT
-#define CRITICAL_SECTION_DEADLOCK_DETECT
-#endif // _TEST_TYPE == 9
-
-#ifndef CRITICAL_SECTION_DEADLOCK_DETECT
-#if !defined(_RELEASE) || defined(_PRERELEASE)
-#define MULTI_RESOURCE_DEADLOCK_DETECT
-#endif //MULTI_RESOURCE_DEADLOCK_DETECT
-#endif
-
-// macro for kernel memory spy
-#define KMEM_CHECKPOINT_MAX_SUM 8
-#define KMEM_CURRENT_POINT KMEM_CHECKPOINT_MAX_SUM + 1
-#if defined(_x86) || defined(_arm)
-//#define KERNEL_MEMORY_DETECT
-#endif // _x86 || _arm
-#endif
-
-// macro for process heap memory spy
-#if defined(_x86) || defined(_arm)
-#if !defined(_RELEASE) || defined(_PRERELEASE)
-#define MEMORYSPY
-#endif
-#endif // _x86 _arm
-
-// arm debugger for msvc
-
-#ifdef _arm
-#if !defined(_RELEASE) || defined(_PRERELEASE)
-#define _ELADBGAGENT
-#endif //_RELEASE
-#endif //_arm
-
-#if defined(_x86) || defined(_arm)
-#if !defined(_RELEASE) || defined(_PRERELEASE)
-#define _KDBAGENT
-#define _UDBAGENT
-#endif
-#endif // _x86 || _arm
 
 // If define this then use Cache Manager
 //#define CACHEMANAGER
@@ -131,15 +82,6 @@
 
 #ifndef _devtools
 
-//
-// System definitions
-//
-#define THREAD_MINIMUM_AVAILABLE        127
-
-#define TLS_MINIMUM_AVAILABLE           52
-#define TLS_TOTAL_SLOTS                 64
-#define TLS_INVALID_INDEX               ((int)0xffffffff)
-
 EXTERN_C pthread_key_t *getTlSystemSlotBase();
 
 #define TL_SYSTEM_SLOT_BASE             (getTlSystemSlotBase())
@@ -148,20 +90,6 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #define TL_ORG_CALLBACK_SLOT            (*(TL_SYSTEM_SLOT_BASE + 7))
 
 #endif // _devtools
-
-#define MAXIMUM_WAIT_EVENTS             64     // Maximum number of wait events
-
-#define MAXIMUM_SERVICE_NAME_LENGTH     256
-
-#define MAXIMUM_OWNED_READER_LOCKS      12
-
-#define MAXIMUM_FULL_PATH_LENGTH        260    // Contains the L'\0'
-
-#define MAXIMUM_ARGC                    128
-#define MAXIMUM_ARGS_LENGTH             1024   // Contains the L'\0'
-
-#define MAXIMUM_THREAD_NAME_LENGTH      64     // Contains the L'\0'
-
 
 //
 // Helper Info Flag
@@ -172,15 +100,6 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #define HELPER_CARHOST_CALLING            0x00000008
 #define HELPER_PROBE_CALLBACK_INTERFACE   0x00000010
 #define HELPER_CALLING_CALLBACK_FILTER    0x00000020
-
-
-//
-// Error Info
-//
-#define ERROR_INFO_SIZE         512
-#define MAX_ERROR_STRING        ((ERROR_INFO_SIZE - sizeof(WORD)) / 2)
-#define MAX_ERROR_STRING_A      (ERROR_INFO_SIZE - sizeof(WORD))
-#define MAX_ERROR_URL           (ERROR_INFO_SIZE - sizeof(WORD))
 
 //
 // Debug out
@@ -220,12 +139,6 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #else
 #define PROFILING(x)
 #endif
-
-//
-//  System macros
-//
-#define SIGNALED     1
-#define UNSIGNALED   0
 
 //
 //  Utilities

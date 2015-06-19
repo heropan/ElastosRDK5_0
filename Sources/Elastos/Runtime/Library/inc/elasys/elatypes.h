@@ -2,10 +2,6 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELATYPES_H__
 #define __ELATYPES_H__
 
@@ -16,7 +12,7 @@
 #include <stdint.h>
 #endif
 
-extern "C"{
+extern "C" {
 
 #if defined(_MSC_VER) || defined(_EVC)
 #define DECLSPEC_SELECTANY      __declspec(selectany)
@@ -137,8 +133,6 @@ typedef Microsecond64* PMicrosecond64;
 typedef Int32 MemorySize;
 typedef UInt32 Address;
 
-/** @} */
-
 /** @addtogroup SystemRef
   *   @{
   */
@@ -152,6 +146,8 @@ typedef struct CriticalSection
     PVoid   reserved;
     PVoid   sequenced;
 } CriticalSection, *PCriticalSection, CRITICAL_SECTION, *PCRITICAL_SECTION;
+/** @} */
+
 /** @} */
 
 /** @addtogroup CARTypesRef
@@ -409,10 +405,6 @@ EXTERN_C void __asm(char*, ...);
 #define ELFUNCCALLTYPE          CDECL
 #define ELFUNC                  _ELASTOS ECode ELFUNCCALLTYPE
 #define ELFUNC_(type)           type ELFUNCCALLTYPE
-
-typedef _ELASTOS ECode (ELFUNCCALLTYPE *PThreadMain)(_ELASTOS PVoid);
-typedef _ELASTOS Void (ELFUNCCALLTYPE *PThreadQuitRoutine)(_ELASTOS PVoid);
-typedef _ELASTOS Void (ELFUNCCALLTYPE *PProcessExitRoutine)(_ELASTOS PVoid);
 
 }
 

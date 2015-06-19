@@ -28,19 +28,21 @@ EXTERN_C int CDECL printf(const char *fmt,...);
 EXTERN_C int invokeCoalescer(void* pFunc, void* pOldParam, void* pNewParam, int nSize);
 EXTERN_C int invokeCallback(CallbackEventFlags cFlags, void* pSender, void* pThis, void* pFunc, void* pParam, int size);
 
-ELAPI_(PCallbackEvent) _Impl_CallbackSink_AllocCallbackEvent(MemorySize size)
+ELAPI_(PCallbackEvent) _Impl_CallbackSink_AllocCallbackEvent(Elastos::MemorySize size)
 {
     // TODO: optimize
     return (PCallbackEvent)malloc(size);
 }
 
-ELAPI_(void) _Impl_CallbackSink_FreeCallbackEvent(PVoid pCallbackEvent)
+ELAPI_(void) _Impl_CallbackSink_FreeCallbackEvent(Elastos::PVoid pCallbackEvent)
 {
     // TODO: optimize
 
     ((PCallbackEvent)pCallbackEvent)->~_EzCallbackEvent();
     free(pCallbackEvent);
 }
+
+_ELASTOS_NAMESPACE_BEGIN
 
 //
 //  class CCallbackContext
@@ -670,3 +672,5 @@ Exit:
     pthread_setspecific(TL_CALLBACK_SLOT, pCallbackContext);
     return 0;
 }
+
+_ELASTOS_NAMESPACE_END

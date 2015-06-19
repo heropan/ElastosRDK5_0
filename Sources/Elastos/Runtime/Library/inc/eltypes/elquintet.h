@@ -2,25 +2,12 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELQUINTET_H__
 #define __ELQUINTET_H__
 
-#include <elatypes.h>
-#include <elaobj.h>
-#include <eladef.h>
-#include <elsharedbuf.h>
-#include <elquintettype.h>
 #include <elrefbase.h>
-#include <elautoptr.h>
-#include <elstring.h>
-
-#if defined(_DEBUG) || defined(_ELASTOS_DEBUG)
+#include <elquintettype.h>
 #include <stdio.h>
-#endif
 
 extern "C" {
     _ELASTOS PCarQuintet __cdecl _CarQuintet_Init(_ELASTOS PCarQuintet pCq,
@@ -42,9 +29,6 @@ extern "C" {
             _ELASTOS Int32 size, _ELASTOS CarQuintetFlags flags);
     _ELASTOS Int32 __cdecl _ArrayOf_Replace(_ELASTOS PCarQuintet pCq,
             _ELASTOS Int32 offset, const _ELASTOS PByte p, _ELASTOS Int32 n);
-
-    _ELASTOS PCarQuintet __cdecl _CarQuintet_GetNullValue(
-            _ELASTOS CarQuintetFlags flag);
 }
 
 //
@@ -737,10 +721,6 @@ inline Int32 QuintetObjectCopyOp::operator()(
     Int32 copyCount = MIN(count, dst->GetLength() - dstOffset);
     return PlainCopy((String*)(dst->m_pBuf), dstOffset, src, srcOffset, copyCount);
 }
-
-#define NULL_ARRAYOF(type) \
-        *(const ArrayOf<type> *)_CarQuintet_GetNullValue( \
-            Type2Flag<type>::Flag())
 
 _ELASTOS_NAMESPACE_END
 

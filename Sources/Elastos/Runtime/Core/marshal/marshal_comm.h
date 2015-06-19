@@ -2,8 +2,7 @@
 #ifndef __MARSHAL_COMM_H__
 #define __MARSHAL_COMM_H__
 
-#include "clsinfo.h"
-#include "elasys_server.h"
+#include <clsinfo.h>
 
 _ELASTOS_NAMESPACE_USING
 

@@ -1,9 +1,8 @@
 
-#include <elaatomics.h>
-#include "prxstub.h"
-#include "rot.h"
-#include "looper.h"
-#include "DataBuffer.h"
+#include <prxstub.h>
+#include <rot.h>
+#include <looper.h>
+#include <DataBuffer.h>
 #include <cutils/log.h>
 
 #include <stdio.h>

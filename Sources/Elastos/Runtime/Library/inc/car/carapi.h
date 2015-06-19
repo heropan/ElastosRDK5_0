@@ -6,10 +6,8 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#ifndef __CAR_CARAPI_H__
-#define __CAR_CARAPI_H__
-
-#include <eldelegate.h>
+#ifndef __CARAPI_H__
+#define __CARAPI_H__
 
 extern "C" {
 
@@ -20,8 +18,6 @@ struct EzMultiQI
     _ELASTOS ECode     ec;
 };
 typedef struct EzMultiQI EzMultiQI, *PMULTIQI;
-interface IRegime;
-typedef interface IRegime* PRegime;
 
 #define RGM_INVALID_DOMAIN          ((PRegime)0x0000)
 #define RGM_SAME_DOMAIN             ((PRegime)0x0001)
@@ -30,9 +26,6 @@ typedef interface IRegime* PRegime;
 #define RGM_DIFF_MACHINE            ((PRegime)0x0004)
 #define RGM_SAME_PROCESS            RGM_SAME_DOMAIN
 #define RGM_DIFF_PROCESS            RGM_DIFF_DOMAIN
-
-#define RGM_USER_2_KERN             ((PRegime)0x0100)
-#define RGM_KERN_2_USER             ((PRegime)0x0200)
 
 #define RGM_MAX_NUMBER              ((PRegime)0xFFFF)
 #define IS_INVALID_REGIME(dw)      ((dw == RGM_INVALID_DOMAIN))
@@ -80,23 +73,8 @@ ELAPI _CObject_LeaveRegime(
     /* [in] */ PInterface pObj,
     /* [in] */ PRegime pRgm);
 
-typedef interface IModuleMetadata *PMMETADATA;
-typedef interface IClassMetadata *PCMETADATA;
-typedef interface IInterfaceMetadata *PIMETADATA;
 typedef interface ICallbackSink *PCALLBACKSINK;
 typedef interface ICallbackRendezvous* PCallbackRendezvous;
-
-ELAPI EzGetModuleMetadata(
-    /* [in] */ PInterface pObject,
-    /* [out] */ PMMETADATA *ppModuleMetadata);
-
-ELAPI EzGetClassMetadata(
-    /* [in] */ PInterface pObject,
-    /* [out] */ PCMETADATA *ppClassMetadata);
-
-ELAPI EzGetInterfaceMetadata(
-    /* [in] */ PInterface pObject,
-    /* [out] */ PIMETADATA *ppIMetadata);
 
 ELAPI _CObject_AcquireCallbackSink(
     /* [in] */ PInterface pObject,
@@ -122,30 +100,7 @@ ELAPI _CObject_AcquireCallbackRendezvous(
 
 ELAPI_(_ELASTOS Boolean) _CModule_CanUnloadAllModules();
 
-ELAPI_(_ELASTOS PVoid) _CMemoryHeap_Alloc(_ELASTOS MemorySize size, _ELASTOS Boolean zeroMem);
-ELAPI_(_ELASTOS PVoid) _CMemoryHeap_Realloc(_ELASTOS PVoid pMem, _ELASTOS MemorySize size);
-ELAPI_(void) _CMemoryHeap_Free(_ELASTOS PVoid pMem);
-ELAPI_(_ELASTOS Boolean) _CMemoryHeap_Trim(_ELASTOS MemorySize pad);
-ELAPI _CMemoryHeap_GetStatistics(
-        _ELASTOS MemorySize *pInUseBytes,
-        _ELASTOS MemorySize *pSystemBytes,
-        _ELASTOS MemorySize *pMaxSystemBytes);
-
-// APIs for debug purpose
-//
-ELAPI _DebugHelper_SeedStringFromGuid(_ELASTOS REMuid, wchar_t *);
-ELAPI _DebugHelper_NameFromGuid(_ELASTOS REMuid, wchar_t *);
-ELAPI _DebugHelper_GuidFromSeedString(const wchar_t *, _ELASTOS PEMuid);
-
-#define _MAX_SEED_LEN   255
-
-#ifdef _win32
-ELAPI _QueryFreeThreadedMarshaler(
-    /* [in] */ _ELASTOS REIID riid,
-    /* [out] */ PInterface *ppObj);
-#endif // _win32
-
 }
 // extern "C"
 
-#endif // __CAR_CARAPI_H__
+#endif // __CARAPI_H__

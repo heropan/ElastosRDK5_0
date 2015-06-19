@@ -1,12 +1,8 @@
 #include <car.h>
-#include <assert.h>
-#include <malloc.h>
-#include <elstring.h>
-#include <elaerror.h>
+#include <elquintet.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include <elquintet.h>
 
 _ELASTOS_NAMESPACE_BEGIN
 
@@ -15,6 +11,11 @@ _ELASTOS_NAMESPACE_BEGIN
 //=======================================================================================
 EXTERN_C SharedBuffer* gElEmptyStringBuf;
 EXTERN_C char* gElEmptyString;
+
+extern "C" {
+    Char32 __cdecl _String_ToLowerCase(_ELASTOS Char32 ch);
+    Char32 __cdecl _String_ToUpperCase(_ELASTOS Char32 ch);
+}
 
 static inline char* _getEmptyString()
 {
@@ -129,6 +130,19 @@ String::~String()
     if (mString != NULL) {
         SharedBuffer::GetBufferFromData(mString)->Release();
     }
+}
+
+Int32 String::GetHashCode() const
+{
+    Int64 h = 0;
+
+    const char* string = mString;
+    if (string) {
+        for ( ; *string; ++string) {
+            h = 5 * h + *string;
+        }
+    }
+    return (Int32)h;
 }
 
 void String::SetCounted(UInt32 charCount) const
@@ -820,7 +834,7 @@ Char32 String::ToLowerCase(Char32 codePoint)
     if (codePoint < 192) {
         return codePoint;
     }
-    return _String_Char32_ToLowerCase(codePoint);
+    return _String_ToLowerCase(codePoint);
 }
 
 Char32 String::ToUpperCase(Char32 codePoint)
@@ -832,7 +846,7 @@ Char32 String::ToUpperCase(Char32 codePoint)
     if (codePoint < 181) {
         return codePoint;
     }
-    return _String_Char32_ToUpperCase(codePoint);
+    return _String_ToUpperCase(codePoint);
 }
 
 String String::ToLowerCase() const

@@ -15,8 +15,6 @@
 //
 //
 
-#include <elatypes.h>
-
 // Success codes
 //
 #ifndef NOERROR

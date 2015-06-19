@@ -1,8 +1,6 @@
 
 #include <stdio.h>
-#include <new>
-#include <eltypes.h>
-#include "marshal_rpc.h"
+#include <marshal_rpc.h>
 
 #define ROUND8(n)       (((n)+7)&~7)   // round up to multiple of 8 bytes
 

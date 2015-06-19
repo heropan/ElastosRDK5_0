@@ -2,13 +2,10 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#ifndef __CAR_ELAOBJ_H__
-#define __CAR_ELAOBJ_H__
+#ifndef __ELAOBJ_H__
+#define __ELAOBJ_H__
 
-#include <elatypes.h>
 #include <elstring.h>
-
-#define CONST_VTBL          const
 
 extern "C" {
 
@@ -18,6 +15,7 @@ typedef interface IAspect IAspect;
 
 typedef interface IInterface *PInterface;
 typedef interface IAspect *PASPECT;
+typedef interface IRegime* PRegime;
 
 typedef enum AggregateType
 {
@@ -276,4 +274,4 @@ struct Conversion<void, CCarObject>
     (Conversion<Sub, Super>::exists && !Conversion<Super, void*>::sameType)
 #endif
 
-#endif // __CAR_ELAOBJ_H__
+#endif // __ELAOBJ_H__

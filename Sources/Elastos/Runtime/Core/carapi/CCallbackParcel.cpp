@@ -2,12 +2,12 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <new>
 #include "CCallbackParcel.h"
-#include "elquintet.h"
 
 #define ROUND4(n)       (((n)+3)&~3)   // round up to multiple of 4 bytes
 #define ROUND8(n)       (((n)+7)&~7)   // round up to multiple of 8 bytes
+
+_ELASTOS_NAMESPACE_BEGIN
 
 enum Type {
     Type_Unknown = 0,
@@ -760,3 +760,5 @@ ELAPI _CCallbackParcel_New(
 
     return NOERROR;
 }
+
+_ELASTOS_NAMESPACE_END

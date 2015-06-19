@@ -3,9 +3,7 @@
 #define __CREMOTEPARCEL_H__
 
 #include <binder/Parcel.h>
-#include <elasys_server.h>
-#include <elrefbase.h>
-#include "marshal_ipc.h"
+#include <marshal_ipc.h>
 
 namespace Elastos {
 namespace IPC {

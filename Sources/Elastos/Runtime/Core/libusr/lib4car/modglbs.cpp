@@ -2,8 +2,8 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <elapi.h>
 #include <elastos.h>
+
 _ELASTOS_NAMESPACE_USING
 
 class ModuleGlobals

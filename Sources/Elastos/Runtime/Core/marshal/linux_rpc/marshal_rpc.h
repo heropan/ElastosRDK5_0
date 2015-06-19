@@ -2,9 +2,8 @@
 #ifndef __MARSHAL_RPC_H__
 #define __MARSHAL_RPC_H__
 
-#include "clsinfo.h"
-#include "elasys_server.h"
-#include "marshal_comm.h"
+#include <elastos.h>
+#include <marshal_comm.h>
 
 namespace Elastos {
 namespace RPC {

@@ -4,6 +4,8 @@
 
 #include "CCallbackContext.h"
 
+using namespace Elastos;
+
 ELAPI _Impl_CallbackSink_TryToHandleEvents(
     IInterface* pCallbackContext)
 {

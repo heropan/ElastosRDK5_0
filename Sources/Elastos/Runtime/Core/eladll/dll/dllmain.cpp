@@ -2,8 +2,7 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#include <elapi.h>
-#include <eladef.h>
+#include <elastos.h>
 #include <stdio.h>
 
 _ELASTOS_NAMESPACE_USING

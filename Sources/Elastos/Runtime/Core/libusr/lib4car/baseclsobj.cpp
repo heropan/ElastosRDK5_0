@@ -3,7 +3,6 @@
 //==========================================================================
 
 #include <car.h>
-#include <elaatomics.h>
 
 _ELASTOS_NAMESPACE_USING
 

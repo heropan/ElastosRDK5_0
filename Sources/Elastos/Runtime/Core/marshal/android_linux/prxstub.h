@@ -5,13 +5,9 @@
 #include <binder/Binder.h>
 #include <utils/List.h>
 #include <utils/Mutex.h>
-#include "CRemoteParcel.h"
+#include <CRemoteParcel.h>
 #include <semaphore.h>
 #include <pthread.h>
-
-#include "eltypes.h"
-#include "car.h"
-#include "marshal_ipc.h"
 
 namespace Elastos {
 namespace IPC {

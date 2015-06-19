@@ -2,9 +2,7 @@
 #ifndef __CREMOTEPARCEL_H__
 #define __CREMOTEPARCEL_H__
 
-#include <elasys_server.h>
-#include <elrefbase.h>
-#include "marshal_rpc.h"
+#include <marshal_rpc.h>
 
 namespace Elastos {
 namespace RPC {

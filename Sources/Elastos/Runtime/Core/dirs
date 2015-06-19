@@ -2,8 +2,7 @@
 # Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 #==========================================================================
 
-DIRS = inc
-DIRS += reflection
+DIRS = reflection
 DIRS += marshal
 DIRS += libusr
 DIRS += carapi

@@ -1,8 +1,10 @@
 
-#ifndef __CPACKAGE_H__
-#define __CPACKAGE_H__
+#ifndef __CCALLBACKPARCEL_H__
+#define __CCALLBACKPARCEL_H__
 
-#include <elasys_server.h>
+#include <elapi.h>
+
+_ELASTOS_NAMESPACE_BEGIN
 
 class CCallbackParcel : public IParcel
 {
@@ -178,5 +180,7 @@ private:
     Byte* m_dataPtr;
     Int32 m_dataBufCapacity;
 };
+
+_ELASTOS_NAMESPACE_END
 
 #endif

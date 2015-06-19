@@ -9,36 +9,40 @@
 #include <elaatomics.h>
 #include <unistd.h>
 
+_ELASTOS_NAMESPACE_BEGIN
+
 class SpinLock
 {
 public:
-    SpinLock() : m_bLocked(FALSE) {}
+    SpinLock() : mLocked(FALSE) {}
 
     void Lock();
 
     void Unlock();
 
-    _ELASTOS Boolean TryLock();
+    Boolean TryLock();
 
 private:
-    _ELASTOS Int32 m_bLocked;
+    Int32 mLocked;
 };
 
 CAR_INLINE void SpinLock::Lock()
 {
-    while (atomic_swap(TRUE, &m_bLocked)) {
-        while (m_bLocked) usleep(1);
+    while (atomic_swap(TRUE, &mLocked)) {
+        while (mLocked) usleep(1);
     }
 }
 
 CAR_INLINE void SpinLock::Unlock()
 {
-    atomic_swap(FALSE, &m_bLocked);
+    atomic_swap(FALSE, &mLocked);
 }
 
 CAR_INLINE _ELASTOS Boolean SpinLock::TryLock()
 {
-    return !atomic_swap(TRUE, &m_bLocked);
+    return !atomic_swap(TRUE, &mLocked);
 }
+
+_ELASTOS_NAMESPACE_END
 
 #endif //__ELASTOS_SPINLOCK_H__

@@ -8,28 +8,24 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELAPI_H__
 #define __ELAPI_H__
 
-#include <elastos.h>
-
-#ifdef _UNDEFDLLEXP
-#include <elasys_server.h>
-#else
-#include <elasys.h>
-#endif
-
-#include <stdint.h>
+// #include <stdint.h>
 
 /** @} */
 /** @addtogroup CARRef
   *   @{
   */
+#include <eltypes.h>
+#ifdef _UNDEFDLLEXP
+#define _NO_INCLIST
+#include <elasys_server.h>
+#else
+#include <elasys.h>
+#endif
 #include <callback.h>
+#include <carapi.h>
 
 ELAPI _CReflector_AcquireModuleInfo(
     /* [in] */ const _ELASTOS String& name,
@@ -55,7 +51,6 @@ ELAPI _CReflector_AcquireCppVectorInfo(
     /* [in] */ IDataTypeInfo *pElementTypeInfo,
     /* [in] */ _ELASTOS Int32 length,
     /* [out] */ ICppVectorInfo **ppCppVectorInfo);
-
 
 ELAPI _CReflector_AcquireCarArrayInfo(
     /* [in] */ CarDataType quintetType,

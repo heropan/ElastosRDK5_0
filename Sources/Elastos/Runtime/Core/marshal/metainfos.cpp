@@ -3,7 +3,7 @@
 #include <dlfcn.h>
 #include <stdio.h>
 #include <elastos.h>
-#include "clsinfo.h"
+#include <clsinfo.h>
 #include <cutils/log.h>
 
 _ELASTOS_NAMESPACE_USING

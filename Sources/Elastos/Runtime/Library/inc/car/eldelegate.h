@@ -2,14 +2,10 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
+#ifndef __ELDELEGATE_H__
+#define __ELDELEGATE_H__
 
 #include <assert.h>
-
-#if !defined(__DELEGATE_H__)
-#define __DELEGATE_H__
 
 #define _Impl_Memset memset
 
@@ -151,4 +147,4 @@ public:
 };
 _ELASTOS_NAMESPACE_END
 
-#endif // __DELEGATE_H__
+#endif // __ELDELEGATE_H__

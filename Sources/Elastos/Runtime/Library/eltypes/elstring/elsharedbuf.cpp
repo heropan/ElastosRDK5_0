@@ -1,6 +1,5 @@
 
 #include <elsharedbuf.h>
-#include <string.h>
 
 _ELASTOS_NAMESPACE_BEGIN
 

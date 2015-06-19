@@ -6,14 +6,8 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#if _MSC_VER > 1000
-#pragma once
-#endif
-
 #ifndef __ELASYSAPI_H__
 #define __ELASYSAPI_H__
-
-#include <elapi.h>
 
 _ELASTOS_NAMESPACE_BEGIN
 

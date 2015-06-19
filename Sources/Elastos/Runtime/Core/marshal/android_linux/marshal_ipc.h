@@ -3,9 +3,8 @@
 #define __MARSHAL_H__
 
 #include <binder/Binder.h>
-#include "clsinfo.h"
-#include "elasys_server.h"
-#include "marshal_comm.h"
+#include <elastos.h>
+#include <marshal_comm.h>
 
 namespace Elastos {
 namespace IPC {

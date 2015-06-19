@@ -1,11 +1,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <elaatomics.h>
 #include <sys/mman.h>
-#include "prxstub.h"
-#include "rot.h"
-#include "DataBuffer.h"
+#include <prxstub.h>
+#include <rot.h>
+#include <DataBuffer.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

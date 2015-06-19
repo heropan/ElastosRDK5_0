@@ -73,12 +73,7 @@ ${ClassNamespaceEnd(class)}
 $   END IF ;; hascallback and !generic
 $END DO ;; all classes
 
-
-#ifdef __cplusplus
 #include <_${name}.h>
-#else
-#include <_${name}_c.h>
-#endif // __cplusplus
 
 #endif // __CAR_${Upper(name)}_H__
 $

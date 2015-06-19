@@ -5,8 +5,6 @@
 #ifndef __NAMELIST_H__
 #define __NAMELIST_H__
 
-#ifdef __cplusplus
-
 class NameList
 {
 public:
@@ -63,7 +61,5 @@ inline char *NameList::Current()
 {
     return m_pCurr;
 }
-
-#endif // __cplusplus
 
 #endif // __NAMELIST_H__

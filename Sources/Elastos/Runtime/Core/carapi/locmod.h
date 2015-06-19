@@ -7,6 +7,8 @@
 #include <clsinfo.h>
 #include <elcontainer.h>
 
+using namespace Elastos;
+
 typedef ECode (__stdcall *PDLLGETCLASSOBJECT)(
                 REMuid, REIID, PInterface *);
 typedef ECode (__stdcall *PDLLCANUNLOADNOW)();
@@ -21,8 +23,8 @@ typedef struct LocalModule : DLinkNode {
 }   LocalModule;
 
 ECode  AcquireClassObjectFromLocalModule(
-        /* [in] */ RClassID rclsid,
-        /* [in] */ REIID riid,
-        /* [out] */ PInterface *ppObject);
+    /* [in] */ RClassID rclsid,
+    /* [in] */ REIID riid,
+    /* [out] */ PInterface *ppObject);
 
 #endif // __LOCMOD_H__

@@ -1,10 +1,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <elaatomics.h>
 #include <sys/mman.h>
-#include "prxstub.h"
-#include "rot.h"
+#include <prxstub.h>
+#include <rot.h>
 
 EXTERN_C const InterfaceID EIID_IProxy;
 

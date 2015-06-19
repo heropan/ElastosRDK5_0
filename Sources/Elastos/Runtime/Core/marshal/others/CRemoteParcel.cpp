@@ -1,6 +1,5 @@
 
 #include <dbus/dbus.h>
-#include <new>
 #include "CRemoteParcel.h"
 
 ECode LookupClassInfo(
