@@ -1,0 +1,44 @@
+
+#ifndef __AWDEVTOOLSSERVER_H__
+#define __AWDEVTOOLSSERVER_H__
+
+// import org.chromium.base.JNINamespace;
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace AndroidWebview {
+
+/**
+ * Controller for Remote Web Debugging (Developer Tools).
+ */
+//@JNINamespace("android_webview")
+class AwDevToolsServer
+{
+public:
+    AwDevToolsServer();
+
+    CARAPI_(void) Destroy();
+
+    CARAPI_(void) SetRemoteDebuggingEnabled(
+        /* [in] */ Boolean enabled);
+
+private:
+    CARAPI_(Int64) NativeInitRemoteDebugging();
+
+    CARAPI_(void) NativeDestroyRemoteDebugging(
+        /* [in] */ Int64 devToolsServer);
+
+    CARAPI_(void) NativeSetRemoteDebuggingEnabled(
+        /* [in] */ Int64 devToolsServer,
+        /* [in] */ Boolean enabled);
+
+    Int64 mNativeDevToolsServer;
+};
+
+} // namespace AndroidWebview
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+#endif//__AWDEVTOOLSSERVER_H__
