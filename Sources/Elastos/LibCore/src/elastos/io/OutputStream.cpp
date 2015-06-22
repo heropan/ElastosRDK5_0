@@ -1,18 +1,14 @@
 
 #include "OutputStream.h"
-#include <utils/Log.h>
 #include "Autolock.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace IO {
 
 CAR_INTERFACE_IMPL_3(OutputStream, Object, ICloseable, IFlushable, IOutputStream)
-
-OutputStream::OutputStream()
-{}
-
-OutputStream::~OutputStream()
-{}
 
 ECode OutputStream::Close()
 {
@@ -55,7 +51,7 @@ ECode OutputStream::Write(
     // used (offset | count) < 0 instead of (offset < 0) || (count < 0)
     // to safe one operation
     if ((offset | count) < 0 || count > buffer->GetLength() - offset) {
-        ALOGE("OutputStream::Write IndexOutOfBoundsException: offset: %d, count: %d", offset, count);
+        Logger::E("OutputStream", "IndexOutOfBoundsException: offset: %d, count: %d", offset, count);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed

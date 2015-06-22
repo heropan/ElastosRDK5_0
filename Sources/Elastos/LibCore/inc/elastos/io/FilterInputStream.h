@@ -61,7 +61,6 @@ public:
      * @see #markSupported()
      * @see #reset()
      */
-    // synchronized
     CARAPI Mark(
         /* [in] */ Int32 readLimit);
 
@@ -127,7 +126,6 @@ public:
      * @see #mark(int)
      * @see #markSupported()
      */
-    // synchronized
     CARAPI Reset();
 
     /**
@@ -149,9 +147,9 @@ public:
         /* [out] */ Int64* number);
 
 protected:
-    FilterInputStream();
+    FilterInputStream() {}
 
-    virtual ~FilterInputStream();
+    virtual ~FilterInputStream() {}
 
 protected:
     /**

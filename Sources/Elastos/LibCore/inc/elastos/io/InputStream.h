@@ -4,14 +4,13 @@
 
 #include <elastos/core/Object.h>
 
-
 namespace Elastos {
 namespace IO {
 
 class InputStream
     : public Object
-    , public ICloseable
     , public IInputStream
+    , public ICloseable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -158,7 +157,6 @@ public:
      * @throws IOException
      *             if this stream is closed or another IOException occurs.
      */
-    //synchronized
     CARAPI Reset();
 
     /**
@@ -183,9 +181,9 @@ public:
         /* [out] */ Int64* number);
 
 protected:
-    InputStream();
+    InputStream() {}
 
-    virtual ~InputStream();
+    virtual ~InputStream() {}
 };
 
 } // namespace IO

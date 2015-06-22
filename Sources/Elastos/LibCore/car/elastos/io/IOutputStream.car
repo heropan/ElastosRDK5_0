@@ -23,8 +23,6 @@ module
      */
     [deprecated]
     interface IOutputStream {
-        Close();
-
         /**
          * Writes a single byte to this stream. Only the least significant byte of
          * the integer oneByte is written to the stream.
@@ -75,6 +73,8 @@ module
          */
         CheckError(
             [out] Boolean* hasError);
+
+        Close();
     }
 
     } // namespace IO

@@ -1,18 +1,14 @@
 
 #include "InputStream.h"
 #include "Math.h"
-#include <utils/Log.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace IO {
 
 CAR_INTERFACE_IMPL_2(InputStream, Object, IInputStream, ICloseable)
-
-InputStream::InputStream()
-{}
-
-InputStream::~InputStream()
-{}
 
 ECode InputStream::Available(
     /* [out] */ Int32* number)
@@ -70,11 +66,11 @@ ECode InputStream::Read(
     // END android-note
     // Force null check for b first!
     if (byteOffset > buffer->GetLength() || byteOffset < 0) {
-        ALOGE("InputStream::Read ArrayIndexOutOfBoundsException: Offset out of bounds: %d", byteOffset);
+        Logger::E("InputStream", "ArrayIndexOutOfBoundsException: Offset out of bounds: %d", byteOffset);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     if (byteCount < 0 || byteCount > buffer->GetLength() - byteOffset) {
-        ALOGE("InputStream::Read ArrayIndexOutOfBoundsException: Length out of bounds: %d", byteCount);
+        Logger::E("InputStream", "ArrayIndexOutOfBoundsException: Length out of bounds: %d", byteCount);
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 

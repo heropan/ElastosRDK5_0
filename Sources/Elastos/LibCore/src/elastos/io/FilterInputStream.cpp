@@ -7,14 +7,6 @@ namespace IO {
 
 CAR_INTERFACE_IMPL(FilterInputStream, InputStream, IFilterInputStream)
 
-FilterInputStream::FilterInputStream()
-{
-}
-
-FilterInputStream::~FilterInputStream()
-{
-}
-
 ECode FilterInputStream::constructor(
     /* [in] */ IInputStream* in)
 {

@@ -7,18 +7,6 @@ namespace IO {
 
 CAR_INTERFACE_IMPL(BufferedInputStream, FilterInputStream, IBufferedInputStream)
 
-BufferedInputStream::BufferedInputStream()
-    : mCount(0)
-    , mMarklimit(0)
-    , mMarkpos(-1)
-    , mPos(0)
-{
-}
-
-BufferedInputStream::~BufferedInputStream()
-{
-}
-
 ECode BufferedInputStream::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ Int32 size)
