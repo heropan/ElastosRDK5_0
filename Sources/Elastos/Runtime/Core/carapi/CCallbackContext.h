@@ -14,117 +14,87 @@ EXTERN void _Impl_CallbackSink_FreeCallbackEvent(PCallbackEvent pCallbackEvent);
 
 _ELASTOS_NAMESPACE_BEGIN
 
-class CCallbackContext : public IInterface
+class CCallbackContext
+    : public ElLightRefBase
+    , public IInterface
 {
 public:
-    CARAPI_(PInterface) Probe(REIID riid);
+    CCallbackContext();
+
+    virtual ~CCallbackContext();
+
+    CARAPI Initialize();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
     CARAPI_(UInt32) AddRef();
 
     CARAPI_(UInt32) Release();
 
-    CARAPI GetInterfaceID(IInterface *pObject, InterfaceID *pIID);
+    CARAPI GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [in] */ InterfaceID* iid);
 
-public:
-    CCallbackContext()
-    {
-        m_bExitRequested = FALSE;
-        m_bRequestToQuit = FALSE;
+    CARAPI PostCallbackEvent(
+        /* [in] */ PCallbackEvent callbackEvent);
 
-        m_eventQueue.Initialize();
-        m_currentEvents.Initialize();
-        m_Status = CallbackContextStatus_Created;
-        m_nEventsCount = 0;
-        m_cRef = 0;
-    }
+    CARAPI SendCallbackEvent(
+        /* [in] */ PCallbackEvent callbackEvent,
+        /* [in] */ Millisecond32 timeOut);
 
-    ECode Initialize()
-    {
-        pthread_mutexattr_t recursiveAttr;
+    CARAPI RequestToFinish(
+        /* [in] */ Int32 flag);
 
-        pthread_mutexattr_init(&recursiveAttr);
-        pthread_mutexattr_settype(&recursiveAttr, PTHREAD_MUTEX_RECURSIVE);
-        m_ppThreadEvent = &m_pThreadEvent;
-        ECode ec = sem_init(&m_pThreadEvent, 0, 0);
+    CARAPI CancelAllPendingCallbacks(
+        /* [in] */ PInterface sender);
 
-        if (FAILED(ec)) return ec;
-        if (pthread_mutex_init(&m_workingLock, &recursiveAttr)) goto Exit;
-        if (pthread_mutex_init(&m_queueLock, &recursiveAttr)) goto Exit;
-    Exit:
-        pthread_mutexattr_destroy(&recursiveAttr);
-        return ec;
-    }
+    CARAPI CancelPendingCallback(
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
 
-    virtual ~CCallbackContext()
-    {
-        CancelAllCallbackEvents();
+    CARAPI CancelCallbackEvents(
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id,
+        /* [in] */ PVoid handlerThis,
+        /* [in] */ PVoid handlerFunc);
 
-        pthread_mutex_destroy(&m_workingLock);
-        pthread_mutex_destroy(&m_queueLock);
+    CARAPI_(Int32) HandleCallbackEvents(
+        /* [in] */ Millisecond32 msTimeOut = INFINITE,
+        /* [in] */ WaitResult* result = NULL,
+        /* [in] */ Boolean* occured = NULL,
+        /* [in] */ UInt32 priority = 0);
 
-        sem_destroy(&m_pThreadEvent);
-    }
-
-    ECode PostCallbackEvent(
-            PCallbackEvent pCallbackEvent);
-
-    ECode SendCallbackEvent(
-            PCallbackEvent pCallbackEvent,
-            Millisecond32 timeOut);
-
-    ECode RequestToFinish(Int32 flag);
-
-    ECode CancelAllPendingCallbacks(
-        PInterface pSender);
-
-    ECode CancelPendingCallback(
-        PInterface pSender,
-        CallbackEventId id);
-
-    ECode CancelCallbackEvents(
-        PInterface pSender,
-        CallbackEventId id,
-        PVoid pHandlerThis,
-        PVoid pHandlerFunc);
-
-    Int32 HandleCallbackEvents(
-        Millisecond32 msTimeOut = INFINITE,
-        WaitResult *pResult = NULL,
-        Boolean * pbOccured = NULL,
-        UInt32 fPriority = 0);
-
-    void CancelAllCallbackEvents();
+    CARAPI_(void) CancelAllCallbackEvents();
 
 private:
+    CARAPI_(PCallbackEvent) PopEvent();
 
-    PCallbackEvent PopEvent();
+    CARAPI_(void) PushEvent(
+        /* [in] */ PCallbackEvent event);
 
-    void PushEvent(PCallbackEvent pEvent);
+    CARAPI_(Boolean) IsExistEvent(
+        /* [in] */ PCallbackEvent event);
 
-    Boolean IsExistEvent(PCallbackEvent pEvent);
+    CARAPI_(Boolean) IsExistEvent(
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id,
+        /* [in] */ PVoid handlerThis,
+        /* [in] */ PVoid handlerFunc);
 
-    Boolean IsExistEvent(
-        PInterface pSender,
-        CallbackEventId id,
-        PVoid pHandlerThis,
-        PVoid pHandlerFunc);
-
-    PCallbackEvent GetEvent(UInt32 fPriority);
+    CARAPI_(PCallbackEvent) GetEvent(
+        /* [in] */ UInt32 priority);
 
 public:
-    pthread_mutex_t             m_workingLock;
-    pthread_mutex_t             m_queueLock;
-    Boolean                     m_bExitRequested;
-    Boolean                     m_bRequestToQuit;
-    _EzCallbackEvent            m_eventQueue;
-    _EzCallbackEvent            m_currentEvents;
-    sem_t                       m_pThreadEvent;
-    sem_t                       *m_ppThreadEvent;
-    Int32                       m_Status;
-    Int32                       m_nEventsCount;
-
-private:
-    Int32                       m_cRef;
+    pthread_mutex_t mWorkingLock;
+    pthread_mutex_t mQueueLock;
+    Boolean mExitRequested;
+    Boolean mRequestToQuit;
+    _EzCallbackEvent mEventQueue;
+    _EzCallbackEvent mCurrentEvents;
+    sem_t mThreadEvent;
+    Int32 mStatus;
+    Int32 mEventsCount;
 };
 
 _ELASTOS_NAMESPACE_END

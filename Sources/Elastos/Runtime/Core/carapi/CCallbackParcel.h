@@ -6,16 +6,18 @@
 
 _ELASTOS_NAMESPACE_BEGIN
 
-class CCallbackParcel : public IParcel
+class CCallbackParcel
+    : public ElLightRefBase
+    , public IParcel
 {
 public:
     CCallbackParcel();
 
     virtual ~CCallbackParcel();
 
-    CARAPI_(UInt32)AddRef();
+    CARAPI_(UInt32) AddRef();
 
-    CARAPI_(UInt32)Release();
+    CARAPI_(UInt32) Release();
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
@@ -165,8 +167,6 @@ private:
     ECode WriteValue(PVoid pValue, Int32 type, Int32 size);
 
 private:
-    Int32 m_nRefs;
-
     Int32 m_elemCount;
 
     Byte* m_elemTypes;

@@ -35,7 +35,6 @@ CCallbackParcel::CCallbackParcel()
     m_dataBuf = (Byte*)malloc(m_dataBufCapacity);
     memset(m_dataBuf, 0, m_dataBufCapacity);
     m_dataPtr = m_dataBuf;
-    m_nRefs = 0;
 }
 
 CCallbackParcel::~CCallbackParcel()
@@ -92,20 +91,12 @@ PInterface CCallbackParcel::Probe(
 
 UInt32 CCallbackParcel::AddRef()
 {
-    Int32 ref = atomic_inc(&m_nRefs);
-
-    return (UInt32)ref;
+    return ElLightRefBase::AddRef();
 }
 
 UInt32 CCallbackParcel::Release()
 {
-    Int32 ref = atomic_dec(&m_nRefs);
-
-    if (0 == ref) {
-        delete this;
-    }
-    assert(ref >= 0);
-    return ref;
+    return ElLightRefBase::Release();
 }
 
 ECode CCallbackParcel::GetInterfaceID(

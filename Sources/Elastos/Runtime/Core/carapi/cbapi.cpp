@@ -16,7 +16,7 @@ ELAPI _Impl_CallbackSink_TryToHandleEvents(
 
     pCBCtx = (CCallbackContext*)pCallbackContext;
     ec = pCBCtx->HandleCallbackEvents(INFINITE, NULL, NULL, 0);
-    pCBCtx->m_Status = CallbackContextStatus_Finishing;
+    pCBCtx->mStatus = CallbackContextStatus_Finishing;
 
     return ec;
 }
@@ -212,7 +212,7 @@ ELAPI _Impl_CallbackSink_GetThreadEvent(
         return E_INVALID_ARGUMENT;
     }
 
-    ppEvent =  ((CCallbackContext *)pCallbackContext)->m_ppThreadEvent;
+    ppEvent = &((CCallbackContext *)pCallbackContext)->mThreadEvent;
 
     return NOERROR;
 }
@@ -221,7 +221,7 @@ ELAPI_(Int32) _Impl_CallbackSink_GetStatus(
     PInterface pCallbackContext)
 {
     if (pCallbackContext) {
-        return ((CCallbackContext *)pCallbackContext)->m_Status;
+        return ((CCallbackContext *)pCallbackContext)->mStatus;
     }
     return 0;
 }
