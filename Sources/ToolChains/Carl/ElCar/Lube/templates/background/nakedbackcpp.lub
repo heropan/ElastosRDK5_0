@@ -170,7 +170,9 @@ $   END IF;
     *ppObj = pObj;
     (*ppObj)->AddRef();
 
+$   IF method.attrib is not "TrivialCtor"
 Exit:
+$   END IF;
     if (FAILED(ec) && pObj) {
         pObj->~${class.name}();
         free(pObj);
