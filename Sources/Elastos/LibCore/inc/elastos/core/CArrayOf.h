@@ -31,7 +31,7 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ IInterface** element);
 
-    CARAPI Put(
+    CARAPI Set(
         /* [in] */ Int32 index,
         /* [in] */ IInterface* element);
 

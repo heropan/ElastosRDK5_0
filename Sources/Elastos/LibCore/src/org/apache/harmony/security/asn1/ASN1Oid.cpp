@@ -110,7 +110,7 @@ ECode ASN1Oid::DerivedASN1Oid::SetEncodingContent(
     for (Int32 i = 0; i < oid->GetLength(); i++) {
         AutoPtr<IInteger32> i32;
         CInteger32::New((*oid)[i], (IInteger32**)&i32);
-        arrayOf->Put(i, i32.Get());
+        arrayOf->Set(i, i32.Get());
     }
     *object = arrayOf.Get();
     REFCOUNT_ADD(*object)
@@ -193,7 +193,7 @@ ECode ASN1Oid::GetDecodedObject(
     for (Int32 i = 0; i < oid->GetLength(); i++) {
         AutoPtr<IInteger32> i32;
         CInteger32::New((*oid)[i], (IInteger32**)&i32);
-        arrayOf->Put(i, i32.Get());
+        arrayOf->Set(i, i32.Get());
     }
     *object = arrayOf.Get();
     REFCOUNT_ADD(*object)
