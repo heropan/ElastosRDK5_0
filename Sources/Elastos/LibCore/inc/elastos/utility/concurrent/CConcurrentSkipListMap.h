@@ -8,9 +8,12 @@
 
 using Elastos::Core::IComparable;
 using Elastos::Core::IComparator;
-using Elastos::Utility::IRandom;
+using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
+using Elastos::Utility::IRandom;
+using Elastos::Utility::Concurrent::IConcurrentNavigableMap;
 
 namespace Elastos {
 namespace Utility {
@@ -18,10 +21,11 @@ namespace Concurrent {
 
 CarClass(CConcurrentSkipListMap)
     , public AbstractMap
-    , public IConcurrentNavigableMap
     , public INavigableMap
     , public ISortedMap
     , public IConcurrentMap
+    , public ICloneable
+    , public ISerializable
 {
 public:
     class Node
@@ -256,29 +260,29 @@ public:
 
         CARAPI Clear();
 
-        CARAPI Lower(
+        CARAPI GetLower(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Floor(
+        CARAPI GetFloor(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Ceiling(
+        CARAPI GetCeiling(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Higher(
+        CARAPI GetHigher(
             /* [in] */ IInterface* e,
             /* [out] */ IInterface** outface);
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** outcom);
 
-        CARAPI First(
+        CARAPI GetFirst(
             /* [out] */ IInterface** outface);
 
-        CARAPI Last(
+        CARAPI GetLast(
             /* [out] */ IInterface** outface);
 
         CARAPI PollFirst(
@@ -301,40 +305,40 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
-        CARAPI DescendingIterator(
+        CARAPI GetDescendingIterator(
             /* [out] */ IIterator** outiter);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* toElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* fromElement,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableSet** outnav);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* start,
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* start,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI DescendingSet(
+        CARAPI GetDescendingSet(
             /* [out] */ INavigableSet** outnav);
 
     private:
@@ -551,86 +555,86 @@ public:
 
         /* ----------------  SortedMap API methods -------------- */
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** comp);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ PInterface fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ PInterface toKey,
             /* [in] */ Boolean toInclusive,
             /* [out] */ INavigableMap** res);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ PInterface toKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** res);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ PInterface fromKey,
             /* [in] */ Boolean inclusive,
             /* [out] */ INavigableMap** res);
 
-        CARAPI SubMap(
+        CARAPI GetSubMap(
             /* [in] */ PInterface fromKey,
             /* [in] */ PInterface toKey,
             /* [out] */ ISortedMap** res);
 
-        CARAPI HeadMap(
+        CARAPI GetHeadMap(
             /* [in] */ PInterface toKey,
             /* [out] */ ISortedMap** res);
 
-        CARAPI TailMap(
+        CARAPI GetTailMap(
             /* [in] */ PInterface fromKey,
             /* [out] */ ISortedMap** res);
 
-        CARAPI DescendingMap(
+        CARAPI GetDescendingMap(
             /* [out] */ INavigableMap** res);
 
         /* ----------------  Relational methods -------------- */
 
-        CARAPI CeilingEntry(
+        CARAPI GetCeilingEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI CeilingKey(
+        CARAPI GetCeilingKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI LowerEntry(
+        CARAPI GetLowerEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI LowerKey(
+        CARAPI GetLowerKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI FloorEntry(
-            /* [in] */ IInterface* key,
-            /* [out] */ IMapEntry** outent);
-
-        CARAPI FloorKey(
-            /* [in] */ IInterface* key,
-            /* [out] */ IInterface** outface);
-
-        CARAPI HigherEntry(
+        CARAPI GetFloorEntry(
             /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI HigherKey(
+        CARAPI GetFloorKey(
             /* [in] */ IInterface* key,
             /* [out] */ IInterface** outface);
 
-        CARAPI FirstKey(
-            /* [out] */ IInterface** outface);
-
-        CARAPI LastKey(
-            /* [out] */ IInterface** outface);
-
-        CARAPI FirstEntry(
+        CARAPI GetHigherEntry(
+            /* [in] */ IInterface* key,
             /* [out] */ IMapEntry** outent);
 
-        CARAPI LastEntry(
+        CARAPI GetHigherKey(
+            /* [in] */ IInterface* key,
+            /* [out] */ IInterface** outface);
+
+        CARAPI GetFirstKey(
+            /* [out] */ IInterface** outface);
+
+        CARAPI GetLastKey(
+            /* [out] */ IInterface** outface);
+
+        CARAPI GetFirstEntry(
+            /* [out] */ IMapEntry** outent);
+
+        CARAPI GetLastEntry(
             /* [out] */ IMapEntry** outent);
 
         CARAPI PollFirstEntry(
@@ -644,7 +648,7 @@ public:
         CARAPI GetKeySet(
             /* [out] */ ISet** res);
 
-        CARAPI NavigableKeySet(
+        CARAPI GetNavigableKeySet(
             /* [out] */ INavigableSet** res);
 
         CARAPI GetValues(
@@ -653,7 +657,7 @@ public:
         CARAPI GetEntrySet(
             /* [out] */ ISet** entries);
 
-        CARAPI DescendingKeySet(
+        CARAPI GetDescendingKeySet(
             /* [out] */ INavigableSet** res);
 
         AutoPtr<IIterator> KeyIterator();
@@ -835,7 +839,7 @@ public:
     CARAPI GetKeySet(
         /* [out] */ ISet** res);
 
-    CARAPI NavigableKeySet(
+    CARAPI GetNavigableKeySet(
         /* [out] */ INavigableSet** res);
 
     CARAPI GetValues(
@@ -844,10 +848,10 @@ public:
     CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
-    CARAPI DescendingMap(
+    CARAPI GetDescendingMap(
         /* [out] */ INavigableMap** res);
 
-    CARAPI DescendingKeySet(
+    CARAPI GetDescendingKeySet(
         /* [out] */ INavigableSet** res);
 
     /* ---------------- AbstractMap Overrides -------------- */
@@ -881,83 +885,83 @@ public:
 
     /* ------ SortedMap API methods ------ */
 
-    CARAPI Comparator(
+    CARAPI GetComparator(
         /* [out] */ IComparator** comp);
 
-    CARAPI FirstKey(
+    CARAPI GetFirstKey(
         /* [out] */ IInterface** outface);
 
-    CARAPI LastKey(
+    CARAPI GetLastKey(
         /* [out] */ IInterface** outface);
 
-    CARAPI SubMap(
+    CARAPI GetSubMap(
         /* [in] */ PInterface fromKey,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ PInterface toKey,
         /* [in] */ Boolean toInclusive,
         /* [out] */ INavigableMap** res);
 
-    CARAPI HeadMap(
+    CARAPI GetHeadMap(
         /* [in] */ PInterface toKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** res);
 
-    CARAPI TailMap(
+    CARAPI GetTailMap(
         /* [in] */ PInterface fromKey,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableMap** res);
 
-    CARAPI SubMap(
+    CARAPI GetSubMap(
         /* [in] */ PInterface fromKey,
         /* [in] */ PInterface toKey,
         /* [out] */ ISortedMap** res);
 
-    CARAPI HeadMap(
+    CARAPI GetHeadMap(
         /* [in] */ PInterface toKey,
         /* [out] */ ISortedMap** res);
 
-    CARAPI TailMap(
+    CARAPI GetTailMap(
         /* [in] */ PInterface fromKey,
         /* [out] */ ISortedMap** res);
 
     /* ---------------- Relational operations -------------- */
 
-    CARAPI LowerEntry(
+    CARAPI GetLowerEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
-    CARAPI LowerKey(
+    CARAPI GetLowerKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
-    CARAPI FloorEntry(
+    CARAPI GetFloorEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
-    CARAPI FloorKey(
+    CARAPI GetFloorKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
-    CARAPI HigherEntry(
+    CARAPI GetHigherEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
-    CARAPI HigherKey(
+    CARAPI GetHigherKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
-    CARAPI CeilingEntry(
+    CARAPI GetCeilingEntry(
         /* [in] */ IInterface* key,
         /* [out] */ IMapEntry** outent);
 
-    CARAPI CeilingKey(
+    CARAPI GetCeilingKey(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
-    CARAPI FirstEntry(
+    CARAPI GetFirstEntry(
         /* [out] */ IMapEntry** outent);
 
-    CARAPI LastEntry(
+    CARAPI GetLastEntry(
         /* [out] */ IMapEntry** outent);
 
     CARAPI PollFirstEntry(
@@ -1075,5 +1079,11 @@ private:
 } // namespace Concurrent
 } // namespace Utility
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Utility::Concurrent::CConcurrentSkipListMap::Index*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif //__ELASTOS_UTILITY_CCONCURRENTSKIPLISTMAP_H__

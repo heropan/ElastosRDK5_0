@@ -362,7 +362,6 @@ ECode FutureTask::AwaitDone(
     AutoPtr<WaitNode> q;
     Boolean queued = FALSE;
     for (;;) {
-        Boolean interrupted;
         if (Thread::Interrupted()) {
             RemoveWaiter(q);
             return E_INTERRUPTED_EXCEPTION;

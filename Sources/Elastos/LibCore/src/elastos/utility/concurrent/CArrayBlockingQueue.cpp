@@ -5,9 +5,11 @@
 #include <StringUtils.h>
 #include <Math.h>
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Concurrent::Locks::CReentrantLock;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -17,7 +19,7 @@ namespace Concurrent {
 //==========================================================
 //       CArrayBlockingQueue
 //==========================================================
-CAR_INTERFACE_IMPL_2(CArrayBlockingQueue, AbstractQueue, IArrayBlockingQueue, IBlockingQueue)
+CAR_INTERFACE_IMPL_3(CArrayBlockingQueue, AbstractQueue, IArrayBlockingQueue, IBlockingQueue, ISerializable)
 
 CAR_OBJECT_IMPL(CArrayBlockingQueue);
 
@@ -45,8 +47,8 @@ ECode CArrayBlockingQueue::constructor(
 
     mItems = ArrayOf<IInterface*>::Alloc(capacity);
     CReentrantLock::New(fair, (IReentrantLock**)&mLock);
-    mLock->NewCondition((ICondition**)&mNotEmpty);
-    mLock->NewCondition((ICondition**)&mNotFull);
+    (ILock::Probe(mLock))->NewCondition((ICondition**)&mNotEmpty);
+    (ILock::Probe(mLock))->NewCondition((ICondition**)&mNotFull);
     return NOERROR;
 }
 
@@ -64,13 +66,13 @@ ECode CArrayBlockingQueue::constructor(
     Boolean hasNext;
     AutoPtr<IInterface> obj;
 
-    lock->Lock(); // Lock only for visibility, not mutual exclusion
+    (ILock::Probe(lock))->Lock(); // Lock only for visibility, not mutual exclusion
 
     // try {
     i = 0;
         // try {
     if (c != NULL) {
-        c->GetIterator((IIterator**)&it);
+        (IIterable::Probe(c))->GetIterator((IIterator**)&it);
         while(it->HasNext(&hasNext), hasNext) {
             obj = NULL;
             it->GetNext((IInterface**)&obj);
@@ -92,7 +94,7 @@ ECode CArrayBlockingQueue::constructor(
     mPutIndex = (i == capacity) ? 0 : i;
     // } finally {
 _Exit_:
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
 
     return ec;
@@ -114,14 +116,14 @@ ECode CArrayBlockingQueue::Offer(
     FAIL_RETURN(CheckNotNull(e));
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (mCount != mItems->GetLength()) {
         Enqueue(e);
         *result = TRUE;
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -132,14 +134,14 @@ ECode CArrayBlockingQueue::Put(
     FAIL_RETURN(CheckNotNull(e));
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     // try {
     while (mCount == mItems->GetLength()) {
         mNotFull->Await();
     }
     Enqueue(e);
     // } finally {
-         lock->UnLock();
+         (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -159,7 +161,7 @@ ECode CArrayBlockingQueue::Offer(
     unit->ToNanos(timeout, &nanos);
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
 
     // try {
     while (mCount == mItems->GetLength()) {
@@ -174,7 +176,7 @@ ECode CArrayBlockingQueue::Offer(
 
 _Exit_:
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -186,7 +188,7 @@ ECode CArrayBlockingQueue::Poll(
     *e = NULL;
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (mCount != 0) {
         AutoPtr<IInterface> obj = Dequeue();
@@ -194,7 +196,7 @@ ECode CArrayBlockingQueue::Poll(
         REFCOUNT_ADD(*e);
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -206,7 +208,7 @@ ECode CArrayBlockingQueue::Take(
     *e = NULL;
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     // try {
     while (mCount == 0) {
         mNotEmpty->Await();
@@ -215,7 +217,7 @@ ECode CArrayBlockingQueue::Take(
     *e = obj;
     REFCOUNT_ADD(*e);
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -231,11 +233,11 @@ ECode CArrayBlockingQueue::Poll(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->LockInterruptibly();
+    (ILock::Probe(lock))->LockInterruptibly();
     // try {
     while (mCount == 0) {
         if (nanos <= 0) {
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
 
@@ -245,7 +247,7 @@ ECode CArrayBlockingQueue::Poll(
     AutoPtr<IInterface> obj = Dequeue();
     *e = obj;
     REFCOUNT_ADD(*e);
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // } finally {
     //     lock->UnLock();
     // }
@@ -259,7 +261,7 @@ ECode CArrayBlockingQueue::Peek(
     *e = NULL;
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (mCount != 0) {
         AutoPtr<IInterface> obj = ItemAt(mTakeIndex);
@@ -267,7 +269,7 @@ ECode CArrayBlockingQueue::Peek(
         REFCOUNT_ADD(*e);
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -286,11 +288,11 @@ ECode CArrayBlockingQueue::GetSize(
     VALIDATE_NOT_NULL(size);
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     *size = mCount;
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -301,11 +303,11 @@ ECode CArrayBlockingQueue::RemainingCapacity(
     VALIDATE_NOT_NULL(capacity);
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     *capacity = mItems->GetLength() - mCount;
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -350,7 +352,7 @@ ECode CArrayBlockingQueue::Remove(
 
     AutoPtr<ArrayOf<IInterface*> > items = mItems;
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (mCount > 0) {
         Int32 putIndex = mPutIndex;
@@ -367,7 +369,7 @@ ECode CArrayBlockingQueue::Remove(
         } while ((i = Inc(i)) != putIndex);
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -402,7 +404,7 @@ ECode CArrayBlockingQueue::Contains(
 
     AutoPtr<ArrayOf<IInterface*> > items = mItems;
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (mCount > 0) {
         Int32 putIndex = mPutIndex;
@@ -418,7 +420,7 @@ ECode CArrayBlockingQueue::Contains(
         } while ((i = Inc(i)) != putIndex);
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -430,7 +432,7 @@ ECode CArrayBlockingQueue::ToArray(
 
     AutoPtr<ArrayOf<IInterface*> > items = mItems;
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     Int32 count = mCount;
     AutoPtr<ArrayOf<IInterface*> > a = ArrayOf<IInterface*>::Alloc(count);
@@ -440,7 +442,7 @@ ECode CArrayBlockingQueue::ToArray(
     *array = a;
     REFCOUNT_ADD(*array);
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -453,7 +455,7 @@ ECode CArrayBlockingQueue::ToArray(
 
     AutoPtr<ArrayOf<IInterface*> > items = mItems;
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     Int32 count = mCount;
     AutoPtr<ArrayOf<IInterface*> > r = a;
@@ -475,7 +477,7 @@ ECode CArrayBlockingQueue::ToArray(
     *outArray = r;
     REFCOUNT_ADD(*outArray);
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -486,12 +488,12 @@ ECode CArrayBlockingQueue::ToString(
     VALIDATE_NOT_NULL(str);
 
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     Int32 k = mCount;
     if (k == 0) {
         *str = String("[]");
-        lock->UnLock();
+        (ILock::Probe(lock))->UnLock();
         return NOERROR;
     }
 
@@ -503,7 +505,7 @@ ECode CArrayBlockingQueue::ToString(
             sb += "(this Collection)";
         }
         else {
-            sb += StringUtils::Int32ToHexString((Int32)e.Get());
+            sb += StringUtils::ToHexString((Int32)e.Get());
         }
         if (--k == 0) {
             sb += "]";
@@ -516,7 +518,7 @@ ECode CArrayBlockingQueue::ToString(
 _Exit_:
     *str = sb.ToString();
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -532,7 +534,7 @@ ECode CArrayBlockingQueue::Clear()
 {
     AutoPtr<ArrayOf<IInterface*> > items = mItems;
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     Int32 k = mCount;
     if (k > 0) {
@@ -552,7 +554,7 @@ ECode CArrayBlockingQueue::Clear()
             mNotFull->Signal();
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -583,7 +585,7 @@ ECode CArrayBlockingQueue::DrainTo(
 
     AutoPtr<ArrayOf<IInterface*> > items = mItems;
     AutoPtr<IReentrantLock> lock = mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     Int32 n = Elastos::Core::Math::Min(maxElements, mCount);
     Int32 take = mTakeIndex;
@@ -617,7 +619,7 @@ ECode CArrayBlockingQueue::DrainTo(
     }
     // }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }
@@ -904,7 +906,7 @@ CArrayBlockingQueue::Itr::Itr(
     // assert lock.getHoldCount() == 0;
     mLastRet = NONE;
     AutoPtr<IReentrantLock> lock = mHost->mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
         if (mHost->mCount == 0) {
             // assert itrs == NULL;
@@ -931,7 +933,7 @@ CArrayBlockingQueue::Itr::Itr(
             // assert nextItem != NULL;
         }
     // } finally {
-        lock->UnLock();
+        (ILock::Probe(lock))->UnLock();
     // }
 }
 
@@ -969,7 +971,7 @@ ECode CArrayBlockingQueue::Itr::GetNext(
     }
 
     AutoPtr<IReentrantLock> lock = mHost->mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (!IsDetached()) {
         IncorporateDequeues();
@@ -988,7 +990,7 @@ ECode CArrayBlockingQueue::Itr::GetNext(
         mNextItem = NULL;
     }
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     *object = x;
     REFCOUNT_ADD(*object);
@@ -999,7 +1001,7 @@ ECode CArrayBlockingQueue::Itr::Remove()
 {
     // assert lock.getHoldCount() == 0;
     AutoPtr<IReentrantLock> lock = mHost->mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     if (!IsDetached()) {
         IncorporateDequeues(); // might update mLastRet or detach
@@ -1032,7 +1034,7 @@ ECode CArrayBlockingQueue::Itr::Remove()
     if (mCursor < 0 && mNextIndex < 0)
         Detach();
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // assert mLastRet == NONE;
     // assert lastItem == NULL;
     // }
@@ -1221,7 +1223,7 @@ Int32 CArrayBlockingQueue::Itr::Distance(
 ECode CArrayBlockingQueue::Itr::NoNext()
 {
     AutoPtr<IReentrantLock> lock = mHost->mLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     // try {
     // assert cursor == NONE;
     // assert nextIndex == NONE;
@@ -1237,7 +1239,7 @@ ECode CArrayBlockingQueue::Itr::NoNext()
     // assert IsDetached();
     // assert mLastRet < 0 ^ lastItem != NULL;
     // } finally {
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     // }
     return NOERROR;
 }

@@ -114,7 +114,6 @@ public:
     virtual CARAPI_(void) SetException(
         /* [in] */ ECode ec);
 
-protected:
     CARAPI constructor(
         /* [in] */ ICallable* callable);
 
