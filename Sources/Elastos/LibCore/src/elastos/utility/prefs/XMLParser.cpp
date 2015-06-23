@@ -1,5 +1,39 @@
 
 #include "XMLParser.h"
+#include "Autolock.h"
+#include "COutputStreamWriter.h"
+#include "CBufferedWriter.h"
+#include "StringUtils.h"
+#include "StringBuilder.h"
+#include "CStringTokenizer.h"
+#include "AbstractPreferences.h"
+#include "CArrayList.h"
+#include "CProperties.h"
+#include "CFile.h"
+#include "CFileOutputStream.h"
+#include "CFileInputStream.h"
+#include "CInputStreamReader.h"
+#include "NodeSet.h"
+
+using Elastos::Core::Autolock;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::IO::IOutputStreamWriter;
+using Elastos::IO::COutputStreamWriter;
+using Elastos::IO::CBufferedWriter;
+using Elastos::IO::IWriter;
+using Elastos::IO::IFlushable;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::CInputStreamReader;
+using Elastos::IO::CFile;
+using Elastos::IO::CFileOutputStream;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::CStringTokenizer;
+using Org::Xml::Sax::IInputSource;
+using Org::W3c::Dom::IDocument;
+using Org::W3c::Dom::INode;
 
 namespace Elastos {
 namespace Utility {
@@ -23,7 +57,7 @@ const String XMLParser::PREFS_DTD = String("<?xml version=\"1.0\" encoding=\"UTF
     + String("    <!ATTLIST node name CDATA #REQUIRED >")
     + String("    <!ELEMENT map (entry*) >")
     + String("    <!ELEMENT entry EMPTY >")
-    + String("    <!ATTLIST entry key   CDATA #REQUIRED value CDATA #REQUIRED >";)
+    + String("    <!ATTLIST entry key   CDATA #REQUIRED value CDATA #REQUIRED >");
 const String XMLParser::HEADER = String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 const String XMLParser::DOCTYPE = String("<!DOCTYPE preferences SYSTEM");
 
@@ -83,23 +117,37 @@ ECode XMLParser::ExportPrefs(
     AutoPtr<IBufferedWriter> out;
     AutoPtr<IOutputStreamWriter> writer;
     COutputStreamWriter::New(stream, String("UTF-8"), (IOutputStreamWriter**)&writer);
-    CBufferedWriter::New(writer, (IBufferedWriter**)&out);
-    out->Write(HEADER);
+    CBufferedWriter::New(IWriter::Probe(writer), (IBufferedWriter**)&out);
+    AutoPtr<IWriter> _out = IWriter::Probe(out);
+    _out->Write(HEADER);
     out->NewLine();
     out->NewLine();
 
-    out->Write(DOCTYPE);
-    out->Write(" '");
-    out->Write(PREFS_DTD_NAME);
-    out->Write("'>");
+    _out->Write(DOCTYPE);
+    _out->Write(String(" '"));
+    _out->Write(PREFS_DTD_NAME);
+    _out->Write(String("'>"));
     out->NewLine();
     out->NewLine();
 
-    FlushStartTag("preferences", new String[] { "EXTERNAL_XML_VERSION" },
-            new String[] { String.valueOf(XML_VERSION) }, out);
-    FlushStartTag("root", new String[] { "type" },
-            new String[] { prefs.isUserNode() ? "user" : "system" }, out);
-    FlushEmptyElement("map", out);
+    AutoPtr<ArrayOf<String> > na = ArrayOf<String>::Alloc(1);
+    na->Set(0, String("EXTERNAL_XML_VERSION"));
+
+    AutoPtr<ArrayOf<String> > va = ArrayOf<String>::Alloc(1);
+    va->Set(0, StringUtils::ToString(XML_VERSION));
+    FlushStartTag(String("preferences"), na, va, out);
+
+    Boolean userMode = FALSE;
+    prefs->IsUserNode(&userMode);
+    na->Set(0, String("type"));
+    if (userMode) {
+        va->Set(0, String("user"));
+    } else {
+        va->Set(0, String("system"));
+    }
+
+    FlushStartTag(String("root"), na, va, out);
+    FlushEmptyElement(String("map"), out);
 
     AutoPtr<IStringTokenizer> ancestors;
     String path;
@@ -107,9 +155,9 @@ ECode XMLParser::ExportPrefs(
     CStringTokenizer::New(path, String("/"), (IStringTokenizer**)&ancestors);
     ExportNode(ancestors, prefs, withSubTree, out);
 
-    FlushEndTag("root", out);
-    FlushEndTag("preferences", out);
-    out->Flush();
+    FlushEndTag(String("root"), out);
+    FlushEndTag(String("preferences"), out);
+    IFlushable::Probe(out)->Flush();
     out = NULL;
     return NOERROR;
 }
@@ -123,15 +171,15 @@ ECode XMLParser::ExportNode(
     Boolean has = FALSE;
     if (ancestors->HasMoreTokens(&has), has) {
         String name;
-        ancestors->NextToken(&name);
+        ancestors->GetNextToken(&name);
         AutoPtr<ArrayOf<String> > na = ArrayOf<String>::Alloc(1);
         na->Set(0, String("name"));
 
         AutoPtr<ArrayOf<String> > va = ArrayOf<String>::Alloc(1);
         va->Set(0, name);
-        FAIL_RETURN(FlushStartTag("node", na, va, out));
+        FAIL_RETURN(FlushStartTag(String("node"), na, va, out));
         if (ancestors->HasMoreTokens(&has), has) {
-            FAIL_RETURN(FlushEmptyElement("map", out));
+            FAIL_RETURN(FlushEmptyElement(String("map"), out));
             FAIL_RETURN(ExportNode(ancestors, prefs, withSubTree, out));
         } else {
             FAIL_RETURN(ExportEntries(prefs, out));
@@ -139,7 +187,7 @@ ECode XMLParser::ExportNode(
                 FAIL_RETURN(ExportSubTree(prefs, out));
             }
         }
-        FAIL_RETURN(FlushEndTag("node", out));
+        FAIL_RETURN(FlushEndTag(String("node"), out));
     }
     return NOERROR;
 }
@@ -160,10 +208,10 @@ ECode XMLParser::ExportSubTree(
 
             AutoPtr<ArrayOf<String> > va = ArrayOf<String>::Alloc(1);
             va->Set(0, (*names)[i]);
-            FAIL_RETURN(FlushStartTag("node", na, va, out));
+            FAIL_RETURN(FlushStartTag(String("node"), na, va, out));
             FAIL_RETURN(ExportEntries(child, out));
             FAIL_RETURN(ExportSubTree(child, out));
-            FAIL_RETURN(FlushEndTag("node", out));
+            FAIL_RETURN(FlushEndTag(String("node"), out));
         }
     }
 
@@ -179,7 +227,7 @@ ECode XMLParser::ExportEntries(
     Int32 len = keys->GetLength();
     AutoPtr<ArrayOf<String> > values = ArrayOf<String>::Alloc(len);
     for (Int32 i = 0; i < len; i++) {
-        prefs->Get((*keys)[i], NULL, &(*values)[i]);
+        prefs->Get((*keys)[i], String(NULL), &(*values)[i]);
     }
     return ExportEntries(keys, values, out);
 }
@@ -190,10 +238,10 @@ ECode XMLParser::ExportEntries(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     if (keys->GetLength() == 0) {
-        return FlushEmptyElement("map", out);
+        return FlushEmptyElement(String("map"), out);
     }
 
-    FAIL_RETURN(FlushStartTag("map", out));
+    FAIL_RETURN(FlushStartTag(String("map"), out));
     for (Int32 i = 0; i < keys->GetLength(); i++) {
         if ((*values)[i] != NULL) {
             AutoPtr<ArrayOf<String> > na = ArrayOf<String>::Alloc(2);
@@ -204,10 +252,10 @@ ECode XMLParser::ExportEntries(
             va->Set(0, (*keys)[i]);
             va->Set(1, (*values)[i]);
 
-            FAIL_RETURN(FlushEmptyElement("entry", na, va, out));
+            FAIL_RETURN(FlushEmptyElement(String("entry"), na, va, out));
         }
     }
-    return FlushEndTag("map", out);
+    return FlushEndTag(String("map"), out);
 }
 
 ECode XMLParser::FlushEndTag(
@@ -215,9 +263,9 @@ ECode XMLParser::FlushEndTag(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     FAIL_RETURN(FlushIndent(sIndent--, out));
-    FAIL_RETURN(out->Write("</"));
-    FAIL_RETURN(out->Write(tagName));
-    FAIL_RETURN(out->Write(">"));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String("</")));
+    FAIL_RETURN(IWriter::Probe(out)->Write(tagName));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String(">")));
     return out->NewLine();
 }
 
@@ -226,9 +274,9 @@ ECode XMLParser::FlushEmptyElement(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     FAIL_RETURN(FlushIndent(++sIndent, out));
-    FAIL_RETURN(out->Write("<"));
-    FAIL_RETURN(out->Write(tagName));
-    FAIL_RETURN(out->Write(" />"));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String("<")));
+    FAIL_RETURN(IWriter::Probe(out)->Write(tagName));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String(" />")));
     FAIL_RETURN(out->NewLine());
     sIndent--;
     return NOERROR;
@@ -241,10 +289,10 @@ ECode XMLParser::FlushEmptyElement(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     FAIL_RETURN(FlushIndent(++sIndent, out));
-    FAIL_RETURN(out->Write("<"));
-    FAIL_RETURN(out->Write(tagName));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String("<")));
+    FAIL_RETURN(IWriter::Probe(out)->Write(tagName));
     FAIL_RETURN(FlushPairs(attrKeys, attrValues, out));
-    FAIL_RETURN(out->Write(" />"));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String(" />")));
     FAIL_RETURN(out->NewLine());
     sIndent--;
     return NOERROR;
@@ -256,11 +304,11 @@ ECode XMLParser::FlushPairs(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     for (Int32 i = 0; i < attrKeys->GetLength(); i++) {
-        FAIL_RETURN(out->Write(" "));
-        FAIL_RETURN(out->Write((*attrKeys)[i]));
-        FAIL_RETURN(out->Write("=\""));
-        FAIL_RETURN(out->Write(HtmlEncode((*attrValues)[i])));
-        FAIL_RETURN(out->Write("\""));
+        FAIL_RETURN(IWriter::Probe(out)->Write(String(" ")));
+        FAIL_RETURN(IWriter::Probe(out)->Write((*attrKeys)[i]));
+        FAIL_RETURN(IWriter::Probe(out)->Write(String("=\"")));
+        FAIL_RETURN(IWriter::Probe(out)->Write(HtmlEncode((*attrValues)[i])));
+        FAIL_RETURN(IWriter::Probe(out)->Write(String("\"")));
     }
 
     return NOERROR;
@@ -271,7 +319,7 @@ ECode XMLParser::FlushIndent(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     for (Int32 i = 0; i < ind; i++) {
-        FAIL_RETURN(out->Write("  "));
+        FAIL_RETURN(IWriter::Probe(out)->Write(String("  ")));
     }
     return NOERROR;
 }
@@ -283,10 +331,10 @@ ECode XMLParser::FlushStartTag(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     FAIL_RETURN(FlushIndent(++sIndent, out));
-    FAIL_RETURN(out->Write("<"));
-    FAIL_RETURN(out->Write(tagName));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String("<")));
+    FAIL_RETURN(IWriter::Probe(out)->Write(tagName));
     FAIL_RETURN(FlushPairs(attrKeys, attrValues, out));
-    FAIL_RETURN(out->Write(">"));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String(">")));
     return out->NewLine();
 }
 
@@ -295,9 +343,9 @@ ECode XMLParser::FlushStartTag(
     /* [in] */ IBufferedWriter* out) /*throws IOException*/
 {
     FAIL_RETURN(FlushIndent(++sIndent, out));
-    FAIL_RETURN(out->Write("<"));
-    FAIL_RETURN(out->Write(tagName));
-    FAIL_RETURN(out->Write(">"));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String("<")));
+    FAIL_RETURN(IWriter::Probe(out)->Write(tagName));
+    FAIL_RETURN(IWriter::Probe(out)->Write(String(">")));
     return out->NewLine();
 }
 
@@ -305,7 +353,7 @@ String XMLParser::HtmlEncode(
     /* [in] */ const String& s)
 {
     StringBuilder sb/* = new StringBuilder()*/;
-    for (Int32 i = 0; i < s.GetLength(); i++) {
+    for (UInt32 i = 0; i < s.GetLength(); i++) {
         Char32 c = s.GetChar(i);
         switch (c) {
         case '<':
@@ -321,7 +369,7 @@ String XMLParser::HtmlEncode(
             sb.Append("&quot;");
             break;
         default:
-            sb.Append(c);
+            sb.AppendChar(c);
         }
     }
     return sb.ToString();
@@ -340,8 +388,11 @@ ECode XMLParser::ImportPrefs(
     AutoPtr<INodeList> nl;
     AutoPtr<IPreferences> prefsRoot;
     ECode ec = NOERROR;
-    FAIL_GOTO2(CInputSource::New(in, (IInputSource**)&is), Failed);
-    FAIL_GOTO2(builder->Parse(is, (IDocument**)&doc), Failed);
+
+    //TODO
+    assert(0);
+    // FAIL_GOTO2(CInputSource::New(in, (IInputSource**)&is), Failed);
+    FAIL_GOTO2(sBuilder->ParseEx4(is, (IDocument**)&doc), Failed);
 
     // check preferences' export version
     FAIL_GOTO2(doc->GetDocumentElement((IElement**)&preferences), Failed);
@@ -355,7 +406,7 @@ ECode XMLParser::ImportPrefs(
     // check preferences root's type
     FAIL_GOTO2(preferences->GetElementsByTagName(String("root"), (INodeList**)&nl), Failed);
     nl->Item(0, (INode**)&root);
-    FAIL_GOTO2(IElement::Probe(root)->GetAttribute("type", &type), Failed);
+    FAIL_GOTO2(IElement::Probe(root)->GetAttribute(String("type"), &type), Failed);
 
     if (type.Equals("user")) {
         FAIL_GOTO2(Preferences::UserRoot((IPreferences**)&prefsRoot), Failed);
@@ -368,7 +419,7 @@ Failed:
         return E_INVALID_PREFERENCES_FORMAT_EXCEPTION;
     }
     // load node
-    return LoadNode(prefsRoot, root);
+    return LoadNode(prefsRoot, IElement::Probe(root));
     // } catch (FactoryConfigurationError e) {
     //     throw new InvalidPreferencesFormatException(e);
     // } catch (SAXException e) {
@@ -381,15 +432,16 @@ ECode XMLParser::LoadNode(
     /* [in] */ IElement* node)
 {
     // load preferences
-    AutoPtr<INodeList> children = SelectNodeList(node, "node");
-    AutoPtr<INodeList> entries = SelectNodeList(node, "map/entry");
+    AutoPtr<INodeList> children = SelectNodeList(node, String("node"));
+    AutoPtr<INodeList> entries = SelectNodeList(node, String("map/entry"));
     Int32 childNumber = 0;
     children->GetLength(&childNumber);
     AutoPtr<ArrayOf<AutoPtr<IPreferences> > > prefChildren = ArrayOf<AutoPtr<IPreferences> >::Alloc(childNumber);
     Int32 entryNumber = 0;
     entries->GetLength(&entryNumber);
-    AutoPtr<AbstractPreferences> apf = (AbstractPreferences*) prefs->Probe(EIID_AbstractPreferences);
-    synchronized (apf->mLock) {
+    AutoPtr<AbstractPreferences> apf = reinterpret_cast<AbstractPreferences*>(prefs->Probe(EIID_AbstractPreferences));
+    AutoPtr<Object> lock = &apf->mLock;
+    synchronized (lock) {
         if (apf->IsRemoved()) {
             return NOERROR;
         }
@@ -397,9 +449,9 @@ ECode XMLParser::LoadNode(
             AutoPtr<INode> entry;
             entries->Item(i, (INode**)&entry);
             String key;
-            IElement::Probe(entry)->GetAttribute("key", &key);
+            IElement::Probe(entry)->GetAttribute(String("key"), &key);
             String value;
-            IElement::Probe(entry)->GetAttribute("value", &value);
+            IElement::Probe(entry)->GetAttribute(String("value"), &value);
             prefs->Put(key, value);
         }
         // get children preferences node
@@ -407,7 +459,7 @@ ECode XMLParser::LoadNode(
             AutoPtr<INode> child;
             children->Item(i, (INode**)&child);
             String name;
-            IElement::Probe(child)->GetAttribute("name", &name);
+            IElement::Probe(child)->GetAttribute(String("name"), &name);
 
             AutoPtr<IPreferences> pf;
             prefs->Node(name, (IPreferences**)&pf);
@@ -438,7 +490,7 @@ AutoPtr<INodeList> XMLParser::SelectNodeList(
     StringUtils::Split(string, "/", (ArrayOf<String>**)&path);
 
     AutoPtr<INodeList> childNodes;
-    documentElement->GetChildNodes((INodeList**)&childNodes);
+    INode::Probe(documentElement)->GetChildNodes((INodeList**)&childNodes);
 
     if((*path)[0].Equals("entry") || (*path)[0].Equals("node")) {
         Int32 len = 0;
@@ -448,9 +500,9 @@ AutoPtr<INodeList> XMLParser::SelectNodeList(
             childNodes->Item(i, (INode**)&next);
             if(IElement::Probe(next)) {
                 String nm;
-                IElement::Probe(next)->GetNodeName(&nm);
-                if(nm.Equals(path[0])) {
-                    input->Add(next);
+                next->GetNodeName(&nm);
+                if(nm.Equals((*path)[0])) {
+                    IList::Probe(input)->Add(next);
                 }
             }
         }
@@ -462,10 +514,10 @@ AutoPtr<INodeList> XMLParser::SelectNodeList(
             childNodes->Item(i, (INode**)&next);
             if(IElement::Probe(next)) {
                 String nm;
-                IElement::Probe(next)->GetNodeName(&nm)
-                if(nm.Equals(path[0])) {
-                    AutoPtr<INodeList> nextChildNodes
-                    IElement::Probe(next)->GetChildNodes((INodeList**)&nextChildNodes);
+                next->GetNodeName(&nm);
+                if(nm.Equals((*path)[0])) {
+                    AutoPtr<INodeList> nextChildNodes;
+                    next->GetChildNodes((INodeList**)&nextChildNodes);
 
                     Int32 len2 = 0;
                     nextChildNodes->GetLength(&len2);
@@ -474,9 +526,9 @@ AutoPtr<INodeList> XMLParser::SelectNodeList(
                         nextChildNodes->Item(j, (INode**)&subnext);
                         if(IElement::Probe(subnext)) {
                             String str;
-                            IElement::Probe(subnext)->GetNodeName(&str);
-                            if(str.Equals(path[1])) {
-                                input->Add(subnext);
+                            subnext->GetNodeName(&str);
+                            if(str.Equals((*path)[1])) {
+                                IList::Probe(input)->Add(subnext);
                             }
                         }
                     }
@@ -486,7 +538,7 @@ AutoPtr<INodeList> XMLParser::SelectNodeList(
     }
 
     AutoPtr<IIterator> iter;
-    input->GetIterator((IIterator**)&iter);
+    IIterable::Probe(input)->GetIterator((IIterator**)&iter);
     result = new NodeSet(iter);
 
     return result;
@@ -503,35 +555,40 @@ ECode XMLParser::ReadXmlPreferences(
     if (!(xmlFile->Exists(&flag), flag)) {
         AutoPtr<IFile> file;
         xmlFile->GetParentFile((IFile**)&file);
-        file->Mkdirs();
+        Boolean succeeded = FALSE;
+        file->Mkdirs(&succeeded);
     } else if (xmlFile->CanRead(&flag), flag) {
         AutoPtr<IReader> reader;
         AutoPtr<IFileInputStream> fis;
-        FAIL_GOTO(CFileInputStream::New(xmlFile, (IFileInputStream**)&fis), finally);
-        FAIL_GOTO(CInputStreamReader::New(fis, "UTF-8", (IReader**)&reader), finally);
-
         AutoPtr<IInputSource> is;
-        FAIL_GOTO(CInputSource::New(reader, (IInputSource**)&is), finally);
         AutoPtr<IDocument> document;
-        builder->Parse(is, (IDocument**)&document);
-
         AutoPtr<IElement> el;
-        FAIL_GOTO(document->GetDocumentElement((IElement**)&el), finally);
-        AutoPtr<INodeList> entries = SelectNodeList(el, String("entry"));
         Int32 length = 0;
+        AutoPtr<INodeList> entries;
+        FAIL_GOTO(CFileInputStream::New(xmlFile, (IFileInputStream**)&fis), finally);
+        FAIL_GOTO(CInputStreamReader::New(IInputStream::Probe(fis), String("UTF-8"), (IReader**)&reader), finally);
+
+        //TODO
+        assert(0);
+        // FAIL_GOTO(CInputSource::New(reader, (IInputSource**)&is), finally);
+        sBuilder->ParseEx4(is, (IDocument**)&document);
+
+        FAIL_GOTO(document->GetDocumentElement((IElement**)&el), finally);
+        entries = SelectNodeList(el, String("entry"));
         entries->GetLength(&length);
         for (Int32 i = 0; i < length; i++) {
-            AutoPtr<IInterface> node;
-            FAIL_GOTO(entries->Item(i, (IInterface**)&node), finally);
-            String key;
-            FAIL_GOTO(IElement::Probe(node)->GetAttribute("key", &key), finally);
-            String value;
-            FAIL_GOTO(IElement::Probe(node)->GetAttribute("value", &value), finally);
-            FAIL_GOTO(result->SetProperty(key, value), finally);
+            AutoPtr<INode> node;
+            FAIL_GOTO(entries->Item(i, (INode**)&node), finally);
+            String key, value, tmp;
+            FAIL_GOTO(IElement::Probe(node)->GetAttribute(String("key"), &key), finally);
+            FAIL_GOTO(IElement::Probe(node)->GetAttribute(String("value"), &value), finally);
+            FAIL_GOTO(result->SetProperty(key, value, &tmp), finally);
         }
 
 finally:
-        IoUtils::CloseQuietly(reader);
+        //TODO
+        assert(0);
+        // IoUtils::CloseQuietly(reader);
     } else {
         // the prefs API requires this to be hostile towards pre-existing files
         xmlFile->Delete();
@@ -549,7 +606,20 @@ ECode XMLParser::WriteXmlPreferences(
     AutoPtr<IFile> parent;
     xmlFile->GetParentFile((IFile**)&parent);
     AutoPtr<IFile> temporaryForWriting;
-    FAIL_RETURN(CFile::New(parent, String("prefs-") + UUID.randomUUID() + String(".xml.tmp"),
+    String value;
+    Int32 length = 0;
+    ECode ec = NOERROR;
+    Boolean ok = FALSE;
+    AutoPtr<ArrayOf<String> > strKeys;
+    AutoPtr<ArrayOf<String> > values;
+    Int32 size = 0;
+    AutoPtr<ISet> keySet;
+    AutoPtr<ArrayOf<IInterface*> > keys;
+
+    //TODO
+    assert(0);
+    String uuid/* = UUID.randomUUID()*/;
+    FAIL_RETURN(CFile::New(parent, String("prefs-") + uuid + String(".xml.tmp"),
             (IFile**)&temporaryForWriting));
 
     AutoPtr<IBufferedWriter> out;
@@ -557,31 +627,43 @@ ECode XMLParser::WriteXmlPreferences(
     AutoPtr<IFileOutputStream> fs;
     CFileOutputStream::New(temporaryForWriting, (IFileOutputStream**)&fs);
     AutoPtr<IOutputStreamWriter> osw;
-    COutputStreamWriter::New(fs, String("UTF-8"), (IOutputStreamWriter**)&osw);
-    CBufferedWriter::New(osw, (IBufferedWriter**)&out);
-    FAIL_GOTO(out->Write(HEADER), finally);
+    COutputStreamWriter::New(IOutputStream::Probe(fs), String("UTF-8"), (IOutputStreamWriter**)&osw);
+    CBufferedWriter::New(IWriter::Probe(osw), (IBufferedWriter**)&out);
+    FAIL_GOTO(IWriter::Probe(out)->Write(HEADER), finally);
     FAIL_GOTO(out->NewLine(), finally);
-    FAIL_GOTO(out->Write(FILE_PREFS), finally);
+    FAIL_GOTO(IWriter::Probe(out)->Write(FILE_PREFS), finally);
     FAIL_GOTO(out->NewLine(), finally);
-    String[] keys = properties.keySet().toArray(new String[properties.size()]);
-    Int32 length = keys.length;
-    String[] values = new String[length];
-    for (Int32 i = 0; i < length; i++) {
-        values[i] = properties.getProperty(keys[i]);
-    }
-    FAIL_GOTO(ExportEntries(keys, values, out), finally);
-    FAIL_GOTO(out->Close(), finally);
 
-    Boolean ok = FALSE;
+    IMap::Probe(properties)->GetSize(&size);
+
+    IMap::Probe(properties)->GetKeySet((ISet**)&keySet);
+    strKeys = ArrayOf<String>::Alloc(size);
+    ICollection::Probe(keySet)->ToArray((ArrayOf<IInterface*>**)&keys);
+    assert(keys->GetLength() >= size);
+    for (Int32 i = 0; i < size; i++) {
+        IObject::Probe((*keys)[i])->ToString(&value);
+        strKeys->Set(i, value);
+    }
+
+    length = strKeys->GetLength();
+    values = ArrayOf<String>::Alloc(length);
+    for (Int32 i = 0; i < length; i++) {
+        properties->GetProperty((*strKeys)[i], &value);
+        values->Set(i,value);
+    }
+    FAIL_GOTO(ExportEntries(strKeys, values, out), finally);
+    FAIL_GOTO(ICloseable::Probe(out)->Close(), finally);
+
     FAIL_GOTO(temporaryForWriting->RenameTo(xmlFile, &ok), finally);
-    ECode ec = NOERROR;
     if (!ok) {
         ec = E_IO_EXCEPTION;
         // throw new IOException("Failed to write preferences to " + xmlFile);
     }
 
 finally:
-    IoUtils::CloseQuietly(out);
+    //TODO
+    assert(0);
+    // IoUtils::CloseQuietly(out);
     FAIL_RETURN(temporaryForWriting->Delete()); // no-op unless something failed
     return ec;
 }

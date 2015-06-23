@@ -32,6 +32,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/zip
 INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/logging
 //INCLUDES += $(MAKEDIR)/../../inc/elastos/utility/jar
 INCLUDES += $(MAKEDIR)/../../inc/elastos/droid/system
+INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml
 INCLUDES += $(MAKEDIR)/../../inc/libcore/io
 INCLUDES += $(MAKEDIR)/../../inc/libcore/icu
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net
@@ -72,6 +73,7 @@ LIBRARIES += ../libcore/net/net.lib
 LIBRARIES += ../libcore/net/url/url.lib
 LIBRARIES += ../libcore/utility/utility.lib
 LIBRARIES += ../org/w3c/dom/dom.lib
+//LIBRARIES += ../elastosx/xml/elastosx.xml.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

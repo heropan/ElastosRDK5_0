@@ -1,20 +1,10 @@
-TARGET_NAME= Elastosx.Xml
-TARGET_TYPE= eco
-
-CAR_FLAGS += -n -u
-LUBE_FLAGS += -n -u
+TARGET_NAME= elastosx.xml
+TARGET_TYPE= lib
 
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/xml/namespace
+INCLUDES += ../../../elastos
 
-SOURCES = Elastosx.Xml.car
-
-VPATH := $(MAKEDIR)/Namespace
+VPATH := $(MAKEDIR)/namespace
 SOURCES += CQName.cpp
 SOURCES += CQNameHelper.cpp
 SOURCES += Elastos.CoreLibrary.cpp
-
-LIBRARIES = $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += -licuuc -lm -lcutils

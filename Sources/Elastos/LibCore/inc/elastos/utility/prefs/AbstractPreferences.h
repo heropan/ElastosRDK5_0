@@ -12,6 +12,7 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
+extern "C" const InterfaceID EIID_AbstractPreferences;
 class XMLParser;
 
 class AbstractPreferences

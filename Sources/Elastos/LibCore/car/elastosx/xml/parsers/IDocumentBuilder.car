@@ -2,13 +2,13 @@
 module
 {
     interface Elastosx.Xml.Validation.ISchema;
-    interface Org.W3c.Dom.IDOMImplementation;
-    interface Org.W3c.Dom.IDocument;
-    interface Elastos.IO.IInputStream;
-    interface Elastos.IO.IFile;
-    interface Org.Xml.Sax.IEntityResolver;
-    interface Org.Xml.Sax.IErrorHandler;
-    interface Org.Xml.Sax.IInputSource;
+    using interface Org.W3c.Dom.IDOMImplementation;
+    using interface Org.W3c.Dom.IDocument;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IFile;
+    using interface Org.Xml.Sax.IEntityResolver;
+    using interface Org.Xml.Sax.IErrorHandler;
+    using interface Org.Xml.Sax.IInputSource;
 
     namespace Elastosx {
     namespace Xml {
@@ -65,7 +65,7 @@ module
          * @see org.xml.sax.DocumentHandler
          */
         Parse(
-            [in] IInputStream* is,
+            [in] Elastos.IO.IInputStream* is,
             [out] IDocument** doc);
 
         /**

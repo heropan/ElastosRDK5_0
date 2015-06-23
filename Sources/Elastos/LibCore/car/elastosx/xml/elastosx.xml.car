@@ -1,0 +1,48 @@
+
+module
+{
+    merge("../../org/xml/sax/IInputSource.car");
+    merge("../../org/xml/sax/IEntityResolver.car");
+    merge("../../org/xml/sax/IErrorHandler.car");
+    merge("../../org/xml/sax/IDocumentHandler.car");
+    merge("../../org/xml/sax/ILocator.car");
+    merge("../../org/xml/sax/IParser.car");
+    merge("../../org/xml/sax/IXMLReader.car");
+    merge("../../org/xml/sax/IDTDHandler.car");
+    merge("../../org/xml/sax/IAttributeList.car");
+    merge("../../org/xml/sax/IAttributes.car");
+    merge("../../org/xml/sax/IContentHandler.car");
+    merge("parsers/IDocumentBuilder.car");
+    merge("parsers/IDocumentBuilderFactory.car");
+    merge("parsers/ISAXParserFactory.car");
+    merge("parsers/ISAXParser.car");
+    merge("validation/ISchema.car");
+    merge("IXMLConstants.car");
+    merge("namespace/IQName.car");
+
+//    namespace Elastosx {
+//    namespace Xml {
+//    namespace Namespace {
+
+//    class CQName {
+//        constructor(
+//            [in] String namespaceURI,
+//            [in] String localPart);
+//        constructor(
+//            [in] String namespaceURI,
+//            [in] String localPart,
+//            [in] String prefix);
+//        constructor(
+//            [in] String localPart);
+
+//        interface IQName;
+//    }
+
+//    singleton class CQNameHelper {
+//        interface IQNameHelper;
+//    }
+
+//    } // namespace Namespace
+//    } // namespace Xml
+//    } // namespace Elastosx
+}

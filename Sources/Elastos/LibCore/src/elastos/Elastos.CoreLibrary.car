@@ -16,4 +16,5 @@ module
     merge("../../car/libcore/utility.car");
     merge("../../car/libcore/net.car");
     merge("../../car/org/w3c/dom.car");
+    merge("../../car/elastosx/xml/elastosx.xml.car");
 }
