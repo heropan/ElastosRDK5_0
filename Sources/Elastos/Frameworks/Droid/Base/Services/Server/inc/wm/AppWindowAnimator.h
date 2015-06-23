@@ -5,9 +5,9 @@
 #include "wm/WindowStateAnimator.h"
 #include "wm/WindowAnimator.h"
 #include "view/animation/Animation.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Animation::IAnimationListener;
@@ -69,7 +69,7 @@ public:
             /* [in] */ IContext* context,
             /* [in] */ Int32 resID);
 
-        CARAPI SetInterpolatorEx(
+        CARAPI SetInterpolator(
             /* [in] */ IInterpolator* i);
 
         CARAPI SetStartOffset(
@@ -168,7 +168,7 @@ public:
             /* [in, out] */ ITransformation* outTransformation,
             /* [out] */ Boolean* result);
 
-        CARAPI GetTransformationEx(
+        CARAPI GetTransformation(
             /* [in] */ Int64 currentTime,
             /* [in, out] */ ITransformation* outTransformation,
             /* [in] */ Float scale,

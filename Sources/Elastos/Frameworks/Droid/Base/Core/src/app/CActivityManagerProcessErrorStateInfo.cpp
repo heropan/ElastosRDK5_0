@@ -206,7 +206,7 @@ ECode CActivityManagerProcessErrorStateInfo::GetCrashData(
 {
     VALIDATE_NOT_NULL(crashData);
     *crashData = mCrashData;
-    INTERFACE_ADDREF(*crashData);
+    REFCOUNT_ADD(*crashData);
     return NOERROR;
 }
 

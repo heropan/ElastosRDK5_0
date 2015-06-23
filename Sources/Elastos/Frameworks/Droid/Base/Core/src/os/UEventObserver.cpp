@@ -1,11 +1,11 @@
 
 #include "os/UEventObserver.h"
 #include <elastos/Vector.h>
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 #include <hardware_legacy/uevent.h>
 
 using Elastos::Utility::Vector;
-using Elastos::Core::Threading::EIID_IThread;
+using Elastos::Core::EIID_IThread;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;

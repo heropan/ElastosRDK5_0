@@ -59,7 +59,7 @@ public:
     CARAPI GetFriendlyDisplayName(
         /* [out] */ String* name);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IWifiDisplay* other,
         /* [out] */ Boolean* res);
 

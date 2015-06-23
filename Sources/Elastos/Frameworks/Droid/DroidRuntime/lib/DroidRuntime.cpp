@@ -1,6 +1,6 @@
 
 #include "DroidRuntime.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <stdlib.h>

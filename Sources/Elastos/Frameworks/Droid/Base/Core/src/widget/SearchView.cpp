@@ -1,5 +1,5 @@
 
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "widget/SearchView.h"
 #include "text/TextUtils.h"
 #include "text/CSpannableStringBuilder.h"
@@ -117,7 +117,7 @@ ECode SearchView::Init(
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inter);
     AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(inter);
     AutoPtr<IView> view;
-    inflater->InflateEx2(R::layout::search_view, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&view);
+    inflater->Inflate(R::layout::search_view, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&view);
 
     mSearchButton = FindViewById(R::id::search_button);
     mQueryTextView = (ISearchViewSearchAutoComplete*)(FindViewById(R::id::search_src_text).Get());
@@ -150,7 +150,7 @@ ECode SearchView::Init(
             const_cast<Int32 *>(R::styleable::SearchView),
             ARRAY_SIZE(R::styleable::SearchView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a));
 
     Boolean byDefault = FALSE;
     a->GetBoolean(R::styleable::SearchView_iconifiedByDefault, TRUE, &byDefault);
@@ -186,7 +186,7 @@ ECode SearchView::Init(
             const_cast<Int32 *>(R::styleable::View),
             ARRAY_SIZE(R::styleable::View));
     a = NULL;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a));
 
     a->GetBoolean(R::styleable::View_focusable, focusable, &focusable);
     a->Recycle();
@@ -280,7 +280,7 @@ Boolean SearchView::RequestFocus(
     // If it is not iconified, then give the focus to the text field
     if (!IsIconified()) {
         Boolean result = FALSE;
-        mQueryTextView->RequestFocusEx2(direction, previouslyFocusedRect, &result);
+        mQueryTextView->RequestFocus(direction, previouslyFocusedRect, &result);
         if (result) {
             UpdateViewsVisibility(FALSE);
         }
@@ -352,7 +352,7 @@ ECode SearchView::SetQuery(
     if (query) {
         Int32 length = 0;
         mQueryTextView->GetLength(&length);
-        mQueryTextView->SetSelectionEx(length);
+        mQueryTextView->SetSelection(length);
         mUserQuery = query;
     }
 
@@ -540,7 +540,7 @@ Boolean SearchView::OnSuggestionsKey(
             mQueryTextView->GetLength(&length);
             Int32 selPoint = (keyCode == IKeyEvent::KEYCODE_DPAD_LEFT) ? 0 : length;
 
-            mQueryTextView->SetSelectionEx(selPoint);
+            mQueryTextView->SetSelection(selPoint);
             mQueryTextView->SetListSelection(0);
             mQueryTextView->ClearListSelection();
             mQueryTextView->EnsureImeVisible(TRUE);
@@ -1197,7 +1197,7 @@ void SearchView::SetQuery(
     // Move the cursor to the end
     Int32 length = 0;
     query->GetLength(&length);
-    mQueryTextView->SetSelectionEx(TextUtils::IsEmpty(query) ? 0 : length);
+    mQueryTextView->SetSelection(TextUtils::IsEmpty(query) ? 0 : length);
 }
 
 void SearchView::LaunchQuerySearch(

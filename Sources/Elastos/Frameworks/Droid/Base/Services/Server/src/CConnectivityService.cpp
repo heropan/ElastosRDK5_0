@@ -15,9 +15,9 @@
 #include "text/TextUtils.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <cutils/properties.h>
 
 using Elastos::Core::StringUtils;
@@ -534,7 +534,7 @@ void CConnectivityService::SettingsObserver::Observe(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    settingsGlobal->GetUriForEx(ISettingsGlobal::HTTP_PROXY, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::HTTP_PROXY, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, (IContentObserver*)this);
 }
 
@@ -564,7 +564,7 @@ ECode CConnectivityService::VpnCallback::OnStateChanged(
     /* [in] */ INetworkInfo* info)
 {
     AutoPtr<IMessage> msg;
-    mOwner->mHandler->ObtainMessageEx(CConnectivityService::EVENT_VPN_STATE_CHANGED, info, (IMessage**)&msg);
+    mOwner->mHandler->ObtainMessage(CConnectivityService::EVENT_VPN_STATE_CHANGED, info, (IMessage**)&msg);
     return msg->SendToTarget();
 }
 
@@ -1063,7 +1063,7 @@ ECode CConnectivityService::SetNetworkPreference(
     FAIL_RETURN(EnforceChangePermission());
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(EVENT_SET_NETWORK_PREFERENCE, preference, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(EVENT_SET_NETWORK_PREFERENCE, preference, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -1798,7 +1798,7 @@ ECode CConnectivityService::StartUsingNetworkFeature(
 
             if (restoreTimer >= 0) {
                 AutoPtr<IMessage> msg;
-                mHandler->ObtainMessageEx(EVENT_RESTORE_DEFAULT_NETWORK, fuser, (IMessage**)&msg);
+                mHandler->ObtainMessage(EVENT_RESTORE_DEFAULT_NETWORK, fuser, (IMessage**)&msg);
                 Boolean result;
                 return mHandler->SendMessageDelayed(msg, restoreTimer, &result);
             }
@@ -2199,7 +2199,7 @@ Boolean CConnectivityService::ModifyRouteToAddress(
             // if we will connect to this through another route, add a direct route
             // to it's gateway
             bestRoute = NULL;
-            helper->MakeHostRouteEx(addr, address, (IRouteInfo**)&bestRoute);
+            helper->MakeHostRoute(addr, address, (IRouteInfo**)&bestRoute);
         }
     }
     String name;
@@ -2249,7 +2249,7 @@ Boolean CConnectivityService::ModifyRoute(
                 // if we will connect to our gateway through another route, add a direct
                 // route to it's gateway
                 bestRoute = NULL;
-                helper->MakeHostRouteEx(gateway, address, (IRouteInfo**)&bestRoute);
+                helper->MakeHostRoute(gateway, address, (IRouteInfo**)&bestRoute);
             }
             ModifyRoute(ifaceName, lp, bestRoute, cycleCount + 1, doAdd, toDefaultTable);
         }
@@ -2331,7 +2331,7 @@ ECode CConnectivityService::SetDataDependency(
     FAIL_RETURN(EnforceConnectivityInternalPermission());
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(EVENT_SET_DEPENDENCY_MET,
+    mHandler->ObtainMessage(EVENT_SET_DEPENDENCY_MET,
         (met ? ENABLED : DISABLED), networkType, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -2359,7 +2359,7 @@ ECode CConnectivityService::SetMobileDataEnabled(
     if (DBG) Slogger::D(TAG, "setMobileDataEnabled(%s)", enabled ? "true" : "false");
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(EVENT_SET_MOBILE_DATA,
+    mHandler->ObtainMessage(EVENT_SET_MOBILE_DATA,
         (enabled ? ENABLED : DISABLED), 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -2395,7 +2395,7 @@ ECode CConnectivityService::SetPolicyDataEnable(
             Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(EVENT_SET_POLICY_DATA_ENABLE,
+    mHandler->ObtainMessage(EVENT_SET_POLICY_DATA_ENABLE,
         networkType, (enabled ? ENABLED : DISABLED), (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -2856,7 +2856,7 @@ void CConnectivityService::SendStickyBroadcastDelayed(
         }
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx(EVENT_SEND_STICKY_BROADCAST_INTENT,
+        mHandler->ObtainMessage(EVENT_SEND_STICKY_BROADCAST_INTENT,
             intent, (IMessage**)&msg);
         Boolean result;
         mHandler->SendMessageDelayed(msg, delayMs, &result);
@@ -2966,7 +2966,7 @@ void CConnectivityService::HandleConnect(
             Boolean isHeld;
             if ((mNetTransitionWakeLock->IsHeld(&isHeld), isHeld)) {
                 AutoPtr<IMessage> msg;
-                mHandler->ObtainMessageEx2(EVENT_CLEAR_NET_TRANSITION_WAKELOCK,
+                mHandler->ObtainMessage(EVENT_CLEAR_NET_TRANSITION_WAKELOCK,
                     mNetTransitionWakeLockSerialNumber, 0, (IMessage**)&msg);
                 Boolean result;
                 mHandler->SendMessageDelayed(msg, 1000, &result);
@@ -4132,7 +4132,7 @@ ECode CConnectivityService::RequestNetworkTransitionWakelock(
     }
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(EVENT_CLEAR_NET_TRANSITION_WAKELOCK,
+    mHandler->ObtainMessage(EVENT_CLEAR_NET_TRANSITION_WAKELOCK,
         mNetTransitionWakeLockSerialNumber, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessageDelayed(msg, mNetTransitionWakeLockTimeout, &result);
@@ -4168,7 +4168,7 @@ ECode CConnectivityService::ReportInetCondition(
 //    }
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(EVENT_INET_CONDITION_CHANGE,
+    mHandler->ObtainMessage(EVENT_INET_CONDITION_CHANGE,
         networkType, percentage, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -4210,7 +4210,7 @@ void CConnectivityService::HandleInetConditionChange(
         mInetConditionChangeInFlight = TRUE;
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx2(EVENT_INET_CONDITION_HOLD_END,
+        mHandler->ObtainMessage(EVENT_INET_CONDITION_HOLD_END,
             mActiveDefaultNetwork, mDefaultConnectionSequence, (IMessage**)&msg);
         Boolean result;
         mHandler->SendMessageDelayed(msg, delay, &result);

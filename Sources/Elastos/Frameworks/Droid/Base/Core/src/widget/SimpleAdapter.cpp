@@ -1,10 +1,10 @@
 
 #include "widget/SimpleAdapter.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include "os/ElDataInterface.h"
 #include "net/Uri.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
@@ -42,11 +42,11 @@ ECode SimpleAdapter::SimpleFilter::DoFilter(
     return Filter::DoFilter(constraint);
 }
 
-ECode SimpleAdapter::SimpleFilter::DoFilterEx(
+ECode SimpleAdapter::SimpleFilter::DoFilter(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterListener* listener)
 {
-    return Filter::DoFilterEx(constraint, listener);
+    return Filter::DoFilter(constraint, listener);
 }
 
 ECode SimpleAdapter::SimpleFilter::ConvertResultToString(
@@ -242,7 +242,7 @@ AutoPtr<IView> SimpleAdapter::CreateViewFromResource(
     AutoPtr<IView> view;
 
     if (convertView == NULL) {
-        ECode ec = mInflater->InflateEx2(resource, parent, FALSE, (IView**)&view);
+        ECode ec = mInflater->Inflate(resource, parent, FALSE, (IView**)&view);
         if (FAILED(ec) || view == NULL) {
             Slogger::E("SimpleAdapter", "Error: failed to inflate view with resource id=%08x, position=%d, ec=%08x",
                 resource, position, ec);

@@ -466,11 +466,11 @@ ECode CPaint::GetFontMetrics(
     return Paint::GetFontMetrics(metrics, spacing);
 }
 
-ECode CPaint::GetFontMetricsEx(
+ECode CPaint::GetFontMetrics(
     /* [out] */ IPaintFontMetrics** metrics)
 {
     VALIDATE_NOT_NULL(metrics);
-    return Paint::GetFontMetricsEx(metrics);
+    return Paint::GetFontMetrics(metrics);
 }
 
 ECode CPaint::GetFontMetricsInt(
@@ -481,11 +481,11 @@ ECode CPaint::GetFontMetricsInt(
     return Paint::GetFontMetricsInt(fmi, spacing);
 }
 
-ECode CPaint::GetFontMetricsIntEx(
+ECode CPaint::GetFontMetricsInt(
     /* [out] */ IPaintFontMetricsInt** fmi)
 {
     VALIDATE_NOT_NULL(fmi);
-    return Paint::GetFontMetricsIntEx(fmi);
+    return Paint::GetFontMetricsInt(fmi);
 }
 
 ECode CPaint::GetFontSpacing(
@@ -505,32 +505,32 @@ ECode CPaint::MeasureText(
     return Paint::MeasureText(text, index, count, width);
 }
 
-ECode CPaint::MeasureTextEx(
+ECode CPaint::MeasureText(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ Float* width)
 {
     VALIDATE_NOT_NULL(width);
-    return Paint::MeasureTextEx(text, start, end, width);
+    return Paint::MeasureText(text, start, end, width);
 }
 
-ECode CPaint::MeasureTextEx2(
+ECode CPaint::MeasureText(
     /* [in] */ const String& text,
     /* [out] */ Float* width)
 {
     VALIDATE_NOT_NULL(width);
-    return Paint::MeasureTextEx2(text, width);
+    return Paint::MeasureText(text, width);
 }
 
-ECode CPaint::MeasureTextEx3(
+ECode CPaint::MeasureText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ Float* width)
 {
     VALIDATE_NOT_NULL(width);
-    return Paint::MeasureTextEx3(text, start, end, width);
+    return Paint::MeasureText(text, start, end, width);
 }
 
 ECode CPaint::BreakText(
@@ -545,7 +545,7 @@ ECode CPaint::BreakText(
     return Paint::BreakText(text, index, count, maxWidth, measuredWidth, number);
 }
 
-ECode CPaint::BreakTextEx(
+ECode CPaint::BreakText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -555,10 +555,10 @@ ECode CPaint::BreakTextEx(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return Paint::BreakTextEx(text, start, end, measureForwards, maxWidth, measuredWidth, number);
+    return Paint::BreakText(text, start, end, measureForwards, maxWidth, measuredWidth, number);
 }
 
-ECode CPaint::BreakTextEx2(
+ECode CPaint::BreakText(
     /* [in] */ const String& text,
     /* [in] */ Boolean measureForwards,
     /* [in] */ Float maxWidth,
@@ -566,7 +566,7 @@ ECode CPaint::BreakTextEx2(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return Paint::BreakTextEx2(text, measureForwards, maxWidth, measuredWidth, number);
+    return Paint::BreakText(text, measureForwards, maxWidth, measuredWidth, number);
 }
 
 ECode CPaint::GetTextWidths(
@@ -580,7 +580,7 @@ ECode CPaint::GetTextWidths(
     return Paint::GetTextWidths(text, index, count, widths, width);
 }
 
-ECode CPaint::GetTextWidthsEx(
+ECode CPaint::GetTextWidths(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -588,10 +588,10 @@ ECode CPaint::GetTextWidthsEx(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width);
-    return Paint::GetTextWidthsEx(text, start, end, widths, width);
+    return Paint::GetTextWidths(text, start, end, widths, width);
 }
 
-ECode CPaint::GetTextWidthsEx2(
+ECode CPaint::GetTextWidths(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -599,16 +599,16 @@ ECode CPaint::GetTextWidthsEx2(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width);
-    return Paint::GetTextWidthsEx2(text, start, end, widths, width);
+    return Paint::GetTextWidths(text, start, end, widths, width);
 }
 
-ECode CPaint::GetTextWidthsEx3(
+ECode CPaint::GetTextWidths(
     /* [in] */ const String& text,
     /* [in] */ ArrayOf<Float>* widths,
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width);
-    return Paint::GetTextWidthsEx3(text, widths, width);
+    return Paint::GetTextWidths(text, widths, width);
 }
 
 ECode CPaint::GetTextPath(
@@ -622,7 +622,7 @@ ECode CPaint::GetTextPath(
     return Paint::GetTextPath(text, index, count, x, y, path);
 }
 
-ECode CPaint::GetTextPathEx(
+ECode CPaint::GetTextPath(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -630,7 +630,7 @@ ECode CPaint::GetTextPathEx(
     /* [in] */ Float y,
     /* [in] */ IPath* path)
 {
-    return Paint::GetTextPathEx(text, start, end, x, y, path);
+    return Paint::GetTextPath(text, start, end, x, y, path);
 }
 
 ECode CPaint::GetTextBounds(
@@ -642,13 +642,13 @@ ECode CPaint::GetTextBounds(
     return Paint::GetTextBounds(text, start, end, bounds);
 }
 
-ECode CPaint::GetTextBoundsEx(
+ECode CPaint::GetTextBounds(
     /* [in] */ const ArrayOf<Char32> & text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ IRect* bounds)
 {
-    return Paint::GetTextBoundsEx(text, index, count, bounds);
+    return Paint::GetTextBounds(text, index, count, bounds);
 }
 
 ECode CPaint::SetTextLocale(
@@ -721,7 +721,7 @@ ECode CPaint::GetTextRunAdvances(
                 contextCount, flags, advances, advancesIndex, advance);
 }
 
-ECode CPaint::GetTextRunAdvancesEx(
+ECode CPaint::GetTextRunAdvances(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
@@ -734,11 +734,11 @@ ECode CPaint::GetTextRunAdvancesEx(
     /* [out] */ Float* advance)
 {
     VALIDATE_NOT_NULL(advance);
-    return Paint::GetTextRunAdvancesEx(chars, index, count, contextIndex, contextCount,
+    return Paint::GetTextRunAdvances(chars, index, count, contextIndex, contextCount,
             flags, advances, advancesIndex, reserved, advance);
 }
 
-ECode CPaint::GetTextRunAdvancesEx2(
+ECode CPaint::GetTextRunAdvances(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -750,11 +750,11 @@ ECode CPaint::GetTextRunAdvancesEx2(
     /* [out] */ Float* advance)
 {
     VALIDATE_NOT_NULL(advance);
-    return Paint::GetTextRunAdvancesEx2(text, start, end, contextStart, contextEnd,
+    return Paint::GetTextRunAdvances(text, start, end, contextStart, contextEnd,
             flags, advances, advancesIndex, advance);
 }
 
-ECode CPaint::GetTextRunAdvancesEx3(
+ECode CPaint::GetTextRunAdvances(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -767,11 +767,11 @@ ECode CPaint::GetTextRunAdvancesEx3(
     /* [out] */ Float* advance)
 {
     VALIDATE_NOT_NULL(advance);
-     return Paint::GetTextRunAdvancesEx3(text, start, end, contextStart, contextEnd,
+     return Paint::GetTextRunAdvances(text, start, end, contextStart, contextEnd,
             flags, advances, advancesIndex, reserved, advance);
 }
 
-ECode CPaint::GetTextRunAdvancesEx4(
+ECode CPaint::GetTextRunAdvances(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -783,11 +783,11 @@ ECode CPaint::GetTextRunAdvancesEx4(
     /* [out] */ Float* advance)
 {
     VALIDATE_NOT_NULL(advance);
-    return Paint::GetTextRunAdvancesEx4(text, start, end, contextStart,
+    return Paint::GetTextRunAdvances(text, start, end, contextStart,
             contextEnd, flags, advances, advancesIndex, advance);
 }
 
-ECode CPaint::GetTextRunAdvancesEx5(
+ECode CPaint::GetTextRunAdvances(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -800,7 +800,7 @@ ECode CPaint::GetTextRunAdvancesEx5(
     /* [out] */ Float* advance)
 {
     VALIDATE_NOT_NULL(advance);
-    return Paint::GetTextRunAdvancesEx5(text, start, end, contextStart,
+    return Paint::GetTextRunAdvances(text, start, end, contextStart,
             contextEnd, flags, advances, advancesIndex, reserved, advance);
 }
 
@@ -818,7 +818,7 @@ ECode CPaint::GetTextRunCursor(
             flags, offset, cursorOpt, position);
 }
 
-ECode CPaint::GetTextRunCursorEx(
+ECode CPaint::GetTextRunCursor(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -828,11 +828,11 @@ ECode CPaint::GetTextRunCursorEx(
    /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    return Paint::GetTextRunCursorEx(text, contextStart, contextEnd, flags,
+    return Paint::GetTextRunCursor(text, contextStart, contextEnd, flags,
             offset, cursorOpt, position);
 }
 
-ECode CPaint::GetTextRunCursorEx2(
+ECode CPaint::GetTextRunCursor(
     /* [in] */ const String& text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -842,7 +842,7 @@ ECode CPaint::GetTextRunCursorEx2(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    return Paint::GetTextRunCursorEx2(text, contextStart, contextEnd, flags,
+    return Paint::GetTextRunCursor(text, contextStart, contextEnd, flags,
             offset, cursorOpt, position);
 }
 

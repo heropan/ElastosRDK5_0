@@ -1,7 +1,7 @@
 
 #include "CWifiP2pDeviceList.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;
@@ -155,7 +155,7 @@ ECode CWifiP2pDeviceList::Get(
     HashMap<String, AutoPtr<IWifiP2pDevice> >::Iterator it = mDevices.Find(deviceAddress);
     if (it != mDevices.End()) {
         *device = it->mSecond;
-        INTERFACE_ADDREF(*device);
+        REFCOUNT_ADD(*device);
     }
 
     return NOERROR;
@@ -187,7 +187,7 @@ ECode CWifiP2pDeviceList::Remove(
     return NOERROR;
 }
 
-ECode CWifiP2pDeviceList::RemoveEx(
+ECode CWifiP2pDeviceList::Remove(
     /* [in] */ IWifiP2pDeviceList* list,
     /* [out] */ Boolean* ret)
 {
@@ -224,7 +224,7 @@ ECode CWifiP2pDeviceList::GetDeviceList(
     }
 
     *list = array;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 

@@ -3,11 +3,11 @@
 #define __DRAWABLEHOLDER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/Math.h>
-#include <elastos/List.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::Math;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;

@@ -4,7 +4,7 @@
 
 #include "_CRequestHandle.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "Request.h"
 
 using namespace Elastos::Core;

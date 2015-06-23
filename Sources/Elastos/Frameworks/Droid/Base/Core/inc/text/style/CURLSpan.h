@@ -4,8 +4,8 @@
 
 #include "_CURLSpan.h"
 #include "text/style/URLSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

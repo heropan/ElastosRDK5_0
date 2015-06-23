@@ -3,11 +3,11 @@
 #define __BROADCASTQUEUE_H__
 
 #include "am/CActivityManagerService.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "os/HandlerBase.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::IBinder;

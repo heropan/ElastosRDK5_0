@@ -68,7 +68,7 @@ ECode CRequestQueue::QueueRequest(
         bodyProvider, bodyLength, handle);
 }
 
-ECode CRequestQueue::QueueRequestEx(
+ECode CRequestQueue::QueueRequest(
     /* [in] */ const String& url,
     /* [in] */ Elastos::Droid::Net::IWebAddress* uri,
     /* [in] */ const String& method,
@@ -138,7 +138,7 @@ ECode CRequestQueue::GetRequest(
     return RequestQueue::GetRequest((Request**)request);
 }
 
-ECode CRequestQueue::GetRequestEx(
+ECode CRequestQueue::GetRequest(
     /* [in] */ Org::Apache::Http::IHttpHost* host,
     /* [out] */ IRequest** request)
 {

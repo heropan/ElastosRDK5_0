@@ -3,7 +3,7 @@
 
 #include "FrameLayout.h"
 #include "BaseAdapter.h"
-#include "view/ViewMacro.h"
+
 #include "view/SimpleOnGestureListener.h"
 #include "os/Runnable.h"
 

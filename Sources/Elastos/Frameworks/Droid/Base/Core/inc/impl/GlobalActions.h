@@ -8,7 +8,7 @@
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 #include "impl/EnableAccessibilityController.h"
-#include "widget/AdapterMacro.h"
+
 #include "widget/BaseAdapter.h"
 
 using Elastos::Core::ICharSequence;

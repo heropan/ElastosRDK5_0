@@ -3,7 +3,7 @@
 
 #include "_CHeaderViewListAdapter.h"
 #include "widget/HeaderViewListAdapter.h"
-#include "widget/AdapterMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

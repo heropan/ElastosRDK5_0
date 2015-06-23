@@ -4,7 +4,7 @@
 
 #include "_CViewStub.h"
 #include "view/ViewStub.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

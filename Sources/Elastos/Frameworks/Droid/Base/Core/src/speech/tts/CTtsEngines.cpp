@@ -35,7 +35,7 @@ ECode CTtsEngines::GetEngineInfo(
 
     AutoPtr<ITextToSpeechEngineInfo> temp = TtsEngines::GetEngineInfo(packageName);
     *ppRet = temp;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 
@@ -56,7 +56,7 @@ ECode CTtsEngines::GetEngines(
     }
 
     *ppRet = oc;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 
@@ -76,7 +76,7 @@ ECode CTtsEngines::GetSettingsIntent(
     VALIDATE_NOT_NULL(ppRet);
     AutoPtr<IIntent> temp = TtsEngines::GetSettingsIntent(engine);
     *ppRet = temp;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 

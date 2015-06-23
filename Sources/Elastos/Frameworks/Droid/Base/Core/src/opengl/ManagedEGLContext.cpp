@@ -1,6 +1,6 @@
 #include "ManagedEGLContext.h"
 #include "os/Looper.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "gles/CEGL10Helper.h"
 #include "gles/CEGLImpl.h"
 #include "gles/CEGLContextImpl.h"
@@ -33,7 +33,7 @@ ECode ManagedEGLContext::GetContext(
     /* [out] */ XIEGLContext** ctx)
 {
     *ctx = mContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 

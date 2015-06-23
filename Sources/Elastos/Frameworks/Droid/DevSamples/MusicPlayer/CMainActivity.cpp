@@ -17,7 +17,7 @@
 #include "CMusicUtil.h"
 #include "CMainActivityListener.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ICharSequence;
@@ -104,7 +104,7 @@ ECode CMainActivity::MyListener::OnClick(
     switch (viewId) {
         case R::main::title_btn_about:
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("MusicPlayer"),
+            intent->SetClassName(String("MusicPlayer"),
                 String("MusicPlayer.CAboutActivity"));
             mActivity->StartActivity(intent);
             break;
@@ -632,7 +632,7 @@ ECode CMainActivity::InitStatus()
 
     if (NULL != mDataList) {
         Logger::D("CMainActivity", "InitStatus setup mAdapter");
-        mAdapter->AddAllEx(mDataList);
+        mAdapter->AddAll(mDataList);
         mAdapter->NotifyDataSetChanged();
 
         mSeekBarMusic->SetVisibility(IView::VISIBLE);

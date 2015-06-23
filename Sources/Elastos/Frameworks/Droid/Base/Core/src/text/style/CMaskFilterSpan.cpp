@@ -21,7 +21,7 @@ ECode CMaskFilterSpan::GetMaskFilter(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IMaskFilter> mf = MaskFilterSpan::GetMaskFilter();
     *ret = mf;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -251,7 +251,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IInteger16> rTmp;
             CInteger16::New(v, (IInteger16**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
         }
         case CarDataType_Int32:
@@ -262,7 +262,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IInteger32> rTmp;
             CInteger32::New(v, (IInteger32**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -274,7 +274,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IInteger64> rTmp;
             CInteger64::New(v, (IInteger64**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -286,7 +286,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IByte> rTmp;
             CByte::New(v, (IByte**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -298,7 +298,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IFloat> rTmp;
             CFloat::New(v, (IFloat**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -310,7 +310,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IDouble> rTmp;
             CDouble::New(v, (IDouble**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -322,7 +322,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IChar8> rTmp;
             CChar8::New(v, (IChar8**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -334,7 +334,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<IChar16> rTmp;
             CChar16::New(v, (IChar16**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }
@@ -346,7 +346,7 @@ ECode ReflectiveProperty::Get(
             AutoPtr<ICharSequence> rTmp;
             CStringWrapper::New(v, (ICharSequence**)&rTmp);
             *rst = rTmp;
-            INTERFACE_ADDREF(*rst);
+            REFCOUNT_ADD(*rst);
             return NOERROR;
 
         }

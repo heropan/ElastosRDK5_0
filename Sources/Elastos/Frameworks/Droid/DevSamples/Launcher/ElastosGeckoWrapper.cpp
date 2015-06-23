@@ -116,7 +116,7 @@ void GeckoSurfaceViewDraw2D(eobject eobj, eobject bitmap, int width, int height)
     surfaceView->Draw2D((IBitmap*)bitmap, width, height);
 }
 
-void GeckoSurfaceViewDraw2DEx(eobject eobj, eobject buffer, int stride)
+void GeckoSurfaceViewDraw2D(eobject eobj, eobject buffer, int stride)
 {
     if (!eobj) return;
     CGeckoSurfaceView* pSurfaceView = (CGeckoSurfaceView*)eobj;
@@ -1026,7 +1026,7 @@ void AudioTrackFlush(eobject object)
     ((ElAudioTrack*)object)->Flush();
 }
 
-void AudioTrackReleaseEx(eobject object)
+void AudioTrackRelease(eobject object)
 {
     PRINT_FILE_LINE_EX("--------- AudioTrackReleaseEx");
     ((ElAudioTrack*)object)->Release();

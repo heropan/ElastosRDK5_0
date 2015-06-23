@@ -25,18 +25,18 @@ ECode CMatrixCursor::AddRow(
     return MatrixCursor::AddRow(columnValues);
 }
 
-ECode CMatrixCursor::AddRowEx(
+ECode CMatrixCursor::AddRow(
     /* [in] */ IObjectContainer* columnValues)
 {
     return MatrixCursor::AddRow(columnValues);
 }
 
-ECode CMatrixCursor::SetNotificationUriEx(
+ECode CMatrixCursor::SetNotificationUri(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* notifyUri,
     /* [in] */ Int32 userHandle)
 {
-    return MatrixCursor::SetNotificationUriEx(cr, notifyUri, userHandle);
+    return MatrixCursor::SetNotificationUri(cr, notifyUri, userHandle);
 }
 
 ECode CMatrixCursor::GetNotificationUri(

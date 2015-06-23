@@ -5,7 +5,7 @@
 #include "app/CApplicationErrorReportAnrInfo.h"
 #include "app/CApplicationErrorReportBatteryInfo.h"
 #include "app/CApplicationErrorReportRunningServiceInfo.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "content/CIntent.h"
 #include "content/CComponentName.h"
 

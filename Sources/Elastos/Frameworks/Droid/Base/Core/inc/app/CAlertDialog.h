@@ -3,9 +3,9 @@
 #define __CALERTDIALOG_H__
 
 #include "_CAlertDialog.h"
-#include "app/AlertDialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 using Elastos::Droid::Os::IMessage;
 

@@ -9,9 +9,9 @@
 #include "inputmethodservice/Keyboard.h"
 #include "util/Xml.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/Character.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
@@ -548,7 +548,7 @@ ECode Keyboard::Key::GetCurrentDrawableState(
         }
     }
     *drawableStates = states;
-    INTERFACE_ADDREF(*drawableStates);
+    REFCOUNT_ADD(*drawableStates);
     return NOERROR;
 }
 
@@ -557,7 +557,7 @@ ECode Keyboard::Key::GetCodes(
 {
     VALIDATE_NOT_NULL(codes);
     *codes = mCodes;
-    INTERFACE_ADDREF(*codes);
+    REFCOUNT_ADD(*codes);
     return NOERROR;
 }
 
@@ -573,7 +573,7 @@ ECode Keyboard::Key::GetLabel(
 {
     VALIDATE_NOT_NULL(label);
     *label = mLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -589,7 +589,7 @@ ECode Keyboard::Key::GetIcon(
 {
     VALIDATE_NOT_NULL(icon);
     *icon = mIcon;
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
     return NOERROR;
 }
 
@@ -605,7 +605,7 @@ ECode Keyboard::Key::GetIconPreview(
 {
     VALIDATE_NOT_NULL(preview);
     *preview = mIconPreview;
-    INTERFACE_ADDREF(*preview);
+    REFCOUNT_ADD(*preview);
     return NOERROR;
 }
 
@@ -711,7 +711,7 @@ ECode Keyboard::Key::GetText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -720,7 +720,7 @@ ECode Keyboard::Key::GetPopupCharacters(
 {
     VALIDATE_NOT_NULL(popupCharacters);
     *popupCharacters = mPopupCharacters;
-    INTERFACE_ADDREF(*popupCharacters);
+    REFCOUNT_ADD(*popupCharacters);
     return NOERROR;
 }
 
@@ -1213,7 +1213,7 @@ ECode Keyboard::GetShiftKeyIndices(
 {
     assert(keyIndices != NULL);
     *keyIndices = mShiftKeyIndices;
-    INTERFACE_ADDREF(*keyIndices);
+    REFCOUNT_ADD(*keyIndices);
     return NOERROR;
 }
 
@@ -1278,12 +1278,12 @@ ECode Keyboard::GetNearestKeys(
         if (index < GRID_SIZE) {
             AutoPtr<ArrayOf<Int32> > keys = (*mGridNeighbors)[index];
             *nearestKeys = keys;
-            INTERFACE_ADDREF(*nearestKeys);
+            REFCOUNT_ADD(*nearestKeys);
             return NOERROR;
         }
     }
     *nearestKeys = ArrayOf<Int32>::Alloc(0);
-    INTERFACE_ADDREF(*nearestKeys);
+    REFCOUNT_ADD(*nearestKeys);
     return NOERROR;
 }
 

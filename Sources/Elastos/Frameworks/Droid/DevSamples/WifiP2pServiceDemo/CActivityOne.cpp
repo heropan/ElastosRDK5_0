@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <utils/SystemClock.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <unistd.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "CWifiBroadcastReceiver.h"
 #include "GroupOwnerSocketHandler.h"
 #include "ClientSocketHandler.h"

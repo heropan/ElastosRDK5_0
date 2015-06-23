@@ -58,7 +58,7 @@ ECode CPhoneLayoutInflater::GetContext(
     VALIDATE_NOT_NULL(context);
 
     *context = LayoutInflater::GetContext();
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -127,17 +127,17 @@ ECode CPhoneLayoutInflater::Inflate(
     return LayoutInflater::Inflate(resource, root, view);
 }
 
-ECode CPhoneLayoutInflater::InflateEx(
+ECode CPhoneLayoutInflater::Inflate(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IViewGroup* root,
     /* [out] */ IView** view)
 {
     VALIDATE_NOT_NULL(view);
 
-    return LayoutInflater::InflateEx(parser, root, view);
+    return LayoutInflater::Inflate(parser, root, view);
 }
 
-ECode CPhoneLayoutInflater::InflateEx2(
+ECode CPhoneLayoutInflater::Inflate(
     /* [in] */ Int32 resource,
     /* [in] */ IViewGroup* root,
     /* [in] */ Boolean attachToRoot,
@@ -145,10 +145,10 @@ ECode CPhoneLayoutInflater::InflateEx2(
 {
     VALIDATE_NOT_NULL(view);
 
-    return LayoutInflater::InflateEx2(resource, root, attachToRoot, view);
+    return LayoutInflater::Inflate(resource, root, attachToRoot, view);
 }
 
-ECode CPhoneLayoutInflater::InflateEx3(
+ECode CPhoneLayoutInflater::Inflate(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IViewGroup* root,
     /* [in] */ Boolean attachToRoot,
@@ -156,7 +156,7 @@ ECode CPhoneLayoutInflater::InflateEx3(
 {
     VALIDATE_NOT_NULL(view);
 
-    return LayoutInflater::InflateEx3(parser, root, attachToRoot, view);
+    return LayoutInflater::Inflate(parser, root, attachToRoot, view);
 }
 
 } // namespace Impl

@@ -1,8 +1,8 @@
 #include "speech/tts/AudioPlaybackQueueItem.h"
 //#include "os/CConditionVariable.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "ext/frameworkext.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;

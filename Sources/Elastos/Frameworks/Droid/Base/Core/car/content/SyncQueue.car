@@ -40,7 +40,7 @@ module
             [in] String providerName,
             [in] Int64 delayUntil);
 
-        RemoveEx(
+        Remove(
             [in] IAccount* account,
             [in] Int32 userId,
             [in] String authority);

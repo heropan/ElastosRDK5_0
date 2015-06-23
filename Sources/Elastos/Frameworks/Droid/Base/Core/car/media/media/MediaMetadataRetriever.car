@@ -204,7 +204,7 @@ module
          * @param headers the headers to be sent together with the request for the data
          * @throws IllegalArgumentException If the URI is invalid.
          */
-        SetDataSourceEx(
+        SetDataSource(
             [in] String uri,
             [in] IObjectStringMap* headers);
 
@@ -221,7 +221,7 @@ module
          * non-negative.
          * @throws IllegalArgumentException if the arguments are invalid
          */
-        SetDataSourceEx2(
+        SetDataSource(
             [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length);
@@ -235,7 +235,7 @@ module
          * @param fd the FileDescriptor for the file you want to play
          * @throws IllegalArgumentException if the FileDescriptor is invalid
          */
-        SetDataSourceEx3(
+        SetDataSource(
             [in] IFileDescriptor* fd);
 
         /**
@@ -248,7 +248,7 @@ module
          * @throws SecurityException if the Uri cannot be used due to lack of
          * permission.
          */
-        SetDataSourceEx4(
+        SetDataSource(
             [in] IContext* ctx,
             [in] IUri* uri);
 
@@ -321,7 +321,7 @@ module
          *
          * @see #getFrameAtTime(long, int)
          */
-        GetFrameAtTimeEx(
+        GetFrameAtTime(
             [in] Int64 timeUs,
             [out] IBitmap** result);
 
@@ -339,7 +339,7 @@ module
          * @see #getFrameAtTime(long)
          * @see #getFrameAtTime(long, int)
          */
-        GetFrameAtTimeEx2(
+        GetFrameAtTime(
             [out] IBitmap** result);
 
         /**

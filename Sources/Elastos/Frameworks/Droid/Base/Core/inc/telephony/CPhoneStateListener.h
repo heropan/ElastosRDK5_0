@@ -114,7 +114,7 @@ public:
     CARAPI OnDataConnectionStateChanged(
         /* [in] */ Int32 state);
 
-    CARAPI OnDataConnectionStateChangedEx(
+    CARAPI OnDataConnectionStateChanged(
         /* [in] */ Int32 state,
         /* [in] */ Int32 networkType);
 

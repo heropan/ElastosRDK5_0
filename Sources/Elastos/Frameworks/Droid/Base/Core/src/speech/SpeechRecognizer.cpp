@@ -1,5 +1,5 @@
 #include "speech/SpeechRecognizer.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "content/CComponentName.h"
 #include "content/CIntent.h"
 //#include "provider/CSettings.h"
@@ -201,7 +201,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnBufferReceived(
     assert(0);
     // Message.obtain(mInternalHandler, MSG_BUFFER_RECEIVED, buffer).sendToTarget();
     // AutoPtr<IMessage> msg;
-    // mInternalHandler->ObtainMessageEx(MSG_BUFFER_RECEIVED, obj, (IMessage**)&msg);
+    // mInternalHandler->ObtainMessage(MSG_BUFFER_RECEIVED, obj, (IMessage**)&msg);
     // msg->SendToTarget();
     return NOERROR;
 }
@@ -216,7 +216,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnError(
     /* [in] */ Int32 error)
 {
     AutoPtr<IMessage> msg;
-    mInternalHandler->ObtainMessageEx2(MSG_ERROR, error, 0, (IMessage**)&msg);
+    mInternalHandler->ObtainMessage(MSG_ERROR, error, 0, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -225,7 +225,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnReadyForSpeech(
     /* [in] */ IBundle* noiseParams)
 {
     AutoPtr<IMessage> msg;
-    mInternalHandler->ObtainMessageEx(MSG_READY_FOR_SPEECH, noiseParams, (IMessage**)&msg);
+    mInternalHandler->ObtainMessage(MSG_READY_FOR_SPEECH, noiseParams, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -234,7 +234,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnResults(
     /* [in] */ IBundle* results)
 {
     AutoPtr<IMessage> msg;
-    mInternalHandler->ObtainMessageEx(MSG_RESULTS, results, (IMessage**)&msg);
+    mInternalHandler->ObtainMessage(MSG_RESULTS, results, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -243,7 +243,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnPartialResults(
     /* [in] */ IBundle* results)
 {
     AutoPtr<IMessage> msg;
-    mInternalHandler->ObtainMessageEx(MSG_PARTIAL_RESULTS, results, (IMessage**)&msg);
+    mInternalHandler->ObtainMessage(MSG_PARTIAL_RESULTS, results, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -254,7 +254,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnRmsChanged(
     AutoPtr<IFloat> fobj;
     CFloat::New(rmsdB, (IFloat**)&fobj);
     AutoPtr<IMessage> msg;
-    mInternalHandler->ObtainMessageEx(MSG_RMS_CHANGED,fobj, (IMessage**)&msg);
+    mInternalHandler->ObtainMessage(MSG_RMS_CHANGED,fobj, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -264,7 +264,7 @@ ECode SpeechRecognizer::SpeechRecognizerInternalListener::OnEvent(
     /* [in] */ IBundle* bParams)
 {
     AutoPtr<IMessage> msg;
-    mInternalHandler->ObtainMessageEx3(MSG_ON_EVENT, eventType, eventType, bParams, (IMessage**)&msg);
+    mInternalHandler->ObtainMessage(MSG_ON_EVENT, eventType, eventType, bParams, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -334,7 +334,7 @@ void SpeechRecognizer::SetRecognitionListener(
     CheckIsCalledFromMainThread();
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_CHANGE_LISTENER, listener, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_CHANGE_LISTENER, listener, (IMessage**)&msg);
     PutMessage(msg);
 }
 
@@ -387,7 +387,7 @@ void SpeechRecognizer::StartListening(
     }
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_START, recognizerIntent, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_START, recognizerIntent, (IMessage**)&msg);
     PutMessage(msg);
 }
 

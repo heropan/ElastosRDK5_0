@@ -4,7 +4,7 @@
 #include "media/CRingtoneManagerHelper.h"
 #include "os/CBinder.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using namespace Elastos::Core;
 using Elastos::Utility::Logging::Logger;
@@ -140,7 +140,7 @@ String CRingtone::GetTitle(
                 CStringWrapper::New(actualTitle, (ICharSequence**)&seq);
                 AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(1);
                 array->Set(0, (IInterface*)seq.Get());
-                context->GetStringEx(R::string::ringtone_default_with_actual, array, &title);
+                context->GetString(R::string::ringtone_default_with_actual, array, &title);
             }
         }
         else {

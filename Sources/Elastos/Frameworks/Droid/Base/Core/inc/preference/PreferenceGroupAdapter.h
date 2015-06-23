@@ -4,12 +4,12 @@
 
 #include "os/Runnable.h"
 #include "widget/BaseAdapter.h"
-#include <elastos/List.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::Core::IComparable;
-using Elastos::Core::Threading::Object;
-using Elastos::Utility::List;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Widget::BaseAdapter;

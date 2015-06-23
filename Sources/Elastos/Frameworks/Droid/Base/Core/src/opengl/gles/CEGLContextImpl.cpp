@@ -25,7 +25,7 @@ ECode CEGLContextImpl::GetGL(
     /* [in] */ IGL** gl)
 {
     *gl = mGLContext;
-    INTERFACE_ADDREF(*gl);
+    REFCOUNT_ADD(*gl);
     return NOERROR;
 }
 

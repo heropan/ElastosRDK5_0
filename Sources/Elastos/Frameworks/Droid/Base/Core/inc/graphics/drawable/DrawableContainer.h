@@ -3,9 +3,6 @@
 #define __DRAWABLECONTAINER_H__
 
 #include "graphics/drawable/Drawable.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

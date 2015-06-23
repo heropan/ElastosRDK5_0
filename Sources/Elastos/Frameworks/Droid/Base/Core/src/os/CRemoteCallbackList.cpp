@@ -1,6 +1,6 @@
 
 #include "os/CRemoteCallbackList.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -27,7 +27,7 @@ ECode CRemoteCallbackList::Callback::ProxyDied()
 
         mOwner->mCallbacks.Erase(IBinder::Probe(mCallback));
     }
-    return mOwner->OnCallbackDiedEx(mCallback, mCookie);
+    return mOwner->OnCallbackDied(mCallback, mCookie);
 }
 
 
@@ -41,10 +41,10 @@ ECode CRemoteCallbackList::Register(
     /* [in] */ IInterface* callback,
     /* [out] */ Boolean* result)
 {
-    return RegisterEx(callback, NULL, result);
+    return Register(callback, NULL, result);
 }
 
-ECode CRemoteCallbackList::RegisterEx(
+ECode CRemoteCallbackList::Register(
     /* [in] */ IInterface* callback,
     /* [in] */ IInterface* cookie,
     /* [out] */ Boolean* result)
@@ -124,7 +124,7 @@ ECode CRemoteCallbackList::OnCallbackDied(
     return NOERROR;
 }
 
-ECode CRemoteCallbackList::OnCallbackDiedEx(
+ECode CRemoteCallbackList::OnCallbackDied(
     /* [in] */ IInterface* callback,
     /* [in] */ IInterface* cookie)
 {
@@ -171,7 +171,7 @@ ECode CRemoteCallbackList::GetBroadcastItem(
     VALIDATE_NOT_NULL(callback);
 
     *callback = ((Callback*)(*mActiveBroadcast)[index])->mCallback;
-    INTERFACE_ADDREF(*callback);
+    REFCOUNT_ADD(*callback);
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode CRemoteCallbackList::GetBroadcastCookie(
     VALIDATE_NOT_NULL(cookie);
 
     *cookie = ((Callback*)(*mActiveBroadcast)[index])->mCookie;
-    INTERFACE_ADDREF(*cookie);
+    REFCOUNT_ADD(*cookie);
     return NOERROR;
 }
 

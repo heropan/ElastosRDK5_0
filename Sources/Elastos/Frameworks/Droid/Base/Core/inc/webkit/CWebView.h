@@ -4,7 +4,7 @@
 
 #include "_CWebView.h"
 #include "webkit/WebView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -102,7 +102,7 @@ public:
         /* [in] */ IBundle* inState,
         /* [out] */ IWebBackForwardList** wfl);
 
-    CARAPI LoadUrlEx(
+    CARAPI LoadUrl(
         /* [in] */ const String& url,
         /* [in] */ IMap* additionalHttpHeaders);
 
@@ -128,7 +128,7 @@ public:
     CARAPI SaveWebArchive(
         /* [in] */ const String& filename);
 
-    CARAPI SaveWebArchiveEx(
+    CARAPI SaveWebArchive(
         /* [in] */ const String& basename,
         /* [in] */ Boolean autoname,
         /* [in] */ IValueCallback* callBack);

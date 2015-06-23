@@ -27,7 +27,7 @@ module
              * @see #setDialogTitle(CharSequence)
              * @param dialogTitleResId The dialog title as a resource.
              */
-            SetDialogTitleEx(
+            SetDialogTitle(
                 [in] Int32 dialogTitleResId);
 
             /**
@@ -54,7 +54,7 @@ module
              * @see #setDialogMessage(CharSequence)
              * @param dialogMessageResId The dialog message as a resource.
              */
-            SetDialogMessageEx(
+            SetDialogMessage(
                 [in] Int32 dialogMessageResId);
 
             /**
@@ -78,7 +78,7 @@ module
              *
              * @param dialogIconRes The icon, as a resource ID.
              */
-            SetDialogIconEx(
+            SetDialogIcon(
                 [in] Int32 dialogIconRes);
 
             /**
@@ -101,7 +101,7 @@ module
              * @see #setPositiveButtonText(CharSequence)
              * @param positiveButtonTextResId The positive button text as a resource.
              */
-            SetPositiveButtonTextEx(
+            SetPositiveButtonText(
                 [in] Int32 positiveButtonTextResId);
 
             /**
@@ -126,7 +126,7 @@ module
              * @see #setNegativeButtonText(CharSequence)
              * @param negativeButtonTextResId The negative button text as a resource.
              */
-            SetNegativeButtonTextEx(
+            SetNegativeButtonText(
                 [in] Int32 negativeButtonTextResId);
 
             /**

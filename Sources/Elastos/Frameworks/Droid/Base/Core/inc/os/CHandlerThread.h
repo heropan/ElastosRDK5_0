@@ -3,11 +3,11 @@
 #define __CHANDLERTHREAD_H__
 
 #include "_CHandlerThread.h"
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {
@@ -71,10 +71,10 @@ public:
 
     CARAPI Join();
 
-    CARAPI JoinEx(
+    CARAPI Join(
         /* [in] */ Int64 millis);
 
-    CARAPI JoinEx2(
+    CARAPI Join(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 
@@ -117,10 +117,10 @@ public:
 
     CARAPI Wait();
 
-    CARAPI WaitEx(
+    CARAPI Wait(
         /* [in] */ Int64 millis);
 
-    CARAPI WaitEx2(
+    CARAPI Wait(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 

@@ -2,7 +2,7 @@
 #include "hardware/CHardwareCameraHelper.h"
 #include "hardware/CHardwareCamera.h"
 #include <media/MediaProfiles.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Hardware::IHardwareCameraHelper;
@@ -89,14 +89,14 @@ ECode CCamcorderProfile::Get(
         hardwareCameraHelper->GetCameraInfo(i, cameraInfo);
         cameraInfo->GetFacing(&facing);
         if (facing == ICameraInfo::CAMERA_FACING_BACK) {
-            return GetEx(i, quality, result);
+            return Get(i, quality, result);
         }
     }
     return NOERROR;
 }
 
 /*static*/
-ECode CCamcorderProfile::GetEx(
+ECode CCamcorderProfile::Get(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 quality,
     /* [out] */ ICamcorderProfile** result)
@@ -131,7 +131,7 @@ ECode CCamcorderProfile::HasProfile(
     for (Int32 i = 0; i < numberOfCameras; i++) {
         hardwareCameraHelper->GetCameraInfo(i, cameraInfo);
         if (cameraInfo->GetFacing(&facing) == ICameraInfo::CAMERA_FACING_BACK) {
-            HasProfileEx(i, quality, result);
+            HasProfile(i, quality, result);
             return NOERROR;
         }
     }
@@ -320,7 +320,7 @@ ECode CCamcorderProfile::GetAudioChannels(
 }
 
 /*static*/
-ECode CCamcorderProfile::HasProfileEx(
+ECode CCamcorderProfile::HasProfile(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 quality,
     /* [out] */ Boolean* result)
@@ -387,7 +387,7 @@ ECode CCamcorderProfile::NativeGetCamcorderProfile(
         audioChannels,
         (CCamcorderProfile**)&camcorderProfile);
     *profile = (ICamcorderProfile*)camcorderProfile.Get();
-    INTERFACE_ADDREF(*profile);
+    REFCOUNT_ADD(*profile);
     return NOERROR;
 }
 

@@ -35,11 +35,11 @@ ECode CMotionEventHelper::Obtain(
         deviceId, edgeFlags, source, flags, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CMotionEventHelper::ObtainEx(
+ECode CMotionEventHelper::Obtain(
     /* [in] */ Int64 downTime,
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 action,
@@ -65,11 +65,11 @@ ECode CMotionEventHelper::ObtainEx(
         deviceId, edgeFlags, source, flags, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CMotionEventHelper::ObtainEx2(
+ECode CMotionEventHelper::Obtain(
     /* [in] */ Int64 downTime,
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 action,
@@ -93,11 +93,11 @@ ECode CMotionEventHelper::ObtainEx2(
         xPrecision, yPrecision, deviceId, edgeFlags, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CMotionEventHelper::ObtainEx3(
+ECode CMotionEventHelper::Obtain(
     /* [in] */ Int64 downTime,
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 action,
@@ -122,11 +122,11 @@ ECode CMotionEventHelper::ObtainEx3(
         metaState, xPrecision, yPrecision, deviceId, edgeFlags, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CMotionEventHelper::ObtainEx4(
+ECode CMotionEventHelper::Obtain(
     /* [in] */ Int64 downTime,
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 action,
@@ -143,11 +143,11 @@ ECode CMotionEventHelper::ObtainEx4(
         downTime, eventTime, action, x, y, metaState, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CMotionEventHelper::ObtainEx5(
+ECode CMotionEventHelper::Obtain(
     /* [in] */ IMotionEvent* o,
     /* [out] */ IMotionEvent** event)
 {
@@ -158,7 +158,7 @@ ECode CMotionEventHelper::ObtainEx5(
     FAIL_RETURN(CMotionEvent::Obtain((CMotionEvent*)o, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
@@ -173,7 +173,7 @@ ECode CMotionEventHelper::ObtainNoHistory(
     FAIL_RETURN(CMotionEvent::ObtainNoHistory((CMotionEvent*)o, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
@@ -236,7 +236,7 @@ ECode CMotionEventHelper::CreateFromParcelBody(
     FAIL_RETURN(CMotionEvent::CreateFromParcelBody(in, (CMotionEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 

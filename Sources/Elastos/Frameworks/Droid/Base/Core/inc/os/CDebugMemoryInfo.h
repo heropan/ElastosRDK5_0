@@ -30,15 +30,15 @@ public:
     CARAPI GetTotalSharedDirty(
         /* [out] */ Int32* totalSharedDirty);
 
-    CARAPI GetOtherPssEx(
+    CARAPI GetOtherPss(
         /* [in] */ Int32 which,
         /* [out] */ Int32* otherPss);
 
-    CARAPI GetOtherPrivateDirtyEx(
+    CARAPI GetOtherPrivateDirty(
         /* [in] */ Int32 which,
         /* [out] */ Int32* otherPrivateDirty);
 
-    CARAPI GetOtherSharedDirtyEx(
+    CARAPI GetOtherSharedDirty(
         /* [in] */ Int32 which,
         /* [out] */ Int32* otherSharedDirty);
 

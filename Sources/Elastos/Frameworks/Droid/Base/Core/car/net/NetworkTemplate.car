@@ -27,7 +27,7 @@ module
             [in] IInterface* obj,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] INetworkTemplate* obj,
             [out] Boolean* result);
 
@@ -70,7 +70,7 @@ module
         BuildTemplateWifi(
             [out] INetworkTemplate** result);
 
-        BuildTemplateWifiEx(
+        BuildTemplateWifi(
             [in] String networkId,
             [out] INetworkTemplate** result);
 

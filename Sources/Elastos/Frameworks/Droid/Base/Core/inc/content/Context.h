@@ -152,7 +152,7 @@ public:
      * @param resId Resource id for the format string
      * @param formatArgs The format arguments that will be used for substitution.
      */
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* str)
@@ -161,7 +161,7 @@ public:
         *str = String(NULL);
         AutoPtr<IResources> resources;
         FAIL_RETURN(GetResources((IResources**) &resources));
-//***        return resources->GetStringEx(resId, formatArgs, str);
+//***        return resources->GetString(resId, formatArgs, str);
         return E_NOT_IMPLEMENTED;
     }
 
@@ -220,7 +220,7 @@ public:
      *
      * @see Resources.Theme#obtainStyledAttributes(int, int[])
      */
-    CARAPI ObtainStyledAttributesEx(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ Int32 resid,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles)
@@ -229,7 +229,7 @@ public:
         *styles = NULL;
         AutoPtr<IResourcesTheme> theme;
         FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributesEx(resid, attrs, styles);
+        return theme->ObtainStyledAttributes(resid, attrs, styles);
     }
 
     /**
@@ -239,7 +239,7 @@ public:
      *
      * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
      */
-    CARAPI ObtainStyledAttributesEx2(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles)
@@ -248,7 +248,7 @@ public:
         *styles = NULL;
         AutoPtr<IResourcesTheme> theme;
         FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributesEx2(set, attrs, 0, 0, styles);
+        return theme->ObtainStyledAttributes(set, attrs, 0, 0, styles);
     }
 
     /**
@@ -258,7 +258,7 @@ public:
      *
      * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
      */
-    CARAPI ObtainStyledAttributesEx3(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -269,7 +269,7 @@ public:
         *styles = NULL;
         AutoPtr<IResourcesTheme> theme;
         FAIL_RETURN(GetTheme((IResourcesTheme**) &theme));
-        return theme->ObtainStyledAttributesEx2(set, attrs, defStyleAttr, defStyleRes, styles);
+        return theme->ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes, styles);
     }
 
     /**
@@ -691,7 +691,7 @@ public:
      * @see #MODE_ENABLE_WRITE_AHEAD_LOGGING
      * @see #deleteDatabase
      */
-    virtual CARAPI OpenOrCreateDatabaseEx(
+    virtual CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& name,
         /* [in] */ Int32 mode,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -783,7 +783,7 @@ public:
      * <p>This method requires the caller to hold the permission
      * {@link android.Manifest.permission#SET_WALLPAPER}.
      */
-    virtual CARAPI SetWallpaperEx(
+    virtual CARAPI SetWallpaper(
         /* [in] */ IInputStream* data) = 0;
 
     /**
@@ -851,7 +851,7 @@ public:
      * @see #startActivity(Intent)
      * @see PackageManager#resolveActivity
      */
-    virtual CARAPI StartActivityEx(
+    virtual CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options) = 0;
 
@@ -869,7 +869,7 @@ public:
      * @throws ActivityNotFoundException
      * @hide
      */
-    CARAPI StartActivityAsUserEx(
+    CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [in] */ IUserHandle* userId)
@@ -916,7 +916,7 @@ public:
      * @see {@link #startActivities(Intent[])}
      * @see PackageManager#resolveActivity
      */
-    virtual CARAPI StartActivitiesEx(
+    virtual CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents,
         /* [in] */ IBundle* options) = 0;
 
@@ -1003,7 +1003,7 @@ public:
      * @see #startActivity(Intent, Bundle)
      * @see #startIntentSender(IntentSender, Intent, int, int, int)
      */
-    virtual CARAPI StartIntentSenderEx(
+    virtual CARAPI StartIntentSender(
         /* [in] */ IIntentSender* intent,
         /* [in] */ IIntent* fillInIntent,
         /* [in] */ Int32 flagsMask,
@@ -1058,7 +1058,7 @@ public:
      * @see #sendOrderedBroadcast(Intent, String)
      * @see #sendOrderedBroadcast(Intent, String, BroadcastReceiver, Handler, int, String, Bundle)
      */
-    virtual CARAPI SendBroadcastEx(
+    virtual CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission) = 0;
 
@@ -1128,7 +1128,7 @@ public:
      * @see #registerReceiver
      * @see android.app.Activity#RESULT_OK
      */
-    virtual CARAPI SendOrderedBroadcastEx(
+    virtual CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission,
         /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -1165,7 +1165,7 @@ public:
      *
      * @see #sendBroadcast(Intent, String)
      */
-    virtual CARAPI SendBroadcastAsUserEx(
+    virtual CARAPI SendBroadcastAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission) = 0;
@@ -1451,7 +1451,7 @@ public:
      * @see #sendBroadcast
      * @see #unregisterReceiver
      */
-    virtual CARAPI RegisterReceiverEx(
+    virtual CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
         /* [in] */ IIntentFilter* filter,
         /* [in] */ const String& broadcastPermission,
@@ -1657,7 +1657,7 @@ public:
      * argument for use by system server and other multi-user aware code.
      * @hide
      */
-    CARAPI BindServiceEx(
+    CARAPI BindService(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
@@ -2096,7 +2096,7 @@ public:
      * is allowed to access that uri or holds one of the given permissions, or
      * {@link PackageManager#PERMISSION_DENIED} if it is not.
      */
-    virtual CARAPI CheckUriPermissionEx(
+    virtual CARAPI CheckUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,
@@ -2197,7 +2197,7 @@ public:
      *
      * @see #checkUriPermission(Uri, String, String, int, int, int)
      */
-    virtual CARAPI EnforceUriPermissionEx(
+    virtual CARAPI EnforceUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,

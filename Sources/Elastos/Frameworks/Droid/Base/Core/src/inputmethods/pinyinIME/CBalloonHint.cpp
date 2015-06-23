@@ -90,7 +90,7 @@ ECode CBalloonHint::BalloonTimer::Run()
             mHost->mParent->GetLocationInWindow(&x, &y);
             mHost->mParentLocationInWindow[0] = x;
             mHost->mParentLocationInWindow[1] = y;
-            mHost->UpdateEx2(mPositionInParent[0], mPositionInParent[1]
+            mHost->Update(mPositionInParent[0], mPositionInParent[1]
                     + mHost->mParentLocationInWindow[1], mWidth, mHeight);
         }
     }
@@ -140,7 +140,7 @@ ECode CBalloonHint::GetContext(
 {
     VALIDATE_NOT_NULL(ctx);
     *ctx = mContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 
@@ -149,7 +149,7 @@ ECode CBalloonHint::GetPadding(
 {
     VALIDATE_NOT_NULL(rect);
     *rect = mPaddingRect;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
     return NOERROR;
 }
 
@@ -185,7 +185,7 @@ ECode CBalloonHint::SetBalloonConfig(
     return NOERROR;
 }
 
-ECode CBalloonHint::SetBalloonConfigEx(
+ECode CBalloonHint::SetBalloonConfig(
     /* [in] */ IDrawable* icon,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
@@ -261,7 +261,7 @@ ECode CBalloonHint::DelayedUpdate(
     /* [in] */ Int32 height)
 {
     assert(locationInParent != NULL);
-    mBalloonView->InvalidateEx2();
+    mBalloonView->Invalidate();
     if (mBalloonTimer->IsPending()) {
         mBalloonTimer->RemoveTimer();
     }
@@ -270,7 +270,7 @@ ECode CBalloonHint::DelayedUpdate(
         mParent->GetLocationInWindow(&x, &y);
         mParentLocationInWindow[0] = x;
         mParentLocationInWindow[1] = y;
-        UpdateEx2((*locationInParent)[0], (*locationInParent)[1]
+        Update((*locationInParent)[0], (*locationInParent)[1]
                 + mParentLocationInWindow[1], width, height);
     } else {
         mBalloonTimer->StartTimer(delay, BalloonTimer::ACTION_UPDATE,
@@ -359,7 +359,7 @@ ECode CBalloonHint::GetBackground(
     VALIDATE_NOT_NULL(background);
     AutoPtr<IDrawable> bk = PopupWindow::GetBackground();
     *background = bk.Get();
-    INTERFACE_ADDREF(*background);
+    REFCOUNT_ADD(*background);
     return NOERROR;
 }
 
@@ -394,7 +394,7 @@ ECode CBalloonHint::GetContentView(
     VALIDATE_NOT_NULL(contentView);
     AutoPtr<IView> cv = PopupWindow::GetContentView();
     *contentView = cv.Get();
-    INTERFACE_ADDREF(*contentView);
+    REFCOUNT_ADD(*contentView);
     return NOERROR;
 }
 
@@ -606,7 +606,7 @@ ECode CBalloonHint::ShowAtLocation(
     return PopupWindow::ShowAtLocation(parent, gravity, x, y);
 }
 
-ECode CBalloonHint::ShowAtLocationEx(
+ECode CBalloonHint::ShowAtLocation(
     /* [in] */ IBinder* token,
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 x,
@@ -621,7 +621,7 @@ ECode CBalloonHint::ShowAsDropDown(
     return PopupWindow::ShowAsDropDown(anchor);
 }
 
-ECode CBalloonHint::ShowAsDropDownEx(
+ECode CBalloonHint::ShowAsDropDown(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 xoff,
     /* [in] */ Int32 yoff)
@@ -646,7 +646,7 @@ ECode CBalloonHint::GetMaxAvailableHeight(
     return NOERROR;
 }
 
-ECode CBalloonHint::GetMaxAvailableHeightEx(
+ECode CBalloonHint::GetMaxAvailableHeight(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 yOffset,
     /* [out] */ Int32* maxAvailableHeight)
@@ -656,7 +656,7 @@ ECode CBalloonHint::GetMaxAvailableHeightEx(
     return NOERROR;
 }
 
-ECode CBalloonHint::GetMaxAvailableHeightEx2(
+ECode CBalloonHint::GetMaxAvailableHeight(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 yOffset,
     /* [in] */ Boolean ignoreBottomDecorations,
@@ -683,14 +683,14 @@ ECode CBalloonHint::Update()
     return PopupWindow::Update();
 }
 
-ECode CBalloonHint::UpdateEx(
+ECode CBalloonHint::Update(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     return PopupWindow::Update(width, height);
 }
 
-ECode CBalloonHint::UpdateEx2(
+ECode CBalloonHint::Update(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -699,7 +699,7 @@ ECode CBalloonHint::UpdateEx2(
     return PopupWindow::Update(x, y, width, height);
 }
 
-ECode CBalloonHint::UpdateEx3(
+ECode CBalloonHint::Update(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -709,7 +709,7 @@ ECode CBalloonHint::UpdateEx3(
     return PopupWindow::Update(x, y, width, height, force);
 }
 
-ECode CBalloonHint::UpdateEx4(
+ECode CBalloonHint::Update(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
@@ -717,7 +717,7 @@ ECode CBalloonHint::UpdateEx4(
     return PopupWindow::Update(anchor, width, height);
 }
 
-ECode CBalloonHint::UpdateEx5(
+ECode CBalloonHint::Update(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 xoff,
     /* [in] */ Int32 yoff,

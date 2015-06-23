@@ -4,9 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "database/sqlite/SQLiteOpenHelper.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::Database::Sqlite::ISQLiteOpenHelper;
 using Elastos::Droid::Database::Sqlite::SQLiteOpenHelper;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;

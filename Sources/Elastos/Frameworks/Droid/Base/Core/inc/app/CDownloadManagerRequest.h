@@ -4,13 +4,13 @@
 
 #include "ext/frameworkext.h"
 #include "_CDownloadManagerRequest.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Pair.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFile;
-using Elastos::Utility::List;
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Net::IUri;

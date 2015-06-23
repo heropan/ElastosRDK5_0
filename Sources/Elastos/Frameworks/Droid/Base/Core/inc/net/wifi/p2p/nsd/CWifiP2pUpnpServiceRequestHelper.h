@@ -17,7 +17,7 @@ public:
     CARAPI NewInstance(
         /* [out] */ IWifiP2pUpnpServiceRequest** instance);
 
-    CARAPI NewInstanceEx(
+    CARAPI NewInstance(
         /* [in] */ const String& st,
         /* [out] */ IWifiP2pUpnpServiceRequest** instance);
 };

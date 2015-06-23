@@ -2,7 +2,7 @@
 #include "provider/CContactsSettings.h"
 #include "net/Uri.h"
 #include "content/CContentValues.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Net::Uri;

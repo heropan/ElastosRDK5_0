@@ -199,7 +199,7 @@ ECode CImageButton::SetColorFilter(
     return ImageButton::SetColorFilter(color);
 }
 
-ECode CImageButton::SetColorFilterEx(
+ECode CImageButton::SetColorFilter(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode)
 {
@@ -219,7 +219,7 @@ ECode CImageButton::GetColorFilter(
     return NOERROR;
 }
 
-ECode CImageButton::SetColorFilterEx2(
+ECode CImageButton::SetColorFilter(
         /* [in] */ IColorFilter* cf)
 {
     return ImageButton::SetColorFilter(cf);
@@ -239,10 +239,10 @@ ECode CImageButton::SetImageAlpha(
     return ImageButton::SetImageAlpha(alpha);
 }
 
-ECode CImageButton::SetAlphaEx(
+ECode CImageButton::SetAlpha(
         /* [in] */ Int32 alpha)
 {
-    return ImageButton::SetAlphaEx(alpha);
+    return ImageButton::SetAlpha(alpha);
 }
 
 }// namespace Widget

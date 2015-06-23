@@ -3,8 +3,8 @@
 
 #include "_CTextProgressBar.h"
 #include "widget/internal/TextProgressBar.h"
-#include "widget/RelativeLayoutMacro.h"
-#include "view/ViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

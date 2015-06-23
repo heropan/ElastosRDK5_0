@@ -140,7 +140,7 @@ module
          *        content up.
          * @param duration Duration of the scroll in milliseconds.
          */
-        StartScrollEx(
+        StartScroll(
             [in] Int32 startX,
             [in] Int32 startY,
             [in] Int32 dx,

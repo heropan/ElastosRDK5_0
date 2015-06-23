@@ -4,7 +4,7 @@
 
 #include "_CDynamicLayout.h"
 #include "text/DynamicLayout.h"
-#include "text/LayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

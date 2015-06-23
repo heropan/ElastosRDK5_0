@@ -1,8 +1,8 @@
 
 #include "media/CExifInterface.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <Elastos.Core.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -438,7 +438,7 @@ ECode CExifInterface::GetThumbnail(
 
     AutoPtr<ArrayOf<Byte> > thumbnail = GetThumbnailNative(mFilename);
     *result = thumbnail;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -512,7 +512,7 @@ ECode CExifInterface::GetDateTime(
     CParsePosition::New(0, (IParsePosition**)&pos);
     // try {
     AutoPtr<IDate> datetime;
-    FAIL_RETURN(GetFormatter()->ParseEx(dateTimeString, pos, (IDate**)&datetime));
+    FAIL_RETURN(GetFormatter()->Parse(dateTimeString, pos, (IDate**)&datetime));
     if (datetime != NULL) {
         datetime->GetTime(result);
     }
@@ -549,7 +549,7 @@ ECode CExifInterface::GetGpsDateTime(
 
     // try {
     AutoPtr<IDate> datetime;
-    FAIL_RETURN(GetFormatter()->ParseEx(dateTimeString, pos, (IDate**)&datetime));
+    FAIL_RETURN(GetFormatter()->Parse(dateTimeString, pos, (IDate**)&datetime));
     if (datetime != NULL) {
         datetime->GetTime(result);
     }

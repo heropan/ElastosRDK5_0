@@ -4,9 +4,9 @@
 #include "src/data/DataSourceHelper.h"
 #include "src/data/AsyncImageLoader.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "os/SomeArgs.h"
 
 using Elastos::Core::CBoolean;
@@ -21,8 +21,8 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::CThread;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::CThread;
+using Elastos::Core::IThread;
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;
@@ -195,7 +195,7 @@ ECode CAlbumActivity::MyListener::OnClick(
             Logger::D(TAG, "OnClick()---album_about");
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("Gallery"), String("Gallery.CAboutActivity"));
+            intent->SetClassName(String("Gallery"), String("Gallery.CAboutActivity"));
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "OnClick()---StartActivity CAboutActivity failed!");
             }
@@ -295,7 +295,7 @@ ECode CAlbumActivity::MyListener::OnTouch(
         CBitmapDrawable::New(res, (IBitmap*)NULL, (IBitmapDrawable**)&bitmapDrawable);
         itemLayout->SetBackgroundDrawable(IDrawable::Probe(bitmapDrawable));
         AutoPtr<IViewParent> viewParent2;
-        viewParent->GetParentEx((IViewParent**)&viewParent2);
+        viewParent->GetParent((IViewParent**)&viewParent2);
         AutoPtr<IAdapterView> adapterView = IAdapterView::Probe(viewParent2);
         Int32 index = 0;
         adapterView->GetPositionForView(v, &index);
@@ -306,7 +306,7 @@ ECode CAlbumActivity::MyListener::OnTouch(
             Logger::D(TAG, "onTouch()--ACTION_UP--path:%s", folderPath.string());
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("Gallery"), String("Gallery.CBrowserActivity"));
+            intent->SetClassName(String("Gallery"), String("Gallery.CBrowserActivity"));
             intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, folderPath);
             intent->PutStringExtra(DataSourceHelper::SOURCE_DESC, entry->desc);
             if (FAILED(mHost->StartActivity(intent))) {
@@ -449,7 +449,7 @@ ECode CAlbumActivity::MyLoadImageCallback::ImageLoaded(
     args->mArg2 = imageView;
 
     AutoPtr<IMessage> msg;
-    mHost->mMyHandler->ObtainMessageEx(CAlbumActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
+    mHost->mMyHandler->ObtainMessage(CAlbumActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
     Boolean result;
     return mHost->mMyHandler->SendMessage(msg, &result);
 }

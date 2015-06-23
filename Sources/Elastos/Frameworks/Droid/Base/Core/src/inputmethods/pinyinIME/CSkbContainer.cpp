@@ -9,7 +9,7 @@
 #include "CPinyinEnvironmentHelper.h"
 #include "CBalloonHint.h"
 #include "CSoftKeyboardView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::ISystemProperties;
@@ -182,7 +182,7 @@ ECode SkbContainer::ToggleCandidateMode(
         ((SoftKeyboard*)skb.Get())->EnableToggleState(state, FALSE);
     }
 
-    return mMajorView->InvalidateEx2();
+    return mMajorView->Invalidate();
 }
 
 ECode SkbContainer::UpdateInputMode()
@@ -262,7 +262,7 @@ void SkbContainer::UpdateSkbLayout()
         return;
     }
     mMajorView->SetBalloonHint(mBalloonOnKey, mBalloonPopup, FALSE);
-    mMajorView->InvalidateEx2();
+    mMajorView->Invalidate();
 }
 
 void SkbContainer::ResponseKeyEvent(
@@ -698,7 +698,7 @@ ECode CSkbContainer::OnTouch(
     Int64 tm = 0;
     Int32 value = 0;
     Float fv = 0.f;
-    helper->ObtainEx2(
+    helper->Obtain(
             (event->GetDownTime(&tm), tm),
             (event->GetEventTime(&tm), tm),
             (event->GetAction(&value), value),

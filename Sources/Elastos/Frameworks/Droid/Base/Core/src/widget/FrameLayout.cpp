@@ -1,6 +1,6 @@
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <R.h>
 #include "view/Gravity.h"
 #include "widget/CFrameLayoutLayoutParams.h"
@@ -123,7 +123,7 @@ ECode FrameLayout::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::FrameLayout),
             ARRAY_SIZE(R::styleable::FrameLayout));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     a->GetInt32(R::styleable::FrameLayout_foregroundGravity,
@@ -547,7 +547,7 @@ ECode FrameLayout::Draw(
             Gravity::Apply(mForegroundGravity, iWidth, iHeight,
                 selfBounds, overlayBounds,
                 layoutDirection);
-            foreground->SetBoundsEx(overlayBounds);
+            foreground->SetBounds(overlayBounds);
         }
 
         foreground->Draw(canvas);

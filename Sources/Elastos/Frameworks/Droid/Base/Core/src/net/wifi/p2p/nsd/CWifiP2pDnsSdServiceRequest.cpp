@@ -4,7 +4,7 @@
 #include "CWifiP2pServiceRequest.h"
 #include "CWifiP2pDnsSdServiceInfoHelper.h"
 #include "CWifiP2pDnsSdServiceInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -65,7 +65,7 @@ ECode CWifiP2pDnsSdServiceRequest::NewInstance(
     AutoPtr<CWifiP2pDnsSdServiceRequest> obj;
     CWifiP2pDnsSdServiceRequest::NewByFriend((CWifiP2pDnsSdServiceRequest**)&obj);
     *instance = (IWifiP2pDnsSdServiceRequest*)obj.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -88,7 +88,7 @@ ECode CWifiP2pDnsSdServiceRequest::NewInstance(
         IWifiP2pDnsSdServiceInfo::VERSION_1,
         (CWifiP2pDnsSdServiceRequest**)&obj);
     *instance = (IWifiP2pDnsSdServiceRequest*)obj.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -115,7 +115,7 @@ ECode CWifiP2pDnsSdServiceRequest::NewInstance(
         IWifiP2pDnsSdServiceInfo::VERSION_1,
         (CWifiP2pDnsSdServiceRequest**)&obj);
     *instance = (IWifiP2pDnsSdServiceRequest*)obj.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

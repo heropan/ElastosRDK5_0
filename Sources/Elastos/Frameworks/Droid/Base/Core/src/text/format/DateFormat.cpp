@@ -5,9 +5,9 @@
 #include "text/CSpannableStringBuilder.h"
 #include "provider/Settings.h"
 #include "R.h"
-#include <elastos/StringBuilder.h>
-#include <Elastos.Core.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -71,7 +71,7 @@ Boolean DateFormat::Is24HourFormat(
         AutoPtr<IDateFormatHelper> helper;
         CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
         AutoPtr<Elastos::Text::IDateFormat> natural;
-        helper->GetTimeInstanceEx2(Elastos::Text::IDateFormat::LONG, locale, (Elastos::Text::IDateFormat**)&natural);
+        helper->GetTimeInstance(Elastos::Text::IDateFormat::LONG, locale, (Elastos::Text::IDateFormat**)&natural);
 
         if (ISimpleDateFormat::Probe(natural) != NULL) {
             AutoPtr<ISimpleDateFormat> sdf = ISimpleDateFormat::Probe(natural);
@@ -201,7 +201,7 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetLongDateFormat(
     AutoPtr<IDateFormatHelper> helper;
     CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
     AutoPtr<Elastos::Text::IDateFormat> df;
-    helper->GetDateInstanceEx(Elastos::Text::IDateFormat::LONG, (Elastos::Text::IDateFormat**)&df);
+    helper->GetDateInstance(Elastos::Text::IDateFormat::LONG, (Elastos::Text::IDateFormat**)&df);
     return df;
 }
 
@@ -211,7 +211,7 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetMediumDateFormat(
     AutoPtr<IDateFormatHelper> helper;
     CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
     AutoPtr<Elastos::Text::IDateFormat> df;
-    helper->GetDateInstanceEx(Elastos::Text::IDateFormat::MEDIUM, (Elastos::Text::IDateFormat**)&df);
+    helper->GetDateInstance(Elastos::Text::IDateFormat::MEDIUM, (Elastos::Text::IDateFormat**)&df);
     return df;
 }
 
@@ -472,7 +472,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
         if (!replacement.IsNull()) {
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(replacement, (ICharSequence**)&cs);
-            s->ReplaceEx(i, i + count, cs);
+            s->Replace(i, i + count, cs);
             count = replacement.GetLength(); // CARE: count is used in the for loop above
             s->GetLength(&len);
         }
@@ -549,7 +549,7 @@ String DateFormat::GetTimeZoneString(
         inDate->Get(ICalendar::DST_OFFSET, &dstOffset);
         Boolean dst = dstOffset != 0;
         String str;
-        tz->GetDisplayNameEx2(dst, ITimeZone::SHORT, &str);
+        tz->GetDisplayName(dst, ITimeZone::SHORT, &str);
         return str;
     }
 }

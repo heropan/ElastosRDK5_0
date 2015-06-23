@@ -5,7 +5,7 @@
 #include "os/CStatFs.h"
 #include "content/res/CResources.h"
 #include "R.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <sqlite3_android.h>
 
 using Elastos::Droid::R;
@@ -60,7 +60,7 @@ String SQLiteGlobal::GetDefaultJournalMode()
     r->GetString(R::string::db_default_journal_mode, &str);
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
-    sp->GetEx(String("debug.sqlite.journalmode"), str, &result);
+    sp->Get(String("debug.sqlite.journalmode"), str, &result);
     return result;
 }
 
@@ -79,7 +79,7 @@ String SQLiteGlobal::GetDefaultSyncMode()
     r->GetString(R::string::db_default_sync_mode, &str);
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
-    sp->GetEx(String("debug.sqlite.syncmode"), str, &result);
+    sp->Get(String("debug.sqlite.syncmode"), str, &result);
     return result;
 }
 
@@ -90,7 +90,7 @@ String SQLiteGlobal::GetWALSyncMode()
     r->GetString(R::string::db_wal_sync_mode, &str);
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
-    sp->GetEx(String("debug.sqlite.wal.syncmode"), str, &result);
+    sp->Get(String("debug.sqlite.wal.syncmode"), str, &result);
     return result;
 }
 

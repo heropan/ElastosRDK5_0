@@ -4,7 +4,7 @@
 
 #include "_CActionMenuItemView.h"
 #include "view/menu/ActionMenuItemView.h"
-#include "widget/TextViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -68,7 +68,7 @@ public:
     CARAPI ShowsIcon(
         /* [out] */ Boolean* shows);
 
-    CARAPI SetEnabledEx(
+    CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
     CARAPI NeedsDividerBefore(

@@ -1,12 +1,12 @@
 
 #include "test.h"
 #include <elautoptr.h>
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 #include <tstcom.h>
 #include <os/Process.h>
 
 using namespace Elastos::Droid::Os;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using namespace Elastos::Core;
 
 

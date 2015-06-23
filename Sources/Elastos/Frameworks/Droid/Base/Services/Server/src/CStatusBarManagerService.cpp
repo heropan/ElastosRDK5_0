@@ -4,8 +4,8 @@
 #include "os/Runnable.h"
 #include "os/Handler.h"
 #include "os/UserHandle.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

@@ -374,7 +374,7 @@ public:
         /* [in] */ IIntent* intent);
 
     //    @Deprecated
-    CARAPI SetRemoteAdapterEx(
+    CARAPI SetRemoteAdapter(
         /* [in] */ Int32 appWidgetId,
         /* [in] */ Int32 viewId,
         /* [in] */ IIntent* intent);
@@ -623,7 +623,7 @@ public:
         /* [out] */ IView** view);
 
     /** @hide */
-    CARAPI ApplyEx(
+    CARAPI Apply(
         /* [in] */ IContext* context,
         /* [in] */ IViewGroup* parent,
         /* [in] */ IRemoteViewsOnClickHandler* handler,
@@ -642,7 +642,7 @@ public:
         /* [in] */ IView* v);
 
     /** @hide */
-    CARAPI ReapplyEx(
+    CARAPI Reapply(
         /* [in] */ IContext* context,
         /* [in] */ IView* v,
         /* [in] */ IRemoteViewsOnClickHandler* handler);

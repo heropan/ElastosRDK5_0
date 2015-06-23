@@ -6,11 +6,10 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Mutex.h>
 #include <pthread.h>
 
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::IThread;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Os::IMessageQueue;
 

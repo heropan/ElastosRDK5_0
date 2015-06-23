@@ -17,8 +17,8 @@ ECode CBrowser::GetSEARCHESURI(
 }
 
 ECode CBrowser::SaveBookmark(
-    /* [in] */ IContext* c, 
-    /* [in] */ const String& title, 
+    /* [in] */ IContext* c,
+    /* [in] */ const String& title,
     /* [in] */ const String& url)
 {
 //     Intent i = new Intent(Intent.ACTION_INSERT, Browser.BOOKMARKS_URI);
@@ -34,7 +34,7 @@ ECode CBrowser::SendString(
 //    sendString(context, string, context.getString(com.android.internal.R.string.sendText));
 }
 
-ECode CBrowser::SendStringEx(
+ECode CBrowser::SendString(
     /* [in] */ IContext* c,
     /* [in] */ const String& stringToSend,
     /* [in] */ const String& chooserDialogTitle)
@@ -55,10 +55,10 @@ ECode CBrowser::SendStringEx(
 
 ECode CBrowser::GetAllBookmarks(
     /* [in] */ IContentResolver* cr,
-    /* [out] */ ICursor** bookmarks) 
+    /* [out] */ ICursor** bookmarks)
 {
 //     return cr.query(Bookmarks.CONTENT_URI,
-//             new String[] { Bookmarks.URL }, 
+//             new String[] { Bookmarks.URL },
 //             Bookmarks.IS_FOLDER + " = 0", null, null);
 }
 
@@ -199,7 +199,7 @@ ECode CBrowser::TruncateHistory(
 //     // TODO make a single request to the provider to do this in a single transaction
 //     Cursor cursor = null;
 //     try {
-        
+
 //         // Select non-bookmark history, ordered by date
 //         cursor = cr.query(History.CONTENT_URI,
 //                 new String[] { History._ID, History.URL, History.DATE_LAST_VISITED },
@@ -296,7 +296,7 @@ ECode CBrowser::DeleteHistoryTimeFrame(
 }
 
 ECode CBrowser::DeleteFromHistory(
-    /* [in] */ IContentResolver* cr, 
+    /* [in] */ IContentResolver* cr,
     /* [in] */ const String& url)
 {
 //    cr.delete(History.CONTENT_URI, History.URL + "=?", new String[] { url });

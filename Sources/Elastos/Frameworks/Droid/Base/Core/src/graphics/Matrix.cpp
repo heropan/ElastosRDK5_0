@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "graphics/Matrix.h"
 #include "graphics/GraphicsNative.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <skia/core/SkMatrix.h>
 
 using Elastos::Core::StringBuilder;
@@ -123,7 +123,7 @@ ECode Matrix::SetScale(
 }
 
 /** Set the matrix to scale by sx and sy. */
-ECode Matrix::SetScaleEx(
+ECode Matrix::SetScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
@@ -148,7 +148,7 @@ ECode Matrix::SetRotate(
 /**
  * Set the matrix to rotate about (0,0) by the specified number of degrees.
  */
-ECode Matrix::SetRotateEx(
+ECode Matrix::SetRotate(
     /* [in] */ Float degrees)
 {
     NativeSetRotate(mNativeInstance, degrees);
@@ -171,7 +171,7 @@ ECode Matrix::SetSinCos(
 }
 
 /** Set the matrix to rotate by the specified sine and cosine values. */
-ECode Matrix::SetSinCosEx(
+ECode Matrix::SetSinCos(
     /* [in] */ Float sinValue,
     /* [in] */ Float cosValue)
 {
@@ -195,7 +195,7 @@ ECode Matrix::SetSkew(
 }
 
 /** Set the matrix to skew by sx and sy. */
-ECode Matrix::SetSkewEx(
+ECode Matrix::SetSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky)
 {
@@ -251,7 +251,7 @@ ECode Matrix::PreScale(
  * Preconcats the matrix with the specified scale.
  * M' = M * S(sx, sy)
  */
-ECode Matrix::PreScaleEx(
+ECode Matrix::PreScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
@@ -278,7 +278,7 @@ ECode Matrix::PreRotate(
  * Preconcats the matrix with the specified rotation.
  * M' = M * R(degrees)
  */
-ECode Matrix::PreRotateEx(
+ECode Matrix::PreRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
@@ -305,7 +305,7 @@ ECode Matrix::PreSkew(
  * Preconcats the matrix with the specified skew.
  * M' = M * K(kx, ky)
  */
-ECode Matrix::PreSkewEx(
+ECode Matrix::PreSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
@@ -358,7 +358,7 @@ ECode Matrix::PostScale(
  * Postconcats the matrix with the specified scale.
  * M' = S(sx, sy) * M
  */
-ECode Matrix::PostScaleEx(
+ECode Matrix::PostScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
@@ -385,7 +385,7 @@ ECode Matrix::PostRotate(
  * Postconcats the matrix with the specified rotation.
  * M' = R(degrees) * M
  */
-ECode Matrix::PostRotateEx(
+ECode Matrix::PostRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
@@ -412,7 +412,7 @@ ECode Matrix::PostSkew(
  * Postconcats the matrix with the specified skew.
  * M' = K(kx, ky) * M
  */
-ECode Matrix::PostSkewEx(
+ECode Matrix::PostSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
@@ -583,7 +583,7 @@ ECode Matrix::MapVectors(
  * @param dst   The array of dst points (x,y pairs)
  * @param src   The array of src points (x,y pairs)
  */
-ECode Matrix::MapPointsEx(
+ECode Matrix::MapPoints(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ const ArrayOf<Float>& src)
 {
@@ -606,7 +606,7 @@ ECode Matrix::MapPointsEx(
  * @param dst   The array of dst vectors (x,y pairs)
  * @param src   The array of src vectors (x,y pairs)
  */
-ECode Matrix::MapVectorsEx(
+ECode Matrix::MapVectors(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ const ArrayOf<Float>& src)
 {
@@ -624,7 +624,7 @@ ECode Matrix::MapVectorsEx(
  *
  * @param pts The array [x0, y0, x1, y1, ...] of points to transform.
  */
-ECode Matrix::MapPointsEx2(
+ECode Matrix::MapPoints(
     /* [in, out] */ ArrayOf<Float>* pts)
 {
     return MapPoints(pts, 0, *pts, 0, pts->GetLength() >> 1);
@@ -639,7 +639,7 @@ ECode Matrix::MapPointsEx2(
  *
  * @param vecs The array [x0, y0, x1, y1, ...] of vectors to transform.
  */
-ECode Matrix::MapVectorsEx2(
+ECode Matrix::MapVectors(
     /* [in, out] */ ArrayOf<Float>* vecs)
 {
     return MapVectors(vecs, 0, *vecs, 0, vecs->GetLength() >> 1);
@@ -675,7 +675,7 @@ ECode Matrix::MapRect(
  * @param rect The rectangle to transform.
  * @return the result of calling rectStaysRect()
  */
-ECode Matrix::MapRectEx(
+ECode Matrix::MapRect(
     /* [in] */ IRectF* rect,
     /* [out] */ Boolean* result)
 {
@@ -730,7 +730,7 @@ ECode Matrix::ToString(
 {
     StringBuilder sb(64);
     sb.AppendString(String("Matrix{"));
-    ToShortStringEx((IStringBuilder*)&sb);
+    ToShortString((IStringBuilder*)&sb);
     sb.AppendChar('}');
     sb.ToString(str);
     return NOERROR;
@@ -741,7 +741,7 @@ ECode Matrix::ToShortString(
     /* [out] */ String* str)
 {
     StringBuilder sb(64);
-    ToShortStringEx((IStringBuilder*)&sb);
+    ToShortString((IStringBuilder*)&sb);
     sb.ToString(str);
     return NOERROR;
 }
@@ -749,7 +749,7 @@ ECode Matrix::ToShortString(
 /**
  * @hide
  */
-ECode Matrix::ToShortStringEx(
+ECode Matrix::ToShortString(
     /* [in] */ IStringBuilder* sb)
 {
     ArrayOf_<Float, 9> values;

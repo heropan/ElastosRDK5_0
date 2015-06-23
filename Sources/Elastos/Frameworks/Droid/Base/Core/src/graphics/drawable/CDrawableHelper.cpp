@@ -26,7 +26,7 @@ ECode CDrawableHelper::CreateFromResourceStream(
     return Drawable::CreateFromResourceStream(res, value, is, srcName, opts, draw);
 }
 
-ECode CDrawableHelper::CreateFromResourceStreamEx(
+ECode CDrawableHelper::CreateFromResourceStream(
     /* [in] */ IResources* res,
     /* [in] */ ITypedValue* value,
     /* [in] */ IInputStream* is,

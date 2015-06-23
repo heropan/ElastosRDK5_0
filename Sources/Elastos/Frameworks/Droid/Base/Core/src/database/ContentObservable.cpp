@@ -14,10 +14,10 @@ ECode ContentObservable::RegisterObserver(
 ECode ContentObservable::DispatchChange(
     /* [in] */ Boolean selfChange)
 {
-    return DispatchChangeEx(selfChange, NULL);
+    return DispatchChange(selfChange, NULL);
 }
 
-ECode ContentObservable::DispatchChangeEx(
+ECode ContentObservable::DispatchChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {

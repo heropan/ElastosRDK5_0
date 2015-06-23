@@ -37,7 +37,7 @@ ECode CResourcesHelper::GetSystem(
     VALIDATE_NOT_NULL(res);
     AutoPtr<IResources> r = CResources::GetSystem();
     *res = r;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -50,7 +50,7 @@ ECode CResourcesHelper::UpdateSystemConfiguration(
     return NOERROR;
 }
 
-ECode CResourcesHelper::UpdateSystemConfigurationEx(
+ECode CResourcesHelper::UpdateSystemConfiguration(
     /* [in] */ IConfiguration* config,
     /* [in] */ IDisplayMetrics* metrics)
 {

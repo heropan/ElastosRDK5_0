@@ -20,7 +20,7 @@ module
             [in] Float dx,
             [in] Float dy);
 
-        AddLayerEx(
+        AddLayer(
             [in] IPaint* paint);
     }
 

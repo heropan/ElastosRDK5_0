@@ -1,7 +1,7 @@
 
 #include "am/CPendingIntentRecordKey.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "am/ActivityRecord.h"
 #include "am/CActivityManagerService.h"
 

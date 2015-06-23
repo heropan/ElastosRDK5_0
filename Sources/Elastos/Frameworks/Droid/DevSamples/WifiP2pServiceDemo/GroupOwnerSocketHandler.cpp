@@ -1,6 +1,6 @@
 #include "GroupOwnerSocketHandler.h"
 #include "ChatManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Slogger;

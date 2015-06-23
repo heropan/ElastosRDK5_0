@@ -44,10 +44,10 @@ ECode CImageView::constructor(
     return ImageView::Init(context, attrs, defStyle);
 }
 
-ECode CImageView::SetAlphaEx(
+ECode CImageView::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    return ImageView::SetAlphaEx(alpha);
+    return ImageView::SetAlpha(alpha);
 }
 
 }// namespace Widget

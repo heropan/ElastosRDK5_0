@@ -2,9 +2,9 @@
 #define __CRADIOGROUPLAYOUTPARAMS_H_
 
 #include "_CRadioGroupLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 #include "widget/RadioGroupLayoutParams.h"
-#include "widget/LinearLayoutMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

@@ -6,10 +6,10 @@
 #include "util/AsyncChannel.h"
 #include "os/HandlerBase.h"
 #include <elastos/Pair.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Pair;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::Pair;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::Utility::AsyncChannel;

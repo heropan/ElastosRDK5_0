@@ -112,7 +112,7 @@ module
             [in] Int64 rxBytes,
             [in] Int64 txBytes);
 
-        RecordDataEx(
+        RecordData(
             [in] Int64 start,
             [in] Int64 end,
             [in] INetworkStatsEntry* entry);
@@ -128,13 +128,13 @@ module
         RemoveBucketsBefore(
             [in] Int64 cutoff);
 
-        GetValuesEx(
+        GetValues(
             [in] Int64 start,
             [in] Int64 end,
             [in] INetworkStatsHistoryEntry* recycle,
             [out] INetworkStatsHistoryEntry** result);
 
-        GetValuesEx2(
+        GetValues(
             [in] Int64 start,
             [in] Int64 end,
             [in] Int64 now,
@@ -146,7 +146,7 @@ module
             [in] Int64 end,
             [in] Int64 bytes);
 
-        GenerateRandomEx(
+        GenerateRandom(
             [in] Int64 start,
             [in] Int64 end,
             [in] Int64 rxBytes,

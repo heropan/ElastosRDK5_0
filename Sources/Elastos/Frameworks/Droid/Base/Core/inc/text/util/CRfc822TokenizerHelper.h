@@ -19,7 +19,7 @@ public:
         /* [in] */ ICharSequence* text,
         /* [in, out] */ IObjectContainer* ret);
 
-    CARAPI TokenizeEx(
+    CARAPI Tokenize(
         /* [in] */ ICharSequence* text,
         /* [out, callee] */ ArrayOf<IRfc822Token*>** ret);
 };

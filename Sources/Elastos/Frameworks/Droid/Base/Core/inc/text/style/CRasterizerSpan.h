@@ -4,7 +4,7 @@
 
 #include "_CRasterizerSpan.h"
 #include "text/style/RasterizerSpan.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

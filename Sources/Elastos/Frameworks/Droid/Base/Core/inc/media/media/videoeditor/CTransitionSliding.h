@@ -5,7 +5,7 @@
 #include "_CTransitionSliding.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Transition.h"
-#include "media/media/videoeditor/TransitionMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

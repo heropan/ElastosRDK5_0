@@ -4,7 +4,6 @@
 
 #include "_CNetworkIdentity.h"
 #include "os/Build.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Build;
@@ -30,7 +29,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result );
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ INetworkIdentity* obj,
         /* [out] */ Boolean* result );
 

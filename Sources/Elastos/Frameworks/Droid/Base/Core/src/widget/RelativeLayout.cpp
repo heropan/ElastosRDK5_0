@@ -3,9 +3,9 @@
 #include <R.h>
 #include "view/Gravity.h"
 #include "view/ViewGroup.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IComparator;
@@ -607,7 +607,7 @@ ECode RelativeLayout::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::RelativeLayout),
             ARRAY_SIZE(R::styleable::RelativeLayout));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx2(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
 
     a->GetResourceId(R::styleable::RelativeLayout_ignoreGravity, IView::NO_ID, &mIgnoreGravity);
@@ -954,7 +954,7 @@ void RelativeLayout::OnMeasure(
 
                     CRelativeLayoutLayoutParams* lp = (CRelativeLayoutLayoutParams*)params.Get();
                     AutoPtr<ArrayOf<Int32> > rules;
-                    lp->GetRulesEx(layoutDirection, (ArrayOf<Int32>**)&rules);
+                    lp->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
                     if ((*rules)[IRelativeLayout::CENTER_IN_PARENT] != 0 ||
                             (*rules)[IRelativeLayout::CENTER_HORIZONTAL] != 0) {
                         CenterHorizontal(child, lp, width);
@@ -996,7 +996,7 @@ void RelativeLayout::OnMeasure(
 
                     CRelativeLayoutLayoutParams* lp = (CRelativeLayoutLayoutParams*)params.Get();
                     AutoPtr<ArrayOf<Int32> > rules;
-                    lp->GetRulesEx(layoutDirection, (ArrayOf<Int32>**)&rules);
+                    lp->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
                     if ((*rules)[IRelativeLayout::CENTER_IN_PARENT] != 0 ||
                             (*rules)[IRelativeLayout::CENTER_VERTICAL] != 0) {
                         CenterVertical(child, lp, height);
@@ -1056,7 +1056,7 @@ void RelativeLayout::AlignBaseline(
     Int32 layoutDirection = GetLayoutDirection();
 
     AutoPtr<ArrayOf<Int32> > rules;
-    params->GetRulesEx(layoutDirection, (ArrayOf<Int32>**)&rules);
+    params->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
     Int32 anchorBaseline = GetRelatedViewBaseline(rules, IRelativeLayout::ALIGN_BASELINE);
 
     if (anchorBaseline != -1) {
@@ -1215,7 +1215,7 @@ Boolean RelativeLayout::PositionChildHorizontal(
     Int32 layoutDirection = GetLayoutDirection();
 
     AutoPtr<ArrayOf<Int32> > rules;
-    params->GetRulesEx(layoutDirection, (ArrayOf<Int32>**)&rules);
+    params->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
 
     Int32 width;
     child->GetMeasuredWidth(&width);
@@ -1307,7 +1307,7 @@ void RelativeLayout::ApplyHorizontalSizeRules(
     Int32 layoutDirection = GetLayoutDirection();
 
     AutoPtr<ArrayOf<Int32> > rules;
-    childParams->GetRulesEx(layoutDirection, (ArrayOf<Int32>**)&rules);
+    childParams->GetRules(layoutDirection, (ArrayOf<Int32>**)&rules);
     AutoPtr<CRelativeLayoutLayoutParams> anchorParams;
 
     // -1 indicated a "soft requirement" in that direction. For example:
@@ -1476,7 +1476,7 @@ AutoPtr<IView> RelativeLayout::GetRelatedView(
             AutoPtr<ArrayOf<Int32> > rules;
             Int32 direction;
             v->GetLayoutDirection(&direction);
-            params->GetRulesEx(direction, (ArrayOf<Int32>**)&rules);
+            params->GetRules(direction, (ArrayOf<Int32>**)&rules);
 
             it = mGraph->mKeyNodes.Find((*rules)[relation]);
             node = it == mGraph->mKeyNodes.End() ? NULL : it->mSecond;

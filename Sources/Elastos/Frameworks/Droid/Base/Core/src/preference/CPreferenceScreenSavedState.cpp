@@ -36,7 +36,7 @@ ECode CPreferenceScreenSavedState::GetDialogBundle(
 {
     VALIDATE_NOT_NULL(b)
     *b = mDialogBundle;
-    INTERFACE_ADDREF(*b)
+    REFCOUNT_ADD(*b)
     return NOERROR;
 }
 

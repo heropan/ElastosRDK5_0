@@ -25,7 +25,7 @@ ECode CDragShadowBuilder::GetView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

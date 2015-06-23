@@ -1,6 +1,6 @@
 
 #include "animation/Animator.h"
-#include <elastos/Algorithm.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 namespace Elastos {
 namespace Droid {
@@ -71,7 +71,7 @@ ECode Animator::GetListeners(
             tmp->Set(i, *it);
         }
         *listeners = tmp;
-        INTERFACE_ADDREF(*listeners);
+        REFCOUNT_ADD(*listeners);
         return NOERROR;
     }
 

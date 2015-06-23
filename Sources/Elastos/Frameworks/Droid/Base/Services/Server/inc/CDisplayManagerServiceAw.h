@@ -2,13 +2,10 @@
 #define __CDISPLAYMANAGERSERVICEAW_H__
 
 #include "_CDisplayManagerServiceAw.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IIPowerManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IIWindowManager;

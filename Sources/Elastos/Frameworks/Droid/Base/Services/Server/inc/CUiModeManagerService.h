@@ -4,11 +4,10 @@
 
 #include "_CUiModeManagerService.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "content/BroadcastReceiver.h"
 #include "TwilightService.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;

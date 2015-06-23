@@ -5,8 +5,8 @@
 #include "_CSuggestionSpan.h"
 #include "ext/frameworkext.h"
 #include "text/style/SuggestionSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 #include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {

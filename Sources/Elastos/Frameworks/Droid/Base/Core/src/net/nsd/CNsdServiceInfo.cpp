@@ -1,7 +1,7 @@
 #include "CNsdServiceInfo.h"
 #include "ext/frameworkdef.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -76,7 +76,7 @@ ECode CNsdServiceInfo::GetTxtRecord(
 {
     VALIDATE_NOT_NULL(rec);
     *rec = mTxtRecord;
-    INTERFACE_ADDREF(*rec);
+    REFCOUNT_ADD(*rec);
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ ECode CNsdServiceInfo::GetHost(
 {
     VALIDATE_NOT_NULL(host);
     *host = mHost;
-    INTERFACE_ADDREF(*host);
+    REFCOUNT_ADD(*host);
     return NOERROR;
 }
 

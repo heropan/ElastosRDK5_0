@@ -1,16 +1,15 @@
 #include "ext/frameworkext.h"
 #include "am/CPendingIntentRecord.h"
-#include <elastos/Mutex.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/Binder.h"
 #include "am/CActivityManagerService.h"
 #include "am/ActivityStack.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::Binder;

@@ -3,9 +3,9 @@
 
 #include "_CDispListHelper.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "Elastos.Core.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 #define HDMI_DEFAULT_FORMAT DISP_FORMAT_HDMI_720P_60HZ
 #define CVBS_DEFAULT_FORMAT DISP_FORMAT_NTSC
@@ -17,7 +17,7 @@ using Elastos::Utility::IObjectMap;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 #ifndef HASH_EQUALTO_FUNC_FOR_AUTOPTR_IDISPLISTDISPFORMAT
 #define HASH_EQUALTO_FUNC_FOR_AUTOPTR_IDISPLISTDISPFORMAT

@@ -2,8 +2,8 @@
 #include "connectivity/CTethering.h"
 #include "net/NetworkUtils.h"
 #include "R.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
@@ -1619,7 +1619,7 @@ void CTethering::ShowTetheredNotification(
 
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent **)&intent);
-    intent->SetClassNameEx(String("com.android.settings"), String("com.android.settings.TetherSettings"));
+    intent->SetClassName(String("com.android.settings"), String("com.android.settings.TetherSettings"));
     intent->SetFlags(IIntent::FLAG_ACTIVITY_NO_HISTORY);
 
     AutoPtr<IPendingIntentHelper> helper;

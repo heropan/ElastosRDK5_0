@@ -2,9 +2,9 @@
 #include "widget/TableRow.h"
 #include "widget/CTableRowLayoutParams.h"
 #include "view/CGravity.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::CGravity;
 using Elastos::Droid::View::EIID_IViewGroupOnHierarchyChangeListener;

@@ -11,8 +11,8 @@
 #include "R.h"
 
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::Mutex;
+using Elastos::Core::CThread;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::CAlertDialogBuilder;
 using Elastos::Droid::App::IAlertDialogBuilder;
@@ -28,7 +28,7 @@ using Elastos::Droid::Os::Process;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::ViewRootImpl;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Iterator;
 
 namespace Elastos {
@@ -82,7 +82,7 @@ ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClick
     AutoPtr<IMessage> msg;
 
     CMessageHelper::AcquireSingleton((IMessageHelper**)&msgHelper);
-    msgHelper->ObtainEx3(mOwner->mWatchdogHandler, TIMED_OUT, (IMessage**)&msg);
+    msgHelper->Obtain(mOwner->mWatchdogHandler, TIMED_OUT, (IMessage**)&msg);
 
     Boolean bResult = FALSE;
     return mOwner->mWatchdogHandler->SendMessageDelayed(msg, SUBSEQUENT_TIMEOUT_PERIOD, &bResult);
@@ -107,7 +107,7 @@ ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnCance
     AutoPtr<IMessage> msg;
 
     CMessageHelper::AcquireSingleton((IMessageHelper**)&msgHelper);
-    msgHelper->ObtainEx3(mOwner->mWatchdogHandler, TIMED_OUT, (IMessage**)&msg);
+    msgHelper->Obtain(mOwner->mWatchdogHandler, TIMED_OUT, (IMessage**)&msg);
 
     Boolean bResult = FALSE;
     return mOwner->mWatchdogHandler->SendMessageDelayed(msg, SUBSEQUENT_TIMEOUT_PERIOD, &bResult);
@@ -176,11 +176,11 @@ ECode WebCoreThreadWatchdog::InnerHandler::HandleMessage(
             AutoPtr<IMessage> msg1, msg2, msg3;
 
             Boolean bResult = FALSE;
-            msgHelper->ObtainEx3(this, TIMED_OUT, (IMessage**)&msg1);
+            msgHelper->Obtain(this, TIMED_OUT, (IMessage**)&msg1);
             SendMessageDelayed(msg1, TIMEOUT_PERIOD, &bResult);
 
-            msgHelper->ObtainEx3(mOwner->mHandler, IS_ALIVE, (IMessage**)&msg2);
-            msgHelper->ObtainEx4(mOwner->mWebCoreThreadHandler, CWebViewCore::EventHub::HEARTBEAT, msg2, (IMessage**)&msg3);
+            msgHelper->Obtain(mOwner->mHandler, IS_ALIVE, (IMessage**)&msg2);
+            msgHelper->Obtain(mOwner->mWebCoreThreadHandler, CWebViewCore::EventHub::HEARTBEAT, msg2, (IMessage**)&msg3);
             mOwner->mWebCoreThreadHandler->SendMessageDelayed(msg3, HEARTBEAT_PERIOD, &bResult);
         }
         break;
@@ -236,7 +236,7 @@ ECode WebCoreThreadWatchdog::InnerHandler::HandleMessage(
                     // never get the chance to terminate the process, and will
                     // need to do it manually.
                     AutoPtr<IMessage> msg;
-                    msgHelper->ObtainEx3(this, TIMED_OUT, (IMessage**)&msg);
+                    msgHelper->Obtain(this, TIMED_OUT, (IMessage**)&msg);
                     Boolean bResult = FALSE;
                     SendMessageDelayed(msg,
                             SUBSEQUENT_TIMEOUT_PERIOD, &bResult);
@@ -354,12 +354,12 @@ ECode WebCoreThreadWatchdog::Run()
             AutoPtr<IMessage> msg1, msg2, msg3;
 
             CMessageHelper::AcquireSingleton((IMessageHelper**)&msgHelper);
-            msgHelper->ObtainEx3(mHandler, IS_ALIVE, (IMessage**)&msg1);
-            msgHelper->ObtainEx4(mWebCoreThreadHandler, CWebViewCore::EventHub::HEARTBEAT, msg1, (IMessage**)&msg2);
+            msgHelper->Obtain(mHandler, IS_ALIVE, (IMessage**)&msg1);
+            msgHelper->Obtain(mWebCoreThreadHandler, CWebViewCore::EventHub::HEARTBEAT, msg1, (IMessage**)&msg2);
             msg2->SendToTarget();
 
             Boolean bResult = FALSE;
-            msgHelper->ObtainEx3(mHandler, TIMED_OUT, (IMessage**)&msg3);
+            msgHelper->Obtain(mHandler, TIMED_OUT, (IMessage**)&msg3);
             mHandler->SendMessageDelayed(msg3, TIMEOUT_PERIOD, &bResult);
         }
     }
@@ -412,12 +412,12 @@ void WebCoreThreadWatchdog::ResumeWatchdog()
     AutoPtr<IMessage> msg1, msg2, msg3;
 
     CMessageHelper::AcquireSingleton((IMessageHelper**)&msgHelper);
-    msgHelper->ObtainEx3(mHandler, IS_ALIVE, (IMessage**)&msg1);
-    msgHelper->ObtainEx4(mWebCoreThreadHandler, CWebViewCore::EventHub::HEARTBEAT, msg1, (IMessage**)&msg2);
+    msgHelper->Obtain(mHandler, IS_ALIVE, (IMessage**)&msg1);
+    msgHelper->Obtain(mWebCoreThreadHandler, CWebViewCore::EventHub::HEARTBEAT, msg1, (IMessage**)&msg2);
     msg2->SendToTarget();
 
     Boolean bResult = FALSE;
-    msgHelper->ObtainEx3(mHandler, TIMED_OUT, (IMessage**)&msg3);
+    msgHelper->Obtain(mHandler, TIMED_OUT, (IMessage**)&msg3);
     mHandler->SendMessageDelayed(msg3, TIMEOUT_PERIOD, &bResult);
 }
 

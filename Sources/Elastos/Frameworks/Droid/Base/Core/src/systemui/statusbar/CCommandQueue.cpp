@@ -1,5 +1,5 @@
 #include "systemui/statusbar/CCommandQueue.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 #include "statusbar/CStatusBarIcon.h"
 
 using Elastos::Core::CStringWrapper;
@@ -79,7 +79,7 @@ ECode CCommandQueue::SetIcon(
     Int32 what = MSG_ICON | index;
     mHandler->RemoveMessages(what);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx3(what, OP_SET_ICON, 0, cloneIcon, (IMessage**)&msg);
+    mHandler->ObtainMessage(what, OP_SET_ICON, 0, cloneIcon, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -92,7 +92,7 @@ ECode CCommandQueue::RemoveIcon(
     Int32 what = MSG_ICON | index;
     mHandler->RemoveMessages(what);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(what, OP_REMOVE_ICON, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(what, OP_REMOVE_ICON, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -108,7 +108,7 @@ ECode CCommandQueue::AddNotification(
     ne->mNotification = notification;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_ADD_NOTIFICATION, ne, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_ADD_NOTIFICATION, ne, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -124,7 +124,7 @@ ECode CCommandQueue::UpdateNotification(
     ne->mNotification = notification;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_UPDATE_NOTIFICATION, ne, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_UPDATE_NOTIFICATION, ne, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -135,7 +135,7 @@ ECode CCommandQueue::RemoveNotification(
     Mutex::Autolock lock(mListLock);
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_REMOVE_NOTIFICATION, key, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_REMOVE_NOTIFICATION, key, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -147,7 +147,7 @@ ECode CCommandQueue::Disable(
 
     mHandler->RemoveMessages(MSG_DISABLE);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_DISABLE, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DISABLE, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -158,7 +158,7 @@ ECode CCommandQueue::AnimateExpandNotificationsPanel()
 
     mHandler->RemoveMessages(MSG_EXPAND_NOTIFICATIONS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_EXPAND_NOTIFICATIONS, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_EXPAND_NOTIFICATIONS, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -169,7 +169,7 @@ ECode CCommandQueue::AnimateExpandSettingsPanel()
 
     mHandler->RemoveMessages(MSG_EXPAND_SETTINGS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_EXPAND_SETTINGS, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_EXPAND_SETTINGS, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -180,7 +180,7 @@ ECode CCommandQueue::AnimateCollapsePanels()
 
     mHandler->RemoveMessages(MSG_COLLAPSE_PANELS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_COLLAPSE_PANELS, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_COLLAPSE_PANELS, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -193,7 +193,7 @@ ECode CCommandQueue::SetSystemUiVisibility(
 
     mHandler->RemoveMessages(MSG_SET_SYSTEMUI_VISIBILITY);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_SET_SYSTEMUI_VISIBILITY,
+    mHandler->ObtainMessage(MSG_SET_SYSTEMUI_VISIBILITY,
         vis, mask, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -206,7 +206,7 @@ ECode CCommandQueue::TopAppWindowChanged(
 
     mHandler->RemoveMessages(MSG_TOP_APP_WINDOW_CHANGED);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_TOP_APP_WINDOW_CHANGED,
+    mHandler->ObtainMessage(MSG_TOP_APP_WINDOW_CHANGED,
         menuVisible ? 1 : 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -221,7 +221,7 @@ ECode CCommandQueue::SetImeWindowStatus(
 
     mHandler->RemoveMessages(MSG_SHOW_IME_BUTTON);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx3(MSG_SHOW_IME_BUTTON,
+    mHandler->ObtainMessage(MSG_SHOW_IME_BUTTON,
         vis, backDisposition, token, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -235,7 +235,7 @@ ECode CCommandQueue::SetHardKeyboardStatus(
 
     mHandler->RemoveMessages(MSG_SET_HARD_KEYBOARD_STATUS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_SET_HARD_KEYBOARD_STATUS,
+    mHandler->ObtainMessage(MSG_SET_HARD_KEYBOARD_STATUS,
         available ? 1 : 0, enabled ? 1 : 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -247,7 +247,7 @@ ECode CCommandQueue::ToggleRecentApps()
 
     mHandler->RemoveMessages(MSG_TOGGLE_RECENT_APPS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_TOGGLE_RECENT_APPS, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_TOGGLE_RECENT_APPS, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -258,7 +258,7 @@ ECode CCommandQueue::PreloadRecentApps()
 
     mHandler->RemoveMessages(MSG_PRELOAD_RECENT_APPS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_PRELOAD_RECENT_APPS, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_PRELOAD_RECENT_APPS, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -269,7 +269,7 @@ ECode CCommandQueue::CancelPreloadRecentApps()
 
     mHandler->RemoveMessages(MSG_CANCEL_PRELOAD_RECENT_APPS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_CANCEL_PRELOAD_RECENT_APPS, 0, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_CANCEL_PRELOAD_RECENT_APPS, 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -281,7 +281,7 @@ ECode CCommandQueue::SetNavigationIconHints(
 
     mHandler->RemoveMessages(MSG_SET_NAVIGATION_ICON_HINTS);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_SET_NAVIGATION_ICON_HINTS, hints, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_SET_NAVIGATION_ICON_HINTS, hints, 0, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }

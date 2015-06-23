@@ -3,8 +3,8 @@
 #define __ABSLISTVIEW_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/IntegralToString.h>
 #include "widget/AdapterView.h"
 #include "widget/EdgeEffect.h"
@@ -15,7 +15,7 @@
 #include "view/CKeyEventHelper.h"
 #include "view/IInputConnectionWrapper.h"
 #include "graphics/CRect.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include "R.h"
 
 namespace Elastos{

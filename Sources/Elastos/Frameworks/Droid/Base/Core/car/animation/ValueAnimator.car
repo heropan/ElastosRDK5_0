@@ -180,7 +180,7 @@ module
          * @return animatedValue The value most recently calculated for the named property
          * by this <code>ValueAnimator</code>.
          */
-        GetAnimatedValueEx(
+        GetAnimatedValue(
             [in] String propertyName,
             [out] IInterface** value);
 

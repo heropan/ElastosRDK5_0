@@ -5,7 +5,7 @@
 #include "os/ServiceManager.h"
 #include "os/Looper.h"
 #include "view/Display.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IContext;
@@ -39,7 +39,7 @@ void DisplayManagerGlobal::DisplayListenerDelegate::SendDisplayEvent(
     /* [in] */ Int32 event)
 {
     AutoPtr<IMessage> msg;
-    ObtainMessageEx2(event, displayId, 0, (IMessage**)&msg);
+    ObtainMessage(event, displayId, 0, (IMessage**)&msg);
     Boolean result;
     SendMessage(msg, &result);
 }
@@ -116,7 +116,7 @@ ECode DisplayManagerGlobal::GetDisplayInfo(
             = mDisplayInfoCache.Find(displayId);
         if (find != mDisplayInfoCache.End()) {
             *displayInfo = find->mSecond;
-            INTERFACE_ADDREF(*displayInfo);
+            REFCOUNT_ADD(*displayInfo);
             return NOERROR;
         }
     }
@@ -155,14 +155,14 @@ ECode DisplayManagerGlobal::GetDisplayIds(
     if (USE_CACHE) {
         if (mDisplayIdCache != NULL) {
             *displayIds = mDisplayIdCache;
-            INTERFACE_ADDREF(*displayIds);
+            REFCOUNT_ADD(*displayIds);
             return NOERROR;
         }
     }
 
     if (FAILED(mDm->GetDisplayIds(displayIds))) {
         *displayIds = ArrayOf<Int32>::Alloc(1);
-        INTERFACE_ADDREF(*displayIds);
+        REFCOUNT_ADD(*displayIds);
         (**displayIds)[0] = IDisplay::DEFAULT_DISPLAY;
         return NOERROR;
     }
@@ -196,7 +196,7 @@ ECode DisplayManagerGlobal::GetCompatibleDisplay(
 
     *display = new View::Display(this, displayId, displayInfo, cih);
     if (*display) {
-        INTERFACE_ADDREF(*display);
+        REFCOUNT_ADD(*display);
         return NOERROR;
     }
     else {

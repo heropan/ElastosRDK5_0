@@ -42,11 +42,11 @@ ECode CArgbEvaluator::Evaluate(
     AutoPtr<IInteger32> r;
     CInteger32::New(retValue, (IInteger32**)&r);
     *result = r;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CArgbEvaluator::EvaluateEx(
+ECode CArgbEvaluator::Evaluate(
     /* [in] */ Float fraction,
     /* [in] */ Int32 startValue,
     /* [in] */ Int32 endValue,

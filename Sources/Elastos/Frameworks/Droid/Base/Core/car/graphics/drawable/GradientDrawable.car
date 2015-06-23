@@ -133,7 +133,7 @@ module
          * @see #mutate()
          * @see #setStroke(int, int)
          */
-        SetStrokeEx(
+        SetStroke(
             [in] Int32 width,
             [in] Int32 color,
             [in] Float dashWidth,

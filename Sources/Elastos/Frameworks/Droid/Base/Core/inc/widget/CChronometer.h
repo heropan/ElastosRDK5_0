@@ -4,8 +4,8 @@
 
 #include "_CChronometer.h"
 #include "widget/Chronometer.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

@@ -198,7 +198,7 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyPress(
         textSize = size;
         AutoPtr<IDrawable> icon = mSoftKeyDown->GetKeyIcon();
         if (NULL != icon) {
-            mBalloonOnKey->SetBalloonConfigEx(icon, desired_width,
+            mBalloonOnKey->SetBalloonConfig(icon, desired_width,
                     desired_height);
         } else {
             String label;
@@ -238,7 +238,7 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyPress(
         textSize = size;
         AutoPtr<IDrawable> iconPopup = mSoftKeyDown->GetKeyIconPopup();
         if (NULL != iconPopup) {
-            mBalloonPopup->SetBalloonConfigEx(iconPopup, desired_width, desired_height);
+            mBalloonPopup->SetBalloonConfig(iconPopup, desired_width, desired_height);
         } else {
             String label;
             mSoftKeyDown->GetKeyLabel(&label);
@@ -349,7 +349,7 @@ void SoftKeyboardView::TryVibrate()
     }
 
     assert(mVibrator != NULL);
-    mVibrator->VibrateEx(*mVibratePattern, -1);
+    mVibrator->Vibrate(*mVibratePattern, -1);
 }
 
 void SoftKeyboardView::TryPlayKeyDown()
@@ -405,7 +405,7 @@ void SoftKeyboardView::OnDraw(
 
     if (mDimSkb) {
         mPaint->SetColor(0xa0000000);
-        canvas->DrawRectEx2(0, 0, GetWidth(), GetHeight(), mPaint);
+        canvas->DrawRect(0, 0, GetWidth(), GetHeight(), mPaint);
     }
 
     mDirtyRect->SetEmpty();
@@ -452,13 +452,13 @@ void SoftKeyboardView::DrawSoftKey(
         mPaint->SetColor(textColor);
         Float pw = 0.f;
         Float x = softKey->mLeft
-                + (softKey->GetWidth() - (mPaint->MeasureTextEx2(keyLabel, &pw), pw)) / 2.0f;
+                + (softKey->GetWidth() - (mPaint->MeasureText(keyLabel, &pw), pw)) / 2.0f;
 
         Int32 bottom = 0, top = 0;
         Int32 fontHeight = (mFmi->GetBottom(&bottom), bottom) - (mFmi->GetTop(&top), top);
         Float marginY = (softKey->GetHeight() - fontHeight) / 2.0f;
         Float y = softKey->mTop + marginY - top + bottom / 1.5f;
-        canvas->DrawTextEx(keyLabel, x, y + 1, mPaint);
+        canvas->DrawText(keyLabel, x, y + 1, mPaint);
     }
 }
 
@@ -489,7 +489,7 @@ ECode CSoftKeyboardView::constructor(
 
     CPaint::New((IPaint**)&mPaint);
     mPaint->SetAntiAlias(TRUE);
-    return mPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmi);
+    return mPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
 }
 
 ECode CSoftKeyboardView::SetSoftKeyboard(
@@ -507,7 +507,7 @@ ECode CSoftKeyboardView::GetSoftKeyboard(
     VALIDATE_NOT_NULL(keyboard);
     AutoPtr<ISoftKeyboard> temp = SoftKeyboardView::GetSoftKeyboard();
     *keyboard = temp;
-    INTERFACE_ADDREF(*keyboard);
+    REFCOUNT_ADD(*keyboard);
     return NOERROR;
 }
 
@@ -548,7 +548,7 @@ ECode CSoftKeyboardView::OnKeyPress(
     VALIDATE_NOT_NULL(key);
     AutoPtr<ISoftKey> sKey = SoftKeyboardView::OnKeyPress(x, y, longPressTimer, movePress);
     *key = sKey.Get();
-    INTERFACE_ADDREF(*key);
+    REFCOUNT_ADD(*key);
     return NOERROR;
 }
 
@@ -560,7 +560,7 @@ ECode CSoftKeyboardView::OnKeyRelease(
     VALIDATE_NOT_NULL(key);
     AutoPtr<ISoftKey> sKey = SoftKeyboardView::OnKeyRelease(x, y);
     *key = sKey.Get();
-    INTERFACE_ADDREF(*key);
+    REFCOUNT_ADD(*key);
     return NOERROR;
 }
 
@@ -572,7 +572,7 @@ ECode CSoftKeyboardView::OnKeyMove(
     VALIDATE_NOT_NULL(key);
     AutoPtr<ISoftKey> sKey = SoftKeyboardView::OnKeyMove(x, y);
     *key = sKey.Get();
-    INTERFACE_ADDREF(*key);
+    REFCOUNT_ADD(*key);
     return NOERROR;
 }
 

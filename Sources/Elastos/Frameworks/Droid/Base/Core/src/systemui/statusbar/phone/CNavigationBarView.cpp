@@ -56,7 +56,7 @@ ECode CNavigationBarView::GetRecentsButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetRecentsButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CNavigationBarView::GetMenuButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetMenuButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -76,7 +76,7 @@ ECode CNavigationBarView::GetBackButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetBackButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode CNavigationBarView::GetHomeButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetHomeButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -96,7 +96,7 @@ ECode CNavigationBarView::GetScreenShotButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetScreenShotButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -106,7 +106,7 @@ ECode CNavigationBarView::GetVolumeDownButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetVolumeDownButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -116,7 +116,7 @@ ECode CNavigationBarView::GetVolumeUpButton(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetVolumeUpButton();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -127,7 +127,7 @@ ECode CNavigationBarView::GetSearchLight(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = NavigationBarView::GetSearchLight();
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -143,7 +143,7 @@ ECode CNavigationBarView::SetNavigationIconHints(
     return NavigationBarView::SetNavigationIconHints(hints);
 }
 
-ECode CNavigationBarView::SetNavigationIconHintsEx(
+ECode CNavigationBarView::SetNavigationIconHints(
     /* [in] */ Int32 hints,
     /* [in] */ Boolean force)
 {
@@ -156,7 +156,7 @@ ECode CNavigationBarView::SetDisabledFlags(
     return NavigationBarView::SetDisabledFlags(disabledFlags);
 }
 
-ECode CNavigationBarView::SetDisabledFlagsEx(
+ECode CNavigationBarView::SetDisabledFlags(
     /* [in] */ Int32 disabledFlags,
     /* [in] */ Boolean force)
 {
@@ -175,7 +175,7 @@ ECode CNavigationBarView::SetMenuVisibility(
     return NavigationBarView::NotifyScreenOn(show);
 }
 
-ECode CNavigationBarView::SetMenuVisibilityEx(
+ECode CNavigationBarView::SetMenuVisibility(
     /* [in] */ Boolean show,
     /* [in] */ Boolean force)
 {
@@ -188,7 +188,7 @@ ECode CNavigationBarView::SetLowProfile(
     return NavigationBarView::SetLowProfile(lightsOut);
 }
 
-ECode CNavigationBarView::SetLowProfileEx(
+ECode CNavigationBarView::SetLowProfile(
     /* [in] */ Boolean lightsOut,
     /* [in] */ Boolean animate,
     /* [in] */ Boolean force)

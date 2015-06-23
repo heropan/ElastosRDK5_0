@@ -4,9 +4,8 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;

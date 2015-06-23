@@ -5,8 +5,8 @@
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
 #include "view/ViewBaseSavedState.h"
-#include <Elastos.Core.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
+#include <Elastos.CoreLibrary.h>
 #include <R.h>
 
 
@@ -15,7 +15,7 @@ using Elastos::Utility::ICalendar;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Widget::FrameLayout;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Text::IDateFormat;
 using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
 using Elastos::Droid::Widget::IOnDateChangedListener;

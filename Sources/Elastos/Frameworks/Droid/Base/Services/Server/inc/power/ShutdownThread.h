@@ -6,12 +6,10 @@
 #include "ext/frameworkdef.h"
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
 
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;

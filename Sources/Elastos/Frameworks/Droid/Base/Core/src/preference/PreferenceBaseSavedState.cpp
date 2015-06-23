@@ -29,7 +29,7 @@ ECode PreferenceBaseSavedState::GetSuperState(
     VALIDATE_NOT_NULL(superState)
     AutoPtr<IParcelable> temp = AbsSavedState::GetSuperState();
     *superState = temp;
-    INTERFACE_ADDREF(*superState);
+    REFCOUNT_ADD(*superState);
     return NOERROR;
 }
 

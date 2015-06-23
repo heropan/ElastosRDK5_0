@@ -71,7 +71,7 @@ public:
      * @return A Bitmap instance. It could be null if the original image associated with
      *         origId doesn't exist or memory is not enough.
      */
-    CARAPI GetThumbnailEx(
+    CARAPI GetThumbnail(
         /* [in] */ IContentResolver* cr,
         /* [in] */ Int64 origId,
         /* [in] */ Int64 groupId,
@@ -88,7 +88,7 @@ public:
      * @param origId original video id
      * @param groupId the same groupId used in getThumbnail.
      */
-    CARAPI CancelThumbnailRequestEx(
+    CARAPI CancelThumbnailRequest(
         /* [in] */ IContentResolver* cr,
         /* [in] */ Int64 origId,
         /* [in] */ Int64 groupId);

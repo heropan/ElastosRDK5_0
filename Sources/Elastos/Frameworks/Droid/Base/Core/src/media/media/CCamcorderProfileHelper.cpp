@@ -15,12 +15,12 @@ ECode CCamcorderProfileHelper::Get(
 }
 
 /*static*/
-ECode CCamcorderProfileHelper::GetEx(
+ECode CCamcorderProfileHelper::Get(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 quality,
     /* [out] */ ICamcorderProfile** result)
 {
-    return CCamcorderProfile::GetEx(cameraId, quality, result);
+    return CCamcorderProfile::Get(cameraId, quality, result);
 }
 
 /*static*/
@@ -32,12 +32,12 @@ ECode CCamcorderProfileHelper::HasProfile(
 }
 
 /*static*/
-ECode CCamcorderProfileHelper::HasProfileEx(
+ECode CCamcorderProfileHelper::HasProfile(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 quality,
     /* [out] */ Boolean* result)
 {
-    return CCamcorderProfile::HasProfileEx(cameraId, quality, result);
+    return CCamcorderProfile::HasProfile(cameraId, quality, result);
 }
 
 } // namespace Media

@@ -164,7 +164,7 @@ module
     namespace Text {
 
         interface ISelectionHelper {
-            SetSelectionEx(
+            SetSelection(
                 [in] ISpannableStringBuilder* sb,
                 [in] Int32 val);
         }
@@ -242,13 +242,13 @@ module
             SetContentType(
                 [in] IHeader* contentType);
 
-            SetContentTypeEx(
+            SetContentType(
                 [in] String ctString);
 
             SetContentEncoding(
                 [in] IHeader* contentEncoding);
 
-            SetContentEncodingEx(
+            SetContentEncoding(
                 [in] String ceString);
 
             SetChunked(

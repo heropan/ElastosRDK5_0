@@ -16,7 +16,6 @@ SOURCES += Elastos.Droid.Test.cpp
 SOURCES += Eunit.cpp
 
 LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.Test.lib
 LIBRARIES += $(XDK_USER_LIB)/Eunit.lib

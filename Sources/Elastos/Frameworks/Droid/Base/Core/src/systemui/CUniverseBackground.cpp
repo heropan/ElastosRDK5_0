@@ -41,7 +41,7 @@ ECode CUniverseBackground::GetWindowManagerLayoutParams(
     VALIDATE_NOT_NULL(lp);
     AutoPtr<IWindowManagerLayoutParams> temp = UniverseBackground::GetWindowManagerLayoutParams();
     *lp = temp;
-    INTERFACE_ADDREF(*lp);
+    REFCOUNT_ADD(*lp);
     return NOERROR;
 }
 
@@ -50,7 +50,7 @@ ECode CUniverseBackground::AnimateCollapse()
     return UniverseBackground::AnimateCollapse();
 }
 
-ECode CUniverseBackground::AnimateCollapseEx(
+ECode CUniverseBackground::AnimateCollapse(
     /* [in] */ Float velocityMultiplier)
 {
     return UniverseBackground::AnimateCollapse(velocityMultiplier);

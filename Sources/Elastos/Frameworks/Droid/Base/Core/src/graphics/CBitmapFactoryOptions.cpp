@@ -42,7 +42,7 @@ ECode CBitmapFactoryOptions::GetInBitmap(
 {
     VALIDATE_NOT_NULL(bm);
     *bm = mInBitmap;
-    INTERFACE_ADDREF(*bm);
+    REFCOUNT_ADD(*bm);
     return NOERROR;
 }
 
@@ -290,7 +290,7 @@ ECode CBitmapFactoryOptions::GetInTempStorage(
 {
     VALIDATE_NOT_NULL(storage);
     *storage = mInTempStorage;
-    INTERFACE_ADDREF(*storage);
+    REFCOUNT_ADD(*storage);
     return NOERROR;
 }
 

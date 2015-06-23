@@ -280,7 +280,7 @@ module
             [in] IMediaItemGetThumbnailListCallback* listcallback);
 
         // This is for compatibility, only used in tests.
-        GetThumbnailListEx(
+        GetThumbnailList(
             [in] Int32 width,
             [in] Int32 height,
             [in] Int64 startMs,

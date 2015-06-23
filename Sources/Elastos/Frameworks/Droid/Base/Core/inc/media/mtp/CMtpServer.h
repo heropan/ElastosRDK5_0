@@ -3,9 +3,6 @@
 #define __CMTPSERVER_H__
 
 #include "_CMtpServer.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

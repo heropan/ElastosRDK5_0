@@ -113,7 +113,7 @@ module
             [in] Int64 txPackets,
             [in] Int64 operations);
 
-        AddValuesEx(
+        AddValues(
             [in] INetworkStatsEntry* entry);
 
         GetValues(
@@ -143,7 +143,7 @@ module
             [in] Int64 txPackets,
             [in] Int64 operations);
 
-        CombineValuesEx(
+        CombineValues(
             [in] String iface,
             [in] Int32 uid,
             [in] Int32 set,
@@ -154,7 +154,7 @@ module
             [in] Int64 txPackets,
             [in] Int64 operations);
 
-        CombineValuesEx2(
+        CombineValues(
             [in] INetworkStatsEntry* entry);
 
         CombineAllValues(
@@ -191,12 +191,12 @@ module
             [in] INetworkStatsEntry* recycle,
             [out] INetworkStatsEntry** result);
 
-        GetTotalEx(
+        GetTotal(
             [in] INetworkStatsEntry* recycle,
             [in] Int32 limitUid,
             [out] INetworkStatsEntry** result);
 
-        GetTotalEx2(
+        GetTotal(
             [in] INetworkStatsEntry* recycle,
             [in] IObjectContainer* limitIface,
             [out] INetworkStatsEntry** result);

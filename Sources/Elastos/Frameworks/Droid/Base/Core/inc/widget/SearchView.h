@@ -5,9 +5,9 @@
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"
 #include "widget/AutoCompleteTextView.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
-#include "widget/AutoCompleteTextViewMacro.h"
+
+
+
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::ISearchableInfo;

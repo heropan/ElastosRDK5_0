@@ -326,7 +326,7 @@ go_on:
     AutoPtr<IDisplayMetrics> dm;
     ASSERT_SUCCEEDED(CDisplayMetrics::New((IDisplayMetrics**)&dm));
     AutoPtr<ILocalWindowManager> wmgr;
-    GetWindowManagerEx((ILocalWindowManager**)&wmgr);
+    GetWindowManager((ILocalWindowManager**)&wmgr);
     AutoPtr<IDisplay> display;
     wmgr->GetDefaultDisplay((IDisplay**)&display);
     AutoPtr<IDisplayMetrics> metrics;

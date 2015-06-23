@@ -60,7 +60,7 @@ ECode CNotificationPanel::GetClearButton(
     VALIDATE_NOT_NULL(button);
     AutoPtr<IView> view = NotificationPanel::GetClearButton();
     *button = view;
-    INTERFACE_ADDREF(*button);
+    REFCOUNT_ADD(*button);
     return NOERROR;
 }
 

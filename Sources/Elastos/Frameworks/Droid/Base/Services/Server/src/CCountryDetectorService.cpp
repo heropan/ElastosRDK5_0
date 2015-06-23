@@ -3,10 +3,10 @@
 #include "os/Process.h"
 #include "os/Looper.h"
 #include "os/Handler.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::Threading::CThread;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::CThread;
+using Elastos::Core::IThread;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Looper;

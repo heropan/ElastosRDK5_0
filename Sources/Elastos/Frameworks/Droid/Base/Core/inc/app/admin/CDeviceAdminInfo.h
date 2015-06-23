@@ -5,8 +5,8 @@
 #include "_CDeviceAdminInfo.h"
 #include "ext/frameworkext.h"
 #include "util/SparseArray.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
 using Org::Xmlpull::V1::IXmlSerializer;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -21,8 +21,8 @@ using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Utility::SparseArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

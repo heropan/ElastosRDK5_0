@@ -5,7 +5,7 @@
 #include "_CPhoneWindow.h"
 #include "view/Window.h"
 #include "view/BaseSurfaceHolder.h"
-#include "view/ViewMacro.h"
+
 #include "view/menu/CIconMenuPresenter.h"
 #include "view/menu/CListMenuPresenter.h"
 #include "os/CBundle.h"
@@ -807,10 +807,10 @@ public:
     CARAPI SetContentView(
         /* [in] */ Int32 layoutResID);
 
-    CARAPI SetContentViewEx(
+    CARAPI SetContentView(
         /* [in] */ IView* view);
 
-    CARAPI SetContentViewEx2(
+    CARAPI SetContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
 
@@ -1049,7 +1049,7 @@ public:
 
     CARAPI Destroy();
 
-    CARAPI SetWindowManagerEx(
+    CARAPI SetWindowManager(
         /* [in] */ IWindowManager* wm,
         /* [in] */ IBinder* appToken,
         /* [in] */ const String& appName,
@@ -1069,7 +1069,7 @@ public:
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* res);
 
-    CARAPI SetUiOptionsEx(
+    CARAPI SetUiOptions(
         /* [in] */ Int32 uiOptions,
         /* [in] */ Int32 mask);
 

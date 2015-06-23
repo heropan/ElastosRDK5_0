@@ -8,7 +8,7 @@
 /*#include "widget/ExpandableListViewSavedState.h"
 #include "widget/CExpandableListViewSavedState.h"*/
 #include "view/SoundEffectConstants.h"
-//#include <elastos/Logger.h>
+//#include <elastos/utility/logging/Logger.h>
 
 //using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::View::SoundEffectConstants;
@@ -87,7 +87,7 @@ ECode ExpandableListView::Init(
             const_cast<Int32 *>(R::styleable::ExpandableListView),
             ARRAY_SIZE(R::styleable::ExpandableListView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetDrawable(R::styleable::ExpandableListView_groupIndicator, (IDrawable**)&mGroupIndicator);
@@ -125,7 +125,7 @@ void ExpandableListView::DispatchDraw(
         Int32 scrollX = mScrollX;
         Int32 scrollY = mScrollY;
         Boolean isNotEmpty = FALSE;
-        canvas->ClipRectEx6(scrollX + mPaddingLeft, scrollY + mPaddingTop,
+        canvas->ClipRect(scrollX + mPaddingLeft, scrollY + mPaddingTop,
                 scrollX + mRight - mLeft - mPaddingRight,
                 scrollY + mBottom - mTop - mPaddingBottom, &isNotEmpty);
     }
@@ -190,7 +190,7 @@ void ExpandableListView::DispatchDraw(
 
             indicator = GetIndicator(pos);
             if (indicator != NULL) {
-                indicator->SetBoundsEx(indicatorRect);
+                indicator->SetBounds(indicatorRect);
                 indicator->Draw(canvas);
             }
         }
@@ -276,7 +276,7 @@ void ExpandableListView::DrawDivider(
                 ((GroupMetadata*)((PositionMetadata*)pos.Get())->mGroupMetadata.Get())->mLastChildFlPos != ((GroupMetadata*)((PositionMetadata*)pos.Get())->mGroupMetadata.Get())->mFlPos)) {
             // These are the cases where we draw the child divider
             AutoPtr<IDrawable> divider = mChildDivider;
-            divider->SetBoundsEx(bounds);
+            divider->SetBounds(bounds);
             divider->Draw(canvas);
             pos->Recycle();
             return;
@@ -386,7 +386,7 @@ Boolean ExpandableListView::HandleItemClick(
         posMetadata->IsExpanded(&expanded);
         if (expanded) {
             Boolean res = FALSE;
-            ((CExpandableListConnector*)mConnector.Get())->CollapseGroupEx(posMetadata, &res);
+            ((CExpandableListConnector*)mConnector.Get())->CollapseGroup(posMetadata, &res);
 
             PlaySoundEffect(SoundEffectConstants::CLICK);
 
@@ -395,7 +395,7 @@ Boolean ExpandableListView::HandleItemClick(
             }
         } else {
             Boolean rush = FALSE;
-            ((CExpandableListConnector*)mConnector.Get())->CollapseGroupEx(posMetadata, &rush);
+            ((CExpandableListConnector*)mConnector.Get())->CollapseGroup(posMetadata, &rush);
 
             PlaySoundEffect(SoundEffectConstants::CLICK);
 
@@ -449,7 +449,7 @@ Boolean ExpandableListView::ExpandGroup(
     elGroupPos->Recycle();
 
     Boolean retValue = FALSE;
-    mConnector->ExpandGroupEx(pm, &retValue);
+    mConnector->ExpandGroup(pm, &retValue);
 
     if(mOnGroupExpandListener != NULL) {
         mOnGroupExpandListener->OnGroupExpand(groupPos);

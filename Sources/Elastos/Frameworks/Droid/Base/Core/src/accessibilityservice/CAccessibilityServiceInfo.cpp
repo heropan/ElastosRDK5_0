@@ -1,8 +1,8 @@
 #include "CAccessibilityServiceInfo.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <Elastos.Core.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
 #include "content/CComponentName.h"
 #include "view/accessibility/CAccessibilityEventHelper.h"
 #include "util/Xml.h"
@@ -281,7 +281,7 @@ ECode CAccessibilityServiceInfo::GetResolveInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mResolveInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

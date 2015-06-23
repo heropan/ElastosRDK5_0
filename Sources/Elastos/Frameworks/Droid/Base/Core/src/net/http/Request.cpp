@@ -2,7 +2,7 @@
 #include "Request.h"
 // #include "CHttpsConnection.h"
 #include "HttpLog.h"
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using namespace Elastos::Core;
 
@@ -341,7 +341,7 @@ ECode Request::ReadResponse(
             }
 
             ECode ec;
-            ec = nis->ReadBytesEx(buf, count, buf->GetLength() - count, &len);
+            ec = nis->ReadBytes(buf, count, buf->GetLength() - count, &len);
             if(FAILED(ec)) {
                 /* InflaterInputStream throws an EOFException when the
                    server truncates gzipped content.  Handle this case

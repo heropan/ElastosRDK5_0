@@ -26,22 +26,20 @@
 #include "pm/CUserManagerService.h"
 // #include <binder/IPermissionController.h>
 #include <Elastos.Droid.Core.h>
-#include <Elastos.Core.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/HashMap.h>
-#include <elastos/Object.h>
-#include <elastos/List.h>
-#include <elastos/ThreadBase.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/Core/Object.h>
+#include <elastos/utility/etl/List.h>
 #include <pthread.h>
 
 
 using Libcore::ICU::ILocale;
 using Elastos::Core::IInteger32;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFile;
 using Elastos::IO::IPrintWriter;
@@ -3240,7 +3238,7 @@ private:
      */
     HashSet< AutoPtr<IInteger32> > mAlreadyLoggedViolatedStacks;
     Mutex mAlreadyLoggedViolatedStacksLock;
-    
+
     static const Int32 MAX_DUP_SUPPRESSED_STACKS;
 
     /**

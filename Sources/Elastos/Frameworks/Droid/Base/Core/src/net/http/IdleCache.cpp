@@ -139,7 +139,7 @@ ECode IdleCache::IdleReaper::Run()
         Mutex::Autolock lock(mParent->mLock);
 
         while (check < EMPTY_CHECK_MAX) {
-            WaitEx(CHECK_INTERVAL);
+            Wait(CHECK_INTERVAL);
 
             if (mParent->mCount == 0) {
                 check++;

@@ -2,8 +2,8 @@
 #define __CLINEARLAYOUT_H_
 
 #include "_CLinearLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/LinearLayout.h"
 
 namespace Elastos{

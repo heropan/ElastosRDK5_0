@@ -3,12 +3,12 @@
 #define __SYNCQUEUE_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "content/SyncAdaptersCache.h"
 
 using namespace Elastos::Core;
 using Elastos::Droid::Accounts::IAccount;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -61,7 +61,7 @@ public:
         /* [in] */ const String& providerName,
         /* [in] */ Int64 delayUntil);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ IAccount* account,
         /* [in] */ Int32 userId,
         /* [in] */ const String& authority);

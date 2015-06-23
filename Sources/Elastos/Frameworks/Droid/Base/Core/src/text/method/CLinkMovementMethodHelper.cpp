@@ -14,7 +14,7 @@ ECode CLinkMovementMethodHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IMovementMethod> mm = CLinkMovementMethod::GetInstance();
     *ret = mm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -4,7 +4,7 @@
 #include "app/backup/CBackupDataOutput.h"
 #include "app/backup/CRestoreSet.h"
 #include "os/CEnvironment.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "util/CBase64.h"
 
 using Elastos::IO::CFile;
@@ -185,7 +185,7 @@ ECode CLocalTransport::PerformBackup(
             if (DEBUG) {
                 Logger::V(TAG, "data size:%d", dataSize);
             }
-            FAIL_GOTO(entity->WriteBytesEx(*buf, 0, dataSize),ERROR);
+            FAIL_GOTO(entity->WriteBytes(*buf, 0, dataSize),ERROR);
             entity->Close();
         } else {
             Boolean tempResult;
@@ -250,7 +250,7 @@ ECode CLocalTransport::GetAvailableRestoreSets(
     AutoPtr<ArrayOf<IRestoreSet*> > _array = ArrayOf<IRestoreSet*>::Alloc(1);
     _array->Set(0, set);
     *result = _array;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -7,11 +7,11 @@
 #include "display/DisplayDevice.h"
 #include "os/Runnable.h"
 #include "database/ContentObserver.h"
-#include <elastos/List.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Object;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Object;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Graphics::ISurfaceTexture;

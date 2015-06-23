@@ -189,14 +189,14 @@ ECode CViewFlipper::SetOutAnimation(
     return ViewAnimator::SetOutAnimation(outAnimation);
 }
 
-ECode CViewFlipper::SetInAnimationEx(
+ECode CViewFlipper::SetInAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {
     return ViewAnimator::SetInAnimation(context, resourceID);
 }
 
-ECode CViewFlipper::SetOutAnimationEx(
+ECode CViewFlipper::SetOutAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {

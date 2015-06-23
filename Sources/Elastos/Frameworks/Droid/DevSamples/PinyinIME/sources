@@ -9,7 +9,7 @@ include $(MAKEDIR)/../../sources.inc
 
 IMPORTS = Elastos.Droid.Core.eco
 
-CAR_FLAGS += -u
+CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 SOURCES  = PinyinIME.car
@@ -27,7 +27,6 @@ SOURCES += Org.Kxml2.IO.cpp
 SOURCES += Elastos.Core.cpp
 
 LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco

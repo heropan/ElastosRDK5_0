@@ -5,12 +5,11 @@
 #include "_CAccountManager.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/FutureTask.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IInteger64;
 using Elastos::Utility::Concurrent::ITimeUnit;
@@ -65,7 +64,7 @@ private:
         CARAPI GetResult(
             /* [out] */ IInterface** result);
 
-        CARAPI GetResultEx(
+        CARAPI GetResult(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ IInterface** result);
@@ -293,7 +292,7 @@ private:
         CARAPI GetResult(
             /* [out] */ IInterface** result);
 
-        CARAPI GetResultEx(
+        CARAPI GetResult(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ IInterface** result);
@@ -1081,7 +1080,7 @@ public:
      * authenticator-dependent.  The caller should verify the validity of the
      * account before requesting an auth token.
      */
-    CARAPI GetAuthTokenEx(
+    CARAPI GetAuthToken(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authTokenType,
         /* [in] */ Boolean notifyAuthFailure,
@@ -1159,7 +1158,7 @@ public:
      * authenticator-dependent.  The caller should verify the validity of the
      * account before requesting an auth token.
      */
-    CARAPI GetAuthTokenEx2(
+    CARAPI GetAuthToken(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authTokenType,
         /* [in] */ IBundle* options,

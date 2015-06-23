@@ -4,7 +4,7 @@
 #include "display/PersistentDataStore.h"
 #include "display/WifiDisplayController.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

@@ -15,11 +15,11 @@
 #include "graphics/CRegion.h"
 #include "os/HandlerBase.h"
 #include "widget/CScroller.h"
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Core::Threading::IThread;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Core::IThread;
 using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IClipDescription;
 using Elastos::Droid::Animation::ILayoutTransition;
@@ -447,7 +447,7 @@ private:
         CARAPI LockCanvas(
             /* [out] */ ICanvas** canvas);
 
-        CARAPI LockCanvasEx(
+        CARAPI LockCanvas(
             /* [in] */ IRect* dirty,
             /* [out] */ ICanvas** canvas);
 
@@ -686,18 +686,18 @@ public:
 
     CARAPI_(AutoPtr<IView>) GetView();
 
-    CARAPI RequestFitSystemWindowsEx();
+    CARAPI RequestFitSystemWindows();
 
     CARAPI RequestLayout();
 
     //in IViewParent
-    CARAPI RequestLayoutEx();
+    CARAPI RequestLayout();
 
     CARAPI IsLayoutRequested(
         /* [out] */ Boolean* result);
 
     //in IViewParent
-    CARAPI IsLayoutRequestedEx(
+    CARAPI IsLayoutRequested(
         /* [out] */ Boolean* result);
 
     CARAPI InvalidateChild(
@@ -713,7 +713,7 @@ public:
         /* [out] */ IViewParent** parent);
 
     //in IViewParent
-    CARAPI GetParentEx(
+    CARAPI GetParent(
         /* [out] */ IViewParent** parent);
 
     CARAPI GetChildVisibleRect(
@@ -759,7 +759,7 @@ public:
     CARAPI ClearChildFocus(
         /* [in] */ IView* child);
 
-    CARAPI GetParentForAccessibilityEx(
+    CARAPI GetParentForAccessibility(
         /* [out] */ IViewParent** parent);
 
     CARAPI FocusableViewAvailable(
@@ -795,7 +795,7 @@ public:
         /* [out */ IView** result);
 
     //in IViewParent
-    CARAPI FocusSearchEx(
+    CARAPI FocusSearch(
         /* [in] */ IView* focused,
         /* [in] */ Int32 direction,
         /* [out */ IView** result);
@@ -887,7 +887,7 @@ public:
 
     CARAPI_(void) DispatchCheckFocus();
 
-    CARAPI StartActionModeForChildEx(
+    CARAPI StartActionModeForChild(
         /* [in] */ IView* originalView,
         /* [in] */ IActionModeCallback* callback,
         /* [out] */ IActionMode** actionMode);
@@ -896,7 +896,7 @@ public:
         /* [in] */ IView* originalView,
         /* [out] */ Boolean* result);
 
-    CARAPI CreateContextMenuEx(
+    CARAPI CreateContextMenu(
         /* [in] */ IContextMenu* menu);
 
     CARAPI_(void) CreateContextMenu(
@@ -913,7 +913,7 @@ public:
     CARAPI ChildAccessibilityStateChanged(
         /* [in] */ IView* child);
 
-    CARAPI_(CARAPI) ChildHasTransientStateChangedEx(
+    CARAPI_(CARAPI) ChildHasTransientStateChanged(
         /* [in] */ IView* child,
         /* [in] */ Boolean hasTransientState);
 

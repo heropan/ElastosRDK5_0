@@ -4,7 +4,7 @@
 
 #include "_CNinePatchDrawable.h"
 #include "graphics/drawable/NinePatchDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -56,10 +56,10 @@ public:
     CARAPI SetTargetDensity(
         /* [in] */ ICanvas* canvas);
 
-    CARAPI SetTargetDensityEx(
+    CARAPI SetTargetDensity(
         /* [in] */ IDisplayMetrics* metrics);
 
-    CARAPI SetTargetDensityEx2(
+    CARAPI SetTargetDensity(
         /* [in] */ Int32 density);
 
     CARAPI GetPaint(

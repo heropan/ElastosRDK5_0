@@ -2,12 +2,10 @@
 #ifndef __ELAUDIOTRACK_H__
 #define __ELAUDIOTRACK_H__
 
-#include <elastos/Mutex.h>
 #include <media/AudioTrack.h>
 #include <binder/MemoryHeapBase.h>
 #include <binder/MemoryBase.h>
 
-using namespace Elastos::Core::Threading;
 
 namespace Elastos {
 namespace Droid {

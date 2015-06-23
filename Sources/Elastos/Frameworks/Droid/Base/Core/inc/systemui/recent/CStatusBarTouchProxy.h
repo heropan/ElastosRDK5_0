@@ -3,9 +3,9 @@
 #define __CSTATISBARTOUCHPROXY_H_
 
 #include "_CStatusBarTouchProxy.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/recent/StatusBarTouchProxy.h"
 
 namespace Elastos {

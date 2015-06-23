@@ -3,7 +3,7 @@
 
 #include "_CAnalogClock.h"
 #include "AnalogClock.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Droid::View::EIID_View;
 

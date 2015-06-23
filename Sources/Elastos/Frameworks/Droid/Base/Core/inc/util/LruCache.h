@@ -3,14 +3,14 @@
 #define __LRUCACHE_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Object.h>
-#include <elastos/HashMap.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/Core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Object;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

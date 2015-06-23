@@ -4,9 +4,8 @@
 
 #include "_CContentProviderClient.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
@@ -35,7 +34,7 @@ public:
         /* [out] */ ICursor** cursor);
 
     /** See {@link ContentProvider#query ContentProvider.query} */
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ const String& selection,

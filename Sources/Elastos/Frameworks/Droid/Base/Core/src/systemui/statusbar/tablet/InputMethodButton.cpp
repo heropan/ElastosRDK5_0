@@ -1,7 +1,7 @@
 #include "systemui/statusbar/tablet/InputMethodButton.h"
 #include "systemui/SystemUIR.h"
 #include "provider/CSettingsSecure.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IContentResolver;

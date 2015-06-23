@@ -1,9 +1,9 @@
 
 #include "util/TimeUtils.h"
-#include <elastos/List.h>
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include "util/XmlUtils.h"
 #include <R.h>
 #include "os/SystemClock.h"
@@ -11,7 +11,7 @@
 #include "content/res/CResourcesHelper.h"
 #endif
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
 using Elastos::Utility::IZoneInfoDB;
@@ -242,7 +242,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
             break;
         }
 
-        parser->GetAttributeValueEx(nullStr, strCode, &code);
+        parser->GetAttributeValue(nullStr, strCode, &code);
 
         if (country.Equals(code)) {
             parser->Next(&nextId);
@@ -464,7 +464,7 @@ void TimeUtils::FormatDuration(
 {
     Mutex::Autolock lock(sFormatSync);
     Int32 len = FormatDurationLocked(duration, 0);
-    builder.AppendCharsEx(*sFormatStr, 0, len);
+    builder.AppendChars(*sFormatStr, 0, len);
 }
 
     /** @hide Just for debugging; not internationalized. */

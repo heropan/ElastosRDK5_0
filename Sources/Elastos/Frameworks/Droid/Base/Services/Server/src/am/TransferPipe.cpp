@@ -1,8 +1,8 @@
 
 #include "am/TransferPipe.h"
 #include "os/SystemClock.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFileInputStream;
@@ -220,14 +220,14 @@ ECode TransferPipe::Run()
         while (fis->ReadBytes(buffer, &size), size > 0) {
             if (DEBUG) Slogger::I(TAG, "Got %d bytes", size);
             if (bufferPrefix == NULL) {
-                fos->WriteBytesEx(*buffer, 0, size);
+                fos->WriteBytes(*buffer, 0, size);
             }
             else {
                 Int32 start = 0;
                 for (Int32 i = 0; i < size; i++) {
                     if ((*buffer)[i] != '\n') {
                         if (i > start) {
-                            fos->WriteBytesEx(*buffer, start, i-start);
+                            fos->WriteBytes(*buffer, start, i-start);
                         }
                         start = i;
                         if (needPrefix) {
@@ -243,7 +243,7 @@ ECode TransferPipe::Run()
                     }
                 }
                 if (size > start) {
-                    fos->WriteBytesEx(*buffer, start, size-start);
+                    fos->WriteBytes(*buffer, start, size-start);
                 }
             }
         }

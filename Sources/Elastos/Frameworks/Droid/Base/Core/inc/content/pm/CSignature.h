@@ -53,7 +53,7 @@ public:
      * to hold the ASCII representation, or a newly created char[] array if
      * needed.
      */
-    CARAPI ToCharsEx(
+    CARAPI ToChars(
         /* [in] */ ArrayOf<Char32>* existingArray,
         /* [in] */ ArrayOf<Int32>* outLen,
         /* [out, callee] */ ArrayOf<Char32>** text);

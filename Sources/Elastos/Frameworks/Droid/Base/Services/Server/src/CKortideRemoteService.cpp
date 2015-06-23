@@ -1,7 +1,7 @@
 
 #include "CKortideRemoteService.h"
 #include "os/SystemClock.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Net::CServerSocket;
 using Elastos::Droid::Os::ISystemProperties;
@@ -27,7 +27,7 @@ ECode CKortideRemoteService::constructor(
     mContext = context;
     AutoPtr<ISystemProperties> systemProperties;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperties);
-    systemProperties->GetEx(String("ro.product.name"), String("KortideDevice"), &mDevName);
+    systemProperties->Get(String("ro.product.name"), String("KortideDevice"), &mDevName);
     mLanDispatcher = new LanDispatcher(mContext);
     mLanDispatcher->Start();
     InitServerSocket();

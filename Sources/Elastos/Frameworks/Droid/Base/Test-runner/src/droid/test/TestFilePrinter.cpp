@@ -1,7 +1,7 @@
 #include "droid/test/TestFilePrinter.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

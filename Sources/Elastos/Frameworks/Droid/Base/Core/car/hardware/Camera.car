@@ -16,7 +16,7 @@ module
      * Image size (width and height dimensions).
      */
     interface ICameraSize {
-        EqualsEx(
+        Equals(
             [in] ICameraSize* obj,
             [out] Boolean* e);
 
@@ -389,7 +389,7 @@ module
          * @param key   the key name for the parameter
          * @param value the int value of the parameter
          */
-        SetEx(
+        Set(
             [in] String key,
             [in] Int32 value);
 
@@ -2012,7 +2012,7 @@ module
          *
          * <p>You must call this as soon as you're done with the Camera object.</p>
          */
-        ReleaseEx();
+        Release();
 
         /**
          * Unlocks the camera to allow another process to access it.
@@ -2406,7 +2406,7 @@ module
          * @param postview  callback with postview image data, may be null
          * @param jpeg      the callback for JPEG image data, or null
          */
-        TakePictureEx(
+        TakePicture(
             [in] IShutterCallback* shutter,
             [in] IPictureCallback* raw,
             [in] IPictureCallback* postview,
@@ -2670,7 +2670,7 @@ module
          * null.
          * @see #open(int)
          */
-        OpenEx(
+        Open(
             [out] IHardwareCamera** value);
 
         /**

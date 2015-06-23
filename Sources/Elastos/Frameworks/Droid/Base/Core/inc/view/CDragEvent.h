@@ -5,8 +5,7 @@
 #include "ext/frameworkdef.h"
 #include "_CDragEvent.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IClipDescription;
@@ -149,7 +148,7 @@ public:
     static CARAPI Obtain(
         /* [out] */ CDragEvent ** ppEvent);
 
-    static CARAPI ObtainEx(
+    static CARAPI Obtain(
         /* [in] */ Int32 action,
         /* [in] */ Float x,
         /* [in] */ Float y,
@@ -159,7 +158,7 @@ public:
         /* [in] */ Boolean result,
         /* [out] */ CDragEvent ** ppEvent);
 
-    static CARAPI ObtainEx2(
+    static CARAPI Obtain(
         /* [in] */ CDragEvent * pSource,
         /* [out] */ CDragEvent ** ppEvent);
 

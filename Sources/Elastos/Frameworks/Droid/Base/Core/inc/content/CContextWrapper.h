@@ -5,7 +5,6 @@
 #include "_CContextWrapper.h"
 #include <ext/frameworkext.h>
 #include "ContextWrapper.h"
-#include "ContextMacro.h"
 
 using namespace Elastos;
 using namespace Elastos::Core;

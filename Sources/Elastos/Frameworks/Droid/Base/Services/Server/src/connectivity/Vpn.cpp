@@ -6,8 +6,8 @@
 #include "connectivity/CVpnObserver.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 #include <netinet/in.h>
 #include <linux/if.h>
 #include <linux/if_tun.h>
@@ -683,7 +683,7 @@ ECode Vpn::Establish(
     CIntent::New(IVpnConfig::SERVICE_INTERFACE, (IIntent**)&intent);
     String user;
     config->GetUser(&user);
-    intent->SetClassNameEx(mPackage, user);
+    intent->SetClassName(mPackage, user);
     AutoPtr<IResolveInfo> info;
     pm->ResolveService(intent, 0, (IResolveInfo**)&info);
     if (info == NULL) {
@@ -725,7 +725,7 @@ ECode Vpn::Establish(
 
         AutoPtr<IBitmapFactory> factory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-        factory->CreateBitmapEx3(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+        factory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
         AutoPtr<ICanvas> c;
         CCanvas::New(bitmap, (ICanvas**)&c);
         icon->Draw(c);
@@ -863,7 +863,7 @@ void Vpn::ShowNotification(
             CStringWrapper::New(label, (ICharSequence**)&csLabel);
             AutoPtr< ArrayOf<IInterface*> > format = ArrayOf<IInterface*>::Alloc(1);
             format->Set(0, csLabel.Get());
-            mContext->GetStringEx(R::string::vpn_title_long, format, &title);
+            mContext->GetString(R::string::vpn_title_long, format, &title);
         }
         String text;
         String session;
@@ -876,7 +876,7 @@ void Vpn::ShowNotification(
             CStringWrapper::New(session, (ICharSequence**)&csSession);
             AutoPtr< ArrayOf<IInterface*> > format = ArrayOf<IInterface*>::Alloc(1);
             format->Set(0, csSession.Get());
-            mContext->GetStringEx(R::string::vpn_text_long, format, &text);
+            mContext->GetString(R::string::vpn_text_long, format, &text);
         }
         config->SetStartTime(SystemClock::GetElapsedRealtime());
 

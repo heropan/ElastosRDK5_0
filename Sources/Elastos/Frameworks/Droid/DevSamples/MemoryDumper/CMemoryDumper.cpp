@@ -2,8 +2,8 @@
 #include <unistd.h>
 #include "CMemoryDumper.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;
@@ -183,7 +183,7 @@ ECode CMemoryDumper::OutputBackTrace(
             num = 0;
             size = 0;
             flag = String("");
-            
+
             String info(data);
             start = info.IndexOf("sz");
 

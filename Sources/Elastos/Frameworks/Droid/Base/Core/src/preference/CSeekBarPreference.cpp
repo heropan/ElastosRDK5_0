@@ -76,7 +76,7 @@ ECode CSeekBarPreference::constructor(
             const_cast<Int32 *>(R::styleable::ProgressBar),
             ARRAY_SIZE(R::styleable::ProgressBar));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     Int32 max;
     a->GetInt32(R::styleable::ProgressBar_max, mMax, &max);
     SetMax(max);
@@ -308,7 +308,7 @@ ECode CSeekBarPreference::OnSaveInstanceState(
     if (isPersistent) {
         // No need to save instance state since it's persistent
         *state = superState;
-        INTERFACE_ADDREF(*state);
+        REFCOUNT_ADD(*state);
         return NOERROR;
     }
 
@@ -317,7 +317,7 @@ ECode CSeekBarPreference::OnSaveInstanceState(
     myState->mProgress = mProgress;
     myState->mMax = mMax;
     *state = (IParcelable*)myState->Probe(EIID_IParcelable);
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -446,10 +446,10 @@ ECode CSeekBarPreference::SetTitle(
     return Preference::SetTitle(title);
 }
 
-ECode CSeekBarPreference::SetTitleEx(
+ECode CSeekBarPreference::SetTitle(
     /* [in] */ Int32 titleResId)
 {
-    return Preference::SetTitleEx(titleResId);
+    return Preference::SetTitle(titleResId);
 }
 
 ECode CSeekBarPreference::GetTitleRes(
@@ -470,10 +470,10 @@ ECode CSeekBarPreference::SetIcon(
     return Preference::SetIcon(icon);
 }
 
-ECode CSeekBarPreference::SetIconEx(
+ECode CSeekBarPreference::SetIcon(
     /* [in] */ Int32 iconResId)
 {
-    return Preference::SetIconEx(iconResId);
+    return Preference::SetIcon(iconResId);
 }
 
 ECode CSeekBarPreference::GetIcon(
@@ -488,10 +488,10 @@ ECode CSeekBarPreference::SetSummary(
     return Preference::SetSummary(summary);
 }
 
-ECode CSeekBarPreference::SetSummaryEx(
+ECode CSeekBarPreference::SetSummary(
     /* [in] */ Int32 summaryResId)
 {
-    return Preference::SetSummaryEx(summaryResId);
+    return Preference::SetSummary(summaryResId);
 }
 
 ECode CSeekBarPreference::SetEnabled(

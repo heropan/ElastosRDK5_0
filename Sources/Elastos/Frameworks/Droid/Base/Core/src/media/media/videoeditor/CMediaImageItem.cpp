@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "CMediaImageItem.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "graphics/CRect.h"
 #include "graphics/CCanvas.h"
 #include "graphics/CPaint.h"
@@ -179,7 +179,7 @@ ECode CMediaImageItem::constructor(
         mScaledFilename = filename;
         mScaledWidth =  (mWidth >> 1) << 1;
         mScaledHeight = (mHeight >> 1) << 1;
-        bitmapFactory->DecodeFileEx(mScaledFilename, (IBitmap**)&imageBitmap);
+        bitmapFactory->DecodeFile(mScaledFilename, (IBitmap**)&imageBitmap);
     }
     Int32 newWidth = mScaledWidth;
     Int32 newHeight = mScaledHeight;
@@ -204,7 +204,7 @@ ECode CMediaImageItem::constructor(
         while (tmp < newHeight) {
             imageBitmap->GetPixels(*framingBuffer, 0, mScaledWidth, 0, tmp, newWidth, 1);
             byteBuffer->AsInt32Buffer((IInt32Buffer**)&intBuffer);
-            intBuffer->PutInt32sEx(*framingBuffer, 0, newWidth);
+            intBuffer->PutInt32s(*framingBuffer, 0, newWidth);
             dos->WriteBytes(*array);
             tmp += 1;
         }
@@ -663,7 +663,7 @@ ECode CMediaImageItem::GetThumbnail(
     }
 
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -726,7 +726,7 @@ ECode CMediaImageItem::InvalidateTransitions(
     return NOERROR;
 }
 
-ECode CMediaImageItem::InvalidateTransitionsEx(
+ECode CMediaImageItem::InvalidateTransitions(
     /* [in] */ Int64 oldStartTimeMs,
     /* [in] */ Int64 oldDurationMs,
     /* [in] */ Int64 newStartTimeMs,
@@ -968,7 +968,7 @@ ECode CMediaImageItem::GenerateKenburnsClip(
     clipSettings->endCutTime = duration;
 
     *settings = clipSettings;
-    INTERFACE_ADDREF(*settings);
+    REFCOUNT_ADD(*settings);
     return NOERROR;
 }
 
@@ -1010,7 +1010,7 @@ ECode CMediaImageItem::GetImageClipProperties(
     }
 
     *settings = clipSettings;
-    INTERFACE_ADDREF(*settings);
+    REFCOUNT_ADD(*settings);
     return NOERROR;
 }
 
@@ -1073,7 +1073,7 @@ AutoPtr<IBitmap> CMediaImageItem::ScaleImage(
     else {
         bitmapWidth = width;
         bitmapHeight = height;
-        bitmapFactory->DecodeFileEx(filename, (IBitmap**)&srcBitmap);
+        bitmapFactory->DecodeFile(filename, (IBitmap**)&srcBitmap);
 
     }
 
@@ -1089,7 +1089,7 @@ AutoPtr<IBitmap> CMediaImageItem::ScaleImage(
     AutoPtr<IBitmapFactory> factory;
     ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     AutoPtr<IBitmap> bitmap;
-    factory->CreateBitmapEx3((Int32)bitmapWidth, (Int32)bitmapHeight,
+    factory->CreateBitmap((Int32)bitmapWidth, (Int32)bitmapHeight,
             Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
@@ -1101,7 +1101,7 @@ AutoPtr<IBitmap> CMediaImageItem::ScaleImage(
     CRect::New(0, 0, wid, hei, (IRect**)&ra);
     AutoPtr<IRect> rb;
     CRect::New(0, 0, (Int32)bitmapWidth, (Int32)bitmapHeight, (IRect**)&rb);
-    canvas->DrawBitmapEx2(srcBitmap, ra, rb, sResizePaint);
+    canvas->DrawBitmap(srcBitmap, ra, rb, sResizePaint);
     canvas->SetBitmap(NULL);
     /**
      *  Release the source bitmap

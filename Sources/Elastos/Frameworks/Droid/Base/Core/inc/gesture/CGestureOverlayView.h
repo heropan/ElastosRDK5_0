@@ -94,7 +94,7 @@ public:
     CARAPI GetGesturePath(
         /* [out] */ IPath **gesturePath);
 
-    CARAPI GetGesturePathEx(
+    CARAPI GetGesturePath(
         /* [in] */ IPath *path,
         /* [out] */ IPath **gesturePath);
 

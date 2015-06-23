@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <elstrtoken.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 namespace Elastos {
 namespace Droid {

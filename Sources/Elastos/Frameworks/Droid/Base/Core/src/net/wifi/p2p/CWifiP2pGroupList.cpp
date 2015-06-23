@@ -1,7 +1,7 @@
 
 #include "CWifiP2pGroupList.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringBuilder;
@@ -86,7 +86,7 @@ ECode CWifiP2pGroupList::GetGroupList(
     }
 
     *list = array;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
 
     return NOERROR;
 }
@@ -112,7 +112,7 @@ ECode CWifiP2pGroupList::Remove(
     return NOERROR;
 }
 
-ECode CWifiP2pGroupList::RemoveEx(
+ECode CWifiP2pGroupList::Remove(
     /* [in] */ const String& deviceAddress)
 {
     Int32 networkId;
@@ -173,7 +173,7 @@ ECode CWifiP2pGroupList::GetNetworkId(
     return NOERROR;
 }
 
-ECode CWifiP2pGroupList::GetNetworkIdEx(
+ECode CWifiP2pGroupList::GetNetworkId(
     /* [in] */ const String& deviceAddress,
     /* [in] */ const String& ssid,
     /* [out] */ Int32 * networkId)

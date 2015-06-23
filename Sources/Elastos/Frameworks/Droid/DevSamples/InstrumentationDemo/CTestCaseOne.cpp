@@ -125,7 +125,7 @@ ECode CTestCaseOne::SetUp()
     AutoPtr<IContext> targetContext;
     instrumentation->GetTargetContext((IContext**)&targetContext);
     targetContext->GetContentResolver((IContentResolver**)&mContentResolver);
-    mContentResolver->AcquireContentProviderClientEx(IContacts::AUTHORITY,
+    mContentResolver->AcquireContentProviderClient(IContacts::AUTHORITY,
             (IContentProviderClient**)&mProvider);
 
     CArrayList::New((IArrayList**)&mPeopleRowsAdded);
@@ -249,7 +249,7 @@ ECode CTestCaseOne::TestAddToGroup()
     AutoPtr<IInterface> object;
     mPeopleRowsAdded->Get(0, (IInterface**)&object);
     AutoPtr<IUri> uri = IUri::Probe(object);
-    ec = mProvider->QueryEx(uri, PEOPLE_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
+    ec = mProvider->Query(uri, PEOPLE_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
     assert(SUCCEEDED(ec));
     Boolean succeeded;
     ec = cursor->MoveToFirst(&succeeded);
@@ -270,7 +270,7 @@ ECode CTestCaseOne::TestAddToGroup()
     Boolean modified;
     mRowsAdded->Add(object, &modified);
     cursor = NULL;
-    ec = mProvider->QueryEx(uriGroup, GROUPS_PROJECTION,
+    ec = mProvider->Query(uriGroup, GROUPS_PROJECTION,
             IContactsGroupsColumns::SYSTEM_ID + String("='") + IContactsGroups::GROUP_MY_CONTACTS + String("'"),
             NULL, String(NULL), NULL, (ICursor**)&cursor);
     assert(SUCCEEDED(ec));
@@ -307,7 +307,7 @@ ECode CTestCaseOne::TestAddToGroup()
     object = (IInterface*)uri;
     mRowsAdded->Add(object, &modified);
     cursor = NULL;
-    ec = mProvider->QueryEx(uriPeople, PEOPLE_PROJECTION,
+    ec = mProvider->Query(uriPeople, PEOPLE_PROJECTION,
             IContactsPeopleColumns::NAME + String(" = 'test_people_create'"), NULL, String(NULL), NULL, (ICursor**)&cursor);
     assert(SUCCEEDED(ec));
 
@@ -322,7 +322,7 @@ ECode CTestCaseOne::TestAddToGroup()
     cursor->Close();
 
     cursor = NULL;
-    mProvider->QueryEx(uriGroup, GROUPS_PROJECTION,
+    mProvider->Query(uriGroup, GROUPS_PROJECTION,
             IContactsGroupsColumns::SYSTEM_ID + String("='") + IContactsGroups::GROUP_MY_CONTACTS + String("'"),
             NULL, String(NULL), NULL, (ICursor**)&cursor);
     cursor->MoveToFirst(&succeeded);
@@ -343,7 +343,7 @@ ECode CTestCaseOne::TestAddToGroup()
     mPeopleRowsAdded->Get(1, (IInterface**)&object);
     uri = IUri::Probe(object);
     cursor = NULL;
-    mProvider->QueryEx(uri, PEOPLE_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
+    mProvider->Query(uri, PEOPLE_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
     cursor->MoveToFirst(&succeeded);
     cursor->GetInt32(PEOPLE_ID_INDEX, &personId);
     cursor->Close();
@@ -352,13 +352,13 @@ ECode CTestCaseOne::TestAddToGroup()
     mGroupRowsAdded->Get(0, (IInterface**)&object);
     uri = IUri::Probe(object);
     cursor = NULL;
-    mProvider->QueryEx(uri, GROUPS_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
+    mProvider->Query(uri, GROUPS_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
     cursor->MoveToFirst(&succeeded);
     cursor->GetInt32(GROUPS_ID_INDEX, &groupId);
     cursor->Close();
 
     uri = NULL;
-    people->AddToGroupEx(mContentResolver, personId, groupId, (IUri**)&uri);
+    people->AddToGroup(mContentResolver, personId, groupId, (IUri**)&uri);
     object = (IInterface*)uri;
     mRowsAdded->Add(object, &modified);
     cursor = NULL;
@@ -385,7 +385,7 @@ ECode CTestCaseOne::TestAddToGroup()
     mPeopleRowsAdded->Get(2, (IInterface**)&object);
     uri = IUri::Probe(object);
     cursor = NULL;
-    mProvider->QueryEx(uri, PEOPLE_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
+    mProvider->Query(uri, PEOPLE_PROJECTION, String(NULL), NULL, String(NULL), NULL, (ICursor**)&cursor);
     cursor->MoveToFirst(&succeeded);
     cursor->GetInt32(PEOPLE_ID_INDEX, &personId);
     cursor->Close();
@@ -430,7 +430,7 @@ ECode CTestCaseOne::TestAddToGroup()
         builder += id;
         String str = builder.ToString();
         cursor = NULL;
-        mProvider->QueryEx(uriGroup, GROUPS_PROJECTION, str, NULL, String(NULL), NULL, (ICursor**)&cursor);
+        mProvider->Query(uriGroup, GROUPS_PROJECTION, str, NULL, String(NULL), NULL, (ICursor**)&cursor);
         Boolean succeed;
         cursor->MoveToFirst(&succeed);
         String columnValue;

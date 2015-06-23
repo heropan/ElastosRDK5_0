@@ -7,7 +7,7 @@
 #include "view/accessibility/CAccessibilityManager.h"
 #include "view/accessibility/CAccessibilityEvent.h"
 #include "widget/Toast.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::ICharSequence;
@@ -190,7 +190,7 @@ ECode CToastTransientNotification::HandleShow()
             mWM->RemoveView(mView);
         }
         //if (localLOGV) Log.v(TAG, "ADD! " + mView + " in " + this);
-        mWM->AddViewEx5(mView, mParams);
+        mWM->AddView(mView, mParams);
 
         TrySendAccessibilityEvent();
     }

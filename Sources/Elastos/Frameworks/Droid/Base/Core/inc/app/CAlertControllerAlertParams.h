@@ -150,7 +150,7 @@ private:
         CARAPI AddAll(
             /* [in] */ IObjectContainer* collection);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ ArrayOf<IInterface* >* items) ;
 
         CARAPI Insert(
@@ -349,7 +349,7 @@ private:
         CARAPI DoClick(
             /* [in] */ Int32 position);
 
-        CARAPI DoClickEx(
+        CARAPI DoClick(
             /* [in] */ Int32 position);
     private:
         AutoPtr<IAlertControllerAlertParams> mAlertParams;

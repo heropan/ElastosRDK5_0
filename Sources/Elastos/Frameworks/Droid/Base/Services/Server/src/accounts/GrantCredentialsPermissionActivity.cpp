@@ -2,8 +2,8 @@
 #include "accounts/GrantCredentialsPermissionActivity.h"
 #include "R.h"
 #include "text/TextUtils.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
@@ -325,7 +325,7 @@ ECode GrantCredentialsPermissionActivity::OnClick(
             AutoPtr<IIntent> result;
             ASSERT_SUCCEEDED(CIntent::New((IIntent**)&result));
             result->PutBooleanExtra(String("retry"), TRUE);
-            SetResultEx(RESULT_OK, result);
+            SetResult(RESULT_OK, result);
             AutoPtr<IBundle> extras;
             result->GetExtras((IBundle**)&extras);
             SetAccountAuthenticatorResult(extras);

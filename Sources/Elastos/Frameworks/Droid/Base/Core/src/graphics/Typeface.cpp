@@ -95,7 +95,7 @@ ECode Typeface::Create(
         family->GetStyle(&familyStyle);
         if (familyStyle == style) {
             *typeface = family;
-            INTERFACE_ADDREF(*typeface);
+            REFCOUNT_ADD(*typeface);
             return NOERROR;
         }
 
@@ -116,7 +116,7 @@ ECode Typeface::Create(
         }
         if (tmpTypeface != NULL) {
             *typeface = tmpTypeface;
-            INTERFACE_ADDREF(*typeface);
+            REFCOUNT_ADD(*typeface);
             return NOERROR;
         }
     }
@@ -138,7 +138,7 @@ ECode Typeface::DefaultFromStyle(
     VALIDATE_NOT_NULL(typeface);
 
     *typeface = (*sDefaults)[style];
-    INTERFACE_ADDREF(*typeface);
+    REFCOUNT_ADD(*typeface);
     return NOERROR;
 }
 

@@ -1,9 +1,9 @@
 
 #include "am/TaskRecord.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include <os/UserHandle.h>
 #include <os/SystemClock.h>
 #include "am/CActivityManagerService.h"
@@ -166,14 +166,14 @@ void TaskRecord::Dump(
     if (mIntent != NULL) {
         StringBuilder sb;
         sb += prefix; sb += "intent={";
-        mIntent->ToShortStringEx((IStringBuilder*)&sb, FALSE, TRUE, FALSE, TRUE);
+        mIntent->ToShortString((IStringBuilder*)&sb, FALSE, TRUE, FALSE, TRUE);
         sb += '}';
         pw->PrintStringln(sb.ToString());
     }
     if (mAffinityIntent != NULL) {
         StringBuilder sb;
         sb += prefix; sb += "affinityIntent={";
-        mAffinityIntent->ToShortStringEx((IStringBuilder*)&sb, FALSE, TRUE, FALSE, TRUE);
+        mAffinityIntent->ToShortString((IStringBuilder*)&sb, FALSE, TRUE, FALSE, TRUE);
         sb += '}';
         pw->PrintStringln(sb.ToString());
     }

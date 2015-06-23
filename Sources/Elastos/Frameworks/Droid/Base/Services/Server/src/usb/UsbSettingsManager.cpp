@@ -2,8 +2,8 @@
 #include "usb/UsbSettingsManager.h"
 #include "os/UserHandle.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -580,7 +580,7 @@ void UsbSettingsManager::UpgradeSingleUserLocked()
         CFileInputStream::New(sSingleUserSettingsFile, (IFileInputStream**)&fis);
 
         AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-        parser->SetInputEx(fis, String(NULL));
+        parser->SetInput(fis, String(NULL));
 
         Int32 eventType;
 
@@ -643,7 +643,7 @@ void UsbSettingsManager::ReadSettingsLocked()
         return;
     }
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(stream, String(NULL));
+    parser->SetInput(stream, String(NULL));
 
     Int32 eventType;
 
@@ -1049,7 +1049,7 @@ void UsbSettingsManager::ResolveActivity(
                 // start UsbResolverActivity so user can choose an activity
                 AutoPtr<IIntent> dialogIntent;
                 CIntent::New((IIntent**)&dialogIntent);
-                dialogIntent->SetClassNameEx(String("com.android.systemui"), String("com.android.systemui.usb.UsbAccessoryUriActivity"));
+                dialogIntent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbAccessoryUriActivity"));
                 dialogIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
                 dialogIntent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
                 dialogIntent->PutStringExtra(String("uri"), uri);
@@ -1152,7 +1152,7 @@ void UsbSettingsManager::ResolveActivity(
 
         if (count == 1) {
             // start UsbConfirmActivity if there is only one choice
-            resolverIntent->SetClassNameEx(String("com.android.systemui"), String("com.android.systemui.usb.UsbConfirmActivity"));
+            resolverIntent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbConfirmActivity"));
 
             AutoPtr<IResolveInfo> info = *matches->Begin();
             resolverIntent->PutParcelableExtra(String("rinfo"), IParcelable::Probe(info));\
@@ -1166,7 +1166,7 @@ void UsbSettingsManager::ResolveActivity(
         }
         else {
             // start UsbResolverActivity so user can choose an activity
-            resolverIntent->SetClassNameEx(String("com.android.systemui"), String("com.android.systemui.usb.UsbResolverActivity"));
+            resolverIntent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbResolverActivity"));
             AutoPtr< ArrayOf<IParcelable*> > matchesArray = ArrayOf<IParcelable*>::Alloc(count);
             List<AutoPtr<IResolveInfo> >::Iterator it = matches->Begin();
             for (Int32 i = 0; it != matches->End(); ++it, ++i) {
@@ -1447,7 +1447,7 @@ ECode UsbSettingsManager::RequestPermissionDialog(
     // }
 
     Int64 identity = Binder::ClearCallingIdentity();
-    intent->SetClassNameEx(String("com.android.systemui"), String("com.android.systemui.usb.UsbPermissionActivity"));
+    intent->SetClassName(String("com.android.systemui"), String("com.android.systemui.usb.UsbPermissionActivity"));
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     intent->PutParcelableExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(pi));
     intent->PutStringExtra(String("package"), packageName);
@@ -1478,7 +1478,7 @@ ECode UsbSettingsManager::RequestPermission(
         intent->PutParcelableExtra(IUsbManager::EXTRA_DEVICE, IParcelable::Probe(device));
         intent->PutBooleanExtra(IUsbManager::EXTRA_PERMISSION_GRANTED, TRUE);
         // try {
-        ECode ec = pi->SendEx2(mUserContext, 0, intent);
+        ECode ec = pi->Send(mUserContext, 0, intent);
         if (FAILED(ec) && DEBUG == TRUE) {
             Slogger::D(TAG, "requestPermission PendingIntent was cancelled");
         }
@@ -1506,7 +1506,7 @@ ECode UsbSettingsManager::RequestPermission(
         intent->PutParcelableExtra(IUsbManager::EXTRA_ACCESSORY, IParcelable::Probe(accessory));
         intent->PutBooleanExtra(IUsbManager::EXTRA_PERMISSION_GRANTED, TRUE);
         // try {
-        ECode ec = pi->SendEx2(mUserContext, 0, intent);
+        ECode ec = pi->Send(mUserContext, 0, intent);
         if (FAILED(ec) && DEBUG == TRUE) {
             Slogger::D(TAG, "requestPermission PendingIntent was cancelled");
         }

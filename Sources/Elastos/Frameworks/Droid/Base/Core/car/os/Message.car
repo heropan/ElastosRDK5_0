@@ -120,33 +120,33 @@ module
         Obtain(
             [out] IMessage** msg);
 
-        ObtainEx(
+        Obtain(
             [in] IMessage* orig,
             [out] IMessage** msg);
 
-        ObtainEx2(
+        Obtain(
             [in] IHandler* target,
             [out] IMessage** msg);
 
-        ObtainEx3(
+        Obtain(
             [in] IHandler* target,
             [in] Int32 what,
             [out] IMessage** msg);
 
-        ObtainEx4(
+        Obtain(
             [in] IHandler* target,
             [in] Int32 what,
             [in] IInterface* obj,
             [out] IMessage** msg);
 
-        ObtainEx5(
+        Obtain(
             [in] IHandler* target,
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
             [out] IMessage** msg);
 
-        ObtainEx6(
+        Obtain(
             [in] IHandler* target,
             [in] Int32 what,
             [in] Int32 arg1,
@@ -154,7 +154,7 @@ module
             [in] IInterface* obj,
             [out] IMessage** msg);
 
-        ObtainEx7(
+        Obtain(
             [in] IHandler* target,
             [in] IRunnable* cb,
             [out] IMessage** msg);

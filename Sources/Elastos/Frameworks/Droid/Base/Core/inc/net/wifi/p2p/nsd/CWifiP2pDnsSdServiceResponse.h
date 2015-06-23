@@ -4,7 +4,7 @@
 
 #include "_CWifiP2pDnsSdServiceResponse.h"
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "WifiP2pServiceResponse.h"
 
 using Elastos::IO::IByteArrayInputStream;
@@ -12,7 +12,7 @@ using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IDataInput;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

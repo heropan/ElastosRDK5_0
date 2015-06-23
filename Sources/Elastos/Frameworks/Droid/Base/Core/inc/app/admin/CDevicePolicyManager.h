@@ -109,7 +109,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordQualityEx(
+    CARAPI GetPasswordQuality(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -150,7 +150,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumLengthEx(
+    CARAPI GetPasswordMinimumLength(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -198,7 +198,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumUpperCaseEx(
+    CARAPI GetPasswordMinimumUpperCase(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -246,7 +246,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumLowerCaseEx(
+    CARAPI GetPasswordMinimumLowerCase(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -292,7 +292,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumLettersEx(
+    CARAPI GetPasswordMinimumLetters(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -339,7 +339,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumNumericEx(
+    CARAPI GetPasswordMinimumNumeric(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -385,7 +385,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumSymbolsEx(
+    CARAPI GetPasswordMinimumSymbols(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -431,7 +431,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordMinimumNonLetterEx(
+    CARAPI GetPasswordMinimumNonLetter(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -523,7 +523,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetPasswordHistoryLengthEx(
+    CARAPI GetPasswordHistoryLength(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -599,7 +599,7 @@ public:
         /* [out] */ Int32* password);
 
     /** @hide per-user version */
-    CARAPI GetMaximumFailedPasswordsForWipeEx(
+    CARAPI GetMaximumFailedPasswordsForWipe(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* password);
@@ -659,7 +659,7 @@ public:
         /* [out] */ Int64* time);
 
     /** @hide per-user version */
-    CARAPI GetMaximumTimeToLockEx(
+    CARAPI GetMaximumTimeToLock(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int64* time);
@@ -798,7 +798,7 @@ public:
         /* [out] */ Int32* st);
 
     /** @hide per-user version */
-    CARAPI GetStorageEncryptionStatusEx(
+    CARAPI GetStorageEncryptionStatus(
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* st);
 
@@ -829,7 +829,7 @@ public:
         /* [out] */ Boolean* disabled);
 
     /** @hide per-user version */
-    CARAPI GetCameraDisabledEx(
+    CARAPI GetCameraDisabled(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Boolean* disabled);
@@ -865,7 +865,7 @@ public:
         /* [out] */ Int32* which);
 
     /** @hide per-user version */
-    CARAPI GetKeyguardDisabledFeaturesEx(
+    CARAPI GetKeyguardDisabledFeatures(
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Int32* which);

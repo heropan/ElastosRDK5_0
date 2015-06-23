@@ -32,7 +32,7 @@ module {
          * @param title The title for the content (or null)
          * @return uri to the DRM record or null
          */
-        AddDrmFileEx(
+        AddDrmFile(
             [in] IContentResolver* cr,
             [in] IFileInputStream* fis,
             [in] String title,

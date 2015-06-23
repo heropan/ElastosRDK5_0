@@ -1,7 +1,7 @@
 
 #include "media/CJetPlayer.h"
 #include "os/Looper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::Looper;
 using Elastos::Utility::Logging::Logger;
@@ -193,7 +193,7 @@ ECode CJetPlayer::LoadJetFile(
     return NativeLoadJetFromFile(path, result);
 }
 
-ECode CJetPlayer::LoadJetFileEx(
+ECode CJetPlayer::LoadJetFile(
     /* [in] */ IAssetFileDescriptor* afd,
     /* [out] */ Boolean* result)
 {
@@ -316,10 +316,10 @@ ECode CJetPlayer::ClearQueue(
 ECode CJetPlayer::SetEventListener(
     /* [in] */ IOnJetEventListener* listener)
 {
-    return SetEventListenerEx(listener, NULL);
+    return SetEventListener(listener, NULL);
 }
 
-ECode CJetPlayer::SetEventListenerEx(
+ECode CJetPlayer::SetEventListener(
     /* [in] */ IOnJetEventListener* listener,
     /* [in] */ IHandler* handler)
 {
@@ -377,7 +377,7 @@ void CJetPlayer::PostEventFromNative(
     }
 
     AutoPtr<IMessage> message;
-    jet->mEventHandler->ObtainMessageEx3(what, arg1, arg2, NULL, (IMessage**)&message);
+    jet->mEventHandler->ObtainMessage(what, arg1, arg2, NULL, (IMessage**)&message);
     Boolean bval;
     jet->mEventHandler->SendMessage(message, &bval);
 }

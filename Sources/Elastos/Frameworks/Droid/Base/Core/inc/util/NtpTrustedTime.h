@@ -3,9 +3,8 @@
 
 #include "ext/frameworkext.h"
 #include "util/TrustedTime.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::INtpTrustedTime;
 

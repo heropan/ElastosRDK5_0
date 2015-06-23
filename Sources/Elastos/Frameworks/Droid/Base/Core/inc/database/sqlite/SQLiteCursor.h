@@ -4,12 +4,9 @@
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 #include "database/AbstractWindowedCursor.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::HashMap;
 namespace Elastos {
 namespace Droid {
 namespace Database {
@@ -109,7 +106,7 @@ public:
         /* [in] */ ArrayOf<String>* selectionArgs);
 
 private:
-    CARAPI_(void) FillWindowEx(
+    CARAPI_(void) FillWindow(
         /* [in] */ Int32 requiredPos);
 
 private:

@@ -4,9 +4,9 @@
 
 #include "_CDispatcherState.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -31,7 +31,7 @@ public:
     /**
      * Stop any tracking associated with this target.
      */
-    CARAPI ResetEx(
+    CARAPI Reset(
         /* [in] */ IInterface* target);
 
     /**

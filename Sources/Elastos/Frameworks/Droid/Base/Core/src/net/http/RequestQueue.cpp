@@ -2,8 +2,8 @@
 #include "RequestQueue.h"
 #include "ConnectionThread.h"
 #include "HttpLog.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Utility::Logging::Logger;
@@ -104,7 +104,7 @@ ECode RequestQueue::ActivePool::GetProxyHost(
 {
     VALIDATE_NOT_NULL(host);
     *host = mParent->mProxyHost;
-    INTERFACE_ADDREF(*host);
+    REFCOUNT_ADD(*host);
     return NOERROR;
 }
 
@@ -122,7 +122,7 @@ ECode RequestQueue::ActivePool::GetThread(
         // TODO:
         // if (connection != NULL && connection->mHost->Equals(host)) {
         //     *thread = ct;
-        //     INTERFACE_ADDREF(*thread);
+        //     REFCOUNT_ADD(*thread);
         //     return NOERROR;
         // }
     }
@@ -159,7 +159,7 @@ ECode RequestQueue::ActivePool::GetConnection(
         // con = Connection::GetConnection(mParent->mContext, host, mParent->mProxyHost, mParent);
     }
     *conn = con;
-    INTERFACE_ADDREF(*conn);
+    REFCOUNT_ADD(*conn);
     return NOERROR;
 }
 
@@ -197,7 +197,7 @@ ECode RequestQueue::SyncFeeder::GetRequest(
     AutoPtr<Request> r = mRequest;
     mRequest = NULL;
     *req = r;
-    INTERFACE_ADDREF(*req);
+    REFCOUNT_ADD(*req);
     return NOERROR;
 }
 
@@ -312,7 +312,7 @@ ECode RequestQueue::GetProxyHost(
 {
     VALIDATE_NOT_NULL(host);
     *host = mProxyHost;
-    INTERFACE_ADDREF(*host);
+    REFCOUNT_ADD(*host);
     return NOERROR;
 }
 

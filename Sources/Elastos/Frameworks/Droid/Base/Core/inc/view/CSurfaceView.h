@@ -4,7 +4,7 @@
 
 #include "_CSurfaceView.h"
 #include "view/SurfaceView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

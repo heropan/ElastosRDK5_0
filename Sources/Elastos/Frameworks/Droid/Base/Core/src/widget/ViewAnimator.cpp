@@ -42,7 +42,7 @@ ViewAnimator::ViewAnimator(
             const_cast<Int32 *>(R::styleable::ViewAnimator),
             ARRAY_SIZE(R::styleable::ViewAnimator));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx2(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
     Int32 resource;
     a->GetResourceId(R::styleable::ViewAnimator_inAnimation, 0, &resource);
@@ -80,7 +80,7 @@ void ViewAnimator::InitViewAnimator(
             const_cast<Int32 *>(R::styleable::FrameLayout),
             ARRAY_SIZE(R::styleable::FrameLayout));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx2(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
 
     Boolean measureAllChildren;
@@ -370,7 +370,7 @@ ECode ViewAnimator::Init(
             const_cast<Int32 *>(R::styleable::ViewAnimator),
             ARRAY_SIZE(R::styleable::ViewAnimator));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx2(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
     Int32 resource;
     a->GetResourceId(R::styleable::ViewAnimator_inAnimation, 0, &resource);

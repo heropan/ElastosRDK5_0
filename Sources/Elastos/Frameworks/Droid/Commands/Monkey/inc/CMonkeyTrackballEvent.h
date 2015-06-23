@@ -30,7 +30,7 @@ public:
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    CARAPI AddPointerEx(
+    CARAPI AddPointer(
         /* [in] */ Int32 id,
         /* [in] */ Float x,
         /* [in] */ Float y,

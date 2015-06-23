@@ -35,7 +35,7 @@ private:
         CARAPI DeliverSelfNotifications(
             /* [out] */ Boolean* result);
 
-        CARAPI OnChangeEx(
+        CARAPI OnChange(
             /* [in] */ Boolean selfChange,
             /* [in] */ IUri* uri);
 

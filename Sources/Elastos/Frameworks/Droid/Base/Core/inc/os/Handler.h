@@ -2,13 +2,12 @@
 #define __ELASTOS_DROID_OS_HANDLER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/Object.h>
-#include <elastos/Mutex.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::ISynchronize;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Mutex;
+using Elastos::Core::ISynchronize;
+using Elastos::Core::Object;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessageQueue;
@@ -53,10 +52,10 @@ private:
 
         CARAPI Wait();
 
-        CARAPI WaitEx(
+        CARAPI Wait(
             /* [in] */ Int64 millis);
 
-        CARAPI WaitEx2(
+        CARAPI Wait(
             /* [in] */ Int64 millis,
             /* [in] */ Int32 nanos);
 
@@ -104,18 +103,18 @@ public:
         /* [in] */ Int32 what,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageEx(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageEx2(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageEx3(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -131,7 +130,7 @@ public:
         /* [in] */ Int64 uptimeMillis,
         /* [out] */ Boolean* result);
 
-    CARAPI PostAtTimeEx(
+    CARAPI PostAtTime(
         /* [in] */ IRunnable* action,
         /* [in] */ IInterface* token,
         /* [in] */ Int64 uptimeMillis,
@@ -149,7 +148,7 @@ public:
     CARAPI RemoveCallbacks(
         /* [in] */ IRunnable* action);
 
-    CARAPI RemoveCallbacksEx(
+    CARAPI RemoveCallbacks(
         /* [in] */ IRunnable* action,
         /* [in] */ IInterface* token);
 
@@ -196,17 +195,17 @@ public:
         /* [in] */ Int32 what,
         /* [out] */ Boolean* result);
 
-    CARAPI HasMessagesEx(
+    CARAPI HasMessages(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
-    CARAPI HasMessagesEx2(
+    CARAPI HasMessages(
         /* [in] */ Int32 id,
         /* [in] */ Int32 what,
         /* [out] */ Boolean* result);
 
-    CARAPI HasMessagesEx3(
+    CARAPI HasMessages(
         /* [in] */ Int32 id,
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj,
@@ -215,11 +214,11 @@ public:
     CARAPI RemoveMessages(
         /* [in] */ Int32 what);
 
-    CARAPI RemoveMessagesEx(
+    CARAPI RemoveMessages(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj);
 
-    CARAPI RemoveMessagesEx2(
+    CARAPI RemoveMessages(
         /* [in] */ Int32 id,
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj);

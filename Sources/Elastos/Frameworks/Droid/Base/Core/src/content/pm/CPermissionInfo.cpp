@@ -87,7 +87,7 @@ ECode CPermissionInfo::LoadDescription(
 
     if (mNonLocalizedDescription != NULL) {
         *description = mNonLocalizedDescription;
-        INTERFACE_ADDREF(*description);
+        REFCOUNT_ADD(*description);
         return NOERROR;
     }
 
@@ -321,7 +321,7 @@ ECode CPermissionInfo::GetNonLocalizedDescription(
 {
     VALIDATE_NOT_NULL(des);
     *des = mNonLocalizedDescription;
-    INTERFACE_ADDREF(*des);
+    REFCOUNT_ADD(*des);
     return NOERROR;
 }
 

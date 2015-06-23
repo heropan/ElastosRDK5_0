@@ -111,17 +111,17 @@ ECode CHandlerThread::Join()
     return Thread::Join();
 }
 
-ECode CHandlerThread::JoinEx(
+ECode CHandlerThread::Join(
     /* [in] */ Int64 millis)
 {
-    return Thread::JoinEx(millis);
+    return Thread::Join(millis);
 }
 
-ECode CHandlerThread::JoinEx2(
+ECode CHandlerThread::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
-    return Thread::JoinEx2(millis, nanos);
+    return Thread::Join(millis, nanos);
 }
 
 ECode CHandlerThread::Resume()
@@ -209,13 +209,13 @@ ECode CHandlerThread::Wait()
     return Thread::Wait();
 }
 
-ECode CHandlerThread::WaitEx(
+ECode CHandlerThread::Wait(
     /* [in] */ Int64 millis)
 {
     return Thread::Wait(millis);
 }
 
-ECode CHandlerThread::WaitEx2(
+ECode CHandlerThread::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
@@ -269,7 +269,7 @@ ECode CHandlerThread::GetLooper(
         Unlock();
     }
     *looper = mLooper;
-    INTERFACE_ADDREF(*looper);
+    REFCOUNT_ADD(*looper);
     return NOERROR;
 }
 

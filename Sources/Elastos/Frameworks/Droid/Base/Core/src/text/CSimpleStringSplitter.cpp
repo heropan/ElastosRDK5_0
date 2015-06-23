@@ -31,7 +31,7 @@ ECode CSimpleStringSplitter::GetIterator(
 {
     VALIDATE_NOT_NULL(it);
     *it = THIS_PROBE(IIterator);
-    INTERFACE_ADDREF(*it);
+    REFCOUNT_ADD(*it);
     return NOERROR;
 }
 
@@ -74,7 +74,7 @@ ECode CSimpleStringSplitter::Next(
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(str, (ICharSequence**)&seq);
     *obj = seq;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

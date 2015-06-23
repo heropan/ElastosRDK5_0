@@ -1,5 +1,5 @@
 
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "graphics/Typeface.h"
 #include "text/CStaticLayout.h"
 #include "text/TextUtils.h"
@@ -119,7 +119,7 @@ ECode Switch::InitImpl(
             const_cast<Int32 *>(R::styleable::Switch),
             ARRAY_SIZE(R::styleable::Switch));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     a->GetDrawable(R::styleable::Switch_thumb, (IDrawable**)&mThumbDrawable);
     a->GetDrawable(R::styleable::Switch_track, (IDrawable**)&mTrackDrawable);
@@ -155,7 +155,7 @@ ECode Switch::SetSwitchTextAppearance(
             const_cast<Int32 *>(R::styleable::TextAppearance),
             ARRAY_SIZE(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx(resid, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(resid, attrIds, (ITypedArray**)&a);
 
     AutoPtr<IColorStateList> colors;
     a->GetColorStateList(R::styleable::TextAppearance_textColor, (IColorStateList**)&colors);
@@ -678,7 +678,7 @@ void Switch::OnDraw(
     Int32 switchInnerTop = switchTop + rect->mTop;
     Int32 switchInnerRight = switchRight - rect->mRight;
     Int32 switchInnerBottom = switchBottom - rect->mBottom;
-    canvas->ClipRectEx6(switchInnerLeft, switchInnerTop, switchInnerRight, switchInnerBottom, &padding);
+    canvas->ClipRect(switchInnerLeft, switchInnerTop, switchInnerRight, switchInnerBottom, &padding);
 
     mThumbDrawable->GetPadding(mTempRect, &padding);
     Int32 thumbPos = (Int32)(mThumbPosition + 0.5f);

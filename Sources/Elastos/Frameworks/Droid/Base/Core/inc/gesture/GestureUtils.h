@@ -3,10 +3,10 @@
 
 #include "ext/frameworkext.h"
 #include "gesture/CGesture.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::IO::ICloseable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

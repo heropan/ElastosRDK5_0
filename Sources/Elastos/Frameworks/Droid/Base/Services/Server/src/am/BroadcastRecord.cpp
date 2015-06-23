@@ -1,8 +1,8 @@
 
 #include "am/BroadcastRecord.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

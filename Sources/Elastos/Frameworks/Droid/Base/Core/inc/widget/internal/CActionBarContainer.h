@@ -2,10 +2,10 @@
 #define __CACTIONBARCONTAINER_H_
 
 #include "_CActionBarContainer.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/internal/ActionBarContainer.h"
-#include "widget/FrameLayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

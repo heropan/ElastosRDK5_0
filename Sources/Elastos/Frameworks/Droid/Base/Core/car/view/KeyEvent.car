@@ -86,7 +86,7 @@ module
         /**
          * Stop any tracking associated with this target.
          */
-        ResetEx(
+        Reset(
             [in] IInterface* target);
 
         /**
@@ -1463,7 +1463,7 @@ module
          * @param metaState The meta key modifier state.
          * @return The associated character or combining accent, or 0 if none.
          */
-        GetUnicodeCharEx(
+        GetUnicodeChar(
             [in] Int32 metaState,
             [out] Int32* unicodeChar);
 
@@ -1506,7 +1506,7 @@ module
          * @param metaState The preferred meta key modifier state.
          * @return The matching associated character, or 0 if none.
          */
-        GetMatchEx(
+        GetMatch(
             [in] ArrayOf<Char32> chars,
             [in] Int32 modifiers,
             [out] Char32* match);
@@ -1561,7 +1561,7 @@ module
          *
          * @return The return value from the Callback method that was called.
          */
-        DispatchEx(
+        Dispatch(
             [in] IKeyEventCallback* receiver,
             [in] IDispatcherState* state,
             [in] IInterface* target,
@@ -1609,7 +1609,7 @@ module
          *
          * @hide
          */
-        ObtainEx(
+        Obtain(
             [in] IKeyEvent* otherEvent,
             [out] IKeyEvent** keyEvent);
 
@@ -1639,7 +1639,7 @@ module
          * @param newFlags New flags for the event, replacing the entire value
          * in the original event.
          */
-        ChangeTimeRepeatEx(
+        ChangeTimeRepeat(
             [in] IKeyEvent* event,
             [in] Int64 eventTime,
             [in] Int32 newRepeat,

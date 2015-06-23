@@ -66,7 +66,7 @@ public:
         /* [in] */ Int32 dx,
         /* [in] */ Int32 dy);
 
-    CARAPI StartScrollEx(
+    CARAPI StartScroll(
         /* [in] */ Int32 startX,
         /* [in] */ Int32 startY,
         /* [in] */ Int32 dx,

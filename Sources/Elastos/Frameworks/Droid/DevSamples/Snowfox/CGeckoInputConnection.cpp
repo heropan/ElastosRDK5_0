@@ -1,10 +1,10 @@
 
 #include "GeckoApp.h"
 #include "GeckoAppShell.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "CGeckoInputConnection.h"
 #include "GeckoEvent.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <stdlib.h>
 #include <stdio.h>
 

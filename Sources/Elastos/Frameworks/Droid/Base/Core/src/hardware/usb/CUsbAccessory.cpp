@@ -1,6 +1,6 @@
 
 #include "hardware/usb/CUsbAccessory.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Droid::Hardware::Usb::EIID_IUsbAccessory;
 

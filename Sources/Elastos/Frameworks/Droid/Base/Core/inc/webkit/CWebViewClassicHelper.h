@@ -64,7 +64,7 @@ public:
      *
      * @return the address, or if no address is found, return null.
      */
-    CARAPI FindAddressEx(
+    CARAPI FindAddress(
         /* [in] */ const String& addr,
         /* [in] */ Boolean caseInsensitive,
         /* [out] */ String* outAddr);

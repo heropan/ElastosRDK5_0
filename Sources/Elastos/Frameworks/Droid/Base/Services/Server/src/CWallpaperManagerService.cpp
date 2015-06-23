@@ -13,8 +13,8 @@
 #include "util/Xml.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
@@ -401,7 +401,7 @@ ECode CWallpaperManagerService::constructor(
     mIWindowManager = (IIWindowManager*)ServiceManager::GetService(IContext::WINDOW_SERVICE).Get();
     mIPackageManager = AppGlobals::GetPackageManager();
     mMonitor = new MyPackageMonitor(this);
-    mMonitor->RegisterEx(context, NULL, UserHandle::ALL, TRUE);
+    mMonitor->Register(context, NULL, UserHandle::ALL, TRUE);
     Boolean res;
     GetWallpaperDir(IUserHandle::USER_OWNER)->Mkdirs(&res);
     LoadSettingsLocked(IUserHandle::USER_OWNER);
@@ -1043,7 +1043,7 @@ Boolean CWallpaperManagerService::BindWallpaperComponentLocked(
             IIntent::EXTRA_CLIENT_INTENT, IParcelable::Probe(pendingIntent));
 
         Boolean res;
-        mContext->BindServiceEx(
+        mContext->BindService(
             intent, newConn, IContext::BIND_AUTO_CREATE,
             serviceUserId, &res);
         if (!res) {
@@ -1325,7 +1325,7 @@ void CWallpaperManagerService::LoadSettingsLocked(
         goto __FAILED__;
 
     parser = Xml::NewPullParser();
-    ec = parser->SetInputEx(stream, String(NULL));
+    ec = parser->SetInput(stream, String(NULL));
     if (FAILED(ec))
         goto __FAILED__;
 
@@ -1340,19 +1340,19 @@ void CWallpaperManagerService::LoadSettingsLocked(
                 break;
             if (tag.Equals("wp")) {
                 String value;
-                ec = parser->GetAttributeValueEx(String(NULL), String("width"), &value);
+                ec = parser->GetAttributeValue(String(NULL), String("width"), &value);
                 if (FAILED(ec))
                     break;
                 wallpaper->mWidth = StringUtils::ParseInt32(value);
-                ec = parser->GetAttributeValueEx(String(NULL), String("height"), &value);
+                ec = parser->GetAttributeValue(String(NULL), String("height"), &value);
                 if (FAILED(ec))
                     break;
                 wallpaper->mHeight = StringUtils::ParseInt32(value);
-                ec = parser->GetAttributeValueEx(String(NULL), String("name"), &wallpaper->mName);
+                ec = parser->GetAttributeValue(String(NULL), String("name"), &wallpaper->mName);
                 if (FAILED(ec))
                     break;
                 String comp;
-                ec = parser->GetAttributeValueEx(String(NULL), String("component"), &comp);
+                ec = parser->GetAttributeValue(String(NULL), String("component"), &comp);
                 if (FAILED(ec))
                     break;
 
@@ -1543,7 +1543,7 @@ Boolean CWallpaperManagerService::RestoreNamedResourceLocked(
                 AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(32768);
                 Int32 amt;
                 while ((res->ReadBytes(buffer, &amt), amt) > 0) {
-                    fos->WriteBytesEx(*buffer, 0, amt);
+                    fos->WriteBytes(*buffer, 0, amt);
                 }
                 // mWallpaperObserver will notice the close and send the change broadcast
 

@@ -1,13 +1,13 @@
 #include "MonkeyPowerEvent.h"
 #include "os/SystemClock.h"
 #include <os/Build.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Core::IInteger64;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::Build;
 using Elastos::Core::StringUtils;

@@ -3,7 +3,7 @@
 
 #include "widget/FrameLayout.h"
 #include "widget/BaseAdapter.h"
-#include "widget/AdapterMacro.h"
+
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
@@ -221,7 +221,7 @@ public:
     CARAPI Show(
         /* [in] */ Boolean show);
 
-    CARAPI ShowEx(
+    CARAPI Show(
         /* [in] */ Boolean show,
         /* [in] */ IObjectContainer* recentTaskDescriptions,
         /* [in] */ Boolean firstScreenful,

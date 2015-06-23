@@ -74,22 +74,22 @@ ECode CPhoneNumberUtilsHelper::Compare(
     return CPhoneNumberUtils::Compare(a, b, res);
 }
 
-ECode CPhoneNumberUtilsHelper::CompareEx(
+ECode CPhoneNumberUtilsHelper::Compare(
     /* [in] */ IContext* context,
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [out] */ Boolean* res)
 {
-    return CPhoneNumberUtils::CompareEx(context, a, b, res);
+    return CPhoneNumberUtils::Compare(context, a, b, res);
 }
 
-ECode CPhoneNumberUtilsHelper::CompareEx2(
+ECode CPhoneNumberUtilsHelper::Compare(
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [in] */ Boolean useStrictComparation,
     /* [out] */ Boolean* res)
 {
-    return CPhoneNumberUtils::CompareEx2(a, b, useStrictComparation, res);
+    return CPhoneNumberUtils::Compare(a, b, useStrictComparation, res);
 }
 
 ECode CPhoneNumberUtilsHelper::CompareLoosely(
@@ -108,13 +108,13 @@ ECode CPhoneNumberUtilsHelper::CompareStrictly(
     return CPhoneNumberUtils::CompareStrictly(a, b, res);
 }
 
-ECode CPhoneNumberUtilsHelper::CompareStrictlyEx(
+ECode CPhoneNumberUtilsHelper::CompareStrictly(
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [in] */ Boolean acceptInvalidCCCPrefix,
     /* [out] */ Boolean* res)
 {
-    return CPhoneNumberUtils::CompareStrictlyEx(a, b, acceptInvalidCCCPrefix, res);
+    return CPhoneNumberUtils::CompareStrictly(a, b, acceptInvalidCCCPrefix, res);
 }
 
 ECode CPhoneNumberUtilsHelper::ToCallerIDMinMatch(
@@ -206,12 +206,12 @@ ECode CPhoneNumberUtilsHelper::FormatNumber(
     return CPhoneNumberUtils::FormatNumber(source, res);
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ const String& source,
     /* [in] */ Int32 defaultFormattingType,
     /* [out] */ String* res)
 {
-    return CPhoneNumberUtils::FormatNumberEx(source, defaultFormattingType, res);
+    return CPhoneNumberUtils::FormatNumber(source, defaultFormattingType, res);
 }
 
 ECode CPhoneNumberUtilsHelper::GetFormatTypeForLocale(
@@ -221,11 +221,11 @@ ECode CPhoneNumberUtilsHelper::GetFormatTypeForLocale(
     return CPhoneNumberUtils::GetFormatTypeForLocale(locale, res);
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx2(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ IEditable* text,
     /* [in] */ Int32 defaultFormattingType)
 {
-    return CPhoneNumberUtils::FormatNumberEx2(text, defaultFormattingType);
+    return CPhoneNumberUtils::FormatNumber(text, defaultFormattingType);
 }
 
 ECode CPhoneNumberUtilsHelper::FormatNanpNumber(
@@ -248,21 +248,21 @@ ECode CPhoneNumberUtilsHelper::FormatNumberToE164(
     return CPhoneNumberUtils::FormatNumberToE164(phoneNumber, defaultCountryIso, res);
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx3(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ const String& phoneNumber,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ String* res)
 {
-    return CPhoneNumberUtils::FormatNumberEx3(phoneNumber, defaultCountryIso, res);
+    return CPhoneNumberUtils::FormatNumber(phoneNumber, defaultCountryIso, res);
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx4(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ const String& phoneNumber,
     /* [in] */ const String& phoneNumberE164,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ String* res)
 {
-    return CPhoneNumberUtils::FormatNumberEx4(phoneNumber, phoneNumberE164, defaultCountryIso, res);
+    return CPhoneNumberUtils::FormatNumber(phoneNumber, phoneNumberE164, defaultCountryIso, res);
 }
 
 ECode CPhoneNumberUtilsHelper::NormalizeNumber(
@@ -293,20 +293,20 @@ ECode CPhoneNumberUtilsHelper::IsPotentialEmergencyNumber(
     return CPhoneNumberUtils::IsPotentialEmergencyNumber(number, res);
 }
 
-ECode CPhoneNumberUtilsHelper::IsEmergencyNumberEx(
+ECode CPhoneNumberUtilsHelper::IsEmergencyNumber(
     /* [in] */ const String& number,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ Boolean* res)
 {
-    return CPhoneNumberUtils::IsEmergencyNumberEx(number, defaultCountryIso, res);
+    return CPhoneNumberUtils::IsEmergencyNumber(number, defaultCountryIso, res);
 }
 
-ECode CPhoneNumberUtilsHelper::IsPotentialEmergencyNumberEx(
+ECode CPhoneNumberUtilsHelper::IsPotentialEmergencyNumber(
     /* [in] */ const String& number,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ Boolean* res)
 {
-    return CPhoneNumberUtils::IsPotentialEmergencyNumberEx(number, defaultCountryIso, res);
+    return CPhoneNumberUtils::IsPotentialEmergencyNumber(number, defaultCountryIso, res);
 }
 
 ECode CPhoneNumberUtilsHelper::IsLocalEmergencyNumber(

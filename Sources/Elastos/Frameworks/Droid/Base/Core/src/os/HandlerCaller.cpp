@@ -46,7 +46,7 @@ ECode HandlerCaller::GetWeakReference(
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(
         (IInterface*)(IWeakReferenceSource*)this, CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -99,7 +99,7 @@ ECode HandlerCaller::GetContext(
 {
     VALIDATE_NOT_NULL(ctx);
     *ctx = mContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 
@@ -145,11 +145,11 @@ ECode HandlerCaller::RemoveMessages(
     return mH->RemoveMessages(what);
 }
 
-ECode HandlerCaller::RemoveMessagesEx(
+ECode HandlerCaller::RemoveMessages(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
 {
-    return mH->RemoveMessagesEx(what, obj);
+    return mH->RemoveMessages(what, obj);
 }
 
 ECode HandlerCaller::SendMessage(
@@ -168,7 +168,7 @@ ECode HandlerCaller::ObtainMessage(
     AutoPtr<IMessage> message;
     mH->ObtainMessage(what, (IMessage**)&message);
     *msg = message;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
@@ -241,9 +241,9 @@ ECode HandlerCaller::ObtainMessageIIO(
     VALIDATE_NOT_NULL(msg);
 
     AutoPtr<IMessage> message;
-    mH->ObtainMessageEx3(what, arg1, arg2, arg3, (IMessage**)&message);
+    mH->ObtainMessage(what, arg1, arg2, arg3, (IMessage**)&message);
     *msg = message;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 

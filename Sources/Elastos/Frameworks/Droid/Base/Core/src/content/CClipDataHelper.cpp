@@ -69,7 +69,7 @@ ECode CClipDataHelper::GetMimeTypes(
         *types = CClipData::MIMETYPES_TEXT_INTENT;
     }
 
-    INTERFACE_ADDREF(*types);
+    REFCOUNT_ADD(*types);
     return NOERROR;
 }
 

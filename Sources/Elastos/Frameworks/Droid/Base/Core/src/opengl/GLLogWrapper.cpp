@@ -1,7 +1,7 @@
 #include "GLLogWrapper.h"
-#include "elastos/StringUtils.h"
-#include "elastos/Math.h"
-#include "elastos/Slogger.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::IFlushable;
@@ -323,7 +323,7 @@ String GLLogWrapper::ToString(
         builder += i;
         builder += "] = ";
         Float f;
-        buf->GetFloatEx(i, &f);
+        buf->GetFloat(i, &f);
         builder += f;
         builder += '\n';
     }
@@ -343,7 +343,7 @@ String GLLogWrapper::ToString(
         builder += i;
         builder += "] = ";
         Int32 f;
-        buf->GetInt32Ex(i, &f);
+        buf->GetInt32(i, &f);
         builder += FormattedAppend(builder, f, format);
         builder += '\n';
     }
@@ -362,7 +362,7 @@ String GLLogWrapper::ToString(
         builder += i;
         builder += "] = ";
         Int16 f;
-        buf->GetInt16Ex(i, &f);
+        buf->GetInt16(i, &f);
         builder += f;
         builder += '\n';
     }
@@ -1335,7 +1335,7 @@ ECode GLLogWrapper::ToByteBuffer(
     orderHelper->GetNativeOrder(&nativeOrder);
     result->SetOrder(nativeOrder);
     *rBuf = result;
-    INTERFACE_ADDREF(*rBuf)
+    REFCOUNT_ADD(*rBuf)
     return NOERROR;
 }
 
@@ -1416,13 +1416,13 @@ ECode GLLogWrapper::DoArrayElement(
         switch (type) {
         case IGL10::_GL_BYTE: {
             Byte d;
-            byteBuffer->GetByteEx(byteOffset, &d);
+            byteBuffer->GetByte(byteOffset, &d);
             builder += d;
         }
             break;
         case IGL10::_GL_UNSIGNED_BYTE: {
             Byte d;
-            byteBuffer->GetByteEx(byteOffset, &d);
+            byteBuffer->GetByte(byteOffset, &d);
             builder += (0xff & d);
         }
             break;
@@ -1430,7 +1430,7 @@ ECode GLLogWrapper::DoArrayElement(
             AutoPtr<IInt16Buffer> shortBuffer;
             byteBuffer->AsInt16Buffer((IInt16Buffer**)&shortBuffer);
             Int16 d;
-            shortBuffer->GetInt16Ex(byteOffset / 2, &d);
+            shortBuffer->GetInt16(byteOffset / 2, &d);
             builder += d;
         }
             break;
@@ -1438,7 +1438,7 @@ ECode GLLogWrapper::DoArrayElement(
             AutoPtr<IInt32Buffer> intBuffer;
             byteBuffer->AsInt32Buffer((IInt32Buffer**)&intBuffer);
             Int32 d;
-            intBuffer->GetInt32Ex(byteOffset / 4, &d);
+            intBuffer->GetInt32(byteOffset / 4, &d);
             builder += d;
         }
             break;
@@ -1446,7 +1446,7 @@ ECode GLLogWrapper::DoArrayElement(
             AutoPtr<IFloatBuffer> floatBuffer;
             byteBuffer->AsFloatBuffer((IFloatBuffer**)&floatBuffer);
             Float d;
-            floatBuffer->GetFloatEx(byteOffset / 4, &d);
+            floatBuffer->GetFloat(byteOffset / 4, &d);
             builder += d;
         }
             break;
@@ -1826,7 +1826,7 @@ ECode GLLogWrapper::GlDeleteTextures(
     return ec;
 }
 
-ECode GLLogWrapper::GlDeleteTexturesEx(
+ECode GLLogWrapper::GlDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures)
 {
@@ -1835,7 +1835,7 @@ ECode GLLogWrapper::GlDeleteTexturesEx(
     Arg(String("textures"), n, textures);
     End();
 
-    ECode ec = mgl->GlDeleteTexturesEx(n, textures);
+    ECode ec = mgl->GlDeleteTextures(n, textures);
     CheckError();
     return ec;
 }
@@ -2025,7 +2025,7 @@ ECode GLLogWrapper::GlFogfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlFogfvEx(
+ECode GLLogWrapper::GlFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -2034,7 +2034,7 @@ ECode GLLogWrapper::GlFogfvEx(
     Arg(String("params"), GetFogParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlFogfvEx(pname, params);
+    ECode ec = mgl->GlFogfv(pname, params);
     CheckError();
     return ec;
 }
@@ -2069,7 +2069,7 @@ ECode GLLogWrapper::GlFogxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlFogxvEx(
+ECode GLLogWrapper::GlFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -2078,7 +2078,7 @@ ECode GLLogWrapper::GlFogxvEx(
     Arg(String("params"), GetFogParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlFogxvEx(pname, params);
+    ECode ec = mgl->GlFogxv(pname, params);
     CheckError();
     return ec;
 }
@@ -2157,7 +2157,7 @@ ECode GLLogWrapper::GlGenTextures(
     return ec;
 }
 
-ECode GLLogWrapper::GlGenTexturesEx(
+ECode GLLogWrapper::GlGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures)
 {
@@ -2165,7 +2165,7 @@ ECode GLLogWrapper::GlGenTexturesEx(
     Arg(String("n"), n);
     Arg(String("textures"), ParamsToString(textures));
 
-    ECode ec = mgl->GlGenTexturesEx(n, textures);
+    ECode ec = mgl->GlGenTextures(n, textures);
 
     Returns(ToString(n, FORMAT_INT, textures));
 
@@ -2244,7 +2244,7 @@ ECode GLLogWrapper::GlLightModelfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlLightModelfvEx(
+ECode GLLogWrapper::GlLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -2253,7 +2253,7 @@ ECode GLLogWrapper::GlLightModelfvEx(
     Arg(String("params"), GetLightModelParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlLightModelfvEx(pname, params);
+    ECode ec = mgl->GlLightModelfv(pname, params);
     CheckError();
     return ec;
 }
@@ -2288,7 +2288,7 @@ ECode GLLogWrapper::GlLightModelxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlLightModelxvEx(
+ECode GLLogWrapper::GlLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -2297,7 +2297,7 @@ ECode GLLogWrapper::GlLightModelxvEx(
     Arg(String("params"), GetLightModelParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlLightModelxvEx(pname, params);
+    ECode ec = mgl->GlLightModelxv(pname, params);
     CheckError();
     return ec;
 }
@@ -2336,7 +2336,7 @@ ECode GLLogWrapper::GlLightfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlLightfvEx(
+ECode GLLogWrapper::GlLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -2347,7 +2347,7 @@ ECode GLLogWrapper::GlLightfvEx(
     Arg(String("params"), GetLightParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlLightfvEx(light, pname, params);
+    ECode ec = mgl->GlLightfv(light, pname, params);
     CheckError();
     return ec;
 }
@@ -2386,7 +2386,7 @@ ECode GLLogWrapper::GlLightxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlLightxvEx(
+ECode GLLogWrapper::GlLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -2397,7 +2397,7 @@ ECode GLLogWrapper::GlLightxvEx(
     Arg(String("params"), GetLightParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlLightxvEx(light, pname, params);
+    ECode ec = mgl->GlLightxv(light, pname, params);
     CheckError();
     return ec;
 }
@@ -2450,14 +2450,14 @@ ECode GLLogWrapper::GlLoadMatrixf(
     return ec;
 }
 
-ECode GLLogWrapper::GlLoadMatrixfEx(
+ECode GLLogWrapper::GlLoadMatrixf(
     /* [in] */ IFloatBuffer* m)
 {
     Begin(String("GlLoadMatrixfEx"));
     Arg(String("m"), 16, m);
     End();
 
-    ECode ec = mgl->GlLoadMatrixfEx(m);
+    ECode ec = mgl->GlLoadMatrixf(m);
     CheckError();
     return ec;
 }
@@ -2476,14 +2476,14 @@ ECode GLLogWrapper::GlLoadMatrixx(
     return ec;
 }
 
-ECode GLLogWrapper::GlLoadMatrixxEx(
+ECode GLLogWrapper::GlLoadMatrixx(
     /* [in] */ IInt32Buffer* m)
 {
     Begin(String("GlLoadMatrixxEx"));
     Arg(String("m"), 16, m);
     End();
 
-    ECode ec = mgl->GlLoadMatrixxEx(m);
+    ECode ec = mgl->GlLoadMatrixx(m);
     CheckError();
     return ec;
 }
@@ -2534,7 +2534,7 @@ ECode GLLogWrapper::GlMaterialfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlMaterialfvEx(
+ECode GLLogWrapper::GlMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -2545,7 +2545,7 @@ ECode GLLogWrapper::GlMaterialfvEx(
     Arg(String("params"), GetMaterialParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlMaterialfvEx(face, pname, params);
+    ECode ec = mgl->GlMaterialfv(face, pname, params);
     CheckError();
     return ec;
 }
@@ -2584,7 +2584,7 @@ ECode GLLogWrapper::GlMaterialxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlMaterialxvEx(
+ECode GLLogWrapper::GlMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -2595,7 +2595,7 @@ ECode GLLogWrapper::GlMaterialxvEx(
     Arg(String("params"), GetMaterialParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlMaterialxvEx(face, pname, params);
+    ECode ec = mgl->GlMaterialxv(face, pname, params);
     CheckError();
     return ec;
 }
@@ -2626,14 +2626,14 @@ ECode GLLogWrapper::GlMultMatrixf(
     return ec;
 }
 
-ECode GLLogWrapper::GlMultMatrixfEx(
+ECode GLLogWrapper::GlMultMatrixf(
     /* [in] */ IFloatBuffer* m)
 {
     Begin(String("GlMultMatrixfEx"));
     Arg(String("m"), 16, m);
     End();
 
-    ECode ec = mgl->GlMultMatrixfEx(m);
+    ECode ec = mgl->GlMultMatrixf(m);
     CheckError();
     return ec;
 }
@@ -2652,14 +2652,14 @@ ECode GLLogWrapper::GlMultMatrixx(
     return ec;
 }
 
-ECode GLLogWrapper::GlMultMatrixxEx(
+ECode GLLogWrapper::GlMultMatrixx(
     /* [in] */ IInt32Buffer* m)
 {
     Begin(String("GlMultMatrixxEx"));
     Arg(String("m"), 16, m);
     End();
 
-    ECode ec = mgl->GlMultMatrixxEx(m);
+    ECode ec = mgl->GlMultMatrixx(m);
     CheckError();
     return ec;
 }
@@ -3283,7 +3283,7 @@ ECode GLLogWrapper::GlTexParameterfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexParameterfvEx(
+ECode GLLogWrapper::GlTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -3295,7 +3295,7 @@ ECode GLLogWrapper::GlTexParameterfvEx(
     params->ToString(&str);
     Arg(String("params"), str);
     End();
-    ECode ec = mgl11->GlTexParameterfvEx(target, pname, params);
+    ECode ec = mgl11->GlTexParameterfv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -3386,7 +3386,7 @@ ECode GLLogWrapper::GlGetIntegerv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetIntegervEx(
+ECode GLLogWrapper::GlGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -3394,7 +3394,7 @@ ECode GLLogWrapper::GlGetIntegervEx(
     Arg(String("pname"), GetIntegerStateName(pname));
     Arg(String("params"), ParamsToString(params));
 
-    ECode ec = mgl->GlGetIntegervEx(pname, params);
+    ECode ec = mgl->GlGetIntegerv(pname, params);
 
     Returns(ToString(GetIntegerStateSize(pname),
         GetIntegerStateFormat(pname), params));
@@ -3453,7 +3453,7 @@ ECode GLLogWrapper::GlTexEnvfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexEnvfvEx(
+ECode GLLogWrapper::GlTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -3464,7 +3464,7 @@ ECode GLLogWrapper::GlTexEnvfvEx(
     Arg(String("params"), GetTextureEnvParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlTexEnvfvEx(target, pname, params);
+    ECode ec = mgl->GlTexEnvfv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -3503,7 +3503,7 @@ ECode GLLogWrapper::GlTexEnvxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexEnvxvEx(
+ECode GLLogWrapper::GlTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -3514,7 +3514,7 @@ ECode GLLogWrapper::GlTexEnvxvEx(
     Arg(String("params"), GetTextureEnvParamCount(pname), params);
     End();
 
-    ECode ec = mgl->GlTexEnvxvEx(target, pname, params);
+    ECode ec = mgl->GlTexEnvxv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -3538,7 +3538,7 @@ ECode GLLogWrapper::GlQueryMatrixxOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlQueryMatrixxOESEx(
+ECode GLLogWrapper::GlQueryMatrixxOES(
     /* [in] */ IInt32Buffer* mantissa,
     /* [in] */ IInt32Buffer* exponent,
     /* [out] */ Int32* matrixxOES)
@@ -3547,7 +3547,7 @@ ECode GLLogWrapper::GlQueryMatrixxOESEx(
     Arg(String("mantissa"), ParamsToString(mantissa));
     Arg(String("exponent"), ParamsToString(exponent));
     End();
-    ECode ec = mgl10Ext->GlQueryMatrixxOESEx(mantissa, exponent, matrixxOES);
+    ECode ec = mgl10Ext->GlQueryMatrixxOES(mantissa, exponent, matrixxOES);
     Returns(ToString(16, FORMAT_FIXED, mantissa));
     Returns(ToString(16, FORMAT_INT, exponent));
     CheckError();
@@ -3629,7 +3629,7 @@ ECode GLLogWrapper::GlClipPlanef(
     return ec;
 }
 
-ECode GLLogWrapper::GlClipPlanefEx(
+ECode GLLogWrapper::GlClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ IFloatBuffer* equation)
 {
@@ -3637,7 +3637,7 @@ ECode GLLogWrapper::GlClipPlanefEx(
     Arg(String("plane"), plane);
     Arg(String("equation"), 4, equation);
     End();
-    ECode ec = mgl11->GlClipPlanefEx(plane, equation);
+    ECode ec = mgl11->GlClipPlanef(plane, equation);
     CheckError();
     return ec;
 }
@@ -3657,7 +3657,7 @@ ECode GLLogWrapper::GlClipPlanex(
     return ec;
 }
 
-ECode GLLogWrapper::GlClipPlanexEx(
+ECode GLLogWrapper::GlClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ IInt32Buffer* equation)
 {
@@ -3665,7 +3665,7 @@ ECode GLLogWrapper::GlClipPlanexEx(
     Arg(String("plane"), plane);
     Arg(String("equation"), 4, equation);
     End();
-    ECode ec = mgl11->GlClipPlanexEx(plane, equation);
+    ECode ec = mgl11->GlClipPlanex(plane, equation);
     CheckError();
     return ec;
 }
@@ -3687,7 +3687,7 @@ ECode GLLogWrapper::GlColor4ub(
     return ec;
 }
 
-ECode GLLogWrapper::GlColorPointerEx(
+ECode GLLogWrapper::GlColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3699,7 +3699,7 @@ ECode GLLogWrapper::GlColorPointerEx(
     Arg(String("stride"), stride);
     Arg(String("offset"), offset);
     End();
-    ECode ec = mgl11->GlColorPointerEx(size, type, stride, offset);
+    ECode ec = mgl11->GlColorPointer(size, type, stride, offset);
     CheckError();
     return ec;
 }
@@ -3719,7 +3719,7 @@ ECode GLLogWrapper::GlDeleteBuffers(
     return ec;
 }
 
-ECode GLLogWrapper::GlDeleteBuffersEx(
+ECode GLLogWrapper::GlDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers)
 {
@@ -3727,12 +3727,12 @@ ECode GLLogWrapper::GlDeleteBuffersEx(
     Arg(String("n"), n);
     Arg(String("buffers"), ParamsToString(buffers));
     End();
-    ECode ec = mgl11->GlDeleteBuffersEx(n, buffers);
+    ECode ec = mgl11->GlDeleteBuffers(n, buffers);
     CheckError();
     return ec;
 }
 
-ECode GLLogWrapper::GlDrawElementsEx(
+ECode GLLogWrapper::GlDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -3744,7 +3744,7 @@ ECode GLLogWrapper::GlDrawElementsEx(
     Arg(String("type"), type);
     Arg(String("offset"), offset);
     End();
-    ECode ec = mgl11->GlDrawElementsEx(mode, count, type, offset);
+    ECode ec = mgl11->GlDrawElements(mode, count, type, offset);
     CheckError();
     return ec;
 }
@@ -3764,7 +3764,7 @@ ECode GLLogWrapper::GlGenBuffers(
     return ec;
 }
 
-ECode GLLogWrapper::GlGenBuffersEx(
+ECode GLLogWrapper::GlGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers)
 {
@@ -3772,7 +3772,7 @@ ECode GLLogWrapper::GlGenBuffersEx(
     Arg(String("n"), n);
     Arg(String("buffers"), ParamsToString(buffers));
     End();
-    ECode ec = mgl11->GlGenBuffersEx(n, buffers);
+    ECode ec = mgl11->GlGenBuffers(n, buffers);
     CheckError();
     return ec;
 }
@@ -3792,7 +3792,7 @@ ECode GLLogWrapper::GlGetBooleanv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetBooleanvEx(
+ECode GLLogWrapper::GlGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -3800,7 +3800,7 @@ ECode GLLogWrapper::GlGetBooleanvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetBooleanvEx(pname, params);
+    ECode ec = mgl11->GlGetBooleanv(pname, params);
     CheckError();
     return ec;
 }
@@ -3822,7 +3822,7 @@ ECode GLLogWrapper::GlGetBufferParameteriv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetBufferParameterivEx(
+ECode GLLogWrapper::GlGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -3832,7 +3832,7 @@ ECode GLLogWrapper::GlGetBufferParameterivEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetBufferParameterivEx(target, pname, params);
+    ECode ec = mgl11->GlGetBufferParameteriv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -3852,7 +3852,7 @@ ECode GLLogWrapper::GlGetClipPlanef(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetClipPlanefEx(
+ECode GLLogWrapper::GlGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* eqn)
 {
@@ -3860,7 +3860,7 @@ ECode GLLogWrapper::GlGetClipPlanefEx(
     Arg(String("pname"), pname);
     Arg(String("eqn"), ParamsToString(eqn));
     End();
-    ECode ec = mgl11->GlGetClipPlanefEx(pname, eqn);
+    ECode ec = mgl11->GlGetClipPlanef(pname, eqn);
     CheckError();
     return ec;
 }
@@ -3878,7 +3878,7 @@ ECode GLLogWrapper::GlGetClipPlanex(
     return mgl11->GlGetClipPlanex(pname, eqn, offset);
 }
 
-ECode GLLogWrapper::GlGetClipPlanexEx(
+ECode GLLogWrapper::GlGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* eqn)
 {
@@ -3886,7 +3886,7 @@ ECode GLLogWrapper::GlGetClipPlanexEx(
     Arg(String("pname"), pname);
     Arg(String("eqn"), ParamsToString(eqn));
     End();
-    ECode ec = mgl11->GlGetClipPlanexEx(pname, eqn);
+    ECode ec = mgl11->GlGetClipPlanex(pname, eqn);
     CheckError();
     return ec;
 }
@@ -3904,7 +3904,7 @@ ECode GLLogWrapper::GlGetFixedv(
     return mgl11->GlGetFixedv(pname, params, offset);
 }
 
-ECode GLLogWrapper::GlGetFixedvEx(
+ECode GLLogWrapper::GlGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -3912,7 +3912,7 @@ ECode GLLogWrapper::GlGetFixedvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetFixedvEx(pname, params);
+    ECode ec = mgl11->GlGetFixedv(pname, params);
     CheckError();
     return ec;
 }
@@ -3930,7 +3930,7 @@ ECode GLLogWrapper::GlGetFloatv(
     return mgl11->GlGetFloatv(pname, params, offset);
 }
 
-ECode GLLogWrapper::GlGetFloatvEx(
+ECode GLLogWrapper::GlGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -3938,7 +3938,7 @@ ECode GLLogWrapper::GlGetFloatvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetFloatvEx(pname, params);
+    ECode ec = mgl11->GlGetFloatv(pname, params);
     CheckError();
     return ec;
 }
@@ -3960,7 +3960,7 @@ ECode GLLogWrapper::GlGetLightfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetLightfvEx(
+ECode GLLogWrapper::GlGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -3970,7 +3970,7 @@ ECode GLLogWrapper::GlGetLightfvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetLightfvEx(light, pname, params);
+    ECode ec = mgl11->GlGetLightfv(light, pname, params);
     CheckError();
     return ec;
 }
@@ -3992,7 +3992,7 @@ ECode GLLogWrapper::GlGetLightxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetLightxvEx(
+ECode GLLogWrapper::GlGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4002,7 +4002,7 @@ ECode GLLogWrapper::GlGetLightxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetLightxvEx(light, pname, params);
+    ECode ec = mgl11->GlGetLightxv(light, pname, params);
     CheckError();
     return ec;
 }
@@ -4024,7 +4024,7 @@ ECode GLLogWrapper::GlGetMaterialfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetMaterialfvEx(
+ECode GLLogWrapper::GlGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -4034,7 +4034,7 @@ ECode GLLogWrapper::GlGetMaterialfvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetMaterialfvEx(face, pname, params);
+    ECode ec = mgl11->GlGetMaterialfv(face, pname, params);
     CheckError();
     return ec;
 }
@@ -4056,7 +4056,7 @@ ECode GLLogWrapper::GlGetMaterialxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetMaterialxvEx(
+ECode GLLogWrapper::GlGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4066,7 +4066,7 @@ ECode GLLogWrapper::GlGetMaterialxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetMaterialxvEx(face, pname, params);
+    ECode ec = mgl11->GlGetMaterialxv(face, pname, params);
     CheckError();
     return ec;
 }
@@ -4088,7 +4088,7 @@ ECode GLLogWrapper::GlGetTexEnviv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexEnvivEx(
+ECode GLLogWrapper::GlGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4098,7 +4098,7 @@ ECode GLLogWrapper::GlGetTexEnvivEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetTexEnvivEx(env, pname, params);
+    ECode ec = mgl11->GlGetTexEnviv(env, pname, params);
     CheckError();
     return ec;
 }
@@ -4120,7 +4120,7 @@ ECode GLLogWrapper::GlGetTexEnvxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexEnvxvEx(
+ECode GLLogWrapper::GlGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4130,7 +4130,7 @@ ECode GLLogWrapper::GlGetTexEnvxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetTexEnvxvEx(env, pname, params);
+    ECode ec = mgl11->GlGetTexEnvxv(env, pname, params);
     CheckError();
     return ec;
 }
@@ -4152,7 +4152,7 @@ ECode GLLogWrapper::GlGetTexParameterfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexParameterfvEx(
+ECode GLLogWrapper::GlGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -4162,7 +4162,7 @@ ECode GLLogWrapper::GlGetTexParameterfvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetTexParameterfvEx(target, pname, params);
+    ECode ec = mgl11->GlGetTexParameterfv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -4184,7 +4184,7 @@ ECode GLLogWrapper::GlGetTexParameteriv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexParameterivEx(
+ECode GLLogWrapper::GlGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4194,7 +4194,7 @@ ECode GLLogWrapper::GlGetTexParameterivEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetTexParameterivEx(target, pname, params);
+    ECode ec = mgl11->GlGetTexParameteriv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -4216,7 +4216,7 @@ ECode GLLogWrapper::GlGetTexParameterxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexParameterxvEx(
+ECode GLLogWrapper::GlGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4226,7 +4226,7 @@ ECode GLLogWrapper::GlGetTexParameterxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlGetTexParameterxvEx(target, pname, params);
+    ECode ec = mgl11->GlGetTexParameterxv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -4267,7 +4267,7 @@ ECode GLLogWrapper::GlIsTexture(
     return ec;
 }
 
-ECode GLLogWrapper::GlNormalPointerEx(
+ECode GLLogWrapper::GlNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Int32 offset)
@@ -4277,7 +4277,7 @@ ECode GLLogWrapper::GlNormalPointerEx(
     Arg(String("stride"), stride);
     Arg(String("offset"), offset);
     End();
-    return mgl11->GlNormalPointerEx(type, stride, offset);
+    return mgl11->GlNormalPointer(type, stride, offset);
 }
 
 ECode GLLogWrapper::GlPointParameterf(
@@ -4308,7 +4308,7 @@ ECode GLLogWrapper::GlPointParameterfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlPointParameterfvEx(
+ECode GLLogWrapper::GlPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
 {
@@ -4316,7 +4316,7 @@ ECode GLLogWrapper::GlPointParameterfvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlPointParameterfvEx(pname, params);
+    ECode ec = mgl11->GlPointParameterfv(pname, params);
     CheckError();
     return ec;
 }
@@ -4349,7 +4349,7 @@ ECode GLLogWrapper::GlPointParameterxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlPointParameterxvEx(
+ECode GLLogWrapper::GlPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
 {
@@ -4357,7 +4357,7 @@ ECode GLLogWrapper::GlPointParameterxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlPointParameterxvEx( pname, params);
+    ECode ec = mgl11->GlPointParameterxv( pname, params);
     CheckError();
     return ec;
 }
@@ -4377,7 +4377,7 @@ ECode GLLogWrapper::GlPointSizePointerOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexCoordPointerEx(
+ECode GLLogWrapper::GlTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -4389,7 +4389,7 @@ ECode GLLogWrapper::GlTexCoordPointerEx(
     Arg(String("stride"), stride);
     Arg(String("offset"), offset);
     End();
-    return mgl11->GlTexCoordPointerEx(size, type, stride, offset);
+    return mgl11->GlTexCoordPointer(size, type, stride, offset);
 }
 
 ECode GLLogWrapper::GlTexEnvi(
@@ -4424,7 +4424,7 @@ ECode GLLogWrapper::GlTexEnviv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexEnvivEx(
+ECode GLLogWrapper::GlTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4434,7 +4434,7 @@ ECode GLLogWrapper::GlTexEnvivEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlTexEnvivEx( target, pname, params);
+    ECode ec = mgl11->GlTexEnviv( target, pname, params);
     CheckError();
     return ec;
 }
@@ -4471,7 +4471,7 @@ ECode GLLogWrapper::GlTexParameteriv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexParameterivEx(
+ECode GLLogWrapper::GlTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4482,7 +4482,7 @@ ECode GLLogWrapper::GlTexParameterivEx(
     Arg(String("params"), 4, params);
     End();
 
-    ECode ec = mgl11->GlTexParameterivEx(target, pname, params);
+    ECode ec = mgl11->GlTexParameteriv(target, pname, params);
     CheckError();
     return ec;
 }
@@ -4504,7 +4504,7 @@ ECode GLLogWrapper::GlTexParameterxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexParameterxvEx(
+ECode GLLogWrapper::GlTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -4514,12 +4514,12 @@ ECode GLLogWrapper::GlTexParameterxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11->GlTexParameterxvEx(target, pname, params);
+    ECode ec = mgl11->GlTexParameterxv(target, pname, params);
     CheckError();
     return ec;
 }
 
-ECode GLLogWrapper::GlVertexPointerEx(
+ECode GLLogWrapper::GlVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -4531,7 +4531,7 @@ ECode GLLogWrapper::GlVertexPointerEx(
     Arg(String("stride"), stride);
     Arg(String("offset"), offset);
     End();
-    return mgl11->GlVertexPointerEx(size, type, stride, offset);
+    return mgl11->GlVertexPointer(size, type, stride, offset);
 }
 
 ECode GLLogWrapper::GlCurrentPaletteMatrixOES(
@@ -4577,13 +4577,13 @@ ECode GLLogWrapper::GlDrawTexfvOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlDrawTexfvOESEx(
+ECode GLLogWrapper::GlDrawTexfvOES(
     /* [in] */ IFloatBuffer* coords)
 {
     Begin(String("GlDrawTexfvOESEx"));
     Arg(String("coords"), 5, coords);
     End();
-    ECode ec = mgl11Ext->GlDrawTexfvOESEx(coords);
+    ECode ec = mgl11Ext->GlDrawTexfvOES(coords);
     CheckError();
     return ec;
 }
@@ -4620,13 +4620,13 @@ ECode GLLogWrapper::GlDrawTexivOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlDrawTexivOESEx(
+ECode GLLogWrapper::GlDrawTexivOES(
     /* [in] */ IInt32Buffer* coords)
 {
     Begin(String("GlDrawTexivOESEx"));
     Arg(String("coords"), 5, coords);
     End();
-    ECode ec = mgl11Ext->GlDrawTexivOESEx(coords);
+    ECode ec = mgl11Ext->GlDrawTexivOES(coords);
     CheckError();
     return ec;
 }
@@ -4663,13 +4663,13 @@ ECode GLLogWrapper::GlDrawTexsvOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlDrawTexsvOESEx(
+ECode GLLogWrapper::GlDrawTexsvOES(
     /* [in] */ IInt16Buffer* coords)
 {
     Begin(String("GlDrawTexsvOESEx"));
     Arg(String("coords"), 5, coords);
     End();
-    ECode ec = mgl11Ext->GlDrawTexsvOESEx(coords);
+    ECode ec = mgl11Ext->GlDrawTexsvOES(coords);
     CheckError();
     return ec;
 }
@@ -4706,13 +4706,13 @@ ECode GLLogWrapper::GlDrawTexxvOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlDrawTexxvOESEx(
+ECode GLLogWrapper::GlDrawTexxvOES(
     /* [in] */ IInt32Buffer* coords)
 {
     Begin(String("GlDrawTexxvOESEx"));
     Arg(String("coords"), 5, coords);
     End();
-    ECode ec = mgl11Ext->GlDrawTexxvOESEx(coords);
+    ECode ec = mgl11Ext->GlDrawTexxvOES(coords);
     CheckError();
     return ec;
 }
@@ -4740,7 +4740,7 @@ ECode GLLogWrapper::GlMatrixIndexPointerOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlMatrixIndexPointerOESEx(
+ECode GLLogWrapper::GlMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -4752,7 +4752,7 @@ ECode GLLogWrapper::GlMatrixIndexPointerOESEx(
     Arg(String("stride"), stride);
     Arg(String("offset"), offset);
     End();
-    ECode ec = mgl11Ext->GlMatrixIndexPointerOESEx(size, type, stride, offset);
+    ECode ec = mgl11Ext->GlMatrixIndexPointerOES(size, type, stride, offset);
     CheckError();
     return ec;
 }
@@ -4771,7 +4771,7 @@ ECode GLLogWrapper::GlWeightPointerOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlWeightPointerOESEx(
+ECode GLLogWrapper::GlWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -4783,7 +4783,7 @@ ECode GLLogWrapper::GlWeightPointerOESEx(
     Arg(String("stride"), stride);
     Arg(String("offset"), offset);
     End();
-    ECode ec = mgl11Ext->GlWeightPointerOESEx(size, type, stride, offset);
+    ECode ec = mgl11Ext->GlWeightPointerOES(size, type, stride, offset);
     CheckError();
     return ec;
 }
@@ -4882,7 +4882,7 @@ ECode GLLogWrapper::GlDeleteFramebuffersOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlDeleteFramebuffersOESEx(
+ECode GLLogWrapper::GlDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers)
 {
@@ -4890,7 +4890,7 @@ ECode GLLogWrapper::GlDeleteFramebuffersOESEx(
     Arg(String("n"), n);
     Arg(String("framebuffers"), ParamsToString(framebuffers));
     End();
-    ECode ec = mgl11ExtensionPack->GlDeleteFramebuffersOESEx(n, framebuffers);
+    ECode ec = mgl11ExtensionPack->GlDeleteFramebuffersOES(n, framebuffers);
     CheckError();
     return ec;
 }
@@ -4910,7 +4910,7 @@ ECode GLLogWrapper::GlDeleteRenderbuffersOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlDeleteRenderbuffersOESEx(
+ECode GLLogWrapper::GlDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers)
 {
@@ -4918,7 +4918,7 @@ ECode GLLogWrapper::GlDeleteRenderbuffersOESEx(
     Arg(String("n"), n);
     Arg(String("renderbuffers"), ParamsToString(renderbuffers));
     End();
-    ECode ec = mgl11ExtensionPack->GlDeleteRenderbuffersOESEx(n, renderbuffers);
+    ECode ec = mgl11ExtensionPack->GlDeleteRenderbuffersOES(n, renderbuffers);
     CheckError();
     return ec;
 }
@@ -4985,7 +4985,7 @@ ECode GLLogWrapper::GlGenFramebuffersOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlGenFramebuffersOESEx(
+ECode GLLogWrapper::GlGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers)
 {
@@ -4993,7 +4993,7 @@ ECode GLLogWrapper::GlGenFramebuffersOESEx(
     Arg(String("n"), n);
     Arg(String("framebuffers"), ParamsToString(framebuffers));
     End();
-    ECode ec = mgl11ExtensionPack->GlGenFramebuffersOESEx(n, framebuffers);
+    ECode ec = mgl11ExtensionPack->GlGenFramebuffersOES(n, framebuffers);
     CheckError();
     return ec;
 }
@@ -5013,7 +5013,7 @@ ECode GLLogWrapper::GlGenRenderbuffersOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlGenRenderbuffersOESEx(
+ECode GLLogWrapper::GlGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers)
 {
@@ -5021,7 +5021,7 @@ ECode GLLogWrapper::GlGenRenderbuffersOESEx(
     Arg(String("n"), n);
     Arg(String("renderbuffers"), ParamsToString(renderbuffers));
     End();
-    ECode ec = mgl11ExtensionPack->GlGenRenderbuffersOESEx(n, renderbuffers);
+    ECode ec = mgl11ExtensionPack->GlGenRenderbuffersOES(n, renderbuffers);
     CheckError();
     return ec;
 }
@@ -5045,7 +5045,7 @@ ECode GLLogWrapper::GlGetFramebufferAttachmentParameterivOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetFramebufferAttachmentParameterivOESEx(
+ECode GLLogWrapper::GlGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -5057,7 +5057,7 @@ ECode GLLogWrapper::GlGetFramebufferAttachmentParameterivOESEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlGetFramebufferAttachmentParameterivOESEx(target, attachment, pname, params);
+    ECode ec = mgl11ExtensionPack->GlGetFramebufferAttachmentParameterivOES(target, attachment, pname, params);
     CheckError();
     return ec;
 }
@@ -5079,7 +5079,7 @@ ECode GLLogWrapper::GlGetRenderbufferParameterivOES(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetRenderbufferParameterivOESEx(
+ECode GLLogWrapper::GlGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5089,7 +5089,7 @@ ECode GLLogWrapper::GlGetRenderbufferParameterivOESEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlGetRenderbufferParameterivOESEx(target, pname, params);
+    ECode ec = mgl11ExtensionPack->GlGetRenderbufferParameterivOES(target, pname, params);
     CheckError();
     return ec;
 }
@@ -5111,7 +5111,7 @@ ECode GLLogWrapper::GlGetTexGenfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexGenfvEx(
+ECode GLLogWrapper::GlGetTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -5121,7 +5121,7 @@ ECode GLLogWrapper::GlGetTexGenfvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlGetTexGenfvEx(coord, pname, params);
+    ECode ec = mgl11ExtensionPack->GlGetTexGenfv(coord, pname, params);
     CheckError();
     return ec;
 }
@@ -5143,7 +5143,7 @@ ECode GLLogWrapper::GlGetTexGeniv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexGenivEx(
+ECode GLLogWrapper::GlGetTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5153,7 +5153,7 @@ ECode GLLogWrapper::GlGetTexGenivEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlGetTexGenivEx(coord, pname, params);
+    ECode ec = mgl11ExtensionPack->GlGetTexGeniv(coord, pname, params);
     CheckError();
     return ec;
 }
@@ -5175,7 +5175,7 @@ ECode GLLogWrapper::GlGetTexGenxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlGetTexGenxvEx(
+ECode GLLogWrapper::GlGetTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5185,7 +5185,7 @@ ECode GLLogWrapper::GlGetTexGenxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlGetTexGenxvEx(coord, pname, params);
+    ECode ec = mgl11ExtensionPack->GlGetTexGenxv(coord, pname, params);
     CheckError();
     return ec;
 }
@@ -5263,7 +5263,7 @@ ECode GLLogWrapper::GlTexGenfv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexGenfvEx(
+ECode GLLogWrapper::GlTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params)
@@ -5273,7 +5273,7 @@ ECode GLLogWrapper::GlTexGenfvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlTexGenfvEx(coord, pname, params);
+    ECode ec = mgl11ExtensionPack->GlTexGenfv(coord, pname, params);
     CheckError();
     return ec;
 }
@@ -5310,7 +5310,7 @@ ECode GLLogWrapper::GlTexGeniv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexGenivEx(
+ECode GLLogWrapper::GlTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5320,7 +5320,7 @@ ECode GLLogWrapper::GlTexGenivEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlTexGenivEx(coord, pname, params);
+    ECode ec = mgl11ExtensionPack->GlTexGeniv(coord, pname, params);
     CheckError();
     return ec;
 }
@@ -5357,7 +5357,7 @@ ECode GLLogWrapper::GlTexGenxv(
     return ec;
 }
 
-ECode GLLogWrapper::GlTexGenxvEx(
+ECode GLLogWrapper::GlTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5367,7 +5367,7 @@ ECode GLLogWrapper::GlTexGenxvEx(
     Arg(String("pname"), pname);
     Arg(String("params"), ParamsToString(params));
     End();
-    ECode ec = mgl11ExtensionPack->GlTexGenxvEx(coord, pname, params);
+    ECode ec = mgl11ExtensionPack->GlTexGenxv(coord, pname, params);
     CheckError();
     return ec;
 }

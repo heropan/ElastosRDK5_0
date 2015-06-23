@@ -5,13 +5,12 @@
 #include "_CPppoeStateTracker.h"
 #include "CPppoeMonitor.h"
 #include "net/DhcpInfoInternal.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Net::IDhcpInfo;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
 using Elastos::Droid::Net::INetworkInfo;

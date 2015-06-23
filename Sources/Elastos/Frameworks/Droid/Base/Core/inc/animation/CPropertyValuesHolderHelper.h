@@ -31,7 +31,7 @@ public:
      * @param values The values that the property will animate between.
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      */
-    CARAPI OfInt32Ex(
+    CARAPI OfInt32(
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Int32>* values,
         /* [out] */ IPropertyValuesHolder** holder);
@@ -55,7 +55,7 @@ public:
      * @param values The values that the property will animate between.
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      */
-    CARAPI OfFloatEx(
+    CARAPI OfFloat(
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Float>* values,
         /* [out] */ IPropertyValuesHolder** holder);
@@ -90,7 +90,7 @@ public:
      * @param values The values that the property will animate between.
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      */
-    CARAPI OfObjectEx(
+    CARAPI OfObject(
         /* [in] */ IProperty* property,
         /* [in] */ ITypeEvaluator* evaluator,
         /* [in] */ ArrayOf<IInterface*>* values,
@@ -136,7 +136,7 @@ public:
      * @param property The property associated with this set of values. Should not be NULL.
      * @param values The set of values to animate between.
      */
-    CARAPI OfKeyframeEx(
+    CARAPI OfKeyframe(
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<IKeyframe*>* values,
         /* [out] */ IPropertyValuesHolder** holder);

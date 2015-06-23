@@ -425,7 +425,7 @@ module
         SetSelector(
             [in] Int32 resID);
 
-        SetSelectorEx(
+        SetSelector(
             [in] IDrawable* sel);
 
         /**
@@ -484,7 +484,7 @@ module
          * @param boundPosition Do not scroll if it would move this adapter
          *          position out of view.
          */
-        SmoothScrollToPositionEx(
+        SmoothScrollToPosition(
             [in] Int32 position,
             [in] Int32 boundPosition);
 
@@ -763,7 +763,7 @@ module
          * @param offset Desired distance in pixels of <code>position</code> from the top
          *               of the view when scrolling is finished
          */
-        SmoothScrollToPositionFromTopEx(
+        SmoothScrollToPositionFromTop(
             [in] Int32 position,
             [in] Int32 offset);
 

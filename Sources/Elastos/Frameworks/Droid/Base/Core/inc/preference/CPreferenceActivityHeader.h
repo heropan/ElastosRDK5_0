@@ -25,7 +25,7 @@ public:
      * this resource is loaded from <var>res</var> and returned.  Otherwise
      * {@link #title} is returned.
      */
-    CARAPI GetTitleEx(
+    CARAPI GetTitle(
         /* [in] */ IResources* res,
         /* [out] */ ICharSequence** title);
 
@@ -34,7 +34,7 @@ public:
      * this resource is loaded from <var>res</var> and returned.  Otherwise
      * {@link #summary} is returned.
      */
-    CARAPI GetSummaryEx(
+    CARAPI GetSummary(
         /* [in] */ IResources* res,
         /* [out] */ ICharSequence** summary);
 
@@ -43,7 +43,7 @@ public:
      * this resource is loaded from <var>res</var> and returned.  Otherwise
      * {@link #breadCrumbTitle} is returned.
      */
-    CARAPI GetBreadCrumbTitleEx(
+    CARAPI GetBreadCrumbTitle(
         /* [in] */ IResources* res,
         /* [out] */ ICharSequence** title);
 
@@ -53,7 +53,7 @@ public:
      * this resource is loaded from <var>res</var> and returned.  Otherwise
      * {@link #breadCrumbShortTitle} is returned.
      */
-    CARAPI GetBreadCrumbShortTitleEx(
+    CARAPI GetBreadCrumbShortTitle(
         /* [in] */ IResources* res,
         /* [out] */ ICharSequence** title);
 

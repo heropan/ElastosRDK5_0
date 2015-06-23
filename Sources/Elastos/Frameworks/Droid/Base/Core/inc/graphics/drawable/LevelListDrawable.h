@@ -33,7 +33,7 @@ protected:
             /* [out] */ IDrawable** drawable);
 
         //@Override
-        CARAPI NewDrawableEx(
+        CARAPI NewDrawable(
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 

@@ -1,10 +1,10 @@
 
 #include "view/inputmethod/CInputMethodSubtype.h"
 #include "text/TextUtils.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::CStringWrapper;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Libcore::ICU::CLocale;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Text::TextUtils;
@@ -263,7 +263,7 @@ ECode CInputMethodSubtype::GetHashCode(
     return NOERROR;
 }
 
-ECode CInputMethodSubtype::EqualsEx(
+ECode CInputMethodSubtype::Equals(
     /* [in] */ IInputMethodSubtype* o,
     /* [out] */ Boolean* equals)
 {
@@ -291,7 +291,7 @@ ECode CInputMethodSubtype::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    return EqualsEx(IInputMethodSubtype::Probe(other), result);
+    return Equals(IInputMethodSubtype::Probe(other), result);
 }
 
 ECode CInputMethodSubtype::WriteToParcel(

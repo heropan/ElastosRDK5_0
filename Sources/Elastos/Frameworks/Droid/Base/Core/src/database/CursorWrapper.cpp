@@ -16,7 +16,7 @@ ECode CursorWrapper::GetWrappedCursor(
 {
     VALIDATE_NOT_NULL(cursor)
     *cursor = mCursor;
-    INTERFACE_ADDREF(*cursor)
+    REFCOUNT_ADD(*cursor)
     return NOERROR;
 }
 

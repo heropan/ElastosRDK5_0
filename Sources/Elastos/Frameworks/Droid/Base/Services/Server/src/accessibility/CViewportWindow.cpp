@@ -29,7 +29,7 @@ namespace Accessibility {
 // void CViewportWindow::_ContentView::OnDraw(
 //     /* [in] */ ICanvas* canvas)
 // {
-//     canvas->DrawColorEx(IColor::TRANSPARENT, PorterDuffMode_CLEAR);
+//     canvas->DrawColor(IColor::TRANSPARENT, PorterDuffMode_CLEAR);
 //     mHighlightFrame->SetBounds(mBounds);
 //     mHighlightFrame->SetAlpha(mAlpha);
 //     mHighlightFrame->Draw(canvas);
@@ -137,7 +137,7 @@ ECode CViewportWindow::Show()
         return NOERROR;
     }
     mShown = TRUE;
-    mWindowManager->AddViewEx5(mWindowContent, mWindowParams);
+    mWindowManager->AddView(mWindowContent, mWindowParams);
     // if (DEBUG_VIEWPORT_WINDOW) {
     //     Slog.i(LOG_TAG, "ViewportWindow shown.");
     // }
@@ -173,7 +173,7 @@ ECode CViewportWindow::SetAlpha(
     }
     mAlpha = alpha;
     if (mShown) {
-        mWindowContent->InvalidateEx2();
+        mWindowContent->Invalidate();
     }
     // if (DEBUG_VIEWPORT_WINDOW) {
     //     Slog.i(LOG_TAG, "ViewportFrame set alpha: " + alpha);
@@ -208,12 +208,12 @@ ECode CViewportWindow::SetBounds(
     /* [in] */ IRect* bounds)
 {
     Boolean bval;
-    if (mBounds->EqualsEx(bounds, &bval), bval) {
+    if (mBounds->Equals(bounds, &bval), bval) {
         return NOERROR;
     }
-    mBounds->SetEx(bounds);
+    mBounds->Set(bounds);
     if (mShown) {
-        mWindowContent->InvalidateEx2();
+        mWindowContent->Invalidate();
     }
     // if (DEBUG_VIEWPORT_WINDOW) {
     //     Slog.i(LOG_TAG, "ViewportFrame set bounds: " + bounds);

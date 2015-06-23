@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CDHCPINFO_H__
 
 #include "_CDhcpInfo.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::CStringWrapper;

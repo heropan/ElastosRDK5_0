@@ -51,7 +51,7 @@ public:
      *
      * @hide
      */
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ IKeyEvent* otherEvent,
         /* [out] */ IKeyEvent** keyEvent);
 
@@ -81,7 +81,7 @@ public:
      * @param newFlags New flags for the event, replacing the entire value
      * in the original event.
      */
-    CARAPI ChangeTimeRepeatEx(
+    CARAPI ChangeTimeRepeat(
         /* [in] */ IKeyEvent* event,
         /* [in] */ Int64 eventTime,
         /* [in] */ Int32 newRepeat,

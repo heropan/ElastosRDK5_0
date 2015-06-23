@@ -4,11 +4,11 @@
 
 #include "text/method/BaseKeyListener.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 extern "C" const InterfaceID EIID_Replaced;
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

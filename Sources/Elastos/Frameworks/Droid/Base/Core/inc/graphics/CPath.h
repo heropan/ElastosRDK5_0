@@ -261,7 +261,7 @@ public:
      * @param startAngle  Starting angle (in degrees) where the arc begins
      * @param sweepAngle  Sweep angle (in degrees) measured clockwise
      */
-    CARAPI ArcToEx(
+    CARAPI ArcTo(
         /* [in] */ IRectF* oval,
         /* [in] */ Float startAngle,
         /* [in] */ Float sweepAngle);
@@ -291,7 +291,7 @@ public:
      * @param bottom The bottom of a rectangle to add to the path
      * @param dir    The direction to wind the rectangle's contour
      */
-    CARAPI AddRectEx(
+    CARAPI AddRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -357,7 +357,7 @@ public:
      * @param radii Array of 8 values, 4 pairs of [X,Y] radii
      * @param dir  The direction to wind the round-rectangle's contour
      */
-    CARAPI AddRoundRectEx(
+    CARAPI AddRoundRect(
         /* [in] */ IRectF* rect,
         /* [in] */ const ArrayOf<Float>& radii,
         /* [in] */ PathDirection dir);
@@ -378,7 +378,7 @@ public:
      *
      * @param src The path that is appended to the current path
      */
-    CARAPI AddPathEx(
+    CARAPI AddPath(
         /* [in] */ IPath* src);
 
     /**
@@ -386,7 +386,7 @@ public:
      *
      * @param src The path to add as a new contour
      */
-    CARAPI AddPathEx2(
+    CARAPI AddPath(
         /* [in] */ IPath* src,
         /* [in] */ IMatrix* matrix);
 
@@ -409,7 +409,7 @@ public:
      * @param dx The amount in the X direction to offset the entire path
      * @param dy The amount in the Y direction to offset the entire path
      */
-    CARAPI OffsetEx(
+    CARAPI Offset(
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
@@ -440,7 +440,7 @@ public:
      *
      * @param matrix The matrix to apply to the path
      */
-    CARAPI TransformEx(
+    CARAPI Transform(
         /* [in] */ IMatrix* matrix);
 
     /*package*/ CARAPI_(Int32) Ni();

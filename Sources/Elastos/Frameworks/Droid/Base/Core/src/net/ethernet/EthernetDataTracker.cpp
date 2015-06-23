@@ -16,14 +16,14 @@
 #endif
 #include "os/Handler.h"
 #include "os/ServiceManager.h"
-#include <elastos/Logger.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Thread.h>
 #include <cutils/properties.h>
 #include "R.h"
 
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
@@ -515,7 +515,7 @@ ECode EthernetDataTracker::StartMonitoring(
     CIntentFilter::New(
         IEthernetManager::PPPOE_STATE_CHANGED_ACTION, (IIntentFilter**)&mPppoeStateFilter);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiverEx(mPppoeStateReceiver, mPppoeStateFilter,
+    mContext->RegisterReceiver(mPppoeStateReceiver, mPppoeStateFilter,
         String(NULL), NULL, (IIntent**)&intent);
 
     return NOERROR;
@@ -613,7 +613,7 @@ ECode EthernetDataTracker::GetNetworkInfo(
 {
     Mutex::Autolock lock(mSelfLock);
     *info = mNetworkInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -675,7 +675,7 @@ AutoPtr<IMessage> EthernetDataTracker::ObtainMessage(
         return NULL;
 
     AutoPtr<IMessage> m;
-    mCsHandler->ObtainMessageEx(what, obj, (IMessage**)&m);
+    mCsHandler->ObtainMessage(what, obj, (IMessage**)&m);
     return m;
 }
 

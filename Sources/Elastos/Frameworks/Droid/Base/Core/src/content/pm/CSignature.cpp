@@ -70,10 +70,10 @@ ECode CSignature::ParseHexDigit(
 ECode CSignature::ToChars(
     /* [out, callee] */ ArrayOf<Char32>** text)
 {
-    return ToCharsEx(NULL, NULL, text);
+    return ToChars(NULL, NULL, text);
 }
 
-ECode CSignature::ToCharsEx(
+ECode CSignature::ToChars(
     /* [in] */ ArrayOf<Char32>* existingArray,
     /* [in] */ ArrayOf<Int32>* outLen,
     /* [out, callee] */ ArrayOf<Char32>** text)
@@ -120,7 +120,7 @@ ECode CSignature::ToByteArray(
     VALIDATE_NOT_NULL(bytes);
 
     *bytes = mSignature->Clone();
-    INTERFACE_ADDREF(*bytes);
+    REFCOUNT_ADD(*bytes);
     return NOERROR;
 }
 

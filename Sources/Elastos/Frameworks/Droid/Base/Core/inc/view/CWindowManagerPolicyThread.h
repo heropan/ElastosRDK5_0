@@ -3,7 +3,7 @@
 
 #include "_CWindowManagerPolicyThread.h"
 
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 using Elastos::Droid::Os::ILooper;
 
 namespace Elastos {

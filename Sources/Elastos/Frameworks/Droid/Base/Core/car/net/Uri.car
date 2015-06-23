@@ -216,7 +216,7 @@ module
             [in] IInterface* other,
             [out] Boolean* isEqual);
 
-        EqualsEx(
+        Equals(
             [in] IUri* other,
             [out] Boolean* isEqual);
 
@@ -433,7 +433,7 @@ module
          * @return an encoded version of s suitable for use as a URI component,
          *  or null if s is null
          */
-        EncodeEx(
+        Encode(
             [in] String s,
             [in] String allow,
             [out] String* result);
@@ -485,7 +485,7 @@ module
         OpaquePart(
             [in] String opaquePart);
 
-        OpaquePartEx(
+        OpaquePart(
             [in] Handle32 opaquePart);
 
         /**
@@ -502,7 +502,7 @@ module
         Authority(
             [in] String authority);
 
-        AuthorityEx(
+        Authority(
             [in] Handle32 authority);
 
         /**
@@ -522,7 +522,7 @@ module
         Path(
             [in] String path);
 
-        PathEx(
+        Path(
             [in] Handle32 path);
 
         /**
@@ -553,7 +553,7 @@ module
         Query(
             [in] String query);
 
-        QueryEx(
+        Query(
             [in] Handle32 query);
 
         /**
@@ -568,7 +568,7 @@ module
         Fragment(
             [in] String fragment);
 
-        FragmentEx(
+        Fragment(
             [in] Handle32 fragment);
 
         /**

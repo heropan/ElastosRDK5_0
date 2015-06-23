@@ -23,14 +23,14 @@ module
         Insert(
             [in] IContentResolver* contentResolver,
             [in] IInputStream* inStream);
-        
+
         /**
          * insert data from String to ContentResolver
          * @param contentResolver
          * @param in input string
          * @throws SAXException
          */
-        InsertEx(
+        Insert(
             [in] IContentResolver* contentResolver,
             [in] String inStr);
     }

@@ -194,7 +194,7 @@ module
          *
          * @attr ref android.R.styleable#CalendarView_selectedDateVerticalBar
          */
-        SetSelectedDateVerticalBarEx(
+        SetSelectedDateVerticalBar(
             [in] IDrawable* drawable);
 
         /**
@@ -404,7 +404,7 @@ module
          * @see #setMinDate(Int64)
          * @see #setMaxDate(Int64)
          */
-        SetDateEx(
+        SetDate(
             [in] Int64 date,
             [in] Boolean animate,
             [in] Boolean center);

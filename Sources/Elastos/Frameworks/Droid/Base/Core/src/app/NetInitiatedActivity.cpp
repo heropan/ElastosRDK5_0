@@ -3,7 +3,7 @@
 #include "content/CIntentFilter.h"
 #include "content/BroadcastReceiver.h"
 #include "location/LocationManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Slogger;

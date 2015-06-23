@@ -40,7 +40,7 @@ ECode CAtomicFile::GetBaseFile(
 {
     VALIDATE_NOT_NULL(file);
     *file = mBaseName;
-    INTERFACE_ADDREF(*file);
+    REFCOUNT_ADD(*file);
     return NOERROR;
 }
 
@@ -236,7 +236,7 @@ ECode CAtomicFile::ReadFully(
 
     AutoPtr<ArrayOf<Byte> > newData;
     while (TRUE) {
-        stream->ReadBytesEx(data, pos,data->GetLength() - pos, &amt);
+        stream->ReadBytes(data, pos,data->GetLength() - pos, &amt);
         //Log.i("foo", "Read " + amt + " bytes at " + pos
         //        + " of avail " + data.length);
         if (amt <= 0) {
@@ -255,7 +255,7 @@ ECode CAtomicFile::ReadFully(
     }
 
     *result = data;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
 _EXIT_:
     //} finally {
         stream->Close();

@@ -12,7 +12,7 @@ ECode CUserEnvironment::GetExternalStorageDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CUserEnvironment::GetExternalStorageObbDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageObbDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -33,7 +33,7 @@ ECode CUserEnvironment::GetExternalStoragePublicDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStoragePublicDirectory(type);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -43,7 +43,7 @@ ECode CUserEnvironment::GetExternalStorageAndroidDataDir(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageAndroidDataDir();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -54,7 +54,7 @@ ECode CUserEnvironment::GetExternalStorageAppDataDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageAppDataDirectory(packageName);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -65,7 +65,7 @@ ECode CUserEnvironment::GetExternalStorageAppMediaDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageAppMediaDirectory(packageName);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -76,7 +76,7 @@ ECode CUserEnvironment::GetExternalStorageAppObbDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageAppObbDirectory(packageName);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -87,7 +87,7 @@ ECode CUserEnvironment::GetExternalStorageAppFilesDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageAppFilesDirectory(packageName);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -98,7 +98,7 @@ ECode CUserEnvironment::GetExternalStorageAppCacheDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetExternalStorageAppCacheDirectory(packageName);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode CUserEnvironment::GetMediaStorageDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::UserEnvironment::GetMediaStorageDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 

@@ -34,10 +34,10 @@ ECode CBassBoost::BaseParameterListener::OnParameterChange(
         Int16 v = -1;
 
         if (param->GetLength() == 4) {
-            mHost->ByteArrayToInt32Ex(param, 0, &p);
+            mHost->ByteArrayToInt32(param, 0, &p);
         }
         if (value->GetLength() == 2) {
-            mHost->ByteArrayToInt16Ex(value, 0, &v);
+            mHost->ByteArrayToInt16(value, 0, &v);
         }
         if (p != -1 && v != -1) {
             l->OnParameterChange((IBassBoost*)mHost, status, p, v);
@@ -70,7 +70,7 @@ ECode CBassBoost::constructor(
 
     AutoPtr<ArrayOf<Int32> > value = ArrayOf<Int32>::Alloc(1);
     Int32 status;
-    GetParameterEx2(IBassBoost::PARAM_STRENGTH_SUPPORTED, value, &status);
+    GetParameter(IBassBoost::PARAM_STRENGTH_SUPPORTED, value, &status);
     CheckStatus(status);
     mStrengthSupported = (value[0] != 0);
     return NOERROR;
@@ -95,7 +95,7 @@ ECode CBassBoost::SetStrength(
     /* [in] */ Int16 strength)
 {
     Int32 status;
-    SetParameterEx2(IBassBoost::PARAM_STRENGTH, strength, &status);
+    SetParameter(IBassBoost::PARAM_STRENGTH, strength, &status);
     return CheckStatus(status);
 }
 
@@ -106,13 +106,13 @@ ECode CBassBoost::GetRoundedStrength(
 
     AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameterEx3(IBassBoost::PARAM_STRENGTH, value, &status);
+    GetParameter(IBassBoost::PARAM_STRENGTH, value, &status);
     CheckStatus(status);
     *strength = (*value)[0];
     return NOERROR;
 }
 
-ECode CBassBoost::SetParameterListenerEx(
+ECode CBassBoost::SetParameterListener(
     /* [in] */ IBassBoostOnParameterChangeListener* listener)
 {
     Mutex::Autolock lock(&mParamListenerLock);
@@ -133,11 +133,11 @@ ECode CBassBoost::GetProperties(
     CBassBoostSettings::New((IBassBoostSettings**)&settings);
     AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameterEx3(IBassBoost::PARAM_STRENGTH, value, &status);
+    GetParameter(IBassBoost::PARAM_STRENGTH, value, &status);
     CheckStatus(status);
     settings->SetStrength((*value)[0]);
     *properties = settings;
-    INTERFACE_ADDREF(*properties);
+    REFCOUNT_ADD(*properties);
     return NOERROR;
 }
 
@@ -147,7 +147,7 @@ ECode CBassBoost::SetProperties(
     Int16 strength;
     settings->GetStrength(&strength);
     Int32 status;
-    SetParameterEx2(IBassBoost::PARAM_STRENGTH, strength, &status);
+    SetParameter(IBassBoost::PARAM_STRENGTH, strength, &status);
     return CheckStatus(status);
 }
 

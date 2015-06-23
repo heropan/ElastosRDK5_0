@@ -13,7 +13,7 @@ ECode CChoreographerHelper::GetInstance(
     VALIDATE_NOT_NULL(choreographer);
     AutoPtr<Choreographer> temp = Choreographer::GetInstance();
     *choreographer = temp.Get();
-    INTERFACE_ADDREF(*choreographer);
+    REFCOUNT_ADD(*choreographer);
     return NOERROR;
 }
 

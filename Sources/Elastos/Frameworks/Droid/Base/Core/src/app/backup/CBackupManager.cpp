@@ -1,5 +1,5 @@
 #include "app/backup/CBackupManager.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/ServiceManager.h"
 #include "app/backup/CRestoreSession.h"
 
@@ -167,7 +167,7 @@ ECode CBackupManager::BeginRestoreSession(
         }
         if (binder != NULL) {
             CRestoreSession::New(mContext, binder, (IRestoreSession**)session);
-            INTERFACE_ADDREF(*session);
+            REFCOUNT_ADD(*session);
         }
         //} catch (RemoteException e) {
         //    Log.w(TAG, "beginRestoreSession() couldn't connect");

@@ -2,7 +2,7 @@
 #ifndef __DROID_UTIL_PATTERNS_H_
 #define __DROID_UTIL_PATTERNS_H_
 
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IPattern;

@@ -5,7 +5,7 @@
 #include "database/CContentObservable.h"
 #include "database/DatabaseUtils.h"
 #include "os/UserHandle.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::UserHandle;
@@ -434,10 +434,10 @@ ECode AbstractCursor::SetNotificationUri(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* notifyUri)
 {
-    return SetNotificationUriEx(cr, notifyUri, UserHandle::GetMyUserId());
+    return SetNotificationUri(cr, notifyUri, UserHandle::GetMyUserId());
 }
 
-ECode AbstractCursor::SetNotificationUriEx(
+ECode AbstractCursor::SetNotificationUri(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* notifyUri,
     /* [in] */ Int32 userHandle)
@@ -460,7 +460,7 @@ ECode AbstractCursor::GetNotificationUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mNotifyUri;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -484,7 +484,7 @@ ECode AbstractCursor::GetExtras(
 {
     VALIDATE_NOT_NULL(extras)
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras)
+    REFCOUNT_ADD(*extras)
     return NOERROR;
 }
 
@@ -494,7 +494,7 @@ ECode AbstractCursor::Respond(
 {
     VALIDATE_NOT_NULL(v)
     *v = CBundle::EMPTY;
-    INTERFACE_ADDREF(*v)
+    REFCOUNT_ADD(*v)
     return NOERROR;
 }
 

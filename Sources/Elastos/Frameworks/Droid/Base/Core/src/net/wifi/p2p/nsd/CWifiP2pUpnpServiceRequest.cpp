@@ -4,7 +4,7 @@
 #include "CWifiP2pServiceRequest.h"
 #include "CWifiP2pServiceInfo.h"
 #include "WifiP2pServiceInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -88,7 +88,7 @@ ECode CWifiP2pUpnpServiceRequest::NewInstance(
     AutoPtr<CWifiP2pUpnpServiceRequest> requst;
     CWifiP2pUpnpServiceRequest::NewByFriend((CWifiP2pUpnpServiceRequest**)&requst);
     *instance = (IWifiP2pUpnpServiceRequest*)requst.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -113,7 +113,7 @@ ECode CWifiP2pUpnpServiceRequest::NewInstance(
     AutoPtr<CWifiP2pUpnpServiceRequest> requst;
     CWifiP2pUpnpServiceRequest::NewByFriend(sb, (CWifiP2pUpnpServiceRequest**)&requst);
     *instance = (IWifiP2pUpnpServiceRequest*)requst.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

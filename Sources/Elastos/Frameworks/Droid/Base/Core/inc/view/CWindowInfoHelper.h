@@ -13,7 +13,7 @@ public:
     CARAPI Obtain(
         /* [out] */ IWindowInfo** info);
 
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ IWindowInfo *other,
         /* [out] */ IWindowInfo** info);
 

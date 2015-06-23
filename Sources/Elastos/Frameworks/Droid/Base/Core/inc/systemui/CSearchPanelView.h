@@ -2,9 +2,9 @@
 #define __CSEARCHPANELVIEW_H_
 
 #include "_CSearchPanelView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/SearchPanelView.h"
 
 namespace Elastos {

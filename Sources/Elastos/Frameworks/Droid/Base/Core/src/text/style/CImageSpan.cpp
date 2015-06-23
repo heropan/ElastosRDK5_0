@@ -60,7 +60,7 @@ ECode CImageSpan::GetDrawable(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IDrawable> d = ImageSpan::GetDrawable();
     *ret = d;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

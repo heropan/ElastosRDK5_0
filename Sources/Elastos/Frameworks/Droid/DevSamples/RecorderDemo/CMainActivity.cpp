@@ -1,6 +1,6 @@
 #include "CMainActivity.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/StringBuilder.h>
 
 using Elastos::IO::CFile;
@@ -44,14 +44,14 @@ ECode CMainActivity::RecorderClickListener::OnClick(
 	AutoPtr<ICalendarHelper> calendarHelper;
 	CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
 	AutoPtr<ICalendar> calendar;
-	calendarHelper->GetInstanceEx(locale, (ICalendar**)&calendar);
+	calendarHelper->GetInstance(locale, (ICalendar**)&calendar);
     AutoPtr<IDateFormat> df;
     CDateFormat::AcquireSingleton((IDateFormat**)&df);
 
     AutoPtr<ICharSequence> cs1;
     CStringWrapper::New(String("yyyyMMdd_hhmmss"), (ICharSequence**)&cs1);
     AutoPtr<ICharSequence> cs2;
-    df->FormatEx2(cs1, calendar, (ICharSequence**)&cs2);
+    df->Format(cs1, calendar, (ICharSequence**)&cs2);
 
     String fileName;
 	StringBuilder sb("/sdcard/");
@@ -73,7 +73,7 @@ ECode CMainActivity::RecorderClickListener::OnClick(
     // 设置编码格式
     mMediaRecorder->SetAudioEncoder(IAudioEncoder::DEFAULT);
 
-    mMediaRecorder->SetOutputFileEx(path);
+    mMediaRecorder->SetOutputFile(path);
     // try {
         // 创建文件
     	Boolean b;

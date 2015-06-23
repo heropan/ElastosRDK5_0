@@ -48,7 +48,7 @@ public:
         /* [in] */ const String& sortOrder,
         /* [out] */ ICursor** cursor);
 
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
@@ -59,7 +59,7 @@ public:
         /* [in] */ const String& limit,
         /* [out] */ ICursor** cursor);
 
-    CARAPI QueryEx2(
+    CARAPI Query(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
@@ -80,7 +80,7 @@ public:
         /* [in] */ const String& limit,
         /* [out] */ String *str);
 
-    CARAPI BuildQueryEx(
+    CARAPI BuildQuery(
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
@@ -101,7 +101,7 @@ public:
         /* [in] */ const String& having,
         /* [out] */ String *str);
 
-    CARAPI BuildUnionSubQueryEx(
+    CARAPI BuildUnionSubQuery(
         /* [in] */ const String& typeDiscriminatorColumn,
         /* [in] */ const ArrayOf<String>& unionColumns,
         /* [in] */ IObjectStringMap* columnsPresentInTable,

@@ -33,10 +33,10 @@ ECode CVirtualizer::BaseParameterListener::OnParameterChange(
         Int16 v = -1;
 
         if (param->GetLength() == 4) {
-            mHost->ByteArrayToInt32Ex(param, 0, &p);
+            mHost->ByteArrayToInt32(param, 0, &p);
         }
         if (value->GetLength() == 2) {
-            mHost->ByteArrayToInt16Ex(value, 0, &v);
+            mHost->ByteArrayToInt16(value, 0, &v);
         }
         if (p != -1 && v != -1) {
             l->OnParameterChange((IVirtualizer*)mHost, status, p, v);
@@ -69,7 +69,7 @@ ECode CVirtualizer::constructor(
 
     AutoPtr<ArrayOf<Int32> > value = ArrayOf<Int32>::Alloc(1);
     Int32 status;
-    GetParameterEx2(IVirtualizer::PARAM_STRENGTH_SUPPORTED, value, &status);
+    GetParameter(IVirtualizer::PARAM_STRENGTH_SUPPORTED, value, &status);
     CheckStatus(status);
     mStrengthSupported = (value[0] != 0);
     return NOERROR;
@@ -93,7 +93,7 @@ ECode CVirtualizer::SetStrength(
     /* [in] */ Int16 strength)
 {
     Int32 status;
-    SetParameterEx2(IVirtualizer::PARAM_STRENGTH, strength, &status);
+    SetParameter(IVirtualizer::PARAM_STRENGTH, strength, &status);
     return CheckStatus(status);
 }
 
@@ -104,13 +104,13 @@ ECode CVirtualizer::GetRoundedStrength(
 
     AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameterEx3(IVirtualizer::PARAM_STRENGTH, value, &status);
+    GetParameter(IVirtualizer::PARAM_STRENGTH, value, &status);
     CheckStatus(status);
     *strength = (*value)[0];
     return NOERROR;
 }
 
-ECode CVirtualizer::SetParameterListenerEx(
+ECode CVirtualizer::SetParameterListener(
     /* [in] */ IVirtualizerOnParameterChangeListener* listener)
 {
     Mutex::Autolock lock(&mParamListenerLock);
@@ -131,11 +131,11 @@ ECode CVirtualizer::GetProperties(
     CVirtualizerSettings::New((IVirtualizerSettings**)&settings);
     AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameterEx3(IVirtualizer::PARAM_STRENGTH, value, &status);
+    GetParameter(IVirtualizer::PARAM_STRENGTH, value, &status);
     CheckStatus(status);
     settings->SetStrength((*value)[0]);
     *properties = settings;
-    INTERFACE_ADDREF(*properties);
+    REFCOUNT_ADD(*properties);
     return NOERROR;
 }
 
@@ -145,7 +145,7 @@ ECode CVirtualizer::SetProperties(
     Int16 strength;
     settings->GetStrength(&strength);
     Int32 status;
-    SetParameterEx2(IVirtualizer::PARAM_STRENGTH, strength, &status);
+    SetParameter(IVirtualizer::PARAM_STRENGTH, strength, &status);
     return CheckStatus(status);
 }
 

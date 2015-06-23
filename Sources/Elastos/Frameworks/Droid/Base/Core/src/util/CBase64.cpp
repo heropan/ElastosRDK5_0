@@ -601,7 +601,7 @@ ECode CBase64::Decode3(
 
     delete decoder;
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
 
     return NOERROR;
 }
@@ -709,7 +709,7 @@ ECode CBase64::Encode2(
 
     delete encoder;
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
 
     return NOERROR;
 }

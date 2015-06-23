@@ -3,11 +3,10 @@
 #define __FILTER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {
@@ -133,7 +132,7 @@ public:
     virtual CARAPI DoFilter(
         /* [in] */ ICharSequence* constraint);
 
-    virtual CARAPI DoFilterEx(
+    virtual CARAPI DoFilter(
         /* [in] */ ICharSequence* constraint,
         /* [in] */ IFilterListener* listener);
 

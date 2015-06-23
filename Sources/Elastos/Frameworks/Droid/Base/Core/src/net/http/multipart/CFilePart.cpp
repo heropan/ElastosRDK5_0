@@ -1,6 +1,6 @@
 
 #include "CFilePart.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 #include "ext/frameworkext.h"
 // #include "EncodingUtils.h"
 #include "CFilePartSource.h"
@@ -130,7 +130,7 @@ ECode CFilePart::SendData(
     Int32 len;
     ECode ec;
     while ((ec = inStream->ReadBytes(tmp, &len)) == NOERROR && len >= 0) {
-        ec = outStream->WriteBytesEx(*tmp, 0, len);
+        ec = outStream->WriteBytes(*tmp, 0, len);
         if(ec != NOERROR) {
             break;
         }
@@ -149,7 +149,7 @@ ECode CFilePart::GetSource(
 
     VALIDATE_NOT_NULL(partSource);
     *partSource = mSource;
-    INTERFACE_ADDREF(*partSource);
+    REFCOUNT_ADD(*partSource);
     return NOERROR;
 }
 

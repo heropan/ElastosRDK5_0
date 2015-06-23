@@ -40,52 +40,52 @@ ECode CAudioEffect::SetParameter(
     return AudioEffect::SetParameter(param, value, result);
 }
 
-ECode CAudioEffect::SetParameterEx(
+ECode CAudioEffect::SetParameter(
     /* [in] */ Int32 param,
     /* [in] */ Int32 value,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::SetParameterEx(param, value, result);
+    return AudioEffect::SetParameter(param, value, result);
 }
 
-ECode CAudioEffect::SetParameterEx2(
+ECode CAudioEffect::SetParameter(
     /* [in] */ Int32 param,
     /* [in] */ Int16 value,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::SetParameterEx2(param, value, result);
+    return AudioEffect::SetParameter(param, value, result);
 }
 
-ECode CAudioEffect::SetParameterEx3(
+ECode CAudioEffect::SetParameter(
     /* [in] */ Int32 param,
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::SetParameterEx3(param, value, result);
+    return AudioEffect::SetParameter(param, value, result);
 }
 
-ECode CAudioEffect::SetParameterEx4(
+ECode CAudioEffect::SetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::SetParameterEx4(param, value, result);
+    return AudioEffect::SetParameter(param, value, result);
 }
 
-ECode CAudioEffect::SetParameterEx5(
+ECode CAudioEffect::SetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Int16>* value,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::SetParameterEx5(param, value, result);
+    return AudioEffect::SetParameter(param, value, result);
 }
 
-ECode CAudioEffect::SetParameterEx6(
+ECode CAudioEffect::SetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::SetParameterEx6(param, value, result);
+    return AudioEffect::SetParameter(param, value, result);
 }
 
 ECode CAudioEffect::GetParameter(
@@ -96,52 +96,52 @@ ECode CAudioEffect::GetParameter(
     return AudioEffect::GetParameter(param, value, status);
 }
 
-ECode CAudioEffect::GetParameterEx(
+ECode CAudioEffect::GetParameter(
     /* [in] */ const Int32 param,
     /* [out] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* status)
 {
-    return AudioEffect::GetParameterEx(param, value, status);
+    return AudioEffect::GetParameter(param, value, status);
 }
 
-ECode CAudioEffect::GetParameterEx2(
+ECode CAudioEffect::GetParameter(
     /* [in] */ Int32 param,
     /* [out] */ ArrayOf<Int32>* value,
     /* [out] */ Int32* status)
 {
-    return AudioEffect::GetParameterEx2(param, value, status);
+    return AudioEffect::GetParameter(param, value, status);
 }
 
-ECode CAudioEffect::GetParameterEx3(
+ECode CAudioEffect::GetParameter(
     /* [in] */ Int32 param,
     /* [out] */ ArrayOf<Int16>* value,
     /* [out] */ Int32* status)
 {
-    return AudioEffect::GetParameterEx3(param, value, status);
+    return AudioEffect::GetParameter(param, value, status);
 }
 
-ECode CAudioEffect::GetParameterEx4(
+ECode CAudioEffect::GetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [out] */ ArrayOf<Int32>* value,
     /* [out] */ Int32* status)
 {
-    return AudioEffect::GetParameterEx4(param, value, status);
+    return AudioEffect::GetParameter(param, value, status);
 }
 
-ECode CAudioEffect::GetParameterEx5(
+ECode CAudioEffect::GetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [out] */ ArrayOf<Int16>* value,
     /* [out] */ Int32* status)
 {
-    return AudioEffect::GetParameterEx5(param, value, status);
+    return AudioEffect::GetParameter(param, value, status);
 }
 
-ECode CAudioEffect::GetParameterEx6(
+ECode CAudioEffect::GetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* status)
 {
-    return AudioEffect::GetParameterEx6(param, value, status);
+    return AudioEffect::GetParameter(param, value, status);
 }
 
 ECode CAudioEffect::Command(
@@ -208,12 +208,12 @@ ECode CAudioEffect::ByteArrayToInt32(
     return AudioEffect::ByteArrayToInt32(valueBuf, result);
 }
 
-ECode CAudioEffect::ByteArrayToInt32Ex(
+ECode CAudioEffect::ByteArrayToInt32(
     /* [in] */ ArrayOf<Byte>* valueBuf,
     /* [in] */ Int32 offset,
     /* [out] */ Int32* result)
 {
-    return AudioEffect::ByteArrayToInt32Ex(valueBuf, offset, result);
+    return AudioEffect::ByteArrayToInt32(valueBuf, offset, result);
 }
 
 ECode CAudioEffect::Int32ToByteArray(
@@ -230,12 +230,12 @@ ECode CAudioEffect::ByteArrayToInt16(
     return AudioEffect::ByteArrayToInt16(valueBuf, result);
 }
 
-ECode CAudioEffect::ByteArrayToInt16Ex(
+ECode CAudioEffect::ByteArrayToInt16(
     /* [in] */ ArrayOf<Byte>* valueBuf,
     /* [in] */ Int32 offset,
     /* [out] */ Int16* result)
 {
-    return AudioEffect::ByteArrayToInt16Ex(valueBuf, offset, result);
+    return AudioEffect::ByteArrayToInt16(valueBuf, offset, result);
 }
 
 ECode CAudioEffect::Int16ToByteArray(

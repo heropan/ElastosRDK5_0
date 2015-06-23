@@ -5,9 +5,9 @@
 #include "provider/Settings.h"
 #include "provider/CMediaStoreAudioMedia.h"
 #include "os/Environment.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "media/CRingtone.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Provider::IMediaStoreAudioAudioColumns;
 using Elastos::Droid::Provider::IMediaStoreAudioMedia;
@@ -194,7 +194,7 @@ ECode CRingtoneManager::GetCursor(
     Boolean tempState;
     if (mCursor != NULL && (mCursor->Requery(&tempState), tempState)) {
         *result = mCursor;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -224,7 +224,7 @@ ECode CRingtoneManager::GetRingtone(
     InferStreamType(&tempValue);
     GetRingtone(mContext, uri, (IRingtone**)&mPreviousRingtone);
     *result = mPreviousRingtone;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -244,7 +244,7 @@ ECode CRingtoneManager::GetRingtoneUri(
 
     AutoPtr<IUri> temp = GetUriFromCursor(mCursor);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -324,7 +324,7 @@ ECode CRingtoneManager::GetValidRingtoneUri(
         uri = GetValidRingtoneUriFromCursorAndClose(context, rm->GetDrmRingtones());
     }
     *result = uri;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -339,7 +339,7 @@ ECode CRingtoneManager::GetRingtone(
     // Don't set the stream type
     AutoPtr<IRingtone> temp = GetRingtone(context, ringtoneUri, -1);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -366,7 +366,7 @@ ECode CRingtoneManager::GetActualDefaultRingtoneUri(
     uriHelper->Parse(uriString, (IUri**)&uri);
 
     *result = !uriString.IsNull() ? uri : NULL;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -442,7 +442,7 @@ ECode CRingtoneManager::GetDefaultUri(
     } else {
         *result = NULL;
     }
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -590,7 +590,7 @@ AutoPtr<ICursor> CRingtoneManager::Query(
 {
     AutoPtr<ICursor> cursor;
     if (mActivity != NULL) {
-        mActivity->ManagedQueryEx(uri, projection, selection, selectionArgs, sortOrder, (ICursor**)&cursor);
+        mActivity->ManagedQuery(uri, projection, selection, selectionArgs, sortOrder, (ICursor**)&cursor);
     }
     else {
         AutoPtr<IContentResolver> contentResolver;

@@ -27,7 +27,7 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ String * value);
 
-    CARAPI GetAttributeValueEx(
+    CARAPI GetAttributeValue(
         /* [in] */ const String& namespace1,
         /* [in] */ const String& name,
         /* [out] */ String * value);
@@ -76,33 +76,33 @@ public:
         /* [in] */ Float defaultValue,
         /* [out] */ Float * value);
 
-    CARAPI GetAttributeListValueEx(
+    CARAPI GetAttributeListValue(
         /* [in] */ Int32 index,
         /* [in] */ const ArrayOf<String> &options,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32 * value);
 
-    CARAPI GetAttributeBooleanValueEx(
+    CARAPI GetAttributeBooleanValue(
         /* [in] */ Int32 index,
         /* [in] */ Boolean defaultValue,
         /* [out] */ Boolean * value);
 
-    CARAPI GetAttributeResourceValueEx(
+    CARAPI GetAttributeResourceValue(
         /* [in] */ Int32 index,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32 * value);
 
-    CARAPI GetAttributeIntValueEx(
+    CARAPI GetAttributeIntValue(
         /* [in] */ Int32 index,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32 * value);
 
-    CARAPI GetAttributeUnsignedIntValueEx(
+    CARAPI GetAttributeUnsignedIntValue(
         /* [in] */ Int32 index,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32 * value);
 
-    CARAPI GetAttributeFloatValueEx(
+    CARAPI GetAttributeFloatValue(
         /* [in] */ Int32 index,
         /* [in] */ Float defaultValue,
         /* [out] */ Float * value);

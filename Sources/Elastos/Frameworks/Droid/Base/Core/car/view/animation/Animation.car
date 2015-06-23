@@ -186,7 +186,7 @@ module
              * @param i The interpolator which defines the acceleration curve
              * @attr ref android.R.styleable#interpolator
              */
-            SetInterpolatorEx(
+            SetInterpolator(
                 [in] IInterpolator* i);
 
             /**
@@ -533,7 +533,7 @@ module
              *        pivot points being rotated or scaled around.
              * @return True if the animation is still running
              */
-            GetTransformationEx(
+            GetTransformation(
                 [in] Int64 currentTime,
                 [in/*, out*/] ITransformation* outTransformation,
                 [in] Float scale,

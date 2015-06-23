@@ -4,7 +4,7 @@
 
 #include "_CPicture.h"
 #include "graphics/Canvas.h"
-#include "graphics/CanvasMacro.h"
+
 
 
 using Elastos::IO::IInputStream;

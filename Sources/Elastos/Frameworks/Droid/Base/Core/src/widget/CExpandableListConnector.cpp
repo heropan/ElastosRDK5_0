@@ -59,7 +59,7 @@ ECode CExpandableListConnector::ExpandGroup(
     return NOERROR;
 }
 
-ECode CExpandableListConnector::ExpandGroupEx(
+ECode CExpandableListConnector::ExpandGroup(
     /* [in] */ IPositionMetadata* posMetadata,
     /* [out] */ Boolean* res)
 {
@@ -77,7 +77,7 @@ ECode CExpandableListConnector::CollapseGroup(
     return NOERROR;
 }
 
-ECode CExpandableListConnector::CollapseGroupEx(
+ECode CExpandableListConnector::CollapseGroup(
     /* [in] */ IPositionMetadata* posMetadata,
     /* [out] */ Boolean* res)
 {

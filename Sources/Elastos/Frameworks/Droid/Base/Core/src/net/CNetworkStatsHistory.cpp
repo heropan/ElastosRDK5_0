@@ -3,7 +3,7 @@
 #include "net/CNetworkStatsHistoryEntry.h"
 #include "net/CNetworkStatsEntry.h"
 #include "util/ArrayUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::IO::IDataInput;
 using Elastos::IO::IDataOutput;
@@ -32,7 +32,7 @@ ECode CNetworkStatsHistory::DataStreamUtils::ReadFullLongArray(
         IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
     }
     *result =values;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CNetworkStatsHistory::DataStreamUtils::ReadVarLongArray(
         IDataInput::Probe(in)->ReadInt64(&(*values)[i]);
     }
     *result =values;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -129,7 +129,7 @@ ECode CNetworkStatsHistory::ParcelUtils::ReadLongArray(
         in->ReadInt64(&(*values)[i]);
     }
     *result =values;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 ECode CNetworkStatsHistory::ParcelUtils::WriteLongArray(
@@ -403,7 +403,7 @@ ECode CNetworkStatsHistory::GetValues(
     entry->SetTxPackets(GetLong(mTxPackets, i, INetworkStatsHistoryEntry::UNKNOWN));
     entry->SetOperations(GetLong(mOperations, i, INetworkStatsHistoryEntry::UNKNOWN));
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -424,14 +424,14 @@ ECode CNetworkStatsHistory::RecordData(
     INetworkStats::TAG_NONE, rxBytes, 0L,  txBytes, 0L, 0L,
     (INetworkStatsEntry**)&networkStatsEntry);
 
-    return RecordDataEx(start, end, networkStatsEntry);
+    return RecordData(start, end, networkStatsEntry);
 }
 
 /**
  * Record that data traffic occurred in the given time range. Will
  * distribute across internal buckets, creating new buckets as needed.
  */
-ECode CNetworkStatsHistory::RecordDataEx(
+ECode CNetworkStatsHistory::RecordData(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ INetworkStatsEntry* entry)
@@ -555,7 +555,7 @@ ECode CNetworkStatsHistory::RecordHistory(
         entry->SetTxPackets(GetLong(txPackets, i, 0L));
         entry->SetOperations(GetLong(operations, i, 0L));
 
-        RecordDataEx(bucketStart, bucketEnd, entry);
+        RecordData(bucketStart, bucketEnd, entry);
     }
     return NOERROR;
 }
@@ -664,21 +664,21 @@ ECode CNetworkStatsHistory::RemoveBucketsBefore(
  * Return interpolated data usage across the requested range. Interpolates
  * across buckets, so values may be rounded slightly.
  */
-ECode CNetworkStatsHistory::GetValuesEx(
+ECode CNetworkStatsHistory::GetValues(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ INetworkStatsHistoryEntry* recycle,
     /* [out] */ INetworkStatsHistoryEntry** result)
 {
     VALIDATE_NOT_NULL(result);
-    return GetValuesEx2(start, end, Elastos::Core::Math::INT64_MAX_VALUE, recycle, result);
+    return GetValues(start, end, Elastos::Core::Math::INT64_MAX_VALUE, recycle, result);
 }
 
 /**
  * Return interpolated data usage across the requested range. Interpolates
  * across buckets, so values may be rounded slightly.
  */
-ECode CNetworkStatsHistory::GetValuesEx2(
+ECode CNetworkStatsHistory::GetValues(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ Int64 now,
@@ -746,7 +746,7 @@ ECode CNetworkStatsHistory::GetValuesEx2(
         if (mOperations != NULL) entry->SetOperations(ori_operations + ((*mOperations)[i] *  overlap / mBucketDuration));
     }
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -770,14 +770,14 @@ ECode CNetworkStatsHistory::GenerateRandom(
     Int64 txPackets = txBytes / 1024;
     Int64 operations = rxBytes / 2048;
 
-    return GenerateRandomEx(start, end, rxBytes, rxPackets, txBytes, txPackets, operations, random);
+    return GenerateRandom(start, end, rxBytes, rxPackets, txBytes, txPackets, operations, random);
 }
 
 /**
  * @deprecated only for temporary testing
  */
 //@Deprecated
-ECode CNetworkStatsHistory::GenerateRandomEx(
+ECode CNetworkStatsHistory::GenerateRandom(
     /* [in] */ Int64 start,
     /* [in] */ Int64 end,
     /* [in] */ Int64 rxBytes,
@@ -835,7 +835,7 @@ ECode CNetworkStatsHistory::GenerateRandomEx(
         txPackets = txPackets - ori_txPackets;
         operations = operations - ori_operations;
 
-        RecordDataEx(curStart, curEnd, entry);
+        RecordData(curStart, curEnd, entry);
     }
     return NOERROR;
 }

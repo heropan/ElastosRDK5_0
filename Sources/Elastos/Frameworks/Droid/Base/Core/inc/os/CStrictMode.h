@@ -3,24 +3,21 @@
 
 #include "_CStrictMode.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Object.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <Elastos.Droid.System.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICloseGuardReporter;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IStrictModeSpan;
 using Elastos::Droid::Os::IStrictModeThreadPolicy;
 using Elastos::Droid::Os::IStrictModeVmPolicy;
 using Elastos::Droid::View::IIWindowManager;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 

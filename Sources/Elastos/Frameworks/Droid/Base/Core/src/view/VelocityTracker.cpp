@@ -1,9 +1,9 @@
 
 #include "view/VelocityTracker.h"
 #include "view/VelocityTrackerState.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "util/Pools.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include <stdio.h>
 
 using namespace Elastos::Core;
@@ -76,7 +76,7 @@ ECode VelocityTracker::VelocityTrackerPoolableManager::NewInstance(
     if (*element == NULL) {
         return E_OUT_OF_MEMORY_ERROR;
     }
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
     return NOERROR;
 }
 
@@ -264,7 +264,7 @@ ECode VelocityTracker::GetNextPoolable(
 {
     VALIDATE_NOT_NULL(element);
     *element = THIS_PROBE(IPoolable);
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
     return NOERROR;
 }
 
@@ -318,10 +318,10 @@ ECode VelocityTracker::AddMovement(
 ECode VelocityTracker::ComputeCurrentVelocity(
     /* [in] */ Int32 units)
 {
-    return ComputeCurrentVelocityEx(units, Elastos::Core::Math::FLOAT_MAX_VALUE);
+    return ComputeCurrentVelocity(units, Elastos::Core::Math::FLOAT_MAX_VALUE);
 }
 
-ECode VelocityTracker::ComputeCurrentVelocityEx(
+ECode VelocityTracker::ComputeCurrentVelocity(
     /* [in] */ Int32 units,
     /* [in] */ Float maxVelocity)
 {
@@ -347,7 +347,7 @@ ECode VelocityTracker::GetYVelocity(
     return NOERROR;
 }
 
-ECode VelocityTracker::GetXVelocityEx(
+ECode VelocityTracker::GetXVelocity(
     /* [in] */ Int32 id,
     /* [out] */ Float* x)
 {
@@ -357,7 +357,7 @@ ECode VelocityTracker::GetXVelocityEx(
     return NOERROR;
 }
 
-ECode VelocityTracker::GetYVelocityEx(
+ECode VelocityTracker::GetYVelocity(
     /* [in] */ Int32 id,
     /* [out] */ Float* y)
 {

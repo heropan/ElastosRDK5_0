@@ -1,10 +1,10 @@
 
 #include "util/FileRotator.h"
 #include "os/FileUtils.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

@@ -2,7 +2,7 @@
 #include "ext/frameworkdef.h"
 #include "os/CMessage.h"
 #include "os/CBundle.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -162,7 +162,7 @@ ECode CMessage::GetNext(
 {
     VALIDATE_NOT_NULL(next);
     *next = (IMessage*)mNext.Get();
-    INTERFACE_ADDREF(*next);
+    REFCOUNT_ADD(*next);
     return NOERROR;
 }
 
@@ -242,7 +242,7 @@ ECode CMessage::GetTarget(
 {
     VALIDATE_NOT_NULL(target);
     *target = mTarget;
-    INTERFACE_ADDREF(*target);
+    REFCOUNT_ADD(*target);
     return NOERROR;
 }
 
@@ -258,7 +258,7 @@ ECode CMessage::GetCallback(
 {
     VALIDATE_NOT_NULL(callback);
     *callback = mCallback;
-    INTERFACE_ADDREF(*callback);
+    REFCOUNT_ADD(*callback);
     return NOERROR;
 }
 
@@ -289,7 +289,7 @@ ECode CMessage::GetData(
     }
 
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -320,7 +320,7 @@ ECode CMessage::GetReplyTo(
 {
     VALIDATE_NOT_NULL(replyTo);
     *replyTo = mReplyTo;
-    INTERFACE_ADDREF(*replyTo);
+    REFCOUNT_ADD(*replyTo);
     return NOERROR;
 }
 
@@ -366,7 +366,7 @@ ECode CMessage::GetObj(
 {
     VALIDATE_NOT_NULL(obj);
     *obj = mObj;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

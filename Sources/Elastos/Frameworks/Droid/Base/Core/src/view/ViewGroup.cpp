@@ -16,8 +16,8 @@
 #include "os/Build.h"
 #include "os/SystemClock.h"
 #include "os/SystemProperties.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 #include "R.h"
 
 using Elastos::Droid::Content::Pm::IApplicationInfo;
@@ -692,7 +692,7 @@ void ViewGroup::InitFromAttributes(
         const_cast<Int32 *>(R::styleable::ViewGroup),
         ARRAY_SIZE(R::styleable::ViewGroup));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx2(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
         attrs, attrIds, (ITypedArray**)&a));
 
     Int32 N;
@@ -888,7 +888,7 @@ AutoPtr<IActionMode> ViewGroup::StartActionModeForChild(
 {
     if (mParent != NULL) {
         AutoPtr<IActionMode> mode;
-        mParent->StartActionModeForChildEx(originalView, callback, (IActionMode**)&mode);
+        mParent->StartActionModeForChild(originalView, callback, (IActionMode**)&mode);
         return mode;
     }
 
@@ -909,7 +909,7 @@ AutoPtr<IView> ViewGroup::FocusSearch(
             THIS_PROBE(IViewGroup), focused, direction, (IView**)&result);
     }
     else if (mParent != NULL) {
-        mParent->FocusSearchEx(focused, direction, (IView**)&result);
+        mParent->FocusSearch(focused, direction, (IView**)&result);
     }
 
     return result;
@@ -976,7 +976,7 @@ ECode ViewGroup::ChildHasTransientStateChanged(
 
     Boolean newHasTransientState = HasTransientState();
     if (mParent != NULL && oldHasTransientState != newHasTransientState) {
-        return mParent->ChildHasTransientStateChangedEx(THIS_PROBE(IViewGroup), newHasTransientState);
+        return mParent->ChildHasTransientStateChanged(THIS_PROBE(IViewGroup), newHasTransientState);
     }
 
     return NOERROR;
@@ -1218,10 +1218,10 @@ void ViewGroup::OnChildVisibilityChanged(
 {
     if (mTransition != NULL) {
         if (newVisibility == IView::VISIBLE) {
-            mTransition->ShowChildEx(THIS_PROBE(IViewGroup), child, oldVisibility);
+            mTransition->ShowChild(THIS_PROBE(IViewGroup), child, oldVisibility);
         }
         else {
-            mTransition->HideChildEx(THIS_PROBE(IViewGroup), child, newVisibility);
+            mTransition->HideChild(THIS_PROBE(IViewGroup), child, newVisibility);
             if (!mTransitioningViews.IsEmpty()) {
                 AutoPtr<IView> temp = child;
                 List<AutoPtr<IView> >::Iterator iter =
@@ -2100,9 +2100,9 @@ Boolean ViewGroup::DispatchTouchEvent(
                     // Find a child that can receive the event.
                     // Scan children from front to back.
                     Float x = 0.0f;
-                    ev->GetXEx(actionIndex, &x);
+                    ev->GetX(actionIndex, &x);
                     Float y = 0.0f;
-                    ev->GetYEx(actionIndex, &y);
+                    ev->GetY(actionIndex, &y);
 
                     Boolean customOrder = IsChildrenDrawingOrderEnabled();
                     for (Int32 i = childrenCount - 1; i >= 0; i--) {
@@ -2372,7 +2372,7 @@ Boolean ViewGroup::IsTransformedTouchPointInView(
         AutoPtr<ArrayOf<Float> > locations = ArrayOf<Float>::Alloc(2);
         (*locations)[0] = localX;
         (*locations)[1] = localY;
-        _child->GetInverseMatrix()->MapPointsEx2(locations);
+        _child->GetInverseMatrix()->MapPoints(locations);
         localX = (*locations)[0];
         localY = (*locations)[1];
         mAttachInfo->mTmpTransformLocation[0] = localX;
@@ -2961,7 +2961,7 @@ ECode ViewGroup::CreateSnapshot(
         delete[] visibilities;
     }
     *bitmap = b;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -2976,7 +2976,7 @@ void ViewGroup::DrawRect(
     AutoPtr<IPaint> paint = GetDebugPaint();
     paint->SetColor(color);
 
-    canvas->DrawLinesEx(*GetDebugLines(x1, y1, x2, y2), paint);
+    canvas->DrawLines(*GetDebugLines(x1, y1, x2, y2), paint);
 }
 
 void ViewGroup::OnDebugDrawMargins(
@@ -3074,7 +3074,7 @@ void ViewGroup::DispatchDraw(
     if (clipToPadding) {
         canvas->Save(&saveCount);
         Boolean isNonEmpty;
-        canvas->ClipRectEx6(mScrollX + mPaddingLeft, mScrollY + mPaddingTop,
+        canvas->ClipRect(mScrollX + mPaddingLeft, mScrollY + mPaddingTop,
                 mScrollX + mRight - mLeft - mPaddingRight,
                 mScrollY + mBottom - mTop - mPaddingBottom, &isNonEmpty);
 
@@ -3573,7 +3573,7 @@ ECode ViewGroup::AddViewInner(
     if (mTransition != NULL) {
         // Don't prevent other add transitions from completing, but cancel remove
         // transitions to let them complete the process before we add to the container
-        mTransition->CancelEx(ILayoutTransition::DISAPPEARING);
+        mTransition->Cancel(ILayoutTransition::DISAPPEARING);
     }
 
     AutoPtr<IViewGroupLayoutParams> params = _params;
@@ -4207,7 +4207,7 @@ ECode ViewGroup::InvalidateChild(
         if (v->mLayerType != IView::LAYER_TYPE_NONE) {
             mPrivateFlags |= PFLAG_INVALIDATED;
             mPrivateFlags &= ~PFLAG_DRAWING_CACHE_VALID;
-            v->mLocalDirtyRect->UnionEx(dirty);
+            v->mLocalDirtyRect->Union(dirty);
         }
 
         AutoPtr<ArrayOf<Int32> > location = ArrayOf<Int32>::Alloc(2);
@@ -4215,7 +4215,7 @@ ECode ViewGroup::InvalidateChild(
         (*location)[CHILD_TOP_INDEX] = v->mTop;
         if (!isIdentity || (mGroupFlags & FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
             AutoPtr<IRectF> boundingRect = attachInfo->mTmpTransformRect;
-            boundingRect->SetEx2(dirty);
+            boundingRect->Set(dirty);
             AutoPtr<IMatrix> transformMatrix;
             if ((mGroupFlags & FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
                 AutoPtr<ITransformation> t = attachInfo->mTmpTransformation;
@@ -4241,7 +4241,7 @@ ECode ViewGroup::InvalidateChild(
             }
 
             Boolean res;
-            transformMatrix->MapRectEx(boundingRect, &res);
+            transformMatrix->MapRect(boundingRect, &res);
             Float l, r, t, b;
             boundingRect->GetLeft(&l);
             boundingRect->GetRight(&r);
@@ -4292,9 +4292,9 @@ ECode ViewGroup::InvalidateChild(
                 m->IsIdentity(&isIdentity);
                 if (!isIdentity) {
                     AutoPtr<IRectF> boundingRect = attachInfo->mTmpTransformRect;
-                    boundingRect->SetEx2(dirty);
+                    boundingRect->Set(dirty);
                     Boolean res;
-                    m->MapRectEx(boundingRect, &res);
+                    m->MapRect(boundingRect, &res);
 
                     Float l, r, t, b;
                     boundingRect->GetLeft(&l);
@@ -4343,7 +4343,7 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
 
             if (mLayerType != IView::LAYER_TYPE_NONE) {
                 mPrivateFlags |= PFLAG_INVALIDATED;
-                mLocalDirtyRect->UnionEx(dirty);
+                mLocalDirtyRect->Union(dirty);
             }
 
             return mParent;
@@ -4364,7 +4364,7 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParent(
 
             if (mLayerType != IView::LAYER_TYPE_NONE) {
                 mPrivateFlags |= PFLAG_INVALIDATED;
-                mLocalDirtyRect->UnionEx(dirty);
+                mLocalDirtyRect->Union(dirty);
             }
 
             return mParent;
@@ -4385,7 +4385,7 @@ ECode ViewGroup::InvalidateChildFast(
     View* v = VIEW_PROBE(child);
     if (attachInfo != NULL) {
         if (v->mLayerType != IView::LAYER_TYPE_NONE) {
-            v->mLocalDirtyRect->UnionEx(dirty);
+            v->mLocalDirtyRect->Union(dirty);
         }
 
         Int32 left = v->mLeft;
@@ -4444,7 +4444,7 @@ AutoPtr<IViewParent> ViewGroup::InvalidateChildInParentFast(
             (dirty->Intersect(0, 0, mRight - mLeft, mBottom - mTop, &isIntersect), isIntersect)) {
 
             if (mLayerType != IView::LAYER_TYPE_NONE) {
-                mLocalDirtyRect->UnionEx(dirty);
+                mLocalDirtyRect->Union(dirty);
             }
 
             AutoPtr<IMatrix> tmpMatrix = GetMatrix();
@@ -4570,13 +4570,13 @@ ECode ViewGroup::GetChildVisibleRect(
         CRectF::New((IRectF**)&rect);
     }
 
-    rect->SetEx2(r);
+    rect->Set(r);
 
     assert(child != NULL && result != NULL);
     View* _child = VIEW_PROBE(child);
     if (!_child->HasIdentityMatrix()) {
         Boolean res;
-        _child->GetMatrix()->MapRectEx(rect, &res);
+        _child->GetMatrix()->MapRect(rect, &res);
     }
 
     Int32 dx = _child->mLeft - mScrollX;
@@ -4593,7 +4593,7 @@ ECode ViewGroup::GetChildVisibleRect(
             (*position)[0] = x;
             (*position)[1] = y;
 
-            _child->GetMatrix()->MapPointsEx2(position);
+            _child->GetMatrix()->MapPoints(position);
             offset->Set((Int32)((*position)[0] + 0.5f), (Int32)((*position)[1] + 0.5f));
 
             if (mAttachInfo != NULL) {
@@ -4779,7 +4779,7 @@ ECode ViewGroup::GenerateLayoutParams(
     AutoPtr<IContext> ctx = GetContext();
     CViewGroupLayoutParams::New(ctx, attrs, (IViewGroupLayoutParams**)&temp);
     *params = temp;
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -4805,7 +4805,7 @@ ECode ViewGroup::GenerateDefaultLayoutParams(
         IViewGroupLayoutParams::WRAP_CONTENT,
         IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&temp);
     *params = temp;
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -5301,7 +5301,7 @@ ECode ViewGroup::OnCreateDrawableState(
     }
 
     *drawableState = state;
-    INTERFACE_ADDREF(*drawableState);
+    REFCOUNT_ADD(*drawableState);
     return NOERROR;
 }
 

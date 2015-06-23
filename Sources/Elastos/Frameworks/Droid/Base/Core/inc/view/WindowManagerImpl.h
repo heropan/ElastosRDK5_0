@@ -29,7 +29,7 @@ public:
     CARAPI_(AutoPtr<WindowManagerImpl>) CreatePresentationWindowManager(
         /* [in] */ IDisplay* display);
 
-    CARAPI AddViewEx5(
+    CARAPI AddView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
 

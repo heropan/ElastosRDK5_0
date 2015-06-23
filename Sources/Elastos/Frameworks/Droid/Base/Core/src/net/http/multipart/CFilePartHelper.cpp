@@ -53,7 +53,7 @@ ECode CFilePartHelper::GetLengthOfParts(
     return CFilePart::GetLengthOfParts(parts, length);
 }
 
-ECode CFilePartHelper::GetLengthOfPartsEx(
+ECode CFilePartHelper::GetLengthOfParts(
     /* [in] */ ArrayOf<IPart *>* iparts,
     /* [in] */ ArrayOf<Byte>* partBoundary,
     /* [out] */ Int64* length)

@@ -3,7 +3,7 @@
 #include "gesture/GestureUtils.h"
 #include "gesture/InstanceLearner.h"
 #include <elastos/Map.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::EIID_IComparator;
 using Elastos::Utility::Map;
@@ -93,7 +93,7 @@ AutoPtr<IArrayList> InstanceLearner::Classify(
 
     AutoPtr<ICollections> collections;
     CCollections::AcquireSingleton((ICollections**)&collections);
-    collections->SortEx(IList::Probe(predictions), mComparator);
+    collections->Sort(IList::Probe(predictions), mComparator);
 
     return predictions;
 }

@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "_CDownloadManagerQuery.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IInteger32;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;

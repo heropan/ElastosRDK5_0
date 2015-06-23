@@ -227,7 +227,7 @@ public:
      * when the query is executed.
      * @return a Cursor or null.
      */
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ const String& selection,

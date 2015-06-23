@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "os/CParcel.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -572,7 +572,7 @@ ECode CParcel::OpenFileDescriptor(
         close(fd);
     }
     *desc = object;
-    INTERFACE_ADDREF(*desc);
+    REFCOUNT_ADD(*desc);
     return NOERROR;
 }
 
@@ -602,7 +602,7 @@ ECode CParcel::DupFileDescriptor(
     }
 
     *desc = object;
-    INTERFACE_ADDREF(*desc);
+    REFCOUNT_ADD(*desc);
     return NOERROR;
 }
 

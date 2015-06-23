@@ -144,7 +144,7 @@ ECode KeyButtonView::Init(
             const_cast<Int32 *>(SystemUIR::styleable::KeyButtonView),
             ARRAY_SIZE(SystemUIR::styleable::KeyButtonView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     a->GetInt32(SystemUIR::styleable::KeyButtonView_keyCode, 0, &mCode);
     a->GetBoolean(SystemUIR::styleable::KeyButtonView_keyRepeat, TRUE, &mSupportsLongpress);
@@ -180,7 +180,7 @@ void KeyButtonView::OnDraw(
         Int32 drawW = (Int32)(h*aspect);
         Int32 drawH = h;
         Int32 margin = (drawW-w)/2;
-        canvas->ScaleEx(mGlowScale, mGlowScale, w*0.5f, h*0.5f);
+        canvas->Scale(mGlowScale, mGlowScale, w*0.5f, h*0.5f);
         mGlowBG->SetBounds(-margin, 0, drawW-margin, drawH);
         mGlowBG->SetAlpha((Int32)(mDrawingAlpha * mGlowAlpha * 255));
         mGlowBG->Draw(canvas);
@@ -199,7 +199,7 @@ ECode KeyButtonView::SetDrawingAlpha(
     // Calling setAlpha(Int32), which is an ImageView-specific
     // method that's different from setAlpha(float). This sets
     // the alpha on this ImageView's drawable directly
-    SetAlphaEx((Int32) (x * 255));
+    SetAlpha((Int32) (x * 255));
     mDrawingAlpha = x;
     return NOERROR;
 }

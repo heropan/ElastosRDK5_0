@@ -28,7 +28,7 @@ module
         GetHandler(
             [out] IHandler** handler);
 
-        AnimateCollapsePanelsEx();
+        AnimateCollapsePanels();
 
         SetVisibilityWhenDone(
             [in] IViewPropertyAnimator* a,
@@ -36,7 +36,7 @@ module
             [in] Int32 vis,
             [out] IViewPropertyAnimator** animator);
 
-        SetVisibilityWhenDoneEx(
+        SetVisibilityWhenDone(
             [in] IAnimator* a,
             [in] IView* v,
             [in] Int32 vis,

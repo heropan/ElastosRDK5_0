@@ -2,7 +2,7 @@
 #include "CActivityTwo.h"
 #include "R.h"
 #include <elautoptr.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::CIntent;
@@ -112,7 +112,7 @@ ECode CActivityTwo::OnBackPressed()
     data->PutStringExtra(String("Interacting.at.key1"), String("elastos"));
     data->PutStringExtra(String("Interacting.at.key2"), String("elastos.org"));
 
-    SetResultEx(10, data);
+    SetResult(10, data);
     return Activity::OnBackPressed();
 }
 

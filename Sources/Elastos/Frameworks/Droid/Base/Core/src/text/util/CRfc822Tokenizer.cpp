@@ -149,7 +149,7 @@ ECode CRfc822Tokenizer::Tokenize(
     return NOERROR;
 }
 
-ECode CRfc822Tokenizer::TokenizeEx(
+ECode CRfc822Tokenizer::Tokenize(
     /* [in] */ ICharSequence* text,
     /* [out, callee] */ ArrayOf<IRfc822Token*>** ret)
 {

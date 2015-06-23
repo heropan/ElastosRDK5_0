@@ -4,8 +4,8 @@
 #include "net/CUriHelper.h"
 #include "content/CContentUris.h"
 #include "graphics/CBitmapFactory.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "provider/CMediaStoreVideoMedia.h"
 #include "provider/CMediaStoreImagesMedia.h"
 #include "media/media/CMiniThumbFile.h"

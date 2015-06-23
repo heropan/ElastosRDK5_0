@@ -2,7 +2,7 @@
 #include "CCellInfoCdma.h"
 #include "CCellIdentityCdma.h"
 #include "CCellSignalStrengthCdma.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -28,7 +28,7 @@ ECode CCellInfoCdma::constructor(
     ci->GetCellIdentity((ICellIdentityCdma**)&ccdma);
     ci->GetCellSignalStrength((ICellSignalStrengthCdma**)&csscdma);
     ccdma->Copy((ICellIdentityCdma**)&mCellIdentityCdma);
-    csscdma->CopyEx((ICellSignalStrengthCdma**)&mCellSignalStrengthCdma);
+    csscdma->Copy((ICellSignalStrengthCdma**)&mCellSignalStrengthCdma);
     return NOERROR;
 }
 
@@ -82,7 +82,7 @@ ECode CCellInfoCdma::GetCellIdentity(
 {
     VALIDATE_NOT_NULL(cid);
     *cid = mCellIdentityCdma;
-    INTERFACE_ADDREF(*cid);
+    REFCOUNT_ADD(*cid);
     return NOERROR;
 }
 
@@ -98,7 +98,7 @@ ECode CCellInfoCdma::GetCellSignalStrength(
 {
     VALIDATE_NOT_NULL(css);
     *css = mCellSignalStrengthCdma;
-    INTERFACE_ADDREF(*css);
+    REFCOUNT_ADD(*css);
     return NOERROR;
 }
 

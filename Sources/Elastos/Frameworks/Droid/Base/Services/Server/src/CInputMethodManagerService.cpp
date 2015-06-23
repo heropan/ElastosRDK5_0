@@ -14,9 +14,9 @@
 #include "util/Xml.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
@@ -211,17 +211,17 @@ CInputMethodManagerService::SettingsObserver::SettingsObserver(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    settingsSecure->GetUriForEx(ISettingsSecure::DEFAULT_INPUT_METHOD, (IUri**)&uri);
+    settingsSecure->GetUriFor(ISettingsSecure::DEFAULT_INPUT_METHOD, (IUri**)&uri);
     assert(uri != NULL);
     resolver->RegisterContentObserver(uri, FALSE, THIS_PROBE(IContentObserver));
 
     uri = NULL;
-    settingsSecure->GetUriForEx(ISettingsSecure::ENABLED_INPUT_METHODS, (IUri**)&uri);
+    settingsSecure->GetUriFor(ISettingsSecure::ENABLED_INPUT_METHODS, (IUri**)&uri);
     assert(uri != NULL);
     resolver->RegisterContentObserver(uri, FALSE, THIS_PROBE(IContentObserver));
 
     uri = NULL;
-    settingsSecure->GetUriForEx(ISettingsSecure::SELECTED_INPUT_METHOD_SUBTYPE, (IUri**)&uri);
+    settingsSecure->GetUriFor(ISettingsSecure::SELECTED_INPUT_METHOD_SUBTYPE, (IUri**)&uri);
     assert(uri != NULL);
     resolver->RegisterContentObserver(uri,
                 FALSE, THIS_PROBE(IContentObserver));
@@ -468,7 +468,7 @@ void CInputMethodManagerService::HardKeyboardListener::OnHardKeyboardStatusChang
     /* [in] */ Boolean enabled)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx2(
+    mHost->mHandler->ObtainMessage(
         CInputMethodManagerService::MSG_HARD_KEYBOARD_SWITCH_CHANGED,
         available ? 1 : 0, enabled ? 1 : 0, (IMessage**)&msg);
     Boolean result;
@@ -1471,7 +1471,7 @@ Int32 CInputMethodManagerService::InputMethodSettings::GetSelectedInputMethodSub
     Int32 value = 0;
     AutoPtr<ISettingsSystem> settingsSystem;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
-    ECode ec = settingsSystem->GetInt32ForUserEx(
+    ECode ec = settingsSystem->GetInt32ForUser(
             mResolver, ISettingsSecure::SELECTED_INPUT_METHOD_SUBTYPE,
             mCurrentUserId, &value);
     if (FAILED(ec)/*SettingNotFoundException*/) {
@@ -1712,7 +1712,7 @@ void CInputMethodManagerService::InputMethodFileManager::ReadAdditionalInputMeth
     // // try {
     subtypesFile->OpenRead((IFileInputStream**)&fis);
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(fis, String(NULL));
+    parser->SetInput(fis, String(NULL));
     Int32 type = 0;
     parser->GetEventType(&type);
     // Skip parsing until START_TAG
@@ -1739,7 +1739,7 @@ void CInputMethodManagerService::InputMethodFileManager::ReadAdditionalInputMeth
         String nodeName;
         parser->GetName(&nodeName);
         if (NODE_IMI.Equals(nodeName) == 0) {
-            parser->GetAttributeValueEx(String(NULL)/*NULL*/, ATTR_ID, &currentImiId);
+            parser->GetAttributeValue(String(NULL)/*NULL*/, ATTR_ID, &currentImiId);
 
             AutoPtr<ICharSequence> tmp;
             CStringWrapper::New(currentImiId, (ICharSequence**)&tmp);
@@ -1760,22 +1760,22 @@ void CInputMethodManagerService::InputMethodFileManager::ReadAdditionalInputMeth
             }
 
             String value;
-            parser->GetAttributeValueEx(String(NULL), ATTR_ICON, &value);
+            parser->GetAttributeValue(String(NULL), ATTR_ICON, &value);
             const Int32 icon = StringUtils::ParseInt32(value);
 
-            parser->GetAttributeValueEx(String(NULL), ATTR_LABEL, &value);
+            parser->GetAttributeValue(String(NULL), ATTR_LABEL, &value);
             const Int32 label = StringUtils::ParseInt32(value);
             String imeSubtypeLocale;
-            parser->GetAttributeValueEx(String(NULL), ATTR_IME_SUBTYPE_LOCALE, &imeSubtypeLocale);
+            parser->GetAttributeValue(String(NULL), ATTR_IME_SUBTYPE_LOCALE, &imeSubtypeLocale);
 
             String imeSubtypeMode;
-            parser->GetAttributeValueEx(String(NULL), ATTR_IME_SUBTYPE_MODE, &imeSubtypeMode);
+            parser->GetAttributeValue(String(NULL), ATTR_IME_SUBTYPE_MODE, &imeSubtypeMode);
 
             String imeSubtypeExtraValue;
-            parser->GetAttributeValueEx(String(NULL), ATTR_IME_SUBTYPE_EXTRA_VALUE, &imeSubtypeExtraValue);
+            parser->GetAttributeValue(String(NULL), ATTR_IME_SUBTYPE_EXTRA_VALUE, &imeSubtypeExtraValue);
 
             Boolean isAuxiliary = String("1").Equals(
-                (parser->GetAttributeValueEx(String(NULL), ATTR_IS_AUXILIARY, &value), value)) == 0;
+                (parser->GetAttributeValue(String(NULL), ATTR_IS_AUXILIARY, &value), value)) == 0;
 
             AutoPtr<IInputMethodSubtype> subtype;
             CInputMethodSubtype::New(label, icon, imeSubtypeLocale,
@@ -1914,7 +1914,7 @@ ECode CInputMethodManagerService::constructor(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetALL((IUserHandle**)&allUserHande);
-    mMyPackageMonitor->RegisterEx(mContext, NULL, allUserHande, TRUE);
+    mMyPackageMonitor->Register(mContext, NULL, allUserHande, TRUE);
 
     // mSettings should be created before buildInputMethodListLocked
     AutoPtr<IContentResolver> resolver;
@@ -2272,7 +2272,7 @@ Boolean CInputMethodManagerService::BindCurrentInputMethodService(
         return FALSE;
     }
     Boolean succeeded = FALSE;
-    mContext->BindServiceEx(service, conn, flags, mSettings->GetCurrentUserId(), &succeeded);
+    mContext->BindService(service, conn, flags, mSettings->GetCurrentUserId(), &succeeded);
     return succeeded;
 }
 
@@ -3236,7 +3236,7 @@ ECode CInputMethodManagerService::NotifySuggestionPicked(
             // notification.
             String pNname;
             targetImi->GetPackageName(&pNname);
-            intent->SetClassNameEx(pNname, className);
+            intent->SetClassName(pNname, className);
             intent->SetAction(ISuggestionSpan::ACTION_SUGGESTION_PICKED);
             intent->PutStringExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_BEFORE, originalString);
             intent->PutStringExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_AFTER, (*suggestions)[index]);
@@ -4358,7 +4358,7 @@ void CInputMethodManagerService::ShowInputMethodAndSubtypeEnabler(
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
     AutoPtr<IUserHandle> CURRENT;
     userHandleHelper->GetCURRENT((IUserHandle**)&CURRENT);
-    mContext->StartActivityAsUserEx(intent, NULL, CURRENT);
+    mContext->StartActivityAsUser(intent, NULL, CURRENT);
 }
 
 void CInputMethodManagerService::ShowConfigureInputMethods()
@@ -4372,7 +4372,7 @@ void CInputMethodManagerService::ShowConfigureInputMethods()
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
     AutoPtr<IUserHandle> CURRENT;
     userHandleHelper->GetCURRENT((IUserHandle**)&CURRENT);
-    mContext->StartActivityAsUserEx(intent, NULL, CURRENT);
+    mContext->StartActivityAsUser(intent, NULL, CURRENT);
 }
 
 Boolean CInputMethodManagerService::IsScreenLocked()

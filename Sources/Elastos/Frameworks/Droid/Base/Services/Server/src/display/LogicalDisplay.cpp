@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "display/LogicalDisplay.h"
-#include <elastos/Algorithm.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::CDisplayInfo;

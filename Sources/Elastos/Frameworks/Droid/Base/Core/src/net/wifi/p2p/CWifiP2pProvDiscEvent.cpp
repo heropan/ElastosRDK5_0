@@ -1,9 +1,9 @@
 #include "CWifiP2pProvDiscEvent.h"
 #include "CWifiP2pDevice.h"
 #include "ext/frameworkdef.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;;
 using Elastos::Core::StringBuilder;
@@ -82,7 +82,7 @@ ECode CWifiP2pProvDiscEvent::GetDevice(
 {
     VALIDATE_NOT_NULL(device);
     *device = mDevice;
-    INTERFACE_ADDREF(*device);
+    REFCOUNT_ADD(*device);
     return NOERROR;
 }
 

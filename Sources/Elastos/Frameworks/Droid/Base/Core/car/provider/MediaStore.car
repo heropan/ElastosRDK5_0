@@ -417,7 +417,7 @@ module {
          * @param rowId the file to get the URI for
          * @return the URI to the files table on the given volume
          */
-        GetContentUriEx(
+        GetContentUri(
             [in] String volumeName,
             [in] Int64 rowId,
             [out] IUri** uri);
@@ -434,7 +434,7 @@ module {
          * For use only by the MTP implementation.
          * @hide
          */
-        GetMtpObjectsUriEx(
+        GetMtpObjectsUri(
             [in] String volumeName,
             [in] Int64 fileId,
             [out] IUri** uri);
@@ -664,7 +664,7 @@ module {
             [in] ArrayOf<String>* projection,
             [out] ICursor** cursor);
 
-        QueryEx(
+        Query(
             [in] IContentResolver* cr,
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
@@ -672,7 +672,7 @@ module {
             [in] String orderBy,
             [out] ICursor** cursor);
 
-        QueryEx2(
+        Query(
             [in] IContentResolver* cr,
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
@@ -721,7 +721,7 @@ module {
          * @return The URL to the newly created image, or <code>null</code> if the image failed to be stored
          *              for any reason.
          */
-        InsertImageEx(
+        InsertImage(
             [in] IContentResolver* cr,
             [in] IBitmap* source,
             [in] String title,
@@ -859,7 +859,7 @@ module {
          * @param origId original image id
          * @param groupId the same groupId used in getThumbnail.
          */
-        CancelThumbnailRequestEx(
+        CancelThumbnailRequest(
             [in] IContentResolver* cr,
             [in] Int64 origId,
             [in] Int64 groupId);
@@ -876,7 +876,7 @@ module {
          * @return A Bitmap instance. It could be null if the original image
          *         associated with origId doesn't exist or memory is not enough.
          */
-        GetThumbnailEx(
+        GetThumbnail(
             [in] IContentResolver* cr,
             [in] Int64 origId,
             [in] Int64 groupId,
@@ -1878,7 +1878,7 @@ module {
          * @return A Bitmap instance. It could be null if the original image associated with
          *         origId doesn't exist or memory is not enough.
          */
-        GetThumbnailEx(
+        GetThumbnail(
             [in] IContentResolver* cr,
             [in] Int64 origId,
             [in] Int64 groupId,
@@ -1895,7 +1895,7 @@ module {
          * @param origId original video id
          * @param groupId the same groupId used in getThumbnail.
          */
-        CancelThumbnailRequestEx(
+        CancelThumbnailRequest(
             [in] IContentResolver* cr,
             [in] Int64 origId,
             [in] Int64 groupId);

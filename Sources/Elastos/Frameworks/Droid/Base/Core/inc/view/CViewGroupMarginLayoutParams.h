@@ -4,7 +4,7 @@
 
 #include "_CViewGroupMarginLayoutParams.h"
 #include "view/ViewGroupMarginLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

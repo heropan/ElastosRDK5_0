@@ -4,7 +4,7 @@
 
 #include "_CSizeAdaptiveLayoutLayoutParams.h"
 #include "widget/internal/SizeAdaptiveLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

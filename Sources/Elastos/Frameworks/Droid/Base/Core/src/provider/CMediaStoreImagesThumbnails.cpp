@@ -93,7 +93,7 @@ ECode CMediaStoreImagesThumbnails::GetThumbnail(
             uri, FALSE, bitmap);
 }
 
-ECode CMediaStoreImagesThumbnails::CancelThumbnailRequestEx(
+ECode CMediaStoreImagesThumbnails::CancelThumbnailRequest(
     /* [in] */ IContentResolver* cr,
     /* [in] */ Int64 origId,
     /* [in] */ Int64 groupId)
@@ -106,7 +106,7 @@ ECode CMediaStoreImagesThumbnails::CancelThumbnailRequestEx(
     return thumbnails->CancelThumbnailRequest(cr, origId, uri, groupId);
 }
 
-ECode CMediaStoreImagesThumbnails::GetThumbnailEx(
+ECode CMediaStoreImagesThumbnails::GetThumbnail(
     /* [in] */ IContentResolver* cr,
     /* [in] */ Int64 origId,
     /* [in] */ Int64 groupId,

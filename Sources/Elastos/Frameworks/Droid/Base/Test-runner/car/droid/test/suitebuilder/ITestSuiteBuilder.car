@@ -85,7 +85,7 @@ module
          * @param predicates Predicates to add to the list of requirements.
          * @return The builder for method chaining.
          */
-        AddRequirementsEx(
+        AddRequirements(
             [in] ArrayOf<IPredicate*>* predicates);
     }
 

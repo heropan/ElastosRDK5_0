@@ -58,7 +58,7 @@ ECode CLocalServerSocket::GetLocalSocketAddress(
 {
     VALIDATE_NOT_NULL(result);
     *result = mLocalAddress;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -81,7 +81,7 @@ ECode CLocalServerSocket::Accept(
     AutoPtr<ILocalSocket> lsocket;
     CLocalSocket::New((Handle32)acceptedImpl, (ILocalSocket**)&lsocket);
     *result = lsocket;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -97,7 +97,7 @@ ECode CLocalServerSocket::GetFileDescriptor(
     AutoPtr<IFileDescriptor> fd;
     fd = mImpl->GetFileDescriptor();
     *result = fd;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

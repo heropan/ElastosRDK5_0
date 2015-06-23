@@ -3,8 +3,8 @@
 #include "os/SystemClock.h"
 #include "Elastos.Core.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Libcore::IO::CLibcore;

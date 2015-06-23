@@ -143,7 +143,7 @@ ECode CActivityManagerRunningAppProcessInfo::GetPkgList(
 {
     VALIDATE_NOT_NULL(pkgList);
     *pkgList = mPkgList;
-    INTERFACE_ADDREF(*pkgList);
+    REFCOUNT_ADD(*pkgList);
     return NOERROR;
 }
 
@@ -288,7 +288,7 @@ ECode CActivityManagerRunningAppProcessInfo::GetImportanceReasonComponent(
 {
     VALIDATE_NOT_NULL(component);
     *component = mImportanceReasonComponent;
-    INTERFACE_ADDREF(*component);
+    REFCOUNT_ADD(*component);
     return NOERROR;
 }
 

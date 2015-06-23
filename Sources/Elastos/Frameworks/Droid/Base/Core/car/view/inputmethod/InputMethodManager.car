@@ -337,7 +337,7 @@ module
         /**
          * Return true if any view is currently active in the input method.
          */
-        IsActiveEx(
+        IsActive(
             [out] Boolean* active);
 
         /**
@@ -394,7 +394,7 @@ module
          * {@link #RESULT_UNCHANGED_HIDDEN}, {@link #RESULT_SHOWN}, or
          * {@link #RESULT_HIDDEN}.
          */
-        ShowSoftInputEx(
+        ShowSoftInput(
             [in] IView* view,
             [in] Int32 flags,
             [in] IResultReceiver* resultReceiver,
@@ -436,7 +436,7 @@ module
          * {@link #RESULT_UNCHANGED_HIDDEN}, {@link #RESULT_SHOWN}, or
          * {@link #RESULT_HIDDEN}.
          */
-        HideSoftInputFromWindowEx(
+        HideSoftInputFromWindow(
             [in] IBinder* windowToken,
             [in] Int32 flags,
             [in] IResultReceiver* resultReceiver,

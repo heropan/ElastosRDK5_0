@@ -5,13 +5,12 @@
 #include "ext/frameworkdef.h"
 #include "_CTextServicesManagerService.h"
 #include "content/PackageMonitor.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::App::IUserSwitchObserver;

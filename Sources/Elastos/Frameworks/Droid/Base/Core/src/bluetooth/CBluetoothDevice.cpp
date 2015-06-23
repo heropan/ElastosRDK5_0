@@ -4,7 +4,7 @@
 #include "CBluetoothClass.h"
 #include "BluetoothSocket.h"
 #include "CBluetoothAdapter.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -433,7 +433,7 @@ ECode CBluetoothDevice::CreateRfcommSocket(
     VALIDATE_NOT_NULL(socket)
     AutoPtr<IBluetoothSocket> _socket = (IBluetoothSocket*)new BluetoothSocket(BluetoothSocket::TYPE_RFCOMM, -1, TRUE, TRUE, this, channel, NULL);
     *socket = _socket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -464,7 +464,7 @@ ECode CBluetoothDevice::CreateInsecureRfcommSocket(
     VALIDATE_NOT_NULL(socket)
     AutoPtr<IBluetoothSocket> _socket = (IBluetoothSocket*)new BluetoothSocket(BluetoothSocket::TYPE_RFCOMM, -1, FALSE, FALSE, this, port, NULL);
     *socket = _socket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -474,7 +474,7 @@ ECode CBluetoothDevice::CreateScoSocket(
     VALIDATE_NOT_NULL(socket)
     AutoPtr<IBluetoothSocket> _socket = (IBluetoothSocket*)new BluetoothSocket(BluetoothSocket::TYPE_SCO, -1, TRUE, TRUE, this, -1, NULL);
     *socket = _socket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 

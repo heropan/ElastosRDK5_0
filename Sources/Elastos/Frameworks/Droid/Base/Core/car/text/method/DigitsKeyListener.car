@@ -30,7 +30,7 @@ module
          * plus the minus sign (only at the beginning) and/or decimal point
          * (only one per field) if specified.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] Boolean sign,
             [in] Boolean decimal,
             [out] IDigitsKeyListener** ret);
@@ -40,7 +40,7 @@ module
          * that appear in the specified String.  Note that not all characters
          * may be available on every keyboard.
          */
-        GetInstanceEx2(
+        GetInstance(
             [in] String accepted,
             [out] IDigitsKeyListener** ret);
 

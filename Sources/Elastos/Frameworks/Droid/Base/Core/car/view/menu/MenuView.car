@@ -75,7 +75,7 @@ module
              * @param enabled Whether the item view should be enabled.
              */
             // duplicate with IView::SetEnabled, so rename to SetEnabledEx
-            SetEnabledEx(
+            SetEnabled(
                 [in] Boolean enabled);
 
             /**

@@ -2,8 +2,8 @@
 #include "net/CMailTo.h"
 #include "net/Uri.h"
 #include <errno.h>
-#include <elastos/StringUtils.h>
-#include <Elastos.Core.h>
+#include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::StringUtils;
 
@@ -99,7 +99,7 @@ ECode CCMailTo::Parse(
     }
 
     *result = m;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

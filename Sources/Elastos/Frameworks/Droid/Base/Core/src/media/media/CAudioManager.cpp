@@ -1,9 +1,9 @@
 
 #include "media/CAudioManager.h"
 #include "R.h"
-#include <elastos/List.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "os/CBinder.h"
 #include "os/SystemClock.h"
 #include "os/CLooperHelper.h"
@@ -40,7 +40,7 @@ using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -648,10 +648,10 @@ ECode CAudioManager::IsStreamMute(
 ECode CAudioManager::SetMasterMute(
     /* [in] */ Boolean state)
 {
-    return SetMasterMuteEx(state, FLAG_SHOW_UI);
+    return SetMasterMute(state, FLAG_SHOW_UI);
 }
 
-ECode CAudioManager::SetMasterMuteEx(
+ECode CAudioManager::SetMasterMute(
     /* [in] */ Boolean state,
     /* [in] */ Int32 flags)
 {
@@ -1086,7 +1086,7 @@ ECode CAudioManager::PlaySoundEffect(
     return NOERROR;
 }
 
-ECode CAudioManager::PlaySoundEffectEx(
+ECode CAudioManager::PlaySoundEffect(
     /* [in] */ Int32 effectType,
     /* [in] */ Float volume)
 {
@@ -1638,7 +1638,7 @@ ECode CAudioManager::GetRingtonePlayer(
         return E_REMOTE_EXCEPTION;
     }
 
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1773,7 +1773,7 @@ ECode CAudioManager::GetAudioDevices(
     }
 
     *result = audioDevList;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1827,7 +1827,7 @@ ECode CAudioManager::GetActiveAudioDevices(
     }
 
     *result = audioDevList;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

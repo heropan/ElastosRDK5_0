@@ -17,7 +17,7 @@ ECode CAlteredCharSequenceHelper::Make(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IAlteredCharSequence> acs = CAlteredCharSequence::Make(source, sub, substart, subend);
     *ret = acs;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

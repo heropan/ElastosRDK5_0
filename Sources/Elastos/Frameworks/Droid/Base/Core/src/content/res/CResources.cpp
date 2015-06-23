@@ -9,9 +9,9 @@
 #include "content/pm/CActivityInfoHelper.h"
 #include "os/Build.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Libcore::ICU::INativePluralRulesHelper;
 using Libcore::ICU::CNativePluralRulesHelper;
@@ -112,11 +112,11 @@ ECode CResources::Theme::ObtainStyledAttributes(
     FAIL_RETURN(CAssetManager::ApplyStyle(mTheme, 0, 0, 0, *attrs,
             array->mData, array->mIndices, &result));
     *styles = (ITypedArray*)array;
-    INTERFACE_ADDREF(*styles);
+    REFCOUNT_ADD(*styles);
     return NOERROR;
 }
 
-ECode CResources::Theme::ObtainStyledAttributesEx(
+ECode CResources::Theme::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
@@ -158,11 +158,11 @@ ECode CResources::Theme::ObtainStyledAttributesEx(
     //     System.out.println(s);
     // }
     *styles = (ITypedArray*)array;
-    INTERFACE_ADDREF(*styles);
+    REFCOUNT_ADD(*styles);
     return NOERROR;
 }
 
-ECode CResources::Theme::ObtainStyledAttributesEx2(
+ECode CResources::Theme::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -220,7 +220,7 @@ ECode CResources::Theme::ObtainStyledAttributesEx2(
     //     System.out.println(s);
     // }
     *styles = (ITypedArray*)array;
-    INTERFACE_ADDREF(*styles);
+    REFCOUNT_ADD(*styles);
     return NOERROR;
 }
 
@@ -342,7 +342,7 @@ ECode CResources::GetText(
     AutoPtr<ICharSequence> temp = mAssets->GetResourceText(id);
     if (temp != NULL) {
         *seq = temp;
-        INTERFACE_ADDREF(*seq);
+        REFCOUNT_ADD(*seq);
         return NOERROR;
     }
 
@@ -367,14 +367,14 @@ ECode CResources::GetQuantityText(
     AutoPtr<ICharSequence> temp = mAssets->GetResourceBagText(id, AttrForQuantityCode(value));
     if (temp != NULL) {
         *csq = temp;
-        INTERFACE_ADDREF(*csq);
+        REFCOUNT_ADD(*csq);
         return NOERROR;
     }
 
     temp = mAssets->GetResourceBagText(id, ID_OTHER);
     if (temp != NULL) {
         *csq = temp;
-        INTERFACE_ADDREF(*csq);
+        REFCOUNT_ADD(*csq);
         return NOERROR;
     }
 
@@ -461,7 +461,7 @@ ECode CResources::GetString(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-ECode CResources::GetStringEx(
+ECode CResources::GetString(
     /* [in] */ Int32 id,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
@@ -482,7 +482,7 @@ ECode CResources::GetStringEx(
     return f->ToString(str);
 }
 
-ECode CResources::GetQuantityStringEx(
+ECode CResources::GetQuantityString(
     /* [in] */ Int32 id,
     /* [in] */ Int32 quantity,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
@@ -522,7 +522,7 @@ ECode CResources::GetQuantityString(
     return ec;
 }
 
-ECode CResources::GetTextEx(
+ECode CResources::GetText(
     /* [in] */ Int32 id,
     /* [in] */ ICharSequence* def,
     /* [out] */ ICharSequence** csq)
@@ -538,7 +538,7 @@ ECode CResources::GetTextEx(
     }
     else *csq = def;
 
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 
@@ -552,7 +552,7 @@ ECode CResources::GetTextArray(
     AutoPtr< ArrayOf<ICharSequence*> > temp = mAssets->GetResourceTextArray(id);
     if (temp) {
         *seqs = temp;
-        INTERFACE_ADDREF(*seqs);
+        REFCOUNT_ADD(*seqs);
         return NOERROR;
     }
 
@@ -570,7 +570,7 @@ ECode CResources::GetStringArray(
     AutoPtr< ArrayOf<String> > temp = mAssets->GetResourceStringArray(id);
     if (temp) {
         *strs = temp;
-        INTERFACE_ADDREF(*strs);
+        REFCOUNT_ADD(*strs);
         return NOERROR;
     }
 
@@ -615,7 +615,7 @@ ECode CResources::ObtainTypedArray(
     (*temp->mIndices)[0] = 0;
 
     *array = (ITypedArray*)temp.Get();
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -871,10 +871,10 @@ ECode CResources::OpenRawResource(
 {
     VALIDATE_NOT_NULL(res);
     Mutex::Autolock lock(mTmpValueLock);
-    return OpenRawResourceEx(id, (ITypedValue*)mTmpValue.Get(), res);
+    return OpenRawResource(id, (ITypedValue*)mTmpValue.Get(), res);
 }
 
-ECode CResources::OpenRawResourceEx(
+ECode CResources::OpenRawResource(
     /* [in] */ Int32 id,
     /* [in] */ ITypedValue* value,
     /* [out] */ IInputStream** res)
@@ -886,7 +886,7 @@ ECode CResources::OpenRawResourceEx(
 //    try {
     String str;
     ((CTypedValue*)value)->mString->ToString(&str);
-    return mAssets->OpenNonAssetEx3(
+    return mAssets->OpenNonAsset(
             ((CTypedValue*)value)->mAssetCookie,
             str, IAssetManager::ACCESS_STREAMING, res);
 //    } catch (Exception e) {
@@ -910,7 +910,7 @@ ECode CResources::OpenRawResourceFd(
 //    try {
     String str;
     mTmpValue->mString->ToString(&str);
-    return mAssets->OpenNonAssetFdEx(
+    return mAssets->OpenNonAssetFd(
             mTmpValue->mAssetCookie, str, des);
 //    } catch (Exception e) {
 //        NotFoundException rnf = new NotFoundException(
@@ -949,7 +949,7 @@ ECode CResources::GetValueForDensity(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-ECode CResources::GetValueEx(
+ECode CResources::GetValue(
     /* [in] */ const String& name,
     /* [in, out] */ ITypedValue* outValue,
     /* [in] */ Boolean resolveRefs)
@@ -971,7 +971,7 @@ ECode CResources::NewTheme(
     VALIDATE_NOT_NULL(theme);
 
     *theme = new CResources::Theme(this);
-    INTERFACE_ADDREF(*theme);
+    REFCOUNT_ADD(*theme);
     return NOERROR;
 }
 
@@ -998,7 +998,7 @@ ECode CResources::ObtainAttributes(
     temp->mXml = parser;
 
     *array = (ITypedArray*)temp;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
 
     return NOERROR;
 }
@@ -1007,10 +1007,10 @@ ECode CResources::UpdateConfiguration(
     /* [in] */ IConfiguration* config,
     /* [in] */ IDisplayMetrics* metrics)
 {
-    return UpdateConfigurationEx(config, metrics, NULL);
+    return UpdateConfiguration(config, metrics, NULL);
 }
 
-ECode CResources::UpdateConfigurationEx(
+ECode CResources::UpdateConfiguration(
     /* [in] */ IConfiguration* config,
     /* [in] */ IDisplayMetrics* metrics,
     /* [in] */ ICompatibilityInfo* compat)
@@ -1175,7 +1175,7 @@ void CResources::UpdateSystemConfiguration(
     /* [in] */ ICompatibilityInfo* compat)
 {
     if (mSystem != NULL) {
-        mSystem->UpdateConfigurationEx(config, metrics, compat);
+        mSystem->UpdateConfiguration(config, metrics, compat);
         //Log.i(TAG, "Updated system resources " + mSystem
         //        + ": " + mSystem.getConfiguration());
     }
@@ -1196,7 +1196,7 @@ ECode CResources::GetDisplayMetrics(
     if (DEBUG_CONFIG) Slogger::V(TAG, "Returning DisplayMetrics: %d x %d %f",
             mMetrics->mWidthPixels, mMetrics->mHeightPixels, mMetrics->mDensity);
     *metrics = (IDisplayMetrics*)mMetrics.Get();
-    INTERFACE_ADDREF(*metrics);
+    REFCOUNT_ADD(*metrics);
     return NOERROR;
 }
 
@@ -1206,7 +1206,7 @@ ECode CResources::GetConfiguration(
     VALIDATE_NOT_NULL(config);
 
     *config = (IConfiguration*)mConfiguration.Get();
-    INTERFACE_ADDREF(*config);
+    REFCOUNT_ADD(*config);
     return NOERROR;
 }
 
@@ -1217,7 +1217,7 @@ ECode CResources::GetCompatibilityInfo(
 
     *ci = mCompatibilityInfo != NULL ? mCompatibilityInfo.Get()
             : CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO.Get();
-    INTERFACE_ADDREF(*ci);
+    REFCOUNT_ADD(*ci);
     return NOERROR;
 }
 
@@ -1458,7 +1458,7 @@ ECode CResources::GetAssets(
     VALIDATE_NOT_NULL(manager);
 
     *manager = (IAssetManager*)mAssets.Get();
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -1561,7 +1561,7 @@ ECode CResources::LoadDrawable(
     if (dr != NULL) {
         dr->SetResId(id);
         *drawable = dr;
-        INTERFACE_ADDREF(*drawable);
+        REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
 
@@ -1586,7 +1586,7 @@ ECode CResources::LoadDrawable(
     }
 
     if (cs != NULL) {
-        cs->NewDrawableEx((IResources*)this, (IDrawable**)&dr);
+        cs->NewDrawable((IResources*)this, (IDrawable**)&dr);
     }
     else {
         if (isColorDrawable) {
@@ -1648,7 +1648,7 @@ ECode CResources::LoadDrawable(
             else {
                 // try {
                 AutoPtr<IInputStream> is;
-                ECode ec = mAssets->OpenNonAssetEx3(typedValue->mAssetCookie, file,
+                ECode ec = mAssets->OpenNonAsset(typedValue->mAssetCookie, file,
                     IAssetManager::ACCESS_STREAMING, (IInputStream**)&is);
                 if (FAILED(ec)) {
                     Slogger::E(TAG, "File %s from drawable resource ID #0x%08x", file.string(), id);
@@ -1718,7 +1718,7 @@ ECode CResources::LoadDrawable(
 
     if (dr != NULL) dr->SetResId(id);
     *drawable = dr;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -1742,7 +1742,7 @@ AutoPtr<IDrawable> CResources::GetCachedDrawable(
         //        Integer.toHexString(((Integer)key).intValue())
         //        + " in " + this + ": " + entry);
 
-        drawable->NewDrawableEx((IResources*)this, (IDrawable**)&dr);
+        drawable->NewDrawable((IResources*)this, (IDrawable**)&dr);
     }
     else {  // our entry has been purged
         drawableCache.Erase(it);
@@ -1785,7 +1785,7 @@ ECode CResources::LoadColorStateList(
 
         if (csl != NULL) {
             *stateList = csl;
-            INTERFACE_ADDREF(*stateList)
+            REFCOUNT_ADD(*stateList)
             return NOERROR;
         }
 
@@ -1802,14 +1802,14 @@ ECode CResources::LoadColorStateList(
         }
 
         *stateList = csl;
-        INTERFACE_ADDREF(*stateList)
+        REFCOUNT_ADD(*stateList)
         return NOERROR;
     }
 
     csl = GetCachedColorStateList(key);
     if (csl != NULL) {
         *stateList = csl;
-        INTERFACE_ADDREF(*stateList)
+        REFCOUNT_ADD(*stateList)
         return NOERROR;
     }
 
@@ -1823,7 +1823,7 @@ ECode CResources::LoadColorStateList(
 
     if (csl != NULL) {
         *stateList = csl;
-        INTERFACE_ADDREF(*stateList)
+        REFCOUNT_ADD(*stateList)
         return NOERROR;
     }
 
@@ -1891,7 +1891,7 @@ ECode CResources::LoadColorStateList(
     }
 
     *stateList = csl;
-    INTERFACE_ADDREF(*stateList);
+    REFCOUNT_ADD(*stateList);
     return NOERROR;
 }
 
@@ -1975,7 +1975,7 @@ ECode CResources::LoadXmlResourceParser(
 
                 AutoPtr<IXmlResourceParser> p = (*mCachedXmlBlocks)[i]->NewParser(filename);
                 *parser = p;
-                INTERFACE_ADDREF(*parser);
+                REFCOUNT_ADD(*parser);
                 return NOERROR;
             }
         }
@@ -2012,7 +2012,7 @@ ECode CResources::LoadXmlResourceParser(
             }
             AutoPtr<IXmlResourceParser> p = block->NewParser(filename);
             *parser = p;
-            INTERFACE_ADDREF(*parser);
+            REFCOUNT_ADD(*parser);
             return NOERROR;
         }
         // } catch (Exception e) {

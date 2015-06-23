@@ -134,7 +134,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     // @Deprecated
-    CARAPI AddToGroupEx(
+    CARAPI AddToGroup(
         /* [in] */ IContentResolver* resolver,
         /* [in] */ Int64 personId,
         /* [in] */ Int64 groupId,

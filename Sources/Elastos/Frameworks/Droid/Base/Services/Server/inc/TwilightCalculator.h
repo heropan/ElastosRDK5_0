@@ -3,7 +3,7 @@
 #define __TWILIGHTCALCULATOR_H__
 
 #include "ext/frameworkdef.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 

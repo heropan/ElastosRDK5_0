@@ -4,9 +4,9 @@
 
 #include "_CLocaleSpan.h"
 #include "text/style/LocaleSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/style/MetricAffectingSpanMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
+
 
 using Libcore::ICU::ILocale;
 

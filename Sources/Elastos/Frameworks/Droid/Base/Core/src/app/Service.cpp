@@ -1,8 +1,8 @@
 
 #include "os/Build.h"
 #include "app/Service.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 #include <R.h>
 #ifdef DROID_CORE
 #include "content/CComponentName.h"
@@ -156,7 +156,7 @@ ECode Service::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode Service::GetApplication(
     VALIDATE_NOT_NULL(application);
 
     *application = mApplication;
-    INTERFACE_ADDREF(*application);
+    REFCOUNT_ADD(*application);
 
     return NOERROR;
 }
@@ -288,10 +288,10 @@ ECode Service::OnTaskRemoved(
 
 ECode Service::StopSelf()
 {
-    return StopSelfEx(-1);
+    return StopSelf(-1);
 }
 
-ECode Service::StopSelfEx(
+ECode Service::StopSelf(
     /* [in] */ Int32 startId)
 {
     if (mActivityManager == NULL) {
@@ -424,7 +424,7 @@ ECode Service::GetBaseContext(
     VALIDATE_NOT_NULL(ctx);
 
     *ctx = mBase;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
 
     return NOERROR;
 }
@@ -491,12 +491,12 @@ ECode Service::GetString(
     return mBase->GetString(resId, str);
 }
 
-ECode Service::GetStringEx(
+ECode Service::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
-    return mBase->GetStringEx(resId, formatArgs, str);
+    return mBase->GetString(resId, formatArgs, str);
 }
 
 ECode Service::SetTheme(
@@ -524,30 +524,30 @@ ECode Service::ObtainStyledAttributes(
     return mBase->ObtainStyledAttributes(attrs, styles);
 }
 
-ECode Service::ObtainStyledAttributesEx(
+ECode Service::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return mBase->ObtainStyledAttributesEx(resid, attrs, styles);
+    return mBase->ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode Service::ObtainStyledAttributesEx2(
+ECode Service::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return mBase->ObtainStyledAttributesEx2(set, attrs, styles);
+    return mBase->ObtainStyledAttributes(set, attrs, styles);
 }
 
-ECode Service::ObtainStyledAttributesEx3(
+ECode Service::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes,
     /* [out] */ ITypedArray** styles)
 {
-    return mBase->ObtainStyledAttributesEx3(set, attrs,
+    return mBase->ObtainStyledAttributes(set, attrs,
             defStyleAttr, defStyleRes, styles);
 }
 
@@ -679,14 +679,14 @@ ECode Service::OpenOrCreateDatabase(
     return mBase->OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode Service::OpenOrCreateDatabaseEx(
+ECode Service::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return mBase->OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return mBase->OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode Service::DeleteDatabase(
@@ -739,10 +739,10 @@ ECode Service::SetWallpaper(
     return mBase->SetWallpaper(bitmap);
 }
 
-ECode Service::SetWallpaperEx(
+ECode Service::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return mBase->SetWallpaperEx(data);
+    return mBase->SetWallpaper(data);
 }
 
 ECode Service::ClearWallpaper()
@@ -756,11 +756,11 @@ ECode Service::StartActivity(
     return mBase->StartActivity(intent);
 }
 
-ECode Service::StartActivityEx(
+ECode Service::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return mBase->StartActivityEx(intent, options);
+    return mBase->StartActivity(intent, options);
 }
 
 ECode Service::StartActivityAsUser(
@@ -770,12 +770,12 @@ ECode Service::StartActivityAsUser(
     return mBase->StartActivityAsUser(intent, user);
 }
 
-ECode Service::StartActivityAsUserEx(
+ECode Service::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
 {
-    return mBase->StartActivityAsUserEx(intent, options, user);
+    return mBase->StartActivityAsUser(intent, options, user);
 }
 
 ECode Service::StartActivities(
@@ -784,11 +784,11 @@ ECode Service::StartActivities(
     return mBase->StartActivities(intents);
 }
 
-ECode Service::StartActivitiesEx(
+ECode Service::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
-    return mBase->StartActivitiesEx(intents, options);
+    return mBase->StartActivities(intents, options);
 }
 
 ECode Service::StartActivitiesAsUser(
@@ -810,7 +810,7 @@ ECode Service::StartIntentSender(
         flagsValues, extraFlags);
 }
 
-ECode Service::StartIntentSenderEx(
+ECode Service::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -818,7 +818,7 @@ ECode Service::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return mBase->StartIntentSenderEx(intent, fillInIntent, flagsMask,
+    return mBase->StartIntentSender(intent, fillInIntent, flagsMask,
         flagsValues, extraFlags, options);
 }
 
@@ -828,11 +828,11 @@ ECode Service::SendBroadcast(
     return mBase->SendBroadcast(intent);
 }
 
-ECode Service::SendBroadcastEx(
+ECode Service::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return mBase->SendBroadcastEx(intent, receiverPermission);
+    return mBase->SendBroadcast(intent, receiverPermission);
 }
 
 ECode Service::SendOrderedBroadcast(
@@ -842,7 +842,7 @@ ECode Service::SendOrderedBroadcast(
     return mBase->SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode Service::SendOrderedBroadcastEx(
+ECode Service::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -851,7 +851,7 @@ ECode Service::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return mBase->SendOrderedBroadcastEx(intent, receiverPermission, resultReceiver, scheduler,
+    return mBase->SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler,
         initialCode, initialData, initialExtras);
 }
 
@@ -862,12 +862,12 @@ ECode Service::SendBroadcastAsUser(
     return mBase->SendBroadcastAsUser(intent, user);
 }
 
-ECode Service::SendBroadcastAsUserEx(
+ECode Service::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return mBase->SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return mBase->SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode Service::SendOrderedBroadcastAsUser(
@@ -943,14 +943,14 @@ ECode Service::RegisterReceiver(
     return mBase->RegisterReceiver(receiver,filter,intent);
 }
 
-ECode Service::RegisterReceiverEx(
+ECode Service::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** intent)
 {
-    return mBase->RegisterReceiverEx(receiver,filter,broadcastPermission,scheduler, intent);
+    return mBase->RegisterReceiver(receiver,filter,broadcastPermission,scheduler, intent);
 }
 
 ECode Service::RegisterReceiverAsUser(
@@ -1011,14 +1011,14 @@ ECode Service::BindService(
     return mBase->BindService(service, conn, flags, succeeded);
 }
 
-ECode Service::BindServiceEx(
+ECode Service::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return mBase->BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return mBase->BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode Service::UnbindService(
@@ -1054,7 +1054,7 @@ ECode Service::GetSystemService(
                     THIS_PROBE(IContext), (ILayoutInflater**)&mInflater);
         }
         *object = mInflater;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
 
@@ -1148,7 +1148,7 @@ ECode Service::CheckCallingOrSelfUriPermission(
     return mBase->CheckCallingOrSelfUriPermission(uri, modeFlags, permissionId);
 }
 
-ECode Service::CheckUriPermissionEx(
+ECode Service::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1157,7 +1157,7 @@ ECode Service::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32 * result)
 {
-    return mBase->CheckUriPermissionEx(uri, readPermission, writePermission,
+    return mBase->CheckUriPermission(uri, readPermission, writePermission,
                     pid, uid, modeFlags, result);
 }
 
@@ -1187,7 +1187,7 @@ ECode Service::EnforceCallingOrSelfUriPermission(
     return mBase->EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode Service::EnforceUriPermissionEx(
+ECode Service::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1196,7 +1196,7 @@ ECode Service::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return mBase->EnforceUriPermissionEx(uri, readPermission, writePermission,
+    return mBase->EnforceUriPermission(uri, readPermission, writePermission,
             pid, uid, modeFlags, message);
 }
 

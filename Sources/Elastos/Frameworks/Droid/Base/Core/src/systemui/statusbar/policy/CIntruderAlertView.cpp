@@ -66,7 +66,7 @@ ECode CIntruderAlertView::GetChildAtPosition(
     VALIDATE_NOT_NULL(result);
     AutoPtr<IView> tmpView = IntruderAlertView::GetChildAtPosition(ev);
     *result = tmpView.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -77,7 +77,7 @@ ECode CIntruderAlertView::GetChildContentView(
     VALIDATE_NOT_NULL(result);
     AutoPtr<IView> tmpView = IntruderAlertView::GetChildContentView(v);
     *result = tmpView.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

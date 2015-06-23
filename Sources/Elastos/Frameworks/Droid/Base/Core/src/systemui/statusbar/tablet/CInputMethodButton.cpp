@@ -58,10 +58,10 @@ ECode CInputMethodButton::SetScreenLocked(
     return InputMethodButton::SetScreenLocked(available);
 }
 
-ECode CInputMethodButton::SetAlphaEx(
+ECode CInputMethodButton::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    return InputMethodButton::SetAlphaEx(alpha);
+    return InputMethodButton::SetAlpha(alpha);
 }
 
 }// namespace Tablet

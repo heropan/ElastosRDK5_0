@@ -3,8 +3,8 @@
 
 #include "_CTimeAnimator.h"
 #include "animation/TimeAnimator.h"
-#include "animation/AnimatorMacro.h"
-#include "animation/ValueAnimatorMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

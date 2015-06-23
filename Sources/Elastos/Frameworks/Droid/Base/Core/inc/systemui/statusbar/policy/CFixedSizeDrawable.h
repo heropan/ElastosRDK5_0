@@ -3,7 +3,7 @@
 #define __CFIXEDSIZEDRAWABLE_H__
 
 #include "_CFixedSizeDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 #include "systemui/statusbar/policy/FixedSizeDrawable.h"
 
 namespace Elastos {

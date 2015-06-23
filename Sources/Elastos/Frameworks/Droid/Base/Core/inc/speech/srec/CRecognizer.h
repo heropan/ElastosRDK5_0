@@ -25,7 +25,7 @@ public:
         /* [in] */ Boolean isLast,
         /* [out] */ Int32* ret);
 
-    CARAPI PutAudioEx(
+    CARAPI PutAudio(
         /* [in] */ IInputStream* audio);
 
     CARAPI GetResultCount(

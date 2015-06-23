@@ -5,9 +5,9 @@
 #include "util/XmlUtils.h"
 #include "R.h"
 #include <R.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -1135,7 +1135,7 @@ ECode DatabaseHelper::OnUpgrade(
         AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(2);
         (*args)[0] = String("_id");
         (*args)[1] = String("value");
-        db->QueryEx2(TABLE_SECURE, args, String("name='lockscreen.disabled'"),
+        db->Query(TABLE_SECURE, args, String("name='lockscreen.disabled'"),
                 NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
         // only set default if it has not yet been set
         Int32 count;
@@ -1758,7 +1758,7 @@ ECode DatabaseHelper::UpgradeLockPatternLocation(
     AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(2);
     (*args)[0] = String("_id");
     (*args)[1] = String("value");
-    FAIL_RETURN(db->QueryEx2(TABLE_SYSTEM, args, String("name='lock_pattern'"),
+    FAIL_RETURN(db->Query(TABLE_SYSTEM, args, String("name='lock_pattern'"),
             NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c))
     Int32 count;
     if (c->GetCount(&count), count > 0) {
@@ -1800,7 +1800,7 @@ ECode DatabaseHelper::UpgradeScreenTimeoutFromNever(
     AutoPtr< ArrayOf<String> > args2 = ArrayOf<String>::Alloc(2);
     (*args2)[0] = ISettingsSystem::SCREEN_OFF_TIMEOUT;
     (*args2)[1] = String("-1");
-    FAIL_RETURN(db->QueryEx2(TABLE_SYSTEM, args1, String("name=? AND value=?"),
+    FAIL_RETURN(db->Query(TABLE_SYSTEM, args1, String("name=? AND value=?"),
             args2, String(NULL), String(NULL), String(NULL), (ICursor**)&c))
 
     AutoPtr<ISQLiteStatement> stmt;
@@ -1931,10 +1931,10 @@ ECode DatabaseHelper::LoadBookmarks(
         }
 
         String pkg, cls, shortcutStr, category;
-        parser->GetAttributeValueEx(String(NULL), String("package"), &pkg);
-        parser->GetAttributeValueEx(String(NULL), String("class"), &cls);
-        parser->GetAttributeValueEx(String(NULL), String("shortcut"), &shortcutStr);
-        parser->GetAttributeValueEx(String(NULL), String("category"), &category);
+        parser->GetAttributeValue(String(NULL), String("package"), &pkg);
+        parser->GetAttributeValue(String(NULL), String("class"), &cls);
+        parser->GetAttributeValue(String(NULL), String("shortcut"), &shortcutStr);
+        parser->GetAttributeValue(String(NULL), String("category"), &category);
 
         Int32 shortcutValue = shortcutStr.GetChar(0);
         if (TextUtils::IsEmpty(shortcutStr)) {
@@ -2488,7 +2488,7 @@ void DatabaseHelper::LoadGlobalSettings(
 
     // Data roaming default, based on build
     String dataroaming;
-    prop->GetEx(String("ro.com.android.dataroaming"), String("false"), &dataroaming);
+    prop->Get(String("ro.com.android.dataroaming"), String("false"), &dataroaming);
     AutoPtr<IInteger32> integer3;
     CInteger32::New(dataroaming.EqualsIgnoreCase("true")? 1 : 0, (IInteger32**)&integer3);
     LoadSetting(stmt, ISettingsGlobal::DATA_ROAMING, integer3);
@@ -2515,7 +2515,7 @@ void DatabaseHelper::LoadGlobalSettings(
 
     // Mobile Data default, based on build
     String mobiledata;
-    prop->GetEx(String("ro.com.android.mobiledata"), String("true"), &mobiledata);
+    prop->Get(String("ro.com.android.mobiledata"), String("true"), &mobiledata);
     AutoPtr<IInteger32> integer4;
     CInteger32::New(mobiledata.EqualsIgnoreCase("true") ? 1 : 0, (IInteger32**)&integer4);
     LoadSetting(stmt, ISettingsGlobal::MOBILE_DATA, integer4);
@@ -2681,7 +2681,7 @@ String DatabaseHelper::GetStringValueFromTable(
     // try {
     AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
     (*args)[0] = ISettingsSystem::VALUE;
-    db->QueryEx2(table, args, String("name='") + name + String("'"),
+    db->Query(table, args, String("name='") + name + String("'"),
             NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
     Boolean result;
     if (c != NULL && (c->MoveToFirst(&result), result)) {

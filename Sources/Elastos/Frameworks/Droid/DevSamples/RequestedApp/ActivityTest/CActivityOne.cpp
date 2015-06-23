@@ -3,7 +3,7 @@
 #include "R.h"
 #include <elautoptr.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
@@ -71,7 +71,7 @@ ECode CActivityOne::MyListener::OnClick(
 {
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
-    intent->SetClassNameEx(String("ActivityTest"), String("ActivityTest.CActivityTwo"));
+    intent->SetClassName(String("ActivityTest"), String("ActivityTest.CActivityTwo"));
     ECode ec = mHost->StartActivity(intent);
     // if (FAILED(mHost->StartActivity(intent))) {
     //     Slogger::E("CActivityOne", "StartActivity---CActivityTwo---failed");

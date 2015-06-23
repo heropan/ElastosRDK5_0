@@ -4,7 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elautoptr.h>
 
 using Elastos::Core::ICharSequence;
@@ -710,7 +710,7 @@ public:
      * Allocates a new FontMetrics object, and then calls getFontMetrics(fm)
      * with it, returning the object.
      */
-    virtual CARAPI GetFontMetricsEx(
+    virtual CARAPI GetFontMetrics(
         /* [out] */ IPaintFontMetrics** metrics);
 
     /**
@@ -727,7 +727,7 @@ public:
         /* [in] */ IPaintFontMetricsInt* fmi,
         /* [out] */ Int32* spacing);
 
-    virtual CARAPI GetFontMetricsIntEx(
+    virtual CARAPI GetFontMetricsInt(
         /* [out] */ IPaintFontMetricsInt** metrics);
 
     /**
@@ -762,7 +762,7 @@ public:
      * @param end   1 beyond the index of the last character to measure
      * @return      The width of the text
      */
-    virtual CARAPI MeasureTextEx(
+    virtual CARAPI MeasureText(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -774,7 +774,7 @@ public:
      * @param text  The text to measure. Cannot be null.
      * @return      The width of the text
      */
-    virtual CARAPI MeasureTextEx2(
+    virtual CARAPI MeasureText(
         /* [in] */ const String& text,
         /* [out] */ Float* width);
 
@@ -786,7 +786,7 @@ public:
      * @param end   1 beyond the index of the last character to measure
      * @return      The width of the text
      */
-    virtual CARAPI MeasureTextEx3(
+    virtual CARAPI MeasureText(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -831,7 +831,7 @@ public:
      * @return The number of chars that were measured. Will always be <=
      *         abs(end - start).
      */
-    virtual CARAPI BreakTextEx(
+    virtual CARAPI BreakText(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -856,7 +856,7 @@ public:
      * @return The number of chars that were measured. Will always be <=
      *         abs(count).
      */
-    virtual CARAPI BreakTextEx2(
+    virtual CARAPI BreakText(
         /* [in] */ const String& text,
         /* [in] */ Boolean measureForwards,
         /* [in] */ Float maxWidth,
@@ -890,7 +890,7 @@ public:
      *                 Must be at least a large as (end - start).
      * @return         the actual number of widths returned.
      */
-    virtual CARAPI GetTextWidthsEx(
+    virtual CARAPI GetTextWidths(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -907,7 +907,7 @@ public:
      *               Must be at least a large as the text.
      * @return       the number of unichars in the specified text.
      */
-    virtual CARAPI GetTextWidthsEx2(
+    virtual CARAPI GetTextWidths(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -922,7 +922,7 @@ public:
      *               Must be at least a large as the text.
      * @return       the number of unichars in the specified text.
      */
-    virtual CARAPI GetTextWidthsEx3(
+    virtual CARAPI GetTextWidths(
         /* [in] */ const String& text,
         /* [in] */ ArrayOf<Float>* widths,
         /* [out] */ Int32* number);
@@ -981,7 +981,7 @@ public:
      * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int, int)
      * @hide
      */
-    virtual CARAPI GetTextRunAdvancesEx(
+    virtual CARAPI GetTextRunAdvances(
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
@@ -1000,7 +1000,7 @@ public:
      * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
      * @hide
      */
-    virtual CARAPI GetTextRunAdvancesEx2(
+    virtual CARAPI GetTextRunAdvances(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1018,7 +1018,7 @@ public:
      * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
      * @hide
      */
-    virtual CARAPI GetTextRunAdvancesEx3(
+    virtual CARAPI GetTextRunAdvances(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1072,7 +1072,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI GetTextRunAdvancesEx4(
+    virtual CARAPI GetTextRunAdvances(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1126,7 +1126,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI GetTextRunAdvancesEx5(
+    virtual CARAPI GetTextRunAdvances(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1199,7 +1199,7 @@ public:
      * @return the offset of the next position, or -1
      * @hide
      */
-    virtual CARAPI GetTextRunCursorEx(
+    virtual CARAPI GetTextRunCursor(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
@@ -1234,7 +1234,7 @@ public:
      * @return the offset of the next position, or -1
      * @hide
      */
-    virtual CARAPI GetTextRunCursorEx2(
+    virtual CARAPI GetTextRunCursor(
         /* [in] */ const String& text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
@@ -1277,7 +1277,7 @@ public:
      * @param path  The path to receive the data describing the text. Must
      *              be allocated by the caller.
      */
-    virtual CARAPI GetTextPathEx(
+    virtual CARAPI GetTextPath(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1311,7 +1311,7 @@ public:
      * @param bounds Returns the unioned bounds of all the text. Must be
      *               allocated by the caller.
      */
-    virtual CARAPI GetTextBoundsEx(
+    virtual CARAPI GetTextBounds(
         /* [in] */ const ArrayOf<Char32>& text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,

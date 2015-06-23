@@ -41,7 +41,7 @@ ECode CNetworkState::GetNetworkInfo(
 {
     VALIDATE_NOT_NULL(networkInfo);
     *networkInfo = mNetworkInfo;
-    INTERFACE_ADDREF(*networkInfo);
+    REFCOUNT_ADD(*networkInfo);
     return NOERROR;
 }
 
@@ -50,7 +50,7 @@ ECode CNetworkState::GetLinkProperties(
 {
     VALIDATE_NOT_NULL(linkProperties);
     *linkProperties = mLinkProperties;
-    INTERFACE_ADDREF(*linkProperties);
+    REFCOUNT_ADD(*linkProperties);
     return NOERROR;
 }
 
@@ -59,7 +59,7 @@ ECode CNetworkState::GetLinkCapabilities(
 {
     VALIDATE_NOT_NULL(linkCapabilities);
     *linkCapabilities = mLinkCapabilities;
-    INTERFACE_ADDREF(*linkCapabilities);
+    REFCOUNT_ADD(*linkCapabilities);
     return NOERROR;
 }
 

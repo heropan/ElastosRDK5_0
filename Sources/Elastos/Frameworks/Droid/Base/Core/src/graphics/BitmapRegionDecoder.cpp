@@ -407,7 +407,7 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
 
    if (tileBitmap != NULL) {
         *bitmap = tileBitmap;
-        INTERFACE_ADDREF(*bitmap);
+        REFCOUNT_ADD(*bitmap);
         return NOERROR;
     }
 
@@ -419,7 +419,7 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
     AutoPtr<CBitmap> bitmapObj;
     FAIL_RETURN(GraphicsNative::CreateBitmap(nativeBitmap, buff, FALSE, NULL, NULL, -1, (CBitmap**)&bitmapObj));
     *bitmap = (IBitmap*)bitmapObj.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 

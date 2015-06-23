@@ -13,7 +13,7 @@
 #include "view/LayoutInflater.h"
 #include "R.h"
 #include "net/Uri.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 //#include "provider/CBrowser.h"
 #include "webkit/DebugFlags.h"
 
@@ -178,7 +178,7 @@ ECode CallbackProxy::InnerDialogOnClickListener::OnClick(
 //          CallbackProxy::InnerDialogOnClickListenerEx
 //===============================================================
 
-CallbackProxy::InnerDialogOnClickListenerEx::InnerDialogOnClickListenerEx(
+CallbackProxy::InnerDialogOnClickListenerEx::InnerDialogOnClickListener(
     /* [in] */ IJsPromptResult* res,
     /* [in] */ IEditText* text,
     /* [in] */ CallbackProxy* owner)
@@ -198,7 +198,7 @@ ECode CallbackProxy::InnerDialogOnClickListenerEx::OnClick(
     mEditText->GetText((ICharSequence**)&text);
     String str;
     text->ToString(&str);
-    return mRes->ConfirmEx(str);
+    return mRes->Confirm(str);
 }
 
 //===============================================================
@@ -701,7 +701,7 @@ ECode CallbackProxy::HandleMessage(
 
                 AutoPtr<IBrowserDownloadListener> bdl = IBrowserDownloadListener::Probe(mDownloadListener);
                 if (bdl != NULL) {
-                    bdl->OnDownloadStartEx(url,
+                    bdl->OnDownloadStart(url,
                          userAgent, contentDisposition, mimetype, referer, contentLength);
                 }
                 else {
@@ -875,10 +875,10 @@ ECode CallbackProxy::HandleMessage(
                     CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&builder);
                     AutoPtr<ICharSequence> title;
                     CStringWrapper::New(GetJsDialogTitle(url), (ICharSequence**)&title);
-                    builder->SetTitleEx(title);
+                    builder->SetTitle(title);
                     AutoPtr<ICharSequence> messageCS;
                     CStringWrapper::New(message, (ICharSequence**)&messageCS);
-                    builder->SetMessageEx(messageCS);
+                    builder->SetMessage(messageCS);
                     AutoPtr<IDialogInterfaceOnClickListener> clickListener = new InnerDialogOnClickListener(res, this);
                     builder->SetPositiveButton(R::string::ok, clickListener);
                     AutoPtr<IDialogInterfaceOnCancelListener> cancelListener = new InnerDialogOnCancelListener(res, this);
@@ -916,10 +916,10 @@ ECode CallbackProxy::HandleMessage(
                     CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&builder);
                     AutoPtr<ICharSequence> title;
                     CStringWrapper::New(GetJsDialogTitle(url), (ICharSequence**)&title);
-                    builder->SetTitleEx(title);
+                    builder->SetTitle(title);
                     AutoPtr<ICharSequence> messageCS;
                     CStringWrapper::New(message, (ICharSequence**)&messageCS);
-                    builder->SetMessageEx(messageCS);
+                    builder->SetMessage(messageCS);
                     AutoPtr<IDialogInterfaceOnClickListener> positive = new InnerDialogOnClickListener(res, this);
                     builder->SetPositiveButton(R::string::ok, positive);
                     AutoPtr<IDialogInterfaceOnClickListener> negative = new CancelClickListener(res, this);
@@ -978,9 +978,9 @@ ECode CallbackProxy::HandleMessage(
                     CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&builder);
                     AutoPtr<ICharSequence> title;
                     CStringWrapper::New(GetJsDialogTitle(url), (ICharSequence**)&title);
-                    builder->SetTitleEx(title);
+                    builder->SetTitle(title);
                     builder->SetView(view);
-                    AutoPtr<IDialogInterfaceOnClickListener> listener = new InnerDialogOnClickListenerEx(res, v, this);
+                    AutoPtr<IDialogInterfaceOnClickListener> listener = new InnerDialogOnClickListener(res, v, this);
                     builder->SetPositiveButton(R::string::ok, listener);
                     AutoPtr<IDialogInterfaceOnClickListener> clickListener = new CancelClickListener(res, this);
                     builder->SetNegativeButton(R::string::cancel, clickListener);
@@ -1022,12 +1022,12 @@ ECode CallbackProxy::HandleMessage(
                     AutoPtr<ICharSequence> messageCS;
                     CStringWrapper::New(message, (ICharSequence**)&messageCS);
                     args->Set(0, messageCS);
-                    mContext->GetStringEx(R::string::js_dialog_before_unload, args, &m);
+                    mContext->GetString(R::string::js_dialog_before_unload, args, &m);
                     AutoPtr<IAlertDialogBuilder> builder;
                     CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&builder);
                     AutoPtr<ICharSequence> _m;
                     CStringWrapper::New(m, (ICharSequence**)&_m);
-                    builder->SetMessageEx(_m);
+                    builder->SetMessage(_m);
                     AutoPtr<IDialogInterfaceOnClickListener> listener = new InnerDialogOnClickListener(res, this);
                     builder->SetPositiveButton(R::string::ok, listener);
                     AutoPtr<IDialogInterfaceOnClickListener> clickListener = new CancelClickListener(res, this);
@@ -1115,7 +1115,7 @@ ECode CallbackProxy::HandleMessage(
                 AutoPtr<IConsoleMessage> cm;
                 CConsoleMessage::New(message, sourceID, lineNumber, messageLevel, (IConsoleMessage**)&cm);
                 Boolean result = FALSE;
-                mWebChromeClient->OnConsoleMessageEx(cm, &result);
+                mWebChromeClient->OnConsoleMessage(cm, &result);
                 if (!result) {
                     // If false was returned the user did not provide their own console function so
                     //  we should output some default messages to the system log.
@@ -1236,7 +1236,7 @@ void CallbackProxy::SwitchOutDrawHistory()
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, SWITCH_OUT_HISTORY, (IMessage**)&msg);
+    mh->Obtain(this, SWITCH_OUT_HISTORY, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1266,7 +1266,7 @@ void CallbackProxy::OnPageStarted(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, PAGE_STARTED, (IMessage**)&msg);
+    mh->Obtain(this, PAGE_STARTED, (IMessage**)&msg);
     msg->SetObj(favicon);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
@@ -1291,7 +1291,7 @@ void CallbackProxy::OnPageFinished(
     AutoPtr<ICharSequence> urlCS;
     CStringWrapper::New(url, (ICharSequence**)&urlCS);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, PAGE_FINISHED, urlCS, (IMessage**)&msg);
+    mh->Obtain(this, PAGE_FINISHED, urlCS, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1320,7 +1320,7 @@ void CallbackProxy::OnReceivedError(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, REPORT_ERROR, (IMessage**)&msg);
+    mh->Obtain(this, REPORT_ERROR, (IMessage**)&msg);
     msg->SetArg1(errorCode);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
@@ -1344,7 +1344,7 @@ void CallbackProxy::OnFormResubmission(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, RESEND_POST_DATA, (IMessage**)&msg);
+    mh->Obtain(this, RESEND_POST_DATA, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutParcelable(String("resend"), IParcelable::Probe(resend));
@@ -1367,7 +1367,7 @@ Boolean CallbackProxy::ShouldOverrideUrlLoading(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, OVERRIDE_URL, (IMessage**)&msg);
+    mh->Obtain(this, OVERRIDE_URL, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("url"), url);
@@ -1394,7 +1394,7 @@ void CallbackProxy::OnReceivedHttpAuthRequest(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, AUTH_REQUEST, handler, (IMessage**)&msg);
+    mh->Obtain(this, AUTH_REQUEST, handler, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("host"), hostName);
@@ -1417,7 +1417,7 @@ void CallbackProxy::OnReceivedSslError(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, SSL_ERROR, (IMessage**)&msg);
+    mh->Obtain(this, SSL_ERROR, (IMessage**)&msg);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
     map->Put(String("handler"), handler);
@@ -1437,7 +1437,7 @@ void CallbackProxy::OnProceededAfterSslError(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, PROCEEDED_AFTER_SSL_ERROR, (IMessage**)&msg);
+    mh->Obtain(this, PROCEEDED_AFTER_SSL_ERROR, (IMessage**)&msg);
     msg->SetObj(error);
     Boolean result = FALSE;
     SendMessage(msg, &result);
@@ -1457,7 +1457,7 @@ void CallbackProxy::OnReceivedClientCertRequest(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, CLIENT_CERT_REQUEST, (IMessage**)&msg);
+    mh->Obtain(this, CLIENT_CERT_REQUEST, (IMessage**)&msg);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
     map->Put(String("handler"), handler);
@@ -1476,7 +1476,7 @@ void CallbackProxy::OnReceivedCertificate(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, RECEIVED_CERTIFICATE, certificate, (IMessage**)&msg);
+    mh->Obtain(this, RECEIVED_CERTIFICATE, certificate, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1496,7 +1496,7 @@ void CallbackProxy::DoUpdateVisitedHistory(
     AutoPtr<ICharSequence> urlCS;
     CStringWrapper::New(url, (ICharSequence**)&urlCS);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx6(this, UPDATE_VISITED, isReload ? 1 : 0, 0, urlCS, (IMessage**)&msg);
+    mh->Obtain(this, UPDATE_VISITED, isReload ? 1 : 0, 0, urlCS, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1520,7 +1520,7 @@ if (mWebViewClient == NULL) {
         AutoPtr<ICharSequence> urlCS;
         CStringWrapper::New(url, (ICharSequence**)&urlCS);
         AutoPtr<IMessage> msg;
-        mh->ObtainEx4(this, LOAD_RESOURCE, urlCS, (IMessage**)&msg);
+        mh->Obtain(this, LOAD_RESOURCE, urlCS, (IMessage**)&msg);
         Boolean result = FALSE;
         SendMessage(msg, &result);
     }
@@ -1540,7 +1540,7 @@ void CallbackProxy::OnUnhandledKeyEvent(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, ASYNC_KEYEVENTS, event, (IMessage**)&msg);
+    mh->Obtain(this, ASYNC_KEYEVENTS, event, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1558,7 +1558,7 @@ void CallbackProxy::OnScaleChanged(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, SCALE_CHANGED, (IMessage**)&msg);
+    mh->Obtain(this, SCALE_CHANGED, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutFloat(String("old"), oldScale);
@@ -1581,7 +1581,7 @@ void CallbackProxy::OnReceivedLoginRequest(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, AUTO_LOGIN, (IMessage**)&msg);
+    mh->Obtain(this, AUTO_LOGIN, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("realm"), realm);
@@ -1617,7 +1617,7 @@ Boolean CallbackProxy::OnDownloadStart(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, DOWNLOAD_FILE, (IMessage**)&msg);
+    mh->Obtain(this, DOWNLOAD_FILE, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("url"), url);
@@ -1652,9 +1652,9 @@ Boolean CallbackProxy::OnSavePassword(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> _resumeMsg;
-    mh->ObtainEx3(this, NOTIFY, (IMessage**)&_resumeMsg);
+    mh->Obtain(this, NOTIFY, (IMessage**)&_resumeMsg);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, SAVE_PASSWORD, _resumeMsg, (IMessage**)&msg);
+    mh->Obtain(this, SAVE_PASSWORD, _resumeMsg, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("host"), schemePlusHost);
@@ -1674,7 +1674,7 @@ void CallbackProxy::OnReceivedHttpAuthCredentials(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, AUTH_CREDENTIALS, (IMessage**)&msg);
+    mh->Obtain(this, AUTH_CREDENTIALS, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("host"), host);
@@ -1769,7 +1769,7 @@ void CallbackProxy::OnCloseWindow(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, CLOSE_WINDOW, IWebViewClassic::Probe(window), (IMessage**)&msg);
+    mh->Obtain(this, CLOSE_WINDOW, IWebViewClassic::Probe(window), (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1796,7 +1796,7 @@ void CallbackProxy::OnReceivedIcon(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, RECEIVED_ICON, icon, (IMessage**)&msg);
+    mh->Obtain(this, RECEIVED_ICON, icon, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1828,7 +1828,7 @@ void CallbackProxy::OnReceivedTouchIconUrl(
     AutoPtr<ICharSequence> urlCS;
     CStringWrapper::New(url, (ICharSequence**)&urlCS);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx6(this, RECEIVED_TOUCH_ICON_URL, precomposed ? 1 : 0, 0, urlCS, (IMessage**)&msg);
+    mh->Obtain(this, RECEIVED_TOUCH_ICON_URL, precomposed ? 1 : 0, 0, urlCS, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1847,7 +1847,7 @@ void CallbackProxy::OnReceivedTitle(
     AutoPtr<ICharSequence> titleCS;
     CStringWrapper::New(title, (ICharSequence**)&titleCS);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, RECEIVED_TITLE, titleCS, (IMessage**)&msg);
+    mh->Obtain(this, RECEIVED_TITLE, titleCS, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -1865,7 +1865,7 @@ void CallbackProxy::OnJsAlert(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> alert;
-    mh->ObtainEx4(this, JS_ALERT, result, (IMessage**)&alert);
+    mh->Obtain(this, JS_ALERT, result, (IMessage**)&alert);
     AutoPtr<IBundle> bundle;
     alert->GetData((IBundle**)&bundle);
     bundle->PutString(String("message"), message);
@@ -1886,7 +1886,7 @@ Boolean CallbackProxy::OnJsConfirm(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> confirm;
-    mh->ObtainEx4(this, JS_CONFIRM, result, (IMessage**)&confirm);
+    mh->Obtain(this, JS_CONFIRM, result, (IMessage**)&confirm);
     AutoPtr<IBundle> bundle;
     confirm->GetData((IBundle**)&bundle);
     bundle->PutString(String("message"), message);
@@ -1911,7 +1911,7 @@ String CallbackProxy::OnJsPrompt(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> prompt;
-    mh->ObtainEx4(this, JS_PROMPT, result, (IMessage**)&prompt);
+    mh->Obtain(this, JS_PROMPT, result, (IMessage**)&prompt);
     AutoPtr<IBundle> bundle;
     prompt->GetData((IBundle**)&bundle);
     bundle->PutString(String("message"), message);
@@ -1937,7 +1937,7 @@ Boolean CallbackProxy::OnJsBeforeUnload(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> confirm;
-    mh->ObtainEx4(this, JS_UNLOAD, result, (IMessage**)&confirm);
+    mh->Obtain(this, JS_UNLOAD, result, (IMessage**)&confirm);
     AutoPtr<IBundle> bundle;
     confirm->GetData((IBundle**)&bundle);
     bundle->PutString(String("message"), message);
@@ -1982,7 +1982,7 @@ void CallbackProxy::OnExceededDatabaseQuota(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> exceededQuota;
-    mh->ObtainEx3(this, EXCEEDED_DATABASE_QUOTA, (IMessage**)&exceededQuota);
+    mh->Obtain(this, EXCEEDED_DATABASE_QUOTA, (IMessage**)&exceededQuota);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
     AutoPtr<ICharSequence> databaseIdentifierCS;
@@ -2031,7 +2031,7 @@ void CallbackProxy::OnReachedMaxAppCacheSize(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, REACHED_APPCACHE_MAXSIZE, (IMessage**)&msg);
+    mh->Obtain(this, REACHED_APPCACHE_MAXSIZE, (IMessage**)&msg);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
     AutoPtr<IInteger64> iRequiredStorage;
@@ -2064,7 +2064,7 @@ void CallbackProxy::OnGeolocationPermissionsShowPrompt(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> showMessage;
-    mh->ObtainEx3(this, GEOLOCATION_PERMISSIONS_SHOW_PROMPT, (IMessage**)&showMessage);
+    mh->Obtain(this, GEOLOCATION_PERMISSIONS_SHOW_PROMPT, (IMessage**)&showMessage);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
     AutoPtr<ICharSequence> originCS;
@@ -2089,7 +2089,7 @@ void CallbackProxy::OnGeolocationPermissionsHidePrompt()
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> hideMessage;
-    mh->ObtainEx3(this, GEOLOCATION_PERMISSIONS_HIDE_PROMPT, (IMessage**)&hideMessage);
+    mh->Obtain(this, GEOLOCATION_PERMISSIONS_HIDE_PROMPT, (IMessage**)&hideMessage);
     Boolean result = FALSE;
     SendMessage(hideMessage, &result);
 }
@@ -2118,7 +2118,7 @@ void CallbackProxy::AddMessageToConsole(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, ADD_MESSAGE_TO_CONSOLE, (IMessage**)&msg);
+    mh->Obtain(this, ADD_MESSAGE_TO_CONSOLE, (IMessage**)&msg);
     AutoPtr<IBundle> bundle;
     msg->GetData((IBundle**)&bundle);
     bundle->PutString(String("message"), message);
@@ -2139,7 +2139,7 @@ Boolean CallbackProxy::OnJsTimeout()
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> timeout;
-    mh->ObtainEx4(this, JS_TIMEOUT, result, (IMessage**)&timeout);
+    mh->Obtain(this, JS_TIMEOUT, result, (IMessage**)&timeout);
     SendMessageToUiThreadSync(timeout);
     Boolean bRet = FALSE;
     result->mJsResult->GetResult(&bRet);
@@ -2155,7 +2155,7 @@ void CallbackProxy::GetVisitedHistory(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(this, GET_VISITED_HISTORY, (IMessage**)&msg);
+    mh->Obtain(this, GET_VISITED_HISTORY, (IMessage**)&msg);
     msg->SetObj(callback);
     Boolean result = FALSE;
     SendMessage(msg, &result);
@@ -2175,7 +2175,7 @@ AutoPtr<IUri> CallbackProxy::OpenFileChooser(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> myMessage;
-    mh->ObtainEx3(this, OPEN_FILE_CHOOSER, (IMessage**)&myMessage);
+    mh->Obtain(this, OPEN_FILE_CHOOSER, (IMessage**)&myMessage);
     AutoPtr<UploadFile> uploadFile = new UploadFile(this);
     AutoPtr<UploadFileMessageData> data = new UploadFileMessageData(uploadFile, acceptType, capture);
     myMessage->SetObj(data);
@@ -2192,7 +2192,7 @@ void CallbackProxy::OnNewHistoryItem(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(this, ADD_HISTORY_ITEM, item, (IMessage**)&msg);
+    mh->Obtain(this, ADD_HISTORY_ITEM, item, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -2207,7 +2207,7 @@ void CallbackProxy::OnIndexChanged(
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx6(this, HISTORY_INDEX_CHANGED, index, 0, item, (IMessage**)&msg);
+    mh->Obtain(this, HISTORY_INDEX_CHANGED, index, 0, item, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }

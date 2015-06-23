@@ -4,9 +4,9 @@
 
 #include "_CVolumePanelDialog.h"
 #include "widget/VolumePanelDialog.h"
-#include "app/DialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 using Elastos::Droid::View::IMotionEvent;
 

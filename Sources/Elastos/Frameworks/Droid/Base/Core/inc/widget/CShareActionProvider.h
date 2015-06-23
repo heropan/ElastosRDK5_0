@@ -32,7 +32,7 @@ public:
     CARAPI OnCreateActionView(
         /* [out] */ IView** view);
 
-    CARAPI OnCreateActionViewEx(
+    CARAPI OnCreateActionView(
         /* [in] */ IMenuItem* forItem,
         /* [out] */ IView** view);
 

@@ -4,12 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "_CRemoteCallbackList.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::HashMap;
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -72,7 +69,7 @@ public:
         /* [in] */ IInterface* callback,
         /* [out] */ Boolean* result);
 
-    CARAPI RegisterEx(
+    CARAPI Register(
         /* [in] */ IInterface* callback,
         /* [in] */ IInterface* cookie,
         /* [out] */ Boolean* result);
@@ -86,7 +83,7 @@ public:
     CARAPI OnCallbackDied(
         /* [in] */ IInterface* callback);
 
-    CARAPI OnCallbackDiedEx(
+    CARAPI OnCallbackDied(
         /* [in] */ IInterface* callback,
         /* [in] */ IInterface* cookie);
 

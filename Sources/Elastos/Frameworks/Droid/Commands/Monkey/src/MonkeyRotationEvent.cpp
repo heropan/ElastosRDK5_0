@@ -1,5 +1,5 @@
 #include "MonkeyRotationEvent.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;

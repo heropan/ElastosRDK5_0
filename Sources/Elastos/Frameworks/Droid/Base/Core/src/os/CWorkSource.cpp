@@ -74,7 +74,7 @@ ECode CWorkSource::Clear()
     return NOERROR;
 }
 
-ECode CWorkSource::EqualsEx(
+ECode CWorkSource::Equals(
     /* [in] */ IWorkSource* o,
     /* [out] */ Boolean* equal)
 {
@@ -90,7 +90,7 @@ ECode CWorkSource::Equals(
     /* [out] */ Boolean* equal)
 {
     VALIDATE_NOT_NULL(equal);
-    return EqualsEx(IWorkSource::Probe(o), equal);
+    return Equals(IWorkSource::Probe(o), equal);
 }
 
 ECode CWorkSource::GetHashCode(
@@ -151,7 +151,7 @@ ECode CWorkSource::Set(
     return NOERROR;
 }
 
-ECode CWorkSource::SetEx(
+ECode CWorkSource::Set(
     /* [in] */ Int32 uid)
 {
     mNum = 1;
@@ -178,7 +178,7 @@ ECode CWorkSource::SetReturningDiffs(
             diffs->Set(0, sNewbWork);
             diffs->Set(1, sGoneWork);
             *result = diffs;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
         }
     }
 
@@ -207,12 +207,12 @@ ECode CWorkSource::AddReturningNewbs(
         sNewbWork = NULL;
         UpdateLocked(other, FALSE, TRUE);
         *result = sNewbWork;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 }
 
-ECode CWorkSource::AddEx(
+ECode CWorkSource::Add(
     /* [in] */ Int32 uid,
     /* [out] */ Boolean* added)
 {
@@ -225,7 +225,7 @@ ECode CWorkSource::AddEx(
     }
 }
 
-ECode CWorkSource::AddReturningNewbsEx(
+ECode CWorkSource::AddReturningNewbs(
     /* [in] */ Int32 uid,
     /* [out] */ IWorkSource** result)
 {
@@ -236,7 +236,7 @@ ECode CWorkSource::AddReturningNewbsEx(
         ((CWorkSource*)sTmpWorkSource.Get())->mUids->Set(0, uid);
         UpdateLocked(sTmpWorkSource, FALSE, TRUE);
         *result = sNewbWork;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 }

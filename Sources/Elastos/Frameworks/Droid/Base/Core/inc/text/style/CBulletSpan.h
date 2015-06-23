@@ -4,8 +4,8 @@
 
 #include "_CBulletSpan.h"
 #include "text/style/BulletSpan.h"
-#include "text/style/LeadingMarginSpanMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

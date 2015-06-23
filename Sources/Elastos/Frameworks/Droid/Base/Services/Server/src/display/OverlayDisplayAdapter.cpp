@@ -2,10 +2,10 @@
 #include "display/OverlayDisplayAdapter.h"
 #include "display/OverlayDisplayWindow.h"
 #include "display/DisplayDeviceInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/Handler.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -262,7 +262,7 @@ ECode OverlayDisplayAdapter::RegisterRunnable::Run()
     AutoPtr<ISettingsGlobal> sg;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
     AutoPtr<IUri> uri;
-    sg->GetUriForEx(ISettingsGlobal::OVERLAY_DISPLAY_DEVICES, (IUri**)&uri);
+    sg->GetUriFor(ISettingsGlobal::OVERLAY_DISPLAY_DEVICES, (IUri**)&uri);
     AutoPtr<IContentObserver> co = new OverlayDisplayContentObserver(
         mHost->GetHandler(), mHost);
     cr->RegisterContentObserver(uri, TRUE, co);
@@ -390,13 +390,13 @@ void OverlayDisplayAdapter::UpdateOverlayDisplayDevicesLocked()
                 }
 
                 String strGroup;
-                matcher->GroupEx(1, &strGroup);
+                matcher->Group(1, &strGroup);
                 ec = StringUtils::ParseInt32(strGroup, 10, &width);
                 if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
-                matcher->GroupEx(2, &strGroup);
+                matcher->Group(2, &strGroup);
                 ec = StringUtils::ParseInt32(strGroup, 10, &height);
                 if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
-                matcher->GroupEx(3, &strGroup);
+                matcher->Group(3, &strGroup);
                 ec = StringUtils::ParseInt32(strGroup, 10, &densityDpi);
                 if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
 

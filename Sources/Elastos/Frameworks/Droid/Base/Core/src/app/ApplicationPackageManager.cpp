@@ -5,9 +5,9 @@
 #include "content/CIntent.h"
 #include "content/res/CResourcesHelper.h"
 #include "util/CParcelableObjectContainer.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
 using Elastos::Core::CObjectContainer;
@@ -102,7 +102,7 @@ ECode ApplicationPackageManager::GetPackageInfo(
     FAIL_RETURN(mPM->GetPackageInfo(packageName, flags, id, (IPackageInfo**)&pi));
     if (pi != NULL) {
         *info = pi;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //    } catch (RemoteException e) {
@@ -178,9 +178,9 @@ ECode ApplicationPackageManager::GetLaunchIntentForPackage(
     String pkgName, name;
     aInfo->GetPackageName(&pkgName);
     aInfo->GetName(&name);
-    newIntent->SetClassNameEx(pkgName, name);
+    newIntent->SetClassName(pkgName, name);
     *intent = newIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -196,7 +196,7 @@ ECode ApplicationPackageManager::GetPackageGids(
     FAIL_RETURN(mPM->GetPackageGids(packageName, (ArrayOf<Int32>**)&gids));
     if (gids == NULL || gids->GetLength() > 0) {
         *pgids = gids;
-        INTERFACE_ADDREF(*pgids);
+        REFCOUNT_ADD(*pgids);
         return NOERROR;
     }
 //    } catch (RemoteException e) {
@@ -220,7 +220,7 @@ ECode ApplicationPackageManager::GetPermissionInfo(
     FAIL_RETURN(mPM->GetPermissionInfo(name, flags, (IPermissionInfo**)&pi));
     if (pi != NULL) {
         *info = pi;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -244,7 +244,7 @@ ECode ApplicationPackageManager::QueryPermissionsByGroup(
     FAIL_RETURN(mPM->QueryPermissionsByGroup(group, flags, (IObjectContainer**)&pi));
     if (pi != NULL) {
         *permissions = pi;
-        INTERFACE_ADDREF(*permissions);
+        REFCOUNT_ADD(*permissions);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -268,7 +268,7 @@ ECode ApplicationPackageManager::GetPermissionGroupInfo(
     FAIL_RETURN(mPM->GetPermissionGroupInfo(name, flags, (IPermissionGroupInfo**)&pgi));
     if (pgi != NULL) {
         *info = pgi;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -307,7 +307,7 @@ ECode ApplicationPackageManager::GetApplicationInfo(
     #endif
     if (ai != NULL) {
         *info = ai;
-        INTERFACE_ADDREF(*info)
+        REFCOUNT_ADD(*info)
         return NOERROR;
     }
     return E_NAME_NOT_FOUND_EXCEPTION;
@@ -328,7 +328,7 @@ ECode ApplicationPackageManager::GetActivityInfo(
     FAIL_RETURN(mPM->GetActivityInfo(component, flags, id, (IActivityInfo**)&ai));
     if (ai != NULL) {
         *info = ai;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -354,7 +354,7 @@ ECode ApplicationPackageManager::GetReceiverInfo(
     FAIL_RETURN(mPM->GetReceiverInfo(component, flags, id, (IActivityInfo**)&ai));
     if (ai != NULL) {
         *info = ai;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -380,7 +380,7 @@ ECode ApplicationPackageManager::GetServiceInfo(
     FAIL_RETURN(mPM->GetServiceInfo(component, flags, id, (IServiceInfo**)&si));
     if (si != NULL) {
         *info = si;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -406,7 +406,7 @@ ECode ApplicationPackageManager::GetProviderInfo(
     FAIL_RETURN(mPM->GetProviderInfo(component, flags, id, (IProviderInfo**)&pi));
     if (pi != NULL) {
         *info = pi;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -529,7 +529,7 @@ ECode ApplicationPackageManager::CheckSignatures(
 //     }
 }
 
-ECode ApplicationPackageManager::CheckSignaturesEx(
+ECode ApplicationPackageManager::CheckSignatures(
     /* [in] */ Int32 uid1,
     /* [in] */ Int32 uid2,
     /* [out] */ Int32* result)
@@ -592,10 +592,10 @@ ECode ApplicationPackageManager::GetInstalledPackages(
     VALIDATE_NOT_NULL(infos);
     Int32 id;
     mContext->GetUserId(&id);
-    return GetInstalledPackagesEx(flags, id, infos);
+    return GetInstalledPackages(flags, id, infos);
 }
 
-ECode ApplicationPackageManager::GetInstalledPackagesEx(
+ECode ApplicationPackageManager::GetInstalledPackages(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userId,
     /* [out] */ IObjectContainer** infos)
@@ -618,7 +618,7 @@ ECode ApplicationPackageManager::GetInstalledPackagesEx(
     } while (slice->IsLastSlice(&lastSlice), !lastSlice);
 
     *infos = packageInfos;
-    INTERFACE_ADDREF(*infos);
+    REFCOUNT_ADD(*infos);
     return NOERROR;
 //     } catch (RemoteException e) {
 //         throw new RuntimeException("Package manager has died", e);
@@ -647,7 +647,7 @@ ECode ApplicationPackageManager::GetInstalledApplications(
         FAIL_RETURN(slice->PopulateList(applicationInfos, ECLSID_CApplicationInfo, (IInterface**)&lastItem));
     } while (!(slice->IsLastSlice(&lastSlice), lastSlice));
     *apps = applicationInfos;
-    INTERFACE_ADDREF(*apps);
+    REFCOUNT_ADD(*apps);
     return NOERROR;
 }
 
@@ -760,7 +760,7 @@ ECode ApplicationPackageManager::QueryIntentActivityOptions(
 //     }
 }
 
-ECode ApplicationPackageManager::QueryBroadcastReceiversEx(
+ECode ApplicationPackageManager::QueryBroadcastReceivers(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userId,
@@ -792,7 +792,7 @@ ECode ApplicationPackageManager::QueryBroadcastReceivers(
 
     Int32 id;
     mContext->GetUserId(&id);
-    return QueryBroadcastReceiversEx(intent, flags, id, resolves);
+    return QueryBroadcastReceivers(intent, flags, id, resolves);
 }
 
 ECode ApplicationPackageManager::ResolveService(
@@ -892,7 +892,7 @@ ECode ApplicationPackageManager::GetInstrumentationInfo(
     mPM->GetInstrumentationInfo(className, flags, (IInstrumentationInfo**)&ii);
     if (ii != NULL) {
         *instrumentation = ii;
-        INTERFACE_ADDREF(*instrumentation);
+        REFCOUNT_ADD(*instrumentation);
         return NOERROR;
     }
 //     } catch (RemoteException e) {
@@ -927,7 +927,7 @@ ECode ApplicationPackageManager::GetDrawable(
     AutoPtr<IDrawable> dr = GetCachedIcon(name);
     if (dr != NULL) {
         *drawable = dr;
-        INTERFACE_ADDREF(*drawable);
+        REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
     if (appInfo == NULL) {
@@ -943,7 +943,7 @@ ECode ApplicationPackageManager::GetDrawable(
 
     PutCachedIcon(name, dr);
     *drawable = dr;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 
 EXCEPTION:
@@ -962,7 +962,7 @@ ECode ApplicationPackageManager::GetActivityIcon(
     return NOERROR;
 }
 
-ECode ApplicationPackageManager::GetActivityIconEx(
+ECode ApplicationPackageManager::GetActivityIcon(
     /* [in] */ IIntent* intent,
     /* [out] */ IDrawable** icon)
 {
@@ -1007,7 +1007,7 @@ ECode ApplicationPackageManager::GetApplicationIcon(
     return info->LoadIcon(this, icon);
 }
 
-ECode ApplicationPackageManager::GetApplicationIconEx(
+ECode ApplicationPackageManager::GetApplicationIcon(
     /* [in] */ const String& packageName,
     /* [out] */ IDrawable** icon)
 {
@@ -1028,7 +1028,7 @@ ECode ApplicationPackageManager::GetActivityLogo(
     return aInfo->LoadLogo(this, logo);
 }
 
-ECode ApplicationPackageManager::GetActivityLogoEx(
+ECode ApplicationPackageManager::GetActivityLogo(
     /* [in] */ IIntent* intent,
     /* [out] */ IDrawable** logo)
 {
@@ -1060,7 +1060,7 @@ ECode ApplicationPackageManager::GetApplicationLogo(
     return info->LoadLogo(this, logo);
 }
 
-ECode ApplicationPackageManager::GetApplicationLogoEx(
+ECode ApplicationPackageManager::GetApplicationLogo(
     /* [in] */ const String& packageName,
     /* [out] */ IDrawable** logo)
 {
@@ -1113,7 +1113,7 @@ ECode ApplicationPackageManager::GetResourcesForApplication(
         resDir, IDisplay::DEFAULT_DISPLAY, NULL, mContext->mPackageInfo, (IResources**)&r);
     if (r != NULL) {
         *res = r;
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
         return NOERROR;
     }
 
@@ -1121,7 +1121,7 @@ ECode ApplicationPackageManager::GetResourcesForApplication(
     return E_NAME_NOT_FOUND_EXCEPTION;
 }
 
-ECode ApplicationPackageManager::GetResourcesForApplicationEx(
+ECode ApplicationPackageManager::GetResourcesForApplication(
     /* [in] */ const String& appPackageName,
     /* [out] */ IResources** res)
 {
@@ -1367,7 +1367,7 @@ ECode ApplicationPackageManager::GetText(
     AutoPtr<ICharSequence> text = GetCachedString(name);
     if (text != NULL) {
         *_text = text;
-        INTERFACE_ADDREF(*_text);
+        REFCOUNT_ADD(*_text);
         return NOERROR;
     }
 
@@ -1384,7 +1384,7 @@ ECode ApplicationPackageManager::GetText(
     FAIL_GOTO((ec = r->GetText(resid, (ICharSequence**)&text)), ERROR)
     PutCachedString(name, text);
     *_text = text;
-    INTERFACE_ADDREF(*_text)
+    REFCOUNT_ADD(*_text)
     return NOERROR;
 
 ERROR:
@@ -1640,7 +1640,7 @@ ECode ApplicationPackageManager::AddPreferredActivity(
     return mPM->AddPreferredActivity(filter, match, set, activity, uid);
 }
 
-ECode ApplicationPackageManager::AddPreferredActivityEx(
+ECode ApplicationPackageManager::AddPreferredActivity(
     /* [in] */ IIntentFilter* filter,
     /* [in] */ Int32 match,
     /* [in] */ ArrayOf<IComponentName*>* set,
@@ -1751,7 +1751,7 @@ ECode ApplicationPackageManager::GetPackageArchiveInfo(
     return PackageManager::GetPackageArchiveInfo(archiveFilePath, flags, info);
 }
 
-ECode ApplicationPackageManager::GetPackageSizeInfoEx(
+ECode ApplicationPackageManager::GetPackageSizeInfo(
     /* [in] */ const String& packageName,
     /* [in] */ IPackageStatsObserver* observer)
 {

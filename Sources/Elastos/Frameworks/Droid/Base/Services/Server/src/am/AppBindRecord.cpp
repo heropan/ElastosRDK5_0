@@ -3,8 +3,8 @@
 #include "am/CServiceRecord.h"
 #include "am/IntentBindRecord.h"
 #include "am/ProcessRecord.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

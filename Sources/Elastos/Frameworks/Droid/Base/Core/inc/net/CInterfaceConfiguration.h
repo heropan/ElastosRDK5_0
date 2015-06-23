@@ -4,9 +4,9 @@
 
 #include "ext/frameworkdef.h"
 #include "_CInterfaceConfiguration.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Net::IInetAddress;
 
 namespace Elastos {

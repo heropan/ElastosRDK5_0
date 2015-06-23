@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "webkit/CPluginList.h"
-#include <elastos/Algorithm.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::CObjectContainer;
 

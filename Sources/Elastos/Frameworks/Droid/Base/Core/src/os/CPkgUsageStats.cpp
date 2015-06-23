@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "os/CPkgUsageStats.h"
 
 using Elastos::Core::IInteger64;

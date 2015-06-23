@@ -38,7 +38,7 @@ module
          *  "_http._tcp" (http service)
          * @return service request for DnsSd.
          */
-        NewInstanceEx(
+        NewInstance(
             [in] String serviceType,
             [out] IWifiP2pDnsSdServiceRequest** instance);
 
@@ -54,7 +54,7 @@ module
          *  "_ipp._tcp" (IP Printing over TCP)<br>
          * @return service request for Bonjour.
          */
-        NewInstanceEx2(
+        NewInstance(
             [in] String instanceName,
             [in] String serviceType,
             [out] IWifiP2pDnsSdServiceRequest** instance);

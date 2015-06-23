@@ -2,9 +2,9 @@
 #define __CCOMPATMODEPANEL_H_
 
 #include "_CCompatModePanel.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/CompatModePanel.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #include "HttpsConnection.h"
 #include "Request.h"
 #include "HttpLog.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 
 using namespace Org::Apache::Harmony::Xnet::Provider::Jsse;
 using namespace Org::Apache::Http::Params;
@@ -448,7 +448,7 @@ ECode HttpsConnection::OpenConnection(
     conn->Bind(sslBaseSock, baseParams);
 
     *connection = conn;
-    INTERFACE_ADDREF(*connection);
+    REFCOUNT_ADD(*connection);
     return NOERROR;
 }
 

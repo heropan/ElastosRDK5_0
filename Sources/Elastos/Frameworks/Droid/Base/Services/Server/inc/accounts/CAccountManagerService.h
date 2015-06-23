@@ -8,13 +8,12 @@
 #include "content/BroadcastReceiver.h"
 #include "database/sqlite/SQLiteOpenHelper.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Pair.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::Pair;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Core::IInteger32;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

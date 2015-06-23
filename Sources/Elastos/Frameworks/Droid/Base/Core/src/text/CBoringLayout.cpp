@@ -41,7 +41,7 @@ ECode CBoringLayout::ReplaceOrMake(
  * this one if it is already suitable.  The caller must make sure that
  * no one is still using this Layout.
  */
-ECode CBoringLayout::ReplaceOrMakeEx(
+ECode CBoringLayout::ReplaceOrMake(
     /* [in] */ ICharSequence* source,
     /* [in] */ ITextPaint* paint,
     /* [in] */ Int32 outerwidth,

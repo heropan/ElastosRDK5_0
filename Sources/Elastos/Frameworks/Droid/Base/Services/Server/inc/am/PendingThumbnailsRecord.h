@@ -3,10 +3,10 @@
 #define __PENDINGTHUMBNAILSRECORD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 #include "am/ActivityRecord.h"
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::App::IThumbnailReceiver;
 
 namespace Elastos {

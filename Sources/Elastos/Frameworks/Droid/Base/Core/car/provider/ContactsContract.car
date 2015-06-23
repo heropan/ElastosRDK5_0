@@ -1506,7 +1506,7 @@ module {
          * Build a {@link #CONTENT_LOOKUP_URI} lookup {@link Uri} using the
          * given {@link ContactsContract.Contacts#_ID} and {@link #LOOKUP_KEY}.
          */
-        GetLookupUriEx(
+        GetLookupUri(
             [in] Int64 contactId,
             [in] String lookupKey,
             [out] IUri** uri);
@@ -1564,7 +1564,7 @@ module {
          * @see #openContactPhotoInputStream(ContentResolver, Uri, boolean), if instead
          * of the thumbnail the high-res picture is preferred
          */
-        OpenContactPhotoInputStreamEx(
+        OpenContactPhotoInputStream(
             [in] IContentResolver* cr,
             [in] IUri* contactUri,
             [out] IInputStream** stream);
@@ -5134,7 +5134,7 @@ module {
          * @hide
          */
         // @Deprecated
-        GetDisplayLabelEx(
+        GetDisplayLabel(
             [in] IContext* ctx,
             [in] Int32 type,
             [in] ICharSequence* label,
@@ -7109,7 +7109,7 @@ module {
          * Constructs the QuickContacts intent.
          * @hide
          */
-        ComposeQuickContactsIntentEx(
+        ComposeQuickContactsIntent(
             [in] IContext* ctx,
             [in] IRect* target,
             [in] IUri* lookupUri,
@@ -7173,7 +7173,7 @@ module {
          *            already viewing the contact details card, this can be used
          *            to omit the details entry from the dialog.
          */
-        ShowQuickContactEx(
+        ShowQuickContact(
             [in] IContext* ctx,
             [in] IRect* target,
             [in] IUri* lookupUri,

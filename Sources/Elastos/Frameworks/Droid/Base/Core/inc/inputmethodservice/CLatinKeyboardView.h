@@ -3,7 +3,7 @@
 #define  __CLATINKEYBOARDVIEW_H__
 
 #include "_CLatinKeyboardView.h"
-#include "view/ViewMacro.h"
+
 #include "inputmethodservice/KeyboardView.h"
 
 namespace Elastos {

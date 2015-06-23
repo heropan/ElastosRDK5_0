@@ -71,7 +71,7 @@ public:
      *
      * @hide
      */
-    CARAPI StartSearchEx(
+    CARAPI StartSearch(
         /* [in] */ const String& initialQuery,
         /* [in] */ Boolean selectInitialQuery,
         /* [in] */ IComponentName launchActivity,
@@ -201,7 +201,7 @@ public:
      *
      * @hide because SearchableInfo is not part of the API.
      */
-    CARAPI GetSuggestionsEx(
+    CARAPI GetSuggestions(
         /* [in] */ ISearchableInfo* searchable,
         /* [in] */ const String& query,
         /* [in] */ Int32 limit,
@@ -233,7 +233,7 @@ public:
      *
      * @hide
      */
-    CARAPI GetAssistIntentEx(
+    CARAPI GetAssistIntent(
         /* [in] */ IContext* context,
         /* [in] */ Int32 userHandle,
         /* [out] */ IIntent** intent);

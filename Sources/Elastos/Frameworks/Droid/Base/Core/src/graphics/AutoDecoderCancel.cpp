@@ -1,7 +1,4 @@
 #include "graphics/AutoDecoderCancel.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

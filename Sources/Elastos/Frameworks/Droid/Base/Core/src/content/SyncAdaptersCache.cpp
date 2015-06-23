@@ -2,7 +2,7 @@
 #include "content/SyncAdaptersCache.h"
 #include "content/CSyncAdapterType.h"
 #include "content/CSyncAdapterTypeHelper.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -38,15 +38,15 @@ ECode SyncAdaptersCache::MySerializer::CreateFromXml(
 {
     VALIDATE_NOT_NULL(obj)
     String authority;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("authority"), &authority))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("authority"), &authority))
     String accountType;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("accountType"), &accountType))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("accountType"), &accountType))
     AutoPtr<ISyncAdapterTypeHelper> typeHelper;
     FAIL_RETURN(CSyncAdapterTypeHelper::AcquireSingleton((ISyncAdapterTypeHelper**)&typeHelper))
     AutoPtr<ISyncAdapterType> adapterType;
     FAIL_RETURN(typeHelper->NewKey(authority, accountType, (ISyncAdapterType**)&adapterType))
     *obj = adapterType;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -111,7 +111,7 @@ ECode SyncAdaptersCache::ParseServiceAttributes(
             isAlwaysSyncable, allowParallelSyncs, settingsActivity, (ISyncAdapterType**)&adapterType);
     if (FAILED(ec)) goto EXIT;
     *syncAdapterType = adapterType.Get();
-    INTERFACE_ADDREF(*syncAdapterType);
+    REFCOUNT_ADD(*syncAdapterType);
 
 EXIT:
     FAIL_RETURN(sa->Recycle())

@@ -93,7 +93,7 @@ public:
      * @param name to look up in the table
      * @return the corresponding content URI, or null if not present
      */
-    CARAPI GetUriForEx(
+    CARAPI GetUriFor(
         /* [in] */ const String& name,
         /* [out] */ IUri** uri);
 
@@ -135,7 +135,7 @@ public:
      *
      * @return The setting's current value.
      */
-    CARAPI GetInt32Ex(
+    CARAPI GetInt32(
         /* [in] */ IContentResolver* cr,
         /* [in] */ const String& name,
         /* [out] */ Int32* value);
@@ -196,7 +196,7 @@ public:
      * @throws SettingNotFoundException Thrown if a setting by the given
      * name can't be found or the setting value is not an integer.
      */
-    CARAPI GetInt64Ex(
+    CARAPI GetInt64(
         /* [in] */ IContentResolver* cr,
         /* [in] */ const String& name,
         /* [out] */ Int64* value);
@@ -258,7 +258,7 @@ public:
      *
      * @return The setting's current value.
      */
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ IContentResolver* cr,
         /* [in] */ const String& name,
         /* [out] */ Float* value);

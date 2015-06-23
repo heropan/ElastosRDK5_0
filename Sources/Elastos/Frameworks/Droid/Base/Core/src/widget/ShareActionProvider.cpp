@@ -2,7 +2,7 @@
 #include "widget/ShareActionProvider.h"
 #include "util/CTypedValue.h"
 #include <R.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::View::EIID_IOnMenuItemClickListener;
@@ -115,7 +115,7 @@ ECode ShareActionProvider::OnPrepareSubMenu(
         AutoPtr<ICharSequence> csq;
         activity->LoadLabel(packageManager, (ICharSequence**)&csq);
         AutoPtr<IMenuItem> item;
-        subMenu->AddEx2(0, i, i, csq,(IMenuItem**)&item);
+        subMenu->Add(0, i, i, csq,(IMenuItem**)&item);
         AutoPtr<IDrawable> icon;
         activity->LoadIcon(packageManager, (IDrawable**)&icon);
         item->SetIcon(icon);
@@ -128,7 +128,7 @@ ECode ShareActionProvider::OnPrepareSubMenu(
         AutoPtr<ICharSequence> strcsq;
         CStringWrapper::New(str, (ICharSequence**)&strcsq);
         AutoPtr<ISubMenu> expandedSubMenu;
-        subMenu->AddSubMenuEx2(IMenu::NONE, collapsedActivityCount, collapsedActivityCount, strcsq, (ISubMenu**)&expandedSubMenu);
+        subMenu->AddSubMenu(IMenu::NONE, collapsedActivityCount, collapsedActivityCount, strcsq, (ISubMenu**)&expandedSubMenu);
 
         for (Int32 i = 0; i < expandedActivityCount; i++) {
             AutoPtr<IResolveInfo> activity;
@@ -136,7 +136,7 @@ ECode ShareActionProvider::OnPrepareSubMenu(
             AutoPtr<ICharSequence> lebel;
             activity->LoadLabel(packageManager, (ICharSequence**)&lebel);
             AutoPtr<IMenuItem> itemMenu;
-            expandedSubMenu->AddEx2(0, i, i, lebel,(IMenuItem**)&itemMenu);
+            expandedSubMenu->Add(0, i, i, lebel,(IMenuItem**)&itemMenu);
             AutoPtr<IDrawable> drawable;
             activity->LoadIcon(packageManager, (IDrawable**)&drawable);
             itemMenu->SetIcon(drawable);

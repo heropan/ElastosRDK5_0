@@ -14,12 +14,12 @@ ECode CRfc822TokenizerHelper::Tokenize(
     return CRfc822Tokenizer::Tokenize(text, ret);
 }
 
-ECode CRfc822TokenizerHelper::TokenizeEx(
+ECode CRfc822TokenizerHelper::Tokenize(
     /* [in] */ ICharSequence* text,
     /* [out, callee] */ ArrayOf<IRfc822Token*>** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    return CRfc822Tokenizer::TokenizeEx(text, ret);
+    return CRfc822Tokenizer::Tokenize(text, ret);
 }
 
 } // namespace Utility

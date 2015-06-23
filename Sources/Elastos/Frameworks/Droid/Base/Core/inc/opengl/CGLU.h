@@ -5,7 +5,7 @@
 #include "_CGLU.h"
 #include "elastos/Mutex.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastosx::Microedition::Khronos::Opengles::IGL10;
 
 namespace Elastos {

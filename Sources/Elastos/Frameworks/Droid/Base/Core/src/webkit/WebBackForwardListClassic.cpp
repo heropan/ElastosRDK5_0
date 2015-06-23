@@ -1,7 +1,7 @@
 
 #include "webkit/WebBackForwardListClassic.h"
 #include "webkit/CallbackProxy.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "webkit/DebugFlags.h"
 
 using Elastos::Utility::Logging::Logger;

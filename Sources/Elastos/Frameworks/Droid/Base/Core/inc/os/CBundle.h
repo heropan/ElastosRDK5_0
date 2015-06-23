@@ -3,14 +3,13 @@
 
 #include "_CBundle.h"
 #include "ext/frameworkext.h"
-#include <Elastos.Core.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::ISerializable;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::IObjectInt32Map;
@@ -82,7 +81,7 @@ public:
     CARAPI SetAllowFds(
         /* [in] */ Boolean allowFds);
 
-    CARAPI SetAllowFdsEx(
+    CARAPI SetAllowFds(
         /* [in] */ Boolean allowFds,
         /* [out] */ Boolean* prev);
 
@@ -476,7 +475,7 @@ public:
      * @param key a const String&
      * @return a boolean value
      */
-    CARAPI GetBooleanEx(
+    CARAPI GetBoolean(
         /* [in] */ const String& key,
         /* [in] */ Boolean defaultValue,
         /* [out] */ Boolean* value);
@@ -492,7 +491,7 @@ public:
      * @param key a const String&
      * @return a byte value
      */
-    CARAPI GetByteEx(
+    CARAPI GetByte(
         /* [in] */ const String& key,
         /* [in] */ Byte defaultValue,
         /* [out] */ Byte* value);
@@ -508,7 +507,7 @@ public:
      * @param key a const String&
      * @return a char value
      */
-    CARAPI GetCharEx(
+    CARAPI GetChar(
         /* [in] */ const String& key,
         /* [in] */ Char32 defaultValue,
         /* [out] */ Char32* value);
@@ -524,7 +523,7 @@ public:
      * @param key a const String&
      * @return a short value
      */
-    CARAPI GetInt16Ex(
+    CARAPI GetInt16(
         /* [in] */ const String& key,
         /* [in] */ Int16 defaultValue,
         /* [out] */ Int16* value);
@@ -540,7 +539,7 @@ public:
      * @param key a const String&
      * @return an int value
      */
-    CARAPI GetInt32Ex(
+    CARAPI GetInt32(
         /* [in] */ const String& key,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32* value);
@@ -556,7 +555,7 @@ public:
      * @param key a const String&
      * @return a long value
      */
-    CARAPI GetInt64Ex(
+    CARAPI GetInt64(
         /* [in] */ const String& key,
         /* [in] */ Int64 defaultValue,
         /* [out] */ Int64* value);
@@ -572,7 +571,7 @@ public:
      * @param key a const String&
      * @return a float value
      */
-    CARAPI GetFloatEx(
+    CARAPI GetFloat(
         /* [in] */ const String& key,
         /* [in] */ Float defaultValue,
         /* [out] */ Float* value);
@@ -588,7 +587,7 @@ public:
      * @param key a const String&
      * @return a double value
      */
-    CARAPI GetDoubleEx(
+    CARAPI GetDouble(
         /* [in] */ const String& key,
         /* [in] */ Double defaultValue,
         /* [out] */ Double* value);
@@ -613,7 +612,7 @@ public:
      * @param defaultValue Value to return if key does not exist
      * @return a String value, or null
      */
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ const String& key,
         /* [in] */ const String& defaultValue,
         /* [out] */ String* value);

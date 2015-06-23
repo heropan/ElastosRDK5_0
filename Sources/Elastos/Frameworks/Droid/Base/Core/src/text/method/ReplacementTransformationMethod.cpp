@@ -2,7 +2,7 @@
 #include "text/TextUtils.h"
 #include "text/CSpannedString.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_ICharSequence;
@@ -110,7 +110,7 @@ ECode ReplacementTransformationMethod::ReplacementCharSequence::SubSequence(
     sb.AppendChars(*c);
     AutoPtr<ICharSequence> cs = sb.ToCharSequence();
     *csq = cs;
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 

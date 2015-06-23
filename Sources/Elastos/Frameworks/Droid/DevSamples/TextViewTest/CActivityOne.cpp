@@ -84,10 +84,10 @@ ECode CActivityOne::MyListener::OnCheckedChanged(
 
     // RadioGroup language
     if(checkedId == R::id::radio_button_language_english) {
-        mHost->mTextView->SetTextEx3(R::string::text_english);
+        mHost->mTextView->SetText(R::string::text_english);
     }
     if(checkedId == R::id::radio_button_language_chinese) {
-        mHost->mTextView->SetTextEx3(R::string::text_chinese);
+        mHost->mTextView->SetText(R::string::text_chinese);
     }
 
     // RadionGroup gravity
@@ -131,7 +131,7 @@ ECode CActivityOne::OnCreate(
     AutoPtr<IView> view = FindViewById(R::id::text_view);
     assert(view != NULL);
     mTextView = ITextView::Probe(view);
-    mTextView->SetTextEx3(R::string::text_english);
+    mTextView->SetText(R::string::text_english);
 
     view = FindViewById(R::id::radio_group_language);
     assert(view != NULL);

@@ -23,7 +23,7 @@ ECode CLocaleSpan::GetLocale(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ILocale> l = LocaleSpan::GetLocale();
     *ret = l;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

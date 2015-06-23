@@ -4,7 +4,6 @@
 
 #include "ext/frameworkext.h"
 #include "view/View.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
@@ -78,7 +77,7 @@ private:
         CARAPI LockCanvas(
             /* [out] */ ICanvas** canvas);
 
-        CARAPI LockCanvasEx(
+        CARAPI LockCanvas(
             /* [in]*/ IRect* dirty,
             /* [out]*/ ICanvas** canvas);
 

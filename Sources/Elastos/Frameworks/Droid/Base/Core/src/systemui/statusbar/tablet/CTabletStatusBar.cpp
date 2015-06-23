@@ -75,7 +75,7 @@ ECode CTabletStatusBar::ClearAll()
     return TabletStatusBar::ClearAll();
 }
 
-ECode CTabletStatusBar::AnimateCollapsePanelsEx()
+ECode CTabletStatusBar::AnimateCollapsePanels()
 {
     return TabletStatusBar::AnimateCollapsePanels();
 }

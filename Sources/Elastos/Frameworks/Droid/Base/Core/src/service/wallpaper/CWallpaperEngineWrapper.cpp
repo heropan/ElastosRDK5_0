@@ -1,6 +1,6 @@
 
 #include "service/wallpaper/CWallpaperEngineWrapper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/HandlerCaller.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -248,7 +248,7 @@ ECode CWallpaperEngineWrapper::GetHandlerCaller(
 {
     VALIDATE_NOT_NULL(caller);
     *caller = mCaller;
-    INTERFACE_ADDREF(*caller);
+    REFCOUNT_ADD(*caller);
     return NOERROR;
 }
 
@@ -257,7 +257,7 @@ ECode CWallpaperEngineWrapper::GetConnection(
 {
     VALIDATE_NOT_NULL(connection);
     *connection = mConnection;
-    INTERFACE_ADDREF(*connection);
+    REFCOUNT_ADD(*connection);
 
     return NOERROR;
 }
@@ -267,7 +267,7 @@ ECode CWallpaperEngineWrapper::GetWindowToken(
 {
     VALIDATE_NOT_NULL(windowToken);
     *windowToken = mWindowToken;
-    INTERFACE_ADDREF(*windowToken);
+    REFCOUNT_ADD(*windowToken);
 
     return NOERROR;
 }

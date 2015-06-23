@@ -5,7 +5,7 @@
 #include "os/SystemClock.h"
 #include "os/Binder.h"
 #include "os/ServiceManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CObjectContainer;
@@ -88,7 +88,7 @@ ECode CAccessibilityManager::GetInstance(
         FAIL_RETURN(CreateSingletonInstance(context, UserHandle::GetMyUserId()));
     }
     *manager = sInstance;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -213,7 +213,7 @@ ECode CAccessibilityManager::GetAccessibilityServiceList(
         services->Add(serviceInfo);
     }
     *serviceList = services;
-    INTERFACE_ADDREF(*serviceList);
+    REFCOUNT_ADD(*serviceList);
     return NOERROR;
 }
 

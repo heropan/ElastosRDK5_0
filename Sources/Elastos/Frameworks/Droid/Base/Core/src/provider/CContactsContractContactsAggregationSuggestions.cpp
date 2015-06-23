@@ -1,7 +1,7 @@
 
 #include "provider/CContactsContractContactsAggregationSuggestions.h"
 #include "provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 
 using Elastos::Droid::Provider::IContactsContractContactsAggregationSuggestionsBuilder;
 using Elastos::Droid::Provider::CContactsContractContactsAggregationSuggestionsBuilder;
@@ -21,7 +21,7 @@ ECode CContactsContractContactsAggregationSuggestions::Builder(
     AutoPtr<IContactsContractContactsAggregationSuggestionsBuilder> builder;
     FAIL_RETURN(CContactsContractContactsAggregationSuggestionsBuilder::New((IContactsContractContactsAggregationSuggestionsBuilder**)&builder))
     *build = builder;
-    INTERFACE_ADDREF(*build);
+    REFCOUNT_ADD(*build);
 
     return NOERROR;
 }

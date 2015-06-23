@@ -7,7 +7,6 @@
 // #include "ConnectTimerTask.h"
 #include "WifiFun.h"
 #include "Ethernet.h"
-#include <elastos/Mutex.h>
 #include <elrefbase.h>
 
 using Elastos::Droid::App::Activity;

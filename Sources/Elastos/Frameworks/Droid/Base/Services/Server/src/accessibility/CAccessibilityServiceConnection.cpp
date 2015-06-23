@@ -6,7 +6,7 @@
 #include "os/SystemClock.h"
 #include "os/ServiceManager.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Graphics::CRect;
@@ -196,7 +196,7 @@ Boolean CAccessibilityServiceConnection::Bind()
     if (!mIsAutomation && mService == NULL) {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
         Boolean result;
-        service->mContext->BindServiceEx(mIntent, IServiceConnection::Probe(this),
+        service->mContext->BindService(mIntent, IServiceConnection::Probe(this),
             IContext::BIND_AUTO_CREATE, mUserId, &result);
         return result;
     }
@@ -815,7 +815,7 @@ void CAccessibilityServiceConnection::NotifyAccessibilityEvent(
     ASSERT_SUCCEEDED(CAccessibilityEventHelper::AcquireSingleton(
             (IAccessibilityEventHelper**)&helper));
     AutoPtr<IAccessibilityEvent> newEvent;
-    helper->ObtainEx(event, (IAccessibilityEvent**)&newEvent);
+    helper->Obtain(event, (IAccessibilityEvent**)&newEvent);
     AutoPtr<IAccessibilityEvent> oldEvent;
     HashMap<Int32, AutoPtr<IAccessibilityEvent> >::Iterator it
             = mPendingEvents.Find(eventType);

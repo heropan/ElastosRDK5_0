@@ -1,7 +1,7 @@
 
 #include "widget/AbsSeekBar.h"
 #include "view/CViewConfiguration.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
@@ -102,7 +102,7 @@ ECode AbsSeekBar::InitFromAttributes(
             ARRAY_SIZE(R::styleable::SeekBar));
     AutoPtr<ITypedArray> a;
 
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
     AutoPtr<IDrawable> thumb;
     FAIL_RETURN(a->GetDrawable(R::styleable::SeekBar_thumb,
@@ -121,7 +121,7 @@ ECode AbsSeekBar::InitFromAttributes(
     attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::Theme),
                 ARRAY_SIZE(R::styleable::Theme));
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, 0, 0, (ITypedArray**)&a));
     FAIL_RETURN(a->GetFloat(
         R::styleable::Theme_disabledAlpha,

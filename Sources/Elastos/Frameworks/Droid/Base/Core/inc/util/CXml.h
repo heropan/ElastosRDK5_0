@@ -33,7 +33,7 @@ public:
      * Parses xml from the given reader and fires events on the given SAX
      * handler.
      */
-    CARAPI ParseEx(
+    CARAPI Parse(
         /* [in] */ IReader * in,
         /* [in] */ IContentHandler * contentHandler);
 
@@ -41,7 +41,7 @@ public:
      * Parses xml from the given input stream and fires events on the given SAX
      * handler.
      */
-    CARAPI ParseEx2(
+    CARAPI Parse(
         /* [in] */ IInputStream * in,
         // /* [in] */ IEncoding * encoding,
         /* [in] */ IContentHandler * contentHandler);

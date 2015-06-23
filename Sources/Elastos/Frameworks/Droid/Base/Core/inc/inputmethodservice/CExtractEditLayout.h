@@ -4,8 +4,8 @@
 
 #include "_CExtractEditLayout.h"
 #include "widget/LinearLayout.h"
-#include "widget/LinearLayoutMacro.h"
-#include "view/ViewMacro.h"
+
+
 #include "view/ActionMode.h"
 
 using Elastos::Droid::Widget::LinearLayout;
@@ -52,7 +52,7 @@ protected:
             /* [in] */ ICharSequence* title);
 
         //@Override
-        CARAPI SetTitleEx(
+        CARAPI SetTitle(
             /* [in] */ Int32 resId);
 
         //@Override
@@ -60,7 +60,7 @@ protected:
             /* [in] */ ICharSequence* subtitle);
 
         //@Override
-        CARAPI SetSubtitleEx(
+        CARAPI SetSubtitle(
             /* [in] */ Int32 resId);
 
         //@Override

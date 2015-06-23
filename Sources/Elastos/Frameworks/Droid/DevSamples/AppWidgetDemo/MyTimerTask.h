@@ -2,14 +2,13 @@
 #ifndef __MyTimerTask_H__
 #define __MyTimerTask_H__
 
-#include <Elastos.Core.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
+#include <Elastos.CoreLibrary.h>
 #include <elrefbase.h>
-#include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>
 #include "CTimeService.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::ITimer;
 using Elastos::Utility::ITimerTask;
 

@@ -22,7 +22,7 @@ ECode CSoundManagerHelper::GetInstance(
     }
 
     *sm = mInstance;
-    INTERFACE_ADDREF(*sm);
+    REFCOUNT_ADD(*sm);
     return NOERROR;
 }
 

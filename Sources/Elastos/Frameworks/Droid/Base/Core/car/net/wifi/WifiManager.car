@@ -1162,7 +1162,7 @@ module
          * initialized again
          * @hide
          */
-        ConnectEx(
+        Connect(
             [in] Int32 networkId,
             [in] IWifiManagerActionListener* listener);
 
@@ -1299,7 +1299,7 @@ module
          *
          * @see WifiLock
          */
-        CreateWifiLockEx(
+        CreateWifiLock(
             [in] String tag,
             [out] IWifiLock** lock);
 

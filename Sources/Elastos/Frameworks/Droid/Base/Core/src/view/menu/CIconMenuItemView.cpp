@@ -91,7 +91,7 @@ ECode CIconMenuItemView::SetTitle(
     return IconMenuItemView::SetTitle(title);
 }
 
-ECode CIconMenuItemView::SetEnabledEx(
+ECode CIconMenuItemView::SetEnabled(
     /* [in] */ Boolean enabled)
 {
     return IconMenuItemView::SetEnabled(enabled);

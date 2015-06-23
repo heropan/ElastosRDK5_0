@@ -201,7 +201,7 @@ public:
         /* [in] */ const String& pkg2,
         /* [out] */ Int32* result);
 
-    CARAPI CheckSignaturesEx(
+    CARAPI CheckSignatures(
         /* [in] */ Int32 uid1,
         /* [in] */ Int32 uid2,
         /* [out] */ Int32* result);
@@ -222,7 +222,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ IObjectContainer** infos);
 
-    CARAPI GetInstalledPackagesEx(
+    CARAPI GetInstalledPackages(
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
         /* [out] */ IObjectContainer** infos);
@@ -260,7 +260,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ IObjectContainer** resolves);
 
-    CARAPI QueryBroadcastReceiversEx(
+    CARAPI QueryBroadcastReceivers(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
@@ -318,7 +318,7 @@ public:
         /* [in] */ IComponentName* activityName,
         /* [out] */ IDrawable** icon);
 
-    CARAPI GetActivityIconEx(
+    CARAPI GetActivityIcon(
         /* [in] */ IIntent* intent,
         /* [out] */ IDrawable** icon);
 
@@ -329,7 +329,7 @@ public:
         /* [in] */ IApplicationInfo* info,
         /* [out] */ IDrawable** icon);
 
-    CARAPI GetApplicationIconEx(
+    CARAPI GetApplicationIcon(
         /* [in] */ const String& packageName,
         /* [out] */ IDrawable** icon);
 
@@ -337,7 +337,7 @@ public:
         /* [in] */ IComponentName* activityName,
         /* [out] */ IDrawable** logo);
 
-    CARAPI GetActivityLogoEx(
+    CARAPI GetActivityLogo(
         /* [in] */ IIntent* intent,
         /* [out] */ IDrawable** logo);
 
@@ -345,7 +345,7 @@ public:
         /* [in] */ IApplicationInfo* info,
         /* [out] */ IDrawable** logo);
 
-    CARAPI GetApplicationLogoEx(
+    CARAPI GetApplicationLogo(
         /* [in] */ const String& packageName,
         /* [out] */ IDrawable** logo);
 
@@ -357,7 +357,7 @@ public:
         /* [in] */ IApplicationInfo* app,
         /* [out] */ IResources** res);
 
-    CARAPI GetResourcesForApplicationEx(
+    CARAPI GetResourcesForApplication(
         /* [in] */ const String& appPackageName,
         /* [out] */ IResources** res);
 
@@ -483,7 +483,7 @@ public:
         /* [in] */ ArrayOf<IComponentName*>* set,
         /* [in] */ IComponentName* activity);
 
-    CARAPI AddPreferredActivityEx(
+    CARAPI AddPreferredActivity(
         /* [in] */ IIntentFilter* filter,
         /* [in] */ Int32 match,
         /* [in] */ ArrayOf<IComponentName*>* set,
@@ -531,7 +531,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ IPackageInfo** info);
 
-    CARAPI GetPackageSizeInfoEx(
+    CARAPI GetPackageSizeInfo(
         /* [in] */ const String& packageName,
         /* [in] */ IPackageStatsObserver* observer);
 

@@ -6,14 +6,12 @@
 #include "content/PackageMonitor.h"
 #include <ext/frameworkext.h>
 #include <Elastos.Droid.Core.h>
-#include <elastos/ThreadBase.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileInputStream;
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::ICalendar;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Content::IContext;

@@ -202,7 +202,7 @@ module
          * @see android.graphics.Bitmap#setDensity(Int32)
          * @see android.graphics.Bitmap#getDensity()
          */
-        SetTargetDensityEx(
+        SetTargetDensity(
             [in] IDisplayMetrics* metrics);
 
         /**
@@ -213,7 +213,7 @@ module
          * @see android.graphics.Bitmap#setDensity(Int32)
          * @see android.graphics.Bitmap#getDensity()
          */
-        SetTargetDensityEx2(
+        SetTargetDensity(
             [in] Int32 density);
 
         /**

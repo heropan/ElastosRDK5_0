@@ -23,7 +23,7 @@ ECode CDateFormat::GetTimeFormat(
     VALIDATE_NOT_NULL(format);
     AutoPtr<Elastos::Text::IDateFormat> f = DateFormat::GetTimeFormat(context);
     *format = f;
-    INTERFACE_ADDREF(*format);
+    REFCOUNT_ADD(*format);
     return NOERROR;
 }
 
@@ -34,7 +34,7 @@ ECode CDateFormat::GetDateFormat(
     VALIDATE_NOT_NULL(format);
     AutoPtr<Elastos::Text::IDateFormat> f = DateFormat::GetDateFormat(context);
     *format = f;
-    INTERFACE_ADDREF(*format);
+    REFCOUNT_ADD(*format);
     return NOERROR;
 }
 
@@ -46,7 +46,7 @@ ECode CDateFormat::GetDateFormatForSetting(
     VALIDATE_NOT_NULL(format);
     AutoPtr<Elastos::Text::IDateFormat> f = DateFormat::GetDateFormatForSetting(context, value);
     *format = f;
-    INTERFACE_ADDREF(*format);
+    REFCOUNT_ADD(*format);
     return NOERROR;
 }
 
@@ -57,7 +57,7 @@ ECode CDateFormat::GetLongDateFormat(
     VALIDATE_NOT_NULL(format);
     AutoPtr<Elastos::Text::IDateFormat> f = DateFormat::GetLongDateFormat(context);
     *format = f;
-    INTERFACE_ADDREF(*format);
+    REFCOUNT_ADD(*format);
     return NOERROR;
 }
 
@@ -68,7 +68,7 @@ ECode CDateFormat::GetMediumDateFormat(
     VALIDATE_NOT_NULL(format);
     AutoPtr<Elastos::Text::IDateFormat> f = DateFormat::GetMediumDateFormat(context);
     *format = f;
-    INTERFACE_ADDREF(*format);
+    REFCOUNT_ADD(*format);
     return NOERROR;
 }
 
@@ -79,7 +79,7 @@ ECode CDateFormat::GetDateFormatOrder(
     VALIDATE_NOT_NULL(order);
     AutoPtr< ArrayOf<Char32> > o =DateFormat::GetDateFormatOrder(context);
     *order = o;
-    INTERFACE_ADDREF(*order);
+    REFCOUNT_ADD(*order);
     return NOERROR;
 }
 
@@ -91,11 +91,11 @@ ECode CDateFormat::Format(
     VALIDATE_NOT_NULL(result);
     AutoPtr<ICharSequence> r = DateFormat::Format(inFormat, inTimeInMillis);
     *result = r;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CDateFormat::FormatEx(
+ECode CDateFormat::Format(
     /* [in] */ ICharSequence* inFormat,
     /* [in] */ IDate* inDate,
     /* [out] */ ICharSequence** result)
@@ -103,7 +103,7 @@ ECode CDateFormat::FormatEx(
     VALIDATE_NOT_NULL(result);
     AutoPtr<ICharSequence> r = DateFormat::Format(inFormat, inDate);
     *result = r;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -116,7 +116,7 @@ ECode CDateFormat::HasSeconds(
     return NOERROR;
 }
 
-ECode CDateFormat::FormatEx2(
+ECode CDateFormat::Format(
     /* [in] */ ICharSequence* inFormat,
     /* [in] */ ICalendar* inDate,
     /* [out] */ ICharSequence** result)
@@ -124,7 +124,7 @@ ECode CDateFormat::FormatEx2(
     VALIDATE_NOT_NULL(result);
     AutoPtr<ICharSequence> r = DateFormat::Format(inFormat, inDate);
     *result = r.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

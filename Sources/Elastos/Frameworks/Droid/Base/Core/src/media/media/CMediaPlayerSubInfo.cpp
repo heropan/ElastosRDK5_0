@@ -30,7 +30,7 @@ ECode CMediaPlayerSubInfo::GetName(
 {
     VALIDATE_NOT_NULL(name);
     *name = mName;
-    INTERFACE_ADDREF(*name);
+    REFCOUNT_ADD(*name);
     return NOERROR;
 }
 

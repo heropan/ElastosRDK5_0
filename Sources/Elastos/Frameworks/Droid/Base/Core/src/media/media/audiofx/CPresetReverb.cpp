@@ -33,10 +33,10 @@ ECode CPresetReverb::BaseParameterListener::OnParameterChange(
         Int16 v = -1;
 
         if (param->GetLength() == 4) {
-            mHost->ByteArrayToInt32Ex(param, 0, &p);
+            mHost->ByteArrayToInt32(param, 0, &p);
         }
         if (value->GetLength() == 2) {
-            mHost->ByteArrayToInt16Ex(value, 0, &v);
+            mHost->ByteArrayToInt16(value, 0, &v);
         }
         if (p != -1 && v != -1) {
             l->OnParameterChange((IPresetReverb*)mHost, status, p, v);
@@ -73,7 +73,7 @@ ECode CPresetReverb::SetPreset(
     /* [in] */ Int16 preset)
 {
     Int32 status;
-    SetParameterEx2(IPresetReverb::PARAM_PRESET, preset, &status);
+    SetParameter(IPresetReverb::PARAM_PRESET, preset, &status);
     return CheckStatus(status);
 }
 
@@ -84,13 +84,13 @@ ECode CPresetReverb::GetPreset(
 
     AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameterEx3(IPresetReverb::PARAM_PRESET, value, &status);
+    GetParameter(IPresetReverb::PARAM_PRESET, value, &status);
     CheckStatus(status);
     *preset = (*value)[0];
     return NOERROR;
 }
 
-ECode CPresetReverb::SetParameterListenerEx(
+ECode CPresetReverb::SetParameterListener(
         /* [in] */ IPresetReverbOnParameterChangeListener* listener)
 {
     Mutex::Autolock lock(&mParamListenerLock);
@@ -111,11 +111,11 @@ ECode CPresetReverb::GetProperties(
     CPresetReverbSettings::New((IPresetReverbSettings**)&settings);
     AutoPtr<ArrayOf<Int16> > value = ArrayOf<Int16>::Alloc(1);
     Int32 status;
-    GetParameterEx3(IPresetReverb::PARAM_PRESET, value, &status);
+    GetParameter(IPresetReverb::PARAM_PRESET, value, &status);
     CheckStatus(status);
     settings->SetPreset((*value)[0]);
     *properties = settings;
-    INTERFACE_ADDREF(*properties);
+    REFCOUNT_ADD(*properties);
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode CPresetReverb::SetProperties(
     Int16 preset;
     settings->GetPreset(&preset);
     Int32 status;
-    SetParameterEx2(IPresetReverb::PARAM_PRESET, preset, &status);
+    SetParameter(IPresetReverb::PARAM_PRESET, preset, &status);
     return CheckStatus(status);
 }
 

@@ -6,10 +6,10 @@
 #include "wm/DisplayContent.h"
 #include "wm/MagnificationSpec.h"
 #include "wm/WindowStateAnimator.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "input/InputWindowHandle.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IWindowState;
 using Elastos::Droid::View::IWindowManagerLayoutParams;

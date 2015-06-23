@@ -97,7 +97,7 @@ module
          *
          * @return service discovery request.
          */
-        NewInstanceEx(
+        NewInstance(
             [in] Int32 protocolType,
             [out] IWifiP2pServiceRequest** instance);
     }

@@ -2,9 +2,9 @@
 #define __CNAVIGATIONBARVIEW_H_
 
 #include "_CNavigationBarView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/phone/NavigationBarView.h"
 
 namespace Elastos {
@@ -69,14 +69,14 @@ public:
     CARAPI SetNavigationIconHints(
         /* [in] */ Int32 hints);
 
-    CARAPI SetNavigationIconHintsEx(
+    CARAPI SetNavigationIconHints(
         /* [in] */ Int32 hints,
         /* [in] */ Boolean force);
 
     CARAPI SetDisabledFlags(
         /* [in] */ Int32 disabledFlags);
 
-    CARAPI SetDisabledFlagsEx(
+    CARAPI SetDisabledFlags(
         /* [in] */ Int32 disabledFlags,
         /* [in] */ Boolean force);
 
@@ -86,14 +86,14 @@ public:
     CARAPI SetMenuVisibility(
         /* [in] */ Boolean show);
 
-    CARAPI SetMenuVisibilityEx(
+    CARAPI SetMenuVisibility(
         /* [in] */ Boolean show,
         /* [in] */ Boolean force);
 
     CARAPI SetLowProfile(
         /* [in] */ Boolean lightsOut);
 
-    CARAPI SetLowProfileEx(
+    CARAPI SetLowProfile(
         /* [in] */ Boolean lightsOut,
         /* [in] */ Boolean animate,
         /* [in] */ Boolean force);

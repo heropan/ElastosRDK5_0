@@ -36,10 +36,10 @@ ECode CAnimatedImageView::constructor(
     return AnimatedImageView::Init(context, attrs);
 }
 
-ECode CAnimatedImageView::SetAlphaEx(
+ECode CAnimatedImageView::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    return AnimatedImageView::SetAlphaEx(alpha);
+    return AnimatedImageView::SetAlpha(alpha);
 }
 
 }// namespace StatusBar

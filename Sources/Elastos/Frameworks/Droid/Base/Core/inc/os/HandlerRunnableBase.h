@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
 #define __ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
 
-#include "os/HandlerMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

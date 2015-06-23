@@ -41,7 +41,7 @@ AppWaitingForDebuggerDialog::AppWaitingForDebuggerDialog(
     CStringWrapper::New(text.ToString(), (ICharSequence**)&textMsg);
     SetMessage(textMsg);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(1, (IInterface*)app, (IMessage**)&msg);
+    mHandler->ObtainMessage(1, (IInterface*)app, (IMessage**)&msg);
     AutoPtr<ICharSequence> btMsg;
     CStringWrapper::New(String("Force Close"), (ICharSequence**)&btMsg);
     SetButton(IDialogInterface::BUTTON_POSITIVE, btMsg, msg);

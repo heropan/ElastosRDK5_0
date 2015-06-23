@@ -1,7 +1,7 @@
 
 #include "content/res/CObbInfo.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ISystem;
@@ -84,7 +84,7 @@ ECode CObbInfo::GetSalt(
 {
     VALIDATE_NOT_NULL(salt)
     *salt = mSalt;
-    INTERFACE_ADDREF(*salt)
+    REFCOUNT_ADD(*salt)
     return NOERROR;
 }
 

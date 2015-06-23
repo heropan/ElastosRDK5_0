@@ -6,10 +6,8 @@
 #include "am/BaseErrorDialog.h"
 #include "am/AppErrorResult.h"
 #include "am/ProcessRecord.h"
-#include <elastos/Mutex.h>
 
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;

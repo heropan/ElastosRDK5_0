@@ -4,8 +4,8 @@
 #define __CSTATUSBARICONVIEW_H__
 
 #include "_CStatusBarIconView.h"
-#include "view/ViewMacro.h"
-#include "widget/ImageViewMacro.h"
+
+
 #include "systemui/statusbar/StatusBarIconView.h"
 
 namespace Elastos {
@@ -45,7 +45,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

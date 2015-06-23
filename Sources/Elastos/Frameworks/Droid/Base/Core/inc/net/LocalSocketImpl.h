@@ -3,11 +3,10 @@
 #define __ELASTOS_DROID_NET_CLOCALSOCKETIMPL_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
 #include <elastos/io/InputStream.h>
 #include <elastos/io/OutputStream.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::OutputStream;
@@ -61,7 +60,7 @@ private:
             /* [out] */ ArrayOf<Byte>* b,
             /* [out] */ Int32* result);
 
-        CARAPI ReadBytesEx(
+        CARAPI ReadBytes(
             /* [out] */ ArrayOf<Byte>* b,
             /* [in] */ Int32 off,
             /* [in] */ Int32 len,
@@ -118,7 +117,7 @@ private:
         CARAPI WriteBytes(
             /* [in] */ const ArrayOf<Byte>& b);
 
-        CARAPI WriteBytesEx(
+        CARAPI WriteBytes(
             /* [in] */ const ArrayOf<Byte>& b,
             /* [in] */ Int32 off,
             /* [in] */ Int32 len);

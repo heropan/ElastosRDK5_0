@@ -4,10 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "webkit/WebHistoryItemClassic.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

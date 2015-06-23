@@ -9,7 +9,7 @@
 #include "animation/CAnimatorSet.h"
 #include "animation/CObjectAnimator.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Utility::CDisplayMetrics;
@@ -76,7 +76,7 @@ ECode ActionBarContextView::Init(
     AutoPtr<ArrayOf<Int32> > values = ArrayOf<Int32>::Alloc(
         const_cast<Int32*>(R::styleable::ActionMode),
         ARRAY_SIZE(R::styleable::ActionMode));
-    context->ObtainStyledAttributesEx3(attrs, values, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, values, defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<IDrawable> dr;
     a->GetDrawable(
@@ -87,7 +87,7 @@ ECode ActionBarContextView::Init(
     a->GetResourceId(
         R::styleable::ActionMode_subtitleTextStyle, 0, &mSubtitleStyleRes);
 
-    a->GetLayoutDimensionEx(
+    a->GetLayoutDimension(
         R::styleable::ActionMode_height, 0, &mContentHeight);
 
     a->GetDrawable(
@@ -151,7 +151,7 @@ ECode ActionBarContextView::SetSplitActionBar(
                 mMenuView->GetParent((IViewParent**)&oldParent);
                 IViewManager* vm = IViewManager::Probe(oldParent);
                 if (vm != NULL) vm->RemoveView(mMenuView);
-                mSplitView->AddViewEx3(mMenuView, layoutParams);
+                mSplitView->AddView(mMenuView, layoutParams);
             }
         }
         AbsActionBarView::SetSplitActionBar(split);
@@ -256,7 +256,7 @@ ECode ActionBarContextView::InitForMode(
     if (mClose == NULL) {
         AutoPtr<ILayoutInflater> inflater;
         LayoutInflater::From(mContext, (ILayoutInflater**)&inflater);
-        inflater->InflateEx2(R::layout::action_mode_close_item,
+        inflater->Inflate(R::layout::action_mode_close_item,
             THIS_PROBE(IViewGroup), FALSE, (IView**)&mClose);
         AddView(mClose);
     } else if ((mClose->GetParent((IViewParent**)&vp), vp) == NULL) {
@@ -308,7 +308,7 @@ ECode ActionBarContextView::InitForMode(
         mActionMenuPresenter->GetMenuView(THIS_PROBE(IViewGroup), (IMenuView**)&view);
         mMenuView = IActionMenuView::Probe(view);
         mMenuView->SetBackgroundDrawable(mSplitBackground);
-        mSplitView->AddViewEx3(mMenuView, layoutParams);
+        mSplitView->AddView(mMenuView, layoutParams);
     }
 
     mAnimateInOnLayout = TRUE;

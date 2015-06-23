@@ -2,7 +2,7 @@
 #include "graphics/drawable/TransitionDrawable.h"
 #include "graphics/drawable/CTransitionDrawable.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::SystemClock;
 
@@ -28,7 +28,7 @@ ECode TransitionDrawable::TransitionState::NewDrawable(
 }
 
 //@Override
-ECode TransitionDrawable::TransitionState::NewDrawableEx(
+ECode TransitionDrawable::TransitionState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {

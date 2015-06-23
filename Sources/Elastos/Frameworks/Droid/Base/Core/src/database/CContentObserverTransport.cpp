@@ -11,7 +11,7 @@ ECode CContentObserverTransport::OnChange(
 {
     AutoPtr<IContentObserver> contentObserver = mContentObserver;
     if (contentObserver) {
-        contentObserver->DispatchChangeEx(selfChange, uri);
+        contentObserver->DispatchChange(selfChange, uri);
     }
     return NOERROR;
 }

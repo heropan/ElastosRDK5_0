@@ -3,8 +3,8 @@
 #include "CPhoneNumberUtils.h"
 #include "net/CUriHelper.h"
 #include "CCallerInfoAsyncQuery.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::CUriHelper;
@@ -50,11 +50,11 @@ ECode CCallerInfoAsyncQueryHelper::StartQuery(
                             String(NULL));  // orderBy
 
     *cia = c;
-    INTERFACE_ADDREF(*cia);
+    REFCOUNT_ADD(*cia);
     return NOERROR;
 }
 
-ECode CCallerInfoAsyncQueryHelper::StartQueryEx(
+ECode CCallerInfoAsyncQueryHelper::StartQuery(
     /* [in] */ Int32 token,
     /* [in] */ IContext* context,
     /* [in] */ const String& number,
@@ -167,7 +167,7 @@ ECode CCallerInfoAsyncQueryHelper::StartQueryEx(
                           (ArrayOf<String>*)selectionArgs,  // selectionArgs
                           String(NULL));  // orderBy
     *cia = c;
-    INTERFACE_ADDREF(*cia);
+    REFCOUNT_ADD(*cia);
     return NOERROR;
 }
 

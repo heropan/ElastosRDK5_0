@@ -1,7 +1,7 @@
 
 #include "BluetoothOutputStream.h"
 #include "BluetoothSocket.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::EIID_ICloseable;
@@ -81,7 +81,7 @@ ECode BluetoothOutputStream::Write(
     return mSocket->Write(b, 0, 1, &count);
 }
 
-ECode BluetoothOutputStream::WriteBytesEx(
+ECode BluetoothOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte> & buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -121,7 +121,7 @@ ECode BluetoothOutputStream::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = OutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

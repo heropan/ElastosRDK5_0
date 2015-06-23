@@ -4,14 +4,13 @@
 
 #include "ext/frameworkext.h"
 #include "_CHardwareCamera.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <camera/Camera.h>
 #include <system/camera.h>
 #include <utils/Vector.h>
 
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IPoint;
@@ -267,7 +266,7 @@ public:
          *         same as those of this size. {@code FALSE} otherwise.
          */
         //@Override
-        CARAPI EqualsEx(
+        CARAPI Equals(
             /* [in] */ ICameraSize* obj,
             /* [out] */ Boolean* e);
 
@@ -390,7 +389,7 @@ public:
             /* [in] */ const String& key,
             /* [in] */ const String& value);
 
-        CARAPI SetEx(
+        CARAPI Set(
             /* [in] */ const String& key,
             /* [in] */ Int32 value);
 
@@ -1030,7 +1029,7 @@ public:
      *
      * <p>You must call this as soon as you're done with the Camera object.</p>
      */
-    CARAPI ReleaseEx();
+    CARAPI Release();
 
 
     /**
@@ -1311,7 +1310,7 @@ public:
      * @param postview  callback with postview image data, may be NULL
      * @param jpeg      the callback for JPEG image data, or NULL
      */
-    CARAPI TakePictureEx(
+    CARAPI TakePicture(
         /* [in] */ IShutterCallback* shutter,
         /* [in] */ IPictureCallback* raw,
         /* [in] */ IPictureCallback* postview,

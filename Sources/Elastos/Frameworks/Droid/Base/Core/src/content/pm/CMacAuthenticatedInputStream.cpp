@@ -70,14 +70,14 @@ ECode CMacAuthenticatedInputStream::Read(
     return NOERROR;
 }
 
-ECode CMacAuthenticatedInputStream::ReadBytesEx(
+ECode CMacAuthenticatedInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
     Int32 numRead;
-    FilterInputStream::ReadBytesEx(buffer, offset, count, &numRead);
+    FilterInputStream::ReadBytes(buffer, offset, count, &numRead);
     if (numRead > 0) {
         // TODO:
         // mMac->Update(buffer, offset, numRead);
@@ -135,7 +135,7 @@ ECode CMacAuthenticatedInputStream::GetLock(
 
     AutoPtr<IInterface> obj = FilterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

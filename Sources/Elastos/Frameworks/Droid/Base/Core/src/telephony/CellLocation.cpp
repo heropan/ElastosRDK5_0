@@ -61,7 +61,7 @@ ECode CellLocation::NewFromBundle(
             AutoPtr<ICdmaCellLocation> cc;
             CCdmaCellLocation::New(bundle, (ICdmaCellLocation**)&cc);
             *cl = ICellLocation::Probe(cc);
-            INTERFACE_ADDREF(*cl);
+            REFCOUNT_ADD(*cl);
             return NOERROR;
         }
     case IPhoneConstants::PHONE_TYPE_GSM:
@@ -69,7 +69,7 @@ ECode CellLocation::NewFromBundle(
             AutoPtr<IGsmCellLocation> gc;
             CGsmCellLocation::New(bundle, (IGsmCellLocation**)&gc);
             *cl = ICellLocation::Probe(gc);
-            INTERFACE_ADDREF(*cl);
+            REFCOUNT_ADD(*cl);
             return NOERROR;
         }
     default:
@@ -96,7 +96,7 @@ ECode CellLocation::GetEmpty(
             AutoPtr<ICdmaCellLocation> cc;
             CCdmaCellLocation::New((ICdmaCellLocation**)&cc);
             *cl = ICellLocation::Probe(cc);
-            INTERFACE_ADDREF(*cl);
+            REFCOUNT_ADD(*cl);
             return NOERROR;
         }
     case IPhoneConstants::PHONE_TYPE_GSM:
@@ -104,7 +104,7 @@ ECode CellLocation::GetEmpty(
             AutoPtr<IGsmCellLocation> gc;
             CGsmCellLocation::New((IGsmCellLocation**)&gc);
             *cl = ICellLocation::Probe(gc);
-            INTERFACE_ADDREF(*cl);
+            REFCOUNT_ADD(*cl);
             return NOERROR;
         }
     default:

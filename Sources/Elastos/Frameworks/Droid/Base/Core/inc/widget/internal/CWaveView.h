@@ -1,6 +1,6 @@
 #include "_CWaveView.h"
 #include "internal/WaveView.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Droid::Animation::IValueAnimator;
 

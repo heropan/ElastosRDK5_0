@@ -5,9 +5,8 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "webkit/WebStorage.h"
-#include <elastos/Mutex.h>
 #include <elastos/Set.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Utility::ICollection;

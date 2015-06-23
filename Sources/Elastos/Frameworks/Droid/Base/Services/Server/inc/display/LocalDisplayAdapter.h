@@ -7,9 +7,9 @@
 #include "display/DisplayDevice.h"
 #include "display/DisplayDeviceInfo.h"
 #include "view/DisplayEventReceiver.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::View::IPhysicalDisplayInfo;
 using Elastos::Droid::View::DisplayEventReceiver;

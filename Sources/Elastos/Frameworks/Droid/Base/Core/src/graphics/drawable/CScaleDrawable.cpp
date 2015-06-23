@@ -50,7 +50,7 @@ ECode CScaleDrawable::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> d = ScaleDrawable::GetDrawable();
     *drawable = d;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

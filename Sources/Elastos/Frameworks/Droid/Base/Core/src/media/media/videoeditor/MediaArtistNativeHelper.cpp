@@ -5,7 +5,7 @@
 #include "graphics/CCanvas.h"
 #include "graphics/CMatrix.h"
 #include "graphics/CBitmapFactory.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "CVideoEditorOverlayData.h"
 #include "CMediaImageItem.h"
 #include "CVideoEditorProfileHelper.h"
@@ -84,11 +84,11 @@ ECode MediaArtistNativeHelper::MediaArtistNativeHelperNativeGetPixelsListCallbac
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> outBitmap;
-    bitmapFactory->CreateBitmapEx3(mWidth, mHeight, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&outBitmap);
+    bitmapFactory->CreateBitmap(mWidth, mHeight, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&outBitmap);
 
     // Copy int[] to IntBuffer
     mDecBuffer->Rewind();
-    mDecBuffer->PutInt32sEx(*mDecArray, 0, mThumbnailSize);
+    mDecBuffer->PutInt32s(*mDecArray, 0, mThumbnailSize);
     mDecBuffer->Rewind();
 
     if (!mNeedToMassage) {
@@ -110,10 +110,10 @@ ECode MediaArtistNativeHelper::MediaArtistNativeHelperNativeGetPixelsListCallbac
         Float sx = 1 / mDecWidth;
         Float sy = 1 / mDecHeight;
         Boolean b;
-        m->PostScaleEx(sx, sy, &b);
+        m->PostScale(sx, sy, &b);
         m->PostRotate(mVideoRotation, 0.5f, 0.5f, &b);
-        m->PostScaleEx(mWidth, mHeight, &b);
-        canvas->DrawBitmapEx5(mBitmap, m, sResizePaint);
+        m->PostScale(mWidth, mHeight, &b);
+        canvas->DrawBitmap(mBitmap, m, sResizePaint);
     }
     mCallback->OnThumbnail(outBitmap, index);
     return NOERROR;
@@ -129,7 +129,7 @@ ECode MediaArtistNativeHelper::Version::GetVersion(
     version->revision = Version::VIDEOEDITOR_REVISION_VERSION;
 
     *result = version;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -309,7 +309,7 @@ void MediaArtistNativeHelper::OnPreviewProgressUpdate(
                 AutoPtr<IBitmapFactory> factory;
                 CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
                 AutoPtr<IBitmap> bitmap;
-                factory->DecodeFileEx(filename, (IBitmap**)&bitmap);
+                factory->DecodeFile(filename, (IBitmap**)&bitmap);
                 ((CVideoEditorOverlayData*)overlayData.Get())->Set(bitmap, renderingMode);
             } else {
                 ((CVideoEditorOverlayData*)overlayData.Get())->SetClear();
@@ -387,7 +387,7 @@ ECode MediaArtistNativeHelper::GetEffectSettings(
     effectSettings->alphaBlendingFadeInTimePercent = 0;
     effectSettings->alphaBlendingFadeOutTimePercent = 0;
     *result = effectSettings;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -512,7 +512,7 @@ ECode MediaArtistNativeHelper::GetOverlaySettings(
     }
     effectSettings->framingScaledSize = FindVideoResolution(aspectRatio, mediaItemHeight);
     *result = effectSettings;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1570,7 +1570,7 @@ ECode MediaArtistNativeHelper::RenderPreviewFrame(
             AutoPtr<IBitmapFactory> factory;
             CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
             AutoPtr<IBitmap> bitmap;
-            factory->DecodeFileEx(mRenderPreviewOverlayFile, (IBitmap**)&bitmap);
+            factory->DecodeFile(mRenderPreviewOverlayFile, (IBitmap**)&bitmap);
             ((CVideoEditorOverlayData*)overlayData)->Set(bitmap, mRenderPreviewRenderingMode);
         }
         else {
@@ -2243,7 +2243,7 @@ ECode MediaArtistNativeHelper::GetPixelsList(
     if(needToMassage) {
         AutoPtr<IBitmapFactory> bitmapFactory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
-        bitmapFactory->CreateBitmapEx3(decWidth, decHeight, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&tmpBitmap);
+        bitmapFactory->CreateBitmap(decWidth, decHeight, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&tmpBitmap);
     } else {
         tmpBitmap = NULL;
     }

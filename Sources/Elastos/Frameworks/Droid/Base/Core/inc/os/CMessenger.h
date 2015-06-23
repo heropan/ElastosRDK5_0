@@ -36,7 +36,7 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32* hashcode);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IMessenger* other,
         /* [out] */ Boolean* equals);
 

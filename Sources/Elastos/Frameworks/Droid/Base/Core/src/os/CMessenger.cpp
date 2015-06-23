@@ -47,7 +47,7 @@ ECode CMessenger::GetIMessenger(
 {
     VALIDATE_NOT_NULL(mgr);
     *mgr = mTarget;
-    INTERFACE_ADDREF(*mgr);
+    REFCOUNT_ADD(*mgr);
     return NOERROR;
 }
 
@@ -59,7 +59,7 @@ ECode CMessenger::GetHashCode(
     return NOERROR;
 }
 
-ECode CMessenger::EqualsEx(
+ECode CMessenger::Equals(
     /* [in] */ IMessenger* other,
     /* [out] */ Boolean* equals)
 {
@@ -79,7 +79,7 @@ ECode CMessenger::Equals(
     /* [out] */ Boolean* equals)
 {
     VALIDATE_NOT_NULL(equals);
-    return EqualsEx(IMessenger::Probe(other), equals);
+    return Equals(IMessenger::Probe(other), equals);
 }
 
 } // namespace Os

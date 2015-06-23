@@ -101,7 +101,7 @@ public:
      * @return A Cursor of instances matching the search terms in the given
      *         time range
      */
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ IContentResolver* cr,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ Int64 begin,

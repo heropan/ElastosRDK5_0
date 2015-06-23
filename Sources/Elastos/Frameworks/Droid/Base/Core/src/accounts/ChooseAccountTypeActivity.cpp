@@ -6,7 +6,7 @@
 #include "os/CBundle.h"
 #include "content/CIntent.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::CObjectContainer;
@@ -178,10 +178,10 @@ ECode ChooseAccountTypeActivity::AccountArrayAdapter::AddAll(
     return ArrayAdapter::AddAll(collection);
 }
 
-ECode ChooseAccountTypeActivity::AccountArrayAdapter::AddAllEx(
+ECode ChooseAccountTypeActivity::AccountArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    return ArrayAdapter::AddAllEx(items);
+    return ArrayAdapter::AddAll(items);
 }
 
 ECode ChooseAccountTypeActivity::AccountArrayAdapter::Insert(
@@ -220,7 +220,7 @@ ECode ChooseAccountTypeActivity::AccountArrayAdapter::GetContext(
     VALIDATE_NOT_NULL(context);
     AutoPtr<IContext> ctx = ArrayAdapter::GetContext();
     *context = ctx;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -275,7 +275,7 @@ ECode ChooseAccountTypeActivity::AccountArrayAdapter::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> tdView = ArrayAdapter::GetDropDownView(position, convertView, parent);
     *view = tdView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -306,7 +306,7 @@ ECode ChooseAccountTypeActivity::AccountArrayAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> i = ArrayAdapter::GetItem(position);
     *item = i;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -360,7 +360,7 @@ ECode ChooseAccountTypeActivity::AccountArrayAdapter::GetView(
     holder->mIcon->SetImageDrawable((*mInfos)[position]->mDrawable);
 
     *view = convertView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -466,8 +466,8 @@ ECode ChooseAccountTypeActivity::OnCreate(
                 String("no allowable account types"));
         AutoPtr<IIntent> intent;
         ASSERT_SUCCEEDED(CIntent::New((IIntent**)&intent));
-        intent->PutExtrasEx(bundle);
-        SetResultEx(IActivity::RESULT_OK, intent);
+        intent->PutExtras(bundle);
+        SetResult(IActivity::RESULT_OK, intent);
         return Finish();
     }
 
@@ -502,8 +502,8 @@ void ChooseAccountTypeActivity::SetResultAndFinish(
     bundle->PutString(IAccountManager::KEY_ACCOUNT_TYPE, type);
     AutoPtr<IIntent> intent;
     ASSERT_SUCCEEDED(CIntent::New((IIntent**)&intent));
-    intent->PutExtrasEx(bundle);
-    SetResultEx(IActivity::RESULT_OK, intent);
+    intent->PutExtras(bundle);
+    SetResult(IActivity::RESULT_OK, intent);
     // if (Log.isLoggable(TAG, Log.VERBOSE)) {
     //     Log.v(TAG, "ChooseAccountTypeActivity.setResultAndFinish: "
     //             + "selected account type " + type);

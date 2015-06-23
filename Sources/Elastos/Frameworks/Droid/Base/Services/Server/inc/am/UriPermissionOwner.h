@@ -3,10 +3,10 @@
 #define __URIPERMISSIONOWNER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 #include "am/UriPermission.h"
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Net::IUri;
 

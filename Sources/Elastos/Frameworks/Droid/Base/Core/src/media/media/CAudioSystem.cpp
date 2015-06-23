@@ -1,6 +1,6 @@
 
 #include "media/CAudioSystem.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 #include <media/AudioSystem.h>
 

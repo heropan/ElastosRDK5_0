@@ -19,7 +19,7 @@ public:
         /* [in] */ const String& queryData,
         /* [out] */ IWifiP2pServiceRequest** instance);
 
-    CARAPI NewInstanceEx(
+    CARAPI NewInstance(
         /* [in] */ Int32 protocolType,
         /* [out] */ IWifiP2pServiceRequest** instance);
 

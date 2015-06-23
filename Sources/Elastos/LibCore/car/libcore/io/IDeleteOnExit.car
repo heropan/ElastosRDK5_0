@@ -6,7 +6,7 @@ module
 
     /**
     * @extends
-    * Elastos.Core.Threading.IThread;
+    * Elastos.Core.IThread;
     */
 
     interface IDeleteOnExit {

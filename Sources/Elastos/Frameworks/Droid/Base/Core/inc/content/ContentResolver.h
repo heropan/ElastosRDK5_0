@@ -6,9 +6,8 @@
 #include "Elastos.Droid.Core_server.h"
 #include "database/CrossProcessCursorWrapper.h"
 #include "os/ParcelFileDescriptor.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Core::IRandom;
@@ -356,7 +355,7 @@ public:
      * @return A Cursor object, which is positioned before the first entry, or null
      * @see Cursor
      */
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ const String& selection,
@@ -416,7 +415,7 @@ public:
      * @throws FileNotFoundException if the provided URI could not be opened.
      * @see #openAssetFileDescriptor(Uri, String)
      */
-    CARAPI OpenOutputStreamEx(
+    CARAPI OpenOutputStream(
         /* [in] */ IUri* uri,
         /* [in] */ const String& mode,
         /* [out] */ IOutputStream** outStream);
@@ -690,7 +689,7 @@ public:
     /**
      * @hide
      */
-    CARAPI AcquireProviderEx(
+    CARAPI AcquireProvider(
         /* [in] */ const String& name,
         /* [out] */ IIContentProvider** contentProvider);
 
@@ -708,7 +707,7 @@ public:
     /**
      * @hide
      */
-    CARAPI AcquireUnstableProviderEx(
+    CARAPI AcquireUnstableProvider(
         /* [in] */ const String& name,
         /* [out] */ IIContentProvider** contentProvider);
 
@@ -738,7 +737,7 @@ public:
      * @return a {@link ContentProviderClient} that is associated with the {@link ContentProvider}
      * with the authority of name or null if there isn't one.
      */
-    CARAPI AcquireContentProviderClientEx(
+    CARAPI AcquireContentProviderClient(
         /* [in] */ const String& name,
         /* [out] */ IContentProviderClient** client);
 
@@ -778,7 +777,7 @@ public:
      * can acquire a new one if you would like to try to restart the provider
      * and perform new operations on it.
      */
-    CARAPI AcquireUnstableContentProviderClientEx(
+    CARAPI AcquireUnstableContentProviderClient(
         /* [in] */ const String& name,
         /* [out] */ IContentProviderClient** client);
 
@@ -801,7 +800,7 @@ public:
         /* [in] */ IContentObserver* observer);
 
     /** @hide - designated user version */
-    CARAPI RegisterContentObserverEx(
+    CARAPI RegisterContentObserver(
         /* [in] */ IUri* uri,
         /* [in] */ Boolean notifyForDescendents,
         /* [in] */ IContentObserver* observer,
@@ -848,7 +847,7 @@ public:
      * @param syncToNetwork If true, attempt to sync the change to the network.
      * @see #requestSync(android.accounts.Account, String, android.os.Bundle)
      */
-    CARAPI NotifyChangeEx(
+    CARAPI NotifyChange(
         /* [in] */ IUri* uri,
         /* [in] */ IContentObserver* observer,
         /* [in] */ Boolean syncToNetwork);
@@ -858,7 +857,7 @@ public:
      *
      * @hide
      */
-    CARAPI NotifyChangeEx2(
+    CARAPI NotifyChange(
         /* [in] */ IUri* uri,
         /* [in] */ IContentObserver* observer,
         /* [in] */ Boolean syncToNetwork,

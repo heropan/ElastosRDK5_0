@@ -3,10 +3,9 @@
 #define __BITMAPREGIONDECODER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.Core.h>
-#include <elastos/Mutex.h>
+#include <Elastos.CoreLibrary.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 

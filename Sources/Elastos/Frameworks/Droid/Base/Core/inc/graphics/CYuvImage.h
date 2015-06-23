@@ -2,7 +2,7 @@
 #define __CYUVIMAGE_H__
 
 #include "_CYuvImage.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IOutputStream;
 

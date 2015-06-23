@@ -33,7 +33,7 @@ public:
     virtual CARAPI SetSummaryOn(
         /* [in] */ ICharSequence* summary);
 
-    virtual CARAPI SetSummaryOnEx(
+    virtual CARAPI SetSummaryOn(
         /* [in] */ Int32 summaryResId);
 
     virtual CARAPI GetSummaryOn(
@@ -42,7 +42,7 @@ public:
     virtual CARAPI SetSummaryOff(
         /* [in] */ ICharSequence* summary);
 
-    virtual CARAPI SetSummaryOffEx(
+    virtual CARAPI SetSummaryOff(
         /* [in] */ Int32 summaryResId);
 
     virtual CARAPI GetSummaryOff(

@@ -4,7 +4,7 @@
 
 #include "_CLevelListDrawable.h"
 #include "graphics/drawable/LevelListDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

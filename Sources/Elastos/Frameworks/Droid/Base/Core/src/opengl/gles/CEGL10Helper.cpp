@@ -40,7 +40,7 @@ ECode CEGL10Helper::GetDefaultDisplay(
     /* [out] */ IInterface** disp)
 {
     *disp = sDefaultDisplay;
-    INTERFACE_ADDREF(*disp);
+    REFCOUNT_ADD(*disp);
     return NOERROR;
 }
 
@@ -48,7 +48,7 @@ ECode CEGL10Helper::GetNoDisplay(
     /* [out] */ XIEGLDisplay** disp)
 {
     *disp = sNoDisplay;
-    INTERFACE_ADDREF(*disp);
+    REFCOUNT_ADD(*disp);
     return NOERROR;
 }
 
@@ -56,7 +56,7 @@ ECode CEGL10Helper::GetNoContext(
     /* [out] */ XIEGLContext** ctx)
 {
     *ctx = sNoContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 
@@ -64,7 +64,7 @@ ECode CEGL10Helper::GetNoSurface(
     /* [out] */ XIEGLSurface** sfc)
 {
     *sfc = sNoSurface;
-    INTERFACE_ADDREF(*sfc);
+    REFCOUNT_ADD(*sfc);
     return NOERROR;
 }
 

@@ -3,8 +3,8 @@
 #define __CVIEWFLIPPER_H__
 
 #include "_CViewFlipper.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/ViewFlipper.h"
 
 using Elastos::Droid::Content::IIntent;
@@ -129,11 +129,11 @@ public:
     CARAPI SetOutAnimation(
         /* [in] */ IAnimation* outAnimation);
 
-    CARAPI SetInAnimationEx(
+    CARAPI SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI SetOutAnimationEx(
+    CARAPI SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 

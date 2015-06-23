@@ -5,10 +5,10 @@
 #include "ext/frameworkdef.h"
 #include "app/ListActivity.h"
 #include "os/HandlerBase.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::ListActivity;
 using Elastos::Droid::App::IFragment;
 using Elastos::Droid::App::IFragmentManager;
@@ -353,7 +353,7 @@ public:
      * @param shortTitleRes Resource ID of string to display for the short title of
      * this set of preferences.
      */
-    virtual CARAPI StartWithFragmentEx(
+    virtual CARAPI StartWithFragment(
         /* [in] */ const String& fragmentName,
         /* [in] */ IBundle* args,
         /* [in] */ IFragment* resultTo,
@@ -399,7 +399,7 @@ public:
      *
      * @param header The new header to display.
      */
-    virtual CARAPI SwitchToHeaderEx(
+    virtual CARAPI SwitchToHeader(
         /* [in] */ IPreferenceActivityHeader* header);
 
     /**
@@ -569,7 +569,7 @@ private:
     CARAPI_(void) SetSelectedHeader(
         /* [in] */ IPreferenceActivityHeader* header);
 
-    CARAPI_(void) ShowBreadCrumbsEx(
+    CARAPI_(void) ShowBreadCrumbs(
         /* [in] */ IPreferenceActivityHeader* header);
 
     CARAPI_(void) SwitchToHeaderInner(

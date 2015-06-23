@@ -29,7 +29,7 @@ ECode CMetaKeyKeyListenerHelper::GetMetaState(
     return NOERROR;
 }
 
-ECode CMetaKeyKeyListenerHelper::GetMetaStateEx(
+ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 meta,
     /* [out] */ Int32* state)
@@ -54,7 +54,7 @@ ECode CMetaKeyKeyListenerHelper::GetMetaStateEx(
     return NOERROR;
 }
 
-ECode CMetaKeyKeyListenerHelper::GetMetaStateEx2(
+ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [in] */ Int64 state,
     /* [out] */ Int32* ret)
 {
@@ -84,7 +84,7 @@ ECode CMetaKeyKeyListenerHelper::GetMetaStateEx2(
     return NOERROR;
 }
 
-ECode CMetaKeyKeyListenerHelper::GetMetaStateEx3(
+ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [in] */ Int64 state,
     /* [in] */ Int32 meta,
     /* [out] */ Int32* ret)
@@ -245,7 +245,7 @@ ECode CMetaKeyKeyListenerHelper::GetMetaState(
     return NOERROR;
 }
 
-ECode CMetaKeyKeyListenerHelper::GetMetaStateEx(
+ECode CMetaKeyKeyListenerHelper::GetMetaState(
     /* [in] */ Int64 state,
     /* [in] */ Int32 meta,
     /* [out] */ Int32* result)
@@ -269,7 +269,7 @@ ECode CMetaKeyKeyListenerHelper::GetMetaStateEx(
     return NOERROR;
 }
 
-ECode CMetaKeyKeyListenerHelper::AdjustMetaAfterKeypressEx(
+ECode CMetaKeyKeyListenerHelper::AdjustMetaAfterKeypress(
     /* [in] */ Int64 state,
     /* [out] */ Int64* result)
 {

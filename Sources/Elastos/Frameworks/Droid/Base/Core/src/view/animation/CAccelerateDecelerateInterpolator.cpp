@@ -1,7 +1,7 @@
 
 #include "view/animation/CAccelerateDecelerateInterpolator.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {

@@ -5,7 +5,7 @@
 #include "ext/frameworkext.h"
 #include "view/SurfaceView.h"
 #include "media/media/CMediaPlayer.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;

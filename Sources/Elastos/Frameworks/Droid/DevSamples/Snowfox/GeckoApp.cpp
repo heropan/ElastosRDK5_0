@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "GeckoApp.h"
 #include "GeckoRunnable.h"
 #include "GeckoAppShell.h"
@@ -10,7 +10,7 @@
 #include "CGeckoNetworkManager.h"
 #include "CGeckoBatteryManager.h"
 #include <elastos/System.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 #include <unistd.h>
 
@@ -346,7 +346,7 @@ ECode GeckoApp::ShowErrorDialog(
     AutoPtr<ICharSequence> charS;
     ec = CStringWrapper::New(message, (ICharSequence**)&(charS));
     if (FAILED(ec)) return ec;
-    builder->SetMessageEx(charS);
+    builder->SetMessage(charS);
     builder->SetCancelable(FALSE);
     AutoPtr<GeckoAppDialogOnClickListener> listener = new GeckoAppDialogOnClickListener(this);
     builder->SetPositiveButton(0x7f05000d, //R.string.exit_label,
@@ -757,7 +757,7 @@ ECode GeckoApp::OnCreate(
     #endif
 
     AutoPtr<IWindow> window;
-    ASSERT_SUCCEEDED(GetWindowEx((IWindow**)&window));
+    ASSERT_SUCCEEDED(GetWindow((IWindow**)&window));
     ASSERT_SUCCEEDED(window->SetFlags(sFullscreen ?
             IWindowManagerLayoutParams::FLAG_FULLSCREEN : 0,
             IWindowManagerLayoutParams::FLAG_FULLSCREEN));
@@ -786,14 +786,14 @@ ECode GeckoApp::OnCreate(
             IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::MATCH_PARENT,
             0, 0, (IAbsoluteLayoutLayoutParams**)&fLayoutParams));
-    ASSERT_SUCCEEDED(sMainLayout->AddViewEx3(sSurfaceView, fLayoutParams));
+    ASSERT_SUCCEEDED(sMainLayout->AddView(sSurfaceView, fLayoutParams));
 
     AutoPtr<IViewGroupLayoutParams> vgLayoutParams;
     ASSERT_SUCCEEDED(CViewGroupLayoutParams::New(
             IViewGroupLayoutParams::FILL_PARENT,
             IViewGroupLayoutParams::FILL_PARENT,
             (IViewGroupLayoutParams**)&vgLayoutParams));
-    SetContentViewEx2(sMainLayout, vgLayoutParams);
+    SetContentView(sMainLayout, vgLayoutParams);
 
     ASSERT_SUCCEEDED((CIntentFilter::New((IIntentFilter**)&mConnectivityFilter)));
     mConnectivityFilter->AddAction(String(IConnectivityManager::CONNECTIVITY_ACTION));
@@ -834,7 +834,7 @@ ECode GeckoApp::EnableCameraView()
     AutoPtr<IAbsoluteLayoutLayoutParams> params;
     CAbsoluteLayoutLayoutParams::New(8, 16, 0, 0, (IAbsoluteLayoutLayoutParams**)&params);
     DBG_LOG("\t - GeckoApp::EnableCameraView()");
-    return sMainLayout->AddViewEx3(sCameraView, params);
+    return sMainLayout->AddView(sCameraView, params);
 }
 
 ECode GeckoApp::DisableCameraView()
@@ -871,7 +871,7 @@ ECode GeckoApp::OnNewIntent(
 //        AutoPtr<IViewOnClickListener> listener = new ButtonClickListener(this);
 //        assert(listener != NULL);
 //        mLaunchButton->SetOnClickListener(listener);
-//        sMainLayout->AddViewEx2(mLaunchButton, 300, 200);
+//        sMainLayout->AddView(mLaunchButton, 300, 200);
 
 //        mMainHandler.postDelayed(new Runnable() {
 //            public void run() {
@@ -1226,10 +1226,10 @@ ECode GeckoApp::UnpackFile(
     Int32 number, readCount;
     ec = pFileStream->Available(&number);
     while (SUCCEEDED(ec) && number > 0) {
-        ec = pFileStream->ReadBytesEx(buf, 0, buf->GetLength(), &readCount);
+        ec = pFileStream->ReadBytes(buf, 0, buf->GetLength(), &readCount);
         FAIL_GOTO(ec, exit);
 
-        ec = pOutStream->WriteBytesEx(*buf, 0, readCount);
+        ec = pOutStream->WriteBytes(*buf, 0, readCount);
         FAIL_GOTO(ec, exit);
 
         ec = pFileStream->Available(&number);
@@ -1281,7 +1281,7 @@ ECode GeckoApp::DoRestart()
 
         String packageName;
         ASSERT_SUCCEEDED(GetPackageName(&packageName));
-        pIIntent->SetClassNameEx(packageName, packageName + ".Restarter");
+        pIIntent->SetClassName(packageName, packageName + ".Restarter");
 
         FAIL_RETURN(AddEnvToIntent(pIIntent));
 
@@ -1391,7 +1391,7 @@ ECode GeckoApp::CheckAndLaunchUpdate()
 
         ASSERT_SUCCEEDED(CFileOutputStream::New(statusFile, (IFileOutputStream**)&os));
 
-        os->WriteBytesEx(buf, 0, buf.GetLength());
+        os->WriteBytes(buf, 0, buf.GetLength());
         os->Close();
     }
     //} catch (Exception e) {
@@ -1516,7 +1516,7 @@ ECode GeckoApp::OnActivityResult(
 
         AutoPtr<IFileHelper> helper;
         CFileHelper::AcquireSingleton((IFileHelper**)&helper);
-        ec = helper->CreateTempFileEx(fileName, fileExt, sGREDir, (IFile**)&pIFile);
+        ec = helper->CreateTempFile(fileName, fileExt, sGREDir, (IFile**)&pIFile);
         FAIL_GOTO(ec, exit);
 
         ec = CFileOutputStream::New(pIFile, (IFileOutputStream**)&pFos);
@@ -1528,7 +1528,7 @@ ECode GeckoApp::OnActivityResult(
         ec = pIs->ReadBytes(buf, &len);
         FAIL_GOTO(ec, exit);
         while (len != -1) {
-            ec = pFos->WriteBytesEx(*buf, 0, len);
+            ec = pFos->WriteBytes(*buf, 0, len);
             FAIL_GOTO(ec, exit);
             ec = pIs->ReadBytes(buf, &len);
             FAIL_GOTO(ec, exit);

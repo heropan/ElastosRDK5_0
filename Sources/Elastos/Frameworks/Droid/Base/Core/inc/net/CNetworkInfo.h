@@ -4,12 +4,9 @@
 
 #include "ext/frameworkdef.h"
 #include "_CNetworkInfo.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::HashMap;
 namespace Elastos {
 namespace Droid {
 namespace Net {

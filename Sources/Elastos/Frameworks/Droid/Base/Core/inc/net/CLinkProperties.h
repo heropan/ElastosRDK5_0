@@ -4,9 +4,9 @@
 
 #include "_CLinkProperties.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Net::IInetAddress;
 
 namespace Elastos {
@@ -79,7 +79,7 @@ public:
         /* [in] */ ILinkProperties* target,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ ILinkProperties* target,
         /* [out] */ Boolean* result);
 

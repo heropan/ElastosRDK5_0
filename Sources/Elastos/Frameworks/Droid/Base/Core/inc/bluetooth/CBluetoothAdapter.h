@@ -5,9 +5,9 @@
 #include "_CBluetoothAdapter.h"
 #include "ext/frameworkdef.h"
 #include "CBluetoothAdapterManagerCallback.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::IHandler;
 
@@ -76,7 +76,7 @@ public:
         /* [in] */ const String& address,
         /* [out] */ IBluetoothDevice** device);
 
-    CARAPI GetRemoteDeviceEx(
+    CARAPI GetRemoteDevice(
         /* [in] */ ArrayOf<Byte>* address,
         /* [out] */ IBluetoothDevice** device);
 
@@ -92,7 +92,7 @@ public:
     CARAPI Disable(
         /* [out] */ Boolean* result);
 
-    CARAPI DisableEx(
+    CARAPI Disable(
         /* [in] */ Boolean persist,
         /* [out] */ Boolean* result);
 
@@ -117,7 +117,7 @@ public:
         /* [in] */ Int32 duration,
         /* [out] */ Boolean* result);
 
-    CARAPI SetScanModeEx(
+    CARAPI SetScanMode(
         /* [in] */ Int32 mode,
         /* [out] */ Boolean* result);
 

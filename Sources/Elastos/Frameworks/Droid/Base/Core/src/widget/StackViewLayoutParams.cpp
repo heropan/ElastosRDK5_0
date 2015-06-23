@@ -1,7 +1,7 @@
 #include <widget/StackViewLayoutParams.h>
 #include <graphics/CRect.h>
 #include <graphics/CRectF.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Droid::Graphics::CRect;
@@ -143,7 +143,7 @@ CARAPI StackViewLayoutParams::SetOffsets(
         AutoPtr<IMatrix> matrix;
         mView->GetMatrix((IMatrix**)&matrix);
         Boolean res = FALSE;
-        matrix->MapRectEx(mInvalidateRectf, &res);
+        matrix->MapRect(mInvalidateRectf, &res);
         mInvalidateRectf->Offset(-xoffset, -yoffset);
 
         mInvalidateRect->Set((Int32)Elastos::Core::Math::Floor(il), (Int32)Elastos::Core::Math::Floor(it),
@@ -158,7 +158,7 @@ void StackViewLayoutParams::InvalidateGlobalRegion(
     /* [in] */ IView* v,
     /* [in] */ IRect* r)
 {
-    mGlobalInvalidateRect->SetEx(r);
+    mGlobalInvalidateRect->Set(r);
     Int32 width = 0, height =0;
     mStackView->GetWidth(&width);
     mStackView->GetHeight(&height);
@@ -171,7 +171,7 @@ void StackViewLayoutParams::InvalidateGlobalRegion(
     Boolean firstPass = TRUE;
     mParentRect->Set(0, 0, 0, 0);
     Boolean res = FALSE;
-    mParentRect->ContainsEx2(mGlobalInvalidateRect, &res);
+    mParentRect->Contains(mGlobalInvalidateRect, &res);
     Int32 rl = 0, rr = 0, rt = 0, rb = 0;
     vp = NULL;
     p->GetParent((IViewParent**)&vp);
@@ -195,14 +195,14 @@ void StackViewLayoutParams::InvalidateGlobalRegion(
         mGlobalInvalidateRect->GetTop(&rt);
         mGlobalInvalidateRect->GetRight(&rr);
         mGlobalInvalidateRect->GetBottom(&rb);
-        p->InvalidateEx(rl, rt, rr, rb);
+        p->Invalidate(rl, rt, rr, rb);
     }
 
     mGlobalInvalidateRect->GetLeft(&rl);
     mGlobalInvalidateRect->GetTop(&rt);
     mGlobalInvalidateRect->GetRight(&rr);
     mGlobalInvalidateRect->GetBottom(&rb);
-    p->InvalidateEx(rl, rt, rr, rb);
+    p->Invalidate(rl, rt, rr, rb);
 }
 
 AutoPtr<IRect> StackViewLayoutParams::GetInvalidateRect()

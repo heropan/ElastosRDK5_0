@@ -110,7 +110,7 @@ ECode CActivityManagerRunningTaskInfo::GetBaseActivity(
 {
     VALIDATE_NOT_NULL(baseActivity);
     *baseActivity = mBaseActivity;
-    INTERFACE_ADDREF(*baseActivity)
+    REFCOUNT_ADD(*baseActivity)
     return NOERROR;
 }
 
@@ -130,7 +130,7 @@ ECode CActivityManagerRunningTaskInfo::GetTopActivity(
 {
     VALIDATE_NOT_NULL(topActivity);
     *topActivity = mTopActivity;
-    INTERFACE_ADDREF(*topActivity)
+    REFCOUNT_ADD(*topActivity)
     return NOERROR;
 }
 
@@ -150,7 +150,7 @@ ECode CActivityManagerRunningTaskInfo::GetThumbnail(
 {
     VALIDATE_NOT_NULL(thumbnail);
     *thumbnail = mThumbnail;
-    INTERFACE_ADDREF(*thumbnail)
+    REFCOUNT_ADD(*thumbnail)
     return NOERROR;
 }
 
@@ -169,7 +169,7 @@ ECode CActivityManagerRunningTaskInfo::GetDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mDescription;
-    INTERFACE_ADDREF(*description)
+    REFCOUNT_ADD(*description)
     return NOERROR;
 }
 

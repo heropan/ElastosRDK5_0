@@ -1,7 +1,7 @@
 
 #include "location/CAddress.h"
 #include "os/CBundle.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Libcore::ICU::CLocale;
 using Elastos::Droid::Os::CBundle;
@@ -27,7 +27,7 @@ ECode CAddress::GetLocale(
 {
     VALIDATE_NOT_NULL(locale);
     *locale = mLocale;
-    INTERFACE_ADDREF(mLocale);
+    REFCOUNT_ADD(mLocale);
 
     return NOERROR;
 }
@@ -397,7 +397,7 @@ ECode CAddress::GetExtras(
 {
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras.Get();
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
 
     return NOERROR;
 }

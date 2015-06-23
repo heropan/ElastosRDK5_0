@@ -144,7 +144,7 @@ module
          * @see View#LAYOUT_DIRECTION_LTR
          * @see View#LAYOUT_DIRECTION_RTL
          */
-        ApplyEx(
+        Apply(
             [in] Int32 gravity,
             [in] Int32 w,
             [in] Int32 h,
@@ -173,7 +173,7 @@ module
          * @param outRect Receives the computed frame of the object in its
          *                container.
          */
-        ApplyEx2(
+        Apply(
             [in] Int32 gravity,
             [in] Int32 w,
             [in] Int32 h,
@@ -207,7 +207,7 @@ module
          * @see View#LAYOUT_DIRECTION_LTR
          * @see View#LAYOUT_DIRECTION_RTL
          */
-        ApplyEx3(
+        Apply(
             [in] Int32 gravity,
             [in] Int32 w,
             [in] Int32 h,
@@ -258,7 +258,7 @@ module
          * @see View#LAYOUT_DIRECTION_LTR
          * @see View#LAYOUT_DIRECTION_RTL
          */
-        ApplyDisplayEx(
+        ApplyDisplay(
             [in] Int32 gravity,
             [in] IRect* display,
             [in] IRect* inoutObj,

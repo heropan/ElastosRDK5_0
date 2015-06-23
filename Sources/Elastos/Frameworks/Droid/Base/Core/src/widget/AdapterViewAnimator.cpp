@@ -1,6 +1,6 @@
 
-#include <elastos/Math.h>
-//#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+//#include <elastos/utility/logging/Logger.h>
 #include <animation/AnimatorInflater.h>
 #include <animation/CObjectAnimatorHelper.h>
 #include <content/CIntentFilterComparison.h>
@@ -86,7 +86,7 @@ ECode AdapterViewAnimator::Init(
             const_cast<Int32 *>(R::styleable::AdapterViewAnimator),
             ARRAY_SIZE(R::styleable::AdapterViewAnimator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     Int32 resource = 0;
     a->GetResourceId(R::styleable::AdapterViewAnimator_inAnimation, 0, &resource);
     if (resource > 0) {

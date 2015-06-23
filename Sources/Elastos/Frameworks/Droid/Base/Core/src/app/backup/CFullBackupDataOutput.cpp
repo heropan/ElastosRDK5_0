@@ -22,7 +22,7 @@ ECode CFullBackupDataOutput::GetData(
     /* [out] */ IBackupDataOutput** data)
 {
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

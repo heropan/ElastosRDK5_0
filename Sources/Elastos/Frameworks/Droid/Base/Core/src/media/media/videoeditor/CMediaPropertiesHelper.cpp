@@ -229,7 +229,7 @@ ECode CMediaPropertiesHelper::GetSupportedResolutions(
     }
 
     *result = supportedResolutions;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

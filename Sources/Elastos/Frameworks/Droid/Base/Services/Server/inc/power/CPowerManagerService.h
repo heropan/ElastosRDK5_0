@@ -14,12 +14,10 @@
 #include "database/ContentObserver.h"
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"
-#include <elastos/Object.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/Core/Object.h>
 
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Internal::App::IIBatteryStats;
@@ -307,7 +305,7 @@ private:
 
         CARAPI Acquire();
 
-        CARAPI ReleaseEx();
+        CARAPI Release();
 
         CARAPI BootFastSleepRelease();
 
@@ -333,7 +331,7 @@ private:
 
         CARAPI Acquire();
 
-        CARAPI ReleaseEx();
+        CARAPI Release();
 
     private:
         Int32 mNestCount;

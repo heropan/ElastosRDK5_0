@@ -13,11 +13,11 @@ ECode CHtml::FromHtml(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ISpanned> spanned = Html::FromHtml(source);
     *ret = spanned;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CHtml::FromHtmlEx(
+ECode CHtml::FromHtml(
     /* [in] */ const String& source,
     /* [in] */ IHtmlImageGetter* imageGetter,
     /* [in] */ IHtmlTagHandler* tagHandler,
@@ -26,7 +26,7 @@ ECode CHtml::FromHtmlEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ISpanned> spanned = Html::FromHtml(source, imageGetter, tagHandler);
     *ret = spanned;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

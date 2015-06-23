@@ -1,14 +1,14 @@
 
 #include "ext/frameworkext.h"
 #include "CMtpServer.h"
-#include <elastos/Logger.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Thread.h>
 #include "MediaMtp/MtpServer.h"
 #include "MediaMtp/MtpStorage.h"
 #include <fcntl.h>
 
 using namespace android;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -107,7 +107,7 @@ void CMtpServer::NativeRun()
 
 void CMtpServer::NativeCleanup()
 {
-    Elastos::Core::Threading::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::Mutex::Autolock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server) {
@@ -122,7 +122,7 @@ void CMtpServer::NativeCleanup()
 void CMtpServer::NativeSendObjectAdded(
     /* [in] */ Int32 handle)
 {
-    Elastos::Core::Threading::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::Mutex::Autolock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server)
@@ -135,7 +135,7 @@ void CMtpServer::NativeSendObjectAdded(
 void CMtpServer::NativeSendObjectRemoved(
     /* [in] */ Int32 handle)
 {
-    Elastos::Core::Threading::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::Mutex::Autolock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server)
@@ -148,7 +148,7 @@ void CMtpServer::NativeSendObjectRemoved(
 void CMtpServer::NativeAddStorage(
     /* [in] */ IMtpStorage* storage)
 {
-    Elastos::Core::Threading::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::Mutex::Autolock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server) {
@@ -183,7 +183,7 @@ void CMtpServer::NativeAddStorage(
 void CMtpServer::NativeRemoveStorage(
     /* [in] */ Int32 storageId)
 {
-    Elastos::Core::Threading::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::Mutex::Autolock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server) {

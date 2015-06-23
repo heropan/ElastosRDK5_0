@@ -3,7 +3,7 @@
 #define __EMOJIFACTORY_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Map.h>
 #include "graphics/CBitmap.h"
 
@@ -131,7 +131,7 @@ public:
         /* [in] */ Int32 vsp,
         /* [out] */ Int32* RetValue);
 
-    static CARAPI GetAndroidPuaFromVendorSpecificPuaEx(
+    static CARAPI GetAndroidPuaFromVendorSpecificPua(
         /* [in] */ const String& vspString,
         /* [out] */ String* RetValue);
 
@@ -145,7 +145,7 @@ public:
         /* [in] */ Int32 pua
         /* [out] */ Int32* RetValue);
 
-    static CARAPI GetVendorSpecificPuaFromAndroidPuaEx(
+    static CARAPI GetVendorSpecificPuaFromAndroidPua(
         /* [in] */ const String& puaString,
         /* [out] */ String* RetValue);
 

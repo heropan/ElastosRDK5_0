@@ -391,7 +391,7 @@ module
             [in] Int32 offset);
 
         // C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
-        GlDeleteTexturesEx(
+        GlDeleteTextures(
             [in] Int32 n,
             [in] IInt32Buffer* textures);
 
@@ -460,7 +460,7 @@ module
             [in] Int32 offset);
 
         // C function void glFogfv ( GLenum pname, const GLfloat *params )
-        GlFogfvEx(
+        GlFogfv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
@@ -476,7 +476,7 @@ module
             [in] Int32 offset);
 
         // C function void glFogxv ( GLenum pname, const GLfixed *params )
-        GlFogxvEx(
+        GlFogxv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -509,7 +509,7 @@ module
             [in] Int32 offset);
 
         // C function void glGenTextures ( GLsizei n, GLuint *textures )
-        GlGenTexturesEx(
+        GlGenTextures(
             [in] Int32 n,
             [in] IInt32Buffer* textures);
 
@@ -524,7 +524,7 @@ module
             [in] Int32 offset);
 
         // C function void glGetIntegerv ( GLenum pname, GLint *params )
-        GlGetIntegervEx(
+        GlGetIntegerv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -566,7 +566,7 @@ module
             [in] Int32 offset);
 
         // C function void glLightModelfv ( GLenum pname, const GLfloat *params )
-        GlLightModelfvEx(
+        GlLightModelfv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
@@ -582,7 +582,7 @@ module
             [in] Int32 offset);
 
         // C function void glLightModelxv ( GLenum pname, const GLfixed *params )
-        GlLightModelxvEx(
+        GlLightModelxv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -600,7 +600,7 @@ module
             [in] Int32 offset);
 
         // C function void glLightfv ( GLenum light, GLenum pname, const GLfloat *params )
-        GlLightfvEx(
+        GlLightfv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -619,7 +619,7 @@ module
             [in] Int32 offset);
 
         // C function void glLightxv ( GLenum light, GLenum pname, const GLfixed *params )
-        GlLightxvEx(
+        GlLightxv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -641,7 +641,7 @@ module
             [in] Int32 offset);
 
         // C function void glLoadMatrixf ( const GLfloat *m )
-        GlLoadMatrixfEx(
+        GlLoadMatrixf(
             [in] IFloatBuffer* m);
 
         // C function void glLoadMatrixx ( const GLfixed *m )
@@ -650,7 +650,7 @@ module
             [in] Int32 offset);
 
         // C function void glLoadMatrixx ( const GLfixed *m )
-        GlLoadMatrixxEx(
+        GlLoadMatrixx(
             [in] IInt32Buffer* m);
 
         // C function void glLogicOp ( GLenum opcode )
@@ -671,7 +671,7 @@ module
             [in] Int32 offset);
 
         // C function void glMaterialfv ( GLenum face, GLenum pname, const GLfloat *params )
-        GlMaterialfvEx(
+        GlMaterialfv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -690,7 +690,7 @@ module
             [in] Int32 offset);
 
         // C function void glMaterialxv ( GLenum face, GLenum pname, const GLfixed *params )
-        GlMaterialxvEx(
+        GlMaterialxv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -705,7 +705,7 @@ module
             [in] Int32 offset);
 
         // C function void glMultMatrixf ( const GLfloat *m )
-        GlMultMatrixfEx(
+        GlMultMatrixf(
             [in] IFloatBuffer* m);
 
         // C function void glMultMatrixx ( const GLfixed *m )
@@ -714,7 +714,7 @@ module
             [in] Int32 offset);
 
         // C function void glMultMatrixx ( const GLfixed *m )
-        GlMultMatrixxEx(
+        GlMultMatrixx(
             [in] IInt32Buffer* m);
 
         // C function void glMultiTexCoord4f ( GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q )
@@ -890,7 +890,7 @@ module
             [in] Int32 offset);
 
         // C function void glTexEnvfv ( GLenum target, GLenum pname, const GLfloat *params )
-        GlTexEnvfvEx(
+        GlTexEnvfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -909,7 +909,7 @@ module
             [in] Int32 offset);
 
         // C function void glTexEnvxv ( GLenum target, GLenum pname, const GLfixed *params )
-        GlTexEnvxvEx(
+        GlTexEnvxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);

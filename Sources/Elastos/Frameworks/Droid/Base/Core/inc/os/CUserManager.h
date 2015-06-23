@@ -149,7 +149,7 @@ public:
      * @return the list of users that were created.
      * @hide
      */
-    CARAPI GetUsersEx(
+    CARAPI GetUsers(
         /* [in] */ Boolean excludeDying,
         /* [out] */ IObjectContainer** users);
 
@@ -251,7 +251,7 @@ public:
      * is not valid.
      * @hide
      */
-    CARAPI GetUserHandleEx(
+    CARAPI GetUserHandle(
         /* [in] */ Int32 userSerialNumber,
         /* [out] */ Int32* userHandle);
 

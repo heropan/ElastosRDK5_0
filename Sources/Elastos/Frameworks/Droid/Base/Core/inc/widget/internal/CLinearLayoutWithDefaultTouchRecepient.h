@@ -3,8 +3,8 @@
 
 #include "_CLinearLayoutWithDefaultTouchRecepient.h"
 #include "internal/LinearLayoutWithDefaultTouchRecepient.h"
-#include "view/ViewMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

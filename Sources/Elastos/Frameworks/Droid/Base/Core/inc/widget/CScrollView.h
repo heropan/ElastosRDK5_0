@@ -2,10 +2,10 @@
 #define __CSCROLLVIEW_H_
 
 #include "_CScrollView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/ScrollView.h"
-#include "widget/FrameLayoutMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

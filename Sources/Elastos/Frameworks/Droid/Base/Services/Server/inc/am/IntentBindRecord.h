@@ -3,10 +3,10 @@
 #define __INTENTBINDRECORD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "am/AppBindRecord.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntentFilterComparison;
 

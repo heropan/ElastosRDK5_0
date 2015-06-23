@@ -3,7 +3,7 @@
 #define __CRFC822TOKENIZER_H__
 
 #include "_CRfc822Tokenizer.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
@@ -43,7 +43,7 @@ public:
      * It will try to be tolerant of broken syntax instead of
      * returning an error.
      */
-    static CARAPI TokenizeEx(
+    static CARAPI Tokenize(
         /* [in] */ ICharSequence* text,
         /* [out] */ ArrayOf<IRfc822Token*>** ret);
 

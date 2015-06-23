@@ -161,7 +161,7 @@ public:
      *
      * @param keys The series of key codes to send through instrumentation.
      */
-    CARAPI SendKeysEx(
+    CARAPI SendKeys(
         /* [in] */ ArrayOf<Int32>* keys);
 
     /**

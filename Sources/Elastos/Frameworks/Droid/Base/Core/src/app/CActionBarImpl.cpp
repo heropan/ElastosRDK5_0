@@ -112,7 +112,7 @@ ECode CActionBarImpl::ActionModeImpl::GetMenu(
 {
     VALIDATE_NOT_NULL(menu);
     *menu = mMenu;
-    INTERFACE_ADDREF(*menu)
+    REFCOUNT_ADD(*menu)
     return NOERROR;
 }
 
@@ -197,7 +197,7 @@ ECode CActionBarImpl::ActionModeImpl::SetTitle(
     return NOERROR;
 }
 
-ECode CActionBarImpl::ActionModeImpl::SetTitleEx(
+ECode CActionBarImpl::ActionModeImpl::SetTitle(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IResources> res;
@@ -208,7 +208,7 @@ ECode CActionBarImpl::ActionModeImpl::SetTitleEx(
     return NOERROR;
 }
 
-ECode CActionBarImpl::ActionModeImpl::SetSubtitleEx(
+ECode CActionBarImpl::ActionModeImpl::SetSubtitle(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IResources> res;
@@ -253,7 +253,7 @@ ECode CActionBarImpl::ActionModeImpl::GetCustomView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mCustomView != NULL ? mCustomView : NULL;
-    INTERFACE_ADDREF(*view)
+    REFCOUNT_ADD(*view)
     return NOERROR;
 }
 
@@ -377,7 +377,7 @@ ECode CActionBarImpl::TabImpl::GetTag(
 {
     VALIDATE_NOT_NULL(obj);
     *obj = mTag;
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -393,7 +393,7 @@ ECode CActionBarImpl::TabImpl::GetCallback(
 {
     VALIDATE_NOT_NULL(cb);
     *cb = mCallback;
-    INTERFACE_ADDREF(*cb)
+    REFCOUNT_ADD(*cb)
     return NOERROR;
 }
 
@@ -409,7 +409,7 @@ ECode CActionBarImpl::TabImpl::GetCustomView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mCustomView;
-    INTERFACE_ADDREF(*view)
+    REFCOUNT_ADD(*view)
     return NOERROR;
 }
 
@@ -423,7 +423,7 @@ ECode CActionBarImpl::TabImpl::SetCustomView(
     return NOERROR;
 }
 
-ECode CActionBarImpl::TabImpl::SetCustomViewEx(
+ECode CActionBarImpl::TabImpl::SetCustomView(
     /* [in] */ Int32 layoutResId)
 {
     AutoPtr<IContext> cxt;
@@ -440,7 +440,7 @@ ECode CActionBarImpl::TabImpl::GetIcon(
 {
     VALIDATE_NOT_NULL(icon);
     *icon = mIcon;
-    INTERFACE_ADDREF(*icon)
+    REFCOUNT_ADD(*icon)
     return NOERROR;
 }
 
@@ -464,7 +464,7 @@ ECode CActionBarImpl::TabImpl::GetText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mText;
-    INTERFACE_ADDREF(*text)
+    REFCOUNT_ADD(*text)
     return NOERROR;
 }
 
@@ -478,7 +478,7 @@ ECode CActionBarImpl::TabImpl::SetIcon(
     return NOERROR;
 }
 
-ECode CActionBarImpl::TabImpl::SetIconEx(
+ECode CActionBarImpl::TabImpl::SetIcon(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IResources> resources;
@@ -498,7 +498,7 @@ ECode CActionBarImpl::TabImpl::SetText(
     return NOERROR;
 }
 
-ECode CActionBarImpl::TabImpl::SetTextEx(
+ECode CActionBarImpl::TabImpl::SetText(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IResources> resources;
@@ -521,10 +521,10 @@ ECode CActionBarImpl::TabImpl::SetContentDescription(
     mActionBarImpl->mContext->GetResources((IResources**)&resources);
     AutoPtr<ICharSequence> textId;
     resources->GetText(resId, (ICharSequence**)&textId);
-    return SetContentDescriptionEx(textId);
+    return SetContentDescription(textId);
 }
 
-ECode CActionBarImpl::TabImpl::SetContentDescriptionEx(
+ECode CActionBarImpl::TabImpl::SetContentDescription(
     /* [in] */ ICharSequence* contentDesc)
 {
     mContentDesc = contentDesc;
@@ -539,7 +539,7 @@ ECode CActionBarImpl::TabImpl::GetContentDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mContentDesc;
-    INTERFACE_ADDREF(*description)
+    REFCOUNT_ADD(*description)
     return NOERROR;
 }
 
@@ -788,7 +788,7 @@ ECode CActionBarImpl::DispatchMenuVisibilityChanged(
     return NOERROR;
 }
 
-ECode CActionBarImpl::SetCustomViewEx2(
+ECode CActionBarImpl::SetCustomView(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IContext> cxt;
@@ -796,7 +796,7 @@ ECode CActionBarImpl::SetCustomViewEx2(
     AutoPtr<ILayoutInflater> inflater;
     LayoutInflater::From(cxt, (ILayoutInflater**)&inflater);
     AutoPtr<IView> view;
-    inflater->InflateEx2(resId, mActionView, FALSE, (IView**)&view);
+    inflater->Inflate(resId, mActionView, FALSE, (IView**)&view);
     SetCustomView(view);
     return NOERROR;
 }
@@ -804,31 +804,31 @@ ECode CActionBarImpl::SetCustomViewEx2(
 ECode CActionBarImpl::SetDisplayUseLogoEnabled(
     /* [in] */ Boolean useLogo)
 {
-    return SetDisplayOptionsEx(useLogo ? DISPLAY_USE_LOGO : 0, DISPLAY_USE_LOGO);
+    return SetDisplayOptions(useLogo ? DISPLAY_USE_LOGO : 0, DISPLAY_USE_LOGO);
 }
 
 ECode CActionBarImpl::SetDisplayShowHomeEnabled(
     /* [in] */ Boolean showHome)
 {
-    return SetDisplayOptionsEx(showHome ? DISPLAY_SHOW_HOME : 0, DISPLAY_SHOW_HOME);
+    return SetDisplayOptions(showHome ? DISPLAY_SHOW_HOME : 0, DISPLAY_SHOW_HOME);
 }
 
 ECode CActionBarImpl::SetDisplayHomeAsUpEnabled(
         /* [in] */ Boolean showHomeAsUp)
 {
-    return SetDisplayOptionsEx(showHomeAsUp ? DISPLAY_HOME_AS_UP : 0, DISPLAY_HOME_AS_UP);
+    return SetDisplayOptions(showHomeAsUp ? DISPLAY_HOME_AS_UP : 0, DISPLAY_HOME_AS_UP);
 }
 
 ECode CActionBarImpl::SetDisplayShowTitleEnabled(
     /* [in] */ Boolean showTitle)
 {
-    return SetDisplayOptionsEx(showTitle ? DISPLAY_SHOW_TITLE : 0, DISPLAY_SHOW_TITLE);
+    return SetDisplayOptions(showTitle ? DISPLAY_SHOW_TITLE : 0, DISPLAY_SHOW_TITLE);
 }
 
 ECode CActionBarImpl::SetDisplayShowCustomEnabled(
     /* [in] */ Boolean showCustom)
 {
-    return SetDisplayOptionsEx(showCustom ? DISPLAY_SHOW_CUSTOM : 0, DISPLAY_SHOW_CUSTOM);
+    return SetDisplayOptions(showCustom ? DISPLAY_SHOW_CUSTOM : 0, DISPLAY_SHOW_CUSTOM);
 }
 
 ECode CActionBarImpl::SetHomeButtonEnabled(
@@ -838,7 +838,7 @@ ECode CActionBarImpl::SetHomeButtonEnabled(
     return NOERROR;
 }
 
-ECode CActionBarImpl::SetTitleEx(
+ECode CActionBarImpl::SetTitle(
     /* [in] */ Int32 resId)
 {
     AutoPtr<ICharSequence> textId;
@@ -847,7 +847,7 @@ ECode CActionBarImpl::SetTitleEx(
     return NOERROR;
 }
 
-ECode CActionBarImpl::SetSubtitleEx(
+ECode CActionBarImpl::SetSubtitle(
     /* [in] */ Int32 resId)
 {
     AutoPtr<ICharSequence> textId;
@@ -918,7 +918,7 @@ ECode CActionBarImpl::SetDisplayOptions(
     return NOERROR;
 }
 
-ECode CActionBarImpl::SetDisplayOptionsEx(
+ECode CActionBarImpl::SetDisplayOptions(
     /* [in] */ Int32 options,
     /* [in] */ Int32 mask)
 {
@@ -1018,7 +1018,7 @@ ECode CActionBarImpl::StartActionMode(
         }
         mActionMode = mode;
         *actionmode = mode;
-        INTERFACE_ADDREF(*actionmode);
+        REFCOUNT_ADD(*actionmode);
         return NOERROR;
     }
     *actionmode = NULL;
@@ -1049,17 +1049,17 @@ void CActionBarImpl::ConfigureTab(
 ECode CActionBarImpl::AddTab(
     /* [in] */ IActionBarTab* tab)
 {
-    return AddTabEx(tab, mTabs.IsEmpty());
+    return AddTab(tab, mTabs.IsEmpty());
 }
 
-ECode CActionBarImpl::AddTabEx2(
+ECode CActionBarImpl::AddTab(
     /* [in] */ IActionBarTab* tab,
     /* [in] */ Int32 position)
 {
-    return AddTabEx3(tab, position, mTabs.IsEmpty());
+    return AddTab(tab, position, mTabs.IsEmpty());
 }
 
-ECode CActionBarImpl::AddTabEx(
+ECode CActionBarImpl::AddTab(
     /* [in] */ IActionBarTab* tab,
     /* [in] */ Boolean setSelected)
 {
@@ -1072,13 +1072,13 @@ ECode CActionBarImpl::AddTabEx(
     return NOERROR;
 }
 
-ECode CActionBarImpl::AddTabEx3(
+ECode CActionBarImpl::AddTab(
     /* [in] */ IActionBarTab* tab,
     /* [in] */ Int32 position,
     /* [in] */ Boolean setSelected)
 {
     EnsureTabsExist();
-    mTabScrollView->AddTabEx(tab, position, setSelected);
+    mTabScrollView->AddTab(tab, position, setSelected);
     ConfigureTab(tab, position);
     if (setSelected) {
         SelectTab(tab);
@@ -1090,7 +1090,7 @@ ECode CActionBarImpl::NewTab(
     /* [out] */ IActionBarTab** tab)
 {
    *tab = new TabImpl(this);
-   INTERFACE_ADDREF(*tab)
+   REFCOUNT_ADD(*tab)
     return NOERROR;
 }
 
@@ -1191,7 +1191,7 @@ ECode CActionBarImpl::GetSelectedTab(
 {
     VALIDATE_NOT_NULL(tab);
     *tab = mSelectedTab;
-    INTERFACE_ADDREF(*tab)
+    REFCOUNT_ADD(*tab)
     return NOERROR;
 }
 
@@ -1493,7 +1493,7 @@ ECode CActionBarImpl::GetThemedContext(
         }
     }
     *context = mThemedContext;
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -1513,7 +1513,7 @@ ECode CActionBarImpl::SetCustomView(
     return mActionView->SetCustomNavigationView(view);
 }
 
-ECode CActionBarImpl::SetCustomViewEx(
+ECode CActionBarImpl::SetCustomView(
     /* [in] */ IView* view,
     /* [in] */ IActionBarLayoutParams* layoutParams)
 {
@@ -1629,7 +1629,7 @@ ECode CActionBarImpl::GetTabAt(
 {
     VALIDATE_NOT_NULL(tab);
     *tab = mTabs[index];
-    INTERFACE_ADDREF(*tab)
+    REFCOUNT_ADD(*tab)
     return NOERROR;
 }
 
@@ -1637,10 +1637,10 @@ ECode CActionBarImpl::GetTabAt(
 ECode CActionBarImpl::SetIcon(
     /* [in] */ Int32 resId)
 {
-    return mActionView->SetIconEx(resId);
+    return mActionView->SetIcon(resId);
 }
 
-ECode CActionBarImpl::SetIconEx(
+ECode CActionBarImpl::SetIcon(
     /* [in] */ IDrawable* icon)
 {
     return mActionView->SetIcon(icon);
@@ -1649,10 +1649,10 @@ ECode CActionBarImpl::SetIconEx(
 ECode CActionBarImpl::SetLogo(
     /* [in] */ Int32 resId)
 {
-    return mActionView->SetLogoEx(resId);
+    return mActionView->SetLogo(resId);
 }
 
-ECode CActionBarImpl::SetLogoEx(
+ECode CActionBarImpl::SetLogo(
     /* [in] */ IDrawable* logo)
 {
     return mActionView->SetLogo(logo);

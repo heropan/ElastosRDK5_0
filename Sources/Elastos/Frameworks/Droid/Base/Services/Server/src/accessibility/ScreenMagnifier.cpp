@@ -8,8 +8,8 @@
 #include "text/TextUtils.h"
 #include "accessibility/CMagnificationController.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 using Libcore::ICU::ILocale;
 using Libcore::ICU::CLocaleHelper;
@@ -530,7 +530,7 @@ void ScreenMagnifier::DetectingStateHandler::OnMotionEvent(
             AutoPtr<IMotionEventHelper> helper;
             CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
             mLastDownEvent = NULL;
-            helper->ObtainEx5(event, (IMotionEvent**)&mLastDownEvent);
+            helper->Obtain(event, (IMotionEvent**)&mLastDownEvent);
             break;
         }
 
@@ -600,7 +600,7 @@ void ScreenMagnifier::DetectingStateHandler::OnMotionEvent(
             AutoPtr<IMotionEventHelper> helper;
             CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
             mLastDownEvent = NULL;
-            helper->ObtainEx5(event, (IMotionEvent**)&mLastDownEvent);
+            helper->Obtain(event, (IMotionEvent**)&mLastDownEvent);
             break;
         }
 
@@ -811,9 +811,9 @@ void ScreenMagnifier::MotionEventInfo::Initialize(
     AutoPtr<IMotionEventHelper> helper;
     CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     mEvent = NULL;
-    helper->ObtainEx5(event, (IMotionEvent**)&mEvent);
+    helper->Obtain(event, (IMotionEvent**)&mEvent);
     mRawEvent = NULL;
-    helper->ObtainEx5(rawEvent, (IMotionEvent**)&mRawEvent);
+    helper->Obtain(rawEvent, (IMotionEvent**)&mRawEvent);
     mPolicyFlags = policyFlags;
     mCachedTimeMillis = SystemClock::GetUptimeMillis();
 }
@@ -942,7 +942,7 @@ ECode ScreenMagnifier::DisplayContentObserver::MyDisplayContentChangeListener::O
     assert(0);
     // ASSERT_SUCCEEDED(CWindowInfoHelper::AcquireSingleton((IWindowInfoHelper**)&helper));
     AutoPtr<IWindowInfo> outInfo;
-    helper->ObtainEx(info, (IWindowInfo**)&outInfo);
+    helper->Obtain(info, (IWindowInfo**)&outInfo);
 
     AutoPtr<IMessage> msg;
     mHost->mHandler->ObtainMessage(
@@ -1200,7 +1200,7 @@ void ScreenMagnifier::DisplayContentObserver::HandleOnWindowTransition(
                     AutoPtr<IRect> touchableRegion;
                     info->GetTouchableRegion((IRect**)&touchableRegion);
                     Boolean result;
-                    magnifiedRegionBounds->IntersectEx(touchableRegion, &result);
+                    magnifiedRegionBounds->Intersect(touchableRegion, &result);
                     if (!result) {
                         EnsureRectangleInMagnifiedRegionBounds(
                             magnifiedRegionBounds, touchableRegion);
@@ -1229,7 +1229,7 @@ void ScreenMagnifier::DisplayContentObserver::HandleOnRectangleOnScreenRequested
     AutoPtr<IRect> magnifiedRegionBounds;
     mMagnificationController->GetMagnifiedRegionBounds((IRect**)&magnifiedRegionBounds);
     Boolean isContains;
-    magnifiedRegionBounds->ContainsEx2(rectangle, &isContains);
+    magnifiedRegionBounds->Contains(rectangle, &isContains);
     if (isContains) {
         return;
     }
@@ -1241,7 +1241,7 @@ void ScreenMagnifier::DisplayContentObserver::EnsureRectangleInMagnifiedRegionBo
     /* [in] */ IRect* rectangle)
 {
     Boolean result;
-    rectangle->IntersectEx(mViewport->GetBounds(), &result);
+    rectangle->Intersect(mViewport->GetBounds(), &result);
     if (!result) {
         return;
     }
@@ -1644,11 +1644,11 @@ void ScreenMagnifier::Viewport::RecomputeBounds(
         AutoPtr<IRect> windowFrame = mTempRect3;
         AutoPtr<IRect> touchableRegion;
         info->GetTouchableRegion((IRect**)&touchableRegion);
-        windowFrame->SetEx(touchableRegion);
+        windowFrame->Set(touchableRegion);
         if (IsWindowMagnified(type)) {
-            magnifiedFrame->UnionEx(windowFrame);
+            magnifiedFrame->Union(windowFrame);
             Boolean bval;
-            magnifiedFrame->IntersectEx(availableFrame, &bval);
+            magnifiedFrame->Intersect(availableFrame, &bval);
         }
         else {
             Subtract(windowFrame, magnifiedFrame);

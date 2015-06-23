@@ -4,8 +4,8 @@
 
 #include "_CForegroundColorSpan.h"
 #include "text/style/ForegroundColorSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

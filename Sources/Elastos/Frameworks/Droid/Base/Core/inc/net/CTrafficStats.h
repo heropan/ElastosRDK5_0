@@ -176,7 +176,7 @@ public:
      * @param tag Accounting tag used in {@link #setThreadStatsTag(int)}.
      * @param operationCount Number of operations to increment count by.
      */
-    CARAPI IncrementOperationCountEx(
+    CARAPI IncrementOperationCount(
         /* [in] */ Int32 tag,
         /* [in] */ Int32 operationCount);
 

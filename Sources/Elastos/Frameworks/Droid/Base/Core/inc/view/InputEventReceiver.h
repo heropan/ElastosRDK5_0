@@ -6,9 +6,9 @@
 #include <utils/Looper.h>
 #include <androidfw/InputTransport.h>
 #include "os/NativeMessageQueue.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::NativeMessageQueue;
 using Elastos::Droid::Os::ILooper;
 

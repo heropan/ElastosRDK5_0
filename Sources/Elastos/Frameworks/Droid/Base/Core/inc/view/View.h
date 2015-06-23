@@ -9,11 +9,11 @@
 #include "view/InputEventConsistencyVerifier.h"
 #include "view/HardwareRenderer.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IObjectInt32Map;
 using Elastos::Droid::Content::IClipData;

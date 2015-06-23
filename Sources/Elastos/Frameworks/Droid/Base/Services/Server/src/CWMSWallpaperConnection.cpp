@@ -2,7 +2,7 @@
 #include "CWMSWallpaperConnection.h"
 #include "os/Binder.h"
 #include "os/SystemClock.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::CBinder;

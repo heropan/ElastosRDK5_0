@@ -2,9 +2,9 @@
 #define __CINTRUDERALERTVIEW_H_
 
 #include "_CIntruderAlertView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/policy/IntruderAlertView.h"
 
 namespace Elastos {

@@ -72,7 +72,7 @@ module
         IsInputShutdown(
             [out] Boolean* result);
 
-        ConnectEx(
+        Connect(
             [in] ILocalSocketAddress* endpoint,
             [in] Int32 timeout);
 

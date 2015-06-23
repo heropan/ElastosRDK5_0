@@ -34,14 +34,14 @@ ECode CPhysicalDisplayInfo::constructor(
 // {
 //     assert(equals != NULL);
 //     if (IPhysicalDisplayInfo::Probe(o) != NULL) {
-//         return EqualsEx(IPhysicalDisplayInfo::Probe(o), equals);
+//         return Equals(IPhysicalDisplayInfo::Probe(o), equals);
 //     }
 
 //     *equals = FALSE;
 //     return NOERROR;
 // }
 
-ECode CPhysicalDisplayInfo::EqualsEx(
+ECode CPhysicalDisplayInfo::Equals(
     /* [in] */ IPhysicalDisplayInfo* otherObj,
     /* [out] */ Boolean* equals)
 {
@@ -67,7 +67,7 @@ ECode CPhysicalDisplayInfo::Equals(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
-    return EqualsEx(IPhysicalDisplayInfo::Probe(other), result);
+    return Equals(IPhysicalDisplayInfo::Probe(other), result);
 }
 
 ECode CPhysicalDisplayInfo::GetHashCode(

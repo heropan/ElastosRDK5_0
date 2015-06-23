@@ -1,10 +1,10 @@
 
 #include "ext/frameworkdef.h"
 #include "NativeDaemonEvent.h"
-#include <elastos/StringUtils.h>
-#include <elastos/List.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringUtils;
 
 namespace Elastos {

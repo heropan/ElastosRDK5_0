@@ -1,7 +1,7 @@
 
 #include "eunit/framework/CTestSuite.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/Algorithm.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::CVector;

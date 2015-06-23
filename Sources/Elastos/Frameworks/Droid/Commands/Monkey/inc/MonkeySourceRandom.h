@@ -50,7 +50,7 @@ public:
     CARAPI SetFactors(
         /* [in] */ ArrayOf<Float> *factors);
 
-    CARAPI SetFactorsEx(
+    CARAPI SetFactors(
     /* [in] */ Int32 index,
     /* [in] */ Float v);
 

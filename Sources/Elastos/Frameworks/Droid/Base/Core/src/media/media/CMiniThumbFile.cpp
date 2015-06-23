@@ -1,10 +1,10 @@
 
 #include "media/CMiniThumbFile.h"
 
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "net/CUriHelper.h"
 #include "os/Environment.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::IByteBufferHelper;
@@ -78,11 +78,11 @@ ECode CMiniThumbFile::GetMagic(
             mBuffer->Clear();
             mBuffer->SetLimit(1 + 8);
 
-            mChannel->LockEx(pos, 1 + 8, TRUE, (IFileLock**)&fileLock);
+            mChannel->Lock(pos, 1 + 8, TRUE, (IFileLock**)&fileLock);
             // check that we can read the following 9 bytes
             // (1 for the "status" and 8 for the long)
             Int32 tempValue1;
-            mChannel->ReadByteBufferEx(mBuffer, pos, &tempValue1);
+            mChannel->ReadByteBuffer(mBuffer, pos, &tempValue1);
             if (tempValue1 == 9) {
                 mBuffer->SetPosition(0);
                 Byte tempValue2;
@@ -141,9 +141,9 @@ ECode CMiniThumbFile::SaveMiniThumbToFile( // throws IOException
             mBuffer->PutBytes(*data);
             mBuffer->Flip();
 
-            mChannel->LockEx(pos, BYTES_PER_MINTHUMB, FALSE, (IFileLock**)&fileLock);
+            mChannel->Lock(pos, BYTES_PER_MINTHUMB, FALSE, (IFileLock**)&fileLock);
             Int32 tempValue;
-            mChannel->WriteByteBufferEx(mBuffer, pos, &tempValue);
+            mChannel->WriteByteBuffer(mBuffer, pos, &tempValue);
         }
 //    } catch (IOException ex) {
 //        Logger::E(TAG, String("couldn't save mini thumbnail data for ")
@@ -185,9 +185,9 @@ ECode CMiniThumbFile::GetMiniThumbFromFile(
     AutoPtr<IFileLock> fileLock = NULL;
 //    try {
         mBuffer->Clear();
-        mChannel->LockEx(pos, BYTES_PER_MINTHUMB, TRUE, (IFileLock**)&fileLock);
+        mChannel->Lock(pos, BYTES_PER_MINTHUMB, TRUE, (IFileLock**)&fileLock);
         Int32 size;
-        mChannel->ReadByteBufferEx(mBuffer, pos, &size);
+        mChannel->ReadByteBuffer(mBuffer, pos, &size);
         if (size > 1 + 8 + 4) { // flag, magic, length
             mBuffer->SetPosition(0);
             Byte flag;
@@ -198,7 +198,7 @@ ECode CMiniThumbFile::GetMiniThumbFromFile(
             mBuffer->GetInt32(&length);
 
             if (size >= 1 + 8 + 4 + length && data->GetLength() >= length) {
-                mBuffer->GetBytesEx(data, 0, length);
+                mBuffer->GetBytes(data, 0, length);
                 *result = data;
             }
         }
@@ -266,7 +266,7 @@ ECode CMiniThumbFile::Instance(
     }
 
     *result = file;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

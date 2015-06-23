@@ -446,7 +446,7 @@ module
              * :-|:------------|
              * IllegalArgumentException | if address is invalid
              */
-            GetRemoteDeviceEx(
+            GetRemoteDevice(
                 [in] ArrayOf<Byte>* address,
                 [out] IBluetoothDevice** device);
 
@@ -566,7 +566,7 @@ module
              *         immediate error
              * @hide
              */
-            DisableEx(
+            Disable(
                 [in] Boolean persist,
                 [out] Boolean* result);
 
@@ -703,7 +703,7 @@ module
                 [out] Boolean* result);
 
             /** @hide */
-            SetScanModeEx(
+            SetScanMode(
                 [in] Int32 mode,
                 [out] Boolean* result);
 

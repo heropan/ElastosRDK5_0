@@ -200,7 +200,7 @@ ECode PropertyValuesHolderImpl::Clone(
     AutoPtr<PropertyValuesHolderImpl> v = new PropertyValuesHolderImpl(mPropertyName);
     PropertyValuesHolder::CloneSuperData(v);
     *holder = v;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 

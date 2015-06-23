@@ -1,8 +1,8 @@
 
 #include "view/CPointerCoords.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 

@@ -4,12 +4,11 @@
 
 #include "ext/frameworkdef.h"
 #include "usb/UsbSettingsManager.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
 using Elastos::Droid::Os::IBundle;

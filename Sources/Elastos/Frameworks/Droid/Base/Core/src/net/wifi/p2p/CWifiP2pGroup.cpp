@@ -1,9 +1,9 @@
 
 #include "CWifiP2pGroup.h"
-#include <Elastos.Core.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "CWifiP2pDevice.h"
 
 using Elastos::Core::StringUtils;
@@ -68,17 +68,17 @@ ECode CWifiP2pGroup::constructor(
             return NOERROR;
         }
 
-        FAIL_RETURN(match->GroupEx(1, &mNetworkName));
+        FAIL_RETURN(match->Group(1, &mNetworkName));
         //freq and psk are unused right now
         //int freq = Integer.parseInt(match.group(2));
         //String psk = match.group(3);
-        FAIL_RETURN(match->GroupEx(4, &mPassphrase));
+        FAIL_RETURN(match->Group(4, &mPassphrase));
 
         String temp;
-        FAIL_RETURN(match->GroupEx(5, &temp));
+        FAIL_RETURN(match->Group(5, &temp));
         FAIL_RETURN(CWifiP2pDevice::New(temp, (IWifiP2pDevice**)&mOwner));
 
-        FAIL_RETURN(match->GroupEx(6, &temp));
+        FAIL_RETURN(match->Group(6, &temp));
         if (!temp.IsNull()) {
             mNetId = IWifiP2pGroup::PERSISTENT_NET_ID;
         }
@@ -205,7 +205,7 @@ ECode CWifiP2pGroup::GetOwner(
     VALIDATE_NOT_NULL(device);
 
     *device = mOwner;
-    INTERFACE_ADDREF(*device);
+    REFCOUNT_ADD(*device);
     return NOERROR;
 }
 
@@ -215,10 +215,10 @@ ECode CWifiP2pGroup::AddClient(
     AutoPtr<IWifiP2pDevice> device;
     FAIL_RETURN(CWifiP2pDevice::New(address, (IWifiP2pDevice**)&device));
 
-    return AddClientEx(device);
+    return AddClient(device);
 }
 
-ECode CWifiP2pGroup::AddClientEx(
+ECode CWifiP2pGroup::AddClient(
     /* [in] */ IWifiP2pDevice* device)
 {
     Boolean ret;
@@ -241,10 +241,10 @@ ECode CWifiP2pGroup::RemoveClient(
     AutoPtr<IWifiP2pDevice> device;
     FAIL_RETURN(CWifiP2pDevice::New(address, (IWifiP2pDevice**)&device));
 
-    return RemoveClientEx(device, ret);
+    return RemoveClient(device, ret);
 }
 
-ECode CWifiP2pGroup::RemoveClientEx(
+ECode CWifiP2pGroup::RemoveClient(
     /* [in] */ IWifiP2pDevice* device,
     /* [out] */ Boolean* ret)
 {
@@ -317,7 +317,7 @@ ECode CWifiP2pGroup::GetClientList(
     }
 
     *list = array;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
 
     return NOERROR;
 }

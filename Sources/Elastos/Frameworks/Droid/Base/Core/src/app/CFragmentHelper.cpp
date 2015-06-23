@@ -13,13 +13,13 @@ ECode CFragmentHelper::Instantiate(
     return Fragment::Instantiate(context, fname, fragment);
 }
 
-ECode CFragmentHelper::InstantiateEx(
+ECode CFragmentHelper::Instantiate(
     /* [in] */ IContext* context,
     /* [in] */ const String& fname,
     /* [in] */ IBundle* args,
     /* [out] */ IFragment** fragment)
 {
-    return Fragment::InstantiateEx(context, fname, args, fragment);
+    return Fragment::Instantiate(context, fname, args, fragment);
 }
 
 } // namespace App

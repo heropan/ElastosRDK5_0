@@ -1,10 +1,10 @@
 
 #include "database/DatabaseUtils.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -791,10 +791,10 @@ void DatabaseUtils::DumpCursor(
     /* [in] */ ICursor* cursor)
 {
     assert(0);
-    //DumpCursorEx(cursor, System.out);
+    //DumpCursor(cursor, System.out);
 }
 
-void DatabaseUtils::DumpCursorEx(
+void DatabaseUtils::DumpCursor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IPrintStream* stream)
 {
@@ -807,14 +807,14 @@ void DatabaseUtils::DumpCursorEx(
         Boolean succeeded;
         cursor->MoveToPosition(-1, &succeeded);
         while (cursor->MoveToNext(&succeeded), succeeded) {
-            DumpCurrentRowEx(cursor, stream);
+            DumpCurrentRow(cursor, stream);
         }
         cursor->MoveToPosition(startPos, &succeeded);
     }
     stream->PrintStringln(String("<<<<<"));
 }
 
-void DatabaseUtils::DumpCursorEx2(
+void DatabaseUtils::DumpCursor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IStringBuilder* sb)
 {
@@ -827,7 +827,7 @@ void DatabaseUtils::DumpCursorEx2(
         Boolean succeeded;
         cursor->MoveToPosition(-1, &succeeded);
         while (cursor->MoveToNext(&succeeded), succeeded) {
-            DumpCurrentRowEx2(cursor, sb);
+            DumpCurrentRow(cursor, sb);
         }
         cursor->MoveToPosition(startPos, &succeeded);
     }
@@ -838,7 +838,7 @@ String DatabaseUtils::DumpCursorToString(
     /* [in] */ ICursor* cursor)
 {
     AutoPtr<IStringBuilder> sb = (IStringBuilder*)new StringBuilder();
-    DumpCursorEx2(cursor, sb);
+    DumpCursor(cursor, sb);
     String str;
     sb->ToString(&str);
     return str;
@@ -848,10 +848,10 @@ void DatabaseUtils::DumpCurrentRow(
     /* [in] */ ICursor* cursor)
 {
     assert(0);
-    //DumpCurrentRowEx(cursor, System.out);
+    //DumpCurrentRow(cursor, System.out);
 }
 
-void DatabaseUtils::DumpCurrentRowEx(
+void DatabaseUtils::DumpCurrentRow(
     /* [in] */ ICursor* cursor,
     /* [in] */ IPrintStream* stream)
 {
@@ -884,7 +884,7 @@ void DatabaseUtils::DumpCurrentRowEx(
     stream->PrintStringln(String("}"));
 }
 
-void DatabaseUtils::DumpCurrentRowEx2(
+void DatabaseUtils::DumpCurrentRow(
     /* [in] */ ICursor* cursor,
     /* [in] */ IStringBuilder* sb)
 {
@@ -920,7 +920,7 @@ String DatabaseUtils::DumpCurrentRowToString(
     /* [in] */ ICursor* cursor)
 {
     AutoPtr<IStringBuilder> sb = (IStringBuilder*)new StringBuilder();
-    DumpCurrentRowEx2(cursor, sb);
+    DumpCurrentRow(cursor, sb);
     String str;
     sb->ToString(&str);
     return str;
@@ -931,7 +931,7 @@ void DatabaseUtils::CursorStringToContentValues(
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values)
 {
-    CursorStringToContentValuesEx(cursor, field, values, field);
+    CursorStringToContentValues(cursor, field, values, field);
 }
 
 void DatabaseUtils::CursorStringToInsertHelper(
@@ -947,7 +947,7 @@ void DatabaseUtils::CursorStringToInsertHelper(
     inserter->BindString(index, str);
 }
 
-void DatabaseUtils::CursorStringToContentValuesEx(
+void DatabaseUtils::CursorStringToContentValues(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values,
@@ -967,10 +967,10 @@ void DatabaseUtils::CursorInt32ToContentValues(
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values)
 {
-    CursorInt32ToContentValuesEx(cursor, field, values, field);
+    CursorInt32ToContentValues(cursor, field, values, field);
 }
 
-void DatabaseUtils::CursorInt32ToContentValuesEx(
+void DatabaseUtils::CursorInt32ToContentValues(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values,
@@ -996,10 +996,10 @@ void DatabaseUtils::CursorInt64ToContentValues(
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values)
 {
-    CursorInt64ToContentValuesEx(cursor, field, values, field);
+    CursorInt64ToContentValues(cursor, field, values, field);
 }
 
-void DatabaseUtils::CursorInt64ToContentValuesEx(
+void DatabaseUtils::CursorInt64ToContentValues(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values,
@@ -1093,18 +1093,18 @@ Int64 DatabaseUtils::QueryNumEntries(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& table)
 {
-    return QueryNumEntriesEx2(db, table, String(NULL), NULL);
+    return QueryNumEntries(db, table, String(NULL), NULL);
 }
 
-Int64 DatabaseUtils::QueryNumEntriesEx(
+Int64 DatabaseUtils::QueryNumEntries(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& table,
     /* [in] */ const String& selection)
 {
-    return QueryNumEntriesEx2(db, table, selection, NULL);
+    return QueryNumEntries(db, table, selection, NULL);
 }
 
-Int64 DatabaseUtils::QueryNumEntriesEx2(
+Int64 DatabaseUtils::QueryNumEntries(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& table,
     /* [in] */ const String& selection,
@@ -1125,14 +1125,14 @@ Int64 DatabaseUtils::Int64ForQuery(
     AutoPtr<ISQLiteStatement> prog;
     db->CompileStatement(query, (ISQLiteStatement**)&prog);
     //try {
-    Int64 value = Int64ForQueryEx(prog, selectionArgs);
+    Int64 value = Int64ForQuery(prog, selectionArgs);
     //} finally {
     prog->Close();
     //}
     return value;
 }
 
-Int64 DatabaseUtils::Int64ForQueryEx(
+Int64 DatabaseUtils::Int64ForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
@@ -1150,14 +1150,14 @@ String DatabaseUtils::StringForQuery(
     AutoPtr<ISQLiteStatement> prog;
     db->CompileStatement(query, (ISQLiteStatement**)&prog);
     //try {
-    String str = StringForQueryEx(prog, selectionArgs);
+    String str = StringForQuery(prog, selectionArgs);
     //} finally {
     prog->Close();
     //}
     return str;
 }
 
-String DatabaseUtils::StringForQueryEx(
+String DatabaseUtils::StringForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
@@ -1175,14 +1175,14 @@ AutoPtr<IParcelFileDescriptor> DatabaseUtils::BlobFileDescriptorForQuery(
     AutoPtr<ISQLiteStatement> prog;
     db->CompileStatement(query, (ISQLiteStatement**)&prog);
     //try {
-    AutoPtr<IParcelFileDescriptor> desc = BlobFileDescriptorForQueryEx(prog, selectionArgs);
+    AutoPtr<IParcelFileDescriptor> desc = BlobFileDescriptorForQuery(prog, selectionArgs);
     //} finally {
     prog->Close();
     //}
     return desc;
 }
 
-AutoPtr<IParcelFileDescriptor> DatabaseUtils::BlobFileDescriptorForQueryEx(
+AutoPtr<IParcelFileDescriptor> DatabaseUtils::BlobFileDescriptorForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {

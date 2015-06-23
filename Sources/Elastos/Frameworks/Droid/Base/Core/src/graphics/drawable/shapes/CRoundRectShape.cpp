@@ -63,7 +63,7 @@ ECode CRoundRectShape::Clone(
     CRoundRectShape::NewByFriend(NULL, NULL, NULL, (CRoundRectShape**)&s);
     RoundRectShape::Clone((RoundRectShape*)s.Get());
     *shape = (IShape*)s.Get();
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 

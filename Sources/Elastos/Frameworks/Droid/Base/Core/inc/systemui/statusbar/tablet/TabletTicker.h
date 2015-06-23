@@ -3,7 +3,7 @@
 
 #include "ext/frameworkext.h"
 #include "widget/ImageView.h"
-#include "os/HandlerMacro.h"
+
 
 using Elastos::Droid::Animation::ITransitionListener;
 using Elastos::Droid::Animation::ILayoutTransition;

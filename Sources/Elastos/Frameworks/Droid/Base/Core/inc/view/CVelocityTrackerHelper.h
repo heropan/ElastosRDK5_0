@@ -13,7 +13,7 @@ public:
     CARAPI Obtain(
         /* [out] */ IVelocityTracker** velocity);
 
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ const String& strategy,
         /* [out] */ IVelocityTracker** velocity);
 };

@@ -3,13 +3,13 @@
 #define __POLICY_CNETWORKCONTROLLER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "os/HandlerBase.h"
 #include "util/AsyncChannel.h"
 #include "content/BroadcastReceiver.h"
 #include "R.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Internal::Utility::AsyncChannel;
 using Elastos::Droid::Widget::IImageView;

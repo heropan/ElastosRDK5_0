@@ -155,7 +155,7 @@ ECode CTextSwitcher::SetOutAnimation(
      * @see #getInAnimation()
      * @see #setInAnimation(android.view.animation.Animation)
      */
-ECode CTextSwitcher::SetInAnimationEx(
+ECode CTextSwitcher::SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID)
 {
@@ -171,7 +171,7 @@ ECode CTextSwitcher::SetInAnimationEx(
      * @see #getOutAnimation()
      * @see #setOutAnimation(android.view.animation.Animation)
      */
-ECode CTextSwitcher::SetOutAnimationEx(
+ECode CTextSwitcher::SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID)
 {

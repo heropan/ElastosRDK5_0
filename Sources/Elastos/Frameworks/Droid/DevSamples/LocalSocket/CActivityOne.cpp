@@ -3,7 +3,7 @@
 #include "gen/fwLocalSocket/R.h"
 //#include "Uri.h"
 #include <tstcom.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <unistd.h>
 #include <utils/Timers.h>
 //using namespace Elastos::Core;
@@ -297,7 +297,7 @@ ECode CActivityOne::Test2()
         goto Exit;
     }
 
-    ec = socket->ConnectEx(addr, 2005);
+    ec = socket->Connect(addr, 2005);
     if (SUCCEEDED(ec)) {
         TPERR("testLocalSocketSecondary shouldn't come to here5 failed.ec = 0x%x.\n", ec);
         goto Exit;

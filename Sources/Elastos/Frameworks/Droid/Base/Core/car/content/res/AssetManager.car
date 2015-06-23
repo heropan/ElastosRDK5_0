@@ -84,7 +84,7 @@ module
          * @see #open(String)
          * @see #list
          */
-        OpenEx(
+        Open(
             [in] String fileName,
             [in] Int32 accessMode,
             [out] IInputStream** stream);
@@ -131,7 +131,7 @@ module
          *
          * @see #open(String, int)
          */
-        OpenNonAssetEx(
+        OpenNonAsset(
             [in] String fileName,
             [in] Int32 accessMode,
             [out] IInputStream** stream);
@@ -143,7 +143,7 @@ module
          * @param cookie Identifier of the package to be opened.
          * @param fileName Name of the asset to retrieve.
          */
-        OpenNonAssetEx2(
+        OpenNonAsset(
             [in] Int32 cookie,
             [in] String fileName,
             [out] IInputStream** stream);
@@ -156,7 +156,7 @@ module
          * @param fileName Name of the asset to retrieve.
          * @param accessMode Desired access mode for retrieving the data.
          */
-        OpenNonAssetEx3(
+        OpenNonAsset(
             [in] Int32 cookie,
             [in] String fileName,
             [in] Int32 accessMode,
@@ -166,7 +166,7 @@ module
             [in] String fileName,
             [out] IAssetFileDescriptor** fd);
 
-        OpenNonAssetFdEx(
+        OpenNonAssetFd(
             [in] Int32 cookie,
             [in] String fileName,
             [out] IAssetFileDescriptor** fd);
@@ -186,7 +186,7 @@ module
          * @param cookie Identifier of the package to be opened.
          * @param fileName The name of the file to retrieve.
          */
-        OpenXmlResourceParserEx(
+        OpenXmlResourceParser(
             [in] Int32 cookie,
             [in] String fileName,
             [out] IXmlResourceParser** parser);

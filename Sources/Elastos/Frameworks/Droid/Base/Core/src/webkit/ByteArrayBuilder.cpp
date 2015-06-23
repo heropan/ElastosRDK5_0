@@ -1,6 +1,6 @@
 
 #include "webkit/ByteArrayBuilder.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Utility::CLinkedList;
 using Elastos::Utility::IListIterator;
@@ -165,7 +165,7 @@ Int32 ByteArrayBuilder::GetByteSize()
 
     Int32 total = 0;
     AutoPtr<IListIterator> it;
-    mChunks->GetListIteratorEx(0, (IListIterator**)&it);
+    mChunks->GetListIterator(0, (IListIterator**)&it);
     Boolean bFlag = FALSE;
     it->HasNext(&bFlag);
     while (bFlag) {

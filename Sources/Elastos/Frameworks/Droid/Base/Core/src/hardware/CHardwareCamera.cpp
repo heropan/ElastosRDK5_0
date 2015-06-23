@@ -1,6 +1,6 @@
 
 #include "hardware/CHardwareCamera.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "text/TextUtils.h"
 #include "text/CSimpleStringSplitter.h"
 #include <utils/String8.h>
@@ -8,19 +8,19 @@
 #include "graphics/CRect.h"
 #include "graphics/CSurfaceTexture.h"
 #include "graphics/CBitmapFactory.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "os/Looper.h"
 #include "os/Process.h"
 #include "os/ServiceManager.h"
 #include <gui/BufferQueue.h>
 #include <gui/SurfaceTexture.h>
 #include <gui/Surface.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "privacy/CPrivacySettingsManager.h"
 
 
 using Elastos::Core::StringUtils;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CInteger32;
 using Elastos::IO::IFile;
@@ -725,7 +725,7 @@ ECode CHardwareCamera::Size::GetInterfaceID(
     return NOERROR;
 }
 
-ECode CHardwareCamera::Size::EqualsEx(
+ECode CHardwareCamera::Size::Equals(
     /* [in] */ ICameraSize* obj,
     /* [out] */ Boolean* e)
 {
@@ -746,7 +746,7 @@ ECode CHardwareCamera::Size::Equals(
 {
     VALIDATE_NOT_NULL(e);
     *e = FALSE;
-    return EqualsEx(ICameraSize::Probe(obj), e);
+    return Equals(ICameraSize::Probe(obj), e);
 }
 
 ECode CHardwareCamera::Size::GetHashCode(
@@ -945,7 +945,7 @@ ECode CHardwareCamera::Parameters::Set(
     return NOERROR;
 }
 
-ECode CHardwareCamera::Parameters::SetEx(
+ECode CHardwareCamera::Parameters::Set(
     /* [in] */ const String& key,
     /* [in] */ Int32 value)
 {
@@ -1020,7 +1020,7 @@ ECode CHardwareCamera::Parameters::GetPreviewSize(
     Get(KEY_PREVIEW_SIZE, &pair);
     AutoPtr<ICameraSize> cs = StrToSize(pair);
     *size = cs;
-    INTERFACE_ADDREF(*size);
+    REFCOUNT_ADD(*size);
 
     return NOERROR;
 }
@@ -1034,7 +1034,7 @@ ECode CHardwareCamera::Parameters::GetSupportedPreviewSizes(
     Get(KEY_PREVIEW_SIZE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<ICameraSize*> > array = SplitSize(str);
     *sizes = array;
-    INTERFACE_ADDREF(*sizes);
+    REFCOUNT_ADD(*sizes);
 
     return NOERROR;
 }
@@ -1048,7 +1048,7 @@ ECode CHardwareCamera::Parameters::GetSupportedVideoSizes(
     Get(KEY_VIDEO_SIZE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<ICameraSize*> > array = SplitSize(str);
     *sizes = array;
-    INTERFACE_ADDREF(*sizes);
+    REFCOUNT_ADD(*sizes);
 
     return NOERROR;
 }
@@ -1061,7 +1061,7 @@ ECode CHardwareCamera::Parameters::GetPreferredPreviewSizeForVideo(
     Get(KEY_PREFERRED_PREVIEW_SIZE_FOR_VIDEO, &pair);
     AutoPtr<ICameraSize> temp = StrToSize(pair);
     *size = temp;
-    INTERFACE_ADDREF(*size);
+    REFCOUNT_ADD(*size);
 
     return NOERROR;
 }
@@ -1070,8 +1070,8 @@ ECode CHardwareCamera::Parameters::SetJpegThumbnailSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    SetEx(KEY_JPEG_THUMBNAIL_WIDTH, width);
-    SetEx(KEY_JPEG_THUMBNAIL_HEIGHT, height);
+    Set(KEY_JPEG_THUMBNAIL_WIDTH, width);
+    Set(KEY_JPEG_THUMBNAIL_HEIGHT, height);
     return NOERROR;
 }
 
@@ -1097,7 +1097,7 @@ ECode CHardwareCamera::Parameters::GetSupportedJpegThumbnailSizes(
     assert(sizes != NULL);
     AutoPtr<ArrayOf<ICameraSize*> > array = SplitSize(str);
     *sizes = array;
-    INTERFACE_ADDREF(*sizes);
+    REFCOUNT_ADD(*sizes);
 
     return NOERROR;
 }
@@ -1105,7 +1105,7 @@ ECode CHardwareCamera::Parameters::GetSupportedJpegThumbnailSizes(
 ECode CHardwareCamera::Parameters::SetJpegThumbnailQuality(
     /* [in] */ Int32 quality)
 {
-    return SetEx(KEY_JPEG_THUMBNAIL_QUALITY, quality);
+    return Set(KEY_JPEG_THUMBNAIL_QUALITY, quality);
 }
 
 ECode CHardwareCamera::Parameters::GetJpegThumbnailQuality(
@@ -1118,7 +1118,7 @@ ECode CHardwareCamera::Parameters::GetJpegThumbnailQuality(
 ECode CHardwareCamera::Parameters::SetJpegQuality(
     /* [in] */ Int32 quality)
 {
-    return SetEx(KEY_JPEG_QUALITY, quality);
+    return Set(KEY_JPEG_QUALITY, quality);
 }
 
 ECode CHardwareCamera::Parameters::GetJpegQuality(
@@ -1130,7 +1130,7 @@ ECode CHardwareCamera::Parameters::GetJpegQuality(
 ECode CHardwareCamera::Parameters::SetPreviewFrameRate(
     /* [in] */ Int32 fps)
 {
-    return SetEx(KEY_PREVIEW_FRAME_RATE, fps);
+    return Set(KEY_PREVIEW_FRAME_RATE, fps);
 }
 
 ECode CHardwareCamera::Parameters::GetPreviewFrameRate(
@@ -1148,7 +1148,7 @@ ECode CHardwareCamera::Parameters::GetSupportedPreviewFrameRates(
     Get(KEY_PREVIEW_FRAME_RATE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<IInteger32*> > array =  SplitInt(str);
     *rates = array;
-    INTERFACE_ADDREF(*rates);
+    REFCOUNT_ADD(*rates);
 
     return NOERROR;
 }
@@ -1183,7 +1183,7 @@ ECode CHardwareCamera::Parameters::GetSupportedPreviewFpsRange(
     Get(KEY_PREVIEW_FPS_RANGE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<IObjectContainer> temp = SplitRange(str);
     *lists = temp;
-    INTERFACE_ADDREF(*lists);
+    REFCOUNT_ADD(*lists);
     return NOERROR;
 }
 
@@ -1223,7 +1223,7 @@ ECode CHardwareCamera::Parameters::GetSupportedPreviewFormats(
     AutoPtr<ArrayOf<String> > splitStrArray = Split(str);
     if (splitStrArray != NULL) {
         *formats = ArrayOf<IInteger32*>::Alloc(splitStrArray->GetLength());
-        INTERFACE_ADDREF(*formats);
+        REFCOUNT_ADD(*formats);
 
         for (Int32 i = 0; i < splitStrArray->GetLength(); i++) {
             String s = (*splitStrArray)[i];
@@ -1257,7 +1257,7 @@ ECode CHardwareCamera::Parameters::GetPictureSize(
     Get(KEY_PICTURE_SIZE, &pair);
     AutoPtr<ICameraSize> temp = StrToSize(pair);
     *size = temp;
-    INTERFACE_ADDREF(*size);
+    REFCOUNT_ADD(*size);
     return NOERROR;
 }
 
@@ -1270,7 +1270,7 @@ ECode CHardwareCamera::Parameters::GetSupportedPictureSizes(
     Get(KEY_PICTURE_SIZE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<ICameraSize*> > array = SplitSize(str).Get();
     *sizes = array;
-    INTERFACE_ADDREF(*sizes);
+    REFCOUNT_ADD(*sizes);
 
     return NOERROR;
 }
@@ -1311,7 +1311,7 @@ ECode CHardwareCamera::Parameters::GetSupportedPictureFormats(
     AutoPtr<ArrayOf<String> > splitStrArray = Split(str);
     if (splitStrArray != NULL) {
         *formats = ArrayOf<IInteger32*>::Alloc(splitStrArray->GetLength());
-        INTERFACE_ADDREF(*formats);
+        REFCOUNT_ADD(*formats);
 
         for (Int32 i = 0; i < splitStrArray->GetLength(); i++) {
             String s = (*splitStrArray)[i];
@@ -1455,7 +1455,7 @@ ECode CHardwareCamera::Parameters::GetSupportedWhiteBalance(
     Get(KEY_WHITE_BALANCE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<String> > array = Split(str);
     *balance = array;
-    INTERFACE_ADDREF(*balance);
+    REFCOUNT_ADD(*balance);
 
     return NOERROR;
 }
@@ -1481,7 +1481,7 @@ ECode CHardwareCamera::Parameters::GetSupportedColorEffects(
     Get(KEY_EFFECT + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<String> > array = Split(str);
     *effects = array;
-    INTERFACE_ADDREF(*effects);
+    REFCOUNT_ADD(*effects);
 
     return NOERROR;
 }
@@ -1507,7 +1507,7 @@ ECode CHardwareCamera::Parameters::GetSupportedAntibanding(
     Get(KEY_ANTIBANDING + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<String> > array = Split(str);
     *values = array;
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
 
     return NOERROR;
 }
@@ -1533,7 +1533,7 @@ ECode CHardwareCamera::Parameters::GetSupportedSceneModes(
     Get(KEY_SCENE_MODE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<String> > array = Split(str);
     *modes = array;
-    INTERFACE_ADDREF(*modes);
+    REFCOUNT_ADD(*modes);
 
     return NOERROR;
 }
@@ -1559,7 +1559,7 @@ ECode CHardwareCamera::Parameters::GetSupportedFlashModes(
     Get(KEY_FLASH_MODE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<String> > array = Split(str);
     *modes = array;
-    INTERFACE_ADDREF(*modes);
+    REFCOUNT_ADD(*modes);
 
     return NOERROR;
 }
@@ -1585,7 +1585,7 @@ ECode CHardwareCamera::Parameters::GetSupportedFocusModes(
     Get(KEY_FOCUS_MODE + SUPPORTED_VALUES_SUFFIX, &str);
     AutoPtr<ArrayOf<String> > array = Split(str);
     *modes = array;
-    INTERFACE_ADDREF(*modes);
+    REFCOUNT_ADD(*modes);
 
     return NOERROR;
 }
@@ -1635,7 +1635,7 @@ ECode CHardwareCamera::Parameters::GetExposureCompensation(
 ECode CHardwareCamera::Parameters::SetExposureCompensation(
     /* [out] */ Int32 value)
 {
-    return SetEx(KEY_EXPOSURE_COMPENSATION, value);
+    return Set(KEY_EXPOSURE_COMPENSATION, value);
 }
 
 ECode CHardwareCamera::Parameters::GetMaxExposureCompensation(
@@ -1725,7 +1725,7 @@ ECode CHardwareCamera::Parameters::GetZoom(
 ECode CHardwareCamera::Parameters::SetZoom(
     /* [in] */ Int32 value)
 {
-    return SetEx(KEY_ZOOM, value);
+    return Set(KEY_ZOOM, value);
 }
 
 ECode CHardwareCamera::Parameters::IsZoomSupported(
@@ -1755,7 +1755,7 @@ ECode CHardwareCamera::Parameters::GetZoomRatios(
     Get(KEY_ZOOM_RATIOS, &str);
     AutoPtr<ArrayOf<IInteger32*> > array = SplitInt(str);
     *ratios = array;
-    INTERFACE_ADDREF(*ratios);
+    REFCOUNT_ADD(*ratios);
 
     return NOERROR;
 }
@@ -1803,7 +1803,7 @@ ECode CHardwareCamera::Parameters::GetFocusAreas(
     Get(KEY_FOCUS_AREAS, &str);
     AutoPtr<ArrayOf<ICameraArea*> > array = SplitArea(str);
     *areas = array;
-    INTERFACE_ADDREF(array);
+    REFCOUNT_ADD(array);
 
     return NOERROR;
 }
@@ -1832,7 +1832,7 @@ ECode CHardwareCamera::Parameters::GetMeteringAreas(
     Get(KEY_METERING_AREAS, &str);
     AutoPtr<ArrayOf<ICameraArea*> > array = SplitArea(str);
     *areas = array;
-    INTERFACE_ADDREF(*areas);
+    REFCOUNT_ADD(*areas);
 
     return NOERROR;
 }
@@ -2223,10 +2223,10 @@ ECode CHardwareCamera::constructor()
 
 void CHardwareCamera::Finalize()
 {
-    ReleaseEx();
+    Release();
 }
 
-ECode CHardwareCamera::ReleaseEx()
+ECode CHardwareCamera::Release()
 {
     native_release();
     mFaceDetectionRunning = FALSE;
@@ -2400,10 +2400,10 @@ ECode CHardwareCamera::TakePicture(
     /* [in] */ IPictureCallback* raw,
     /* [in] */ IPictureCallback* jpeg)
 {
-    return TakePictureEx(shutter, raw, NULL, jpeg);
+    return TakePicture(shutter, raw, NULL, jpeg);
 }
 
-ECode CHardwareCamera::TakePictureEx(
+ECode CHardwareCamera::TakePicture(
     /* [in] */ IShutterCallback* shutter,
     /* [in] */ IPictureCallback* raw,
     /* [in] */ IPictureCallback* postview,
@@ -2529,7 +2529,7 @@ ECode CHardwareCamera::GetParameters(
 {
     assert(para);
     *para = new Parameters();
-    INTERFACE_ADDREF(*para);
+    REFCOUNT_ADD(*para);
 
     String s;
     native_getParameters(&s);
@@ -3021,7 +3021,7 @@ AutoPtr<ArrayOf<Byte> > CHardwareCamera::GetFakeImage()
 
 
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&fact);
-    FAIL_GOTO(fact->DecodeStreamEx(fis, (IBitmap**)&bm), _EXIT_);
+    FAIL_GOTO(fact->DecodeStream(fis, (IBitmap**)&bm), _EXIT_);
 
     FAIL_GOTO(CByteArrayOutputStream::New((IByteArrayOutputStream**)&helper), _EXIT_);
     FAIL_GOTO(bm->Compress(BitmapCompressFormat_JPEG, 100 , helper, &bval), _EXIT_);
@@ -3087,7 +3087,7 @@ Int32 CHardwareCamera::CheckIfPackagesAllowed()
         Byte cs;
         for (Int32 i = 0; i < packageNames->GetLength(); i++) {
             settings = NULL;
-            mPrivacySettingsManager->GetSettingsEx((*packageNames)[i], uid, (IPrivacySettings**)&settings);
+            mPrivacySettingsManager->GetSettings((*packageNames)[i], uid, (IPrivacySettings**)&settings);
             //if settings is NULL, we allow application to access to mic
             if (settings != NULL) {
                 settings->GetCameraSetting(&cs);

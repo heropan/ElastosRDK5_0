@@ -132,7 +132,7 @@ public:
     CARAPI SetPhysicalYDpi(
         /* [in] */ Float physicalYDpi);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IDisplayInfo* otherObj,
         /* [out] */ Boolean* isEquals);
 

@@ -6,10 +6,9 @@
 #include "ext/frameworkext.h"
 #include "util/JournaledFile.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
-#include <elastos/Logger.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using namespace Elastos::Utility::Logging;
 using Org::Xmlpull::V1::IXmlSerializer;
@@ -18,9 +17,9 @@ using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::App::Admin::IDeviceAdminInfo;
 using Elastos::Droid::App::Admin::IDevicePolicyManager;

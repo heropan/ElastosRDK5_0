@@ -6,7 +6,7 @@
 #include "content/CContentUris.h"
 #include "content/CContentValues.h"
 #include "graphics/CBitmapFactory.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -158,7 +158,7 @@ ECode CContactsPeople::AddToMyContactsGroup(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    return AddToGroupEx(resolver, personId, groupId, uri);
+    return AddToGroup(resolver, personId, groupId, uri);
 }
 
 ECode CContactsPeople::AddToGroup(
@@ -194,10 +194,10 @@ ECode CContactsPeople::AddToGroup(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    return AddToGroupEx(resolver, personId, groupId, uri);
+    return AddToGroup(resolver, personId, groupId, uri);
 }
 
-ECode CContactsPeople::AddToGroupEx(
+ECode CContactsPeople::AddToGroup(
     /* [in] */ IContentResolver* resolver,
     /* [in] */ Int64 personId,
     /* [in] */ Int64 groupId,
@@ -247,7 +247,7 @@ ECode CContactsPeople::CreatePersonInMyContactsGroup(
         return NOERROR;
     }
     *uri =  contactUri;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode CContactsPeople::OpenContactPhotoInputStream(
     AutoPtr<IByteArrayInputStream> _stream;
     CByteArrayInputStream::New(data, (IByteArrayInputStream**)&_stream);
     *stream = IInputStream::Probe(_stream);
-    INTERFACE_ADDREF(*stream);
+    REFCOUNT_ADD(*stream);
     if (cursor != NULL) cursor->Close();
     return NOERROR;
 }
@@ -333,7 +333,7 @@ ECode CContactsPeople::LoadContactPhoto(
     if (person == NULL) {
         AutoPtr<IBitmap> bm = LoadPlaceholderPhoto(placeholderImageResource, context, options);
         *bitmap = bm;
-        INTERFACE_ADDREF(*bitmap);
+        REFCOUNT_ADD(*bitmap);
         return NOERROR;
     }
 
@@ -351,7 +351,7 @@ ECode CContactsPeople::LoadContactPhoto(
         bm = LoadPlaceholderPhoto(placeholderImageResource, context, options);
     }
     *bitmap = bm;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 

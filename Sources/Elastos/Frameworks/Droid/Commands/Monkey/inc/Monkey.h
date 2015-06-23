@@ -3,17 +3,16 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Commands.Monkey.h"
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
 #include <elrefbase.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Object;
-using Elastos::Utility::HashSet;
+using Elastos::Core::Mutex;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::View::IIWindowManager;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IActivityController;
 using Elastos::Core::IRandom;
 using Elastos::Droid::Content::IIntent;

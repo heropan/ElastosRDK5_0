@@ -3,13 +3,12 @@
 
 #include "_CNsdManager.h"
 #include "ext/frameworkdef.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "text/TextUtils.h"
 #include "os/HandlerBase.h"
 #include "util/AsyncChannel.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Concurrent::ICountDownLatch;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IMessenger;

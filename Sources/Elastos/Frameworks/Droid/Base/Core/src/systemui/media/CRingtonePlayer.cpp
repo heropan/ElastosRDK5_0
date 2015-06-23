@@ -1,5 +1,5 @@
 #include "systemui/media/CRingtonePlayer.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "os/ServiceManager.h"
 #include "os/Binder.h"
 #include "os/CBinderHelper.h"
@@ -206,7 +206,7 @@ ECode CRingtonePlayer::GetContext(
     VALIDATE_NOT_NULL(context);
     AutoPtr<IContext> ctx = SystemUI::GetContext();
     *context = ctx;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 

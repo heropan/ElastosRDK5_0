@@ -119,7 +119,7 @@ void RotateAnimation::ApplyTransformation(
     AutoPtr<IMatrix> matrix;
     t->GetMatrix((IMatrix**)&matrix);
     if (mPivotX == 0.0f && mPivotY == 0.0f) {
-        matrix->SetRotateEx(degrees);
+        matrix->SetRotate(degrees);
     }
     else {
         matrix->SetRotate(degrees, mPivotX * scale, mPivotY * scale);
@@ -149,7 +149,7 @@ ECode RotateAnimation::Init(
             const_cast<Int32 *>(R::styleable::RotateAnimation),
             ARRAY_SIZE(R::styleable::RotateAnimation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::RotateAnimation_fromDegrees, 0.0f, &mFromDegrees);
 

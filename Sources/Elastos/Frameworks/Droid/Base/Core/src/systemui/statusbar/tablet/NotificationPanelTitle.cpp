@@ -134,7 +134,7 @@ Boolean NotificationPanelTitle::OnRequestSendAccessibilityEvent(
         AutoPtr<IAccessibilityEventHelper> helper;
         CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
         AutoPtr<IAccessibilityEvent> record;
-        helper->ObtainEx2((IAccessibilityEvent**)&record);
+        helper->Obtain((IAccessibilityEvent**)&record);
 
         OnInitializeAccessibilityEvent(record);
         DispatchPopulateAccessibilityEvent(record);

@@ -1,7 +1,7 @@
 #include "systemui/statusbar/BaseStatusBar.h"
 #include "R.h"
-#include "elastos/StringUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "Elastos.Droid.Core_server.h"
 #include "util/CDisplayMetrics.h"
 #include "os/Build.h"
@@ -458,7 +458,7 @@ ECode BaseStatusBar::NotificationClicker::OnClick(
         CIntent::New((IIntent**)&overlay);
         overlay->SetSourceBounds(rect);
         // try {
-            mIntent->SendEx2(mHost->mContext, 0, overlay);
+            mIntent->Send(mHost->mContext, 0, overlay);
         // } catch (PendingIntent.CanceledException e) {
         //     // the stack trace isn't very helpful here.  Just log the exception message.
         //     Slogger::W(TAG, "Sending contentIntent failed: " + e);
@@ -624,7 +624,7 @@ ECode BaseStatusBar::Start()
     AutoPtr<ISettingsGlobal> settingsGlobal;
     ASSERT_SUCCEEDED(CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal));
     AutoPtr<IUri> uri;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::DEVICE_PROVISIONED, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::DEVICE_PROVISIONED, (IUri**)&uri);
 
     //TODO resolver->RegisterContentObserver(uri, TRUE, mProvisioningObserver);
 
@@ -846,7 +846,7 @@ ECode BaseStatusBar::StartApplicationDetailsActivity(
     AutoPtr<ITaskStackBuilder> builder;
     helper->Create(mContext, (ITaskStackBuilder**)&builder);
     builder->AddNextIntentWithParentStack(intent);
-    builder->StartActivitiesEx(NULL, UserHandle::CURRENT);
+    builder->StartActivities(NULL, UserHandle::CURRENT);
     return NOERROR;
 }
 
@@ -931,7 +931,7 @@ ECode BaseStatusBar::UpdateSearchPanel()
     AutoPtr<ILayoutInflater> li;
     LayoutInflater::From(mContext, (ILayoutInflater**)&li);
     AutoPtr<IView> spv;
-    li->InflateEx2(SystemUIR::layout::status_bar_search_panel,
+    li->Inflate(SystemUIR::layout::status_bar_search_panel,
         IViewGroup::Probe(tmpRoot.Get()), FALSE, (IView**)&spv);
     mSearchPanelView = ISearchPanelView::Probe(spv.Get());
     assert(mSearchPanelView != NULL);
@@ -945,7 +945,7 @@ ECode BaseStatusBar::UpdateSearchPanel()
     mSearchPanelView->GetLayoutParams((IViewGroupLayoutParams**)&params);
     AutoPtr<IWindowManagerLayoutParams> lp = GetSearchLayoutParams(IViewGroupLayoutParams::Probe(params.Get()));
 
-    mWindowManager->AddViewEx5(mSearchPanelView, lp);
+    mWindowManager->AddView(mSearchPanelView, lp);
     mSearchPanelView->SetBar(THIS_PROBE(IBaseStatusBar));
     if (visible) {
         mSearchPanelView->Show(TRUE, FALSE);
@@ -984,7 +984,7 @@ ECode BaseStatusBar::ToggleRecentsActivity()
     CIntent::New(IRecentsActivity::TOGGLE_RECENTS_INTENT, (IIntent**)&intent);
     String packageName("SystemUI"); //("Elastos.Droid.Core.eco"); //"com.android.systemui"
     String className("SystemUI.CRecentsActivityOne"); //("Elastos.Droid.SystemUI.Recent.RecentsActivity");//"com.android.systemui.recent.RecentsActivity"
-    intent->SetClassNameEx(packageName, className);
+    intent->SetClassName(packageName, className);
     intent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK
         | IIntent::FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
 
@@ -1008,7 +1008,7 @@ ECode BaseStatusBar::ToggleRecentsActivity()
                    (IActivityOptions**)&opts);
             AutoPtr<IBundle> bundle;
             opts->ToBundle((IBundle**)&bundle);
-            mContext->StartActivityAsUserEx(intent, bundle, userHandle);
+            mContext->StartActivityAsUser(intent, bundle, userHandle);
         }
         else {
             // The correct window animation will be applied via the activity's style
@@ -1095,7 +1095,7 @@ ECode BaseStatusBar::ToggleRecentsActivity()
             CPaint::New((IPaint**)&p);
             p->SetTextSize(labelTextSize);
             AutoPtr<IPaintFontMetricsInt> pfmi;
-            p->GetFontMetricsIntEx((IPaintFontMetricsInt**)&pfmi);
+            p->GetFontMetricsInt((IPaintFontMetricsInt**)&pfmi);
             Int32 top, bottom;
             pfmi->GetTop(&top);
             pfmi->GetBottom(&bottom);
@@ -1134,7 +1134,7 @@ ECode BaseStatusBar::ToggleRecentsActivity()
         intent->PutBooleanExtra(IRecentsActivity::WAITING_FOR_WINDOW_ANIMATION_PARAM, TRUE);
         AutoPtr<IBundle> bundle;
         opts->ToBundle((IBundle**)&bundle);
-        mContext->StartActivityAsUserEx(intent, bundle, userHandle);
+        mContext->StartActivityAsUser(intent, bundle, userHandle);
     }
     // } catch (ActivityNotFoundException e) {
     //     Log.e(TAG, "Failed to launch RecentAppsIntent", e);
@@ -1149,7 +1149,7 @@ ECode BaseStatusBar::PreloadRecentTasksList()
     CIntent::New(IRecentsActivity::PRELOAD_INTENT, (IIntent**)&intent);
     String packageName("SystemUI"); //("Elastos.Droid.Core.eco"); //"com.android.systemui"
     String className("SystemUI.CRecentsPreloadReceiver"); //"com.android.systemui.recent.RecentsActivity"
-    intent->SetClassNameEx(packageName, className);
+    intent->SetClassName(packageName, className);
     AutoPtr<IUserHandle> userHandle;
     CUserHandle::New(IUserHandle::USER_CURRENT, (IUserHandle**)&userHandle);
     mContext->SendBroadcastAsUser(intent, userHandle);
@@ -1165,7 +1165,7 @@ ECode BaseStatusBar::CancelPreloadingRecentTasksList()
     CIntent::New(IRecentsActivity::CANCEL_PRELOAD_INTENT, (IIntent**)&intent);
     String packageName("SystemUI"); //("Elastos.Droid.Core.eco"); //"com.android.systemui"
     String className("SystemUI.CRecentsPreloadReceiver"); //"com.android.systemui.recent.RecentsActivity"
-    intent->SetClassNameEx(packageName, className);
+    intent->SetClassName(packageName, className);
     AutoPtr<IUserHandle> userHandle;
     CUserHandle::New(IUserHandle::USER_CURRENT, (IUserHandle**)&userHandle);
     mContext->SendBroadcastAsUser(intent, userHandle);
@@ -1223,7 +1223,7 @@ Boolean BaseStatusBar::InflateViews(
     mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&liObj);
     AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(liObj.Get());
     AutoPtr<IView> row;
-    inflater->InflateEx2(SystemUIR::layout::status_bar_notification_row,
+    inflater->Inflate(SystemUIR::layout::status_bar_notification_row,
         parent, FALSE, (IView**)&row);
 
     // for blaming (see SwipeHelper->SetLongPressListener)
@@ -1275,10 +1275,10 @@ Boolean BaseStatusBar::InflateViews(
     AutoPtr<IView> expandedOneU;
     AutoPtr<IView> expandedLarge;
     // try {
-       ECode ec = oneU->ApplyEx(mContext, adaptive, mOnClickHandler, (IView**)&expandedOneU);
+       ECode ec = oneU->Apply(mContext, adaptive, mOnClickHandler, (IView**)&expandedOneU);
        if (ec == E_RUNTIME_EXCEPTION) return FALSE;
        if (large != NULL) {
-           ec = large->ApplyEx(mContext, adaptive, mOnClickHandler, (IView**)&expandedLarge);
+           ec = large->Apply(mContext, adaptive, mOnClickHandler, (IView**)&expandedLarge);
            if (ec == E_RUNTIME_EXCEPTION) return FALSE;
        }
 
@@ -1297,7 +1297,7 @@ Boolean BaseStatusBar::InflateViews(
         params->SetMinHeight(minHeight);
         params->SetMaxHeight(minHeight);
 
-        adaptive->AddViewEx3(expandedOneU, IViewGroupLayoutParams::Probe(params));
+        adaptive->AddView(expandedOneU, IViewGroupLayoutParams::Probe(params));
     }
 
     if (expandedLarge != NULL) {
@@ -1309,7 +1309,7 @@ Boolean BaseStatusBar::InflateViews(
         params->SetMinHeight(minHeight + 1);
         params->SetMaxHeight(maxHeight);
 
-        adaptive->AddViewEx3(expandedLarge, IViewGroupLayoutParams::Probe(params));
+        adaptive->AddView(expandedLarge, IViewGroupLayoutParams::Probe(params));
     }
     row->SetDrawingCacheEnabled(TRUE);
 
@@ -1317,7 +1317,7 @@ Boolean BaseStatusBar::InflateViews(
 
     AutoPtr<IBoolean> bVal;
     CBoolean::New(large != NULL, (IBoolean**)&bVal);
-    row->SetTagEx(SystemUIR::id::expandable_tag, bVal);
+    row->SetTag(SystemUIR::id::expandable_tag, bVal);
 
     // if (MULTIUSER_DEBUG) {
     //    TextView debug = (TextView) row.findViewById(R.id.debug_info);
@@ -1641,9 +1641,9 @@ ECode BaseStatusBar::UpdateNotification(
         oldEntry->mNotification = notification;
         // try {
             // Reapply the RemoteViews
-            contentView->ReapplyEx(mContext, oldEntry->mExpanded, mOnClickHandler);
+            contentView->Reapply(mContext, oldEntry->mExpanded, mOnClickHandler);
             if (bigContentView != NULL && olv != NULL) {
-                bigContentView->ReapplyEx(mContext, olv, mOnClickHandler);
+                bigContentView->Reapply(mContext, olv, mOnClickHandler);
             }
 
             String pkg, tag;

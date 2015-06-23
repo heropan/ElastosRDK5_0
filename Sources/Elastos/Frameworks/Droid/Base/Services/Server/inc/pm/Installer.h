@@ -2,9 +2,8 @@
 #define __ELASTOS_DROID_SERVER_PM_INSTALLER_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 

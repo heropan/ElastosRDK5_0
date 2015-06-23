@@ -1,8 +1,8 @@
 
 #include "net/CLinkCapabilities.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CObjectInt32Map;
@@ -125,7 +125,7 @@ ECode CLinkCapabilities::GetCapabilities(
 {
     VALIDATE_NOT_NULL(result);
     *result = mCapabilities;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

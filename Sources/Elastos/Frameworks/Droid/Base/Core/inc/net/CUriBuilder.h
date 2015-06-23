@@ -31,7 +31,7 @@ public:
     CARAPI Scheme(
         /* [in] */ const String& scheme);
 
-    CARAPI OpaquePartEx(
+    CARAPI OpaquePart(
         /* [in] */ Handle32 opaquePart);
 
     CARAPI OpaquePart(
@@ -40,7 +40,7 @@ public:
     CARAPI EncodedOpaquePart(
         /* [in] */ const String& opaquePart);
 
-    CARAPI AuthorityEx(
+    CARAPI Authority(
         /* [in] */ Handle32 authority);
 
     CARAPI Authority(
@@ -49,7 +49,7 @@ public:
     CARAPI EncodedAuthority(
         /* [in] */ const String& authority);
 
-    CARAPI PathEx(
+    CARAPI Path(
         /* [in] */ Handle32 path);
 
     CARAPI Path(
@@ -64,7 +64,7 @@ public:
     CARAPI AppendEncodedPath(
         /* [in] */ const String& newSegment);
 
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ Handle32 query);
 
     CARAPI Query(
@@ -73,7 +73,7 @@ public:
     CARAPI EncodedQuery(
         /* [in] */ const String& query);
 
-    CARAPI FragmentEx(
+    CARAPI Fragment(
         /* [in] */ Handle32 fragment);
 
     CARAPI Fragment(

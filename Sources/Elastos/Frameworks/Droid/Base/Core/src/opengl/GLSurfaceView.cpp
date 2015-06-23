@@ -1,6 +1,6 @@
 #include "GLSurfaceView.h"
-#include "elastos/Slogger.h"
-#include "elastos/StringUtils.h"
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include "os/SystemProperties.h"
 #include "gles/CEGL10Helper.h"
 #include "CGLDebugHelper.h"
@@ -218,7 +218,7 @@ ECode GLSurfaceView::ComponentSizeChooser::ChooseConfig(
             if ((r == mRedSize) && (g == mGreenSize)
                     && (b == mBlueSize) && (a == mAlphaSize)) {
                 *rst = config;
-                INTERFACE_ADDREF(*rst);
+                REFCOUNT_ADD(*rst);
                 return NOERROR;
             }
         }
@@ -1385,7 +1385,7 @@ ECode GLSurfaceView::LogWriter::WriteChars(
     return Writer::WriteChars(buffer);
 }
 
-ECode GLSurfaceView::LogWriter::WriteCharsEx(
+ECode GLSurfaceView::LogWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -1408,12 +1408,12 @@ ECode GLSurfaceView::LogWriter::WriteString(
     return Writer::WriteString(str);
 }
 
-ECode GLSurfaceView::LogWriter::WriteStringEx(
+ECode GLSurfaceView::LogWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return Writer::WriteStringEx(str, offset, count);
+    return Writer::WriteString(str, offset, count);
 }
 
 ECode GLSurfaceView::LogWriter::CheckError(
@@ -1444,12 +1444,12 @@ ECode GLSurfaceView::LogWriter::AppendCharSequence(
     return Writer::AppendCharSequence(csq);
 }
 
-ECode GLSurfaceView::LogWriter::AppendCharSequenceEx(
+ECode GLSurfaceView::LogWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return Writer::AppendCharSequenceEx(csq, start, end);
+    return Writer::AppendCharSequence(csq, start, end);
 }
 
 ECode GLSurfaceView::LogWriter::GetLock(
@@ -1458,7 +1458,7 @@ ECode GLSurfaceView::LogWriter::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = Writer::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -1613,7 +1613,7 @@ ECode GLSurfaceView::SetEGLConfigChooser(
     return NOERROR;
 }
 
-ECode GLSurfaceView::SetEGLConfigChooserEx(
+ECode GLSurfaceView::SetEGLConfigChooser(
     /* [in] */ Boolean needDepth)
 {
     AutoPtr<SimpleEGLConfigChooser> chooser = new SimpleEGLConfigChooser(needDepth, this);
@@ -1621,7 +1621,7 @@ ECode GLSurfaceView::SetEGLConfigChooserEx(
     return NOERROR;
 }
 
-ECode GLSurfaceView::SetEGLConfigChooserEx2(
+ECode GLSurfaceView::SetEGLConfigChooser(
     /* [in] */ Int32 redSize,
     /* [in] */ Int32 greenSize,
     /* [in] */ Int32 blueSize,

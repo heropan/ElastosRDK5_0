@@ -13,9 +13,9 @@
 #include "os/CLooperHelper.h"
 #endif
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Content::CIntentFilter;
@@ -495,7 +495,7 @@ void WallpaperService::Engine::UpdateSurface(
                     Logger::W(TAG, "Failed to add window while updating wallpaper surface.");
                     return;
                 }
-                mContentInsets->SetEx(outContentInsets);
+                mContentInsets->Set(outContentInsets);
                 outInputChannel->TransferTo(mInputChannel);
                 mCreated = TRUE;
 
@@ -523,9 +523,9 @@ void WallpaperService::Engine::UpdateSurface(
                 (IRect**)&visibleInsets, (IConfiguration**)&configuration,
                 &relayoutResult, (ISurface**)&surface);
             mSurfaceHolder->mSurfaceLock.Lock();
-            if (winFrame) mWinFrame->SetEx(winFrame);
-            if (contentInsets) mContentInsets->SetEx(contentInsets);
-            if (visibleInsets) mVisibleInsets->SetEx(visibleInsets);
+            if (winFrame) mWinFrame->Set(winFrame);
+            if (contentInsets) mContentInsets->Set(contentInsets);
+            if (visibleInsets) mVisibleInsets->Set(visibleInsets);
             if (configuration) mConfiguration->SetTo(configuration);
             if (surface) {
                 Handle32 nativeSurface;
@@ -919,7 +919,7 @@ ECode WallpaperService::OnBind(
     CWallpaperServiceWrapper::New((Handle32)this, (IIWallpaperService**)&service);
     *binder = IBinder::Probe(service);
     assert(*binder != NULL);
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
 
     return NOERROR;
 }

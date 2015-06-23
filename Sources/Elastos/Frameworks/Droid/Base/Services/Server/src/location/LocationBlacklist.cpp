@@ -1,14 +1,14 @@
 
 #include "location/LocationBlacklist.h"
 #include "ext/frameworkext.h"
-#include "elastos/List.h"
-#include "elastos/StringUtils.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
@@ -40,8 +40,8 @@ void LocationBlacklist::Init()
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    settingsSecure->GetUriForEx(BLACKLIST_CONFIG_NAME, (IUri**)&uri);
-    cr->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    settingsSecure->GetUriFor(BLACKLIST_CONFIG_NAME, (IUri**)&uri);
+    cr->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
     ReloadBlacklist();
 }
 

@@ -3,10 +3,10 @@
 #define __BASEERRORDIALOG_H__
 
 #include "app/AlertDialog.h"
-#include "app/AlertDialogMacro.h"
-#include "app/DialogMacro.h"
+
+
 #include "os/HandlerBase.h"
-#include "view/WindowCallbackMacro.h"
+
 
 using Elastos::Droid::App::AlertDialog;
 using Elastos::Droid::App::IAlertDialog;

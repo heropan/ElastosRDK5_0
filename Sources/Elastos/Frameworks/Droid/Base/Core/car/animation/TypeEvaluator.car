@@ -41,7 +41,7 @@ module
 
     interface IArgbEvaluator extends Elastos.Droid.Animation.ITypeEvaluator{
 
-        EvaluateEx(
+        Evaluate(
             [in] Float f,
             [in] Int32 startFloat,
             [in] Int32 endFloat,
@@ -63,7 +63,7 @@ module
          * @return A linear interpolation between the start and end values, given the
          *         <code>fraction</code> parameter.
          */
-        EvaluateEx(
+        Evaluate(
             [in] Float f,
             [in] Float startFloat,
             [in] Float endFloat,
@@ -85,7 +85,7 @@ module
          * @return A linear interpolation between the start and end values, given the
          *         <code>fraction</code> parameter.
          */
-        EvaluateEx(
+        Evaluate(
             [in] Float f,
             [in] Int32 startValue,
             [in] Int32 endValue,

@@ -1,6 +1,6 @@
 
 #include "droid/test/EcoFile.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::EIID_IComparable;
 using Elastos::Utility::EIID_IEnumeration;

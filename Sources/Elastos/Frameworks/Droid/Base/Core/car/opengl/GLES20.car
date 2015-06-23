@@ -523,7 +523,7 @@ module
 
     // C function void glDeleteBuffers ( GLsizei n, const GLuint *buffers )
 
-    GlDeleteBuffersEx(
+    GlDeleteBuffers(
         [in] Int32 n,
         [in] IInt32Buffer* buffers);
 
@@ -536,7 +536,7 @@ module
 
     // C function void glDeleteFramebuffers ( GLsizei n, const GLuint *framebuffers )
 
-    GlDeleteFramebuffersEx(
+    GlDeleteFramebuffers(
         [in] Int32 n,
         [in] IInt32Buffer* framebuffers);
 
@@ -554,7 +554,7 @@ module
 
     // C function void glDeleteRenderbuffers ( GLsizei n, const GLuint *renderbuffers )
 
-    GlDeleteRenderbuffersEx(
+    GlDeleteRenderbuffers(
         [in] Int32 n,
         [in] IInt32Buffer* renderbuffers);
 
@@ -572,7 +572,7 @@ module
 
     // C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
 
-    GlDeleteTexturesEx(
+    GlDeleteTextures(
         [in] Int32 n,
         [in] IInt32Buffer* textures);
 
@@ -625,7 +625,7 @@ module
 
     // C function void glDrawElements ( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices )
 
-    GlDrawElementsEx(
+    GlDrawElements(
         [in] Int32 mode,
         [in] Int32 count,
         [in] Int32 type,
@@ -681,7 +681,7 @@ module
 
     // C function void glGenBuffers ( GLsizei n, GLuint *buffers )
 
-    GlGenBuffersEx(
+    GlGenBuffers(
         [in] Int32 n,
         [in] IInt32Buffer* buffers);
 
@@ -699,7 +699,7 @@ module
 
     // C function void glGenFramebuffers ( GLsizei n, GLuint *framebuffers )
 
-    GlGenFramebuffersEx(
+    GlGenFramebuffers(
         [in] Int32 n,
         [in] IInt32Buffer* framebuffers);
 
@@ -712,7 +712,7 @@ module
 
     // C function void glGenRenderbuffers ( GLsizei n, GLuint *renderbuffers )
 
-    GlGenRenderbuffersEx(
+    GlGenRenderbuffers(
         [in] Int32 n,
         [in] IInt32Buffer* renderbuffers);
 
@@ -725,7 +725,7 @@ module
 
     // C function void glGenTextures ( GLsizei n, GLuint *textures )
 
-    GlGenTexturesEx(
+    GlGenTextures(
         [in] Int32 n,
         [in] IInt32Buffer* textures);
 
@@ -748,7 +748,7 @@ module
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    GlGetActiveAttribEx(
+    GlGetActiveAttrib(
         [in] Int32 program,
         [in] Int32 index,
         [in] Int32 bufsize,
@@ -759,7 +759,7 @@ module
 
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-    GlGetActiveAttribEx2(
+    GlGetActiveAttrib(
         [in] Int32 program,
         [in] Int32 index,
         [in] ArrayOf<Int32>* size,
@@ -770,7 +770,7 @@ module
 
     // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-    GlGetActiveAttribEx3(
+    GlGetActiveAttrib(
         [in] Int32 program,
         [in] Int32 index,
         [in] IInt32Buffer* size,
@@ -794,7 +794,7 @@ module
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    GlGetActiveUniformEx(
+    GlGetActiveUniform(
         [in] Int32 program,
         [in] Int32 index,
         [in] Int32 bufsize,
@@ -805,7 +805,7 @@ module
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    GlGetActiveUniformEx2(
+    GlGetActiveUniform(
         [in] Int32 program,
         [in] Int32 index,
         [in] ArrayOf<Int32>* size,
@@ -817,7 +817,7 @@ module
     // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
     // GLint *size, GLenum *type, char *name )
 
-    GlGetActiveUniformEx3(
+    GlGetActiveUniform(
         [in] Int32 program,
         [in] Int32 index,
         [in] IInt32Buffer* size,
@@ -835,7 +835,7 @@ module
 
     // C function void glGetAttachedShaders ( GLuint program, GLsizei maxcount, GLsizei *count, GLuint *shaders )
 
-    GlGetAttachedShadersEx(
+    GlGetAttachedShaders(
         [in] Int32 program,
         [in] Int32 maxcount,
         [in] IInt32Buffer* count,
@@ -857,7 +857,7 @@ module
 
     // C function void glGetBooleanv ( GLenum pname, GLboolean *params )
 
-    GlGetBooleanvEx(
+    GlGetBooleanv(
         [in] Int32 pname,
         [in] IInt32Buffer* params);
 
@@ -871,7 +871,7 @@ module
 
     // C function void glGetBufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    GlGetBufferParameterivEx(
+    GlGetBufferParameteriv(
         [in] Int32 target,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -890,7 +890,7 @@ module
 
     // C function void glGetFloatv ( GLenum pname, GLfloat *params )
 
-    GlGetFloatvEx(
+    GlGetFloatv(
         [in] Int32 pname,
         [in] IFloatBuffer* params);
 
@@ -907,7 +907,7 @@ module
     // C function void glGetFramebufferAttachmentParameteriv ( GLenum target, GLenum attachment, GLenum pname,
     // GLint *params )
 
-    GlGetFramebufferAttachmentParameterivEx(
+    GlGetFramebufferAttachmentParameteriv(
         [in] Int32 target,
         [in] Int32 attachment,
         [in] Int32 pname,
@@ -922,7 +922,7 @@ module
 
     // C function void glGetIntegerv ( GLenum pname, GLint *params )
 
-    GlGetIntegervEx(
+    GlGetIntegerv(
         [in] Int32 pname,
         [in] IInt32Buffer* params);
 
@@ -936,7 +936,7 @@ module
 
     // C function void glGetProgramiv ( GLuint program, GLenum pname, GLint *params )
 
-    GlGetProgramivEx(
+    GlGetProgramiv(
         [in] Int32 program,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -954,7 +954,7 @@ module
 
     // C function void glGetRenderbufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    GlGetRenderbufferParameterivEx(
+    GlGetRenderbufferParameteriv(
         [in] Int32 target,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -969,7 +969,7 @@ module
 
     // C function void glGetShaderiv ( GLuint shader, GLenum pname, GLint *params )
 
-    GlGetShaderivEx(
+    GlGetShaderiv(
         [in] Int32 shader,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -994,7 +994,7 @@ module
 
     // C function void glGetShaderPrecisionFormat ( GLenum shadertype, GLenum precisiontype, GLint *range, GLint *precision )
 
-    GlGetShaderPrecisionFormatEx(
+    GlGetShaderPrecisionFormat(
         [in] Int32 shadertype,
         [in] Int32 precisiontype,
         [in] IInt32Buffer* range,
@@ -1012,7 +1012,7 @@ module
 
     // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-    GlGetShaderSourceEx(
+    GlGetShaderSource(
         [in] Int32 shader,
         [in] Int32 bufsize,
         [in] IInt32Buffer* length,
@@ -1020,7 +1020,7 @@ module
 
     // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-    GlGetShaderSourceEx2(
+    GlGetShaderSource(
         [in] Int32 shader,
         [out] String* rst);
 
@@ -1040,7 +1040,7 @@ module
 
     // C function void glGetTexParameterfv ( GLenum target, GLenum pname, GLfloat *params )
 
-    GlGetTexParameterfvEx(
+    GlGetTexParameterfv(
         [in] Int32 target,
         [in] Int32 pname,
         [in] IFloatBuffer* params);
@@ -1055,7 +1055,7 @@ module
 
     // C function void glGetTexParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-    GlGetTexParameterivEx(
+    GlGetTexParameteriv(
         [in] Int32 target,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -1070,7 +1070,7 @@ module
 
     // C function void glGetUniformfv ( GLuint program, GLint location, GLfloat *params )
 
-    GlGetUniformfvEx(
+    GlGetUniformfv(
         [in] Int32 program,
         [in] Int32 location,
         [in] IFloatBuffer* params);
@@ -1085,7 +1085,7 @@ module
 
     // C function void glGetUniformiv ( GLuint program, GLint location, GLint *params )
 
-    GlGetUniformivEx(
+    GlGetUniformiv(
         [in] Int32 program,
         [in] Int32 location,
         [in] IInt32Buffer* params);
@@ -1107,7 +1107,7 @@ module
 
     // C function void glGetVertexAttribfv ( GLuint index, GLenum pname, GLfloat *params )
 
-    GlGetVertexAttribfvEx(
+    GlGetVertexAttribfv(
         [in] Int32 index,
         [in] Int32 pname,
         [in] IFloatBuffer* params);
@@ -1122,7 +1122,7 @@ module
 
     // C function void glGetVertexAttribiv ( GLuint index, GLenum pname, GLint *params )
 
-    GlGetVertexAttribivEx(
+    GlGetVertexAttribiv(
         [in] Int32 index,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -1249,7 +1249,7 @@ module
     // C function void glShaderBinary ( GLsizei n, const GLuint *shaders, GLenum binaryformat,
     // const GLvoid *binary, GLsizei length )
 
-    GlShaderBinaryEx(
+    GlShaderBinary(
         [in] Int32 n,
         [in] IInt32Buffer* shaders,
         [in] Int32 binaryformat,
@@ -1333,7 +1333,7 @@ module
 
     // C function void glTexParameterfv ( GLenum target, GLenum pname, const GLfloat *params )
 
-    GlTexParameterfvEx(
+    GlTexParameterfv(
         [in] Int32 target,
         [in] Int32 pname,
         [in] IFloatBuffer* params);
@@ -1355,7 +1355,7 @@ module
 
     // C function void glTexParameteriv ( GLenum target, GLenum pname, const GLint *params )
 
-    GlTexParameterivEx(
+    GlTexParameteriv(
         [in] Int32 target,
         [in] Int32 pname,
         [in] IInt32Buffer* params);
@@ -1390,7 +1390,7 @@ module
 
     // C function void glUniform1fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    GlUniform1fvEx(
+    GlUniform1fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IFloatBuffer* v);
@@ -1411,7 +1411,7 @@ module
 
     // C function void glUniform1iv ( GLint location, GLsizei count, const GLint *v )
 
-    GlUniform1ivEx(
+    GlUniform1iv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IInt32Buffer* v);
@@ -1433,7 +1433,7 @@ module
 
     // C function void glUniform2fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    GlUniform2fvEx(
+    GlUniform2fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IFloatBuffer* v);
@@ -1455,7 +1455,7 @@ module
 
     // C function void glUniform2iv ( GLint location, GLsizei count, const GLint *v )
 
-    GlUniform2ivEx(
+    GlUniform2iv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IInt32Buffer* v);
@@ -1478,7 +1478,7 @@ module
 
     // C function void glUniform3fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    GlUniform3fvEx(
+    GlUniform3fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IFloatBuffer* v);
@@ -1501,7 +1501,7 @@ module
 
     // C function void glUniform3iv ( GLint location, GLsizei count, const GLint *v )
 
-    GlUniform3ivEx(
+    GlUniform3iv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IInt32Buffer* v);
@@ -1525,7 +1525,7 @@ module
 
     // C function void glUniform4fv ( GLint location, GLsizei count, const GLfloat *v )
 
-    GlUniform4fvEx(
+    GlUniform4fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IFloatBuffer* v);
@@ -1549,7 +1549,7 @@ module
 
     // C function void glUniform4iv ( GLint location, GLsizei count, const GLint *v )
 
-    GlUniform4ivEx(
+    GlUniform4iv(
         [in] Int32 location,
         [in] Int32 count,
         [in] IInt32Buffer* v);
@@ -1565,7 +1565,7 @@ module
 
     // C function void glUniformMatrix2fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    GlUniformMatrix2fvEx(
+    GlUniformMatrix2fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] Boolean transpose,
@@ -1582,7 +1582,7 @@ module
 
     // C function void glUniformMatrix3fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    GlUniformMatrix3fvEx(
+    GlUniformMatrix3fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] Boolean transpose,
@@ -1599,7 +1599,7 @@ module
 
     // C function void glUniformMatrix4fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-    GlUniformMatrix4fvEx(
+    GlUniformMatrix4fv(
         [in] Int32 location,
         [in] Int32 count,
         [in] Boolean transpose,
@@ -1630,7 +1630,7 @@ module
 
     // C function void glVertexAttrib1fv ( GLuint indx, const GLfloat *values )
 
-    GlVertexAttrib1fvEx(
+    GlVertexAttrib1fv(
         [in] Int32 indx,
         [in] IFloatBuffer* values);
 
@@ -1650,7 +1650,7 @@ module
 
     // C function void glVertexAttrib2fv ( GLuint indx, const GLfloat *values )
 
-    GlVertexAttrib2fvEx(
+    GlVertexAttrib2fv(
         [in] Int32 indx,
         [in] IFloatBuffer* values);
 
@@ -1671,7 +1671,7 @@ module
 
     // C function void glVertexAttrib3fv ( GLuint indx, const GLfloat *values )
 
-    GlVertexAttrib3fvEx(
+    GlVertexAttrib3fv(
         [in] Int32 indx,
         [in] IFloatBuffer* values);
 
@@ -1693,7 +1693,7 @@ module
 
     // C function void glVertexAttrib4fv ( GLuint indx, const GLfloat *values )
 
-    GlVertexAttrib4fvEx(
+    GlVertexAttrib4fv(
         [in] Int32 indx,
         [in] IFloatBuffer* values);
 
@@ -1711,7 +1711,7 @@ module
     // C function void glVertexAttribPointer ( GLuint indx, GLint size, GLenum type,
     // GLboolean normalized, GLsizei stride, const GLvoid *ptr )
 
-    GlVertexAttribPointerEx(
+    GlVertexAttribPointer(
         [in] Int32 indx,
         [in] Int32 size,
         [in] Int32 type,

@@ -3,10 +3,10 @@
 #define __MEDIADETAILS_H__
 
 #include "app/Activity.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Media::IExifInterface;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Gallery {
 

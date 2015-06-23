@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <elstrtoken.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 namespace Elastos {
 namespace Droid {
@@ -60,7 +60,7 @@ Ecode CUrlQuerySanitizer::GetUnregisteredParameterValueSanitizer(
 {
     VALIDATE_NOT_NULL(result);
     *result = mUnregisteredParameterValueSanitizer;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -76,7 +76,7 @@ Ecode CUrlQuerySanitizer::GetAllIllegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sAllIllegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ Ecode CUrlQuerySanitizer::GetAllButNulLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sAllButNulLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ Ecode CUrlQuerySanitizer::GetAllButWhitespaceLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sAllButWhitespaceLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -103,7 +103,7 @@ Ecode CUrlQuerySanitizer::GetUrlLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sURLLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -112,7 +112,7 @@ Ecode CUrlQuerySanitizer::GetUrlAndSpaceLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sUrlAndSpaceLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -121,7 +121,7 @@ Ecode CUrlQuerySanitizer::GetAmpLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sAmpLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -130,7 +130,7 @@ Ecode CUrlQuerySanitizer::GetAmpAndSpaceLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sAmpAndSpaceLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -139,7 +139,7 @@ Ecode CUrlQuerySanitizer::GetSpaceLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sSpaceLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -148,7 +148,7 @@ Ecode CUrlQuerySanitizer::GetAllButNulAndAngleBracketsLegal(
 {
     VALIDATE_NOT_NULL(result);
     *result = sAllButNulAndAngleBracketsLegal;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -210,7 +210,7 @@ Ecode CUrlQuerySanitizer::GetParameterSet(
     }
 
     *result = out->Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ Ecode CUrlQuerySanitizer::GetParameterList(
     }
 
     *result = out->Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -317,7 +317,7 @@ Ecode CUrlQuerySanitizer::GetValueSanitizer(
     HashMap<String, AutoPtr<IValueSanitizer> >::Iterator iter = mSanitizers.Find(parameter);
     if (iter != mSanitizers.End()) {
         *result = iter->mSecond;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;
@@ -334,7 +334,7 @@ Ecode CUrlQuerySanitizer::GetEffectiveValueSanitizer(
         GetUnregisteredParameterValueSanitizer(&sanitizer);
     }
     *result = sanitizer;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

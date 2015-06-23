@@ -4,9 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "Connection.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using namespace Org::Apache::Http;
 
 namespace Elastos {

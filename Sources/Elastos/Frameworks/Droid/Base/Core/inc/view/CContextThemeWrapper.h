@@ -4,7 +4,7 @@
 
 #include "_CContextThemeWrapper.h"
 #include "view/ContextThemeWrapper.h"
-#include "content/ContextMacro.h"
+
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IComponentCallbacks;

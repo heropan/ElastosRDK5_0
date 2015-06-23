@@ -2,8 +2,8 @@
 #include "PreferenceGroupAdapter.h"
 #include "Preference.h"
 #include "os/CHandler.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Math;
 using Elastos::Utility::ICollections;
@@ -264,7 +264,7 @@ ECode PreferenceGroupAdapter::GetItem(
         return NOERROR;
     }
     *item = (IInterface*)(*mPreferenceList)[position];
-    INTERFACE_ADDREF(*item)
+    REFCOUNT_ADD(*item)
     return NOERROR;
 }
 

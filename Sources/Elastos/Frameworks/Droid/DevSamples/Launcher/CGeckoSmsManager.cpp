@@ -5,7 +5,7 @@
 #include "GeckoRunnable.h"
 #include "ext/frameworkext.h"
 #include "stdio.h"
-#include "elastos/Math.h"
+#include <elastos/core/Math.h>
 #include <elastos/System.h>
 //#include <net/Uri.h>
 
@@ -320,13 +320,13 @@ ECode SmsIOThread::Join()
     return E_NOT_IMPLEMENTED;
 }
 
-ECode SmsIOThread::JoinEx(
+ECode SmsIOThread::Join(
     /* [in] */ Int64 millis)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode SmsIOThread::JoinEx2(
+ECode SmsIOThread::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
@@ -705,8 +705,8 @@ ECode CGeckoSmsManager::Send(
     if (aMessage.GetLength() <= GeckoSmsManager_kMaxMessageSize) {
         envelopeId = Postman::GetInstance()->CreateEnvelope(1);
         bundle->PutInt32(String("envelopeId"), envelopeId);
-        sentIntent->PutExtrasEx(bundle);
-        deliveredIntent->PutExtrasEx(bundle);
+        sentIntent->PutExtras(bundle);
+        deliveredIntent->PutExtras(bundle);
         /*
          * There are a few things to know about getBroadcast and pending intents:
          * - the pending intents are in a shared pool maintained by the system;
@@ -740,8 +740,8 @@ ECode CGeckoSmsManager::Send(
         //sm->DivideMessage(aMessage, *parts);
         envelopeId = Postman::GetInstance()->CreateEnvelope(parts->GetUsed());
         bundle->PutInt32(String("envelopeId"),envelopeId);
-        sentIntent->PutExtrasEx(bundle);
-        deliveredIntent->PutExtrasEx(bundle);
+        sentIntent->PutExtras(bundle);
+        deliveredIntent->PutExtras(bundle);
         BufferOf< AutoPtr<IPendingIntent> >* sentPendingIntents
             = BufferOf< AutoPtr<IPendingIntent> >::Alloc(parts->GetUsed());
         BufferOf< AutoPtr<IPendingIntent> >* deliveredPendingIntents

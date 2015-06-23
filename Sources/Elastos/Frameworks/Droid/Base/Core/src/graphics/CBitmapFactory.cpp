@@ -11,7 +11,7 @@
 #include "graphics/NinePatchPeeker.h"
 #include "graphics/NBitmapFactory.h"
 #include "util/CTypedValue.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkTemplates.h>
 #include <skia/core/SkCanvas.h>
@@ -65,7 +65,7 @@ ECode CBitmapFactory::CreateBitmap(
     return CBitmap::CreateBitmap(source, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ IBitmap* source,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
@@ -76,7 +76,7 @@ ECode CBitmapFactory::CreateBitmapEx(
     return CBitmap::CreateBitmap(source, x, y, width, height, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx2(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ IBitmap* source,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
@@ -89,7 +89,7 @@ ECode CBitmapFactory::CreateBitmapEx2(
     return CBitmap::CreateBitmap(source, x, y, width, height, m, filter, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx3(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ BitmapConfig config,
@@ -98,7 +98,7 @@ ECode CBitmapFactory::CreateBitmapEx3(
     return CBitmap::CreateBitmap(width, height, config, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx4(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ const ArrayOf<Int32>& colors,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 stride,
@@ -110,7 +110,7 @@ ECode CBitmapFactory::CreateBitmapEx4(
     return CBitmap::CreateBitmap(colors, offset, stride, width, height, config, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx5(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ const ArrayOf<Int32>& colors,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -120,7 +120,7 @@ ECode CBitmapFactory::CreateBitmapEx5(
     return CBitmap::CreateBitmap(colors, width, height, config, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx6(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ IDisplayMetrics* display,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -130,7 +130,7 @@ ECode CBitmapFactory::CreateBitmapEx6(
     return CBitmap::CreateBitmap(display, width, height, config, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx7(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ IDisplayMetrics* display,
     /* [in] */ const ArrayOf<Int32>& colors,
     /* [in] */ Int32 offset,
@@ -143,7 +143,7 @@ ECode CBitmapFactory::CreateBitmapEx7(
     return CBitmap::CreateBitmap(display, colors, offset, stride, width, height, config, bitmap);
 }
 
-ECode CBitmapFactory::CreateBitmapEx8(
+ECode CBitmapFactory::CreateBitmap(
     /* [in] */ IDisplayMetrics* display,
     /* [in] */ const ArrayOf<Int32>& colors,
     /* [in] */ Int32 width,
@@ -190,7 +190,7 @@ ECode CBitmapFactory::DecodeFile(
     return ec;
 }
 
-ECode CBitmapFactory::DecodeFileEx(
+ECode CBitmapFactory::DecodeFile(
     /* [in] */ const String& pathName,
     /* [out] */ IBitmap** bitmap)
 {
@@ -245,7 +245,7 @@ ECode CBitmapFactory::DecodeResource(
 
     AutoPtr<ITypedValue> value;
     FAIL_RETURN(CTypedValue::New((ITypedValue**)&value));
-    FAIL_RETURN(res->OpenRawResourceEx(id, value.Get(), (IInputStream**)&is));
+    FAIL_RETURN(res->OpenRawResource(id, value.Get(), (IInputStream**)&is));
 
     /*  do nothing.
         If the exception happened on open, bm will be NULL.
@@ -262,7 +262,7 @@ ECode CBitmapFactory::DecodeResource(
     return NOERROR;
 }
 
-ECode CBitmapFactory::DecodeResourceEx(
+ECode CBitmapFactory::DecodeResource(
     /* [in] */ IResources* res,
     /* [in] */ Int32 id,
     /* [out] */ IBitmap** bitmap)
@@ -287,11 +287,11 @@ ECode CBitmapFactory::DecodeByteArray(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     *bitmap = bm;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
-ECode CBitmapFactory::DecodeByteArrayEx(
+ECode CBitmapFactory::DecodeByteArray(
     /* [in] */ const ArrayOf<Byte>& data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -420,7 +420,7 @@ ECode CBitmapFactory::DecodeStream(
         *bitmap = bm;
     }
 
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -487,7 +487,7 @@ AutoPtr<IBitmap> CBitmapFactory::FinishDecode(
     return bm;
 }
 
-ECode CBitmapFactory::DecodeStreamEx(
+ECode CBitmapFactory::DecodeStream(
     /* [in] */ IInputStream* is,
     /* [out] */ IBitmap** bitmap)
 {
@@ -511,7 +511,7 @@ ECode CBitmapFactory::DecodeFileDescriptor(
         }
         bm = FinishDecode(bm, outPadding, opts);
         *bitmap = bm;
-        INTERFACE_ADDREF(*bitmap);
+        REFCOUNT_ADD(*bitmap);
         return NOERROR;
     }
     else{
@@ -523,7 +523,7 @@ ECode CBitmapFactory::DecodeFileDescriptor(
     }
 }
 
-ECode CBitmapFactory::DecodeFileDescriptorEx(
+ECode CBitmapFactory::DecodeFileDescriptor(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ IBitmap** bitmap)
 {

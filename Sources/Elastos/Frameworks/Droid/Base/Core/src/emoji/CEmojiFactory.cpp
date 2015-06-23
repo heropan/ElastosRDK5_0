@@ -120,7 +120,7 @@ ECode CEmojiFactory::GetBitmapFromAndroidPua(
     }
 
     *retBitmap = cache;
-    INTERFACE_ADDREF(*retBitmap);
+    REFCOUNT_ADD(*retBitmap);
     return NOERROR;
 }
 
@@ -165,7 +165,7 @@ ECode CEmojiFactory::GetAndroidPuaFromVendorSpecificPua(
     return NOERROR;
 }
 
-ECode CEmojiFactory::GetAndroidPuaFromVendorSpecificPuaEx(
+ECode CEmojiFactory::GetAndroidPuaFromVendorSpecificPua(
     /* [in] */ const String& vspString,
     /* [out] */ String* retValue)
 {
@@ -207,7 +207,7 @@ Int32 CEmojiFactory::GetVendorSpecificPuaFromAndroidPua(
     return NOERROR;
 }
 
-String CEmojiFactory::GetVendorSpecificPuaFromAndroidPuaEx(
+String CEmojiFactory::GetVendorSpecificPuaFromAndroidPua(
     /* [in] */ const String& puaString,
     /* [out] */ String* retValue)
 {
@@ -266,7 +266,7 @@ Ecode CEmojiFactory::NewInstance(
     }
 
     *emojiFactory = new CEmojiFactory(factory,name);
-    INTERFACE_ADDREF(*emojiFactory);
+    REFCOUNT_ADD(*emojiFactory);
     return NOERROR;
 }
 
@@ -292,7 +292,7 @@ Ecode CEmojiFactory::NewAvailableInstance(
     }
 
     *emojiFactory= new CEmojiFactory(factory,tempname);
-    INTERFACE_ADDREF(*emojiFactory);
+    REFCOUNT_ADD(*emojiFactory);
     return NOERROR;
 }
 

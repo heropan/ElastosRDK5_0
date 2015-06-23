@@ -3,9 +3,9 @@
 #include "text/TextUtils.h"
 #include "Manifest.h"
 #include <R.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -549,7 +549,7 @@ void CSettingsProvider::SendNotify(
         GetContext((IContext**)&context);
         AutoPtr<IContentResolver> resolver;
         context->GetContentResolver((IContentResolver**)&resolver);
-        resolver->NotifyChangeEx2(uri, NULL, TRUE, notifyTarget);
+        resolver->NotifyChange(uri, NULL, TRUE, notifyTarget);
         // } finally {
         helper->RestoreCallingIdentity(oldId);
         // }
@@ -740,7 +740,7 @@ void CSettingsProvider::FullyPopulateCache(
     (*args)[0] = ISettingsNameValueTable::NAME;
     (*args)[1] = ISettingsNameValueTable::VALUE;
     AutoPtr<ICursor> c;
-    db->QueryEx3(table, args, String(NULL), NULL, String(NULL), String(NULL), String(NULL),
+    db->Query(table, args, String(NULL), NULL, String(NULL), String(NULL), String(NULL),
             String("") + StringUtils::Int32ToString(MAX_CACHE_ENTRIES + 1), (ICursor**)&c);
     // try {
     {
@@ -909,7 +909,7 @@ ECode CSettingsProvider::Call(
     helper->GetCallingUserId(&callingUser);
     if (args != NULL) {
         Int32 reqUser = callingUser;
-        args->GetInt32Ex(ISettings::CALL_METHOD_USER_KEY, callingUser, &reqUser);
+        args->GetInt32(ISettings::CALL_METHOD_USER_KEY, callingUser, &reqUser);
         if (reqUser != callingUser) {
             AutoPtr<IBinderHelper> binderHelper;
             CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
@@ -1050,7 +1050,7 @@ AutoPtr<IBundle> CSettingsProvider::LookupValue(
     // try {
     AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
     (*args)[0] = key;
-    ECode ec = db->QueryEx3(table, COLUMN_VALUE, String("name=?"), args,
+    ECode ec = db->Query(table, COLUMN_VALUE, String("name=?"), args,
             String(NULL), String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
     if (FAILED(ec)) {
         Logger::W(TAG, "settings lookup error");
@@ -1160,7 +1160,7 @@ ECode CSettingsProvider::QueryForUser(
     GetContext((IContext**)&context);
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
-    ECode ec = ac->SetNotificationUriEx(resolver, url, forUser);
+    ECode ec = ac->SetNotificationUri(resolver, url, forUser);
     if (FAILED(ec)) {
         // details of the concrete Cursor implementation have changed and this code has
         // not been updated to match -- complain and fail hard.

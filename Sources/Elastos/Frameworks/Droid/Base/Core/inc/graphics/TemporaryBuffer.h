@@ -3,9 +3,6 @@
 #define __TEMPORARYBUFFER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

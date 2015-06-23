@@ -3,7 +3,7 @@
 #include "database/sqlite/SQLiteSession.h"
 #include "database/DatabaseUtils.h"
 #include "text/TextUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
@@ -203,11 +203,11 @@ ECode SQLiteQueryBuilder::Query(
     /* [in] */ const String& sortOrder,
     /* [out] */ ICursor** cursor)
 {
-    return QueryEx2(db, projectionIn, selection, selectionArgs, groupBy, having, sortOrder,
+    return Query(db, projectionIn, selection, selectionArgs, groupBy, having, sortOrder,
                 String(NULL) /* limit */, NULL, cursor);
 }
 
-ECode SQLiteQueryBuilder::QueryEx(
+ECode SQLiteQueryBuilder::Query(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ ArrayOf<String>* projectionIn,
     /* [in] */ const String& selection,
@@ -218,11 +218,11 @@ ECode SQLiteQueryBuilder::QueryEx(
     /* [in] */ const String& limit,
     /* [out] */ ICursor** cursor)
 {
-    return QueryEx2(db, projectionIn, selection, selectionArgs,
+    return Query(db, projectionIn, selection, selectionArgs,
             groupBy, having, sortOrder, limit, NULL, cursor);
 }
 
-ECode SQLiteQueryBuilder::QueryEx2(
+ECode SQLiteQueryBuilder::Query(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ ArrayOf<String>* projectionIn,
     /* [in] */ const String& selection,
@@ -263,7 +263,7 @@ ECode SQLiteQueryBuilder::QueryEx2(
     // }
     String str;
     FAIL_RETURN(SQLiteDatabase::FindEditTable(mTables, &str))
-    return db->RawQueryWithFactoryEx(mFactory, sql, selectionArgs, str, cancellationSignal, cursor); // will throw if query is invalid
+    return db->RawQueryWithFactory(mFactory, sql, selectionArgs, str, cancellationSignal, cursor); // will throw if query is invalid
 }
 
 ECode SQLiteQueryBuilder::ValidateQuerySql(
@@ -314,7 +314,7 @@ ECode SQLiteQueryBuilder::BuildQuery(
             groupBy, having, sortOrder, limit, str);
 }
 
-ECode SQLiteQueryBuilder::BuildQueryEx(
+ECode SQLiteQueryBuilder::BuildQuery(
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
@@ -363,7 +363,7 @@ ECode SQLiteQueryBuilder::BuildUnionSubQuery(
             String(NULL) /* limit */, str);
 }
 
-ECode SQLiteQueryBuilder::BuildUnionSubQueryEx(
+ECode SQLiteQueryBuilder::BuildUnionSubQuery(
     /* [in] */ const String& typeDiscriminatorColumn,
     /* [in] */ const ArrayOf<String>& unionColumns,
     /* [in] */ IObjectStringMap* columnsPresentInTable,

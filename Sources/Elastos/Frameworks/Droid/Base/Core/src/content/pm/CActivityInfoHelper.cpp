@@ -13,7 +13,7 @@ ECode CActivityInfoHelper::GetCONFIG_NATIVE_BITS(
 {
     VALIDATE_NOT_NULL(bits);
     *bits = CActivityInfo::CONFIG_NATIVE_BITS;
-    INTERFACE_ADDREF(*bits);
+    REFCOUNT_ADD(*bits);
     return NOERROR;
 }
 

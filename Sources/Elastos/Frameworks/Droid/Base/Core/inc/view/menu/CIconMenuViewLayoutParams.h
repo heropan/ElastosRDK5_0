@@ -4,7 +4,7 @@
 
 #include "_CIconMenuViewLayoutParams.h"
 #include "view/menu/IconMenuViewLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

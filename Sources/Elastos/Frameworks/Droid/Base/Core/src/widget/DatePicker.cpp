@@ -78,7 +78,7 @@ ECode DatePicker::Init(
             const_cast<Int32 *>(R::styleable::DatePicker),
             ARRAY_SIZE(R::styleable::DatePicker));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     Boolean spinnersShown = FALSE;
     a->GetBoolean(R::styleable::DatePicker_spinnersShown, DEFAULT_SPINNERS_SHOWN, &spinnersShown);
@@ -143,10 +143,10 @@ ECode DatePicker::Init(
     mTempDate->Clear();
     if (!TextUtils::IsEmpty(minDate)) {
         if (!ParseDate(minDate, mTempDate)) {
-            mTempDate->SetEx(startYear, 0, 1);
+            mTempDate->Set(startYear, 0, 1);
         }
     } else {
-        mTempDate->SetEx(startYear, 0, 1);
+        mTempDate->Set(startYear, 0, 1);
     }
     Int64 minTimeInMillis = 0;
     mTempDate->GetTimeInMillis(&minTimeInMillis);
@@ -154,10 +154,10 @@ ECode DatePicker::Init(
     mTempDate->Clear();
     if (!TextUtils::IsEmpty(maxDate)) {
         if (!ParseDate(maxDate, mTempDate)) {
-            mTempDate->SetEx(endYear, 11, 31);
+            mTempDate->Set(endYear, 11, 31);
         }
     } else {
-        mTempDate->SetEx(endYear, 11, 31);
+        mTempDate->Set(endYear, 11, 31);
     }
     Int64 maxTimeInMillis = 0;
     mTempDate->GetTimeInMillis(&maxTimeInMillis);
@@ -394,13 +394,13 @@ AutoPtr<ICalendar> DatePicker::GetCalendarForLocale(
     CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     if(!oldCalendar) {
         AutoPtr<ICalendar> calendar;
-        helper->GetInstanceEx(locale, (ICalendar**)&calendar);
+        helper->GetInstance(locale, (ICalendar**)&calendar);
         return calendar;
     } else {
         Int64 currentTimeMillis;
         oldCalendar->GetTimeInMillis(&currentTimeMillis);
         AutoPtr<ICalendar> calendar;
-        helper->GetInstanceEx(locale, (ICalendar**)&calendar);
+        helper->GetInstance(locale, (ICalendar**)&calendar);
         calendar->SetTimeInMillis(currentTimeMillis);
         return calendar;
     }
@@ -514,7 +514,7 @@ ECode DatePicker::SetDate(
     /* [in] */ Int32 month,
     /* [in] */ Int32 dayOfMonth)
 {
-    mCurrentDate->SetEx(year, month, dayOfMonth);
+    mCurrentDate->Set(year, month, dayOfMonth);
     Boolean beforeMin = FALSE, afterMax = FALSE;
     mCurrentDate->IsBefore(mMinDate, &beforeMin);
     mCurrentDate->IsAfter(mMaxDate, &afterMax);
@@ -612,7 +612,7 @@ ECode DatePicker::UpdateCalendarView()
 {
     Int64 timeInMillis;
     mCurrentDate->GetTimeInMillis(&timeInMillis);
-    mCalendarView->SetDateEx(timeInMillis, FALSE, FALSE);
+    mCalendarView->SetDate(timeInMillis, FALSE, FALSE);
     return NOERROR;
 }
 

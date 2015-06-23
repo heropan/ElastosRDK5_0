@@ -1,7 +1,7 @@
 ﻿
 #include "CAboutActivity.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::View::EIID_IViewOnClickListener;

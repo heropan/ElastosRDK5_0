@@ -2,10 +2,10 @@
 #define __MONKEYMOTIONEVENT_H__
 
 #include "MonkeyEvent.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 //#include <view/CMotionEvent.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::CMotionEvent;
 //using Elastos::Droid::View::CMotionEvent::PointerCoords;

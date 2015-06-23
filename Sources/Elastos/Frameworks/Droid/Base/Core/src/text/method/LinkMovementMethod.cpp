@@ -2,10 +2,10 @@
 #include "text/Selection.h"
 //#include "os/ElObject.h"
 #include "view/CKeyEvent.h"
-#include <elastos/Math.h>
-//#include <elastos/Object.h>
+#include <elastos/core/Math.h>
+//#include <elastos/Core/Object.h>
 
-//using Elastos::Core::Threading::Object;
+//using Elastos::Core::Object;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Style::EIID_IClickableSpan;
 using Elastos::Droid::Text::Style::IClickableSpan;

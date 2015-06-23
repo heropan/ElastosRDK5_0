@@ -477,7 +477,7 @@ ECode AnimatorSet::GetChildAnimations(
         array->Set(i, (*it)->mAnimation);
     }
     *childAnimations = array;
-    INTERFACE_ADDREF(*childAnimations);
+    REFCOUNT_ADD(*childAnimations);
     return NOERROR;
 }
 
@@ -493,7 +493,7 @@ ECode AnimatorSet::GetChildAnimations(
         array->Add(((*it)->mAnimation).Get());
     }
     *childAnimations = array;
-    INTERFACE_ADDREF(*childAnimations);
+    REFCOUNT_ADD(*childAnimations);
     return NOERROR;
 }
 
@@ -844,7 +844,7 @@ ECode AnimatorSet::Clone(
     }
 
     *object = newObject;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

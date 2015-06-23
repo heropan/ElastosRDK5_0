@@ -3,7 +3,7 @@
 #define __CSUBSCRIPTSPANHELPER_H__
 
 #include "_CSubscriptSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

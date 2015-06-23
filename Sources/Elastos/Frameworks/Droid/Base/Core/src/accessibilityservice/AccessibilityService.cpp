@@ -250,7 +250,7 @@ ECode AccessibilityService::OnBind(
     CAccessibilityServiceClientWrapper::New(THIS_PROBE(IContext), looper, callbacks,
         (IAccessibilityServiceClientWrapper**)&wrapper);
     *binder = IBinder::Probe(wrapper);
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 

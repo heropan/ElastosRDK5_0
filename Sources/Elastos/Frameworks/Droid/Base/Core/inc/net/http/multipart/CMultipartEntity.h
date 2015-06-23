@@ -106,13 +106,13 @@ public:
     CARAPI SetContentType(
         /* [in] */ Org::Apache::Http::IHeader* contentType);
 
-    CARAPI SetContentTypeEx(
+    CARAPI SetContentType(
         /* [in] */ const String& ctString);
 
     CARAPI SetContentEncoding(
         /* [in] */ Org::Apache::Http::IHeader* contentEncoding);
 
-    CARAPI SetContentEncodingEx(
+    CARAPI SetContentEncoding(
         /* [in] */ const String& ceString);
 
     CARAPI SetChunked(

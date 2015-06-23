@@ -11,16 +11,16 @@ ECode CRouteInfoHelper::MakeHostRoute(
     /* [out] */ IRouteInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    return CRouteInfo::MakeHostRouteEx(host, NULL, info);
+    return CRouteInfo::MakeHostRoute(host, NULL, info);
 }
-        
-ECode CRouteInfoHelper::MakeHostRouteEx(
+
+ECode CRouteInfoHelper::MakeHostRoute(
     /* [in] */ IInetAddress* host,
     /* [in] */ IInetAddress* gateway,
     /* [out] */ IRouteInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    return CRouteInfo::MakeHostRouteEx(host, gateway, info);
+    return CRouteInfo::MakeHostRoute(host, gateway, info);
 }
 
 /**

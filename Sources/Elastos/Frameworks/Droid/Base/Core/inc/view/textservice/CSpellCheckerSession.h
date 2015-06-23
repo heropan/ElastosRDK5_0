@@ -118,7 +118,7 @@ public:
      * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
      */
     //@Deprecated
-    CARAPI GetSuggestionsEx(
+    CARAPI GetSuggestions(
         /* [in] */ ArrayOf<ITextInfo*>* textInfos,
         /* [in] */ Int32 suggestionsLimit,
         /* [in] */ Boolean sequentialWords);

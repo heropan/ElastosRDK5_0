@@ -3,9 +3,9 @@
 
 #include "_CToggleButton.h"
 #include "widget/ToggleButton.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
-#include "widget/CompoundButtonMacro.h"
+
+
+
 
 namespace Elastos {
 namespace Droid {

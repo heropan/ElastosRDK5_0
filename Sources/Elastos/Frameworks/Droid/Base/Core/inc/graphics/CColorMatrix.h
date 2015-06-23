@@ -86,7 +86,7 @@ public:
     /**
      * Assign the array of floats into this matrix, copying all of its values.
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ const ArrayOf<Float>& src);
 
     /**

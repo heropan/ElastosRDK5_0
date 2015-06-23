@@ -145,7 +145,7 @@ public:
         /* [in] */ IInterface* that,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IConfiguration* that,
         /* [out] */ Boolean* result);
 

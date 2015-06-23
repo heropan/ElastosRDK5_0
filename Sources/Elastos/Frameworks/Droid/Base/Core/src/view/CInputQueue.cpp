@@ -19,7 +19,7 @@ ECode CInputQueue::GetInputChannel(
 {
     VALIDATE_NOT_NULL(inputChannel);
     *inputChannel = mChannel;
-    INTERFACE_ADDREF(*inputChannel);
+    REFCOUNT_ADD(*inputChannel);
     return NOERROR;
 }
 

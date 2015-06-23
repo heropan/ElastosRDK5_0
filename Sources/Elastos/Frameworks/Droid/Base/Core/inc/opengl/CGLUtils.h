@@ -28,7 +28,7 @@ public:
         /* [in] */ IBitmap* bitmap,
         /* [in] */ Int32 border);
 
-    CARAPI TexImage2DEx(
+    CARAPI TexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 internalformat,
@@ -36,7 +36,7 @@ public:
         /* [in] */ Int32 type,
         /* [in] */ Int32 border);
 
-    CARAPI TexImage2DEx2(
+    CARAPI TexImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ IBitmap* bitmap,
@@ -49,7 +49,7 @@ public:
         /* [in] */ Int32 yoffset,
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI TexSubImage2DEx(
+    CARAPI TexSubImage2D(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 xoffset,

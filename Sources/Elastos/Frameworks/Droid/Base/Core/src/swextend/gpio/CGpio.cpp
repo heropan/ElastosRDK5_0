@@ -3,8 +3,8 @@
 #include "IGpioService.h"
 #include <binder/IPCThreadState.h>
 #include <binder/IServiceManager.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::CChar32;
 using Elastos::Core::IChar32;

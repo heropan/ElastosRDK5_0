@@ -3,10 +3,10 @@
 #define __CEXPANDEDMENUVIEW_H__
 
 #include "ext/frameworkext.h"
-#include "view/ViewMacro.h"
-#include "widget/AdapterViewMacro.h"
-#include "widget/AbsListViewMacro.h"
-#include "widget/ListViewMacro.h"
+
+
+
+
 #include "_CExpandedMenuView.h"
 #include "view/menu/ExpandedMenuView.h"
 

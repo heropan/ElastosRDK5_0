@@ -56,7 +56,7 @@ public:
         /* [in] */ Int32 max);
 
     //@Override
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

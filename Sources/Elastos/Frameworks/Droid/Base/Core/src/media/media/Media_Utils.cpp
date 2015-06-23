@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "media/Media_Utils.h"
 #include <media/stagefright/MediaErrors.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IByteBufferHelper;
@@ -199,7 +199,7 @@ ECode Media_Utils::ConvertMessageToMap(
     }//end for
 
     *mymap = returnMap;
-    INTERFACE_ADDREF(*mymap);
+    REFCOUNT_ADD(*mymap);
     return NOERROR;
 }
 

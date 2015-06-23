@@ -21,7 +21,7 @@ ECode CSettingsSecure::GetContentUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::Secure::CONTENT_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -81,12 +81,12 @@ ECode CSettingsSecure::PutStringForUser(
     return Settings::Secure::PutStringForUser(resolver, name, value, userHandle, result);
 }
 
-ECode CSettingsSecure::GetUriForEx(
+ECode CSettingsSecure::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    return Settings::Secure::GetUriForEx(name, uri);
+    return Settings::Secure::GetUriFor(name, uri);
 }
 
 ECode CSettingsSecure::GetInt32(
@@ -110,7 +110,7 @@ ECode CSettingsSecure::GetInt32ForUser(
     return Settings::Secure::GetInt32ForUser(cr, name, def, userHandle, value);
 }
 
-ECode CSettingsSecure::GetInt32Ex(
+ECode CSettingsSecure::GetInt32(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Int32* value)
@@ -119,7 +119,7 @@ ECode CSettingsSecure::GetInt32Ex(
     return Settings::Secure::GetInt32(cr, name, value);
 }
 
-ECode CSettingsSecure::GetInt32ForUserEx(
+ECode CSettingsSecure::GetInt32ForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [in] */ Int32 userHandle,
@@ -171,7 +171,7 @@ ECode CSettingsSecure::GetInt64ForUser(
     return Settings::Secure::GetInt64ForUser(cr, name, def, userHandle, value);
 }
 
-ECode CSettingsSecure::GetInt64Ex(
+ECode CSettingsSecure::GetInt64(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Int64* value)
@@ -180,7 +180,7 @@ ECode CSettingsSecure::GetInt64Ex(
     return Settings::Secure::GetInt64(cr, name, value);
 }
 
-ECode CSettingsSecure::GetInt64ForUserEx(
+ECode CSettingsSecure::GetInt64ForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [in] */ Int32 userHandle,
@@ -232,7 +232,7 @@ ECode CSettingsSecure::GetFloatForUser(
     return Settings::Secure::GetFloatForUser(cr, name, def, userHandle, value);
 }
 
-ECode CSettingsSecure::GetFloatEx(
+ECode CSettingsSecure::GetFloat(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Float* value)
@@ -241,7 +241,7 @@ ECode CSettingsSecure::GetFloatEx(
     return Settings::Secure::GetFloat(cr, name, value);
 }
 
-ECode CSettingsSecure::GetFloatForUserEx(
+ECode CSettingsSecure::GetFloatForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [in] */ Int32 userHandle,

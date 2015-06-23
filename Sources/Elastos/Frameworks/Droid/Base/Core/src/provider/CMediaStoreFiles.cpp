@@ -22,7 +22,7 @@ ECode CMediaStoreFiles::GetContentUri(
             "/file", uri);
 }
 
-ECode CMediaStoreFiles::GetContentUriEx(
+ECode CMediaStoreFiles::GetContentUri(
     /* [in] */ const String& volumeName,
     /* [in] */ Int64 rowId,
     /* [out] */ IUri** uri)
@@ -47,7 +47,7 @@ ECode CMediaStoreFiles::GetMtpObjectsUri(
             "/object", uri);
 }
 
-ECode CMediaStoreFiles::GetMtpObjectsUriEx(
+ECode CMediaStoreFiles::GetMtpObjectsUri(
     /* [in] */ const String& volumeName,
     /* [in] */ Int64 fileId,
     /* [out] */ IUri** uri)

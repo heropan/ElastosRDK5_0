@@ -93,7 +93,7 @@ module
          * @throws SendIntentException Throws CanceledIntentException if the IntentSender
          * is no longer allowing more intents to be sent through it.
          */
-        SendIntentEx(
+        SendIntent(
             [in] IContext* ctx,
             [in] Int32 code,
             [in] IIntent* intent,

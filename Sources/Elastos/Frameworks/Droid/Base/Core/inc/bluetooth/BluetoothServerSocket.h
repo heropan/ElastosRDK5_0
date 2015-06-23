@@ -34,7 +34,7 @@ public:
     CARAPI Accept(
         /* [out] */ IBluetoothSocket** socket);
 
-    CARAPI AcceptEx(
+    CARAPI Accept(
         /* [in] */ Int32 timeout,
         /* [out] */ IBluetoothSocket** socket);
 

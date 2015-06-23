@@ -16,11 +16,11 @@ ECode CAccessibilityRecordHelper::Obtain(
     return CAccessibilityRecord::Obtain(record, newInstance);
 }
 
-ECode CAccessibilityRecordHelper::ObtainEx(
+ECode CAccessibilityRecordHelper::Obtain(
     /* [out] */ IAccessibilityRecord** newInstance)
 {
     VALIDATE_NOT_NULL(newInstance);
-    return CAccessibilityRecord::ObtainEx(newInstance);
+    return CAccessibilityRecord::Obtain(newInstance);
 }
 
 } // Accessibility

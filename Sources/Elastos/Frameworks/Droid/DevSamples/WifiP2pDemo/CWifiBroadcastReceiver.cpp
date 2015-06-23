@@ -1,6 +1,6 @@
 #include "CWifiBroadcastReceiver.h"
 #include "CActivityOne.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 

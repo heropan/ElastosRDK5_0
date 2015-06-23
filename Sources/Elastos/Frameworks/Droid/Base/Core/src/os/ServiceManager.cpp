@@ -45,7 +45,7 @@ void ServiceManager::AddService(
     /* [in] */ IInterface* service)
 {
 //    try {
-    GetIServiceManager()->AddServiceEx(name, service, FALSE);
+    GetIServiceManager()->AddService(name, service, FALSE);
 //    } catch (RemoteException e) {
 //        Log.e(TAG, "error in addService", e);
 //    }
@@ -57,7 +57,7 @@ void ServiceManager::AddService(
     /* [in] */ Boolean allowIsolated)
 {
     // try {
-    GetIServiceManager()->AddServiceEx(name, service, allowIsolated);
+    GetIServiceManager()->AddService(name, service, allowIsolated);
     // } catch (RemoteException e) {
     //     Log.e(TAG, "error in addService", e);
     // }

@@ -50,7 +50,7 @@ ECode CAccountAndUser::GetAccount(
 {
     VALIDATE_NOT_NULL(account)
     *account = mAccount;
-    INTERFACE_ADDREF(*account)
+    REFCOUNT_ADD(*account)
     return NOERROR;
 }
 

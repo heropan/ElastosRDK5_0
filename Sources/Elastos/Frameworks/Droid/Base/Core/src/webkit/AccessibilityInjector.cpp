@@ -5,14 +5,14 @@
 #include "speech/tts/CTextToSpeech.h"
 #include "os/CHandler.h"
 #include "os/SystemClock.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Thread.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Content::IContentResolver;
 //using Elastos::Droid::Provider::CSettingsSecure;
 //using Elastos::Droid::Provider::ISettingsSecure;

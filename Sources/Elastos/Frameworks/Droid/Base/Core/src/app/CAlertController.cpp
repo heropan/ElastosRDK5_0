@@ -7,7 +7,7 @@
 #include "util/CTypedValue.h"
 #include "text/TextUtils.h"
 #include "ext/frameworkext.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
@@ -126,13 +126,13 @@ ECode CAlertController::ButtonViewOnClickListener::OnClick(
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> m;
     if (v == IView::Probe(mHost->mButtonPositive) && mHost->mButtonPositiveMessage != NULL) {
-        helper->ObtainEx(mHost->mButtonPositiveMessage, (IMessage**)&m);
+        helper->Obtain(mHost->mButtonPositiveMessage, (IMessage**)&m);
     }
     else if (v == IView::Probe(mHost->mButtonNegative) && mHost->mButtonNegativeMessage != NULL) {
-        helper->ObtainEx(mHost->mButtonNegativeMessage, (IMessage**)&m);
+        helper->Obtain(mHost->mButtonNegativeMessage, (IMessage**)&m);
     }
     else if (v == IView::Probe(mHost->mButtonNeutral) && mHost->mButtonNeutralMessage != NULL) {
-        helper->ObtainEx(mHost->mButtonNeutralMessage, (IMessage**)&m);
+        helper->Obtain(mHost->mButtonNeutralMessage, (IMessage**)&m);
     }
     if (m != NULL) {
         m->SendToTarget();
@@ -140,7 +140,7 @@ ECode CAlertController::ButtonViewOnClickListener::OnClick(
 
     // Post a message so we dismiss after the above handlers are executed
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(mHost->mHandler, ButtonHandler::MSG_DISMISS_DIALOG,
+    helper->Obtain(mHost->mHandler, ButtonHandler::MSG_DISMISS_DIALOG,
         ac->Probe(EIID_IAlertController), (IMessage**)&msg);
     msg->SendToTarget();
 
@@ -208,7 +208,7 @@ ECode CAlertController::constructor(
         const_cast<Int32 *>(R::styleable::AlertDialog),
         ARRAY_SIZE(R::styleable::AlertDialog));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
         NULL, attrIds, R::attr::alertDialogStyle, 0, (ITypedArray**)&a);
     assert(a != NULL);
     a->GetResourceId(R::styleable::AlertDialog_layout,
@@ -235,7 +235,7 @@ ECode CAlertController::GetDialogInterface(
 {
     VALIDATE_NOT_NULL(dialog);
     *dialog = mDialogInterface;
-    INTERFACE_ADDREF(*dialog);
+    REFCOUNT_ADD(*dialog);
     return NOERROR;
     // return mWeakDialogInterface->Resolve(EIID_IDialogInterface, (IInterface**)dialog);
 }
@@ -367,7 +367,7 @@ ECode CAlertController::SetView(
     return NOERROR;
 }
 
-ECode CAlertController::SetViewEx(
+ECode CAlertController::SetView(
     /* [in] */ IView* view,
     /* [in] */ Int32 viewSpacingLeft,
     /* [in] */ Int32 viewSpacingTop,
@@ -391,7 +391,7 @@ ECode CAlertController::SetButton(
 {
     AutoPtr<IMessage> msg = _msg;
     if (msg == NULL && listener != NULL) {
-        mHandler->ObtainMessageEx(whichButton, listener, (IMessage**)&msg);
+        mHandler->ObtainMessage(whichButton, listener, (IMessage**)&msg);
     }
 
     switch (whichButton) {
@@ -435,7 +435,7 @@ ECode CAlertController::SetIcon(
     return NOERROR;
 }
 
-ECode CAlertController::SetIconEx(
+ECode CAlertController::SetIcon(
    /* [in] */ IDrawable* icon)
 {
     mIcon = icon;
@@ -479,7 +479,7 @@ ECode CAlertController::GetListView(
 {
     VALIDATE_NOT_NULL(listview);
     *listview = mListView;
-    INTERFACE_ADDREF(*listview);
+    REFCOUNT_ADD(*listview);
     return NOERROR;
 }
 
@@ -504,7 +504,7 @@ ECode CAlertController::GetButton(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    INTERFACE_ADDREF(*button);
+    REFCOUNT_ADD(*button);
     return NOERROR;
 }
 
@@ -551,7 +551,7 @@ void CAlertController::SetupView()
         const_cast<Int32 *>(R::styleable::AlertDialog),
         ARRAY_SIZE(R::styleable::AlertDialog));
     AutoPtr<ITypedArray> a;
-    mContext->ObtainStyledAttributesEx3(
+    mContext->ObtainStyledAttributes(
         NULL, attrIds, R::attr::alertDialogStyle, 0, (ITypedArray**)&a);
 
     Boolean hasTitle = SetupTitle(topPanel);
@@ -576,7 +576,7 @@ void CAlertController::SetupView()
         AutoPtr<IViewGroupLayoutParams> lParams;
         CViewGroupLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
                 (IViewGroupLayoutParams**)&lParams);
-        custom->AddViewEx3(mView, lParams);
+        custom->AddView(mView, lParams);
         if (mViewSpacingSpecified) {
             custom->SetPadding(mViewSpacingLeft, mViewSpacingTop, mViewSpacingRight,
                     mViewSpacingBottom);
@@ -627,7 +627,7 @@ Boolean CAlertController::SetupTitle(
                 ILinearLayoutLayoutParams::MATCH_PARENT, ILinearLayoutLayoutParams::WRAP_CONTENT,
                 (ILinearLayoutLayoutParams**)&lp);
 
-        topPanel->AddViewEx4(mCustomTitleView, 0, lp);
+        topPanel->AddView(mCustomTitleView, 0, lp);
 
         // Hide the title template
         AutoPtr<IView> titleTemplate;
@@ -716,7 +716,7 @@ void CAlertController::SetupContent(
             Int32 lp = ILinearLayoutLayoutParams::MATCH_PARENT;
             AutoPtr<ILinearLayoutLayoutParams> linearParams;
             CLinearLayoutLayoutParams::New(lp, lp, (ILinearLayoutLayoutParams**)&linearParams);
-            contentPanel->AddViewEx3(
+            contentPanel->AddView(
                 IView::Probe(mListView.Get()),
                 IViewGroupLayoutParams::Probe(linearParams.Get()));
 

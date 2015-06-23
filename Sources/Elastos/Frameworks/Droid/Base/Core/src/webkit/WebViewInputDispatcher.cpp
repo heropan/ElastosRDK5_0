@@ -5,7 +5,7 @@
 #include "view/CViewConfigurationHelper.h"
 #include "webkit/WebViewInputDispatcher.h"
 #include "view/InputEvent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "webkit/DebugFlags.h"
 
 using Elastos::Droid::Os::EIID_IHandler;
@@ -1254,7 +1254,7 @@ Boolean WebViewInputDispatcher::BatchEventLocked(
             && in->mWebKitScale == tail->mWebKitScale) {
 
         Boolean b = FALSE;
-        tail->mEvent->AddBatchEx2(in->mEvent, &b);
+        tail->mEvent->AddBatch(in->mEvent, &b);
         return b;
     }
 

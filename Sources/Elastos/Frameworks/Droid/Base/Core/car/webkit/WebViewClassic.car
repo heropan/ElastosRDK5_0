@@ -398,7 +398,7 @@ module
          *
          * @return the address, or if no address is found, return null.
          */
-        FindAddressEx(
+        FindAddress(
             [in] String addr,
             [in] Boolean caseInsensitive,
             [out] String* outAddr);

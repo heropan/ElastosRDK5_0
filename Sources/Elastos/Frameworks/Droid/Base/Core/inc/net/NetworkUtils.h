@@ -4,7 +4,6 @@
 
 #include "ext/frameworkext.h"
 #include "net/DhcpInfoInternal.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetAddressHelper;

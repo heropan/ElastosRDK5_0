@@ -12,12 +12,12 @@ module
         /**
          * Returns true if the point's coordinates equal (x,y)
          */
-        EqualsEx2(
+        Equals(
             [in] Float x,
             [in] Float y,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] IPointF* o,
             [out] Boolean* result);
 
@@ -57,7 +57,7 @@ module
         /**
          * Set the point's x and y coordinates to the coordinates of p
          */
-        SetEx(
+        Set(
             [in] IPointF* p);
 
         GetX(

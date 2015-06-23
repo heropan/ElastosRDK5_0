@@ -2,7 +2,7 @@
 #define __CSPACE_H_
 
 #include "_CSpace.h"
-#include "view/ViewMacro.h"
+
 #include "widget/Space.h"
 
 namespace Elastos {

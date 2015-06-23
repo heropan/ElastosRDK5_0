@@ -2,9 +2,9 @@
 #define __CRECENTSPANELVIEW_H_
 
 #include "_CRecentsPanelView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/recent/RecentsPanelView.h"
 
 using Elastos::Droid::View::IView;
@@ -53,7 +53,7 @@ public:
     CARAPI Show(
         /* [in] */ Boolean show);
 
-    CARAPI ShowEx(
+    CARAPI Show(
         /* [in] */ Boolean show,
         /* [in] */ IObjectContainer* recentTaskDescriptions,
         /* [in] */ Boolean firstScreenful,

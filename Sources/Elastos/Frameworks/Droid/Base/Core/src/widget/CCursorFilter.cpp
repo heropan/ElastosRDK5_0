@@ -19,12 +19,12 @@ ECode CCursorFilter::DoFilter(
     return CursorFilter::DoFilter(pConstraint);
 }
 
-ECode CCursorFilter::DoFilterEx(
+ECode CCursorFilter::DoFilter(
     /* [in] */ ICharSequence * pConstraint,
     /* [in] */ IFilterListener * pListener)
 {
     // TODO: Add your code here
-    return CursorFilter::DoFilterEx(pConstraint, pListener);
+    return CursorFilter::DoFilter(pConstraint, pListener);
 }
 
 ECode CCursorFilter::ConvertResultToString(

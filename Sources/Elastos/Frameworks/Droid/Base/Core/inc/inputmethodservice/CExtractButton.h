@@ -5,8 +5,8 @@
 //#include "ext/frameworkext.h"
 #include "_CExtractButton.h"
 #include "widget/Button.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 
 using Elastos::Droid::Widget::Button;
 

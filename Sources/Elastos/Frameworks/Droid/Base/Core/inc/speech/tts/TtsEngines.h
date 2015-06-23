@@ -2,7 +2,7 @@
 #define __TtsEngines_H__
 
 #include "speech/tts/TextToSpeech.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 //using Elastos::Utility::IComparator;
 using Elastos::Droid::Content::IIntent;
@@ -10,8 +10,6 @@ using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::IContext;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Speech {

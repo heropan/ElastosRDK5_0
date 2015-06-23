@@ -3,8 +3,8 @@
 #include "os/SystemClock.h"
 #include "graphics/CRect.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::R;
 using Elastos::Core::CStringWrapper;
@@ -616,7 +616,7 @@ ECode SlidingDrawer::InitSelf(
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::SlidingDrawer),
             ARRAY_SIZE(R::styleable::SlidingDrawer));
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     Int32 orientation;
     a->GetInt32(R::styleable::SlidingDrawer_orientation, ISlidingDrawer::ORIENTATION_VERTICAL, &orientation);
@@ -809,7 +809,7 @@ ECode SlidingDrawer::MoveHandle(
             AutoPtr<IRect> region = mInvalidate;
 
             handle->GetHitRect(frame);
-            region->SetEx(frame);
+            region->Set(frame);
 
             Int32 frameLeft, frameTop, frameRight, frameBottom;
             frame->GetLeft(&frameLeft);
@@ -851,7 +851,7 @@ ECode SlidingDrawer::MoveHandle(
             AutoPtr<IRect> region = mInvalidate;
 
             handle->GetHitRect(frame);
-            region->SetEx(frame);
+            region->Set(frame);
 
             Int32 frameLeft, frameTop, frameRight, frameBottom;
             frame->GetLeft(&frameLeft);

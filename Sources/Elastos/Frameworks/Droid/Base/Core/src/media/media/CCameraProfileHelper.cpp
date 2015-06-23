@@ -38,7 +38,7 @@ ECode CCameraProfileHelper::GetJpegEncodingQualityParameter(
         Int32 facing;
         cameraInfo->GetFacing(&facing);
         if (facing == ICameraInfo::CAMERA_FACING_BACK) {
-            GetJpegEncodingQualityParameterEx(i, quality, result);
+            GetJpegEncodingQualityParameter(i, quality, result);
             return NOERROR;
         }
     }
@@ -54,7 +54,7 @@ ECode CCameraProfileHelper::GetJpegEncodingQualityParameter(
  * @param cameraId The id of the camera
  * @param quality The target quality level
  */
-ECode CCameraProfileHelper::GetJpegEncodingQualityParameterEx(
+ECode CCameraProfileHelper::GetJpegEncodingQualityParameter(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 quality,
     /* [out] */ Int32* result)

@@ -3,9 +3,9 @@
 #define __NETWORKIDENTITYSET_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IDataInput;
 using Elastos::IO::IDataOutput;
 using Elastos::Droid::Net::INetworkIdentity;

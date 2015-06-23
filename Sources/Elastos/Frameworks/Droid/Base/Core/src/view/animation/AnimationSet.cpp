@@ -1,7 +1,7 @@
 
 #include "view/animation/CAnimationSet.h"
 #include "view/animation/CTransformation.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/Build.h"
 
 using Elastos::Droid::Os::Build;
@@ -388,7 +388,7 @@ Boolean AnimationSet::GetTransformation(
         Animation* a = reinterpret_cast<Animation*>((*iter)->Probe(EIID_Animation));
 
         mTempTransformation->Clear();
-        more = a->GetTransformationEx(currentTime, mTempTransformation, GetScaleFactor()) || more;
+        more = a->GetTransformation(currentTime, mTempTransformation, GetScaleFactor()) || more;
         t->Compose(mTempTransformation);
 
         started = started || a->HasStarted();
@@ -477,7 +477,7 @@ ECode AnimationSet::Initialize(
             (*iter)->SetRepeatMode(mRepeatMode);
         }
         if (shareInterpolator) {
-            (*iter)->SetInterpolatorEx(mInterpolator);
+            (*iter)->SetInterpolator(mInterpolator);
         }
         if (startOffsetSet) {
             Int64 offset;
@@ -563,7 +563,7 @@ ECode AnimationSet::Init(
             const_cast<Int32 *>(R::styleable::AnimationSet),
             ARRAY_SIZE(R::styleable::AnimationSet));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(
+    context->ObtainStyledAttributes(
         attrs, attrIds, (ITypedArray**)&a);
 
     Boolean share;

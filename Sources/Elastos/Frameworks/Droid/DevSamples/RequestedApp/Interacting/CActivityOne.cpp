@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <elautoptr.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 
 using Elastos::Utility::Logging::Slogger;
@@ -89,7 +89,7 @@ ECode CActivityOne::MyListener::OnClick(
     else if (id == R::id::startforresult) {
         AutoPtr<IIntent> intent;
         CIntent::New((IIntent**)&intent);
-        intent->SetClassNameEx(String("Interacting"), String("Interacting.CActivityTwo"));
+        intent->SetClassName(String("Interacting"), String("Interacting.CActivityTwo"));
         Int32 requestCode = 10;
         if (FAILED(mHost->StartActivityForResult(intent, requestCode))) {
             Slogger::E("CActivityOne", "StartActivityForResult---CActivityTwo---failed");

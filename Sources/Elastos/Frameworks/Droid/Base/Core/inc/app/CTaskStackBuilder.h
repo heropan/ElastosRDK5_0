@@ -3,9 +3,9 @@
 
 #include "_CTaskStackBuilder.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Content::IContext;
@@ -87,7 +87,7 @@ public:
      *                           this activity will be added
      * @return This TaskStackBuilder for method chaining
      */
-    CARAPI AddParentStackEx(
+    CARAPI AddParentStack(
         /* [in] */ IComponentName * sourceActivityName);
 
     /**
@@ -117,7 +117,7 @@ public:
      * Start the task stack constructed by this builder.
      * @hide
      */
-    CARAPI StartActivitiesEx(
+    CARAPI StartActivities(
         /* [in] */ IBundle * options,
         /* [in] */ IUserHandle * userHandle);
 
@@ -128,7 +128,7 @@ public:
      * See {@link android.content.Context#startActivity(Intent, Bundle)
      * Context.startActivity(Intent, Bundle)} for more details.
      */
-    CARAPI StartActivitiesEx2(
+    CARAPI StartActivities(
         /* [in] */ IBundle * options);
 
     /**
@@ -163,7 +163,7 @@ public:
      *
      * @return The obtained PendingIntent
      */
-    CARAPI GetPendingIntentEx(
+    CARAPI GetPendingIntent(
         /* [in] */ Int32 requestCode,
         /* [in] */ Int32 flags,
         /* [in] */ IBundle * options,
@@ -172,7 +172,7 @@ public:
     /**
      * @hide
      */
-    CARAPI GetPendingIntentEx2(
+    CARAPI GetPendingIntent(
         /* [in] */ Int32 requestCode,
         /* [in] */ Int32 flags,
         /* [in] */ IBundle * options,

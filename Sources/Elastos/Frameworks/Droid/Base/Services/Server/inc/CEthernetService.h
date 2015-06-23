@@ -5,9 +5,9 @@
 #include "_CEthernetService.h"
 #include "content/BroadcastReceiver.h"
 #include "net/ethernet/EthernetDataTracker.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntent;

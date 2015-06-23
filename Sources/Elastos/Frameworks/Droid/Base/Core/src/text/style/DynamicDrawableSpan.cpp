@@ -82,7 +82,7 @@ ECode DynamicDrawableSpan::Draw(
     Int32 transY = bottom - ((b->GetBounds( (IRect**)&rect ), rect)->GetBottom(&rbottom), rbottom);
     if (mVerticalAlignment == IDynamicDrawableSpan::ALIGN_BASELINE) {
         AutoPtr<IPaintFontMetricsInt> fm;
-        paint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&fm);
+        paint->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
         Int32 descent;
         fm->GetDescent(&descent);
         transY -= descent;

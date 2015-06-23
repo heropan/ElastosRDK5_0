@@ -25,7 +25,7 @@ ECode CActionBarLayoutParams::constructor(
         ARRAY_SIZE(R::styleable::ActionBar_LayoutParams));
 
     AutoPtr<ITypedArray> a;
-    ctx->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    ctx->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     a->GetInt32(R::styleable::ActionBar_LayoutParams_layout_gravity, IGravity::NO_GRAVITY, &mGravity);
     a->Recycle();
     return NOERROR;

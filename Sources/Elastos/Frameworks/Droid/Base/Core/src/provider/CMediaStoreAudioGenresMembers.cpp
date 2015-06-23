@@ -2,7 +2,7 @@
 #include "provider/CMediaStoreAudioGenresMembers.h"
 #include "ext/frameworkext.h"
 #include "net/CUriHelper.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Net::IUriHelper;

@@ -257,7 +257,7 @@ ECode ViewPropertyAnimator::InnerRunnable::Run()
 }
 
 /*---------------------------------InnerRunnableEx---------------------------------*/
-ViewPropertyAnimator::InnerRunnableEx::InnerRunnableEx(
+ViewPropertyAnimator::InnerRunnableEx::InnerRunnable(
     /* [in] */ ViewPropertyAnimator* host,
     /* [in] */ Int32 type)
     : mHost(host)
@@ -550,10 +550,10 @@ ECode ViewPropertyAnimator::AlphaBy(
 
 ECode ViewPropertyAnimator::WithLayer()
 {
-    mPendingSetupAction = new InnerRunnableEx(this, IView::LAYER_TYPE_HARDWARE);
+    mPendingSetupAction = new InnerRunnable(this, IView::LAYER_TYPE_HARDWARE);
     Int32 currentLayerType;
     mView->GetLayerType(&currentLayerType);
-    mPendingCleanupAction = new InnerRunnableEx(this, currentLayerType);
+    mPendingCleanupAction = new InnerRunnable(this, currentLayerType);
     if (mAnimatorSetupMap == NULL) {
         mAnimatorSetupMap = new HashMap<AutoPtr<IAnimator>, AutoPtr<IRunnable> >();
     }

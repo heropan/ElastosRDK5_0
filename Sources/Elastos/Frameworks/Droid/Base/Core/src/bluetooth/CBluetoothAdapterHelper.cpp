@@ -14,7 +14,7 @@ ECode CBluetoothAdapterHelper::GetDefaultAdapter(
 
     AutoPtr<IBluetoothAdapter> _adapter = CBluetoothAdapter::GetDefaultAdapter();
     *adapter = _adapter;
-    INTERFACE_ADDREF(*adapter)
+    REFCOUNT_ADD(*adapter)
     return NOERROR;
 }
 

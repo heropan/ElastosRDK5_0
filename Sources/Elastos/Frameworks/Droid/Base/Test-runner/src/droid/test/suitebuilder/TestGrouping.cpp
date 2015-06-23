@@ -4,7 +4,7 @@
 #include "droid/test/PackageInfoSources.h"
 #include "droid/test/ClassPathPackageInfoSource.h"
 #include "droid/test/ClassPathPackageInfo.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IComparator;
 using Elastos::Utility::INavigableSet;

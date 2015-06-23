@@ -98,7 +98,7 @@ ECode HttpConnection::OpenConnection(
     // conn->Bind(sock, params);
 
     *connection = conn;
-    INTERFACE_ADDREF(*connection);
+    REFCOUNT_ADD(*connection);
     return NOERROR;
 }
 

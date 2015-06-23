@@ -178,7 +178,7 @@ module
          * :-|:------------|
          * CanceledException Throws CanceledException | if the PendingIntent is no longer allowing more intents to be sent through it.
          */
-        SendEx(
+        Send(
             [in] Int32 code);
 
         /**
@@ -200,7 +200,7 @@ module
          * :-|:------------|
          * CanceledException Throws CanceledException | if the PendingIntent is no longer allowing more intents to be sent through it.
          */
-        SendEx2(
+        Send(
             [in] IContext* ctx,
             [in] Int32 code,
             [in] IIntent* intent);
@@ -223,7 +223,7 @@ module
          * :-|:------------|
          * CanceledException Throws CanceledException | if the PendingIntent is no longer allowing more intents to be sent through it.
          */
-        SendEx3(
+        Send(
             [in] Int32 code,
             [in] IPendingIntentOnFinished* onFinished,
             [in] IHandler* handler);
@@ -267,7 +267,7 @@ module
          * :-|:------------|
          * CanceledException Throws CanceledException | if the PendingIntent is no longer allowing more intents to be sent through it.
          */
-        SendEx4(
+        Send(
             [in] IContext* ctx,
             [in] Int32 code,
             [in] IIntent* intent,
@@ -319,7 +319,7 @@ module
          * :-|:------------|
          * CanceledException Throws CanceledException | if the PendingIntent is no longer allowing more intents to be sent through it.
          */
-        SendEx5(
+        Send(
             [in] IContext* ctx,
             [in] Int32 code,
             [in] IIntent* intent,
@@ -489,7 +489,7 @@ module
          *
          * @sa #FLAG_NO_CREATE
          */
-        GetActivityEx(
+        GetActivity(
             [in] IContext* ctx,
             [in] Int32 requestCode,
             [in] IIntent* intent,
@@ -636,7 +636,7 @@ module
          *
          * @sa #FLAG_NO_CREATE
          */
-        GetActivitiesEx(
+        GetActivities(
             [in] IContext* ctx,
             [in] Int32 requestCode,
             [in] ArrayOf<IIntent*>* intents,

@@ -10,9 +10,9 @@
 #include "util/Xml.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -350,7 +350,7 @@ ECode CNetworkPolicyManagerService::WifiConfigReceiver::OnReceive(
             AutoPtr<INetworkTemplateHelper> netTempHelper;
             CNetworkTemplateHelper::AcquireSingleton((INetworkTemplateHelper**)&netTempHelper);
             AutoPtr<INetworkTemplate> networkTemp;
-            netTempHelper->BuildTemplateWifiEx(netid, (INetworkTemplate**)&networkTemp);
+            netTempHelper->BuildTemplateWifi(netid, (INetworkTemplate**)&networkTemp);
             {
                 Mutex::Autolock lock(mOwner->mRulesLock);
                 HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it =
@@ -400,7 +400,7 @@ ECode CNetworkPolicyManagerService::WifiStateReceiver::OnReceive(
     String netid;
     wifiHelper->RemoveDoubleQuotes(wifiSSID, &netid);
     AutoPtr<INetworkTemplate> networkTemp;
-    netTempHelper->BuildTemplateWifiEx(netid, (INetworkTemplate**)&networkTemp);
+    netTempHelper->BuildTemplateWifi(netid, (INetworkTemplate**)&networkTemp);
     {
         Mutex::Autolock lock(mOwner->mRulesLock);
         AutoPtr<INetworkPolicy> policy;
@@ -465,7 +465,7 @@ ECode CNetworkPolicyManagerService::XmlUtils::ReadInt32Attribute(
     /* [out] */ Int32* attr)
 {
     String value;
-    in->GetAttributeValueEx(String(NULL), name, &value);
+    in->GetAttributeValue(String(NULL), name, &value);
     //try {
     ECode ec = StringUtils::ParseInt32(value, attr);
     if (FAILED(ec)) return E_PROTOCOL_EXCEPTION;
@@ -489,7 +489,7 @@ ECode CNetworkPolicyManagerService::XmlUtils::ReadInt64Attribute(
     /* [out] */ Int64* attr)
 {
     String value;
-    in->GetAttributeValueEx(String(NULL), name, &value);
+    in->GetAttributeValue(String(NULL), name, &value);
     //try {
     ECode ec = StringUtils::ParseInt64(value, attr);
     if (FAILED(ec)) return E_PROTOCOL_EXCEPTION;
@@ -513,7 +513,7 @@ ECode CNetworkPolicyManagerService::XmlUtils::ReadBooleanAttribute(
     /* [out] */ Boolean* attr)
 {
     String value;
-    in->GetAttributeValueEx(String(NULL), name, &value);
+    in->GetAttributeValue(String(NULL), name, &value);
     *attr = value.EqualsIgnoreCase("TRUE") ? 1 : 0;
     return NOERROR;
 }
@@ -730,7 +730,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     AutoPtr<IIntentFilter> connFilter;
     CIntentFilter::New(IConnectivityManager::CONNECTIVITY_ACTION_IMMEDIATE, (IIntentFilter**)&connFilter);
     AutoPtr<IIntent> resIntent;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mConnReceiver, connFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
         mHandler, (IIntent**)&resIntent);
 
@@ -740,14 +740,14 @@ ECode CNetworkPolicyManagerService::SystemReady()
     packageFilter->AddAction(IIntent::ACTION_PACKAGE_ADDED);
     packageFilter->AddDataScheme(String("package"));
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mPackageReceiver, packageFilter, String(NULL), mHandler, (IIntent**)&resIntent);
 
     // listen for UID changes to update policy
     AutoPtr<IIntentFilter> acRemoved;
     CIntentFilter::New(IIntent::ACTION_UID_REMOVED, (IIntentFilter**)&acRemoved);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mUidRemovedReceiver, acRemoved, String(NULL), mHandler, (IIntent**)&resIntent);
 
     // listen for user changes to update policy
@@ -756,14 +756,14 @@ ECode CNetworkPolicyManagerService::SystemReady()
     userFilter->AddAction(IIntent::ACTION_USER_ADDED);
     userFilter->AddAction(IIntent::ACTION_USER_REMOVED);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mUserReceiver, userFilter, String(NULL), mHandler, (IIntent**)&resIntent);
 
     // listen for stats update events
     AutoPtr<IIntentFilter> statsFilter;
     CIntentFilter::New(CNetworkStatsService::ACTION_NETWORK_STATS_UPDATED, (IIntentFilter**)&statsFilter);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mStatsReceiver, statsFilter, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY,
         mHandler, (IIntent**)&resIntent);
 
@@ -771,7 +771,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     AutoPtr<IIntentFilter> allowFilter;
     CIntentFilter::New(ACTION_ALLOW_BACKGROUND, (IIntentFilter**)&allowFilter);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mAllowReceiver, allowFilter, Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY,
         mHandler, (IIntent**)&resIntent);
 
@@ -779,7 +779,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     AutoPtr<IIntentFilter> snoozeWarningFilter;
     CIntentFilter::New(ACTION_SNOOZE_WARNING, (IIntentFilter**)&snoozeWarningFilter);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mSnoozeWarningReceiver, snoozeWarningFilter, Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY,
         mHandler, (IIntent**)&resIntent);
 
@@ -787,7 +787,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     AutoPtr<IIntentFilter> wifiConfigFilter;
     CIntentFilter::New(IWifiManager::CONFIGURED_NETWORKS_CHANGED_ACTION, (IIntentFilter**)&wifiConfigFilter);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mWifiConfigReceiver, wifiConfigFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
         mHandler, (IIntent**)&resIntent);
 
@@ -795,7 +795,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     AutoPtr<IIntentFilter> wifiStateFilter;
     CIntentFilter::New(IWifiManager::NETWORK_STATE_CHANGED_ACTION, (IIntentFilter**)&wifiStateFilter);
     resIntent = NULL;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         mWifiStateReceiver, wifiStateFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
         mHandler, (IIntent**)&resIntent);
 
@@ -1060,7 +1060,7 @@ void CNetworkPolicyManagerService::EnqueueNotification(
             args->Set(0, csFormatter.Get());
 
             String strbody;
-            res->GetStringEx(R::string::data_usage_limit_snoozed_body, args, &strbody);
+            res->GetString(R::string::data_usage_limit_snoozed_body, args, &strbody);
             AutoPtr<ICharSequence> body;
             CStringWrapper::New(strbody, (ICharSequence**)&body);
 
@@ -1540,7 +1540,7 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
     Int32 type, version;
     FAIL_GOTO(mPolicyFile->OpenRead((IFileInputStream**)&fis), ERROR);
     in = Xml::NewPullParser();
-    in->SetInputEx((IInputStream*)fis.Get(), String(NULL));
+    in->SetInput((IInputStream*)fis.Get(), String(NULL));
 
     version = VERSION_INIT;
     while (in->Next(&type), type != IXmlPullParser::END_DOCUMENT) {
@@ -1572,16 +1572,16 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
                 AutoPtr<INetworkTemplate> nwkTemplate;
                 AutoPtr<INetworkPolicy> policy;
                 FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_NETWORK_TEMPLATE, &networkTemplate), ERROR);
-                FAIL_GOTO(in->GetAttributeValueEx(String(NULL), ATTR_SUBSCRIBER_ID, &subscriberId), ERROR);
+                FAIL_GOTO(in->GetAttributeValue(String(NULL), ATTR_SUBSCRIBER_ID, &subscriberId), ERROR);
                 if (version >= VERSION_ADDED_NETWORK_ID) {
-                    FAIL_GOTO(in->GetAttributeValueEx(String(NULL), ATTR_NETWORK_ID, &networkId), ERROR);
+                    FAIL_GOTO(in->GetAttributeValue(String(NULL), ATTR_NETWORK_ID, &networkId), ERROR);
                 }
                 else {
                     networkId = NULL;
                 }
                 FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_CYCLE_DAY, &cycleDay), ERROR);
                 if (version >= VERSION_ADDED_TIMEZONE) {
-                    FAIL_GOTO(in->GetAttributeValueEx(String(NULL), ATTR_CYCLE_TIMEZONE, &cycleTimezone), ERROR);
+                    FAIL_GOTO(in->GetAttributeValue(String(NULL), ATTR_CYCLE_TIMEZONE, &cycleTimezone), ERROR);
                 }
                 else {
                     cycleTimezone = ITime::TIMEZONE_UTC;

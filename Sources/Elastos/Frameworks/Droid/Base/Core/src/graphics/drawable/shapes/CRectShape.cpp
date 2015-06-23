@@ -59,7 +59,7 @@ ECode CRectShape::Clone(
     CRectShape::NewByFriend((CRectShape**)&s);
     RectShape::Clone((RectShape*)s.Get());
     *shape = (IShape*)s.Get();
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 

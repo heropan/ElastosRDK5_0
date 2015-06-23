@@ -5,7 +5,7 @@
 #include "content/CIntentHelper.h"
 #include "content/CComponentName.h"
 #include "app/CPendingIntentHelper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::UserHandle;
@@ -64,7 +64,7 @@ ECode CTaskStackBuilder::AddNextIntentWithParentStack(
         nextIntent->ResolveActivity(pm, (IComponentName**)&target);
     }
     if (target != NULL) {
-        AddParentStackEx(target);
+        AddParentStack(target);
     }
     AddNextIntent(nextIntent);
     return NOERROR;
@@ -86,13 +86,13 @@ ECode CTaskStackBuilder::AddParentStack(
             mSourceContext->GetPackageManager((IPackageManager**)&pm);
             parent->ResolveActivity(pm ,(IComponentName**)&target);
         }
-        AddParentStackEx(target);
+        AddParentStack(target);
         AddNextIntent(parent);
     }
     return NOERROR;
 }
 
-ECode CTaskStackBuilder::AddParentStackEx(
+ECode CTaskStackBuilder::AddParentStack(
     /* [in] */ IComponentName *sourceActivityName)
 {
     Int32 insertAt = mIntents.GetSize();
@@ -156,16 +156,16 @@ ECode CTaskStackBuilder::EditIntentAt(
     else {
         *intent = NULL;
     }
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
 ECode CTaskStackBuilder::StartActivities()
 {
-    return StartActivitiesEx2(NULL);
+    return StartActivities(NULL);
 }
 
-ECode CTaskStackBuilder::StartActivitiesEx(
+ECode CTaskStackBuilder::StartActivities(
     /* [in] */ IBundle *options,
     /* [in] */ IUserHandle *userHandle)
 {
@@ -179,12 +179,12 @@ ECode CTaskStackBuilder::StartActivitiesEx(
     return mSourceContext->StartActivitiesAsUser(intents, options, userHandle);
 }
 
-ECode CTaskStackBuilder::StartActivitiesEx2(
+ECode CTaskStackBuilder::StartActivities(
     /* [in] */ IBundle *options)
 {
     AutoPtr<IUserHandle> userHandle;
     CUserHandle::New(UserHandle::GetMyUserId(), (IUserHandle**)&userHandle);
-    return StartActivitiesEx(options, userHandle);
+    return StartActivities(options, userHandle);
 }
 
 ECode CTaskStackBuilder::GetPendingIntent(
@@ -192,10 +192,10 @@ ECode CTaskStackBuilder::GetPendingIntent(
     /* [in] */ Int32 flags,
     /* [out] */ IPendingIntent **pendingIntent)
 {
-    return GetPendingIntentEx(requestCode, flags, NULL, pendingIntent);
+    return GetPendingIntent(requestCode, flags, NULL, pendingIntent);
 }
 
-ECode CTaskStackBuilder::GetPendingIntentEx(
+ECode CTaskStackBuilder::GetPendingIntent(
     /* [in] */ Int32 requestCode,
     /* [in] */ Int32 flags,
     /* [in] */ IBundle *options,
@@ -214,11 +214,11 @@ ECode CTaskStackBuilder::GetPendingIntentEx(
     GetIntents((ArrayOf<IIntent *>**)&intents);
     AutoPtr<IPendingIntentHelper> helper;
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
-    return helper->GetActivitiesEx(mSourceContext, requestCode, intents,
+    return helper->GetActivities(mSourceContext, requestCode, intents,
             flags, options, pendingIntent);
 }
 
-ECode CTaskStackBuilder::GetPendingIntentEx2(
+ECode CTaskStackBuilder::GetPendingIntent(
     /* [in] */ Int32 requestCode,
     /* [in] */ Int32 flags,
     /* [in] */ IBundle *options,
@@ -265,7 +265,7 @@ ECode CTaskStackBuilder::GetIntents(
         }
 
         *intents = array;
-        INTERFACE_ADDREF(*intents);
+        REFCOUNT_ADD(*intents);
     }
 
     return NOERROR;

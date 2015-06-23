@@ -22,11 +22,11 @@ CARAPI CBoringLayoutHelper::Make(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBoringLayout> bl = CBoringLayout::Make(source, paint, outerwidth, align, spacingmult, spacingadd, metrics, includepad);
     *ret = bl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-CARAPI CBoringLayoutHelper::MakeEx(
+CARAPI CBoringLayoutHelper::Make(
     /*[in]*/ ICharSequence* source,
     /*[in]*/ ITextPaint* paint,
     /*[in]*/ Int32 outerwidth,
@@ -42,7 +42,7 @@ CARAPI CBoringLayoutHelper::MakeEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBoringLayout> bl = CBoringLayout::Make(source, paint, outerwidth, align, spacingmult, spacingadd, metrics, includepad, ellipsize, ellipsizedWidth);
     *ret = bl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -54,11 +54,11 @@ CARAPI CBoringLayoutHelper::IsBoring(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBoringLayoutMetrics> blm = CBoringLayout::IsBoring(text, paint);
     *ret = blm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-CARAPI CBoringLayoutHelper::IsBoringEx(
+CARAPI CBoringLayoutHelper::IsBoring(
     /*[in]*/ ICharSequence* text,
     /*[in]*/ ITextPaint* paint,
     /*[in]*/ ITextDirectionHeuristic* textDir,
@@ -67,11 +67,11 @@ CARAPI CBoringLayoutHelper::IsBoringEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBoringLayoutMetrics> blm = CBoringLayout::IsBoring(text, paint, textDir);
     *ret = blm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-CARAPI CBoringLayoutHelper::IsBoringEx2(
+CARAPI CBoringLayoutHelper::IsBoring(
     /*[in]*/ ICharSequence* text,
     /*[in]*/ ITextPaint* paint,
     /*[in]*/ IBoringLayoutMetrics* metrics,
@@ -80,11 +80,11 @@ CARAPI CBoringLayoutHelper::IsBoringEx2(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBoringLayoutMetrics> blm = CBoringLayout::IsBoring(text, paint, metrics);
     *ret = blm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-CARAPI CBoringLayoutHelper::IsBoringEx3(
+CARAPI CBoringLayoutHelper::IsBoring(
     /*[in]*/ ICharSequence* text,
     /*[in]*/ ITextPaint* paint,
     /*[in]*/ ITextDirectionHeuristic* textDir,
@@ -94,7 +94,7 @@ CARAPI CBoringLayoutHelper::IsBoringEx3(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBoringLayoutMetrics> blm = CBoringLayout::IsBoring(text, paint, textDir, metrics);
     *ret = blm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

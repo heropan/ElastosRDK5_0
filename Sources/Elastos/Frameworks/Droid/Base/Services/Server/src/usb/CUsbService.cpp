@@ -2,7 +2,7 @@
 #include "usb/CUsbService.h"
 #include "os/UserHandle.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::UserHandle;
@@ -97,7 +97,7 @@ ECode CUsbService::constructor(
     userFilter->AddAction(String(IIntent::ACTION_USER_SWITCHED));
     userFilter->AddAction(String(IIntent::ACTION_USER_STOPPED));
     AutoPtr<IIntent> stickyIntent;
-    mContext->RegisterReceiverEx(mUserReceiver, userFilter, String(NULL), NULL, (IIntent**)&stickyIntent);
+    mContext->RegisterReceiver(mUserReceiver, userFilter, String(NULL), NULL, (IIntent**)&stickyIntent);
 
     return NOERROR;
 }

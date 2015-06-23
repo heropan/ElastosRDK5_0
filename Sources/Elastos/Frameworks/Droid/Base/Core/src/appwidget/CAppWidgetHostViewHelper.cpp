@@ -16,7 +16,7 @@ ECode CAppWidgetHostViewHelper::GetDefaultPaddingForWidget(
     VALIDATE_NOT_NULL(rect);
     AutoPtr<IRect> r = CAppWidgetHostView::GetDefaultPaddingForWidget(context, component, padding);
     *rect = r.Get();
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
     return NOERROR;
 }
 

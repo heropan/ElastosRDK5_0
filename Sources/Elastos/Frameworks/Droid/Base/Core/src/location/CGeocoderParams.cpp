@@ -38,7 +38,7 @@ ECode CGeocoderParams::GetLocale(
 {
     VALIDATE_NOT_NULL(locale);
     *locale = mLocale;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 

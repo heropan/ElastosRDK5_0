@@ -4,8 +4,8 @@
 #include "CFilePartHelper.h"
 #include "CStringPartHelper.h"
 // #include "EncodingUtils.h"
-#include "elastos/Logger.h"
-#include "elastos/StringBuffer.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
 #include "ext/frameworkext.h"
 
 using namespace Elastos::Core;
@@ -69,7 +69,7 @@ ECode CMultipartEntity::constructor(
 ECode CMultipartEntity::constructor(
     /* [in] */ ArrayOf<IPart *>* parts)
 {
-    SetContentTypeEx(MULTIPART_FORM_CONTENT_TYPE);
+    SetContentType(MULTIPART_FORM_CONTENT_TYPE);
     if (parts == NULL) {
       Logger::E(String("CMultipartEntity"), String("parts cannot be null"));
       return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -178,11 +178,11 @@ ECode CMultipartEntity::GetContentLength(
         if (filePart != NULL) {
             AutoPtr<IFilePartHelper> helper;
             CFilePartHelper::AcquireSingleton((IFilePartHelper**)&helper);
-            return helper->GetLengthOfPartsEx(mParts, GetMultipartBoundary(), length);
+            return helper->GetLengthOfParts(mParts, GetMultipartBoundary(), length);
         } else {
             AutoPtr<IStringPartHelper> helper;
             CStringPartHelper::AcquireSingleton((IStringPartHelper**)&helper);
-            return helper->GetLengthOfPartsEx(mParts, GetMultipartBoundary(), length);
+            return helper->GetLengthOfParts(mParts, GetMultipartBoundary(), length);
         }
     }
 
@@ -255,10 +255,10 @@ ECode CMultipartEntity::SetContentType(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CMultipartEntity::SetContentTypeEx(
+ECode CMultipartEntity::SetContentType(
     /* [in] */ const String& ctString)
 {
-    // return AbstractHttpEntity::SetContentTypeEx(ctString);
+    // return AbstractHttpEntity::SetContentType(ctString);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -269,10 +269,10 @@ ECode CMultipartEntity::SetContentEncoding(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CMultipartEntity::SetContentEncodingEx(
+ECode CMultipartEntity::SetContentEncoding(
     /* [in] */ const String& ceString)
 {
-    // return AbstractHttpEntity::SetContentEncodingEx(ceString);
+    // return AbstractHttpEntity::SetContentEncoding(ceString);
     return E_NOT_IMPLEMENTED;
 }
 

@@ -4,7 +4,7 @@
 #include "text/CSpannableStringBuilder.h"
 #include "text/Html.h"
 #include "text/style/CURLSpan.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
@@ -33,7 +33,7 @@ ECode CClipDataItem::GetText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -50,7 +50,7 @@ ECode CClipDataItem::GetIntent(
 {
     VALIDATE_NOT_NULL(intent)
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -59,7 +59,7 @@ ECode CClipDataItem::GetUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mUri;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -72,7 +72,7 @@ ECode CClipDataItem::CoerceToText(
     AutoPtr<ICharSequence> cs = mText;
     if (cs != NULL) {
         *text = cs;
-        INTERFACE_ADDREF(*text);
+        REFCOUNT_ADD(*text);
         return NOERROR;
     }
 
@@ -111,13 +111,13 @@ ECode CClipDataItem::CoerceToText(
         AutoPtr< ArrayOf<Char32> > buffer = ArrayOf<Char32>::Alloc(8192);
         Int32 len;
         while (reader->ReadChars(buffer, &len), len > 0) {
-            builder.AppendCharsEx(*buffer, 0, len);
+            builder.AppendChars(*buffer, 0, len);
         }
         String str;
         builder.ToString(&str);
         AutoPtr<ICharSequence> seq = builder.ToCharSequence();
         *text = seq;
-        INTERFACE_ADDREF(*text);
+        REFCOUNT_ADD(*text);
 
         if (stream != NULL) {
             stream->Close();
@@ -161,7 +161,7 @@ ECode CClipDataItem::CoerceToStyledText(
     AutoPtr<ICharSequence> cs = mText;
     if (ISpanned::Probe(cs) != NULL) {
         *text = cs;
-        INTERFACE_ADDREF(*text);
+        REFCOUNT_ADD(*text);
         return NOERROR;
     }
 
@@ -173,7 +173,7 @@ ECode CClipDataItem::CoerceToStyledText(
 //            newText = Html.fromHtml(htmlText);
             if (newText != NULL) {
                 *text = newText;
-                INTERFACE_ADDREF(*text);
+                REFCOUNT_ADD(*text);
                 return NOERROR;
             }
         // } catch (RuntimeException e) {
@@ -183,7 +183,7 @@ ECode CClipDataItem::CoerceToStyledText(
 
     if (cs != NULL) {
         *text = cs;
-        INTERFACE_ADDREF(*text);
+        REFCOUNT_ADD(*text);
         return NOERROR;
     }
 
@@ -276,7 +276,7 @@ ECode CClipDataItem::CoerceToHtmlOrStyledText(
             FAIL_GOTO(ec, EXIT);
 
             while ((reader->ReadChars(buffer, &len), len) > 0) {
-                ec = builder->AppendCharsEx(*buffer, 0, len);
+                ec = builder->AppendChars(*buffer, 0, len);
                 FAIL_GOTO(ec, EXIT);
             }
 
@@ -290,7 +290,7 @@ ECode CClipDataItem::CoerceToHtmlOrStyledText(
 
                     if (newText != NULL) {
                         *cs = newText;
-                        INTERFACE_ADDREF(*cs);
+                        REFCOUNT_ADD(*cs);
                         if (stream != NULL) {
                             FAIL_RETURN(ICloseable::Probe(stream)->Close());
                         }
@@ -427,7 +427,7 @@ ECode CClipDataItem::ToShortString(
     }
     else if (mIntent != NULL) {
         sb->AppendString(String("I:"));
-        FAIL_RETURN(mIntent->ToShortStringEx(sb, TRUE, TRUE, TRUE, TRUE));
+        FAIL_RETURN(mIntent->ToShortString(sb, TRUE, TRUE, TRUE, TRUE));
     }
     else {
         sb->AppendString(String("NULL"));
@@ -545,7 +545,7 @@ ECode CClipDataItem::UriToStyledText(
     String str;
     FAIL_RETURN(builder->ToString(&str));
     *cs = ICharSequence::Probe(builder.Get());
-    INTERFACE_ADDREF(*cs);
+    REFCOUNT_ADD(*cs);
     return NOERROR;
 }
 

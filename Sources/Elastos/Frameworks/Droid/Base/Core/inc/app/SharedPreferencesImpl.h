@@ -3,20 +3,19 @@
 
 #include <ext/frameworkext.h>
 #include "os/Runnable.h"
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Map.h>
-#include <elastos/Mutex.h>
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Utility::ISet;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Map;
 using Elastos::Utility::IObjectMap;
 using Elastos::Utility::Concurrent::ICountDownLatch;

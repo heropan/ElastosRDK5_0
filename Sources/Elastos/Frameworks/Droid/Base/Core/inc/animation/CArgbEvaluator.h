@@ -37,7 +37,7 @@ public:
         /* [in] */ IInterface* endValue,
         /* [out] */ IInterface** result);
 
-    CARAPI EvaluateEx(
+    CARAPI Evaluate(
         /* [in] */ Float fraction,
         /* [in] */ Int32 startValue,
         /* [in] */ Int32 endValue,

@@ -177,11 +177,11 @@ ECode CGestureOverlayView::GetGesturePath(
     return GestureOverlayView::GetGesturePath(gesturePath);
 }
 
-ECode CGestureOverlayView::GetGesturePathEx(
+ECode CGestureOverlayView::GetGesturePath(
     /* [in] */ IPath *path,
     /* [out] */ IPath **gesturePath)
 {
-    return GestureOverlayView::GetGesturePathEx(path, gesturePath);
+    return GestureOverlayView::GetGesturePath(path, gesturePath);
 }
 
 ECode CGestureOverlayView::IsGestureVisible(

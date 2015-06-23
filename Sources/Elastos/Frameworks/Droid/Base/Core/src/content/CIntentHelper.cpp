@@ -14,7 +14,7 @@ ECode CIntentHelper::CreateChooser(
     VALIDATE_NOT_NULL(intent)
     AutoPtr<IIntent> it = Intent::CreateChooser(target, title);
     *intent = it;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -25,7 +25,7 @@ ECode CIntentHelper::MakeMainActivity(
     VALIDATE_NOT_NULL(intent)
     AutoPtr<IIntent> it = Intent::MakeMainActivity(mainActivity);
     *intent = it;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -37,7 +37,7 @@ ECode CIntentHelper::MakeMainSelectorActivity(
     VALIDATE_NOT_NULL(intent)
     AutoPtr<IIntent> it = Intent::MakeMainSelectorActivity(selectorAction, selectorCategory);
     *intent = it;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -48,7 +48,7 @@ ECode CIntentHelper::MakeRestartActivityTask(
     VALIDATE_NOT_NULL(intent)
     AutoPtr<IIntent> it = Intent::MakeRestartActivityTask(mainActivity);
     *intent = it;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 

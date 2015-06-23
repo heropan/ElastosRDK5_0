@@ -273,7 +273,7 @@ public:
     CARAPI ShowContextMenu(
         /* [out] */ Boolean * pResult);
 
-    CARAPI ShowContextMenuEx(
+    CARAPI ShowContextMenu(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Int32 metaState,
@@ -302,7 +302,7 @@ public:
         /* [in] */ IRect * pRectangle,
         /* [out] */ Boolean * pResult);
 
-    CARAPI RequestRectangleOnScreenEx(
+    CARAPI RequestRectangleOnScreen(
         /* [in] */ IRect * pRectangle,
         /* [in] */ Boolean immediate,
         /* [out] */ Boolean * pResult);
@@ -550,7 +550,7 @@ public:
         /* [in] */ IObjectContainer * pViews,
         /* [in] */ Int32 direction);
 
-    CARAPI AddFocusablesEx(
+    CARAPI AddFocusables(
         /* [in] */ IObjectContainer * pViews,
         /* [in] */ Int32 direction,
         /* [in] */ Int32 focusableMode);
@@ -574,11 +574,11 @@ public:
     CARAPI RequestFocus(
         /* [out] */ Boolean * pResult);
 
-    CARAPI RequestFocusEx(
+    CARAPI RequestFocus(
         /* [in] */ Int32 direction,
         /* [out] */ Boolean * pResult);
 
-    CARAPI RequestFocusEx2(
+    CARAPI RequestFocus(
         /* [in] */ Int32 direction,
         /* [in] */ IRect * pPreviouslyFocusedRect,
         /* [out] */ Boolean * pResult);
@@ -926,7 +926,7 @@ public:
         /* [in] */ IPoint * pOutGlobalOffset,
         /* [out] */ Boolean * pResult);
 
-    CARAPI GetGlobalVisibleRectEx(
+    CARAPI GetGlobalVisibleRect(
         /* [in] */ IRect * pOutRect,
         /* [out] */ Boolean * pResult);
 
@@ -959,13 +959,13 @@ public:
     CARAPI Invalidate(
         /* [in] */ IRect * pDirty);
 
-    CARAPI InvalidateEx(
+    CARAPI Invalidate(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    CARAPI InvalidateEx2();
+    CARAPI Invalidate();
 
     CARAPI IsOpaque(
         /* [out] */ Boolean * pOpaque);
@@ -975,7 +975,7 @@ public:
 
     CARAPI PostInvalidate();
 
-    CARAPI PostInvalidateEx(
+    CARAPI PostInvalidate(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -984,7 +984,7 @@ public:
     CARAPI PostInvalidateDelayed(
         /* [in] */ Int64 delayMilliseconds);
 
-    CARAPI PostInvalidateDelayedEx(
+    CARAPI PostInvalidateDelayed(
         /* [in] */ Int64 delayMilliseconds,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
@@ -993,7 +993,7 @@ public:
 
     CARAPI PostInvalidateOnAnimation();
 
-    CARAPI PostInvalidateOnAnimationEx(
+    CARAPI PostInvalidateOnAnimation(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -1142,7 +1142,7 @@ public:
     CARAPI GetDrawingCache(
         /* [out] */ IBitmap ** ppBitmap);
 
-    CARAPI GetDrawingCacheEx(
+    CARAPI GetDrawingCache(
         /* [in] */ Boolean autoScale,
         /* [out] */ IBitmap ** ppBitmap);
 
@@ -1156,7 +1156,7 @@ public:
 
     CARAPI BuildDrawingCache();
 
-    CARAPI BuildDrawingCacheEx(
+    CARAPI BuildDrawingCache(
         /* [in] */ Boolean autoScale);
 
     CARAPI CreateSnapshot(
@@ -1191,7 +1191,7 @@ public:
     CARAPI GetResources(
         /* [out] */ IResources ** ppResources);
 
-    CARAPI UnscheduleDrawableEx(
+    CARAPI UnscheduleDrawable(
         /* [in] */ IDrawable * pWho);
 
     CARAPI OnResolveDrawables(
@@ -1311,11 +1311,11 @@ public:
     CARAPI SetTag(
         /* [in] */ IInterface* tag);
 
-    CARAPI GetTagEx(
+    CARAPI GetTag(
         /* [in] */ Int32 key,
         /* [out] */ IInterface** tag);
 
-    CARAPI SetTagEx(
+    CARAPI SetTag(
         /* [in] */ Int32 key,
         /* [in] */ IInterface* tag);
 
@@ -1385,7 +1385,7 @@ public:
         /* [in] */ Int32 feedbackConstant,
         /* [out] */ Boolean * pResult);
 
-    CARAPI PerformHapticFeedbackEx(
+    CARAPI PerformHapticFeedback(
         /* [in] */ Int32 feedbackConstant,
         /* [in] */ Int32 flags,
         /* [out] */ Boolean * pResult);

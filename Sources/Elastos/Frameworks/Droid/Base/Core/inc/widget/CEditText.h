@@ -3,7 +3,7 @@
 
 #include "_CEditText.h"
 #include "widget/EditText.h"
-#include "widget/TextViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid{
@@ -37,7 +37,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 stop);
 
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 index);
 
     CARAPI SelectAll();

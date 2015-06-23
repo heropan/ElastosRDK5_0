@@ -3,7 +3,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <cmdef.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "cutils/log.h"
 #include "gles/CEGLContextImpl.h"
 #include "gles/CEGL10Helper.h"
@@ -571,7 +571,7 @@ ECode CGLES20::GlDeleteBuffers(
 
 // C function void glDeleteBuffers ( GLsizei n, const GLuint *buffers )
 
-ECode CGLES20::GlDeleteBuffersEx(
+ECode CGLES20::GlDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers_buf)
 {
@@ -628,7 +628,7 @@ ECode CGLES20::GlDeleteFramebuffers(
 
 // C function void glDeleteFramebuffers ( GLsizei n, const GLuint *framebuffers )
 
-ECode CGLES20::GlDeleteFramebuffersEx(
+ECode CGLES20::GlDeleteFramebuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers_buf)
 {
@@ -692,7 +692,7 @@ ECode CGLES20::GlDeleteRenderbuffers(
 
 // C function void glDeleteRenderbuffers ( GLsizei n, const GLuint *renderbuffers )
 
-ECode CGLES20::GlDeleteRenderbuffersEx(
+ECode CGLES20::GlDeleteRenderbuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers_buf)
 {
@@ -762,7 +762,7 @@ ECode CGLES20::GlDeleteTextures(
 
 // C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
 
-ECode CGLES20::GlDeleteTexturesEx(
+ECode CGLES20::GlDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures_buf)
 {
@@ -893,7 +893,7 @@ ECode CGLES20::GlDrawElements(
 
 // C function void glDrawElements ( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices )
 
-ECode CGLES20::GlDrawElementsEx(
+ECode CGLES20::GlDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -1046,7 +1046,7 @@ ECode CGLES20::GlGenBuffers(
 
 // C function void glGenBuffers ( GLsizei n, GLuint *buffers )
 
-ECode CGLES20::GlGenBuffersEx(
+ECode CGLES20::GlGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers_buf)
 {
@@ -1114,7 +1114,7 @@ ECode CGLES20::GlGenFramebuffers(
 
 // C function void glGenFramebuffers ( GLsizei n, GLuint *framebuffers )
 
-ECode CGLES20::GlGenFramebuffersEx(
+ECode CGLES20::GlGenFramebuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers_buf)
 {
@@ -1167,7 +1167,7 @@ ECode CGLES20::GlGenRenderbuffers(
 
 // C function void glGenRenderbuffers ( GLsizei n, GLuint *renderbuffers )
 
-ECode CGLES20::GlGenRenderbuffersEx(
+ECode CGLES20::GlGenRenderbuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers_buf)
 {
@@ -1226,7 +1226,7 @@ ECode CGLES20::GlGenTextures(
 
 // C function void glGenTextures ( GLsizei n, GLuint *textures )
 
-ECode CGLES20::GlGenTexturesEx(
+ECode CGLES20::GlGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures_buf)
 {
@@ -1337,7 +1337,7 @@ ECode CGLES20::GlGetActiveAttrib(
 // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
 // GLint *size, GLenum *type, char *name )
 
-ECode CGLES20::GlGetActiveAttribEx(
+ECode CGLES20::GlGetActiveAttrib(
     /* [in] */ Int32 program,
     /* [in] */ Int32 index,
     /* [in] */ Int32 bufsize,
@@ -1392,7 +1392,7 @@ ECode CGLES20::GlGetActiveAttribEx(
 
 // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-ECode CGLES20::GlGetActiveAttribEx2(
+ECode CGLES20::GlGetActiveAttrib(
     /* [in] */ Int32 program,
     /* [in] */ Int32 index,
     /* [in] */ ArrayOf<Int32>* size_ref,
@@ -1466,7 +1466,7 @@ ECode CGLES20::GlGetActiveAttribEx2(
 
 // C function void glGetActiveAttrib ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length, GLint *size, GLenum *type, char *name )
 
-ECode CGLES20::GlGetActiveAttribEx3(
+ECode CGLES20::GlGetActiveAttrib(
     /* [in] */ Int32 program,
     /* [in] */ Int32 index,
     /* [in] */ IInt32Buffer* size_buf,
@@ -1607,7 +1607,7 @@ ECode CGLES20::GlGetActiveUniform(
 // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
 // GLint *size, GLenum *type, char *name )
 
-ECode CGLES20::GlGetActiveUniformEx(
+ECode CGLES20::GlGetActiveUniform(
     /* [in] */ Int32 program,
     /* [in] */ Int32 index,
     /* [in] */ Int32 bufsize,
@@ -1664,7 +1664,7 @@ ECode CGLES20::GlGetActiveUniformEx(
 // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
 // GLint *size, GLenum *type, char *name )
 
-ECode CGLES20::GlGetActiveUniformEx2(
+ECode CGLES20::GlGetActiveUniform(
     /* [in] */ Int32 program,
     /* [in] */ Int32 index,
     /* [in] */ ArrayOf<Int32>* size_ref,
@@ -1736,7 +1736,7 @@ ECode CGLES20::GlGetActiveUniformEx2(
 // C function void glGetActiveUniform ( GLuint program, GLuint index, GLsizei bufsize, GLsizei *length,
 // GLint *size, GLenum *type, char *name )
 
-ECode CGLES20::GlGetActiveUniformEx3(
+ECode CGLES20::GlGetActiveUniform(
     /* [in] */ Int32 program,
     /* [in] */ Int32 index,
     /* [in] */ IInt32Buffer* size_buf,
@@ -1842,7 +1842,7 @@ ECode CGLES20::GlGetAttachedShaders(
 
 // C function void glGetAttachedShaders ( GLuint program, GLsizei maxcount, GLsizei *count, GLuint *shaders )
 
-ECode CGLES20::GlGetAttachedShadersEx(
+ECode CGLES20::GlGetAttachedShaders(
     /* [in] */ Int32 program,
     /* [in] */ Int32 maxcount,
     /* [in] */ IInt32Buffer* count_buf,
@@ -1934,7 +1934,7 @@ ECode CGLES20::GlGetBooleanv(
 
 // C function void glGetBooleanv ( GLenum pname, GLboolean *params )
 
-ECode CGLES20::GlGetBooleanvEx(
+ECode CGLES20::GlGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -1995,7 +1995,7 @@ ECode CGLES20::GlGetBufferParameteriv(
 
 // C function void glGetBufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetBufferParameterivEx(
+ECode CGLES20::GlGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -2065,7 +2065,7 @@ ECode CGLES20::GlGetFloatv(
 
 // C function void glGetFloatv ( GLenum pname, GLfloat *params )
 
-ECode CGLES20::GlGetFloatvEx(
+ECode CGLES20::GlGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -2125,7 +2125,7 @@ ECode CGLES20::GlGetFramebufferAttachmentParameteriv(
 // C function void glGetFramebufferAttachmentParameteriv ( GLenum target, GLenum attachment, GLenum pname,
 // GLint *params )
 
-ECode CGLES20::GlGetFramebufferAttachmentParameterivEx(
+ECode CGLES20::GlGetFramebufferAttachmentParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -2520,7 +2520,7 @@ ECode CGLES20::GlGetIntegerv(
 
 // C function void glGetIntegerv ( GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetIntegervEx(
+ECode CGLES20::GlGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -2912,7 +2912,7 @@ ECode CGLES20::GlGetProgramiv(
 
 // C function void glGetProgramiv ( GLuint program, GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetProgramivEx(
+ECode CGLES20::GlGetProgramiv(
     /* [in] */ Int32 program,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -2991,7 +2991,7 @@ ECode CGLES20::GlGetRenderbufferParameteriv(
 
 // C function void glGetRenderbufferParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetRenderbufferParameterivEx(
+ECode CGLES20::GlGetRenderbufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -3048,7 +3048,7 @@ ECode CGLES20::GlGetShaderiv(
 
 // C function void glGetShaderiv ( GLuint shader, GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetShaderivEx(
+ECode CGLES20::GlGetShaderiv(
     /* [in] */ Int32 shader,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -3148,7 +3148,7 @@ ECode CGLES20::GlGetShaderPrecisionFormat(
 
 // C function void glGetShaderPrecisionFormat ( GLenum shadertype, GLenum precisiontype, GLint *range, GLint *precision )
 
-ECode CGLES20::GlGetShaderPrecisionFormatEx(
+ECode CGLES20::GlGetShaderPrecisionFormat(
     /* [in] */ Int32 shadertype,
     /* [in] */ Int32 precisiontype,
     /* [in] */ IInt32Buffer* range_buf,
@@ -3233,7 +3233,7 @@ ECode CGLES20::GlGetShaderSource(
 
 // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-ECode CGLES20::GlGetShaderSourceEx(
+ECode CGLES20::GlGetShaderSource(
     /* [in] */ Int32 shader,
     /* [in] */ Int32 bufsize,
     /* [in] */ IInt32Buffer* length_buf,
@@ -3262,7 +3262,7 @@ ECode CGLES20::GlGetShaderSourceEx(
 
 // C function void glGetShaderSource ( GLuint shader, GLsizei bufsize, GLsizei *length, char *source )
 
-ECode CGLES20::GlGetShaderSourceEx2(
+ECode CGLES20::GlGetShaderSource(
     /* [in] */ Int32 shader,
     /* [out] */ String* str)
 {
@@ -3334,7 +3334,7 @@ ECode CGLES20::GlGetTexParameterfv(
 
 // C function void glGetTexParameterfv ( GLenum target, GLenum pname, GLfloat *params )
 
-ECode CGLES20::GlGetTexParameterfvEx(
+ECode CGLES20::GlGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -3401,7 +3401,7 @@ ECode CGLES20::GlGetTexParameteriv(
 
 // C function void glGetTexParameteriv ( GLenum target, GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetTexParameterivEx(
+ECode CGLES20::GlGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -3463,7 +3463,7 @@ ECode CGLES20::GlGetUniformfv(
 
 // C function void glGetUniformfv ( GLuint program, GLint location, GLfloat *params )
 
-ECode CGLES20::GlGetUniformfvEx(
+ECode CGLES20::GlGetUniformfv(
     /* [in] */ Int32 program,
     /* [in] */ Int32 location,
     /* [in] */ IFloatBuffer* params_buf)
@@ -3520,7 +3520,7 @@ ECode CGLES20::GlGetUniformiv(
 
 // C function void glGetUniformiv ( GLuint program, GLint location, GLint *params )
 
-ECode CGLES20::GlGetUniformivEx(
+ECode CGLES20::GlGetUniformiv(
     /* [in] */ Int32 program,
     /* [in] */ Int32 location,
     /* [in] */ IInt32Buffer* params_buf)
@@ -3600,7 +3600,7 @@ ECode CGLES20::GlGetVertexAttribfv(
 
 // C function void glGetVertexAttribfv ( GLuint index, GLenum pname, GLfloat *params )
 
-ECode CGLES20::GlGetVertexAttribfvEx(
+ECode CGLES20::GlGetVertexAttribfv(
     /* [in] */ Int32 index,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -3657,7 +3657,7 @@ ECode CGLES20::GlGetVertexAttribiv(
 
 // C function void glGetVertexAttribiv ( GLuint index, GLenum pname, GLint *params )
 
-ECode CGLES20::GlGetVertexAttribivEx(
+ECode CGLES20::GlGetVertexAttribiv(
     /* [in] */ Int32 index,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -3982,7 +3982,7 @@ ECode CGLES20::GlShaderBinary(
 // C function void glShaderBinary ( GLsizei n, const GLuint *shaders, GLenum binaryformat,
 // const GLvoid *binary, GLsizei length )
 
-ECode CGLES20::GlShaderBinaryEx(
+ECode CGLES20::GlShaderBinary(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* shaders_buf,
     /* [in] */ Int32 binaryformat,
@@ -4221,7 +4221,7 @@ ECode CGLES20::GlTexParameterfv(
 
 // C function void glTexParameterfv ( GLenum target, GLenum pname, const GLfloat *params )
 
-ECode CGLES20::GlTexParameterfvEx(
+ECode CGLES20::GlTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -4303,7 +4303,7 @@ ECode CGLES20::GlTexParameteriv(
 
 // C function void glTexParameteriv ( GLenum target, GLenum pname, const GLint *params )
 
-ECode CGLES20::GlTexParameterivEx(
+ECode CGLES20::GlTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4418,7 +4418,7 @@ ECode CGLES20::GlUniform1fv(
 
 // C function void glUniform1fv ( GLint location, GLsizei count, const GLfloat *v )
 
-ECode CGLES20::GlUniform1fvEx(
+ECode CGLES20::GlUniform1fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IFloatBuffer* v_buf)
@@ -4488,7 +4488,7 @@ ECode CGLES20::GlUniform1iv(
 
 // C function void glUniform1iv ( GLint location, GLsizei count, const GLint *v )
 
-ECode CGLES20::GlUniform1ivEx(
+ECode CGLES20::GlUniform1iv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IInt32Buffer* v_buf)
@@ -4560,7 +4560,7 @@ ECode CGLES20::GlUniform2fv(
 
 // C function void glUniform2fv ( GLint location, GLsizei count, const GLfloat *v )
 
-ECode CGLES20::GlUniform2fvEx(
+ECode CGLES20::GlUniform2fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IFloatBuffer* v_buf)
@@ -4632,7 +4632,7 @@ ECode CGLES20::GlUniform2iv(
 
 // C function void glUniform2iv ( GLint location, GLsizei count, const GLint *v )
 
-ECode CGLES20::GlUniform2ivEx(
+ECode CGLES20::GlUniform2iv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IInt32Buffer* v_buf)
@@ -4706,7 +4706,7 @@ ECode CGLES20::GlUniform3fv(
 
 // C function void glUniform3fv ( GLint location, GLsizei count, const GLfloat *v )
 
-ECode CGLES20::GlUniform3fvEx(
+ECode CGLES20::GlUniform3fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IFloatBuffer* v_buf)
@@ -4780,7 +4780,7 @@ ECode CGLES20::GlUniform3iv(
 
 // C function void glUniform3iv ( GLint location, GLsizei count, const GLint *v )
 
-ECode CGLES20::GlUniform3ivEx(
+ECode CGLES20::GlUniform3iv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IInt32Buffer* v_buf)
@@ -4856,7 +4856,7 @@ ECode CGLES20::GlUniform4fv(
 
 // C function void glUniform4fv ( GLint location, GLsizei count, const GLfloat *v )
 
-ECode CGLES20::GlUniform4fvEx(
+ECode CGLES20::GlUniform4fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IFloatBuffer* v_buf)
@@ -4932,7 +4932,7 @@ ECode CGLES20::GlUniform4iv(
 
 // C function void glUniform4iv ( GLint location, GLsizei count, const GLint *v )
 
-ECode CGLES20::GlUniform4ivEx(
+ECode CGLES20::GlUniform4iv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ IInt32Buffer* v_buf)
@@ -4991,7 +4991,7 @@ ECode CGLES20::GlUniformMatrix2fv(
 
 // C function void glUniformMatrix2fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-ECode CGLES20::GlUniformMatrix2fvEx(
+ECode CGLES20::GlUniformMatrix2fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ Boolean transpose,
@@ -5053,7 +5053,7 @@ ECode CGLES20::GlUniformMatrix3fv(
 
 // C function void glUniformMatrix3fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-ECode CGLES20::GlUniformMatrix3fvEx(
+ECode CGLES20::GlUniformMatrix3fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ Boolean transpose,
@@ -5114,7 +5114,7 @@ ECode CGLES20::GlUniformMatrix4fv(
 
 // C function void glUniformMatrix4fv ( GLint location, GLsizei count, GLboolean transpose, const GLfloat *value )
 
-ECode CGLES20::GlUniformMatrix4fvEx(
+ECode CGLES20::GlUniformMatrix4fv(
     /* [in] */ Int32 location,
     /* [in] */ Int32 count,
     /* [in] */ Boolean transpose,
@@ -5206,7 +5206,7 @@ ECode CGLES20::GlVertexAttrib1fv(
 
 // C function void glVertexAttrib1fv ( GLuint indx, const GLfloat *values )
 
-ECode CGLES20::GlVertexAttrib1fvEx(
+ECode CGLES20::GlVertexAttrib1fv(
     /* [in] */ Int32 indx,
     /* [in] */ IFloatBuffer* values_buf)
 {
@@ -5274,7 +5274,7 @@ ECode CGLES20::GlVertexAttrib2fv(
 
 // C function void glVertexAttrib2fv ( GLuint indx, const GLfloat *values )
 
-ECode CGLES20::GlVertexAttrib2fvEx(
+ECode CGLES20::GlVertexAttrib2fv(
     /* [in] */ Int32 indx,
     /* [in] */ IFloatBuffer* values_buf)
 {
@@ -5344,7 +5344,7 @@ ECode CGLES20::GlVertexAttrib3fv(
 
 // C function void glVertexAttrib3fv ( GLuint indx, const GLfloat *values )
 
-ECode CGLES20::GlVertexAttrib3fvEx(
+ECode CGLES20::GlVertexAttrib3fv(
     /* [in] */ Int32 indx,
     /* [in] */ IFloatBuffer* values_buf)
 {
@@ -5416,7 +5416,7 @@ ECode CGLES20::GlVertexAttrib4fv(
 
 // C function void glVertexAttrib4fv ( GLuint indx, const GLfloat *values )
 
-ECode CGLES20::GlVertexAttrib4fvEx(
+ECode CGLES20::GlVertexAttrib4fv(
     /* [in] */ Int32 indx,
     /* [in] */ IFloatBuffer* values_buf)
 {
@@ -5465,7 +5465,7 @@ ECode CGLES20::GlVertexAttribPointer(
 // C function void glVertexAttribPointer ( GLuint indx, GLint size, GLenum type,
 // GLboolean normalized, GLsizei stride, const GLvoid *ptr )
 
-ECode CGLES20::GlVertexAttribPointerEx(
+ECode CGLES20::GlVertexAttribPointer(
     /* [in] */ Int32 indx,
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,

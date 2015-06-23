@@ -3,7 +3,7 @@
 #define __CDRMRIGHTSMANAGER_H__
 
 #include "_CDrmRightsManager.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include "media/drm/mobile1/CDrmRights.h"
 #include <ext/frameworkext.h>
 

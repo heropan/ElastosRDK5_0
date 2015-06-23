@@ -6,7 +6,7 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Utility::Regex::IPattern;
 using Elastos::IO::IFile;

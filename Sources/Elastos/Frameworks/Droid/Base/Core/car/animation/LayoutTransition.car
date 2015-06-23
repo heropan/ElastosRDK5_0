@@ -212,7 +212,7 @@ module
          * @param duration The length of time, in milliseconds, that the specified animation should run.
          * @see Animator#setDuration(Int64)
          */
-        SetDurationEx(
+        SetDuration(
             [in] Int32 transitionType,
             [in] Int64 duration);
 
@@ -413,7 +413,7 @@ module
          *
          * @hide
          */
-        CancelEx(
+        Cancel(
             [in] Int32 transitionType);
 
         /**
@@ -465,7 +465,7 @@ module
          * @param child The View being made visible.
          * @param oldVisibility The previous visibility value of the child View.
          */
-        ShowChildEx(
+        ShowChild(
             [in] IViewGroup* parent,
             [in] IView* child,
             [in] Int32 oldVisibility);
@@ -504,7 +504,7 @@ module
          * @param child The View being hidden.
          * @param newVisibility The new visibility value of the child View, either 'GONE' *or 'INVISIBLE'.
          */
-        HideChildEx(
+        HideChild(
             [in] IViewGroup* parent,
             [in] IView* child,
             [in] Int32 newVisibility);

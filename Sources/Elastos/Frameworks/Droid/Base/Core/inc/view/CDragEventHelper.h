@@ -17,7 +17,7 @@ public:
     CARAPI Obtain(
            /* [out] */  IDragEvent** event);
 
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ Int32 action,
         /* [in] */ Float x,
         /* [in] */ Float y,
@@ -27,7 +27,7 @@ public:
         /* [in] */ Boolean result,
         /* [out] */ IDragEvent** event);
 
-    CARAPI ObtainEx2(
+    CARAPI Obtain(
         /* [in] */ IDragEvent* source,
         /* [out] */ IDragEvent** event);
 };

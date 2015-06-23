@@ -1,5 +1,5 @@
 #include "MonkeySourceScript.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 #include "os/SystemClock.h"
 #include <unistd.h>
 
@@ -210,7 +210,7 @@ void MonkeySourceScript::HandleEvent(
         e->SetPrecision(xPrecision, yPrecision);
         e->SetDeviceId(device);
         e->SetEdgeFlags(edgeFlags);
-        e->AddPointerEx(0, x, y, pressure, size);
+        e->AddPointer(0, x, y, pressure, size);
         mQ->AddLast(IMonkeyEvent::Probe(e));
         return;
     }
@@ -247,7 +247,7 @@ void MonkeySourceScript::HandleEvent(
         CMonkeyTouchEvent::New(IMotionEvent::ACTION_DOWN, (IMonkeyTouchEvent**)&e1);
         e1->SetDownTime(downTime);
         e1->SetEventTime(downTime);
-        e1->AddPointerEx(0, x, y, 1, 5);
+        e1->AddPointer(0, x, y, 1, 5);
         mQ->AddLast(IMonkeyEvent::Probe(e1));
 
         if (tapDuration > 0)  {
@@ -260,7 +260,7 @@ void MonkeySourceScript::HandleEvent(
         CMonkeyTouchEvent::New(IMotionEvent::ACTION_UP, (IMonkeyTouchEvent**)&e2);
         e2->SetDownTime(downTime);
         e2->SetEventTime(downTime);
-        e2->AddPointerEx(0, x, y, 1, 5);
+        e2->AddPointer(0, x, y, 1, 5);
         mQ->AddLast(IMonkeyEvent::Probe(e2));
         return;
     }
@@ -278,7 +278,7 @@ void MonkeySourceScript::HandleEvent(
         CMonkeyTouchEvent::New(IMotionEvent::ACTION_DOWN, (IMonkeyTouchEvent**)&e1);
         e1->SetDownTime(downTime);
         e1->SetEventTime(downTime);
-        e1->AddPointerEx(0, x, y, 1, 5);
+        e1->AddPointer(0, x, y, 1, 5);
         mQ->AddLast(IMonkeyEvent::Probe(e1));
 
         AutoPtr<IMonkeyWaitEvent> e2;
@@ -289,7 +289,7 @@ void MonkeySourceScript::HandleEvent(
         CMonkeyTouchEvent::New(IMotionEvent::ACTION_UP, (IMonkeyTouchEvent**)&e3);
         e3->SetDownTime(downTime + pressDuration);
         e3->SetEventTime(downTime + pressDuration);
-        e3->AddPointerEx(0, x, y, 1, 5);
+        e3->AddPointer(0, x, y, 1, 5);
         mQ->AddLast(IMonkeyEvent::Probe(e3));
         return;
     }
@@ -314,7 +314,7 @@ void MonkeySourceScript::HandleEvent(
             CMonkeyTouchEvent::New(IMotionEvent::ACTION_DOWN, (IMonkeyTouchEvent**)&e);
             e->SetDownTime(downTime);
             e->SetEventTime(eventTime);
-            e->AddPointerEx(0, x, y, 1, 5);
+            e->AddPointer(0, x, y, 1, 5);
             mQ->AddLast(IMonkeyEvent::Probe(e));
 
             for (Int32 i = 0; i < stepCount; ++i) {
@@ -325,7 +325,7 @@ void MonkeySourceScript::HandleEvent(
                 CMonkeyTouchEvent::New(IMotionEvent::ACTION_MOVE, (IMonkeyTouchEvent**)&e);
                 e->SetDownTime(downTime);
                 e->SetEventTime(eventTime);
-                e->AddPointerEx(0, x, y, 1, 5);
+                e->AddPointer(0, x, y, 1, 5);
                 mQ->AddLast(IMonkeyEvent::Probe(e));
             }
 
@@ -334,7 +334,7 @@ void MonkeySourceScript::HandleEvent(
             CMonkeyTouchEvent::New(IMotionEvent::ACTION_UP, (IMonkeyTouchEvent**)&e);
             e->SetDownTime(downTime);
             e->SetEventTime(eventTime);
-            e->AddPointerEx(0, x, y, 1, 5);
+            e->AddPointer(0, x, y, 1, 5);
             mQ->AddLast(IMonkeyEvent::Probe(e));
         }
     }
@@ -373,7 +373,7 @@ void MonkeySourceScript::HandleEvent(
             CMonkeyTouchEvent::New(IMotionEvent::ACTION_DOWN, (IMonkeyTouchEvent**)&e);
             e->SetDownTime(downTime);
             e->SetEventTime(eventTime);
-            e->AddPointerEx(0, x1, y1, 1, 5);
+            e->AddPointer(0, x1, y1, 1, 5);
             mQ->AddLast(IMonkeyEvent::Probe(e));
 
             e = NULL;
@@ -396,8 +396,8 @@ void MonkeySourceScript::HandleEvent(
                 CMonkeyTouchEvent::New(IMotionEvent::ACTION_MOVE, (IMonkeyTouchEvent**)&e);
                 e->SetDownTime(downTime);
                 e->SetEventTime(eventTime);
-                e->AddPointerEx(0, x1, y1, 1, 5);
-                e->AddPointerEx(0, x2, y2, 1, 5);
+                e->AddPointer(0, x1, y1, 1, 5);
+                e->AddPointer(0, x2, y2, 1, 5);
                 mQ->AddLast(IMonkeyEvent::Probe(e));
             }
 

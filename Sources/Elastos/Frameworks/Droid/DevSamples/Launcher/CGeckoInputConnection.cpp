@@ -4,7 +4,7 @@
 #include "ext/frameworkext.h"
 #include "CGeckoInputConnection.h"
 #include "GeckoEvent.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <stdlib.h>
 #include <stdio.h>
 

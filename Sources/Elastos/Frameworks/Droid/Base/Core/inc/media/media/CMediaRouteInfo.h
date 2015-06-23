@@ -39,7 +39,7 @@ public:
      * @return The user-friendly name of the media route. This is the string presented
      * to users who may select this as the active route.
      */
-    CARAPI GetNameEx(
+    CARAPI GetName(
         /* [in] */ IContext* context,
         /* [out] */ ICharSequence** result);
 
@@ -202,7 +202,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
-    CARAPI SetNameEx(
+    CARAPI SetName(
         /* [in] */ Int32 nameResId);
 
     CARAPI SetSupportedTypes(

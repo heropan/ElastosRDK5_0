@@ -2,10 +2,10 @@
 #define __CBLINKLAYOUT_H_
 
 #include "_CBlinkLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/FrameLayout.h"
-#include "widget/FrameLayoutMacro.h"
+
 
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IMessage;

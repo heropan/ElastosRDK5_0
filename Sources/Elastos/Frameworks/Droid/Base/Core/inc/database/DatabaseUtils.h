@@ -3,12 +3,11 @@
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IStringBuilder;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintStream;
 using Elastos::Text::ICollator;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
@@ -416,7 +415,7 @@ public:
      * @param cursor the cursor to print
      * @param stream the stream to print to
      */
-    static CARAPI_(void) DumpCursorEx(
+    static CARAPI_(void) DumpCursor(
         /* [in] */ ICursor* cursor,
         /* [in] */ IPrintStream* stream);
 
@@ -427,7 +426,7 @@ public:
      * @param cursor the cursor to print
      * @param sb the StringBuilder to print to
      */
-    static CARAPI_(void) DumpCursorEx2(
+    static CARAPI_(void) DumpCursor(
         /* [in] */ ICursor* cursor,
         /* [in] */ IStringBuilder* sb);
 
@@ -455,7 +454,7 @@ public:
      * @param cursor the cursor to print
      * @param stream the stream to print to
      */
-    static CARAPI_(void) DumpCurrentRowEx(
+    static CARAPI_(void) DumpCurrentRow(
         /* [in] */ ICursor* cursor,
         /* [in] */ IPrintStream* stream);
 
@@ -465,7 +464,7 @@ public:
      * @param cursor the cursor to print
      * @param sb the StringBuilder to print to
      */
-    static CARAPI_(void) DumpCurrentRowEx2(
+    static CARAPI_(void) DumpCurrentRow(
         /* [in] */ ICursor* cursor,
         /* [in] */ IStringBuilder* sb);
 
@@ -512,7 +511,7 @@ public:
      * @param values The {@link ContentValues} to put the value into, with the field as the key
      * @param key The key to store the value with in the map
      */
-    static CARAPI_(void) CursorStringToContentValuesEx(
+    static CARAPI_(void) CursorStringToContentValues(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& field,
         /* [in] */ IContentValues* values,
@@ -538,7 +537,7 @@ public:
      * @param values The {@link ContentValues} to put the value into, with the field as the key
      * @param key The key to store the value with in the map
      */
-    static CARAPI_(void) CursorInt32ToContentValuesEx(
+    static CARAPI_(void) CursorInt32ToContentValues(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& field,
         /* [in] */ IContentValues* values,
@@ -564,7 +563,7 @@ public:
      * @param values The {@link ContentValues} to put the value into
      * @param key The key to store the value with in the map
      */
-    static CARAPI_(void) CursorInt64ToContentValuesEx(
+    static CARAPI_(void) CursorInt64ToContentValues(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& field,
         /* [in] */ IContentValues* values,
@@ -650,7 +649,7 @@ public:
      *              Passing null will count all rows for the given table
      * @return the number of rows in the table filtered by the selection
      */
-    static CARAPI_(Int64) QueryNumEntriesEx(
+    static CARAPI_(Int64) QueryNumEntries(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ const String& table,
         /* [in] */ const String& selection);
@@ -668,7 +667,7 @@ public:
      *              The values will be bound as Strings.
      * @return the number of rows in the table filtered by the selection
      */
-    static CARAPI_(Int64) QueryNumEntriesEx2(
+    static CARAPI_(Int64) QueryNumEntries(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ const String& table,
         /* [in] */ const String& selection,
@@ -687,7 +686,7 @@ public:
      * Utility method to run the pre-compiled query and return the value in the
      * first column of the first row.
      */
-    static CARAPI_(Int64) Int64ForQueryEx(
+    static CARAPI_(Int64) Int64ForQuery(
         /* [in] */ ISQLiteStatement* prog,
         /* [in] */ ArrayOf<String>* selectionArgs);
 
@@ -704,7 +703,7 @@ public:
      * Utility method to run the pre-compiled query and return the value in the
      * first column of the first row.
      */
-    static CARAPI_(String) StringForQueryEx(
+    static CARAPI_(String) StringForQuery(
         /* [in] */ ISQLiteStatement* prog,
         /* [in] */ ArrayOf<String>* selectionArgs);
 
@@ -725,7 +724,7 @@ public:
      *
      * @return A read-only file descriptor for a copy of the blob value.
      */
-    static CARAPI_(AutoPtr<IParcelFileDescriptor>) BlobFileDescriptorForQueryEx(
+    static CARAPI_(AutoPtr<IParcelFileDescriptor>) BlobFileDescriptorForQuery(
         /* [in] */ ISQLiteStatement* prog,
         /* [in] */ ArrayOf<String>* selectionArgs);
 

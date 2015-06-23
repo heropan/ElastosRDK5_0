@@ -160,7 +160,7 @@ module
             [in] ArrayOf<Float>* equation,
             [in] Int32 offset);
 
-        GlClipPlanefEx(
+        GlClipPlanef(
             [in] Int32 plane,
             [in] IFloatBuffer* equation);
 
@@ -169,7 +169,7 @@ module
             [in] ArrayOf<Int32>* equation,
             [in] Int32 offset);
 
-        GlClipPlanexEx(
+        GlClipPlanex(
             [in] Int32 plane,
             [in] IInt32Buffer* equation);
 
@@ -179,7 +179,7 @@ module
             [in] Byte blue,
             [in] Byte alpha);
 
-        GlColorPointerEx(
+        GlColorPointer(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,
@@ -190,12 +190,12 @@ module
             [in] ArrayOf<Int32>* buffers,
             [in] Int32 offset);
 
-        GlDeleteBuffersEx(
+        GlDeleteBuffers(
             [in] Int32 n,
             [in] IInt32Buffer* buffers
         );
 
-        GlDrawElementsEx(
+        GlDrawElements(
             [in] Int32 mode,
             [in] Int32 count,
             [in] Int32 type,
@@ -206,7 +206,7 @@ module
             [in] ArrayOf<Int32>* buffers,
             [in] Int32 offset);
 
-        GlGenBuffersEx(
+        GlGenBuffers(
             [in] Int32 n,
             [in] IInt32Buffer* buffers);
 
@@ -215,7 +215,7 @@ module
             [in] ArrayOf<Boolean>* params,
             [in] Int32 offset);
 
-        GlGetBooleanvEx(
+        GlGetBooleanv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -225,7 +225,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetBufferParameterivEx(
+        GlGetBufferParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -235,7 +235,7 @@ module
             [in] ArrayOf<Float>* eqn,
             [in] Int32 offset);
 
-        GlGetClipPlanefEx(
+        GlGetClipPlanef(
             [in] Int32 pname,
             [in] IFloatBuffer* eqn);
 
@@ -244,7 +244,7 @@ module
             [in] ArrayOf<Int32>* eqn,
             [in] Int32 offset);
 
-        GlGetClipPlanexEx(
+        GlGetClipPlanex(
             [in] Int32 pname,
             [in] IInt32Buffer* eqn);
 
@@ -253,7 +253,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetFixedvEx(
+        GlGetFixedv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -262,7 +262,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetFloatvEx(
+        GlGetFloatv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
@@ -272,7 +272,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetLightfvEx(
+        GlGetLightfv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -283,7 +283,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetLightxvEx(
+        GlGetLightxv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -294,7 +294,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetMaterialfvEx(
+        GlGetMaterialfv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -305,7 +305,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetMaterialxvEx(
+        GlGetMaterialxv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -316,7 +316,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexEnvivEx(
+        GlGetTexEnviv(
             [in] Int32 env,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -327,7 +327,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexEnvxvEx(
+        GlGetTexEnvxv(
             [in] Int32 env,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -338,7 +338,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetTexParameterfvEx(
+        GlGetTexParameterfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -349,7 +349,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexParameterivEx(
+        GlGetTexParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -360,7 +360,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexParameterxvEx(
+        GlGetTexParameterxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -377,7 +377,7 @@ module
             [in] Int32 texture,
             [out] Boolean* result);
 
-        GlNormalPointerEx(
+        GlNormalPointer(
             [in] Int32 type,
             [in] Int32 stride,
             [in] Int32 offset);
@@ -391,7 +391,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlPointParameterfvEx(
+        GlPointParameterfv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
@@ -404,7 +404,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlPointParameterxvEx(
+        GlPointParameterxv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -413,7 +413,7 @@ module
             [in] Int32 stride,
             [in] IBuffer* pointer);
 
-        GlTexCoordPointerEx(
+        GlTexCoordPointer(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,
@@ -430,7 +430,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexEnvivEx(
+        GlTexEnviv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -446,7 +446,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexParameterivEx(
+        GlTexParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -457,12 +457,12 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexParameterxvEx(
+        GlTexParameterxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlVertexPointerEx(
+        GlVertexPointer(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,

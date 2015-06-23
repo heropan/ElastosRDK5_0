@@ -35,7 +35,7 @@ public:
      * Constructs the QuickContacts intent.
      * @hide
      */
-    CARAPI ComposeQuickContactsIntentEx(
+    CARAPI ComposeQuickContactsIntent(
         /* [in] */ IContext* context,
         /* [in] */ IRect* target,
         /* [in] */ IUri* lookupUri,
@@ -99,7 +99,7 @@ public:
      *            already viewing the contact details card, this can be used
      *            to omit the details entry from the dialog.
      */
-    CARAPI ShowQuickContactEx(
+    CARAPI ShowQuickContact(
         /* [in] */ IContext* context,
         /* [in] */ IRect* target,
         /* [in] */ IUri* lookupUri,

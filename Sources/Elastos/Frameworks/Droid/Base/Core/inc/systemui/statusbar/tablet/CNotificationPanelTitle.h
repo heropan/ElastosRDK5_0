@@ -2,9 +2,9 @@
 #define __CNOTIFICATIONPANELTITLE_H_
 
 #include "_CNotificationPanelTitle.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/RelativeLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/NotificationPanelTitle.h"
 
 namespace Elastos {

@@ -3,9 +3,9 @@
 #define __CINSTRUMENTATIONACTIVITYMONITOR_H__
 
 #include "_CInstrumentationActivityMonitor.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;

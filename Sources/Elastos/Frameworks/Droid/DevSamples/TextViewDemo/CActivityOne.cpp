@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <utils/SystemClock.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>
 
 using Elastos::Core::EIID_IRunnable;
@@ -537,11 +537,11 @@ ECode CActivityOne::ShowAlert(
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(String("Bingo!"), (ICharSequence**)&cs);
-    builder->SetTitleEx(cs);
+    builder->SetTitle(cs);
 
     cs = NULL;
     CStringWrapper::New(info, (ICharSequence**)&cs);
-    builder->SetMessageEx(cs);
+    builder->SetMessage(cs);
 
     // Setup Button
     //
@@ -550,7 +550,7 @@ ECode CActivityOne::ShowAlert(
 
     cs = NULL;
     CStringWrapper::New(String("确定"), (ICharSequence**)&cs);
-    builder->SetPositiveButtonEx(cs, clickListener);
+    builder->SetPositiveButton(cs, clickListener);
 
     // Create Dialog
     //
@@ -572,11 +572,11 @@ AutoPtr<IDialog> CActivityOne::OnCreateDialog(
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(String("普通对话框"), (ICharSequence**)&cs);
-    builder->SetTitleEx(cs);
+    builder->SetTitle(cs);
 
     cs = NULL;
     CStringWrapper::New(String("这是一个普通对话框"), (ICharSequence**)&cs);
-    builder->SetMessageEx(cs);
+    builder->SetMessage(cs);
 
     // Setup Button
     //
@@ -585,15 +585,15 @@ AutoPtr<IDialog> CActivityOne::OnCreateDialog(
 
     cs = NULL;
     CStringWrapper::New(String("确定"), (ICharSequence**)&cs);
-    builder->SetPositiveButtonEx(cs, clickListener);
+    builder->SetPositiveButton(cs, clickListener);
 
     cs = NULL;
     CStringWrapper::New(String("中立"), (ICharSequence**)&cs);
-    builder->SetNeutralButtonEx(cs, clickListener);
+    builder->SetNeutralButton(cs, clickListener);
 
     cs = NULL;
     CStringWrapper::New(String("取消"), (ICharSequence**)&cs);
-    builder->SetNegativeButtonEx(cs, clickListener);
+    builder->SetNegativeButton(cs, clickListener);
 
     // Create Dialog
     //
@@ -614,31 +614,31 @@ ECode CActivityOne::OnCreateContextMenu(
     AutoPtr<IMenuItem> item = NULL;
     AutoPtr<ICharSequence> csq;
     CStringWrapper::New(String("ctxItem1"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 1, 1, csq, (IMenuItem**)&item);
+    menu->Add(0, 1, 1, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem2"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 2, 2, csq, (IMenuItem**)&item);
+    menu->Add(0, 2, 2, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem3"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 3, 3, csq, (IMenuItem**)&item);
+    menu->Add(0, 3, 3, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem4"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 4, 4, csq, (IMenuItem**)&item);
+    menu->Add(0, 4, 4, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem5"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 5, 5, csq, (IMenuItem**)&item);
+    menu->Add(0, 5, 5, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem6"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 6, 6, csq, (IMenuItem**)&item);
+    menu->Add(0, 6, 6, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem7"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 7, 7, csq, (IMenuItem**)&item);
+    menu->Add(0, 7, 7, csq, (IMenuItem**)&item);
 
     return NOERROR;
 }
@@ -684,7 +684,7 @@ ECode CActivityOne::CreateNavigationBar()
 
 //    AutoPtr<IWindowManager> wm;
 //    CWindowManagerImpl::AcquireSingleton((IWindowManager**)&wm);
-//    wm->AddViewEx5(navigationBar, lp);
+//    wm->AddView(navigationBar, lp);
 
     return NOERROR;
 }

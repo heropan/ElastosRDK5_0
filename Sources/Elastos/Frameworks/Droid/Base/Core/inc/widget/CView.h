@@ -2,7 +2,7 @@
 #define __CVIEW_H_
 
 #include "_CView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

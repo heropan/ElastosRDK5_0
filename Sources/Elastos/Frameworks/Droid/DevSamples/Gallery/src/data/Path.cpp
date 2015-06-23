@@ -1,7 +1,7 @@
 #include "Path.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

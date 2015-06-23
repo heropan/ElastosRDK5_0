@@ -70,11 +70,11 @@ ECode MenuDialogHelper::Show(
         // Otherwise use the (text) title and icon
         AutoPtr<IDrawable> icon;
         menu->GetHeaderIcon((IDrawable**)&icon);
-        builder->SetIconEx(icon);
+        builder->SetIcon(icon);
 
         AutoPtr<ICharSequence> csq;
         menu->GetHeaderTitle((ICharSequence**)&csq);
-        builder->SetTitleEx(csq);
+        builder->SetTitle(csq);
     }
 
     // Set the key listener
@@ -143,7 +143,7 @@ ECode MenuDialogHelper::OnKey(
                     decor->GetKeyDispatcherState((IDispatcherState**)&dispatcher);
                     Boolean isTracking;
                     if (dispatcher != NULL && (dispatcher->IsTracking(event, &isTracking), isTracking)) {
-                        mMenu->CloseEx(TRUE);
+                        mMenu->Close(TRUE);
                         dialog->Dismiss();
                         *flag = TRUE;
                         return NOERROR;

@@ -1,9 +1,9 @@
 
 #include "os/SystemClock.h"
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 #include <utils/SystemClock.h>
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {

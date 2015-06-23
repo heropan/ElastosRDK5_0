@@ -6,7 +6,7 @@
 #include "CListPopupWindow.h"
 #include "text/TextUtils.h"
 #include "text/Selection.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::LayoutInflater;
@@ -913,7 +913,7 @@ void AutoCompleteTextView::PerformFiltering(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 keyCode)
 {
-    mFilter->DoFilterEx(text, (IFilterListener*)this->Probe(EIID_IFilterListener));
+    mFilter->DoFilter(text, (IFilterListener*)this->Probe(EIID_IFilterListener));
 }
 
 /**
@@ -1530,7 +1530,7 @@ ECode AutoCompleteTextView::InternalInit(
             const_cast<Int32 *>(R::styleable::AutoCompleteTextView),
             ARRAY_SIZE(R::styleable::AutoCompleteTextView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetInt32(R::styleable::AutoCompleteTextView_completionThreshold, 2, &mThreshold);
@@ -1559,13 +1559,13 @@ ECode AutoCompleteTextView::InternalInit(
     // For dropdown width, the developer can specify a specific width, or MATCH_PARENT
     // (for full screen width) or WRAP_CONTENT (to match the width of the anchored view).
     Int32 dropDownWidth;
-    a->GetLayoutDimensionEx(
+    a->GetLayoutDimension(
             R::styleable::AutoCompleteTextView_dropDownWidth,
             IViewGroupLayoutParams::WRAP_CONTENT, &dropDownWidth);
     mPopup->SetWidth(dropDownWidth);
 
     Int32 dropDownHeight;
-    a->GetLayoutDimensionEx(
+    a->GetLayoutDimension(
             R::styleable::AutoCompleteTextView_dropDownHeight,
             IViewGroupLayoutParams::WRAP_CONTENT, &dropDownHeight);
     mPopup->SetHeight(dropDownHeight);

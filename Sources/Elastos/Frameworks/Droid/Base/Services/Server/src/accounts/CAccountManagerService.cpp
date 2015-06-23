@@ -19,9 +19,9 @@
 #include "text/TextUtils.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/HashSet.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IArrayOf;
@@ -34,7 +34,7 @@ using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::App::CNotification;
 using Elastos::Droid::App::IPendingIntentHelper;
 // using Elastos::Droid::App::CPendingIntentHelper;
@@ -507,7 +507,7 @@ void CAccountManagerService::PurgeOldGrants (
     AutoPtr< ArrayOf<String> > ids = ArrayOf<String>::Alloc(1);
     (*ids)[0] = GRANTS_GRANTEE_UID;
     String nullStr;
-    ASSERT_SUCCEEDED(db->QueryEx2(TABLE_GRANTS, ids, nullStr, NULL,
+    ASSERT_SUCCEEDED(db->Query(TABLE_GRANTS, ids, nullStr, NULL,
             GRANTS_GRANTEE_UID, nullStr, nullStr, (ICursor**)&cursor));
     // try {
     Boolean result;
@@ -568,7 +568,7 @@ void CAccountManagerService::ValidateAccountsInternal(
         (*accountsInfo)[1] = ACCOUNTS_TYPE;
         (*accountsInfo)[2] = ACCOUNTS_NAME;
         String nullStr;
-        db->QueryEx2(TABLE_ACCOUNTS, accountsInfo, nullStr, NULL,
+        db->Query(TABLE_ACCOUNTS, accountsInfo, nullStr, NULL,
                 nullStr, nullStr, nullStr, (ICursor**)&cursor);
         // try {
         accounts->mAccountCache.Clear();
@@ -755,7 +755,7 @@ String CAccountManagerService::ReadPasswordInternal(
     account->GetName(&(*accounts2)[0]);
     account->GetType(&(*accounts2)[1]);
     String nullStr;
-    ASSERT_SUCCEEDED(db->QueryEx2(TABLE_ACCOUNTS, accounts1,
+    ASSERT_SUCCEEDED(db->Query(TABLE_ACCOUNTS, accounts1,
             ACCOUNTS_NAME + String("=? AND ") + ACCOUNTS_TYPE+ String("=?"),
             accounts2, nullStr, nullStr, nullStr, (ICursor**)&cursor));
     // try {
@@ -1706,7 +1706,7 @@ void CAccountManagerService::CreateNoCredentialsPermissionNotification(
     AutoPtr< ArrayOf<ICharSequence*> > args = ArrayOf<ICharSequence*>::Alloc(1);
     args->Set(0, cs);
     String titleAndSubtitle;
-    mContext->GetStringEx(R::string::permission_request_notification_with_subtitle,
+    mContext->GetString(R::string::permission_request_notification_with_subtitle,
             (ArrayOf<IInterface*>*)args.Get(), &titleAndSubtitle);
     Int32 index = titleAndSubtitle.IndexOf('\n');
     String title = titleAndSubtitle;
@@ -2228,7 +2228,7 @@ Int64 CAccountManagerService::GetAccountIdLocked(
     account->GetName(&(*ss2)[0]);
     account->GetType(&(*ss2)[1]);
     String nullStr;
-    db->QueryEx2(TABLE_ACCOUNTS, ss1, String("name=? AND type=?"),
+    db->Query(TABLE_ACCOUNTS, ss1, String("name=? AND type=?"),
             ss2, nullStr, nullStr, nullStr, (ICursor**)&cursor);
     // try {
     Boolean result;
@@ -2254,7 +2254,7 @@ Int64 CAccountManagerService::GetExtrasIdLocked(
     AutoPtr< ArrayOf<String> > ss2 = ArrayOf<String>::Alloc(1);
     (*ss2)[0] = key;
     String nullStr;
-    db->QueryEx2(TABLE_EXTRAS, ss1,
+    db->Query(TABLE_EXTRAS, ss1,
             EXTRAS_ACCOUNTS_ID + String("=") + StringUtils::Int64ToString(accountId)
             + String(" AND ") + EXTRAS_KEY + String("=?"),
             ss2, nullStr, nullStr, nullStr, (ICursor**)&cursor);
@@ -2602,7 +2602,7 @@ Boolean CAccountManagerService::HasAuthenticatorUid(
         if (descType.Equals(accountType)) {
             Int32 result;
             return (serviceInfo->mUid == callingUid) ||
-                    (mPackageManager->CheckSignaturesEx(serviceInfo->mUid, callingUid, &result),
+                    (mPackageManager->CheckSignatures(serviceInfo->mUid, callingUid, &result),
                     result == IPackageManager::SIGNATURE_MATCH);
         }
     }
@@ -3037,7 +3037,7 @@ AutoPtr<HashMap<String, String> > CAccountManagerService::ReadUserDataForAccount
     params->Set(0, COLUMNS_EXTRAS_KEY_AND_VALUE[0]);
     params->Set(1, COLUMNS_EXTRAS_KEY_AND_VALUE[1]);
     String nullStr;
-    ASSERT_SUCCEEDED(db->QueryEx2(TABLE_EXTRAS,
+    ASSERT_SUCCEEDED(db->Query(TABLE_EXTRAS,
             params,
             SELECTION_USERDATA_BY_ACCOUNT, args,
             nullStr, nullStr, nullStr, (ICursor**)&cursor));
@@ -3069,7 +3069,7 @@ AutoPtr<HashMap<String, String> > CAccountManagerService::ReadAuthTokensForAccou
     params->Set(0, COLUMNS_AUTHTOKENS_TYPE_AND_AUTHTOKEN[0]);
     params->Set(1, COLUMNS_AUTHTOKENS_TYPE_AND_AUTHTOKEN[1]);
     String nullStr;
-    ASSERT_SUCCEEDED(db->QueryEx2(TABLE_AUTHTOKENS,
+    ASSERT_SUCCEEDED(db->Query(TABLE_AUTHTOKENS,
             params, SELECTION_AUTHTOKENS_BY_ACCOUNT, args,
             nullStr, nullStr, nullStr, (ICursor**)&cursor));
     // try {

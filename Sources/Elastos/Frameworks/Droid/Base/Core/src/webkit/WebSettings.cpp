@@ -1,7 +1,7 @@
 
 #include "webkit/WebSettings.h"
 #include "webkit/WebViewFactory.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {

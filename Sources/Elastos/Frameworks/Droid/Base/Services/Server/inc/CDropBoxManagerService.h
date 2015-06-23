@@ -6,14 +6,12 @@
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 #include "os/HandlerBase.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Set.h>
 
 using Elastos::Core::IComparable;
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::IO::IFile;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Set;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

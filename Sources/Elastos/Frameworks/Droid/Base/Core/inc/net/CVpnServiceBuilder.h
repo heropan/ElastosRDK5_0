@@ -67,7 +67,7 @@ public:
      * @throws IllegalArgumentException if the address is invalid.
      * @see #addAddress(InetAddress, int)
      */
-    CARAPI AddAddressEx(
+    CARAPI AddAddress(
         /* [in] */ const String& address,
         /* [in] */ Int32 prefixLength);
 
@@ -89,7 +89,7 @@ public:
      * @throws IllegalArgumentException if the route is invalid.
      * @see #addRoute(InetAddress, int)
      */
-    CARAPI AddRouteEx(
+    CARAPI AddRoute(
         /* [in] */ const String& address,
         /* [in] */ Int32 prefixLength);
 
@@ -111,7 +111,7 @@ public:
      * @throws IllegalArgumentException if the address is invalid.
      * @see #addDnsServer(InetAddress)
      */
-    CARAPI AddDnsServerEx(
+    CARAPI AddDnsServer(
         /* [in] */ const String& address);
 
     /**

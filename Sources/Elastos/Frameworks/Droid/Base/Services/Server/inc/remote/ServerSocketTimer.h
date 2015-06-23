@@ -8,7 +8,6 @@
 using Elastos::IO::IFile;
 using Elastos::IO::IOutputStream;
 using Elastos::Net::ISocket;
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Net::IServerSocket;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerThread;

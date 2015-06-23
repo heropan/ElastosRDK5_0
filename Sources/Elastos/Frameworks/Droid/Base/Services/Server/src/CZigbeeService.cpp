@@ -1,8 +1,8 @@
 
 #include "CZigbeeService.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "zigbee/ZigbeeDoorSensor.h"
 #include <hardware/zigbee/zigbee_hal.h>
 
@@ -357,7 +357,7 @@ void CZigbeeService::CallbackManager::NotifyDeviceOnlineStatusChanged(
         CBundle::New((IBundle**)&bundle);
         bundle->PutString(IZigbeeManager::EXTRA_NAME, deviceName);
         bundle->PutInt32(IZigbeeManager::EXTRA_STATUS, onlineStatus);
-        intent->PutExtrasEx(bundle);
+        intent->PutExtras(bundle);
 
         if (mHost->mContext != NULL) {
             if (DBG) Slogger::D(TAG, "CallbackManager: NotifyDeviceOnlineStatusChanged(): sendBroadcast()");
@@ -482,7 +482,7 @@ void CZigbeeService::CallbackManager::NotifySensorHumidityReport(
     bundle->PutInt32(IZigbeeManager::EXTRA_HUMIDITY, humidity);
 
     if (intent != NULL) {
-        intent->PutExtrasEx(bundle);
+        intent->PutExtras(bundle);
 
         if (mHost->mContext != NULL) {
             if (DBG) Slogger::D(TAG, "CallbackManager: NotifySensorHumidityReport(): sendBroadcast()");
@@ -608,7 +608,7 @@ void CZigbeeService::CallbackManager::NotifySensorTemperatureReport(
     bundle->PutInt32(IZigbeeManager::EXTRA_TEMPERATURE, temperature);
 
     if (intent != NULL) {
-        intent->PutExtrasEx(bundle);
+        intent->PutExtras(bundle);
 
         if (mHost->mContext != NULL) {
             if (DBG) Slogger::D(TAG, "CallbackManager: NotifySensorTemperatureReport(): sendBroadcast()");
@@ -700,7 +700,7 @@ void CZigbeeService::CallbackManager::NotifyDoorOnOffStateChanged(
     bundle->PutString(IZigbeeManager::EXTRA_TIME, time);
 
     if (intent != NULL) {
-        intent->PutExtrasEx(bundle);
+        intent->PutExtras(bundle);
 
         if (mHost->mContext != NULL) {
             if (DBG) Slogger::D(TAG, "CallbackManager: NotifyDoorOnOffStateChanged(): sendBroadcast()");
@@ -743,7 +743,7 @@ void CZigbeeService::CallbackManager::NotifySensorVoltageChanged(
     CBundle::New((IBundle**)&bundle);
     bundle->PutString(IZigbeeManager::EXTRA_NAME, deviceName);
     bundle->PutInt32(IZigbeeManager::EXTRA_VOLTAGE, voltage);
-    intent->PutExtrasEx(bundle);
+    intent->PutExtras(bundle);
 
     if (mHost->mContext != NULL) {
         if (DBG) Slogger::D(TAG, "CallbackManager: NotifySensorVoltageChanged(): sendBroadcast()");
@@ -2161,7 +2161,7 @@ ECode CZigbeeService::ReadDeviceConfig(
         Slogger::I(TAG, "read device information xml file: %s", targetFile.string());
 
 
-        xpp->SetInputEx(fileis, String("UTF-8"));
+        xpp->SetInput(fileis, String("UTF-8"));
         if (FAILED(ec))
             break;
 
@@ -4697,7 +4697,7 @@ ECode CZigbeeService::GetSensorHumidity(
         bundle->PutInt32(IZigbeeManager::EXTRA_HUMIDITY, humidity);
 
         if (intent != NULL) {
-            intent->PutExtrasEx(bundle);
+            intent->PutExtras(bundle);
 
             if (mContext != NULL) {
                 if (DBG) Slogger::D(TAG, "GetSensorHumidity(): sendBroadcast()");
@@ -5545,7 +5545,7 @@ ECode CZigbeeService::GetSensorTemperature(
         bundle->PutInt32(IZigbeeManager::EXTRA_TEMPERATURE, temperature);
 
         if (intent != NULL) {
-            intent->PutExtrasEx(bundle);
+            intent->PutExtras(bundle);
 
             if (mContext != NULL) {
                 if (DBG) Slogger::D(TAG, "GetSensorTemperature(): sendBroadcast()");
@@ -5976,7 +5976,7 @@ ECode CZigbeeService::GetDoorOnOffState(
             bundle->PutString(IZigbeeManager::EXTRA_NAME, deviceName);
             bundle->PutInt32(IZigbeeManager::EXTRA_STATE, doorState);
             bundle->PutString(IZigbeeManager::EXTRA_TIME, time);
-            intent->PutExtrasEx(bundle);
+            intent->PutExtras(bundle);
 
             if (mContext != NULL) {
                 if (DBG) Slogger::D(TAG, "GetDoorOnOffState(): sendBroadcast()");

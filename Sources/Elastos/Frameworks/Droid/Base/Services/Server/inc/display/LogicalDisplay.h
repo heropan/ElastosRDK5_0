@@ -5,9 +5,9 @@
 #include "ext/frameworkdef.h"
 #include "display/DisplayDevice.h"
 #include "display/DisplayDeviceInfo.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IDisplayInfo;

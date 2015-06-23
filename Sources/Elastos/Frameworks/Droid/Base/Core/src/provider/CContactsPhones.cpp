@@ -72,11 +72,11 @@ ECode CContactsPhones::GetDisplayLabel(
         }
     }
     *label = display;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
-ECode CContactsPhones::GetDisplayLabelEx(
+ECode CContactsPhones::GetDisplayLabel(
     /* [in] */ IContext* context,
     /* [in] */ Int32 type,
     /* [in] */ ICharSequence* sequence,

@@ -3,7 +3,7 @@
 #define __CLIENTCERTREQUESTHANDLER_H__
 
 #include "os/Handler.h"
-#include "os/HandlerMacro.h"
+
 #include "webkit/SslClientCertLookupTable.h"
 
 using Elastos::Core::IRunnable;

@@ -43,7 +43,7 @@ public:
      * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
      * of time elapsed of the overall animation duration.
      */
-    CARAPI OfInt32Ex(
+    CARAPI OfInt32(
         /* [in] */ Float fraction,
         /* [out] */ IKeyframe** obj);
 
@@ -78,7 +78,7 @@ public:
      * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
      * of time elapsed of the overall animation duration.
      */
-    CARAPI OfFloatEx(
+    CARAPI OfFloat(
         /* [in] */ Float fraction,
         /* [out] */ IKeyframe** obj);
 
@@ -113,7 +113,7 @@ public:
      * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
      * of time elapsed of the overall animation duration.
      */
-    CARAPI OfObjectEx(
+    CARAPI OfObject(
         /* [in] */ Float fraction,
         /* [out] */ IKeyframe** obj);
 

@@ -37,7 +37,7 @@ module
             [in] IInterface* o,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] IProxyProperties* o,
             [out] Boolean* result);
 

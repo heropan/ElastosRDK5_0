@@ -10,7 +10,7 @@
  */
 
 #include "widget/AdapterView.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "R.h"
 
 using Elastos::Droid::View::IView;

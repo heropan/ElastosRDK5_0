@@ -5,11 +5,11 @@
 #include "ext/frameworkext.h"
 #include "_CMonkeySourceNetworkViews.h"
 #include <elrefbase.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IServiceManager;
 
 using Elastos::Droid::Content::Pm::IIPackageManager;

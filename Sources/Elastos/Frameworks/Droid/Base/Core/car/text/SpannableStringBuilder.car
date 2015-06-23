@@ -59,7 +59,7 @@ module
          * Don't call this yourself -- exists for Paint to use internally.
          * {@hide}
          */
-        GetTextRunAdvancesEx(
+        GetTextRunAdvances(
             [in] Int32 start,
             [in] Int32 end,
             [in] Int32 contextStart,

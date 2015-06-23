@@ -3,7 +3,7 @@
 #include "webkit/CWebViewClassic.h"
 #include "widget/CAbsoluteLayoutLayoutParams.h"
 #include "widget/CListPopupWindow.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::View::EIID_IView;
@@ -205,7 +205,7 @@ void AutoCompletePopup::SetText(
 {
     mText = text;
     if (mFilter != NULL) {
-        mFilter->DoFilterEx(text, (IFilterListener*)this);
+        mFilter->DoFilter(text, (IFilterListener*)this);
     }
 }
 
@@ -236,7 +236,7 @@ void AutoCompletePopup::SetAdapter(
     if (adapter != NULL) {
         assert(0);
 //        IFilterListener::Probe(adapter)->GetFilter((IFilter**)&mFilter);
-        mFilter->DoFilterEx(mText, (IFilterListener*)this);
+        mFilter->DoFilter(mText, (IFilterListener*)this);
     } else {
         mFilter = NULL;
     }

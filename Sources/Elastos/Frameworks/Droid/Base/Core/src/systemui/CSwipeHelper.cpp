@@ -1,11 +1,11 @@
 #include "systemui/CSwipeHelper.h"
-#include "elastos/Math.h"
+#include <elastos/core/Math.h>
 #include "graphics/CRectF.h"
 #include "view/animation/CLinearInterpolator.h"
 #include "view/CViewConfigurationHelper.h"
 #include "os/CHandler.h"
 #include "animation/CObjectAnimatorHelper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::Math;
@@ -300,9 +300,9 @@ ECode CSwipeHelper::InvalidateGlobalRegion(
 
         AutoPtr<IMatrix> matrix;
         tmpView->GetMatrix((IMatrix**)&matrix);
-        matrix->MapRectEx(childBounds, &result);
+        matrix->MapRect(childBounds, &result);
         childBounds->Get(&l, &t, &r, &b);
-        tmpView->InvalidateEx(
+        tmpView->Invalidate(
             (Int32) Math::Floor(l),
             (Int32) Math::Floor(t),
             (Int32) Math::Ceil(r),
@@ -511,7 +511,7 @@ ECode CSwipeHelper::OnTouchEvent(
         case IMotionEvent::ACTION_CANCEL:
             if (mCurrView != NULL) {
                 Float maxVelocity = MAX_DISMISS_VELOCITY * mDensityScale;
-                mVelocityTracker->ComputeCurrentVelocityEx(1000 /* px/sec */, maxVelocity);
+                mVelocityTracker->ComputeCurrentVelocity(1000 /* px/sec */, maxVelocity);
                 Float escapeVelocity = SWIPE_ESCAPE_VELOCITY * mDensityScale;
                 Float velocity = GetVelocity(mVelocityTracker);
                 Float perpendicularVelocity = GetPerpendicularVelocity(mVelocityTracker);

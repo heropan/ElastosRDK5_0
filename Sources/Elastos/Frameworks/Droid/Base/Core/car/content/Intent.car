@@ -2914,7 +2914,7 @@ module
          * @see #getType
          * @see #resolveType(Context)
          */
-        ResolveTypeEx(
+        ResolveType(
             [in] IContentResolver* resolver,
             [out] String* type);
 
@@ -3486,7 +3486,7 @@ module
          * @deprecated
          * @hide
          */
-        GetExtraEx(
+        GetExtra(
             [in] String name,
             [in] IInterface* defaultValue,
             [out] IInterface** obj);
@@ -4487,7 +4487,7 @@ module
          * @see #putExtra
          * @see #removeExtra
          */
-        PutExtrasEx(
+        PutExtras(
             [in] IBundle* extras);
 
         /**
@@ -4507,7 +4507,7 @@ module
          * @param extras The new set of extras in the Intent, or null to erase
          * all extras.
          */
-        ReplaceExtrasEx(
+        ReplaceExtras(
             [in] IBundle* extras);
 
         /**
@@ -4658,7 +4658,7 @@ module
          * @see #setComponent
          * @see #setClass
          */
-        SetClassNameEx(
+        SetClassName(
             [in] String packageName,
             [in] String className);
 
@@ -4788,7 +4788,7 @@ module
             [out] String* str);
 
         /** @hide */
-        ToShortStringEx(
+        ToShortString(
             [in] IStringBuilder* b,
             [in] Boolean secure,
             [in] Boolean comp,

@@ -2,13 +2,11 @@
 #ifndef __MYTHREAD_H__
 #define __MYTHREAD_H__
 
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 #include <elrefbase.h>
-#include <elastos/Mutex.h>
 #include "CWifiSetting.h"
 #include "WifiFun.h"
 
-using namespace Elastos::Core::Threading;
 
 class MyThread
     : public ElRefBase
@@ -98,10 +96,10 @@ public:
 
     CARAPI Join();
 
-    CARAPI JoinEx(
+    CARAPI Join(
         /* [in] */ Int64 millis);
 
-    CARAPI JoinEx2(
+    CARAPI Join(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 
@@ -136,10 +134,10 @@ public:
 
     CARAPI Wait();
 
-    CARAPI WaitEx(
+    CARAPI Wait(
         /* [in] */ Int64 millis);
 
-    CARAPI WaitEx2(
+    CARAPI Wait(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 

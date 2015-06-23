@@ -2,8 +2,8 @@
 #include "remote/RemoteUtils.h"
 #include "remote/ResultMsg.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

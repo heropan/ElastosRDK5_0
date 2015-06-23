@@ -3,7 +3,7 @@
 
 #include "ext/frameworkext.h"
 #include "app/Service.h"
-#include "content/ContextMacro.h"
+
 #include "content/Context.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;

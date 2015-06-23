@@ -3,11 +3,10 @@
 #define  __LEGACYSENSORMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IRotationWatcher;

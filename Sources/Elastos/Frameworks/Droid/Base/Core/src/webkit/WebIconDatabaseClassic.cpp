@@ -239,7 +239,7 @@ void WebIconDatabaseClassic::EventHandler::RequestIconAndSendResult(
     if (icon != NULL) {
         AutoPtr<IInterface> iconResult = new IconResult(url, icon, listener);
         AutoPtr<IMessage> msg;
-        ObtainMessageEx(ICON_RESULT, iconResult, (IMessage**)&msg);
+        ObtainMessage(ICON_RESULT, iconResult, (IMessage**)&msg);
         Boolean result = FALSE;
         SendMessage(msg, &result);
     }
@@ -282,7 +282,7 @@ ECode WebIconDatabaseClassic::Open(
         AutoPtr<IMessageHelper> msghelper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
         AutoPtr<IMessage> msg;
-        msghelper->ObtainEx4(NULL, EventHandler::OPEN, cs, (IMessage**)&msg);
+        msghelper->Obtain(NULL, EventHandler::OPEN, cs, (IMessage**)&msg);
         mEventHandler->PostMessage(msg);
     }
     return NOERROR;
@@ -293,7 +293,7 @@ ECode WebIconDatabaseClassic::Close()
     AutoPtr<IMessageHelper> msghelper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
     AutoPtr<IMessage> msg;
-    msghelper->ObtainEx3(NULL, EventHandler::CLOSE, (IMessage**)&msg);
+    msghelper->Obtain(NULL, EventHandler::CLOSE, (IMessage**)&msg);
     mEventHandler->PostMessage(msg);
     return NOERROR;
 }
@@ -303,7 +303,7 @@ ECode WebIconDatabaseClassic::RemoveAllIcons()
     AutoPtr<IMessageHelper> msghelper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
     AutoPtr<IMessage> msg;
-    msghelper->ObtainEx3(NULL, EventHandler::REMOVE_ALL, (IMessage**)&msg);
+    msghelper->Obtain(NULL, EventHandler::REMOVE_ALL, (IMessage**)&msg);
     mEventHandler->PostMessage(msg);
     return NOERROR;
 }
@@ -324,7 +324,7 @@ ECode WebIconDatabaseClassic::RequestIconForPageUrl(
     AutoPtr<IMessageHelper> msghelper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
     AutoPtr<IMessage> msg;
-    msghelper->ObtainEx4(NULL, EventHandler::REQUEST_ICON, listener, (IMessage**)&msg);
+    msghelper->Obtain(NULL, EventHandler::REQUEST_ICON, listener, (IMessage**)&msg);
     AutoPtr<IBundle> data;
     msg->GetData((IBundle**)&data);
     data->PutString(String("url"), url);
@@ -369,7 +369,7 @@ ECode WebIconDatabaseClassic::BulkRequestIconForPageUrl(
         AutoPtr<IMessageHelper> msghelper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
         AutoPtr<IMessage> msg;
-        msghelper->ObtainEx4(NULL, EventHandler::BULK_REQUEST_ICON, map, (IMessage**)&msg);
+        msghelper->Obtain(NULL, EventHandler::BULK_REQUEST_ICON, map, (IMessage**)&msg);
         mEventHandler->PostMessage(msg);
     }
     return NOERROR;
@@ -384,7 +384,7 @@ ECode WebIconDatabaseClassic::RetainIconForPageUrl(
         AutoPtr<IMessageHelper> msghelper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
         AutoPtr<IMessage> msg;
-        msghelper->ObtainEx4(NULL, EventHandler::RETAIN_ICON, urlCS, (IMessage**)&msg);
+        msghelper->Obtain(NULL, EventHandler::RETAIN_ICON, urlCS, (IMessage**)&msg);
         mEventHandler->PostMessage(msg);
     }
     return NOERROR;
@@ -399,7 +399,7 @@ ECode WebIconDatabaseClassic::ReleaseIconForPageUrl(
         AutoPtr<IMessageHelper> msghelper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&msghelper);
         AutoPtr<IMessage> msg;
-        msghelper->ObtainEx4(NULL, EventHandler::RELEASE_ICON, urlCS, (IMessage**)&msg);
+        msghelper->Obtain(NULL, EventHandler::RELEASE_ICON, urlCS, (IMessage**)&msg);
         mEventHandler->PostMessage(msg);
     }
     return NOERROR;

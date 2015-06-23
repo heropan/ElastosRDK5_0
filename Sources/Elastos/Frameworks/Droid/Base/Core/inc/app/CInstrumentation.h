@@ -291,7 +291,7 @@ public:
      * @see #addMonitor(ActivityMonitor)
      * @see #checkMonitorHit
      */
-    CARAPI AddMonitorEx(
+    CARAPI AddMonitor(
         /* [in] */ IIntentFilter* filter,
         /* [in] */ IInstrumentationActivityResult* result,
         /* [in] */ Boolean block,
@@ -313,7 +313,7 @@ public:
      * @see #addMonitor(ActivityMonitor)
      * @see #checkMonitorHit
      */
-    CARAPI AddMonitorEx2(
+    CARAPI AddMonitor(
         /* [in] */ const String& cls,
         /* [in] */ IInstrumentationActivityResult* result,
         /* [in] */ Boolean block,
@@ -556,7 +556,7 @@ public:
      *
      * @return The newly instantiated Activity object.
      */
-    CARAPI NewActivityEx(
+    CARAPI NewActivity(
         /* [in] */ IClassLoader* cl,
         /* [in] */ const String& className,
         /* [in] */ IIntent* intent,
@@ -819,7 +819,7 @@ public:
      *
      * {@hide}
      */
-    CARAPI ExecStartActivityEx(
+    CARAPI ExecStartActivity(
         /* [in] */ IContext* who,
         /* [in] */ IBinder* contextThread,
         /* [in] */ IBinder* token,
@@ -859,7 +859,7 @@ public:
      *
      * {@hide}
      */
-    CARAPI ExecStartActivityEx2(
+    CARAPI ExecStartActivity(
         /* [in] */ IContext* who,
         /* [in] */ IBinder* contextThread,
         /* [in] */ IBinder* token,

@@ -43,7 +43,7 @@ module
 
         SetState(
             [in] Int32 state);
-    
+
         // Non-null if the fragment's view hierarchy is currently animating away,
         // meaning we need to wait a bit on completely destroying it.  This is the
         // animation that is running.
@@ -73,11 +73,11 @@ module
 
         SetSavedViewState(
             [in] IObjectInt32Map* viewState);
-    
+
         // Index into active fragment array.
         GetIndex(
             [out] Int32* index);
-    
+
         // Internal unique name for this fragment;
         GetWho(
             [out] String* who);
@@ -114,7 +114,7 @@ module
 
         SetResumed(
             [in] Boolean resumed);
-    
+
         // Set to true if this fragment was instantiated from a layout file.
         GetFromLayout(
             [out] Boolean* fLayout);
@@ -131,7 +131,7 @@ module
 
         SetRestored(
             [in] Boolean restored);
-    
+
         // Number of active back stack entries this fragment is in.
         GetBackStackNesting(
             [out] Int32* bsNesting);
@@ -162,7 +162,7 @@ module
 
         SetFragmentId(
             [in] Int32 fid);
-    
+
         // When a fragment is being dynamically added to the view hierarchy, this
         // is the identifier of the parent container it is being added to.
         GetContainerId(
@@ -186,7 +186,7 @@ module
 
         SetRetaining(
             [in] Boolean retaining);
-    
+
         // If set this fragment has menu items to contribute.
         GetHasMenu(
             [out] Boolean* hasMenu);
@@ -207,14 +207,14 @@ module
 
         SetCalled(
             [in] Boolean called);
-    
+
         // If app has requested a specific animation, this is the one to use.
         GetNextAnim(
             [out] Int32* anim);
 
         SetNextAnim(
             [in] Int32 anim);
-    
+
         // The parent container of the fragment after dynamically added to UI.
         GetContainer(
             [out] IViewGroup** container);
@@ -224,7 +224,7 @@ module
 
         SetView(
             [in] IView* view);
-    
+
         // Whether this fragment should defer starting until after other fragments
         // have been started and their loaders are finished.
         GetDeferStart(
@@ -368,7 +368,7 @@ module
          * @param formatArgs The format arguments that will be used for substitution.
          */
 
-        GetStringEx(
+        GetString(
             [in] Int32 resId,
             [in] ArrayOf<IInterface*>* formatArgs,
             [out] String* string);
@@ -441,7 +441,7 @@ module
 
         /**
          * Return true if the fragment is currently visible to the user.  This means
-         * it: (1) has been added, (2) has its view attached to the window, and 
+         * it: (1) has been added, (2) has its view attached to the window, and
          * (3) is not hidden.
          */
         IsVisible(
@@ -491,7 +491,7 @@ module
          * Report that this fragment would like to participate in populating
          * the options menu by receiving a call to {@link #onCreateOptionsMenu}
          * and related methods.
-         * 
+         *
          * @param hasMenu If true, the fragment has menu items to contribute.
          */
         SetHasOptionsMenu(
@@ -556,7 +556,7 @@ module
          * See {@link android.content.Context#startActivity(Intent, Bundle)
          * Context.startActivity(Intent, Bundle)} for more details.
          */
-        StartActivityEx(
+        StartActivity(
             [in] IIntent* intent,
             [in] IBundle* options);
 
@@ -572,7 +572,7 @@ module
          * Call {@link Activity#startActivityForResult(Intent, int, Bundle)} on the fragment's
          * containing Activity.
          */
-        StartActivityForResultEx(
+        StartActivityForResult(
             [in] IIntent* intent,
             [in] Int32 requestCode,
             [in] IBundle* options);
@@ -582,7 +582,7 @@ module
          * {@link #startActivityForResult(Intent, int)}.  This follows the
          * related Activity API as described there in
          * {@link Activity#onActivityResult(int, int, Intent)}.
-         * 
+         *
          * @param requestCode The integer request code originally supplied to
          *                    startActivityForResult(), allowing you to identify who this
          *                    result came from.
@@ -619,7 +619,7 @@ module
          * tag in a layout file.  Note this is <em>before</em> the fragment's
          * {@link #onAttach(Activity)} has been called; all you should do here is
          * parse the attributes and save them away.
-         * 
+         *
          * <p>This is called every time the fragment is inflated, even if it is
          * being inflated into a new instance with saved state.  It typically makes
          * sense to re-parse the parameters each time, to allow them to change with
@@ -635,7 +635,7 @@ module
          * declaration for the styleable used here is:</p>
          *
          * {@sample development/samples/ApiDemos/res/values/attrs.xml fragment_arguments}
-         * 
+         *
          * <p>The fragment can then be declared within its activity's content layout
          * through a tag like this:</p>
          *
@@ -654,7 +654,7 @@ module
          * @param savedInstanceState If the fragment is being re-created from
          * a previous saved state, this is the state.
          */
-        OnInflateEx(
+        OnInflate(
             [in] IActivity* activity,
             [in] IAttributeSet* attrs,
             [in] IBundle* savedInstanceState);
@@ -679,13 +679,13 @@ module
          * Called to do initial creation of a fragment.  This is called after
          * {@link #onAttach(Activity)} and before
          * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-         * 
+         *
          * <p>Note that this can be called while the fragment's activity is
          * still in the process of being created.  As such, you can not rely
          * on things like the activity's content view hierarchy being initialized
          * at this point.  If you want to do work once the activity itself is
          * created, see {@link #onActivityCreated(Bundle)}.
-         * 
+         *
          * @param savedInstanceState If the fragment is being re-created from
          * a previous saved state, this is the state.
          */
@@ -697,10 +697,10 @@ module
          * This is optional, and non-graphical fragments can return null (which
          * is the default implementation).  This will be called between
          * {@link #onCreate(Bundle)} and {@link #onActivityCreated(Bundle)}.
-         * 
+         *
          * <p>If you return a View from here, you will later be called in
          * {@link #onDestroyView} when the view is being released.
-         * 
+         *
          * @param inflater The LayoutInflater object that can be used to inflate
          * any views in the fragment,
          * @param container If non-null, this is the parent view that the fragment's
@@ -708,7 +708,7 @@ module
          * but this can be used to generate the LayoutParams of the view.
          * @param savedInstanceState If non-null, this fragment is being re-constructed
          * from a previous saved state as given here.
-         * 
+         *
          * @return Return the View for the fragment's UI, or null.
          */
         OnCreateView(
@@ -734,7 +734,7 @@ module
         /**
          * Get the root view for the fragment's layout (the one returned by {@link #onCreateView}),
          * if provided.
-         * 
+         *
          * @return The fragment's root view, or null if it has no layout.
          */
         GetView(
@@ -850,9 +850,9 @@ module
          * to be called, you must have first called {@link #setHasOptionsMenu}.  See
          * {@link Activity#onCreateOptionsMenu(Menu) Activity.onCreateOptionsMenu}
          * for more information.
-         * 
+         *
          * @param menu The options menu in which you place your items.
-         * 
+         *
          * @see #setHasOptionsMenu
          * @see #onPrepareOptionsMenu
          * @see #onOptionsItemSelected
@@ -868,10 +868,10 @@ module
          * dynamically modify the contents.  See
          * {@link Activity#onPrepareOptionsMenu(Menu) Activity.onPrepareOptionsMenu}
          * for more information.
-         * 
+         *
          * @param menu The options menu as last shown or first initialized by
          *             onCreateOptionsMenu().
-         * 
+         *
          * @see #setHasOptionsMenu
          * @see #onCreateOptionsMenu
          */
@@ -894,15 +894,15 @@ module
          * its Handler as appropriate).  You can use this method for any items
          * for which you would like to do processing without those other
          * facilities.
-         * 
+         *
          * <p>Derived classes should call through to the base class for it to
          * perform the default menu handling.
-         * 
+         *
          * @param item The menu item that was selected.
-         * 
+         *
          * @return boolean Return false to allow normal menu processing to
          *         proceed, true to consume it here.
-         * 
+         *
          * @see #onCreateOptionsMenu
          */
         OnOptionsItemSelected(
@@ -912,7 +912,7 @@ module
         /**
          * This hook is called whenever the options menu is being closed (either by the user canceling
          * the menu with the back/menu button, or when an item is selected).
-         *  
+         *
          * @param menu The options menu as last shown or first initialized by
          *             onCreateOptionsMenu().
          */
@@ -925,7 +925,7 @@ module
          * {@link OnCreateContextMenuListener} on the view to this fragment, so
          * {@link #onCreateContextMenu(ContextMenu, View, ContextMenuInfo)} will be
          * called when it is time to show the context menu.
-         * 
+         *
          * @see #unregisterForContextMenu(View)
          * @param view The view that should show a context menu.
          */
@@ -935,7 +935,7 @@ module
         /**
          * Prevents a context menu to be shown for the given view. This method will
          * remove the {@link OnCreateContextMenuListener} on the view.
-         * 
+         *
          * @see #registerForContextMenu(View)
          * @param view The view that should stop showing a context menu.
          */
@@ -954,7 +954,7 @@ module
          * <p>
          * Derived classes should call through to the base class for it to perform
          * the default menu handling.
-         * 
+         *
          * @param item The context menu item that was selected.
          * @return boolean Return false to allow normal context menu processing to
          *         proceed, true to consume it here.

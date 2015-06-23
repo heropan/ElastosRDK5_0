@@ -81,7 +81,7 @@ module
          * @return true iff the the 4 specified sides of a rectangle are inside or
          *              equal to this rectangle
          */
-        ContainsEx(
+        Contains(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -96,7 +96,7 @@ module
          * @return true iff the specified rectangle r is inside or equal to this
          *              rectangle
          */
-        ContainsEx2(
+        Contains(
              [in] IRectF* r,
              [out] Boolean* isContained);
 
@@ -163,7 +163,7 @@ module
          *              (and this rectangle is then set to that intersection) else
          *              return false and do not change this rectangle.
          */
-        IntersectEx(
+        Intersect(
             [in] IRectF* r,
             [out] Boolean* result);
 
@@ -237,7 +237,7 @@ module
          * @param src The rectangle whose coordinates are copied into this
          *           rectangle.
          */
-        SetEx(
+        Set(
             [in] IRectF* src);
 
         /**
@@ -246,7 +246,7 @@ module
          * @param src The rectangle whose coordinates are copied into this
          *           rectangle.
          */
-        SetEx2(
+        Set(
             [in] IRect* src);
 
         /**
@@ -324,7 +324,7 @@ module
          *
          * @param r The rectangle being unioned with this rectangle
          */
-        UnionEx(
+        Union(
             [in] IRectF* r);
 
         /**
@@ -334,11 +334,11 @@ module
          * @param x The x coordinate of the point to add to the rectangle
          * @param y The y coordinate of the point to add to the rectangle
          */
-        UnionEx2(
+        Union(
             [in] Float x,
             [in] Float y);
 
-        EqualsEx(
+        Equals(
             [in] IRectF* r,
             [out] Boolean* result);
 

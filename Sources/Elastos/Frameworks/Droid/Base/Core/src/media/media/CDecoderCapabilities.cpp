@@ -2,9 +2,9 @@
 #include "media/CDecoderCapabilities.h"
 
 #include <media/MediaProfiles.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::CObjectContainer;
 
 namespace Elastos {
@@ -48,7 +48,7 @@ ECode CDecoderCapabilities::GetVideoDecoders(
     }
 
     *result = vd;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -65,7 +65,7 @@ ECode CDecoderCapabilities::GetAudioDecoders(
     }
 
     *result = ad;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

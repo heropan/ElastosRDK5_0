@@ -54,11 +54,11 @@ ECode CInterpolator::GetValueCount(
 ECode CInterpolator::Reset(
     /* [in] */ Int32 valueCount)
 {
-    ResetEx(valueCount, 2);
+    Reset(valueCount, 2);
     return NOERROR;
 }
 
-ECode CInterpolator::ResetEx(
+ECode CInterpolator::Reset(
     /* [in] */ Int32 valueCount,
     /* [in] */ Int32 frameCount)
 {
@@ -73,11 +73,11 @@ ECode CInterpolator::SetKeyFrame(
     /* [in] */ Int32 msec,
     /* [in] */ const ArrayOf<Float>& values)
 {
-    SetKeyFrameEx(index, msec, values, NULL);
+    SetKeyFrame(index, msec, values, NULL);
     return NOERROR;
 }
 
-ECode CInterpolator::SetKeyFrameEx(
+ECode CInterpolator::SetKeyFrame(
     /* [in] */ Int32 index,
     /* [in] */ Int32 msec,
     /* [in] */ const ArrayOf<Float>& values,
@@ -130,10 +130,10 @@ ECode CInterpolator::TimeToValues(
     /* [out] */ ArrayOf<Float>* values,
     /* [out] */ InterpolatorResult* result)
 {
-    return TimeToValuesEx((Int32)SystemClock::GetUptimeMillis(), values, result);
+    return TimeToValues((Int32)SystemClock::GetUptimeMillis(), values, result);
 }
 
-ECode CInterpolator::TimeToValuesEx(
+ECode CInterpolator::TimeToValues(
     /* [in] */ Int32 msec,
     /* [out] */ ArrayOf<Float>* values,
     /* [out] */ InterpolatorResult* result)

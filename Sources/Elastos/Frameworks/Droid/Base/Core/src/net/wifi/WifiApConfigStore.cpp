@@ -2,7 +2,7 @@
 #include "net/wifi/WifiApConfigStore.h"
 #include "net/wifi/WifiStateMachine.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #ifdef DROID_CORE
 #include "net/wifi/CWifiConfiguration.h"
 #include "os/CMessenger.h"
@@ -10,7 +10,7 @@
 #endif
 #include "util/AsyncChannel.h"
 
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;

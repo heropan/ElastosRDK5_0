@@ -200,7 +200,7 @@ ECode CListView::AddHeaderView(
  *
  * @param v The view to add.
  */
-ECode CListView::AddHeaderViewEx(
+ECode CListView::AddHeaderView(
     /* [in] */ IView* v)
 {
     return ListView::AddHeaderView(v);
@@ -253,7 +253,7 @@ ECode CListView::AddFooterView(
  *
  * @param v The view to add.
  */
-ECode CListView::AddFooterViewEx(
+ECode CListView::AddFooterView(
     /* [in] */ IView* v)
 {
     return ListView::AddFooterView(v);

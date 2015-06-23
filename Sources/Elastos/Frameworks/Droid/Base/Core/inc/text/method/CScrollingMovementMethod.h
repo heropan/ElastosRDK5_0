@@ -4,7 +4,7 @@
 
 #include "_CScrollingMovementMethod.h"
 #include "text/method/ScrollingMovementMethod.h"
-#include "text/method/BaseMovementMethodMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

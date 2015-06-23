@@ -1103,7 +1103,7 @@ module
          *
          * @hide
          */
-        SetMasterMuteEx(
+        SetMasterMute(
             [in] Boolean state,
             [in] Int32 flags);
 
@@ -1522,7 +1522,7 @@ module
          * NOTE: This version is for applications that have their own
          * settings panel for enabling and controlling volume.
          */
-        PlaySoundEffectEx(
+        PlaySoundEffect(
             [in] Int32 effectType,
             [in] Float volume);
 

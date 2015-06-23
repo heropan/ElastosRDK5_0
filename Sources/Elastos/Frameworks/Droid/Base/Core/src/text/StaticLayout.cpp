@@ -1,13 +1,13 @@
 #include "text/StaticLayout.h"
-#include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
 #include "util/ArrayUtils.h"
 #include "graphics/CPaintFontMetricsInt.h"
 #include "text/TextUtils.h"
 #include "text/TextDirectionHeuristics.h"
 #include "text/AndroidBidi.h"
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>
 using Elastos::Utility::Logging::Slogger;
 
@@ -1142,7 +1142,7 @@ Int32 StaticLayout::Out(
             assert(obj != NULL);
             ILineHeightSpanWithDensity* lhsd = ILineHeightSpanWithDensity::Probe(obj);
             if (lhsd) {
-                lhsd->ChooseHeightEx(text, start, end, (*chooseHtv)[i], v, fm, paint);
+                lhsd->ChooseHeight(text, start, end, (*chooseHtv)[i], v, fm, paint);
             } else {
                 obj->ChooseHeight(text, start, end, (*chooseHtv)[i], v, fm);
             }

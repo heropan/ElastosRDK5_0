@@ -22,7 +22,7 @@ ECode ActionMode::GetTag(
 {
     VALIDATE_NOT_NULL(tag);
     *tag = mTag;
-    INTERFACE_ADDREF(*tag);
+    REFCOUNT_ADD(*tag);
     return NOERROR;
 }
 

@@ -5,8 +5,8 @@
 #include "graphics/CRect.h"
 #endif
 #include "os/SystemClock.h"
-#include <elastos/Algorithm.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Logger.h>
 #include <unistd.h>
 
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -191,7 +191,7 @@ ECode BaseSurfaceHolder::LockCanvas(
     return NOERROR;
 }
 
-ECode BaseSurfaceHolder::LockCanvasEx(
+ECode BaseSurfaceHolder::LockCanvas(
     /* [in] */ IRect* dirty,
     /* [out] */ ICanvas** canvas)
 {
@@ -221,7 +221,7 @@ ECode BaseSurfaceHolder::GetSurface(
     }
 
     *surface = mSurface;
-    INTERFACE_ADDREF(*surface);
+    REFCOUNT_ADD(*surface);
 
     return NOERROR;
 }
@@ -234,7 +234,7 @@ ECode BaseSurfaceHolder::GetSurfaceFrame(
     }
 
     *rect = mSurfaceFrame;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
 
     return NOERROR;
 }
@@ -264,7 +264,7 @@ ECode BaseSurfaceHolder::InternalLockCanvas(
                 CRect::New((IRect**)&mTmpDirty);
             }
 
-            mTmpDirty->SetEx(mSurfaceFrame);
+            mTmpDirty->Set(mSurfaceFrame);
             dirty = mTmpDirty;
         }
 

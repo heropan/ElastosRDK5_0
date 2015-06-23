@@ -2,9 +2,9 @@
 #define __CTABLELAYOUT_H_
 
 #include "_CTableLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "widget/TableLayout.h"
 
 namespace Elastos{

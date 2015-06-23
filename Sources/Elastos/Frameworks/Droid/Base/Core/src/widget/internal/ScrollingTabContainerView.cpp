@@ -1,6 +1,6 @@
 
 #include "internal/ScrollingTabContainerView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "view/menu/CActionBarPolicy.h"
 #include "view/CViewGroupLayoutParams.h"
 #include "widget/CAbsListViewLayoutParams.h"
@@ -393,7 +393,7 @@ ECode ScrollingTabContainerView::AddTab(
     AutoPtr<ILinearLayoutLayoutParams> lp;
     CLinearLayoutLayoutParams::New(0,
         ILinearLayoutLayoutParams::MATCH_PARENT, 1, (ILinearLayoutLayoutParams**)&lp);
-    mTabLayout->AddViewEx3((IView*)tabView->Probe(EIID_IView), lp);
+    mTabLayout->AddView((IView*)tabView->Probe(EIID_IView), lp);
 
     if (mTabSpinner != NULL) {
         AutoPtr<IAdapter> tabAdapter;
@@ -420,7 +420,7 @@ ECode ScrollingTabContainerView::AddTab(
     AutoPtr<ILinearLayoutLayoutParams> lp;
     CLinearLayoutLayoutParams::New(0,
         ILinearLayoutLayoutParams::MATCH_PARENT, 1, (ILinearLayoutLayoutParams**)&lp);
-    mTabLayout->AddViewEx4((IView*)tabView->Probe(EIID_IView), position, lp);
+    mTabLayout->AddView((IView*)tabView->Probe(EIID_IView), position, lp);
 
     if (mTabSpinner != NULL) {
         AutoPtr<IAdapter> tabAdapter;

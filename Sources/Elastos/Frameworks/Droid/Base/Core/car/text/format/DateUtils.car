@@ -196,7 +196,7 @@ module
          * {@link #formatDateRange(Context, Formatter, long, long, int, String) formatDateRange}
          * @return a string containing the formatted date/time range.
          */
-        FormatDateRangeEx(
+        FormatDateRange(
             [in] IContext* ctx,
             [in] /*Elastos::Utility::IFormatter*/IInterface* formatter,
             [in] Int64 startMillis,
@@ -371,7 +371,7 @@ module
          *
          * @return the formatter with the formatted date/time range appended to the string buffer.
          */
-        FormatDateRangeEx2(
+        FormatDateRange(
             [in] IContext* ctx,
             [in] /*Elastos::Utility::IFormatter*/IInterface* formatter,
             [in] Int64 startMillis,
@@ -456,7 +456,7 @@ module
          * @param recycle {@link StringBuilder} to recycle, if possible
          * @param elapsedSeconds the elapsed time in seconds.
          */
-        FormatElapsedTimeEx(
+        FormatElapsedTime(
             [in] String recycle,
             [in] Int64 elapsedSeconds,
             [out] String* ret);
@@ -586,7 +586,7 @@ module
          *     past will be reported as "0 minutes ago" if this is set to MINUTE_IN_MILLIS. Pass one of
          *     0, MINUTE_IN_MILLIS, HOUR_IN_MILLIS, DAY_IN_MILLIS, WEEK_IN_MILLIS
          */
-        GetRelativeTimeSpanStringEx(
+        GetRelativeTimeSpanString(
             [in] Int64 time,
             [in] Int64 now,
             [in] Int64 minResolution,
@@ -612,7 +612,7 @@ module
          *            {@link #FORMAT_NUMERIC_DATE} or
          *            {@link #FORMAT_ABBREV_RELATIVE}
          */
-        GetRelativeTimeSpanStringEx2(
+        GetRelativeTimeSpanString(
             [in] Int64 time,
             [in] Int64 now,
             [in] Int64 minResolution,
@@ -633,7 +633,7 @@ module
          * @param withPreposition If true, the string returned will include the correct
          * preposition ("at 9:20am", "on 10/12/2008" or "on May 29").
          */
-        GetRelativeTimeSpanStringEx3(
+        GetRelativeTimeSpanString(
             [in] IContext* c,
             [in] Int64 millis,
             [in] Boolean withPreposition,
@@ -646,7 +646,7 @@ module
          * @return {@link CharSequence} containing relative time.
          * @see #getRelativeTimeSpanString(Context, long, boolean)
          */
-        GetRelativeTimeSpanStringEx4(
+        GetRelativeTimeSpanString(
             [in] IContext* c,
             [in] Int64 millis,
             [out] ICharSequence** ret);
@@ -746,7 +746,7 @@ module
          * @hide
          * @deprecated use {@link android.text.format.Time}
          */
-        WriteDateTimeEx(
+        WriteDateTime(
             [in] ICalendar* cal,
             [in] Boolean zulu,
             [out] String* ret);
@@ -761,7 +761,7 @@ module
          * @hide
          * @deprecated use {@link android.text.format.Time}
          */
-        WriteDateTimeEx2(
+        WriteDateTime(
             [in] ICalendar* cal,
             [out] String* sb,
             [out] String* ret);

@@ -33,7 +33,7 @@ module
         RemoveMessages(
             [in] Int32 what);
 
-        RemoveMessagesEx(
+        RemoveMessages(
             [in] Int32 what,
             [in] IInterface* obj);
 

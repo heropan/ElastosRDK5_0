@@ -4,7 +4,7 @@
 
 #include "_CScaleAnimation.h"
 #include "view/animation/ScaleAnimation.h"
-#include "view/animation/AnimationMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

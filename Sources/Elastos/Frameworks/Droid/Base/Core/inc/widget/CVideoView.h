@@ -2,8 +2,8 @@
 #define __CVideoView_h__
 
 #include "_CVideoView.h"
-#include "view/ViewMacro.h"
-#include "view/SurfaceViewMacro.h"
+
+
 #include "widget/VideoView.h"
 
 namespace Elastos{

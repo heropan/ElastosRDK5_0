@@ -29,10 +29,10 @@ ECode CJsPromptResult::GetResult(
     return NOERROR;
 }
 
-ECode CJsPromptResult::ConfirmEx(
+ECode CJsPromptResult::Confirm(
     /* [in] */ const String& result)
 {
-    return JsPromptResult::ConfirmEx(result);
+    return JsPromptResult::Confirm(result);
 }
 
 ECode CJsPromptResult::GetStringResult(

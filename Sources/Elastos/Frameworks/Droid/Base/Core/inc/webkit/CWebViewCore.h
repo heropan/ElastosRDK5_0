@@ -14,7 +14,6 @@
 #include "webkit/DeviceMotionAndOrientationManager.h"
 #include "webkit/WebSettingsClassic.h"
 #include "webkit/WebTextView.h"
-#include <elastos/Mutex.h>
 
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::IMap;

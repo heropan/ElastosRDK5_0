@@ -4,7 +4,7 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
-#include "elastos/io/InputStream.h"
+#include <elastos/io/InputStream.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::InputStream;
@@ -34,7 +34,7 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

@@ -3,10 +3,10 @@
 
 #include "_CDropBoxManager.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/ParcelFileDescriptor.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 #include "os/CDropBoxManagerEntry.h"
 
 using Elastos::Core::Math;

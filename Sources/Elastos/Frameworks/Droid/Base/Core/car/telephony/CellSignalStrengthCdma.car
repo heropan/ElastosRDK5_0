@@ -15,7 +15,7 @@ module
             [in] Int32 evdoEcio,
             [in] Int32 evdoSnr);
 
-        CopyEx(
+        Copy(
             [out] ICellSignalStrengthCdma** css);
 
         GetCdmaLevel(

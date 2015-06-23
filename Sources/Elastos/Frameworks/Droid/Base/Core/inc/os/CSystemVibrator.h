@@ -26,7 +26,7 @@ public:
         /* [in] */ Int64 milliseconds);
 
     //@Override
-    CARAPI VibrateEx(
+    CARAPI Vibrate(
         /* [in] */ const ArrayOf<Int64>& pattern,
         /* [in] */ Int32 repeat);
 

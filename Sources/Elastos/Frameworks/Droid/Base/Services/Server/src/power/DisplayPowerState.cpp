@@ -2,7 +2,7 @@
 #include "power/DisplayPowerState.h"
 #include "os/Handler.h"
 #include "os/AsyncTask.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Slogger;

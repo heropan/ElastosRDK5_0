@@ -233,7 +233,7 @@ module
          * @param metaState The preferred meta key modifier state.
          * @return The matching associated character, or 0 if none.
          */
-        GetMatchEx(
+        GetMatch(
             [in] Int32 keyCode,
             [in] ArrayOf<Char32> chars,
             [in] Int32 metaState,

@@ -1,8 +1,8 @@
 #include "speech/tts/EventLogger.h"
 #include "text/TextUtils.h"
 #include "os/SystemClock.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;

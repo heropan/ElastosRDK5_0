@@ -47,7 +47,7 @@ ECode BlinkLayout::BlickHandlerCallback::HandleMessage(
                 blinkLayout->mBlinkState = !blinkLayout->mBlinkState;
                 blinkLayout->MakeBlink();
             }
-            blinkLayout->InvalidateEx2();
+            blinkLayout->Invalidate();
         }
 
         *result = TRUE;

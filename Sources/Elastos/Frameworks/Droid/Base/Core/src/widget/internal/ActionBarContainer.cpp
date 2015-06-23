@@ -2,7 +2,7 @@
 #include "internal/ActionBarContainer.h"
 #include <R.h>
 #include "widget/CFrameLayoutLayoutParams.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Droid::App::IActionBar;
@@ -44,7 +44,7 @@ ECode ActionBarContainer::Init(
             ARRAY_SIZE(R::styleable::ActionBar));
 
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetDrawable(R::styleable::ActionBar_background, (IDrawable**)&mBackground);
 

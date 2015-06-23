@@ -44,7 +44,7 @@ ECode CAudioManagerHelper::GetDefaultStreamVolume(
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(const_cast<Int32*>(CAudioManager::DEFAULT_STREAM_VOLUME), 10);
 
     *defaultStreamVolume = array;
-    INTERFACE_ADDREF(*defaultStreamVolume);
+    REFCOUNT_ADD(*defaultStreamVolume);
     return NOERROR;
 }
 

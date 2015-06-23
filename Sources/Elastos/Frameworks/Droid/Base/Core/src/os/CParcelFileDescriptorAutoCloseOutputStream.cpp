@@ -47,12 +47,12 @@ ECode CParcelFileDescriptorAutoCloseOutputStream::WriteBytes(
     return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer);
 }
 
-ECode CParcelFileDescriptorAutoCloseOutputStream::WriteBytesEx(
+ECode CParcelFileDescriptorAutoCloseOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytesEx(buffer, offset, count);
+    return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer, offset, count);
 }
 
 ECode CParcelFileDescriptorAutoCloseOutputStream::CheckError(
@@ -75,7 +75,7 @@ ECode CParcelFileDescriptorAutoCloseOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = ParcelFileDescriptor::AutoCloseOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

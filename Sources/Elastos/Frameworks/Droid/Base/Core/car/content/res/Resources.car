@@ -129,7 +129,7 @@ module
          * @see #obtainStyledAttributes(int[])
          * @see #obtainStyledAttributes(AttributeSet, int[], int, int)
          */
-        ObtainStyledAttributesEx(
+        ObtainStyledAttributes(
             [in] Int32 resid,
             [in] ArrayOf<Int32>* attrs,
             [out] ITypedArray** styles);
@@ -184,7 +184,7 @@ module
          * @see #obtainStyledAttributes(int[])
          * @see #obtainStyledAttributes(int, int[])
          */
-        ObtainStyledAttributesEx2(
+        ObtainStyledAttributes(
             [in] IAttributeSet* set,
             [in] ArrayOf<Int32>* attrs,
             [in] Int32 defStyleAttr,
@@ -317,7 +317,7 @@ module
          * @return String The string data associated with the resource,
          * stripped of styled text information.
          */
-        GetStringEx(
+        GetString(
             [in] Int32 id,
             [in] ArrayOf<IInterface*>* formatArgs,
             [out] String* str);
@@ -347,7 +347,7 @@ module
          * @return String The string data associated with the resource,
          * stripped of styled text information.
          */
-        GetQuantityStringEx(
+        GetQuantityString(
             [in] Int32 id,
             [in] Int32 quantity,
             [in] ArrayOf<IInterface*>* formatArgs,
@@ -390,7 +390,7 @@ module
          * @return CharSequence The string data associated with the resource, plus
          *         possibly styled text information, or def if id is 0 or not found.
          */
-        GetTextEx(
+        GetText(
             [in] Int32 id,
             [in] ICharSequence* def,
             [out] ICharSequence** csq);
@@ -846,7 +846,7 @@ module
          * :-|:------------|
          * @throws NotFoundException Throws NotFoundException | if the given ID does not exist.
          */
-        OpenRawResourceEx(
+        OpenRawResource(
             [in] Int32 id,
             [in] ITypedValue* value,
             [out] IInputStream** res);
@@ -947,7 +947,7 @@ module
          * @throws NotFoundException Throws NotFoundException | if the given ID does not exist.
          *
          */
-         GetValueEx(
+         GetValue(
             [in] String name,
             [in] ITypedValue* outValue,
             [in] Boolean resolveRefs);
@@ -990,7 +990,7 @@ module
         /**
          * @hide
          */
-        UpdateConfigurationEx(
+        UpdateConfiguration(
             [in] IConfiguration* config,
             [in] IDisplayMetrics* metrics,
             [in] ICompatibilityInfo* compat);
@@ -1262,7 +1262,7 @@ module
             [in] IDisplayMetrics* metrics,
             [in] ICompatibilityInfo* compat);
 
-        UpdateSystemConfigurationEx(
+        UpdateSystemConfiguration(
             [in] IConfiguration* config,
             [in] IDisplayMetrics* metrics);
     }

@@ -14,7 +14,7 @@
 //#include "util/CEventLogTags.h"
 //#include "view/WindowManagerPolicy.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CServiceManager;
@@ -1184,7 +1184,7 @@ ECode ActivityStack::ActivityPaused(
     Int32 index = GetIndexOfTokenLocked(token);
     if (index >= 0) {
         r = mHistory[index];
-        mHandler->RemoveMessagesEx(PAUSE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+        mHandler->RemoveMessages(PAUSE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
 
         if (mPausingActivity == r) {
             // if (DEBUG_STATES) Slogger::V(TAG, String("Moving to PAUSED: ") + r
@@ -1210,7 +1210,7 @@ ECode ActivityStack::ActivityStoppedLocked(
     assert(r != NULL);
     if (r->mState != ActivityState_STOPPING) {
         Slogger::I(TAG, "Activity reported stop, but no longer stopping: %p", r);
-        mHandler->RemoveMessagesEx(STOP_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+        mHandler->RemoveMessages(STOP_TIMEOUT_MSG, r->Probe(EIID_IInterface));
         return NOERROR;
     }
     if (DEBUG_SAVED_STATE) Slogger::I(TAG, "Saving icicle of %p : ", r, icicle);
@@ -1223,7 +1223,7 @@ ECode ActivityStack::ActivityStoppedLocked(
     }
     if (!r->mStopped) {
         if (DEBUG_STATES) Slogger::V(TAG, "Moving to STOPPED: %p (stop complete)", r);
-        mHandler->RemoveMessagesEx(STOP_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+        mHandler->RemoveMessages(STOP_TIMEOUT_MSG, r->Probe(EIID_IInterface));
 
         r->mStopped = TRUE;
         r->mState = ActivityState_STOPPED;
@@ -4246,7 +4246,7 @@ AutoPtr<ActivityRecord> ActivityStack::ActivityIdleInternal(
         AutoPtr<ActivityRecord> r;
         ActivityRecord::ForToken(token, (ActivityRecord**)&r);
         if (r != NULL) {
-            mHandler->RemoveMessagesEx(IDLE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+            mHandler->RemoveMessages(IDLE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
             r->FinishLaunchTickingLocked();
         }
 
@@ -4800,10 +4800,10 @@ ECode ActivityStack::CleanUpActivityLocked(
 ECode ActivityStack::RemoveTimeoutsForActivityLocked(
     /* [in] */ ActivityRecord* r)
 {
-    mHandler->RemoveMessagesEx(PAUSE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
-    mHandler->RemoveMessagesEx(STOP_TIMEOUT_MSG, r->Probe(EIID_IInterface));
-    mHandler->RemoveMessagesEx(IDLE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
-    mHandler->RemoveMessagesEx(DESTROY_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+    mHandler->RemoveMessages(PAUSE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+    mHandler->RemoveMessages(STOP_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+    mHandler->RemoveMessages(IDLE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+    mHandler->RemoveMessages(DESTROY_TIMEOUT_MSG, r->Probe(EIID_IInterface));
     r->FinishLaunchTickingLocked();
     return NOERROR;
 }
@@ -5051,7 +5051,7 @@ ECode ActivityStack::ActivityDestroyed(
     AutoPtr<ActivityRecord> r;
     ActivityRecord::ForToken(token, (ActivityRecord**)&r);
     if (r != NULL) {
-         mHandler->RemoveMessagesEx(DESTROY_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+         mHandler->RemoveMessages(DESTROY_TIMEOUT_MSG, r->Probe(EIID_IInterface));
     }
 
     Int32 index = GetIndexOfActivityLocked(r);
@@ -5768,7 +5768,7 @@ Boolean ActivityStack::RelaunchActivityLocked(
         r->mState = ActivityState_RESUMED;
     }
     else {
-        mHandler->RemoveMessagesEx(PAUSE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
+        mHandler->RemoveMessages(PAUSE_TIMEOUT_MSG, r->Probe(EIID_IInterface));
     }
 
     return TRUE;

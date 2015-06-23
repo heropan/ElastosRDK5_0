@@ -3,7 +3,7 @@
 #include "graphics/drawable/InsetDrawable.h"
 #include "graphics/drawable/CInsetDrawable.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 
 using Elastos::Utility::Logging::Logger;
@@ -31,7 +31,7 @@ InsetDrawable::InsetState::InsetState(
         AutoPtr<IDrawableConstantState> state;
         orig->mDrawable->GetConstantState((IDrawableConstantState**)&state);
         if (res != NULL) {
-            state->NewDrawableEx(res, (IDrawable**)&mDrawable);
+            state->NewDrawable(res, (IDrawable**)&mDrawable);
         }
         else {
             state->NewDrawable((IDrawable**)&mDrawable);
@@ -52,7 +52,7 @@ ECode InsetDrawable::InsetState::NewDrawable(
     return CInsetDrawable::New((Handle32)this, NULL, (IInsetDrawable**)drawable);
 }
 
-ECode InsetDrawable::InsetState::NewDrawableEx(
+ECode InsetDrawable::InsetState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -294,7 +294,7 @@ void InsetDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
     CRect* r = mTmpRect;
-    r->SetEx(bounds);
+    r->Set(bounds);
 
     r->mLeft += mInsetState->mInsetLeft;
     r->mTop += mInsetState->mInsetTop;

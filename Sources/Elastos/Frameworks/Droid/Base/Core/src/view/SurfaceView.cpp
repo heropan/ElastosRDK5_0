@@ -8,7 +8,7 @@
 #include "graphics/PixelFormat.h"
 #include "os/SystemClock.h"
 #include "os/SystemProperties.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "provider/Settings.h"
 
 using Elastos::Core::CStringWrapper;
@@ -168,7 +168,7 @@ ECode SurfaceView::_SurfaceHolder::SetKeepScreenOn(
     /* [in] */ Boolean screenOn)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx2(SurfaceView::KEEP_SCREEN_ON_MSG,
+    mHost->mHandler->ObtainMessage(SurfaceView::KEEP_SCREEN_ON_MSG,
         screenOn ? 1 : 0, 0, (IMessage**)&msg);
     Boolean result;
     return mHost->mHandler->SendMessage(msg, &result);
@@ -180,18 +180,18 @@ ECode SurfaceView::_SurfaceHolder::LockCanvas(
     VALIDATE_NOT_NULL(canvas);
     AutoPtr<ICanvas> _canvas = InternalLockCanvas(NULL);
     *canvas = _canvas.Get();
-    INTERFACE_ADDREF(*canvas);
+    REFCOUNT_ADD(*canvas);
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::LockCanvasEx(
+ECode SurfaceView::_SurfaceHolder::LockCanvas(
     /* [in]*/ IRect* dirty,
     /* [out]*/ ICanvas** canvas)
 {
     VALIDATE_NOT_NULL(canvas);
     AutoPtr<ICanvas> _canvas = InternalLockCanvas(dirty);
     *canvas = _canvas.Get();
-    INTERFACE_ADDREF(*canvas);
+    REFCOUNT_ADD(*canvas);
     return NOERROR;
 }
 
@@ -208,7 +208,7 @@ ECode SurfaceView::_SurfaceHolder::GetSurface(
 {
     VALIDATE_NOT_NULL(surface);
     *surface = mHost->mSurface;
-    INTERFACE_ADDREF(*surface);
+    REFCOUNT_ADD(*surface);
     return NOERROR;
 }
 
@@ -217,7 +217,7 @@ ECode SurfaceView::_SurfaceHolder::GetSurfaceFrame(
 {
     VALIDATE_NOT_NULL(rect);
     *rect = mHost->mSurfaceFrame;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
     return NOERROR;
 }
 
@@ -239,7 +239,7 @@ AutoPtr<ICanvas> SurfaceView::_SurfaceHolder::InternalLockCanvas(
                 CRect::New((IRect**)&mHost->mTmpDirty);
             }
 
-            mHost->mTmpDirty->SetEx(mHost->mSurfaceFrame);
+            mHost->mTmpDirty->Set(mHost->mSurfaceFrame);
             dirty = mHost->mTmpDirty;
         }
 
@@ -677,7 +677,7 @@ Boolean SurfaceView::GatherTransparentRegion(
             Int32 t = (*mLocation)[1];
 
             Boolean res;
-            region->OpEx(l, t, l+w, t+h, RegionOp_UNION, &res);
+            region->Op(l, t, l+w, t+h, RegionOp_UNION, &res);
         }
     }
     if (PixelFormat::FormatHasAlpha(mRequestedFormat)) {
@@ -693,7 +693,7 @@ ECode SurfaceView::Draw(
         // draw() is not called when PFLAG_SKIP_DRAW is set
         if ((mPrivateFlags & PFLAG_SKIP_DRAW) == 0) {
             // punch a whole in the view-hierarchy below us
-            canvas->DrawColorEx(0, PorterDuffMode_CLEAR);
+            canvas->DrawColor(0, PorterDuffMode_CLEAR);
         }
     }
     return View::Draw(canvas);
@@ -706,7 +706,7 @@ void SurfaceView::DispatchDraw(
         // if PFLAG_SKIP_DRAW is cleared, draw() has already punched a hole
         if ((mPrivateFlags & PFLAG_SKIP_DRAW) == PFLAG_SKIP_DRAW) {
             // punch a whole in the view-hierarchy below us
-            canvas->DrawColorEx(0, PorterDuffMode_CLEAR);
+            canvas->DrawColor(0, PorterDuffMode_CLEAR);
         }
     }
 
@@ -860,7 +860,7 @@ ECode SurfaceView::UpdateWindow(
                         mWindow, ((CSurfaceViewWindow*)mWindow.Get())->mSeq, mLayout,
                         mVisible ? IView::VISIBLE : IView::GONE,
                         displayId, mContentInsets, (IRect**)&outContentInsets, &result);
-                mContentInsets->SetEx(outContentInsets);
+                mContentInsets->Set(outContentInsets);
             }
 
             Boolean realSizeChanged;
@@ -898,9 +898,9 @@ ECode SurfaceView::UpdateWindow(
                         (IConfiguration**)&outConfig, &relayoutResult,
                         (ISurface**)&outSurface);
                 mSurfaceLock.Lock();
-                mWinFrame->SetEx(outFrame);
-                mContentInsets->SetEx(outContentInsets);
-                mVisibleInsets->SetEx(outVisibleInsets);
+                mWinFrame->Set(outFrame);
+                mContentInsets->Set(outContentInsets);
+                mVisibleInsets->Set(outVisibleInsets);
                 mConfiguration->SetTo(outConfig);
                 Handle32 nativeSurface;
                 outSurface->GetSurface(&nativeSurface);

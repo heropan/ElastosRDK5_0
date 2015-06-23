@@ -5,8 +5,8 @@
 #include "os/Binder.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;

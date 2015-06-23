@@ -3,9 +3,9 @@
 #include "os/CBundle.h"
 #include "text/TextUtils.h"
 #include "view/CAbsSavedStateHelper.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::EIID_IComparable;
 using Elastos::Core::StringBuilder;
@@ -171,7 +171,7 @@ ECode Preference::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -186,7 +186,7 @@ void Preference::Init(
             const_cast<Int32 *>(R::styleable::Preference),
             ARRAY_SIZE(R::styleable::Preference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     Int32 indexCount;
     a->GetIndexCount(&indexCount);
@@ -292,7 +292,7 @@ ECode Preference::GetIntent(
 {
     VALIDATE_NOT_NULL(intent)
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -320,7 +320,7 @@ ECode Preference::GetExtras(
         CBundle::New((IBundle**)&mExtras);
     }
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras)
+    REFCOUNT_ADD(*extras)
     return NOERROR;
 }
 
@@ -329,7 +329,7 @@ ECode Preference::PeekExtras(
 {
     VALIDATE_NOT_NULL(extras)
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras)
+    REFCOUNT_ADD(*extras)
     return NOERROR;
 }
 
@@ -383,7 +383,7 @@ ECode Preference::GetView(
     }
     OnBindView(convertView);
     *view = convertView;
-    INTERFACE_ADDREF(*view)
+    REFCOUNT_ADD(*view)
     return NOERROR;
 }
 
@@ -396,7 +396,7 @@ ECode Preference::OnCreateView(
     mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&layoutInflater);
 
     AutoPtr<IView> layout;
-    layoutInflater->InflateEx2(mLayoutResId, parent, FALSE, (IView**)&layout);
+    layoutInflater->Inflate(mLayoutResId, parent, FALSE, (IView**)&layout);
 
     AutoPtr<IView> v;
     layout->FindViewById(R::id::widget_frame, (IView**)&v);
@@ -411,7 +411,7 @@ ECode Preference::OnCreateView(
         }
     }
     *view = layout;
-    INTERFACE_ADDREF(*view)
+    REFCOUNT_ADD(*view)
     return NOERROR;
 }
 
@@ -533,7 +533,7 @@ ECode Preference::SetTitle(
     return NOERROR;
 }
 
-ECode Preference::SetTitleEx(
+ECode Preference::SetTitle(
     /* [in] */ Int32 titleResId)
 {
     String title;
@@ -558,7 +558,7 @@ ECode Preference::GetTitle(
 {
     VALIDATE_NOT_NULL(title)
     *title = mTitle;
-    INTERFACE_ADDREF(*title)
+    REFCOUNT_ADD(*title)
     return NOERROR;
 }
 
@@ -572,7 +572,7 @@ ECode Preference::SetIcon(
     return NOERROR;
 }
 
-ECode Preference::SetIconEx(
+ECode Preference::SetIcon(
     /* [in] */ Int32 iconResId)
 {
     mIconResId = iconResId;
@@ -588,7 +588,7 @@ ECode Preference::GetIcon(
 {
     VALIDATE_NOT_NULL(drawable)
     *drawable = mIcon;
-    INTERFACE_ADDREF(*drawable)
+    REFCOUNT_ADD(*drawable)
     return NOERROR;
 }
 
@@ -597,7 +597,7 @@ ECode Preference::GetSummary(
 {
     VALIDATE_NOT_NULL(summary)
     *summary = mSummary;
-    INTERFACE_ADDREF(*summary)
+    REFCOUNT_ADD(*summary)
     return NOERROR;
 }
 
@@ -619,7 +619,7 @@ ECode Preference::SetSummary(
     return NOERROR;
 }
 
-ECode Preference::SetSummaryEx(
+ECode Preference::SetSummary(
     /* [in] */ Int32 summaryResId)
 {
     String summary;
@@ -786,7 +786,7 @@ ECode Preference::GetOnPreferenceChangeListener(
 {
     VALIDATE_NOT_NULL(listener)
     *listener = mOnChangeListener;
-    INTERFACE_ADDREF(*listener)
+    REFCOUNT_ADD(*listener)
     return NOERROR;
 }
 
@@ -802,7 +802,7 @@ ECode Preference::GetOnPreferenceClickListener(
 {
     VALIDATE_NOT_NULL(listener)
     *listener = mOnClickListener;
-    INTERFACE_ADDREF(*listener)
+    REFCOUNT_ADD(*listener)
     return NOERROR;
 }
 
@@ -857,7 +857,7 @@ ECode Preference::GetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = mContext;
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -954,7 +954,7 @@ ECode Preference::GetPreferenceManager(
 {
     VALIDATE_NOT_NULL(manager)
     *manager = mPreferenceManager;
-    INTERFACE_ADDREF(*manager)
+    REFCOUNT_ADD(*manager)
     return NOERROR;
 }
 
@@ -1494,7 +1494,7 @@ ECode Preference::OnSaveInstanceState(
     AutoPtr<IAbsSavedState> emptyState;
     helper->GetEmptyState((IAbsSavedState**)&emptyState);
     *state = IParcelable::Probe(emptyState);
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 

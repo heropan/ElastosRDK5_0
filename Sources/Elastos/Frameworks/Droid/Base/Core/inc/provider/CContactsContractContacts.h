@@ -124,7 +124,7 @@ public:
      * Build a {@link #CONTENT_LOOKUP_URI} lookup {@link Uri} using the
      * given {@link ContactsContract.Contacts#_ID} and {@link #LOOKUP_KEY}.
      */
-    CARAPI GetLookupUriEx(
+    CARAPI GetLookupUri(
         /* [in] */ Int64 contactId,
         /* [in] */ const String& lookupKey,
         /* [out] */ IUri** uri);
@@ -182,7 +182,7 @@ public:
      * @see #openContactPhotoInputStream(ContentResolver, Uri, boolean), if instead
      * of the thumbnail the high-res picture is preferred
      */
-    CARAPI OpenContactPhotoInputStreamEx(
+    CARAPI OpenContactPhotoInputStream(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* contactUri,
         /* [out] */ IInputStream** stream);

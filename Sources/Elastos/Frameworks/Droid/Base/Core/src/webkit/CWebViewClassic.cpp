@@ -60,10 +60,10 @@
 #include "widget/CLinearLayout.h"
 #include "widget/CView.h"
 #include "widget/CToastHelper.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -311,7 +311,7 @@ void _CWebViewClassicWebViewInputConnection::SetTextAndKeepSelection(
     Int32 length;
     editable->GetLength(&length);
     text = LimitReplaceTextByMaxLength(text, length);
-    editable->ReplaceEx(0, length, text);
+    editable->Replace(0, length, text);
     RestartInput();
     // Keep the previous selection.
     editable->GetLength(&length);
@@ -329,7 +329,7 @@ void _CWebViewClassicWebViewInputConnection::ReplaceSelection(
     Int32 selectionEnd = Selection::GetSelectionEnd(editable);
     text = LimitReplaceTextByMaxLength(text, selectionEnd - selectionStart);
     SetNewText(selectionStart, selectionEnd, text);
-    editable->ReplaceEx(selectionStart, selectionEnd, text);
+    editable->Replace(selectionStart, selectionEnd, text);
     RestartInput();
     // Move caret to the end of the new text
     Int32 length;
@@ -438,12 +438,12 @@ Boolean _CWebViewClassicWebViewInputConnection::PerformEditorAction(
     switch (editorAction) {
     case IEditorInfo::IME_ACTION_NEXT: {
         Boolean result;
-        mOwner->mWebView->RequestFocusEx(IView::FOCUS_FORWARD, &result);
+        mOwner->mWebView->RequestFocus(IView::FOCUS_FORWARD, &result);
         break;
     }
     case IEditorInfo::IME_ACTION_PREVIOUS: {
         Boolean result;
-        mOwner->mWebView->RequestFocusEx(IView::FOCUS_BACKWARD, &result);
+        mOwner->mWebView->RequestFocus(IView::FOCUS_BACKWARD, &result);
         break;
     }
     case IEditorInfo::IME_ACTION_DONE:
@@ -653,7 +653,7 @@ void _CWebViewClassicWebViewInputConnection::SetNewText(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx6(mOwner->mPrivateHandler, CWebViewClassic::REPLACE_TEXT, start, end, text, (IMessage**)&msg);
+        helper->Obtain(mOwner->mPrivateHandler, CWebViewClassic::REPLACE_TEXT, start, end, text, (IMessage**)&msg);
         msg->SendToTarget();
     }
     if (mOwner->mAutoCompletePopup != NULL) {
@@ -699,7 +699,7 @@ void _CWebViewClassicWebViewInputConnection::SendCharacter(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx5(mOwner->mPrivateHandler, CWebViewClassic::KEY_PRESS, (Int32)c, 0, (IMessage**)&msg);
+        helper->Obtain(mOwner->mPrivateHandler, CWebViewClassic::KEY_PRESS, (Int32)c, 0, (IMessage**)&msg);
         msg->SendToTarget();
     }
 }
@@ -859,7 +859,7 @@ CWebViewClassic::PastePopupWindow::PastePopupWindow(
     mPasteTextView = ITextView::Probe(v);
     mPasteTextView->SetLayoutParams(wrapContent);
     mContentView->AddView(mPasteTextView);
-    mPasteTextView->SetTextEx3(R::string::paste);
+    mPasteTextView->SetText(R::string::paste);
     mPasteTextView->SetOnClickListener(this);
     SetContentView(mContentView);
 }
@@ -901,7 +901,7 @@ void CWebViewClassic::PastePopupWindow::Show(
     if (IsShowing(&isShowing), !isShowing) {
         ShowAtLocation(mOwner->mWebView, IGravity::NO_GRAVITY, x, y);
     }
-    UpdateEx2(x, y, width, height);
+    Update(x, y, width, height);
 }
 
 void CWebViewClassic::PastePopupWindow::Hide()
@@ -1186,7 +1186,7 @@ ECode CWebViewClassic::PastePopupWindow::ShowAtLocation(
     return PopupWindow::ShowAtLocation(parent, gravity, x, y);
 }
 
-ECode CWebViewClassic::PastePopupWindow::ShowAtLocationEx(
+ECode CWebViewClassic::PastePopupWindow::ShowAtLocation(
     /* [in] */ IBinder* token,
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 x,
@@ -1201,7 +1201,7 @@ ECode CWebViewClassic::PastePopupWindow::ShowAsDropDown(
     return PopupWindow::ShowAsDropDown(anchor);
 }
 
-ECode CWebViewClassic::PastePopupWindow::ShowAsDropDownEx(
+ECode CWebViewClassic::PastePopupWindow::ShowAsDropDown(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 xoff,
     /* [in] */ Int32 yoff)
@@ -1226,7 +1226,7 @@ ECode CWebViewClassic::PastePopupWindow::GetMaxAvailableHeight(
     return NOERROR;
 }
 
-ECode CWebViewClassic::PastePopupWindow::GetMaxAvailableHeightEx(
+ECode CWebViewClassic::PastePopupWindow::GetMaxAvailableHeight(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 yOffset,
     /* [out] */ Int32* maxAvailableHeight)
@@ -1236,7 +1236,7 @@ ECode CWebViewClassic::PastePopupWindow::GetMaxAvailableHeightEx(
     return NOERROR;
 }
 
-ECode CWebViewClassic::PastePopupWindow::GetMaxAvailableHeightEx2(
+ECode CWebViewClassic::PastePopupWindow::GetMaxAvailableHeight(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 yOffset,
     /* [in] */ Boolean ignoreBottomDecorations,
@@ -1263,14 +1263,14 @@ ECode CWebViewClassic::PastePopupWindow::Update()
     return PopupWindow::Update();
 }
 
-ECode CWebViewClassic::PastePopupWindow::UpdateEx(
+ECode CWebViewClassic::PastePopupWindow::Update(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     return PopupWindow::Update(width, height);
 }
 
-ECode CWebViewClassic::PastePopupWindow::UpdateEx2(
+ECode CWebViewClassic::PastePopupWindow::Update(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -1279,7 +1279,7 @@ ECode CWebViewClassic::PastePopupWindow::UpdateEx2(
     return PopupWindow::Update(x, y, width, height);
 }
 
-ECode CWebViewClassic::PastePopupWindow::UpdateEx3(
+ECode CWebViewClassic::PastePopupWindow::Update(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
@@ -1289,7 +1289,7 @@ ECode CWebViewClassic::PastePopupWindow::UpdateEx3(
     return PopupWindow::Update(x, y, width, height, force);
 }
 
-ECode CWebViewClassic::PastePopupWindow::UpdateEx4(
+ECode CWebViewClassic::PastePopupWindow::Update(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
@@ -1297,7 +1297,7 @@ ECode CWebViewClassic::PastePopupWindow::UpdateEx4(
     return PopupWindow::Update(anchor, width, height);
 }
 
-ECode CWebViewClassic::PastePopupWindow::UpdateEx5(
+ECode CWebViewClassic::PastePopupWindow::Update(
     /* [in] */ IView* anchor,
     /* [in] */ Int32 xoff,
     /* [in] */ Int32 yoff,
@@ -2159,11 +2159,11 @@ ECode CWebViewClassic::PrivateHandler::HandleMessage(
                 AutoPtr<ICharSequence> cs;
                 CStringWrapper::New(initData->mText, (ICharSequence**)&cs);
                 mHost->mInputConnection->SetTextAndKeepSelection(cs);
-                mHost->mEditTextContentBounds->SetEx(initData->mContentBounds);
+                mHost->mEditTextContentBounds->Set(initData->mContentBounds);
                 mHost->mEditTextLayerId = initData->mNodeLayerId;
                 mHost->NativeMapLayerRect(mHost->mNativeClass, mHost->mEditTextLayerId,
                         mHost->mEditTextContentBounds);
-                mHost->mEditTextContent->SetEx(initData->mClientRect);
+                mHost->mEditTextContent->Set(initData->mClientRect);
                 mHost->RelocateAutoCompletePopup();
             }
             break;
@@ -2239,7 +2239,7 @@ ECode CWebViewClassic::PrivateHandler::HandleMessage(
             if (arg1 == mHost->mFieldPointer) {
                 AutoPtr<IInterface> obj;
                 msg->GetObj((IInterface**)&obj);
-                mHost->mEditTextContent->SetEx(IRect::Probe(obj));
+                mHost->mEditTextContent->Set(IRect::Probe(obj));
             }
             break;
         }
@@ -2254,7 +2254,7 @@ ECode CWebViewClassic::PrivateHandler::HandleMessage(
         case UPDATE_CONTENT_BOUNDS: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            mHost->mEditTextContentBounds->SetEx(IRect::Probe(obj));
+            mHost->mEditTextContentBounds->Set(IRect::Probe(obj));
             mHost->NativeMapLayerRect(mHost->mNativeClass, mHost->mEditTextLayerId,
                     mHost->mEditTextContentBounds);
             break;
@@ -2402,7 +2402,7 @@ ECode CWebViewClassic::_FocusTransitionDrawable::Draw(
         AutoPtr<IPoint> from;
         CPoint::New(centerX, centerY, (IPoint**)&from);
         Boolean result;
-        mNewRegion->GetBoundsEx(bounds, &result);
+        mNewRegion->GetBounds(bounds, &result);
         bounds->GetCenterX(&centerX);
         bounds->GetCenterY(&centerY);
         AutoPtr<IPoint> to;
@@ -2426,11 +2426,11 @@ ECode CWebViewClassic::_FocusTransitionDrawable::Draw(
     Float tx = translateX * mProgress;
     Float ty = translateY * mProgress;
     Int32 save;
-    canvas->SaveEx(ICanvas::MATRIX_SAVE_FLAG, &save);
+    canvas->Save(ICanvas::MATRIX_SAVE_FLAG, &save);
     canvas->Translate(-tx, -ty);
     Boolean bNext = FALSE;
     while ((iter->Next(r, &bNext), bNext)) {
-        canvas->DrawRectEx(r, mPaint);
+        canvas->DrawRect(r, mPaint);
     }
     canvas->RestoreToCount(save);
     iter = NULL;
@@ -2438,14 +2438,14 @@ ECode CWebViewClassic::_FocusTransitionDrawable::Draw(
     r = NULL;
     CRect::New((IRect**)&r);
     mPaint->SetAlpha(alpha);
-    canvas->SaveEx(ICanvas::MATRIX_SAVE_FLAG, &save);
+    canvas->Save(ICanvas::MATRIX_SAVE_FLAG, &save);
     mTranslate->GetX(&translateX);
     mTranslate->GetY(&translateY);
     tx = translateX - tx;
     ty = translateY - ty;
     canvas->Translate(tx, ty);
     while ((iter->Next(r, &bNext), bNext)) {
-        canvas->DrawRectEx(r, mPaint);
+        canvas->DrawRect(r, mPaint);
     }
     canvas->RestoreToCount(save);
     return NOERROR;
@@ -2525,7 +2525,7 @@ ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::GetView(
             // If that changes, the class cast will no longer be valid.
             if (mHost->mMultiple) {
                 assert(ICheckedTextView::Probe(convertView) != NULL);
-                ICheckedTextView::Probe(convertView)->SetCheckMarkDrawableEx(NULL);
+                ICheckedTextView::Probe(convertView)->SetCheckMarkDrawable(NULL);
             }
         }
         else {
@@ -2686,10 +2686,10 @@ ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::AddAll(
     return ArrayAdapter::AddAll(collection);
 }
 
-ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::AddAllEx(
+ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    return ArrayAdapter::AddAllEx(items);
+    return ArrayAdapter::AddAll(items);
 }
 
 ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::Insert(
@@ -2956,7 +2956,7 @@ ECode CWebViewClassic::ItemClickListener::OnItemClick(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx5(NULL, CWebViewCore::EventHub::SINGLE_LISTBOX_CHOICE,
+    helper->Obtain(NULL, CWebViewCore::EventHub::SINGLE_LISTBOX_CHOICE,
             (Int32)id, 0, (IMessage**)&msg);
     mHost->mListBoxMessage = msg;
     if (mHost->mListBoxDialog != NULL) {
@@ -3694,9 +3694,9 @@ void CWebViewClassic::OnHandleUiTouchEvent(
     for (Int32 i = 0; i < count; i++) {
         if (skipIndex == i) continue;
         Float x, y;
-        ev->GetXEx(i, &x);
+        ev->GetX(i, &x);
         sumX += x;
-        ev->GetYEx(i, &y);
+        ev->GetY(i, &y);
         sumY += y;
     }
     Int32 div = pointerUp ? count - 1 : count;
@@ -3817,7 +3817,7 @@ AutoPtr<IContext> CWebViewClassic::GetContext()
 
 void CWebViewClassic::Invalidate()
 {
-    mWebView->InvalidateEx2();
+    mWebView->Invalidate();
 }
 
 // Setters for the Scroll X & Y, without invoking the onScrollChanged etc code paths.
@@ -4221,7 +4221,7 @@ Boolean CWebViewClassic::OnSavePassword(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> remember;
-        helper->ObtainEx3(mPrivateHandler, REMEMBER_PASSWORD, (IMessage**)&remember);
+        helper->Obtain(mPrivateHandler, REMEMBER_PASSWORD, (IMessage**)&remember);
         AutoPtr<IBundle> data;
         remember->GetData((IBundle**)&data);
         data->PutString(String("host"), schemePlusHost);
@@ -4230,7 +4230,7 @@ Boolean CWebViewClassic::OnSavePassword(
         remember->SetObj(resumeMsg);
 
         AutoPtr<IMessage> neverRemember;
-        helper->ObtainEx3(mPrivateHandler, NEVER_REMEMBER_PASSWORD, (IMessage**)&neverRemember);
+        helper->Obtain(mPrivateHandler, NEVER_REMEMBER_PASSWORD, (IMessage**)&neverRemember);
         data = NULL;
         neverRemember->GetData((IBundle**)&data);
         data->PutString(String("host"), schemePlusHost);
@@ -4835,8 +4835,8 @@ void CWebViewClassic::RestoreHistoryPictureFields(
     /* [in] */ IBundle* b)
 {
     Int32 sx, sy;
-    b->GetInt32Ex(String("scrollX"), 0, &sx);
-    b->GetInt32Ex(String("scrollY"), 0, &sy);
+    b->GetInt32(String("scrollX"), 0, &sx);
+    b->GetInt32(String("scrollY"), 0, &sy);
 
     mDrawHistory = TRUE;
     mHistoryPicture = p;
@@ -4978,7 +4978,7 @@ ECode CWebViewClassic::RestoreState(
             }
             for (Int32 i = 0; i < size; i++) {
                 AutoPtr<IInterface> e;
-                history->RemoveEx(0, (IInterface**)&e);
+                history->Remove(0, (IInterface**)&e);
                 AutoPtr<IArrayOf> data = IArrayOf::Probe(e);
                 if (data == NULL) {
                     // If we somehow have null data, we cannot reconstruct
@@ -5031,7 +5031,7 @@ ECode CWebViewClassic::RestoreState(
 /**
  * See {@link WebView#loadUrl(String, Map)}
  */
-ECode CWebViewClassic::LoadUrlEx(
+ECode CWebViewClassic::LoadUrl(
     /* [in] */ const String& url,
     /* [in] */ IMap* additionalHttpHeaders)
 {
@@ -5157,7 +5157,7 @@ ECode CWebViewClassic::SaveWebArchive(
 /**
  * See {@link WebView#saveWebArchive(String, boolean, ValueCallback)}
  */
-ECode CWebViewClassic::SaveWebArchiveEx(
+ECode CWebViewClassic::SaveWebArchive(
     /* [in] */ const String& basename,
     /* [in] */ Boolean autoname,
     /* [in] */ IValueCallback* callback)
@@ -5733,7 +5733,7 @@ void CWebViewClassic::ViewInvalidate(
 {
     Float scale = mZoomManager->GetScale();
     Int32 dy = GetTitleHeight();
-    mWebView->InvalidateEx((Int32)Elastos::Core::Math::Floor(l * scale),
+    mWebView->Invalidate((Int32)Elastos::Core::Math::Floor(l * scale),
             (Int32)Elastos::Core::Math::Floor(t * scale) + dy,
             (Int32)Elastos::Core::Math::Ceil(r * scale),
             (Int32)Elastos::Core::Math::Ceil(b * scale) + dy);
@@ -5750,7 +5750,7 @@ void CWebViewClassic::ViewInvalidateDelayed(
 {
     Float scale = mZoomManager->GetScale();
     Int32 dy = GetTitleHeight();
-    mWebView->PostInvalidateDelayedEx(delay,
+    mWebView->PostInvalidateDelayed(delay,
             (Int32)Elastos::Core::Math::Floor(l * scale),
             (Int32)Elastos::Core::Math::Floor(t * scale) + dy,
             (Int32)Elastos::Core::Math::Ceil(r * scale),
@@ -5824,10 +5824,10 @@ AutoPtr<IRect> CWebViewClassic::SendOurVisibleRect()
             mWebViewCore->SendMessage(CWebViewCore::EventHub::SET_SCROLL_OFFSET,
                     mSendScrollEvent ? 1 : 0, mScrollOffset);
         }
-        mLastVisibleRectSent->SetEx(mVisibleRect);
+        mLastVisibleRectSent->Set(mVisibleRect);
         mPrivateHandler->RemoveMessages(SWITCH_TO_LONGPRESS);
     }
-    if ((mWebView->GetGlobalVisibleRectEx(mGlobalVisibleRect, &result), result) &&
+    if ((mWebView->GetGlobalVisibleRect(mGlobalVisibleRect, &result), result) &&
         (mGlobalVisibleRect->Equals(mLastGlobalRect, &result), !result)) {
         if (DebugFlags::WEB_VIEW) {
             Int32 left, top, right, bottom;
@@ -5840,7 +5840,7 @@ AutoPtr<IRect> CWebViewClassic::SendOurVisibleRect()
         if (!mBlockWebkitViewMessages) {
             mWebViewCore->SendMessage(CWebViewCore::EventHub::SET_GLOBAL_BOUNDS, mGlobalVisibleRect);
         }
-        mLastGlobalRect->SetEx(mGlobalVisibleRect);
+        mLastGlobalRect->Set(mGlobalVisibleRect);
     }
     return mVisibleRect;
 }
@@ -7231,7 +7231,7 @@ void CWebViewClassic::DrawOverScrollBackground(
         AutoPtr<IBitmapFactory> factory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
         AutoPtr<IBitmap> bm;
-        factory->DecodeResourceEx(res, R::drawable::status_bar_background, (IBitmap**)&bm);
+        factory->DecodeResource(res, R::drawable::status_bar_background, (IBitmap**)&bm);
         AutoPtr<IBitmapShader> bs;
         CBitmapShader::New(bm,
                 ShaderTileMode_REPEAT, ShaderTileMode_REPEAT, (IBitmapShader**)&bs);
@@ -7251,14 +7251,14 @@ void CWebViewClassic::DrawOverScrollBackground(
     canvas->Save(NULL);
     canvas->Translate(GetScrollX(), GetScrollY());
     Boolean result;
-    canvas->ClipRectEx4(-GetScrollX(), top - GetScrollY(), right - GetScrollX(), bottom
+    canvas->ClipRect(-GetScrollX(), top - GetScrollY(), right - GetScrollX(), bottom
             - GetScrollY(), RegionOp_DIFFERENCE, &result);
     canvas->DrawPaint(mOverScrollBackground);
     canvas->Restore();
     // then draw the border
-    canvas->DrawRectEx2(-1, top - 1, right, bottom, mOverScrollBorder);
+    canvas->DrawRect(-1, top - 1, right, bottom, mOverScrollBorder);
     // next clip the region for the content
-    canvas->ClipRectEx6(0, top, right, bottom, &result);
+    canvas->ClipRect(0, top, right, bottom, &result);
 }
 
 ECode CWebViewClassic::OnDraw(
@@ -7325,7 +7325,7 @@ ECode CWebViewClassic::OnDraw(
         CRect::New((IRect**)&r);
         Boolean hasNext = FALSE;
         while (iter->Next(r, &hasNext), hasNext) {
-            canvas->DrawRectEx(r, mTouchHightlightPaint);
+            canvas->DrawRect(r, mTouchHightlightPaint);
         }
     }
     if (DEBUG_TOUCH_HIGHLIGHT) {
@@ -7636,7 +7636,7 @@ void CWebViewClassic::DrawHandle(
     Int32 x = ContentToViewDimension(pointX);
     Int32 y = ContentToViewDimension(pointY);
     bounds->Set(x - offset, y, x - offset + width, y + height);
-    drawable->SetBoundsEx(bounds);
+    drawable->SetBounds(bounds);
     drawable->SetAlpha(alpha);
     drawable->Draw(canvas);
 }
@@ -7660,7 +7660,7 @@ void CWebViewClassic::DrawTextSelectionHandles(
         mSelectHandleCenter->GetIntrinsicWidth(&width);
         mSelectHandleCenter->GetIntrinsicHeight(&height);
         mSelectHandleBaseBounds->Set(x, y, x + width, y + height);
-        mSelectHandleCenter->SetBoundsEx(mSelectHandleBaseBounds);
+        mSelectHandleCenter->SetBounds(mSelectHandleBaseBounds);
         mSelectHandleCenter->SetAlpha(mBaseAlpha->GetAlpha());
         mSelectHandleCenter->Draw(canvas);
     }
@@ -7864,7 +7864,7 @@ void CWebViewClassic::RequestFormData(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> update;
-        helper->ObtainEx3(mPrivateHandler, REQUEST_FORM_DATA, (IMessage**)&update);
+        helper->Obtain(mPrivateHandler, REQUEST_FORM_DATA, (IMessage**)&update);
         update->SetArg1(nodePointer);
         String url;
         GetUrl(&url);
@@ -8163,7 +8163,7 @@ ECode CWebViewClassic::OnKeyDown(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx3(mPrivateHandler, LONG_PRESS_CENTER, (IMessage**)&msg);
+            helper->Obtain(mPrivateHandler, LONG_PRESS_CENTER, (IMessage**)&msg);
             mPrivateHandler->SendMessageDelayed(msg, LONG_PRESS_TIMEOUT, result);
         }
     }
@@ -8508,7 +8508,7 @@ ECode CWebViewClassic::CopySelection(
         AutoPtr<IToastHelper> helper;
         CToastHelper::AcquireSingleton((IToastHelper**)&helper);
         AutoPtr<IToast> toast;
-        helper->MakeTextEx(mContext, R::string::text_copied, IToast::LENGTH_SHORT, (IToast**)&toast);
+        helper->MakeText(mContext, R::string::text_copied, IToast::LENGTH_SHORT, (IToast**)&toast);
         toast->Show();
         *copiedSomething = TRUE;
         AutoPtr<IClipboardManager> cm;
@@ -8744,14 +8744,14 @@ void CWebViewClassic::UpdateRectsForGL()
     // we should not draw
     Boolean visible = FALSE;
     mWebView->GetGlobalVisibleRect(mTempVisibleRect, mTempVisibleRectOffset, &visible);
-    mInvScreenRect->SetEx(mTempVisibleRect);
+    mInvScreenRect->Set(mTempVisibleRect);
     if (visible) {
         // Then need to invert the Y axis, just for GL
         AutoPtr<IView> rootView;
         mWebView->GetRootView((IView**)&rootView);
         Int32 rootViewHeight;
         rootView->GetHeight(&rootViewHeight);
-        mScreenRect->SetEx(mInvScreenRect);
+        mScreenRect->Set(mInvScreenRect);
         Int32 savedWebViewBottom, top;
         mInvScreenRect->GetBottom(&savedWebViewBottom);
         mInvScreenRect->GetTop(&top);
@@ -8873,7 +8873,7 @@ void CWebViewClassic::ScrollEditIntoView()
             ViewToContentY(GetScrollY() + GetViewHeightWithTitle()),
             (IRect**)&visibleRect);
     Boolean contains = FALSE;
-    if (visibleRect->ContainsEx2(mEditTextContentBounds, &contains), contains) {
+    if (visibleRect->Contains(mEditTextContentBounds, &contains), contains) {
         return; // no need to scroll
     }
     SyncSelectionCursors();
@@ -8921,7 +8921,7 @@ void CWebViewClassic::ScrollEditIntoView()
         }
     }
 
-    if (visibleRect->ContainsEx2(showRect, &contains), contains) {
+    if (visibleRect->Contains(showRect, &contains), contains) {
         return; // no need to scroll
     }
 
@@ -10211,7 +10211,7 @@ void CWebViewClassic::DoFling()
     Int32 maxX = ComputeMaxScrollX();
     Int32 maxY = ComputeMaxScrollY();
 
-    mVelocityTracker->ComputeCurrentVelocityEx(1000, mMaximumFling);
+    mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumFling);
     Float x, y;
     mVelocityTracker->GetXVelocity(&x);
     mVelocityTracker->GetYVelocity(&y);
@@ -11076,7 +11076,7 @@ ECode CWebViewClassic::SetNewPicture(
             || (mWebView->GetLayerType(&layerType), layerType != IView::LAYER_TYPE_NONE)) {
         // invalidate the screen so that the next repaint will show new content
         // TODO: partial invalidate
-        mWebView->InvalidateEx2();
+        mWebView->Invalidate();
     }
 
     // update the zoom information based on the new picture
@@ -11206,7 +11206,7 @@ void CWebViewClassic::SendBatchableInputMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> message;
-    helper->ObtainEx6(NULL, what, arg1, arg2, obj, (IMessage**)&message);
+    helper->Obtain(NULL, what, arg1, arg2, obj, (IMessage**)&message);
     if (mIsBatchingTextChanges) {
         mBatchedTextChanges.PushBack(message);
     }
@@ -11434,7 +11434,7 @@ void CWebViewClassic::AutoFillForm(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx5(mPrivateHandler, AUTOFILL_FORM, autoFillQueryId, 0, (IMessage**)&msg);
+    helper->Obtain(mPrivateHandler, AUTOFILL_FORM, autoFillQueryId, 0, (IMessage**)&msg);
     msg->SendToTarget();
 }
 

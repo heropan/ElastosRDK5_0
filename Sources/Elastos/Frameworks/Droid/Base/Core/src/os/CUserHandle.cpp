@@ -40,7 +40,7 @@ ECode CUserHandle::ToString(
     return UserHandle::ToString(str);
 }
 
-ECode CUserHandle::EqualsEx(
+ECode CUserHandle::Equals(
     /* [in] */ IUserHandle* other,
     /* [out] */ Boolean* equals)
 {
@@ -52,7 +52,7 @@ ECode CUserHandle::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* equals)
 {
-    return EqualsEx(IUserHandle::Probe(other), equals);
+    return Equals(IUserHandle::Probe(other), equals);
 }
 
 ECode CUserHandle::GetHashCode(

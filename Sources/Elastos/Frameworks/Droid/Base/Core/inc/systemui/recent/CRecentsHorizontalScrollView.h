@@ -3,10 +3,10 @@
 
 #include "_CRecentsHorizontalScrollView.h"
 #include "systemui/recent/RecentsHorizontalScrollView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
-#include "widget/HorizontalScrollViewMacro.h"
+
+
+
+
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IMotionEvent;

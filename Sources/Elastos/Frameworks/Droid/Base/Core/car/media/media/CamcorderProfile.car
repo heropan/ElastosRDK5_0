@@ -215,7 +215,7 @@ module
          * @see #QUALITY_TIME_LAPSE_720P
          * @see #QUALITY_TIME_LAPSE_1080P
          */
-        GetEx(
+        Get(
             [in] Int32 cameraId,
             [in] Int32 quality,
             [out] ICamcorderProfile** result);
@@ -235,7 +235,7 @@ module
          * @param cameraId the id for the camera
          * @param quality the target quality level for the camcorder profile
          */
-        HasProfileEx(
+        HasProfile(
             [in] Int32 cameraId,
             [in] Int32 quality,
             [out] Boolean* result);

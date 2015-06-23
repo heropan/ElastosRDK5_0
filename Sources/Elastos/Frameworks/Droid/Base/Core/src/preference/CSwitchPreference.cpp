@@ -131,7 +131,7 @@ ECode CSwitchPreference::SetSwitchTextOff(
     return NotifyChanged();
 }
 
-ECode CSwitchPreference::SetSwitchTextOnEx(
+ECode CSwitchPreference::SetSwitchTextOn(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IContext> context;
@@ -143,7 +143,7 @@ ECode CSwitchPreference::SetSwitchTextOnEx(
     return SetSwitchTextOn(textOn);
 }
 
-ECode CSwitchPreference::SetSwitchTextOffEx(
+ECode CSwitchPreference::SetSwitchTextOff(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IContext> context;
@@ -160,7 +160,7 @@ ECode CSwitchPreference::GetSwitchTextOn(
 {
     VALIDATE_NOT_NULL(textOn)
     *textOn = mSwitchOn;
-    INTERFACE_ADDREF(*textOn)
+    REFCOUNT_ADD(*textOn)
     return NOERROR;
 }
 
@@ -169,7 +169,7 @@ ECode CSwitchPreference::GetSwitchTextOff(
 {
     VALIDATE_NOT_NULL(textOff)
     *textOff = mSwitchOff;
-    INTERFACE_ADDREF(*textOff)
+    REFCOUNT_ADD(*textOff)
     return NOERROR;
 }
 
@@ -184,7 +184,7 @@ ECode CSwitchPreference::constructor(
             const_cast<Int32 *>(R::styleable::SwitchPreference),
             ARRAY_SIZE(R::styleable::SwitchPreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     String summaryOn;
     a->GetString(R::styleable::SwitchPreference_summaryOn, &summaryOn);
     AutoPtr<ICharSequence> summaryOnCs;
@@ -248,10 +248,10 @@ ECode CSwitchPreference::SetSummaryOn(
     return TwoStatePreference::SetSummaryOn(summary);
 }
 
-ECode CSwitchPreference::SetSummaryOnEx(
+ECode CSwitchPreference::SetSummaryOn(
     /* [in] */ Int32 summaryResId)
 {
-    return TwoStatePreference::SetSummaryOnEx(summaryResId);
+    return TwoStatePreference::SetSummaryOn(summaryResId);
 }
 
 ECode CSwitchPreference::GetSummaryOn(
@@ -266,10 +266,10 @@ ECode CSwitchPreference::SetSummaryOff(
     return TwoStatePreference::SetSummaryOff(summary);
 }
 
-ECode CSwitchPreference::SetSummaryOffEx(
+ECode CSwitchPreference::SetSummaryOff(
     /* [in] */ Int32 summaryResId)
 {
-    return TwoStatePreference::SetSummaryOffEx(summaryResId);
+    return TwoStatePreference::SetSummaryOff(summaryResId);
 }
 
 ECode CSwitchPreference::GetSummaryOff(

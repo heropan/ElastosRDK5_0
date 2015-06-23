@@ -23,7 +23,7 @@ ECode CWaveHeader::SetFormat(
     WaveHeader::SetFormat(format);
     AutoPtr<IWaveHeader> wh = (IWaveHeader*)this;
     *ret = wh;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -43,7 +43,7 @@ ECode CWaveHeader::SetNumChannels(
     WaveHeader::SetNumChannels(numChannels);
     AutoPtr<IWaveHeader> wh = (IWaveHeader*)this;
     *ret = wh;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -63,7 +63,7 @@ ECode CWaveHeader::SetSampleRate(
     WaveHeader::SetSampleRate(sampleRate);
     AutoPtr<IWaveHeader> wh = (IWaveHeader*)this;
     *ret = wh;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -83,7 +83,7 @@ ECode CWaveHeader::SetBitsPerSample(
     WaveHeader::SetBitsPerSample(bitsPerSample);
     AutoPtr<IWaveHeader> wh = (IWaveHeader*)this;
     *ret = wh;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -103,7 +103,7 @@ ECode CWaveHeader::SetNumBytes(
     WaveHeader::SetNumBytes(numBytes);
     AutoPtr<IWaveHeader> wh = (IWaveHeader*)this;
     *ret = wh;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

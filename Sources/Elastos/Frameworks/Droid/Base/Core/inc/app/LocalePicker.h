@@ -4,7 +4,7 @@
 
 #include "ext/frameworkdef.h"
 #include "app/ListFragment.h"
-#include "widget/AdapterMacro.h"
+
 #include "widget/ArrayAdapter.h"
 
 using Libcore::ICU::ILocale;

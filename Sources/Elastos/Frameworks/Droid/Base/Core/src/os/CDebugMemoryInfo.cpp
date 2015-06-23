@@ -43,7 +43,7 @@ ECode CDebugMemoryInfo::GetTotalSharedDirty(
     return NOERROR;
 }
 
-ECode CDebugMemoryInfo::GetOtherPssEx(
+ECode CDebugMemoryInfo::GetOtherPss(
     /* [in] */ Int32 which,
     /* [out] */ Int32* otherPss)
 {
@@ -52,7 +52,7 @@ ECode CDebugMemoryInfo::GetOtherPssEx(
     return NOERROR;
 }
 
-ECode CDebugMemoryInfo::GetOtherPrivateDirtyEx(
+ECode CDebugMemoryInfo::GetOtherPrivateDirty(
     /* [in] */ Int32 which,
     /* [out] */ Int32* otherPrivateDirty)
 {
@@ -61,7 +61,7 @@ ECode CDebugMemoryInfo::GetOtherPrivateDirtyEx(
     return NOERROR;
 }
 
-ECode CDebugMemoryInfo::GetOtherSharedDirtyEx(
+ECode CDebugMemoryInfo::GetOtherSharedDirty(
     /* [in] */ Int32 which,
     /* [out] */ Int32* otherSharedDirty)
 {
@@ -311,7 +311,7 @@ ECode CDebugMemoryInfo::GetOtherStats(
     VALIDATE_NOT_NULL(stats);
 
     *stats = mOtherStats;
-    INTERFACE_ADDREF(*stats);
+    REFCOUNT_ADD(*stats);
     return NOERROR;
 }
 

@@ -18,7 +18,7 @@ ECode CParcelStringList::GetStringList(
 {
     VALIDATE_NOT_NULL(list)
     *list = mStringList;
-    INTERFACE_ADDREF(*list)
+    REFCOUNT_ADD(*list)
     return NOERROR;
 }
 

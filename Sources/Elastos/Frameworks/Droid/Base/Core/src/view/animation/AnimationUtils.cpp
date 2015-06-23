@@ -17,7 +17,7 @@
 #include "view/animation/CLayoutAnimationController.h"
 #include "view/animation/CGridLayoutAnimationController.h"
 #include "os/SystemClock.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -119,7 +119,7 @@ ECode AnimationUtils::CreateAnimationFromXml(
     }
 
     *animation = anim;
-    INTERFACE_ADDREF(*animation);
+    REFCOUNT_ADD(*animation);
     return NOERROR;
 }
 
@@ -193,7 +193,7 @@ ECode AnimationUtils::CreateLayoutAnimationFromXml(
     }
 
     *controller = temp;
-    INTERFACE_ADDREF(*controller);
+    REFCOUNT_ADD(*controller);
     return NOERROR;
 }
 
@@ -218,7 +218,7 @@ ECode AnimationUtils::MakeInAnimation(
 
     AutoPtr<IInterpolator> interpolator;
     FAIL_RETURN(CDecelerateInterpolator::New((IDecelerateInterpolator**)&interpolator));
-    (*animation)->SetInterpolatorEx(interpolator);
+    (*animation)->SetInterpolator(interpolator);
     (*animation)->SetStartTime(CurrentAnimationTimeMillis());
 
     return NOERROR;
@@ -245,7 +245,7 @@ ECode AnimationUtils::MakeOutAnimation(
 
     AutoPtr<IInterpolator> interpolator;
     FAIL_RETURN(CAccelerateInterpolator::New((IAccelerateInterpolator**)&interpolator));
-    (*animation)->SetInterpolatorEx(interpolator);
+    (*animation)->SetInterpolator(interpolator);
     (*animation)->SetStartTime(CurrentAnimationTimeMillis());
 
     return NOERROR;
@@ -264,7 +264,7 @@ ECode AnimationUtils::MakeInChildBottomAnimation(
 
     AutoPtr<IInterpolator> interpolator;
     FAIL_RETURN(CAccelerateInterpolator::New((IAccelerateInterpolator**)&interpolator));
-    (*animation)->SetInterpolatorEx(interpolator);
+    (*animation)->SetInterpolator(interpolator);
     (*animation)->SetStartTime(CurrentAnimationTimeMillis());
 
     return NOERROR;
@@ -351,7 +351,7 @@ ECode AnimationUtils::CreateInterpolatorFromXml(
     }
 
     *interpolator = temp;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
     return NOERROR;
 }
 

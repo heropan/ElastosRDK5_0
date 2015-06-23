@@ -1,8 +1,8 @@
 #include "CMonkeySourceNetworkVars.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "os/Build.h"
 #include "CMonkeyCommandReturn.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include "MonkeySourceNetwork.h"
 #include "Monkey.h"
 #include "os/SystemClock.h"

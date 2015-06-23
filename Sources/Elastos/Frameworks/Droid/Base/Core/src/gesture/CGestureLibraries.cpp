@@ -19,17 +19,17 @@ ECode CGestureLibraries::FromFile(
 {
     AutoPtr<IFile> file;
     CFile::New(path, (IFile**)&file);
-    return FromFileEx(file, instance);
+    return FromFile(file, instance);
 }
 
-ECode CGestureLibraries::FromFileEx(
+ECode CGestureLibraries::FromFile(
     /* [in] */ IFile *path,
     /* [out] */ IGestureLibrary **instance)
 {
     VALIDATE_NOT_NULL(instance);
     AutoPtr<FileGestureLibrary> fgl = new FileGestureLibrary(path);
     *instance = (IGestureLibrary*)fgl;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CGestureLibraries::FromPrivateFile(
 {
     AutoPtr<IFile> file;
     context->GetFileStreamPath(name, (IFile**)&file);
-    return FromFileEx(file, instance);
+    return FromFile(file, instance);
 }
 
 ECode CGestureLibraries::FromRawResource(
@@ -50,7 +50,7 @@ ECode CGestureLibraries::FromRawResource(
 {
     AutoPtr<ResourceGestureLibrary> rgl = new ResourceGestureLibrary(context, resourceId);
     *instance = (IGestureLibrary*)rgl;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -101,7 +101,7 @@ ECode CGestureLibraries::FileGestureLibrary::Save(
     file->CreateNewFile(&b);
     AutoPtr<IFileOutputStream> fos;
     CFileOutputStream::New(file, (IFileOutputStream**)&fos);
-    mStore->SaveEx(fos, TRUE);
+    mStore->Save(fos, TRUE);
     result = TRUE;
     //} catch (FileNotFoundException e) {
     //    Log.d(LOG_TAG, "Could not save the gesture library in " + mPath, e);
@@ -125,7 +125,7 @@ ECode CGestureLibraries::FileGestureLibrary::Load(
         //try {
         AutoPtr<IFileInputStream> fis;
         CFileInputStream::New(file, (IFileInputStream**)&fis);
-        mStore->LoadEx(fis, TRUE);
+        mStore->Load(fis, TRUE);
         result = TRUE;
         //} catch (FileNotFoundException e) {
         //    Log.d(LOG_TAG, "Could not load the gesture library from " + mPath, e);
@@ -236,7 +236,7 @@ ECode CGestureLibraries::ResourceGestureLibrary::Load(
 //    if (context != null) {
 //        final InputStream in = context.getResources().openRawResource(mResourceId);
         //try {
-//        mStore->LoadEx(in, TRUE);
+//        mStore->Load(in, TRUE);
 //        result = TRUE;
         //} catch (IOException e) {
         //    Log.d(LOG_TAG, "Could not load the gesture library from raw resource " +

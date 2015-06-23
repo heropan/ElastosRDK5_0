@@ -7,7 +7,7 @@
 #include "view/inputmethod/CControlledInputConnectionWrapper.h"
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::IObjectMap;
 using Elastos::Droid::Content::IContext;
@@ -176,7 +176,7 @@ public:
     /**
      * Return true if any view is currently active in the input method.
      */
-    CARAPI IsActiveEx(
+    CARAPI IsActive(
         /* [out] */ Boolean* active);
 
     /**
@@ -249,7 +249,7 @@ public:
      * {@link #RESULT_UNCHANGED_HIDDEN}, {@link #RESULT_SHOWN}, or
      * {@link #RESULT_HIDDEN}.
      */
-    CARAPI ShowSoftInputEx(
+    CARAPI ShowSoftInput(
         /* [in] */ IView* view,
         /* [in] */ Int32 flags,
         /* [in] */ IResultReceiver* resultReceiver,
@@ -291,7 +291,7 @@ public:
      * {@link #RESULT_UNCHANGED_HIDDEN}, {@link #RESULT_SHOWN}, or
      * {@link #RESULT_HIDDEN}.
      */
-    CARAPI HideSoftInputFromWindowEx(
+    CARAPI HideSoftInputFromWindow(
         /* [in] */ IBinder* windowToken,
         /* [in] */ Int32 flags,
         /* [in] */ IResultReceiver* resultReceiver,

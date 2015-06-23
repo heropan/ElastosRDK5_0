@@ -10,7 +10,7 @@
 #include "BluetoothSocket.h"
 #include "app/CActivityThread.h"
 #include "os/ServiceManager.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Pm::IIPackageManager;
@@ -94,7 +94,7 @@ ECode CBluetoothAdapter::GetRemoteDevice(
     return CBluetoothDevice::New(address, device);
 }
 
-ECode CBluetoothAdapter::GetRemoteDeviceEx(
+ECode CBluetoothAdapter::GetRemoteDevice(
     /* [in] */ ArrayOf<Byte>* address,
     /* [out] */ IBluetoothDevice** device)
 {
@@ -177,7 +177,7 @@ ECode CBluetoothAdapter::Disable(
     // return false;
 }
 
-ECode CBluetoothAdapter::DisableEx(
+ECode CBluetoothAdapter::Disable(
     /* [in] */ Boolean persist,
     /* [out] */ Boolean* result)
 {
@@ -274,7 +274,7 @@ ECode CBluetoothAdapter::SetScanMode(
     return NOERROR;
 }
 
-ECode CBluetoothAdapter::SetScanModeEx(
+ECode CBluetoothAdapter::SetScanMode(
     /* [in] */ Int32 mode,
     /* [out] */ Boolean* result)
 {
@@ -432,7 +432,7 @@ ECode CBluetoothAdapter::ListenUsingRfcommOn(
         return E_IO_EXCEPTION;
     }
     *socket = serverSocket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -484,7 +484,7 @@ ECode CBluetoothAdapter::CreateNewRfcommSocketAndRecord(
         return E_IO_EXCEPTION;
     }
     *socket = (IBluetoothServerSocket*)serverSocket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -506,7 +506,7 @@ ECode CBluetoothAdapter::ListenUsingInsecureRfcommOn(
         return E_IO_EXCEPTION;
     }
     *socket = serverSocket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -527,7 +527,7 @@ ECode CBluetoothAdapter::ListenUsingEncryptedRfcommOn(
         return E_IO_EXCEPTION;
     }
     *socket = serverSocket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -545,7 +545,7 @@ ECode CBluetoothAdapter::ListenUsingScoOn(
         //socket.mSocket.throwErrnoNative(errno);
     }
     *socket = serverSocket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 

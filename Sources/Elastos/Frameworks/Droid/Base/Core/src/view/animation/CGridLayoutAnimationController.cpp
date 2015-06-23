@@ -28,7 +28,7 @@ ECode CGridLayoutAnimationController::SetAnimation(
     return GridLayoutAnimationController::SetAnimation(context, resourceID);
 }
 
-ECode CGridLayoutAnimationController::SetAnimationEx(
+ECode CGridLayoutAnimationController::SetAnimation(
     /* [in] */ IAnimation* animation)
 {
     return GridLayoutAnimationController::SetAnimation(animation);
@@ -40,7 +40,7 @@ ECode CGridLayoutAnimationController::GetAnimation(
     VALIDATE_NOT_NULL(animation);
     AutoPtr<IAnimation> temp = GridLayoutAnimationController::GetAnimation();
     *animation = temp;
-    INTERFACE_ADDREF(*animation);
+    REFCOUNT_ADD(*animation);
 
     return NOERROR;
 }
@@ -52,7 +52,7 @@ ECode CGridLayoutAnimationController::SetInterpolator(
     return GridLayoutAnimationController::SetInterpolator(context, resourceID);
 }
 
-ECode CGridLayoutAnimationController::SetInterpolatorEx(
+ECode CGridLayoutAnimationController::SetInterpolator(
     /* [in] */ IInterpolator* interpolator)
 {
     return GridLayoutAnimationController::SetInterpolator(interpolator);
@@ -64,7 +64,7 @@ ECode CGridLayoutAnimationController::GetInterpolator(
     VALIDATE_NOT_NULL(interpolator);
     AutoPtr<IInterpolator> temp = GridLayoutAnimationController::GetInterpolator();
     *interpolator = temp;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
 
     return NOERROR;
 }
@@ -105,7 +105,7 @@ ECode CGridLayoutAnimationController::GetAnimationForView(
     VALIDATE_NOT_NULL(animation);
     AutoPtr<IAnimation> temp = GridLayoutAnimationController::GetAnimationForView(view);
     *animation = temp;
-    INTERFACE_ADDREF(*animation);
+    REFCOUNT_ADD(*animation);
 
     return NOERROR;
 }

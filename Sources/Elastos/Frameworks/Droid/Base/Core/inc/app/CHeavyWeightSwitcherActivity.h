@@ -3,7 +3,7 @@
 #define __CHEAVYWEIGHTSWITCHERACTIVITY_H__
 
 #include "_CHeavyWeightSwitcherActivity.h"
-#include "content/ContextMacro.h"
+
 #include "app/Activity.h"
 
 using Elastos::Core::ICharSequence;

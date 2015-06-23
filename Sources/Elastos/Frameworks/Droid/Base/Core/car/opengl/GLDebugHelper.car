@@ -71,7 +71,7 @@ module
          * @param log - null to disable logging, non-null to enable logging.
          * @return the wrapped EGL interface.
          */
-        WrapEx(
+        Wrap(
             [in] IEGL* egl,
             [in] Int32 configFlags,
             [in] IWriter* log,

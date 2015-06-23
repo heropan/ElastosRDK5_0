@@ -65,7 +65,7 @@ module
          * @param cursorOffsetVertical the amount to temporarily translate the
          *        canvas while rendering the highlight
          */
-        DrawEx(
+        Draw(
             [in] ICanvas* canvas,
             [in] IPath* highlight,
             [in] IPaint* highlightPaint,
@@ -476,7 +476,7 @@ module
          * specified text slice with one line per paragraph.
          */
         //static
-        GetDesiredWidthEx(
+        GetDesiredWidth(
             [in] ICharSequence* source,
             [in] Int32 start,
             [in] Int32 end,

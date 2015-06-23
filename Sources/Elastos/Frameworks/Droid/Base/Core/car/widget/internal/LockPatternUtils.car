@@ -261,7 +261,7 @@ module
          * @param pattern The new pattern to save.
          * @param isFallback Specifies if this is a fallback to biometric weak
          */
-        SaveLockPatternEx(
+        SaveLockPattern(
             [in] IObjectContainer* pattern,
             [in] Boolean isFallback);
 
@@ -284,7 +284,7 @@ module
          * @param quality {@see DevicePolicyManager#getPasswordQuality(android.content.ComponentName)}
          * @param isFallback Specifies if this is a fallback to biometric weak
          */
-        SaveLockPasswordEx(
+        SaveLockPassword(
             [in] String password,
             [in] Int32 quality,
             [in] Boolean isFallback);
@@ -298,7 +298,7 @@ module
          * @param isFallback Specifies if this is a fallback to biometric weak
          * @param userHandle The userId of the user to change the password for
          */
-        SaveLockPasswordEx2(
+        SaveLockPassword(
             [in] String password,
             [in] Int32 quality,
             [in] Boolean isFallback,
@@ -492,7 +492,7 @@ module
          * @param phoneState
          * @param shown
          */
-        UpdateEmergencyCallButtonStateEx(
+        UpdateEmergencyCallButtonState(
             [in] IButton* button,
             [in] Int32  phoneState,
             [in] Boolean shown);

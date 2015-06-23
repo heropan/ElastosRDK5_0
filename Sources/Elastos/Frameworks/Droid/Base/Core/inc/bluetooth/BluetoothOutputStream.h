@@ -4,7 +4,7 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
-#include "elastos/io/OutputStream.h"
+#include <elastos/io/OutputStream.h>
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IFlushable;
@@ -38,7 +38,7 @@ public:
     CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte>& buffer);
 
-    CARAPI WriteBytesEx(
+    CARAPI WriteBytes(
         /* [in] */ const ArrayOf<Byte> & buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);

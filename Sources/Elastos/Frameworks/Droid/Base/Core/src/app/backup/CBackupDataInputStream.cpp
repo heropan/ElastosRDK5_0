@@ -1,7 +1,7 @@
 
 #include "app/backup/CBackupDataInputStream.h"
-#include "cmdef.h"
-#include <elastos/Math.h>
+#include <elastos/coredef.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos{
 namespace Droid{
@@ -32,7 +32,7 @@ ECode CBackupDataInputStream::Read(
     return NOERROR;
 }
 
-ECode CBackupDataInputStream::ReadBytesEx(
+ECode CBackupDataInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -98,7 +98,7 @@ ECode CBackupDataInputStream::Skip(
     while (skipped < byteCount) {
         Int32 toRead = (Int32)Elastos::Core::Math::Min(byteCount - skipped, (Int64)buffer->GetLength());
         Int32 read = 0;
-        FAIL_RETURN(ReadBytesEx(buffer.Get(), 0, toRead, &read));
+        FAIL_RETURN(ReadBytes(buffer.Get(), 0, toRead, &read));
         if (read == -1) {
             break;
         }
@@ -152,7 +152,7 @@ ECode CBackupDataInputStream::GetLock(
     assert(0 && "TODO");
     // AutoPtr<IInterface> obj = InputStream::GetLock();
     // *lockobj = obj;
-    // INTERFACE_ADDREF(*lockobj);
+    // REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -161,7 +161,7 @@ ECode CBackupDataInputStream::GetData(
 {
     VALIDATE_NOT_NULL(data);
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

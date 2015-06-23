@@ -3,12 +3,12 @@
 #define __CINSTRUMENTATIONWATCHER_H__
 
 #include "_CInstrumentationWatcher.h"
-#include "elastos/Object.h"
+#include <elastos/Core/Object.h>
 #include "CAm.h"
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

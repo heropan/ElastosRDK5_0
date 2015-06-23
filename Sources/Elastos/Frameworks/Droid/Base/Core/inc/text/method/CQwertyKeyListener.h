@@ -4,8 +4,8 @@
 
 #include "_CQwertyKeyListener.h"
 #include "text/method/QwertyKeyListener.h"
-#include "text/method/BaseKeyListenerMacro.h"
-#include "text/method/KeyListenerMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

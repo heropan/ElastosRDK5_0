@@ -3,8 +3,8 @@
 #define __ANIMATION_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/Runnable.h"
 #include "R.h"
 
@@ -198,7 +198,7 @@ public:
         /* [in] */ Int64 currentTime,
         /* [in] */ ITransformation* outTransformation);
 
-    virtual CARAPI_(Boolean) GetTransformationEx(
+    virtual CARAPI_(Boolean) GetTransformation(
         /* [in] */ Int64 currentTime,
         /* [in, out] */ ITransformation* outTransformation,
         /* [in] */ Float scale);

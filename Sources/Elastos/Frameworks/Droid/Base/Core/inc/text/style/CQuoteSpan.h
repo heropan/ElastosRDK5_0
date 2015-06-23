@@ -4,8 +4,8 @@
 
 #include "_CQuoteSpan.h"
 #include "text/style/QuoteSpan.h"
-#include "text/style/LeadingMarginSpanMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

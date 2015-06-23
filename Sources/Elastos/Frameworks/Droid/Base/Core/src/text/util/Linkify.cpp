@@ -4,7 +4,7 @@
 #include "text/style/CURLSpan.h"
 //#include "webkit/CWebView.h"
 #include "util/Patterns.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Net::CURLEncoder;
@@ -301,7 +301,7 @@ Boolean Linkify::AddLinks(
     }
 
     AutoPtr<IMatcher> m;
-    p->MatcherEx(s, (IMatcher**)&m);
+    p->Matcher(s, (IMatcher**)&m);
     Boolean bFind, allowed;
     Int32 start, end;
     String group, url;
@@ -318,7 +318,7 @@ Boolean Linkify::AddLinks(
             AutoPtr< ArrayOf<String> > ary = ArrayOf<String>::Alloc(1);
             (*ary)[0] = prefix;
 
-            m->GroupEx(0, &group);
+            m->Group(0, &group);
             url = MakeUrl(group, ary, m, transformFilter);
 
             ApplyLink(url, start, end, s);
@@ -383,7 +383,7 @@ void Linkify::GatherLinks(
     /* [in] */ ILinkifyTransformFilter* transformFilter)
 {
     AutoPtr<IMatcher> m;
-    pattern->MatcherEx(s, (IMatcher**)&m);
+    pattern->Matcher(s, (IMatcher**)&m);
 
     Boolean mFind, bAcceptMatch;
     Int32 start, end;
@@ -393,7 +393,7 @@ void Linkify::GatherLinks(
         m->End(&end);
 
         if (matchFilter == NULL || (matchFilter->AcceptMatch(s, start, end, &bAcceptMatch), bAcceptMatch)) {
-            m->GroupEx(0, &group);
+            m->Group(0, &group);
             url = MakeUrl(group, schemes, m, transformFilter);
 
             AutoPtr<LinkSpec> spec = new LinkSpec();
@@ -438,7 +438,7 @@ void Linkify::GatherMapLinks(
         //try {
             AutoPtr<IURLEncoder> sUrlEncoder;
             CURLEncoder::AcquireSingleton((IURLEncoder**)&sUrlEncoder);
-            sUrlEncoder->EncodeEx(address, String("UTF-8"), &encodedAddress);
+            sUrlEncoder->Encode(address, String("UTF-8"), &encodedAddress);
         //} catch (UnsupportedEncodingException e) {
             //continue;
         //}

@@ -5,8 +5,8 @@
 
 #include "_CIconMenuItemView.h"
 #include "view/menu/IconMenuItemView.h"
-#include "widget/TextViewMacro.h"
-#include "view/ViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {
@@ -56,7 +56,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetEnabledEx(
+    CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
     CARAPI SetCheckable(

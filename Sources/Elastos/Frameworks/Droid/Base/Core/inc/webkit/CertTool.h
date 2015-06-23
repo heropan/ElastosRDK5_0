@@ -3,9 +3,9 @@
 #define __CERTTOOL_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {

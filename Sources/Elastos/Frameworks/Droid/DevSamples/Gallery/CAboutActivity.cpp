@@ -1,7 +1,7 @@
 
 #include "CAboutActivity.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "src/data/AsyncImageLoader.h"
 
 using Elastos::Core::CStringWrapper;

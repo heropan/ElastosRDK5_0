@@ -4,13 +4,11 @@
 
 #include "_CSystemSensorManager.h"
 #include "hardware/SensorManager.h"
-#include <elastos/List.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/utility/etl/List.h>
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::Droid::Content::IContext;
@@ -160,7 +158,7 @@ public:
         /* [in] */ Int32 sensors,
         /* [out] */ Boolean* state);
 
-    CARAPI RegisterListenerEx(
+    CARAPI RegisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors,
         /* [in] */ Int32 rate,
@@ -169,24 +167,24 @@ public:
     CARAPI UnregisterListener(
         /* [in] */ ISensorListener* listener);
 
-    CARAPI UnregisterListenerEx(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors);
 
-    CARAPI UnregisterListenerEx2(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor);
 
-    CARAPI UnregisterListenerEx3(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorEventListener* listener);
 
-    CARAPI RegisterListenerEx2(
+    CARAPI RegisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor,
         /* [in] */ Int32 rate,
         /* [out] */ Boolean* state);
 
-    CARAPI RegisterListenerEx3(
+    CARAPI RegisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor,
         /* [in] */ Int32 rate,

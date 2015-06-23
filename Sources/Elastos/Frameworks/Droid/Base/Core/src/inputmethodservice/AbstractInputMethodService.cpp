@@ -48,7 +48,7 @@ ECode AbstractInputMethodService::GetKeyDispatcherState(
 {
     assert(dispatcherState != NULL);
     *dispatcherState = mDispatcherState;
-    INTERFACE_ADDREF(*dispatcherState);
+    REFCOUNT_ADD(*dispatcherState);
 
     return NOERROR;
 }
@@ -68,7 +68,7 @@ ECode AbstractInputMethodService::OnBind(
     AutoPtr<IIInputMethod> method;
     CIInputMethodWrapper::New(THIS_PROBE(IAbstractInputMethodService), mInputMethod, (IIInputMethod**)&method);
     *binder = IBinder::Probe(method);
-    INTERFACE_ADDREF(*binder)
+    REFCOUNT_ADD(*binder)
     return NOERROR;
 }
 

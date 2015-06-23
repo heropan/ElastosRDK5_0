@@ -23,7 +23,7 @@ ECode PathSegmentsBuilder::Build(
 
     if (mSegments.IsEmpty()) {
         *pathSegments = PathSegments::EMPTY;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 

@@ -61,7 +61,7 @@ ECode CSpinner::OnClick(
     return NOERROR;
 }
 
-ECode CSpinner::SetSelectionEx(
+ECode CSpinner::SetSelection(
     /* [in] */ Int32 position,
     /* [in] */ Boolean animate)
 {

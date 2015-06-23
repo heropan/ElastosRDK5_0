@@ -9,10 +9,10 @@
 #include "os/CUserHandle.h"
 #include "os/CSystemProperties.h"
 #endif
-#include <elastos/Thread.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/Vector.h>
 #include <binder/ProcessState.h>
 #include <cutils/sched_policy.h>
@@ -24,7 +24,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IOutputStreamWriter;
 using Elastos::IO::COutputStreamWriter;
@@ -168,7 +168,7 @@ ECode Process::OpenZygoteSocketIfNeeded()
 
     if (sZygoteSocket == NULL) {
         sPreviousZygoteOpenFailed = TRUE;
-        // throw new ZygoteStartFailedEx("connect failed");
+        // throw new ZygoteStartFailed("connect failed");
         return E_ZYGOTE_START_FAILED_EX;
     }
 
@@ -206,7 +206,7 @@ ECode Process::OpenJavaZygoteSocketIfNeeded()
 
         AutoPtr<ISystemProperties> sysProp;
         CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-        sysProp->GetEx(String("android_zygote_inited"), String("false"), &androidZygoteInited);
+        sysProp->Get(String("android_zygote_inited"), String("false"), &androidZygoteInited);
         if(androidZygoteInited.Equals(String("true"))){
             Logger::I("Zygote", "Android Zygote is ready");
             break;
@@ -239,7 +239,7 @@ ECode Process::OpenJavaZygoteSocketIfNeeded()
 
     if (sJavaZygoteSocket == NULL) {
         sPreviousJavaZygoteOpenFailed = TRUE;
-        // throw new ZygoteStartFailedEx("connect failed");
+        // throw new ZygoteStartFailed("connect failed");
         return E_ZYGOTE_START_FAILED_EX;
     }
 
@@ -274,7 +274,7 @@ ECode Process::ZygoteSendArgsAndGetResult(
     for (it = args.Begin(); it != args.End(); ++it) {
         String& arg = *it;
         if (arg.IndexOf('\n') >= 0) {
-            // throw new ZygoteStartFailedEx(
+            // throw new ZygoteStartFailed(
             //         "embedded newlines not allowed");
             return E_ZYGOTE_START_FAILED_EX;
         }
@@ -291,14 +291,14 @@ ECode Process::ZygoteSendArgsAndGetResult(
     IDataInput::Probe(sZygoteInputStream)->ReadInt32(&pid);
     result->SetPid(pid);
     if (pid < 0) {
-        // throw new ZygoteStartFailedEx("fork() failed");
+        // throw new ZygoteStartFailed("fork() failed");
         return E_ZYGOTE_START_FAILED_EX;
     }
     Boolean usingWrapper;
     IDataInput::Probe(sZygoteInputStream)->ReadBoolean(&usingWrapper);
     result->SetUsingWrapper(usingWrapper);
     *_result = result;
-    INTERFACE_ADDREF(*_result);
+    REFCOUNT_ADD(*_result);
     return NOERROR;
     // } catch (IOException ex) {
     //     try {
@@ -312,7 +312,7 @@ ECode Process::ZygoteSendArgsAndGetResult(
 
     //     sZygoteSocket = null;
 
-    //     throw new ZygoteStartFailedEx(ex);
+    //     throw new ZygoteStartFailed(ex);
     // }
 }
 
@@ -344,7 +344,7 @@ ECode Process::JavaZygoteSendArgsAndGetResult(
     for (it = args.Begin(); it != args.End(); ++it) {
         String& arg = *it;
         if (arg.IndexOf('\n') >= 0) {
-            // throw new ZygoteStartFailedEx(
+            // throw new ZygoteStartFailed(
             //         "embedded newlines not allowed");
             return E_ZYGOTE_START_FAILED_EX;
         }
@@ -361,14 +361,14 @@ ECode Process::JavaZygoteSendArgsAndGetResult(
     IDataInput::Probe(sJavaZygoteInputStream)->ReadInt32(&pid);
     result->SetPid(pid);
     if (pid < 0) {
-        // throw new ZygoteStartFailedEx("fork() failed");
+        // throw new ZygoteStartFailed("fork() failed");
         return E_ZYGOTE_START_FAILED_EX;
     }
     Boolean usingWrapper;
     IDataInput::Probe(sJavaZygoteInputStream)->ReadBoolean(&usingWrapper);
     result->SetUsingWrapper(usingWrapper);
     *_result = result;
-    INTERFACE_ADDREF(*_result);
+    REFCOUNT_ADD(*_result);
     return NOERROR;
     // } catch (IOException ex) {
     //     try {
@@ -382,7 +382,7 @@ ECode Process::JavaZygoteSendArgsAndGetResult(
 
     //     sZygoteSocket = null;
 
-    //     throw new ZygoteStartFailedEx(ex);
+    //     throw new ZygoteStartFailed(ex);
     // }
 }
 
@@ -1187,7 +1187,7 @@ ECode Process::GetPids(
     }
 
     *pids = lastArray;
-    INTERFACE_ADDREF(*pids);
+    REFCOUNT_ADD(*pids);
     return NOERROR;
 }
 
@@ -1417,7 +1417,7 @@ ECode Process::GetPidsForCommands(
     }
 
     *pids = pidArray;
-    INTERFACE_ADDREF(*pids);
+    REFCOUNT_ADD(*pids);
     return NOERROR;
 }
 

@@ -3,9 +3,9 @@
 
 #include "_CRecentApplicationsDialog.h"
 #include "impl/RecentApplicationsDialog.h"
-#include "app/DialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 namespace Elastos {
 namespace Droid {

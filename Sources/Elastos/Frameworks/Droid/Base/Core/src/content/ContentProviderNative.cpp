@@ -84,7 +84,7 @@ ECode ContentProviderNative::ContentProviderProxy::AsBinder(
 {
     VALIDATE_NOT_NULL(binder);
     *binder = mRemote;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode ContentProviderNative::ContentProviderProxy::Query(
     }
 
     *cursor = adaptor;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 //    } catch (RemoteException ex) {
 //        adaptor.close();
@@ -319,7 +319,7 @@ ECode ContentProviderNative::ContentProviderProxy::ApplyBatch(
 
     AutoPtr<IContentProviderResult> tmpProviderResult;
     *providerResults = ArrayOf<IContentProviderResult*>::Alloc(N);
-    INTERFACE_ADDREF(*providerResults);
+    REFCOUNT_ADD(*providerResults);
 
     for (Int32 i = 0; i < N; i++) {
         FAIL_RETURN(reply->ReadInt32(&value));
@@ -414,7 +414,7 @@ ECode ContentProviderNative::ContentProviderProxy::OpenFile(
         AutoPtr<IParcelFileDescriptor> fd;
 //***        FAIL_RETURN(CFileDescriptor::New(fileDes, (IParcelFileDescriptor**)&fd));
         *fileDescriptor = fd;
-        INTERFACE_ADDREF(*fileDescriptor);
+        REFCOUNT_ADD(*fileDescriptor);
     }
     else {
         *fileDescriptor = NULL;
@@ -482,7 +482,7 @@ ECode ContentProviderNative::ContentProviderProxy::Call(
     AutoPtr<IInterface> obj;
     FAIL_RETURN(reply->ReadInterfacePtr((Handle32*)(IInterface*)obj));
     *bundle = obj != NULL ? (IBundle*) obj->Probe(EIID_IBundle) : NULL;
-    INTERFACE_ADDREF(*bundle);
+    REFCOUNT_ADD(*bundle);
 //    data.recycle();
 //    reply.recycle();
     return NOERROR;
@@ -540,7 +540,7 @@ ECode ContentProviderNative::ContentProviderProxy::OpenTypedAssetFile(
         AutoPtr<IAssetFileDescriptor> fd;
 //***        FAIL_RETURN(CAssetFileDescriptor::New(reply, (IAssetFileDescriptor**)&fd));
         *fileDescriptor = fd;
-        INTERFACE_ADDREF(*fileDescriptor);
+        REFCOUNT_ADD(*fileDescriptor);
     }
     else {
         *fileDescriptor = NULL;
@@ -693,14 +693,14 @@ ECode ContentProviderNative::AsInterface(
 
     if (NULL != provider) {
         *contentProvider = provider;
-        INTERFACE_ADDREF(*contentProvider);
+        REFCOUNT_ADD(*contentProvider);
         return NOERROR;
     }
 
     AutoPtr<ContentProviderNative::ContentProviderProxy> proxy = new ContentProviderNative::ContentProviderProxy(obj);
     provider = (IIContentProvider*) proxy->Probe(EIID_IIContentProvider);
     *contentProvider = provider;
-    INTERFACE_ADDREF(*contentProvider);
+    REFCOUNT_ADD(*contentProvider);
     return NOERROR;
 }
 
@@ -1080,7 +1080,7 @@ ECode ContentProviderNative::AsBinder(
     assert(0 && "TODO delete ??");
     VALIDATE_NOT_NULL(binder);
     *binder = (IIBinder*) this;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 

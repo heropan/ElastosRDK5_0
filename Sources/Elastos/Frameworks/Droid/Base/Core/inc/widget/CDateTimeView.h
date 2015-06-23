@@ -3,7 +3,7 @@
 
 #include "_CDateTimeView.h"
 #include "widget/DateTimeView.h"
-#include "widget/TextViewMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

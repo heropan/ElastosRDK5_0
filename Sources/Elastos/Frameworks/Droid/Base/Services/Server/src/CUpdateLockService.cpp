@@ -2,8 +2,8 @@
 #include "CUpdateLockService.h"
 #include "os/Binder.h"
 #include "Manifest.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -149,7 +149,7 @@ ECode CUpdateLockService::Dump(
         return NOERROR;
     }
 
-    mLocks->DumpEx(pw);
+    mLocks->Dump(pw);
     return NOERROR;
 }
 

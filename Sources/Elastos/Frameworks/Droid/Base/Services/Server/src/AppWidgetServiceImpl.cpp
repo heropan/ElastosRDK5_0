@@ -8,10 +8,10 @@
 #include "util/Xml.h"
 #include "R.h"
 #include "Manifest.h"
-#include <Elastos.Core.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include "elastos/StringUtils.h"
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/IntegralToString.h>
 
 using Libcore::ICU::CLocaleHelper;
@@ -27,7 +27,7 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IntegralToString;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::R;
 using Elastos::Droid::AppWidget::CAppWidgetProviderInfo;
 using Elastos::Droid::AppWidget::IAppWidgetManager;
@@ -351,7 +351,7 @@ void AppWidgetServiceImpl::OnBroadcastReceived(
         AutoPtr<IBundle> extras;
         intent->GetExtras((IBundle**)&extras);
         Boolean value = FALSE;
-        if (changed || (extras != NULL && (extras->GetBooleanEx(IIntent::EXTRA_REPLACING, FALSE, &value), value))) {
+        if (changed || (extras != NULL && (extras->GetBoolean(IIntent::EXTRA_REPLACING, FALSE, &value), value))) {
             for(Int32 i = 0; i < pkgList->GetLength(); i++) {
                 // The package was just upgraded
                 String pkgName = (*pkgList)[i];
@@ -372,7 +372,7 @@ void AppWidgetServiceImpl::OnBroadcastReceived(
         AutoPtr<IBundle> extras;
         intent->GetExtras((IBundle**)&extras);
         Boolean value = FALSE;
-        if (extras != NULL && (extras->GetBooleanEx(IIntent::EXTRA_REPLACING, FALSE, &value), value)) {
+        if (extras != NULL && (extras->GetBoolean(IIntent::EXTRA_REPLACING, FALSE, &value), value)) {
             // The package is being updated. We'll receive a PACKAGE_ADDED shortly.
         }
         else {
@@ -938,7 +938,7 @@ ECode AppWidgetServiceImpl::BindRemoteViewsService(
     //try {
     conn = new ServiceConnectionProxy(key, connection);
     Boolean succeeded = FALSE;
-    mContext->BindServiceEx(intent, conn, IContext::BIND_AUTO_CREATE, userId, &succeeded);
+    mContext->BindService(intent, conn, IContext::BIND_AUTO_CREATE, userId, &succeeded);
     mBoundRemoteViewsServices[key] = (IServiceConnection*)conn;
     //} finally {
     Binder::RestoreCallingIdentity(token);
@@ -1025,7 +1025,7 @@ void AppWidgetServiceImpl::DestroyRemoteViewsService(
     Int64 token = Binder::ClearCallingIdentity();
     //try {
     Boolean succeeded = FALSE;
-    mContext->BindServiceEx(intent, conn, IContext::BIND_AUTO_CREATE, userId, &succeeded);
+    mContext->BindService(intent, conn, IContext::BIND_AUTO_CREATE, userId, &succeeded);
     //} finally {
     Binder::RestoreCallingIdentity(token);
     //}
@@ -1366,7 +1366,7 @@ void AppWidgetServiceImpl::NotifyAppWidgetViewDataChangedInstanceLocked(
                     Int64 token = Binder::ClearCallingIdentity();
                     //try {
                     Boolean succeeded = FALSE;
-                    mContext->BindServiceEx(intent, conn, IContext::BIND_AUTO_CREATE, userId, &succeeded);
+                    mContext->BindService(intent, conn, IContext::BIND_AUTO_CREATE, userId, &succeeded);
                     //} finally {
                     Binder::RestoreCallingIdentity(token);
                     //}
@@ -2146,7 +2146,7 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
     //try {
     {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    FAIL_GOTO(parser->SetInputEx((IInputStream*)stream, nullStr), OUT);
+    FAIL_GOTO(parser->SetInput((IInputStream*)stream, nullStr), OUT);
 
     Int32 type = 0;
     Int32 providerIndex = 0;
@@ -2160,9 +2160,9 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
                 // TODO: do we need to check that this package has the same signature
                 // as before?
                 String pkg;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("pkg"), &pkg), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("pkg"), &pkg), OUT);
                 String cl;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("cl"), &cl), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("cl"), &cl), OUT);
 
                 AutoPtr<IIPackageManager> packageManager = AppGlobals::GetPackageManager();
                 //try {
@@ -2206,7 +2206,7 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
 
                 // TODO: do we need to check that this package has the same signature
                 // as before?
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("pkg"), &host->mPackageName), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("pkg"), &host->mPackageName), OUT);
                 //try {
                 ECode ec = GetUidForPackage(host->mPackageName, &host->mUid);
                 if (FAILED(ec)) {
@@ -2219,14 +2219,14 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
                     // In safe mode, we don't discard the hosts we don't recognize
                     // so that they're not pruned from our list. Otherwise, we do.
                     String attrVal;
-                    FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("id"), &attrVal), OUT);
+                    FAIL_GOTO(parser->GetAttributeValue(nullStr, String("id"), &attrVal), OUT);
                     host->mHostId = StringUtils::ParseInt32(attrVal, 16);
                     mHosts.PushBack(host);
                 }
             }
             else if (String("b").Equals(tag)) {
                 String packageName;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("packageName"), &packageName), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("packageName"), &packageName), OUT);
                 if (!packageName.IsNull()) {
                     mPackagesWithBindWidgetPermission.Insert(packageName);
                 }
@@ -2234,7 +2234,7 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
             else if (String("g").Equals(tag)) {
                 AutoPtr<AppWidgetId> id = new AppWidgetId();
                 String attrVal;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("id"), &attrVal), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("id"), &attrVal), OUT);
                 id->mAppWidgetId = StringUtils::ParseInt32(attrVal, 16);
                 if (id->mAppWidgetId >= mNextAppWidgetId) {
                     mNextAppWidgetId = id->mAppWidgetId + 1;
@@ -2243,31 +2243,31 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
                 AutoPtr<IBundle> options;
                 CBundle::New((IBundle**)&options);
                 String minWidthString;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("min_width"), &minWidthString), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("min_width"), &minWidthString), OUT);
                 if (!minWidthString.IsNull()) {
                     options->PutInt32(IAppWidgetManager::OPTION_APPWIDGET_MIN_WIDTH,
                             StringUtils::ParseInt32(minWidthString, 16));
                 }
                 String minHeightString;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("min_height"), &minHeightString), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("min_height"), &minHeightString), OUT);
                 if (!minHeightString.IsNull()) {
                     options->PutInt32(IAppWidgetManager::OPTION_APPWIDGET_MIN_HEIGHT,
                             StringUtils::ParseInt32(minHeightString, 16));
                 }
                 String maxWidthString;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("max_width"), &maxWidthString), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("max_width"), &maxWidthString), OUT);
                 if (!maxWidthString.IsNull()) {
                     options->PutInt32(IAppWidgetManager::OPTION_APPWIDGET_MAX_WIDTH,
                             StringUtils::ParseInt32(maxWidthString, 16));
                 }
                 String maxHeightString;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("max_height"), &maxHeightString), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("max_height"), &maxHeightString), OUT);
                 if (!maxHeightString.IsNull()) {
                     options->PutInt32(IAppWidgetManager::OPTION_APPWIDGET_MAX_HEIGHT,
                             StringUtils::ParseInt32(maxHeightString, 16));
                 }
                 String categoryString;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("host_category"), &categoryString), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("host_category"), &categoryString), OUT);
                 if (!categoryString.IsNull()) {
                     options->PutInt32(IAppWidgetManager::OPTION_APPWIDGET_HOST_CATEGORY,
                             StringUtils::ParseInt32(categoryString, 16));
@@ -2275,7 +2275,7 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
                 id->mOptions = options;
 
                 String providerString;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("p"), &providerString), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("p"), &providerString), OUT);
                 if (!providerString.IsNull()) {
                     // there's no provider if it hasn't been bound yet.
                     // maybe we don't have to save this, but it brings the system
@@ -2298,7 +2298,7 @@ void AppWidgetServiceImpl::ReadStateFromFileLocked(
                 }
 
                 String attrVal2;
-                FAIL_GOTO(parser->GetAttributeValueEx(nullStr, String("h"), &attrVal2), OUT);
+                FAIL_GOTO(parser->GetAttributeValue(nullStr, String("h"), &attrVal2), OUT);
                 Int32 hIndex = StringUtils::ParseInt32(attrVal2, 16);
                 id->mHost = NULL;
                 List<AutoPtr<Host> >::Iterator iter;

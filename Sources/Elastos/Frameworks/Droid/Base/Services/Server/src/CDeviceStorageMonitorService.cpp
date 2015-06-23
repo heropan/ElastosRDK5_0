@@ -1,7 +1,7 @@
 #include "CDeviceStorageMonitorService.h"
 #include "os/Handler.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/SystemClock.h"
 #include "os/Binder.h"
 #include "R.h"

@@ -3,7 +3,7 @@
 #define __CDROPZONE_H__
 
 #include "_CDropZone.h"
-#include "view/ViewMacro.h"
+
 #include "systemui/statusbar/tablet/DropZone.h"
 
 namespace Elastos {

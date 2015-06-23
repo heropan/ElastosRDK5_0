@@ -1,5 +1,5 @@
 #include "ShaderUtil.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "ext/frameworkext.h"
 
 using Elastos::IO::IInputStream;

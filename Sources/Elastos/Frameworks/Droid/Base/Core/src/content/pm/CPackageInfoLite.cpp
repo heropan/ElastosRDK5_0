@@ -134,7 +134,7 @@ ECode CPackageInfoLite::GetVerifiers(
 {
     VALIDATE_NOT_NULL(verifiers);
     *verifiers = mVerifiers;
-    INTERFACE_ADDREF(*verifiers);
+    REFCOUNT_ADD(*verifiers);
     return NOERROR;
 }
 

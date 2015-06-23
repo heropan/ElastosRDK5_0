@@ -1,6 +1,6 @@
 #include "systemui/CExpandHelper.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "systemui/SystemUIR.h"
 #include "view/CScaleGestureDetector.h"
 #include "view/CViewConfigurationHelper.h"
@@ -249,7 +249,7 @@ AutoPtr<IView> CExpandHelper::FindView(
     }
 
     AutoPtr<IView> v;
-    mCallback->GetChildAtPositionEx(x, y, (IView**)&v);
+    mCallback->GetChildAtPosition(x, y, (IView**)&v);
     return v;
 }
 

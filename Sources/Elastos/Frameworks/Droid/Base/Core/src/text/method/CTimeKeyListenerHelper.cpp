@@ -16,7 +16,7 @@ ECode CTimeKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ITimeKeyListener> tkl = CTimeKeyListener::GetInstance();
     *ret = tkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -26,7 +26,7 @@ ECode CTimeKeyListenerHelper::GetCHARACTERS(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Char32> > o = CTimeKeyListener::GetCHARACTERS();
     *ret = o;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -1,8 +1,8 @@
 
 #include "ext/frameworkext.h"
 #include "graphics/CRect.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -50,7 +50,7 @@ ECode CRect::constructor(
     return NOERROR;
 }
 
-ECode CRect::EqualsEx(
+ECode CRect::Equals(
     /* [in] */ IRect* r,
     /* [out] */ Boolean* result)
 {
@@ -70,7 +70,7 @@ ECode CRect::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(IRect::Probe(r), result);
+    return Equals(IRect::Probe(r), result);
 }
 
 ECode CRect::GetHashCode(
@@ -223,7 +223,7 @@ ECode CRect::Get(
     return NOERROR;
 }
 
-ECode CRect::SetEx(
+ECode CRect::Set(
     /* [in] */ IRect* src)
 {
     assert(src != NULL);
@@ -282,7 +282,7 @@ ECode CRect::Contains(
     return NOERROR;
 }
 
-ECode CRect::ContainsEx(
+ECode CRect::Contains(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -299,7 +299,7 @@ ECode CRect::ContainsEx(
     return NOERROR;
 }
 
-ECode CRect::ContainsEx2(
+ECode CRect::Contains(
     /* [in] */ IRect* r,
     /* [out] */ Boolean* result)
 {
@@ -345,7 +345,7 @@ ECode CRect::Intersect(
     return NOERROR;
 }
 
-ECode CRect::IntersectEx(
+ECode CRect::Intersect(
     /* [in] */ IRect* r,
     /* [out] */ Boolean* result)
 {
@@ -369,7 +369,7 @@ ECode CRect::Intersects(
     return NOERROR;
 }
 
-ECode CRect::IntersectsEx(
+ECode CRect::Intersects(
     /* [in] */ IRect* a,
     /* [in] */ IRect* b,
     /* [out] */ Boolean* result)
@@ -429,14 +429,14 @@ ECode CRect::Union(
     return NOERROR;
 }
 
-ECode CRect::UnionEx(
+ECode CRect::Union(
     /* [in] */ IRect* r)
 {
     CRect* temp = (CRect*)r;
     return Union(temp->mLeft, temp->mTop, temp->mRight, temp->mBottom);
 }
 
-ECode CRect::UnionEx2(
+ECode CRect::Union(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {

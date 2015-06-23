@@ -2,8 +2,8 @@
 #include "CVisibilityGL.h"
 #include "CMatrixGL.h"
 #include "Poly.h"
-#include "elastos/Math.h"
-#include "elastos/Slogger.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 namespace Elastos {
 namespace Droid {

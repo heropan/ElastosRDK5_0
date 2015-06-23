@@ -1,6 +1,6 @@
 
 #include "webkit/CPluginManagerHelper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 //#include <unistd.h>
 //#include <sys/syscall.h>
 

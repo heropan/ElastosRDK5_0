@@ -3,9 +3,9 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 
 namespace Elastos {
 namespace Droid {

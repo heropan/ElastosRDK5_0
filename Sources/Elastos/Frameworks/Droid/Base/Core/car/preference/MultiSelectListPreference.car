@@ -26,7 +26,7 @@ module
              * @see #setEntries(CharSequence[])
              * @param entriesResId The entries array as a resource.
              */
-            SetEntriesEx(
+            SetEntries(
                 [in] Int32 entriesResId);
 
             /**
@@ -51,7 +51,7 @@ module
              * @see #setEntryValues(CharSequence[])
              * @param entryValuesResId The entry values array as a resource.
              */
-            SetEntryValuesEx(
+            SetEntryValues(
                 [in] Int32 entryValuesResId);
 
             /**

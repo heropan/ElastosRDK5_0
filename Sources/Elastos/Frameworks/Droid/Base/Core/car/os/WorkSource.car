@@ -24,7 +24,7 @@ module
             [in] IWorkSource* other);
 
         /** @hide */
-        SetEx(
+        Set(
             [in] Int32 uid);
 
         /** @hide */
@@ -48,12 +48,12 @@ module
             [out] IWorkSource** result);
 
         /** @hide */
-        AddEx(
+        Add(
             [in] Int32 uid,
             [out] Boolean* added);
 
         /** @hide */
-        AddReturningNewbsEx(
+        AddReturningNewbs(
             [in] Int32 uid,
             [out] IWorkSource** result);
 
@@ -74,7 +74,7 @@ module
          */
         Clear();
 
-        EqualsEx(
+        Equals(
             [in] IWorkSource* o,
             [out] Boolean* equal);
 

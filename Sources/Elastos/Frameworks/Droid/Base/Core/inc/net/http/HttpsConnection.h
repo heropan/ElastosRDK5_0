@@ -3,9 +3,7 @@
 #define __HTTPSCONNECTION_H__
 
 #include "Connection.h"
-#include <elastos/Mutex.h>
 
-using namespace Elastos::Core::Threading;
 using namespace Elastos::Net::Ssl;
 
 using Elastos::Security::Cert::IX509Certificate;

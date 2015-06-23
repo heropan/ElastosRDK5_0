@@ -27,7 +27,7 @@ public:
         /* [in] */ Int32 almanacMask,
         /* [in] */ Int32 usedInFixMask);
 
-    CARAPI SetStatusEx(
+    CARAPI SetStatus(
         /* [in] */ IGpsStatus* status);
 
     CARAPI SetTimeToFirstFix(

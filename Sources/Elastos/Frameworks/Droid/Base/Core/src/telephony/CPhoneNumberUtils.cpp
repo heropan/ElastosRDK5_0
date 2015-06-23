@@ -5,9 +5,9 @@
 #include "CTelephonyManager.h"
 #include "R.h"
 #include "text/SpannableStringBuilder.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Character.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Character.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
@@ -393,10 +393,10 @@ ECode CPhoneNumberUtils::Compare(
 {
     // We've used loose comparation at least Eclair, which may change in the future.
 
-    return CompareEx2(a, b, FALSE, res);
+    return Compare(a, b, FALSE, res);
 }
 
-ECode CPhoneNumberUtils::CompareEx(
+ECode CPhoneNumberUtils::Compare(
     /* [in] */ IContext* context,
     /* [in] */ const String& a,
     /* [in] */ const String& b,
@@ -406,10 +406,10 @@ ECode CPhoneNumberUtils::CompareEx(
     AutoPtr<IResources> resources;
     context->GetResources((IResources**)&resources);
     resources->GetBoolean(R::bool_::config_use_strict_phone_number_comparation, &useStrict);
-    return CompareEx2(a, b, useStrict, res);
+    return Compare(a, b, useStrict, res);
 }
 
-ECode CPhoneNumberUtils::CompareEx2(
+ECode CPhoneNumberUtils::Compare(
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [in] */ Boolean useStrictComparation,
@@ -530,10 +530,10 @@ ECode CPhoneNumberUtils::CompareStrictly(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    return CompareStrictlyEx(a, b, TRUE, res);
+    return CompareStrictly(a, b, TRUE, res);
 }
 
-ECode CPhoneNumberUtils::CompareStrictlyEx(
+ECode CPhoneNumberUtils::CompareStrictly(
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [in] */ Boolean acceptInvalidCCCPrefix,
@@ -638,7 +638,7 @@ ECode CPhoneNumberUtils::CompareStrictlyEx(
                 //       logic here for performance(like "checking whether remaining
                 //       numbers are just 66 or not"), assuming inputs are small
                 //       enough.
-                return CompareEx2(a, b, FALSE, res);
+                return Compare(a, b, FALSE, res);
             } else {
                 *res = FALSE;
                 return NOERROR;
@@ -647,7 +647,7 @@ ECode CPhoneNumberUtils::CompareStrictlyEx(
         if ((trunkPrefixIsOmittedB && forwardIndexB <= backwardIndexB) ||
             (CheckPrefixIsIgnorable(b, forwardIndexA, backwardIndexB, &tempRes), !tempRes)) {
             if (acceptInvalidCCCPrefix) {
-                return CompareEx2(a, b, FALSE, res);
+                return Compare(a, b, FALSE, res);
             } else {
                 *res = FALSE;
                 return NOERROR;
@@ -821,16 +821,16 @@ ECode CPhoneNumberUtils::CalledPartyBCDToString(
         String str;
 
         if (m->Matches(&tempRes), tempRes) {
-            if (String("").Equals((m->GroupEx(2, &str), str))) {
+            if (String("").Equals((m->Group(2, &str), str))) {
                 // Started with two [#*] ends with #
                 // So no dialing number and we'll just
                 // append a +, this handles **21#+
                 ret = NULL;
                 ret = new StringBuilder();
-                ret->AppendString((m->GroupEx(1, &str), str));
-                ret->AppendString((m->GroupEx(3, &str), str));
-                ret->AppendString((m->GroupEx(4, &str), str));
-                ret->AppendString((m->GroupEx(5, &str), str));
+                ret->AppendString((m->Group(1, &str), str));
+                ret->AppendString((m->Group(3, &str), str));
+                ret->AppendString((m->Group(4, &str), str));
+                ret->AppendString((m->Group(5, &str), str));
                 ret->AppendCStr("+");
             } else {
                 // Starts with [#*] and ends with #
@@ -838,12 +838,12 @@ ECode CPhoneNumberUtils::CalledPartyBCDToString(
                 // such as *21*+1234554#
                 ret = NULL;
                 ret = new StringBuilder();
-                ret->AppendString((m->GroupEx(1, &str), str));
-                ret->AppendString((m->GroupEx(2, &str), str));
-                ret->AppendString((m->GroupEx(3, &str), str));
+                ret->AppendString((m->Group(1, &str), str));
+                ret->AppendString((m->Group(2, &str), str));
+                ret->AppendString((m->Group(3, &str), str));
                 ret->AppendCStr("+");
-                ret->AppendString((m->GroupEx(4, &str), str));
-                ret->AppendString((m->GroupEx(5, &str), str));
+                ret->AppendString((m->Group(4, &str), str));
+                ret->AppendString((m->Group(5, &str), str));
             }
         } else {
             p = NULL;
@@ -857,11 +857,11 @@ ECode CPhoneNumberUtils::CalledPartyBCDToString(
                 // This also includes the odd ball *21#+
                 ret = NULL;
                 ret = new StringBuilder();
-                ret->AppendString((m->GroupEx(1, &str), str));
-                ret->AppendString((m->GroupEx(2, &str), str));
-                ret->AppendString((m->GroupEx(3, &str), str));
+                ret->AppendString((m->Group(1, &str), str));
+                ret->AppendString((m->Group(2, &str), str));
+                ret->AppendString((m->Group(3, &str), str));
                 ret->AppendCStr("+");
-                ret->AppendString((m->GroupEx(4, &str), str));
+                ret->AppendString((m->Group(4, &str), str));
             } else {
                 // Does NOT start with [#*] just prepend '+'
                 ret = NULL;
@@ -959,12 +959,12 @@ ECode CPhoneNumberUtils::FormatNumber(
 /*    AutoPtr<SpannableStringBuilder> text = new SpannableStringBuilder(source);
     Int32 defaultFormattingType;
     GetFormatTypeForLocale(CLocale::GetDefault(), &defaultFormattingType);
-    FormatNumberEx(text, defaultFormattingType, res);
+    FormatNumber(text, defaultFormattingType, res);
     *res = text.ToString();*/
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPhoneNumberUtils::FormatNumberEx(
+ECode CPhoneNumberUtils::FormatNumber(
     /* [in] */ const String& source,
     /* [in] */ Int32 defaultFormattingType,
     /* [out] */ String* res)
@@ -985,7 +985,7 @@ ECode CPhoneNumberUtils::GetFormatTypeForLocale(
     return GetFormatTypeFromCountryCode(country, res);
 }
 
-ECode CPhoneNumberUtils::FormatNumberEx2(
+ECode CPhoneNumberUtils::FormatNumber(
     /* [in] */ IEditable* text,
     /* [in] */ Int32 defaultFormattingType)
 {
@@ -1112,7 +1112,7 @@ ECode CPhoneNumberUtils::FormatNumberToE164(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPhoneNumberUtils::FormatNumberEx3(
+ECode CPhoneNumberUtils::FormatNumber(
     /* [in] */ const String& phoneNumber,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ String* res)
@@ -1121,7 +1121,7 @@ ECode CPhoneNumberUtils::FormatNumberEx3(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPhoneNumberUtils::FormatNumberEx4(
+ECode CPhoneNumberUtils::FormatNumber(
     /* [in] */ const String& phoneNumber,
     /* [in] */ const String& phoneNumberE164,
     /* [in] */ const String& defaultCountryIso,
@@ -1163,7 +1163,7 @@ ECode CPhoneNumberUtils::IsPotentialEmergencyNumber(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtils::IsEmergencyNumberEx(
+ECode CPhoneNumberUtils::IsEmergencyNumber(
     /* [in] */ const String& number,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ Boolean* res)
@@ -1172,7 +1172,7 @@ ECode CPhoneNumberUtils::IsEmergencyNumberEx(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtils::IsPotentialEmergencyNumberEx(
+ECode CPhoneNumberUtils::IsPotentialEmergencyNumber(
     /* [in] */ const String& number,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ Boolean* res)
@@ -1247,8 +1247,8 @@ ECode CPhoneNumberUtils::CdmaCheckAndProcessPlusCode(
             String currIso,  defaultIso;
             AutoPtr<ISystemProperties> sp;
             CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
-            sp->GetEx(ITelephonyProperties::PROPERTY_OPERATOR_ISO_COUNTRY, String(""), &currIso);
-            sp->GetEx(ITelephonyProperties::PROPERTY_ICC_OPERATOR_ISO_COUNTRY, String(""), &defaultIso);
+            sp->Get(ITelephonyProperties::PROPERTY_OPERATOR_ISO_COUNTRY, String(""), &currIso);
+            sp->Get(ITelephonyProperties::PROPERTY_ICC_OPERATOR_ISO_COUNTRY, String(""), &defaultIso);
             if (!currIso.IsEmpty() && !defaultIso.IsEmpty()) {
                 Int32 currIsocc, defaultIsocc;
                 GetFormatTypeFromCountryCode(currIso, &currIsocc);
@@ -1844,7 +1844,7 @@ ECode CPhoneNumberUtils::GetDefaultIdp(
     String ps;
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
-    sp->GetEx(ITelephonyProperties::PROPERTY_IDP_STRING, ps, &ps);
+    sp->Get(ITelephonyProperties::PROPERTY_IDP_STRING, ps, &ps);
     if (ps.IsNullOrEmpty()) {
         ps = NANP_IDP_STRING;
     }
@@ -2132,7 +2132,7 @@ ECode CPhoneNumberUtils::NumberToCalledPartyBCDHelper(
     (*result)[offset] = (Byte)(hasPlus ? IPhoneNumberUtils::TOA_International : IPhoneNumberUtils::TOA_Unknown);
 
     *res = result;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
 
     return NOERROR;
 }
@@ -2221,7 +2221,7 @@ ECode CPhoneNumberUtils::TryGetCountryCallingCodeAndNewIndex(
                         ccc = ccc * 10 + ret;
                         if (ccc >= 100 || (IsCountryCallingCode(ccc, &tempRes), tempRes)) {
                             *cccani = new CountryCallingCodeAndNewIndex(ccc, i + 1);
-                            INTERFACE_ADDREF(*cccani);
+                            REFCOUNT_ADD(*cccani);
                         }
                         if (state == 1 || state == 3 || state == 5) {
                             state = 6;
@@ -2244,7 +2244,7 @@ ECode CPhoneNumberUtils::TryGetCountryCallingCodeAndNewIndex(
             case 9:
                 if (ch == '6') {
                     *cccani = new CountryCallingCodeAndNewIndex(66, i + 1);
-                    INTERFACE_ADDREF(*cccani);
+                    REFCOUNT_ADD(*cccani);
                 } else {
                     *cccani = NULL;
                     return NOERROR;

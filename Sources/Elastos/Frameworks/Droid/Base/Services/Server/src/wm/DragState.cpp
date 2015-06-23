@@ -4,7 +4,7 @@
 #include "wm/CWindowManagerService.h"
 #include "os/Process.h"
 #include "os/Handler.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Graphics::CRegion;
@@ -252,7 +252,7 @@ void DragState::BroadcastDragEndedLw()
     AutoPtr<IDragEventHelper> dragEventHelper;
     CDragEventHelper::AcquireSingleton((IDragEventHelper**)&dragEventHelper);
     AutoPtr<IDragEvent> evt;
-    ASSERT_SUCCEEDED(dragEventHelper->ObtainEx(IDragEvent::ACTION_DRAG_ENDED,
+    ASSERT_SUCCEEDED(dragEventHelper->Obtain(IDragEvent::ACTION_DRAG_ENDED,
             0, 0, NULL, NULL, NULL, mDragResult, (IDragEvent**)&evt));
     List<AutoPtr<WindowState> >::Iterator it = mNotifiedWindows.Begin();
     for (; it != mNotifiedWindows.End(); ++it) {
@@ -389,9 +389,9 @@ Boolean DragState::NotifyDropLw(
 
     // 5 second timeout for this window to respond to the drop
     AutoPtr<IMessage> msg;
-    mService->mH->ObtainMessageEx(CWindowManagerService::H::DRAG_END_TIMEOUT,
+    mService->mH->ObtainMessage(CWindowManagerService::H::DRAG_END_TIMEOUT,
         token.Get(), (IMessage**)&msg);
-    mService->mH->RemoveMessagesEx(CWindowManagerService::H::DRAG_END_TIMEOUT, token.Get());
+    mService->mH->RemoveMessages(CWindowManagerService::H::DRAG_END_TIMEOUT, token.Get());
     Boolean result;
     mService->mH->SendMessageDelayed(msg, 5000, &result);
 
@@ -479,7 +479,7 @@ AutoPtr<IDragEvent> DragState::ObtainDragEvent(
     AutoPtr<IDragEventHelper> dragEventHelper;
     CDragEventHelper::AcquireSingleton((IDragEventHelper**)&dragEventHelper);
     AutoPtr<IDragEvent> evt;
-    ASSERT_SUCCEEDED(dragEventHelper->ObtainEx(action, winX, winY, localState,
+    ASSERT_SUCCEEDED(dragEventHelper->Obtain(action, winX, winY, localState,
             description, data, result, (IDragEvent**)&evt));
     return evt;
 }

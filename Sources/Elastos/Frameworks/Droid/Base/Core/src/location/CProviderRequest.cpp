@@ -3,8 +3,8 @@
 #include "location/CLocationRequest.h"
 #include "util/CParcelableObjectContainer.h"
 #include "util/TimeUtils.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Utility::CParcelableObjectContainer;
@@ -111,7 +111,7 @@ ECode CProviderRequest::GetLocationRequests(
         array->Add((*it).Get());
     }
     *requests = array;
-    INTERFACE_ADDREF(*requests);
+    REFCOUNT_ADD(*requests);
     return NOERROR;
 }
 

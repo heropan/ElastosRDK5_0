@@ -40,7 +40,7 @@ public:
      *
      * @throws Resources.NotFoundException if the resource can't be found.
      */
-    CARAPI MakeTextEx(
+    CARAPI MakeText(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resId,
         /* [in] */ Int32 duration,

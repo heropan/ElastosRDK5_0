@@ -102,7 +102,7 @@ public:
     CARAPI SaveLockPattern(
         /* [in] */ IObjectContainer* pattern);
 
-    CARAPI SaveLockPatternEx(
+    CARAPI SaveLockPattern(
         /* [in] */ IObjectContainer* pattern,
         /* [in] */ Boolean isFallback);
 
@@ -110,12 +110,12 @@ public:
         /* [in] */ const String& password,
         /* [in] */ Int32 quality);
 
-    CARAPI SaveLockPasswordEx(
+    CARAPI SaveLockPassword(
         /* [in] */ const String& password,
         /* [in] */ Int32 quality,
         /* [in] */ Boolean isFallback);
 
-    CARAPI SaveLockPasswordEx2(
+    CARAPI SaveLockPassword(
         /* [in] */ const String& password,
         /* [in] */ Int32 quality,
         /* [in] */ Boolean isFallback,
@@ -210,7 +210,7 @@ public:
         /* [in] */ Boolean upperCase,
         /* [in] */ Boolean showIcon);
 
-    CARAPI UpdateEmergencyCallButtonStateEx(
+    CARAPI UpdateEmergencyCallButtonState(
         /* [in] */ IButton* button,
         /* [in] */ Int32  phoneState,
         /* [in] */ Boolean shown);

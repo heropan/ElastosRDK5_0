@@ -70,8 +70,8 @@ AppNotRespondingDialog::AppNotRespondingDialog(
     AutoPtr<ArrayOf<IInterface*> > arrayStr2 = ArrayOf<IInterface*>::Alloc(1);
     arrayStr2->Set(0, name1);
     String str1, str2;
-    res->GetStringEx(resid, arrayStr1, &str1);
-    res->GetStringEx(resid, arrayStr2, &str2);
+    res->GetString(resid, arrayStr1, &str1);
+    res->GetString(resid, arrayStr2, &str2);
     AutoPtr<ICharSequence> cs1, cs2;
     CStringWrapper::New(str1, (ICharSequence**)&cs1);
     CStringWrapper::New(str2, (ICharSequence**)&cs2);

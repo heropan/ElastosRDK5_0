@@ -3,8 +3,8 @@
 #include "app/ActivityManagerNative.h"
 //#include "app/backup/CBackupManagerHelper.h"
 #include "content/res/CResources.h"
-#include <elastos/Slogger.h>
-#include <elastos/Character.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::Character;
@@ -41,7 +41,7 @@ AutoPtr<IView> _LocalArrayAdapter::GetView(
     AutoPtr<IView> view;
     AutoPtr<ITextView> text;
     if (convertView == NULL) {
-        mInflater->InflateEx2(mLayoutId, parent, FALSE, (IView**)&view);
+        mInflater->Inflate(mLayoutId, parent, FALSE, (IView**)&view);
         AutoPtr<IView> tempView;
         view->FindViewById(mFieldId, (IView**)&tempView);
         text = ITextView::Probe(tempView);
@@ -167,7 +167,7 @@ ECode LocalePicker::LocaleInfo::GetLocale(
     VALIDATE_NOT_NULL(locale);
 
     *locale = mLocale;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -240,11 +240,11 @@ ECode LocalePicker::ConstructAdapter(
             if (finalSize == 0) {
                 if (DEBUG) {
                     String lang;
-                    l->GetDisplayLanguageEx(l, &lang);
+                    l->GetDisplayLanguage(l, &lang);
                     Slogger::V(TAG, "adding initial %s", ToTitleCase(lang).string());
                 }
                 String language;
-                l->GetDisplayLanguageEx(l, &language);
+                l->GetDisplayLanguage(l, &language);
                 preprocess->Set(finalSize++, new LocaleInfo(ToTitleCase(language), l));
             } else {
                 // check previous entry:
@@ -277,7 +277,7 @@ ECode LocalePicker::ConstructAdapter(
                         displayName = String("Pseudo...");
                     } else {
                         String lang;
-                        l->GetDisplayLanguageEx(l, &lang);
+                        l->GetDisplayLanguage(l, &lang);
                         displayName = ToTitleCase(lang);
                     }
                     if (DEBUG) {
@@ -299,7 +299,7 @@ ECode LocalePicker::ConstructAdapter(
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE,
             (IInterface**)(ILayoutInflater**)&inflater);
     *adapter = new LocalArrayAdapter(context, layoutId, fieldId, localeInfos, inflater);
-    INTERFACE_ADDREF(*adapter);
+    REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
 
@@ -328,7 +328,7 @@ String LocalePicker::GetDisplayName(
     }
 
     String name;
-    l->GetDisplayNameEx(l, &name);
+    l->GetDisplayName(l, &name);
     return name;
 }
 

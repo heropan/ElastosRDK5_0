@@ -65,7 +65,7 @@ ECode NotificationLinearLayout::InitImpl(
             const_cast<Int32 *>(SystemUIR::styleable::NotificationLinearLayout),
             ARRAY_SIZE(SystemUIR::styleable::NotificationLinearLayout));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetDimensionPixelSize(SystemUIR::styleable::NotificationLinearLayout_insetLeft, 0, &mInsetLeft);
     a->Recycle();

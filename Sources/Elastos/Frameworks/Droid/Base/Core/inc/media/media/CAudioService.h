@@ -4,17 +4,15 @@
 
 #include "_CAudioService.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Stack.h>
-#include <elastos/HashMap.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "os/HandlerBase.h"
 #include "database/ContentObserver.h"
 #include "content/BroadcastReceiver.h"
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::App::IPendingIntent;
@@ -1392,7 +1390,7 @@ private:
      * @param needWakeLock true if a PARTIAL_WAKE_LOCK needs to be held while this key event
      *     is dispatched.
      */
-    CARAPI_(void) DispatchMediaKeyEventEx(
+    CARAPI_(void) DispatchMediaKeyEvent(
         /* [in] */ IKeyEvent* keyEvent,
         /* [in] */ Boolean needWakeLock);
 

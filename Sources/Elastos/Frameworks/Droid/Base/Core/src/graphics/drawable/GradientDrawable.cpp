@@ -10,8 +10,8 @@
 #include "graphics/CRadialGradient.h"
 #include "graphics/CSweepGradient.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -104,7 +104,7 @@ ECode GradientDrawable::GradientState::NewDrawable(
     return CGradientDrawable::New(this, (IGradientDrawable**)drawable);
 }
 
-ECode GradientDrawable::GradientState::NewDrawableEx(
+ECode GradientDrawable::GradientState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -293,7 +293,7 @@ Boolean GradientDrawable::GetPadding(
     /* [in] */ IRect* padding)
 {
     if (mPadding != NULL) {
-        padding->SetEx((IRect*)mPadding.Get());
+        padding->Set((IRect*)mPadding.Get());
         return TRUE;
     }
     else {
@@ -480,7 +480,7 @@ ECode GradientDrawable::Draw(
         Float rad;
         mStrokePaint->GetStrokeWidth(&rad);
         Int32 count;
-        canvas->SaveLayerEx(mRect->mLeft - rad, mRect->mTop - rad,
+        canvas->SaveLayer(mRect->mLeft - rad, mRect->mTop - rad,
                 mRect->mRight + rad, mRect->mBottom + rad,
                 mLayerPaint, ICanvas::HAS_ALPHA_LAYER_SAVE_FLAG, &count);
 
@@ -511,7 +511,7 @@ ECode GradientDrawable::Draw(
             if (st->mRadiusArray != NULL) {
                 if (mPathIsDirty || mRectIsDirty) {
                     mPath->Reset();
-                    mPath->AddRoundRectEx((IRectF*)mRect.Get(), *st->mRadiusArray,
+                    mPath->AddRoundRect((IRectF*)mRect.Get(), *st->mRadiusArray,
                             PathDirection_CW);
                     mPathIsDirty = mRectIsDirty = FALSE;
                 }

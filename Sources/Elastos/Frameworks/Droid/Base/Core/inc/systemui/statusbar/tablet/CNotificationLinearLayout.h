@@ -2,9 +2,9 @@
 #define __CNOTIFICATIONLINEARLAYOUT_H_
 
 #include "_CNotificationLinearLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/NotificationLinearLayout.h"
 
 namespace Elastos {

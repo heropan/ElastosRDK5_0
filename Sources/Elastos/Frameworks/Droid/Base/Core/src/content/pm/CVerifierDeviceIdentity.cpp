@@ -1,6 +1,6 @@
 #include "ext/frameworkext.h"
 #include "content/pm/CVerifierDeviceIdentity.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 

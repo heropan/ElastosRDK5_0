@@ -3,7 +3,7 @@
 #define __CFOREGROUNDCOLORSPANHELPER_H__
 
 #include "_CForegroundColorSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

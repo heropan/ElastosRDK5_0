@@ -24,8 +24,8 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
@@ -33,7 +33,7 @@ using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Find;
 using Elastos::Droid::App::Activity;
@@ -284,7 +284,7 @@ Instrumentation::BlockPhoneCallRunnable::Run()
     mContext->GetPackageName(&packageName);
     extras->PutString(String("packageName"), packageName);
     extras->PutInt32(String("phoneState"), ITelephonyManager::CALL_STATE_IDLE);
-    privacy->PutExtrasEx(extras);
+    privacy->PutExtras(extras);
     mContext->SendBroadcast(privacy);
     Slogger::I("PrivacyContext", "sent privacy intent");
     return NOERROR;
@@ -419,7 +419,7 @@ ECode Instrumentation::GetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = mInstrContext;
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -428,7 +428,7 @@ ECode Instrumentation::GetComponentName(
 {
     VALIDATE_NOT_NULL(component)
     *component = mComponent;
-    INTERFACE_ADDREF(*component)
+    REFCOUNT_ADD(*component)
     return NOERROR;
 }
 
@@ -437,7 +437,7 @@ ECode Instrumentation::GetTargetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = mAppContext;
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -587,7 +587,7 @@ ECode Instrumentation::StartActivitySync(
     } while (Find(mWaitingActivities->Begin(), mWaitingActivities->End(), aw) != mWaitingActivities->End());
 
     *activity = aw->mActivity;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
@@ -602,7 +602,7 @@ ECode Instrumentation::AddMonitor(
     return NOERROR;
 }
 
-ECode Instrumentation::AddMonitorEx(
+ECode Instrumentation::AddMonitor(
     /* [in] */ IIntentFilter* filter,
     /* [in] */ IInstrumentationActivityResult* result,
     /* [in] */ Boolean block,
@@ -614,11 +614,11 @@ ECode Instrumentation::AddMonitorEx(
             (IInstrumentationActivityMonitor**)&am);
     AddMonitor(am);
     *monitor = am;
-    INTERFACE_ADDREF(*monitor)
+    REFCOUNT_ADD(*monitor)
     return NOERROR;
 }
 
-ECode Instrumentation::AddMonitorEx2(
+ECode Instrumentation::AddMonitor(
     /* [in] */ const String& cls,
     /* [in] */ IInstrumentationActivityResult* result,
     /* [in] */ Boolean block,
@@ -630,7 +630,7 @@ ECode Instrumentation::AddMonitorEx2(
             (IInstrumentationActivityMonitor**)&am);
     AddMonitor(am);
     *monitor = am;
-    INTERFACE_ADDREF(*monitor)
+    REFCOUNT_ADD(*monitor)
     return NOERROR;
 }
 
@@ -666,7 +666,7 @@ ECode Instrumentation::WaitForMonitor(
         mActivityMonitors->Remove(monitor);
     }
     *activity  = act;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
@@ -684,7 +684,7 @@ ECode Instrumentation::WaitForMonitorWithTimeout(
         mActivityMonitors->Remove(monitor);
     }
     *activity  = act;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
@@ -925,7 +925,7 @@ ECode Instrumentation::NewApplication(
     IApplication* _app = IApplication::Probe(obj);
     if (_app) FAIL_RETURN(_app->Attach(context))
     *app = _app;
-    INTERFACE_ADDREF(*app)
+    REFCOUNT_ADD(*app)
     return NOERROR;
 }
 
@@ -941,7 +941,7 @@ ECode Instrumentation::NewApplication(
     IApplication* _app = IApplication::Probe(obj);
     if (_app) FAIL_RETURN(_app->Attach(context))
     *app = _app;
-    INTERFACE_ADDREF(*app)
+    REFCOUNT_ADD(*app)
     return NOERROR;
 }
 
@@ -976,11 +976,11 @@ ECode Instrumentation::NewActivity(
             context, NULL, (IInstrumentation*)this->Probe(EIID_IInstrumentation), token, application, intent,
             info, title, parent, id, lastNonConfigurationInstance, config))
     *activity = actObj;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
-ECode Instrumentation::NewActivityEx(
+ECode Instrumentation::NewActivity(
     /* [in] */ IClassLoader* cl,
     /* [in] */ const String& className,
     /* [in] */ IIntent* intent,
@@ -993,7 +993,7 @@ ECode Instrumentation::NewActivityEx(
     AutoPtr<IInterface> obj;
     FAIL_RETURN(clsInfo->CreateObject((IInterface**)&obj))
     *activity = IActivity::Probe(obj);
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
@@ -1215,7 +1215,7 @@ ECode Instrumentation::GetAllocCounts(
     // results->PutInt64(String("gc_invocation_count"), Debug.getGlobalGcInvocationCount());
     assert(0);
     *bundle = results;
-    INTERFACE_ADDREF(*bundle)
+    REFCOUNT_ADD(*bundle)
     return NOERROR;
 }
 
@@ -1229,7 +1229,7 @@ ECode Instrumentation::GetBinderCounts(
     // results->PutInt64(String("received_transactions"), Debug.getBinderReceivedTransactions());
     assert(0);
     *bundle = results;
-    INTERFACE_ADDREF(*bundle)
+    REFCOUNT_ADD(*bundle)
     return NOERROR;
 }
 
@@ -1552,7 +1552,7 @@ ECode Instrumentation::ExecStartActivitiesAsUser(
     return CheckStartActivityResult(res, (*intents)[0]);
 }
 
-ECode Instrumentation::ExecStartActivityEx(
+ECode Instrumentation::ExecStartActivity(
     /* [in] */ IContext* who,
     /* [in] */ IBinder* contextThread,
     /* [in] */ IBinder* token,
@@ -1698,7 +1698,7 @@ ECode Instrumentation::ExecStartActivityEx(
     return CheckStartActivityResult(res, intent);
 }
 
-ECode Instrumentation::ExecStartActivityEx2(
+ECode Instrumentation::ExecStartActivity(
     /* [in] */ IContext* who,
     /* [in] */ IBinder* contextThread,
     /* [in] */ IBinder* token,

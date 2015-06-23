@@ -2,8 +2,8 @@
 #include "CActivityOne.h"
 #include "CTestClass.h"
 #include <stdio.h>
-#include "elastos/Slogger.h"
-#include "elastos/StringBuffer.h"
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuffer.h>
 #include "R.h"
 
 using Elastos::Core::IInteger32;

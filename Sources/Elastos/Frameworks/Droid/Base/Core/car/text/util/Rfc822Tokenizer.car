@@ -46,7 +46,7 @@ module
          * It will try to be tolerant of broken syntax instead of
          * returning an error.
          */
-        TokenizeEx(
+        Tokenize(
             [in] ICharSequence* text,
             [out,callee] ArrayOf<IRfc822Token*>* ret);
     }

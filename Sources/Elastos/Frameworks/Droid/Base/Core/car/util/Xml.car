@@ -25,7 +25,7 @@ module
          * Parses xml from the given reader and fires events on the given SAX
          * handler.
          */
-        ParseEx(
+        Parse(
             [in] IReader * inreader,
             [in] IContentHandler * contentHandler);
 
@@ -33,7 +33,7 @@ module
          * Parses xml from the given input stream and fires events on the given SAX
          * handler.
          */
-        ParseEx2(
+        Parse(
             [in] IInputStream * instrean,
             //[in] IEncoding * encoding,
             [in] IContentHandler * contentHandler);

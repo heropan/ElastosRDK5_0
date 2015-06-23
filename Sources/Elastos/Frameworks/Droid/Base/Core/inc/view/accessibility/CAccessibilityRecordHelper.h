@@ -28,7 +28,7 @@ public:
      *
      * @return An instance.
      */
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [out] */ IAccessibilityRecord** newInstance);
 };
 

@@ -5,9 +5,9 @@
 #include "ext/frameworkext.h"
 #include "widget/BaseAdapter.h"
 #include "widget/Filter.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;
@@ -42,7 +42,7 @@ private:
         CARAPI DoFilter(
             /* [in] */ ICharSequence* constraint);
 
-        CARAPI DoFilterEx(
+        CARAPI DoFilter(
             /* [in] */ ICharSequence* constraint,
             /* [in] */ IFilterListener* listener);
 

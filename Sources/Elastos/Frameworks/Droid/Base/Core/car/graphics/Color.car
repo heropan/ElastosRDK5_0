@@ -66,7 +66,7 @@ module
          * @param hsv  3 element array which holds the input HSV components.
          * @return the resulting argb color
          */
-        HSVToColorEx(
+        HSVToColor(
             [in] Int32 alpha,
             [in] ArrayOf<Float> hsv,
             [out] Int32* color);
@@ -227,7 +227,7 @@ module
          *
          * @hide Pending API council
          */
-        HSBtoColorEx(
+        HSBtoColor(
             [in] Float h,
             [in] Float s,
             [in] Float b,

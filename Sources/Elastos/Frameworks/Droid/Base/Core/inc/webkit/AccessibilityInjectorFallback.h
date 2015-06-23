@@ -3,10 +3,10 @@
 #define __ACCESSIBILITYINJECTORFALLBACK_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Stack.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Stack;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;

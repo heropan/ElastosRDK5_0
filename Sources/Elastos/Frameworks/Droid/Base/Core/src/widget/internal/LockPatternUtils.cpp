@@ -1,8 +1,8 @@
 
 #include "internal/LockPatternUtils.h"
-#include <elastos/Character.h>
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include "os/UserHandle.h"
 #include "os/ServiceManager.h"
 #include "os/SystemClock.h"
@@ -14,7 +14,7 @@
 #include "provider/Settings.h"
 #include "app/ActivityManagerNative.h"
 #include "text/TextUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Character;
@@ -129,63 +129,63 @@ AutoPtr<ILockSettings> LockPatternUtils::GetLockSettings()
 Int32 LockPatternUtils::GetRequestedMinimumPasswordLength()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumLengthEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumLength(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordQuality()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordQualityEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordQuality(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordHistoryLength()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordHistoryLengthEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordHistoryLength(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordMinimumLetters()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumLettersEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumLetters(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordMinimumUpperCase()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumUpperCaseEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumUpperCase(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordMinimumLowerCase()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumLowerCaseEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumLowerCase(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordMinimumNumeric()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumNumericEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumNumeric(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordMinimumSymbols()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumSymbolsEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumSymbols(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
 Int32 LockPatternUtils::GetRequestedPasswordMinimumNonLetter()
 {
     Int32 result = 0;
-    GetDevicePolicyManager()->GetPasswordMinimumNonLetterEx(NULL, GetCurrentOrCallingUserId(), &result);
+    GetDevicePolicyManager()->GetPasswordMinimumNonLetter(NULL, GetCurrentOrCallingUserId(), &result);
     return result;
 }
 
@@ -543,7 +543,7 @@ void LockPatternUtils::UpdateEncryptionPassword(
     AutoPtr<IDevicePolicyManager> dpm = GetDevicePolicyManager();
 
     Int32 status;
-    dpm->GetStorageEncryptionStatusEx(GetCurrentOrCallingUserId(), &status);
+    dpm->GetStorageEncryptionStatus(GetCurrentOrCallingUserId(), &status);
     if (status != IDevicePolicyManager::ENCRYPTION_STATUS_ACTIVE) {
         return;
     }
@@ -943,7 +943,7 @@ Boolean LockPatternUtils::IsBiometricWeakInstalled()
         return FALSE;
     }
     Boolean cameraDisable = FALSE;
-    GetDevicePolicyManager()->GetCameraDisabledEx(NULL, GetCurrentOrCallingUserId(), &cameraDisable);
+    GetDevicePolicyManager()->GetCameraDisabled(NULL, GetCurrentOrCallingUserId(), &cameraDisable);
     if (cameraDisable) {
         return FALSE;
     }
@@ -1439,7 +1439,7 @@ ECode LockPatternUtils::UpdateEmergencyCallButtonState(
         CStringWrapper::New(upper, (ICharSequence**)&csq);
         button->SetText(csq);
     } else {
-        button->SetTextEx3(textId);
+        button->SetText(textId);
     }
 
     return NOERROR;
@@ -1491,7 +1491,7 @@ void LockPatternUtils::FinishBiometricWeak()
     CIntent::New((IIntent**)&intent);
 
     //is right?
-    intent->SetClassNameEx(String("Elastos.Droid.Core.eco"),
+    intent->SetClassName(String("Elastos.Droid.Core.eco"),
             String("SetupEndScreen"));
     mContext->StartActivity(intent);
 }

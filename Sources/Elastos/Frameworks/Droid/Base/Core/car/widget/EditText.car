@@ -19,7 +19,7 @@ module
         /**
          * Convenience for {@link Selection#setSelection(Spannable, Int32)}.
          */
-        SetSelectionEx(
+        SetSelection(
             [in] Int32 index);
 
         /**

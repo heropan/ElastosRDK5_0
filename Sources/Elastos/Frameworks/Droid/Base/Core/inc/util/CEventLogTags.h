@@ -25,7 +25,7 @@ public:
     //     /* [in] */ const String& name,
     //     /* [out] */ IEventLogTagsDescription** desc);
 
-    // CARAPI GetEx(
+    // CARAPI Get(
     //     /* [in] */ Int32 tag,
     //     /* [out] */ IEventLogTagsDescription** desc);
 };

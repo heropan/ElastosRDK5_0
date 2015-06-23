@@ -44,7 +44,7 @@ ECode CSuggestionSpan::ParcelableCreatorSuggestionSpan::CreateFromParcel(
     AutoPtr<ISuggestionSpan> ss;
     ECode ec = CSuggestionSpan::New(source, (ISuggestionSpan**)&ss);
     *ret = ss;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return ec;
 }
 
@@ -55,7 +55,7 @@ ECode CSuggestionSpan::ParcelableCreatorSuggestionSpan::NewArray(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<ISuggestionSpan*> > o = ArrayOf<ISuggestionSpan*>::Alloc(size);
     *ret = o;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -76,7 +76,7 @@ ECode CSuggestionSpan::GetSuggestions(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<String> > o = SuggestionSpan::GetSuggestions();
     *ret = o;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

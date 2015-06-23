@@ -72,7 +72,7 @@ public:
         /* [in] */ Int32 resId,
         /* [out] */ String* str);
 
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface *>* formatArgs,
         /* [out] */ String* str);
@@ -90,17 +90,17 @@ public:
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ Int32 resid,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx2(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx3(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -178,7 +178,7 @@ public:
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [out] */ ISQLiteDatabase** sqliteDB);
 
-    CARAPI OpenOrCreateDatabaseEx(
+    CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& name,
         /* [in] */ Int32 mode,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -211,7 +211,7 @@ public:
     CARAPI SetWallpaper(
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI SetWallpaperEx(
+    CARAPI SetWallpaper(
         /* [in] */ IInputStream* data);
 
     CARAPI ClearWallpaper();
@@ -223,11 +223,11 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
-    CARAPI StartActivityEx(
+    CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
-    CARAPI StartActivityAsUserEx(
+    CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [in] */ IUserHandle* userId);
@@ -235,7 +235,7 @@ public:
     CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent *>* intents);
 
-    CARAPI StartActivitiesEx(
+    CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent *>* intents,
         /* [in] */ IBundle* options);
 
@@ -251,7 +251,7 @@ public:
         /* [in] */ Int32 flagsValues,
         /* [in] */ Int32 extraFlags);
 
-    CARAPI StartIntentSenderEx(
+    CARAPI StartIntentSender(
         /* [in] */ IIntentSender* intent,
         /* [in] */ IIntent* fillInIntent,
         /* [in] */ Int32 flagsMask,
@@ -262,7 +262,7 @@ public:
     CARAPI SendBroadcast(
         /* [in] */ IIntent* intent);
 
-    CARAPI SendBroadcastEx(
+    CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
@@ -270,7 +270,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
-    CARAPI SendOrderedBroadcastEx(
+    CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission,
         /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -283,7 +283,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
-    CARAPI SendBroadcastAsUserEx(
+    CARAPI SendBroadcastAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission);
@@ -334,7 +334,7 @@ public:
         /* [in] */ IIntentFilter* filter,
         /* [out] */ IIntent** stickyIntent);
 
-    CARAPI RegisterReceiverEx(
+    CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
         /* [in] */ IIntentFilter* filter,
         /* [in] */ const String& broadcastPermission,
@@ -376,7 +376,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI BindServiceEx(
+    CARAPI BindService(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
@@ -450,7 +450,7 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [out] */ Int32* result);
 
-    CARAPI CheckUriPermissionEx(
+    CARAPI CheckUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,
@@ -476,7 +476,7 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [in] */ const String& message);
 
-    CARAPI EnforceUriPermissionEx(
+    CARAPI EnforceUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,
@@ -594,7 +594,7 @@ public:
         /* [in] */ const String& sortOrder,
         /* [out] */ ICursor** cursor);
 
-    CARAPI ManagedQueryEx(
+    CARAPI ManagedQuery(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ const String& selection,
@@ -621,10 +621,10 @@ public:
     CARAPI SetContentView(
         /* [in] */ Int32 layoutResID);
 
-    CARAPI SetContentViewEx(
+    CARAPI SetContentView(
         /* [in] */ IView* view);
 
-    CARAPI SetContentViewEx2(
+    CARAPI SetContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
 
@@ -808,7 +808,7 @@ public:
     CARAPI ShowDialog(
         /* [in] */ Int32 id);
 
-    CARAPI ShowDialogEx(
+    CARAPI ShowDialog(
         /* [in] */ Int32 id,
         /* [in] */ IBundle* args,
         /* [out] */ Boolean* res);
@@ -865,7 +865,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode);
 
-    CARAPI StartActivityForResultEx(
+    CARAPI StartActivityForResult(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IBundle* options);
@@ -878,7 +878,7 @@ public:
         /* [in] */ Int32 flagsValues,
         /* [in] */ Int32 extraFlags);
 
-    CARAPI StartIntentSenderForResultEx(
+    CARAPI StartIntentSenderForResult(
         /* [in] */ IIntentSender* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IIntent* fillInIntent,
@@ -892,7 +892,7 @@ public:
         /* [in] */ Int32 requestCode,
         /* [out] */ Boolean* started);
 
-    CARAPI StartActivityIfNeededEx(
+    CARAPI StartActivityIfNeeded(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IBundle* options,
@@ -902,7 +902,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [out] */ Boolean* started);
 
-    CARAPI StartNextMatchingActivityEx(
+    CARAPI StartNextMatchingActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [out] */ Boolean* started);
@@ -912,7 +912,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode);
 
-    CARAPI StartActivityFromChildEx(
+    CARAPI StartActivityFromChild(
         /* [in] */ IActivity* child,
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
@@ -923,7 +923,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode);
 
-    CARAPI StartActivityFromFragmentEx(
+    CARAPI StartActivityFromFragment(
         /* [in] */ IFragment* fragment,
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
@@ -938,7 +938,7 @@ public:
         /* [in] */ Int32 flagsValues,
         /* [in] */ Int32 extraFlags);
 
-    CARAPI StartIntentSenderFromChildEx(
+    CARAPI StartIntentSenderFromChild(
         /* [in] */ IActivity* child,
         /* [in] */ IIntentSender* intent,
         /* [in] */ Int32 requestCode,
@@ -955,7 +955,7 @@ public:
     CARAPI SetResult(
         /* [in] */ Int32 resultCode);
 
-    CARAPI SetResultEx(
+    CARAPI SetResult(
         /* [in] */ Int32 resultCode,
         /* [in] */ IIntent* data);
 
@@ -1037,7 +1037,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 titleId);
 
     CARAPI SetTitleColor(
@@ -1087,7 +1087,7 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IView** view);
 
-    CARAPI OnCreateViewEx(
+    CARAPI OnCreateView(
         /* [in] */ IView* parent,
         /* [in] */ const String& name,
         /* [in] */ IContext* context,
@@ -1150,7 +1150,7 @@ public:
         /* [in] */ IInterface* lastNonConfigurationInstance,
         /* [in] */ IConfiguration* config);
 
-    CARAPI AttachEx(
+    CARAPI Attach(
         /* [in] */ IContext* ctx,
         /* [in] */ IActivityThread* aThread,
         /* [in] */ IInstrumentation* instr,
@@ -1183,7 +1183,7 @@ public:
     CARAPI IsStartedActivity(
         /* [out] */ Boolean* isStartedActivity);
 
-    CARAPI GetWindowEx(
+    CARAPI GetWindow(
         /* [out] */ IWindow** window);
 
     CARAPI SetDecorView(
@@ -1207,7 +1207,7 @@ public:
     CARAPI IsWindowAdded(
         /* [out] */ Boolean* isAdded);
 
-    CARAPI GetWindowManagerEx(
+    CARAPI GetWindowManager(
         /* [out] */ IWindowManager** mgr);
 
     CARAPI SetConfigChangeFlags(

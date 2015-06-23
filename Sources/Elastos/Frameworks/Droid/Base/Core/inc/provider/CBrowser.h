@@ -26,8 +26,8 @@ public:
      *  @param url      Url for the bookmark. Can be null or empty string.
      */
     CARAPI SaveBookmark(
-        /* [in] */ IContext* c, 
-        /* [in] */ const String& title, 
+        /* [in] */ IContext* c,
+        /* [in] */ const String& title,
         /* [in] */ const String& url);
 
     /**
@@ -51,7 +51,7 @@ public:
      *  the string.
      *  @hide pending API council approval
      */
-    CARAPI SendStringEx(
+    CARAPI SendString(
         /* [in] */ IContext* c,
         /* [in] */ const String& stringToSend,
         /* [in] */ const String& chooserDialogTitle);
@@ -159,7 +159,7 @@ public:
      * @param url   url to remove.
      */
     CARAPI DeleteFromHistory(
-        /* [in] */ IContentResolver* cr, 
+        /* [in] */ IContentResolver* cr,
         /* [in] */ const String& url);
 
     /**
@@ -189,7 +189,7 @@ public:
      *  @param  cr The ContentResolver used to access the database.
      *  @param  where Clause to be used to limit the query from the database.
      *          Must be an allowable string to be passed into a database query.
-     *  @param  listener IconListener that gets the icons once they are 
+     *  @param  listener IconListener that gets the icons once they are
      *          retrieved.
      */
     CARAPI RequestAllIcons(

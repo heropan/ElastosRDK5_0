@@ -28,7 +28,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IUserHandle* other,
         /* [out] */ Boolean* equals);
 

@@ -1,6 +1,6 @@
 
 #include "CFileHelperExampleAgent.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "CActivityOne.h"
 
 using Elastos::Utility::Logging::Slogger;

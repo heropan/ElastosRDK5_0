@@ -2,8 +2,8 @@
 #include "provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include "provider/ContactsContractContacts.h"
 #include "text/TextUtils.h"
-#include <elastos/StringUtils.h>
-#include "cmdef.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/coredef.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Text::TextUtils;

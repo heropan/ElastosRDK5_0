@@ -126,7 +126,7 @@ module
          * @see #getBitmap(android.graphics.Bitmap)
          * @see #getBitmap()
          */
-        GetBitmapEx(
+        GetBitmap(
             [in] Int32 width,
             [in] Int32 height,
             [out] IBitmap** bitmap);
@@ -154,7 +154,7 @@ module
          * @throws IllegalStateException if the hardware rendering context cannot be
          *         acquired to capture the bitmap
          */
-        GetBitmapEx2(
+        GetBitmap(
             [in] IBitmap* bitmap,
             [out] IBitmap** result);
 

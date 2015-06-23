@@ -121,7 +121,7 @@ ECode CVpnConfig::GetDnsServers(
     VALIDATE_NOT_NULL(dnsServers);
 
     *dnsServers = mDnsServers;
-    INTERFACE_ADDREF(*dnsServers);
+    REFCOUNT_ADD(*dnsServers);
     return NOERROR;
 }
 
@@ -138,7 +138,7 @@ ECode CVpnConfig::GetSearchDomains(
     VALIDATE_NOT_NULL(searchDomains);
 
     *searchDomains = mSearchDomains;
-    INTERFACE_ADDREF(*searchDomains);
+    REFCOUNT_ADD(*searchDomains);
     return NOERROR;
 }
 
@@ -155,7 +155,7 @@ ECode CVpnConfig::GetConfigureIntent(
     VALIDATE_NOT_NULL(configureIntent);
 
     *configureIntent = mConfigureIntent;
-    INTERFACE_ADDREF(*configureIntent);
+    REFCOUNT_ADD(*configureIntent);
     return NOERROR;
 }
 
@@ -245,9 +245,9 @@ ECode CVpnConfig::GetIntentForConfirmation(
 
     AutoPtr<IIntent> newintent;
     CIntent::New((IIntent**)&newintent);
-    newintent->SetClassNameEx(IVpnConfig::DIALOGS_PACKAGE, IVpnConfig::DIALOGS_PACKAGE + ".ConfirmDialog");
+    newintent->SetClassName(IVpnConfig::DIALOGS_PACKAGE, IVpnConfig::DIALOGS_PACKAGE + ".ConfirmDialog");
     *intent = newintent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -263,7 +263,7 @@ ECode CVpnConfig::GetIntentForStatusPanel(
 
     AutoPtr<IIntent> newintent;
     CIntent::New((IIntent**)&newintent);
-    newintent->SetClassNameEx(IVpnConfig::DIALOGS_PACKAGE, IVpnConfig::DIALOGS_PACKAGE + ".ManageDialog");
+    newintent->SetClassName(IVpnConfig::DIALOGS_PACKAGE, IVpnConfig::DIALOGS_PACKAGE + ".ManageDialog");
     newintent->PutParcelableExtra(String("config"), IParcelable::Probe(config));
     newintent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK | IIntent::FLAG_ACTIVITY_NO_HISTORY |
             IIntent::FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);

@@ -2,7 +2,7 @@
 #include "view/accessibility/CAccessibilityNodeInfo.h"
 #include "view/accessibility/CAccessibilityInteractionClient.h"
 #include "graphics/CRect.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
@@ -79,10 +79,10 @@ Int64 CAccessibilityNodeInfo::MakeNodeId(
 ECode CAccessibilityNodeInfo::SetSource(
     /* [in] */ IView* source)
 {
-    return SetSourceEx(source, UNDEFINED);
+    return SetSource(source, UNDEFINED);
 }
 
-ECode CAccessibilityNodeInfo::SetSourceEx(
+ECode CAccessibilityNodeInfo::SetSource(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
@@ -154,7 +154,7 @@ ECode CAccessibilityNodeInfo::GetChildNodeIds(
         map->Put(it->mFirst, (IInterface*)integer);
     }
     *ids = map;
-    INTERFACE_ADDREF(*ids);
+    REFCOUNT_ADD(*ids);
     return NOERROR;
 }
 
@@ -191,10 +191,10 @@ ECode CAccessibilityNodeInfo::GetChild(
 ECode CAccessibilityNodeInfo::AddChild(
     /* [in] */ IView* child)
 {
-    return AddChildEx(child, UNDEFINED);
+    return AddChild(child, UNDEFINED);
 }
 
-ECode CAccessibilityNodeInfo::AddChildEx(
+ECode CAccessibilityNodeInfo::AddChild(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
@@ -259,7 +259,7 @@ ECode CAccessibilityNodeInfo::PerformAction(
         action, NULL, result);
 }
 
-ECode CAccessibilityNodeInfo::PerformActionEx(
+ECode CAccessibilityNodeInfo::PerformAction(
     /* [in] */ Int32 action,
     /* [in] */ IBundle* arguments,
     /* [out] */ Boolean* result)
@@ -322,10 +322,10 @@ ECode CAccessibilityNodeInfo::GetParentNodeId(
 ECode CAccessibilityNodeInfo::SetParent(
     /* [in] */ IView* parent)
 {
-    return SetParentEx(parent, UNDEFINED);
+    return SetParent(parent, UNDEFINED);
 }
 
-ECode CAccessibilityNodeInfo::SetParentEx(
+ECode CAccessibilityNodeInfo::SetParent(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
@@ -563,7 +563,7 @@ ECode CAccessibilityNodeInfo::GetPackageName(
 {
     VALIDATE_NOT_NULL(packageName);
     *packageName = mPackageName;
-    INTERFACE_ADDREF(*packageName);
+    REFCOUNT_ADD(*packageName);
     return NOERROR;
 }
 
@@ -580,7 +580,7 @@ ECode CAccessibilityNodeInfo::GetClassName(
 {
     VALIDATE_NOT_NULL(className);
     *className = mClassName;
-    INTERFACE_ADDREF(*className);
+    REFCOUNT_ADD(*className);
     return NOERROR;
 }
 
@@ -597,7 +597,7 @@ ECode CAccessibilityNodeInfo::GetText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -614,7 +614,7 @@ ECode CAccessibilityNodeInfo::GetContentDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mContentDescription;
-    INTERFACE_ADDREF(*description);
+    REFCOUNT_ADD(*description);
     return NOERROR;
 }
 
@@ -629,10 +629,10 @@ ECode CAccessibilityNodeInfo::SetContentDescription(
 ECode CAccessibilityNodeInfo::SetLabelFor(
     /* [in] */ IView* labeled)
 {
-    return SetLabelForEx(labeled, UNDEFINED);
+    return SetLabelFor(labeled, UNDEFINED);
 }
 
-ECode CAccessibilityNodeInfo::SetLabelForEx(
+ECode CAccessibilityNodeInfo::SetLabelFor(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
@@ -664,10 +664,10 @@ ECode CAccessibilityNodeInfo::GetLabelFor(
 ECode CAccessibilityNodeInfo::SetLabeledBy(
     /* [in] */ IView* label)
 {
-    return SetLabeledByEx(label, UNDEFINED);
+    return SetLabeledBy(label, UNDEFINED);
 }
 
-ECode CAccessibilityNodeInfo::SetLabeledByEx(
+ECode CAccessibilityNodeInfo::SetLabeledBy(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
@@ -818,21 +818,21 @@ ECode CAccessibilityNodeInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    FAIL_RETURN(ObtainEx2(info));
+    FAIL_RETURN(Obtain(info));
     return (*info)->SetSource(source);
 }
 
-ECode CAccessibilityNodeInfo::ObtainEx(
+ECode CAccessibilityNodeInfo::Obtain(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId,
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    FAIL_RETURN(ObtainEx2(info));
-    return (*info)->SetSourceEx(root, virtualDescendantId);
+    FAIL_RETURN(Obtain(info));
+    return (*info)->SetSource(root, virtualDescendantId);
 }
 
-ECode CAccessibilityNodeInfo::ObtainEx2(
+ECode CAccessibilityNodeInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
@@ -845,22 +845,22 @@ ECode CAccessibilityNodeInfo::ObtainEx2(
         infoCls->mNext = NULL;
         infoCls->mIsInPool = FALSE;
         *info = (IAccessibilityNodeInfo*)infoCls;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
     AutoPtr<CAccessibilityNodeInfo> cinfo;
     CAccessibilityNodeInfo::NewByFriend((CAccessibilityNodeInfo**)&cinfo);
     *info = cinfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
-ECode CAccessibilityNodeInfo::ObtainEx3(
+ECode CAccessibilityNodeInfo::Obtain(
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [out] */ IAccessibilityNodeInfo** infoClone)
 {
     VALIDATE_NOT_NULL(infoClone);
-    FAIL_RETURN(ObtainEx2(infoClone));
+    FAIL_RETURN(Obtain(infoClone));
     ((CAccessibilityNodeInfo*)(*infoClone))->Init((CAccessibilityNodeInfo*)info);
     return NOERROR;
 }
@@ -936,7 +936,7 @@ ECode CAccessibilityNodeInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     AutoPtr<IAccessibilityNodeInfo> info;
-    ObtainEx2((IAccessibilityNodeInfo**)&info);
+    Obtain((IAccessibilityNodeInfo**)&info);
     ((CAccessibilityNodeInfo*)info.Get())->InitFromParcel(source);
     return NOERROR;
 }
@@ -951,8 +951,8 @@ void CAccessibilityNodeInfo::Init(
     mLabeledById = other->mLabeledById;
     mWindowId = other->mWindowId;
     mConnectionId = other->mConnectionId;
-    mBoundsInParent->SetEx(other->mBoundsInParent);
-    mBoundsInScreen->SetEx(other->mBoundsInScreen);
+    mBoundsInParent->Set(other->mBoundsInParent);
+    mBoundsInScreen->Set(other->mBoundsInScreen);
     mPackageName = other->mPackageName;
     mClassName = other->mClassName;
     mText = other->mText;

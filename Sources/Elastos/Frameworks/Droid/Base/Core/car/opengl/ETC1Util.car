@@ -48,7 +48,7 @@ module
          * or GL_UNSIGNED_BYTE, which implies 24-bits-per-pixel.
          * @param texture the ETC1 to load.
          */
-        LoadTextureEx(
+        LoadTexture(
             [in] Int32 target,
             [in] Int32 level,
             [in] Int32 border,

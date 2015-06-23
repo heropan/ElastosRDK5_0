@@ -6,8 +6,7 @@
 #include "os/HandlerBase.h"
 #include "webkit/BrowserFrame.h"
 #include "webkit/WebSettings.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Libcore::ICU::ILocale;

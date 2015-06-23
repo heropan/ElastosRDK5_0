@@ -36,7 +36,7 @@ ECode TableRowLayoutParams::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::TableRow_Cell),
             ARRAY_SIZE(R::styleable::TableRow_Cell));
     AutoPtr<ITypedArray> a;
-    c->ObtainStyledAttributesEx2(
+    c->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a);
 
     a->GetInt32(R::styleable::TableRow_Cell_layout_column,

@@ -37,11 +37,11 @@ ECode CContentProviderClient::Query(
     /* [in] */ const String& sortOrder,
     /* [out] */ ICursor** cursor)
 {
-    ECode ec = QueryEx(uri, projection, selection, selectionArgs, sortOrder, NULL, cursor);
+    ECode ec = Query(uri, projection, selection, selectionArgs, sortOrder, NULL, cursor);
     HANDLE_CATCH(ec)
 }
 
-ECode CContentProviderClient::QueryEx(
+ECode CContentProviderClient::Query(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String& selection,

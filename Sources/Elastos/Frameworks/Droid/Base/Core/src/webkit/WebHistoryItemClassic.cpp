@@ -282,7 +282,7 @@ void WebHistoryItemClassic::Inflate(
 //synchronized
 AutoPtr<WebHistoryItemClassic> WebHistoryItemClassic::Clone()
 {
-    Elastos::Core::Threading::Mutex::Autolock lock(mLock);
+    Elastos::Core::Mutex::Autolock lock(mLock);
     return new WebHistoryItemClassic(this);
 }
 

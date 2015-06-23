@@ -43,7 +43,7 @@ public:
      * @param root The root of the virtual subtree.
      * @param virtualDescendantId The id of the virtual descendant.
      */
-    CARAPI SetSourceEx(
+    CARAPI SetSource(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -490,7 +490,7 @@ public:
      *
      * @return An instance.
      */
-    static CARAPI ObtainEx(
+    static CARAPI Obtain(
         /* [out] */ IAccessibilityRecord** newInstance);
 
     /**

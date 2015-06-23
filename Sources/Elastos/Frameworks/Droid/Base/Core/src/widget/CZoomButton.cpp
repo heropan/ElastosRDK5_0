@@ -211,7 +211,7 @@ ECode CZoomButton::SetColorFilter(
     return ZoomButton::SetColorFilter(color);
 }
 
-ECode CZoomButton::SetColorFilterEx(
+ECode CZoomButton::SetColorFilter(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode)
 {
@@ -231,7 +231,7 @@ ECode CZoomButton::GetColorFilter(
     return NOERROR;
 }
 
-ECode CZoomButton::SetColorFilterEx2(
+ECode CZoomButton::SetColorFilter(
         /* [in] */ IColorFilter* cf)
 {
     return ZoomButton::SetColorFilter(cf);
@@ -251,10 +251,10 @@ ECode CZoomButton::SetImageAlpha(
     return ZoomButton::SetImageAlpha(alpha);
 }
 
-ECode CZoomButton::SetAlphaEx(
+ECode CZoomButton::SetAlpha(
         /* [in] */ Int32 alpha)
 {
-    return ZoomButton::SetAlphaEx(alpha);
+    return ZoomButton::SetAlpha(alpha);
 }
 
 }// namespace Widget

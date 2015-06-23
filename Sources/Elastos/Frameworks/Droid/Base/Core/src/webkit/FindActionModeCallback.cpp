@@ -430,7 +430,7 @@ void FindActionModeCallback::FindNext(
 void FindActionModeCallback::UpdateMatchesString()
 {
     if (mNumberOfMatches == 0) {
-        mMatches->SetTextEx3(R::string::no_matches);
+        mMatches->SetText(R::string::no_matches);
     }
     else {
         AutoPtr< ArrayOf<IInterface*> > formatArgs = ArrayOf<IInterface*>::Alloc(2);
@@ -440,7 +440,7 @@ void FindActionModeCallback::UpdateMatchesString()
         (*formatArgs)[0] = value1;
         (*formatArgs)[1] = value2;
         String str;
-        mResources->GetQuantityStringEx(
+        mResources->GetQuantityString(
             R::plurals::matches_found, mNumberOfMatches,
             formatArgs, &str);
         AutoPtr<ICharSequence> strCS;

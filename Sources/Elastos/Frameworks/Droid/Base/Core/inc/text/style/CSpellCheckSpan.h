@@ -4,7 +4,7 @@
 
 #include "_CSpellCheckSpan.h"
 #include "text/style/SpellCheckSpan.h"
-#include "text/ParcelableSpanMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

@@ -93,7 +93,7 @@ public:
      *
      * @param wm The ViewManager for adding new windows.
      */
-    CARAPI SetWindowManagerEx(
+    CARAPI SetWindowManager(
         /* [in] */ IWindowManager* wm,
         /* [in] */ IBinder* appToken,
         /* [in] */ const String& appName,
@@ -319,10 +319,10 @@ public:
     CARAPI SetContentView(
         /* [in] */ Int32 layoutResID) = 0;
 
-    CARAPI SetContentViewEx(
+    CARAPI SetContentView(
         /* [in] */ IView* view) = 0;
 
-    CARAPI SetContentViewEx2(
+    CARAPI SetContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params) = 0;
 
@@ -624,7 +624,7 @@ public:
      * @param uiOptions Flags specifying extra options for this window.
      * @param mask Flags specifying which options should be modified. Others will remain unchanged.
      */
-    CARAPI SetUiOptionsEx(
+    CARAPI SetUiOptions(
         /* [in] */ Int32 uiOptions,
         /* [in] */ Int32 mask);
 

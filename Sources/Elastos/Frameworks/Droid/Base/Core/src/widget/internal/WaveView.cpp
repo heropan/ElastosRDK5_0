@@ -1,12 +1,12 @@
 
 #include "widget/internal/WaveView.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include "graphics/CBitmapFactory.h"
 #include "graphics/drawable/CBitmapDrawable.h"
 #include "view/accessibility/CAccessibilityManager.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -568,7 +568,7 @@ AutoPtr<IBitmapDrawable> WaveView::CreateDrawable(
     AutoPtr<IBitmapFactory> factory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
     AutoPtr<IBitmap> bitmap;
-    factory->DecodeResourceEx(res, resId, (IBitmap**)&bitmap);
+    factory->DecodeResource(res, resId, (IBitmap**)&bitmap);
 
     AutoPtr<IBitmapDrawable> bd;
     CBitmapDrawable::New(res, bitmap, (IBitmapDrawable**)&bd);

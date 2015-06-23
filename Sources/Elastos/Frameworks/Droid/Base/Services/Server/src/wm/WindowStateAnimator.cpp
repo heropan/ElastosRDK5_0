@@ -1,8 +1,8 @@
 
 #include "wm/WindowStateAnimator.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include "os/Handler.h"
 
 using Elastos::Core::StringUtils;
@@ -777,7 +777,7 @@ void WindowStateAnimator::ComputeShownFrameLocked()
         else {
             tmpMatrix->Reset();
         }
-        tmpMatrix->SetScaleEx(mWin->mGlobalScale, mWin->mGlobalScale);
+        tmpMatrix->SetScale(mWin->mGlobalScale, mWin->mGlobalScale);
         AutoPtr<IMatrix> m;
         if (selfTransformation) {
             mTransformation->GetMatrix((IMatrix**)&m);
@@ -810,7 +810,7 @@ void WindowStateAnimator::ComputeShownFrameLocked()
         }
         AutoPtr<MagnificationSpec> spec = mWin->GetWindowMagnificationSpecLocked();
         if (spec != NULL && !spec->IsNop()) {
-            tmpMatrix->SetScaleEx(spec->mScale, spec->mScale);
+            tmpMatrix->SetScale(spec->mScale, spec->mScale);
             tmpMatrix->PostTranslate(spec->mOffsetX, spec->mOffsetY, &result);
         }
 
@@ -904,7 +904,7 @@ void WindowStateAnimator::ComputeShownFrameLocked()
         AutoPtr<ArrayOf<Float> > tmpFloats = mService->mTmpFloats;
         AutoPtr<IMatrix> tmpMatrix = mWin->mTmpMatrix;
 
-        tmpMatrix->SetScaleEx(mWin->mGlobalScale, mWin->mGlobalScale);
+        tmpMatrix->SetScale(mWin->mGlobalScale, mWin->mGlobalScale);
         Int32 left, top;
         frame->GetLeft(&left);
         frame->GetTop(&top);
@@ -919,7 +919,7 @@ void WindowStateAnimator::ComputeShownFrameLocked()
 
         if (spec != NULL && !spec->IsNop()) {
             Boolean result;
-            tmpMatrix->PostScaleEx(spec->mScale, spec->mScale, &result);
+            tmpMatrix->PostScale(spec->mScale, spec->mScale, &result);
             tmpMatrix->PostTranslate(spec->mOffsetX, spec->mOffsetY, &result);
         }
 
@@ -945,7 +945,7 @@ void WindowStateAnimator::ComputeShownFrameLocked()
         }
     }
     else {
-        mWin->mShownFrame->SetEx2(mWin->mFrame);
+        mWin->mShownFrame->Set(mWin->mFrame);
         if (mWin->mXOffset != 0 || mWin->mYOffset != 0) {
             mWin->mShownFrame->Offset(mWin->mXOffset, mWin->mYOffset);
         }
@@ -1064,7 +1064,7 @@ void WindowStateAnimator::UpdateSurfaceWindowCrop(
     Boolean isEquals;
 
     if (w->mSystemDecorRect->Equals(w->mLastSystemDecorRect, &isEquals), !isEquals) {
-        w->mLastSystemDecorRect->SetEx(w->mSystemDecorRect);
+        w->mLastSystemDecorRect->Set(w->mSystemDecorRect);
         // try {
         // if (WindowManagerService.SHOW_TRANSACTIONS) WindowManagerService.logSurface(w,
         //         "CROP " + w.mSystemDecorRect.toShortString(), null);

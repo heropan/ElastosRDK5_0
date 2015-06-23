@@ -2,7 +2,7 @@
 #include "PreferenceInflater.h"
 #include "content/Intent.h"
 #include "util/XmlUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::Intent;
@@ -115,7 +115,7 @@ ECode PreferenceInflater::OnMergeRoots(
         *p = givenRoot;
     }
 
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 

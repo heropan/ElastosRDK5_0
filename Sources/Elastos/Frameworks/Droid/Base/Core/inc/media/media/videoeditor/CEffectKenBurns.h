@@ -5,7 +5,7 @@
 #include "_CEffectKenBurns.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Effect.h"
-#include "media/media/videoeditor/EffectMacro.h"
+
 
 using Elastos::Droid::Graphics::IRect;
 

@@ -73,7 +73,7 @@ module
          * @return View Newly created view. Return null for the default
          *         behavior.
          */
-        OnCreateViewEx(
+        OnCreateView(
             [in] IView* parent,
             [in] String name,
             [in] IContext* ctx,
@@ -232,7 +232,7 @@ module
          *         this is the root View; otherwise it is the root of the inflated
          *         XML file.
          */
-        InflateEx(
+        Inflate(
             [in] IXmlPullParser* parser,
             [in] IViewGroup* root,
             [out] IView** view);
@@ -254,7 +254,7 @@ module
          *         attachToRoot is true, this is root; otherwise it is the root of
          *         the inflated XML file.
          */
-        InflateEx2(
+        Inflate(
             [in] Int32 resource,
             [in] IViewGroup* root,
             [in] Boolean attachToRoot,
@@ -282,7 +282,7 @@ module
          *         attachToRoot is true, this is root; otherwise it is the root of
          *         the inflated XML file.
          */
-        InflateEx3(
+        Inflate(
             [in] IXmlPullParser* parser,
             [in] IViewGroup* root,
             [in] Boolean attachToRoot,

@@ -1,7 +1,7 @@
 
 #include "CLauncherShortcuts.h"
 #include "jansson.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFileReader;
@@ -328,7 +328,7 @@ go_on:
     AutoPtr<IDisplayMetrics> dm;
     ASSERT_SUCCEEDED(CDisplayMetrics::New((IDisplayMetrics**)&dm));
     AutoPtr<ILocalWindowManager> wmgr;
-    GetWindowManagerEx((ILocalWindowManager**)&wmgr);
+    GetWindowManager((ILocalWindowManager**)&wmgr);
     AutoPtr<IDisplay> display;
     wmgr->GetDefaultDisplay((IDisplay**)&display);
     AutoPtr<IDisplayMetrics> metrics;

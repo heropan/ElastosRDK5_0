@@ -117,7 +117,7 @@ public:
      * @param delay The number of milliseconds that should elapse before the
      * animation starts.
      */
-    CARAPI AfterEx(
+    CARAPI After(
         /* [in] */ Int64 delay);
 
 private:

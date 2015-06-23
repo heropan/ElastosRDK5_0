@@ -543,7 +543,7 @@ ECode CAudioTrack2::GetWaveformData(
 
     if (mWaveformData != NULL) {
         *result = mWaveformData;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (mAudioWaveformFilename != NULL) {
@@ -553,7 +553,7 @@ ECode CAudioTrack2::GetWaveformData(
         //     throw e;
         // }
         *result = mWaveformData;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else {

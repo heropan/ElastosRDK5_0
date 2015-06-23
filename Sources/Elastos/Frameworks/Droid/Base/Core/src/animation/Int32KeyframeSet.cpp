@@ -45,7 +45,7 @@ ECode Int32KeyframeSet::GetValue(
     AutoPtr<IInterface> iv;
     CInteger32::New(vTemp, (IInteger32**)&iv);
     *value = iv;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -208,7 +208,7 @@ ECode Int32KeyframeSet::Clone(
     }
     AutoPtr<IInt32KeyframeSet> newSet = new Int32KeyframeSet(newKeyframes);
     *obj = newSet;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -217,7 +217,7 @@ ECode Int32KeyframeSet::GetKeyframes(
 {
     VALIDATE_NOT_NULL(frames);
     *frames = mKeyframes;
-    INTERFACE_ADDREF(*frames);
+    REFCOUNT_ADD(*frames);
     return NOERROR;
 }
 

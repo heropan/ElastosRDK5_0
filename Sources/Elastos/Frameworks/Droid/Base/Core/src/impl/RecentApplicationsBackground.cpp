@@ -1,7 +1,7 @@
 
 #include "impl/RecentApplicationsBackground.h"
 #include "graphics/CPaint.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
@@ -131,7 +131,7 @@ ECode RecentApplicationsBackground::Draw(
         p->SetColor(0x88ffff00);
         AutoPtr<IRect> bounds;
         background->GetBounds((IRect**)&bounds);
-        canvas->DrawRectEx(bounds, p);
+        canvas->DrawRect(bounds, p);
     }
     canvas->DrawARGB((Int32)(0.75*0xff), 0, 0, 0);
 

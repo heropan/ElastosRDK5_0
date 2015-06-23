@@ -10,8 +10,8 @@
 #include "graphics/CCanvas.h"
 #include "graphics/CRect.h"
 #include "graphics/CBitmapFactoryOptions.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFileInputStream;
@@ -162,7 +162,7 @@ AutoPtr<IBitmap> ThumbnailUtils::CreateVideoThumbnail(
     ECode ec = retriever->SetDataSource(filePath);
     FAIL_GOTO(ec, _EXIT_)
 
-    ec = retriever->GetFrameAtTimeEx(-1, (IBitmap**)&bitmap);
+    ec = retriever->GetFrameAtTime(-1, (IBitmap**)&bitmap);
     FAIL_GOTO(ec, _EXIT_)
 
 _EXIT_:
@@ -243,7 +243,7 @@ AutoPtr<IBitmap> ThumbnailUtils::ExtractThumbnail(
     AutoPtr<IMatrix> matrix;
     CMatrix::New((IMatrix**)&matrix);
 
-    matrix->SetScaleEx(scale, scale);
+    matrix->SetScale(scale, scale);
     AutoPtr<IBitmap> thumbnail = Transform(matrix, source, width, height,
         OPTIONS_SCALE_UP | options);
     return thumbnail;
@@ -426,7 +426,7 @@ AutoPtr<IBitmap> ThumbnailUtils::Transform(
         Int32 dstY = (targetHeight - srcH) / 2;
         AutoPtr<IRect> dst;
         CRect::New(dstX, dstY, targetWidth - dstX, targetHeight - dstY, (IRect**)&dst);
-        c->DrawBitmapEx2(source, src, dst, NULL);
+        c->DrawBitmap(source, src, dst, NULL);
         if (recycle) {
             source->Recycle();
         }
@@ -443,7 +443,7 @@ AutoPtr<IBitmap> ThumbnailUtils::Transform(
     if (bitmapAspect > viewAspect) {
         Float scale = targetHeight / bitmapHeightF;
         if (scale < 0.9f || scale > 1.0f) {
-            scaler->SetScaleEx(scale, scale);
+            scaler->SetScale(scale, scale);
         }
         else {
             scaler = NULL;
@@ -452,7 +452,7 @@ AutoPtr<IBitmap> ThumbnailUtils::Transform(
     else {
         Float scale = targetWidth / bitmapWidthF;
         if (scale < 0.9f || scale > 1.0f) {
-            scaler->SetScaleEx(scale, scale);
+            scaler->SetScale(scale, scale);
         }
         else {
             scaler = NULL;

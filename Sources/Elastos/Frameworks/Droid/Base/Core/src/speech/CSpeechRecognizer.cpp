@@ -1,7 +1,7 @@
 
 #include "speech/CSpeechRecognizer.h"
 
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -51,7 +51,7 @@ AutoPtr<ISpeechRecognizer> CSpeechRecognizer::CreateSpeechRecognizer(
     /* [in] */ IComponentName* serviceComponent)
 {
     if (context == NULL) {
-        //Java:    throw new IllegalArgumentException("Context cannot be null)");        
+        //Java:    throw new IllegalArgumentException("Context cannot be null)");
         Logger::E(TAG, String("Context cannot be null\n"));
         return NULL;
     }

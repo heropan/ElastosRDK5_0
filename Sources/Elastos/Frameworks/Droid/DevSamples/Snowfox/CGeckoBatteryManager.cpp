@@ -1,10 +1,10 @@
 
 #include "CGeckoBatteryManager.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "stdio.h"
 #include "GeckoApp.h"
 #include "GeckoAppShell.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {

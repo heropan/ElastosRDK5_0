@@ -3,11 +3,10 @@
 
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContentResolver;
 
@@ -209,7 +208,7 @@ public:
          /* [in] */ IUri* notifyUri);
 
     /** @hide - set the notification uri but with an observer for a particular user's view */
-    virtual CARAPI SetNotificationUriEx(
+    virtual CARAPI SetNotificationUri(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* notifyUri,
         /* [in] */ Int32 userHandle);

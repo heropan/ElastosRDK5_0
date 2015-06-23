@@ -4,11 +4,11 @@
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
 #include "app/Activity.h"
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;

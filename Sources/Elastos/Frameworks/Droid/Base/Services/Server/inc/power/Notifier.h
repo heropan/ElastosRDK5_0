@@ -5,9 +5,8 @@
 #include "Elastos.Droid.Server_server.h"
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IWorkSource;

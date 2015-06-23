@@ -36,7 +36,7 @@ module
             [in] IInterface* obj,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] INetworkPolicy* obj,
             [out] Boolean* result);
 

@@ -2,7 +2,7 @@
 #include "CHttpDateTime.h"
 // #include "Pattern.h"
 // #include "Matcher.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include "ext/frameworkext.h"
 
 using namespace Elastos::Core;
@@ -61,19 +61,19 @@ ECode CHttpDateTime::Parse(
     rfcMatcher->Find(&isFind);
     if (isFind) {
         String sD;
-        rfcMatcher->GroupEx(1, &sD);
+        rfcMatcher->Group(1, &sD);
         date = GetDate(sD);
 
         String sM;
-        rfcMatcher->GroupEx(2, &sM);
+        rfcMatcher->Group(2, &sM);
         FAIL_RETURN(GetMonth(sM, &month));
 
         String sY;
-        rfcMatcher->GroupEx(3, &sY);
+        rfcMatcher->Group(3, &sY);
         year = GetYear(sY);
 
         String sT;
-        rfcMatcher->GroupEx(4, &sT);
+        rfcMatcher->Group(4, &sT);
         timeOfDay = GetTime(sT);
     } else {
         AutoPtr<IMatcher> ansicMatcher;
@@ -82,19 +82,19 @@ ECode CHttpDateTime::Parse(
         ansicMatcher->Find(&isFind);
         if (isFind) {
             String sM;
-            ansicMatcher->GroupEx(1, &sM);
+            ansicMatcher->Group(1, &sM);
             FAIL_RETURN(GetMonth(sM, &month));
 
             String sD;
-            ansicMatcher->GroupEx(2, &sD);
+            ansicMatcher->Group(2, &sD);
             date = GetDate(sD);
 
             String sT;
-            ansicMatcher->GroupEx(3, &sT);
+            ansicMatcher->Group(3, &sT);
             timeOfDay = GetTime(sT);
 
             String sY;
-            ansicMatcher->GroupEx(4, &sY);
+            ansicMatcher->Group(4, &sY);
             year = GetYear(sY);
         } else {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;

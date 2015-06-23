@@ -3,7 +3,7 @@
 #include "remote/RemoteUtils.h"
 #include "remote/ResultMsg.h"
 #include "remote/SessionCmdTask.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::IInputStream;
@@ -97,7 +97,7 @@ void RemoteCmdListener::AcceptStringCmd()
             AutoPtr<IURLDecoder> urlDecoder;
             CURLDecoder::AcquireSingleton((IURLDecoder**)&urlDecoder);
             String temp;
-            if (FAILED(urlDecoder->DecodeEx(clientCmd, String("UTF-8"), &temp)))
+            if (FAILED(urlDecoder->Decode(clientCmd, String("UTF-8"), &temp)))
                 Slogger::E(TAG, "UnsupportedEncodingException!!");
             clientCmd = temp;
         // } catch (UnsupportedEncodingException ex) {
@@ -122,14 +122,14 @@ void RemoteCmdListener::AcceptStringCmd()
             AutoPtr<ITimeUnit> seconds;
             tuHelper->GetSECONDS((ITimeUnit**)&seconds);
             AutoPtr<IInterface> cmdInterface;
-            ec = future->GetEx(CMDTIMEOUT_SEC, seconds, (IInterface**)&cmdInterface);
+            ec = future->Get(CMDTIMEOUT_SEC, seconds, (IInterface**)&cmdInterface);
             if (FAILED(ec))
                 break;
             ICharSequence::Probe(cmdInterface)->ToString(&cmdResult);
             cmdResult = RemoteUtils::ComposeResult(sct->GetResultNum(), cmdResult);
             AutoPtr<IURLEncoder> urlEncoder;
             CURLEncoder::AcquireSingleton((IURLEncoder**)&urlEncoder);
-            ec = urlEncoder->EncodeEx(cmdResult, String("UTF-8"), &temp);
+            ec = urlEncoder->Encode(cmdResult, String("UTF-8"), &temp);
             if (FAILED(ec))
                 break;
             cmdResult = temp;

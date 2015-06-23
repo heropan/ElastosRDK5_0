@@ -204,7 +204,7 @@ ECode CXBMCActivity::OnCreate(
     CNativeContentView::New(this, (IView**)&mNativeContentView);
     assert(mNativeContentView != NULL);
     //mNativeContentView.mActivity = this;
-    SetContentViewEx(mNativeContentView);
+    SetContentView(mNativeContentView);
 
     Boolean res;
     mNativeContentView->RequestFocus(&res);

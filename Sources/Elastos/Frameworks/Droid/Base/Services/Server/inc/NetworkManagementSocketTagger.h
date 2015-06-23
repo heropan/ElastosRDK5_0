@@ -47,10 +47,10 @@ private:
         CARAPI Untag(
             /* [in] */ IFileDescriptor* socketDescriptor);
 
-        CARAPI TagEx(
+        CARAPI Tag(
             /* [in] */ ISocket* socket);
 
-        CARAPI UntagEx(
+        CARAPI Untag(
             /* [in] */ ISocket* socket);
     };
 
@@ -73,10 +73,10 @@ public:
     CARAPI Untag(
         /* [in] */ IFileDescriptor* fd);
 
-    CARAPI TagEx(
+    CARAPI Tag(
         /* [in] */ ISocket* socket);
 
-    CARAPI UntagEx(
+    CARAPI Untag(
         /* [in] */ ISocket* socket);
 
     static void SetKernelCounterSet(

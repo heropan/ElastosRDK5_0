@@ -3,8 +3,8 @@
 
 #include "_CNumberPickerCustomEditText.h"
 #include "widget/NumberPickerCustomEditText.h"
-#include "widget/TextViewMacro.h"
-#include "view/ViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +30,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 stop);
 
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 index);
 
     CARAPI SelectAll();

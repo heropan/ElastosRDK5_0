@@ -145,7 +145,7 @@ module
          * @param viewSpacingRight Extra space to appear to the right of {view}
          * @param viewSpacingBottom Extra space to appear below {view}
          */
-        SetViewEx(
+        SetView(
             [in] IView* view,
             [in] Int32 viewSpacingLeft,
             [in] Int32 viewSpacingTop,
@@ -191,7 +191,7 @@ module
          *
          * @sa DialogInterface.OnClickListener
          */
-        SetButtonEx(
+        SetButton(
             [in] Int32 whichButton,
             [in] ICharSequence* text,
             [in] IDialogInterfaceOnClickListener* listener);
@@ -204,7 +204,7 @@ module
         SetIcon(
             [in] Int32 resId);
 
-        SetIconEx(
+        SetIcon(
             [in] IDrawable* icon);
 
         /**
@@ -249,7 +249,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetTitleEx(
+        SetTitle(
             [in] ICharSequence* title);
 
         /**
@@ -282,7 +282,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetMessageEx(
+        SetMessage(
             [in] ICharSequence* message);
 
         /**
@@ -302,7 +302,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetIconEx(
+        SetIcon(
             [in] IDrawable* icon);
 
         /**
@@ -335,7 +335,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetPositiveButtonEx(
+        SetPositiveButton(
             [in] ICharSequence* text,
             [in] IDialogInterfaceOnClickListener* listener);
 
@@ -361,7 +361,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetNegativeButtonEx(
+        SetNegativeButton(
             [in] ICharSequence* text,
             [in] IDialogInterfaceOnClickListener* listener);
 
@@ -387,7 +387,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetNeutralButtonEx(
+        SetNeutralButton(
             [in] ICharSequence* text,
             [in] IDialogInterfaceOnClickListener* listener);
 
@@ -440,7 +440,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetItemsEx(
+        SetItems(
             [in] ArrayOf<ICharSequence*>* items,
             [in] IDialogInterfaceOnClickListener* listener);
 
@@ -523,7 +523,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetMultiChoiceItemsEx(
+        SetMultiChoiceItems(
             [in] ArrayOf<ICharSequence*>* items,
             [in] ArrayOf<Boolean>* checkedItems,
             [in] IDialogInterfaceOnMultiChoiceClickListener* listener);
@@ -547,7 +547,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetMultiChoiceItemsEx2(
+        SetMultiChoiceItems(
             [in] ICursor* cursor,
             [in] String isCheckedColumn,
             [in] String labelColumn,
@@ -589,7 +589,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetSingleChoiceItemsEx(
+        SetSingleChoiceItems(
             [in] ICursor* cursor,
             [in] Int32 checkedItem,
             [in] String labelColumn,
@@ -609,7 +609,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetSingleChoiceItemsEx2(
+        SetSingleChoiceItems(
             [in] ArrayOf<ICharSequence*>* items,
             [in] Int32 checkedItem,
             [in] IDialogInterfaceOnClickListener* listener);
@@ -630,7 +630,7 @@ module
          *
          * @return This Builder object to allow for chaining of calls to Set methods
          */
-        SetSingleChoiceItemsEx3(
+        SetSingleChoiceItems(
             [in] IListAdapter* adapter,
             [in] Int32 checkedItem,
             [in] IDialogInterfaceOnClickListener* listener);
@@ -683,7 +683,7 @@ module
          * be able to put padding around the view.
          * @hide
          */
-        SetViewEx(
+        SetView(
             [in] IView* view,
             [in] Int32 viewSpacingLeft,
             [in] Int32 viewSpacingTop,

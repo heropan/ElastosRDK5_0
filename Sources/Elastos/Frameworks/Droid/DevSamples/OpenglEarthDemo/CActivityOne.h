@@ -6,7 +6,6 @@
 #include "_CActivityOne.h"
 #include "ext/frameworkext.h"
 #include "Triangle.h"
-#include "elastos/ThreadBase.h"
 #include "MatrixState.h"
 #include "Moon.h"
 #include "Earth.h"
@@ -21,7 +20,6 @@ using Elastos::Droid::Opengl::IRenderer;
 using Elastosx::Microedition::Khronos::Egl::IEGLConfig;
 using Elastosx::Microedition::Khronos::Opengles::IGL10;
 using Elastos::Droid::Opengl::EIID_IRenderer;
-using Elastos::Core::Threading::ThreadBase;
 
 namespace Elastos {
 namespace Droid {

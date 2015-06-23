@@ -3,7 +3,7 @@
 #define __CURLSPANHELPER_H__
 
 #include "_CURLSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

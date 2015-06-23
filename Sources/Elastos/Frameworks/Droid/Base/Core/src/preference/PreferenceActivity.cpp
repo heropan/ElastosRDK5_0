@@ -14,7 +14,7 @@
 #include "widget/CFrameLayoutLayoutParams.h"
 #endif
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CStringWrapper;
@@ -92,7 +92,7 @@ ECode PreferenceActivity::MyHandler::HandleMessage(
             if (header != NULL && (header->GetFragment(&fragment), !fragment.IsNull())) {
                 AutoPtr<IPreferenceActivityHeader> mappedHeader = mHost->FindBestMatchingHeader(header, oldHeaders);
                 if (mappedHeader == NULL || mHost->mCurHeader != mappedHeader) {
-                    mHost->SwitchToHeaderEx(header);
+                    mHost->SwitchToHeader(header);
                 }
             }
             else if (mHost->mCurHeader != NULL) {
@@ -268,7 +268,7 @@ ECode PreferenceActivity::OnCreate(
                 mHeaders.PushBack(header);
             }
             Int32 curHeader;
-            savedInstanceState->GetInt32Ex(CUR_HEADER_TAG, (Int32) HEADER_ID_UNDEFINED, &curHeader);
+            savedInstanceState->GetInt32(CUR_HEADER_TAG, (Int32) HEADER_ID_UNDEFINED, &curHeader);
             if (curHeader >= 0 && curHeader < (Int32)mHeaders.GetSize()) {
                 SetSelectedHeader(mHeaders[curHeader]);
             }
@@ -309,7 +309,7 @@ ECode PreferenceActivity::OnCreate(
                     if (initialFragment.IsNull()) {
                         AutoPtr<IPreferenceActivityHeader> h;
                         OnGetInitialHeader((IPreferenceActivityHeader**)&h);
-                        SwitchToHeaderEx(h);
+                        SwitchToHeader(h);
                     }
                     else {
                         SwitchToHeader(initialFragment, initialArguments);
@@ -485,7 +485,7 @@ ECode PreferenceActivity::OnGetInitialHeader(
 {
     VALIDATE_NOT_NULL(header)
     *header = *(mHeaders.Begin());
-    INTERFACE_ADDREF(*header)
+    REFCOUNT_ADD(*header)
     return NOERROR;
 }
 
@@ -695,7 +695,7 @@ ECode PreferenceActivity::SetListFooter(
     AutoPtr<IViewGroupLayoutParams> layoutParams;
     CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::WRAP_CONTENT, (IFrameLayoutLayoutParams**)&layoutParams);
-    return mListFooter->AddViewEx3(view, layoutParams);
+    return mListFooter->AddView(view, layoutParams);
 }
 
 ECode PreferenceActivity::OnStop()
@@ -834,10 +834,10 @@ ECode PreferenceActivity::OnHeaderClick(
             }
             AutoPtr<IBundle> fragmentArguments;
             header->GetFragmentArguments((IBundle**)&fragmentArguments);
-            StartWithFragmentEx(fragment, fragmentArguments, NULL, 0, titleRes, shortTitleRes);
+            StartWithFragment(fragment, fragmentArguments, NULL, 0, titleRes, shortTitleRes);
         }
         else {
-            SwitchToHeaderEx(header);
+            SwitchToHeader(header);
         }
     }
     else if (header->GetIntent((IIntent**)&intent), intent != NULL) {
@@ -869,7 +869,7 @@ ECode PreferenceActivity::OnBuildStartFragmentIntent(
     intent->PutBooleanExtra(EXTRA_NO_HEADERS, TRUE);
 
     *_intent = intent;
-    INTERFACE_ADDREF(*_intent)
+    REFCOUNT_ADD(*_intent)
     return NOERROR;
 }
 
@@ -879,10 +879,10 @@ ECode PreferenceActivity::StartWithFragment(
     /* [in] */ IFragment* resultTo,
     /* [in] */ Int32 resultRequestCode)
 {
-    return StartWithFragmentEx(fragmentName, args, resultTo, resultRequestCode, 0, 0);;
+    return StartWithFragment(fragmentName, args, resultTo, resultRequestCode, 0, 0);;
 }
 
-ECode PreferenceActivity::StartWithFragmentEx(
+ECode PreferenceActivity::StartWithFragment(
     /* [in] */ const String& fragmentName,
     /* [in] */ IBundle* args,
     /* [in] */ IFragment* resultTo,
@@ -959,25 +959,25 @@ void PreferenceActivity::SetSelectedHeader(
     else {
         listView->ClearChoices();
     }
-    ShowBreadCrumbsEx(header);
+    ShowBreadCrumbs(header);
 }
 
-void PreferenceActivity::ShowBreadCrumbsEx(
+void PreferenceActivity::ShowBreadCrumbs(
     /* [in] */ IPreferenceActivityHeader* header)
 {
     if (header != NULL) {
         AutoPtr<IResources> resource;
         GetResources((IResources**)&resource);
         AutoPtr<ICharSequence> title;
-        header->GetBreadCrumbTitleEx(resource, (ICharSequence**)&title);
+        header->GetBreadCrumbTitle(resource, (ICharSequence**)&title);
         if (title == NULL) {
-            header->GetTitleEx(resource, (ICharSequence**)&title);
+            header->GetTitle(resource, (ICharSequence**)&title);
         }
         if (title == NULL) {
             GetTitle((ICharSequence**)&title);
         }
         AutoPtr<ICharSequence> breadCrumbShortTitle;
-        header->GetBreadCrumbShortTitleEx(resource, (ICharSequence**)&breadCrumbShortTitle);
+        header->GetBreadCrumbShortTitle(resource, (ICharSequence**)&breadCrumbShortTitle);
         ShowBreadCrumbs(title, breadCrumbShortTitle);
     }
     else {
@@ -994,9 +994,9 @@ void PreferenceActivity::SwitchToHeaderInner(
 {
     AutoPtr<IFragmentManager> manager;
     GetFragmentManager((IFragmentManager**)&manager);
-    manager->PopBackStackEx(BACK_STACK_PREFS, IFragmentManager::POP_BACK_STACK_INCLUSIVE);
+    manager->PopBackStack(BACK_STACK_PREFS, IFragmentManager::POP_BACK_STACK_INCLUSIVE);
     AutoPtr<IFragment> f;
-    Fragment::InstantiateEx(THIS_PROBE(IActivity), fragmentName, args, (IFragment**)&f);
+    Fragment::Instantiate(THIS_PROBE(IActivity), fragmentName, args, (IFragment**)&f);
     AutoPtr<IFragmentTransaction> transaction;
     manager->BeginTransaction((IFragmentTransaction**)&transaction);
     transaction->SetTransition(IFragmentTransaction::TRANSIT_FRAGMENT_FADE);
@@ -1014,7 +1014,7 @@ ECode PreferenceActivity::SwitchToHeader(
     return NOERROR;
 }
 
-ECode PreferenceActivity::SwitchToHeaderEx(
+ECode PreferenceActivity::SwitchToHeader(
     /* [in] */ IPreferenceActivityHeader* header)
 {
     if (mCurHeader.Get() == header) {
@@ -1022,7 +1022,7 @@ ECode PreferenceActivity::SwitchToHeaderEx(
         // to pop the stack up to its root state.
         AutoPtr<IFragmentManager> manager;
         GetFragmentManager((IFragmentManager**)&manager);
-        manager->PopBackStackEx(BACK_STACK_PREFS, IFragmentManager::POP_BACK_STACK_INCLUSIVE);
+        manager->PopBackStack(BACK_STACK_PREFS, IFragmentManager::POP_BACK_STACK_INCLUSIVE);
     }
     else {
         AutoPtr<IPreferenceActivityHeader> temp(header);
@@ -1177,11 +1177,11 @@ ECode PreferenceActivity::StartPreferencePanel(
     /* [in] */ Int32 resultRequestCode)
 {
     if (mSinglePane) {
-        StartWithFragmentEx(fragmentClass, args, resultTo, resultRequestCode, titleRes, 0);
+        StartWithFragment(fragmentClass, args, resultTo, resultRequestCode, titleRes, 0);
     }
     else {
         AutoPtr<IFragment> f;
-        Fragment::InstantiateEx(THIS_PROBE(IActivity), fragmentClass, args, (IFragment**)&f);
+        Fragment::Instantiate(THIS_PROBE(IActivity), fragmentClass, args, (IFragment**)&f);
         if (resultTo != NULL) {
             f->SetTargetFragment(resultTo, resultRequestCode);
         }
@@ -1194,7 +1194,7 @@ ECode PreferenceActivity::StartPreferencePanel(
             transaction->SetBreadCrumbTitle(titleRes);
         }
         else if (titleText != NULL) {
-            transaction->SetBreadCrumbTitleEx(titleText);
+            transaction->SetBreadCrumbTitle(titleText);
         }
         transaction->SetTransition(IFragmentTransaction::TRANSIT_FRAGMENT_OPEN);
         transaction->AddToBackStack(BACK_STACK_PREFS);
@@ -1211,7 +1211,7 @@ ECode PreferenceActivity::FinishPreferencePanel(
     /* [in] */ IIntent* resultData)
 {
     if (mSinglePane) {
-        SetResultEx(resultCode, resultData);
+        SetResult(resultCode, resultData);
         Finish();
     }
     else {
@@ -1280,7 +1280,7 @@ ECode PreferenceActivity::GetPreferenceManager(
 {
     VALIDATE_NOT_NULL(manager)
     *manager = mPreferenceManager;
-    INTERFACE_ADDREF(*manager)
+    REFCOUNT_ADD(*manager)
     return NOERROR;
 }
 
@@ -1326,7 +1326,7 @@ ECode PreferenceActivity::GetPreferenceScreen(
         AutoPtr<IPreferenceScreen> s;
         mPreferenceManager->GetPreferenceScreen((IPreferenceScreen**)&s);
         *screen = s;
-        INTERFACE_ADDREF(*screen)
+        REFCOUNT_ADD(*screen)
         return NOERROR;
     }
     *screen = NULL;

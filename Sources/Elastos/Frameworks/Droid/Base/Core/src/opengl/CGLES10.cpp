@@ -3,7 +3,7 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <cmdef.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #define LOGD(msg) SLOGGERD("CGLES10", msg)
 
@@ -379,7 +379,7 @@ ECode CGLES10::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode CGLES10::GlDeleteTexturesEx(
+ECode CGLES10::GlDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* textures_buf)
 {
@@ -607,7 +607,7 @@ ECode CGLES10::GlFogfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogfvEx(
+ECode CGLES10::GlFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
@@ -728,7 +728,7 @@ ECode CGLES10::GlFogxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlFogxvEx(
+ECode CGLES10::GlFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -859,7 +859,7 @@ ECode CGLES10::GlGenTextures(
     return NOERROR;
 }
 
-ECode CGLES10::GlGenTexturesEx(
+ECode CGLES10::GlGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* textures_buf)
 {
@@ -1257,7 +1257,7 @@ ECode CGLES10::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode CGLES10::GlGetIntegervEx(
+ECode CGLES10::GlGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1695,7 +1695,7 @@ ECode CGLES10::GlLightModelfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelfvEx(
+ECode CGLES10::GlLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
@@ -1798,7 +1798,7 @@ ECode CGLES10::GlLightModelxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightModelxvEx(
+ECode CGLES10::GlLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1930,7 +1930,7 @@ ECode CGLES10::GlLightfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightfvEx(
+ECode CGLES10::GlLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2090,7 +2090,7 @@ ECode CGLES10::GlLightxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlLightxvEx(
+ECode CGLES10::GlLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2209,7 +2209,7 @@ ECode CGLES10::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadMatrixfEx(
+ECode CGLES10::GlLoadMatrixf(
     /* [in] */ Elastos::IO::IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2254,7 +2254,7 @@ ECode CGLES10::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode CGLES10::GlLoadMatrixxEx(
+ECode CGLES10::GlLoadMatrixx(
     /* [in] */ Elastos::IO::IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2359,7 +2359,7 @@ ECode CGLES10::GlMaterialfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialfvEx(
+ECode CGLES10::GlMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2492,7 +2492,7 @@ ECode CGLES10::GlMaterialxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlMaterialxvEx(
+ECode CGLES10::GlMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2582,7 +2582,7 @@ ECode CGLES10::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultMatrixfEx(
+ECode CGLES10::GlMultMatrixf(
     /* [in] */ Elastos::IO::IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2628,7 +2628,7 @@ ECode CGLES10::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode CGLES10::GlMultMatrixxEx(
+ECode CGLES10::GlMultMatrixx(
     /* [in] */ Elastos::IO::IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -3154,7 +3154,7 @@ ECode CGLES10::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvfvEx(
+ECode CGLES10::GlTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -3275,7 +3275,7 @@ ECode CGLES10::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLES10::GlTexEnvxvEx(
+ECode CGLES10::GlTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)

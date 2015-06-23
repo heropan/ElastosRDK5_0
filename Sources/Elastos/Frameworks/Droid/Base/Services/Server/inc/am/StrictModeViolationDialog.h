@@ -7,10 +7,8 @@
 #include "am/AppErrorResult.h"
 #include "am/ProcessRecord.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
 
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 
 namespace Elastos {
 namespace Droid {

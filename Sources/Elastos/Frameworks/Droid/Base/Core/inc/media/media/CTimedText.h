@@ -5,13 +5,13 @@
 #include "_CTimedText.h"
 #include "ext/frameworkext.h"
 #include <elastos/Set.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Utility::Set;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger32;
 
 namespace Elastos {

@@ -1,7 +1,7 @@
 
 #include "util/CFastXmlSerializer.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::CByteBufferHelper;
@@ -248,7 +248,7 @@ ECode CFastXmlSerializer::FlushBytes()
         FAIL_RETURN(mBytes->Flip());
         AutoPtr<ArrayOf<Byte> > bytes;
         mBytes->GetArray((ArrayOf<Byte>**)&bytes);
-        FAIL_RETURN(mOutputStream->WriteBytesEx(*bytes, 0, position));
+        FAIL_RETURN(mOutputStream->WriteBytes(*bytes, 0, position));
         FAIL_RETURN(mBytes->Clear());
     }
     return NOERROR;
@@ -262,9 +262,9 @@ ECode CFastXmlSerializer::Flush()
             AutoPtr<ICharBufferHelper> helper;
             CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&helper);
             AutoPtr<ICharBuffer> charBuffer;
-            helper->WrapArrayEx(mText, 0, mPos, (ICharBuffer**)&charBuffer);
+            helper->WrapArray(mText, 0, mPos, (ICharBuffer**)&charBuffer);
             AutoPtr<ICoderResult> result;
-            mCharset->EncodeEx(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
+            mCharset->Encode(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
             Boolean bValue;
             while (TRUE) {
                 if (result->IsError(&bValue), bValue) {
@@ -274,7 +274,7 @@ ECode CFastXmlSerializer::Flush()
                 else if (result->IsOverflow(&bValue), bValue) {
                     FAIL_RETURN(FlushBytes());
                     result = NULL;
-                    mCharset->EncodeEx(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
+                    mCharset->Encode(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
                     continue;
                 }
                 break;
@@ -284,7 +284,7 @@ ECode CFastXmlSerializer::Flush()
             FAIL_RETURN(flushable->Flush());
         }
         else {
-            FAIL_RETURN(mWriter->WriteCharsEx(*mText, 0, mPos));
+            FAIL_RETURN(mWriter->WriteChars(*mText, 0, mPos));
             IFlushable* flushable = IFlushable::Probe(mWriter.Get());
             FAIL_RETURN(flushable->Flush());
         }
@@ -398,12 +398,12 @@ ECode CFastXmlSerializer::SetOutput(
             COutputStreamWriter::New(os, encoding, (IOutputStreamWriter**)&opsr);
         }
 
-        return SetOutputEx(IWriter::Probe(opsr.Get()));
+        return SetOutput(IWriter::Probe(opsr.Get()));
     }
     return NOERROR;
 }
 
-ECode CFastXmlSerializer::SetOutputEx(
+ECode CFastXmlSerializer::SetOutput(
     /* [in] */ IWriter* writer)
 {
     mWriter = writer;
@@ -462,7 +462,7 @@ ECode CFastXmlSerializer::WriteText(
     return EscapeAndAppendString(text);
 }
 
-ECode CFastXmlSerializer::WriteTextEx(
+ECode CFastXmlSerializer::WriteText(
     /* [in] */ const ArrayOf<Char32>& buf,
     /* [in] */ Int32 start,
     /* [in] */ Int32 len)

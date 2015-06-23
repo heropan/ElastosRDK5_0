@@ -2,9 +2,9 @@
 #define __CPROGRESSDIALOG_H__
 
 #include "_CProgressDialog.h"
-#include "app/ProgressDialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{

@@ -32,7 +32,7 @@ module
             [in] Float y,
             [out] IView** child);
 
-        GetChildAtPositionEx(
+        GetChildAtPosition(
             [in] Float x,
             [in] Float y,
             [out] IView** child);

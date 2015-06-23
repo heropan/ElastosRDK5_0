@@ -36,7 +36,7 @@ ECode PictureDrawable::Draw(
         Int32 count;
         canvas->Save(&count);
         Boolean isNotEmpty;
-        canvas->ClipRectEx3(bounds, &isNotEmpty);
+        canvas->ClipRect(bounds, &isNotEmpty);
         canvas->Translate(
                 ((CRect*)bounds.Get())->mLeft, ((CRect*)bounds.Get())->mTop);
         canvas->DrawPicture(mPicture);

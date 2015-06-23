@@ -6,9 +6,8 @@
 #include "ext/frameworkdef.h"
 #include "BluetoothInputStream.h"
 #include "BluetoothOutputStream.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::ICloseable;;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

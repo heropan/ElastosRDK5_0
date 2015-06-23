@@ -207,7 +207,7 @@ void ScaleAnimation::ApplyTransformation(
     AutoPtr<IMatrix> matrix;
     t->GetMatrix((IMatrix**)&matrix);
     if (mPivotX == 0.0f && mPivotY == 0.0f) {
-        matrix->SetScaleEx(sx, sy);
+        matrix->SetScale(sx, sy);
     }
     else {
         matrix->SetScale(sx, sy, scale * mPivotX, scale * mPivotY);
@@ -245,7 +245,7 @@ ECode ScaleAnimation::Init(
             const_cast<Int32 *>(R::styleable::ScaleAnimation),
             ARRAY_SIZE(R::styleable::ScaleAnimation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     AutoPtr<ITypedValue> tv;
     a->PeekValue(

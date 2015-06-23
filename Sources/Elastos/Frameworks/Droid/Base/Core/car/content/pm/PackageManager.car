@@ -1971,7 +1971,7 @@ module
          *
          * @hide
          */
-        GetInstalledPackagesEx(
+        GetInstalledPackages(
             [in] Int32 flags,
             [in] Int32 userId,
             [out] IObjectContainer** infos);
@@ -2152,7 +2152,7 @@ module
          * @see #SIGNATURE_NO_MATCH
          * @see #SIGNATURE_UNKNOWN_PACKAGE
          */
-        CheckSignaturesEx(
+        CheckSignatures(
             [in] Int32 uid1,
             [in] Int32 uid2,
             [out] Int32* result);
@@ -2488,7 +2488,7 @@ module
          * @see #GET_RESOLVED_FILTER
          * @hide
          */
-        QueryBroadcastReceiversEx(
+        QueryBroadcastReceivers(
             [in] IIntent* intent,
             [in] Int32 flags,
             [in] Int32 userId,
@@ -2703,7 +2703,7 @@ module
          *
          * @see #getActivityIcon(ComponentName)
          */
-        GetActivityIconEx(
+        GetActivityIcon(
             [in] IIntent* intent,
             [out] IDrawable** icon);
 
@@ -2749,7 +2749,7 @@ module
          *
          * @see #getApplicationIcon(ApplicationInfo)
          */
-        GetApplicationIconEx(
+        GetApplicationIcon(
             [in] String packageName,
             [out] IDrawable** icon);
 
@@ -2797,7 +2797,7 @@ module
          *
          * @see #getActivityLogo(ComponentName)
          */
-        GetActivityLogoEx(
+        GetActivityLogo(
             [in] IIntent* intent,
             [out] IDrawable** logo);
 
@@ -2835,7 +2835,7 @@ module
          *
          * @see #getApplicationLogo(ApplicationInfo)
          */
-        GetApplicationLogoEx(
+        GetApplicationLogo(
             [in] String packageName,
             [out] IDrawable** logo);
 
@@ -2951,7 +2951,7 @@ module
          *
          * @see #getResourcesForApplication(ApplicationInfo)
          */
-        GetResourcesForApplicationEx(
+        GetResourcesForApplication(
             [in] String appPackageName,
             [out] IResources** res);
 
@@ -3394,7 +3394,7 @@ module
          *
          * @hide
          */
-        GetPackageSizeInfoEx(
+        GetPackageSizeInfo(
             [in] String packageName,
             [in] IPackageStatsObserver* observer);
 
@@ -3495,7 +3495,7 @@ module
          * @sa #addPreferredActivity(IntentFilter, int, ComponentName[], ComponentName)
          * @hide
          */
-        AddPreferredActivityEx(
+        AddPreferredActivity(
             [in] IIntentFilter* filter,
             [in] Int32 match,
             [in] ArrayOf<IComponentName*>* set,

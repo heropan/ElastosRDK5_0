@@ -126,7 +126,7 @@ public:
      * @throws SendIntentException Throws CanceledIntentException if the IntentSender
      * is no longer allowing more intents to be sent through it.
      */
-    CARAPI SendIntentEx(
+    CARAPI SendIntent(
         /* [in] */ IContext* context,
         /* [in] */ Int32 code,
         /* [in] */ IIntent* intent,

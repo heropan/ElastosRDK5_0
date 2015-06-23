@@ -58,7 +58,7 @@ module
              *
              * @param d The Drawable to use as the background
              */
-        SetButtonDrawableEx(
+        SetButtonDrawable(
             [in] IDrawable* d);
 
         GetButtonDrawable(

@@ -3,7 +3,7 @@
 #define __CPHONENUMBERUTILS_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Content::IContext;
@@ -78,13 +78,13 @@ public:
         /* [in] */ const String& b,
         /* [out] */ Boolean* res);
 
-    static CARAPI CompareEx(
+    static CARAPI Compare(
         /* [in] */ IContext* context,
         /* [in] */ const String& a,
         /* [in] */ const String& b,
         /* [out] */ Boolean* res);
 
-    static CARAPI CompareEx2(
+    static CARAPI Compare(
         /* [in] */ const String& a,
         /* [in] */ const String& b,
         /* [in] */ Boolean useStrictComparation,
@@ -100,7 +100,7 @@ public:
         /* [in] */ const String& b,
         /* [out] */ Boolean* res);
 
-    static CARAPI CompareStrictlyEx(
+    static CARAPI CompareStrictly(
         /* [in] */ const String& a,
         /* [in] */ const String& b,
         /* [in] */ Boolean acceptInvalidCCCPrefix,
@@ -159,7 +159,7 @@ public:
         /* [in] */ const String& source,
         /* [out] */ String* res);
 
-    static CARAPI FormatNumberEx(
+    static CARAPI FormatNumber(
         /* [in] */ const String& source,
         /* [in] */ Int32 defaultFormattingType,
         /* [out] */ String* res);
@@ -168,7 +168,7 @@ public:
         /* [in] */ Libcore::ICU::ILocale* locale,
         /* [out] */ Int32* res);
 
-    static CARAPI FormatNumberEx2(
+    static CARAPI FormatNumber(
         /* [in] */ IEditable* text,
         /* [in] */ Int32 defaultFormattingType);
 
@@ -183,12 +183,12 @@ public:
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ String* res);
 
-    static CARAPI FormatNumberEx3(
+    static CARAPI FormatNumber(
         /* [in] */ const String& phoneNumber,
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ String* res);
 
-    static CARAPI FormatNumberEx4(
+    static CARAPI FormatNumber(
         /* [in] */ const String& phoneNumber,
         /* [in] */ const String& phoneNumberE164,
         /* [in] */ const String& defaultCountryIso,
@@ -210,12 +210,12 @@ public:
         /* [in] */ const String& number,
         /* [out] */ Boolean* res);
 
-    static CARAPI IsEmergencyNumberEx(
+    static CARAPI IsEmergencyNumber(
         /* [in] */ const String& number,
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ Boolean* res);
 
-    static CARAPI IsPotentialEmergencyNumberEx(
+    static CARAPI IsPotentialEmergencyNumber(
         /* [in] */ const String& number,
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ Boolean* res);

@@ -36,7 +36,7 @@ ECode CExtractedText::GetText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 

@@ -207,7 +207,7 @@ void CandidateView::OnDraw(
             text->ToString(&suggestion);
         }
         Float textWidth = 0;
-        mPaint->MeasureTextEx2(suggestion, &textWidth);
+        mPaint->MeasureText(suggestion, &textWidth);
         Int32 wordWidth = (Int32) textWidth + X_GAP * 2;
 
         (*mWordX)[i] = x;
@@ -231,7 +231,7 @@ void CandidateView::OnDraw(
             else if (i != 0) {
                 mPaint->SetColor(mColorOther);
             }
-            canvas->DrawTextEx(suggestion, x + X_GAP, y, mPaint);
+            canvas->DrawText(suggestion, x + X_GAP, y, mPaint);
             mPaint->SetColor(mColorOther);
             canvas->DrawLine(x + wordWidth + 0.5f, top,
                     x + wordWidth + 0.5f, height + 1, mPaint);

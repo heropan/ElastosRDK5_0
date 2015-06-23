@@ -1,6 +1,6 @@
 
 #include "_CSizeAdaptiveLayout.h"
-#include "view/ViewMacro.h"
+
 #include "widget/internal/SizeAdaptiveLayout.h"
 
 namespace Elastos {

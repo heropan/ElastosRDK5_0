@@ -5,7 +5,7 @@
 #include "_CShapeDrawable.h"
 #include "graphics/drawable/CShapeDrawable.h"
 #include "graphics/drawable/ShapeDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -72,7 +72,7 @@ public:
      * Sets padding for this shape, defined by a Rect object.
      * Define the padding in the Rect object as: left, top, right, bottom.
      */
-    CARAPI SetPaddingEx(
+    CARAPI SetPadding(
         /* [in] */ IRect* padding);
 
     /**

@@ -39,7 +39,7 @@ ECode CNumberPickerCustomEditText::SetSelection(
     return NumberPickerCustomEditText::SetSelection(start, stop);
 }
 
-ECode CNumberPickerCustomEditText::SetSelectionEx(
+ECode CNumberPickerCustomEditText::SetSelection(
         /* [in] */ Int32 index)
 {
     return NumberPickerCustomEditText::SetSelection(index);

@@ -9,7 +9,7 @@ module
         GetStorageId(
             [out] Int32* result);
 
-        GetStorageIdEx(
+        GetStorageId(
             [in] Int32 index,
             [out] Int32* result);
 

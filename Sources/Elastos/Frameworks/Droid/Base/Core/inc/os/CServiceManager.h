@@ -4,13 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "_CServiceManager.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IObjectStringMap;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -26,7 +23,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ IInterface* service);
 
-    CARAPI AddServiceEx(
+    CARAPI AddService(
         /* [in] */ const String& name,
         /* [in] */ IInterface* service,
         /* [in] */ Boolean allowIsolated);

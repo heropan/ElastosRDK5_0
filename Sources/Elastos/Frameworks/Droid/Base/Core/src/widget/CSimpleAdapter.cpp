@@ -45,7 +45,7 @@ ECode CSimpleAdapter::SetViewImage(
     return SimpleAdapter::SetViewImage(v, value);
 }
 
-ECode CSimpleAdapter::SetViewImageEx(
+ECode CSimpleAdapter::SetViewImage(
     /* [in] */ IImageView* v,
     /* [in] */ const String& value)
 {

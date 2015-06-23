@@ -1,6 +1,6 @@
 #include "database/AbstractWindowedCursor.h"
 #include "database/CCursorWindow.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -162,7 +162,7 @@ ECode AbstractWindowedCursor::GetWindow(
 {
     VALIDATE_NOT_NULL(window)
     *window = mWindow;
-    INTERFACE_ADDREF(*window)
+    REFCOUNT_ADD(*window)
     return NOERROR;
 }
 

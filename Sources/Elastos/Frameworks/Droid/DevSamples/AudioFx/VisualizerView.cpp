@@ -59,7 +59,7 @@ ECode VisualizerView::OnDraw(
     //循环结束后，就得到了这一次波形的所有刻画坐标，直接画在画布上就好了
     // canvas->DrawLines(mPoints, mForePaint);
 
-    return canvas->DrawLinesEx(mPoints, mForePaint);
+    return canvas->DrawLines(mPoints, mForePaint);
 }
 
 void VisualizerView::Init()

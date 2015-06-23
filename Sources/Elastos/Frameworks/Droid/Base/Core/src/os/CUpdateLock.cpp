@@ -1,5 +1,5 @@
 #include "os/CUpdateLock.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/ServiceManager.h"
 #include "os/CBinder.h"
 

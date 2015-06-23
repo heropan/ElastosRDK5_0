@@ -1,7 +1,7 @@
 
 #include "CIILocationProviderNative.h"
 #include "Util.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 

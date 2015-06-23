@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Core.Threading.IThread;
+    using interface Elastos.Core.IThread;
 
     interface Elastos.Droid.Os.IMessageQueue;
     interface Elastos.Droid.Utility.IPrinter;

@@ -14,7 +14,7 @@ ECode CHideReturnsTransformationMethodHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IHideReturnsTransformationMethod> hrtm = CHideReturnsTransformationMethod::GetInstance();
     *ret = hrtm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

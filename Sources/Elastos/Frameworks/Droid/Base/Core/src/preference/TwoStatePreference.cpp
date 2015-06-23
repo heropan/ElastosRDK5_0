@@ -4,7 +4,7 @@
 #include "view/accessibility/CAccessibilityManagerHelper.h"
 #include "view/accessibility/CAccessibilityEventHelper.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -124,7 +124,7 @@ ECode TwoStatePreference::SetSummaryOn(
     return NOERROR;
 }
 
-ECode TwoStatePreference::SetSummaryOnEx(
+ECode TwoStatePreference::SetSummaryOn(
     /* [in] */ Int32 summaryResId)
 {
     AutoPtr<IContext> context;
@@ -141,7 +141,7 @@ ECode TwoStatePreference::GetSummaryOn(
 {
     VALIDATE_NOT_NULL(summary)
     *summary = mSummaryOn;
-    INTERFACE_ADDREF(*summary)
+    REFCOUNT_ADD(*summary)
     return NOERROR;
 }
 
@@ -157,7 +157,7 @@ ECode TwoStatePreference::SetSummaryOff(
     return NOERROR;
 }
 
-ECode TwoStatePreference::SetSummaryOffEx(
+ECode TwoStatePreference::SetSummaryOff(
     /* [in] */ Int32 summaryResId)
 {
     AutoPtr<IContext> context;
@@ -174,7 +174,7 @@ ECode TwoStatePreference::GetSummaryOff(
 {
     VALIDATE_NOT_NULL(summary)
     *summary = mSummaryOff;
-    INTERFACE_ADDREF(*summary)
+    REFCOUNT_ADD(*summary)
     return NOERROR;
 }
 
@@ -205,7 +205,7 @@ ECode TwoStatePreference::OnGetDefaultValue(
     AutoPtr<IBoolean> retObj;
     CBoolean::New(retVal, (IBoolean**)&retObj);
     *value = (IInterface*)retObj;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -244,7 +244,7 @@ void TwoStatePreference::SendAccessibilityEvent(
         AutoPtr<IAccessibilityEventHelper> helper;
         CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
         AutoPtr<IAccessibilityEvent> event;
-        helper->ObtainEx2((IAccessibilityEvent**)&event);
+        helper->Obtain((IAccessibilityEvent**)&event);
         event->SetEventType(IAccessibilityEvent::TYPE_VIEW_CLICKED);
         view->OnInitializeAccessibilityEvent(event);
         Boolean isConsumed;
@@ -304,7 +304,7 @@ ECode TwoStatePreference::OnSaveInstanceState(
     if (IsPersistent(&isPersistent), isPersistent) {
         // No need to save instance state since it's persistent
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -314,7 +314,7 @@ ECode TwoStatePreference::OnSaveInstanceState(
     IsChecked(&isChecked);
     myState->SetChecked(isChecked);
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 

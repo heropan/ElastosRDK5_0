@@ -1,9 +1,9 @@
 
 #include "app/CDownloadManager.h"
 #include "app/CDownloadManagerQuery.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;

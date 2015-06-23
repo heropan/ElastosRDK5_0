@@ -8,20 +8,20 @@ module
     interface Elastos.Droid.Net.ISSLSessionCache;
     interface Elastos.Net.Ssl.ITrustManager;
     interface Elastos.Net.Ssl.IKeyManager;
-        
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
-   
+
     [deprecated]
     interface ISSLCertificateSocketFactory extends Elastos.Net.Ssl.ISSLSocketFactory {
-    
+
         /**
          * Sets the {@link TrustManager}s to be used for connections made by this factory.
          */
         SetTrustManagers(
            [in] ArrayOf<ITrustManager*>* trustManager);
-        
+
         /**
          * Sets the <a href="http://technotes.googlecode.com/git/nextprotoneg.html">Next
          * Protocol Negotiation (NPN)</a> protocols that this peer is interested in.
@@ -40,7 +40,7 @@ module
          */
         SetNpnProtocols(
             [in] ArrayOf<Byte>* npnProtocols);
-        
+
         /**
          * Returns the <a href="http://technotes.googlecode.com/git/nextprotoneg.html">Next
          * Protocol Negotiation (NPN)</a> protocol selected by client and server, or
@@ -52,13 +52,13 @@ module
         GetNpnSelectedProtocol(
             [in] ISocket* socket,
             [out, callee] ArrayOf<Byte>* protocol);
-        
+
         /**
          * Sets the {@link KeyManager}s to be used for connections made by this factory.
          */
         SetKeyManagers(
             [in] ArrayOf<IKeyManager*>* keyManagers);
-        
+
         /**
          * Enables <a href="http://tools.ietf.org/html/rfc5077#section-3.2">session ticket</a>
          * support on the given socket.
@@ -70,7 +70,7 @@ module
         SetUseSessionTickets(
             [in] ISocket* socket,
             [in] Boolean useSessionTickets);
-        
+
         /**
          * Turns on <a href="http://tools.ietf.org/html/rfc6066#section-3">Server
          * Name Indication (SNI)</a> on a given socket.
@@ -82,7 +82,7 @@ module
         SetHostname(
             [in] ISocket* socket,
             [in] String hostName);
-        
+
          /**
          * Sets this socket's SO_SNDTIMEO write timeout in milliseconds.
          * Use 0 for no timeout.
@@ -97,7 +97,7 @@ module
         SetSoWriteTimeout(
             [in] ISocket* socket,
             [in] Int32 writeTimeoutMilliseconds);
-        
+
         /**
          * {@inheritDoc}
          *
@@ -111,7 +111,7 @@ module
             [in] Int32 port,
             [in] Boolean close,
             [out] ISocket** socket);
-        
+
         /**
          * Creates a new socket which is not connected to any remote host.
          * You must use {@link Socket#connect} to connect the socket.
@@ -121,9 +121,9 @@ module
          * the socket to avoid man-in-the-middle attacks.</p>
          */
         //@Override
-        CreateSocketEx(
+        CreateSocket(
             [out] ISocket** socket);
-        
+
         /**
          * {@inheritDoc}
          *
@@ -132,13 +132,13 @@ module
          * the socket to avoid man-in-the-middle attacks.</p>
          */
         //@Override
-        CreateSocketEx2(
+        CreateSocket(
             [in] IInetAddress* addr,
             [in] Int32 port,
             [in] IInetAddress* localAddr,
             [in] Int32 localPort,
             [out] ISocket** socket);
-        
+
         /**
          * {@inheritDoc}
          *
@@ -147,11 +147,11 @@ module
          * the socket to avoid man-in-the-middle attacks.</p>
          */
         //@Override
-        CreateSocketEx3(
+        CreateSocket(
             [in] IInetAddress* addr,
             [in] Int32 port,
             [out] ISocket** socket);
-        
+
         /**
          * {@inheritDoc}
          *
@@ -159,13 +159,13 @@ module
          * (unless created with {@link #getInsecure(int, SSLSessionCache)}).
          */
         //@Override
-        CreateSocketEx4(
+        CreateSocket(
             [in] String host,
             [in] Int32 port,
             [in] IInetAddress* localAddr,
             [in] Int32 localPort,
             [out] ISocket** socket);
-        
+
         /**
          * {@inheritDoc}
          *
@@ -173,15 +173,15 @@ module
          * (unless created with {@link #getInsecure(int, SSLSessionCache)}).
          */
         //@Override
-        CreateSocketEx5(
+        CreateSocket(
             [in] String host,
             [in] Int32 port,
             [out] ISocket** socket);
-        
+
         //@Override
         GetDefaultCipherSuites(
             [out, callee] ArrayOf<String>* suites);
-        
+
         //@Override
         GetSupportedCipherSuites(
             [out, callee] ArrayOf<String>* suites);
@@ -198,7 +198,7 @@ module
         GetDefault(
             [in] Int32 handshakeTimeoutMillis,
             [out] ISocketFactory** socketFactory);
-        
+
         /**
          * Returns a new socket factory instance with an optional handshake timeout
          * and SSL session cache.
@@ -208,11 +208,11 @@ module
          * @param cache The {@link SSLSessionCache} to use, or null for no cache.
          * @return a new SSLSocketFactory with the specified parameters
          */
-        GetDefaultEx(
-            [in] Int32 handshakeTimeoutMillis, 
+        GetDefault(
+            [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
             [out] Elastos.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
-        
+
         /**
          * Returns a new instance of a socket factory with all SSL security checks
          * disabled, using an optional handshake timeout and SSL session cache.
@@ -229,7 +229,7 @@ module
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
             [out] Elastos.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
-        
+
         /**
          * Returns a socket factory (also named SSLSocketFactory, but in a different
          * namespace) for use with the Apache HTTP stack.
@@ -240,10 +240,10 @@ module
          * @return a new SocketFactory with the specified parameters
          */
         GetHttpSocketFactory(
-            [in] Int32 handshakeTimeoutMillis, 
+            [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
             [out] Elastos.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
-        
+
         /**
          * Verify the hostname of the certificate used by the other end of a
          * connected socket.  You MUST call this if you did not supply a hostname
@@ -262,12 +262,12 @@ module
          * @hide
          */
          VerifyHostname(
-            [in] ISocket* socket, 
+            [in] ISocket* socket,
             [in] String hostname);
-         
-         
+
+
     }
-    
+
     } //namespace Net
     } //namespace Droid
     } //namespace Elastos

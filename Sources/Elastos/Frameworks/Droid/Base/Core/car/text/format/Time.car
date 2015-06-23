@@ -257,14 +257,14 @@ module
         /**
          * Copy the value of that to this Time object. No normalization happens.
          */
-        SetEx(
+        Set(
             [in] ITime* that);
 
         /**
          * Sets the fields. Sets weekDay, yearDay and gmtoff to 0, and isDst to -1.
          * Call {@link #normalize(boolean)} if you need those.
          */
-        SetEx2(
+        Set(
             [in] Int32 second,
             [in] Int32 minute,
             [in] Int32 hour,
@@ -281,7 +281,7 @@ module
          * @param month the zero-based month number (in the range [0,11])
          * @param year the year
          */
-        SetEx3(
+        Set(
             [in] Int32 monthDay,
             [in] Int32 month,
             [in] Int32 year);

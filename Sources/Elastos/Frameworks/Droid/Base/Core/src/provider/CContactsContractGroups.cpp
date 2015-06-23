@@ -51,7 +51,7 @@ ECode CContactsContractGroups::NewEntityIterator(
 
     AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor);
     *iterator = (IEntityIterator*)impl;
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 

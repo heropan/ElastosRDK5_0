@@ -161,7 +161,7 @@ AutoPtr<AttributeCache::Entry> AttributeCache::Get(
     }
 
     AutoPtr<ITypedArray> typeArray;
-    ECode ec = pkg->mContext->ObtainStyledAttributesEx(resId, styleable, (ITypedArray**)&typeArray);
+    ECode ec = pkg->mContext->ObtainStyledAttributes(resId, styleable, (ITypedArray**)&typeArray);
     if (FAILED(ec)) {
         return NULL;
     }

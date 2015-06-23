@@ -15,7 +15,7 @@ ECode CTtsEnginesHelper::ParseLocalePref(
     VALIDATE_NOT_NULL(ppRet);
     AutoPtr<ArrayOf<String> > temp = CTtsEngines::ParseLocalePref(pref);
     *ppRet = temp;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 

@@ -3,7 +3,7 @@
 #include "ext/frameworkext.h"
 #include "stdio.h"
 #include "GeckoAppShell.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {

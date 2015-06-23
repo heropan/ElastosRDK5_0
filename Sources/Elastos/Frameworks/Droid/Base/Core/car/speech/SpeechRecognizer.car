@@ -158,7 +158,7 @@ module
          *        {@code SpeechRecognizer} to
          * @return a new {@code SpeechRecognizer}
          */
-        CreateSpeechRecognizerEx(
+        CreateSpeechRecognizer(
             [in] IContext* ctx,
             [in] IComponentName* serviceComponent,
             [out] ISpeechRecognizer** ret);

@@ -10,8 +10,8 @@
 #endif
 #include "os/Handler.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Utility::ITypedValueHelper;
@@ -945,7 +945,7 @@ Boolean Animation::GetTransformation(
     return mMore;
 }
 
-Boolean Animation::GetTransformationEx(
+Boolean Animation::GetTransformation(
     /* [in] */ Int64 currentTime,
     /* [in, out] */ ITransformation* outTransformation,
     /* [in] */ Float scale)
@@ -1049,14 +1049,14 @@ ECode Animation::GetInvalidateRegion(
     AutoPtr<IMatrix> matrix;
     transformation->GetMatrix((IMatrix**)&matrix);
     Boolean res;
-    matrix->MapRectEx(invalidate, &res);
+    matrix->MapRect(invalidate, &res);
 
     // Enlarge the invalidate region to account for rounding errors
     invalidate->Inset(-1.0f, -1.0f);
-    tempRegion->SetEx(invalidate);
-    invalidate->UnionEx(previousRegion);
+    tempRegion->Set(invalidate);
+    invalidate->Union(previousRegion);
 
-    previousRegion->SetEx(tempRegion);
+    previousRegion->Set(tempRegion);
 
     mTransformation->Set(transformation);
     transformation->Set(mPreviousTransformation);
@@ -1111,7 +1111,7 @@ ECode Animation::Init(
             const_cast<Int32 *>(R::styleable::Animation),
             ARRAY_SIZE(R::styleable::Animation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds,
+    context->ObtainStyledAttributes(attrs, attrIds,
         (ITypedArray**)&a);
 
     Int32 data;

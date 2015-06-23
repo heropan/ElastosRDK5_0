@@ -67,7 +67,7 @@ module
             [in] String key,
             [out] String* value);
 
-        GetPreferenceEx(
+        GetPreference(
             [in] String key,
             [in] Int32 dflt,
             [out] Int32* value);
@@ -79,7 +79,7 @@ module
         /**
          * Filters stack frames from internal JUnit classes
          */
-        GetFilteredTraceEx(
+        GetFilteredTrace(
             [in] String stack,
             [out] String* result);
     }

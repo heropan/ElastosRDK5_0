@@ -4,8 +4,8 @@
 
 #include "_CTextKeyListener.h"
 #include "text/method/TextKeyListener.h"
-#include "text/method/BaseKeyListenerMacro.h"
-#include "text/method/KeyListenerMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

@@ -1,8 +1,6 @@
 #include "CInputMethodManagerServiceUserSwitchObserver.h"
 #include "elastos/Mutex.h"
 
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Server {

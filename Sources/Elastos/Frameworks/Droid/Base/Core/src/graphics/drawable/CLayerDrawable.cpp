@@ -46,7 +46,7 @@ ECode CLayerDrawable::FindDrawableByLayerId(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> temp = LayerDrawable::FindDrawableByLayerId(id);
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
 
     return NOERROR;
 }
@@ -74,7 +74,7 @@ ECode CLayerDrawable::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> temp = LayerDrawable::GetDrawable(index);
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
 
     return NOERROR;
 }

@@ -4,7 +4,7 @@
 #include "gesture/CGesturePoint.h"
 #include "graphics/CRectF.h"
 #include "graphics/CPath.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::IO::IDataInput;
 using Elastos::IO::IDataOutput;
@@ -54,7 +54,7 @@ ECode CGestureStroke::constructor(
         } else {
             len += Elastos::Core::Math::Sqrt(Elastos::Core::Math::Pow(x - (*tmpPoints)[(i - 1) * 2], 2)
                     + Elastos::Core::Math::Pow(y - (*tmpPoints)[(i -1 ) * 2 + 1], 2));
-            bx->UnionEx2(x, y);
+            bx->Union(x, y);
         }
         index++;
         i++;
@@ -102,7 +102,7 @@ ECode CGestureStroke::GetPath(
         MakePath();
     }
     *outPath = mCachedPath;
-    INTERFACE_ADDREF(*outPath);
+    REFCOUNT_ADD(*outPath);
     return NOERROR;
 }
 
@@ -189,7 +189,7 @@ ECode CGestureStroke::ToPath(
         }
     }
     *outPath = path;
-    INTERFACE_ADDREF(*outPath);
+    REFCOUNT_ADD(*outPath);
     return NOERROR;
 }
 
@@ -248,7 +248,7 @@ ECode CGestureStroke::ComputeOrientedBoundingBox(
     VALIDATE_NOT_NULL(box);
     AutoPtr<IOrientedBoundingBox> temp = GestureUtils::ComputeOrientedBoundingBox(mPoints);
     *box = temp;
-    INTERFACE_ADDREF(*box);
+    REFCOUNT_ADD(*box);
     return NOERROR;
 }
 
@@ -257,7 +257,7 @@ ECode CGestureStroke::GetBoundingBox(
 {
     VALIDATE_NOT_NULL(box);
     *box = mBoundingBox;
-    INTERFACE_ADDREF(*box);
+    REFCOUNT_ADD(*box);
     return NOERROR;
 }
 
@@ -275,7 +275,7 @@ ECode CGestureStroke::GetPoints(
 {
     VALIDATE_NOT_NULL(points);
     *points = mPoints;
-    INTERFACE_ADDREF(*points);
+    REFCOUNT_ADD(*points);
     return NOERROR;
 }
 

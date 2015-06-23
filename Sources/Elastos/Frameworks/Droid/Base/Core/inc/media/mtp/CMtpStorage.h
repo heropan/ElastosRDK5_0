@@ -23,7 +23,7 @@ public:
     CARAPI GetStorageId(
         /* [out] */ Int32* result);
 
-    CARAPI GetStorageIdEx(
+    CARAPI GetStorageId(
         /* [in] */ Int32 index,
         /* [out] */ Int32* result);
 

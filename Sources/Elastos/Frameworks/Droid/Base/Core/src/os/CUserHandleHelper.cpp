@@ -116,7 +116,7 @@ ECode CUserHandleHelper::GetALL(
 {
     VALIDATE_NOT_NULL(h);
     *h = UserHandle::ALL;
-    INTERFACE_ADDREF(*h);
+    REFCOUNT_ADD(*h);
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode CUserHandleHelper::GetCURRENT(
 {
     VALIDATE_NOT_NULL(h);
     *h = UserHandle::CURRENT;
-    INTERFACE_ADDREF(*h);
+    REFCOUNT_ADD(*h);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode CUserHandleHelper::GetCURRENT_OR_SELF(
 {
     VALIDATE_NOT_NULL(h);
     *h = UserHandle::CURRENT_OR_SELF;
-    INTERFACE_ADDREF(*h);
+    REFCOUNT_ADD(*h);
     return NOERROR;
 }
 
@@ -143,7 +143,7 @@ ECode CUserHandleHelper::GetOWNER(
 {
     VALIDATE_NOT_NULL(h);
     *h = UserHandle::OWNER;
-    INTERFACE_ADDREF(*h);
+    REFCOUNT_ADD(*h);
     return NOERROR;
 }
 

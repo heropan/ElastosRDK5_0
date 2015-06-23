@@ -1,7 +1,7 @@
 #include "ext/frameworkext.h"
 #include "widget/ArrayAdapter.h"
-#include "elastos/StringUtils.h"
-#include "elastos/Logger.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -62,11 +62,11 @@ ECode ArrayAdapter::ArrayFilter::DoFilter(
  * @see #performFiltering(CharSequence)
  * @see #publishResults(CharSequence, android.widget.Filter.FilterResults)
  */
-ECode ArrayAdapter::ArrayFilter::DoFilterEx(
+ECode ArrayAdapter::ArrayFilter::DoFilter(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterListener* listener)
 {
-    return Filter::DoFilterEx(constraint, listener);
+    return Filter::DoFilter(constraint, listener);
 }
 
 /**
@@ -362,7 +362,7 @@ ECode ArrayAdapter::AddAll(
     return NOERROR;
 }
 
-ECode ArrayAdapter::AddAllEx(
+ECode ArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
     {
@@ -645,7 +645,7 @@ AutoPtr<IView> ArrayAdapter::CreateViewFromResource(
     AutoPtr<ITextView> text;
 
     if (convertView == NULL) {
-        ECode ec = mInflater->InflateEx2(resource, parent, FALSE, (IView**)&view);
+        ECode ec = mInflater->Inflate(resource, parent, FALSE, (IView**)&view);
         if (FAILED(ec) || view == NULL) {
             Logger::E("ArrayAdapter", "Error: failed to inflate view with : "
                 "position=%d, convertView=%p, parent=%p, resource=%08x, ec=%08x",

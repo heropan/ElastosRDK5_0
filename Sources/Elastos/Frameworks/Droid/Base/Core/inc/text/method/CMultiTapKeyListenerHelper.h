@@ -3,7 +3,7 @@
 #define __CMULTITAPKEYLISTENERHELPER_H__
 
 #include "_CMultiTapKeyListenerHelper.h"
-#include "text/method/BaseKeyListenerMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Text::ISpannable;

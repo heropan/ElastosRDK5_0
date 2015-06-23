@@ -23,16 +23,16 @@ public:
         /* [in] */ ICharSequence* text,
         /* [out] */ Int32* state);
 
-    CARAPI GetMetaStateEx(
+    CARAPI GetMetaState(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 meta,
         /* [out] */ Int32* state);
 
-    CARAPI GetMetaStateEx2(
+    CARAPI GetMetaState(
         /* [in] */ Int64 state,
         /* [out] */ Int32* ret);
 
-    CARAPI GetMetaStateEx3(
+    CARAPI GetMetaState(
         /* [in] */ Int64 state,
         /* [in] */ Int32 meta,
         /* [out] */ Int32* ret);
@@ -70,12 +70,12 @@ public:
         /* [in] */ Int64 state,
         /* [out] */ Int32* result);
 
-    CARAPI GetMetaStateEx(
+    CARAPI GetMetaState(
         /* [in] */ Int64 state,
         /* [in] */ Int32 meta,
         /* [out] */ Int32* result);
 
-    CARAPI AdjustMetaAfterKeypressEx(
+    CARAPI AdjustMetaAfterKeypress(
         /* [in] */ Int64 state,
         /* [out] */ Int64* result);
 

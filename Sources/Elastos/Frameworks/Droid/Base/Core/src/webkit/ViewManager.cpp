@@ -2,7 +2,7 @@
 #include "webkit/ViewManager.h"
 #include "webkit/CWebViewClassic.h"
 #include "widget/CAbsoluteLayoutLayoutParams.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Content::Res::IResources;

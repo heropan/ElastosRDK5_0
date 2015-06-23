@@ -64,7 +64,7 @@ ECode CTestFeaturesSession::OnResult(
         AutoPtr<IBundle> newResult;
         CBundle::New((IBundle**)&newResult);
         Boolean value;
-        result->GetBooleanEx(IAccountManager::KEY_BOOLEAN_RESULT, FALSE, &value);
+        result->GetBoolean(IAccountManager::KEY_BOOLEAN_RESULT, FALSE, &value);
         newResult->PutBoolean(IAccountManager::KEY_BOOLEAN_RESULT, value);
         return response->OnResult(newResult);
         // } catch (RemoteException e) {

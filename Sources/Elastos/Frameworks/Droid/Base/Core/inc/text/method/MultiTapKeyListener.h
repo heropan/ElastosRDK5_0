@@ -4,9 +4,9 @@
 #include "text/method/BaseKeyListener.h"
 #include "os/HandlerRunnableBase.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::HandlerRunnableBase;
 //using Elastos::Droid::Text::ITextKeyListener::Capitalize;
 

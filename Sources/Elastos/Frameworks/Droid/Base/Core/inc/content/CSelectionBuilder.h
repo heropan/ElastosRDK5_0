@@ -4,11 +4,11 @@
 
 #include "_CSelectionBuilder.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
@@ -68,7 +68,7 @@ public:
     /**
      * Execute query using the current internal state as {@code WHERE} clause.
      */
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ const String& table,
         /* [in] */ ArrayOf<String>* columns,

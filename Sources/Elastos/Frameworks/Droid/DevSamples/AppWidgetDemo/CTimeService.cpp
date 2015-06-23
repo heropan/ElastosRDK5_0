@@ -41,7 +41,7 @@ ECode CTimeService::OnCreate()
 {
     Service::OnCreate();
     CTimer::New((ITimer**)&mTimer);
-    mTimer->ScheduleEx2((ITimerTask*)mTimerTask->Probe(EIID_ITimerTask), 0, 1 * 1000);
+    mTimer->Schedule((ITimerTask*)mTimerTask->Probe(EIID_ITimerTask), 0, 1 * 1000);
     return NOERROR;
 }
 
@@ -106,7 +106,7 @@ ECode CTimeService::UpdateView()
     assert(classInfo != NULL);
     AutoPtr<IComponentName> componentName;
     CComponentName::New(ctx, classInfo, (IComponentName**)&componentName);
-    return appWidgetManager->UpdateAppWidgetEx2(componentName, views);
+    return appWidgetManager->UpdateAppWidget(componentName, views);
 }
 
 } // namespace AppWidgetDemo

@@ -2,7 +2,7 @@
 #include "view/CPointerIcon.h"
 #include "util/XmlUtils.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
 using Elastos::Droid::Utility::XmlUtils;
@@ -54,7 +54,7 @@ ECode CPointerIcon::GetNullIcon(
 {
     VALIDATE_NOT_NULL(pointerIcon);
     *pointerIcon = gNullIcon;
-    INTERFACE_ADDREF(*pointerIcon)
+    REFCOUNT_ADD(*pointerIcon)
 
     return NOERROR;
 }
@@ -81,7 +81,7 @@ ECode CPointerIcon::GetSystemIcon(
 
     if (style == STYLE_NULL) {
         *pointerIcon = gNullIcon;
-        INTERFACE_ADDREF(*pointerIcon)
+        REFCOUNT_ADD(*pointerIcon)
         return NOERROR;
     }
 
@@ -94,7 +94,7 @@ ECode CPointerIcon::GetSystemIcon(
         const_cast<Int32 *>(R::styleable::Pointer),
         ARRAY_SIZE(R::styleable::Pointer));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
         NULL, attrIds, R::attr::pointerStyle, 0, (ITypedArray**)&a);
     Int32 resourceId;
     a->GetResourceId(styleIndex, -1, &resourceId);
@@ -104,7 +104,7 @@ ECode CPointerIcon::GetSystemIcon(
         Logger::W(TAG, "Missing theme resources for pointer icon style %d", style);
         if (style == STYLE_DEFAULT) {
             *pointerIcon = gNullIcon;
-            INTERFACE_ADDREF(*pointerIcon)
+            REFCOUNT_ADD(*pointerIcon)
             return NOERROR;
         }
         else {
@@ -123,7 +123,7 @@ ECode CPointerIcon::GetSystemIcon(
         FAIL_RETURN(icon->LoadResource(r, resourceId));
     }
     *pointerIcon = icon.Get();
-    INTERFACE_ADDREF(*pointerIcon)
+    REFCOUNT_ADD(*pointerIcon)
 
     return NOERROR;
 }
@@ -147,7 +147,7 @@ ECode CPointerIcon::CreateCustomIcon(
     icon->mHotSpotX = hotSpotX;
     icon->mHotSpotY = hotSpotY;
     *pointerIcon = icon.Get();
-    INTERFACE_ADDREF(*pointerIcon)
+    REFCOUNT_ADD(*pointerIcon)
 
     return NOERROR;
 }
@@ -167,7 +167,7 @@ ECode CPointerIcon::LoadCustomIcon(
     CPointerIcon::New(STYLE_CUSTOM, (IPointerIcon**)&icon);
     FAIL_RETURN(icon->LoadResource(resources, resourceId));
     *pointerIcon = icon.Get();
-    INTERFACE_ADDREF(*pointerIcon)
+    REFCOUNT_ADD(*pointerIcon)
 
     return NOERROR;
 }
@@ -186,7 +186,7 @@ ECode CPointerIcon::Load(
 
     if (mSystemIconResourceId == 0 || mBitmap != NULL) {
         *result = this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -197,7 +197,7 @@ ECode CPointerIcon::Load(
     context->GetResources((IResources**)&r);
     icon->LoadResource(r, mSystemIconResourceId);
     *result = icon.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
 
     return NOERROR;
 }
@@ -233,7 +233,7 @@ ECode CPointerIcon::GetBitmap(
     VALIDATE_NOT_NULL(bitmap);
     FAIL_RETURN(ThrowIfIconIsNotLoaded());
     *bitmap = mBitmap;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 

@@ -3,7 +3,7 @@
 #include "webkit/CWebViewClassic.h"
 #include "widget/CEdgeEffect.h"
 
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Widget::CEdgeEffect;
 

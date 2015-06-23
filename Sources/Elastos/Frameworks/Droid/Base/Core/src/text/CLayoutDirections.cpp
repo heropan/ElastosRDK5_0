@@ -26,7 +26,7 @@ ECode CLayoutDirections::GetDirections(
 {
     VALIDATE_NOT_NULL(directions);
     *directions = mDirections;
-    INTERFACE_ADDREF(*directions);
+    REFCOUNT_ADD(*directions);
     return NOERROR;
 }
 

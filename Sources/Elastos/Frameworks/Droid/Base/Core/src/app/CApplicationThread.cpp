@@ -5,7 +5,7 @@
 #include "os/Handler.h"
 #include "os/CServiceManager.h"
 #include "os/CDebug.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::CStringWrapper;

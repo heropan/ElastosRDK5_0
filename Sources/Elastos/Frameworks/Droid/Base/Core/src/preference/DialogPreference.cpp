@@ -105,7 +105,7 @@ void DialogPreference::Init(
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(const_cast<Int32 *>(R::styleable::DialogPreference),
             ARRAY_SIZE(R::styleable::DialogPreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     String tmpString;
     a->GetString(R::styleable::DialogPreference_dialogTitle, &tmpString);
     if (tmpString.IsNull()) {
@@ -143,7 +143,7 @@ ECode DialogPreference::SetDialogTitle(
     return NOERROR;
 }
 
-ECode DialogPreference::SetDialogTitleEx(
+ECode DialogPreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
     AutoPtr<IContext> context;
@@ -160,7 +160,7 @@ ECode DialogPreference::GetDialogTitle(
 {
     VALIDATE_NOT_NULL(title)
     *title = mDialogTitle;
-    INTERFACE_ADDREF(*title)
+    REFCOUNT_ADD(*title)
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode DialogPreference::SetDialogMessage(
     return NOERROR;
 }
 
-ECode DialogPreference::SetDialogMessageEx(
+ECode DialogPreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
     AutoPtr<IContext> context;
@@ -188,7 +188,7 @@ ECode DialogPreference::GetDialogMessage(
 {
     VALIDATE_NOT_NULL(message)
     *message = mDialogMessage;
-    INTERFACE_ADDREF(*message)
+    REFCOUNT_ADD(*message)
     return NOERROR;
 }
 
@@ -199,7 +199,7 @@ ECode DialogPreference::SetDialogIcon(
     return NOERROR;
 }
 
-ECode DialogPreference::SetDialogIconEx(
+ECode DialogPreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
     AutoPtr<IContext> context;
@@ -216,7 +216,7 @@ ECode DialogPreference::GetDialogIcon(
 {
     VALIDATE_NOT_NULL(icon)
     *icon = mDialogIcon;
-    INTERFACE_ADDREF(*icon)
+    REFCOUNT_ADD(*icon)
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode DialogPreference::SetPositiveButtonText(
     return NOERROR;
 }
 
-ECode DialogPreference::SetPositiveButtonTextEx(
+ECode DialogPreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
     AutoPtr<IContext> context;
@@ -244,7 +244,7 @@ ECode DialogPreference::GetPositiveButtonText(
 {
     VALIDATE_NOT_NULL(text)
     *text = mPositiveButtonText;
-    INTERFACE_ADDREF(*text)
+    REFCOUNT_ADD(*text)
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode DialogPreference::SetNegativeButtonText(
     return NOERROR;
 }
 
-ECode DialogPreference::SetNegativeButtonTextEx(
+ECode DialogPreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
     AutoPtr<IContext> context;
@@ -272,7 +272,7 @@ ECode DialogPreference::GetNegativeButtonText(
 {
     VALIDATE_NOT_NULL(text)
     *text = mNegativeButtonText;
-    INTERFACE_ADDREF(*text)
+    REFCOUNT_ADD(*text)
     return NOERROR;
 }
 
@@ -317,10 +317,10 @@ ECode DialogPreference::ShowDialog(
 
     mBuilder = NULL;
     CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&mBuilder);
-    mBuilder->SetTitleEx(mDialogTitle);
-    mBuilder->SetIconEx(mDialogIcon);
-    mBuilder->SetPositiveButtonEx(mPositiveButtonText, THIS_PROBE(IDialogInterfaceOnClickListener));
-    mBuilder->SetNegativeButtonEx(mNegativeButtonText, THIS_PROBE(IDialogInterfaceOnClickListener));
+    mBuilder->SetTitle(mDialogTitle);
+    mBuilder->SetIcon(mDialogIcon);
+    mBuilder->SetPositiveButton(mPositiveButtonText, THIS_PROBE(IDialogInterfaceOnClickListener));
+    mBuilder->SetNegativeButton(mNegativeButtonText, THIS_PROBE(IDialogInterfaceOnClickListener));
 
     AutoPtr<IView> contentView;
     OnCreateDialogView((IView**)&contentView);
@@ -329,7 +329,7 @@ ECode DialogPreference::ShowDialog(
         mBuilder->SetView(contentView);
     }
     else {
-        mBuilder->SetMessageEx(mDialogMessage);
+        mBuilder->SetMessage(mDialogMessage);
     }
 
     OnPrepareDialogBuilder(mBuilder);
@@ -447,7 +447,7 @@ ECode DialogPreference::GetDialog(
 {
     VALIDATE_NOT_NULL(dialog)
     *dialog = mDialog;
-    INTERFACE_ADDREF(*dialog)
+    REFCOUNT_ADD(*dialog)
     return NOERROR;
 }
 
@@ -470,7 +470,7 @@ ECode DialogPreference::OnSaveInstanceState(
     Boolean isShowing;
     if (mDialog == NULL || (mDialog->IsShowing(&isShowing), !isShowing)) {
         *parcel = superState;
-        INTERFACE_ADDREF(*parcel)
+        REFCOUNT_ADD(*parcel)
         return NOERROR;
     }
 
@@ -481,7 +481,7 @@ ECode DialogPreference::OnSaveInstanceState(
     mDialog->OnSaveInstanceState((IBundle**)&bundle);
     myState->SetDialogBundle(bundle);
     *parcel = (IParcelable*)myState->Probe(EIID_IParcelable);
-    INTERFACE_ADDREF(*parcel)
+    REFCOUNT_ADD(*parcel)
     return NOERROR;
 }
 

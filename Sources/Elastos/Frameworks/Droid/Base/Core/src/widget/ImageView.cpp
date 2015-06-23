@@ -1,9 +1,9 @@
 #include "ext/frameworkext.h"
 #include "widget/ImageView.h"
 #include <stdio.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/Math.h>
 #include <R.h>
 #include "text/TextUtils.h"
 #include "graphics/CPaint.h"
@@ -176,7 +176,7 @@ ECode ImageView::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::ImageView),
             ARRAY_SIZE(R::styleable::ImageView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     AutoPtr<IDrawable> d;
     FAIL_RETURN(a->GetDrawable(R::styleable::ImageView_src, (IDrawable**)&d));
@@ -899,7 +899,7 @@ void ImageView::ConfigureBounds()
                 dy = (vheight - dheight * scale) * 0.5f;
             }
 
-            mDrawMatrix->SetScaleEx(scale, scale);
+            mDrawMatrix->SetScale(scale, scale);
             mDrawMatrix->PostTranslate(dx + 0.5f, dy + 0.5f, &result);
         }
         else if (ImageViewScaleType_CENTER_INSIDE == mScaleType) {
@@ -919,7 +919,7 @@ void ImageView::ConfigureBounds()
             dx = (Int32)((vwidth - dwidth * scale) * 0.5f + 0.5f);
             dy = (Int32)((vheight - dheight * scale) * 0.5f + 0.5f);
 
-            mDrawMatrix->SetScaleEx(scale, scale);
+            mDrawMatrix->SetScale(scale, scale);
             mDrawMatrix->PostTranslate(dx, dy, &result);
         }
         else {
@@ -974,7 +974,7 @@ void ImageView::OnDraw(
             Boolean IsNonEmpty;
             const Int32 scrollX = mScrollX;
             const Int32 scrollY = mScrollY;
-            canvas->ClipRectEx6(scrollX + mPaddingLeft, scrollY + mPaddingTop,
+            canvas->ClipRect(scrollX + mPaddingLeft, scrollY + mPaddingTop,
                     scrollX + mRight - mLeft - mPaddingRight,
                     scrollY + mBottom - mTop - mPaddingBottom,
                     &IsNonEmpty);
@@ -1071,7 +1071,7 @@ ECode ImageView::SetImageAlpha(
     return SetAlpha(alpha);
 }
 
-ECode ImageView::SetAlphaEx(
+ECode ImageView::SetAlpha(
     /* [in] */ Int32 alpha)
 {
     alpha &= 0xFF;          // keep it legal

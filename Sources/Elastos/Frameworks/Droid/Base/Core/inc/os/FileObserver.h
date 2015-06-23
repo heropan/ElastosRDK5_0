@@ -3,15 +3,12 @@
 #define __FILEOBSERVER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IFileObserver;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

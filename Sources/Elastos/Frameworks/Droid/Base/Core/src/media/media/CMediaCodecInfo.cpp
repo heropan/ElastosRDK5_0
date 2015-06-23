@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "media/CMediaCodecInfo.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "media/CMediaCodecList.h"
 
 using namespace Elastos::Core;

@@ -35,7 +35,7 @@ public:
         /* [in] */ ArrayOf<String>* projection,
         /* [out] */ ICursor** cursor);
 
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
@@ -43,7 +43,7 @@ public:
         /* [in] */ const String& orderBy,
         /* [out] */ ICursor** cursor);
 
-    CARAPI QueryEx2(
+    CARAPI Query(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
@@ -92,7 +92,7 @@ public:
      * @return The URL to the newly created image, or <code>null</code> if the image failed to be stored
      *              for any reason.
      */
-    CARAPI InsertImageEx(
+    CARAPI InsertImage(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IBitmap* source,
         /* [in] */ const String& title,

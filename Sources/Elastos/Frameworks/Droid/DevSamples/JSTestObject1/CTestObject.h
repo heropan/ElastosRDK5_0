@@ -3,9 +3,7 @@
 #define __CTESTOBJECT_H__
 
 #include "_CTestObject.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 
 namespace Elastos {
 namespace Droid {

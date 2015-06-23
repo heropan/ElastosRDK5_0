@@ -6,8 +6,8 @@
 #include "content/res/CConfiguration.h"
 #include "os/CServiceManager.h"
 #include "os/SystemProperties.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "animation/CValueAnimator.h"
 
 using Elastos::Core::StringUtils;
@@ -113,7 +113,7 @@ ECode CWindowManagerGlobal::GetWindowManagerService(
     VALIDATE_NOT_NULL(windowManager);
     AutoPtr<IIWindowManager> temp = GetWindowManagerService();
     *windowManager = temp;
-    INTERFACE_ADDREF(*windowManager);
+    REFCOUNT_ADD(*windowManager);
 
     return NOERROR;
 }
@@ -125,7 +125,7 @@ ECode CWindowManagerGlobal::GetWindowSession(
     VALIDATE_NOT_NULL(windowSession);
     AutoPtr<IWindowSession> temp = GetWindowSession(mainLooper);
     *windowSession = temp;
-    INTERFACE_ADDREF(*windowSession)
+    REFCOUNT_ADD(*windowSession)
 
     return NOERROR;
 }
@@ -136,7 +136,7 @@ ECode CWindowManagerGlobal::PeekWindowSession(
     VALIDATE_NOT_NULL(windowSession);
     AutoPtr<IWindowSession> temp = PeekWindowSession();
     *windowSession = temp;
-    INTERFACE_ADDREF(*windowSession)
+    REFCOUNT_ADD(*windowSession)
 
     return NOERROR;
 }

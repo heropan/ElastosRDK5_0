@@ -239,7 +239,7 @@ ECode CCursorLoader::LoadInBackground(
     }
 
     AutoPtr<ICursor> cursor;
-    ec = resolver->QueryEx(mUri, mProjection, mSelection, mSelectionArgs, mSortOrder, mCancellationSignal,
+    ec = resolver->Query(mUri, mProjection, mSelection, mSelectionArgs, mSortOrder, mCancellationSignal,
         (ICursor**)&cursor);
     if (FAILED(ec)) {
         mCancellationSignal = NULL;
@@ -262,7 +262,7 @@ ECode CCursorLoader::LoadInBackground(
     }
 
     *result = cursor;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     mCancellationSignal = NULL;
     return NOERROR;
     // } finally {
@@ -300,7 +300,7 @@ ECode CCursorLoader::GetUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mUri;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -316,7 +316,7 @@ ECode CCursorLoader::GetProjection(
 {
     VALIDATE_NOT_NULL(projection)
     *projection = mProjection;
-    INTERFACE_ADDREF(*projection);
+    REFCOUNT_ADD(*projection);
     return NOERROR;
 }
 
@@ -347,7 +347,7 @@ ECode CCursorLoader::GetSelectionArgs(
 {
     VALIDATE_NOT_NULL(selectionArgs)
     *selectionArgs = mSelectionArgs;
-    INTERFACE_ADDREF(*selectionArgs);
+    REFCOUNT_ADD(*selectionArgs);
     return NOERROR;
 }
 

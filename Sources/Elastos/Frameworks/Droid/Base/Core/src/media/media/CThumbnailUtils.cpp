@@ -13,7 +13,7 @@ ECode CThumbnailUtils::CreateImageThumbnail(
 {
     VALIDATE_NOT_NULL(result);
     *result = ThumbnailUtils::CreateImageThumbnail(filePath, kind);
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -24,7 +24,7 @@ ECode CThumbnailUtils::CreateVideoThumbnail(
 {
     VALIDATE_NOT_NULL(result);
     *result = ThumbnailUtils::CreateVideoThumbnail(filePath, kind);
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -36,11 +36,11 @@ ECode CThumbnailUtils::ExtractThumbnail(
 {
     VALIDATE_NOT_NULL(result);
     *result = ThumbnailUtils::ExtractThumbnail(source, width, height);
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CThumbnailUtils::ExtractThumbnailEx(
+ECode CThumbnailUtils::ExtractThumbnail(
     /* [in] */ IBitmap* source,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -49,7 +49,7 @@ ECode CThumbnailUtils::ExtractThumbnailEx(
 {
     VALIDATE_NOT_NULL(result);
     *result = ThumbnailUtils::ExtractThumbnail(source, width, height, options);
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

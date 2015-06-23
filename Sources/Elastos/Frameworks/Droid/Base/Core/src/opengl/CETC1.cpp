@@ -11,7 +11,7 @@
 #include <gl.h>
 #include <ETC1/etc1.h>
 #include "poly.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #define LOGD(msg) SLOGGERD("CETC1", msg)
 

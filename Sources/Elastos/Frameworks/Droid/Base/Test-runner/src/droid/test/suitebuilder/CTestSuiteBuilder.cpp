@@ -183,7 +183,7 @@ String CTestSuiteBuilder::GetSuiteName()
     return mSuiteName;
 }
 
-ECode CTestSuiteBuilder::AddRequirementsEx(
+ECode CTestSuiteBuilder::AddRequirements(
     /* [in] */ ArrayOf<IPredicate*>* predicates)
 {
     AutoPtr<IArrayList> list;

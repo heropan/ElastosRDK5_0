@@ -24,7 +24,7 @@ ECode CPeriodicSync::GetAccount(
 {
     VALIDATE_NOT_NULL(account)
     *account = mAccount;
-    INTERFACE_ADDREF(*account);
+    REFCOUNT_ADD(*account);
     return NOERROR;
 }
 
@@ -41,7 +41,7 @@ ECode CPeriodicSync::GetExtras(
 {
     VALIDATE_NOT_NULL(extras)
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
     return NOERROR;
 }
 

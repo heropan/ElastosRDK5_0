@@ -20,7 +20,7 @@ public:
         /* [in] */ Elastos::IO::IWriter* log,
         /* [out] */ IGL** glInstance);
 
-    CARAPI WrapEx(
+    CARAPI Wrap(
         /* [in] */ IEGL* egl,
         /* [in] */ Int32 configFlags,
         /* [in] */ Elastos::IO::IWriter* log,

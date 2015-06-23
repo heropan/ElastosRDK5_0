@@ -1,14 +1,14 @@
 #include "ClientSocketHandler.h"
 #include "ChatManager.h"
 #include "CActivityOne.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Net::CSocket;
 using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::CInetSocketAddress;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 
 namespace Elastos {
 namespace Droid {
@@ -43,7 +43,7 @@ ECode ClientSocketHandler::Run()
         (IInetSocketAddress**)&isa);
     if (FAILED(ec)) goto _Exit_;
 
-    ec = socket->ConnectEx(isa, 5000);
+    ec = socket->Connect(isa, 5000);
     if (FAILED(ec)) goto _Exit_;
 
     Slogger::D(TAG, "Launching the I/O handler");

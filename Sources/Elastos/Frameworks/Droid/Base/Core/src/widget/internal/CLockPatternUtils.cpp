@@ -228,7 +228,7 @@ ECode CLockPatternUtils::SaveLockPattern(
     return LockPatternUtils::SaveLockPattern(pattern);
 }
 
-ECode CLockPatternUtils::SaveLockPatternEx(
+ECode CLockPatternUtils::SaveLockPattern(
     /* [in] */ IObjectContainer* pattern,
     /* [in] */ Boolean isFallback)
 {
@@ -242,7 +242,7 @@ ECode CLockPatternUtils::SaveLockPassword(
     return LockPatternUtils::SaveLockPassword(password, quality);
 }
 
-ECode CLockPatternUtils::SaveLockPasswordEx(
+ECode CLockPatternUtils::SaveLockPassword(
     /* [in] */ const String& password,
     /* [in] */ Int32 quality,
     /* [in] */ Boolean isFallback)
@@ -250,7 +250,7 @@ ECode CLockPatternUtils::SaveLockPasswordEx(
     return LockPatternUtils::SaveLockPassword(password, quality, isFallback);
 }
 
-ECode CLockPatternUtils::SaveLockPasswordEx2(
+ECode CLockPatternUtils::SaveLockPassword(
     /* [in] */ const String& password,
     /* [in] */ Int32 quality,
     /* [in] */ Boolean isFallback,
@@ -475,7 +475,7 @@ ECode CLockPatternUtils::UpdateEmergencyCallButtonState(
     return LockPatternUtils::UpdateEmergencyCallButtonState(button, phoneState, shown, upperCase, showIcon);
 }
 
-ECode CLockPatternUtils::UpdateEmergencyCallButtonStateEx(
+ECode CLockPatternUtils::UpdateEmergencyCallButtonState(
     /* [in] */ IButton* button,
     /* [in] */ Int32  phoneState,
     /* [in] */ Boolean shown)

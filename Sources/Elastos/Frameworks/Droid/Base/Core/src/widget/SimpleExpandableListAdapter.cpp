@@ -175,7 +175,7 @@ AutoPtr<IView> SimpleExpandableListAdapter::NewChildView(
     /* [in] */ IViewGroup* parent)
 {
     AutoPtr<IView> v;
-    mInflater->InflateEx2((isLastChild) ? mLastChildLayout : mChildLayout, parent, FALSE, (IView**)&v);
+    mInflater->Inflate((isLastChild) ? mLastChildLayout : mChildLayout, parent, FALSE, (IView**)&v);
     return v;
 }
 
@@ -233,7 +233,7 @@ AutoPtr<IView> SimpleExpandableListAdapter::NewGroupView(
     /* [in] */ IViewGroup* parent)
 {
     AutoPtr<IView> v;
-    mInflater->InflateEx2((isExpanded) ? mExpandedGroupLayout : mCollapsedGroupLayout,
+    mInflater->Inflate((isExpanded) ? mExpandedGroupLayout : mCollapsedGroupLayout,
         parent, FALSE, (IView**)&v);
     return v;
 }

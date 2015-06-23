@@ -1,9 +1,9 @@
 #include "NetworkTimeUpdateService.h"
 #include "os/SystemClock.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::EIID_IContentObserver;
@@ -356,8 +356,8 @@ ECode NetworkTimeUpdateService::SettingsObserver::Observe(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    settingsGlobal->GetUriForEx(String("auto_time"), (IUri**)&uri);
-    resolver->RegisterContentObserverEx((IUri*)uri, FALSE, (IContentObserver*)this, 0);
+    settingsGlobal->GetUriFor(String("auto_time"), (IUri**)&uri);
+    resolver->RegisterContentObserver((IUri*)uri, FALSE, (IContentObserver*)this, 0);
     return NOERROR;
 }
 

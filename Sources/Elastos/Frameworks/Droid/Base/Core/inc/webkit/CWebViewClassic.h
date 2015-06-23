@@ -6,7 +6,7 @@
 #include "content/BroadcastReceiver.h"
 #include "database/DataSetObserver.h"
 #include "graphics/drawable/Drawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
 #include "os/AsyncTask.h"
@@ -29,7 +29,7 @@
 #include "widget/PopupWindow.h"
 #include "widget/ArrayAdapter.h"
 #include "view/inputmethod/BaseInputConnection.h"
-#include "view/inputmethod/BaseInputConnectionMacro.h"
+
 #include "view/VelocityTracker.h"
 #include "view/View.h"
 #include <elastos/Vector.h>
@@ -653,7 +653,7 @@ private:
             /* [in] */ Int32 x,
             /* [in] */ Int32 y);
 
-        CARAPI ShowAtLocationEx(
+        CARAPI ShowAtLocation(
             /* [in] */ IBinder* token,
             /* [in] */ Int32 gravity,
             /* [in] */ Int32 x,
@@ -662,7 +662,7 @@ private:
         CARAPI ShowAsDropDown(
             /* [in] */ IView* anchor);
 
-        CARAPI ShowAsDropDownEx(
+        CARAPI ShowAsDropDown(
             /* [in] */ IView* anchor,
             /* [in] */ Int32 xoff,
             /* [in] */ Int32 yoff);
@@ -674,12 +674,12 @@ private:
             /* [in] */ IView* anchor,
             /* [out] */ Int32* maxAvailableHeight);
 
-        CARAPI GetMaxAvailableHeightEx(
+        CARAPI GetMaxAvailableHeight(
             /* [in] */ IView* anchor,
             /* [in] */ Int32 yOffset,
             /* [out] */ Int32* maxAvailableHeight);
 
-        CARAPI GetMaxAvailableHeightEx2(
+        CARAPI GetMaxAvailableHeight(
             /* [in] */ IView* anchor,
             /* [in] */ Int32 yOffset,
             /* [in] */ Boolean ignoreBottomDecorations,
@@ -692,29 +692,29 @@ private:
 
         CARAPI Update();
 
-        CARAPI UpdateEx(
+        CARAPI Update(
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
 
-        CARAPI UpdateEx2(
+        CARAPI Update(
             /* [in] */ Int32 x,
             /* [in] */ Int32 y,
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
 
-        CARAPI UpdateEx3(
+        CARAPI Update(
             /* [in] */ Int32 x,
             /* [in] */ Int32 y,
             /* [in] */ Int32 width,
             /* [in] */ Int32 height,
             /* [in] */ Boolean force);
 
-        CARAPI UpdateEx4(
+        CARAPI Update(
             /* [in] */ IView* anchor,
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
 
-        CARAPI UpdateEx5(
+        CARAPI Update(
             /* [in] */ IView* anchor,
             /* [in] */ Int32 xoff,
             /* [in] */ Int32 yoff,
@@ -970,7 +970,7 @@ private:
             CARAPI AddAll(
                 /* [in] */ IObjectContainer* collection);
 
-            CARAPI AddAllEx(
+            CARAPI AddAll(
                 /* [in] */ ArrayOf<IInterface* >* items);
 
             CARAPI Insert(
@@ -1610,7 +1610,7 @@ public:
         /* [in] */ IBundle* inState,
         /* [out] */ IWebBackForwardList** wbfl);
 
-    CARAPI LoadUrlEx(
+    CARAPI LoadUrl(
         /* [in] */ const String& url,
         /* [in] */ IMap* additionalHttpHeaders);
 
@@ -1636,7 +1636,7 @@ public:
     CARAPI SaveWebArchive(
         /* [in] */ const String& filename);
 
-    CARAPI SaveWebArchiveEx(
+    CARAPI SaveWebArchive(
         /* [in] */ const String& basename,
         /* [in] */ Boolean autoname,
         /* [in] */ IValueCallback* callBack);

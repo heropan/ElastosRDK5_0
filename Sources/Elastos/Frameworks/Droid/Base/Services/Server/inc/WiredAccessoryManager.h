@@ -6,9 +6,9 @@
 #include "input/CInputManagerService.h"
 #include "os/UEventObserver.h"
 #include "os/HandlerBase.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::UEventObserver;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Media::IAudioManager;

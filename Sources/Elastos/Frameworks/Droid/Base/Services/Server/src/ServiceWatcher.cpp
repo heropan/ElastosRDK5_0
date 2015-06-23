@@ -1,6 +1,6 @@
 #include "ServiceWatcher.h"
 #include "os/Handler.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::EIID_IServiceConnection;
 using Elastos::Utility::Logging::Slogger;
@@ -119,7 +119,7 @@ Boolean ServiceWatcher::Start()
         if (!BindBestPackageLocked(String(NULL))) return FALSE;
     }
 
-    mPackageMonitor->RegisterEx(mContext, NULL, UserHandle::ALL, TRUE);
+    mPackageMonitor->Register(mContext, NULL, UserHandle::ALL, TRUE);
     return TRUE;
 }
 
@@ -172,7 +172,7 @@ Boolean ServiceWatcher::BindBestPackageLocked(
         AutoPtr<IBundle> metaData;
         sInfo->GetMetaData((IBundle**)&metaData);
         if (metaData != NULL) {
-            metaData->GetInt32Ex(EXTRA_SERVICE_VERSION, 0, &version);
+            metaData->GetInt32(EXTRA_SERVICE_VERSION, 0, &version);
         }
 
         if (version > mVersion) {
@@ -217,7 +217,7 @@ void ServiceWatcher::BindToPackageLocked(
     mVersion = version;
 //    if (D) Log.d(mTag, "binding " + packageName + " (version " + version + ")");
     Boolean result;
-    mContext->BindServiceEx(intent, this, IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND
+    mContext->BindService(intent, this, IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND
             | IContext::BIND_NOT_VISIBLE, mCurrentUserId, &result);
 }
 

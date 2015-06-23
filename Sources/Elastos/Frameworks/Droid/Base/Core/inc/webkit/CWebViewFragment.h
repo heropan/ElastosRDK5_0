@@ -4,7 +4,7 @@
 
 #include "_CWebViewFragment.h"
 #include "ext/frameworkext.h"
-#include "app/FragmentMacro.h"
+
 #include "app/Fragment.h"
 #include "webkit/WebViewFragment.h"
 

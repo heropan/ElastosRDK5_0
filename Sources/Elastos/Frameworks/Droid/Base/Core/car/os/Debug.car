@@ -19,14 +19,14 @@ module
         GetMemoryInfo(
             [in] IDebugMemoryInfo* memoryInfo);
 
-        GetMemoryInfoEx(
+        GetMemoryInfo(
             [in] Int32 pid,
             [in] IDebugMemoryInfo* memoryInfo);
 
         GetPss(
             [out] Int64* pss);
 
-        GetPssEx(
+        GetPss(
             [in] Int32 pid,
             [out] Int64* pss);
 

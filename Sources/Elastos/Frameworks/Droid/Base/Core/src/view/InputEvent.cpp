@@ -2,7 +2,7 @@
 #include "view/InputEvent.h"
 #include "view/CInputDevice.h"
 #include "ext/frameworkext.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using namespace Elastos::Utility::Logging;
 

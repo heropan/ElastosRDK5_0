@@ -140,7 +140,7 @@ module
          *
          * @see #setDisplayOptions(int, int)
          */
-        SetCustomViewEx(
+        SetCustomView(
             [in] IView* view,
             [in] IActionBarLayoutParams* layoutParams);
 
@@ -163,7 +163,7 @@ module
          *
          * @see #setDisplayOptions(int, int)
          */
-        SetCustomViewEx2(
+        SetCustomView(
             [in] Int32 resId);
 
         /**
@@ -199,7 +199,7 @@ module
          * @see #setDisplayUseLogoEnabled(boolean)
          * @see #setDisplayShowHomeEnabled(boolean)
          */
-        SetIconEx(
+        SetIcon(
             [in] IDrawable* icon);
 
         /**
@@ -235,7 +235,7 @@ module
          * @see #setDisplayUseLogoEnabled(boolean)
          * @see #setDisplayShowHomeEnabled(boolean)
          */
-        SetLogoEx(
+        SetLogo(
             [in] IDrawable* logo);
 
         /**
@@ -306,7 +306,7 @@ module
          * @see #setTitle(CharSequence)
          * @see #setDisplayOptions(int, int)
          */
-        SetTitleEx(
+        SetTitle(
             [in] Int32 resId);
 
         /**
@@ -335,7 +335,7 @@ module
          * @see #setSubtitle(CharSequence)
          * @see #setDisplayOptions(int, int)
          */
-        SetSubtitleEx(
+        SetSubtitle(
             [in] Int32 resId);
 
         /**
@@ -369,7 +369,7 @@ module
          *                defined in ActionBar.
          * @param mask A bit mask declaring which display options should be changed.
          */
-        SetDisplayOptionsEx(
+        SetDisplayOptions(
             [in] Int32 options,
             [in] Int32 mask);
 
@@ -578,7 +578,7 @@ module
          * @param tab Tab to add
          * @param setSelected True if the added tab should become the selected tab.
          */
-        AddTabEx(
+        AddTab(
             [in] IActionBarTab* tab,
             [in] Boolean setSelected);
 
@@ -590,7 +590,7 @@ module
          * @param tab The tab to add
          * @param position The new position of the tab
          */
-        AddTabEx2(
+        AddTab(
             [in] IActionBarTab* tab,
             [in] Int32 position);
 
@@ -602,7 +602,7 @@ module
          * @param position The new position of the tab
          * @param setSelected True if the added tab should become the selected tab.
          */
-        AddTabEx3(
+        AddTab(
             [in] IActionBarTab* tab,
             [in] Int32 position,
             [in] Boolean setSelected);
@@ -869,7 +869,7 @@ module
          * @param resId Resource ID referring to the drawable to use as an icon
          * @return The current instance for call chaining
          */
-        SetIconEx(
+        SetIcon(
             [in] Int32 resId);
 
         /**
@@ -889,7 +889,7 @@ module
          * @param resId A resource ID referring to the text that should be displayed
          * @return The current instance for call chaining
          */
-        SetTextEx(
+        SetText(
             [in] Int32 resId);
 
         /**
@@ -915,7 +915,7 @@ module
          * @param layoutResId A layout resource to inflate and use as a custom tab view
          * @return The current instance for call chaining
          */
-        SetCustomViewEx(
+        SetCustomView(
             [in] Int32 layoutResId);
 
         /**
@@ -981,7 +981,7 @@ module
          * @see #setContentDescription(int)
          * @see #getContentDescription()
          */
-        SetContentDescriptionEx(
+        SetContentDescription(
             [in] ICharSequence* contentDesc);
 
         /**

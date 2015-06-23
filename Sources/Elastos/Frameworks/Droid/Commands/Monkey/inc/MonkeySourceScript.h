@@ -2,7 +2,7 @@
 #define __MONKEYSOURCESCRIPT_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "Elastos.Droid.Commands.Monkey.h"
 
 using Elastos::IO::IFileInputStream;
@@ -14,7 +14,7 @@ using Elastos::IO::CFileInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::CBufferedReader;
 using Elastos::Core::IRandom;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IBufferedReader;
 using Elastos::Droid::View::ISurface;
 using Elastos::IO::IInputStreamReader;

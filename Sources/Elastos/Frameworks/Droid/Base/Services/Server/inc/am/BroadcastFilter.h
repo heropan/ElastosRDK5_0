@@ -185,7 +185,7 @@ public:
         /* [in] */ const String& logTag,
         /* [out] */ Int32* result);
 
-    CARAPI MatchEx(
+    CARAPI Match(
         /* [in] */ const String& action,
         /* [in] */ const String& type,
         /* [in] */ const String& scheme,

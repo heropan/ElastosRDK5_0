@@ -90,7 +90,7 @@ AutoPtr<IView> ResourceCursorAdapter::NewView(
     /* [in] */ IViewGroup* parent)
 {
     AutoPtr<IView> view;
-    mInflater->InflateEx2(mLayout, parent, FALSE, (IView**)&view);
+    mInflater->Inflate(mLayout, parent, FALSE, (IView**)&view);
     return view;
 }
 
@@ -100,7 +100,7 @@ AutoPtr<IView> ResourceCursorAdapter::NewDropDownView(
     /* [in] */ IViewGroup* parent)
 {
     AutoPtr<IView> view;
-    mInflater->InflateEx2(mDropDownLayout, parent, FALSE, (IView**)&view);
+    mInflater->Inflate(mDropDownLayout, parent, FALSE, (IView**)&view);
     return view;
 }
 

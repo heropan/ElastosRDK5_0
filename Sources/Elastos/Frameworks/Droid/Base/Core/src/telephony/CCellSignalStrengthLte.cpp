@@ -1,8 +1,8 @@
 
 #include "CCellSignalStrengthLte.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -156,7 +156,7 @@ ECode CCellSignalStrengthLte::Copy(
     AutoPtr<ICellSignalStrengthLte> css;
     CCellSignalStrengthLte::New(this, (ICellSignalStrengthLte**)&css);
     *cssReturn = ICellSignalStrength::Probe(css);
-    INTERFACE_ADDREF(*cssReturn);
+    REFCOUNT_ADD(*cssReturn);
     return NOERROR;
 }
 
@@ -222,7 +222,7 @@ ECode CCellSignalStrengthLte::Initialize(
     return NOERROR;
 }
 
-ECode CCellSignalStrengthLte::InitializeEx(
+ECode CCellSignalStrengthLte::Initialize(
     /* [in] */ ISignalStrength* ss,
     /* [in] */ Int32 timingAdvance)
 {
@@ -242,7 +242,7 @@ ECode CCellSignalStrengthLte::InitializeEx(
     return NOERROR;
 }
 
-ECode CCellSignalStrengthLte::CopyEx(
+ECode CCellSignalStrengthLte::Copy(
     /* [out] */ ICellSignalStrengthLte** css)
 {
     VALIDATE_NOT_NULL(css);

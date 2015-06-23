@@ -4,8 +4,8 @@
 
 #include "_CSyncOperation.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 #include "../os/SystemClock.h"
 
 namespace Elastos {

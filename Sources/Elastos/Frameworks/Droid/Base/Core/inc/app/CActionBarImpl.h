@@ -7,12 +7,12 @@
 #include "view/menu/CActionBarPolicy.h"
 #include "animation/AnimatorListenerAdapter.h"
 #include "animation/AnimatorListenerAdapter.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IRunnable;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IHandler;
@@ -94,10 +94,10 @@ public:
         CARAPI SetTitle(
             /* [in] */ ICharSequence* title);
 
-        CARAPI SetTitleEx(
+        CARAPI SetTitle(
             /* [in] */ Int32 resId);
 
-        CARAPI SetSubtitleEx(
+        CARAPI SetSubtitle(
             /* [in] */ Int32 resId);
 
         CARAPI GetTitle(
@@ -190,7 +190,7 @@ public:
         CARAPI SetCustomView(
             /* [in] */ IView* view);
 
-        CARAPI SetCustomViewEx(
+        CARAPI SetCustomView(
             /* [in] */ Int32 layoutResId);
 
         CARAPI GetIcon(
@@ -208,13 +208,13 @@ public:
         CARAPI SetIcon(
             /* [in] */ IDrawable* icon);
 
-        CARAPI SetIconEx(
+        CARAPI SetIcon(
             /* [in] */ Int32 resId);
 
         CARAPI SetText(
             /* [in] */ ICharSequence* text);
 
-        CARAPI SetTextEx(
+        CARAPI SetText(
             /* [in] */ Int32 resId);
 
         CARAPI Select();
@@ -222,7 +222,7 @@ public:
         CARAPI SetContentDescription(
             /* [in] */ Int32 resId);
 
-        CARAPI SetContentDescriptionEx(
+        CARAPI SetContentDescription(
             /* [in] */ ICharSequence* contentDesc);
 
         CARAPI GetContentDescription(
@@ -302,7 +302,7 @@ public:
     CARAPI DispatchMenuVisibilityChanged(
         /* [in] */ Boolean isVisible);
 
-    CARAPI SetCustomViewEx2(
+    CARAPI SetCustomView(
         /* [in] */ Int32 resId);
 
     CARAPI SetDisplayUseLogoEnabled(
@@ -323,10 +323,10 @@ public:
     CARAPI SetHomeButtonEnabled(
         /* [in] */ Boolean enable);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 resId);
 
-    CARAPI SetSubtitleEx(
+    CARAPI SetSubtitle(
         /* [in] */ Int32 resId);
 
     CARAPI SetSelectedNavigationItem(
@@ -345,7 +345,7 @@ public:
     CARAPI SetDisplayOptions(
         /* [in] */ Int32 options);
 
-    CARAPI SetDisplayOptionsEx(
+    CARAPI SetDisplayOptions(
         /* [in] */ Int32 options,
         /* [in] */ Int32 mask);
 
@@ -380,15 +380,15 @@ public:
     CARAPI AddTab(
         /* [in] */ IActionBarTab* tab);
 
-    CARAPI AddTabEx2(
+    CARAPI AddTab(
         /* [in] */ IActionBarTab* tab,
         /* [in] */ Int32 position);
 
-    CARAPI AddTabEx(
+    CARAPI AddTab(
         /* [in] */ IActionBarTab* tab,
         /* [in] */ Boolean setSelected);
 
-    CARAPI AddTabEx3(
+    CARAPI AddTab(
         /* [in] */ IActionBarTab* tab,
         /* [in] */ Int32 position,
         /* [in] */ Boolean setSelected);
@@ -440,7 +440,7 @@ public:
     CARAPI SetCustomView(
         /* [in] */ IView* view);
 
-    CARAPI SetCustomViewEx(
+    CARAPI SetCustomView(
         /* [in] */ IView* view,
         /* [in] */ IActionBarLayoutParams* layoutParams);
 
@@ -467,13 +467,13 @@ public:
     CARAPI SetIcon(
         /* [in] */ Int32 resId);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
     CARAPI SetLogo(
         /* [in] */ Int32 resId);
 
-    CARAPI SetLogoEx(
+    CARAPI SetLogo(
         /* [in] */ IDrawable* logo);
 
 

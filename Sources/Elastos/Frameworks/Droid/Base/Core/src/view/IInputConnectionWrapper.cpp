@@ -1,6 +1,6 @@
 
 #include "view/IInputConnectionWrapper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/Looper.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -588,7 +588,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageII(
     /* [in] */ Int32 arg2)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx2(what, arg1, arg2, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, arg2, (IMessage**)&msg);
     return msg;
 }
 
@@ -597,7 +597,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageO(
     /* [in] */ IInterface* arg1)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx(what, arg1, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, (IMessage**)&msg);
     return msg;
 }
 
@@ -610,7 +610,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageISC(
     AutoPtr<SomeArgs> args = new SomeArgs(NULL, NULL, callback, seq);
 
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(what, arg1, 0, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, 0, args, (IMessage**)&msg);
     return msg;
 }
 
@@ -623,7 +623,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIISC(
 {
     AutoPtr<SomeArgs> args = new SomeArgs(NULL, NULL, callback, seq);
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(what, arg1, arg2, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, arg2, args, (IMessage**)&msg);
     return msg;
 }
 
@@ -636,7 +636,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIOSC(
 {
     AutoPtr<SomeArgs> args = new SomeArgs(arg2, NULL, callback, seq);
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(what, arg1, 0, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, 0, args, (IMessage**)&msg);
     return msg;
 }
 
@@ -646,7 +646,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIO(
     /* [in] */ IInterface* arg2)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(what, arg1, 0, arg2, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, 0, arg2, (IMessage**)&msg);
     return msg;
 }
 
@@ -660,7 +660,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageOO(
 
     AutoPtr<SomeArgs> args = new SomeArgs(text, arg2);
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(what, 0, 0, args, (IMessage**)&msg);
+    mH->ObtainMessage(what, 0, 0, args, (IMessage**)&msg);
     return msg;
 }
 

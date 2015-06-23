@@ -1,23 +1,23 @@
 
 #include "content/SyncQueue.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 #include "os/SystemClock.h"
 //***#include "text/format/DateUtils.h"
 #include "content/CSyncAdapterTypeHelper.h"
 #include "content/CSyncStorageEnginePendingOperation.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "content/CSyncOperation.h"
 #include "content/pm/RegisteredServicesCache.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Iterator;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::Pm::RegisteredServicesCache;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::SystemClock;
@@ -232,7 +232,7 @@ ECode SyncQueue::OnDelayUntilTimeChanged(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode SyncQueue::RemoveEx(
+ECode SyncQueue::Remove(
     /* [in] */ IAccount* account,
     /* [in] */ Int32 userId,
     /* [in] */ const String& authority)
@@ -296,7 +296,7 @@ ECode SyncQueue::GetOperations(
     }
 
     *operations = tmpArray;
-    INTERFACE_ADDREF(*operations);
+    REFCOUNT_ADD(*operations);
     return NOERROR;
 }
 

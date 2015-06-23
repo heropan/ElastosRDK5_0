@@ -4,7 +4,7 @@
 
 #include "_CPathSegmentsBuilder.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 /**
  * Builds PathSegments.

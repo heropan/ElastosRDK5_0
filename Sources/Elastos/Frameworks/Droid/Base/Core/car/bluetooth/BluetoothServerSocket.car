@@ -98,7 +98,7 @@ module
              * :-|:------------|
              * IOException on error | for example this call was aborted, or timeout
              */
-            AcceptEx(
+            Accept(
                 [in] Int32 timeout,
                 [out] IBluetoothSocket** socket);
 

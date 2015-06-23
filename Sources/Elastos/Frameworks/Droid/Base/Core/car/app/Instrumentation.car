@@ -395,7 +395,7 @@ module
          * @see #addMonitor(ActivityMonitor)
          * @see #checkMonitorHit
          */
-        AddMonitorEx(
+        AddMonitor(
             [in] IIntentFilter* filter,
             [in] IInstrumentationActivityResult* result,
             [in] Boolean block,
@@ -417,7 +417,7 @@ module
          * @see #addMonitor(ActivityMonitor)
          * @see #checkMonitorHit
          */
-        AddMonitorEx2(
+        AddMonitor(
             [in] String cls,
             [in] IInstrumentationActivityResult* result,
             [in] Boolean block,
@@ -660,7 +660,7 @@ module
          *
          * @return The newly instantiated Activity object.
          */
-        NewActivityEx(
+        NewActivity(
             [in] IClassLoader* cl,
             [in] String className,
             [in] IIntent* intent,
@@ -923,7 +923,7 @@ module
          *
          * {@hide}
          */
-        ExecStartActivityEx(
+        ExecStartActivity(
             [in] IContext* who,
             [in] IBinder* contextThread,
             [in] IBinder* token,
@@ -963,7 +963,7 @@ module
          *
          * {@hide}
          */
-        ExecStartActivityEx2(
+        ExecStartActivity(
             [in] IContext* who,
             [in] IBinder* contextThread,
             [in] IBinder* token,
@@ -998,7 +998,7 @@ module
             [in] IContext* ctx,
             [out] IApplication** application);
 
-        NewApplicationEx(
+        NewApplication(
             [in] ClassID clsId,
             [in] IContext* ctx,
             [out] IApplication** application);

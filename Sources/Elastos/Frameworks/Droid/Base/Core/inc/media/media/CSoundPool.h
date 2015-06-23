@@ -157,7 +157,7 @@ public:
      *                 a value of 1 for future compatibility.
      * @return a sound ID. This value can be used to play or unload the sound.
      */
-    CARAPI LoadEx(
+    CARAPI Load(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resId,
         /* [in] */ Int32 priority,
@@ -171,7 +171,7 @@ public:
      *                 a value of 1 for future compatibility.
      * @return a sound ID. This value can be used to play or unload the sound.
      */
-    CARAPI LoadEx2(
+    CARAPI Load(
         /* [in] */ IAssetFileDescriptor* afd,
         /* [in] */ Int32 priority,
         /* [out] */ Int32* result);
@@ -190,7 +190,7 @@ public:
      *                 a value of 1 for future compatibility.
      * @return a sound ID. This value can be used to play or unload the sound.
      */
-    CARAPI LoadEx3(
+    CARAPI Load(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length,

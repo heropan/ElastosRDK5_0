@@ -142,7 +142,7 @@ public:
         /* [in] */ const String& path,
         /* [out] */ IGestureLibrary **instance);
 
-    CARAPI FromFileEx(
+    CARAPI FromFile(
         /* [in] */ IFile *path,
         /* [out] */ IGestureLibrary **instance);
 

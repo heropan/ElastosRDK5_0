@@ -2,7 +2,7 @@
 #include "CCellInfoGsm.h"
 #include "CCellIdentityGsm.h"
 #include "CCellSignalStrengthGsm.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <ext/frameworkdef.h>
 
 using Elastos::Core::StringBuilder;
@@ -29,7 +29,7 @@ ECode CCellInfoGsm::constructor(
     ci->GetCellIdentity((ICellIdentityGsm**)&cgsm);
     ci->GetCellSignalStrength((ICellSignalStrengthGsm**)&sgsm);
     cgsm->Copy((ICellIdentityGsm**)&mCellIdentityGsm);
-    sgsm->CopyEx((ICellSignalStrengthGsm**)&mCellSignalStrengthGsm);
+    sgsm->Copy((ICellSignalStrengthGsm**)&mCellSignalStrengthGsm);
     return NOERROR;
 }
 
@@ -83,7 +83,7 @@ ECode CCellInfoGsm::GetCellIdentity(
 {
     VALIDATE_NOT_NULL(cid);
     *cid = mCellIdentityGsm;
-    INTERFACE_ADDREF(*cid);
+    REFCOUNT_ADD(*cid);
     return NOERROR;
 }
 
@@ -99,7 +99,7 @@ ECode CCellInfoGsm::GetCellSignalStrength(
 {
     VALIDATE_NOT_NULL(css);
     *css = mCellSignalStrengthGsm;
-    INTERFACE_ADDREF(*css);
+    REFCOUNT_ADD(*css);
     return NOERROR;
 }
 

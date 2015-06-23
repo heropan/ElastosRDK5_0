@@ -1,7 +1,7 @@
 
 #include "view/accessibility/CAccessibilityEvent.h"
 #include "view/accessibility/CAccessibilityRecord.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -40,11 +40,11 @@ ECode CAccessibilityEvent::SetSource(
     return AccessibilityRecord::SetSource(source);
 }
 
-ECode CAccessibilityEvent::SetSourceEx(
+ECode CAccessibilityEvent::SetSource(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
-    return AccessibilityRecord::SetSourceEx(root, virtualDescendantId);
+    return AccessibilityRecord::SetSource(root, virtualDescendantId);
 }
 
 ECode CAccessibilityEvent::GetSource(
@@ -408,7 +408,7 @@ ECode CAccessibilityEvent::GetRecord(
 {
     VALIDATE_NOT_NULL(record);
     *record = mRecords[index];
-    INTERFACE_ADDREF(*record);
+    REFCOUNT_ADD(*record);
     return NOERROR;
 }
 
@@ -449,7 +449,7 @@ ECode CAccessibilityEvent::GetPackageName(
 {
     VALIDATE_NOT_NULL(packageName);
     *packageName = mPackageName;
-    INTERFACE_ADDREF(*packageName);
+    REFCOUNT_ADD(*packageName);
     return NOERROR;
 }
 
@@ -499,20 +499,20 @@ ECode CAccessibilityEvent::Obtain(
 {
     VALIDATE_NOT_NULL(_event);
     AutoPtr<IAccessibilityEvent> event;
-    FAIL_RETURN(ObtainEx2((IAccessibilityEvent**)&event));
+    FAIL_RETURN(Obtain((IAccessibilityEvent**)&event));
     event->SetEventType(eventType);
     *_event = event;
-    INTERFACE_ADDREF(*_event);
+    REFCOUNT_ADD(*_event);
     return NOERROR;
 }
 
-ECode CAccessibilityEvent::ObtainEx(
+ECode CAccessibilityEvent::Obtain(
     /* [in] */ IAccessibilityEvent* otherEvent,
     /* [out] */ IAccessibilityEvent** event)
 {
     VALIDATE_NOT_NULL(event);
     AutoPtr<IAccessibilityEvent> eventClone;
-    FAIL_RETURN(ObtainEx2((IAccessibilityEvent**)&eventClone));
+    FAIL_RETURN(Obtain((IAccessibilityEvent**)&eventClone));
     AutoPtr<CAccessibilityEvent> otherCls = (CAccessibilityEvent*)otherEvent;
     otherCls->Init(otherEvent);
 
@@ -526,11 +526,11 @@ ECode CAccessibilityEvent::ObtainEx(
     }
 
     *event = eventClone;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CAccessibilityEvent::ObtainEx2(
+ECode CAccessibilityEvent::Obtain(
     /* [out] */ IAccessibilityEvent** event)
 {
     VALIDATE_NOT_NULL(event);
@@ -542,13 +542,13 @@ ECode CAccessibilityEvent::ObtainEx2(
         e->mNext = NULL;
         e->mIsInPool = FALSE;
         *event = (IAccessibilityEvent*)e;
-        INTERFACE_ADDREF(*event);
+        REFCOUNT_ADD(*event);
         return NOERROR;
     }
     AutoPtr<CAccessibilityEvent> cevent;
     CAccessibilityEvent::NewByFriend((CAccessibilityEvent**)&cevent);
     *event = cevent;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
@@ -584,7 +584,7 @@ ECode CAccessibilityEvent::InitFromParcel(
     parcel->ReadInt32(&recordCount);
     for (Int32 i = 0; i < recordCount; i++) {
         AutoPtr<IAccessibilityRecord> record;
-        CAccessibilityRecord::ObtainEx((IAccessibilityRecord**)&record);
+        CAccessibilityRecord::Obtain((IAccessibilityRecord**)&record);
         ReadAccessibilityRecordFromParcel(record, parcel);
         ((CAccessibilityRecord*)record.Get())->mConnectionId = mConnectionId;
         mRecords.PushBack(record);
@@ -686,7 +686,7 @@ ECode CAccessibilityEvent::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
     AutoPtr<IAccessibilityEvent> event;
-    FAIL_RETURN(ObtainEx2((IAccessibilityEvent**)&event));
+    FAIL_RETURN(Obtain((IAccessibilityEvent**)&event));
     return event->InitFromParcel(parcel);
 }
 

@@ -29,7 +29,7 @@ ECode CIntentShortcutIconResourceHelper::FromContext(
     FAIL_RETURN(res->GetResourceName(resourceId, &resourceName))
     FAIL_RETURN(icon->SetResourceName(resourceName))
     *shortcutIconRes = icon;
-    INTERFACE_ADDREF(*shortcutIconRes)
+    REFCOUNT_ADD(*shortcutIconRes)
     return NOERROR;
 }
 

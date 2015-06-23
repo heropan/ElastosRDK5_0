@@ -1,5 +1,5 @@
 #include "CBrickReceiver.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 //#include "os/SystemService.h"
 
 using Elastos::Utility::Logging::Slogger;

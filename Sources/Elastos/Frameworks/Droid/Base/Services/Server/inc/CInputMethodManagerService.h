@@ -10,20 +10,19 @@
 #include "content/BroadcastReceiver.h"
 // #include "content/ContentResolver.h"
 #include "content/PackageMonitor.h"
-#include "content/ContextMacro.h"
+
 #include "text/TextUtils.h"
 #include "widget/ArrayAdapter.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
 #include <database/ContentObserver.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IComparable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::App::IUserSwitchObserver;
 using Elastos::Droid::Content::IIntent;

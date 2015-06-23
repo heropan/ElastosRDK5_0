@@ -103,7 +103,7 @@ module
          * @throws java.io.IOException if the authenticator returned an error response that indicates
          * that it encountered an IOException while communicating with the authentication server
          */
-        GetResultEx(
+        GetResult(
             [in] Int64 timeout,
             [in] ITimeUnit* unit,
             [out] IInterface** result);

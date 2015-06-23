@@ -3,7 +3,7 @@ TARGET_TYPE = eco
 
 EXPORT_ALL_SYMBOLS = 1
 
-#CAR_FLAGS += -u
+#CAR_FLAGS += -n -u
 #LUBE_FLAGS += -n -u
 
 IMPORTS = Elastos.Droid.Core.eco
@@ -34,7 +34,6 @@ SOURCES += Elastos.Core.cpp
 
 #### Build in Source Code Environment
 LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco

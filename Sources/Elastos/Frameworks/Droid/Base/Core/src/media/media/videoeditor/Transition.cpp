@@ -1,6 +1,6 @@
 #include "Transition.h"
 #include "MediaItem.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
@@ -107,7 +107,7 @@ ECode Transition::GetAfterMediaItem(
     VALIDATE_NOT_NULL(result);
 
     *result = mAfterMediaItem;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -117,7 +117,7 @@ ECode Transition::GetBeforeMediaItem(
     VALIDATE_NOT_NULL(result);
 
     *result = mBeforeMediaItem;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -239,7 +239,7 @@ ECode Transition::GetTransitionSettings(
     }
 
     *settings = transitionSetting;
-    INTERFACE_ADDREF(*settings);
+    REFCOUNT_ADD(*settings);
     return NOERROR;
 }
 

@@ -8,10 +8,9 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "database/ContentObserver.h"
-#include <elastos/Mutex.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IPrintWriter;

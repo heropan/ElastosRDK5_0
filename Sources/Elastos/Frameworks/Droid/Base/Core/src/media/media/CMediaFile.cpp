@@ -3,9 +3,9 @@
 #include "media/CMediaFileType.h"
 #include "media/CDecoderCapabilitiesHelper.h"
 #include "media/CDecoderCapabilities.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Mtp::IMtpConstants;
 
 namespace Elastos {
@@ -242,7 +242,7 @@ ECode CMediaFile::GetFileType(
     HashMap< String, AutoPtr<IMediaFileType> >::Iterator it = sFileTypeMap.Find(tempText);
     if (it != sFileTypeMap.End()) {
         *result = it->mSecond;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;

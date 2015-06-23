@@ -4,9 +4,9 @@
 
 #include "_CProcessStats.h"
 #include "ext/frameworkdef.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 
 namespace Elastos {

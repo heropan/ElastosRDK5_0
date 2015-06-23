@@ -4,11 +4,10 @@
 
 #include "_CBassBoost.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "media/media/audiofx/AudioEffect.h"
-#include "media/media/audiofx/AudioEffectMacro.h"
 
-using Elastos::Core::Threading::Mutex;
+
+using Elastos::Core::Mutex;
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 
 namespace Elastos {
@@ -127,7 +126,7 @@ public:
      * Registers an OnParameterChangeListener interface.
      * @param listener OnParameterChangeListener interface registered
      */
-    CARAPI SetParameterListenerEx(
+    CARAPI SetParameterListener(
         /* [in] */ IBassBoostOnParameterChangeListener* listener);
 
     /**

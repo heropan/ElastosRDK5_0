@@ -50,7 +50,7 @@ public:
         /* [in] */ Int32 baseStationLatitude,
         /* [in] */ Int32 baseStationLongitude);
 
-    CARAPI SetCellLocationDataEx(
+    CARAPI SetCellLocationData(
         /* [in] */ Int32 baseStationId,
         /* [in] */ Int32 baseStationLatitude,
         /* [in] */ Int32 baseStationLongitude,

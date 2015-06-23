@@ -4,10 +4,10 @@
 
 #include "_CMetadata.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::IDate;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger32;
 
 namespace Elastos {

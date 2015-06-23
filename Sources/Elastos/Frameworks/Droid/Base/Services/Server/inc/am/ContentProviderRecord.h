@@ -5,14 +5,14 @@
 #include "ext/frameworkext.h"
 #include "am/CContentProviderConnection.h"
 #include <Elastos.Droid.Core.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::ISynchronize;
-using Elastos::Core::Threading::Object;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::ISynchronize;
+using Elastos::Core::Object;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
@@ -102,10 +102,10 @@ public:
 
     CARAPI Wait();
 
-    CARAPI WaitEx(
+    CARAPI Wait(
         /* [in] */ Int64 millis);
 
-    CARAPI WaitEx2(
+    CARAPI Wait(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 

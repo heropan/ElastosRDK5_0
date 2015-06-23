@@ -1,7 +1,7 @@
 
 #include "content/CSyncAdapterType.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 

@@ -1,6 +1,6 @@
 #include "util/Patterns.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Character.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
@@ -261,7 +261,7 @@ String Patterns::ConcatGroups(
 
     String s;
     for (Int32 i = 1; i <= numGroups; i++) {
-        matcher->GroupEx(i, &s);
+        matcher->Group(i, &s);
         if (s != NULL) {
             b += s;
         }

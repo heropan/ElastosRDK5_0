@@ -112,7 +112,7 @@ ECode CEditTextPreference::OnAddEditTextToDialogView(
     dialogView->FindViewById(R::id::edittext_container, (IView**)&temp);
     AutoPtr<IViewGroup> container = IViewGroup::Probe(temp);
     if (container != NULL) {
-        container->AddViewEx2(editText, IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT);
+        container->AddView(editText, IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT);
     }
 
     return NOERROR;
@@ -147,7 +147,7 @@ ECode CEditTextPreference::OnGetDefaultValue(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(str, (ICharSequence**)&cs);
     *value = (IInterface*)cs;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -183,7 +183,7 @@ ECode CEditTextPreference::GetEditText(
 {
     VALIDATE_NOT_NULL(editText)
     *editText = mEditText;
-    INTERFACE_ADDREF(*editText)
+    REFCOUNT_ADD(*editText)
     return NOERROR;
 }
 
@@ -207,7 +207,7 @@ ECode CEditTextPreference::OnSaveInstanceState(
     if (IsPersistent(&isPersistent), isPersistent) {
         // No need to save instance state since it's persistent
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -217,7 +217,7 @@ ECode CEditTextPreference::OnSaveInstanceState(
     GetText(&str);
     myState->SetText(str);
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 
@@ -281,10 +281,10 @@ ECode CEditTextPreference::SetDialogTitle(
     return DialogPreference::SetDialogTitle(dialogTitle);
 }
 
-ECode CEditTextPreference::SetDialogTitleEx(
+ECode CEditTextPreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
-    return DialogPreference::SetDialogTitleEx(dialogTitleResId);
+    return DialogPreference::SetDialogTitle(dialogTitleResId);
 }
 
 ECode CEditTextPreference::GetDialogTitle(
@@ -299,10 +299,10 @@ ECode CEditTextPreference::SetDialogMessage(
     return DialogPreference::SetDialogMessage(dialogMessage);
 }
 
-ECode CEditTextPreference::SetDialogMessageEx(
+ECode CEditTextPreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
-    return DialogPreference::SetDialogMessageEx(dialogMessageResId);
+    return DialogPreference::SetDialogMessage(dialogMessageResId);
 }
 
 ECode CEditTextPreference::GetDialogMessage(
@@ -317,10 +317,10 @@ ECode CEditTextPreference::SetDialogIcon(
     return DialogPreference::SetDialogIcon(dialogIcon);
 }
 
-ECode CEditTextPreference::SetDialogIconEx(
+ECode CEditTextPreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
-    return DialogPreference::SetDialogIconEx(dialogIconRes);
+    return DialogPreference::SetDialogIcon(dialogIconRes);
 }
 
 ECode CEditTextPreference::GetDialogIcon(
@@ -335,10 +335,10 @@ ECode CEditTextPreference::SetPositiveButtonText(
     return DialogPreference::SetPositiveButtonText(positiveButtonText);
 }
 
-ECode CEditTextPreference::SetPositiveButtonTextEx(
+ECode CEditTextPreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
-    return DialogPreference::SetPositiveButtonTextEx(positiveButtonTextResId);
+    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
 }
 
 ECode CEditTextPreference::GetPositiveButtonText(
@@ -353,10 +353,10 @@ ECode CEditTextPreference::SetNegativeButtonText(
     return DialogPreference::SetNegativeButtonText(negativeButtonText);
 }
 
-ECode CEditTextPreference::SetNegativeButtonTextEx(
+ECode CEditTextPreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
-    return DialogPreference::SetNegativeButtonTextEx(negativeButtonTextResId);
+    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
 }
 
 ECode CEditTextPreference::GetNegativeButtonText(

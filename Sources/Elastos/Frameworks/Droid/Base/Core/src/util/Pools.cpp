@@ -3,8 +3,6 @@
 #include "util/SynchronizedPool.h"
 #include "util/FinitePool.h"
 
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Utility {

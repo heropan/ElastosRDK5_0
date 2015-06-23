@@ -117,7 +117,7 @@ ECode CResampleInputStream::Read(
 {
     VALIDATE_NOT_NULL(value);
     Int32 rtn;
-    FAIL_RETURN(ReadBytesEx(mOneByte, 0, 1, &rtn));
+    FAIL_RETURN(ReadBytes(mOneByte, 0, 1, &rtn));
     *value = rtn == 1 ? (0xff & (*mOneByte)[0]) : -1;
     return NOERROR;
 }
@@ -130,10 +130,10 @@ ECode CResampleInputStream::ReadBytes(
     *number = 0;
     VALIDATE_NOT_NULL(buffer);
 
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode CResampleInputStream::ReadBytesEx(
+ECode CResampleInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte> * buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -167,7 +167,7 @@ ECode CResampleInputStream::ReadBytesEx(
         }
         // TODO: should mBuf.length below be nIn instead?
         Int32 n;
-        mInputStream->ReadBytesEx(mBuf, mBuf->GetLength() - mBufCount, mBufCount, &n);
+        mInputStream->ReadBytes(mBuf, mBuf->GetLength() - mBufCount, mBufCount, &n);
         if (n == -1) {
             *number = -1;
             return NOERROR;
@@ -228,7 +228,7 @@ ECode CResampleInputStream::GetLock(
 
     AutoPtr<IInterface> obj = InputStream::GetLock();
     *lockObj = obj;
-    INTERFACE_ADDREF(*lockObj);
+    REFCOUNT_ADD(*lockObj);
     return NOERROR;
 }
 

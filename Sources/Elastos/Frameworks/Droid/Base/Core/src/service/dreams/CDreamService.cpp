@@ -1,6 +1,6 @@
 
 #include "media/CDreamService.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using namespace Elastos::Core;
 using namespace Elastos::Utility::Logging;
@@ -281,14 +281,14 @@ ECode CDreamService::SetContentView(
     return NOERROR;
 }
 
-ECode CDreamService::SetContentViewEx(
+ECode CDreamService::SetContentView(
     /* [in] */ IView* view)
 {
     GetWindow()->SetContentView(view);
     return NOERROR;
 }
 
-ECode CDreamService::SetContentViewEx2(
+ECode CDreamService::SetContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroup.LayoutParams* params)
 {

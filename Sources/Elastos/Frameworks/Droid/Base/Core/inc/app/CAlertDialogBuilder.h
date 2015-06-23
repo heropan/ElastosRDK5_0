@@ -64,7 +64,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ Int32 titleId);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
     CARAPI SetCustomTitle(
@@ -73,13 +73,13 @@ public:
     CARAPI SetMessage(
         /* [in] */ Int32 messageId);
 
-    CARAPI SetMessageEx(
+    CARAPI SetMessage(
         /* [in] */ ICharSequence* message);
 
     CARAPI SetIcon(
         /* [in] */ Int32 iconId);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
     /**
@@ -94,7 +94,7 @@ public:
         /* [in] */ Int32 textId,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetPositiveButtonEx(
+    CARAPI SetPositiveButton(
         /* [in] */ ICharSequence* text,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
@@ -102,7 +102,7 @@ public:
         /* [in] */ Int32 textId,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetNegativeButtonEx(
+    CARAPI SetNegativeButton(
         /* [in] */ ICharSequence* text,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
@@ -110,7 +110,7 @@ public:
         /* [in] */ Int32 textId,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetNeutralButtonEx(
+    CARAPI SetNeutralButton(
         /* [in] */ ICharSequence* text,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
@@ -130,7 +130,7 @@ public:
         /* [in] */ Int32 itemsId,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetItemsEx(
+    CARAPI SetItems(
         /* [in] */ ArrayOf<ICharSequence*>* items,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
@@ -148,12 +148,12 @@ public:
         /* [in] */ ArrayOf<Boolean>* checkedItems,
         /* [in] */ IDialogInterfaceOnMultiChoiceClickListener* listener);
 
-    CARAPI SetMultiChoiceItemsEx(
+    CARAPI SetMultiChoiceItems(
         /* [in] */ ArrayOf<ICharSequence*>* items,
         /* [in] */ ArrayOf<Boolean>* checkedItems,
         /* [in] */ IDialogInterfaceOnMultiChoiceClickListener* listener);
 
-    CARAPI SetMultiChoiceItemsEx2(
+    CARAPI SetMultiChoiceItems(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& isCheckedColumn,
         /* [in] */ const String& labelColumn,
@@ -164,18 +164,18 @@ public:
         /* [in] */ Int32 checkedItem,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetSingleChoiceItemsEx(
+    CARAPI SetSingleChoiceItems(
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 checkedItem,
         /* [in] */ const String& labelColumn,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetSingleChoiceItemsEx2(
+    CARAPI SetSingleChoiceItems(
         /* [in] */ ArrayOf<ICharSequence*>* items,
         /* [in] */ Int32 checkedItem,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
 
-    CARAPI SetSingleChoiceItemsEx3(
+    CARAPI SetSingleChoiceItems(
         /* [in] */ IListAdapter* adapter,
         /* [in] */ Int32 checkedItem,
         /* [in] */ IDialogInterfaceOnClickListener* listener);
@@ -186,7 +186,7 @@ public:
     CARAPI SetView(
         /* [in] */ IView* view);
 
-    CARAPI SetViewEx(
+    CARAPI SetView(
         /* [in] */ IView* view,
         /* [in] */ Int32 viewSpacingLeft,
         /* [in] */ Int32 viewSpacingTop,

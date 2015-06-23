@@ -3,8 +3,8 @@
 #include "os/SystemClock.h"
 #include "os/Handler.h"
 #include "text/TextUtils.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
@@ -127,7 +127,7 @@ void AccountManagerServiceSession::Unbind()
 void AccountManagerServiceSession::ScheduleTimeout()
 {
     AutoPtr<IMessage> msg;
-    mHost->mMessageHandler->ObtainMessageEx(
+    mHost->mMessageHandler->ObtainMessage(
         CAccountManagerService::MESSAGE_TIMED_OUT,
         this->Probe(EIID_IInterface), (IMessage**)&msg);
     Boolean result;
@@ -137,7 +137,7 @@ void AccountManagerServiceSession::ScheduleTimeout()
 
 void AccountManagerServiceSession::CancelTimeout()
 {
-    mHost->mMessageHandler->RemoveMessagesEx(
+    mHost->mMessageHandler->RemoveMessages(
         CAccountManagerService::MESSAGE_TIMED_OUT, (IInterface*)this);
 }
 
@@ -321,7 +321,7 @@ Boolean AccountManagerServiceSession::BindToAuthenticator(
     //     Log.v(TAG, "performing bindService to " + authenticatorInfo.componentName);
     // }
     Boolean result = FALSE;
-    if (mHost->mContext->BindServiceEx(intent, (IServiceConnection*)this,
+    if (mHost->mContext->BindService(intent, (IServiceConnection*)this,
             IContext::BIND_AUTO_CREATE, mAccounts->mUserId, &result), !result) {
         // if (Log.isLoggable(TAG, Log.VERBOSE)) {
         //     Log.v(TAG, "bindService to " + authenticatorInfo.componentName + " failed");

@@ -5,7 +5,7 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "view/View.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IView;

@@ -2,13 +2,13 @@
 #include "os/CMessageHelper.h"
 #include "webkit/CWebViewCore.h"
 #include "webkit/GeolocationPermissionsClassic.h"
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Os::IMessageHelper;
@@ -106,7 +106,7 @@ ECode GeolocationPermissionsClassic::InnerHandler::HandleMessage(
                 AutoPtr<IMessage> msg;
                 AutoPtr<IMessageHelper> mh;
                 CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-                mh->ObtainEx4(NULL, RETURN_ORIGINS, values, (IMessage**)&msg);
+                mh->Obtain(NULL, RETURN_ORIGINS, values, (IMessage**)&msg);
                 mOwner->PostUIMessage(msg);
             } break;
 
@@ -136,7 +136,7 @@ ECode GeolocationPermissionsClassic::InnerHandler::HandleMessage(
                 AutoPtr<IMessage> msg;
                 AutoPtr<IMessageHelper> mh;
                 CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-                mh->ObtainEx4(NULL, RETURN_ALLOWED, retValues, (IMessage**)&msg);
+                mh->Obtain(NULL, RETURN_ALLOWED, retValues, (IMessage**)&msg);
                 mOwner->PostUIMessage(msg);
             } break;
         case CLEAR: {
@@ -251,7 +251,7 @@ ECode GeolocationPermissionsClassic::GetOrigins(
             AutoPtr<IMessage> msg;
             AutoPtr<IMessageHelper> mh;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-            mh->ObtainEx4(NULL, GET_ORIGINS, callback, (IMessage**)&msg);
+            mh->Obtain(NULL, GET_ORIGINS, callback, (IMessage**)&msg);
             PostMessage(msg);
         }
     }
@@ -297,7 +297,7 @@ ECode GeolocationPermissionsClassic::GetAllowed(
         AutoPtr<IMessage> msg;
         AutoPtr<IMessageHelper> mh;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        mh->ObtainEx4(NULL, GET_ALLOWED, values, (IMessage**)&msg);
+        mh->Obtain(NULL, GET_ALLOWED, values, (IMessage**)&msg);
         PostMessage(msg);
     }
 
@@ -316,7 +316,7 @@ ECode GeolocationPermissionsClassic::Clear(
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<ICharSequence> originWrapper;
     CStringWrapper::New(origin, (ICharSequence**)&originWrapper);
-    mh->ObtainEx4(NULL, CLEAR, originWrapper, (IMessage**)&msg);
+    mh->Obtain(NULL, CLEAR, originWrapper, (IMessage**)&msg);
     PostMessage(msg);
     return NOERROR;
 }
@@ -333,7 +333,7 @@ ECode GeolocationPermissionsClassic::Allow(
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<ICharSequence> originWrapper;
     CStringWrapper::New(origin, (ICharSequence**)&originWrapper);
-    mh->ObtainEx4(NULL, ALLOW, originWrapper, (IMessage**)&msg);
+    mh->Obtain(NULL, ALLOW, originWrapper, (IMessage**)&msg);
     PostMessage(msg);
     return NOERROR;
 }
@@ -344,7 +344,7 @@ ECode GeolocationPermissionsClassic::ClearAll()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(NULL, CLEAR_ALL, (IMessage**)&msg);
+    mh->Obtain(NULL, CLEAR_ALL, (IMessage**)&msg);
     PostMessage(msg);
     return  NOERROR;
 }

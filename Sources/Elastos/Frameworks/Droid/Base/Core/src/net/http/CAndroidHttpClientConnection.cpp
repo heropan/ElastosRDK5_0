@@ -1,7 +1,7 @@
 
 #include "CAndroidHttpClientConnection.h"
 #include "ext/frameworkext.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 
 namespace Elastos {
 namespace Droid {

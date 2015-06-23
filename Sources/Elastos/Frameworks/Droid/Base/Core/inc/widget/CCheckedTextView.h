@@ -4,8 +4,8 @@
 
 #include "_CCheckedTextView.h"
 #include "widget/CheckedTextView.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 
 using Elastos::Droid::View::EIID_View;
 
@@ -40,7 +40,7 @@ public:
     CARAPI SetCheckMarkDrawable(
         /* [in] */ Int32 resid);
 
-    CARAPI SetCheckMarkDrawableEx(
+    CARAPI SetCheckMarkDrawable(
         /* [in] */ IDrawable * pD);
 
     CARAPI GetCheckMarkDrawable(

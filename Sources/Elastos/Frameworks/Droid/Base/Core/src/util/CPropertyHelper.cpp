@@ -22,7 +22,7 @@ ECode CPropertyHelper::Of(
 {
     AutoPtr<IReflectiveProperty> pTemp = new ReflectiveProperty(clsId, dataType, name);
     *property = pTemp;
-    INTERFACE_ADDREF(*property);
+    REFCOUNT_ADD(*property);
     return NOERROR;
 }
 

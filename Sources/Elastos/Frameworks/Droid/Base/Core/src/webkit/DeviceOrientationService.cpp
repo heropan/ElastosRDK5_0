@@ -4,13 +4,13 @@
 #include "webkit/DeviceOrientationService.h"
 #include "webkit/DeviceMotionAndOrientationManager.h"
 
-#include <elastos/Math.h>
-#include <elastos/Thread.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Hardware::EIID_ISensorEventListener;
 using Elastos::Droid::Hardware::CSensorManagerHelper;
@@ -265,7 +265,7 @@ Boolean DeviceOrientationService::RegisterForAccelerometerSensor()
     }
     // TODO: Consider handling multiple sensors.
     Boolean result = FALSE;
-    GetSensorManager()->RegisterListenerEx3(
+    GetSensorManager()->RegisterListener(
             this, (*sensors)[0], ISensorManager::SENSOR_DELAY_FASTEST, mHandler, &result);
     return result;
 }
@@ -279,14 +279,14 @@ Boolean DeviceOrientationService::RegisterForMagneticFieldSensor()
     }
     // TODO: Consider handling multiple sensors.
     Boolean result = FALSE;
-    GetSensorManager()->RegisterListenerEx3(
+    GetSensorManager()->RegisterListener(
             this, (*sensors)[0], ISensorManager::SENSOR_DELAY_FASTEST, mHandler, &result);
     return result;
 }
 
 void DeviceOrientationService::UnregisterFromSensors()
 {
-    GetSensorManager()->UnregisterListenerEx3(this);
+    GetSensorManager()->UnregisterListener(this);
 }
 
 void DeviceOrientationService::MaybeSendChange(

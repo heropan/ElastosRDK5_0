@@ -3,8 +3,8 @@
 #include "app/AppGlobals.h"
 #include "os/Handler.h"
 #include "util/Xml.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::CFile;
@@ -66,7 +66,7 @@ CompatModePackages::CompatModePackages(
 //     try {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
     FAIL_GOTO(mFile->OpenRead((IFileInputStream**)&fis), Exit);
-    FAIL_GOTO(parser->SetInputEx(fis, String(NULL)), Exit);
+    FAIL_GOTO(parser->SetInput(fis, String(NULL)), Exit);
     {
 
         Int32 eventType;
@@ -86,10 +86,10 @@ CompatModePackages::CompatModePackages(
                     if (depth == 2) {
                         if (CString("pkg").Equals(tagName)) {
                             String pkg;
-                            parser->GetAttributeValueEx(String(NULL), String("name"), &pkg);
+                            parser->GetAttributeValue(String(NULL), String("name"), &pkg);
                             if (!pkg.IsNull()) {
                                 String mode;
-                                parser->GetAttributeValueEx(String(NULL), String("mode"), &mode);
+                                parser->GetAttributeValue(String(NULL), String("mode"), &mode);
                                 Int32 modeInt = 0;
                                 if (!mode.IsNull()) {
     //                                     try {

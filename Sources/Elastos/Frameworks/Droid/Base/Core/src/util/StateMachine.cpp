@@ -4,7 +4,7 @@
 #ifdef DROID_CORE
 #include "os/CHandlerThread.h"
 #endif
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -498,7 +498,7 @@ ECode StateMachine::SmHandler::AddState(
     stateInfo->mActive = FALSE;
     // if (mDbg) Log.d(TAG, "addStateInternal: X stateInfo: " + stateInfo);
     *info = stateInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -638,7 +638,7 @@ AutoPtr<IMessage> StateMachine::ObtainMessage(
     if (mSmHandler == NULL) return NULL;
 
     AutoPtr<IMessage> m;
-    mSmHandler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&m);
+    mSmHandler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&m);
     return m;
 }
 
@@ -660,7 +660,7 @@ void StateMachine::SendMessage(
     if (mSmHandler == NULL) return;
 
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessageEx(what, obj, (IMessage**)&msg);
+    mSmHandler->ObtainMessage(what, obj, (IMessage**)&msg);
     Boolean result;
     mSmHandler->SendMessage(msg, &result);
 }
@@ -695,7 +695,7 @@ void StateMachine::SendMessageDelayed(
     if (mSmHandler == NULL) return;
 
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessageEx(what, obj, (IMessage**)&msg);
+    mSmHandler->ObtainMessage(what, obj, (IMessage**)&msg);
     Boolean result;
     mSmHandler->SendMessageDelayed(msg, delayMillis, &result);
 }
@@ -716,7 +716,7 @@ void StateMachine::SendMessageAtFrontOfQueue(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessageEx(what, obj, (IMessage**)&msg);
+    mSmHandler->ObtainMessage(what, obj, (IMessage**)&msg);
     Boolean result;
     mSmHandler->SendMessageAtFrontOfQueue(msg, &result);
 }

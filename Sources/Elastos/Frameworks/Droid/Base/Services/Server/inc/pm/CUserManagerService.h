@@ -4,10 +4,9 @@
 #include "ext/frameworkext.h"
 #include "_CUserManagerService.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFile;
 using Org::Xmlpull::V1::IXmlPullParser;
 

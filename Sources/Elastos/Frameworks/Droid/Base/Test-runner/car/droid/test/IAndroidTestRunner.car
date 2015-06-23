@@ -39,7 +39,7 @@ module
 
         RunTest();
 
-        RunTestEx(
+        RunTest(
             [in] ITestResult* testResult);
 
         SetContext(

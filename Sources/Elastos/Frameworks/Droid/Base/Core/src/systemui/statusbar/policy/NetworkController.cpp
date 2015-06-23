@@ -1,11 +1,11 @@
 #include "systemui/statusbar/policy/NetworkController.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "os/SystemProperties.h"
 #include "content/CIntent.h"
 #include "net/wifi/CWifiManager.h"
 #include "content/CIntentFilter.h"
 #include "systemui/SystemUIR.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "provider/Settings.h"
 #include "systemui/statusbar/policy/WifiIcons.h"
 #include "systemui/statusbar/policy/AccessibilityContentDescriptions.h"

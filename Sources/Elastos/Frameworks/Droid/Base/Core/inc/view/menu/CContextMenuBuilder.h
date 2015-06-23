@@ -4,8 +4,8 @@
 
 #include "view/menu/ContextMenuBuilderBase.h"
 #include "_CContextMenuBuilder.h"
-#include "view/MenuMacro.h"
-#include "view/menu/MenuBuilderMacro.h"
+
+
 #include "view/menu/MenuDialogHelper.h"
 
 using Elastos::Droid::Os::IBinder;
@@ -48,7 +48,7 @@ public:
      * @param icon The {@link Drawable} used for the icon.
      * @return This ContextMenu so additional setters can be called.
      */
-    CARAPI SetHeaderIconEx(
+    CARAPI SetHeaderIcon(
         /* [in] */ IDrawable* icon);
 
     /**
@@ -67,7 +67,7 @@ public:
      * @param title The character sequence used for the title.
      * @return This ContextMenu so additional setters can be called.
      */
-    CARAPI SetHeaderTitleEx(
+    CARAPI SetHeaderTitle(
         /* [in] */ ICharSequence* title);
 
     /**

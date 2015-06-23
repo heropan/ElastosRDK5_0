@@ -4,13 +4,13 @@
 
 #include "_CServiceRecord.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "os/BatteryStatsImpl.h"
 #include "am/ConnectionRecord.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::BatteryStatsImpl;
 using Elastos::Droid::Os::IBinder;

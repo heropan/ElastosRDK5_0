@@ -1,6 +1,6 @@
 
 #include "media/CAudioManagerAudioFocusDispatcher.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "media/CAudioManager.h"
 
 using Elastos::Droid::Os::IHandler;
@@ -35,7 +35,7 @@ ECode CAudioManagerAudioFocusDispatcher::DispatchAudioFocusChange(
 
     AutoPtr<IHandler> handler = ((CAudioManager*)am.Get())->mAudioFocusEventHandlerDelegate->GetHandler();
     AutoPtr<IMessage> msg;
-    handler->ObtainMessageEx(focusChange, seq, (IMessage**)&msg);
+    handler->ObtainMessage(focusChange, seq, (IMessage**)&msg);
     Boolean result;
     return handler->SendMessage(msg, &result);
 }

@@ -13,7 +13,7 @@ ECode CEnvironment::GetRootDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetRootDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -23,7 +23,7 @@ ECode CEnvironment::GetDataDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetDataDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -33,7 +33,7 @@ ECode CEnvironment::GetSystemSecureDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetSystemSecureDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -43,7 +43,7 @@ ECode CEnvironment::GetSecureDataDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetSecureDataDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -54,7 +54,7 @@ ECode CEnvironment::GetUserSystemDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetUserSystemDirectory(userId);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -64,7 +64,7 @@ ECode CEnvironment::GetExternalStorageDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetExternalStorageDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -74,7 +74,7 @@ ECode CEnvironment::GetLegacyExternalStorageDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetLegacyExternalStorageDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode CEnvironment::GetEmulatedStorageSource(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetEmulatedStorageSource(userId);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -95,7 +95,7 @@ ECode CEnvironment::GetEmulatedStorageObbSource(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetEmulatedStorageObbSource();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -106,7 +106,7 @@ ECode CEnvironment::GetExternalStoragePublicDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetExternalStoragePublicDirectory(type);
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 
@@ -116,7 +116,7 @@ ECode CEnvironment::GetDownloadCacheDirectory(
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetDownloadCacheDirectory();
     *dir = f;
-    INTERFACE_ADDREF(*dir)
+    REFCOUNT_ADD(*dir)
     return NOERROR;
 }
 

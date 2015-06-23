@@ -6,11 +6,10 @@
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 #include "os/Runnable.h"
-#include <elastos/Thread.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

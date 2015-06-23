@@ -2,7 +2,7 @@
 #include "am/ProviderMap.h"
 #include "am/ContentProviderRecord.h"
 #include "am/ProcessRecord.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "os/Binder.h"
 #include "os/UserHandle.h"
 

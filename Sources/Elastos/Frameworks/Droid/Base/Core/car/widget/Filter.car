@@ -109,7 +109,7 @@ module
          * @see #performFiltering(CharSequence)
          * @see #publishResults(CharSequence, android.widget.Filter.FilterResults)
          */
-        DoFilterEx(
+        DoFilter(
             [in] ICharSequence* constraint,
             [in] IFilterListener* listener);
 
@@ -124,7 +124,7 @@ module
          */
         ConvertResultToString(
             [in] IInterface* resultValue,
-            [out] ICharSequence** cs); 
+            [out] ICharSequence** cs);
    }
 
     }// namespace Widget

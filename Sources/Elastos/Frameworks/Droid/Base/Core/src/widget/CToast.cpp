@@ -171,10 +171,10 @@ ECode CToast::SetText(
  * Update the text in a Toast that was previously created using one of the makeText() methods.
  * @param s The new text for the Toast.
  */
-ECode CToast::SetTextEx(
+ECode CToast::SetText(
     /* [in] */ ICharSequence* s)
 {
-    return Toast::SetTextEx(s);
+    return Toast::SetText(s);
 }
 
 ECode CToast::OnHide()

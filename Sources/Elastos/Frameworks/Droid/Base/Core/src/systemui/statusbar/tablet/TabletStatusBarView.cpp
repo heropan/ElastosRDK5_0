@@ -1,5 +1,5 @@
 #include "systemui/statusbar/tablet/TabletStatusBarView.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "systemui/SystemUIR.h"
 #include "systemui/statusbar/tablet/TabletStatusBar.h"
 

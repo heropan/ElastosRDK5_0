@@ -4,7 +4,7 @@
 #ifdef DROID_CORE
 #include "app/CAlertController.h"
 #endif
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
@@ -198,7 +198,7 @@ ECode AlertDialog::SetView(
     /* [in] */ Int32 viewSpacingRight,
     /* [in] */ Int32 viewSpacingBottom)
 {
-    return mAlert->SetViewEx(view,
+    return mAlert->SetView(view,
             viewSpacingLeft, viewSpacingTop,
             viewSpacingRight, viewSpacingBottom);
 }
@@ -253,7 +253,7 @@ ECode AlertDialog::SetIcon(
 ECode AlertDialog::SetIcon(
     /* [in] */ IDrawable* icon)
 {
-    return mAlert->SetIconEx(icon);
+    return mAlert->SetIcon(icon);
 }
 
 ECode AlertDialog::SetIconAttribute(

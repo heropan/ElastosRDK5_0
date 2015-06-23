@@ -42,7 +42,7 @@ void ViewTreeObserver::InternalInsetsInfo::Reset()
     mTouchableInsets = TOUCHABLE_INSETS_FRAME;
 }
 
-ECode ViewTreeObserver::InternalInsetsInfo::EqualsEx(
+ECode ViewTreeObserver::InternalInsetsInfo::Equals(
     /* [in] */ IInternalInsetsInfo* otherObj,
     /* [out] */ Boolean* equal)
 {
@@ -80,7 +80,7 @@ ECode ViewTreeObserver::InternalInsetsInfo::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    return EqualsEx(IInternalInsetsInfo::Probe(other), result);
+    return Equals(IInternalInsetsInfo::Probe(other), result);
 }
 
 ECode ViewTreeObserver::InternalInsetsInfo::GetHashCode(
@@ -115,7 +115,7 @@ ECode ViewTreeObserver::InternalInsetsInfo::GetContentInsets(
     VALIDATE_NOT_NULL(contentInsets);
 
     *contentInsets = mContentInsets;
-    INTERFACE_ADDREF(*contentInsets);
+    REFCOUNT_ADD(*contentInsets);
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode ViewTreeObserver::InternalInsetsInfo::GetVisibleInsets(
     VALIDATE_NOT_NULL(visibleInsets);
 
     *visibleInsets = mVisibleInsets;
-    INTERFACE_ADDREF(*visibleInsets);
+    REFCOUNT_ADD(*visibleInsets);
     return NOERROR;
 }
 
@@ -134,15 +134,15 @@ ECode ViewTreeObserver::InternalInsetsInfo::GetTouchableRegion(
 {
     VALIDATE_NOT_NULL(touchableRegion);
     *touchableRegion = mTouchableRegion;
-    INTERFACE_ADDREF(*touchableRegion);
+    REFCOUNT_ADD(*touchableRegion);
     return NOERROR;
 }
 
 void ViewTreeObserver::InternalInsetsInfo::Set(
     /* [in] */ InternalInsetsInfo* other)
 {
-    mContentInsets->SetEx(other->mContentInsets);
-    mVisibleInsets->SetEx(other->mVisibleInsets);
+    mContentInsets->Set(other->mContentInsets);
+    mVisibleInsets->Set(other->mVisibleInsets);
     Boolean res;
     mTouchableRegion->Set(other->mTouchableRegion, &res);
     mTouchableInsets = other->mTouchableInsets;

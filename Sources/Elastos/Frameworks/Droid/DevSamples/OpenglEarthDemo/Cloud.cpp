@@ -1,10 +1,10 @@
 #include "Cloud.h"
 #include "MatrixState.h"
-#include "elastos/List.h"
-#include "elastos/Math.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Math.h>
 #include "ShaderUtil.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::IByteBufferHelper;
 using Elastos::IO::ByteOrder;
@@ -156,9 +156,9 @@ ECode Cloud::DrawSelf(
     //将位置、旋转变换矩阵传入shader程序
     gl->GlUniformMatrix4fv(muMMatrixHandle, 1, FALSE, MatrixState::GetMMatrix(), 0);
     //将摄像机位置传入shader程序
-    gl->GlUniform3fvEx(maCameraHandle, 1, MatrixState::sCameraFB);
+    gl->GlUniform3fv(maCameraHandle, 1, MatrixState::sCameraFB);
     //将光源位置传入shader程序
-    gl->GlUniform3fvEx(maSunLightLocationHandle, 1, MatrixState::sLightPositionFBSun);
+    gl->GlUniform3fv(maSunLightLocationHandle, 1, MatrixState::sLightPositionFBSun);
 
     //为画笔指定顶点位置数据
     gl->GlVertexAttribPointerEx

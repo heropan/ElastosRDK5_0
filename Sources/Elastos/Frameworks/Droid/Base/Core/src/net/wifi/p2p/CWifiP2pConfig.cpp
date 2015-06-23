@@ -2,9 +2,9 @@
 #include "CWifiP2pConfig.h"
 #include "CWifiP2pGroup.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "net/wifi/CWpsInfo.h"
 
 using Elastos::Utility::Logging::Slogger;
@@ -48,7 +48,7 @@ ECode CWifiP2pConfig::GetWps(
     VALIDATE_NOT_NULL(wpsInfo);
 
     *wpsInfo = mWps;
-    INTERFACE_ADDREF(*wpsInfo);
+    REFCOUNT_ADD(*wpsInfo);
 
     return NOERROR;
 }

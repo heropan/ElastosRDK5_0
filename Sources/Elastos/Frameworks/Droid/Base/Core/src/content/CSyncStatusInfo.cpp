@@ -1,7 +1,7 @@
 
 #include "content/CSyncStatusInfo.h"
-#include <elastos/Logger.h>
-#include "elastos/StringUtils.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -273,7 +273,7 @@ ECode CSyncStatusInfo::GetperiodicSyncTimes(
 {
     VALIDATE_NOT_NULL(periodicSyncTimes)
     *periodicSyncTimes = mPeriodicSyncTimes;
-    INTERFACE_ADDREF(*periodicSyncTimes);
+    REFCOUNT_ADD(*periodicSyncTimes);
     return NOERROR;
 }
 

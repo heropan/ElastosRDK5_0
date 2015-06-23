@@ -12,8 +12,8 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::Core::ICharSequence;
@@ -493,9 +493,9 @@ void CaptivePortalTracker::SetNotificationVisible(
         notification->GetContentIntent((IPendingIntent**)&pintent);
         notification->SetLatestEventInfo(mContext, title, details, pintent);
 
-        notificationManager->NotifyEx(NOTIFICATION_ID, 1, notification);
+        notificationManager->Notify(NOTIFICATION_ID, 1, notification);
     } else {
-        notificationManager->CancelEx(NOTIFICATION_ID, 1);
+        notificationManager->Cancel(NOTIFICATION_ID, 1);
     }
 
     mNotificationShown = visible;

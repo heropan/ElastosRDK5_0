@@ -1,6 +1,6 @@
 
 #include "am/CoreSettingsObserver.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CBundle;
@@ -65,7 +65,7 @@ void CoreSettingsObserver::BeginObserveCoreSettings()
     for (it = sCoreSettingToTypeMap.Begin(); it != sCoreSettingToTypeMap.End(); ++it) {
         String setting = it->mFirst;
         AutoPtr<IUri> uri;
-        settingsSecure->GetUriForEx(setting, (IUri**)&uri);
+        settingsSecure->GetUriFor(setting, (IUri**)&uri);
         AutoPtr<IContentResolver> resolver;
         mActivityManagerService->mContext->GetContentResolver((IContentResolver**)&resolver);
         resolver->RegisterContentObserver(uri, FALSE, this);
@@ -91,15 +91,15 @@ void CoreSettingsObserver::PopulateCoreSettings(
                 snapshot->PutString(setting, value);
             } else if (type.Equals("Int32")) {
                 Int32 value;
-                settingsSecure->GetInt32Ex(resolver, setting, &value);
+                settingsSecure->GetInt32(resolver, setting, &value);
                 snapshot->PutInt32(setting, value);
             } else if (type.Equals("Float")) {
                 Float value;
-                settingsSecure->GetFloatEx(resolver, setting, &value);
+                settingsSecure->GetFloat(resolver, setting, &value);
                 snapshot->PutFloat(setting, value);
             } else if (type.Equals("Int64")) {
                 Int64 value;
-                settingsSecure->GetInt64Ex(resolver, setting, &value);
+                settingsSecure->GetInt64(resolver, setting, &value);
                 snapshot->PutInt64(setting, value);
             }
             else {

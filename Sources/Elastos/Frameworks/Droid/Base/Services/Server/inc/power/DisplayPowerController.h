@@ -10,10 +10,9 @@
 #include "power/DisplayPowerState.h"
 #include "power/RampAnimator.h"
 #include "display/CDisplayManagerService.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Animation::IObjectAnimator;

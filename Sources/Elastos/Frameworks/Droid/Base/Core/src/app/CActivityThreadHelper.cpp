@@ -13,7 +13,7 @@ ECode CActivityThreadHelper::GetCurrentActivityThread(
     VALIDATE_NOT_NULL(thread);
     AutoPtr<IActivityThread> thr = CActivityThread::GetCurrentActivityThread();
     *thread = thr;
-    INTERFACE_ADDREF(*thread);
+    REFCOUNT_ADD(*thread);
     return NOERROR;
 }
 
@@ -45,7 +45,7 @@ ECode CActivityThreadHelper::GetCurrentApplication(
         CActivityThread* am = (CActivityThread*)at.Get();
         if (am->mInitialApplication = NULL) {
             *app = am->mInitialApplication;
-            INTERFACE_ADDREF(*app);
+            REFCOUNT_ADD(*app);
         }
     }
 
@@ -58,7 +58,7 @@ ECode CActivityThreadHelper::GetPackageManager(
     VALIDATE_NOT_NULL(pkgManager);
     AutoPtr<IIPackageManager> pm = CActivityThread::GetPackageManager();
     *pkgManager = pm;
-    INTERFACE_ADDREF(*pkgManager);
+    REFCOUNT_ADD(*pkgManager);
     return NOERROR;
 }
 
@@ -72,7 +72,7 @@ ECode CActivityThreadHelper::GetIntentBeingBroadcast(
 {
     AutoPtr<IIntent> curIntent = (IIntent*)pthread_getspecific(CActivityThread::sCurrentBroadcastIntentKey);
     *intent = curIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -82,7 +82,7 @@ ECode CActivityThreadHelper::GetSystemMain(
     VALIDATE_NOT_NULL(thread);
     AutoPtr<IActivityThread> thr = CActivityThread::GetSystemMain();
     *thread = thr;
-    INTERFACE_ADDREF(*thread);
+    REFCOUNT_ADD(*thread);
     return NOERROR;
 }
 

@@ -111,12 +111,12 @@ ECode CSQLiteCursor::GetInt64(
     return SQLiteCursor::GetInt64(column, result);
 }
 
-ECode CSQLiteCursor::SetNotificationUriEx(
+ECode CSQLiteCursor::SetNotificationUri(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* notifyUri,
     /* [in] */ Int32 userHandle)
 {
-    return SQLiteCursor::SetNotificationUriEx(cr, notifyUri, userHandle);
+    return SQLiteCursor::SetNotificationUri(cr, notifyUri, userHandle);
 }
 
 ECode CSQLiteCursor::GetNotificationUri(

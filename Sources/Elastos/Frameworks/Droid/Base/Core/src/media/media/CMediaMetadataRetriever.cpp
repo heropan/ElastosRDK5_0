@@ -1,6 +1,6 @@
 
 #include "media/CMediaMetadataRetriever.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "media/Media_Utils.h"
 #include "graphics/CBitmap.h"
 #include "graphics/CBitmapFactory.h"
@@ -142,7 +142,7 @@ ECode CMediaMetadataRetriever::SetDataSource(
         ec = is->GetFD((IFileDescriptor**)&fd);
         FAIL_GOTO(ec, _EXIT_);
 
-        ec = SetDataSourceEx2(fd, 0, 0x7ffffffffffffffL);
+        ec = SetDataSource(fd, 0, 0x7ffffffffffffffL);
         FAIL_GOTO(ec, _EXIT_);
 
 _EXIT_:
@@ -165,7 +165,7 @@ _EXIT_:
     }
 }
 
-ECode CMediaMetadataRetriever::SetDataSourceEx(
+ECode CMediaMetadataRetriever::SetDataSource(
     /* [in] */ const String& uri,
     /* [in] */ IObjectStringMap* headers)
 {
@@ -236,7 +236,7 @@ ECode CMediaMetadataRetriever::NativeSetDataSource(
         status, E_RUNTIME_EXCEPTION, "setDataSource failed");
 }
 
-ECode CMediaMetadataRetriever::SetDataSourceEx2(
+ECode CMediaMetadataRetriever::SetDataSource(
     /* [in] */ IFileDescriptor* fileDescriptor,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
@@ -274,14 +274,14 @@ ECode CMediaMetadataRetriever::SetDataSourceEx2(
     return process_media_retriever_call(status, E_RUNTIME_EXCEPTION, "setDataSource failed");
 }
 
-ECode CMediaMetadataRetriever::SetDataSourceEx3(
+ECode CMediaMetadataRetriever::SetDataSource(
     /* [in] */ IFileDescriptor* fd)
 {
     // intentionally less than LONG_MAX
-    return SetDataSourceEx2(fd, 0, 0x7ffffffffffffffL);
+    return SetDataSource(fd, 0, 0x7ffffffffffffffL);
 }
 
-ECode CMediaMetadataRetriever::SetDataSourceEx4(
+ECode CMediaMetadataRetriever::SetDataSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri)
 {
@@ -334,13 +334,13 @@ ECode CMediaMetadataRetriever::SetDataSourceEx4(
     FAIL_GOTO(ec, _EXIT_)
 
     if (declaredlength < 0) {
-       ec = SetDataSourceEx3(descriptor);
+       ec = SetDataSource(descriptor);
     }
     else {
        ec = fd->GetStartOffset(&startoffset);
        FAIL_GOTO(ec, _EXIT_)
 
-       ec = SetDataSourceEx2(descriptor, startoffset, declaredlength);
+       ec = SetDataSource(descriptor, startoffset, declaredlength);
     }
 
 _EXIT_:
@@ -386,14 +386,14 @@ ECode CMediaMetadataRetriever::GetFrameAtTime(
     return NativeGetFrameAtTime(timeUs, option, bitmap);
 }
 
-ECode CMediaMetadataRetriever::GetFrameAtTimeEx(
+ECode CMediaMetadataRetriever::GetFrameAtTime(
     /* [in] */ Int64 timeUs,
     /* [out] */ IBitmap** bitmap)
 {
     return GetFrameAtTime(timeUs, OPTION_CLOSEST_SYNC, bitmap);
 }
 
-ECode CMediaMetadataRetriever::GetFrameAtTimeEx2(
+ECode CMediaMetadataRetriever::GetFrameAtTime(
     /* [out] */ IBitmap** bitmap)
 {
     return GetFrameAtTime(-1, OPTION_CLOSEST_SYNC, bitmap);
@@ -449,7 +449,7 @@ ECode CMediaMetadataRetriever::NativeGetFrameAtTime(
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> jBitmap;
-    bitmapFactory->CreateBitmapEx3(width, height, config, (IBitmap**)&jBitmap);
+    bitmapFactory->CreateBitmap(width, height, config, (IBitmap**)&jBitmap);
 
     Handle32 nativeBitmap;
     jBitmap->GetNativeBitmap(&nativeBitmap);
@@ -479,12 +479,12 @@ ECode CMediaMetadataRetriever::NativeGetFrameAtTime(
     //         jBitmap, displayWidth, displayHeight, TRUE, (IBitmap**)&scaledBitmap);
 
     //     *result = scaledBitmap;
-    //     INTERFACE_ADDREF(*result);
+    //     REFCOUNT_ADD(*result);
     //     return NOERROR;
     // }
 
     *result = jBitmap;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -537,7 +537,7 @@ ECode CMediaMetadataRetriever::GetEmbeddedPicture(
 
     // // No need to delete mediaAlbumArt here
     // *result = array;
-    // INTERFACE_ADDREF(*result);
+    // REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

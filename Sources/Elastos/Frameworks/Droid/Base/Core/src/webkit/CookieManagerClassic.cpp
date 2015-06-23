@@ -94,10 +94,10 @@ ECode CookieManagerClassic::GetCookie(
     /* [in] */ const String& url,
     /* [out] */ String* cookie)
 {
-    return GetCookieEx(url, FALSE, cookie);
+    return GetCookie(url, FALSE, cookie);
 }
 
-ECode CookieManagerClassic::GetCookieEx(
+ECode CookieManagerClassic::GetCookie(
     /* [in] */ const String& url,
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ String* cookie)
@@ -120,7 +120,7 @@ ECode CookieManagerClassic::GetCookieEx(
 }
 
 //synchronized
-ECode CookieManagerClassic::GetCookieEx2(
+ECode CookieManagerClassic::GetCookie(
     /* [in] */ IWebAddress* uri,
     /* [out] */ String* cookie)
 {
@@ -178,11 +178,11 @@ ECode CookieManagerClassic::HasCookies(
     /* [out] */ Boolean* result)
 {
     Object::Autolock lock(this);
-    return HasCookiesEx(FALSE, result);
+    return HasCookies(FALSE, result);
 }
 
 //synchronized
-ECode CookieManagerClassic::HasCookiesEx(
+ECode CookieManagerClassic::HasCookies(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ Boolean* result)
 {

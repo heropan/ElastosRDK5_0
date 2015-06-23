@@ -63,7 +63,7 @@ public:
      * @see #setTitle(CharSequence)
      * @see #setCustomView(View)
      */
-    virtual CARAPI SetTitleEx(
+    virtual CARAPI SetTitle(
         /* [in] */ Int32 resId) = 0;
 
     /**
@@ -87,7 +87,7 @@ public:
      * @see #setSubtitle(CharSequence)
      * @see #setCustomView(View)
      */
-    virtual CARAPI SetSubtitleEx(
+    virtual CARAPI SetSubtitle(
         /* [in] */ Int32 resId) = 0;
 
     /**

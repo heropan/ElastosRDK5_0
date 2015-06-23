@@ -74,7 +74,7 @@ module
          *
          * @param v The view to add.
          */
-        AddHeaderViewEx(
+        AddHeaderView(
             [in] IView* v);
 
         /**
@@ -116,7 +116,7 @@ module
          *
          * @param v The view to add.
          */
-        AddFooterViewEx(
+        AddFooterView(
             [in] IView* v);
 
         /**

@@ -56,7 +56,7 @@ ECode ActivityManagerTaskThumbnails::GetMainThumbnail(
 {
     VALIDATE_NOT_NULL(thumbnail);
     *thumbnail = mMainThumbnail;
-    INTERFACE_ADDREF(*thumbnail)
+    REFCOUNT_ADD(*thumbnail)
     return NOERROR;
 }
 
@@ -88,7 +88,7 @@ ECode ActivityManagerTaskThumbnails::GetRetriever(
 {
     VALIDATE_NOT_NULL(retriever);
     *retriever = mRetriever;
-    INTERFACE_ADDREF(*retriever)
+    REFCOUNT_ADD(*retriever)
     return NOERROR;
 }
 

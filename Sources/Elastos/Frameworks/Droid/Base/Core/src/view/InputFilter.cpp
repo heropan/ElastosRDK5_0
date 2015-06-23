@@ -1,6 +1,6 @@
 
 #include "view/InputFilter.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -86,7 +86,7 @@ ECode InputFilter::Install(
     /* [in] */ IInputFilterHost* host)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx(MSG_INSTALL, host, (IMessage**)&msg);
+    mH->ObtainMessage(MSG_INSTALL, host, (IMessage**)&msg);
     return msg->SendToTarget();
 }
 
@@ -101,7 +101,7 @@ ECode InputFilter::FilterInputEvent(
     /* [in] */ Int32 policyFlags)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(MSG_INPUT_EVENT, policyFlags, 0, event, (IMessage**)&msg);
+    mH->ObtainMessage(MSG_INPUT_EVENT, policyFlags, 0, event, (IMessage**)&msg);
     return msg->SendToTarget();
 }
 

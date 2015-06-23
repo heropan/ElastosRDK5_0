@@ -1,13 +1,13 @@
 
 #include "widget/RemoteViews.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include "elastos/StringBuilder.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 #include "text/TextUtils.h"
 #include "graphics/CRect.h"
 #include "graphics/CBitmap.h"
 #include "content/CIntent.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "os/Build.h"
 #include "os/Process.h"
 #include "os/CBundle.h"
@@ -15,7 +15,7 @@
 #include "widget/CRemoteViews.h"
 #include "widget/CRemoteViewsBitmapCache.h"
 #include <R.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
@@ -36,7 +36,7 @@ using Elastos::Core::IChar32;
 using Elastos::Core::CChar32;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResources;
@@ -126,7 +126,7 @@ ECode RemoteViewsOnClickHandler::OnClickHandler(
     opts->ToBundle((IBundle**)&bundle);
     AutoPtr<IIntentSender> sender;
     pendingIntent->GetIntentSender((IIntentSender**)&sender);
-    ECode ec = context->StartIntentSenderEx(sender, fillInIntent,
+    ECode ec = context->StartIntentSender(sender, fillInIntent,
         IIntent::FLAG_ACTIVITY_NEW_TASK,
         IIntent::FLAG_ACTIVITY_NEW_TASK, 0, bundle);
     if (FAILED(ec)) {
@@ -640,7 +640,7 @@ void RemoteViews::_SetDrawableParameters::Apply(
             targetDrawable->SetAlpha(mAlpha);
         }
         if (mColorFilter != -1 && mFilterMode) {
-            targetDrawable->SetColorFilterEx(mColorFilter, mFilterMode);
+            targetDrawable->SetColorFilter(mColorFilter, mFilterMode);
         }
         if (mLevel != -1) {
             Boolean res = FALSE;
@@ -1644,7 +1644,7 @@ void RemoteViews::TextViewSizeAction::Apply(
     root->FindViewById(mViewId, (IView**)&v);
     AutoPtr<ITextView> target = ITextView::Probe(v);
     if (target == NULL) return;
-    target->SetTextSizeEx(mUnits, mSize);
+    target->SetTextSize(mUnits, mSize);
 }
 
 String RemoteViews::TextViewSizeAction::GetActionName()
@@ -1898,7 +1898,7 @@ ECode RemoteViews::IntentTemplateOnItemClickListener::OnItemClick(
             AutoPtr<IView> iview;
             vg->GetChildAt(i, (IView**)&iview);
             AutoPtr<IInterface> tag;
-            iview->GetTagEx(R::id::fillInIntent, (IInterface**)&tag);
+            iview->GetTag(R::id::fillInIntent, (IInterface**)&tag);
             if (IIntent::Probe(tag)) {
                 fillInIntent = IIntent::Probe(tag);
                 break;
@@ -2971,7 +2971,7 @@ AutoPtr<IView> RemoteViews::Apply(
     rvToApply->GetLayoutId(&id);
 
     AutoPtr<IView> result;
-    ASSERT_SUCCEEDED(inflater->InflateEx2(id, parent, FALSE, (IView**)&result));
+    ASSERT_SUCCEEDED(inflater->Inflate(id, parent, FALSE, (IView**)&result));
 
     RemoteViews* remote = reinterpret_cast<RemoteViews*>(rvToApply->Probe(EIID_RemoteViews));
     remote->PerformApply(result, parent, handler);

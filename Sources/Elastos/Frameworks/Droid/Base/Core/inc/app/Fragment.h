@@ -2,11 +2,11 @@
 #define __FRAGMENT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::IObjectInt32Map;
 using Elastos::Droid::Os::IBundle;
@@ -353,7 +353,7 @@ public:
         /* [in] */ const String& fname,
         /* [out] */ IFragment** fragment);
 
-    static CARAPI InstantiateEx(
+    static CARAPI Instantiate(
         /* [in] */ IContext* context,
         /* [in] */ const String& fname,
         /* [in] */ IBundle* args,
@@ -418,7 +418,7 @@ public:
         /* [in] */ Int32 resId,
         /* [out] */ String* string);
 
-    virtual CARAPI GetStringEx(
+    virtual CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* string);
@@ -480,7 +480,7 @@ public:
     virtual CARAPI StartActivity(
         /* [in] */ IIntent* intent);
 
-    virtual CARAPI StartActivityEx(
+    virtual CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
@@ -488,7 +488,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode);
 
-    virtual CARAPI StartActivityForResultEx(
+    virtual CARAPI StartActivityForResult(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IBundle* options);
@@ -506,7 +506,7 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnInflateEx(
+    virtual CARAPI OnInflate(
         /* [in] */ IActivity* activity,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ IBundle* savedInstanceState);

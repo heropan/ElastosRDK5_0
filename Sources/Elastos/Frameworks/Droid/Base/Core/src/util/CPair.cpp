@@ -1,9 +1,6 @@
 
 #include "util/CPair.h"
 #include <ext/frameworkdef.h>
-#include <elastos/ObjectUtils.h>
-
-using Elastos::Core::ObjectUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +11,7 @@ ECode CPair::GetFirst(
 {
     VALIDATE_NOT_NULL(first)
     *first = mFirst;
-    INTERFACE_ADDREF(*first)
+    REFCOUNT_ADD(*first)
     return NOERROR;
 }
 
@@ -23,7 +20,7 @@ ECode CPair::GetSecond(
 {
     VALIDATE_NOT_NULL(second)
     *second = mSecond;
-    INTERFACE_ADDREF(*second)
+    REFCOUNT_ADD(*second)
     return NOERROR;
 }
 
@@ -37,7 +34,7 @@ ECode CPair::Equals(
         return NOERROR;
     }
     AutoPtr<CPair> p = (CPair*)IPair::Probe(o);
-    *isEqual = ObjectUtils::Equals(p->mFirst, mFirst) && ObjectUtils::Equals(p->mSecond, mSecond);
+    *isEqual = Object::Equals(p->mFirst, mFirst) && Object::Equals(p->mSecond, mSecond);
     return NOERROR;
 }
 

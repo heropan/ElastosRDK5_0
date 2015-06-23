@@ -80,7 +80,7 @@ module
          * @param height targeted height
          * @param options options used during thumbnail extraction
          */
-        ExtractThumbnailEx(
+        ExtractThumbnail(
             [in] IBitmap* source,
             [in] Int32 width,
             [in] Int32 height,

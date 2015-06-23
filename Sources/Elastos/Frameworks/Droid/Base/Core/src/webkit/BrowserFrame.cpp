@@ -20,8 +20,8 @@
 #include "webkit/WebSettingsClassic.h"
 #include "webkit/CPluginManagerHelper.h"
 #include "R.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "webkit/MimeTypeMap.h"
 #include "webkit/CMimeTypeMapHelper.h"
 #include "webkit/L10nUtils.h"
@@ -126,7 +126,7 @@ ECode BrowserFrame::ConfigCallback::OnConfigurationChanged(
             wh->Resolve(EIID_IHandler, (IInterface**)&h);
             if (h != NULL) {
                 AutoPtr<IMessage> msg;
-                h->ObtainMessageEx2(ORIENTATION_CHANGED,
+                h->ObtainMessage(ORIENTATION_CHANGED,
                     orientation, 0, (IMessage**)&msg);
                 Boolean result;
                 h->SendMessage(msg, &result);
@@ -1055,7 +1055,7 @@ Int32 BrowserFrame::GetFile(
     if (size <= expectedSize && buffer != NULL
             && buffer->GetLength() - offset >= size) {
         Int32 number;
-        stream->ReadBytesEx(buffer, offset, size, &number);
+        stream->ReadBytes(buffer, offset, size, &number);
     }
     else {
         size = 0;
@@ -1137,7 +1137,7 @@ AutoPtr<IInputStream> BrowserFrame::InputStreamForAndroidResource(
                 AutoPtr<IAssetManager> assets;
                 mContext->GetAssets((IAssetManager**)&assets);
                 AutoPtr<IInputStream> inputStream;
-                assets->OpenNonAssetEx3(assetCookie, str,
+                assets->OpenNonAsset(assetCookie, str,
                         IAssetManager::ACCESS_STREAMING, (IInputStream**)&inputStream);
                 return inputStream;
             }
@@ -1168,7 +1168,7 @@ AutoPtr<IInputStream> BrowserFrame::InputStreamForAndroidResource(
             String path;
             uri->GetPath(&path);
             AutoPtr<IInputStream> inputStream;
-            assets->OpenEx(path, IAssetManager::ACCESS_STREAMING,
+            assets->Open(path, IAssetManager::ACCESS_STREAMING,
                     (IInputStream**)&inputStream);
             return inputStream;
         //} catch (IOException e) {
@@ -1402,10 +1402,10 @@ void BrowserFrame::DecidePolicyForFormResubmission(
     /* [in] */ Int32 policyFunction)
 {
     AutoPtr<IMessage> dontResend;
-    ObtainMessageEx2(POLICY_FUNCTION, policyFunction,
+    ObtainMessage(POLICY_FUNCTION, policyFunction,
         POLICY_IGNORE, (IMessage**)&dontResend);
     AutoPtr<IMessage> resend;
-    ObtainMessageEx2(POLICY_FUNCTION, policyFunction,
+    ObtainMessage(POLICY_FUNCTION, policyFunction,
         POLICY_USE, (IMessage**)&resend);
     mCallbackProxy->OnFormResubmission(dontResend, resend);
 }

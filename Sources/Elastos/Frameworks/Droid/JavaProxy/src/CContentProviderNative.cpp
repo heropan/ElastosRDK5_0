@@ -4,7 +4,7 @@
 #include "CICancellationSignalNative.h"
 #include "ext/frameworkext.h"
 #include "Util.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <unistd.h>
 
 using Elastos::Utility::Logging::Logger;

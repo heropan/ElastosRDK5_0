@@ -61,7 +61,7 @@ ECode CArcShape::Clone(
     CArcShape::NewByFriend(0, 0, (CArcShape**)&s);
     ArcShape::Clone((ArcShape*)s.Get());
     *shape = (IShape*)s.Get();
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 

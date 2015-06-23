@@ -182,7 +182,7 @@ ECode CRingtonePreference::OnRestoreRingtone(
         AutoPtr<IUri> uritmp;
         Uri::Parse(uriString, (IUri**)&uritmp);
         *uri = uritmp;
-        INTERFACE_ADDREF(*uri)
+        REFCOUNT_ADD(*uri)
     }
     else {
         *uri = NULL;
@@ -202,7 +202,7 @@ ECode CRingtonePreference::OnGetDefaultValue(
     AutoPtr<ICharSequence> charsequ;
     CStringWrapper::New(out, (ICharSequence**)&charsequ);
     *value = charsequ;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -284,7 +284,7 @@ ECode CRingtonePreference::constructor(
             const_cast<Int32 *>(R::styleable::RingtonePreference),
             ARRAY_SIZE(R::styleable::RingtonePreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, arrayAttrs, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, arrayAttrs, defStyle, 0, (ITypedArray**)&a);
     a->GetInt32(R::styleable::RingtonePreference_ringtoneType, IRingtoneManager::TYPE_RINGTONE, &mRingtoneType);
     a->GetBoolean(R::styleable::RingtonePreference_showDefault, TRUE, &mShowDefault);
     a->GetBoolean(R::styleable::RingtonePreference_showSilent, TRUE, &mShowSilent);

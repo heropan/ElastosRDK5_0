@@ -34,7 +34,7 @@ ECode CCompatibilityInfoHolder::Get(
 {
     VALIDATE_NOT_NULL(compatInfo);
     *compatInfo = mCompatInfo;
-    INTERFACE_ADDREF(*compatInfo);
+    REFCOUNT_ADD(*compatInfo);
 
     return NOERROR;
 }
@@ -50,7 +50,7 @@ ECode CCompatibilityInfoHolder::GetIfNeeded(
     }
     else {
         *compatInfo = mCompatInfo;
-        INTERFACE_ADDREF(*compatInfo);
+        REFCOUNT_ADD(*compatInfo);
     }
 
     return NOERROR;

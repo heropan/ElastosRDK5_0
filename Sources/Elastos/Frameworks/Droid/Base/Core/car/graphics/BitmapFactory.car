@@ -194,7 +194,7 @@ module
          * @param height   The number of rows
          * @return A copy of a subset of the source bitmap or the source bitmap itself.
          */
-        CreateBitmapEx(
+        CreateBitmap(
             [in] IBitmap* source,
             [in] Int32 x,
             [in] Int32 y,
@@ -225,7 +225,7 @@ module
          * @throws IllegalArgumentException if the x, y, width, height values are
          *         outside of the dimensions of the source bitmap.
          */
-        CreateBitmapEx2(
+        CreateBitmap(
             [in] IBitmap* source,
             [in] Int32 x,
             [in] Int32 y,
@@ -244,7 +244,7 @@ module
          * @param config   The bitmap config to create.
          * @throws IllegalArgumentException if the width or height are <= 0
          */
-        CreateBitmapEx3(
+        CreateBitmap(
             [in] Int32 width,
             [in] Int32 height,
             [in] BitmapConfig config,
@@ -268,7 +268,7 @@ module
          * @throws IllegalArgumentException if the width or height are <= 0, or if
          *         the color array's length is less than the number of pixels.
          */
-        CreateBitmapEx4(
+        CreateBitmap(
             [in] ArrayOf<Int32> colors,
             [in] Int32 offset,
             [in] Int32 stride,
@@ -292,7 +292,7 @@ module
          * @throws IllegalArgumentException if the width or height are <= 0, or if
          *         the color array's length is less than the number of pixels.
          */
-        CreateBitmapEx5(
+        CreateBitmap(
             [in] ArrayOf<Int32> colors,
             [in] Int32 width,
             [in] Int32 height,
@@ -310,7 +310,7 @@ module
          * @param config   The bitmap config to create.
          * @throws IllegalArgumentException if the width or height are <= 0
          */
-        CreateBitmapEx6(
+        CreateBitmap(
             [in] IDisplayMetrics* display,
             [in] Int32 width,
             [in] Int32 height,
@@ -337,7 +337,7 @@ module
          * @throws IllegalArgumentException if the width or height are <= 0, or if
          *         the color array's length is less than the number of pixels.
          */
-        CreateBitmapEx7(
+        CreateBitmap(
             [in] IDisplayMetrics* display,
             [in] ArrayOf<Int32> colors,
             [in] Int32 offset,
@@ -364,7 +364,7 @@ module
          * @throws IllegalArgumentException if the width or height are <= 0, or if
          *         the color array's length is less than the number of pixels.
          */
-        CreateBitmapEx8(
+        CreateBitmap(
             [in] IDisplayMetrics* display,
             [in] ArrayOf<Int32> colors,
             [in] Int32 width,
@@ -410,7 +410,7 @@ module
          * @param length the number of bytes, beginning at offset, to parse
          * @return The decoded bitmap, or null if the image could not be decode.
          */
-        DecodeByteArrayEx(
+        DecodeByteArray(
             [in] ArrayOf<Byte> data,
             [in] Int32 offset,
             [in] Int32 length,
@@ -439,7 +439,7 @@ module
          * @param pathName complete path name for the file to be decoded.
          * @return the resulting decoded bitmap, or null if it could not be decoded.
          */
-        DecodeFileEx(
+        DecodeFile(
             [in] String pathName,
             [out] IBitmap** bitmap);
 
@@ -471,7 +471,7 @@ module
          * @param fd The file descriptor containing the bitmap data to decode
          * @return the decoded bitmap, or null
          */
-        DecodeFileDescriptorEx(
+        DecodeFileDescriptor(
             [in] IFileDescriptor* fd,
             [out] IBitmap** bitmap);
 
@@ -503,7 +503,7 @@ module
          * @param id The resource id of the image data
          * @return The decoded bitmap, or null if the image could not be decode.
          */
-        DecodeResourceEx(
+        DecodeResource(
             [in] IResources* res,
             [in] Int32 id,
             [out] IBitmap** bitmap);
@@ -554,7 +554,7 @@ module
          *           bitmap.
          * @return The decoded bitmap, or null if the image data could not be decoded.
          */
-        DecodeStreamEx(
+        DecodeStream(
             [in] IInputStream* is,
             [out] IBitmap** bitmap);
     }

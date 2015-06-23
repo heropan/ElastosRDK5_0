@@ -3,7 +3,7 @@
 #include <ext/frameworkext.h>
 #include "content/CComponentName.h"
 #include "content/CIntent.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::CComponentName;
@@ -96,7 +96,7 @@ ECode CActivityManagerRecentTaskInfo::GetBaseIntent(
 {
     VALIDATE_NOT_NULL(baseIntent);
     *baseIntent = mBaseIntent;
-    INTERFACE_ADDREF(*baseIntent);
+    REFCOUNT_ADD(*baseIntent);
     return NOERROR;
 }
 
@@ -112,7 +112,7 @@ ECode CActivityManagerRecentTaskInfo::GetOrigActivity(
 {
     VALIDATE_NOT_NULL(origActivity);
     *origActivity = mOrigActivity;
-    INTERFACE_ADDREF(*origActivity);
+    REFCOUNT_ADD(*origActivity);
     return NOERROR;
 }
 
@@ -128,7 +128,7 @@ ECode CActivityManagerRecentTaskInfo::GetDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mDescription;
-    INTERFACE_ADDREF(*description);
+    REFCOUNT_ADD(*description);
     return NOERROR;
 }
 

@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "accounts/CAuthenticatorDescription.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -34,7 +34,7 @@ ECode CAuthenticatorDescription::NewKey(
     FAIL_RETURN(CAuthenticatorDescription::NewByFriend(type,
             (CAuthenticatorDescription**)&cdescription));
     *description = cdescription;
-    INTERFACE_ADDREF(*description);
+    REFCOUNT_ADD(*description);
     return NOERROR;
 }
 

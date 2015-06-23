@@ -1,7 +1,7 @@
 
 #include "display/WifiDisplayController.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include <os/Handler.h>
 
 using Elastos::Core::StringUtils;
@@ -202,7 +202,7 @@ ECode WifiDisplayController::RequestPeersPeerListListener::OnPeersAvailable(
 //==============================================================================
 CAR_INTERFACE_IMPL(WifiDisplayController::MyActionListenerEx2, IWifiP2pManagerActionListener);
 
-WifiDisplayController::MyActionListenerEx2::MyActionListenerEx2(
+WifiDisplayController::MyActionListenerEx2::MyActionListener(
     /* [in] */ WifiDisplayController* owner,
     /* [in] */ IWifiP2pDevice* oldDevice,
     /* [in] */ Boolean isDisconnecting)
@@ -742,7 +742,7 @@ WifiDisplayController::WifiDisplayController(
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_STATE_CHANGED_ACTION);
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_PEERS_CHANGED_ACTION);
     intentFilter->AddAction(IWifiP2pManager::WIFI_P2P_CONNECTION_CHANGED_ACTION);
-    context->RegisterReceiverEx(mWifiP2pReceiver, intentFilter, nullStr, mHandler,
+    context->RegisterReceiver(mWifiP2pReceiver, intentFilter, nullStr, mHandler,
         (IIntent**)&stickyIntent);
 
     AutoPtr<IContentObserver> settingsObserver = new MyContentObserver(this, mHandler);
@@ -752,7 +752,7 @@ WifiDisplayController::WifiDisplayController(
     AutoPtr<ISettingsGlobal> sg;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
     AutoPtr<IUri> uri;
-    sg->GetUriForEx(ISettingsGlobal::WIFI_DISPLAY_ON, (IUri**)&uri);
+    sg->GetUriFor(ISettingsGlobal::WIFI_DISPLAY_ON, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, settingsObserver);
     UpdateSettings();
 }

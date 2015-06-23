@@ -43,7 +43,7 @@ ECode CConfigurationHelper::GetEmpty(
 {
     VALIDATE_NOT_NULL(empty);
     *empty = CConfiguration::EMPTY;
-    INTERFACE_ADDREF(*empty);
+    REFCOUNT_ADD(*empty);
     return NOERROR;
 }
 

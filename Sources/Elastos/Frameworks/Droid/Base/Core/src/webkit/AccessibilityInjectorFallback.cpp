@@ -1,5 +1,5 @@
 
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "os/CMessage.h"
 #include "provider/CSettingsSecure.h"
 #include "text/CSimpleStringSplitter.h"

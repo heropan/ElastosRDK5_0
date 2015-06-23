@@ -4,13 +4,12 @@
 
 #include "app/Activity.h"
 #include <elrefbase.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "MediaObject.h"
 
 using Elastos::Core::HashMap;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Gallery {
 

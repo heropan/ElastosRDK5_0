@@ -4,10 +4,9 @@
 
 #include "_CMediaMetadataRetriever.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include <media/mediametadataretriever.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Net::IUri;
@@ -50,7 +49,7 @@ public:
      * @param headers the headers to be sent together with the request for the data
      * @throws IllegalArgumentException If the URI is invalid.
      */
-    CARAPI SetDataSourceEx(
+    CARAPI SetDataSource(
         /* [in] */ const String& uri,
         /* [in] */ IObjectStringMap* headers);
 
@@ -67,7 +66,7 @@ public:
      * non-negative.
      * @throws IllegalArgumentException if the arguments are invalid
      */
-    CARAPI SetDataSourceEx2(
+    CARAPI SetDataSource(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length);
@@ -81,7 +80,7 @@ public:
      * @param fd the FileDescriptor for the file you want to play
      * @throws IllegalArgumentException if the FileDescriptor is invalid
      */
-    CARAPI SetDataSourceEx3(
+    CARAPI SetDataSource(
         /* [in] */ IFileDescriptor* fd);
 
     /**
@@ -94,7 +93,7 @@ public:
      * @throws SecurityException if the Uri cannot be used due to lack of
      * permission.
      */
-    CARAPI SetDataSourceEx4(
+    CARAPI SetDataSource(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri);
 
@@ -167,7 +166,7 @@ public:
      *
      * @see #getFrameAtTime(Int64, Int32)
      */
-    CARAPI GetFrameAtTimeEx(
+    CARAPI GetFrameAtTime(
         /* [in] */ Int64 timeUs,
         /* [out] */ IBitmap** bitmap);
 
@@ -185,7 +184,7 @@ public:
      * @see #getFrameAtTime(Int64)
      * @see #getFrameAtTime(Int64, Int32)
      */
-    CARAPI GetFrameAtTimeEx2(
+    CARAPI GetFrameAtTime(
         /* [out] */ IBitmap** bitmap);
 
     /**

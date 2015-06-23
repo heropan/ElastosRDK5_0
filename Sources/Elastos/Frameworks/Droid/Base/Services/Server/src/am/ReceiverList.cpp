@@ -2,13 +2,13 @@
 #include "am/ReceiverList.h"
 #include "am/ProcessRecord.h"
 #include "am/CActivityManagerService.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

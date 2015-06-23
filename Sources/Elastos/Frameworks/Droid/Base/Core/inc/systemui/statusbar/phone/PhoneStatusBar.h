@@ -527,7 +527,7 @@ public:
 
     AutoPtr<IViewPropertyAnimator> SetVisibilityWhenDone();
 
-    AutoPtr<IAnimator> SetVisibilityWhenDoneEx();
+    AutoPtr<IAnimator> SetVisibilityWhenDone();
 
     AutoPtr<IAnimator> Interpolator(
         /* [in] */ ITimeInterpolator* ti,

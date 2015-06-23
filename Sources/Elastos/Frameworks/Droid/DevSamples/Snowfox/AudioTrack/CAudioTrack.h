@@ -3,13 +3,11 @@
 #define __CAUDIOTRACK_H__
 
 #include "_CAudioTrack.h"
-#include <elastos/Mutex.h>
 #include <media/AudioTrack.h>
 #include <binder/MemoryHeapBase.h>
 #include <binder/MemoryBase.h>
 #include "AudioTrackHelper.h"
 
-using namespace Elastos::Core::Threading;
 
 class AudioManager
 {

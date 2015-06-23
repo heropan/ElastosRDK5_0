@@ -89,7 +89,7 @@ ECode CGetAccountsByTypeAndFeatureSession::OnResult(
         return OnError(IAccountManager::ERROR_CODE_INVALID_RESPONSE, String("null bundle"));
     }
     Boolean value;
-    if (result->GetBooleanEx(IAccountManager::KEY_BOOLEAN_RESULT, FALSE, &value)) {
+    if (result->GetBoolean(IAccountManager::KEY_BOOLEAN_RESULT, FALSE, &value)) {
         mAccountsWithFeatures.PushBack((*mAccountsOfType)[mCurrentAccount]);
     }
     mCurrentAccount++;

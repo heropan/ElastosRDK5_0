@@ -1,6 +1,6 @@
 #include "systemui/statusbar/phone/PanelView.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 #include "systemui/SystemUIR.h"
 #include "animation/CTimeAnimator.h"
 #include "animation/CObjectAnimatorHelper.h"

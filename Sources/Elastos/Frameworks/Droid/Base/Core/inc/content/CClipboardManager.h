@@ -5,8 +5,7 @@
 #include "_CClipboardManager.h"
 #include <ext/frameworkext.h>
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;

@@ -26,7 +26,7 @@ ECode CPreferenceActivityHeader::constructor()
     return NOERROR;
 }
 
-ECode CPreferenceActivityHeader::GetTitleEx(
+ECode CPreferenceActivityHeader::GetTitle(
     /* [in] */ IResources* res,
     /* [out] */ ICharSequence** title)
 {
@@ -35,11 +35,11 @@ ECode CPreferenceActivityHeader::GetTitleEx(
         return res->GetText(mTitleRes, title);
     }
     *title = mTitle;
-    INTERFACE_ADDREF(*title)
+    REFCOUNT_ADD(*title)
     return NOERROR;
 }
 
-ECode CPreferenceActivityHeader::GetSummaryEx(
+ECode CPreferenceActivityHeader::GetSummary(
     /* [in] */ IResources* res,
     /* [out] */ ICharSequence** summary)
 {
@@ -48,11 +48,11 @@ ECode CPreferenceActivityHeader::GetSummaryEx(
         return res->GetText(mSummaryRes, summary);
     }
     *summary = mSummary;
-    INTERFACE_ADDREF(*summary)
+    REFCOUNT_ADD(*summary)
     return NOERROR;
 }
 
-ECode CPreferenceActivityHeader::GetBreadCrumbTitleEx(
+ECode CPreferenceActivityHeader::GetBreadCrumbTitle(
     /* [in] */ IResources* res,
     /* [out] */ ICharSequence** title)
 {
@@ -61,11 +61,11 @@ ECode CPreferenceActivityHeader::GetBreadCrumbTitleEx(
         return res->GetText(mBreadCrumbTitleRes, title);
     }
     *title = mBreadCrumbTitle;
-    INTERFACE_ADDREF(*title)
+    REFCOUNT_ADD(*title)
     return NOERROR;
 }
 
-ECode CPreferenceActivityHeader::GetBreadCrumbShortTitleEx(
+ECode CPreferenceActivityHeader::GetBreadCrumbShortTitle(
     /* [in] */ IResources* res,
     /* [out] */ ICharSequence** title)
 {
@@ -74,7 +74,7 @@ ECode CPreferenceActivityHeader::GetBreadCrumbShortTitleEx(
         return res->GetText(mBreadCrumbShortTitleRes, title);
     }
     *title = mBreadCrumbShortTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
     return NOERROR;
 }
 
@@ -172,7 +172,7 @@ ECode CPreferenceActivityHeader::GetTitle(
 {
     VALIDATE_NOT_NULL(title)
     *title = mTitle;
-    INTERFACE_ADDREF(*title)
+    REFCOUNT_ADD(*title)
     return NOERROR;
 }
 
@@ -203,7 +203,7 @@ ECode CPreferenceActivityHeader::GetSummary(
 {
     VALIDATE_NOT_NULL(summary)
     *summary = mSummary;
-    INTERFACE_ADDREF(*summary)
+    REFCOUNT_ADD(*summary)
     return NOERROR;
 }
 
@@ -234,7 +234,7 @@ ECode CPreferenceActivityHeader::GetBreadCrumbTitle(
 {
     VALIDATE_NOT_NULL(breadCrumbTitle)
     *breadCrumbTitle = mBreadCrumbTitle;
-    INTERFACE_ADDREF(*breadCrumbTitle)
+    REFCOUNT_ADD(*breadCrumbTitle)
     return NOERROR;
 }
 
@@ -265,7 +265,7 @@ ECode CPreferenceActivityHeader::GetBreadCrumbShortTitle(
 {
     VALIDATE_NOT_NULL(breadCrumbShortTitle)
     *breadCrumbShortTitle = mBreadCrumbShortTitle;
-    INTERFACE_ADDREF(*breadCrumbShortTitle)
+    REFCOUNT_ADD(*breadCrumbShortTitle)
     return NOERROR;
 }
 
@@ -311,7 +311,7 @@ ECode CPreferenceActivityHeader::GetFragmentArguments(
 {
     VALIDATE_NOT_NULL(fragmentArguments)
     *fragmentArguments = mFragmentArguments;
-    INTERFACE_ADDREF(*fragmentArguments)
+    REFCOUNT_ADD(*fragmentArguments)
     return NOERROR;
 }
 
@@ -327,7 +327,7 @@ ECode CPreferenceActivityHeader::GetIntent(
 {
     VALIDATE_NOT_NULL(intent)
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -343,7 +343,7 @@ ECode CPreferenceActivityHeader::GetExtras(
 {
     VALIDATE_NOT_NULL(extras)
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras)
+    REFCOUNT_ADD(*extras)
     return NOERROR;
 }
 

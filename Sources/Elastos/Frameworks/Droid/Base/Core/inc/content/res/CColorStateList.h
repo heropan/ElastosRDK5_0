@@ -4,10 +4,10 @@
 
 #include "_CColorStateList.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Utility::IAttributeSet;
 

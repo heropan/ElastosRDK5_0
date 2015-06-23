@@ -3,9 +3,9 @@
 #include "content/CIntent.h"
 #include "text/TextUtils.h"
 #include "util/Xml.h"
-#include "elastos/Math.h"
-#include "elastos/StringUtils.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Math::IBigDecimal;
 using Elastos::Math::CBigDecimal;
@@ -859,7 +859,7 @@ ECode ActivityChooserModel::ReadHistoricalDataImpl()
     Int64 time;
     Int32 type;
 
-    if (FAILED(parser->SetInputEx(fis, String(NULL)))) {
+    if (FAILED(parser->SetInput(fis, String(NULL)))) {
         goto finally;
     }
     type = IXmlPullParser::START_DOCUMENT;
@@ -889,10 +889,10 @@ ECode ActivityChooserModel::ReadHistoricalDataImpl()
         if (!TAG_HISTORICAL_RECORD.Equals(nodeName)) {
             return E_XML_PULL_PARSER_EXCEPTION;
         }
-        parser->GetAttributeValueEx(String(NULL), ATTRIBUTE_ACTIVITY, &activity);
-        parser->GetAttributeValueEx(String(NULL), ATTRIBUTE_TIME, &parseTmp);
+        parser->GetAttributeValue(String(NULL), ATTRIBUTE_ACTIVITY, &activity);
+        parser->GetAttributeValue(String(NULL), ATTRIBUTE_TIME, &parseTmp);
         time = StringUtils::ParseInt64(parseTmp);
-        parser->GetAttributeValueEx(String(NULL), ATTRIBUTE_WEIGHT, &parseTmp);
+        parser->GetAttributeValue(String(NULL), ATTRIBUTE_WEIGHT, &parseTmp);
         Float weight = StringUtils::ParseFloat(parseTmp);
         AutoPtr<HistoricalRecord> readRecord = new HistoricalRecord(activity, time, weight);
         mHistoricalRecords.PushBack(readRecord);

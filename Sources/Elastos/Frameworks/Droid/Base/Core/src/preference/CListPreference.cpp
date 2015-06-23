@@ -2,7 +2,7 @@
 #include "CListPreference.h"
 #include "CListPreferenceSavedState.h"
 #include "R.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;
@@ -96,7 +96,7 @@ ECode CListPreference::SetEntries(
     return NOERROR;
 }
 
-ECode CListPreference::SetEntriesEx(
+ECode CListPreference::SetEntries(
     /* [in] */ Int32 entriesResId)
 {
     AutoPtr<IContext> context;
@@ -124,7 +124,7 @@ ECode CListPreference::SetEntryValues(
     return NOERROR;
 }
 
-ECode CListPreference::SetEntryValuesEx(
+ECode CListPreference::SetEntryValues(
     /* [in] */ Int32 entryValuesResId)
 {
     AutoPtr<IContext> context;
@@ -214,7 +214,7 @@ ECode CListPreference::GetEntry(
     Int32 index = GetValueIndex();
     if (index >= 0 && mEntries != NULL) {
         *entry = (*mEntries)[index];
-        INTERFACE_ADDREF(*entry)
+        REFCOUNT_ADD(*entry)
     }
     else {
         *entry = NULL;
@@ -263,14 +263,14 @@ ECode CListPreference::OnPrepareDialogBuilder(
 
     mClickedDialogEntryIndex = GetValueIndex();
     AutoPtr<IDialogInterfaceOnClickListener> listener = new DialogInterfaceOnClickListener(this);
-    builder->SetSingleChoiceItemsEx2(mEntries, mClickedDialogEntryIndex, listener);
+    builder->SetSingleChoiceItems(mEntries, mClickedDialogEntryIndex, listener);
 
     /*
      * The typical interaction for list-based dialogs is to have
      * click-on-an-item dismiss the dialog instead of the user having to
      * press 'Ok'.
      */
-    builder->SetPositiveButtonEx(NULL, NULL);
+    builder->SetPositiveButton(NULL, NULL);
 
     return NOERROR;
 }
@@ -302,7 +302,7 @@ ECode CListPreference::OnGetDefaultValue(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(str, (ICharSequence**)&cs);
     *value = (IInterface*)cs;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -333,7 +333,7 @@ ECode CListPreference::OnSaveInstanceState(
     if (isPersistent) {
         // No need to save instance state since it's persistent
         *parcel = superState;
-        INTERFACE_ADDREF(*parcel)
+        REFCOUNT_ADD(*parcel)
         return NOERROR;
     }
 
@@ -343,7 +343,7 @@ ECode CListPreference::OnSaveInstanceState(
     GetValue(&value);
     myState->SetValue(value);
     *parcel = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*parcel)
+    REFCOUNT_ADD(*parcel)
 
     return NOERROR;
 }
@@ -376,7 +376,7 @@ ECode CListPreference::constructor(
             const_cast<Int32 *>(R::styleable::ListPreference),
             ARRAY_SIZE(R::styleable::ListPreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetTextArray(R::styleable::ListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
     a->GetTextArray(R::styleable::ListPreference_entryValues, (ArrayOf<ICharSequence*>**)&mEntryValues);
     a->Recycle();
@@ -388,7 +388,7 @@ ECode CListPreference::constructor(
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Preference),
             ARRAY_SIZE(R::styleable::Preference));
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetString(R::styleable::Preference_summary, &mSummary);
     a->Recycle();
 
@@ -407,10 +407,10 @@ ECode CListPreference::SetDialogTitle(
     return DialogPreference::SetDialogTitle(dialogTitle);
 }
 
-ECode CListPreference::SetDialogTitleEx(
+ECode CListPreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
-    return DialogPreference::SetDialogTitleEx(dialogTitleResId);
+    return DialogPreference::SetDialogTitle(dialogTitleResId);
 }
 
 ECode CListPreference::GetDialogTitle(
@@ -425,10 +425,10 @@ ECode CListPreference::SetDialogMessage(
     return DialogPreference::SetDialogMessage(dialogMessage);
 }
 
-ECode CListPreference::SetDialogMessageEx(
+ECode CListPreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
-    return DialogPreference::SetDialogMessageEx(dialogMessageResId);
+    return DialogPreference::SetDialogMessage(dialogMessageResId);
 }
 
 ECode CListPreference::GetDialogMessage(
@@ -443,10 +443,10 @@ ECode CListPreference::SetDialogIcon(
     return DialogPreference::SetDialogIcon(dialogIcon);
 }
 
-ECode CListPreference::SetDialogIconEx(
+ECode CListPreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
-    return DialogPreference::SetDialogIconEx(dialogIconRes);
+    return DialogPreference::SetDialogIcon(dialogIconRes);
 }
 
 ECode CListPreference::GetDialogIcon(
@@ -461,10 +461,10 @@ ECode CListPreference::SetPositiveButtonText(
     return DialogPreference::SetPositiveButtonText(positiveButtonText);
 }
 
-ECode CListPreference::SetPositiveButtonTextEx(
+ECode CListPreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
-    return DialogPreference::SetPositiveButtonTextEx(positiveButtonTextResId);
+    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
 }
 
 ECode CListPreference::GetPositiveButtonText(
@@ -479,10 +479,10 @@ ECode CListPreference::SetNegativeButtonText(
     return DialogPreference::SetNegativeButtonText(negativeButtonText);
 }
 
-ECode CListPreference::SetNegativeButtonTextEx(
+ECode CListPreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
-    return DialogPreference::SetNegativeButtonTextEx(negativeButtonTextResId);
+    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
 }
 
 ECode CListPreference::GetNegativeButtonText(

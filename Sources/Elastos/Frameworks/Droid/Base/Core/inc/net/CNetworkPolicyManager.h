@@ -5,7 +5,6 @@
 #include "_CNetworkPolicyManager.h"
 #include "text/format/CTime.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Text::Format::ITime;

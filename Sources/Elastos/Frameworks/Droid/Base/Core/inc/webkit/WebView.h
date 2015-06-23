@@ -346,7 +346,7 @@ public:
         CARAPI AwakenScrollBars(
             /* [in] */ Int32 duration);
 
-        CARAPI AwakenScrollBarsEx(
+        CARAPI AwakenScrollBars(
             /* [in] */ Int32 duration,
             /* [in] */ Boolean invalidate);
 

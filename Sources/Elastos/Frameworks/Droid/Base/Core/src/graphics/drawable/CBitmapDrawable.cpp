@@ -77,7 +77,7 @@ ECode CBitmapDrawable::GetPaint(
     VALIDATE_NOT_NULL(paint);
     AutoPtr<IPaint> temp = BitmapDrawable::GetPaint();
     *paint = temp;
-    INTERFACE_ADDREF(*paint);
+    REFCOUNT_ADD(*paint);
 
     return NOERROR;
 }
@@ -88,7 +88,7 @@ ECode CBitmapDrawable::GetBitmap(
     VALIDATE_NOT_NULL(bitmap);
     AutoPtr<IBitmap> temp = BitmapDrawable::GetBitmap();
     *bitmap = temp;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
 
     return NOERROR;
 }
@@ -99,13 +99,13 @@ ECode CBitmapDrawable::SetTargetDensity(
     return BitmapDrawable::SetTargetDensity(canvas);
 }
 
-ECode CBitmapDrawable::SetTargetDensityEx(
+ECode CBitmapDrawable::SetTargetDensity(
     /* [in] */ IDisplayMetrics* metrics)
 {
     return BitmapDrawable::SetTargetDensity(metrics);
 }
 
-ECode CBitmapDrawable::SetTargetDensityEx2(
+ECode CBitmapDrawable::SetTargetDensity(
     /* [in] */ Int32 density)
 {
     return BitmapDrawable::SetTargetDensity(density);

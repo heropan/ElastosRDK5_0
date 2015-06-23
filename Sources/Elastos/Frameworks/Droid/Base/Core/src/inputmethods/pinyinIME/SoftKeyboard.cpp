@@ -3,7 +3,7 @@
 #include "graphics/CRect.h"
 #include "CPinyinEnvironmentHelper.h"
 #include "SoftKeyToggle.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::IKeyEvent;

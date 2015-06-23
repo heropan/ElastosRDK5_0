@@ -2,9 +2,9 @@
 #include "os/CProcessStats.h"
 #include "os/Process.h"
 #include "os/SystemClock.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::SystemClock;
@@ -904,7 +904,7 @@ ECode CProcessStats::GetStats(
 {
     VALIDATE_NOT_NULL(stats);
     *stats = (IProcessStatsStats*)mProcStats[index];
-    INTERFACE_ADDREF(*stats);
+    REFCOUNT_ADD(*stats);
     return NOERROR;
 }
 
@@ -923,7 +923,7 @@ ECode CProcessStats::GetWorkingStats(
 {
     VALIDATE_NOT_NULL(stats);
     *stats = (IProcessStatsStats*)mWorkingProcs[index];
-    INTERFACE_ADDREF(*stats);
+    REFCOUNT_ADD(*stats);
     return NOERROR;
 }
 

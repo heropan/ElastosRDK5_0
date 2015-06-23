@@ -53,7 +53,7 @@ ECode CAppWidgetManager::GetInstance(
     }
 
     *appWidgetManager = result;
-    INTERFACE_ADDREF(*appWidgetManager);
+    REFCOUNT_ADD(*appWidgetManager);
     return NOERROR;
 }
 
@@ -93,7 +93,7 @@ ECode CAppWidgetManager::GetAppWidgetOptions(
     //}
 }
 
-ECode CAppWidgetManager::UpdateAppWidgetEx(
+ECode CAppWidgetManager::UpdateAppWidget(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IRemoteViews* views)
 {
@@ -113,7 +113,7 @@ ECode CAppWidgetManager::PartiallyUpdateAppWidget(
     //}
 }
 
-ECode CAppWidgetManager::PartiallyUpdateAppWidgetEx(
+ECode CAppWidgetManager::PartiallyUpdateAppWidget(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IRemoteViews* views)
 {
@@ -122,7 +122,7 @@ ECode CAppWidgetManager::PartiallyUpdateAppWidgetEx(
     return PartiallyUpdateAppWidget(idsArray, views);
 }
 
-ECode CAppWidgetManager::UpdateAppWidgetEx2(
+ECode CAppWidgetManager::UpdateAppWidget(
     /* [in] */ IComponentName* provider,
     /* [in] */ IRemoteViews* views)
 {
@@ -146,7 +146,7 @@ ECode CAppWidgetManager::NotifyAppWidgetViewDataChanged(
     //}
 }
 
-ECode CAppWidgetManager::NotifyAppWidgetViewDataChangedEx(
+ECode CAppWidgetManager::NotifyAppWidgetViewDataChanged(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ Int32 viewId)
 {
@@ -194,7 +194,7 @@ ECode CAppWidgetManager::GetInstalledProviders(
     //     throw new RuntimeException("system server dead?", e);
     // }
     *providerInfos = providers;
-    INTERFACE_ADDREF(*providerInfos);
+    REFCOUNT_ADD(*providerInfos);
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode CAppWidgetManager::GetAppWidgetInfo(
         _info->SetMinResizeHeight(CTypedValue::ComplexToDimensionPixelSize(minResizeHeight, mDisplayMetrics));
     }
     *info = _info;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
     // }
     // catch (RemoteException e) {
@@ -239,7 +239,7 @@ ECode CAppWidgetManager::BindAppWidgetId(
     // }
 }
 
-ECode CAppWidgetManager::BindAppWidgetIdEx(
+ECode CAppWidgetManager::BindAppWidgetId(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IComponentName* provider,
     /* [in] */ IBundle* options)
@@ -273,7 +273,7 @@ ECode CAppWidgetManager::BindAppWidgetIdIfAllowed(
     //}
 }
 
-ECode CAppWidgetManager::BindAppWidgetIdIfAllowedEx(
+ECode CAppWidgetManager::BindAppWidgetIdIfAllowed(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IComponentName* provider,
     /* [in] */ IBundle* options,

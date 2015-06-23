@@ -3,7 +3,7 @@
 #include "hardware/CSensorEvent.h"
 #include "hardware/CSensorManager.h"
 #include "hardware/CLegacySensorManagerRotationWatcher.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/ServiceManager.h"
 
 using Elastos::Droid::Os::ServiceManager;
@@ -437,7 +437,7 @@ Boolean LegacySensorManager::RegisterLegacyListener(
                 // register this legacy sensor with this legacy listener
                 if (legacyListener->RegisterSensor(legacyType)) {
                     // and finally, register the legacy listener with the new apis
-                    mSensorManager->RegisterListenerEx2(legacyListener, sensor, rate, &result);
+                    mSensorManager->RegisterListener(legacyListener, sensor, rate, &result);
                 } else {
                     result = TRUE; // sensor already enabled
                 }
@@ -496,7 +496,7 @@ void LegacySensorManager::UnregisterLegacyListener(
                     // need the corresponding Sensor, unregister it too
                     if (legacyListener->UnregisterSensor(legacyType)) {
                         // corresponding sensor not needed, unregister
-                        mSensorManager->UnregisterListenerEx2(legacyListener, sensor);
+                        mSensorManager->UnregisterListener(legacyListener, sensor);
 
                         // finally check if we still need the legacyListener
                         // in our mapping, if not, get rid of it too.

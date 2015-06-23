@@ -237,7 +237,7 @@ ECode CSelection::GetSelectionStartObject(
     VALIDATE_NOT_NULL(start);
 
     *start = Selection::SELECTION_START;
-    INTERFACE_ADDREF(*start);
+    REFCOUNT_ADD(*start);
 
     return NOERROR;
 }
@@ -248,7 +248,7 @@ ECode CSelection::GetSelectionEndObject(
     VALIDATE_NOT_NULL(end);
 
     *end = Selection::SELECTION_END;
-    INTERFACE_ADDREF(*end);
+    REFCOUNT_ADD(*end);
 
     return NOERROR;
 }

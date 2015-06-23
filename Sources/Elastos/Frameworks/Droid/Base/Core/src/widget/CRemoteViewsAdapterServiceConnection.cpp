@@ -3,7 +3,7 @@
 #include "appwidget/CAppWidgetManager.h"
 #include "os/CUserHandle.h"
 #include "os/Process.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::IUserHandle;
@@ -51,7 +51,7 @@ ECode CRemoteViewsAdapterServiceConnection::MyRunnable::Run()
         // the remote adapter callback
         adpImpl->UpdateTemporaryMetaData();
         // Notify the host that we've connected
-        AutoPtr<IRunnable> r = new MyRunnableEx(mAdapter);
+        AutoPtr<IRunnable> r = new MyRunnable(mAdapter);
         Boolean rst;
         adpImpl->mMainQueue->Post(r, &rst);
     }
@@ -59,7 +59,7 @@ ECode CRemoteViewsAdapterServiceConnection::MyRunnable::Run()
 }
 
 /*----------------------------------MyRunnableEx----------------------------------*/
-CRemoteViewsAdapterServiceConnection::MyRunnableEx::MyRunnableEx(
+CRemoteViewsAdapterServiceConnection::MyRunnableEx::MyRunnable(
     /* [in] */ IRemoteViewsAdapter* adapter) : mAdapter(adapter)
 {}
 
@@ -79,7 +79,7 @@ ECode CRemoteViewsAdapterServiceConnection::MyRunnableEx::Run()
 }
 
 /*----------------------------------MyRunnableEx2----------------------------------*/
-CRemoteViewsAdapterServiceConnection::MyRunnableEx2::MyRunnableEx2(
+CRemoteViewsAdapterServiceConnection::MyRunnableEx2::MyRunnable(
     /* [in] */ IRemoteViewsAdapter* adapter) : mAdapter(adapter)
 {}
 
@@ -231,7 +231,7 @@ ECode CRemoteViewsAdapterServiceConnection::OnServiceDisconnected()
     // Clear the main/worker queues
     RemoteViewsAdapter* adapter = reinterpret_cast<RemoteViewsAdapter*>(mAdapter->Probe(EIID_RemoteViewsAdapter));
     if (adapter == NULL) return NOERROR;
-    AutoPtr<IRunnable> r = new MyRunnableEx2(mAdapter);
+    AutoPtr<IRunnable> r = new MyRunnable(mAdapter);
     Boolean rst;
     adapter->mMainQueue->Post(r, &rst);
     return NOERROR;

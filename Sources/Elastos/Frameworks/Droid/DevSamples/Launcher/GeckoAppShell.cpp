@@ -11,9 +11,9 @@
 #include <stdio.h>
 #include <dlfcn.h>
 #include <stdlib.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elautoptr.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 //#include <elastos/ElPixelFormat.h>
 
 //#include <elastos/ByteBuffer.h>
@@ -349,13 +349,13 @@ ECode GeckoAppShell::LooperThread::Join()
     return E_NOT_IMPLEMENTED;
 }
 
-ECode GeckoAppShell::LooperThread::JoinEx(
+ECode GeckoAppShell::LooperThread::Join(
     /* [in] */ Int64 millis)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode GeckoAppShell::LooperThread::JoinEx2(
+ECode GeckoAppShell::LooperThread::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
@@ -598,7 +598,7 @@ AutoPtr<GeckoAppShell::IMEStateUpdater> GeckoAppShell::IMEStateUpdater::GetInsta
         Thread::Attach((IThread**)&thread);
         instance = new GeckoAppShell::IMEStateUpdater();
         assert(instance);
-//        GeckoAppShell::mIMETimer->ScheduleEx(instance, 500);
+//        GeckoAppShell::mIMETimer->Schedule(instance, 500);
         thread->Detach();
     }
     return instance;
@@ -1534,7 +1534,7 @@ ECode GeckoAppShell::CreateShortcut(
     if (FAILED(ec)) return ec;
 
     AutoPtr<IBitmap> pIBitmap;
-    ec = pIBitmapFactory->DecodeByteArrayEx(*raw, 0, raw->GetLength(), (IBitmap**)&pIBitmap);
+    ec = pIBitmapFactory->DecodeByteArray(*raw, 0, raw->GetLength(), (IBitmap**)&pIBitmap);
     if (FAILED(ec)) return ec;
 
     //ec = pIIntent->PutExtra(Intent_EXTRA_SHORTCUT_ICON, pIBitmap);
@@ -1802,7 +1802,7 @@ ECode GeckoAppShell::OpenUriExternal(
                 CIntent::New(String(VideoPlayer_VIDEO_ACTION), (IIntent**)&pIIntent);
                 String packageName;
                 GeckoApp::sAppContext->GetPackageName(&packageName);
-                pIIntent->SetClassNameEx(packageName,
+                pIIntent->SetClassName(packageName,
                                     String("org.mozilla.gecko.VideoPlayer"));
                 pIIntent->SetData(pIUri);
                 GeckoApp::sAppContext->StartActivity(pIIntent);
@@ -1851,7 +1851,7 @@ ECode GeckoAppShell::OpenUriExternal(
     }
 
     if (aPackageName.GetLength() > 0 && aClassName.GetLength() > 0) {
-        ec = pIIntent->SetClassNameEx(aPackageName, aClassName);
+        ec = pIIntent->SetClassName(aPackageName, aClassName);
         if (FAILED(ec)) return ec;
     }
 
@@ -2221,7 +2221,7 @@ ECode GeckoAppShell::GetDpi(
     ASSERT_SUCCEEDED(CDisplayMetrics::New((IDisplayMetrics**)&metrics));
 
     AutoPtr<IWindowManager> wm;
-    FAIL_RETURN(GeckoApp::sAppContext->GetWindowManagerEx((IWindowManager**)&wm));
+    FAIL_RETURN(GeckoApp::sAppContext->GetWindowManager((IWindowManager**)&wm));
 
     AutoPtr<IDisplay> display;
     FAIL_RETURN(wm->GetDefaultDisplay((IDisplay**)&display));
@@ -2294,7 +2294,7 @@ ECode GeckoAppShell::Vibrate(
 {
     AutoPtr<IVibrator> vibrator;
     ASSERT_SUCCEEDED(Vibrator((IVibrator**)&vibrator));
-    ASSERT_SUCCEEDED(vibrator->VibrateEx(pattern, repeat));
+    ASSERT_SUCCEEDED(vibrator->Vibrate(pattern, repeat));
     return NOERROR;
 }
 
@@ -3358,7 +3358,7 @@ public:
         GeckoApp::sMainLayout->IndexOfChild(view,&index);
         if ( index == -1) {
             view->SetWillNotDraw(TRUE);
-            GeckoApp::sMainLayout->AddViewEx3(view, (IViewGroupLayoutParams*)lp);
+            GeckoApp::sMainLayout->AddView(view, (IViewGroupLayoutParams*)lp);
         }
         else
         {

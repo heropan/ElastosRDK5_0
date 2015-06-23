@@ -3,8 +3,8 @@
 #include "src/data/DataSourceHelper.h"
 #include "src/data/AsyncImageLoader.h"
 #include "R.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "os/SomeArgs.h"
 
 using Elastos::Core::CBoolean;
@@ -225,7 +225,7 @@ ECode CBrowserActivity::MyListener::OnTouch(
         AutoPtr<IViewParent> viewParent;
         AutoPtr<IViewParent> viewParent2;
         v->GetParent((IViewParent**)&viewParent);
-        viewParent->GetParentEx((IViewParent**)&viewParent2);
+        viewParent->GetParent((IViewParent**)&viewParent2);
         AutoPtr<IAdapterView> adapterView = IAdapterView::Probe(viewParent2);
         Int32 index = 0;
         adapterView->GetPositionForView(v, &index);
@@ -234,7 +234,7 @@ ECode CBrowserActivity::MyListener::OnTouch(
             AutoPtr<PictureEntry> entry = mHost->mPictureEntryList[index];
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("Gallery"), String("Gallery.CPhotoActivity"));
+            intent->SetClassName(String("Gallery"), String("Gallery.CPhotoActivity"));
             intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
             intent->PutInt32Extra(DataSourceHelper::SOURCE_INDEX, index);
             if (FAILED(mHost->StartActivity(intent))) {
@@ -328,7 +328,7 @@ ECode CBrowserActivity::MyLoadImageCallback::ImageLoaded(
     args->mArg2 = imageView;
 
     AutoPtr<IMessage> msg;
-    mHost->mMyHandler->ObtainMessageEx(CBrowserActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
+    mHost->mMyHandler->ObtainMessage(CBrowserActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
     Boolean result;
     return mHost->mMyHandler->SendMessage(msg, &result);
 }

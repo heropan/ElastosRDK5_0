@@ -14,7 +14,7 @@ ECode CDisplayManagerGlobalHelper::GetInstance(
     VALIDATE_NOT_NULL(global);
     AutoPtr<IDisplayManagerGlobal> temp = DisplayManagerGlobal::GetInstance();
     *global = temp;
-    INTERFACE_ADDREF(*global);
+    REFCOUNT_ADD(*global);
     return NOERROR;
 }
 

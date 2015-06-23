@@ -56,7 +56,7 @@ ECode CGpsStatus::SetStatus(
     return NOERROR;
 }
 
-ECode CGpsStatus::SetStatusEx(
+ECode CGpsStatus::SetStatus(
     /* [in] */ IGpsStatus* status)
 {
     status->GetTimeToFirstFix(&mTimeToFirstFix);
@@ -102,7 +102,7 @@ ECode CGpsStatus::GetSatellites(
         }
     }
     *satellites = container;
-    INTERFACE_ADDREF(*satellites);
+    REFCOUNT_ADD(*satellites);
 
     return NOERROR;
 }

@@ -6,9 +6,9 @@
 #include "graphics/CPaint.h"
 #include "graphics/CMatrix.h"
 #include "graphics/CLinearGradient.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::Math;
@@ -51,7 +51,7 @@ RecentsScrollViewPerformanceHelper::RecentsScrollViewPerformanceHelper(
             const_cast<Int32 *>(R::styleable::View),
             ARRAY_SIZE(R::styleable::View));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrViews, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrViews, (ITypedArray**)&a);
     AutoPtr<IViewConfiguration> vc;
     AutoPtr<IViewConfigurationHelper> helper;
     CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
@@ -175,34 +175,34 @@ void RecentsScrollViewPerformanceHelper::DrawCallback(
         }
 
         if (drawTop) {
-            matrix->SetScaleEx(1, fadeHeight * topFadeStrength);
+            matrix->SetScale(1, fadeHeight * topFadeStrength);
             matrix->PostTranslate(left, top, &b);
             fade->SetLocalMatrix(matrix);
-            canvas->DrawRectEx2(left, top, right, top + length, p);
+            canvas->DrawRect(left, top, right, top + length, p);
         }
 
         if (drawBottom) {
-            matrix->SetScaleEx(1, fadeHeight * bottomFadeStrength);
-            matrix->PostRotateEx(180, &b);
+            matrix->SetScale(1, fadeHeight * bottomFadeStrength);
+            matrix->PostRotate(180, &b);
             matrix->PostTranslate(left, bottom, &b);
             fade->SetLocalMatrix(matrix);
-            canvas->DrawRectEx2(left, bottom - length, right, bottom, p);
+            canvas->DrawRect(left, bottom - length, right, bottom, p);
         }
 
         if (drawLeft) {
-            matrix->SetScaleEx(1, fadeHeight * leftFadeStrength);
-            matrix->PostRotateEx(-90, &b);
+            matrix->SetScale(1, fadeHeight * leftFadeStrength);
+            matrix->PostRotate(-90, &b);
             matrix->PostTranslate(left, top, &b);
             fade->SetLocalMatrix(matrix);
-            canvas->DrawRectEx2(left, top, left + length, bottom, p);
+            canvas->DrawRect(left, top, left + length, bottom, p);
         }
 
         if (drawRight) {
-            matrix->SetScaleEx(1, fadeHeight * rightFadeStrength);
-            matrix->PostRotateEx(90, &b);
+            matrix->SetScale(1, fadeHeight * rightFadeStrength);
+            matrix->PostRotate(90, &b);
             matrix->PostTranslate(right, top, &b);
             fade->SetLocalMatrix(matrix);
-            canvas->DrawRectEx2(right - length, top, right, bottom, p);
+            canvas->DrawRect(right - length, top, right, bottom, p);
         }
     }
 }

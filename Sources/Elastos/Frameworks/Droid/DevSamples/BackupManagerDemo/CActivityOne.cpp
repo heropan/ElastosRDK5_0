@@ -1,7 +1,7 @@
 
 #include "CActivityOne.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/ServiceManager.h"
 
 using Elastos::IO::CFile;

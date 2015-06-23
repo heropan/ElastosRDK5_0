@@ -4,7 +4,7 @@
 #include "view/animation/AnimationUtils.h"
 #include "os/SystemClock.h"
 #include "os/Build.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;

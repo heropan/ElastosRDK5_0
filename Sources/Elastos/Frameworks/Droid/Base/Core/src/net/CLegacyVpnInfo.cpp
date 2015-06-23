@@ -51,7 +51,7 @@ ECode CLegacyVpnInfo::GetIntent(
 {
     VALIDATE_NOT_NULL(intent);
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 

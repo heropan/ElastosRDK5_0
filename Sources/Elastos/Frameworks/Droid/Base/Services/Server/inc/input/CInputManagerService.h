@@ -9,9 +9,9 @@
 #include "display/DisplayViewport.h"
 #include "database/ContentObserver.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Content::IIntent;
@@ -208,7 +208,7 @@ private:
     class MyBroadcastReceiverEx : public BroadcastReceiver
     {
     public:
-        MyBroadcastReceiverEx(
+        MyBroadcastReceiver(
             /* [in] */ CInputManagerService* owner);
 
         //@Override
@@ -231,7 +231,7 @@ private:
     class MyBroadcastReceiverEx2 : public BroadcastReceiver
     {
     public:
-        MyBroadcastReceiverEx2(
+        MyBroadcastReceiver(
             /* [in] */ CInputManagerService* owner);
 
         //@Override
@@ -282,7 +282,7 @@ private:
     class MyKeyboardLayoutVisitorEx : public KeyboardLayoutVisitor
     {
     public:
-        MyKeyboardLayoutVisitorEx(
+        MyKeyboardLayoutVisitor(
             /* [in] */ List<AutoPtr<IKeyboardLayout> >& list);
 
         CARAPI_(void) VisitKeyboardLayout(
@@ -299,7 +299,7 @@ private:
     class MyKeyboardLayoutVisitorEx2 : public KeyboardLayoutVisitor
     {
     public:
-        MyKeyboardLayoutVisitorEx2(
+        MyKeyboardLayoutVisitor(
             /* [in] */ IKeyboardLayout** layout);
 
         CARAPI_(void) VisitKeyboardLayout(
@@ -331,7 +331,7 @@ private:
     class MyContentObserverEx : public ContentObserver
     {
     public:
-        MyContentObserverEx(
+        MyContentObserver(
             /* [in] */ CInputManagerService* owner,
             /* [in] */ IHandler* handler);
 
@@ -346,7 +346,7 @@ private:
     class MyKeyboardLayoutVisitorEx3 : public KeyboardLayoutVisitor
     {
     public:
-        MyKeyboardLayoutVisitorEx3(
+        MyKeyboardLayoutVisitor(
             /* [in] */ ArrayOf<String>* layouts);
 
         CARAPI_(void) VisitKeyboardLayout(

@@ -5,7 +5,7 @@
 #include "content/CIntentFilter.h"
 #include "content/CIntent.h"
 #include "provider/Settings.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <R.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -245,7 +245,7 @@ AutoPtr<IDateFormat> DateTimeView::GetDateFormat()
     if (format.IsNullOrEmpty()) {
         AutoPtr<IDateFormatHelper> helper;
         CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
-        helper->GetDateInstanceEx(IDateFormat::SHORT, (IDateFormat**)&df);
+        helper->GetDateInstance(IDateFormat::SHORT, (IDateFormat**)&df);
     }
     else {
         //try {
@@ -276,7 +276,7 @@ ECode DateTimeView::RegisterReceivers()
     context->RegisterReceiver(mBroadcastReceiver, filter, (IIntent**)&registerIntent);
 
     AutoPtr<IUri> uri;
-    Settings::System::GetUriForEx(ISettingsSystem::DATE_FORMAT, (IUri**)&uri);
+    Settings::System::GetUriFor(ISettingsSystem::DATE_FORMAT, (IUri**)&uri);
 
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);

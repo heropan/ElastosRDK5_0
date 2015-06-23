@@ -1,7 +1,7 @@
 
 #include "wm/ViewServer.h"
-#include <elastos/Thread.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFlushable;

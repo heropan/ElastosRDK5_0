@@ -153,7 +153,7 @@ ECode CandidatesContainer::ActiveCurseBackward(
 
     Boolean state = FALSE;
     if (cv->ActiveCurseBackward(&state), state) {
-        cv->InvalidateEx2();
+        cv->Invalidate();
         *result = TRUE;
         return NOERROR;
     }
@@ -174,7 +174,7 @@ ECode CandidatesContainer::ActiveCurseForward(
     mFlipper->GetCurrentView((IView**)&cv);
 
     if (cv->ActiveCursorForward(&state), state) {
-        cv->InvalidateEx2();
+        cv->Invalidate();
         *result = TRUE;
         return NOERROR;
     }
@@ -216,7 +216,7 @@ ECode CandidatesContainer::PageBackward(
 
     cvNext->ShowPage(mCurrentPage, activeCandInPage, enableActiveHighlight);
     LoadAnimation(animLeftRight, FALSE);
-    StartAnimationEx();
+    StartAnimation();
 
     UpdateArrowStatus();
     *result = TRUE;
@@ -256,7 +256,7 @@ ECode CandidatesContainer::PageForward(
 
     cvNext->ShowPage(mCurrentPage, activeCandInPage, enableActiveHighlight);
     LoadAnimation(animLeftRight, TRUE);
-    StartAnimationEx();
+    StartAnimation();
 
     UpdateArrowStatus();
     *result = TRUE;
@@ -410,7 +410,7 @@ AutoPtr<IAnimation> CandidatesContainer::CreateAnimation(
     return animSet;
 }
 
-void CandidatesContainer::StartAnimationEx()
+void CandidatesContainer::StartAnimation()
 {
     mFlipper->ShowNext();
 }

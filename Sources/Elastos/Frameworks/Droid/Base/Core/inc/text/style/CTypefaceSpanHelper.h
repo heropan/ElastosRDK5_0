@@ -3,7 +3,7 @@
 #define __CTYPEFACESPANHELPER_H__
 
 #include "_CTypefaceSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

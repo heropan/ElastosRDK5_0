@@ -437,7 +437,7 @@ ECode CDrmRawContent::GetContentInputStream(
     }
 
     *rights = new DrmInputStream(mRights, this);
-    INTERFACE_ADDREF(*rights);
+    REFCOUNT_ADD(*rights);
 
     return NOERROR;
 }
@@ -574,7 +574,7 @@ ECode CDrmRawContent::DrmInputStream::Read(
     VALIDATE_NOT_NULL(value);
 
     Int32 res;
-    ReadBytesEx(mB, 0, 1, &res);
+    ReadBytes(mB, 0, 1, &res);
 
     if (-1 == res){
         *value = -1;
@@ -590,10 +590,10 @@ ECode CDrmRawContent::DrmInputStream::ReadBytes(
     /* [in] */ ArrayOf<Byte>* b,
     /* [out] */ Int32* number)
 {
-    return ReadBytesEx(b, 0, b->GetLength(), number);
+    return ReadBytes(b, 0, b->GetLength(), number);
 }
 
-ECode CDrmRawContent::DrmInputStream::ReadBytesEx(
+ECode CDrmRawContent::DrmInputStream::ReadBytes(
     /* [in] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
@@ -675,7 +675,7 @@ ECode CDrmRawContent::DrmInputStream::GetLock(
 
     AutoPtr<IInterface> obj = InputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

@@ -78,7 +78,7 @@ ECode CPanelView::GetHandle(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = PanelView::GetHandle();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

@@ -2,12 +2,10 @@
 #ifndef __ELAUDIOTRACK_H__
 #define __ELAUDIOTRACK_H__
 
-#include <elastos/Mutex.h>
 #include <media/AudioTrack.h>
 #include <binder/MemoryHeapBase.h>
 #include <binder/MemoryBase.h>
 
-using namespace Elastos::Core::Threading;
 
 class AudioManager
 {
@@ -61,7 +59,7 @@ public:
     /** Stereo (2 channel) audio configuration */
     /** @deprecated use CHANNEL_OUT_STEREO or CHANNEL_IN_STEREO instead  */
     static const int CHANNEL_CONFIGURATION_STEREO    = 3;
-    
+
     /** Invalid audio channel mask */
     static const int CHANNEL_INVALID = 0;
     /** Default audio channel mask */

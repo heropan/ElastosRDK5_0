@@ -5,10 +5,9 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "webkit/WebIconDatabase.h"
-#include <elastos/Mutex.h>
 #include <elastos/Vector.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Vector;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IMessage;

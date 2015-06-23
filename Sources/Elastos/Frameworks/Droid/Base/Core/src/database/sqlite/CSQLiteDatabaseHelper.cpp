@@ -25,7 +25,7 @@ ECode CSQLiteDatabaseHelper::OpenDatabase(
     return SQLiteDatabase::OpenDatabase(path, factory, flags, result);
 }
 
-ECode CSQLiteDatabaseHelper::OpenDatabaseEx(
+ECode CSQLiteDatabaseHelper::OpenDatabase(
     /* [in] */ const String& path,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ Int32 flags,
@@ -33,7 +33,7 @@ ECode CSQLiteDatabaseHelper::OpenDatabaseEx(
     /* [out] */ ISQLiteDatabase** result)
 {
     VALIDATE_NOT_NULL(result)
-    return SQLiteDatabase::OpenDatabaseEx(path, factory, flags, errorHandler, result);
+    return SQLiteDatabase::OpenDatabase(path, factory, flags, errorHandler, result);
 }
 
 ECode CSQLiteDatabaseHelper::OpenOrCreateDatabase(
@@ -45,23 +45,23 @@ ECode CSQLiteDatabaseHelper::OpenOrCreateDatabase(
     return SQLiteDatabase::OpenOrCreateDatabase(file, factory, result);
 }
 
-ECode CSQLiteDatabaseHelper::OpenOrCreateDatabaseEx(
+ECode CSQLiteDatabaseHelper::OpenOrCreateDatabase(
     /* [in] */ const String& path,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [out] */ ISQLiteDatabase** result)
 {
     VALIDATE_NOT_NULL(result)
-    return SQLiteDatabase::OpenOrCreateDatabaseEx(path, factory, result);
+    return SQLiteDatabase::OpenOrCreateDatabase(path, factory, result);
 }
 
-ECode CSQLiteDatabaseHelper::OpenOrCreateDatabaseEx2(
+ECode CSQLiteDatabaseHelper::OpenOrCreateDatabase(
     /* [in] */ const String& path,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** result)
 {
     VALIDATE_NOT_NULL(result)
-    return SQLiteDatabase::OpenOrCreateDatabaseEx2(path, factory, errorHandler, result);
+    return SQLiteDatabase::OpenOrCreateDatabase(path, factory, errorHandler, result);
 }
 
 ECode CSQLiteDatabaseHelper::DeleteDatabase(

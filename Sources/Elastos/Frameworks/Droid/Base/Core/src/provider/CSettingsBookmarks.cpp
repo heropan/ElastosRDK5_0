@@ -12,7 +12,7 @@ ECode CSettingsBookmarks::GetContentUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::Bookmarks::CONTENT_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -46,7 +46,7 @@ ECode CSettingsBookmarks::GetLabelForFolder(
     VALIDATE_NOT_NULL(fName)
     AutoPtr<ICharSequence> temp = Settings::Bookmarks::GetLabelForFolder(r, folder);
     *fName = temp;
-    INTERFACE_ADDREF(*fName)
+    REFCOUNT_ADD(*fName)
     return NOERROR;
 }
 

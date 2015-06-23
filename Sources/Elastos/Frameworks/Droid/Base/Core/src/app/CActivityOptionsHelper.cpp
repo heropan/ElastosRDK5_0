@@ -16,7 +16,7 @@ ECode CActivityOptionsHelper::MakeCustomAnimation(
         context, enterResId, exitResId, activityoptions);
 }
 
-ECode CActivityOptionsHelper::MakeCustomAnimationEx(
+ECode CActivityOptionsHelper::MakeCustomAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 enterResId,
     /* [in] */ Int32 exitResId,
@@ -51,7 +51,7 @@ ECode CActivityOptionsHelper::MakeThumbnailScaleUpAnimation(
         source, thumbnail, startX, startY, activityoptions);
 }
 
-ECode CActivityOptionsHelper::MakeThumbnailScaleUpAnimationEx(
+ECode CActivityOptionsHelper::MakeThumbnailScaleUpAnimation(
     /* [in] */ IView* source,
     /* [in] */ IBitmap* thumbnail,
     /* [in] */ Int32 startX,

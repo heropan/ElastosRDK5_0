@@ -6,7 +6,7 @@
 #include "net/CLinkCapabilities.h"
 #include "os/CMessage.h"
 #endif
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Net::CNetworkInfo;
@@ -89,7 +89,7 @@ ECode DummyDataStateTracker::GetNetworkInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mNetworkInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

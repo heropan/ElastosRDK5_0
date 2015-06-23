@@ -34,7 +34,7 @@ ECode CPaintDrawable::GetShape(
     VALIDATE_NOT_NULL(shape);
     AutoPtr<IShape> s = PaintDrawable::GetShape();
     *shape = s;
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 
@@ -56,7 +56,7 @@ ECode CPaintDrawable::GetShaderFactory(
     VALIDATE_NOT_NULL(fact);
     AutoPtr<IShaderFactory> f = PaintDrawable::GetShaderFactory();
     *fact = f;
-    INTERFACE_ADDREF(*fact);
+    REFCOUNT_ADD(*fact);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CPaintDrawable::GetPaint(
     VALIDATE_NOT_NULL(paint);
     AutoPtr<IPaint> p = PaintDrawable::GetPaint();
     *paint = p;
-    INTERFACE_ADDREF(*paint);
+    REFCOUNT_ADD(*paint);
     return NOERROR;
 }
 
@@ -79,7 +79,7 @@ ECode CPaintDrawable::SetPadding(
     return PaintDrawable::SetPadding(left, top, right, bottom);
 }
 
-ECode CPaintDrawable::SetPaddingEx(
+ECode CPaintDrawable::SetPadding(
     /* [in] */ IRect* padding)
 {
     return PaintDrawable::SetPadding(padding);

@@ -61,7 +61,7 @@ ECode CCalendarContractCalendars::GetSYNCWRITABLECOLUMNS(
     VALIDATE_NOT_NULL(columns);
 
     *columns = SYNC_WRITABLE_COLUMNS;
-    INTERFACE_ADDREF(*columns);
+    REFCOUNT_ADD(*columns);
     return NOERROR;
 }
 

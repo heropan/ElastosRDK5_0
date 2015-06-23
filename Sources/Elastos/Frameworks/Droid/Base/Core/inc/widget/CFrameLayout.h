@@ -2,8 +2,8 @@
 #define __CFRAMELAYOUT_H_
 
 #include "_CFrameLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/FrameLayout.h"
 
 namespace Elastos{

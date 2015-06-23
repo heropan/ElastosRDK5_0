@@ -4,8 +4,8 @@
 
 #include "_CIconMarginSpan.h"
 #include "text/style/IconMarginSpan.h"
-#include "text/style/LeadingMarginSpanMacro.h"
-#include "text/style/LineHeightSpanMacro.h"
+
+
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;

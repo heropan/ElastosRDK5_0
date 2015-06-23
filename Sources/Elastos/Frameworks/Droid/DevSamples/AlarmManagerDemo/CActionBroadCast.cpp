@@ -1,5 +1,5 @@
 #include "CActionBroadCast.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <stdio.h>
 
 using Elastos::Utility::Logging::Slogger;

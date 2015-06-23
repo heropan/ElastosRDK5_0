@@ -9,15 +9,15 @@
 #include "content/CIntent.h"
 #include "content/res/CResourcesHelper.h"
 #include "R.h"
-#include <elastos/Thread.h>
-#include <elastos/Math.h>
-#include <elastos/List.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::Threading::Thread;
-using Elastos::Utility::List;
+using Elastos::Core::Thread;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Concurrent::CLinkedBlockingQueue;
 using Elastos::Droid::R;
@@ -422,7 +422,7 @@ ECode CRecentTasksLoader::GetDefaultThumbnail(
 {
     VALIDATE_NOT_NULL(bitmap);
     *bitmap = mDefaultThumbnailBackground;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -431,7 +431,7 @@ ECode CRecentTasksLoader::GetDefaultIcon(
 {
     VALIDATE_NOT_NULL(bitmap);
     *bitmap = mDefaultIconBackground;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -440,7 +440,7 @@ ECode CRecentTasksLoader::GetLoadedTasks(
 {
     VALIDATE_NOT_NULL(tasks);
     *tasks = mLoadedTasks;
-    INTERFACE_ADDREF(*tasks);
+    REFCOUNT_ADD(*tasks);
     return NOERROR;
 }
 
@@ -726,7 +726,7 @@ ECode CRecentTasksLoader::GetFirstTask(
         Mutex::Autolock lock(mFirstTaskLock);
         if (mFirstTaskLoaded) {
             *des = mFirstTask;
-            INTERFACE_ADDREF(*des);
+            REFCOUNT_ADD(*des);
             return NOERROR;
         }
         else if (!mFirstTaskLoaded && !mPreloadingFirstTask) {
@@ -734,7 +734,7 @@ ECode CRecentTasksLoader::GetFirstTask(
             LoadFirstTask((ITaskDescription**)&mFirstTask);
             mFirstTaskLoaded = TRUE;
             *des = mFirstTask;
-            INTERFACE_ADDREF(*des);
+            REFCOUNT_ADD(*des);
             return NOERROR;
         }
         // try {
@@ -807,7 +807,7 @@ ECode CRecentTasksLoader::LoadFirstTask(
             LoadThumbnailAndIcon(item);
         }
         *des = item;
-        INTERFACE_ADDREF(*des);
+        REFCOUNT_ADD(*des);
         return NOERROR;
     }
     return NOERROR;
@@ -815,10 +815,10 @@ ECode CRecentTasksLoader::LoadFirstTask(
 
 ECode CRecentTasksLoader::LoadTasksInBackground()
 {
-    return LoadTasksInBackgroundEx(FALSE);
+    return LoadTasksInBackground(FALSE);
 }
 
-ECode CRecentTasksLoader::LoadTasksInBackgroundEx(
+ECode CRecentTasksLoader::LoadTasksInBackground(
     /* [in] */ Boolean zeroeth)
 {
     if (mState != State_CANCELLED) {

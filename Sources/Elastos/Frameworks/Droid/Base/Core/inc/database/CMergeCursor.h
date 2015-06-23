@@ -17,7 +17,7 @@ public:
     CARAPI_(PInterface) Probe(
         /* [in]  */ REIID riid);
 
-    CARAPI SetNotificationUriEx(
+    CARAPI SetNotificationUri(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* notifyUri,
         /* [in] */ Int32 userHandle);

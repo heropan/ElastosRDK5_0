@@ -1,7 +1,7 @@
 #include "systemui/statusbar/StatusBarIconView.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "R.h"
 #include "text/TextUtils.h"
 #include "graphics/CPaint.h"
@@ -334,7 +334,7 @@ void StatusBarIconView::OnDraw(
 
     if (mNumberBackground != NULL) {
         mNumberBackground->Draw(canvas);
-        canvas->DrawTextEx(mNumberText, mNumberX, mNumberY, mNumberPain);
+        canvas->DrawText(mNumberText, mNumberX, mNumberY, mNumberPain);
     }
 }
 

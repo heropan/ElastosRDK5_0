@@ -9,15 +9,14 @@
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
 #include "PackageManagerBackupAgent.h"
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Map.h>
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IRandom;
 using Elastos::Core::IStringBuilder;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::Crypto::ISecretKey;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
@@ -25,10 +24,10 @@ using Elastos::IO::IOutputStream;
 using Elastos::IO::IPrintWriter;
 using Elastos::Security::ISecureRandom;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::List;
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Zip::IDeflaterOutputStream;
 using Elastos::Droid::App::Backup::IBackupDataOutput;
 using Elastos::Droid::App::Backup::IBackupManager;

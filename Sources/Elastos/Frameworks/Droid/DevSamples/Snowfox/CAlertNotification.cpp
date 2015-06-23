@@ -1,9 +1,9 @@
 
 #include "CAlertNotification.h"
 #include "GeckoApp.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <cmdef.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Net::IURL;
 using Elastos::Net::CURL;
@@ -99,7 +99,7 @@ ECode CAlertNotification::SetCustomIcon(
     ec = CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     if (FAILED(ec)) return ec;
     AutoPtr<IBitmap> pBm;
-    ec = bitmapFactory->DecodeStreamEx(inStream, (IBitmap**)&pBm);
+    ec = bitmapFactory->DecodeStream(inStream, (IBitmap**)&pBm);
     if (FAILED(ec)) return ec;
 
     ec = pView->SetImageViewBitmap(0x7f070004, pBm);//R.id.notificationImage

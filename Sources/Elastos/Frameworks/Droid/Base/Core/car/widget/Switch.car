@@ -30,7 +30,7 @@ module
          * Typeface that you provided does not have all the bits in the
          * style that you specified.
          */
-        SetSwitchTypefaceEx(
+        SetSwitchTypeface(
             [in] ITypeface* tf,
             [in] Int32 style);
 

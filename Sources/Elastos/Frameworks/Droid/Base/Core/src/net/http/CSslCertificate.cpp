@@ -1,7 +1,7 @@
 
 #include "CSslCertificate.h"
-#include "elastos/StringUtils.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "view/LayoutInflater.h"
 #include "R.h"
 
@@ -136,7 +136,7 @@ ECode CSslCertificate::GetIssuedTo(
 {
     VALIDATE_NOT_NULL(issuedTo);
     *issuedTo = mIssuedTo;
-    INTERFACE_ADDREF(*issuedTo);
+    REFCOUNT_ADD(*issuedTo);
     return NOERROR;
 }
 
@@ -145,7 +145,7 @@ ECode CSslCertificate::GetIssuedBy(
 {
     VALIDATE_NOT_NULL(issuedBy);
     *issuedBy = mIssuedBy;
-    INTERFACE_ADDREF(*issuedBy);
+    REFCOUNT_ADD(*issuedBy);
     return NOERROR;
 }
 
@@ -229,7 +229,7 @@ AutoPtr<IDate> CSslCertificate::ParseDate(
     // TODO:
     // CSimpleDateFormat::New(ISO_8601_DATE_FORMAT, (ISimpleDateFormat**)&format);
     AutoPtr<IDate> date;
-    // if(!FAILED(format->ParseEx(string, &date))) {
+    // if(!FAILED(format->Parse(string, &date))) {
     //     return date;
     // }
 

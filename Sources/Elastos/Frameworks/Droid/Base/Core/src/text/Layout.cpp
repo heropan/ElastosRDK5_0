@@ -13,7 +13,7 @@
 //#include "emoji/CEmojiFactoryHelper.h"
 #include "graphics/CRect.h"
 #include "util/ArrayUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_ICharSequence;
@@ -409,7 +409,7 @@ ECode Layout::SpannedEllipsizer::SubSequence(
     FAIL_RETURN(CSpannableString::New(seq, (ISpannableString**)&ss));
     TextUtils::CopySpansFrom(mSpanned, start, end, EIID_IInterface, ss, 0);
     *subcsq = ICharSequence::Probe(ss);
-    INTERFACE_ADDREF(*subcsq);
+    REFCOUNT_ADD(*subcsq);
     return NOERROR;
 }
 
@@ -646,10 +646,10 @@ ECode Layout::ReplaceWith(
 ECode Layout::Draw(
     /* [in] */ ICanvas* c)
 {
-    return DrawEx(c, NULL, NULL, 0);
+    return Draw(c, NULL, NULL, 0);
 }
 
-ECode Layout::DrawEx(
+ECode Layout::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IPath* highlight,
     /* [in] */ IPaint* highlightPaint,
@@ -818,7 +818,7 @@ ECode Layout::DrawText(
         AutoPtr<ILayoutDirections> directions = GetLineDirections(i);
         if (directions == DIRS_ALL_LEFT_TO_RIGHT && !mSpannedText && !hasTabOrEmoji) {
             // XXX: assumes there's nothing additional to be done
-            canvas->DrawTextEx3(buf, start, end, x, lbaseline, paint);
+            canvas->DrawText(buf, start, end, x, lbaseline, paint);
         } else {
             tl->Set(paint, buf, start, end, dir, directions, hasTabOrEmoji, tabStops);
             tl->Draw(canvas, x, ltop, lbaseline, lbottom);
@@ -1933,7 +1933,7 @@ void Layout::AddSelection(
                 Float left = Elastos::Core::Math::Min(h1, h2);
                 Float right = Elastos::Core::Math::Max(h1, h2);
 
-                dest->AddRectEx(left, top, right, bottom, Elastos::Droid::Graphics::PathDirection_CW);
+                dest->AddRect(left, top, right, bottom, Elastos::Droid::Graphics::PathDirection_CW);
             }
         }
     }
@@ -1976,16 +1976,16 @@ ECode Layout::GetSelectionPath(
                      top, GetLineBottom(startline), dest);
 
         if (GetParagraphDirection(startline) == ILayout::DIR_RIGHT_TO_LEFT)
-            dest->AddRectEx(GetLineLeft(startline), top,
+            dest->AddRect(GetLineLeft(startline), top,
                           0, GetLineBottom(startline), Elastos::Droid::Graphics::PathDirection_CW);
         else
-            dest->AddRectEx(GetLineRight(startline), top,
+            dest->AddRect(GetLineRight(startline), top,
                           width, GetLineBottom(startline), Elastos::Droid::Graphics::PathDirection_CW);
 
         for (Int32 i = startline + 1; i < endline; i++) {
             top = GetLineTop(i);
             bottom = GetLineBottom(i);
-            dest->AddRectEx(0, top, width, bottom, Elastos::Droid::Graphics::PathDirection_CW);
+            dest->AddRect(0, top, width, bottom, Elastos::Droid::Graphics::PathDirection_CW);
         }
 
         top = GetLineTop(endline);
@@ -1995,9 +1995,9 @@ ECode Layout::GetSelectionPath(
                      top, bottom, dest);
 
         if (GetParagraphDirection(endline) == ILayout::DIR_RIGHT_TO_LEFT)
-            dest->AddRectEx(width, top, GetLineRight(endline), bottom, Elastos::Droid::Graphics::PathDirection_CW);
+            dest->AddRect(width, top, GetLineRight(endline), bottom, Elastos::Droid::Graphics::PathDirection_CW);
         else
-            dest->AddRectEx(0, top, GetLineLeft(endline), bottom, Elastos::Droid::Graphics::PathDirection_CW);
+            dest->AddRect(0, top, GetLineLeft(endline), bottom, Elastos::Droid::Graphics::PathDirection_CW);
     }
 
     return NOERROR;

@@ -2,9 +2,9 @@
 #define __CTABLEROW_H_
 
 #include "_CTableRow.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "widget/TableRow.h"
 
 namespace Elastos{

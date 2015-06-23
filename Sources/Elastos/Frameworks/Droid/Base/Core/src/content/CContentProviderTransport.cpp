@@ -28,7 +28,7 @@ ECode CContentProviderTransport::GetContentProvider(
 {
     VALIDATE_NOT_NULL(provider)
     *provider = (IContentProvider*)mContentProvider->Probe(EIID_IContentProvider);
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 
@@ -55,7 +55,7 @@ ECode CContentProviderTransport::Query(
     CCancellationSignalHelper::AcquireSingleton((ICancellationSignalHelper**)&helper);
     AutoPtr<ICancellationSignal> sig;
     helper->FromTransport(cancellationSignal, (ICancellationSignal**)&sig);
-    return mContentProvider->QueryEx(uri, projection, selection, selectionArgs, sortOrder, sig, cursor);
+    return mContentProvider->Query(uri, projection, selection, selectionArgs, sortOrder, sig, cursor);
 }
 
 ECode CContentProviderTransport::GetType(

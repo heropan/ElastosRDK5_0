@@ -58,7 +58,7 @@ module
             [in] String address);
 
         /** @hide */
-        AddClientEx(
+        AddClient(
             [in] IWifiP2pDevice* device);
 
         /** @hide */
@@ -67,7 +67,7 @@ module
             [out] Boolean* ret);
 
         /** @hide */
-        RemoveClientEx(
+        RemoveClient(
             [in] IWifiP2pDevice* device,
             [out] Boolean* ret);
 

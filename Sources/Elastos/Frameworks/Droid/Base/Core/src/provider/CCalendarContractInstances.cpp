@@ -82,7 +82,7 @@ ECode CCalendarContractInstances::Query(
             WHERE_CALENDARS_ARGS, DEFAULT_SORT_ORDER, cursor);
 }
 
-ECode CCalendarContractInstances::QueryEx(
+ECode CCalendarContractInstances::Query(
     /* [in] */ IContentResolver* cr,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ Int64 begin,

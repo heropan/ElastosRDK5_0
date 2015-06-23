@@ -44,7 +44,7 @@ module
             [in] ArrayOf<Float>* coords,
             [in] Int32 offset);
 
-        GlDrawTexfvOESEx(
+        GlDrawTexfvOES(
             [in] IFloatBuffer* coords);
 
         GlDrawTexiOES(
@@ -58,7 +58,7 @@ module
             [in] ArrayOf<Int32>* coords,
             [in] Int32 offset);
 
-        GlDrawTexivOESEx(
+        GlDrawTexivOES(
             [in] IInt32Buffer* coords);
 
         GlDrawTexsOES(
@@ -72,7 +72,7 @@ module
             [in] ArrayOf<Int16>* coords,
             [in] Int32 offset);
 
-        GlDrawTexsvOESEx(
+        GlDrawTexsvOES(
             [in] IInt16Buffer* coords);
 
         GlDrawTexxOES(
@@ -86,7 +86,7 @@ module
             [in] ArrayOf<Int32>* coords,
             [in] Int32 offset);
 
-        GlDrawTexxvOESEx(
+        GlDrawTexxvOES(
             [in] IInt32Buffer* coords);
 
         GlLoadPaletteFromModelViewMatrixOES();
@@ -97,7 +97,7 @@ module
             [in] Int32 stride,
             [in] IBuffer* pointer);
 
-        GlMatrixIndexPointerOESEx(
+        GlMatrixIndexPointerOES(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,
@@ -109,7 +109,7 @@ module
             [in] Int32 stride,
             [in] IBuffer* pointer);
 
-        GlWeightPointerOESEx(
+        GlWeightPointerOES(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,

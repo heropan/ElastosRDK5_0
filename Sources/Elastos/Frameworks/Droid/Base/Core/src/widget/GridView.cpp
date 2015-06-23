@@ -1,6 +1,6 @@
 
 #include "widget/GridView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "widget/CAbsListViewLayoutParams.h"
 #include "view/SoundEffectConstants.h"
 #include "view/CViewGroupLayoutParams.h"
@@ -51,7 +51,7 @@ ECode GridView::Init(
             const_cast<Int32 *>(R::styleable::GridView),
             ARRAY_SIZE(R::styleable::GridView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     Int32 hSpacing;

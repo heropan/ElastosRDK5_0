@@ -1,7 +1,7 @@
 
 #include "BluetoothInputStream.h"
 #include "BluetoothSocket.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::EIID_ICloseable;
@@ -48,7 +48,7 @@ ECode BluetoothInputStream::Read(
     return NOERROR;
 }
 
-ECode BluetoothInputStream::ReadBytesEx(
+ECode BluetoothInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -107,7 +107,7 @@ ECode BluetoothInputStream::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = InputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

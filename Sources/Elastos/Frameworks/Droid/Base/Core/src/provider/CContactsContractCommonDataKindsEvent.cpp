@@ -1,7 +1,7 @@
 
 #include "provider/CContactsContractCommonDataKindsEvent.h"
 #include "R.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 
 namespace Elastos {
 namespace Droid {

@@ -5,7 +5,7 @@
 #include <ext/frameworkdef.h>
 #include "_CAndroidTestRunner.h"
 #include <Eunit.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Eunit::Framework::ITest;
 using Eunit::Framework::ITestListener;
@@ -13,7 +13,7 @@ using Eunit::Framework::ITestResult;
 using Eunit::Framework::ITestCase;
 using Eunit::Runner::ITestSuiteLoader;
 using Elastos::Utility::IList;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IInstrumentation;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IPerformanceResultsWriter;
@@ -94,7 +94,7 @@ public:
 
     CARAPI RunTest();
 
-    CARAPI RunTestEx(
+    CARAPI RunTest(
         /* [in] */ ITestResult* testResult);
 
     CARAPI SetContext(

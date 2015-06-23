@@ -67,7 +67,7 @@ ECode CSpannableString::SubSequence(
         (ICharSequence*)this->Probe(EIID_ICharSequence),
         start, end, (ISpannableString**)&sub);
     *csq = ICharSequence::Probe(sub.Get());
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 

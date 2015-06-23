@@ -2,7 +2,7 @@
 #include "database/sqlite/SQLiteProgram.h"
 #include "database/sqlite/SQLiteStatementInfo.h"
 #include "database/DatabaseUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

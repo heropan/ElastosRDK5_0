@@ -251,7 +251,7 @@ module
          * a matching number is not found, then a generic caller info is returned,
          * with all relevant fields empty or null.
          */
-        GetCallerInfoEx(
+        GetCallerInfo(
             [in] IContext* ctx,
             [in] String number,
             [out] ICallerInfo** callerInfo);
@@ -264,7 +264,7 @@ module
          * @return the CallerInfo which contains the caller id for the given
          * number. The returned CallerInfo is null if no number is supplied.
          */
-        GetCallerInfoEx2(
+        GetCallerInfo(
             [in] IContext* ctx,
             [in] IUri* contactRef,
             [out] ICallerInfo** callerInfo);
@@ -277,7 +277,7 @@ module
          * @return the CallerInfo which contains the caller id for the given
          * number. The returned CallerInfo is null if no number is supplied.
          */
-        GetCallerInfoEx3(
+        GetCallerInfo(
             [in] IContext* ctx,
             [in] IUri* contactRef,
             [in] ICursor* cursor,

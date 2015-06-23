@@ -2,15 +2,15 @@
 #define __Html_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/StringBuilder.h>
 
 //using Org::Ccil::Cowan::TagSoup::IParser;
 using Org::Xml::Sax::IContentHandler;
 using Org::Xml::Sax::IXMLReader;
 using Org::Xml::Sax::IAttributes;
 using Org::Xml::Sax::ILocator;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 

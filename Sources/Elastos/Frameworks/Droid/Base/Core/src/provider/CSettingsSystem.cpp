@@ -21,7 +21,7 @@ ECode CSettingsSystem::GetContentUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::System::CONTENT_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -39,7 +39,7 @@ ECode CSettingsSystem::GetDefaultRingtoneUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::System::DEFAULT_RINGTONE_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -48,7 +48,7 @@ ECode CSettingsSystem::GetDefaultNotificationUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::System::DEFAULT_NOTIFICATION_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -57,7 +57,7 @@ ECode CSettingsSystem::GetDefaultAlarmAlertUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::System::DEFAULT_ALARM_ALERT_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -124,12 +124,12 @@ ECode CSettingsSystem::PutStringForUser(
     return Settings::System::PutStringForUser(resolver, name, value, userHandle, res);
 }
 
-ECode CSettingsSystem::GetUriForEx(
+ECode CSettingsSystem::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    return Settings::System::GetUriForEx(name, uri);
+    return Settings::System::GetUriFor(name, uri);
 }
 
 ECode CSettingsSystem::GetInt32(
@@ -153,7 +153,7 @@ ECode CSettingsSystem::GetInt32ForUser(
     return Settings::System::GetInt32ForUser(cr, name, def, userHandle, value);
 }
 
-ECode CSettingsSystem::GetInt32Ex(
+ECode CSettingsSystem::GetInt32(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Int32* value)
@@ -162,7 +162,7 @@ ECode CSettingsSystem::GetInt32Ex(
     return Settings::System::GetInt32(cr, name, value);
 }
 
-ECode CSettingsSystem::GetInt32ForUserEx(
+ECode CSettingsSystem::GetInt32ForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [in] */ Int32 userHandle,
@@ -215,7 +215,7 @@ ECode CSettingsSystem::GetInt64ForUser(
     return Settings::System::GetInt64ForUser(cr, name, def, userHandle, value);
 }
 
-ECode CSettingsSystem::GetInt64Ex(
+ECode CSettingsSystem::GetInt64(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Int64* value)
@@ -224,7 +224,7 @@ ECode CSettingsSystem::GetInt64Ex(
     return Settings::System::GetInt64(cr, name, value);
 }
 
-ECode CSettingsSystem::GetInt64ForUserEx(
+ECode CSettingsSystem::GetInt64ForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [in] */ Int32 userHandle,
@@ -276,7 +276,7 @@ ECode CSettingsSystem::GetFloatForUser(
     return Settings::System::GetFloatForUser(cr, name, def, userHandle, value);
 }
 
-ECode CSettingsSystem::GetFloatEx(
+ECode CSettingsSystem::GetFloat(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Float* value)
@@ -285,7 +285,7 @@ ECode CSettingsSystem::GetFloatEx(
     return Settings::System::GetFloat(cr, name, value);
 }
 
-ECode CSettingsSystem::GetFloatForUserEx(
+ECode CSettingsSystem::GetFloatForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [in] */ Int32 userHandle,

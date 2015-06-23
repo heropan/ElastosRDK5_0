@@ -27,11 +27,11 @@ ECode CGLDebugHelper::Wrap(
         rst = (IGL*)(new GLLogWrapper(gl, log, logArgumentNames))->Probe(EIID_IGL);
     }
     *glInstance = rst;
-    INTERFACE_ADDREF(*glInstance)
+    REFCOUNT_ADD(*glInstance)
     return NOERROR;
 }
 
-ECode CGLDebugHelper::WrapEx(
+ECode CGLDebugHelper::Wrap(
     /* [in] */ IEGL* egl,
     /* [in] */ Int32 configFlags,
     /* [in] */ Elastos::IO::IWriter* log,
@@ -40,7 +40,7 @@ ECode CGLDebugHelper::WrapEx(
     if (log != NULL) {
         *eglInterface = new EGLLogWrapper(egl, configFlags, log);
     }
-    INTERFACE_ADDREF(*eglInterface)
+    REFCOUNT_ADD(*eglInterface)
     return NOERROR;
 }
 

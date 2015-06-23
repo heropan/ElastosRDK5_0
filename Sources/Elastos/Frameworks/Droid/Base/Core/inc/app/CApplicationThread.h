@@ -4,9 +4,8 @@
 
 #include "_CApplicationThread.h"
 #include "app/CActivityThread.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::IObjectStringMap;

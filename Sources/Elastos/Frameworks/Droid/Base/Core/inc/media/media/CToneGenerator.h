@@ -30,7 +30,7 @@ public:
         /* [in] */ Int32 toneType,
         /* [out] */ Boolean* result);
 
-    CARAPI StartToneEx(
+    CARAPI StartTone(
         /* [in] */ Int32 toneType,
         /* [in] */ Int32 durationMs,
         /* [out] */ Boolean* result);

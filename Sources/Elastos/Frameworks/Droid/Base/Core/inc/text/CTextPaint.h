@@ -96,7 +96,7 @@ public:
      * @return The number of chars that were measured. Will always be <=
      *         abs(end - start).
      */
-    CARAPI BreakTextEx(
+    CARAPI BreakText(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -121,7 +121,7 @@ public:
      * @return The number of chars that were measured. Will always be <=
      *         abs(count).
      */
-    CARAPI BreakTextEx2(
+    CARAPI BreakText(
         /* [in] */ const String& text,
         /* [in] */ Boolean measureForwards,
         /* [in] */ Float maxWidth,
@@ -213,7 +213,7 @@ public:
      * Allocates a new FontMetrics object, and then calls getFontMetrics(fm)
      * with it, returning the object.
      */
-    CARAPI GetFontMetricsEx(
+    CARAPI GetFontMetrics(
         /* [out] */ IPaintFontMetrics** metrics);
 
     /**
@@ -230,7 +230,7 @@ public:
         /* [in] */ IPaintFontMetricsInt* fmi,
         /* [out] */ Int32* spacing);
 
-    CARAPI GetFontMetricsIntEx(
+    CARAPI GetFontMetricsInt(
         /* [out] */ IPaintFontMetricsInt** fmi);
 
     /**
@@ -963,7 +963,7 @@ public:
      * @param bounds Returns the unioned bounds of all the text. Must be
      *               allocated by the caller.
      */
-    CARAPI GetTextBoundsEx(
+    CARAPI GetTextBounds(
         /* [in] */ const ArrayOf<Char32>& text,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
@@ -996,7 +996,7 @@ public:
      *                 Must be at least a large as (end - start).
      * @return         the actual number of widths returned.
      */
-    CARAPI GetTextWidthsEx(
+    CARAPI GetTextWidths(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1013,7 +1013,7 @@ public:
      *               Must be at least a large as the text.
      * @return       the number of unichars in the specified text.
      */
-    CARAPI GetTextWidthsEx2(
+    CARAPI GetTextWidths(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1028,7 +1028,7 @@ public:
      *               Must be at least a large as the text.
      * @return       the number of unichars in the specified text.
      */
-    CARAPI GetTextWidthsEx3(
+    CARAPI GetTextWidths(
         /* [in] */ const String& text,
         /* [in] */ ArrayOf<Float>* widths,
         /* [out] */ Int32* number);
@@ -1087,7 +1087,7 @@ public:
      * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int, int)
      * @hide
      */
-    CARAPI GetTextRunAdvancesEx(
+    CARAPI GetTextRunAdvances(
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 index,
         /* [in] */ Int32 count,
@@ -1106,7 +1106,7 @@ public:
      * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
      * @hide
      */
-    CARAPI GetTextRunAdvancesEx2(
+    CARAPI GetTextRunAdvances(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1124,7 +1124,7 @@ public:
      * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
      * @hide
      */
-    CARAPI GetTextRunAdvancesEx3(
+    CARAPI GetTextRunAdvances(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1178,7 +1178,7 @@ public:
      *
      * @hide
      */
-    CARAPI GetTextRunAdvancesEx4(
+    CARAPI GetTextRunAdvances(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1232,7 +1232,7 @@ public:
      *
      * @hide
      */
-    CARAPI GetTextRunAdvancesEx5(
+    CARAPI GetTextRunAdvances(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1305,7 +1305,7 @@ public:
      * @return the offset of the next position, or -1
      * @hide
      */
-    CARAPI GetTextRunCursorEx(
+    CARAPI GetTextRunCursor(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
@@ -1340,7 +1340,7 @@ public:
      * @return the offset of the next position, or -1
      * @hide
      */
-    CARAPI GetTextRunCursorEx2(
+    CARAPI GetTextRunCursor(
         /* [in] */ const String& text,
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
@@ -1362,7 +1362,7 @@ public:
      * @param path  The path to receive the data describing the text. Must
      *              be allocated by the caller.
      */
-    CARAPI GetTextPathEx(
+    CARAPI GetTextPath(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1392,7 +1392,7 @@ public:
      * @param end   1 beyond the index of the last character to measure
      * @return      The width of the text
      */
-    CARAPI MeasureTextEx(
+    CARAPI MeasureText(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -1404,7 +1404,7 @@ public:
      * @param text  The text to measure. Cannot be null.
      * @return      The width of the text
      */
-    CARAPI MeasureTextEx2(
+    CARAPI MeasureText(
         /* [in] */ const String& text,
         /* [out] */ Float* width);
 
@@ -1416,7 +1416,7 @@ public:
      * @param end   1 beyond the index of the last character to measure
      * @return      The width of the text
      */
-    CARAPI MeasureTextEx3(
+    CARAPI MeasureText(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,

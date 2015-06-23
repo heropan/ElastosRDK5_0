@@ -4,9 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "_CMenuBuilder.h"
-#include "view/MenuMacro.h"
+
 #include "view/menu/MenuBuilderBase.h"
-#include "view/menu/MenuBuilderMacro.h"
+
 
 
 namespace Elastos {

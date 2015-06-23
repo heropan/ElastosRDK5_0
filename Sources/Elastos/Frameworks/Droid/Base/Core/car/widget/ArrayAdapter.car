@@ -41,7 +41,7 @@ module
          *
          * @param items The items to add at the end of the array.
          */
-        AddAllEx(
+        AddAll(
             [in] ArrayOf<IInterface* >* items) ;
 
         /**

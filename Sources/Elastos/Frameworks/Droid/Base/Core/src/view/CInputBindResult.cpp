@@ -49,7 +49,7 @@ ECode CInputBindResult::GetIIMSession(
 {
     VALIDATE_NOT_NULL(session);
     *session = mMethod;
-    INTERFACE_ADDREF(*session);
+    REFCOUNT_ADD(*session);
     return NOERROR;
 }
 

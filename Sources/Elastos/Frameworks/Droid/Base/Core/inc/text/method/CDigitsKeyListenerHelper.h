@@ -3,7 +3,7 @@
 #define __CDIGITSKEYLISTENERHELPER_H__
 
 #include "_CDigitsKeyListenerHelper.h"
-#include "text/method/BaseKeyListenerMacro.h"
+
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;
@@ -23,12 +23,12 @@ public:
     CARAPI GetInstance(
         /* [out] */ IDigitsKeyListener** ret);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ Boolean sign,
         /* [in] */ Boolean decimal,
         /* [out] */ IDigitsKeyListener** ret);
 
-    CARAPI GetInstanceEx2(
+    CARAPI GetInstance(
         /* [in] */ const String& accepted,
         /* [out] */ IDigitsKeyListener** ret);
 };

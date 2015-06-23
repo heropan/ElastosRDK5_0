@@ -1,5 +1,5 @@
 #include "LocalMediaItem.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CArrayOf;

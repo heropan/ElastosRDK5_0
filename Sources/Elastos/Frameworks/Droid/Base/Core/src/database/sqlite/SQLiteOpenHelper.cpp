@@ -4,7 +4,7 @@
 #ifdef DROID_CORE
 #include "database/sqlite/CSQLiteDatabaseHelper.h"
 #endif
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFile;
@@ -110,7 +110,7 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
         }
         else if(!writable || (mDatabase->IsReadOnly(&isReadOnly), !isReadOnly)) {
             *database = mDatabase;
-            INTERFACE_ADDREF(*database)
+            REFCOUNT_ADD(*database)
             return NOERROR;  // The database is already open for business
         }
     }
@@ -217,7 +217,7 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
 
     mDatabase = db;
     *database = db;
-    INTERFACE_ADDREF(*database)
+    REFCOUNT_ADD(*database)
 //} finally {
     mIsInitializing = FALSE;
     if (db != NULL && db != mDatabase) {

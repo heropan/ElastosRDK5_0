@@ -3,13 +3,13 @@
 
 #include "speech/tts/PlaybackQueueItem.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 //#include <elastos/Queue.h>//#include <elastos/BlockingQueue.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 //using Elastos::Utility::Queue;//using Elastos::Utility::BlockingQueue;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Droid {

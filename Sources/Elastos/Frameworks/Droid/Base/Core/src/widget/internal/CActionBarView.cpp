@@ -161,7 +161,7 @@ ECode CActionBarView::SetIcon(
     return ActionBarView::SetIcon(icon);
 }
 
-ECode CActionBarView::SetIconEx(
+ECode CActionBarView::SetIcon(
     /* [in] */ Int32 resId)
 {
     return ActionBarView::SetIcon(resId);
@@ -173,7 +173,7 @@ ECode CActionBarView::SetLogo(
     return ActionBarView::SetLogo(logo);
 }
 
-ECode CActionBarView::SetLogoEx(
+ECode CActionBarView::SetLogo(
     /* [in] */ Int32 resId)
 {
     return ActionBarView::SetLogo(resId);

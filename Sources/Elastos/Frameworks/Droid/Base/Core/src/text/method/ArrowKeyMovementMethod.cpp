@@ -7,7 +7,7 @@
 #include "graphics/CRect.h"
 #include "view/CKeyEvent.h"
 //#include "os/ElObject.h"
-//#include <elastos/Object.h>
+//#include <elastos/Core/Object.h>
 
 using Elastos::Droid::Text::ISelectionPositionIterator;
 using Elastos::Droid::Text::EIID_ISelectionPositionIterator;
@@ -15,7 +15,7 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IViewParent;
-//using Elastos::Core::Threading::Object;
+//using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -54,7 +54,7 @@ Int32 ArrowKeyMovementMethod::GetPageHeight(
     AutoPtr<IRect> rect;
     CRect::New((IRect**)&rect);
     Boolean bGlobalVisibleRect;
-    widget->GetGlobalVisibleRectEx(rect, &bGlobalVisibleRect);
+    widget->GetGlobalVisibleRect(rect, &bGlobalVisibleRect);
     Int32 height;
     return bGlobalVisibleRect ? (rect->GetHeight(&height), height) : 0;
 }

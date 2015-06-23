@@ -70,7 +70,7 @@ AppErrorDialog::AppErrorDialog(
         CStringWrapper::New(pName, (ICharSequence**)&pNamecs);
         args->Set(1, (IInterface*)pNamecs.Get());
         String resStr;
-        res->GetStringEx(R::string::aerr_application, args, &resStr);
+        res->GetString(R::string::aerr_application, args, &resStr);
         AutoPtr<ICharSequence> resCs;
         CStringWrapper::New(resStr, (ICharSequence**)&resCs);
         SetMessage(resCs);
@@ -80,7 +80,7 @@ AppErrorDialog::AppErrorDialog(
         String s;
         AutoPtr<ArrayOf<IInterface*> > nameArray = ArrayOf<IInterface*>::Alloc(1);
         nameArray->Set(0, (IInterface*)name.Get());
-        res->GetStringEx(R::string::aerr_process,
+        res->GetString(R::string::aerr_process,
                 nameArray, &s);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(s, (ICharSequence**)&cs);

@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_NET_CNETWORKTEMPLATE_H__
 
 #include "_CNetworkTemplate.h"
-#include <elastos/Mutex.h>
 
 
 namespace Elastos {
@@ -30,7 +29,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ INetworkTemplate* obj,
         /* [out] */ Boolean* result);
 
@@ -76,7 +75,7 @@ public:
     static CARAPI BuildTemplateWifi(
         /* [out] */ INetworkTemplate** result);
 
-    static CARAPI BuildTemplateWifiEx(
+    static CARAPI BuildTemplateWifi(
         /* [in] */ const String& networkId,
         /* [out] */ INetworkTemplate** result);
 

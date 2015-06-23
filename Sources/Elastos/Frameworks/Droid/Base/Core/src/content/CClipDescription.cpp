@@ -2,7 +2,7 @@
 #include "content/CClipDescription.h"
 #include "content/CClipDescriptionHelper.h"
 #include "text/TextUtils.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Text::TextUtils;
 
@@ -23,7 +23,7 @@ ECode CClipDescription::GetLabel(
 {
     VALIDATE_NOT_NULL(label)
     *label = mLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -82,7 +82,7 @@ ECode CClipDescription::FilterMimeTypes(
     }
     array.Clear();
     *mimeTypes = rawArray;
-    INTERFACE_ADDREF(*mimeTypes);
+    REFCOUNT_ADD(*mimeTypes);
     return NOERROR;
 }
 
@@ -259,7 +259,7 @@ ECode CClipDescription::CreateStringArray(
             (*tmpArray)[i] = tmp;
         }
         *val = tmpArray;
-        INTERFACE_ADDREF(*val);
+        REFCOUNT_ADD(*val);
     }
 
     return NOERROR;

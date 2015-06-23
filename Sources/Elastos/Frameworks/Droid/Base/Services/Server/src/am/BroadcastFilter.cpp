@@ -2,15 +2,15 @@
 #include "am/CActivityManagerService.h"
 #include "am/BroadcastFilter.h"
 #include "am/ReceiverList.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::EIID_IIntentFilter;
 //TODO using Elastos::Droid::Content::CIntentFilter;
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -432,7 +432,7 @@ ECode BroadcastFilter::Match(
     return NOERROR;
 }
 
-ECode BroadcastFilter::MatchEx(
+ECode BroadcastFilter::Match(
     /* [in] */ const String& action,
     /* [in] */ const String& type,
     /* [in] */ const String& scheme,

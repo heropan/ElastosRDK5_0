@@ -4,8 +4,8 @@
 #include "net/CUriHelper.h"
 #include "content/CContentUris.h"
 #include "graphics/CBitmapFactory.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "provider/CMediaStoreVideoMedia.h"
 #include "provider/CMediaStoreImagesMedia.h"
 #include "media/media/CMiniThumbFile.h"
@@ -153,14 +153,14 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                         ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
                             (IBitmapFactory**)&factory));
 
-                        factory->DecodeByteArrayEx(*sThumbBuf, 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
+                        factory->DecodeByteArray(*sThumbBuf, 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
                         if (bitmap == NULL) {
                             // Logger::W(TAG, "couldn't decode byte array.");
                         }
                     }
                 }
                 *outBitmap = bitmap;
-                INTERFACE_ADDREF(*outBitmap);
+                REFCOUNT_ADD(*outBitmap);
                 return NOERROR;
             } else if (kind == MINI_KIND) {
                 String column = isVideo ? String("video_id=") : String("image_id=");
@@ -171,7 +171,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                     bitmap = GetMiniThumbFromFile(c, baseUri, cr, options);
                     if (bitmap != NULL) {
                         *outBitmap = bitmap;
-                        INTERFACE_ADDREF(*outBitmap);
+                        REFCOUNT_ADD(*outBitmap);
                         return NOERROR;
                     }
                 }
@@ -196,7 +196,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         // This happens when original image/video doesn't exist.
         if (c == NULL) {
             *outBitmap = NULL;
-            INTERFACE_ADDREF(*outBitmap);
+            REFCOUNT_ADD(*outBitmap);
             return NOERROR;
         }
 
@@ -218,7 +218,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                         (IBitmapFactory**)&factory));
 
                     bitmap = NULL;
-                    factory->DecodeByteArrayEx(*sThumbBuf, 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
+                    factory->DecodeByteArray(*sThumbBuf, 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
 
                     if (bitmap == NULL) {
                         //Log.w(TAG, "couldn't decode byte array.");
@@ -263,7 +263,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                 Boolean bSucceeded;
                 if (c == NULL || !(c->MoveToFirst(&bSucceeded), bSucceeded)) {
                     *outBitmap = NULL;
-                    INTERFACE_ADDREF(*outBitmap);
+                    REFCOUNT_ADD(*outBitmap);
                     return NOERROR;
                 }
                 c->GetString(1, &filePath);
@@ -283,7 +283,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         thumbFile->Deactivate();
     //}
     *outBitmap = bitmap;
-    INTERFACE_ADDREF(*outBitmap);
+    REFCOUNT_ADD(*outBitmap);
     return NOERROR;
 }
 

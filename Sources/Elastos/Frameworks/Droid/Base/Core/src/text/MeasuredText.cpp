@@ -1,5 +1,5 @@
 #include "text/MeasuredText.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "util/ArrayUtils.h"
 #include "text/TextUtils.h"
 #include "text/TextDirectionHeuristics.h"

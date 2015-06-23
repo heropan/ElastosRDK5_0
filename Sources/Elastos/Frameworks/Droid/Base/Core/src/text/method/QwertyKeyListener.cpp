@@ -9,10 +9,10 @@
 #include "view/CKeyCharacterMap.h"
 #include "view/CKeyEvent.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
 #include <stdio.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using namespace Elastos::Core;
 using Elastos::Core::StringUtils;
@@ -228,7 +228,7 @@ Boolean QwertyKeyListener::OnKeyDown(
 
     Int32 eMetaState;
     Int32 i;
-    event->GetUnicodeCharEx((event->GetMetaState(&eMetaState), eMetaState)|GetMetaState(content), &i);
+    event->GetUnicodeChar((event->GetMetaState(&eMetaState), eMetaState)|GetMetaState(content), &i);
 
     if (!mFullKeyboard) {
         Int32 count;
@@ -349,7 +349,7 @@ Boolean QwertyKeyListener::OnKeyDown(
         str.Append(i);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
-        content->ReplaceEx(selStart, selEnd, cs);
+        content->Replace(selStart, selEnd, cs);
 
         Int32 oldStart;
         content->GetSpanStart(OLD_SEL_START, &oldStart);
@@ -406,7 +406,7 @@ Boolean QwertyKeyListener::OnKeyDown(
                                 ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 AutoPtr<ICharSequence> cs;
                 CStringWrapper::New(rep, (ICharSequence**)&cs);
-                content->ReplaceEx(x, oldStart, cs);
+                content->Replace(x, oldStart, cs);
             }
         }
 
@@ -434,7 +434,7 @@ Boolean QwertyKeyListener::OnKeyDown(
                     if (Character::IsLetter(c) || Character::IsDigit(c)) {
                         AutoPtr<ICharSequence> cs;
                         CStringWrapper::New(String("."), (ICharSequence**)&cs);
-                        content->ReplaceEx(selEnd - 2, selEnd - 1, cs);
+                        content->Replace(selEnd - 2, selEnd - 1, cs);
                     }
                 }
             }
@@ -484,7 +484,7 @@ Boolean QwertyKeyListener::OnKeyDown(
                                 en, en, ISpanned::SPAN_POINT_POINT);
                 AutoPtr<ICharSequence> oldCs;
                 CStringWrapper::New(old, (ICharSequence**)&oldCs);
-                content->ReplaceEx(st, en, oldCs);
+                content->Replace(st, en, oldCs);
 
                 content->GetSpanStart(TextKeyListener::INHIBIT_REPLACEMENT, &en);
                 if (en - 1 >= 0) {

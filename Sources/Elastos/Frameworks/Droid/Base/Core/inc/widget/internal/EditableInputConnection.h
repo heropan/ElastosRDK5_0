@@ -4,9 +4,8 @@
 
 #include "view/inputmethod/BaseInputConnection.h"
 #include "view/inputmethod/CExtractedText.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Text::ISpanned;

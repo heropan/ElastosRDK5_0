@@ -1,7 +1,7 @@
 
 #include "CPhoneNumberUtilsHelper.h"
 #include "os/SystemProperties.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Droid::Os::SystemProperties;
@@ -224,7 +224,7 @@ ECode CPhoneNumberUtilsHelper::Compare(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::CompareEx(
+ECode CPhoneNumberUtilsHelper::Compare(
     /* [in] */ IContext* context,
     /* [in] */ const String& a,
     /* [in] */ const String& b,
@@ -234,7 +234,7 @@ ECode CPhoneNumberUtilsHelper::CompareEx(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::CompareEx2(
+ECode CPhoneNumberUtilsHelper::Compare(
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [in] */ Boolean useStrictComparation,
@@ -262,7 +262,7 @@ ECode CPhoneNumberUtilsHelper::CompareStrictly(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::CompareStrictlyEx(
+ECode CPhoneNumberUtilsHelper::CompareStrictly(
     /* [in] */ const String& a,
     /* [in] */ const String& b,
     /* [in] */ Boolean acceptInvalidCCCPrefix,
@@ -382,7 +382,7 @@ ECode CPhoneNumberUtilsHelper::GetFormatTypeForLocale(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ IEditable* text,
     /* [in] */ Int32 defaultFormattingType)
 {
@@ -413,7 +413,7 @@ ECode CPhoneNumberUtilsHelper::FormatNumberToE164(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx2(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ const String& phoneNumber,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ String* res)
@@ -422,7 +422,7 @@ ECode CPhoneNumberUtilsHelper::FormatNumberEx2(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::FormatNumberEx3(
+ECode CPhoneNumberUtilsHelper::FormatNumber(
     /* [in] */ const String& phoneNumber,
     /* [in] */ const String& phoneNumberE164,
     /* [in] */ const String& defaultCountryIso,
@@ -464,7 +464,7 @@ ECode CPhoneNumberUtilsHelper::IsPotentialEmergencyNumber(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::IsEmergencyNumberEx(
+ECode CPhoneNumberUtilsHelper::IsEmergencyNumber(
     /* [in] */ const String& number,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ Boolean* res)
@@ -473,7 +473,7 @@ ECode CPhoneNumberUtilsHelper::IsEmergencyNumberEx(
     return NOERROR;
 }
 
-ECode CPhoneNumberUtilsHelper::IsPotentialEmergencyNumberEx(
+ECode CPhoneNumberUtilsHelper::IsPotentialEmergencyNumber(
     /* [in] */ const String& number,
     /* [in] */ const String& defaultCountryIso,
     /* [out] */ Boolean* res)

@@ -4,12 +4,12 @@
 #include "net/CNetworkStats.h"
 #include "os/Process.h"
 #include "os/ServiceManager.h"
-#include "elastos/StringBuffer.h"
+#include <elastos/core/StringBuffer.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 // Returns an ASCII decimal number read from the specified file, -1 on error.
 
 
@@ -187,7 +187,7 @@ ECode CTrafficStats::StopDataProfiling(
 
     sActiveProfilingStart = NULL;
     *retvalue = profilingDelta;
-    INTERFACE_ADDREF(*retvalue);
+    REFCOUNT_ADD(*retvalue);
     return NOERROR;
 }
 
@@ -196,11 +196,11 @@ ECode CTrafficStats::IncrementOperationCount(
 {
     Int32 tag;
     GetThreadStatsTag(&tag);
-    IncrementOperationCountEx(tag, operationCount);
+    IncrementOperationCount(tag, operationCount);
     return NOERROR;
 }
 
-ECode CTrafficStats::IncrementOperationCountEx(
+ECode CTrafficStats::IncrementOperationCount(
     /* [in] */ Int32 tag,
     /* [in] */ Int32 operationCount)
 {

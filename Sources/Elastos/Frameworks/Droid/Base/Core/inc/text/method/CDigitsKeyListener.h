@@ -3,10 +3,10 @@
 #define __CDIGITSKEYLISTENER_H__
 
 #include "_CDigitsKeyListener.h"
-#include "text/method/BaseKeyListenerMacro.h"
+
 #include "text/method/DigitsKeyListener.h"
-#include "text/method/KeyListenerMacro.h"
-#include "text/InputFilterMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

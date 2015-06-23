@@ -3,7 +3,7 @@
 // #include "Uri.h"
 #include <elautoptr.h>
 #include <stdio.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include <utils/SystemClock.h>
 #include <unistd.h>
 // #include "MyThread.h"

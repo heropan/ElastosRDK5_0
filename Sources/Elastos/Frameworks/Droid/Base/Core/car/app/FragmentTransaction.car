@@ -57,10 +57,10 @@ module
 
         /**
          * Calls #add(int, Fragment, String) with a null tag.
-         * 
+         *
          * @sa #add(int, Fragment, String)
          */
-        AddEx(
+        Add(
             [in] Int32 containerViewId,
             [in] IFragment* fragment);
 
@@ -83,7 +83,7 @@ module
          *
          * @return Returns the same FragmentTransaction instance.
          */
-        AddEx2(
+        Add(
             [in] Int32 containerViewId,
             [in] IFragment* fragment,
             [in] String tag);
@@ -118,7 +118,7 @@ module
          *
          * @return Returns the same FragmentTransaction instance.
          */
-        ReplaceEx(
+        Replace(
             [in] Int32 containerViewId,
             [in] IFragment* fragment,
             [in] String tag);
@@ -209,7 +209,7 @@ module
          * and <code>popExit</code> animations will be played for enter/exit
          * operations specifically when popping the back stack.
          */
-        SetCustomAnimationsEx(
+        SetCustomAnimations(
             [in] Int32 enter,
             [in] Int32 exit,
             [in] Int32 popEnter,
@@ -287,7 +287,7 @@ module
          *
          * @sa #setBreadCrumbTitle(int)
          */
-        SetBreadCrumbTitleEx(
+        SetBreadCrumbTitle(
             [in] ICharSequence* text);
 
         /**
@@ -308,7 +308,7 @@ module
          *
          * @sa #setBreadCrumbShortTitle(int)
          */
-        SetBreadCrumbShortTitleEx(
+        SetBreadCrumbShortTitle(
             [in] ICharSequence* text);
 
         /**

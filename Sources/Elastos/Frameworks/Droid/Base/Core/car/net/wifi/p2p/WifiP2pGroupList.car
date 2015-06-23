@@ -50,7 +50,7 @@ module
          *
          * @param deviceAddress
          */
-        RemoveEx(
+        Remove(
             [in] String deviceAddress);
 
         /**
@@ -80,7 +80,7 @@ module
          * @param ssid ssid.
          * @return the network id. if not found, return -1.
          */
-        GetNetworkIdEx(
+        GetNetworkId(
             [in] String deviceAddress,
             [in] String ssid,
             [out] Int32* networkId);

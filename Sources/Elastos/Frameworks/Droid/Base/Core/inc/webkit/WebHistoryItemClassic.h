@@ -3,9 +3,8 @@
 #define __WEBHISTORYITEMCLASSIC_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IBitmap;
 
 #ifdef __cplusplus

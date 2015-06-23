@@ -29,7 +29,7 @@ module
             [in] IInterface* obj,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] IRouteInfo* obj,
             [out] Boolean* result);
 
@@ -46,7 +46,7 @@ module
             [in] IInetAddress* host,
             [out] IRouteInfo** info);
 
-        MakeHostRouteEx(
+        MakeHostRoute(
             [in] IInetAddress* host,
             [in] IInetAddress* gateway,
             [out] IRouteInfo** info);

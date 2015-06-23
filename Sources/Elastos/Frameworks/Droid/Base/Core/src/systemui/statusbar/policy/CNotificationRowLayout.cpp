@@ -125,7 +125,7 @@ ECode CNotificationRowLayout::GetChildAtPosition(
 {
     VALIDATE_NOT_NULL(view);
     *view = NotificationRowLayout::GetChildAtPosition(ev);
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -136,18 +136,18 @@ ECode CNotificationRowLayout::GetChildAtRawPosition(
 {
     VALIDATE_NOT_NULL(view);
     *view = NotificationRowLayout::GetChildAtRawPosition(touchX, touchY);
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
-ECode CNotificationRowLayout::GetChildAtPositionEx(
+ECode CNotificationRowLayout::GetChildAtPosition(
     /* [in] */ Float touchX,
     /* [in] */ Float touchY,
     /* [out] */ IView** view)
 {
     VALIDATE_NOT_NULL(view);
-    *view = NotificationRowLayout::GetChildAtPositionEx(touchX, touchY);
-    INTERFACE_ADDREF(*view);
+    *view = NotificationRowLayout::GetChildAtPosition(touchX, touchY);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -157,7 +157,7 @@ ECode CNotificationRowLayout::GetChildContentView(
 {
     VALIDATE_NOT_NULL(view);
     *view = NotificationRowLayout::GetChildContentView(v);
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -179,11 +179,11 @@ ECode CNotificationRowLayout::DismissRowAnimated(
     return NotificationRowLayout::DismissRowAnimated(child);
 }
 
-ECode CNotificationRowLayout::DismissRowAnimatedEx(
+ECode CNotificationRowLayout::DismissRowAnimated(
     /* [in] */ IView* child,
     /* [in] */ Int32 vel)
 {
-    return NotificationRowLayout::DismissRowAnimatedEx(child, vel);
+    return NotificationRowLayout::DismissRowAnimated(child, vel);
 }
 
 }// namespace Policy

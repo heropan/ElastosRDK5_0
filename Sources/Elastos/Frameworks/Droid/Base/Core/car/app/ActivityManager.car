@@ -459,7 +459,7 @@ module
          *
          * @sa android.Manifest.permission#GET_TASKS
          */
-        GetRunningTasksEx(
+        GetRunningTasks(
             [in] Int32 maxNum,
             [out] IObjectContainer** tasks);
 
@@ -551,7 +551,7 @@ module
          *
          * @sa Context#startActivity(Intent, android.os.Bundle) Context.startActivity(Intent, Bundle)
          */
-        MoveTaskToFrontEx(
+        MoveTaskToFront(
             [in] Int32 taskId,
             [in] Int32 flags,
             [in] IBundle* options);

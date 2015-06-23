@@ -1,8 +1,8 @@
 #include "sax/Element.h"
 #include "sax/CChildren.h"
 #include "sax/CElement.h"
-#include <elastos/Algorithm.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -28,10 +28,10 @@ ECode Element::GetChild(
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return GetChildEx(String(""), localName, result);
+    return GetChild(String(""), localName, result);
 }
 
-ECode Element::GetChildEx(
+ECode Element::GetChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
@@ -56,10 +56,10 @@ ECode Element::RequireChild(
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return RequireChildEx(String(""), localName, result);
+    return RequireChild(String(""), localName, result);
 }
 
-ECode Element::RequireChildEx(
+ECode Element::RequireChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
@@ -68,7 +68,7 @@ ECode Element::RequireChildEx(
     *result = NULL;
 
     AutoPtr<IElement> child;
-    FAIL_RETURN(GetChildEx(uri, localName, (IElement**)&child))
+    FAIL_RETURN(GetChild(uri, localName, (IElement**)&child))
 
     if (mRequiredChilden == NULL) {
         mRequiredChilden = new List<AutoPtr<IElement> >();
@@ -82,7 +82,7 @@ ECode Element::RequireChildEx(
     }
 
     *result = child;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

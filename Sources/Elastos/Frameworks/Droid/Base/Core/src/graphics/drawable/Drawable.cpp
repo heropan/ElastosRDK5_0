@@ -43,7 +43,7 @@ ECode Drawable::ConstantState::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -113,7 +113,7 @@ ECode Drawable::SetBounds(
 ECode Drawable::CopyBounds(
     /* [in] */ IRect* bounds)
 {
-    bounds->SetEx(mBounds);
+    bounds->Set(mBounds);
     return NOERROR;
 }
 
@@ -586,7 +586,7 @@ ECode Drawable::CreateFromXmlInner(
         if (r != NULL) {
             AutoPtr<IDisplayMetrics> metrics;
             r->GetDisplayMetrics((IDisplayMetrics**)&metrics);
-            IBitmapDrawable::Probe(*drawable)->SetTargetDensityEx(metrics);
+            IBitmapDrawable::Probe(*drawable)->SetTargetDensity(metrics);
         }
     }
     else if (name.Equals("nine-patch")) {
@@ -594,7 +594,7 @@ ECode Drawable::CreateFromXmlInner(
         if (r != NULL) {
             AutoPtr<IDisplayMetrics> metrics;
             r->GetDisplayMetrics((IDisplayMetrics**)&metrics);
-            INinePatchDrawable::Probe(*drawable)->SetTargetDensityEx(metrics);
+            INinePatchDrawable::Probe(*drawable)->SetTargetDensity(metrics);
         }
     }
      else {
@@ -620,7 +620,7 @@ ECode Drawable::CreateFromPath(
     AutoPtr<IBitmapFactory> factory;
     FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     AutoPtr<IBitmap> bm;
-    FAIL_RETURN(factory->DecodeFileEx(pathName, (IBitmap**)&bm));
+    FAIL_RETURN(factory->DecodeFile(pathName, (IBitmap**)&bm));
     if (bm != NULL) {
         return DrawableFromBitmap(NULL, bm, NULL, NULL, NULL, pathName, drawable);
     }

@@ -17,7 +17,6 @@ SOURCES += Eunit.cpp
 LIBRARIES += droid/test/test.lib
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
 LIBRARIES += $(XDK_USER_LIB)/Eunit.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

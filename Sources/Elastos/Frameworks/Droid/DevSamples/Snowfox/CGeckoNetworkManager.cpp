@@ -2,7 +2,7 @@
 #include "CGeckoNetworkManager.h"
 #include "GeckoApp.h"
 #include "GeckoAppShell.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "stdio.h"
 
 using Elastos::Droid::Net::INetworkInfo;

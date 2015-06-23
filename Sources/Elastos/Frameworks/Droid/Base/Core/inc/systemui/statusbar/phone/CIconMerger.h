@@ -2,9 +2,9 @@
 #define __CICONMERGER_H_
 
 #include "_CIconMerger.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/phone/IconMerger.h"
 
 namespace Elastos {

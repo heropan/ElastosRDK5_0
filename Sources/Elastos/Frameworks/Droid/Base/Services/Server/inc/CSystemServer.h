@@ -23,9 +23,7 @@
 #include "CBatteryService.h"
 #include "CThrottleService.h"
 #include "CLocationManagerService.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Server::Usb::CUsbService;
 using Elastos::Droid::Server::CRecognitionManagerService;

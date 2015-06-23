@@ -1,6 +1,6 @@
 #include "systemui/statusbar/tablet/TabletStatusBar.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 #include "os/SystemProperties.h"
 #include "os/Process.h"
 #include "text/TextUtils.h"
@@ -547,7 +547,7 @@ ECode TabletStatusBar::MyTransitionListener::StartTransition(
     /* [in] */ IView* view,
     /* [in] */ Int32 transitionType)
 {
-    mBar->InvalidateEx2();
+    mBar->Invalidate();
     return NOERROR;
 }
 
@@ -786,7 +786,7 @@ void TabletStatusBar::AddStatusBarWindow()
     lp->SetTitle(titleSeq);
     lp->SetPackageName(pkgName);
 
-    mWindowManager->AddViewEx5(sb, lp);
+    mWindowManager->AddView(sb, lp);
 }
 
 void TabletStatusBar::AddPanelWindows()
@@ -883,7 +883,7 @@ void TabletStatusBar::AddPanelWindows()
     // lp.windowAnimations = R::style::Animation_ZoomButtons; // simple fade
 
     mNotificationPanelParams = lp;
-    mWindowManager->AddViewEx5(mNotificationPanel, lp);
+    mWindowManager->AddView(mNotificationPanel, lp);
 
     // Search Panel
     mStatusBarView->SetBar(THIS_PROBE(IBaseStatusBar));
@@ -919,7 +919,7 @@ void TabletStatusBar::AddPanelWindows()
     lp->SetTitle(titleSeq);
     lp->SetWindowAnimations(SystemUIR::style::Animation_RecentPanel);
 
-    mWindowManager->AddViewEx5(mInputMethodsPanel, lp);
+    mWindowManager->AddView(mInputMethodsPanel, lp);
 
     // Compatibility mode selector panel
     tmpView = NULL;
@@ -949,7 +949,7 @@ void TabletStatusBar::AddPanelWindows()
     CStringWrapper::New(String("CompatModePanel"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetWindowAnimations(R::style::Animation_Dialog);
-    mWindowManager->AddViewEx5(mCompatModePanel, lp);
+    mWindowManager->AddView(mCompatModePanel, lp);
 
     mRecentButton->SetOnTouchListener(mRecentsPreloadOnTouchListener);
 
@@ -1186,8 +1186,8 @@ AutoPtr<IView> TabletStatusBar::MakeStatusBarView()
     CLayoutTransition::New((ILayoutTransition**)&lt);
     lt->SetDuration(250);
     // don't wait for these transitions; we just want icons to fade in/out, not move around
-    lt->SetDurationEx(ILayoutTransition::CHANGE_APPEARING, 0);
-    lt->SetDurationEx(ILayoutTransition::CHANGE_DISAPPEARING, 0);
+    lt->SetDuration(ILayoutTransition::CHANGE_APPEARING, 0);
+    lt->SetDuration(ILayoutTransition::CHANGE_DISAPPEARING, 0);
     AutoPtr<ITransitionListener> l = new MyTransitionListener(mBarContents);
     lt->AddTransitionListener(l);
 
@@ -1239,13 +1239,13 @@ AutoPtr<IView> TabletStatusBar::MakeStatusBarView()
     (*param1)[0] = 0.5f; (*param1)[1] = 1.f;
     AutoPtr<IObjectAnimator> anim1 = CObjectAnimator::OfFloat(NULL, String("alpha"), param1);
     xition->SetAnimator(ILayoutTransition::APPEARING, anim1);
-    xition->SetDurationEx(ILayoutTransition::APPEARING, LIGHTS_COMING_UP_SYSBAR_DURATION);
+    xition->SetDuration(ILayoutTransition::APPEARING, LIGHTS_COMING_UP_SYSBAR_DURATION);
     xition->SetStartDelay(ILayoutTransition::APPEARING, 0);
     AutoPtr<ArrayOf<Float> > param2 = ArrayOf<Float>::Alloc(2);
     (*param2)[0] = 1.f; (*param2)[1] = 0.f;
     AutoPtr<IObjectAnimator> anim2 = CObjectAnimator::OfFloat(NULL, String("alpha"), param2);
     xition->SetAnimator(ILayoutTransition::DISAPPEARING, anim2);
-    xition->SetDurationEx(ILayoutTransition::DISAPPEARING, LIGHTS_GOING_OUT_SYSBAR_DURATION);
+    xition->SetDuration(ILayoutTransition::DISAPPEARING, LIGHTS_GOING_OUT_SYSBAR_DURATION);
     xition->SetStartDelay(ILayoutTransition::DISAPPEARING, 0);
     AutoPtr<IViewGroup> group;
     sb->FindViewById(SystemUIR::id::bar_contents_holder, (IView**)&group);
@@ -1257,13 +1257,13 @@ AutoPtr<IView> TabletStatusBar::MakeStatusBarView()
     (*param3)[0] = 0.f; (*param3)[1] = 1.f;
     AutoPtr<IObjectAnimator> anim3 = CObjectAnimator::OfFloat(NULL, String("alpha"), param3);
     xition->SetAnimator(ILayoutTransition::APPEARING, anim3);
-    xition->SetDurationEx(ILayoutTransition::APPEARING, LIGHTS_GOING_OUT_SHADOW_DURATION);
+    xition->SetDuration(ILayoutTransition::APPEARING, LIGHTS_GOING_OUT_SHADOW_DURATION);
     xition->SetStartDelay(ILayoutTransition::APPEARING, LIGHTS_GOING_OUT_SHADOW_DELAY);
     AutoPtr<ArrayOf<Float> > param4 = ArrayOf<Float>::Alloc(2);
     (*param4)[0] = 1.f; (*param4)[1] = 0.f;
     AutoPtr<IObjectAnimator> anim4 = CObjectAnimator::OfFloat(NULL, String("alpha"), param4);
     xition->SetAnimator(ILayoutTransition::DISAPPEARING, anim4);
-    xition->SetDurationEx(ILayoutTransition::DISAPPEARING, LIGHTS_COMING_UP_SHADOW_DURATION);
+    xition->SetDuration(ILayoutTransition::DISAPPEARING, LIGHTS_COMING_UP_SHADOW_DURATION);
     xition->SetStartDelay(ILayoutTransition::DISAPPEARING, 0);
     AutoPtr<IViewGroup> group1;
     sb->FindViewById(SystemUIR::id::bar_shadow_holder, (IView**)&group1);
@@ -1861,7 +1861,7 @@ void TabletStatusBar::ShowCompatibilityHelp()
             | IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_NOTHING);
     lp->SetWindowAnimations(R::style::Animation_ZoomButtons); // simple fade
 
-    mWindowManager->AddViewEx5(mCompatibilityHelpDialog, lp);
+    mWindowManager->AddView(mCompatibilityHelpDialog, lp);
 }
 
 void TabletStatusBar::HideCompatibilityHelp()
@@ -2073,7 +2073,7 @@ ECode TabletStatusBar::UpdateNotificationIcons()
                 dndNotification, user, (IStatusBarNotification**)&notification);
 
             mNotificationDNDDummyEntry = new NotificationDataEntry(NULL, notification, iconView);
-            mIconLayout->AddViewEx3(iconView, params);
+            mIconLayout->AddView(iconView, params);
         }
 
         return NOERROR;
@@ -2138,7 +2138,7 @@ ECode TabletStatusBar::UpdateNotificationIcons()
         AutoPtr<IViewParent> parent;
         v->GetParent((IViewParent**)&parent);
         if (parent == NULL) {
-            mIconLayout->AddViewEx4(v, i, params);
+            mIconLayout->AddView(v, i, params);
         }
     }
     return NOERROR;
@@ -2190,7 +2190,7 @@ void TabletStatusBar::LoadNotificationPanel()
         if (parent == NULL) {
             // the notification panel has the most important things at the bottom
             mPile->GetChildCount(&childCount);
-            mPile->AddViewEx(v, Math::Min(toShow.GetSize() - 1 - i, childCount));
+            mPile->AddView(v, Math::Min(toShow.GetSize() - 1 - i, childCount));
         }
     }
 

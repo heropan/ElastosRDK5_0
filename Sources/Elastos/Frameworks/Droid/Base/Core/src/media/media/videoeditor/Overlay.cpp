@@ -109,7 +109,7 @@ ECode Overlay::SetDuration(
     Int64 oldDurationMs = mDurationMs;
     mDurationMs = durationMs;
 
-    ((MediaItem*)mMediaItem.Get())->InvalidateTransitionsEx(mStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
+    ((MediaItem*)mMediaItem.Get())->InvalidateTransitions(mStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
 
     return NOERROR;
 }
@@ -142,7 +142,7 @@ ECode Overlay::SetStartTime(
     Int64 oldStartTimeMs = mStartTimeMs;
     mStartTimeMs = startTimeMs;
 
-    ((MediaItem*)mMediaItem.Get())->InvalidateTransitionsEx(oldStartTimeMs, mDurationMs, mStartTimeMs, mDurationMs);
+    ((MediaItem*)mMediaItem.Get())->InvalidateTransitions(oldStartTimeMs, mDurationMs, mStartTimeMs, mDurationMs);
 
     return NOERROR;
 }
@@ -170,7 +170,7 @@ ECode Overlay::SetStartTimeAndDuration(
     mStartTimeMs = startTimeMs;
     mDurationMs = durationMs;
 
-    ((MediaItem*)mMediaItem.Get())->InvalidateTransitionsEx(oldStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
+    ((MediaItem*)mMediaItem.Get())->InvalidateTransitions(oldStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
 
     return NOERROR;
 }
@@ -181,7 +181,7 @@ ECode Overlay::GetMediaItem(
     VALIDATE_NOT_NULL(result);
 
     *result = mMediaItem;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -200,7 +200,7 @@ ECode Overlay::GetUserAttributes(
     VALIDATE_NOT_NULL(result);
 
     *result = mUserAttributes;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

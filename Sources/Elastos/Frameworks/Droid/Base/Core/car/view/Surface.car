@@ -18,7 +18,7 @@ module
          * @hide
          */
         interface IPhysicalDisplayInfo {
-            EqualsEx(
+            Equals(
                 [in] IPhysicalDisplayInfo* other,
                 [out] Boolean* equals);
 
@@ -436,7 +436,7 @@ module
              *
              * @hide
              */
-            ScreenshotEx(
+            Screenshot(
                 [in] Int32 width,
                 [in] Int32 height,
                 [in] Int32 minLayer,

@@ -1,6 +1,6 @@
 #include <R.h>
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include "widget/internal/LockPatternView.h"
 #include "graphics/CPaint.h"
 #include "graphics/CMatrix.h"
@@ -106,7 +106,7 @@ ECode LockPatternView::Init(
             const_cast<Int32 *>(R::styleable::LockPatternView),
             ARRAY_SIZE(R::styleable::LockPatternView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     String aspect;
     a->GetString(R::styleable::LockPatternView_aspect, &aspect);
 
@@ -318,7 +318,7 @@ AutoPtr<IBitmap> LockPatternView::GetBitmapFor(
     AutoPtr<IResources> res;
     GetContext()->GetResources((IResources**)&res);
     AutoPtr<IBitmap> bp;
-    factory->DecodeResourceEx(res, resId, (IBitmap**)&bp);
+    factory->DecodeResource(res, resId, (IBitmap**)&bp);
     return bp;
 }
 
@@ -751,13 +751,13 @@ void LockPatternView::DrawArrow(
     Float sy = Elastos::Core::Math::Min(mSquareHeight / mBitmapHeight, 1.0f);
     mArrowMatrix->SetTranslate(leftX + offsetX, topY + offsetY);
     mArrowMatrix->PreTranslate(mBitmapWidth/2, mBitmapHeight/2, &green);
-    mArrowMatrix->PreScaleEx(sx, sy, &green);
+    mArrowMatrix->PreScale(sx, sy, &green);
     mArrowMatrix->PreTranslate(-mBitmapWidth/2, -mBitmapHeight/2, &green);
     mArrowMatrix->PreRotate(angle, cellWidth / 2.0f, cellHeight / 2.0f, &green);
     Int32 width = 0;
     arrow->GetWidth(&width);
     mArrowMatrix->PreTranslate((cellWidth - width) / 2.0f, 0.0f, &green);
-    canvas->DrawBitmapEx5(arrow, mArrowMatrix, mPaint);
+    canvas->DrawBitmap(arrow, mArrowMatrix, mPaint);
 }
 
 ECode LockPatternView::DrawCircle(
@@ -799,11 +799,11 @@ ECode LockPatternView::DrawCircle(
     Boolean res = FALSE;
     mCircleMatrix->SetTranslate(leftX + offsetX, topY + offsetY);
     mCircleMatrix->PreTranslate(mBitmapWidth/2, mBitmapHeight/2, &res);
-    mCircleMatrix->PreScaleEx(sx, sy, &res);
+    mCircleMatrix->PreScale(sx, sy, &res);
     mCircleMatrix->PreTranslate(-mBitmapWidth/2, -mBitmapHeight/2, &res);
 
-    canvas->DrawBitmapEx5(outerCircle, mCircleMatrix, mPaint);
-    canvas->DrawBitmapEx5(innerCircle, mCircleMatrix, mPaint);
+    canvas->DrawBitmap(outerCircle, mCircleMatrix, mPaint);
+    canvas->DrawBitmap(innerCircle, mCircleMatrix, mPaint);
 
     return NOERROR;
 }

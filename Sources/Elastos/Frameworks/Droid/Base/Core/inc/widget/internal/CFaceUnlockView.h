@@ -3,7 +3,7 @@
 
 #include "_CFaceUnlockView.h"
 #include "internal/FaceUnlockView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

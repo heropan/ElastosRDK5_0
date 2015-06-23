@@ -2,8 +2,6 @@
 #include "webkit/CookieManager.h"
 #include "webkit/WebViewFactory.h"
 
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -110,7 +108,7 @@ ECode CookieManager::GetCookie(
  *               HTTP request header
  * @hide Used by Browser, no intention to publish.
  */
-ECode CookieManager::GetCookieEx(
+ECode CookieManager::GetCookie(
     /* [in] */ const String& url,
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ String* cookie)
@@ -131,7 +129,7 @@ ECode CookieManager::GetCookieEx(
  * @hide Used by RequestHandle, no intention to publish.
  */
 //synchronized
-ECode CookieManager::GetCookieEx2(
+ECode CookieManager::GetCookie(
     /* [in] */ IWebAddress* uri,
     /* [out] */ String* cookie)
 {
@@ -184,7 +182,7 @@ ECode CookieManager::HasCookies(
  * @hide Used by Browser, no intention to publish.
  */
 //synchronized
-ECode CookieManager::HasCookiesEx(
+ECode CookieManager::HasCookies(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ Boolean* result)
 {

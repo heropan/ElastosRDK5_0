@@ -1,7 +1,7 @@
 #include "CDnsSdTxtRecord.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
@@ -182,7 +182,7 @@ ECode CDnsSdTxtRecord::GetRawData(
 {
     VALIDATE_NOT_NULL(data);
     *data = mData->Clone();
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -266,7 +266,7 @@ ECode CDnsSdTxtRecord::GetValue(
     }
 
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -299,10 +299,10 @@ ECode CDnsSdTxtRecord::Equals(
     /* [out] */ Boolean* val)
 {
     VALIDATE_NOT_NULL(val);
-    return EqualsEx(IDnsSdTxtRecord::Probe(o), val);
+    return Equals(IDnsSdTxtRecord::Probe(o), val);
 }
 
-ECode CDnsSdTxtRecord::EqualsEx(
+ECode CDnsSdTxtRecord::Equals(
     /* [in] */ IDnsSdTxtRecord* o,
     /* [out] */ Boolean* val)
 {

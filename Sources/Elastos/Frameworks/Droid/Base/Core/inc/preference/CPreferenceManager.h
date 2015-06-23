@@ -4,11 +4,10 @@
 
 #include "_CPreferenceManager.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;

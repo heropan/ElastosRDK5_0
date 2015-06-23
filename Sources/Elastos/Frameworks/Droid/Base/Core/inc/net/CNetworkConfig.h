@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_NET_CNETWORKCONFIG_H__
 
 #include "_CNetworkConfig.h"
-#include <elastos/Mutex.h>
 
 namespace Elastos {
 namespace Droid {

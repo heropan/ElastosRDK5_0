@@ -360,7 +360,7 @@ Prompt.prototype = {
     return params.result;
   },
 
-  confirmEx: function confirmEx(aTitle, aText, aButtonFlags, aButton0,
+  confirmEx: function confirm(aTitle, aText, aButtonFlags, aButton0,
                       aButton1, aButton2, aCheckMsg, aCheckState) {
 
     let numButtons = 0;

@@ -2,8 +2,8 @@
 #include "ext/frameworkext.h"
 #include "graphics/CPointF.h"
 #include "graphics/CPoint.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using namespace Elastos::Core;
 
@@ -56,7 +56,7 @@ ECode CPointF::Get(
     return NOERROR;
 }
 
-ECode CPointF::SetEx(
+ECode CPointF::Set(
     /* [in] */ IPointF* p)
 {
     mX = ((CPointF*)p)->mX;
@@ -121,7 +121,7 @@ ECode CPointF::Length(
     return NOERROR;
 }
 
-ECode CPointF::EqualsEx2(
+ECode CPointF::Equals(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [out] */ Boolean* result)
@@ -135,7 +135,7 @@ ECode CPointF::EqualsEx2(
     return NOERROR;
 }
 
-ECode CPointF::EqualsEx(
+ECode CPointF::Equals(
     /* [in] */ IPointF* o,
     /* [out] */ Boolean* result)
 {
@@ -145,7 +145,7 @@ ECode CPointF::EqualsEx(
 
     Float x, y;
     o->Get(&x, &y);
-    return EqualsEx2(x, y, result);
+    return Equals(x, y, result);
 }
 
 ECode CPointF::Equals(
@@ -153,7 +153,7 @@ ECode CPointF::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(IPointF::Probe(o), result);
+    return Equals(IPointF::Probe(o), result);
 }
 
 ECode CPointF::GetHashCode(

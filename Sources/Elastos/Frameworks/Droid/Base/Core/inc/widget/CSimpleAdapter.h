@@ -83,7 +83,7 @@ public:
      *
      * @see #setViewImage(ImageView, Int32)
      */
-    CARAPI SetViewImageEx(
+    CARAPI SetViewImage(
         /* [in] */ IImageView* v,
         /* [in] */ const String& value);
 

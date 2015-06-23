@@ -6,7 +6,7 @@
 #include "media/media/CMediaPlayer.h"
 #include "os/CHandler.h"
 #include "os/CMessageHelper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;
@@ -61,7 +61,7 @@ ECode HTML5Audio::TimeupdateTask::Run()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mOwner, TIMEUPDATE, (IMessage**)&msg);
+    mh->Obtain(mOwner, TIMEUPDATE, (IMessage**)&msg);
     return msg->SendToTarget();
 }
 
@@ -390,7 +390,7 @@ ECode HTML5Audio::OnPrepared(
     mState = PREPARED;
     if (mTimer != NULL) {
         AutoPtr<ITimerTask> task = new TimeupdateTask(this);
-        mTimer->ScheduleEx2(task, TIMEUPDATE_PERIOD, TIMEUPDATE_PERIOD);
+        mTimer->Schedule(task, TIMEUPDATE_PERIOD, TIMEUPDATE_PERIOD);
     }
 
     Int32 duration;
@@ -485,7 +485,7 @@ void HTML5Audio::SetDataSource(
         }
 
         String cookieValue;
-        CookieManager::GetInstance()->GetCookieEx(
+        CookieManager::GetInstance()->GetCookie(
                 url, mIsPrivateBrowsingEnabledGetter->Get(), &cookieValue);
         AutoPtr<IObjectStringMap> headers;
         CObjectStringMap::New((IObjectStringMap**)&headers);
@@ -500,7 +500,7 @@ void HTML5Audio::SetDataSource(
             headers->Put(HIDE_URL_LOGS, value);
         }
 
-        mMediaPlayer->SetDataSourceEx3(url, headers);
+        mMediaPlayer->SetDataSource(url, headers);
         mState = INITIALIZED;
         mMediaPlayer->PrepareAsync();
     //} catch (IOException e) {

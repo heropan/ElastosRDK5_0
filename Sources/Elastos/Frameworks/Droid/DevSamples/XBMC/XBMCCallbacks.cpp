@@ -3,7 +3,6 @@
 #include "XBMCCallbacks.h"
 #include "ElAudioTrack.h"
 #include "WifiNative.h"
-#include <elastos/Mutex.h>
 #include <elastos/Vector.h>
 #include <pthread.h>
 #include <utils/Log.h>

@@ -1,7 +1,7 @@
 
 #include "droid/test/InstrumentationTestCase.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -87,7 +87,7 @@ ECode InstrumentationTestCase::LaunchActivity(
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_MAIN, (IIntent**)&intent);
     if (extras != NULL) {
-        intent->PutExtrasEx(extras);
+        intent->PutExtras(extras);
     }
     return LaunchActivityWithIntent(pkg, activityCls, intent, activity);
 }
@@ -101,7 +101,7 @@ ECode InstrumentationTestCase::LaunchActivityWithIntent(
     VALIDATE_NOT_NULL(activity);
     StringBuf_<512> name;
     activityCls->GetName(&name);
-    intent->SetClassNameEx(pkg, pkg + "." + String((const char*)name));
+    intent->SetClassName(pkg, pkg + "." + String((const char*)name));
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     AutoPtr<IInstrumentation> instrumentation;
     GetInstrumentation((IInstrumentation**)&instrumentation);
@@ -254,7 +254,7 @@ ECode InstrumentationTestCase::SendKeys(
     return instrumentation->WaitForIdleSync();
 }
 
-ECode InstrumentationTestCase::SendKeysEx(
+ECode InstrumentationTestCase::SendKeys(
     /* [in] */ ArrayOf<Int32>* keys)
 {
     Int32 count = keys->GetLength();

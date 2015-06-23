@@ -8,8 +8,8 @@
 #include <media/stagefright/MediaCodecList.h>
 #include <media/stagefright/foundation/AString.h>
 #include <utils/Vector.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
@@ -94,7 +94,7 @@ ECode CMediaCodecList::GetSupportedTypes(
     }
 
     *result = array;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -147,7 +147,7 @@ ECode CMediaCodecList::GetCodecCapabilities(
     caps->SetColorFormats(colorFormatsArray);
 
     *result = (ICodecCapabilities*)caps.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

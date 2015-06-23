@@ -147,11 +147,11 @@ private:
             /* [in] */ const String& label,
             /* [in] */ Int64 value);
 
-        CARAPI WriteMeasurementEx(
+        CARAPI WriteMeasurement(
             /* [in] */ const String& label,
             /* [in] */ Float value);
 
-        CARAPI WriteMeasurementEx2(
+        CARAPI WriteMeasurement(
             /* [in] */ const String& label,
             /* [in] */ const String& value);
 
@@ -297,13 +297,13 @@ public:
     CARAPI AddMonitor(
         /* [in] */ IInstrumentationActivityMonitor* monitor);
 
-    CARAPI AddMonitorEx(
+    CARAPI AddMonitor(
         /* [in] */ IIntentFilter* filter,
         /* [in] */ IInstrumentationActivityResult* result,
         /* [in] */ Boolean block,
         /* [out] */ IInstrumentationActivityMonitor** monitor);
 
-    CARAPI AddMonitorEx2(
+    CARAPI AddMonitor(
         /* [in] */ const String& cls,
         /* [in] */ IInstrumentationActivityResult* result,
         /* [in] */ Boolean block,
@@ -378,7 +378,7 @@ public:
         /* [in] */ IInterface* lastNonConfigurationInstance,
         /* [out] */ IActivity** activity);
 
-    CARAPI NewActivityEx(
+    CARAPI NewActivity(
         /* [in] */ IClassLoader* cl,
         /* [in] */ const String& className,
         /* [in] */ IIntent* intent,
@@ -462,7 +462,7 @@ public:
         /* [in] */ IBundle* options,
         /* [in] */ Int32 userId);
 
-    CARAPI ExecStartActivityEx(
+    CARAPI ExecStartActivity(
         /* [in] */ IContext* who,
         /* [in] */ IBinder* contextThread,
         /* [in] */ IBinder* token,
@@ -472,7 +472,7 @@ public:
         /* [in] */ IBundle* options,
         /* [out] */ IInstrumentationActivityResult** activityResult);
 
-    CARAPI ExecStartActivityEx2(
+    CARAPI ExecStartActivity(
         /* [in] */ IContext* who,
         /* [in] */ IBinder* contextThread,
         /* [in] */ IBinder* token,

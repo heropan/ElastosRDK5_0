@@ -11,7 +11,7 @@ ECode CBundleHelper::GetEmpty(
 {
     VALIDATE_NOT_NULL(bundle)
     *bundle = CBundle::EMPTY;
-    INTERFACE_ADDREF(*bundle);
+    REFCOUNT_ADD(*bundle);
     return NOERROR;
 }
 
@@ -23,7 +23,7 @@ ECode CBundleHelper::ForPair(
     VALIDATE_NOT_NULL(bundle)
     AutoPtr<IBundle> b = CBundle::ForPair(key, value);
     *bundle = b;
-    INTERFACE_ADDREF(*bundle)
+    REFCOUNT_ADD(*bundle)
     return NOERROR;
 }
 

@@ -3,8 +3,8 @@
 #define  __CCANDIDATESCONTAINER_H__
 
 #include "_CCandidatesContainer.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/RelativeLayout.h"
 
 using Elastos::Droid::View::IGestureDetector;
@@ -90,7 +90,7 @@ private:
         /* [in] */ Float alphaTo,
         /* [in] */ Int64 duration);
 
-    void StartAnimationEx();
+    void StartAnimation();
 
     void StopAnimation();
 

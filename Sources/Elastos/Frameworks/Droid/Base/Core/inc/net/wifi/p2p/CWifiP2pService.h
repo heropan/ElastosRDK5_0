@@ -3,15 +3,15 @@
 
 #include "_CWifiP2pService.h"
 #include "ext/frameworkdef.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "util/StateMachine.h"
 #include "util/State.h"
 #include "util/AsyncChannel.h"
 #include "os/SystemProperties.h"
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::SystemProperties;

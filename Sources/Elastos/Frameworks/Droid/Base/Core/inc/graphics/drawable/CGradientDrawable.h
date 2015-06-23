@@ -4,7 +4,7 @@
 
 #include "_CGradientDrawable.h"
 #include "graphics/drawable/GradientDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -55,7 +55,7 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 color);
 
-    CARAPI SetStrokeEx(
+    CARAPI SetStroke(
         /* [in] */ Int32 width,
         /* [in] */ Int32 color,
         /* [in] */ Float dashWidth,

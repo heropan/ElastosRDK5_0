@@ -19,7 +19,7 @@ public:
         /* [in] */ Int32 fallbackType,
         /* [in] */ Elastos::IO::IInputStream* input);
 
-    CARAPI LoadTextureEx(
+    CARAPI LoadTexture(
         /* [in] */ Int32 target,
         /* [in] */ Int32 level,
         /* [in] */ Int32 border,

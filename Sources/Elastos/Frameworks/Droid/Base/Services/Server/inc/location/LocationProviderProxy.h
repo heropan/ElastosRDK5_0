@@ -10,12 +10,11 @@
 #include "ext/frameworkext.h"
 #include "location/LocationProviderInterface.h"
 #include "ServiceWatcher.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::IContext;

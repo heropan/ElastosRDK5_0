@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_MOVIE_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IInputStream;
 
@@ -54,7 +54,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    CARAPI DrawEx(
+    CARAPI Draw(
         /* [in] */ ICanvas* canvas,
         /* [in] */ Float x,
         /* [in] */ Float y);

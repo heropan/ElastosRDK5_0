@@ -4,9 +4,8 @@
 
 #include "_CBluetoothDevice.h"
 #include "CBluetoothDeviceManagerCallback.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::IParcelUuid;
 

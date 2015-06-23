@@ -3,7 +3,7 @@
 #define __CCANDIDATEVIEW_H__
 
 #include "_CCandidateView.h"
-#include "view/ViewMacro.h"
+
 #include "view/View.h"
 //#include "view/GestureDetector.h"
 

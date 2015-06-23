@@ -195,7 +195,7 @@ module
          * @see #setContentView(int)
          * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
          */
-        SetContentViewEx(
+        SetContentView(
             [in] IView* view);
 
         /**
@@ -214,7 +214,7 @@ module
          * @see #setContentView(android.view.View)
          * @see #setContentView(int)
          */
-        SetContentViewEx2(
+        SetContentView(
             [in] IView* view,
             [in] IViewGroupLayoutParams* params);
 

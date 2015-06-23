@@ -1,7 +1,7 @@
 
 #include "os/storage/CStorageManagerHelper.h"
 #include "os/storage/CStorageManager.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -20,7 +20,7 @@ ECode CStorageManagerHelper::From(
     AutoPtr<IInterface> service;
     context->GetSystemService(IContext::STORAGE_SERVICE, (IInterface**)&service);
     *manager = IStorageManager::Probe(service);
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
 
     return NOERROR;
 }
@@ -37,7 +37,7 @@ ECode CStorageManagerHelper::GetPrimaryVolume(
         Boolean primary = FALSE;
         if (volume->IsPrimary(&primary), primary) {
             *result = volume;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }

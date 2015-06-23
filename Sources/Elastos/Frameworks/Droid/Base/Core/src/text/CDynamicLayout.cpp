@@ -107,7 +107,7 @@ ECode CDynamicLayout::GetBlockEndLines(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Int32> > bel = DynamicLayout::GetBlockEndLines();
     *ret = bel;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -117,7 +117,7 @@ ECode CDynamicLayout::GetBlockIndices(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Int32> > bi = DynamicLayout::GetBlockIndices();
     *ret = bi;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

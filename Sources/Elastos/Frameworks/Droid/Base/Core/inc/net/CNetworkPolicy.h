@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
 
 #include "_CNetworkPolicy.h"
-#include <elastos/Mutex.h>
 
 
 namespace Elastos {
@@ -61,7 +60,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ INetworkPolicy* obj,
         /* [out] */ Boolean* result);
 

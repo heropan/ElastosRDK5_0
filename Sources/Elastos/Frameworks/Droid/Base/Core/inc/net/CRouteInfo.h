@@ -55,7 +55,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IRouteInfo* obj,
         /* [out] */ Boolean* result);
 
@@ -71,7 +71,7 @@ public:
         /* [in] */ IInetAddress* host,
         /* [out] */ IRouteInfo** info);
 
-    static CARAPI MakeHostRouteEx(
+    static CARAPI MakeHostRoute(
         /* [in] */ IInetAddress* host,
         /* [in] */ IInetAddress* gateway,
         /* [out] */ IRouteInfo** info);

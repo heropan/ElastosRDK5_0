@@ -26,7 +26,7 @@ ECode CVpnService::Protect(
     return NOERROR;
 }
 
-ECode CVpnService::ProtectEx(
+ECode CVpnService::Protect(
     /* [in] */ ISocket* socket,
     /* [out] */ Boolean* result)
 {
@@ -41,7 +41,7 @@ ECode CVpnService::ProtectEx(
     return Protect(fd, result);
 }
 
-ECode CVpnService::ProtectEx2(
+ECode CVpnService::Protect(
     /* [in] */ IDatagramSocket* socket,
     /* [out] */ Boolean* reault)
 {

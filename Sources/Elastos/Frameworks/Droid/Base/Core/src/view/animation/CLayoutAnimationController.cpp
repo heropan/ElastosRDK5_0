@@ -28,7 +28,7 @@ ECode CLayoutAnimationController::SetAnimation(
     return LayoutAnimationController::SetAnimation(context, resourceID);
 }
 
-ECode CLayoutAnimationController::SetAnimationEx(
+ECode CLayoutAnimationController::SetAnimation(
     /* [in] */ IAnimation* animation)
 {
     return LayoutAnimationController::SetAnimation(animation);
@@ -40,7 +40,7 @@ ECode CLayoutAnimationController::GetAnimation(
     VALIDATE_NOT_NULL(animation);
     AutoPtr<IAnimation> temp = LayoutAnimationController::GetAnimation();
     *animation = temp;
-    INTERFACE_ADDREF(*animation);
+    REFCOUNT_ADD(*animation);
 
     return NOERROR;
 }
@@ -52,7 +52,7 @@ ECode CLayoutAnimationController::SetInterpolator(
     return LayoutAnimationController::SetInterpolator(context, resourceID);
 }
 
-ECode CLayoutAnimationController::SetInterpolatorEx(
+ECode CLayoutAnimationController::SetInterpolator(
     /* [in] */ IInterpolator* interpolator)
 {
     return LayoutAnimationController::SetInterpolator(interpolator);
@@ -64,7 +64,7 @@ ECode CLayoutAnimationController::GetInterpolator(
     VALIDATE_NOT_NULL(interpolator);
     AutoPtr<IInterpolator> temp = LayoutAnimationController::GetInterpolator();
     *interpolator = temp;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
 
     return NOERROR;
 }
@@ -105,7 +105,7 @@ ECode CLayoutAnimationController::GetAnimationForView(
     VALIDATE_NOT_NULL(animation);
     AutoPtr<IAnimation> temp = LayoutAnimationController::GetAnimationForView(view);
     *animation = temp;
-    INTERFACE_ADDREF(*animation);
+    REFCOUNT_ADD(*animation);
 
     return NOERROR;
 }

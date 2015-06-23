@@ -1,5 +1,5 @@
 #include "media/media/audiofx/AudioEffect.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/CLooperHelper.h"
 #include "media/AudioEffect.h"
 #include "media/media/audiofx/CAudioEffectDescriptor.h"
@@ -104,9 +104,9 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
                 // See effect_param_t in EffectApi.h for psize and vsize
                 // fields offsets
                 Int32 status, psize, vsize;
-                mAudioEffect->ByteArrayToInt32Ex(p, 0, &status);
-                mAudioEffect->ByteArrayToInt32Ex(p, 4, &psize);
-                mAudioEffect->ByteArrayToInt32Ex(p, 8, &vsize);
+                mAudioEffect->ByteArrayToInt32(p, 0, &status);
+                mAudioEffect->ByteArrayToInt32(p, 4, &psize);
+                mAudioEffect->ByteArrayToInt32(p, 8, &vsize);
                 AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(psize);
                 AutoPtr<ArrayOf<Byte> > value = ArrayOf<Byte>::Alloc(vsize);
                 // System.arraycopy(p, 12, param, 0, psize);
@@ -205,7 +205,7 @@ ECode AudioEffect::GetDescriptor(
 
     FAIL_RETURN(CheckState(String("GetDescriptor()")));
     *descriptor = mDescriptor;
-    INTERFACE_ADDREF(*descriptor);
+    REFCOUNT_ADD(*descriptor);
 
     return NOERROR;
 }
@@ -217,7 +217,7 @@ ECode AudioEffect::QueryEffects(
 
     AutoPtr<ArrayOf<IAudioEffectDescriptor*> > temp = NativeQueryEffects();
     *descriptor = temp;
-    INTERFACE_ADDREF(*descriptor);
+    REFCOUNT_ADD(*descriptor);
     return NOERROR;
 }
 
@@ -229,7 +229,7 @@ ECode AudioEffect::QueryPreProcessings(
 
     AutoPtr<ArrayOf<IAudioEffectDescriptor*> > temp = NativeQueryPreProcessing(audioSession);
     *descriptor = temp;
-    INTERFACE_ADDREF(*descriptor);
+    REFCOUNT_ADD(*descriptor);
     return NOERROR;
 }
 
@@ -280,7 +280,7 @@ ECode AudioEffect::SetParameter(
     return NOERROR;
 }
 
-ECode AudioEffect::SetParameterEx(
+ECode AudioEffect::SetParameter(
     /* [in] */ Int32 param,
     /* [in] */ Int32 value,
     /* [out] */ Int32* result)
@@ -294,7 +294,7 @@ ECode AudioEffect::SetParameterEx(
     return SetParameter(p.Get(), v.Get(), result);
 }
 
-ECode AudioEffect::SetParameterEx2(
+ECode AudioEffect::SetParameter(
     /* [in] */ Int32 param,
     /* [in] */ Int16 value,
     /* [out] */ Int32* result)
@@ -308,7 +308,7 @@ ECode AudioEffect::SetParameterEx2(
     return SetParameter(p.Get(), v.Get(), result);
 }
 
-ECode AudioEffect::SetParameterEx3(
+ECode AudioEffect::SetParameter(
     /* [in] */ Int32 param,
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* result)
@@ -321,7 +321,7 @@ ECode AudioEffect::SetParameterEx3(
     return SetParameter(p.Get(), value, result);
 }
 
-ECode AudioEffect::SetParameterEx4(
+ECode AudioEffect::SetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Int32>* value,
     /* [out] */ Int32* result)
@@ -355,7 +355,7 @@ ECode AudioEffect::SetParameterEx4(
     return SetParameter(p.Get(), v.Get(), result);
 }
 
-ECode AudioEffect::SetParameterEx5(
+ECode AudioEffect::SetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Int16>* value,
     /* [out] */ Int32* result)
@@ -389,7 +389,7 @@ ECode AudioEffect::SetParameterEx5(
     return SetParameter(p.Get(), v.Get(), result);
 }
 
-ECode AudioEffect::SetParameterEx6(
+ECode AudioEffect::SetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* result)
@@ -428,7 +428,7 @@ ECode AudioEffect::GetParameter(
     return NOERROR;
 }
 
-ECode AudioEffect::GetParameterEx(
+ECode AudioEffect::GetParameter(
     /* [in] */ const Int32 param,
     /* [out] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* status)
@@ -441,7 +441,7 @@ ECode AudioEffect::GetParameterEx(
     return GetParameter(p.Get(), value, status);
 }
 
-ECode AudioEffect::GetParameterEx2(
+ECode AudioEffect::GetParameter(
     /* [in] */ Int32 param,
     /* [out] */ ArrayOf<Int32>* value,
     /* [out] */ Int32* status)
@@ -467,7 +467,7 @@ ECode AudioEffect::GetParameterEx2(
         (*value)[0] = tempInt32;
             if (*status == 8)
             {
-                ByteArrayToInt32Ex(v, 4, &tempInt32);
+                ByteArrayToInt32(v, 4, &tempInt32);
                 (*value)[1] = tempInt32;
             }
         *status /= 4;
@@ -479,7 +479,7 @@ ECode AudioEffect::GetParameterEx2(
     return NOERROR;
 }
 
-ECode AudioEffect::GetParameterEx3(
+ECode AudioEffect::GetParameter(
     /* [in] */ Int32 param,
     /* [out] */ ArrayOf<Int16>* value,
     /* [out] */ Int32* status)
@@ -504,7 +504,7 @@ ECode AudioEffect::GetParameterEx3(
         ByteArrayToInt16(v, &tempInt16);
         (*value)[0] = tempInt16;
         if (*status == 4) {
-            ByteArrayToInt16Ex(v, 2, &tempInt16);
+            ByteArrayToInt16(v, 2, &tempInt16);
             (*value)[1] = tempInt16;
         }
         *status /= 2;
@@ -515,7 +515,7 @@ ECode AudioEffect::GetParameterEx3(
     return NOERROR;
 }
 
-ECode AudioEffect::GetParameterEx4(
+ECode AudioEffect::GetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [out] */ ArrayOf<Int32>* value,
     /* [out] */ Int32* status)
@@ -546,7 +546,7 @@ ECode AudioEffect::GetParameterEx4(
         ByteArrayToInt32(v, &tempInt32);
         (*value)[0] = tempInt32;
         if (*status == 8) {
-            ByteArrayToInt32Ex(v, 4, &tempInt32);
+            ByteArrayToInt32(v, 4, &tempInt32);
             (*value)[1] = tempInt32;
         }
         *status /= 4;
@@ -557,7 +557,7 @@ ECode AudioEffect::GetParameterEx4(
     return NOERROR;
 }
 
-ECode AudioEffect::GetParameterEx5(
+ECode AudioEffect::GetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [out] */ ArrayOf<Int16>* value,
     /* [out] */ Int32* status)
@@ -588,7 +588,7 @@ ECode AudioEffect::GetParameterEx5(
         ByteArrayToInt16(v, &tempInt16);
         (*value)[0] = tempInt16;
         if (*status == 4) {
-            ByteArrayToInt16Ex(v, 2, &tempInt16);
+            ByteArrayToInt16(v, 2, &tempInt16);
             (*value)[1] = tempInt16;
         }
         *status /= 2;
@@ -599,7 +599,7 @@ ECode AudioEffect::GetParameterEx5(
     return NOERROR;
 }
 
-ECode AudioEffect::GetParameterEx6(
+ECode AudioEffect::GetParameter(
     /* [in] */ ArrayOf<Int32>* param,
     /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ Int32* status)
@@ -733,7 +733,7 @@ void AudioEffect::PostEventFromNative(
         AutoPtr<IHandler> handler = effect->mNativeEventHandler;
 
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&msg);
+        handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
         Boolean result;
         handler->SendMessage(msg, &result);
     }
@@ -1403,10 +1403,10 @@ ECode AudioEffect::ByteArrayToInt32(
 {
     VALIDATE_NOT_NULL(result);
 
-    return ByteArrayToInt32Ex(valueBuf, 0, result);
+    return ByteArrayToInt32(valueBuf, 0, result);
 }
 
-ECode AudioEffect::ByteArrayToInt32Ex(
+ECode AudioEffect::ByteArrayToInt32(
     /* [in] */ ArrayOf<Byte>* valueBuf,
     /* [in] */ Int32 offset,
     /* [out] */ Int32* result)
@@ -1422,7 +1422,7 @@ ECode AudioEffect::ByteArrayToInt32Ex(
     ByteOrder nativeOrder;
     helper->GetNativeOrder(&nativeOrder);
     converter->SetOrder(nativeOrder);
-    return converter->GetInt32Ex(offset, result);
+    return converter->GetInt32(offset, result);
 }
 
 ECode AudioEffect::Int32ToByteArray(
@@ -1450,10 +1450,10 @@ ECode AudioEffect::ByteArrayToInt16(
 {
     VALIDATE_NOT_NULL(result);
 
-    return ByteArrayToInt16Ex(valueBuf, 0, result);
+    return ByteArrayToInt16(valueBuf, 0, result);
 }
 
-ECode AudioEffect::ByteArrayToInt16Ex(
+ECode AudioEffect::ByteArrayToInt16(
     /* [in] */ ArrayOf<Byte>* valueBuf,
     /* [in] */ Int32 offset,
     /* [out] */ Int16* result)
@@ -1469,7 +1469,7 @@ ECode AudioEffect::ByteArrayToInt16Ex(
     ByteOrder nativeOrder;
     helper->GetNativeOrder(&nativeOrder);
     converter->SetOrder(nativeOrder);
-    return converter->GetInt16Ex(offset, result);
+    return converter->GetInt16(offset, result);
 }
 
 ECode AudioEffect::Int16ToByteArray(
@@ -1507,7 +1507,7 @@ ECode AudioEffect::ConcatArrays(
     newArray->Copy(array1);
     newArray->Copy(array1->GetLength(), array2, 0, array2->GetLength());
     *result = newArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

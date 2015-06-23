@@ -1,6 +1,6 @@
 
 #include "app/ChooserActivity.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::EIID_IIntent;

@@ -1,7 +1,7 @@
 
 #include "CWifiP2pInfo.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Net::IInetAddressHelper;
@@ -55,7 +55,7 @@ ECode CWifiP2pInfo::GetGroupOwnerAddress(
     VALIDATE_NOT_NULL(address);
 
     *address = mGroupOwnerAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
 
     return NOERROR;
 }

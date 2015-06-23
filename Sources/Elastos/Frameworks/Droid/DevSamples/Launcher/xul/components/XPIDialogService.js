@@ -27,7 +27,7 @@ WebInstallPrompt.prototype = {
       });
       return;
     }
-    
+
     let bundle = Services.strings.createBundle("chrome://browser/locale/browser.properties");
 
     let prompt = Services.prompt;
@@ -36,7 +36,7 @@ WebInstallPrompt.prototype = {
     let button = bundle.GetStringFromName("addonsConfirmInstall.install");
 
     aInstalls.forEach(function(install) {
-      let result = (prompt.confirmEx(aWindow, title, install.name, flags, button, null, null, null, {value: false}) == 0);
+      let result = (prompt.confirm(aWindow, title, install.name, flags, button, null, null, null, {value: false}) == 0);
       if (result)
         install.install();
       else

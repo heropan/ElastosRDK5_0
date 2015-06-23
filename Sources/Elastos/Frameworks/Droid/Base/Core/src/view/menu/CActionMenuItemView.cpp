@@ -106,7 +106,7 @@ ECode CActionMenuItemView::ShowsIcon(
     return ActionMenuItemView::ShowsIcon(shows);
 }
 
-ECode CActionMenuItemView::SetEnabledEx(
+ECode CActionMenuItemView::SetEnabled(
     /* [in] */ Boolean enabled)
 {
     return NOERROR;

@@ -438,7 +438,7 @@ void PasswordEntryKeyboardHelper::PerformHapticFeedback()
 {
     if (mEnableHaptics) {
         Boolean rst;
-        mKeyboardView->PerformHapticFeedbackEx(IHapticFeedbackConstants::VIRTUAL_KEY,
+        mKeyboardView->PerformHapticFeedback(IHapticFeedbackConstants::VIRTUAL_KEY,
                 IHapticFeedbackConstants::FLAG_IGNORE_VIEW_SETTING
                 | IHapticFeedbackConstants::FLAG_IGNORE_GLOBAL_SETTING, &rst);
     }

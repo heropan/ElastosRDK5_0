@@ -3,7 +3,7 @@
 #define __CEVENTHOLE_H_
 
 #include "_CEventHole.h"
-#include "view/ViewMacro.h"
+
 #include "systemui/statusbar/policy/EventHole.h"
 
 namespace Elastos {

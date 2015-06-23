@@ -5,7 +5,7 @@
 #include "text/style/CForegroundColorSpan.h"
 #include "CTransportControlViewSavedState.h"
 #include "view/CKeyEvent.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
@@ -119,7 +119,7 @@ ECode TransportControlView::IRemoteControlDisplayWeak::SetPlaybackState(
     if (obj) {
         AutoPtr<IHandler> handler = IHandler::Probe(obj);
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx2(
+        handler->ObtainMessage(
             TransportControlView::MSG_UPDATE_STATE,
             generationId, state, (IMessage**)&msg);
         msg->SendToTarget();
@@ -136,7 +136,7 @@ ECode TransportControlView::IRemoteControlDisplayWeak::SetMetadata(
     if (obj) {
         AutoPtr<IHandler> handler = IHandler::Probe(obj);
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx3(
+        handler->ObtainMessage(
             TransportControlView::MSG_SET_METADATA,
             generationId, 0, metadata, (IMessage**)&msg);
         msg->SendToTarget();
@@ -154,7 +154,7 @@ ECode TransportControlView::IRemoteControlDisplayWeak::SetTransportControlFlags(
     if (obj) {
         AutoPtr<IHandler> handler = IHandler::Probe(obj);
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx2(
+        handler->ObtainMessage(
             TransportControlView::MSG_SET_TRANSPORT_CONTROLS,
             generationId, flags, (IMessage**)&msg);
         msg->SendToTarget();
@@ -172,7 +172,7 @@ ECode TransportControlView::IRemoteControlDisplayWeak::SetArtwork(
     if (obj) {
         AutoPtr<IHandler> handler = IHandler::Probe(obj);
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx3(
+        handler->ObtainMessage(
             TransportControlView::MSG_SET_ARTWORK,
             generationId, 0, bitmap, (IMessage**)&msg);
         msg->SendToTarget();
@@ -191,13 +191,13 @@ ECode TransportControlView::IRemoteControlDisplayWeak::SetAllMetadata(
     if (obj) {
         AutoPtr<IHandler> handler = IHandler::Probe(obj);
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx3(
+        handler->ObtainMessage(
             TransportControlView::MSG_SET_METADATA,
             generationId, 0, metadata, (IMessage**)&msg);
         msg->SendToTarget();
 
         AutoPtr<IMessage> msg2;
-        handler->ObtainMessageEx3(
+        handler->ObtainMessage(
             TransportControlView::MSG_SET_ARTWORK,
             generationId, 0, bitmap, (IMessage**)&msg2);
         msg2->SendToTarget();
@@ -216,7 +216,7 @@ ECode TransportControlView::IRemoteControlDisplayWeak::SetCurrentClientId(
     if (obj) {
         AutoPtr<IHandler> handler = IHandler::Probe(obj);
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx3(
+        handler->ObtainMessage(
             TransportControlView::MSG_SET_GENERATION_ID,
             clientGeneration, (clearing ? 1 : 0), mediaIntent, (IMessage**)&msg);
         msg->SendToTarget();
@@ -388,7 +388,7 @@ void TransportControlView::PopulateMetadata()
     String temp = sb.ToString();
     AutoPtr<ICharSequence> sequence;
     CStringWrapper::New(temp, (ICharSequence**)&sequence);
-    mTrackTitle->SetTextEx(sequence, BufferType_SPANNABLE);
+    mTrackTitle->SetText(sequence, BufferType_SPANNABLE);
     AutoPtr<ISpannable> str;
     mTrackTitle->GetText((ICharSequence**)&str);
     if (trackTitleLength != 0) {
@@ -576,7 +576,7 @@ void TransportControlView::SendMediaButtonClick(
     intent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent->Probe(EIID_IParcelable));
 
     //try {
-    mClientIntent->SendEx2(GetContext(), 0, intent);
+    mClientIntent->Send(GetContext(), 0, intent);
     /*} catch (CanceledException e)
     {
      Log.e(TAG, "Error sending intent for media button down: "+e);
@@ -589,7 +589,7 @@ void TransportControlView::SendMediaButtonClick(
     CIntent::New(IIntent::ACTION_MEDIA_BUTTON, (IIntent**)&intent);
     intent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent->Probe(EIID_IParcelable));
     //try {
-    mClientIntent->SendEx2(GetContext(), 0, intent);
+    mClientIntent->Send(GetContext(), 0, intent);
     /*} catch (CanceledException e)
 {
      Log.e(TAG, "Error sending intent for media button up: "+e);

@@ -4,9 +4,8 @@
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Hardware::ISensor;
 using Elastos::Droid::Hardware::ISensorEventListener;

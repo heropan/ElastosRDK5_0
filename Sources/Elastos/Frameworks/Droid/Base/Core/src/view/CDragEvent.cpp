@@ -1,5 +1,5 @@
 #include "view/CDragEvent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 //#include "content/CClipDescription"
 
 using Elastos::Droid::Content::IClipData;
@@ -71,7 +71,7 @@ ECode CDragEvent::GetClipData(
 {
     VALIDATE_NOT_NULL(clipData);
     *clipData = mClipData;
-    INTERFACE_ADDREF(*clipData);
+    REFCOUNT_ADD(*clipData);
     return NOERROR;
 }
 
@@ -80,7 +80,7 @@ ECode CDragEvent::GetClipDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mClipDescription;
-    INTERFACE_ADDREF(*description);
+    REFCOUNT_ADD(*description);
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CDragEvent::GetLocalState(
 {
     VALIDATE_NOT_NULL(localState);
     *localState = mLocalState;
-    INTERFACE_ADDREF(*localState);
+    REFCOUNT_ADD(*localState);
     return NOERROR;
 }
 
@@ -203,10 +203,10 @@ ECode CDragEvent::Obtain(
     /* [out] */ CDragEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    return ObtainEx(0, 0.0f, 0.0f, NULL, NULL, NULL, FALSE, event);
+    return Obtain(0, 0.0f, 0.0f, NULL, NULL, NULL, FALSE, event);
 }
 
-ECode CDragEvent::ObtainEx(
+ECode CDragEvent::Obtain(
     /* [in] */ Int32 action,
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -228,7 +228,7 @@ ECode CDragEvent::ObtainEx(
 
         }
         *event = sRecyclerTop;
-        INTERFACE_ADDREF(*event);
+        REFCOUNT_ADD(*event);
         sRecyclerTop = (*event)->mNext;
         sRecyclerUsed -= 1;
     }
@@ -238,7 +238,7 @@ ECode CDragEvent::ObtainEx(
     return NOERROR;
 }
 
-ECode CDragEvent::ObtainEx2(
+ECode CDragEvent::Obtain(
     /* [in] */ CDragEvent* source,
     /* [out] */ CDragEvent** event)
 {
@@ -247,7 +247,7 @@ ECode CDragEvent::ObtainEx2(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    return(ObtainEx(source->mAction, source->mX, source->mY,
+    return(Obtain(source->mAction, source->mX, source->mY,
         source->mLocalState, source->mClipDescription, source->mClipData,
         source->mDragResult, event));
 }

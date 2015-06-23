@@ -2,11 +2,11 @@
 #define __MONKEYPOWEREVENT_H__
 
 #include "MonkeyEvent.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

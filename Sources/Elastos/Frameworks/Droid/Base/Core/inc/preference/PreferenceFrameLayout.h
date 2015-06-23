@@ -4,9 +4,9 @@
 
 #include "widget/FrameLayout.h"
 #include "widget/FrameLayoutLayoutParams.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
+
 
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::View::IViewParent;

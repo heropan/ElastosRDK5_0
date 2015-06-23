@@ -15,13 +15,13 @@
 #include "graphics/TextLayoutCache.h"
 #include "graphics/GraphicsNative.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <Elastos.Core.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
 #include <skia/effects/SkBlurDrawLooper.h>
 #include <skia/core/SkPaint.h>
 #include <unicode/uloc.h>
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::IString;
@@ -768,7 +768,7 @@ ECode Paint::GetShader(
     /* [out] */ IShader** shader)
 {
     *shader = mShader;
-    INTERFACE_ADDREF(*shader);
+    REFCOUNT_ADD(*shader);
     return NOERROR;
 }
 
@@ -804,7 +804,7 @@ ECode Paint::GetColorFilter(
     /* [out] */ IColorFilter** filter)
 {
     *filter = mColorFilter;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -837,7 +837,7 @@ ECode Paint::GetXfermode(
     /* [out] */ IXfermode** xfermode)
 {
     *xfermode = mXfermode;
-    INTERFACE_ADDREF(*xfermode);
+    REFCOUNT_ADD(*xfermode);
     return NOERROR;
 }
 
@@ -873,7 +873,7 @@ ECode Paint::GetPathEffect(
     /* [out] */ IPathEffect** effect)
 {
     *effect = mPathEffect;
-    INTERFACE_ADDREF(*effect);
+    REFCOUNT_ADD(*effect);
     return NOERROR;
 }
 
@@ -909,7 +909,7 @@ ECode Paint::GetMaskFilter(
     /* [out] */ IMaskFilter** maskfilter)
 {
     *maskfilter = mMaskFilter;
-    INTERFACE_ADDREF(*maskfilter)
+    REFCOUNT_ADD(*maskfilter)
     return NOERROR;
 }
 
@@ -949,7 +949,7 @@ ECode Paint::GetTypeface(
     /* [out] */ ITypeface** typeface)
 {
     *typeface = mTypeface;
-    INTERFACE_ADDREF(*typeface);
+    REFCOUNT_ADD(*typeface);
     return NOERROR;
 }
 
@@ -986,7 +986,7 @@ ECode Paint::GetRasterizer(
     /* [out] */ IRasterizer** rasterizer)
 {
     *rasterizer = mRasterizer;
-    INTERFACE_ADDREF(*rasterizer);
+    REFCOUNT_ADD(*rasterizer);
     return NOERROR;
 }
 
@@ -1096,7 +1096,7 @@ ECode Paint::GetTextLocale(
     /* [out] */ ILocale** locale)
 {
     *locale = mLocale;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -1256,7 +1256,7 @@ ECode Paint::GetFontMetrics(
  * Allocates a new FontMetrics object, and then calls getFontMetrics(fm)
  * with it, returning the object.
  */
-ECode Paint::GetFontMetricsEx(
+ECode Paint::GetFontMetrics(
     /* [out] */ IPaintFontMetrics** metrics)
 {
     CPaintFontMetrics::New(metrics);
@@ -1296,7 +1296,7 @@ ECode Paint::GetFontMetricsInt(
     return NOERROR;
 }
 
-ECode Paint::GetFontMetricsIntEx(
+ECode Paint::GetFontMetricsInt(
     /* [out] */ IPaintFontMetricsInt** fmi)
 {
     CPaintFontMetricsInt::New(fmi);
@@ -1360,7 +1360,7 @@ ECode Paint::MeasureText(
  * @param end   1 beyond the index of the last character to measure
  * @return      The width of the text
  */
-ECode Paint::MeasureTextEx(
+ECode Paint::MeasureText(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1398,7 +1398,7 @@ ECode Paint::MeasureTextEx(
  * @param text  The text to measure
  * @return      The width of the text
  */
-ECode Paint::MeasureTextEx2(
+ECode Paint::MeasureText(
     /* [in] */ const String& text,
     /* [out] */ Float* width)
 {
@@ -1433,7 +1433,7 @@ ECode Paint::MeasureTextEx2(
  * @param end   1 beyond the index of the last character to measure
  * @return      The width of the text
  */
-ECode Paint::MeasureTextEx3(
+ECode Paint::MeasureText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1534,7 +1534,7 @@ ECode Paint::BreakText(
  * @return The number of chars that were measured. Will always be <=
  *         abs(end - start).
  */
-ECode Paint::BreakTextEx(
+ECode Paint::BreakText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1594,7 +1594,7 @@ ECode Paint::BreakTextEx(
  * @return The number of chars that were measured. Will always be <=
  *         abs(count).
  */
-ECode Paint::BreakTextEx2(
+ECode Paint::BreakText(
     /* [in] */ const String& text,
     /* [in] */ Boolean measureForwards,
     /* [in] */ Float maxWidth,
@@ -1679,7 +1679,7 @@ ECode Paint::GetTextWidths(
  *                 Must be at least a large as (end - start).
  * @return         the actual number of widths returned.
  */
-ECode Paint::GetTextWidthsEx(
+ECode Paint::GetTextWidths(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1732,7 +1732,7 @@ ECode Paint::GetTextWidthsEx(
  *               Must be at least a large as the text.
  * @return       the number of unichars in the specified text.
  */
-ECode Paint::GetTextWidthsEx2(
+ECode Paint::GetTextWidths(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1778,12 +1778,12 @@ ECode Paint::GetTextWidthsEx2(
  *               Must be at least a large as the text.
  * @return       the number of unichars in the specified text.
  */
-ECode Paint::GetTextWidthsEx3(
+ECode Paint::GetTextWidths(
     /* [in] */ const String& text,
     /* [in] */ ArrayOf<Float>* widths,
     /* [out] */ Int32* number)
 {
-    return GetTextWidthsEx2(text, 0, text.GetLength(), widths, number);
+    return GetTextWidths(text, 0, text.GetLength(), widths, number);
 }
 
 ECode Paint::GetTextGlyphs(
@@ -1828,11 +1828,11 @@ ECode Paint::GetTextRunAdvances(
     /* [in] */ Int32 advancesIndex,
     /* [out] */ Float* advance)
 {
-    return GetTextRunAdvancesEx(chars, index, count, contextIndex, contextCount, flags,
+    return GetTextRunAdvances(chars, index, count, contextIndex, contextCount, flags,
                 advances, advancesIndex, 0 /* use Harfbuzz*/, advance);
 }
 
-ECode Paint::GetTextRunAdvancesEx(
+ECode Paint::GetTextRunAdvances(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
@@ -1882,7 +1882,7 @@ ECode Paint::GetTextRunAdvancesEx(
     return NOERROR;
 }
 
-ECode Paint::GetTextRunAdvancesEx2(
+ECode Paint::GetTextRunAdvances(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1893,11 +1893,11 @@ ECode Paint::GetTextRunAdvancesEx2(
     /* [in] */ Int32 advancesIndex,
     /* [out] */ Float* advance)
 {
-     return GetTextRunAdvancesEx3(text, start, end, contextStart, contextEnd, flags,
+     return GetTextRunAdvances(text, start, end, contextStart, contextEnd, flags,
             advances, advancesIndex, 0 /* use Harfbuzz */, advance);
 }
 
-ECode Paint::GetTextRunAdvancesEx3(
+ECode Paint::GetTextRunAdvances(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1945,13 +1945,13 @@ ECode Paint::GetTextRunAdvancesEx3(
     Int32 len = end - start;
     AutoPtr< ArrayOf<Char32> > buf = TemporaryBuffer::Obtain(contextLen);
     TextUtils::GetChars(text, contextStart, contextEnd, buf, 0);
-    ECode ec = GetTextRunAdvancesEx(*buf, start - contextStart, len,
+    ECode ec = GetTextRunAdvances(*buf, start - contextStart, len,
             0, contextLen, flags, advances, advancesIndex, reserved, advance);
     TemporaryBuffer::Recycle(buf);
     return ec;
 }
 
-ECode Paint::GetTextRunAdvancesEx4(
+ECode Paint::GetTextRunAdvances(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1962,11 +1962,11 @@ ECode Paint::GetTextRunAdvancesEx4(
     /* [in] */ Int32 advancesIndex,
     /* [out] */ Float* advance)
 {
-    return GetTextRunAdvancesEx5(text, start, end, contextStart, contextEnd, flags,
+    return GetTextRunAdvances(text, start, end, contextStart, contextEnd, flags,
             advances, advancesIndex, 0 /* use Harfbuzz*/, advance);
 }
 
-ECode Paint::GetTextRunAdvancesEx5(
+ECode Paint::GetTextRunAdvances(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2044,7 +2044,7 @@ ECode Paint::GetTextRunCursor(
     return NOERROR;
 }
 
-ECode Paint::GetTextRunCursorEx(
+ECode Paint::GetTextRunCursor(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -2056,7 +2056,7 @@ ECode Paint::GetTextRunCursorEx(
    if (IString::Probe(text) || ISpannedString::Probe(text) || ISpannableString::Probe(text)) {
         String str;
         text->ToString(&str);
-       return GetTextRunCursorEx2(str, contextStart, contextEnd,
+       return GetTextRunCursor(str, contextStart, contextEnd,
                flags, offset, cursorOpt, position);
    }
    if (IGraphicsOperations::Probe(text)) {
@@ -2072,7 +2072,7 @@ ECode Paint::GetTextRunCursorEx(
     return ec;
 }
 
-ECode Paint::GetTextRunCursorEx2(
+ECode Paint::GetTextRunCursor(
     /* [in] */ const String& text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -2134,7 +2134,7 @@ ECode Paint::GetTextPath(
  * @param path  The path to receive the data describing the text. Must
  *              be allocated by the caller.
  */
-ECode Paint::GetTextPathEx(
+ECode Paint::GetTextPath(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2186,7 +2186,7 @@ ECode Paint::GetTextBounds(
  * @param bounds Returns the unioned bounds of all the text. Must be
  *               allocated by the caller.
  */
-ECode Paint::GetTextBoundsEx(
+ECode Paint::GetTextBounds(
     /* [in] */ const ArrayOf<Char32>& text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,

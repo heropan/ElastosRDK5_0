@@ -3,7 +3,7 @@
 #define __CPHONENUMBERUTILSHELPER_H__
 
 #include "_CPhoneNumberUtilsHelper.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Content::IContext;
@@ -77,13 +77,13 @@ public:
         /* [in] */ const String& b,
         /* [out] */ Boolean* res);
 
-    CARAPI CompareEx(
+    CARAPI Compare(
         /* [in] */ IContext* context,
         /* [in] */ const String& a,
         /* [in] */ const String& b,
         /* [out] */ Boolean* res);
 
-    CARAPI CompareEx2(
+    CARAPI Compare(
         /* [in] */ const String& a,
         /* [in] */ const String& b,
         /* [in] */ Boolean useStrictComparation,
@@ -99,7 +99,7 @@ public:
         /* [in] */ const String& b,
         /* [out] */ Boolean* res);
 
-    CARAPI CompareStrictlyEx(
+    CARAPI CompareStrictly(
         /* [in] */ const String& a,
         /* [in] */ const String& b,
         /* [in] */ Boolean acceptInvalidCCCPrefix,
@@ -163,7 +163,7 @@ public:
         /* [in] */ Libcore::ICU::ILocale* locale,
         /* [out] */ Int32* res);
 
-    CARAPI FormatNumberEx(
+    CARAPI FormatNumber(
         /* [in] */ IEditable* text,
         /* [in] */ Int32 defaultFormattingType);
 
@@ -178,12 +178,12 @@ public:
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ String* res);
 
-    CARAPI FormatNumberEx2(
+    CARAPI FormatNumber(
         /* [in] */ const String& phoneNumber,
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ String* res);
 
-    CARAPI FormatNumberEx3(
+    CARAPI FormatNumber(
         /* [in] */ const String& phoneNumber,
         /* [in] */ const String& phoneNumberE164,
         /* [in] */ const String& defaultCountryIso,
@@ -205,12 +205,12 @@ public:
         /* [in] */ const String& number,
         /* [out] */ Boolean* res);
 
-    CARAPI IsEmergencyNumberEx(
+    CARAPI IsEmergencyNumber(
         /* [in] */ const String& number,
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ Boolean* res);
 
-    CARAPI IsPotentialEmergencyNumberEx(
+    CARAPI IsPotentialEmergencyNumber(
         /* [in] */ const String& number,
         /* [in] */ const String& defaultCountryIso,
         /* [out] */ Boolean* res);

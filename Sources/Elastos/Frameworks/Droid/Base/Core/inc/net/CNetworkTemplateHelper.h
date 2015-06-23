@@ -34,7 +34,7 @@ public:
     CARAPI BuildTemplateWifi(
         /* [out] */ INetworkTemplate** result);
 
-    CARAPI BuildTemplateWifiEx(
+    CARAPI BuildTemplateWifi(
         /* [in] */ const String& networkId,
         /* [out] */ INetworkTemplate** result);
 

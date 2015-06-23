@@ -2,8 +2,8 @@
 #include "text/method/CTextKeyListener.h"
 #include "text/Selection.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -151,7 +151,7 @@ Boolean MultiTapKeyListener::OnKeyDown(
                 String strT = String((char*)&current,1);
                 AutoPtr<ICharSequence> cs;
                 CStringWrapper::New(strT.ToUpperCase(), (ICharSequence**)&cs);
-                content->ReplaceEx(selStart, selEnd , cs.Get());
+                content->Replace(selStart, selEnd , cs.Get());
                 RemoveTimeouts(content);
                 AutoPtr<Timeout> t = new Timeout(content); // for its side effects
                 return TRUE;
@@ -160,7 +160,7 @@ Boolean MultiTapKeyListener::OnKeyDown(
                 String strT = String((char*)&current,1);
                 AutoPtr<ICharSequence> cs;
                 CStringWrapper::New(strT.ToLowerCase(), (ICharSequence**)&cs);
-                content->ReplaceEx(selStart, selEnd, cs.Get());
+                content->Replace(selStart, selEnd, cs.Get());
                 RemoveTimeouts(content);
                 AutoPtr<Timeout> t = new Timeout(content); // for its side effects
                 return TRUE;

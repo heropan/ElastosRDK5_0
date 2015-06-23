@@ -45,7 +45,7 @@ ECode CShareActionProvider::OnCreateActionView(
     return NOERROR;
 }
 
-ECode CShareActionProvider::OnCreateActionViewEx(
+ECode CShareActionProvider::OnCreateActionView(
     /* [in] */ IMenuItem* forItem,
     /* [out] */ IView** view)
 {

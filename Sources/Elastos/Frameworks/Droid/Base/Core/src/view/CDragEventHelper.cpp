@@ -15,7 +15,7 @@ ECode CDragEventHelper::Obtain(
     return NOERROR;
 }
 
-ECode CDragEventHelper::ObtainEx(
+ECode CDragEventHelper::Obtain(
     /* [in] */ Int32 action,
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -26,24 +26,24 @@ ECode CDragEventHelper::ObtainEx(
     /* [out] */ IDragEvent** event)
 {
     AutoPtr<IDragEvent> ev;
-    FAIL_RETURN(CDragEvent::ObtainEx(
+    FAIL_RETURN(CDragEvent::Obtain(
         action, x, y, localState, description,
         data, result, (CDragEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
-ECode CDragEventHelper::ObtainEx2(
+ECode CDragEventHelper::Obtain(
     /* [in] */ IDragEvent* source,
     /* [out] */ IDragEvent** event)
 {
     AutoPtr<IDragEvent> ev;
-    FAIL_RETURN(CDragEvent::ObtainEx2((CDragEvent*)source, (CDragEvent**)&ev));
+    FAIL_RETURN(CDragEvent::Obtain((CDragEvent*)source, (CDragEvent**)&ev));
 
     *event = ev;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 

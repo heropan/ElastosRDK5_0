@@ -373,7 +373,7 @@ ECode CMediaVideoItem::InvalidateTransitions(
     return NOERROR;
 }
 
-ECode CMediaVideoItem::InvalidateTransitionsEx(
+ECode CMediaVideoItem::InvalidateTransitions(
     /* [in] */ Int64 oldStartTimeMs,
     /* [in] */ Int64 oldDurationMs,
     /* [in] */ Int64 newStartTimeMs,
@@ -627,7 +627,7 @@ ECode CMediaVideoItem::GetWaveformData(
 
     if (mWaveformData != NULL) {
         *result = mWaveformData;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else if (mAudioWaveformFilename != NULL) {
@@ -637,7 +637,7 @@ ECode CMediaVideoItem::GetWaveformData(
         //    throw e;
         //}
         *result = mWaveformData;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else {
@@ -791,7 +791,7 @@ ECode CMediaVideoItem::GetVideoClipProperties(
     clipSettings->rotationDegree = mVideoRotationDegree;
 
     *settings = clipSettings;
-    INTERFACE_ADDREF(*settings);
+    REFCOUNT_ADD(*settings);
     return NOERROR;
 }
 

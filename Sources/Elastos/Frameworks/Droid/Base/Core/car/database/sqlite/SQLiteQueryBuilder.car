@@ -191,7 +191,7 @@ module
          * @see android.content.ContentResolver#query(android.net.Uri, String[],
          *      String, String[], String)
          */
-        QueryEx(
+        Query(
             [in] ISQLiteDatabase* db,
             [in] ArrayOf<String>* projectionIn,
             [in] String selection,
@@ -237,7 +237,7 @@ module
          * @see android.content.ContentResolver#query(android.net.Uri, String[],
          *      String, String[], String)
          */
-        QueryEx2(
+        Query(
             [in] ISQLiteDatabase* db,
             [in] ArrayOf<String>* projectionIn,
             [in] String selection,
@@ -292,7 +292,7 @@ module
          * used at all.  To avoid confusion, call
          * {@link #buildQuery(String[], String, String, String, String, String)} instead.
          */
-        BuildQueryEx(
+        BuildQuery(
             [in] ArrayOf<String>* projectionIn,
             [in] String selection,
             [in] ArrayOf<String>* selectionArgs,
@@ -364,7 +364,7 @@ module
          * instead.
          */
         //@Deprecated
-        BuildUnionSubQueryEx(
+        BuildUnionSubQuery(
             [in] String typeDiscriminatorColumn,
             [in] ArrayOf<String> unionColumns,
             [in] IObjectStringMap* columnsPresentInTable,

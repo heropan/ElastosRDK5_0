@@ -2,9 +2,9 @@
 #include "CGsmAlphabet.h"
 #include "content/res/CResourcesHelper.h"
 #include "R.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include <ext/frameworkdef.h>
 
 using Elastos::Core::CStringWrapper;
@@ -492,14 +492,14 @@ ECode CGsmAlphabet::CharToGsm(
     //     // this should never happen
     //     return sCharsToGsmTables[0].get(' ', ' ');
     // }
-    if (FAILED(CharToGsmEx(c, FALSE, val))) {
+    if (FAILED(CharToGsm(c, FALSE, val))) {
         *val = (*sCharsToGsmTables)[0]->Get(' ', ' ');
     }
 
     return NOERROR;
 }
 
-ECode CGsmAlphabet::CharToGsmEx(
+ECode CGsmAlphabet::CharToGsm(
     /* [in] */ Char32 c,
     /* [in] */ Boolean throwException,
     /* [out] */ Int32* val)
@@ -591,10 +591,10 @@ ECode CGsmAlphabet::StringToGsm7BitPackedWithHeader(
     /* [out, callee] */ ArrayOf<Byte>** res)
 {
     VALIDATE_NOT_NULL(res);
-    return StringToGsm7BitPackedWithHeaderEx(data, header, 0, 0, res);
+    return StringToGsm7BitPackedWithHeader(data, header, 0, 0, res);
 }
 
-ECode CGsmAlphabet::StringToGsm7BitPackedWithHeaderEx(
+ECode CGsmAlphabet::StringToGsm7BitPackedWithHeader(
     /* [in] */ const String& data,
     /* [in] */ ArrayOf<Byte>* header,
     /* [in] */ Int32 languageTable,
@@ -603,14 +603,14 @@ ECode CGsmAlphabet::StringToGsm7BitPackedWithHeaderEx(
 {
     VALIDATE_NOT_NULL(res);
     if (header == NULL || header->GetLength() == 0) {
-        return StringToGsm7BitPackedEx(data, languageTable, languageShiftTable, res);
+        return StringToGsm7BitPacked(data, languageTable, languageShiftTable, res);
     }
 
     Int32 headerBits = (header->GetLength() + 1) * 8;
     Int32 headerSeptets = (headerBits + 6) / 7;
 
     AutoPtr< ArrayOf<Byte> > ret;
-    StringToGsm7BitPackedEx2(data, headerSeptets, TRUE, languageTable,
+    StringToGsm7BitPacked(data, headerSeptets, TRUE, languageTable,
             languageShiftTable, (ArrayOf<Byte>**)&ret);
 
     // Paste in the header
@@ -618,7 +618,7 @@ ECode CGsmAlphabet::StringToGsm7BitPackedWithHeaderEx(
     //System.arraycopy(header, 0, ret, 2, header.length);
     ret->Copy(2, header, 0, header->GetLength());
     *res = ret;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
 
     return NOERROR;
 }
@@ -628,20 +628,20 @@ ECode CGsmAlphabet::StringToGsm7BitPacked(
     /* [out, callee] */ ArrayOf<Byte>** res)
 {
     VALIDATE_NOT_NULL(res);
-    return StringToGsm7BitPackedEx2(data, 0, TRUE, 0, 0, res);
+    return StringToGsm7BitPacked(data, 0, TRUE, 0, 0, res);
 }
 
-ECode CGsmAlphabet::StringToGsm7BitPackedEx(
+ECode CGsmAlphabet::StringToGsm7BitPacked(
     /* [in] */ const String& data,
     /* [in] */ Int32 languageTable,
     /* [in] */ Int32 languageShiftTable,
     /* [out, callee] */ ArrayOf<Byte>** res)
 {
     VALIDATE_NOT_NULL(res);
-    return StringToGsm7BitPackedEx2(data, 0, TRUE, languageTable, languageShiftTable, res);
+    return StringToGsm7BitPacked(data, 0, TRUE, languageTable, languageShiftTable, res);
 }
 
-ECode CGsmAlphabet::StringToGsm7BitPackedEx2(
+ECode CGsmAlphabet::StringToGsm7BitPacked(
     /* [in] */ const String& data,
     /* [in] */ Int32 startingSeptetOffset,
     /* [in] */ Boolean throwException,
@@ -697,7 +697,7 @@ ECode CGsmAlphabet::StringToGsm7BitPackedEx2(
     }
     (*ret)[0] = (Byte) (septetCount);  // Validated by check above.
     *res = ret;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
 
     return NOERROR;
 }
@@ -709,10 +709,10 @@ ECode CGsmAlphabet::Gsm7BitPackedToString(
     /* [out] */ String* res)
 {
     VALIDATE_NOT_NULL(res);
-    return Gsm7BitPackedToStringEx(pdu, offset, lengthSeptets, 0, 0, 0, res);
+    return Gsm7BitPackedToString(pdu, offset, lengthSeptets, 0, 0, 0, res);
 }
 
-ECode CGsmAlphabet::Gsm7BitPackedToStringEx(
+ECode CGsmAlphabet::Gsm7BitPackedToString(
     /* [in] */ ArrayOf<Byte>* pdu,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 lengthSeptets,
@@ -799,10 +799,10 @@ ECode CGsmAlphabet::Gsm8BitUnpackedToString(
     /* [out] */ String* res)
 {
     VALIDATE_NOT_NULL(res);
-    return Gsm8BitUnpackedToStringEx(data, offset, length, String(""), res);
+    return Gsm8BitUnpackedToString(data, offset, length, String(""), res);
 }
 
-ECode CGsmAlphabet::Gsm8BitUnpackedToStringEx(
+ECode CGsmAlphabet::Gsm8BitUnpackedToString(
     /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -898,7 +898,7 @@ ECode CGsmAlphabet::StringToGsm8BitPacked(
     StringToGsm8BitUnpackedField(s, ret, 0, ret->GetLength());
 
     *res = ret;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
 
     return NOERROR;
 }
@@ -953,10 +953,10 @@ ECode CGsmAlphabet::CountGsmSeptets(
 {
     VALIDATE_NOT_NULL(val);
     *val = 0;
-    return CountGsmSeptetsEx(c, FALSE, val);
+    return CountGsmSeptets(c, FALSE, val);
 }
 
-ECode CGsmAlphabet::CountGsmSeptetsEx(
+ECode CGsmAlphabet::CountGsmSeptets(
     /* [in] */ Char32 c,
     /* [in] */ Boolean throwsException,
     /* [out] */ Int32* val)
@@ -1019,7 +1019,7 @@ ECode CGsmAlphabet::CountGsmSeptetsUsingTables(
     return NOERROR;
 }
 
-ECode CGsmAlphabet::CountGsmSeptetsEx2(
+ECode CGsmAlphabet::CountGsmSeptets(
     /* [in] */ ICharSequence* s,
     /* [in] */ Boolean use7bitOnly,
     /* [out] */ IGsmAlphabetTextEncodingDetails** res)
@@ -1112,7 +1112,7 @@ ECode CGsmAlphabet::GetEnabledSingleShiftTables(
 {
     VALIDATE_NOT_NULL(res);
     *res = sEnabledSingleShiftTables;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1121,7 +1121,7 @@ ECode CGsmAlphabet::GetEnabledLockingShiftTables(
 {
     VALIDATE_NOT_NULL(res);
     *res = sEnabledLockingShiftTables;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

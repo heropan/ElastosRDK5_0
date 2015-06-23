@@ -1,9 +1,9 @@
 
 #include "privacy/CPrivacySettings.h"
 #include <stdlib.h>
-#include <Elastos.Core.h>
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Math;
 using Elastos::Math::IBigDecimal;
@@ -772,7 +772,7 @@ ECode CPrivacySettings::GetAllowedContacts(
 {
     VALIDATE_NOT_NULL(contacts);
     *contacts = allowedContacts;
-    INTERFACE_ADDREF(*contacts);
+    REFCOUNT_ADD(*contacts);
     return NOERROR;
 }
 

@@ -4,10 +4,10 @@
 #include "os/FileUtils.h"
 #include "os/SystemClock.h"
 #include "net/Uri.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -402,7 +402,7 @@ ECode CDropBoxManagerService::Add(
     read = 0;
     while (read < buffer->GetLength()) {
        Int32 n;
-       FAIL_GOTO(input->ReadBytesEx(buffer, read, buffer->GetLength() - read, &n), EXIT);
+       FAIL_GOTO(input->ReadBytes(buffer, read, buffer->GetLength() - read, &n), EXIT);
        if (n <= 0) {
            break;
        }
@@ -436,7 +436,7 @@ ECode CDropBoxManagerService::Add(
        }
 
        do {
-           FAIL_GOTO(output->WriteBytesEx(*buffer, 0, read), EXIT);
+           FAIL_GOTO(output->WriteBytes(*buffer, 0, read), EXIT);
 
            Int64 now;
            system->GetCurrentTimeMillis(&now);
@@ -491,7 +491,7 @@ ECode CDropBoxManagerService::Add(
        // very lock while waiting for the WindowManagerService lock.
        AutoPtr<IMessage> msg;
        Boolean rst;
-       mHandler->ObtainMessageEx(MSG_SEND_BROADCAST, dropboxIntent, (IMessage**)&msg);
+       mHandler->ObtainMessage(MSG_SEND_BROADCAST, dropboxIntent, (IMessage**)&msg);
        mHandler->SendMessage(msg, &rst);
     }
     //} catch (IOException e) {
@@ -894,7 +894,7 @@ ECode CDropBoxManagerService::HandleMessage(
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
         AutoPtr<IUserHandle> OWNER;
         helper->GetOWNER((IUserHandle**)&OWNER);
-        mContext->SendBroadcastAsUserEx(obj, OWNER, Elastos::Droid::Manifest::Permission::READ_LOGS);
+        mContext->SendBroadcastAsUser(obj, OWNER, Elastos::Droid::Manifest::Permission::READ_LOGS);
     }
     return NOERROR;
 }

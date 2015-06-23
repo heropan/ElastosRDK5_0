@@ -4,15 +4,14 @@
 
 #include "_CInputDevice.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IVibrator;
 
 namespace Elastos {
@@ -292,7 +291,7 @@ public:
      * @see MotionEvent#AXIS_Y
      * @see #getSupportedAxes()
      */
-    CARAPI GetMotionRangeEx(
+    CARAPI GetMotionRange(
         /* [in] */ Int32 axis,
         /* [in] */ Int32 source,
         /* [out] */ IMotionRange** motionRange);

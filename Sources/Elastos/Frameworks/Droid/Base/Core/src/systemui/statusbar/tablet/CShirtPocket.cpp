@@ -54,10 +54,10 @@ ECode CShirtPocket::Stash(
     return ShirtPocket::Stash(clipping);
 }
 
-ECode CShirtPocket::SetAlphaEx(
+ECode CShirtPocket::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    return CShirtPocket::SetAlphaEx(alpha);
+    return CShirtPocket::SetAlpha(alpha);
 }
 
 

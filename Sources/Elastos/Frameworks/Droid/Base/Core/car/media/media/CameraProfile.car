@@ -39,7 +39,7 @@ module
          * @param cameraId The id of the camera
          * @param quality The target quality level
          */
-        GetJpegEncodingQualityParameterEx(
+        GetJpegEncodingQualityParameter(
             [in] Int32 cameraId,
             [in] Int32 quality,
             [out] Int32* result);

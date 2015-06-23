@@ -4,9 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "_CColor.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -62,7 +62,7 @@ public:
      * @param hsv  3 element array which holds the input HSV components.
      * @return the resulting argb color
     */
-    CARAPI HSVToColorEx(
+    CARAPI HSVToColor(
         /* [in] */ Int32 alpha,
         /* [in] */ const ArrayOf<Float>& hsv,
         /* [out] */ Int32* color);
@@ -223,7 +223,7 @@ public:
      *
      * @hide Pending API council
      */
-    CARAPI HSBtoColorEx(
+    CARAPI HSBtoColor(
         /* [in] */ Float h,
         /* [in] */ Float s,
         /* [in] */ Float b,

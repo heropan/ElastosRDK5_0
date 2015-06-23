@@ -4,18 +4,17 @@
 
 #include "_CGeckoSmsManager.h"
 #include "GeckoErrors.h"
-#include <elastos/Thread.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Thread.h>
 
 //using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::ThreadState;
-using Elastos::Core::Threading::IThreadGroup;
+using Elastos::Core::Mutex;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
+using Elastos::Core::ThreadState;
+using Elastos::Core::IThreadGroup;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IIntent;
@@ -196,10 +195,10 @@ public:
 
     CARAPI Join();
 
-    CARAPI JoinEx(
+    CARAPI Join(
         /* [in] */ Int64 millis);
 
-    CARAPI JoinEx2(
+    CARAPI Join(
         /* [in] */ Int64 millis,
         /* [in] */ Int32 nanos);
 

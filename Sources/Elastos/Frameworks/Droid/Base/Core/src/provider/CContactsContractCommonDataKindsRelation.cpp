@@ -1,7 +1,7 @@
 
 #include "provider/CContactsContractCommonDataKindsRelation.h"
 #include "text/TextUtils.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "R.h"
 
 using Elastos::Droid::Text::TextUtils;
@@ -51,7 +51,7 @@ ECode CContactsContractCommonDataKindsRelation::GetTypeLabel(
 
     if (type == TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
         *lb = label;
-        INTERFACE_ADDREF(*lb);
+        REFCOUNT_ADD(*lb);
         return NOERROR;
     } else {
         Int32 labelRes;

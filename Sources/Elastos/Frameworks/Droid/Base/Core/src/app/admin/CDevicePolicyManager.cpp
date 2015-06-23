@@ -5,9 +5,9 @@
 #include "os/CUserHandleHelper.h"
 #include "net/CProxy.h"
 #include "content/pm/CResolveInfo.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Net::ProxyType;
 using Elastos::Net::IProxyHelper;
@@ -180,10 +180,10 @@ ECode CDevicePolicyManager::GetPasswordQuality(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordQualityEx(admin, myUserId, password);
+    return GetPasswordQuality(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordQualityEx(
+ECode CDevicePolicyManager::GetPasswordQuality(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -228,10 +228,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumLength(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumLengthEx(admin, myUserId, password);
+    return GetPasswordMinimumLength(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumLengthEx(
+ECode CDevicePolicyManager::GetPasswordMinimumLength(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -276,10 +276,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumUpperCase(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumUpperCaseEx(admin, myUserId, password);
+    return GetPasswordMinimumUpperCase(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumUpperCaseEx(
+ECode CDevicePolicyManager::GetPasswordMinimumUpperCase(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -323,10 +323,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumLowerCase(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumLowerCaseEx(admin, myUserId, password);
+    return GetPasswordMinimumLowerCase(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumLowerCaseEx(
+ECode CDevicePolicyManager::GetPasswordMinimumLowerCase(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -371,10 +371,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumLetters(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumLettersEx(admin, myUserId, password);
+    return GetPasswordMinimumLetters(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumLettersEx(
+ECode CDevicePolicyManager::GetPasswordMinimumLetters(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -419,10 +419,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumNumeric(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumNumericEx(admin, myUserId, password);
+    return GetPasswordMinimumNumeric(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumNumericEx(
+ECode CDevicePolicyManager::GetPasswordMinimumNumeric(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -467,10 +467,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumSymbols(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumSymbolsEx(admin, myUserId, password);
+    return GetPasswordMinimumSymbols(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumSymbolsEx(
+ECode CDevicePolicyManager::GetPasswordMinimumSymbols(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -515,10 +515,10 @@ ECode CDevicePolicyManager::GetPasswordMinimumNonLetter(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordMinimumNonLetterEx(admin, myUserId, password);
+    return GetPasswordMinimumNonLetter(admin, myUserId, password);
 }
 
-ECode CDevicePolicyManager::GetPasswordMinimumNonLetterEx(
+ECode CDevicePolicyManager::GetPasswordMinimumNonLetter(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* password)
@@ -623,10 +623,10 @@ ECode CDevicePolicyManager::GetPasswordHistoryLength(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetPasswordHistoryLengthEx(admin, myUserId, length);
+    return GetPasswordHistoryLength(admin, myUserId, length);
 }
 
-ECode CDevicePolicyManager::GetPasswordHistoryLengthEx(
+ECode CDevicePolicyManager::GetPasswordHistoryLength(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* length)
@@ -721,10 +721,10 @@ ECode CDevicePolicyManager::GetMaximumFailedPasswordsForWipe(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetMaximumFailedPasswordsForWipeEx(admin, myUserId, maximum);
+    return GetMaximumFailedPasswordsForWipe(admin, myUserId, maximum);
 }
 
-ECode CDevicePolicyManager::GetMaximumFailedPasswordsForWipeEx(
+ECode CDevicePolicyManager::GetMaximumFailedPasswordsForWipe(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* maximum)
@@ -795,10 +795,10 @@ ECode CDevicePolicyManager::GetMaximumTimeToLock(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetMaximumTimeToLockEx(admin, myUserId, time);
+    return GetMaximumTimeToLock(admin, myUserId, time);
 }
 
-ECode CDevicePolicyManager::GetMaximumTimeToLockEx(
+ECode CDevicePolicyManager::GetMaximumTimeToLock(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int64* time)
@@ -1004,10 +1004,10 @@ ECode CDevicePolicyManager::GetStorageEncryptionStatus(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetStorageEncryptionStatusEx(myUserId, st);
+    return GetStorageEncryptionStatus(myUserId, st);
 }
 
-ECode CDevicePolicyManager::GetStorageEncryptionStatusEx(
+ECode CDevicePolicyManager::GetStorageEncryptionStatus(
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* st)
 {
@@ -1051,10 +1051,10 @@ ECode CDevicePolicyManager::GetCameraDisabled(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetCameraDisabledEx(admin, myUserId, disabled);
+    return GetCameraDisabled(admin, myUserId, disabled);
 }
 
-ECode CDevicePolicyManager::GetCameraDisabledEx(
+ECode CDevicePolicyManager::GetCameraDisabled(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* disabled)
@@ -1099,10 +1099,10 @@ ECode CDevicePolicyManager::GetKeyguardDisabledFeatures(
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     helper->GetMyUserId(&myUserId);
-    return GetKeyguardDisabledFeaturesEx(admin, myUserId, which);
+    return GetKeyguardDisabledFeatures(admin, myUserId, which);
 }
 
-ECode CDevicePolicyManager::GetKeyguardDisabledFeaturesEx(
+ECode CDevicePolicyManager::GetKeyguardDisabledFeatures(
     /* [in] */ IComponentName* admin,
     /* [in] */ Int32 userHandle,
     /* [out] */ Int32* which)

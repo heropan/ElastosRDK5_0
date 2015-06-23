@@ -3,7 +3,7 @@
 
 #include "_CPopupWindow.h"
 #include "ext/frameworkext.h"
-#include "widget/PopupWindowMacro.h"
+
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

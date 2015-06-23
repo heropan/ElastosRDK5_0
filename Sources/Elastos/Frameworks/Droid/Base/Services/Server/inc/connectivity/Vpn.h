@@ -3,11 +3,8 @@
 
 #include "CConnectivityService.h"
 #include <net/BaseNetworkStateTracker.h>
-#include <elastos/ThreadBase.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Security::IKeyStore;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;

@@ -9,7 +9,7 @@
 #include "os/ServiceManager.h"
 #include "content/CIntent.h"
 #include "ext/frameworkext.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::EIID_IHandlerCallback;
@@ -240,7 +240,7 @@ ECode CPppoeStateTracker::GetDhcpInfo(
     VALIDATE_NOT_NULL(dhcpInfo);
     AutoPtr<IDhcpInfo> d = mDhcpInfoInternal->MakeDhcpInfo();
     *dhcpInfo = d;
-    INTERFACE_ADDREF(*dhcpInfo);
+    REFCOUNT_ADD(*dhcpInfo);
     return NOERROR;
 }
 

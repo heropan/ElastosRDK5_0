@@ -1,7 +1,7 @@
 #include "ext/frameworkext.h"
 #include "view/CPointerProperties.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -76,7 +76,7 @@ ECode CPointerProperties::CopyFrom(
     return NOERROR;
 }
 
-ECode CPointerProperties::EqualsEx(
+ECode CPointerProperties::Equals(
     /* [in] */ IPointerProperties* other,
     /* [out] */ Boolean* result)
 {
@@ -97,7 +97,7 @@ ECode CPointerProperties::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* result)
 {
-    return EqualsEx(IPointerProperties::Probe(other), result);
+    return Equals(IPointerProperties::Probe(other), result);
 }
 
 ECode CPointerProperties::GetHashCode(

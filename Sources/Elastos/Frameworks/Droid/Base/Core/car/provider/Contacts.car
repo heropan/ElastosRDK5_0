@@ -413,7 +413,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         // @Deprecated
-        AddToGroupEx(
+        AddToGroup(
             [in] IContentResolver* resolver,
             [in] Int64 personId,
             [in] Int64 groupId,
@@ -780,7 +780,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         // @Deprecated
-        GetDisplayLabelEx(
+        GetDisplayLabel(
             [in] IContext* ctx,
             [in] Int32 type,
             [in] ICharSequence* sequence,

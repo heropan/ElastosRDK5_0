@@ -2,7 +2,7 @@
 #include "CActivityTwo.h"
 #include "R.h"
 #include <elautoptr.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Slogger;
@@ -145,7 +145,7 @@ Slogger::D("CActivityTwo", "HandleSendText=====================================,
         CStringWrapper::New(sharedText, (ICharSequence**)&text);
         mReceiveText->SetText(text);
         mReceiveText->SetTextSize(30);
-        mReceiveText->SetTextColorEx(IColor::RED);
+        mReceiveText->SetTextColor(IColor::RED);
     }
 }
 

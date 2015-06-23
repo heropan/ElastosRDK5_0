@@ -4,8 +4,8 @@
 #include "remote/ResultMsg.h"
 #include "remote/SessionCmdTask.h"
 #include "os/SystemClock.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::SystemClock;
@@ -224,7 +224,7 @@ void ServerSocketTimer::AcceptCmd()
             AutoPtr<IURLDecoder> urlDecoder;
             CURLDecoder::AcquireSingleton((IURLDecoder**)&urlDecoder);
             String temp;
-            if (FAILED(urlDecoder->DecodeEx(clientCmd, String("UTF-8"), &temp)))
+            if (FAILED(urlDecoder->Decode(clientCmd, String("UTF-8"), &temp)))
                 Slogger::E(TAG, "UnsupportedEncodingException!!");
             clientCmd = temp;
         // } catch (UnsupportedEncodingException ex) {
@@ -248,14 +248,14 @@ void ServerSocketTimer::AcceptCmd()
             AutoPtr<ITimeUnit> seconds;
             tuHelper->GetSECONDS((ITimeUnit**)&seconds);
             AutoPtr<IInterface> cmdInterface;
-            ec = future->GetEx(CMD_TIMEOUT_SEC, seconds, (IInterface**)&cmdInterface);
+            ec = future->Get(CMD_TIMEOUT_SEC, seconds, (IInterface**)&cmdInterface);
             if (FAILED(ec))
                 break;
             ICharSequence::Probe(cmdInterface)->ToString(&cmdResult);
             cmdResult = RemoteUtils::ComposeResult(sct->GetResultNum(), cmdResult);
             AutoPtr<IURLEncoder> urlEncoder;
             CURLEncoder::AcquireSingleton((IURLEncoder**)&urlEncoder);
-            ec = urlEncoder->EncodeEx(cmdResult, String("UTF-8"), &temp);
+            ec = urlEncoder->Encode(cmdResult, String("UTF-8"), &temp);
             if (FAILED(ec))
                 break;
             cmdResult = temp;
@@ -333,7 +333,7 @@ void ServerSocketTimer::FactoryCmd(
             AutoPtr<ITimeUnit> seconds;
             tuHelper->GetSECONDS((ITimeUnit**)&seconds);
             AutoPtr<IInterface> cmdInterface;
-            ec = future->GetEx(CMD_TIMEOUT_SEC, seconds, (IInterface**)&cmdInterface);
+            ec = future->Get(CMD_TIMEOUT_SEC, seconds, (IInterface**)&cmdInterface);
             if (FAILED(ec))
                 break;
             ICharSequence::Probe(cmdInterface)->ToString(&cmdResult);
@@ -341,7 +341,7 @@ void ServerSocketTimer::FactoryCmd(
             AutoPtr<IURLEncoder> urlEncoder;
             CURLEncoder::AcquireSingleton((IURLEncoder**)&urlEncoder);
             String temp;
-            ec = urlEncoder->EncodeEx(cmdResult, String("UTF-8"), &temp);
+            ec = urlEncoder->Encode(cmdResult, String("UTF-8"), &temp);
             if (FAILED(ec))
                 break;
             cmdResult = temp;
@@ -400,9 +400,9 @@ ECode ServerSocketTimer::SendFile(
 
         AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(BUFFER_SIZE);
         Int32 bytesReaded = 0;
-        while ((bis->ReadBytesEx(buffer, 0, BUFFER_SIZE, &bytesReaded), bytesReaded) > -1) {
+        while ((bis->ReadBytes(buffer, 0, BUFFER_SIZE, &bytesReaded), bytesReaded) > -1) {
             if (DBG) Slogger::D(TAG, "readBuffer %d", bytesReaded);
-            dos->WriteBytesEx(*buffer, 0, bytesReaded);
+            dos->WriteBytes(*buffer, 0, bytesReaded);
         }
         ec = IFlushable::Probe(dos)->Flush();
     } while (0);
@@ -463,9 +463,9 @@ ECode ServerSocketTimer::ReceiveFile(
             break;
         AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(BUFFER_SIZE);
         Int32 bytesReaded = 0;
-        while ((dis->ReadBytesEx(buffer, 0, BUFFER_SIZE, &bytesReaded), bytesReaded) > -1) {
+        while ((dis->ReadBytes(buffer, 0, BUFFER_SIZE, &bytesReaded), bytesReaded) > -1) {
             if (DBG) Slogger::D(TAG, "readBuffer %d", bytesReaded);
-            fos->WriteBytesEx(*buffer, 0, bytesReaded);
+            fos->WriteBytes(*buffer, 0, bytesReaded);
             IFlushable::Probe(fos)->Flush();
         }
     } while (0);
@@ -514,7 +514,7 @@ void ServerSocketTimer::HandleCmd()
             AutoPtr<IURLDecoder> urlDecoder;
             CURLDecoder::AcquireSingleton((IURLDecoder**)&urlDecoder);
             String temp;
-            if (FAILED(urlDecoder->DecodeEx(clientCmd, String("UTF-8"), &temp)))
+            if (FAILED(urlDecoder->Decode(clientCmd, String("UTF-8"), &temp)))
                 Slogger::E(TAG, "UnsupportedEncodingException!!");
             clientCmd = temp;
         // } catch (UnsupportedEncodingException ex) {

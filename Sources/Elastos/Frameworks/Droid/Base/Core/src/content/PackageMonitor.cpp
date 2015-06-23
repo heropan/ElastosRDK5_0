@@ -3,7 +3,7 @@
 #ifdef DROID_CORE
 #include "content/CIntentFilter.h"
 #endif
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IActivity;
@@ -265,10 +265,10 @@ ECode PackageMonitor::Register(
     /* [in] */ ILooper* thread,
     /* [in] */ Boolean externalStorage)
 {
-    return RegisterEx(context, thread, NULL, externalStorage);
+    return Register(context, thread, NULL, externalStorage);
 }
 
-ECode PackageMonitor::RegisterEx(
+ECode PackageMonitor::Register(
     /* [in] */ IContext* context,
     /* [in] */ ILooper* thread,
     /* [in] */ IUserHandle* user,
@@ -310,14 +310,14 @@ ECode PackageMonitor::RegisterEx(
         }
     }
     else {
-        FAIL_RETURN(context->RegisterReceiverEx(THIS_PROBE(IBroadcastReceiver),
+        FAIL_RETURN(context->RegisterReceiver(THIS_PROBE(IBroadcastReceiver),
                 sPackageFilt, String(NULL), mRegisteredHandler, (IIntent**)&intent))
         intent = NULL;
-        FAIL_RETURN(context->RegisterReceiverEx(THIS_PROBE(IBroadcastReceiver),
+        FAIL_RETURN(context->RegisterReceiver(THIS_PROBE(IBroadcastReceiver),
                 sNonDataFilt, String(NULL), mRegisteredHandler, (IIntent**)&intent))
         if (externalStorage) {
             intent = NULL;
-            FAIL_RETURN(context->RegisterReceiverEx(THIS_PROBE(IBroadcastReceiver),
+            FAIL_RETURN(context->RegisterReceiver(THIS_PROBE(IBroadcastReceiver),
                     sExternalFilt, String(NULL), mRegisteredHandler, (IIntent**)&intent))
         }
     }
@@ -329,7 +329,7 @@ ECode PackageMonitor::GetRegisteredHandler(
 {
     VALIDATE_NOT_NULL(handler)
     *handler = mRegisteredHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 

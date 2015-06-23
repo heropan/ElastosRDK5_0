@@ -7,19 +7,18 @@
 #include "NativeDaemonConnector.h"
 #include "net/NetworkUtils.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger16;
 using Elastos::Core::CInteger16;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IFileInputStream;

@@ -4,7 +4,7 @@
 
 #include "_CWindowManagerLayoutParams.h"
 #include "view/ViewGroupLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBinder;

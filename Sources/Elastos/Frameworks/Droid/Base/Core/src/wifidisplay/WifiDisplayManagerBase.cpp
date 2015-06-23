@@ -1,6 +1,6 @@
 #include "wifidisplay/WifiDisplayManagerBase.h"
 #include "os/ServiceManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::EIID_IHandler;
@@ -195,7 +195,7 @@ void WifiDisplayManagerBase::QueueOrSendMessage(
     }
 
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&msg);
+    mH->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
     Boolean result;
     mH->SendMessage(msg, &result);
 }

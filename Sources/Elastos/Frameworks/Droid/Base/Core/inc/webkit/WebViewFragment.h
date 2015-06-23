@@ -4,7 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "app/Fragment.h"
-#include "app/FragmentMacro.h"
+
 
 using Elastos::Droid::App::Fragment;
 using Elastos::Droid::App::IActivity;

@@ -2,7 +2,7 @@
 #define __CELESTIAL_H__
 
 #include "ShaderUtil.h"
-#include "elastos/Math.h"
+#include <elastos/core/Math.h>
 
 using Elastos::IO::IFloatBuffer;
 using Elastos::Droid::Opengl::IGLSurfaceView;

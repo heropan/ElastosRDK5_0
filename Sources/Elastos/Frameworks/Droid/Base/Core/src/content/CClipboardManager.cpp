@@ -181,7 +181,7 @@ ECode CClipboardManager::GetService(
         sService = IClipboard::Probe(ServiceManager::GetService(String("clipboard")));
     }
     *clipboard = sService;
-    INTERFACE_ADDREF(*clipboard);
+    REFCOUNT_ADD(*clipboard);
     return NOERROR;
 }
 

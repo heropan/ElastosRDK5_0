@@ -1,8 +1,8 @@
 #include "ext/frameworkdef.h"
 #include "am/CActivityRecordToken.h"
 #include "am/ActivityRecord.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

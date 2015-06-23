@@ -49,7 +49,7 @@ ECode CMicrophoneInputStream::ReadBytes(
     return MicrophoneInputStream::ReadBytes(buffer, number);
 }
 
-ECode CMicrophoneInputStream::ReadBytesEx(
+ECode CMicrophoneInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -57,7 +57,7 @@ ECode CMicrophoneInputStream::ReadBytesEx(
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
-    return MicrophoneInputStream::ReadBytesEx(buffer, offset, length, number);
+    return MicrophoneInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CMicrophoneInputStream::Reset()
@@ -93,7 +93,7 @@ ECode CMicrophoneInputStream::GetLock(
 
     AutoPtr<IInterface> obj = MicrophoneInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

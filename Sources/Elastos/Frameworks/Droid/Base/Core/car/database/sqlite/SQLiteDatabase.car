@@ -378,7 +378,7 @@ module
          *   more progress than they would if we started the transaction immediately.
          * @return true if the transaction was yielded
          */
-        YieldIfContendedSafelyEx(
+        YieldIfContendedSafely(
             [in] Int64 sleepAfterYieldDelay,
             [out] Boolean* isYielded);
 
@@ -483,7 +483,7 @@ module
          * @deprecated This method no longer serves any useful purpose and has been deprecated.
          */
         //@Deprecated
-        MarkTableSyncableEx(
+        MarkTableSyncable(
             [in] String table,
             [in] String foreignKey,
             [in] String updateTable);
@@ -583,7 +583,7 @@ module
          * {@link Cursor}s are not synchronized, see the documentation for more details.
          * @see Cursor
          */
-        QueryEx(
+        Query(
             [in] Boolean distinct,
             [in] String table,
             [in] ArrayOf<String>* columns,
@@ -624,7 +624,7 @@ module
          * {@link Cursor}s are not synchronized, see the documentation for more details.
          * @see Cursor
          */
-        QueryEx2(
+        Query(
             [in] String table,
             [in] ArrayOf<String>* columns,
             [in] String selection,
@@ -664,7 +664,7 @@ module
          * {@link Cursor}s are not synchronized, see the documentation for more details.
          * @see Cursor
          */
-        QueryEx3(
+        Query(
             [in] String table,
             [in] ArrayOf<String>* columns,
             [in] String selection,
@@ -755,7 +755,7 @@ module
          * {@link Cursor}s are not synchronized, see the documentation for more details.
          * @see Cursor
          */
-        QueryWithFactoryEx(
+        QueryWithFactory(
             [in] ISQLiteDatabaseCursorFactory* cursorFactory,
             [in] Boolean distinct,
             [in] String table,
@@ -797,7 +797,7 @@ module
          * @return A {@link Cursor} object, which is positioned before the first entry. Note that
          * {@link Cursor}s are not synchronized, see the documentation for more details.
          */
-        RawQueryEx(
+        RawQuery(
             [in] String sql,
             [in] ArrayOf<String>* selectionArgs,
             [in] ICancellationSignal* cancellationSignal,
@@ -837,7 +837,7 @@ module
          * @return A {@link Cursor} object, which is positioned before the first entry. Note that
          * {@link Cursor}s are not synchronized, see the documentation for more details.
          */
-        RawQueryWithFactoryEx(
+        RawQueryWithFactory(
             [in] ISQLiteDatabaseCursorFactory* cursorFactory,
             [in] String sql,
             [in] ArrayOf<String>* selectionArgs,
@@ -1077,7 +1077,7 @@ module
          * @param bindArgs only byte[], String, Long and Double are supported in bindArgs.
          * @throws SQLException if the SQL string is invalid
          */
-        ExecSQLEx(
+        ExecSQL(
             [in] String sql,
             [in] ArrayOf<IInterface*>* bindArgs);
 
@@ -1360,7 +1360,7 @@ module
          * @return the newly opened database
          * @throws SQLiteException if the database cannot be opened
          */
-        OpenDatabaseEx(
+        OpenDatabase(
             [in] String path,
             [in] ISQLiteDatabaseCursorFactory* factory,
             [in] Int32 flags,
@@ -1378,7 +1378,7 @@ module
         /**
          * Equivalent to openDatabase(path, factory, CREATE_IF_NECESSARY).
          */
-        OpenOrCreateDatabaseEx(
+        OpenOrCreateDatabase(
             [in] String path,
             [in] ISQLiteDatabaseCursorFactory* factory,
             [out] ISQLiteDatabase** result);
@@ -1386,7 +1386,7 @@ module
         /**
          * Equivalent to openDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler).
          */
-        OpenOrCreateDatabaseEx2(
+        OpenOrCreateDatabase(
             [in] String path,
             [in] ISQLiteDatabaseCursorFactory* factory,
             [in] IDatabaseErrorHandler* errorHandler,

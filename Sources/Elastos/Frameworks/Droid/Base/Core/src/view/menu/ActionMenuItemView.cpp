@@ -3,7 +3,7 @@
 #include "view/menu/MenuItemImpl.h"
 #include "R.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "widget/CToastHelper.h"
 
 using Elastos::Core::CStringWrapper;
@@ -419,7 +419,7 @@ ECode ActionMenuItemView::Init(
         ARRAY_SIZE(R::styleable::ActionMenuItemView));
 
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetDimensionPixelSize(R::styleable::ActionMenuItemView_minWidth, 0, &mMinWidth);
     a->Recycle();
 

@@ -1,5 +1,5 @@
 #include "text/util/Rfc822Token.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 

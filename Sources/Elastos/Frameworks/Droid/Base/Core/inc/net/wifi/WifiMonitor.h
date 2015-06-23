@@ -5,9 +5,7 @@
 #include "ext/frameworkext.h"
 #include "net/wifi/WifiNative.h"
 #include "util/StateMachine.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Droid::Net::Wifi::P2p::P2pStatus;
 using Elastos::Utility::Regex::IPattern;
 using Elastos::Droid::Utility::IProtocol;

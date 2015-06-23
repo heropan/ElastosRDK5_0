@@ -61,7 +61,7 @@ ECode CAutoCompleteTextView::SetSelection(
 /**
  * Convenience for {@link Selection#setSelection(Spannable, Int32)}.
  */
-ECode CAutoCompleteTextView::SetSelectionEx(
+ECode CAutoCompleteTextView::SetSelection(
     /* [in] */ Int32 index)
 {
     return AutoCompleteTextView::SetSelection(index);

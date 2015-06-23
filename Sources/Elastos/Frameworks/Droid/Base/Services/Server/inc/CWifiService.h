@@ -10,9 +10,9 @@
 #include "os/HandlerBase.h"
 #include "util/AsyncChannel.h"
 #include "R.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;

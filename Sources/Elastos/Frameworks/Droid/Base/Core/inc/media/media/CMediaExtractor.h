@@ -98,7 +98,7 @@ public:
      * @param uri the Content URI of the data you want to extract from.
      * @param headers the headers to be sent together with the request for the data
      */
-    CARAPI SetDataSourceEx(
+    CARAPI SetDataSource(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
         /* [in] */ IObjectStringMap* headers);
@@ -109,7 +109,7 @@ public:
      * @param path the path of the file, or the http URL
      * @param headers the headers associated with the http request for the stream you want to play
      */
-    CARAPI SetDataSourceEx2(
+    CARAPI SetDataSource(
         /* [in] */ const String& path,
         /* [in] */ IObjectStringMap* headers);
 
@@ -125,7 +125,7 @@ public:
      * As an alternative, the application could first open the file for reading,
      * and then use the file descriptor form {@link #setDataSource(FileDescriptor)}.
      */
-    CARAPI SetDataSourceEx3(
+    CARAPI SetDataSource(
         /* [in] */ const String& path);
 
     /**
@@ -134,7 +134,7 @@ public:
      *
      * @param fd the FileDescriptor for the file you want to extract from.
      */
-    CARAPI SetDataSourceEx4(
+    CARAPI SetDataSource(
         /* [in] */ IFileDescriptor* fd);
 
     /**
@@ -146,7 +146,7 @@ public:
      * @param offset the offset into the file where the data to be extracted starts, in bytes
      * @param length the length in bytes of the data to be extracted
      */
-    CARAPI SetDataSourceEx5(
+    CARAPI SetDataSource(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length);

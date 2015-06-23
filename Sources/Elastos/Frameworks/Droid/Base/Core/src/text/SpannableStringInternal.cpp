@@ -1,8 +1,8 @@
 
 #include "text/SpannableStringInternal.h"
 #include <util/ArrayUtils.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::IComparable;
 using Elastos::Core::StringBuffer;

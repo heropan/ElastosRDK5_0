@@ -98,7 +98,7 @@ ECode DialogFragment::Show(
     return NOERROR;
 }
 
-ECode DialogFragment::ShowEx(
+ECode DialogFragment::Show(
     /* [in] */ IFragmentTransaction* transaction,
     /* [in] */ const String& tag,
     /* [out] */ Int32* id)
@@ -140,7 +140,7 @@ void DialogFragment::DismissInternal(
     if (mBackStackId >= 0) {
         AutoPtr<IFragmentManager> frMgr;
         GetFragmentManager((IFragmentManager**)&frMgr);
-        frMgr->PopBackStackEx2(mBackStackId,
+        frMgr->PopBackStack(mBackStackId,
                 IFragmentManager::POP_BACK_STACK_INCLUSIVE);
         mBackStackId = -1;
     } else {
@@ -164,7 +164,7 @@ ECode DialogFragment::GetDialog(
 {
     VALIDATE_NOT_NULL(dialog);
     *dialog = mDialog;
-    INTERFACE_ADDREF(*dialog);
+    REFCOUNT_ADD(*dialog);
     return NOERROR;
 }
 
@@ -238,11 +238,11 @@ ECode DialogFragment::OnCreate(
     mShowsDialog = mContainerId == 0;
 
     if (savedInstanceState != NULL) {
-        savedInstanceState->GetInt32Ex(String(SAVED_STYLE), IDialogFragment::STYLE_NORMAL, &mStyle);
-        savedInstanceState->GetInt32Ex(String(SAVED_THEME), 0, &mTheme);
-        savedInstanceState->GetBooleanEx(String(SAVED_CANCELABLE), TRUE, &mCancelable);
-        savedInstanceState->GetBooleanEx(String(SAVED_SHOWS_DIALOG), mShowsDialog, &mShowsDialog);
-        savedInstanceState->GetInt32Ex(String(SAVED_BACK_STACK_ID), -1, &mBackStackId);
+        savedInstanceState->GetInt32(String(SAVED_STYLE), IDialogFragment::STYLE_NORMAL, &mStyle);
+        savedInstanceState->GetInt32(String(SAVED_THEME), 0, &mTheme);
+        savedInstanceState->GetBoolean(String(SAVED_CANCELABLE), TRUE, &mCancelable);
+        savedInstanceState->GetBoolean(String(SAVED_SHOWS_DIALOG), mShowsDialog, &mShowsDialog);
+        savedInstanceState->GetInt32(String(SAVED_BACK_STACK_ID), -1, &mBackStackId);
     }
     return NOERROR;
 }
@@ -335,7 +335,7 @@ ECode DialogFragment::OnActivityCreated(
 //             throw new IllegalStateException("DialogFragment can not be attached to a container view");
             return E_ILLEGAL_STATE_EXCEPTION;
         }
-        mDialog->SetContentViewEx(view);
+        mDialog->SetContentView(view);
     }
     AutoPtr<IActivity> activity;
     GetActivity((IActivity**)&activity);

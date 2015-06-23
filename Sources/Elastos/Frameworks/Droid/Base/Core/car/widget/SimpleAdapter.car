@@ -133,7 +133,7 @@ module
          *
          * @see #setViewImage(ImageView, Int32)
          */
-        SetViewImageEx(
+        SetViewImage(
             [in] IImageView* v,
             [in] String value);
 

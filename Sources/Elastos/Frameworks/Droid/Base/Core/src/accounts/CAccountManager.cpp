@@ -15,7 +15,7 @@
 #include "text/TextUtils.h"
 #include "content/CIntent.h"
 #include "content/CIntentFilter.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Slogger;
@@ -125,7 +125,7 @@ ECode CAccountManager::AmsTask::Start(
     //     setException(e);
     // }
     *accountManagerFuture = THIS_PROBE(IAccountManagerFuture);
-    INTERFACE_ADDREF(*accountManagerFuture);
+    REFCOUNT_ADD(*accountManagerFuture);
     return NOERROR;
 }
 
@@ -202,7 +202,7 @@ ECode CAccountManager::AmsTask::GetResult(
     return InternalGetResult(NULL, NULL, (IBundle**)result);
 }
 
-ECode CAccountManager::AmsTask::GetResultEx(
+ECode CAccountManager::AmsTask::GetResult(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
@@ -352,7 +352,7 @@ ECode CAccountManager::Future2Task::Start(
 {
     StartTask();
     *accountManagerFuture = THIS_PROBE(IAccountManagerFuture);
-    INTERFACE_ADDREF(*accountManagerFuture);
+    REFCOUNT_ADD(*accountManagerFuture);
     return NOERROR;
 }
 
@@ -409,7 +409,7 @@ ECode CAccountManager::Future2Task::GetResult(
     return InternalGetResult(NULL, NULL, result);
 }
 
-ECode CAccountManager::Future2Task::GetResultEx(
+ECode CAccountManager::Future2Task::GetResult(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
@@ -506,7 +506,7 @@ ECode CAccountManager::GetAuthTokenByTypeAndFeaturesTask::GetAccountsCallback::R
             // have a single account, return an authtoken for it
             mHost->mFuture = NULL;
             if (mHost->mActivity == NULL) {
-                mHost->mHost->GetAuthTokenEx(account, mHost->mAuthTokenType,
+                mHost->mHost->GetAuthToken(account, mHost->mAuthTokenType,
                         FALSE /* notifyAuthFailure */, mHost->mMyCallback,
                         mHost->mHandler, (IAccountManagerFuture**)&(mHost->mFuture));
             }
@@ -525,7 +525,7 @@ ECode CAccountManager::GetAuthTokenByTypeAndFeaturesTask::GetAccountsCallback::R
                 // have many accounts, launch the chooser
                 AutoPtr<IIntent> intent;
                 FAIL_RETURN(CIntent::New((IIntent**)&intent));
-                intent->SetClassNameEx(String("elastos"),
+                intent->SetClassName(String("elastos"),
                         String("elastos.accounts.ChooseAccountActivity"));
                 intent->PutInt32Extra(IAccountManager::KEY_ACCOUNTS, (Int32)accounts.Get());
                 AutoPtr<AccountManagerResponse> response = new AccountManagerResponse(
@@ -883,7 +883,7 @@ ECode CAccountManager::Future2Task_GetAuthTokenLabel::BundleToResult(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(s, (ICharSequence**)&cs);
     *result = (IInterface*)cs;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -948,7 +948,7 @@ ECode CAccountManager::Future2Task_HasFeatures::BundleToResult(
     AutoPtr<IBoolean> b;
     CBoolean::New(res, (IBoolean**)&b);
     *result = (IInterface*)b;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1015,7 +1015,7 @@ ECode CAccountManager::Future2Task_GetAccountsByTypeAndFeatures::BundleToResult(
         descs->Add((IInterface*)account);
     }
     *result = (IInterface*)descs;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1089,7 +1089,7 @@ ECode CAccountManager::Future2Task_RemoveAccount::BundleToResult(
     AutoPtr<IBoolean> b;
     CBoolean::New(res, (IBoolean**)&b);
     *result = (IInterface*)b;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1253,7 +1253,7 @@ ECode CAccountManager::BlockingGetAuthToken(
     }
 
     AutoPtr<IAccountManagerFuture> accountManagerFuture;
-    GetAuthTokenEx(account, authTokenType, notifyAuthFailure, NULL /* callback */,
+    GetAuthToken(account, authTokenType, notifyAuthFailure, NULL /* callback */,
             NULL /* handler */, (IAccountManagerFuture**)&accountManagerFuture);
     AutoPtr<IBundle> bundle;
     accountManagerFuture->GetResult((IInterface**)&bundle);
@@ -1330,7 +1330,7 @@ ECode CAccountManager::GetAuthToken(
     return task->Start(accountManagerFuture);
 }
 
-ECode CAccountManager::GetAuthTokenEx(
+ECode CAccountManager::GetAuthToken(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authTokenType,
     /* [in] */ Boolean notifyAuthFailure,
@@ -1339,11 +1339,11 @@ ECode CAccountManager::GetAuthTokenEx(
     /* [out] */ IAccountManagerFuture** accountManagerFuture)
 {
     VALIDATE_NOT_NULL(accountManagerFuture);
-    return GetAuthTokenEx2(account, authTokenType, NULL, notifyAuthFailure, cb,
+    return GetAuthToken(account, authTokenType, NULL, notifyAuthFailure, cb,
                 handler, accountManagerFuture);
 }
 
-ECode CAccountManager::GetAuthTokenEx2(
+ECode CAccountManager::GetAuthToken(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authTokenType,
     /* [in] */ IBundle* options,
@@ -1705,7 +1705,7 @@ ECode CAccountManager::GetAuthTokenByFeatures(
     AutoPtr<IAccountManagerFuture> future;
     task->Start((IAccountManagerFuture**)&future);
     *accountManagerFuture = (IAccountManagerFuture*)task;
-    INTERFACE_ADDREF(*accountManagerFuture);
+    REFCOUNT_ADD(*accountManagerFuture);
     return NOERROR;
 }
 
@@ -1723,7 +1723,7 @@ ECode CAccountManager::NewChooseAccountIntent(
     VALIDATE_NOT_NULL(_intent);
     AutoPtr<IIntent> intent;
     FAIL_RETURN(CIntent::New((IIntent**)&intent));
-    intent->SetClassNameEx(String("elastos"),
+    intent->SetClassName(String("elastos"),
             String("elastos.accounts.ChooseTypeAndAccountActivity"));
     AutoPtr< ArrayOf<IParcelable*> > parcelables = ArrayOf<IParcelable*>::Alloc(
             allowableAccounts.GetLength());
@@ -1749,7 +1749,7 @@ ECode CAccountManager::NewChooseAccountIntent(
             ChooseTypeAndAccountActivity::EXTRA_ADD_ACCOUNT_REQUIRED_FEATURES_STRING_ARRAY,
             const_cast<ArrayOf<String>*>(&addAccountRequiredFeatures));
     *_intent = intent;
-    INTERFACE_ADDREF(*_intent);
+    REFCOUNT_ADD(*_intent);
     return NOERROR;
 }
 

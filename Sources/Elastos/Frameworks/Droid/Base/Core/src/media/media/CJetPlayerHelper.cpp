@@ -14,7 +14,7 @@ ECode CJetPlayerHelper::GetJetPlayer(
 
     AutoPtr<IJetPlayer> obj = CJetPlayer::GetJetPlayer();
     *player = obj;
-    INTERFACE_ADDREF(*player);
+    REFCOUNT_ADD(*player);
     return NOERROR;
 }
 

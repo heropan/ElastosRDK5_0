@@ -3,7 +3,7 @@
 #define __CTEXTKEYLISTENERHELPER_H__
 
 #include "_CTextKeyListenerHelper.h"
-#include "text/method/BaseKeyListenerMacro.h"
+
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;
@@ -26,7 +26,7 @@ public:
     CARAPI GetInstance(
         /* [out] */ ITextKeyListener** ret);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ Boolean autotext,
         /* [in] */ Capitalize cap,
         /* [out] */ ITextKeyListener** ret);

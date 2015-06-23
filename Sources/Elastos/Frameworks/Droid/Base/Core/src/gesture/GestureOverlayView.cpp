@@ -1,5 +1,5 @@
 #include "GestureOverlayView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "Widget/FrameLayout.h"
 #include "View/Animation/AnimationUtils.h"
 #include "os/SystemClock.h"
@@ -137,7 +137,7 @@ ECode GestureOverlayView::GetCurrentStroke(
 {
     VALIDATE_NOT_NULL(stroke);
     *stroke = mStrokeBuffer;
-    INTERFACE_ADDREF(*stroke);
+    REFCOUNT_ADD(*stroke);
     return NOERROR;
 }
 
@@ -298,7 +298,7 @@ ECode GestureOverlayView::GetGesture(
 {
     VALIDATE_NOT_NULL(gesture);
     *gesture = mCurrentGesture;
-    INTERFACE_ADDREF(*gesture);
+    REFCOUNT_ADD(*gesture);
     return NOERROR;
 }
 
@@ -343,18 +343,18 @@ ECode GestureOverlayView::GetGesturePath(
 {
     VALIDATE_NOT_NULL(gesturePath);
     *gesturePath = mPath;
-    INTERFACE_ADDREF(*gesturePath);
+    REFCOUNT_ADD(*gesturePath);
     return NOERROR;
 }
 
-ECode GestureOverlayView::GetGesturePathEx(
+ECode GestureOverlayView::GetGesturePath(
     /* [in] */ IPath *path,
     /* [out] */ IPath **gesturePath)
 {
     VALIDATE_NOT_NULL(gesturePath);
     path->Set(mPath);
     *gesturePath = path;
-    INTERFACE_ADDREF(*gesturePath);
+    REFCOUNT_ADD(*gesturePath);
     return NOERROR;
 }
 
@@ -476,7 +476,7 @@ ECode GestureOverlayView::GetGesturePaint(
 {
     VALIDATE_NOT_NULL(gesturePaint);
     *gesturePaint = mGesturePaint;
-    INTERFACE_ADDREF(*gesturePaint);
+    REFCOUNT_ADD(*gesturePaint);
     return NOERROR;
 }
 
@@ -865,7 +865,7 @@ ECode GestureOverlayView::TouchMove(
     }
 
     *rect = areaToRefresh;
-    INTERFACE_ADDREF(rect);
+    REFCOUNT_ADD(rect);
     return NOERROR;
 }
 

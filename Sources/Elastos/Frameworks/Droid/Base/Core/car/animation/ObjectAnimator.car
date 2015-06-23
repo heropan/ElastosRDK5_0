@@ -122,7 +122,7 @@ module
          * @param values A set of values that the animation will animate between over time.
          * @return An ObjectAnimator object that is set up to animate between the given values.
          */
-        OfInt32Ex(
+        OfInt32(
             [in] IInterface* target,
             [in] IProperty* property,
             [in] ArrayOf<Int32>* values,
@@ -160,7 +160,7 @@ module
          * @param values A set of values that the animation will animate between over time.
          * @return An ObjectAnimator object that is set up to animate between the given values.
          */
-        OfFloatEx(
+        OfFloat(
             [in] IInterface* target,
             [in] IProperty* property,
             [in] ArrayOf<Float>* values,
@@ -205,7 +205,7 @@ module
          * @param values A set of values that the animation will animate between over time.
          * @return An ObjectAnimator object that is set up to animate between the given values.
          */
-        OfObjectEx(
+        OfObject(
             [in] IInterface* target,
             [in] IProperty* property,
             [in] ITypeEvaluator* evaluator,

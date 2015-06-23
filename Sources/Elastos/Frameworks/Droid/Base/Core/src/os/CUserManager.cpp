@@ -134,7 +134,7 @@ ECode CUserManager::GetUserForSerialNumber(
     *user = NULL;
 
     Int32 ident;
-    FAIL_RETURN(GetUserHandleEx((Int32)serialNumber, &ident));
+    FAIL_RETURN(GetUserHandle((Int32)serialNumber, &ident));
     if (ident >= 0) {
         return CUserHandle::New(ident, user);
     }
@@ -185,7 +185,7 @@ ECode CUserManager::GetUsers(
     // }
 }
 
-ECode CUserManager::GetUsersEx(
+ECode CUserManager::GetUsers(
     /* [in] */ Boolean excludeDying,
     /* [out] */ IObjectContainer** users)
 {
@@ -317,7 +317,7 @@ ECode CUserManager::GetUserSerialNumber(
     // return -1;
 }
 
-ECode CUserManager::GetUserHandleEx(
+ECode CUserManager::GetUserHandle(
     /* [in] */ Int32 userSerialNumber,
     /* [out] */ Int32* userHandle)
 {

@@ -3,12 +3,11 @@
 #define __DateUtils_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Text::IDateFormat;
 using Elastos::Utility::ICalendar;
 //using Elastos::Utility::IFormatter;

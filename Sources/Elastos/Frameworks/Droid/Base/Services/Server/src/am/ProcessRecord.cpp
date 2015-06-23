@@ -2,9 +2,9 @@
 #include "am/ProcessRecord.h"
 #include "am/ProcessList.h"
 #include "os/UserHandle.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 

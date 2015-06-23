@@ -2,7 +2,7 @@
 #ifndef __DATETIMEVIEW_H__
 #define __DATETIMEVIEW_H__
 
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include "ext/frameworkext.h"
 #include "widget/TextView.h"
 #include "content/BroadcastReceiver.h"

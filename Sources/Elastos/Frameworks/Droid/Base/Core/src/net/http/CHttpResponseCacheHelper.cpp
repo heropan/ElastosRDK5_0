@@ -54,7 +54,7 @@ ECode CHttpResponseCacheHelper::Install(
     // helper->SetDefault(result);
 
     *cache = result;
-    INTERFACE_ADDREF(*cache);
+    REFCOUNT_ADD(*cache);
     return NOERROR;
 }
 

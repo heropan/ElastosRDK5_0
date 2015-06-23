@@ -17,13 +17,13 @@
 #include "os/UEventObserver.h"
 #include "util/SparseArray.h"
 #include "view/InputEventReceiver.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <impl/GlobalActions.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IPrintWriter;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::INotificationManager;

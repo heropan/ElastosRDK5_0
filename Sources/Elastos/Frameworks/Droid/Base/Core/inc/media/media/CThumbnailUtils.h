@@ -67,7 +67,7 @@ public:
      * @param height targeted height
      * @param options options used during thumbnail extraction
      */
-    CARAPI ExtractThumbnailEx(
+    CARAPI ExtractThumbnail(
         /* [in] */ IBitmap* source,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,

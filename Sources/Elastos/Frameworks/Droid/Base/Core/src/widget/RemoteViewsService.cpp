@@ -3,7 +3,7 @@
 #include "widget/CRemoteViewsFactoryAdapter.h"
 #include "content/CIntentFilterComparison.h"
 
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Droid::Content::CIntentFilterComparison;
 using Elastos::Droid::Widget::Internal::IIRemoteViewsFactory;
 

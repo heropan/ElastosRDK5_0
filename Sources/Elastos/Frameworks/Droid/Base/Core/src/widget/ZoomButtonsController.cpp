@@ -7,8 +7,8 @@
 #include "view/CWindowManagerLayoutParams.h"
 #include "view/ViewRootImpl.h"
 #include "graphics/CRect.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::IBinder;
@@ -422,7 +422,7 @@ ECode ZoomButtonsController::SetVisible(
             mContainerLayoutParams->SetToken(b);
         }
 
-        IViewManager::Probe(mWindowManager)->AddViewEx5(mContainer, mContainerLayoutParams);
+        IViewManager::Probe(mWindowManager)->AddView(mContainer, mContainerLayoutParams);
 
         if (mPostedVisibleInitializer == NULL) {
             mPostedVisibleInitializer = new MyRunnable(this);
@@ -642,7 +642,7 @@ ECode ZoomButtonsController::OnTouch(
         AutoPtr<IMotionEventHelper> helper;
         CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
         AutoPtr<IMotionEvent> containerEvent;
-        helper->ObtainEx5(event, (IMotionEvent**)&containerEvent);
+        helper->Obtain(event, (IMotionEvent**)&containerEvent);
         // Convert the motion event into the target view's coordinates (from
         // owner view's coordinates)
         containerEvent->OffsetLocation((*mOwnerViewRawLocation)[0] - targetViewRawX,

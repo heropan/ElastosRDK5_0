@@ -105,14 +105,14 @@ module
             [in] ICharSequence* message,
             [out] IProgressDialog** pDialog);
 
-        ShowEx(
+        Show(
             [in] IContext* ctx,
             [in] ICharSequence* title,
             [in] ICharSequence* message,
             [in] Boolean indeterminate,
             [out] IProgressDialog** pDialog);
 
-        ShowEx2(
+        Show(
             [in] IContext* ctx,
             [in] ICharSequence* title,
             [in] ICharSequence* message,
@@ -120,7 +120,7 @@ module
             [in] Boolean cancelable,
             [out] IProgressDialog** pDialog);
 
-        ShowEx3(
+        Show(
             [in] IContext* ctx,
             [in] ICharSequence* title,
             [in] ICharSequence* message,

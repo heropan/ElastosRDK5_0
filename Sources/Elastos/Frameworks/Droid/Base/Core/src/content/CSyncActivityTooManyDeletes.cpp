@@ -79,12 +79,12 @@ ECode CSyncActivityTooManyDeletes::GetString(
     return Activity::GetString(resId, str);
 }
 
-ECode CSyncActivityTooManyDeletes::GetStringEx(
+ECode CSyncActivityTooManyDeletes::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface *>* formatArgs,
     /* [out] */ String* str)
 {
-//    return Activity::GetStringEx(resId, formatArgs, str);
+//    return Activity::GetString(resId, formatArgs, str);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -113,30 +113,30 @@ ECode CSyncActivityTooManyDeletes::ObtainStyledAttributes(
     return Activity::ObtainStyledAttributes(attrs, styles);
 }
 
-ECode CSyncActivityTooManyDeletes::ObtainStyledAttributesEx(
+ECode CSyncActivityTooManyDeletes::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return Activity::ObtainStyledAttributesEx(resid, attrs, styles);
+    return Activity::ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode CSyncActivityTooManyDeletes::ObtainStyledAttributesEx2(
+ECode CSyncActivityTooManyDeletes::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return Activity::ObtainStyledAttributesEx2(set, attrs, styles);
+    return Activity::ObtainStyledAttributes(set, attrs, styles);
 }
 
-ECode CSyncActivityTooManyDeletes::ObtainStyledAttributesEx3(
+ECode CSyncActivityTooManyDeletes::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes,
     /* [out] */ ITypedArray** styles)
 {
-    return Activity::ObtainStyledAttributesEx3(set, attrs, defStyleAttr, defStyleRes, styles);
+    return Activity::ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes, styles);
 }
 
 ECode CSyncActivityTooManyDeletes::GetClassLoader(
@@ -268,14 +268,14 @@ ECode CSyncActivityTooManyDeletes::OpenOrCreateDatabase(
     return Activity::OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode CSyncActivityTooManyDeletes::OpenOrCreateDatabaseEx(
+ECode CSyncActivityTooManyDeletes::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return Activity::OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return Activity::OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode CSyncActivityTooManyDeletes::DeleteDatabase(
@@ -328,10 +328,10 @@ ECode CSyncActivityTooManyDeletes::SetWallpaper(
     return Activity::SetWallpaper(bitmap);
 }
 
-ECode CSyncActivityTooManyDeletes::SetWallpaperEx(
+ECode CSyncActivityTooManyDeletes::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return Activity::SetWallpaperEx(data);
+    return Activity::SetWallpaper(data);
 }
 
 ECode CSyncActivityTooManyDeletes::ClearWallpaper()
@@ -352,19 +352,19 @@ ECode CSyncActivityTooManyDeletes::StartActivityAsUser(
     return Activity::StartActivityAsUser(intent, user);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivityEx(
+ECode CSyncActivityTooManyDeletes::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartActivityEx(intent, options);
+    return Activity::StartActivity(intent, options);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivityAsUserEx(
+ECode CSyncActivityTooManyDeletes::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* userId)
 {
-    return Activity::StartActivityAsUserEx(intent, options, userId);
+    return Activity::StartActivityAsUser(intent, options, userId);
 }
 
 ECode CSyncActivityTooManyDeletes::StartActivities(
@@ -373,11 +373,11 @@ ECode CSyncActivityTooManyDeletes::StartActivities(
     return Activity::StartActivities(intents);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivitiesEx(
+ECode CSyncActivityTooManyDeletes::StartActivities(
     /* [in] */ ArrayOf<IIntent *>* intents,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartActivitiesEx(intents, options);
+    return Activity::StartActivities(intents, options);
 }
 
 ECode CSyncActivityTooManyDeletes::StartActivitiesAsUser(
@@ -398,7 +398,7 @@ ECode CSyncActivityTooManyDeletes::StartIntentSender(
     return Activity::StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags);
 }
 
-ECode CSyncActivityTooManyDeletes::StartIntentSenderEx(
+ECode CSyncActivityTooManyDeletes::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -406,7 +406,7 @@ ECode CSyncActivityTooManyDeletes::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
+    return Activity::StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
 }
 
 ECode CSyncActivityTooManyDeletes::SendBroadcast(
@@ -415,11 +415,11 @@ ECode CSyncActivityTooManyDeletes::SendBroadcast(
     return Activity::SendBroadcast(intent);
 }
 
-ECode CSyncActivityTooManyDeletes::SendBroadcastEx(
+ECode CSyncActivityTooManyDeletes::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return Activity::SendBroadcastEx(intent, receiverPermission);
+    return Activity::SendBroadcast(intent, receiverPermission);
 }
 
 ECode CSyncActivityTooManyDeletes::SendOrderedBroadcast(
@@ -429,7 +429,7 @@ ECode CSyncActivityTooManyDeletes::SendOrderedBroadcast(
     return Activity::SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode CSyncActivityTooManyDeletes::SendOrderedBroadcastEx(
+ECode CSyncActivityTooManyDeletes::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -438,7 +438,7 @@ ECode CSyncActivityTooManyDeletes::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return Activity::SendOrderedBroadcastEx(intent, receiverPermission, resultReceiver, scheduler,
+    return Activity::SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler,
             initialCode, initialData, initialExtras);
 }
 
@@ -449,12 +449,12 @@ ECode CSyncActivityTooManyDeletes::SendBroadcastAsUser(
     return Activity::SendBroadcastAsUser(intent, user);
 }
 
-ECode CSyncActivityTooManyDeletes::SendBroadcastAsUserEx(
+ECode CSyncActivityTooManyDeletes::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return Activity::SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return Activity::SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode CSyncActivityTooManyDeletes::SendOrderedBroadcastAsUser(
@@ -530,14 +530,14 @@ ECode CSyncActivityTooManyDeletes::RegisterReceiver(
     return Activity::RegisterReceiver(receiver, filter, stickyIntent);
 }
 
-ECode CSyncActivityTooManyDeletes::RegisterReceiverEx(
+ECode CSyncActivityTooManyDeletes::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** stickyIntent)
 {
-    return Activity::RegisterReceiverEx(receiver, filter, broadcastPermission, scheduler, stickyIntent);
+    return Activity::RegisterReceiver(receiver, filter, broadcastPermission, scheduler, stickyIntent);
 }
 
 ECode CSyncActivityTooManyDeletes::RegisterReceiverAsUser(
@@ -596,14 +596,14 @@ ECode CSyncActivityTooManyDeletes::BindService(
     return Activity::BindService(service, conn, flags, succeeded);
 }
 
-ECode CSyncActivityTooManyDeletes::BindServiceEx(
+ECode CSyncActivityTooManyDeletes::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return Activity::BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return Activity::BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode CSyncActivityTooManyDeletes::UnbindService(
@@ -715,7 +715,7 @@ ECode CSyncActivityTooManyDeletes::CheckCallingOrSelfUriPermission(
     return Activity::CheckCallingOrSelfUriPermission(uri, modeFlags, result);
 }
 
-ECode CSyncActivityTooManyDeletes::CheckUriPermissionEx(
+ECode CSyncActivityTooManyDeletes::CheckUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -724,7 +724,7 @@ ECode CSyncActivityTooManyDeletes::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32* result)
 {
-    return Activity::CheckUriPermissionEx(uri, readPermission, writePermission, pid, uid, modeFlags, result);
+    return Activity::CheckUriPermission(uri, readPermission, writePermission, pid, uid, modeFlags, result);
 }
 
 ECode CSyncActivityTooManyDeletes::EnforceUriPermission(
@@ -753,7 +753,7 @@ ECode CSyncActivityTooManyDeletes::EnforceCallingOrSelfUriPermission(
     return Activity::EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode CSyncActivityTooManyDeletes::EnforceUriPermissionEx(
+ECode CSyncActivityTooManyDeletes::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -762,7 +762,7 @@ ECode CSyncActivityTooManyDeletes::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return Activity::EnforceUriPermissionEx(uri, readPermission, writePermission, pid, uid, modeFlags, message);
+    return Activity::EnforceUriPermission(uri, readPermission, writePermission, pid, uid, modeFlags, message);
 }
 
 ECode CSyncActivityTooManyDeletes::CreatePackageContext(
@@ -970,7 +970,7 @@ ECode CSyncActivityTooManyDeletes::ManagedQuery(
     return Activity::ManagedQuery(uri, projection, selection, sortOrder, cursor);
 }
 
-ECode CSyncActivityTooManyDeletes::ManagedQueryEx(
+ECode CSyncActivityTooManyDeletes::ManagedQuery(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String& selection,
@@ -978,7 +978,7 @@ ECode CSyncActivityTooManyDeletes::ManagedQueryEx(
     /* [in] */ const String& sortOrder,
     /* [out] */ ICursor** cursor)
 {
-    return Activity::ManagedQueryEx(uri, projection, selection, selectionArgs, sortOrder, cursor);
+    return Activity::ManagedQuery(uri, projection, selection, selectionArgs, sortOrder, cursor);
 }
 
 ECode CSyncActivityTooManyDeletes::StartManagingCursor(
@@ -1018,17 +1018,17 @@ ECode CSyncActivityTooManyDeletes::SetContentView(
     return Activity::SetContentView(layoutResID);
 }
 
-ECode CSyncActivityTooManyDeletes::SetContentViewEx(
+ECode CSyncActivityTooManyDeletes::SetContentView(
     /* [in] */ IView* view)
 {
-    return Activity::SetContentViewEx(view);
+    return Activity::SetContentView(view);
 }
 
-ECode CSyncActivityTooManyDeletes::SetContentViewEx2(
+ECode CSyncActivityTooManyDeletes::SetContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    return Activity::SetContentViewEx2(view, params);
+    return Activity::SetContentView(view, params);
 }
 
 ECode CSyncActivityTooManyDeletes::AddContentView(
@@ -1361,12 +1361,12 @@ ECode CSyncActivityTooManyDeletes::ShowDialog(
     return Activity::ShowDialog(id);
 }
 
-ECode CSyncActivityTooManyDeletes::ShowDialogEx(
+ECode CSyncActivityTooManyDeletes::ShowDialog(
     /* [in] */ Int32 id,
     /* [in] */ IBundle* args,
     /* [out] */ Boolean* res)
 {
-    return Activity::ShowDialogEx(id, args, res);
+    return Activity::ShowDialog(id, args, res);
 }
 
 ECode CSyncActivityTooManyDeletes::DismissDialog(
@@ -1463,12 +1463,12 @@ ECode CSyncActivityTooManyDeletes::StartActivityForResult(
     return Activity::StartActivityForResult(intent, requestCode);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivityForResultEx(
+ECode CSyncActivityTooManyDeletes::StartActivityForResult(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartActivityForResultEx(intent, requestCode, options);
+    return Activity::StartActivityForResult(intent, requestCode, options);
 }
 
 ECode CSyncActivityTooManyDeletes::StartIntentSenderForResult(
@@ -1482,7 +1482,7 @@ ECode CSyncActivityTooManyDeletes::StartIntentSenderForResult(
     return Activity::StartIntentSenderForResult(intent, requestCode, fillInIntent, flagsMask, flagsValues, extraFlags);
 }
 
-ECode CSyncActivityTooManyDeletes::StartIntentSenderForResultEx(
+ECode CSyncActivityTooManyDeletes::StartIntentSenderForResult(
     /* [in] */ IIntentSender* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IIntent* fillInIntent,
@@ -1491,7 +1491,7 @@ ECode CSyncActivityTooManyDeletes::StartIntentSenderForResultEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartIntentSenderForResultEx(intent, requestCode, fillInIntent, flagsMask, flagsValues,
+    return Activity::StartIntentSenderForResult(intent, requestCode, fillInIntent, flagsMask, flagsValues,
             extraFlags, options);
 }
 
@@ -1503,13 +1503,13 @@ ECode CSyncActivityTooManyDeletes::StartActivityIfNeeded(
     return Activity::StartActivityIfNeeded(intent, requestCode, started);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivityIfNeededEx(
+ECode CSyncActivityTooManyDeletes::StartActivityIfNeeded(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options,
     /* [out] */ Boolean* started)
 {
-    return Activity::StartActivityIfNeededEx(intent, requestCode, options, started);
+    return Activity::StartActivityIfNeeded(intent, requestCode, options, started);
 }
 
 ECode CSyncActivityTooManyDeletes::StartNextMatchingActivity(
@@ -1519,12 +1519,12 @@ ECode CSyncActivityTooManyDeletes::StartNextMatchingActivity(
     return Activity::StartNextMatchingActivity(intent, started);
 }
 
-ECode CSyncActivityTooManyDeletes::StartNextMatchingActivityEx(
+ECode CSyncActivityTooManyDeletes::StartNextMatchingActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [out] */ Boolean* started)
 {
-    return Activity::StartNextMatchingActivityEx(intent, options, started);
+    return Activity::StartNextMatchingActivity(intent, options, started);
 }
 
 ECode CSyncActivityTooManyDeletes::StartActivityFromChild(
@@ -1535,13 +1535,13 @@ ECode CSyncActivityTooManyDeletes::StartActivityFromChild(
     return Activity::StartActivityFromChild(child, intent, requestCode);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivityFromChildEx(
+ECode CSyncActivityTooManyDeletes::StartActivityFromChild(
     /* [in] */ IActivity* child,
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartActivityFromChildEx(child, intent, requestCode, options);
+    return Activity::StartActivityFromChild(child, intent, requestCode, options);
 }
 
 ECode CSyncActivityTooManyDeletes::StartActivityFromFragment(
@@ -1552,13 +1552,13 @@ ECode CSyncActivityTooManyDeletes::StartActivityFromFragment(
     return Activity::StartActivityFromFragment(fragment, intent, requestCode);
 }
 
-ECode CSyncActivityTooManyDeletes::StartActivityFromFragmentEx(
+ECode CSyncActivityTooManyDeletes::StartActivityFromFragment(
     /* [in] */ IFragment* fragment,
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartActivityFromFragmentEx(fragment, intent, requestCode, options);
+    return Activity::StartActivityFromFragment(fragment, intent, requestCode, options);
 }
 
 ECode CSyncActivityTooManyDeletes::StartIntentSenderFromChild(
@@ -1574,7 +1574,7 @@ ECode CSyncActivityTooManyDeletes::StartIntentSenderFromChild(
             extraFlags);
 }
 
-ECode CSyncActivityTooManyDeletes::StartIntentSenderFromChildEx(
+ECode CSyncActivityTooManyDeletes::StartIntentSenderFromChild(
     /* [in] */ IActivity* child,
     /* [in] */ IIntentSender* intent,
     /* [in] */ Int32 requestCode,
@@ -1584,7 +1584,7 @@ ECode CSyncActivityTooManyDeletes::StartIntentSenderFromChildEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return Activity::StartIntentSenderFromChildEx(child, intent, requestCode, fillInIntent, flagsMask, flagsValues,
+    return Activity::StartIntentSenderFromChild(child, intent, requestCode, fillInIntent, flagsMask, flagsValues,
             extraFlags, options);
 }
 
@@ -1601,11 +1601,11 @@ ECode CSyncActivityTooManyDeletes::SetResult(
     return Activity::SetResult(resultCode);
 }
 
-ECode CSyncActivityTooManyDeletes::SetResultEx(
+ECode CSyncActivityTooManyDeletes::SetResult(
     /* [in] */ Int32 resultCode,
     /* [in] */ IIntent* data)
 {
-    return Activity::SetResultEx(resultCode, data);
+    return Activity::SetResult(resultCode, data);
 }
 
 ECode CSyncActivityTooManyDeletes::GetCallingPackage(
@@ -1761,10 +1761,10 @@ ECode CSyncActivityTooManyDeletes::SetTitle(
     return Activity::SetTitle(title);
 }
 
-ECode CSyncActivityTooManyDeletes::SetTitleEx(
+ECode CSyncActivityTooManyDeletes::SetTitle(
     /* [in] */ Int32 titleId)
 {
-    return Activity::SetTitleEx(titleId);
+    return Activity::SetTitle(titleId);
 }
 
 ECode CSyncActivityTooManyDeletes::SetTitleColor(
@@ -1856,14 +1856,14 @@ ECode CSyncActivityTooManyDeletes::OnCreateView(
     return Activity::OnCreateView(name, context, attrs, view);
 }
 
-ECode CSyncActivityTooManyDeletes::OnCreateViewEx(
+ECode CSyncActivityTooManyDeletes::OnCreateView(
     /* [in] */ IView* parent,
     /* [in] */ const String& name,
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IView** view)
 {
-    return Activity::OnCreateViewEx(parent, name, context, attrs, view);
+    return Activity::OnCreateView(parent, name, context, attrs, view);
 }
 
 ECode CSyncActivityTooManyDeletes::Dump(
@@ -1959,7 +1959,7 @@ ECode CSyncActivityTooManyDeletes::Attach(
             lastNonConfigurationInstance, config);
 }
 
-ECode CSyncActivityTooManyDeletes::AttachEx(
+ECode CSyncActivityTooManyDeletes::Attach(
     /* [in] */ IContext* ctx,
     /* [in] */ IActivityThread* aThread,
     /* [in] */ IInstrumentation* instr,
@@ -1974,7 +1974,7 @@ ECode CSyncActivityTooManyDeletes::AttachEx(
     /* [in] */ IInterface* lastNonConfigurationInstance,
     /* [in] */ IConfiguration* config)
 {
-    return Activity::AttachEx(ctx, aThread, instr, token, ident, application, intent, info, title, parent, id,
+    return Activity::Attach(ctx, aThread, instr, token, ident, application, intent, info, title, parent, id,
             lastNonConfigurationInstance, config);
 }
 
@@ -2014,10 +2014,10 @@ ECode CSyncActivityTooManyDeletes::IsStartedActivity(
     return Activity::IsStartedActivity(isStartedActivity);
 }
 
-ECode CSyncActivityTooManyDeletes::GetWindowEx(
+ECode CSyncActivityTooManyDeletes::GetWindow(
     /* [out] */ IWindow** window)
 {
-    return Activity::GetWindowEx(window);
+    return Activity::GetWindow(window);
 }
 
 ECode CSyncActivityTooManyDeletes::SetDecorView(
@@ -2062,10 +2062,10 @@ ECode CSyncActivityTooManyDeletes::IsWindowAdded(
     return Activity::IsWindowAdded(isAdded);
 }
 
-ECode CSyncActivityTooManyDeletes::GetWindowManagerEx(
+ECode CSyncActivityTooManyDeletes::GetWindowManager(
     /* [out] */ IWindowManager** mgr)
 {
-    return Activity::GetWindowManagerEx(mgr);
+    return Activity::GetWindowManager(mgr);
 }
 
 ECode CSyncActivityTooManyDeletes::SetConfigChangeFlags(

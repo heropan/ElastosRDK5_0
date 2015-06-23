@@ -1,8 +1,8 @@
 
 #include "app/CBackStackState.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::IO::CPrintWriter;
 using Elastos::Core::StringBuilder;
@@ -129,7 +129,7 @@ ECode CBackStackState::Instantiate(
     bse->mBreadCrumbShortTitleText = mBreadCrumbShortTitleText;
     bse->BumpBackStackNesting(1);
     *record = bse;
-    INTERFACE_ADDREF(*record);
+    REFCOUNT_ADD(*record);
     return NOERROR;
 }
 
@@ -405,7 +405,7 @@ ECode BackStackRecord::GetBreadCrumbTitle(
         return mManager->mActivity->GetText(mBreadCrumbTitleRes, title);
     }
     *title = mBreadCrumbTitleText;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
     return NOERROR;
 }
 
@@ -417,7 +417,7 @@ ECode BackStackRecord::GetBreadCrumbShortTitle(
         return mManager->mActivity->GetText(mBreadCrumbShortTitleRes, shortTitle);
     }
     *shortTitle = mBreadCrumbShortTitleText;
-    INTERFACE_ADDREF(*shortTitle);
+    REFCOUNT_ADD(*shortTitle);
     return NOERROR;
 }
 
@@ -447,14 +447,14 @@ ECode BackStackRecord::Add(
     return DoAddOp(0, fragment, tag, OP_ADD);
 }
 
-ECode BackStackRecord::AddEx(
+ECode BackStackRecord::Add(
     /* [in] */ Int32 containerViewId,
     /* [in] */ IFragment* fragment)
 {
     return DoAddOp(containerViewId, fragment, String(NULL), OP_ADD);
 }
 
-ECode BackStackRecord::AddEx2(
+ECode BackStackRecord::Add(
     /* [in] */ Int32 containerViewId,
     /* [in] */ IFragment* fragment,
     /* [in] */ const String& tag)
@@ -506,10 +506,10 @@ ECode BackStackRecord::Replace(
     /* [in] */ Int32 containerViewId,
     /* [in] */ IFragment* fragment)
 {
-    return ReplaceEx(containerViewId, fragment, String(NULL));
+    return Replace(containerViewId, fragment, String(NULL));
 }
 
-ECode BackStackRecord::ReplaceEx(
+ECode BackStackRecord::Replace(
     /* [in] */ Int32 containerViewId,
     /* [in] */ IFragment* fragment,
     /* [in] */ const String& tag)
@@ -581,10 +581,10 @@ ECode BackStackRecord::SetCustomAnimations(
     /* [in] */ Int32 enter,
     /* [in] */ Int32 exit)
 {
-    return SetCustomAnimationsEx(enter, exit, 0, 0);
+    return SetCustomAnimations(enter, exit, 0, 0);
 }
 
-ECode BackStackRecord::SetCustomAnimationsEx(
+ECode BackStackRecord::SetCustomAnimations(
     /* [in] */ Int32 enter,
     /* [in] */ Int32 exit,
     /* [in] */ Int32 popEnter,
@@ -651,7 +651,7 @@ ECode BackStackRecord::SetBreadCrumbTitle(
     return NOERROR;
 }
 
-ECode BackStackRecord::SetBreadCrumbTitleEx(
+ECode BackStackRecord::SetBreadCrumbTitle(
     /* [in] */ ICharSequence* text)
 {
     mBreadCrumbTitleRes = 0;
@@ -667,7 +667,7 @@ ECode BackStackRecord::SetBreadCrumbShortTitle(
     return NOERROR;
 }
 
-ECode BackStackRecord::SetBreadCrumbShortTitleEx(
+ECode BackStackRecord::SetBreadCrumbShortTitle(
     /* [in] */ ICharSequence* text)
 {
     mBreadCrumbShortTitleRes = 0;
@@ -839,7 +839,7 @@ ECode BackStackRecord::Run()
         op = op->mNext;
     }
 
-    mManager->MoveToStateEx3(mManager->mCurState, mTransition,
+    mManager->MoveToState(mManager->mCurState, mTransition,
             mTransitionStyle, TRUE);
 
     if (mAddToBackStack) {
@@ -934,7 +934,7 @@ ECode BackStackRecord::PopFromBackStack(
     if (doStateMove) {
         Int32 newTransition;
         CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
-        mManager->MoveToStateEx3(mManager->mCurState, newTransition, mTransitionStyle, TRUE);
+        mManager->MoveToState(mManager->mCurState, newTransition, mTransitionStyle, TRUE);
     }
 
     if (mIndex >= 0) {

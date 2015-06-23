@@ -1,6 +1,6 @@
 
 #include "CRestarter.h"
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 #include <stdio.h>
 #include "GeckoAppShell.h"
 
@@ -63,10 +63,10 @@ ECode CRestarter::OnCreate(
         ec = CIntent::New((IIntent**)&pNewIntent);
         if (FAILED(ec)) return ec;
 
-        pNewIntent->SetClassNameEx(String("org.mozilla.fennec_unofficial"),
+        pNewIntent->SetClassName(String("org.mozilla.fennec_unofficial"),
                             String("org.mozilla.fennec_unofficial.App"));
         if (pIBundle) {
-            pNewIntent->PutExtrasEx(pIBundle);
+            pNewIntent->PutExtras(pIBundle);
         }
         pNewIntent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
         //printf("GeckoAppJava %s\n", pNewIntent->ToString());

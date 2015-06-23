@@ -36,7 +36,7 @@ module
          * Set the path to the boundary of the region. If the region is empty, the
          * path will also be empty.
          */
-        GetBoundaryPathEx(
+        GetBoundaryPath(
             [in/*, out*/] IPath* path,
             [out] Boolean* result);
 
@@ -51,7 +51,7 @@ module
          * Set the Rect to the bounds of the region. If the region is empty, the
          * Rect will be set to [0, 0, 0, 0]
          */
-        GetBoundsEx(
+        GetBounds(
             [in/*, out*/] IRect* r,
             [out] Boolean* result);
 
@@ -86,7 +86,7 @@ module
          * Perform the specified Op on this region and the specified rect. Return
          * true if the result of the op is not empty.
          */
-        OpEx(
+        Op(
             [in] Int32 left,
             [in] Int32 top,
             [in] Int32 right,
@@ -98,7 +98,7 @@ module
          * Perform the specified Op on this region and the specified region. Return
          * true if the result of the op is not empty.
          */
-        OpEx2(
+        Op(
             [in] IRegion* region,
             [in] RegionOp op,
             [out] Boolean* result);
@@ -107,7 +107,7 @@ module
          * Set this region to the result of performing the Op on the specified rect
          * and region. Return true if the result is not empty.
          */
-        OpEx3(
+        Op(
             [in] IRect* rect,
             [in] IRegion* region,
             [in] RegionOp op,
@@ -117,7 +117,7 @@ module
          * Set this region to the result of performing the Op on the specified
          * regions. Return true if the result is not empty.
          */
-        OpEx4(
+        Op(
             [in] IRegion* region1,
             [in] IRegion* region2,
             [in] RegionOp op,
@@ -139,7 +139,7 @@ module
          * that the rectangle is not contained by this region, but return true is a
          * guarantee that the rectangle is contained by this region.
          */
-        QuickContainsEx(
+        QuickContains(
             [in] Int32 left,
             [in] Int32 top,
             [in] Int32 right,
@@ -160,7 +160,7 @@ module
          * not intersect the region. Returning false is not a guarantee that they
          * intersect, but returning true is a guarantee that they do not.
          */
-        QuickRejectEx(
+        QuickReject(
             [in] Int32 left,
             [in] Int32 top,
             [in] Int32 right,
@@ -172,7 +172,7 @@ module
          * intersect the region. Returning false is not a guarantee that they
          * intersect, but returning true is a guarantee that they do not.
          */
-        QuickRejectEx2(
+        QuickReject(
             [in] IRegion* rgn,
             [out] Boolean* result);
 
@@ -193,7 +193,7 @@ module
          * If this region is empty, then dst will be set to empty.
          * @hide
          */
-        ScaleEx(
+        Scale(
             [in] Float scale,
             [in] IRegion* dst);
 
@@ -207,14 +207,14 @@ module
         /**
          * Set the region to the specified rectangle
          */
-        SetEx(
+        Set(
             [in] IRect* r,
             [out] Boolean* result);
 
         /**
          * Set the region to the specified rectangle
          */
-        SetEx2(
+        Set(
             [in] Int32 left,
             [in] Int32 top,
             [in] Int32 right,
@@ -248,7 +248,7 @@ module
          * Set the dst region to the result of translating this region by [dx, dy].
          * If this region is empty, then dst will be set to empty.
          */
-        TranslateEx(
+        Translate(
             [in] Int32 dx,
             [in] Int32 dy,
             [in] IRegion* dst);
@@ -257,7 +257,7 @@ module
             [in] IRect* r,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] IRegion* region,
             [out] Boolean* result);
 

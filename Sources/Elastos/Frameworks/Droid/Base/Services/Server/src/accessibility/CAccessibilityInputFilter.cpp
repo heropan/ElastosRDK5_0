@@ -1,6 +1,6 @@
 
 #include "accessibility/CAccessibilityInputFilter.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::ILooper;
@@ -108,7 +108,7 @@ ECode CAccessibilityInputFilter::OnInputEvent(
     AutoPtr<IMotionEventHelper> helper;
     CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     AutoPtr<IMotionEvent> transformedEvent;
-    helper->ObtainEx5(rawEvent, (IMotionEvent**)&transformedEvent);
+    helper->Obtain(rawEvent, (IMotionEvent**)&transformedEvent);
     mEventHandler->OnMotionEvent(transformedEvent, rawEvent, policyFlags);
     transformedEvent->Recycle();
     return NOERROR;

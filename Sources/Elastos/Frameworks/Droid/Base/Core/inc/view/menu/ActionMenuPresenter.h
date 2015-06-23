@@ -3,13 +3,13 @@
 #define  __ACTIONMENUPRESENTER_H__
 
 #include "widget/ImageButton.h"
-#include "view/ViewMacro.h"
+
 #include "view/menu/MenuPopupHelper.h"
 #include "view/menu/BaseMenuPresenter.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::ISubUiVisibilityListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
@@ -167,7 +167,7 @@ private:
         CARAPI SetColorFilter(
             /* [in] */ Int32 color);
 
-        CARAPI SetColorFilterEx(
+        CARAPI SetColorFilter(
             /* [in] */ Int32 color,
             /* [in] */ PorterDuffMode mode);
 
@@ -176,7 +176,7 @@ private:
         CARAPI GetColorFilter(
             /* [out] */ IColorFilter** filter);
 
-        CARAPI SetColorFilterEx2(
+        CARAPI SetColorFilter(
             /* [in] */ IColorFilter* cf);
 
         CARAPI GetImageAlpha(
@@ -185,7 +185,7 @@ private:
         CARAPI SetImageAlpha(
             /* [in] */ Int32 alpha);
 
-        CARAPI SetAlphaEx(
+        CARAPI SetAlpha(
             /* [in] */ Int32 alpha);
     protected:
         CARAPI_(void) OnMeasure(

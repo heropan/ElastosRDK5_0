@@ -130,7 +130,7 @@ ECode LoginFilter::Filter(
     // Either returns null if we made no changes,
     // or what we wanted to change it to if there were changes.
     *ret = modification;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

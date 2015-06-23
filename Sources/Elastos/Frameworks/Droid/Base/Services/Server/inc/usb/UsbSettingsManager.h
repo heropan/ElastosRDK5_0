@@ -7,13 +7,12 @@
 #include "content/PackageMonitor.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::CComponentName;

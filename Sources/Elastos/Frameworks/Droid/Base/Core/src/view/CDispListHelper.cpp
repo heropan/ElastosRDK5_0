@@ -30,7 +30,7 @@ ECode CDispListHelper::GetDispList(
 {
     VALIDATE_NOT_NULL(list);
     *list = mItemArray;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -39,7 +39,7 @@ ECode CDispListHelper::GetItemStringIdList(
 {
     VALIDATE_NOT_NULL(map);
     *map = mStrMap;
-    INTERFACE_ADDREF(*map);
+    REFCOUNT_ADD(*map);
     return NOERROR;
 }
 
@@ -68,7 +68,7 @@ ECode CDispListHelper::ItemName2Code(
     if(it != mName2CodeMap.End())
     {
         *rst = it->mSecond;
-        INTERFACE_ADDREF(*rst);
+        REFCOUNT_ADD(*rst);
     }
     return NOERROR;
 }
@@ -165,112 +165,112 @@ ECode CDispListHelper::GetStaticDispFormat(
     {
         case IDispList::DISP_FORMAT_NTSC_ID : {
             *rst = DISP_FORMAT_NTSC;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_PAL_ID : {
             *rst = DISP_FORMAT_PAL;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_YPBPR_480I_ID : {
             *rst = DISP_FORMAT_YPBPR_480I;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_YPBPR_480P_ID : {
             *rst = DISP_FORMAT_YPBPR_480P;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_YPBPR_576I_ID : {
             *rst = DISP_FORMAT_YPBPR_576I;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_YPBPR_576P_ID : {
             *rst = DISP_FORMAT_YPBPR_576P;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_720P_50HZ_ID : {
             *rst = DISP_FORMAT_HDMI_720P_50HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_720P_60HZ_ID : {
             *rst = DISP_FORMAT_HDMI_720P_60HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_1080I_50HZ_ID : {
             *rst = DISP_FORMAT_HDMI_1080I_50HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_1080I_60HZ_ID : {
             *rst = DISP_FORMAT_HDMI_1080I_60HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_1080P_24HZ_ID : {
             *rst = DISP_FORMAT_HDMI_1080P_24HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_1080P_50HZ_ID : {
             *rst = DISP_FORMAT_HDMI_1080P_50HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_HDMI_1080P_60HZ_ID : {
             *rst = DISP_FORMAT_HDMI_1080P_60HZ;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_640_480_ID : {
             *rst = DISP_FORMAT_VGA_640_480;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_800_600_ID : {
             *rst = DISP_FORMAT_VGA_800_600;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1024_768_ID : {
             *rst = DISP_FORMAT_VGA_1024_768;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1280_720_ID : {
             *rst = DISP_FORMAT_VGA_1280_720;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1280_1024_ID : {
             *rst = DISP_FORMAT_VGA_1280_1024;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1360_768_ID : {
             *rst = DISP_FORMAT_VGA_1360_768;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1440_900_ID : {
             *rst = DISP_FORMAT_VGA_1440_900;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1680_1050_ID : {
             *rst = DISP_FORMAT_VGA_1680_1050;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         case IDispList::DISP_FORMAT_VGA_1920_1080_ID : {
             *rst = DISP_FORMAT_VGA_1920_1080;
-            INTERFACE_ADDREF(*rst)
+            REFCOUNT_ADD(*rst)
             return NOERROR;
         }
         default : {

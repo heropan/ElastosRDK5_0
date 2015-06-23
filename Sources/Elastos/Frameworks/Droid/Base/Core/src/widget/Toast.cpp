@@ -275,7 +275,7 @@ ECode Toast::MakeText(
     return NOERROR;
 }
 
-ECode Toast::MakeTextEx(
+ECode Toast::MakeText(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resId,
     /* [in] */ Int32 duration,
@@ -299,14 +299,14 @@ ECode Toast::SetText(
 {
     AutoPtr<ICharSequence> text;
     mContext->GetText(resId, (ICharSequence**)&text);
-    return SetTextEx(text);
+    return SetText(text);
 }
 
 /**
  * Update the text in a Toast that was previously created using one of the makeText() methods.
  * @param s The new text for the Toast.
  */
-ECode Toast::SetTextEx(
+ECode Toast::SetText(
     /* [in] */ ICharSequence* s)
 {
     if (mNextView == NULL) {

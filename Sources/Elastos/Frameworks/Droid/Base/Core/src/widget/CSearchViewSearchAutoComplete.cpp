@@ -59,7 +59,7 @@ ECode CSearchViewSearchAutoComplete::SetSelection(
     return SearchView::_SearchAutoComplete::SetSelection(start, stop);
 }
 
-ECode CSearchViewSearchAutoComplete::SetSelectionEx(
+ECode CSearchViewSearchAutoComplete::SetSelection(
     /* [in] */ Int32 index)
 {
     return SearchView::_SearchAutoComplete::SetSelection(index);

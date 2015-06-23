@@ -4,7 +4,7 @@
 #include "DialogPreference.h"
 #include "os/CBundle.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Slogger;
@@ -125,7 +125,7 @@ ECode PreferenceFragment::OnCreateView(
     /*[out]*/ IView** view)
 {
     VALIDATE_NOT_NULL(view)
-    return inflater->InflateEx2(R::layout::preference_list_fragment, container, FALSE, view);
+    return inflater->Inflate(R::layout::preference_list_fragment, container, FALSE, view);
 }
 
 ECode PreferenceFragment::OnActivityCreated(
@@ -215,7 +215,7 @@ ECode PreferenceFragment::GetPreferenceManager(
 {
     VALIDATE_NOT_NULL(preferencemanager)
     *preferencemanager = mPreferenceManager;
-    INTERFACE_ADDREF(*preferencemanager)
+    REFCOUNT_ADD(*preferencemanager)
     return NOERROR;
 }
 
@@ -239,7 +239,7 @@ ECode PreferenceFragment::GetPreferenceScreen(
     AutoPtr<IPreferenceScreen> s;
     mPreferenceManager->GetPreferenceScreen((IPreferenceScreen**)&s);
     *preferencescreen = s;
-    INTERFACE_ADDREF(*preferencescreen)
+    REFCOUNT_ADD(*preferencescreen)
     return NOERROR;
 }
 
@@ -336,7 +336,7 @@ ECode PreferenceFragment::GetListView(
     VALIDATE_NOT_NULL(listview)
     EnsureList();
     *listview = mList;
-    INTERFACE_ADDREF(*listview)
+    REFCOUNT_ADD(*listview)
     return NOERROR;
 }
 

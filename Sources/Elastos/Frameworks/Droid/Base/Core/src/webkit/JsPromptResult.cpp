@@ -8,7 +8,7 @@ namespace Webkit {
 /**
  * Handle a confirmation response from the user.
  */
-ECode JsPromptResult::ConfirmEx(
+ECode JsPromptResult::Confirm(
     /* [in] */ const String& result)
 {
     mStringResult = result;

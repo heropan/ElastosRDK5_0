@@ -51,7 +51,7 @@ module
              * @param title The character sequence used for the title.
              * @return This ContextMenu so additional setters can be called.
              */
-            SetHeaderTitleEx(
+            SetHeaderTitle(
                 [in] ICharSequence* title);
 
             /**
@@ -71,7 +71,7 @@ module
              * @param icon The {@link Drawable} used for the icon.
              * @return This ContextMenu so additional setters can be called.
              */
-            SetHeaderIconEx(
+            SetHeaderIcon(
                 [in] IDrawable* icon);
 
             /**

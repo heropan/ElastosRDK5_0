@@ -3,7 +3,7 @@
 
 #include "_CProgressBar.h"
 #include "ProgressBar.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -228,7 +228,7 @@ public:
      *
      * @param interpolator The interpolator which defines the acceleration curve
      */
-    CARAPI SetInterpolatorEx(
+    CARAPI SetInterpolator(
         /* [in] */ IInterpolator* interpolator);
 
     /**

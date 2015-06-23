@@ -34,16 +34,16 @@
 #include "os/UserHandle.h"
 #include "os/ServiceManager.h"
 #include "R.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Net::IInetAddress;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
@@ -820,23 +820,23 @@ void WifiStateMachine::SupplicantStartingState::InitializeWpsDetails()
     String detail;
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    sysProp->GetEx(String("ro.product.name"), String(""), &detail);
+    sysProp->Get(String("ro.product.name"), String(""), &detail);
     if (!mOwner->mWifiNative->SetDeviceName(detail)) {
         mOwner->Loge(String("Failed to set device name ") +  detail);
     }
-    sysProp->GetEx(String("ro.product.manufacturer"), String(""), &detail);
+    sysProp->Get(String("ro.product.manufacturer"), String(""), &detail);
     if (!mOwner->mWifiNative->SetManufacturer(detail)) {
         mOwner->Loge(String("Failed to set manufacturer ") + detail);
     }
-    sysProp->GetEx(String("ro.product.model"), String(""), &detail);
+    sysProp->Get(String("ro.product.model"), String(""), &detail);
     if (!mOwner->mWifiNative->SetModelName(detail)) {
         mOwner->Loge(String("Failed to set model name ") + detail);
     }
-    sysProp->GetEx(String("ro.product.model"), String(""), &detail);
+    sysProp->Get(String("ro.product.model"), String(""), &detail);
     if (!mOwner->mWifiNative->SetModelNumber(detail)) {
         mOwner->Loge(String("Failed to set model number ") + detail);
     }
-    sysProp->GetEx(String("ro.serialno"), String(""), &detail);
+    sysProp->Get(String("ro.serialno"), String(""), &detail);
     if (!mOwner->mWifiNative->SetSerialNumber(detail)) {
         mOwner->Loge(String("Failed to set serial number ") + detail);
     }
@@ -2684,7 +2684,7 @@ ECode WifiStateMachine::WpsRunningState::Enter()
     // EventLog.writeEvent(EVENTLOG_WIFI_STATE_CHANGED, getName());
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
-    helper->ObtainEx(mOwner->GetCurrentMessage(), (IMessage**)&mSourceMessage);
+    helper->Obtain(mOwner->GetCurrentMessage(), (IMessage**)&mSourceMessage);
     return NOERROR;
 }
 
@@ -3506,7 +3506,7 @@ WifiStateMachine::WifiStateMachine(
     mContext->RegisterReceiver(receive, counterFilter, (IIntent**)&stickyIntent);
 
     AutoPtr<IUri> uri;
-    global->GetUriForEx(ISettingsGlobal::WIFI_SUSPEND_OPTIMIZATIONS_ENABLED, (IUri**)&uri);
+    global->GetUriFor(ISettingsGlobal::WIFI_SUSPEND_OPTIMIZATIONS_ENABLED, (IUri**)&uri);
     AutoPtr<IContentObserver> observer = new WifiContentObserver(handler, this);
     cr->RegisterContentObserver(uri, FALSE, observer);
 
@@ -4183,7 +4183,7 @@ void WifiStateMachine::HandleScreenStateChanged(
         }
         else {
             //Allow 2s for suspend optimizations to be set
-            mSuspendWakeLock->AcquireLockEx(2000);
+            mSuspendWakeLock->AcquireLock(2000);
             AutoPtr<IMessage> m = ObtainMessage(CMD_SET_SUSPEND_OPT_ENABLED, 1, 0);
             SendMessage(m);
         }
@@ -4785,7 +4785,7 @@ SupplicantState WifiStateMachine::HandleSupplicantStateChange(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> m;
-    helper->ObtainEx(message, (IMessage**)&m);
+    helper->Obtain(message, (IMessage**)&m);
     mSupplicantStateTracker->SendMessage(m);
 
     return state;

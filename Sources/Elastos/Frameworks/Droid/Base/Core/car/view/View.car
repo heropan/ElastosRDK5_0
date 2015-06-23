@@ -1512,7 +1512,7 @@ module
              *
              * @hide
              */
-            ShowContextMenuEx(
+            ShowContextMenu(
                 [in] Float x,
                 [in] Float y,
                 [in] Int32 metaState,
@@ -1600,7 +1600,7 @@ module
              * @param immediate True to forbid animated scrolling, false otherwise
              * @return Whether any parent scrolled.
              */
-            RequestRectangleOnScreenEx(
+            RequestRectangleOnScreen(
                 [in] IRect* rectangle,
                 [in] Boolean immediate,
                 [out] Boolean* result);
@@ -2660,7 +2660,7 @@ module
              * @see #FOCUSABLES_ALL
              * @see #FOCUSABLES_TOUCH_MODE
              */
-            AddFocusablesEx(
+            AddFocusables(
                 [in] IObjectContainer* views,
                 [in] Int32 direction,
                 [in] Int32 focusableMode);
@@ -2766,7 +2766,7 @@ module
              * @param direction One of FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, and FOCUS_RIGHT
              * @return Whether this view or one of its descendants actually took focus.
              */
-            RequestFocusEx(
+            RequestFocus(
                 [in] Int32 direction,
                 [out] Boolean* result);
 
@@ -2799,7 +2799,7 @@ module
              *        if there is no hint.
              * @return Whether this view or one of its descendants actually took focus.
              */
-            RequestFocusEx2(
+            RequestFocus(
                 [in] Int32 direction,
                 [in] IRect* previouslyFocusedRect,
                 [out] Boolean* result);
@@ -4183,7 +4183,7 @@ module
                 [in/*, out*/] IPoint* outGlobalOffset,
                 [out] Boolean* result);
 
-            GetGlobalVisibleRectEx(
+            GetGlobalVisibleRect(
                 [in/*, out*/] IRect* outRect,
                 [out] Boolean* result);
 
@@ -4289,7 +4289,7 @@ module
              * @param r the right position of the dirty region
              * @param b the bottom position of the dirty region
              */
-            InvalidateEx(
+            Invalidate(
                 [in] Int32 left,
                 [in] Int32 top,
                 [in] Int32 right,
@@ -4301,7 +4301,7 @@ module
              * the future. This must be called from a UI thread. To call from a non-UI thread,
              * call {@link #postInvalidate()}.
              */
-            InvalidateEx2();
+            Invalidate();
 
             /**
              * Indicates whether this View is opaque. An opaque View guarantees that it will
@@ -4361,7 +4361,7 @@ module
              * @see #invalidate(int, int, int, int)
              * @see #invalidate(Rect)
              */
-            PostInvalidateEx(
+            PostInvalidate(
                 [in] Int32 left,
                 [in] Int32 top,
                 [in] Int32 right,
@@ -4388,7 +4388,7 @@ module
              * @param right The right coordinate of the rectangle to invalidate.
              * @param bottom The bottom coordinate of the rectangle to invalidate.
              */
-            PostInvalidateDelayedEx(
+            PostInvalidateDelayed(
                 [in] Int64 delayMilliseconds,
                 [in] Int32 left,
                 [in] Int32 top,
@@ -4421,7 +4421,7 @@ module
              * @see #invalidate(int, int, int, int)
              * @see #invalidate(Rect)
              */
-            PostInvalidateOnAnimationEx(
+            PostInvalidateOnAnimation(
                 [in] Int32 left,
                 [in] Int32 top,
                 [in] Int32 right,
@@ -5090,7 +5090,7 @@ module
              * @see #buildDrawingCache(boolean)
              * @see #destroyDrawingCache()
              */
-            GetDrawingCacheEx(
+            GetDrawingCache(
                 [in] Boolean autoScale,
                 [out] IBitmap** bitmap);
 
@@ -5153,7 +5153,7 @@ module
              * @see #getDrawingCache()
              * @see #destroyDrawingCache()
              */
-            BuildDrawingCacheEx(
+            BuildDrawingCache(
                 [in] Boolean autoScale);
 
             /**
@@ -5290,7 +5290,7 @@ module
              *
              * @see #drawableStateChanged
              */
-            UnscheduleDrawableEx(
+            UnscheduleDrawable(
                 [in] IDrawable* who);
 
             /**
@@ -5890,7 +5890,7 @@ module
              * {@link HapticFeedbackConstants}
              * @param flags Additional flags as per {@link HapticFeedbackConstants}.
              */
-            PerformHapticFeedbackEx(
+            PerformHapticFeedback(
                 [in] Int32 feedbackConstant,
                 [in] Int32 flags,
                 [out] Boolean* result);
@@ -6344,11 +6344,11 @@ module
              * @see #setTag(int, Object)
              * @see #getTag()
              */
-            GetTagEx(
+            GetTag(
                 [in] Int32 key,
                 [out] IInterface** tag);
 
-            SetTagEx(
+            SetTag(
                 [in] Int32 key,
                 [in] IInterface* tag);
 

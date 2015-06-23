@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include <elastos/System.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <R.h>
 #include "R.h"
 
@@ -236,7 +236,7 @@ ECode CActivityOne::NotifyNotification(
 
     AutoPtr<IComponentName> parentCompName;
     CComponentName::New(packageName, parentClassName, ((IComponentName**)&parentCompName));
-    stackBuilder->AddParentStackEx(parentCompName);
+    stackBuilder->AddParentStack(parentCompName);
 
     /* Adds the Intent that starts the Activity to the top of the stack */
     stackBuilder->AddNextIntent(intent);

@@ -4,7 +4,7 @@
 
 #include "_CTestSuiteBuilder.h"
 #include "TestGrouping.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Eunit::Framework::ITestSuite;
 using Eunit::Framework::ITest;
@@ -110,7 +110,7 @@ public:
      * @param predicates Predicates to add to the list of requirements.
      * @return The builder for method chaining.
      */
-    CARAPI AddRequirementsEx(
+    CARAPI AddRequirements(
         /* [in] */ ArrayOf<IPredicate*>* predicates);
 
 protected:

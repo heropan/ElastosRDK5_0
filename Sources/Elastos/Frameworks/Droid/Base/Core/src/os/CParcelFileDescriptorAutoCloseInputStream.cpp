@@ -65,14 +65,14 @@ ECode CParcelFileDescriptorAutoCloseInputStream::ReadBytes(
     return ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(buffer,number);
 }
 
-ECode CParcelFileDescriptorAutoCloseInputStream::ReadBytesEx(
+ECode CParcelFileDescriptorAutoCloseInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    return ParcelFileDescriptor::AutoCloseInputStream::ReadBytesEx(buffer, offset, length, number);
+    return ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CParcelFileDescriptorAutoCloseInputStream::Reset()
@@ -101,7 +101,7 @@ ECode CParcelFileDescriptorAutoCloseInputStream::GetLock(
 
     AutoPtr<IInterface> obj = ParcelFileDescriptor::AutoCloseInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

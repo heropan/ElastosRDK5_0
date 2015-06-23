@@ -2,12 +2,9 @@
 #define __ACCESSIBILITYNODEINFOCACHE_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::HashMap;
 namespace Elastos {
 namespace Droid {
 namespace View {

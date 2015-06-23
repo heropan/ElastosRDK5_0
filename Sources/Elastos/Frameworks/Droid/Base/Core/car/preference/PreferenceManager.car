@@ -435,7 +435,7 @@ module
              * @see #setSharedPreferencesName(String)
              * @see #setSharedPreferencesMode(int)
              */
-            SetDefaultValuesEx(
+            SetDefaultValues(
                 [in] IContext* ctx,
                 [in] String sharedPreferencesName,
                 [in] Int32 sharedPreferencesMode,

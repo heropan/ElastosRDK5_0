@@ -24,7 +24,7 @@ public:
         /* [in] */ IBitmapFactoryOptions* opts,
         /* [out] */ IDrawable** draw);
 
-    CARAPI CreateFromResourceStreamEx(
+    CARAPI CreateFromResourceStream(
         /* [in] */ IResources* res,
         /* [in] */ ITypedValue* value,
         /* [in] */ IInputStream* is,

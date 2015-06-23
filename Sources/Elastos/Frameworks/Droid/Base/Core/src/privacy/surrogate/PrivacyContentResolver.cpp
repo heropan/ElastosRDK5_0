@@ -1,8 +1,8 @@
 #include "PrivacyContentResolver.h"
 #include "PrivacyCursor.h"
 #include <os/Binder.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::Binder;
@@ -52,7 +52,7 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
         AutoPtr<IPrivacySettings> pSet;
         context->GetPackageName(&packageName);
         Int32 uid = Binder::GetCallingUid();
-        mPrivacySetMan->GetSettingsEx(packageName, uid, (IPrivacySettings**)&pSet);
+        mPrivacySetMan->GetSettings(packageName, uid, (IPrivacySettings**)&pSet);
         String auth;
         uri->GetAuthority(&auth);
         String output_label("[real]");
@@ -69,7 +69,7 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                     if (contactsSetting == IPrivacySettings::EMPTY) {
                         output_label = String("[empty]");
                         output = new PrivacyCursor();
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_CONTACTS, String(NULL), pSet.Get());
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_CONTACTS, String(NULL), pSet.Get());
                     } else if (contactsSetting == IPrivacySettings::CUSTOM
                             && uriStr.Contains(GetContactsContractContactsContentUriString())) {
                         Boolean idFound = FALSE;
@@ -100,9 +100,9 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                             pSet->GetAllowedContacts((ArrayOf<Int32>**)&allowedContacts);
                             output = new PrivacyCursor(output, allowedContacts);
                         }
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_CONTACTS, String(NULL), pSet);
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_CONTACTS, String(NULL), pSet);
                     } else { // REAL
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_CONTACTS, String(NULL), pSet);
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_CONTACTS, String(NULL), pSet);
                     }
                 }
             } else if (auth.Equals(ICalendarContract::AUTHORITY)) {
@@ -113,9 +113,9 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 if (pSet != NULL && calendarSetting == IPrivacySettings::EMPTY) {
                     output_label = String("[empty]");
                     output = new PrivacyCursor();
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_CALENDAR, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_CALENDAR, String(NULL), pSet);
                 } else {
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_CALENDAR, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_CALENDAR, String(NULL), pSet);
                 }
             } else if (auth.Equals(MMS_CONTENT_URI_AUTHORITY)) {
                 Byte mmsSetting = 0;
@@ -125,9 +125,9 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 if (pSet != NULL && mmsSetting == IPrivacySettings::EMPTY) {
                     output_label = String("[empty]");
                     output = new PrivacyCursor();
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_MMS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_MMS, String(NULL), pSet);
                 } else {
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_MMS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_MMS, String(NULL), pSet);
                 }
 
             } else if (auth.Equals(SMS_CONTENT_URI_AUTHORITY)) {
@@ -138,9 +138,9 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 if (pSet != NULL && smsSetting == IPrivacySettings::EMPTY) {
                     output_label = String("[empty]");
                     output = new PrivacyCursor();
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_SMS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_SMS, String(NULL), pSet);
                 } else {
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_SMS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_SMS, String(NULL), pSet);
                 }
                 // all messages, sms and mms
             } else if (auth.Equals(MMS_SMS_CONTENT_URI_AUTHORITY)
@@ -156,9 +156,9 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 if (pSet != NULL && (mmsSetting == IPrivacySettings::EMPTY || smsSetting == IPrivacySettings::EMPTY)) {
                     output_label = String("[empty]");
                     output = new PrivacyCursor();
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_MMS_SMS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_MMS_SMS, String(NULL), pSet);
                 } else {
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_MMS_SMS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_MMS_SMS, String(NULL), pSet);
                 }
 
             } else if (auth.Equals(ICallLog::AUTHORITY)) {
@@ -169,9 +169,9 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 if (pSet != NULL && callSetting == IPrivacySettings::EMPTY) {
                     output_label = String("[empty]");
                     output = new PrivacyCursor();
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_CALL_LOG, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_CALL_LOG, String(NULL), pSet);
                 } else {
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_CALL_LOG, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_CALL_LOG, String(NULL), pSet);
                 }
 
             } else if (auth.Equals(GetBrowserBookmarksUriAuthority())) {
@@ -183,19 +183,19 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 if (pSet != NULL && bookmarksSetting == IPrivacySettings::EMPTY) {
                     output_label = "[empty]";
                     output = new PrivacyCursor();
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_BOOKMARKS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_BOOKMARKS, String(NULL), pSet);
                 } else {
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_BOOKMARKS, String(NULL), pSet);
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_BOOKMARKS, String(NULL), pSet);
                 }
             }
         }
         // Log.d(TAG, "query - " + packageName + " (" + uid + ") auth: " + auth + " output: " + output_label);
         *outCusor = output.Get();
-        INTERFACE_ADDREF(*outCusor);
+        REFCOUNT_ADD(*outCusor);
         return NOERROR;
     }
     *outCusor = realCursor;
-    INTERFACE_ADDREF(*outCusor);
+    REFCOUNT_ADD(*outCusor);
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
         String auth;
         context->GetPackageName(&packageName);
         Int32 uid = Binder::GetCallingUid();
-        mPrivacySetMan->GetSettingsEx(packageName, uid, (IPrivacySettings**)&pSet);
+        mPrivacySetMan->GetSettings(packageName, uid, (IPrivacySettings**)&pSet);
         uri->GetAuthority(&auth);
         String output_label("[real]");
         AutoPtr<ICursor> output = realCursor;
@@ -272,21 +272,21 @@ ECode PrivacyContentResolver::EnforcePrivacyPermission(
                 Logger::I(TAG, "now blocking google access to android id and give fake cursor. forbidden_position: " + forbidden_position);
                 output_label = String("[fake]");
 //                output = new PrivacyCursor(realCursor, forbidden_position);
-                mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_NETWORK_INFO_SIM, String(NULL), pSet.Get());
+                mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_NETWORK_INFO_SIM, String(NULL), pSet.Get());
             }
             else {
                 Logger::I(TAG, "google is allowed to get real cursor");
-                mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_NETWORK_INFO_SIM, String(NULL), pSet.Get());
+                mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_NETWORK_INFO_SIM, String(NULL), pSet.Get());
             }
         }
 
         *outCusor = output.Get();
-        INTERFACE_ADDREF(*outCusor);
+        REFCOUNT_ADD(*outCusor);
         return NOERROR;
     }
 
     *outCusor = realCursor;
-    INTERFACE_ADDREF(*outCusor);
+    REFCOUNT_ADD(*outCusor);
     return NOERROR;
 }
 

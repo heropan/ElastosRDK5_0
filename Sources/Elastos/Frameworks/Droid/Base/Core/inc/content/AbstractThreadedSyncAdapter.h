@@ -3,11 +3,9 @@
 #define __ABSTRACTTHREADEDSYNCADAPTER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
@@ -228,7 +226,7 @@ public:
      * parallel syncs.
      * @param thread the Thread of the sync that is to be canceled.
      */
-    virtual CARAPI OnSyncCanceledEx(
+    virtual CARAPI OnSyncCanceled(
         /* [in] */ IThread* thread);
 
 private:

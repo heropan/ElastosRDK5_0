@@ -4,17 +4,15 @@
 #include "_CZigbeeService.h"
 #include "zigbee/ZigbeeTHSensor.h"
 #include "zigbee/ZigbeeGroup.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IParcelStringList;
 using Elastos::Droid::Server::Zigbee::ZigbeeDevice;
 using Elastos::Droid::Server::Zigbee::ZigbeeGroup;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

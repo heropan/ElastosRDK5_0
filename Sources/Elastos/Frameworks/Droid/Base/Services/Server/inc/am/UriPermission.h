@@ -3,9 +3,9 @@
 #define __URIPERMISSION_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Net::IUri;
 

@@ -42,7 +42,7 @@ ECode ShapeDrawable::ShapeState::NewDrawable(
 }
 
 //@Override
-ECode ShapeDrawable::ShapeState::NewDrawableEx(
+ECode ShapeDrawable::ShapeState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -137,7 +137,7 @@ ECode ShapeDrawable::SetPadding(
         if (mShapeState->mPadding == NULL) {
             CRect::New((IRect**)&mShapeState->mPadding);
         }
-        mShapeState->mPadding->SetEx(padding);
+        mShapeState->mPadding->Set(padding);
     }
     return InvalidateSelf();
 }
@@ -170,7 +170,7 @@ Boolean ShapeDrawable::GetPadding(
     /* [in] */ IRect* padding)
 {
     if (mShapeState->mPadding != NULL) {
-        padding->SetEx(mShapeState->mPadding);
+        padding->Set(mShapeState->mPadding);
         return TRUE;
     }
     else {
@@ -217,7 +217,7 @@ ECode ShapeDrawable::Draw(
         canvas->RestoreToCount(count);
     }
     else {
-        canvas->DrawRectEx(r, paint);
+        canvas->DrawRect(r, paint);
     }
 
     // restore

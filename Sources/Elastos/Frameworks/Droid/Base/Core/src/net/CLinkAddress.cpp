@@ -1,7 +1,7 @@
 
 #include "net/CLinkAddress.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -73,7 +73,7 @@ ECode CLinkAddress::ToString(
  * @return {@code true} if both objects are equal, {@code FALSE} otherwise.
  */
 //@Override
-ECode CLinkAddress::EqualsEx(
+ECode CLinkAddress::Equals(
     /* [in] */ ILinkAddress* obj,
     /* [out] */ Boolean* result)
 {
@@ -96,7 +96,7 @@ ECode CLinkAddress::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(ILinkAddress::Probe(obj), result);
+    return Equals(ILinkAddress::Probe(obj), result);
 }
 
 /*
@@ -123,7 +123,7 @@ ECode CLinkAddress::GetAddress(
 {
     VALIDATE_NOT_NULL(result);
     *result = mAddress;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

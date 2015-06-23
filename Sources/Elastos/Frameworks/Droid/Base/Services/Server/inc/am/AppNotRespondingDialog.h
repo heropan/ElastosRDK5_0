@@ -5,10 +5,8 @@
 #include "BaseErrorDialog.h"
 #include "ProcessRecord.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
 
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {

@@ -3,18 +3,17 @@
 
 #include "speech/tts/UtteranceProgressListener.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
 #include <ext/frameworkext.h>
 #include <elastos/Map.h>
 #include <elastos/Set.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 
 using Libcore::ICU::ILocale;
 using Elastos::Utility::Map;
 using Elastos::Utility::Set;
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Os::IBundle;
 //using Elastos::Droid::Os::IIBinder;

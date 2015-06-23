@@ -411,7 +411,7 @@ ECode GridLayoutAnimationController::Init(
             const_cast<Int32 *>(R::styleable::GridLayoutAnimation),
             ARRAY_SIZE(R::styleable::GridLayoutAnimation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     AutoPtr<ITypedValue> value;
     a->PeekValue(R::styleable::GridLayoutAnimation_columnDelay, (ITypedValue**)&value);

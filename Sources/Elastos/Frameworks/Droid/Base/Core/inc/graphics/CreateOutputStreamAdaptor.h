@@ -2,7 +2,7 @@
 #define __HH_CREATEOUTPUTSTREAMADAPTOR_H
 
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <skia/core/SkStream.h>
 
 using Elastos::IO::IInputStream;

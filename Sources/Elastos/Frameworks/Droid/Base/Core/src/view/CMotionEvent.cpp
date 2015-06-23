@@ -5,10 +5,10 @@
 #include "view/CPointerCoords.h"
 #include "view/CPointerProperties.h"
 #include "graphics/CMatrix.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -391,7 +391,7 @@ ECode CMotionEvent::Obtain(
             return CMotionEvent::NewByFriend(event);
         }
         *event = gRecyclerTop;
-        INTERFACE_ADDREF(*event)
+        REFCOUNT_ADD(*event)
         gRecyclerTop = (*event)->mNext;
         gRecyclerUsed -= 1;
     }
@@ -591,7 +591,7 @@ ECode CMotionEvent::Copy(
     AutoPtr<CMotionEvent> motionEvent;
     FAIL_RETURN(Obtain(this, (CMotionEvent**)&motionEvent));
     *event = motionEvent;
-    INTERFACE_ADDREF(*event)
+    REFCOUNT_ADD(*event)
 
     return NOERROR;
 }
@@ -930,7 +930,7 @@ ECode CMotionEvent::FindPointerIndex(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetXEx(
+ECode CMotionEvent::GetX(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* x)
 {
@@ -941,7 +941,7 @@ ECode CMotionEvent::GetXEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetYEx(
+ECode CMotionEvent::GetY(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* y)
 {
@@ -952,7 +952,7 @@ ECode CMotionEvent::GetYEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetPressureEx(
+ECode CMotionEvent::GetPressure(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* pressure)
 {
@@ -963,7 +963,7 @@ ECode CMotionEvent::GetPressureEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetSizeEx(
+ECode CMotionEvent::GetSize(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* size)
 {
@@ -974,7 +974,7 @@ ECode CMotionEvent::GetSizeEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetTouchMajorEx(
+ECode CMotionEvent::GetTouchMajor(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* touchMajor)
 {
@@ -985,7 +985,7 @@ ECode CMotionEvent::GetTouchMajorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetTouchMinorEx(
+ECode CMotionEvent::GetTouchMinor(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* touchMinor)
 {
@@ -996,7 +996,7 @@ ECode CMotionEvent::GetTouchMinorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetToolMajorEx(
+ECode CMotionEvent::GetToolMajor(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* toolMajor)
 {
@@ -1007,7 +1007,7 @@ ECode CMotionEvent::GetToolMajorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetToolMinorEx(
+ECode CMotionEvent::GetToolMinor(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* toolMinor)
 {
@@ -1018,7 +1018,7 @@ ECode CMotionEvent::GetToolMinorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetOrientationEx(
+ECode CMotionEvent::GetOrientation(
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* orientation)
 {
@@ -1029,7 +1029,7 @@ ECode CMotionEvent::GetOrientationEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetAxisValueEx(
+ECode CMotionEvent::GetAxisValue(
     /* [in] */ Int32 axis,
     /* [in] */ Int32 pointerIndex,
     /* [out] */ Float* value)
@@ -1264,7 +1264,7 @@ ECode CMotionEvent::GetHistoricalAxisValue(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalXEx(
+ECode CMotionEvent::GetHistoricalX(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hX)
@@ -1276,7 +1276,7 @@ ECode CMotionEvent::GetHistoricalXEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalYEx(
+ECode CMotionEvent::GetHistoricalY(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hY)
@@ -1288,7 +1288,7 @@ ECode CMotionEvent::GetHistoricalYEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalPressureEx(
+ECode CMotionEvent::GetHistoricalPressure(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hPressure)
@@ -1300,7 +1300,7 @@ ECode CMotionEvent::GetHistoricalPressureEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalSizeEx(
+ECode CMotionEvent::GetHistoricalSize(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hSize)
@@ -1312,7 +1312,7 @@ ECode CMotionEvent::GetHistoricalSizeEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalTouchMajorEx(
+ECode CMotionEvent::GetHistoricalTouchMajor(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hTouchMajor)
@@ -1324,7 +1324,7 @@ ECode CMotionEvent::GetHistoricalTouchMajorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalTouchMinorEx(
+ECode CMotionEvent::GetHistoricalTouchMinor(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hTouchMinor)
@@ -1336,7 +1336,7 @@ ECode CMotionEvent::GetHistoricalTouchMinorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalToolMajorEx(
+ECode CMotionEvent::GetHistoricalToolMajor(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hToolMajor)
@@ -1348,7 +1348,7 @@ ECode CMotionEvent::GetHistoricalToolMajorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalToolMinorEx(
+ECode CMotionEvent::GetHistoricalToolMinor(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hToolMinor)
@@ -1360,7 +1360,7 @@ ECode CMotionEvent::GetHistoricalToolMinorEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalOrientationEx(
+ECode CMotionEvent::GetHistoricalOrientation(
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
     /* [out] */ Float* hOrientation)
@@ -1372,7 +1372,7 @@ ECode CMotionEvent::GetHistoricalOrientationEx(
     return NOERROR;
 }
 
-ECode CMotionEvent::GetHistoricalAxisValueEx(
+ECode CMotionEvent::GetHistoricalAxisValue(
     /* [in] */ Int32 axis,
     /* [in] */ Int32 pointerIndex,
     /* [in] */ Int32 pos,
@@ -1481,7 +1481,7 @@ ECode CMotionEvent::AddBatch(
     return NOERROR;
 }
 
-ECode CMotionEvent::AddBatchEx(
+ECode CMotionEvent::AddBatch(
     /* [in] */ Int64 eventTime,
     /* [in] */ ArrayOf<IPointerCoords*>* pointerCoords,
     /* [in] */ Int32 metaState)
@@ -1503,7 +1503,7 @@ ECode CMotionEvent::AddBatchEx(
  * @return True if batching was performed or FALSE if batching was not possible.
  * @hide
  */
-ECode CMotionEvent::AddBatchEx2(
+ECode CMotionEvent::AddBatch(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* res)
 {
@@ -1644,7 +1644,7 @@ ECode CMotionEvent::ClampNoHistory(
         NativeGetEventTimeNanos(mNative, HISTORY_CURRENT),
         pointerCount, pp, pc);
     *event = ev;
-    INTERFACE_ADDREF(*event)
+    REFCOUNT_ADD(*event)
 
     return NOERROR;
 }
@@ -1762,7 +1762,7 @@ ECode CMotionEvent::Split(
         }
     }
     *event = ev;
-    INTERFACE_ADDREF(*event)
+    REFCOUNT_ADD(*event)
 
     return NOERROR;
 }
@@ -1788,8 +1788,8 @@ String CMotionEvent::ToString()
         msg->AppendInt32(i);
         msg->AppendCStr("]=");
         Float x, y;
-        GetXEx(i, &x);
-        GetYEx(i, &y);
+        GetX(i, &x);
+        GetY(i, &y);
         msg->AppendFloat(x);
         msg->AppendCStr(", y[");
         msg->AppendInt32(i);

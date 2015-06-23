@@ -8,7 +8,7 @@
 #include "content/CContentValues.h"
 #include "content/CEntity.h"
 #include "net/Uri.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -364,7 +364,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
     cursor->MoveToNext(&result);
     // Return the created Entity
     *entity = _entity;
-    INTERFACE_ADDREF(*entity);
+    REFCOUNT_ADD(*entity);
     return NOERROR;
 }
 
@@ -392,11 +392,11 @@ ECode CCalendarContractEventsEntity::NewEntityIterator(
 
     AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor, resolver);
     *iterator = (IEntityIterator*)impl;
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
-ECode CCalendarContractEventsEntity::NewEntityIteratorEx(
+ECode CCalendarContractEventsEntity::NewEntityIterator(
     /* [in] */ ICursor* cursor,
     /* [in] */ IContentProviderClient* provider,
     /* [out] */ IEntityIterator** iterator)
@@ -405,7 +405,7 @@ ECode CCalendarContractEventsEntity::NewEntityIteratorEx(
 
     AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor, provider);
     *iterator = (IEntityIterator*)impl;
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 

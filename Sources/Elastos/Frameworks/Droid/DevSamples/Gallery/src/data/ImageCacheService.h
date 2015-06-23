@@ -3,12 +3,11 @@
 #define __IMAGECACHESERVICE_H__
 
 #include "app/Activity.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Gallery {
 

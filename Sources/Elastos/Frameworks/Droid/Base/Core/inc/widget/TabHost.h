@@ -276,14 +276,14 @@ public:
         /**
          * Specify a label and icon as the tab indicator.
          */
-        CARAPI SetIndicatorEx(
+        CARAPI SetIndicator(
             /* [in] */ ICharSequence* label,
             /* [in] */ IDrawable* icon);
 
         /**
          * Specify a view as the tab indicator.
          */
-        CARAPI SetIndicatorEx2(
+        CARAPI SetIndicator(
             /* [in] */ IView* view);
 
         /**
@@ -297,13 +297,13 @@ public:
          * Specify a {@link android.widget.TabHost.TabContentFactory} to use to
          * create the content of the tab.
          */
-        CARAPI SetContentEx(
+        CARAPI SetContent(
             /* [in] */ ITabHostTabContentFactory* contentFactory);
 
         /**
          * Specify an intent to use to launch an activity as the tab content.
          */
-        CARAPI SetContentEx2(
+        CARAPI SetContent(
             /* [in] */ IIntent* intent);
 
         CARAPI GetTag(

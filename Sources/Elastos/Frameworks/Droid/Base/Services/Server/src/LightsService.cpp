@@ -3,7 +3,7 @@
 #include "CLegacyFlashlightHack.h"
 #include "os/ServiceManager.h"
 #include "os/Handler.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <utils/misc.h>
 #include <utils/Log.h>
 #include <hardware/lights.h>
@@ -103,7 +103,7 @@ ECode LightsService::Light::Pulse(
         SetLightLocked(color, _LIGHT_FLASH_HARDWARE, onMS, 1000, _BRIGHTNESS_MODE_USER);
 
         AutoPtr<IMessage> msg;
-        mOwner->mH->ObtainMessageEx(1, (IInterface*)this, (IMessage**)&msg);
+        mOwner->mH->ObtainMessage(1, (IInterface*)this, (IMessage**)&msg);
         Boolean result;
         mOwner->mH->SendMessageDelayed(msg, onMS, &result);
     }

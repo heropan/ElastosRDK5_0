@@ -26,7 +26,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ ILinkAddress* obj,
         /* [out] */ Boolean* result);
 

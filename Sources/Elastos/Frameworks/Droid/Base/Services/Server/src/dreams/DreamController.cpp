@@ -1,7 +1,7 @@
 
 #include "dreams/DreamController.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::IUserHandle;
@@ -199,7 +199,7 @@ ECode DreamController::StartDream(
     intent->AddFlags(IIntent::FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
     // try {
     Boolean bindService;
-    FAIL_RETURN(mContext->BindServiceEx(intent, mCurrentDream,
+    FAIL_RETURN(mContext->BindService(intent, mCurrentDream,
                 IContext::BIND_AUTO_CREATE, userId, &bindService));
     if (!bindService) {
         Slogger::E(TAG, "Unable to bind dream service: %p", intent.Get());

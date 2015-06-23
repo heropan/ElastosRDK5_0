@@ -1,7 +1,7 @@
 
 #include "CDecodingInfo.h"
 #include "CPinyinSettings.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -141,7 +141,7 @@ ECode CDecodingInfo::GetOrigianlSplStr(
 {
     VALIDATE_NOT_NULL(str);
     *str = mSurface;
-    INTERFACE_ADDREF(*str);
+    REFCOUNT_ADD(*str);
     return NOERROR;
 }
 
@@ -158,7 +158,7 @@ ECode CDecodingInfo::GetSplStart(
 {
     VALIDATE_NOT_NULL(splStart);
     *splStart = mSplStart;
-    INTERFACE_ADDREF(*splStart);
+    REFCOUNT_ADD(*splStart);
     return NOERROR;
 }
 
@@ -386,7 +386,7 @@ void CDecodingInfo::UpdateDecInfoForSearch(
     else {
         mComposingStrDisplay = mFullSent.Substring(0, mFixedLen);
         for (Int32 pos = mFixedLen + 1; pos < mSplStart->GetLength() - 1; pos++) {
-            ec = mSurface->SubstringEx((*mSplStart)[pos], (*mSplStart)[pos + 1], &tmp);
+            ec = mSurface->Substring((*mSplStart)[pos], (*mSplStart)[pos + 1], &tmp);
             FAIL_GOTO(ec, label);
             mComposingStrDisplay += tmp;
             if ((*mSplStart)[pos + 1] < mSurfaceDecodedLen) {
@@ -888,7 +888,7 @@ ECode CDecodingInfo::GetCandidatesList(
         results->Set(i, *ator);
     }
     *candidatesList = results;
-    INTERFACE_ADDREF(*candidatesList);
+    REFCOUNT_ADD(*candidatesList);
     return NOERROR;
 }
 
@@ -918,7 +918,7 @@ ECode CDecodingInfo::GetPageStartList(
         results->Set(i, *ator);
     }
     *pageStartList = results;
-    INTERFACE_ADDREF(*pageStartList);
+    REFCOUNT_ADD(*pageStartList);
     return NOERROR;
 }
 
@@ -948,7 +948,7 @@ ECode CDecodingInfo::GetCnToPageList(
         results->Set(i, *ator);
     }
     *cnToPageList = results;
-    INTERFACE_ADDREF(*cnToPageList);
+    REFCOUNT_ADD(*cnToPageList);
     return NOERROR;
 }
 
@@ -964,7 +964,7 @@ ECode CDecodingInfo::GetPinyinDecoderService(
 {
     VALIDATE_NOT_NULL(pinyinService);
     *pinyinService = mIPinyinDecoderService;
-    INTERFACE_ADDREF(*pinyinService);
+    REFCOUNT_ADD(*pinyinService);
     return NOERROR;
 }
 
@@ -973,7 +973,7 @@ ECode CDecodingInfo::GetAppCompletions(
 {
     VALIDATE_NOT_NULL(completions);
     *completions = mAppCompletions;
-    INTERFACE_ADDREF(*completions);
+    REFCOUNT_ADD(*completions);
     return NOERROR;
 }
 

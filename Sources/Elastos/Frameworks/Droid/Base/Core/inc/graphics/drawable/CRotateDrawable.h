@@ -4,7 +4,7 @@
 
 #include "_CRotateDrawable.h"
 #include "graphics/drawable/RotateDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

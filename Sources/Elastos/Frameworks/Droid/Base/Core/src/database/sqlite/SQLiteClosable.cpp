@@ -1,7 +1,7 @@
 
 #include "database/sqlite/SQLiteClosable.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 

@@ -83,7 +83,7 @@ ECode LinearLayoutLayoutParams::Init(
             const_cast<Int32 *>(R::styleable::LinearLayout_Layout),
             ARRAY_SIZE(R::styleable::LinearLayout_Layout));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx2(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
 
     a->GetFloat(R::styleable::LinearLayout_Layout_layout_weight,

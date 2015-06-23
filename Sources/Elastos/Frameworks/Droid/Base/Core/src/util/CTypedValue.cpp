@@ -2,9 +2,9 @@
 #include "ext/frameworkext.h"
 #include "util/CTypedValue.h"
 #include "util/CDisplayMetrics.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
@@ -184,7 +184,7 @@ ECode CTypedValue::CoerceToString(
     Int32 t = mType;
     if (t == TYPE_STRING) {
         *csq = mString.Get();
-        INTERFACE_ADDREF(*csq);
+        REFCOUNT_ADD(*csq);
         return NOERROR;
     }
     String s = CoerceToString(t, mData);
@@ -296,7 +296,7 @@ ECode CTypedValue::GetString(
 {
     VALIDATE_NOT_NULL(str);
     *str = mString;
-    INTERFACE_ADDREF(*str)
+    REFCOUNT_ADD(*str)
     return NOERROR;
 }
 

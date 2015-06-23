@@ -3,10 +3,10 @@
 
 #include "ext/frameworkext.h"
 #include "widget/ListView.h"
-#include "widget/ListViewMacro.h"
-#include "view/ViewMacro.h"
-#include "widget/AdapterViewMacro.h"
-#include "widget/AbsListViewMacro.h"
+
+
+
+
 #include "os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;

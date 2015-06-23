@@ -2,8 +2,8 @@
 #define __CCOMPATMODEBUTTON_H_
 
 #include "_CCompatModeButton.h"
-#include "view/ViewMacro.h"
-#include "widget/ImageViewMacro.h"
+
+
 #include "systemui/statusbar/policy/CompatModeButton.h"
 
 using Elastos::Droid::Widget::ImageViewScaleType;
@@ -37,7 +37,7 @@ public:
 
     CARAPI Refresh();
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

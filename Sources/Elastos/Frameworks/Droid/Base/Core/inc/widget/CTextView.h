@@ -2,7 +2,7 @@
 #define __CTEXTVIEW_H_
 
 #include "_CTextView.h"
-#include "view/ViewMacro.h"
+
 #include "widget/TextView.h"
 
 namespace Elastos{
@@ -56,7 +56,7 @@ public:
      * @attr ref android.R.styleable#TextView_typeface
      * @attr ref android.R.styleable#TextView_textStyle
      */
-    CARAPI SetTypefaceEx(
+    CARAPI SetTypeface(
         /* [in] */ ITypeface* tf,
         /* [in] */ Int32 style);
 
@@ -329,7 +329,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableRight
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    CARAPI SetCompoundDrawablesWithIntrinsicBoundsEx(
+    CARAPI SetCompoundDrawablesWithIntrinsicBounds(
         /* [in] */ IDrawable* left,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* right,
@@ -385,7 +385,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableEnd
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    CARAPI SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(
+    CARAPI SetCompoundDrawablesRelativeWithIntrinsicBounds(
         /* [in] */ IDrawable* start,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* end,
@@ -487,7 +487,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textSize
      */
-    CARAPI SetTextSizeEx(
+    CARAPI SetTextSize(
         /* [in] */ Int32 unit,
         /* [in] */ Float size);
 
@@ -532,7 +532,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColor
      */
-    CARAPI SetTextColorEx(
+    CARAPI SetTextColor(
         /* [in] */ Int32 color);
 
     /**
@@ -704,7 +704,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorHint
      */
-    CARAPI SetHintTextColorEx(
+    CARAPI SetHintTextColor(
         /* [in] */ Int32 color);
 
     /**
@@ -736,7 +736,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorLink
      */
-    CARAPI SetLinkTextColorEx(
+    CARAPI SetLinkTextColor(
         /* [in] */ Int32 color);
 
     /**
@@ -1039,7 +1039,7 @@ public:
      * display buffer, upgrading it to BufferType.EDITABLE if it was
      * not already editable.
      */
-    CARAPI AppendEx(
+    CARAPI Append(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -1116,7 +1116,7 @@ public:
      * @attr ref android.R.styleable#TextView_text
      * @attr ref android.R.styleable#TextView_bufferType
      */
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ ICharSequence* text,
         /* [in] */ BufferType type);
 
@@ -1127,7 +1127,7 @@ public:
      * since the TextView has no way to know that the text
      * has changed and that it needs to invalidate and re-layout.
      */
-    CARAPI SetTextEx2(
+    CARAPI SetText(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len);
@@ -1138,14 +1138,14 @@ public:
      *
      * @see #setText(CharSequence, android.widget.TextView.BufferType)
      */
-    CARAPI SetTextKeepStateEx(
+    CARAPI SetTextKeepState(
         /* [in] */ ICharSequence* text,
         /* [in] */ BufferType type);
 
-    CARAPI SetTextEx3(
+    CARAPI SetText(
         /* [in] */ Int32 resid);
 
-    CARAPI SetTextEx4(
+    CARAPI SetText(
         /* [in] */ Int32 resid,
         /* [in] */ BufferType type);
 
@@ -1165,7 +1165,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_hint
      */
-    CARAPI SetHintEx(
+    CARAPI SetHint(
         /* [in] */ Int32 resid);
 
     /**
@@ -1374,7 +1374,7 @@ public:
      * If the <code>error</code> is <code>null</code>, the error message will
      * be cleared (and you should provide a <code>null</code> icon as well).
      */
-    CARAPI SetErrorEx(
+    CARAPI SetError(
         /* [in] */ ICharSequence* error,
         /* [in] */ IDrawable* icon);
 
@@ -1630,7 +1630,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_singleLine
      */
-    CARAPI SetSingleLineEx(
+    CARAPI SetSingleLine(
         /* [in] */ Boolean singleLine);
 
     /**

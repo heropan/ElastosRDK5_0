@@ -78,7 +78,7 @@ ECode ExtractEditLayout::ExtractActionMode::SetTitle(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetTitleEx(
+ECode ExtractEditLayout::ExtractActionMode::SetTitle(
     /* [in] */ Int32 resId)
 {
     // Title will not be shown.
@@ -92,7 +92,7 @@ ECode ExtractEditLayout::ExtractActionMode::SetSubtitle(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetSubtitleEx(
+ECode ExtractEditLayout::ExtractActionMode::SetSubtitle(
     /* [in] */ Int32 resId)
 {
     // Subtitle will not be shown.
@@ -162,7 +162,7 @@ ECode ExtractEditLayout::ExtractActionMode::GetMenu(
 {
     assert(menu != NULL);
     *menu = mMenu;
-    INTERFACE_ADDREF(*menu);
+    REFCOUNT_ADD(*menu);
 
     return NOERROR;
 }
@@ -405,7 +405,7 @@ ECode CExtractEditLayout::GetDividerDrawable(
     VALIDATE_NOT_NULL(divider);
     AutoPtr<IDrawable> d = ExtractEditLayout::GetDividerDrawable();
     *divider = d;
-    INTERFACE_ADDREF(*divider);
+    REFCOUNT_ADD(*divider);
     return NOERROR;
 }
 

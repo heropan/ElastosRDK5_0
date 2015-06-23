@@ -113,7 +113,7 @@ public:
      *
      * @throws Resources.NotFoundException if the resource can't be found.
      */
-    static CARAPI MakeTextEx(
+    static CARAPI MakeText(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resId,
         /* [in] */ Int32 duration,
@@ -122,7 +122,7 @@ public:
     virtual CARAPI SetText(
         /* [in] */ Int32 resId);
 
-    virtual CARAPI SetTextEx(
+    virtual CARAPI SetText(
         /* [in] */ ICharSequence* s);
 
     virtual CARAPI OnHide();

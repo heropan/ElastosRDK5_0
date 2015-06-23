@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OS_HANDLER_BASE_H__
 
 #include "ext/frameworkext.h"
-#include "os/HandlerMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

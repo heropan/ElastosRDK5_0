@@ -64,7 +64,7 @@ ECode CContactsContractRawContacts::GetContactLookupUri(
         FAIL_GOTO(cursor->GetInt64(0, &contactId), EXIT)
         String lookupKey;
         FAIL_GOTO(cursor->GetString(1, &lookupKey), EXIT)
-        FAIL_GOTO(ContactsContractContacts::GetLookupUriEx(contactId, lookupKey, uri), EXIT)
+        FAIL_GOTO(ContactsContractContacts::GetLookupUri(contactId, lookupKey, uri), EXIT)
         return cursor->Close();
     }
     //} finally {
@@ -85,7 +85,7 @@ ECode CContactsContractRawContacts::NewEntityIterator(
 
     AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor);
     *iterator = (IEntityIterator*)impl;
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 

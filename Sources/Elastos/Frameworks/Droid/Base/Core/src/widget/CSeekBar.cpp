@@ -156,7 +156,7 @@ ECode CSeekBar::SetInterpolator(
     return SeekBar::SetInterpolator(ctx, resID);
 }
 
-ECode CSeekBar::SetInterpolatorEx(
+ECode CSeekBar::SetInterpolator(
     /* [in] */ IInterpolator* interpolator)
 {
     return SeekBar::SetInterpolator(interpolator);

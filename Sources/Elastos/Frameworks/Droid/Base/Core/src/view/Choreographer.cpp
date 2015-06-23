@@ -5,8 +5,8 @@
 #include "os/SystemProperties.h"
 #include "os/Looper.h"
 #include "hardware/display/DisplayManagerGlobal.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/CMessageHelper.h"
 #include "os/Looper.h"
 
@@ -145,7 +145,7 @@ void Choreographer::FrameDisplayEventReceiver::OnVsync(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx7(mOwner->mHandler, (IRunnable*)this, (IMessage**)&msg);
+    helper->Obtain(mOwner->mHandler, (IRunnable*)this, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
     mOwner->mHandler->SendMessageAtTime(msg, timestampNanos / NANOS_PER_MS, &result);
@@ -386,7 +386,7 @@ void Choreographer::PostCallbackDelayedInternal(
     }
     else {
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx3(MSG_DO_SCHEDULE_CALLBACK,
+        mHandler->ObtainMessage(MSG_DO_SCHEDULE_CALLBACK,
             callbackType, 0, action, (IMessage**)&msg);
         msg->SetAsynchronous(TRUE);
         Boolean result;
@@ -421,7 +421,7 @@ void Choreographer::RemoveCallbacksInternal(
     Mutex::Autolock lock(mLock);
     (*mCallbackQueues)[callbackType]->RemoveCallbacksLocked(action, token);
     if (action != NULL && token == NULL) {
-        mHandler->RemoveMessagesEx(MSG_DO_SCHEDULE_CALLBACK, action->Probe(EIID_IInterface));
+        mHandler->RemoveMessages(MSG_DO_SCHEDULE_CALLBACK, action->Probe(EIID_IInterface));
     }
 }
 

@@ -42,7 +42,7 @@ ECode CMonkeyTrackballEvent::AddPointer(
     return NOERROR;
 }
 
-ECode CMonkeyTrackballEvent::AddPointerEx(
+ECode CMonkeyTrackballEvent::AddPointer(
     /* [in] */ Int32 id,
     /* [in] */ Float x,
     /* [in] */ Float y,

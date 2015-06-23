@@ -4,11 +4,10 @@
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Privacy::IPrivacySettingsManager;

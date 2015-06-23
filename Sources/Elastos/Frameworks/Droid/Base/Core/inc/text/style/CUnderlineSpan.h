@@ -4,8 +4,8 @@
 
 #include "_CUnderlineSpan.h"
 #include "text/style/UnderlineSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

@@ -16,7 +16,7 @@ ECode CSurfaceHelper::Screenshot(
     return CSurface::Screenshot(width, height, bitmap);
 }
 
-ECode CSurfaceHelper::ScreenshotEx(
+ECode CSurfaceHelper::Screenshot(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 minLayer,
@@ -24,7 +24,7 @@ ECode CSurfaceHelper::ScreenshotEx(
     /* [out] */ IBitmap** bitmap)
 {
     VALIDATE_NOT_NULL(bitmap);
-    return CSurface::ScreenshotEx(width, height, minLayer, maxLayer, bitmap);
+    return CSurface::Screenshot(width, height, minLayer, maxLayer, bitmap);
 }
 
 ECode CSurfaceHelper::OpenTransaction()

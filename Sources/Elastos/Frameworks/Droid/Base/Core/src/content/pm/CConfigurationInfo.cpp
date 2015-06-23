@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/CConfigurationInfo.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 

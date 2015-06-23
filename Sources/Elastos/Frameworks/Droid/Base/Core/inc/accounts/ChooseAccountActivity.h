@@ -5,10 +5,10 @@
 #include "app/Activity.h"
 #include "widget/ArrayAdapter.h"
 #include "accounts/ChooseTypeAndAccountActivity.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Widget::IImageView;
@@ -108,7 +108,7 @@ private:
         CARAPI AddAll(
             /* [in] */ IObjectContainer* collection);
 
-        CARAPI AddAllEx(
+        CARAPI AddAll(
             /* [in] */ ArrayOf<IInterface* >* items) ;
 
         CARAPI Insert(

@@ -8,8 +8,8 @@
 #include "os/Binder.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::ISystemProperties;
@@ -21,7 +21,7 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
 using Elastos::Droid::Hardware::Display::CWifiDisplayStatus;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -1074,7 +1074,7 @@ void CDisplayManagerService::SendDisplayEventLocked(
     /* [in] */ Int32 event)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_DELIVER_DISPLAY_EVENT, displayId, event, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DELIVER_DISPLAY_EVENT, displayId, event, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 }

@@ -121,7 +121,7 @@ module
          *                           this activity will be added
          * @return This TaskStackBuilder for method chaining
          */
-        AddParentStackEx(
+        AddParentStack(
             [in] IComponentName* sourceActivityName);
 
         /**
@@ -153,7 +153,7 @@ module
          * Start the task stack constructed by this builder.
          * @hide
          */
-        StartActivitiesEx(
+        StartActivities(
             [in] IBundle* options,
             [in] IUserHandle* userHandle);
 
@@ -166,7 +166,7 @@ module
          *
          * @sa android.content.Context#startActivity(Intent, Bundle) Context.startActivity(Intent, Bundle)
          */
-        StartActivitiesEx2(
+        StartActivities(
             [in] IBundle* options);
 
         /**
@@ -214,7 +214,7 @@ module
          *
          * @return The obtained PendingIntent
          */
-        GetPendingIntentEx(
+        GetPendingIntent(
             [in] Int32 requestCode,
             [in] Int32 flags,
             [in] IBundle* options,
@@ -223,7 +223,7 @@ module
         /**
          * @hide
          */
-        GetPendingIntentEx2(
+        GetPendingIntent(
             [in] Int32 requestCode,
             [in] Int32 flags,
             [in] IBundle* options,

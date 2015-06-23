@@ -1,7 +1,7 @@
 
 #include "CCallerInfoAsyncQuery.h"
 #include "CPhoneNumberUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Telephony::CPhoneNumberUtils;
 using Elastos::Utility::Logging::Slogger;
@@ -43,7 +43,7 @@ ECode CCallerInfoAsyncQuery::CallerInfoAsyncQueryHandler::CreateHandler(
     VALIDATE_NOT_NULL(handler);
     AutoPtr<CallerInfoWorkerHandler> worker = new CallerInfoWorkerHandler(looper, this);
     *handler = (IHandler*)worker.Get();
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 
@@ -91,7 +91,7 @@ ECode CCallerInfoAsyncQuery::CallerInfoAsyncQueryHandler::CallerInfoWorkerHandle
                     // passing the original token value back to the caller
                     // on top of the event values in arg1.
                     AutoPtr<IMessage> reply;
-                    args->mHandler->ObtainMessageEx3(what, arg1, 0, args, (IMessage**)&reply);
+                    args->mHandler->ObtainMessage(what, arg1, 0, args, (IMessage**)&reply);
                     reply->SendToTarget();
                 }
                 break;
@@ -164,7 +164,7 @@ ECode CCallerInfoAsyncQuery::Allocate(
     return NOERROR;
 }
 
-ECode CCallerInfoAsyncQuery::ReleaseEx()
+ECode CCallerInfoAsyncQuery::Release()
 {
     mHandler->mQueryContext = NULL;
     mHandler->mQueryUri = NULL;

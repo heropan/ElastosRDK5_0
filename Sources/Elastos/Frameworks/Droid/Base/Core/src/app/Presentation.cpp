@@ -1,6 +1,6 @@
 #include "Presentation.h"
 #include "util/CDisplayMetrics.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "util/CTypedValue.h"
 #include "view/WindowManagerImpl.h"
 #include "R.h"
@@ -73,7 +73,7 @@ ECode Presentation::PresentationContextThemeWrapper::GetSystemService(
     VALIDATE_NOT_NULL(object);
     if (name.Equals(IContext::WINDOW_SERVICE)) {
         *object = mDisplayWindowManager;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return ContextThemeWrapper::GetSystemService(name, object);
@@ -154,12 +154,12 @@ ECode Presentation::PresentationContextThemeWrapper::GetString(
     return Context::GetString(resId, str);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::GetStringEx(
+ECode Presentation::PresentationContextThemeWrapper::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
-    return ContextThemeWrapper::GetStringEx(resId, formatArgs, str);
+    return ContextThemeWrapper::GetString(resId, formatArgs, str);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::SetTheme(
@@ -187,30 +187,30 @@ ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributes(
     return Context::ObtainStyledAttributes(attrs, styles);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributesEx(
+ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return Context::ObtainStyledAttributesEx(resid, attrs, styles);
+    return Context::ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributesEx2(
+ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return Context::ObtainStyledAttributesEx2(set, attrs, styles);
+    return Context::ObtainStyledAttributes(set, attrs, styles);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributesEx3(
+ECode Presentation::PresentationContextThemeWrapper::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes,
     /* [out] */ ITypedArray** styles)
 {
-    return Context::ObtainStyledAttributesEx3(set, attrs, defStyleAttr, defStyleRes,
+    return Context::ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes,
         styles);
 }
 
@@ -342,14 +342,14 @@ ECode Presentation::PresentationContextThemeWrapper::OpenOrCreateDatabase(
     return ContextThemeWrapper::OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::OpenOrCreateDatabaseEx(
+ECode Presentation::PresentationContextThemeWrapper::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return ContextThemeWrapper::OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return ContextThemeWrapper::OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::DeleteDatabase(
@@ -402,10 +402,10 @@ ECode Presentation::PresentationContextThemeWrapper::SetWallpaper(
     return ContextThemeWrapper::SetWallpaper(bitmap);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::SetWallpaperEx(
+ECode Presentation::PresentationContextThemeWrapper::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return ContextThemeWrapper::SetWallpaperEx(data);
+    return ContextThemeWrapper::SetWallpaper(data);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::ClearWallpaper()
@@ -426,19 +426,19 @@ ECode Presentation::PresentationContextThemeWrapper::StartActivityAsUser(
     return ContextThemeWrapper::StartActivityAsUser(intent, user);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::StartActivityEx(
+ECode Presentation::PresentationContextThemeWrapper::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return ContextThemeWrapper::StartActivityEx(intent, options);
+    return ContextThemeWrapper::StartActivity(intent, options);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::StartActivityAsUserEx(
+ECode Presentation::PresentationContextThemeWrapper::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* userId)
 {
-    return ContextThemeWrapper::StartActivityAsUserEx(intent, options, userId);
+    return ContextThemeWrapper::StartActivityAsUser(intent, options, userId);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::StartActivities(
@@ -447,11 +447,11 @@ ECode Presentation::PresentationContextThemeWrapper::StartActivities(
     return ContextThemeWrapper::StartActivities(intents);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::StartActivitiesEx(
+ECode Presentation::PresentationContextThemeWrapper::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
-    return ContextThemeWrapper::StartActivitiesEx(intents, options);
+    return ContextThemeWrapper::StartActivities(intents, options);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::StartActivitiesAsUser(
@@ -473,7 +473,7 @@ ECode Presentation::PresentationContextThemeWrapper::StartIntentSender(
         extraFlags);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::StartIntentSenderEx(
+ECode Presentation::PresentationContextThemeWrapper::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -481,7 +481,7 @@ ECode Presentation::PresentationContextThemeWrapper::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return ContextThemeWrapper::StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues,
+    return ContextThemeWrapper::StartIntentSender(intent, fillInIntent, flagsMask, flagsValues,
         extraFlags, options);
 }
 
@@ -491,11 +491,11 @@ ECode Presentation::PresentationContextThemeWrapper::SendBroadcast(
     return ContextThemeWrapper::SendBroadcast(intent);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::SendBroadcastEx(
+ECode Presentation::PresentationContextThemeWrapper::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return ContextThemeWrapper::SendBroadcastEx(intent, receiverPermission);
+    return ContextThemeWrapper::SendBroadcast(intent, receiverPermission);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::SendOrderedBroadcast(
@@ -505,7 +505,7 @@ ECode Presentation::PresentationContextThemeWrapper::SendOrderedBroadcast(
     return ContextThemeWrapper::SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::SendOrderedBroadcastEx(
+ECode Presentation::PresentationContextThemeWrapper::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -514,7 +514,7 @@ ECode Presentation::PresentationContextThemeWrapper::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return ContextThemeWrapper::SendOrderedBroadcastEx(intent, receiverPermission, resultReceiver,
+    return ContextThemeWrapper::SendOrderedBroadcast(intent, receiverPermission, resultReceiver,
         scheduler, initialCode, initialData, initialExtras);
 }
 
@@ -525,12 +525,12 @@ ECode Presentation::PresentationContextThemeWrapper::SendBroadcastAsUser(
     return ContextThemeWrapper::SendBroadcastAsUser(intent, user);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::SendBroadcastAsUserEx(
+ECode Presentation::PresentationContextThemeWrapper::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return ContextThemeWrapper::SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return ContextThemeWrapper::SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::SendOrderedBroadcastAsUser(
@@ -606,14 +606,14 @@ ECode Presentation::PresentationContextThemeWrapper::RegisterReceiver(
     return ContextThemeWrapper::RegisterReceiver(receiver, filter, stickyIntent);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::RegisterReceiverEx(
+ECode Presentation::PresentationContextThemeWrapper::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** stickyIntent)
 {
-    return ContextThemeWrapper::RegisterReceiverEx(receiver, filter, broadcastPermission, scheduler,
+    return ContextThemeWrapper::RegisterReceiver(receiver, filter, broadcastPermission, scheduler,
         stickyIntent);
 }
 
@@ -674,14 +674,14 @@ ECode Presentation::PresentationContextThemeWrapper::BindService(
     return ContextThemeWrapper::BindService(service, conn, flags, succeeded);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::BindServiceEx(
+ECode Presentation::PresentationContextThemeWrapper::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return ContextThemeWrapper::BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return ContextThemeWrapper::BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode Presentation::PresentationContextThemeWrapper::UnbindService(
@@ -793,7 +793,7 @@ ECode Presentation::PresentationContextThemeWrapper::CheckCallingOrSelfUriPermis
     return ContextThemeWrapper::CheckCallingOrSelfUriPermission(uri, modeFlags, permissionId);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::CheckUriPermissionEx(
+ECode Presentation::PresentationContextThemeWrapper::CheckUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -802,7 +802,7 @@ ECode Presentation::PresentationContextThemeWrapper::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32* permissionId)
 {
-    return ContextThemeWrapper::CheckUriPermissionEx(uri, readPermission, writePermission, pid, uid,
+    return ContextThemeWrapper::CheckUriPermission(uri, readPermission, writePermission, pid, uid,
         modeFlags, permissionId);
 }
 
@@ -832,7 +832,7 @@ ECode Presentation::PresentationContextThemeWrapper::EnforceCallingOrSelfUriPerm
     return ContextThemeWrapper::EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode Presentation::PresentationContextThemeWrapper::EnforceUriPermissionEx(
+ECode Presentation::PresentationContextThemeWrapper::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -841,7 +841,7 @@ ECode Presentation::PresentationContextThemeWrapper::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return ContextThemeWrapper::EnforceUriPermissionEx(uri, readPermission, writePermission, pid,
+    return ContextThemeWrapper::EnforceUriPermission(uri, readPermission, writePermission, pid,
         uid, modeFlags, message);
 }
 

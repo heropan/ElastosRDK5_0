@@ -13,8 +13,8 @@
 #include "provider/CSettingsSecure.h"
 #include "widget/CPopupWindow.h"
 #include "util/CDisplayMetrics.h"
-#include <elastos/Character.h>
-#include <elastos/Math.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -612,7 +612,7 @@ ECode KeyboardView::InitInternal(
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::KeyboardView),
             ARRAY_SIZE(R::styleable::KeyboardView));
-    context->ObtainStyledAttributesEx3(attrs, attrIds,
+    context->ObtainStyledAttributes(attrs, attrIds,
             defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<ILayoutInflater> inflate;
@@ -771,7 +771,7 @@ ECode KeyboardView::GetOnKeyboardActionListener(
 {
     assert(listener != NULL);
     *listener = mKeyboardActionListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
 
     return NOERROR;
 }
@@ -818,7 +818,7 @@ ECode KeyboardView::GetKeyboard(
 {
     assert(keyboard != NULL);
     *keyboard = mKeyboard;
-    INTERFACE_ADDREF(*keyboard);
+    REFCOUNT_ADD(*keyboard);
 
     return NOERROR;
 }
@@ -1029,7 +1029,7 @@ void KeyboardView::OnBufferDraw()
             AutoPtr<IBitmapFactory> bmFactory;
             CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
             mBuffer = NULL;
-            bmFactory->CreateBitmapEx3(width, height,
+            bmFactory->CreateBitmap(width, height,
                 BitmapConfig_ARGB_8888, (IBitmap**)&mBuffer);
 
             mCanvas = NULL;
@@ -1064,7 +1064,7 @@ void KeyboardView::OnBufferDraw()
             drawSingleKey = TRUE;
         }
     }
-    mCanvas->DrawColorEx(0x00000000, PorterDuffMode_CLEAR);
+    mCanvas->DrawColor(0x00000000, PorterDuffMode_CLEAR);
     CRect* padding = (CRect*)mPadding.Get();
     const Int32 keyCount = mKeys->GetLength();
     for (Int32 i = 0; i < keyCount; i++) {
@@ -1116,7 +1116,7 @@ void KeyboardView::OnBufferDraw()
             Float textSize = 0.0, tmpDescent = 0.0;
             mPaint->GetTextSize(&textSize);
             mPaint->Descent(&tmpDescent);
-            mCanvas->DrawTextEx(label,
+            mCanvas->DrawText(label,
                 (keyW - padding->mLeft - padding->mRight) / 2 + padding->mLeft,
                 (keyH - padding->mTop - padding->mBottom) / 2 + (textSize - tmpDescent) / 2 + padding->mTop,
                 mPaint);
@@ -1146,7 +1146,7 @@ void KeyboardView::OnBufferDraw()
     // Overlay a dark rectangle to dim the keyboard
     if (mMiniKeyboardOnScreen) {
         mPaint->SetColor((Int32)(mBackgroundDimAmount * 0xFF) << 24);
-        mCanvas->DrawRectEx2(0, 0, GetWidth(), GetHeight(), mPaint);
+        mCanvas->DrawRect(0, 0, GetWidth(), GetHeight(), mPaint);
     }
 
     if (DEBUG && mShowTouchPoints) {
@@ -1348,7 +1348,7 @@ void KeyboardView::ShowPreview(
             }
             else {
                 AutoPtr<IMessage> msg;
-                mHandler->ObtainMessageEx2(MSG_REMOVE_PREVIEW, keyIndex, 0, (IMessage**)&msg);
+                mHandler->ObtainMessage(MSG_REMOVE_PREVIEW, keyIndex, 0, (IMessage**)&msg);
                 Boolean result;
                 mHandler->SendMessageDelayed(msg, DELAY_BEFORE_PREVIEW, &result);
             }
@@ -1382,11 +1382,11 @@ void KeyboardView::ShowKey(
         AutoPtr< ArrayOf<Int32> > codes;
         key->GetCodes((ArrayOf<Int32>**)&codes);
         if (len > 1 && codes->GetLength() < 2) {
-            mPreviewText->SetTextSizeEx(ITypedValue::COMPLEX_UNIT_PX, mKeyTextSize);
+            mPreviewText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mKeyTextSize);
             mPreviewText->SetTypeface(Typeface::DEFAULT_BOLD);
         }
         else {
-            mPreviewText->SetTextSizeEx(ITypedValue::COMPLEX_UNIT_PX, mPreviewTextSizeLarge);
+            mPreviewText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mPreviewTextSizeLarge);
             mPreviewText->SetTypeface(Typeface::DEFAULT);
         }
     }
@@ -1472,7 +1472,7 @@ void KeyboardView::ShowKey(
 
     Boolean showing = FALSE;
     if (mPreviewPopup->IsShowing(&showing), showing) {
-        mPreviewPopup->UpdateEx2(mPopupPreviewX, mPopupPreviewY,
+        mPreviewPopup->Update(mPopupPreviewX, mPopupPreviewY,
                 popupWidth, popupHeight);
     }
     else {
@@ -1877,7 +1877,7 @@ Boolean KeyboardView::OnModifiedTouchEvent(
             }
             if (mCurrentKey != NOT_A_KEY) {
                 AutoPtr<IMessage> msg;
-                mHandler->ObtainMessageEx(MSG_LONGPRESS, me, (IMessage**)&msg);
+                mHandler->ObtainMessage(MSG_LONGPRESS, me, (IMessage**)&msg);
                 Boolean result;
                 mHandler->SendMessageDelayed(msg, LONGPRESS_TIMEOUT, &result);
             }
@@ -1914,7 +1914,7 @@ Boolean KeyboardView::OnModifiedTouchEvent(
                 // Start new longpress if key has changed
                 if (keyIndex != NOT_A_KEY) {
                     AutoPtr<IMessage> msg;
-                    mHandler->ObtainMessageEx(MSG_LONGPRESS, me, (IMessage**)&msg);
+                    mHandler->ObtainMessage(MSG_LONGPRESS, me, (IMessage**)&msg);
                     Boolean result;
                     mHandler->SendMessageDelayed(msg, LONGPRESS_TIMEOUT, &result);
                 }

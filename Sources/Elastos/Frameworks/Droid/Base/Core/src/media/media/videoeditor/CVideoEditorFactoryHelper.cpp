@@ -44,7 +44,7 @@ ECode CVideoEditorFactoryHelper::Create(
     AutoPtr<IVideoEditor> videoEditor;
     CVideoEditorImpl::New(projectPath, (IVideoEditor**)&videoEditor);
     *result = videoEditor;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -59,7 +59,7 @@ ECode CVideoEditorFactoryHelper::Load(
         videoEditor->GeneratePreview(NULL);
     }
     *result = videoEditor;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -4,7 +4,7 @@ module
     namespace Droid {
     namespace Os {
 
-    interface IHandlerThread extends Elastos.Core.Threading.IThread {
+    interface IHandlerThread extends Elastos.Core.IThread {
         GetLooper(
             [out] ILooper** looper);
 

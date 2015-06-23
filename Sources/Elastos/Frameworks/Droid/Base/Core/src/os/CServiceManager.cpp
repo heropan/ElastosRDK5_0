@@ -4,7 +4,7 @@
 #include <binder/Binder.h>
 #include <utils/Log.h>
 #include "os/CServiceManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <os/Process.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -61,10 +61,10 @@ ECode CServiceManager::AddService(
     /* [in] */ const String& name,
     /* [in] */ IInterface * service)
 {
-    return AddServiceEx(name, service, FALSE);
+    return AddService(name, service, FALSE);
 }
 
-ECode CServiceManager::AddServiceEx(
+ECode CServiceManager::AddService(
     /* [in] */ const String& name,
     /* [in] */ IInterface * service,
     /* [in] */ Boolean allowIsolated)
@@ -112,7 +112,7 @@ ECode CServiceManager::GetService(
             mServiceCache.Find(name);
     if (it != mServiceCache.End()) {
         *service = it->mSecond;
-        INTERFACE_ADDREF(*service);
+        REFCOUNT_ADD(*service);
         return NOERROR;
     }
 

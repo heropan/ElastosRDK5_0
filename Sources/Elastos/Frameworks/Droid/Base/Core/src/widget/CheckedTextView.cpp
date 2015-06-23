@@ -86,7 +86,7 @@ ECode CheckedTextView::Init(
             const_cast<Int32 *>(R::styleable::CheckedTextView),
             ARRAY_SIZE(R::styleable::CheckedTextView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<IDrawable> d;

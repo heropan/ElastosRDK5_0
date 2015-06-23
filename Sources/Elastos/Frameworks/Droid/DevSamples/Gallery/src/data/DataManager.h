@@ -3,15 +3,14 @@
 #define __DATAMANAGER_H__
 
 #include "app/Activity.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "MediaSource.h"
 #include "MediaObject.h"
 #include "MediaSet.h"
 #include "Path.h"
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Gallery {
 

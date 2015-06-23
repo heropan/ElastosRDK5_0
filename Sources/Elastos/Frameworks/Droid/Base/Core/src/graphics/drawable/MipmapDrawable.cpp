@@ -201,7 +201,7 @@ ECode MipmapDrawable::MipmapContainerState::NewDrawable(
     return CMipmapDrawable::New(this, NULL, drawable);
 }
 
-ECode MipmapDrawable::MipmapContainerState::NewDrawableEx(
+ECode MipmapDrawable::MipmapContainerState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {

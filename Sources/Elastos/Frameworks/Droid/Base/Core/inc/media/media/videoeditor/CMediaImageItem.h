@@ -5,7 +5,7 @@
 #include "_CMediaImageItem.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/MediaItem.h"
-#include "media/media/videoeditor/MediaItemMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -151,7 +151,7 @@ public:
         /* [in] */ Int64 startTimeMs,
         /* [in] */ Int64 durationMs);
 
-    CARAPI InvalidateTransitionsEx(
+    CARAPI InvalidateTransitions(
         /* [in] */ Int64 oldStartTimeMs,
         /* [in] */ Int64 oldDurationMs,
         /* [in] */ Int64 newStartTimeMs,

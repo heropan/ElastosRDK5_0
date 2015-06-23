@@ -4,7 +4,7 @@
 
 #include "widget/BaseExpandableListAdapter.h"
 #include "database/ContentObserver.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 /**
  * An adapter that exposes data from a series of {@link Cursor}s to an
  * {@link ExpandableListView} widget. The top-level {@link Cursor} (that is
@@ -14,7 +14,7 @@
  * will not work.
  */
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Database::ICursor;

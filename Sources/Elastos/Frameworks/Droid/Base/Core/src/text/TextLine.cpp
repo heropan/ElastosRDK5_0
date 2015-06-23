@@ -1,12 +1,12 @@
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "text/TextLine.h"
 #include "text/TextUtils.h"
 #include "text/Layout.h"
 #include "graphics/CRectF.h"
 #include "util/ArrayUtils.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Droid::Graphics::IRectF;
@@ -230,7 +230,7 @@ void TextLine::Draw(
                     assert(emojiRect != NULL);
                     emojiRect->Set(x + h, y + bmAscent,
                             x + h + width, y);
-                    c->DrawBitmapEx(bm, NULL, emojiRect, mPaint);
+                    c->DrawBitmap(bm, NULL, emojiRect, mPaint);
                     h += width;
                     j++;
                 }
@@ -685,7 +685,7 @@ Int32 TextLine::GetOffsetBeforeAfter(
                 flags, offset, cursorOpt, &temp);
         return temp;
     } else {
-        wp->GetTextRunCursorEx(mText, mStart + spanStart,
+        wp->GetTextRunCursor(mText, mStart + spanStart,
                 mStart + spanLimit, flags, mStart + offset, cursorOpt, &temp);
         return temp - mStart;
     }
@@ -759,7 +759,7 @@ Float TextLine::HandleText(
                     contextStart, contextLen, flags, NULL, 0, &ret);
         } else {
             Int32 delta = mStart;
-            wp->GetTextRunAdvancesEx2(mText, delta + start,
+            wp->GetTextRunAdvances(mText, delta + start,
                     delta + end, delta + contextStart, delta + contextEnd,
                     flags, NULL, 0, &ret);
         }
@@ -778,7 +778,7 @@ Float TextLine::HandleText(
 
             wp->SetColor(bgColor);
             wp->SetStyle(PaintStyle_FILL);
-            c->DrawRectEx2(x, top, x + ret, bottom, wp);
+            c->DrawRect(x, top, x + ret, bottom, wp);
 
             wp->SetStyle(previousStyle);
             wp->SetColor(previousColor);
@@ -809,7 +809,7 @@ Float TextLine::HandleText(
             wp->GetUnderlineColor(&underlineColor);
             wp->SetColor(underlineColor);
             wp->GetUnderlineThickness(&underlineThickness);
-            c->DrawRectEx2(x, underlineTop, x + ret, underlineTop + underlineThickness, wp);
+            c->DrawRect(x, underlineTop, x + ret, underlineTop + underlineThickness, wp);
 
             wp->SetStyle(previousStyle);
             wp->SetColor(previousColor);
@@ -996,7 +996,7 @@ void TextLine::DrawTextRun(
                 x, y, flags, wp);
     } else {
         Int32 delta = mStart;
-        c->DrawTextRunEx(mText, delta + start, delta + end,
+        c->DrawTextRun(mText, delta + start, delta + end,
                 delta + contextStart, delta + contextEnd, x, y, flags, wp);
     }
 }

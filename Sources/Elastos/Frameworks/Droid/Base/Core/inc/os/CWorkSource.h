@@ -39,7 +39,7 @@ public:
      */
     CARAPI Clear();
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IWorkSource* o,
         /* [out] */ Boolean* equal);
 
@@ -68,7 +68,7 @@ public:
         /* [in] */ IWorkSource* other);
 
     /** @hide */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ Int32 uid);
 
     /** @hide */
@@ -92,12 +92,12 @@ public:
         /* [out] */ IWorkSource** result);
 
     /** @hide */
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 uid,
         /* [out] */ Boolean* added);
 
     /** @hide */
-    CARAPI AddReturningNewbsEx(
+    CARAPI AddReturningNewbs(
         /* [in] */ Int32 uid,
         /* [out] */ IWorkSource** result);
 

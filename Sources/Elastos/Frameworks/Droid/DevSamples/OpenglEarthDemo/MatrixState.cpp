@@ -1,5 +1,5 @@
 #include "MatrixState.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::IByteBufferHelper;
@@ -57,7 +57,7 @@ ECode MatrixState::Transtate(
         /* [in] */ Float y,
         /* [in] */ Float z)
 {
-    return sMatrix->TranslateMEx(sCurrMatrix, 0, x, y, z);
+    return sMatrix->TranslateM(sCurrMatrix, 0, x, y, z);
 }
 
 ECode MatrixState::Rotate(
@@ -66,7 +66,7 @@ ECode MatrixState::Rotate(
         /* [in] */ Float y,
         /* [in] */ Float z)
 {
-    return sMatrix->RotateMEx(sCurrMatrix, 0, angle, x, y, z);
+    return sMatrix->RotateM(sCurrMatrix, 0, angle, x, y, z);
 }
 
 ECode MatrixState::SetCamera(

@@ -1,9 +1,9 @@
 
 #include "os/BatteryStats.h"
 #include "util/TimeUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IFloat;

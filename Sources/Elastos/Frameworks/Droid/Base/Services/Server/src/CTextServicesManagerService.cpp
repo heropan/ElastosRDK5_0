@@ -6,10 +6,9 @@
 #include "os/Binder.h"
 #include "os/UserHandle.h"
 #include "Manifest.h"
-#include <elastos/Algorithm.h>
-#include <elastos/Mutex.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Libcore::ICU::ILocale;
@@ -1029,7 +1028,7 @@ ECode CTextServicesManagerService::BindCurrentSpellCheckerService(
         return NOERROR;
     }
     mSettings->GetCurrentUserId(&currentUserId);
-    return mContext->BindServiceEx(service, conn, flags, currentUserId, result);
+    return mContext->BindService(service, conn, flags, currentUserId, result);
 }
 
 ECode CTextServicesManagerService::UnbindServiceLocked()

@@ -4,7 +4,7 @@
 
 #include "app/Activity.h"
 #include "CGeckoSurfaceView.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <elautoptr.h>
 
 using namespace Elastos;

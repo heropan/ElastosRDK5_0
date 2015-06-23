@@ -3,9 +3,9 @@
 #include "ext/frameworkext.h"
 #include "util/CDisplayMetrics.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -121,7 +121,7 @@ ECode Display::GetCompatibilityInfo(
 {
     VALIDATE_NOT_NULL(compatibilityInfo);
     *compatibilityInfo =  mCompatibilityInfo;
-    INTERFACE_ADDREF(*compatibilityInfo);
+    REFCOUNT_ADD(*compatibilityInfo);
 
     return NOERROR;
 }

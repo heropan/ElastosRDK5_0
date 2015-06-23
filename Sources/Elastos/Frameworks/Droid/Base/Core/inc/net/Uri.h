@@ -3,11 +3,11 @@
 #define __ELASTOS_DROID_NET_URI_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IFile;
 
 namespace Elastos {

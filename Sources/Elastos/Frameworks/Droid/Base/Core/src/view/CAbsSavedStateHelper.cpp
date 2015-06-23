@@ -11,7 +11,7 @@ ECode CAbsSavedStateHelper::GetEmptyState(
 {
     VALIDATE_NOT_NULL(emptyState)
     *emptyState = AbsSavedState::EMPTY_STATE;
-    INTERFACE_ADDREF(*emptyState)
+    REFCOUNT_ADD(*emptyState)
     return NOERROR;
 }
 

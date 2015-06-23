@@ -2,8 +2,8 @@
 #include "CWifiP2pUpnpServiceInfo.h"
 #include <ext/frameworkext.h>
 #include "CWifiP2pServiceInfo.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::IUUID;
 using Elastos::Utility::IUUIDHelper;
@@ -112,7 +112,7 @@ ECode CWifiP2pUpnpServiceInfo::NewInstance(
     AutoPtr<CWifiP2pUpnpServiceInfo> wpusi;
     CWifiP2pUpnpServiceInfo::NewByFriend(info, (CWifiP2pUpnpServiceInfo**)&wpusi);
     *instance = (CWifiP2pUpnpServiceInfo*)wpusi.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

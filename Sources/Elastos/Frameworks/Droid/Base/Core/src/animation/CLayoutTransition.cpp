@@ -6,7 +6,7 @@
 #include "animation/CObjectAnimator.h"
 #include "view/animation/CAccelerateDecelerateInterpolator.h"
 #include "view/animation/CDecelerateInterpolator.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
@@ -55,7 +55,7 @@ ECode CLayoutTransition::_AnimatorListenerAdapter::OnAnimationEnd(
     return NOERROR;
 }
 
-CLayoutTransition::_AnimatorListenerAdapterEx::_AnimatorListenerAdapterEx(
+CLayoutTransition::_AnimatorListenerAdapterEx::_AnimatorListenerAdapter(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child,
     /* [in] */ IViewGroup* parent,
@@ -118,7 +118,7 @@ ECode CLayoutTransition::_AnimatorListenerAdapterEx::OnAnimationEnd(
     return NOERROR;
 }
 
-CLayoutTransition::_AnimatorListenerAdapterEx2::_AnimatorListenerAdapterEx2(
+CLayoutTransition::_AnimatorListenerAdapterEx2::_AnimatorListenerAdapter(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child,
     /* [in] */ IViewGroup* parent)
@@ -144,7 +144,7 @@ ECode CLayoutTransition::_AnimatorListenerAdapterEx2::OnAnimationEnd(
     return NOERROR;
 }
 
-CLayoutTransition::_AnimatorListenerAdapterEx3::_AnimatorListenerAdapterEx3(
+CLayoutTransition::_AnimatorListenerAdapterEx3::_AnimatorListenerAdapter(
     /* [in] */ CLayoutTransition* host,
     /* [in] */ IView* child,
     /* [in] */ IViewGroup* parent,
@@ -506,7 +506,7 @@ ECode CLayoutTransition::GetStartDelay(
     return NOERROR;
 }
 
-ECode CLayoutTransition::SetDurationEx(
+ECode CLayoutTransition::SetDuration(
     /* [in] */ Int32 transitionType,
     /* [in] */ Int64 duration)
 {
@@ -659,7 +659,7 @@ ECode CLayoutTransition::GetInterpolator(
         }
     }
 
-    INTERFACE_ADDREF(*polator);
+    REFCOUNT_ADD(*polator);
     return NOERROR;
 }
 
@@ -717,7 +717,7 @@ ECode CLayoutTransition::GetAnimator(
         }
     }
 
-    INTERFACE_ADDREF(*mator);
+    REFCOUNT_ADD(*mator);
 
     return NOERROR;
 }
@@ -887,7 +887,7 @@ void CLayoutTransition::SetupChangeAnimation(
      AutoPtr<IViewOnLayoutChangeListener> listener = new ViewOnLayoutChangeListener(this, changeReason, duration, child, parent);
 
     // Remove the animation from the cache when it ends
-    adapter = new _AnimatorListenerAdapterEx(this, child, parent, changeReason, listener);
+    adapter = new _AnimatorListenerAdapter(this, child, parent, changeReason, listener);
     anim->AddListener(adapter);
 
     child->AddOnLayoutChangeListener(listener);
@@ -995,7 +995,7 @@ ECode CLayoutTransition::Cancel()
     return NOERROR;
 }
 
-ECode CLayoutTransition::CancelEx(
+ECode CLayoutTransition::Cancel(
     /* [in] */ Int32 transitionType)
 {
     switch (transitionType) {
@@ -1086,7 +1086,7 @@ void CLayoutTransition::RunAppearingTransition(
     }
 
     AutoPtr<IAnimatorListener> adapter =
-            new _AnimatorListenerAdapterEx2(this, child, parent);
+            new _AnimatorListenerAdapter(this, child, parent);
     anim->AddListener(adapter);
     mCurrentAppearingAnimations[child] = anim;
     anim->Start();
@@ -1122,7 +1122,7 @@ void CLayoutTransition::RunDisappearingTransition(
     Float preAnimAlpha = 0.0;
     child->GetAlpha(&preAnimAlpha);
     AutoPtr<IAnimatorListener> adapter =
-            new _AnimatorListenerAdapterEx3(this, child, parent, preAnimAlpha);
+            new _AnimatorListenerAdapter(this, child, parent, preAnimAlpha);
     anim->AddListener(adapter);
 
     if (IObjectAnimator::Probe(anim) != NULL) {
@@ -1146,13 +1146,13 @@ void CLayoutTransition::AddChild(
 
     if ((mTransitionTypes & FLAG_APPEARING) == FLAG_APPEARING) {
         // Want disappearing animations to finish up before proceeding
-        CancelEx(ILayoutTransition::DISAPPEARING);
+        Cancel(ILayoutTransition::DISAPPEARING);
     }
 
     if (changesLayout && (mTransitionTypes & FLAG_CHANGE_APPEARING) == FLAG_CHANGE_APPEARING) {
         // Also, cancel changing animations so that we start fresh ones from current locations
-        CancelEx(ILayoutTransition::CHANGE_APPEARING);
-        CancelEx(ILayoutTransition::CHANGING);
+        Cancel(ILayoutTransition::CHANGE_APPEARING);
+        Cancel(ILayoutTransition::CHANGING);
     }
 
     if (HasListeners() && (mTransitionTypes & FLAG_APPEARING) == FLAG_APPEARING) {
@@ -1218,7 +1218,7 @@ ECode CLayoutTransition::ShowChild(
     return NOERROR;
 }
 
-ECode CLayoutTransition::ShowChildEx(
+ECode CLayoutTransition::ShowChild(
     /* [in] */ IViewGroup* parent,
     /* [in] */ IView* child,
     /* [in] */ Int32 oldVisibility)
@@ -1240,14 +1240,14 @@ void CLayoutTransition::RemoveChild(
 
     if ((mTransitionTypes & FLAG_DISAPPEARING) == FLAG_DISAPPEARING) {
         // Want appearing animations to finish up before proceeding
-        CancelEx(ILayoutTransition::APPEARING);
+        Cancel(ILayoutTransition::APPEARING);
     }
 
     if (changesLayout &&
             (mTransitionTypes & FLAG_CHANGE_DISAPPEARING) == FLAG_CHANGE_DISAPPEARING) {
         // Also, cancel changing animations so that we start fresh ones from current locations
-        CancelEx(ILayoutTransition::CHANGE_DISAPPEARING);
-        CancelEx(ILayoutTransition::CHANGING);
+        Cancel(ILayoutTransition::CHANGE_DISAPPEARING);
+        Cancel(ILayoutTransition::CHANGING);
     }
 
     if (HasListeners() && (mTransitionTypes & FLAG_DISAPPEARING) == FLAG_DISAPPEARING) {
@@ -1287,7 +1287,7 @@ ECode CLayoutTransition::HideChild(
     return NOERROR;
 }
 
-ECode CLayoutTransition::HideChildEx(
+ECode CLayoutTransition::HideChild(
     /* [in] */ IViewGroup* parent,
     /* [in] */ IView* child,
     /* [in] */ Int32 newVisibility)
@@ -1325,7 +1325,7 @@ ECode CLayoutTransition::GetTransitionListeners(
     VALIDATE_NOT_NULL(listeners);
 
     *listeners = ArrayOf<ITransitionListener*>::Alloc(mListeners.GetSize());
-    INTERFACE_ADDREF(*listeners);
+    REFCOUNT_ADD(*listeners);
     List<AutoPtr<ITransitionListener> >::Iterator item = mListeners.Begin();
     for (Int32 i = 0; item != mListeners.End(); ++item, ++i) {
         (*listeners)->Set(i, *item);

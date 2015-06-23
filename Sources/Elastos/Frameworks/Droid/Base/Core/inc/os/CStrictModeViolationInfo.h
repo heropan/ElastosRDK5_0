@@ -4,10 +4,9 @@
 
 #include "_CStrictModeViolationInfo.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Object.h>
-#include <elastos/Mutex.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::App::IApplicationErrorReportCrashInfo;
 using Elastos::Droid::Utility::IPrinter;
 

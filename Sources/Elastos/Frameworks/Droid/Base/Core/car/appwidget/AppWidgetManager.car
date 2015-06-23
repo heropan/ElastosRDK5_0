@@ -353,7 +353,7 @@ module
              * @param appWidgetIds     The AppWidget instances for which to set the RemoteViews.
              * @param views         The RemoteViews object to show.
              */
-            UpdateAppWidgetEx(
+            UpdateAppWidget(
                 [in] Int32 appWidgetId,
                 [in] IRemoteViews* views);
 
@@ -409,7 +409,7 @@ module
              * @param appWidgetId      The AppWidget instance for which to set the RemoteViews.
              * @param views            The RemoteViews object containing the incremental update / command.
              */
-            PartiallyUpdateAppWidgetEx(
+            PartiallyUpdateAppWidget(
                 [in] Int32 appWidgetId,
                 [in] IRemoteViews* views);
 
@@ -432,7 +432,7 @@ module
              * @param appWidgetId      The AppWidget instance for which to set the RemoteViews.
              * @param views         The RemoteViews object to show.
              */
-            UpdateAppWidgetEx2(
+            UpdateAppWidget(
                 [in] IComponentName* provider,
                 [in] IRemoteViews* views);
 
@@ -454,7 +454,7 @@ module
              * @param appWidgetId  The AppWidget instance for which to notify of view data changes.
              * @param viewId        The collection view id.
              */
-            NotifyAppWidgetViewDataChangedEx(
+            NotifyAppWidgetViewDataChanged(
                 [in] Int32 appWidgetId,
                 [in] Int32 viewId);
 
@@ -505,7 +505,7 @@ module
              *
              * @hide
              */
-            BindAppWidgetIdEx(
+            BindAppWidgetId(
                 [in] Int32 appWidgetId,
                 [in] IComponentName* provider,
                 [in] IBundle* options);
@@ -544,7 +544,7 @@ module
              *
              * @return true if this component has permission to bind the AppWidget
              */
-            BindAppWidgetIdIfAllowedEx(
+            BindAppWidgetIdIfAllowed(
                 [in] Int32 appWidgetId,
                 [in] IComponentName* provider,
                 [in] IBundle* options,

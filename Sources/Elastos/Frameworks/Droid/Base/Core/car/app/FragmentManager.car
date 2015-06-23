@@ -122,7 +122,7 @@ module
          * the named state itself is popped. If null, only the top state is popped.
          * @param flags Either 0 or {@link #POP_BACK_STACK_INCLUSIVE}.
          */
-        PopBackStackEx(
+        PopBackStack(
             [in] String name,
             [in] Int32 flags);
 
@@ -132,7 +132,7 @@ module
          * afterwards.
          * @return Returns true if there was something popped, else false.
          */
-        PopBackStackImmediateEx(
+        PopBackStackImmediate(
             [in] String name,
             [in] Int32 flags,
             [out] Boolean* hasPopped);
@@ -151,7 +151,7 @@ module
          * the named state itself is popped.
          * @param flags Either 0 or {@link #POP_BACK_STACK_INCLUSIVE}.
          */
-        PopBackStackEx2(
+        PopBackStack(
             [in] Int32 id,
             [in] Int32 flags);
 
@@ -161,7 +161,7 @@ module
          * afterwards.
          * @return Returns true if there was something popped, else false.
          */
-        PopBackStackImmediateEx2(
+        PopBackStackImmediate(
             [in] Int32 id,
             [in] Int32 flags,
             [out] Boolean* hasPopped);
@@ -393,14 +393,14 @@ module
             [in] Int32 transitionStyle,
             [in] Boolean keepActive);
 
-        MoveToStateEx(
+        MoveToState(
             [in] IFragment* f);
 
-        MoveToStateEx2(
+        MoveToState(
             [in] Int32 newState,
             [in] Boolean always);
 
-        MoveToStateEx3(
+        MoveToState(
             [in] Int32 newState,
             [in] Int32 transit,
             [in] Int32 transitStyle,

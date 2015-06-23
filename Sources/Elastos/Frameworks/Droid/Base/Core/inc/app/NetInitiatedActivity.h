@@ -5,7 +5,7 @@
 #include "ext/frameworkdef.h"
 #include "app/AlertActivity.h"
 #include "os/HandlerBase.h"
-#include "content/ContextMacro.h"
+
 #include "content/BroadcastReceiver.h"
 
 using Elastos::Droid::Os::HandlerBase;

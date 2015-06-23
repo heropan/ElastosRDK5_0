@@ -6,7 +6,7 @@
 #include "os/SystemClock.h"
 // #include "util/CTypedValue.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;
@@ -37,7 +37,7 @@ AnimatedRotateDrawable::AnimatedRotateState::AnimatedRotateState(
         AutoPtr<IDrawableConstantState> state;
         source->mDrawable->GetConstantState((IDrawableConstantState**)&state);
         if (res != NULL) {
-            state->NewDrawableEx(res, (IDrawable**)&mDrawable);
+            state->NewDrawable(res, (IDrawable**)&mDrawable);
         }
         else {
             state->NewDrawable((IDrawable**)&mDrawable);
@@ -61,7 +61,7 @@ ECode AnimatedRotateDrawable::AnimatedRotateState::NewDrawable(
         this, NULL, (IAnimatedRotateDrawable**)drawable);
 }
 
-ECode AnimatedRotateDrawable::AnimatedRotateState::NewDrawableEx(
+ECode AnimatedRotateDrawable::AnimatedRotateState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -133,7 +133,7 @@ ECode AnimatedRotateDrawable::Draw(
     Float px = st->mPivotXRel ? (w * st->mPivotX) : st->mPivotX;
     Float py = st->mPivotYRel ? (h * st->mPivotY) : st->mPivotY;
 
-    canvas->RotateEx(mCurrentDegrees, px + bounds->mLeft, py + bounds->mTop);
+    canvas->Rotate(mCurrentDegrees, px + bounds->mLeft, py + bounds->mTop);
 
     drawable->Draw(canvas);
 

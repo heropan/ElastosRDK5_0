@@ -1,7 +1,7 @@
 #ifndef __HH_DROID_NIO_UTILS_H
 #define __HH_DROID_NIO_UTILS_H
 
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IBuffer;
 

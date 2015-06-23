@@ -15,7 +15,7 @@ module
         /**
          * Jump directly to a specific item in the adapter data.
          */
-        SetSelectionEx(
+        SetSelection(
             [in] Int32 position,
             [in] Boolean animate);
 

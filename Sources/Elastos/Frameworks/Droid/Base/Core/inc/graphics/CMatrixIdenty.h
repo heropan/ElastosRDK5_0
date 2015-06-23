@@ -32,21 +32,21 @@ public:
         /* [in] */ Float sy,
         /* [in] */ Float px,
         /* [in] */ Float py);
-    virtual CARAPI SetScaleEx(
+    virtual CARAPI SetScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy);
     virtual CARAPI SetRotate(
         /* [in] */ Float degrees,
         /* [in] */ Float px,
         /* [in] */ Float py);
-    virtual CARAPI SetRotateEx(
+    virtual CARAPI SetRotate(
         /* [in] */ Float degrees);
     virtual CARAPI SetSinCos(
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue,
         /* [in] */ Float px,
         /* [in] */ Float py);
-    virtual CARAPI SetSinCosEx(
+    virtual CARAPI SetSinCos(
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue);
     virtual CARAPI SetSkew(
@@ -54,7 +54,7 @@ public:
         /* [in] */ Float ky,
         /* [in] */ Float px,
         /* [in] */ Float py);
-    virtual CARAPI SetSkewEx(
+    virtual CARAPI SetSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky);
     virtual CARAPI SetConcat(
@@ -71,7 +71,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py,
         /* [out] */ Boolean* result);
-    virtual CARAPI PreScaleEx(
+    virtual CARAPI PreScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result);
@@ -80,7 +80,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py,
         /* [out] */ Boolean* result);
-    virtual CARAPI PreRotateEx(
+    virtual CARAPI PreRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result);
     virtual CARAPI PreSkew(
@@ -89,7 +89,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py,
         /* [out] */ Boolean* result);
-    virtual CARAPI PreSkewEx(
+    virtual CARAPI PreSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result);
@@ -106,7 +106,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py,
         /* [out] */ Boolean* result);
-    virtual CARAPI PostScaleEx(
+    virtual CARAPI PostScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result);
@@ -115,7 +115,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py,
         /* [out] */ Boolean* result);
-    virtual CARAPI PostRotateEx(
+    virtual CARAPI PostRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result);
     virtual CARAPI PostSkew(
@@ -124,7 +124,7 @@ public:
         /* [in] */ Float px,
         /* [in] */ Float py,
         /* [out] */ Boolean* result);
-    virtual CARAPI PostSkewEx(
+    virtual CARAPI PostSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result);

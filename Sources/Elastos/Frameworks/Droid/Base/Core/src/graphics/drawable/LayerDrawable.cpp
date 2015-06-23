@@ -43,7 +43,7 @@ LayerDrawable::LayerState::LayerState(
             AutoPtr<IDrawableConstantState> state;
             r2->mDrawable->GetConstantState((IDrawableConstantState**)&state);
             if (res != NULL) {
-                state->NewDrawableEx(res, (IDrawable**)(&(r->mDrawable)));
+                state->NewDrawable(res, (IDrawable**)(&(r->mDrawable)));
             }
             else {
                 state->NewDrawable((IDrawable**)(&(r->mDrawable)));
@@ -78,7 +78,7 @@ ECode LayerDrawable::LayerState::NewDrawable(
     return CLayerDrawable::New(this, NULL, (ILayerDrawable**)drawable);
 }
 
-ECode LayerDrawable::LayerState::NewDrawableEx(
+ECode LayerDrawable::LayerState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -384,7 +384,7 @@ Boolean LayerDrawable::SetDrawableByLayerId(
                 if (drawable != NULL) {
                     AutoPtr<IRect> bounds;
                     (*layers)[i]->mDrawable->GetBounds((IRect**)&bounds);
-                    drawable->SetBoundsEx(bounds);
+                    drawable->SetBounds(bounds);
                 }
                 (*layers)[i]->mDrawable->SetCallback(NULL);
             }

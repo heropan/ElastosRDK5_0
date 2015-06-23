@@ -12,7 +12,7 @@
 #include "view/inputmethod/CInputMethodManagerInputMethodCallback.h"
 #include "view/inputmethod/CIInputMethodClient.h"
 #include "view/inputmethod/CControlledInputConnectionWrapper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::CObjectMap;
@@ -170,7 +170,7 @@ ECode CInputMethodManager::GetClient(
 {
     VALIDATE_NOT_NULL(client);
     *client = mClient;
-    INTERFACE_ADDREF(*client);
+    REFCOUNT_ADD(*client);
     return NOERROR;
 }
 
@@ -179,7 +179,7 @@ ECode CInputMethodManager::GetInputContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mIInputContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -306,7 +306,7 @@ ECode CInputMethodManager::IsActive(
     return NOERROR;
 }
 
-ECode CInputMethodManager::IsActiveEx(
+ECode CInputMethodManager::IsActive(
     /* [out] */ Boolean* active)
 {
     VALIDATE_NOT_NULL(active);
@@ -453,10 +453,10 @@ ECode CInputMethodManager::ShowSoftInput(
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* show)
 {
-    return ShowSoftInputEx(view, flags, NULL, show);
+    return ShowSoftInput(view, flags, NULL, show);
 }
 
-ECode CInputMethodManager::ShowSoftInputEx(
+ECode CInputMethodManager::ShowSoftInput(
     /* [in] */ IView* view,
     /* [in] */ Int32 flags,
     /* [in] */ IResultReceiver* resultReceiver,
@@ -497,10 +497,10 @@ ECode CInputMethodManager::HideSoftInputFromWindow(
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* hide)
 {
-    return HideSoftInputFromWindowEx(windowToken, flags, NULL, hide);
+    return HideSoftInputFromWindow(windowToken, flags, NULL, hide);
 }
 
-ECode CInputMethodManager::HideSoftInputFromWindowEx(
+ECode CInputMethodManager::HideSoftInputFromWindow(
     /* [in] */ IBinder* windowToken,
     /* [in] */ Int32 flags,
     /* [in] */ IResultReceiver* resultReceiver,
@@ -1044,7 +1044,7 @@ ECode CInputMethodManager::UpdateCursor(
             // try {
                 // if (DEBUG) Log.v(TAG, "CURSOR CHANGE: " + mCurMethod);
             mCurMethod->UpdateCursor(mTmpCursorRect);
-            mCursorRect->SetEx(mTmpCursorRect);
+            mCursorRect->Set(mTmpCursorRect);
             // } catch (RemoteException e) {
             //     Log.w(TAG, "IME died: " + mCurId, e);
             // }
@@ -1235,7 +1235,7 @@ void CInputMethodManager::FinishedEvent(
         if (p == NULL) {
             return; // spurious, event already finished or timed out
         }
-        mH->RemoveMessagesEx(MSG_EVENT_TIMEOUT, p);
+        mH->RemoveMessages(MSG_EVENT_TIMEOUT, p);
         callback = p->mCallback;
         RecyclePendingEventLocked(p);
     }
@@ -1272,7 +1272,7 @@ void CInputMethodManager::EnqueuePendingEventLocked(
     mFirstPendingEvent = p;
 
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx3(MSG_EVENT_TIMEOUT, seq, 0, p, (IMessage**)&msg);
+    mH->ObtainMessage(MSG_EVENT_TIMEOUT, seq, 0, p, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
     mH->SendMessageDelayed(msg, INPUT_METHOD_NOT_RESPONDING_TIMEOUT, &result);

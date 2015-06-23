@@ -133,7 +133,7 @@ ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetEntityAndIncrement
 
     // Return the created Entity
     *entity = _entity;
-    INTERFACE_ADDREF(*entity);
+    REFCOUNT_ADD(*entity);
     return NOERROR;
 }
 
@@ -160,7 +160,7 @@ ECode CCalendarContractCalendarEntity::NewEntityIterator(
 
     AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor);
     *iter = (IEntityIterator*)impl;
-    INTERFACE_ADDREF(*iter);
+    REFCOUNT_ADD(*iter);
     return NOERROR;
 }
 

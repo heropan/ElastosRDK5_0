@@ -9,16 +9,16 @@
 #include "util/Xml.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/List.h>
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::IO::CFile;
@@ -419,7 +419,7 @@ ECode CUserManagerService::GetUserIcon(
         }
         AutoPtr<IBitmapFactory> factory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-        return factory->DecodeFileEx(iconPath, userIcon);
+        return factory->DecodeFile(iconPath, userIcon);
     }
 }
 
@@ -614,7 +614,7 @@ void CUserManagerService::ReadUserListLocked()
 //     try {
     userListFile->OpenRead((IFileInputStream**)&fis);
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(fis, String(NULL));
+    parser->SetInput(fis, String(NULL));
     Int32 type;
     while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
             && type != IXmlPullParser::END_DOCUMENT) {
@@ -630,12 +630,12 @@ void CUserManagerService::ReadUserListLocked()
     mNextSerialNumber = -1;
     if (parser->GetName(&tag), tag.Equals(TAG_USERS)) {
         String lastSerialNumber;
-        parser->GetAttributeValueEx(String(NULL), ATTR_NEXT_SERIAL_NO, &lastSerialNumber);
+        parser->GetAttributeValue(String(NULL), ATTR_NEXT_SERIAL_NO, &lastSerialNumber);
         if (!lastSerialNumber.IsNull()) {
             mNextSerialNumber = StringUtils::ParseInt32(lastSerialNumber);
         }
         String versionNumber;
-        parser->GetAttributeValueEx(String(NULL), ATTR_USER_VERSION, &versionNumber);
+        parser->GetAttributeValue(String(NULL), ATTR_USER_VERSION, &versionNumber);
         if (!versionNumber.IsNull()) {
             mUserVersion = StringUtils::ParseInt32(versionNumber);
         }
@@ -644,7 +644,7 @@ void CUserManagerService::ReadUserListLocked()
     while ((parser->Next(&type), type) != IXmlPullParser::END_DOCUMENT) {
         if (type == IXmlPullParser::START_TAG && (parser->GetName(&tag), tag.Equals(TAG_USER))) {
             String id;
-            parser->GetAttributeValueEx(String(NULL), ATTR_ID, &id);
+            parser->GetAttributeValue(String(NULL), ATTR_ID, &id);
             AutoPtr<IUserInfo> user = ReadUser(StringUtils::ParseInt32(id));
 
             if (user != NULL) {
@@ -883,7 +883,7 @@ AutoPtr<IUserInfo> CUserManagerService::ReadUser(
     CAtomicFile::New(baseFile, (IAtomicFile**)&userFile);
     userFile->OpenRead((IFileInputStream**)&fis);
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(fis, String(NULL));
+    parser->SetInput(fis, String(NULL));
     Int32 type;
     while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
             && type != IXmlPullParser::END_DOCUMENT) {
@@ -905,11 +905,11 @@ AutoPtr<IUserInfo> CUserManagerService::ReadUser(
         }
         serialNumber = ReadInt32Attribute(parser, ATTR_SERIAL_NO, id);
         flags = ReadInt32Attribute(parser, ATTR_FLAGS, 0);
-        parser->GetAttributeValueEx(String(NULL), ATTR_ICON_PATH, &iconPath);
+        parser->GetAttributeValue(String(NULL), ATTR_ICON_PATH, &iconPath);
         creationTime = ReadInt64Attribute(parser, ATTR_CREATION_TIME, 0);
         lastLoggedInTime = ReadInt64Attribute(parser, ATTR_LAST_LOGGED_IN_TIME, 0);
         String valueString;
-        parser->GetAttributeValueEx(String(NULL), ATTR_PARTIAL, &valueString);
+        parser->GetAttributeValue(String(NULL), ATTR_PARTIAL, &valueString);
         if (valueString.Equals("true")) {
             partial = TRUE;
         }
@@ -951,7 +951,7 @@ Int32 CUserManagerService::ReadInt32Attribute(
     /* [in] */ Int32 defaultValue)
 {
     String valueString;
-    parser->GetAttributeValueEx(String(NULL), attr, &valueString);
+    parser->GetAttributeValue(String(NULL), attr, &valueString);
     if (valueString.IsNull()) return defaultValue;
     // try {
     return StringUtils::ParseInt32(valueString);
@@ -966,7 +966,7 @@ Int64 CUserManagerService::ReadInt64Attribute(
     /* [in] */ Int64 defaultValue)
 {
     String valueString;
-    parser->GetAttributeValueEx(String(NULL), attr, &valueString);
+    parser->GetAttributeValue(String(NULL), attr, &valueString);
     if (valueString.IsNull()) return defaultValue;
     // try {
     return StringUtils::ParseInt64(valueString);
@@ -1027,7 +1027,7 @@ ECode CUserManagerService::CreateUser(
             Int32 id;
             userInfo->GetId(&id);
             addedIntent->PutInt32Extra(IIntent::EXTRA_USER_HANDLE, id);
-            mContext->SendBroadcastAsUserEx(addedIntent, UserHandle::ALL,
+            mContext->SendBroadcastAsUser(addedIntent, UserHandle::ALL,
                     Elastos::Droid::Manifest::Permission::MANAGE_USERS);
         }
     // } finally {

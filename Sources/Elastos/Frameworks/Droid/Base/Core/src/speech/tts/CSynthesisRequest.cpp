@@ -61,7 +61,7 @@ ECode CSynthesisRequest::GetParams(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IBundle> b = SynthesisRequest::GetParams();
     *ret = b;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

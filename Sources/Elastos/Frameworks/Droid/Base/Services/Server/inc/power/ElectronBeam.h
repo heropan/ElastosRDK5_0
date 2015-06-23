@@ -4,9 +4,8 @@
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
 #include "display/CDisplayManagerService.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFloatBuffer;
 using Elastos::IO::IByteBuffer;
 using Elastos::Droid::View::IDisplay;

@@ -25,9 +25,9 @@ using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::Animation::CAnimationUtils;
 #endif
 
-#include <elastos/Character.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Character.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 #include "os/SystemClock.h"
 
@@ -700,7 +700,7 @@ void InputMethodService::InitViews()
             ARRAY_SIZE(R::styleable::InputMethodService));
     AbstractInputMethodService::ObtainStyledAttributes(attrIds, (ITypedArray**)&mThemeAttrs);
     mInflater->Inflate(R::layout::input_method, NULL, (IView**)&mRootView);
-    mWindow->SetContentViewEx(mRootView);
+    mWindow->SetContentView(mRootView);
     AutoPtr<IViewTreeObserver> vto;
     mRootView->GetViewTreeObserver((IViewTreeObserver**)&vto);
     vto->AddOnComputeInternalInsetsListener(mInsetsComputer);
@@ -709,7 +709,7 @@ void InputMethodService::InitViews()
     // Int32 value = 0;
     // AutoPtr<ISettingsGlobal> settingsGlobal;
     // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    // settingsGlobal->GetInt32Ex(resolver,
+    // settingsGlobal->GetInt32(resolver,
     //         ISettingsGlobal::FANCY_IME_ANIMATIONS, 0, &value);
     // if (value != 0) {
     //     AutoPtr<IWindow> window;
@@ -821,7 +821,7 @@ ECode InputMethodService::OnCreateInputMethodInterface(
 {
     VALIDATE_NOT_NULL(inputMethodImpl)
     *inputMethodImpl = new InputMethodImpl(this);
-    INTERFACE_ADDREF(*inputMethodImpl);
+    REFCOUNT_ADD(*inputMethodImpl);
     return NOERROR;
 }
 
@@ -830,7 +830,7 @@ ECode InputMethodService::OnCreateInputMethodSessionInterface(
 {
     VALIDATE_NOT_NULL(abstractInputMethodSessionImpl)
     *abstractInputMethodSessionImpl = new InputMethodSessionImpl(this);
-    INTERFACE_ADDREF(*abstractInputMethodSessionImpl);
+    REFCOUNT_ADD(*abstractInputMethodSessionImpl);
     return NOERROR;
 }
 
@@ -839,7 +839,7 @@ ECode InputMethodService::GetLayoutInflater(
 {
     assert(inflater != NULL);
     *inflater = mInflater;
-    INTERFACE_ADDREF(*inflater);
+    REFCOUNT_ADD(*inflater);
     return NOERROR;
 }
 
@@ -848,7 +848,7 @@ ECode InputMethodService::GetWindow(
 {
     assert(dialog != NULL);
     *dialog = mWindow;
-    INTERFACE_ADDREF(*dialog);
+    REFCOUNT_ADD(*dialog);
     return NOERROR;
 }
 
@@ -889,7 +889,7 @@ ECode InputMethodService::GetCurrentInputBinding(
 {
     assert(binding != NULL);
     *binding = mInputBinding;
-    INTERFACE_ADDREF(*binding);
+    REFCOUNT_ADD(*binding);
     return NOERROR;
 }
 
@@ -903,7 +903,7 @@ ECode InputMethodService::GetCurrentInputConnection(
     else {
         *inputConnection = mInputConnection;
     }
-    INTERFACE_ADDREF(*inputConnection);
+    REFCOUNT_ADD(*inputConnection);
     return NOERROR;
 }
 
@@ -920,7 +920,7 @@ ECode InputMethodService::GetCurrentInputEditorInfo(
 {
     assert(editorInfo != NULL);
     *editorInfo = mInputEditorInfo;
-    INTERFACE_ADDREF(*editorInfo);
+    REFCOUNT_ADD(*editorInfo);
     return NOERROR;
 }
 
@@ -1286,7 +1286,7 @@ ECode InputMethodService::SetExtractView(
     CViewGroupLayoutParams::New(
         IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
         (IViewGroupLayoutParams**)&params);
-    mExtractFrame->AddViewEx3(view, params.Get());
+    mExtractFrame->AddView(view, params.Get());
     mExtractView = view;
 
     mExtractEditText = NULL;
@@ -1323,7 +1323,7 @@ ECode InputMethodService::SetCandidatesView(
     CViewGroupLayoutParams::New(
         IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
         (IViewGroupLayoutParams**)&params);
-    return mCandidatesFrame->AddViewEx3(view, params.Get());
+    return mCandidatesFrame->AddView(view, params.Get());
 }
 
 /**
@@ -1340,7 +1340,7 @@ ECode InputMethodService::SetInputView(
     CViewGroupLayoutParams::New(
         IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
         (IViewGroupLayoutParams**)&params);
-    mInputFrame->AddViewEx3(view, params.Get());
+    mInputFrame->AddView(view, params.Get());
     mInputView = view;
     return NOERROR;
 }

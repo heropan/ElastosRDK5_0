@@ -3,7 +3,7 @@
 #define  __CSOFTKEYBOARDVIEW_H__
 
 #include "_CSoftKeyboardView.h"
-#include "view/ViewMacro.h"
+
 #include "CSkbContainer.h"
 #include "SoftKeyboard.h"
 

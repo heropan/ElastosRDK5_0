@@ -2,10 +2,7 @@
 #include "os/NativeBinder.h"
 #include "os/CBinder.h"
 #include "os/BinderProxy.h"
-#include <elastos/Mutex.h>
 #include <binder/Binder.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

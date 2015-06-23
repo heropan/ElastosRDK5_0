@@ -3,7 +3,7 @@
 #include "os/UserHandle.h"
 #include "app/AppGlobals.h"
 #include "os/UserHandle.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
@@ -210,7 +210,7 @@ ECode CRecognitionManagerService::constructor(
     mBroadcastReceiver = new MyBroadcastReceiver(this);
     mContext = context;
     mMonitor = new MyPackageMonitor(this);
-    mMonitor->RegisterEx(mContext, NULL, UserHandle::ALL, TRUE);
+    mMonitor->Register(mContext, NULL, UserHandle::ALL, TRUE);
     mIPm = AppGlobals::GetPackageManager();
     AutoPtr<IIntentFilter> intentFilter;
     FAIL_RETURN(CIntentFilter::New(IIntent::ACTION_BOOT_COMPLETED, (IIntentFilter**)&intentFilter));

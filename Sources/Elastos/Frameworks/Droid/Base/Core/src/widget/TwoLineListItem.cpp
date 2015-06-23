@@ -31,7 +31,7 @@ ECode TwoLineListItem::Init(
             const_cast<Int32 *>(R::styleable::TwoLineListItem),
             ARRAY_SIZE(R::styleable::TwoLineListItem));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     a->Recycle();
 

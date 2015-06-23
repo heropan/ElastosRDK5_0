@@ -47,7 +47,7 @@ ECode CSurfaceView::GetHolder(
     assert(holder != NULL);
     AutoPtr<ISurfaceHolder> _holder = SurfaceView::GetHolder();
     *holder = _holder;
-    INTERFACE_ADDREF(*holder );
+    REFCOUNT_ADD(*holder );
     return NOERROR;
 }
 

@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "_CGpsStatusListenerTransport.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBundle;
 

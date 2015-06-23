@@ -3,14 +3,11 @@
 #define __UEVENTOBSERVER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

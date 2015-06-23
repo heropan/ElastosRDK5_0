@@ -302,7 +302,7 @@ ECode CProgressBar::SetInterpolator(
  *
  * @param interpolator The interpolator which defines the acceleration curve
  */
-ECode CProgressBar::SetInterpolatorEx(
+ECode CProgressBar::SetInterpolator(
 /* [in] */ IInterpolator* interpolator)
 {
     return ProgressBar::SetInterpolator(interpolator);

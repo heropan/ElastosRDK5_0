@@ -31,7 +31,7 @@ ECode ColorDrawable::ColorState::NewDrawable(
     return CColorDrawable::New(this, (IColorDrawable**)drawable);
 }
 
-ECode ColorDrawable::ColorState::NewDrawableEx(
+ECode ColorDrawable::ColorState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -90,7 +90,7 @@ ECode ColorDrawable::Draw(
 {
     if (((mState->mUseColor >> 24) & 0xFF) != 0) {
         mPaint->SetColor(mState->mUseColor);
-        canvas->DrawRectEx(GetBounds(), mPaint);
+        canvas->DrawRect(GetBounds(), mPaint);
     }
     return NOERROR;
 }

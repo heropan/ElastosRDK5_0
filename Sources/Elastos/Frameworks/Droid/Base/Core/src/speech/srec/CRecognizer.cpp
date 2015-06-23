@@ -33,7 +33,7 @@ ECode CRecognizer::PutAudio(
     return NOERROR;
 }
 
-ECode CRecognizer::PutAudioEx(
+ECode CRecognizer::PutAudio(
     /* [in] */ IInputStream* audio)
 {
     Recognizer::PutAudio(audio);
@@ -55,7 +55,7 @@ ECode CRecognizer::GetResultKeys(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<String> > o = Recognizer::GetResultKeys(index);
     *ret = o;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -3,8 +3,8 @@
 
 #include "_CImageSwitcher.h"
 #include "widget/ImageSwitcher.h"
-#include "view/ViewMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -66,11 +66,11 @@ public:
     CARAPI SetOutAnimation(
         /* [in] */ IAnimation* outAnimation);
 
-    CARAPI SetInAnimationEx(
+    CARAPI SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI SetOutAnimationEx(
+    CARAPI SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 

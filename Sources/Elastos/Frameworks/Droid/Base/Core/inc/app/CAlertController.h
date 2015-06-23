@@ -126,7 +126,7 @@ public:
     /**
      * Set the view to display in the dialog along with the spacing around that view
      */
-    CARAPI SetViewEx(
+    CARAPI SetView(
         /* [in] */ IView* view,
         /* [in] */ Int32 viewSpacingLeft,
         /* [in] */ Int32 viewSpacingTop,
@@ -159,7 +159,7 @@ public:
     CARAPI SetIcon(
         /* [in] */ Int32 resId);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
     /**

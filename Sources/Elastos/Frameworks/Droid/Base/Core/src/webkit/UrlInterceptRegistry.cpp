@@ -1,6 +1,6 @@
 
 #include "webkit/UrlInterceptRegistry.h"
-#include <elastos/Algorithm.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 namespace Elastos {
 namespace Droid {

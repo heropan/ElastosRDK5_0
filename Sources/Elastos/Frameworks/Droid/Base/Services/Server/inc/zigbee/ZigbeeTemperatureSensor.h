@@ -3,9 +3,9 @@
 #define __ZIGBEETEMPERATURESENSOR_H__
 
 #include "zigbee/ZigbeeDevice.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IDate;
 
 namespace Elastos {

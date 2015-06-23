@@ -34,7 +34,7 @@ public:
         /* [in] */ Int32 sensors,
         /* [out] */ Boolean* supported);
 
-    CARAPI RegisterListenerEx(
+    CARAPI RegisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors,
         /* [in] */ Int32 rate,
@@ -43,24 +43,24 @@ public:
     CARAPI UnregisterListener(
         /* [in] */ ISensorListener* listener);
 
-    CARAPI UnregisterListenerEx(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors);
 
-    CARAPI UnregisterListenerEx2(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor);
 
-    CARAPI UnregisterListenerEx3(
+    CARAPI UnregisterListener(
         /* [in] */ ISensorEventListener* listener);
 
-    CARAPI RegisterListenerEx2(
+    CARAPI RegisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor,
         /* [in] */ Int32 rate,
         /* [out] */ Boolean* supported);
 
-    CARAPI RegisterListenerEx3(
+    CARAPI RegisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor,
         /* [in] */ Int32 rate,

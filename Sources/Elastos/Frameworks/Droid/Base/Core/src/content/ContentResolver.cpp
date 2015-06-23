@@ -11,9 +11,9 @@
 #include "os/SystemClock.h"
 #include "privacy/surrogate/PrivacyContentResolver.h"
 #include "text/TextUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 // BEGIN privacy-added
 #include "privacy/surrogate/PrivacyContentResolver.h"
@@ -485,7 +485,7 @@ ECode ContentResolver::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -572,10 +572,10 @@ ECode ContentResolver::Query(
     /* [in] */ const String& sortOrder,
     /* [out] */ ICursor** cursor)
 {
-    return QueryEx(uri, projection, selection, selectionArgs, sortOrder, NULL, cursor);
+    return Query(uri, projection, selection, selectionArgs, sortOrder, NULL, cursor);
 }
 
-ECode ContentResolver::QueryEx(
+ECode ContentResolver::Query(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String& selection,
@@ -681,7 +681,7 @@ __EXIT__:
     }
 //    }
     *cursor = wrapper.Get();
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return ec;
 }
 
@@ -735,10 +735,10 @@ ECode ContentResolver::OpenOutputStream(
     /* [in] */ IUri* uri,
     /* [out] */ IOutputStream** outStream)
 {
-    return OpenOutputStreamEx(uri, String("w"), outStream);
+    return OpenOutputStream(uri, String("w"), outStream);
 }
 
-ECode ContentResolver::OpenOutputStreamEx(
+ECode ContentResolver::OpenOutputStream(
     /* [in] */ IUri* uri,
     /* [in] */ const String& mode,
     /* [out] */ IOutputStream** outStream)
@@ -1015,7 +1015,7 @@ ECode ContentResolver::GetResourceId(
     else {
         AutoPtr<IPackageManager> packageManager;
         FAIL_RETURN(mContext->GetPackageManager((IPackageManager**)&packageManager))
-        ECode ecode = packageManager->GetResourcesForApplicationEx(authority, (IResources**)&r);
+        ECode ecode = packageManager->GetResourcesForApplication(authority, (IResources**)&r);
         if ((ECode)E_NAME_NOT_FOUND_EXCEPTION == ecode) {
             // throw new FileNotFoundException("No package found for authority: " + uri);
             return E_FILE_NOT_FOUND_EXCEPTION;
@@ -1053,7 +1053,7 @@ ECode ContentResolver::GetResourceId(
     FAIL_RETURN(res->SetResources(r))
     FAIL_RETURN(res->SetResourceId(id))
     *resourceIdResult = res;
-    INTERFACE_ADDREF(*resourceIdResult)
+    REFCOUNT_ADD(*resourceIdResult)
     return NOERROR;
 }
 
@@ -1113,7 +1113,7 @@ ECode ContentResolver::Insert(
         Int64 durationMillis = SystemClock::GetUptimeMillis() - startTime;
         MaybeLogUpdateToEventLog(durationMillis, uri, String("insert"), String(NULL) /* where */);
         *insertedUri = createdRow;
-        INTERFACE_ADDREF(*insertedUri)
+        REFCOUNT_ADD(*insertedUri)
     }
     else *insertedUri = NULL;
 //    } catch (RemoteException e) {
@@ -1133,7 +1133,7 @@ ECode ContentResolver::ApplyBatch(
     /* [out, callee] */ ArrayOf<IContentProviderResult*>** providerResults)
 {
     AutoPtr<IContentProviderClient> providerClient;
-    FAIL_RETURN(AcquireContentProviderClientEx(authority, (IContentProviderClient**)&providerClient))
+    FAIL_RETURN(AcquireContentProviderClient(authority, (IContentProviderClient**)&providerClient))
     if (NULL == providerClient) {
         //throw new IllegalArgumentException("Unknown authority " + authority);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -1326,7 +1326,7 @@ ECode ContentResolver::AcquireExistingProvider(
     return NOERROR;
 }
 
-ECode ContentResolver::AcquireProviderEx(
+ECode ContentResolver::AcquireProvider(
     /* [in] */ const String& name,
     /* [out] */ IIContentProvider** contentProvider)
 {
@@ -1361,7 +1361,7 @@ ECode ContentResolver::AcquireUnstableProvider(
     return NOERROR;
 }
 
-ECode ContentResolver::AcquireUnstableProviderEx(
+ECode ContentResolver::AcquireUnstableProvider(
     /* [in] */ const String& name,
     /* [out] */ IIContentProvider** contentProvider)
 {
@@ -1389,13 +1389,13 @@ ECode ContentResolver::AcquireContentProviderClient(
     return NOERROR;
 }
 
-ECode ContentResolver::AcquireContentProviderClientEx(
+ECode ContentResolver::AcquireContentProviderClient(
     /* [in] */ const String& name,
     /* [out] */ IContentProviderClient** client)
 {
     VALIDATE_NOT_NULL(client)
     AutoPtr<IIContentProvider> provider;
-    FAIL_RETURN(AcquireProviderEx(name, (IIContentProvider**)&provider))
+    FAIL_RETURN(AcquireProvider(name, (IIContentProvider**)&provider))
     if (NULL != provider) {
         return CContentProviderClient::New(
                 (IContentResolver*)this->Probe(EIID_IContentResolver), provider, TRUE, client);
@@ -1421,13 +1421,13 @@ ECode ContentResolver::AcquireUnstableContentProviderClient(
     return NOERROR;
 }
 
-ECode ContentResolver::AcquireUnstableContentProviderClientEx(
+ECode ContentResolver::AcquireUnstableContentProviderClient(
     /* [in] */ const String& name,
     /* [out] */ IContentProviderClient** client)
 {
     VALIDATE_NOT_NULL(client);
     AutoPtr<IIContentProvider> provider;
-    FAIL_RETURN(AcquireUnstableProviderEx(name, (IIContentProvider**)&provider))
+    FAIL_RETURN(AcquireUnstableProvider(name, (IIContentProvider**)&provider))
     if (NULL != provider) {
         return CContentProviderClient::New(
                 (IContentResolver*)this->Probe(EIID_IContentResolver), provider, FALSE, client);
@@ -1442,10 +1442,10 @@ ECode ContentResolver::RegisterContentObserver(
     /* [in] */ Boolean notifyForDescendents,
     /* [in] */ IContentObserver* observer)
 {
-    return RegisterContentObserverEx(uri, notifyForDescendents, observer, UserHandle::GetMyUserId());
+    return RegisterContentObserver(uri, notifyForDescendents, observer, UserHandle::GetMyUserId());
 }
 
-ECode ContentResolver::RegisterContentObserverEx(
+ECode ContentResolver::RegisterContentObserver(
     /* [in] */ IUri* uri,
     /* [in] */ Boolean notifyForDescendents,
     /* [in] */ IContentObserver* observer,
@@ -1479,18 +1479,18 @@ ECode ContentResolver::NotifyChange(
     /* [in] */ IUri* uri,
     /* [in] */ IContentObserver* observer)
 {
-    return NotifyChangeEx(uri, observer, TRUE /* sync to network */);
+    return NotifyChange(uri, observer, TRUE /* sync to network */);
 }
 
-ECode ContentResolver::NotifyChangeEx(
+ECode ContentResolver::NotifyChange(
     /* [in] */ IUri* uri,
     /* [in] */ IContentObserver* observer,
     /* [in] */ Boolean syncToNetwork)
 {
-    return NotifyChangeEx2(uri, observer, syncToNetwork, UserHandle::GetCallingUserId());
+    return NotifyChange(uri, observer, syncToNetwork, UserHandle::GetCallingUserId());
 }
 
-ECode ContentResolver::NotifyChangeEx2(
+ECode ContentResolver::NotifyChange(
     /* [in] */ IUri* uri,
     /* [in] */ IContentObserver* observer,
     /* [in] */ Boolean syncToNetwork,
@@ -1641,13 +1641,13 @@ ECode ContentResolver::AddPeriodicSync(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Boolean value = FALSE;
-    if ((extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &value), value)
-            || (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &value), value)
-            || (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &value), value)
-            || (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &value), value)
-            || (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &value), value)
-            || (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_FORCE, FALSE, &value), value)
-            || (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &value), value)) {
+    if ((extras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &value), value)
+            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &value), value)
+            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &value), value)
+            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &value), value)
+            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &value), value)
+            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_FORCE, FALSE, &value), value)
+            || (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &value), value)) {
         //throw new IllegalArgumentException("illegal extras were set");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -1759,7 +1759,7 @@ ECode ContentResolver::GetCurrentSync(
         AutoPtr<ISyncInfo> valueObj;
         ObjEnumerator->Current((IInterface**)&valueObj);
         *syncInfo = valueObj;
-        INTERFACE_ADDREF(*syncInfo);
+        REFCOUNT_ADD(*syncInfo);
         break;
     }
     return NOERROR;
@@ -1852,7 +1852,7 @@ ECode ContentResolver::MaybeLogQueryToEventLog(
             Mutex::Autolock lock(mRandomLock);
 
             Int32 rando;
-            mRandom->NextInt32Ex(100, &rando);
+            mRandom->NextInt32(100, &rando);
             if (rando >= samplePercent) {
                 return NOERROR;
             }
@@ -1901,7 +1901,7 @@ ECode ContentResolver::MaybeLogUpdateToEventLog(
             Mutex::Autolock lock(mRandomLock);
 
             Int32 rando;
-            mRandom->NextInt32Ex(100, &rando);
+            mRandom->NextInt32(100, &rando);
             if (rando >= samplePercent) {
                 return NOERROR;
             }
@@ -1928,7 +1928,7 @@ ECode ContentResolver::GetContentService(
 
     if (NULL != sContentService) {
         *contentService = sContentService;
-        INTERFACE_ADDREF(*contentService);
+        REFCOUNT_ADD(*contentService);
         return NOERROR;
     }
 
@@ -1936,7 +1936,7 @@ ECode ContentResolver::GetContentService(
     // if (false) Log.v("ContentService", "default service binder = " + b);
     *contentService = sContentService;
     // if (false) Log.v("ContentService", "default service = " + sContentService);
-    INTERFACE_ADDREF(*contentService)
+    REFCOUNT_ADD(*contentService)
     return NOERROR;
 }
 

@@ -1,5 +1,5 @@
 
-module 
+module
 {
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
@@ -21,7 +21,7 @@ module
         /**
          * Set the checkmark to a given Drawable, identified by its resourece id. This will be drawn
          * when {@link #isChecked()} is true.
-         * 
+         *
          * @param resid The Drawable to use for the checkmark.
          */
         SetCheckMarkDrawable(
@@ -32,7 +32,7 @@ module
          *
          * @param d The Drawable to use for the checkmark.
          */
-        SetCheckMarkDrawableEx(
+        SetCheckMarkDrawable(
             [in] IDrawable* d);
 
         /**

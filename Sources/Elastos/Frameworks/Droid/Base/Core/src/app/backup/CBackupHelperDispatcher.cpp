@@ -1,8 +1,8 @@
 
 #include "app/backup/CBackupHelperDispatcher.h"
 #include "app/backup/CBackupDataInputStream.h"
-#include "cmdef.h"
-#include <elastos/Slogger.h>
+#include <elastos/coredef.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <sys/types.h>
 #include <utils/Log.h>
 #include <unistd.h>

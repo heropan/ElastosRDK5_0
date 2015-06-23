@@ -29,7 +29,7 @@ module
          * It is an error to call release() if the suspend blocker has not been acquired.
          * The system may crash.
          */
-        ReleaseEx();
+        Release();
 
         BootFastSleepRelease();
 

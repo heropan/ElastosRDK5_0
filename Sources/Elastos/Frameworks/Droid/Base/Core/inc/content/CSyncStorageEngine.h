@@ -4,19 +4,18 @@
 
 #include "_CSyncStorageEngine.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "SparseArray.h"
 #include "os/Handler.h"
 #include "CSyncStorageEngineAuthorityInfo.h"
 #include "CSyncStorageEngineHelper.h"
-#include "elastos/HashMap.h"
-#include "elastos/List.h"
-#include "os/HandlerMacro.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
+
 
 using namespace Elastos::Core;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Accounts::IAccountAndUser;
 using Elastos::Droid::Database::ICursor;
@@ -26,8 +25,8 @@ using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Utility::IPair;
 using Elastos::Droid::Utility::SparseArray;
 using Elastos::IO::IFile;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {

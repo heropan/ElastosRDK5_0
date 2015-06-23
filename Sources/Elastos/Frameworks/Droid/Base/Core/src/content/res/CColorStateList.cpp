@@ -4,7 +4,7 @@
 #include "util/ArrayUtils.h"
 #include "util/Xml.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Utility::StateSet;
@@ -71,7 +71,7 @@ ECode CColorStateList::ValueOf(
     }
 
     *_csl = csl.Get();
-    INTERFACE_ADDREF(*_csl);
+    REFCOUNT_ADD(*_csl);
     return NOERROR;
 }
 
@@ -113,7 +113,7 @@ ECode CColorStateList::CreateFromXmlInner(
         AutoPtr<CColorStateList> ccsl;
         FAIL_RETURN(CColorStateList::NewByFriend((CColorStateList**)&ccsl));
         *csl = ccsl;
-        INTERFACE_ADDREF(*csl);
+        REFCOUNT_ADD(*csl);
     }
     else {
         String pos;
@@ -194,16 +194,16 @@ ECode CColorStateList::Inflate(
                 break;
 
             if (stateResId == R::attr::color) {
-                attrs->GetAttributeResourceValueEx(i, 0, &colorRes);
+                attrs->GetAttributeResourceValue(i, 0, &colorRes);
 
                 if (colorRes == 0) {
-                    attrs->GetAttributeIntValueEx(i, color, &color);
+                    attrs->GetAttributeIntValue(i, color, &color);
                     haveColor = TRUE;
                 }
             }
             else {
                 Boolean value;
-                attrs->GetAttributeBooleanValueEx(i, FALSE, &value);
+                attrs->GetAttributeBooleanValue(i, FALSE, &value);
                 (*stateSpec)[j++] = value ? stateResId : -stateResId;
             }
         }

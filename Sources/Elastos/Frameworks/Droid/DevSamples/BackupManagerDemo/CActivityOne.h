@@ -5,7 +5,6 @@
 #include "_CActivityOne.h"
 #include "content/BroadcastReceiver.h"
 #include <elrefbase.h>
-#include <elastos/Mutex.h>
 
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::CRandomAccessFile;

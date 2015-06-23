@@ -3,7 +3,6 @@
 
 #include "_CCommonTimeManagementService.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "content/BroadcastReceiver.h"
 //#include "os/CommonTimeConfig.h"
 #include "os/Runnable.h"

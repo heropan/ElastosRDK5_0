@@ -1,5 +1,5 @@
 #include "app/backup/CSharedPreferencesBackupHelper.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "app/QueuedWork.h"
 
 using Elastos::IO::CFile;

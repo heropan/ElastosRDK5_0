@@ -44,7 +44,7 @@ module
             [in] IInterface* other,
             [out] Boolean* equals);
 
-        EqualsEx(
+        Equals(
             [in] IUserHandle* other,
             [out] Boolean* equals);
 

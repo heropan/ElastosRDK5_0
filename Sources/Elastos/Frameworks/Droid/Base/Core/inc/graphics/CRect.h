@@ -49,7 +49,7 @@ public:
     CARAPI constructor(
         /* [in] */ IRect* r);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IRect* r,
         /* [out] */ Boolean* result);
 
@@ -161,7 +161,7 @@ public:
      * @param src The rectangle whose coordinates are copied into this
      *           rectangle.
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ IRect* src);
 
     /**
@@ -227,7 +227,7 @@ public:
      * @return true iff the the 4 specified sides of a rectangle are inside or
      *              equal to this rectangle
      */
-    CARAPI ContainsEx(
+    CARAPI Contains(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -242,7 +242,7 @@ public:
      * @return true iff the specified rectangle r is inside or equal to this
      *              rectangle
      */
-    CARAPI ContainsEx2(
+    CARAPI Contains(
         /* [in] */ IRect* r,
         /* [out] */ Boolean* result);
 
@@ -282,7 +282,7 @@ public:
      *              (and this rectangle is then set to that intersection) else
      *              return false and do not change this rectangle.
      */
-    CARAPI IntersectEx(
+    CARAPI Intersect(
         /* [in] */ IRect* r,
         /* [out] */ Boolean* result);
 
@@ -317,7 +317,7 @@ public:
      * @return true iff the two specified rectangles intersect. In no event are
      *              either of the rectangles modified.
      */
-    CARAPI IntersectsEx(
+    CARAPI Intersects(
         /* [in] */ IRect* a,
         /* [in] */ IRect* b,
         /* [out] */ Boolean* result);
@@ -362,7 +362,7 @@ public:
      *
      * @param r The rectangle being unioned with this rectangle
      */
-    CARAPI UnionEx(
+    CARAPI Union(
         /* [in] */ IRect* r);
 
     /**
@@ -372,7 +372,7 @@ public:
      * @param x The x coordinate of the point to add to the rectangle
      * @param y The y coordinate of the point to add to the rectangle
      */
-    CARAPI UnionEx2(
+    CARAPI Union(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 

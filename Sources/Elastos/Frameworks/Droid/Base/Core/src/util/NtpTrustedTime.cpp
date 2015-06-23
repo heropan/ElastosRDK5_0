@@ -2,8 +2,8 @@
 #include "provider/Settings.h"
 #include "os/SystemClock.h"
 #include "net/CSntpClient.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -72,7 +72,7 @@ ECode NtpTrustedTime::GetInstance(
         sSingleton = new NtpTrustedTime(server, timeout);
     }
     *instance = (INtpTrustedTime*)sSingleton.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

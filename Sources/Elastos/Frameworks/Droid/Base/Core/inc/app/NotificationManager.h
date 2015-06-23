@@ -56,7 +56,7 @@ public:
      * @param notification A {@link Notification} object describing what to
      *        show the user. Must not be null.
      */
-    CARAPI NotifyEx(
+    CARAPI Notify(
         /* [in] */ const String& tag,
         /* [in] */ Int32 id,
         /* [in] */ INotification* notification);
@@ -83,7 +83,7 @@ public:
      * will be hidden.  If it's persistent, it will be removed from the status
      * bar.
      */
-    CARAPI CancelEx(
+    CARAPI Cancel(
         /* [in] */ const String& tag,
         /* [in] */ Int32 id);
 

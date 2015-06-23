@@ -3,10 +3,10 @@
 
 #include "_CRecentApplicationsBackground.h"
 #include "impl/RecentApplicationsBackground.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/LinearLayout.h"
-#include "widget/LinearLayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

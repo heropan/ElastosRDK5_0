@@ -24,7 +24,7 @@ module
          * @param referer The referer associated with this url
          * @param contentLength The file size reported by the server
          */
-        OnDownloadStartEx(
+        OnDownloadStart(
             [in] String url,
             [in] String userAgent,
             [in] String contentDisposition,

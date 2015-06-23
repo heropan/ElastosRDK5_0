@@ -7,9 +7,8 @@
 #include "content/BroadcastReceiver.h"
 #include "content/PackageMonitor.h"
 #include "database/ContentObserver.h"
-#include <elastos/ThreadBase.h>
 #include "search/Searchables.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;

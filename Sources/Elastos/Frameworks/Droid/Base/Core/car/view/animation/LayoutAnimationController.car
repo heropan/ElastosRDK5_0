@@ -96,7 +96,7 @@ module
          *
          * @attr ref android.R.styleable#LayoutAnimation_animation
          */
-        SetAnimationEx(
+        SetAnimation(
             [in] IAnimation* animation);
 
         /**
@@ -138,7 +138,7 @@ module
          *
          * @attr ref android.R.styleable#LayoutAnimation_interpolator
          */
-        SetInterpolatorEx(
+        SetInterpolator(
             [in] IInterpolator* interpolator);
 
         /**

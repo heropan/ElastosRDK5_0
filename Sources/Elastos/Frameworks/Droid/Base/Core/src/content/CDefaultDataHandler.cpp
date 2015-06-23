@@ -131,7 +131,7 @@ ECode CDefaultDataHandler::StartElement(
     else if (DEL.Equals(localName)) {
         String uriString;
         AutoPtr<IUri> u;
-        FAIL_RETURN(atts->GetValueEx2(URI_STR, &uriString))
+        FAIL_RETURN(atts->GetValue(URI_STR, &uriString))
 //***        FAIL_RETURN(StringUri::New(uriString, (IUri**)&u))
 
         if (NULL == u) {
@@ -229,7 +229,7 @@ ECode CDefaultDataHandler::Insert(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CDefaultDataHandler::InsertEx(
+ECode CDefaultDataHandler::Insert(
     /* [in] */ IContentResolver* contentResolver,
     /* [in] */ const String& inStr)
 {
@@ -243,7 +243,7 @@ ECode CDefaultDataHandler::ParseRow(
 {
     String uriStr;
     AutoPtr<IUri> uri;
-    FAIL_RETURN(atts->GetValueEx2(URI_STR, &uriStr))
+    FAIL_RETURN(atts->GetValue(URI_STR, &uriStr))
 
     if (!uriStr.IsNull()) {
         // case 1
@@ -256,7 +256,7 @@ ECode CDefaultDataHandler::ParseRow(
     else if (mUris->IsEmpty() == FALSE) {
         // case 2
         String postfix;
-        FAIL_RETURN(atts->GetValueEx2(POSTFIX, &postfix))
+        FAIL_RETURN(atts->GetValue(POSTFIX, &postfix))
         if (!postfix.IsNull()) {
             AutoPtr<IUri> lastUri = mUris->GetTop();
 //***            AutoPtr<IUriBuilder> builder;

@@ -1,7 +1,7 @@
 
 #include "media/CMediaScannerConnection.h"
 
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "content/CIntent.h"
 
 using Elastos::Utility::Logging::Logger;

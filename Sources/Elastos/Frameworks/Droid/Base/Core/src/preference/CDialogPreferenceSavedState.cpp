@@ -29,7 +29,7 @@ ECode CDialogPreferenceSavedState::GetDialogBundle(
 {
     VALIDATE_NOT_NULL(bundle)
     *bundle = mDialogBundle;
-    INTERFACE_ADDREF(*bundle)
+    REFCOUNT_ADD(*bundle)
     return NOERROR;
 }
 

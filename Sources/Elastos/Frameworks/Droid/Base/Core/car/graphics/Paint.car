@@ -340,7 +340,7 @@ module
          * @return The number of chars that were measured. Will always be <=
          *         abs(end - start).
          */
-        BreakTextEx(
+        BreakText(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,
@@ -365,7 +365,7 @@ module
          * @return The number of chars that were measured. Will always be <=
          *         abs(count).
          */
-        BreakTextEx2(
+        BreakText(
             [in] String text,
             [in] Boolean measureForwards,
             [in] Float maxWidth,
@@ -466,7 +466,7 @@ module
          * Allocates a new FontMetrics object, and then calls getFontMetrics(fm)
          * with it, returning the object.
          */
-        GetFontMetricsEx(
+        GetFontMetrics(
             [out] IPaintFontMetrics** metrics);
 
         /**
@@ -483,7 +483,7 @@ module
             [in] IPaintFontMetricsInt* fmi,
             [out] Int32* spacing);
 
-        GetFontMetricsIntEx(
+        GetFontMetricsInt(
             [out] IPaintFontMetricsInt** fmi);
 
         /**
@@ -627,7 +627,7 @@ module
          * @param bounds Returns the unioned bounds of all the text. Must be
          *               allocated by the caller.
          */
-        GetTextBoundsEx(
+        GetTextBounds(
             [in] ArrayOf<Char32> text,
             [in] Int32 index,
             [in] Int32 count,
@@ -690,7 +690,7 @@ module
          * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int, int)
          * @hide
          */
-        GetTextRunAdvancesEx(
+        GetTextRunAdvances(
             [in] ArrayOf<Char32> chars,
             [in] Int32 index,
             [in] Int32 count,
@@ -709,7 +709,7 @@ module
          * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
          * @hide
          */
-        GetTextRunAdvancesEx2(
+        GetTextRunAdvances(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,
@@ -727,7 +727,7 @@ module
          * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
          * @hide
          */
-        GetTextRunAdvancesEx3(
+        GetTextRunAdvances(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,
@@ -785,7 +785,7 @@ module
          *
          * @hide
          */
-        GetTextRunAdvancesEx4(
+        GetTextRunAdvances(
             [in] String text,
             [in] Int32 start,
             [in] Int32 end,
@@ -842,7 +842,7 @@ module
          *
          * @hide
          */
-        GetTextRunAdvancesEx5(
+        GetTextRunAdvances(
             [in] String text,
             [in] Int32 start,
             [in] Int32 end,
@@ -938,7 +938,7 @@ module
          * @return the offset of the next position, or -1
          * @hide
          */
-        GetTextRunCursorEx(
+        GetTextRunCursor(
          [in] ICharSequence* text,
          [in] Int32 contextStart,
          [in] Int32 contextEnd,
@@ -984,7 +984,7 @@ module
          * @return the offset of the next position, or -1
          * @hide
          */
-        GetTextRunCursorEx2(
+        GetTextRunCursor(
             [in] String text,
             [in] Int32 contextStart,
             [in] Int32 contextEnd,
@@ -1035,7 +1035,7 @@ module
          * @param path  The path to receive the data describing the text. Must
          *              be allocated by the caller.
          */
-        GetTextPathEx(
+        GetTextPath(
             [in] String text,
             [in] Int32 start,
             [in] Int32 end,
@@ -1096,7 +1096,7 @@ module
          *                 Must be at least as large as (end - start).
          * @return         the actual number of widths returned.
          */
-        GetTextWidthsEx(
+        GetTextWidths(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,
@@ -1113,7 +1113,7 @@ module
          *               Must be at least a large as the text.
          * @return       the number of unichars in the specified text.
          */
-        GetTextWidthsEx2(
+        GetTextWidths(
             [in] String text,
             [in] Int32 start,
             [in] Int32 end,
@@ -1128,7 +1128,7 @@ module
          *               Must be at least a large as the text.
          * @return       the number of unichars in the specified text.
          */
-        GetTextWidthsEx3(
+        GetTextWidths(
             [in] String text,
             [in] ArrayOf<Float>* widths,
             [out] Int32* width);
@@ -1249,7 +1249,7 @@ module
          * @param end   1 beyond the index of the last character to measure
          * @return      The width of the text
          */
-        MeasureTextEx(
+        MeasureText(
             [in] String text,
             [in] Int32 start,
             [in] Int32 end,
@@ -1261,7 +1261,7 @@ module
          * @param text  The text to measure
          * @return      The width of the text
          */
-        MeasureTextEx2(
+        MeasureText(
             [in] String text,
             [out] Float* width);
 
@@ -1273,7 +1273,7 @@ module
          * @param end   1 beyond the index of the last character to measure
          * @return      The width of the text
          */
-        MeasureTextEx3(
+        MeasureText(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,

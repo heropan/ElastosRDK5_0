@@ -149,7 +149,7 @@ module
          * @param bounds Rect to receive the drawable's bounds (allocated by the
          *               caller).
          */
-        CopyBoundsEx(
+        CopyBounds(
             [out] IRect** rect);
 
         /**
@@ -515,7 +515,7 @@ module
          * Specify a bounding rectangle for the Drawable. This is where the drawable
          * will draw when its draw() method is called.
          */
-        SetBoundsEx(
+        SetBounds(
             [in] IRect* bounds);
 
         /**
@@ -573,7 +573,7 @@ module
          * Specify a color and porterduff mode to be the colorfilter for this
          * drawable.
          */
-        SetColorFilterEx(
+        SetColorFilter(
             [in] Int32 color,
             [in] PorterDuffMode mode);
 
@@ -758,7 +758,7 @@ module
          * density of their caller (that is depending on whether it is
          * in compatibility mode).
          */
-        NewDrawableEx(
+        NewDrawable(
             [in] IResources* res,
             [out] IDrawable** drawable);
 
@@ -794,7 +794,7 @@ module
          * Create a drawable from an inputstream, using the given resources and
          * value to determine density information.
          */
-        CreateFromResourceStreamEx(
+        CreateFromResourceStream(
             [in] IResources* res,
             [in] ITypedValue* value,
             [in] IInputStream* is,

@@ -5,9 +5,9 @@
 #include "ext/frameworkext.h"
 
 #include "os/Handler.h"
-#include "os/HandlerMacro.h"
+
 #include "view/View.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;

@@ -1,5 +1,5 @@
 #include "systemui/statusbar/phone/Ticker.h"
-#include "elastos/Character.h"
+#include <elastos/core/Character.h>
 #include "R.h"
 #include "util/CharSequences.h"
 #include "os/CHandler.h"

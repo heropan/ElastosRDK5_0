@@ -2,9 +2,9 @@
 #include "media/CEncoderCapabilities.h"
 
 #include <media/MediaProfiles.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::CObjectContainer;
 
 namespace Elastos {
@@ -109,7 +109,7 @@ ECode CEncoderCapabilities::GetOutputFileFormats(
     }
 
     *result = formats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -136,7 +136,7 @@ ECode CEncoderCapabilities::GetVideoEncoders(
         oc->Add((*it));
     }
     *result = oc;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -163,7 +163,7 @@ ECode CEncoderCapabilities::GetAudioEncoders(
         oc->Add((*it));
     }
     *result = oc;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

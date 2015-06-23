@@ -2,11 +2,11 @@
 #include "Connection.h"
 #include "Request.h"
 #include "os/SystemClock.h"
-#include <elastos/List.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {
@@ -391,7 +391,7 @@ ECode Connection::GetHttpContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mHttpContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -467,7 +467,7 @@ ECode Connection::GetBuf(
     }
 
     *buf = mBuf;
-    INTERFACE_ADDREF(*buf);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 

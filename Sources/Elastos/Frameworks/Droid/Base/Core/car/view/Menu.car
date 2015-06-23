@@ -141,7 +141,7 @@ module
              * @param titleRes Resource identifier of title string.
              * @return The newly added menu item.
              */
-            AddEx(
+            Add(
                 [in] Int32 titleRes,
                 [out] IMenuItem** item);
 
@@ -160,7 +160,7 @@ module
              * @param title The text to display for the item.
              * @return The newly added menu item.
              */
-            AddEx2(
+            Add(
                 [in] Int32 groupId,
                 [in] Int32 itemId,
                 [in] Int32 order,
@@ -182,7 +182,7 @@ module
              * @param titleRes Resource identifier of title string.
              * @return The newly added menu item.
              */
-            AddEx3(
+            Add(
                 [in] Int32 groupId,
                 [in] Int32 itemId,
                 [in] Int32 order,
@@ -209,7 +209,7 @@ module
              * @param titleRes Resource identifier of title string.
              * @return The newly added sub-menu
              */
-            AddSubMenuEx(
+            AddSubMenu(
                 [in] Int32 titleRes,
                 [out] ISubMenu** subMenu);
 
@@ -233,7 +233,7 @@ module
              * @param title The text to display for the item.
              * @return The newly added sub-menu
              */
-            AddSubMenuEx2(
+            AddSubMenu(
                 [in] Int32 groupId,
                 [in] Int32 itemId,
                 [in] Int32 order,
@@ -253,7 +253,7 @@ module
              * @param titleRes Resource identifier of title string.
              * @return The newly added sub-menu
              */
-            AddSubMenuEx3(
+            AddSubMenu(
                 [in] Int32 groupId,
                 [in] Int32 itemId,
                 [in] Int32 order,

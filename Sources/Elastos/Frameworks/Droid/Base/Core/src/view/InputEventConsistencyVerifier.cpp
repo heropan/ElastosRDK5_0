@@ -4,9 +4,9 @@
 #include "view/CKeyEvent.h"
 #include "view/CMotionEvent.h"
 #include "os/Build.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

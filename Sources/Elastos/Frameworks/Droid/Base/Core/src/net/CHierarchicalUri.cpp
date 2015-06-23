@@ -171,7 +171,7 @@ ECode CHierarchicalUri::Equals(
     return HierarchicalUri::Equals(IUri::Probe(other), isEqual);
 }
 
-ECode CHierarchicalUri::EqualsEx(
+ECode CHierarchicalUri::Equals(
     /* [in]*/ IUri* other,
     /* [out] */ Boolean* isEqual)
 {

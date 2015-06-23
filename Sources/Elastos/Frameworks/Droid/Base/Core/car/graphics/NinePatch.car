@@ -45,7 +45,7 @@ module
          * @param canvas    A container for the current matrix and clip used to draw the bitmap.
          * @param location  Where to draw the bitmap.
          */
-        DrawEx(
+        Draw(
             [in] ICanvas* canvas,
             [in] IRect* location);
 
@@ -56,7 +56,7 @@ module
          * @param location  Where to draw the bitmap.
          * @param paint     The Paint to draw through.
          */
-        DrawEx2(
+        Draw(
             [in] ICanvas* canvas,
             [in] IRect* location,
             [in] IPaint* paint);

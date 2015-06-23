@@ -35,7 +35,7 @@ public:
         /* [in] */ IDisplayMetrics* metrics,
         /* [in] */ ICompatibilityInfo* compat);
 
-    CARAPI UpdateSystemConfigurationEx(
+    CARAPI UpdateSystemConfiguration(
         /* [in] */ IConfiguration* config,
         /* [in] */ IDisplayMetrics* metrics);
 };

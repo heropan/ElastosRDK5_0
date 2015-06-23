@@ -2,7 +2,7 @@
 #include "CAddAccountSettings.h"
 #include "R.h"
 
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::Accounts::EIID_IAccountManagerCallback;
 using Elastos::Droid::Os::CBundle;
@@ -57,7 +57,7 @@ namespace AccountsAndSyncSettings {
             addAccountOptions->PutParcelable(CAddAccountSettings::KEY_CALLER_IDENTITY, IParcelable::Probe(mOwner->mPendingIntent));
             addAccountOptions->PutBoolean(CAddAccountSettings::EXTRA_HAS_MULTIPLE_USERS,
                     /*Utils.hasMultipleUsers(AddAccountSettings.this)*/FALSE);
-            intent->PutExtrasEx(addAccountOptions);
+            intent->PutExtras(addAccountOptions);
             mOwner->StartActivityForResult(intent, CAddAccountSettings::ADD_ACCOUNT_REQUEST);
         } else {
             mOwner->SetResult(IActivity::RESULT_OK);
@@ -111,7 +111,7 @@ namespace AccountsAndSyncSettings {
 
         AutoPtr<IIntent> intent2;
         FAIL_RETURN(CIntent::New((IIntent**)&intent2));
-        intent2->SetClassNameEx(String("elastos"),
+        intent2->SetClassName(String("elastos"),
                 String("elastos.accounts.ChooseAccountActivity"));
 
         if (authorities != NULL) {

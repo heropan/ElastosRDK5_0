@@ -50,7 +50,7 @@ ECode CUiTestAutomationBridge::MyAccessibilityServiceCallbacks::OnAccessibilityE
         CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
         while (TRUE) {
             mHost->mLastEvent = NULL;
-            helper->ObtainEx(event, (IAccessibilityEvent**)&mHost->mLastEvent);
+            helper->Obtain(event, (IAccessibilityEvent**)&mHost->mLastEvent);
             if (!mHost->mWaitingForEventDelivery) {
                 mHost->mLock.NotifyAll();
                 break;
@@ -121,7 +121,7 @@ ECode CUiTestAutomationBridge::GetLastAccessibilityEvent(
 {
     VALIDATE_NOT_NULL(event);
     *event = mLastEvent;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
@@ -307,7 +307,7 @@ ECode CUiTestAutomationBridge::ExecuteCommandAndWaitForAccessibilityEvent(
             mUnprocessedEventAvailable = FALSE;
             mLock.NotifyAll();
             *event = mLastEvent;
-            INTERFACE_ADDREF(*event);
+            REFCOUNT_ADD(*event);
             return NOERROR;
         }
         // Ask for another event.

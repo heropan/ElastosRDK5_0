@@ -5,7 +5,7 @@
 #include "_CPathSegments.h"
 #include "ext/frameworkext.h"
 #include <elastos/AutoPtr.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 /**
  * Wrapper for path segment array.

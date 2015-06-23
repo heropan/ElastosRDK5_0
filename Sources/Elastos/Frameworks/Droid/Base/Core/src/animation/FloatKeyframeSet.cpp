@@ -27,7 +27,7 @@ ECode FloatKeyframeSet::GetValue(
     AutoPtr<IFloat> rst;
     CFloat::New(v, (IFloat**)&rst);
     *value = rst;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode FloatKeyframeSet::Clone(
     }
     AutoPtr<IFloatKeyframeSet> newSet = new FloatKeyframeSet(newKeyframes);
     *obj = newSet;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -207,7 +207,7 @@ ECode FloatKeyframeSet::GetKeyframes(
 {
     VALIDATE_NOT_NULL(frames);
     *frames = mKeyframes;
-    INTERFACE_ADDREF(*frames);
+    REFCOUNT_ADD(*frames);
     return NOERROR;
 }
 

@@ -2,8 +2,8 @@
 #include "graphics/CRectF.h"
 #include "graphics/CRect.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -69,7 +69,7 @@ ECode CRectF::constructor(
     return NOERROR;
 }
 
-ECode CRectF::EqualsEx(
+ECode CRectF::Equals(
     /* [in] */ IRectF* r,
     /* [out] */ Boolean* result)
 {
@@ -89,7 +89,7 @@ ECode CRectF::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(IRectF::Probe(r), result);
+    return Equals(IRectF::Probe(r), result);
 }
 
 ECode CRectF::GetHashCode(
@@ -269,7 +269,7 @@ ECode CRectF::Get(
     return NOERROR;
 }
 
-ECode CRectF::SetEx(
+ECode CRectF::Set(
     /* [in] */ IRectF* src)
 {
     CRectF* srcObj = (CRectF*)src;
@@ -280,7 +280,7 @@ ECode CRectF::SetEx(
     return NOERROR;
 }
 
-ECode CRectF::SetEx2(
+ECode CRectF::Set(
     /* [in] */ IRect* src)
 {
     CRect* srcObj = (CRect*)src;
@@ -335,7 +335,7 @@ ECode CRectF::Contains(
     return NOERROR;
 }
 
-ECode CRectF::ContainsEx(
+ECode CRectF::Contains(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -351,7 +351,7 @@ ECode CRectF::ContainsEx(
     return NOERROR;
 }
 
-ECode CRectF::ContainsEx2(
+ECode CRectF::Contains(
     /* [in] */ IRectF* r,
     /* [out] */ Boolean* isContained)
 {
@@ -396,7 +396,7 @@ ECode CRectF::Intersect(
     return NOERROR;
 }
 
-ECode CRectF::IntersectEx(
+ECode CRectF::Intersect(
     /* [in] */ IRectF* r,
     /* [out] */ Boolean* result)
 {
@@ -481,14 +481,14 @@ ECode CRectF::Union(
     return NOERROR;
 }
 
-ECode CRectF::UnionEx(
+ECode CRectF::Union(
     /* [in] */ IRectF* r)
 {
     CRectF* cr = (CRectF*)r;
     return Union(cr->mLeft, cr->mTop, cr->mRight, cr->mBottom);
 }
 
-ECode CRectF::UnionEx2(
+ECode CRectF::Union(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {

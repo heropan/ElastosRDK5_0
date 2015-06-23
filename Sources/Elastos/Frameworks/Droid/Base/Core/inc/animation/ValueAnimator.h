@@ -3,9 +3,9 @@
 #define  __VALUEANIMATOR_H__
 
 #include "animation/Animator.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::View::IChoreographer;
 using Elastos::Droid::View::Animation::IAnimation;

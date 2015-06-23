@@ -1355,7 +1355,7 @@ module
             [in] Int32 userHandle,
             [out] Boolean* result);
 
-        GetUriForEx(
+        GetUriFor(
             [in] String name,
             [out] IUri** uri);
 
@@ -1365,7 +1365,7 @@ module
             [in] Int32 def,
             [out] Int32* value);
 
-        GetInt32Ex(
+        GetInt32(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Int32* value);
@@ -1382,7 +1382,7 @@ module
             [in] Int64 def,
             [out] Int64* value);
 
-        GetInt64Ex(
+        GetInt64(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Int64* value);
@@ -1399,7 +1399,7 @@ module
             [in] Float def,
             [out] Float* value);
 
-        GetFloatEx(
+        GetFloat(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Float* value);
@@ -2435,7 +2435,7 @@ module
             [in] Int32 userHandle,
             [out] Boolean* result);
 
-        GetUriForEx(
+        GetUriFor(
             [in] String name,
             [out] IUri** uri);
 
@@ -2452,12 +2452,12 @@ module
             [in] Int32 userHandle,
             [out] Int32* value);
 
-        GetInt32Ex(
+        GetInt32(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Int32* value);
 
-        GetInt32ForUserEx(
+        GetInt32ForUser(
             [in] IContentResolver* cr,
             [in] String name,
             [in] Int32 userHandle,
@@ -2489,12 +2489,12 @@ module
             [in] Int32 userHandle,
             [out] Int64* value);
 
-        GetInt64Ex(
+        GetInt64(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Int64* value);
 
-        GetInt64ForUserEx(
+        GetInt64ForUser(
             [in] IContentResolver* cr,
             [in] String name,
             [in] Int32 userHandle,
@@ -2526,12 +2526,12 @@ module
             [in] Int32 userHandle,
             [out] Float* value);
 
-        GetFloatEx(
+        GetFloat(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Float* value);
 
-        GetFloatForUserEx(
+        GetFloatForUser(
             [in] IContentResolver* cr,
             [in] String name,
             [in] Int32 userHandle,
@@ -3885,7 +3885,7 @@ module
             [in] Int32 userHandle,
             [out] Boolean* res);
 
-        GetUriForEx(
+        GetUriFor(
             [in] String name,
             [out] IUri** uri);
 
@@ -3902,12 +3902,12 @@ module
             [in] Int32 userHandle,
             [out] Int32* value);
 
-        GetInt32Ex(
+        GetInt32(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Int32* value);
 
-        GetInt32ForUserEx(
+        GetInt32ForUser(
             [in] IContentResolver* cr,
             [in] String name,
             [in] Int32 userHandle,
@@ -3939,12 +3939,12 @@ module
             [in] Int32 userHandle,
             [out] Int64* value);
 
-        GetInt64Ex(
+        GetInt64(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Int64* value);
 
-        GetInt64ForUserEx(
+        GetInt64ForUser(
             [in] IContentResolver* cr,
             [in] String name,
             [in] Int32 userHandle,
@@ -3976,12 +3976,12 @@ module
             [in] Int32 userHandle,
             [out] Float* value);
 
-        GetFloatEx(
+        GetFloat(
             [in] IContentResolver* cr,
             [in] String name,
             [out] Float* value);
 
-        GetFloatForUserEx(
+        GetFloatForUser(
             [in] IContentResolver* cr,
             [in] String name,
             [in] Int32 userHandle,

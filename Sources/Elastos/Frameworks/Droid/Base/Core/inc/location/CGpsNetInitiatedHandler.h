@@ -3,9 +3,8 @@
 #define __GPSNETINITIATEDHANDLER_H__
 #include "_CGpsNetInitiatedHandler.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

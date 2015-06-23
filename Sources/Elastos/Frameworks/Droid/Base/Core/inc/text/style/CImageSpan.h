@@ -4,10 +4,10 @@
 
 #include "_CImageSpan.h"
 #include "text/style/ImageSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/style/MetricAffectingSpanMacro.h"
-//#include "text/style/ReplacementSpanMacro.h"
-//#include "text/style/DynamicDrawableSpanMacro.h"
+
+
+//
+//
 
 namespace Elastos {
 namespace Droid {

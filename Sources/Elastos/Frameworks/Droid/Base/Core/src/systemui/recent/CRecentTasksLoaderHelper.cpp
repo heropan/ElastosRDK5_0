@@ -15,7 +15,7 @@ ECode CRecentTasksLoaderHelper::GetInstance(
     VALIDATE_NOT_NULL(loader);
     AutoPtr<IRecentTasksLoader> l = CRecentTasksLoader::GetInstance(context);
     *loader = l;
-    INTERFACE_ADDREF(*loader);
+    REFCOUNT_ADD(*loader);
     return NOERROR;
 }
 

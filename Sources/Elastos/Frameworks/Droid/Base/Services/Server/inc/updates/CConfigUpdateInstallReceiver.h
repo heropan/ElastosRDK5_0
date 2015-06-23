@@ -5,7 +5,7 @@
 #include <elstring.h>
 #include <eltypes.h>
 
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;

@@ -2,7 +2,7 @@
 #define __CACCESSIBILITYSERVICEINFO_H__
 
 #include "_CAccessibilityServiceInfo.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::IContext;

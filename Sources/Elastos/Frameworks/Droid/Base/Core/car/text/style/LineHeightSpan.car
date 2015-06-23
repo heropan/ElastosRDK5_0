@@ -23,7 +23,7 @@ module
     }
 
     interface ILineHeightSpanWithDensity extends ILineHeightSpan {
-        ChooseHeightEx(
+        ChooseHeight(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,

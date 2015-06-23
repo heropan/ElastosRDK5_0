@@ -3,11 +3,10 @@
 #define __COOKIESYNCMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
 #include "webkit/WebSyncManager.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {

@@ -3,7 +3,7 @@
 
 #include "_CLinearLayoutLayoutParams.h"
 #include "widget/LinearLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

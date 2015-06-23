@@ -2,7 +2,7 @@
 #include "webkit/CertTool.h"
 #include "webkit/KeyStoreHandler.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::EIID_IHandler;
 
 namespace Elastos {

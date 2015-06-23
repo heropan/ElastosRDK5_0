@@ -92,13 +92,13 @@ module
         SetIcon(
             [in] IDrawable* icon);
 
-        SetIconEx(
+        SetIcon(
             [in] Int32 resId);
 
         SetLogo(
             [in] IDrawable* logo);
 
-        SetLogoEx(
+        SetLogo(
             [in] Int32 resId);
 
         SetNavigationMode(

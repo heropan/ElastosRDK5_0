@@ -1,6 +1,6 @@
 
 #include "CPppoeManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -16,7 +16,7 @@ ECode CPppoeManager::GetIIPppoeManager(
 {
     VALIDATE_NOT_NULL(manager);
     *manager = mService;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -32,7 +32,7 @@ ECode CPppoeManager::GetHandler(
 {
     VALIDATE_NOT_NULL(handler);
     *handler = mHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 

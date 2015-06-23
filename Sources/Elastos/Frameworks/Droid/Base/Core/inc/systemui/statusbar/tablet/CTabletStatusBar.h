@@ -4,7 +4,7 @@
 
 #include "_CTabletStatusBar.h"
 #include "systemui/statusbar/tablet/TabletStatusBar.h"
-#include "systemui/statusbar/BaseStatusBarMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -43,7 +43,7 @@ public:
 
     CARAPI ResetNotificationPeekFadeTimer();
 
-    CARAPI AnimateCollapsePanelsEx();
+    CARAPI AnimateCollapsePanels();
 
     CARAPI ClearAll();
 

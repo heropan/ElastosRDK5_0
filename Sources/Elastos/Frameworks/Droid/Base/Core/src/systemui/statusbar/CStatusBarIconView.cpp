@@ -53,7 +53,7 @@ ECode CStatusBarIconView::GetStatusBarIcon(
 {
     VALIDATE_NOT_NULL(icon);
     *icon = StatusBarIconView::GetStatusBarIcon();
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
     return NOERROR;
 }
 
@@ -65,10 +65,10 @@ ECode CStatusBarIconView::ToString(
     return NOERROR;
 }
 
-ECode CStatusBarIconView::SetAlphaEx(
+ECode CStatusBarIconView::SetAlpha(
         /* [in] */ Int32 alpha)
 {
-    return StatusBarIconView::SetAlphaEx(alpha);
+    return StatusBarIconView::SetAlpha(alpha);
 }
 
 }// namespace StatusBar

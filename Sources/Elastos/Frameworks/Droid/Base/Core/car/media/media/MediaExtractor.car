@@ -53,7 +53,7 @@ module
          * @param uri the Content URI of the data you want to extract from.
          * @param headers the headers to be sent together with the request for the data
          */
-        SetDataSourceEx(
+        SetDataSource(
             [in] IContext* ctx,
             [in] IUri* uri,
             [in] IObjectStringMap* headers);
@@ -64,7 +64,7 @@ module
          * @param path the path of the file, or the http URL
          * @param headers the headers associated with the http request for the stream you want to play
          */
-        SetDataSourceEx2(
+        SetDataSource(
             [in] String path,
             [in] IObjectStringMap* headers);
 
@@ -80,7 +80,7 @@ module
          * As an alternative, the application could first open the file for reading,
          * and then use the file descriptor form {@link #setDataSource(FileDescriptor)}.
          */
-        SetDataSourceEx3(
+        SetDataSource(
             [in] String path);
 
         /**
@@ -89,7 +89,7 @@ module
          *
          * @param fd the FileDescriptor for the file you want to extract from.
          */
-        SetDataSourceEx4(
+        SetDataSource(
             [in] IFileDescriptor* fd);
 
         /**
@@ -101,7 +101,7 @@ module
          * @param offset the offset into the file where the data to be extracted starts, in bytes
          * @param length the length in bytes of the data to be extracted
          */
-        SetDataSourceEx5(
+        SetDataSource(
             [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length);

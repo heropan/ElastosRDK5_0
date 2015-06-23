@@ -5,7 +5,7 @@
 #include "R.h"
 #include "provider/Settings.h"
 #include "os/SystemClock.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Net::IDatagramPacket;
 using Elastos::Net::CDatagramPacket;
@@ -192,7 +192,7 @@ void CDnsPinger::HandleActionPingDNS(
     mEventCounter++;
 
     AutoPtr<IMessage> msg;
-    ObtainMessageEx2(ACTION_LISTEN_FOR_RESPONSE, mEventCounter, 0, (IMessage**)&msg);
+    ObtainMessage(ACTION_LISTEN_FOR_RESPONSE, mEventCounter, 0, (IMessage**)&msg);
     Boolean result;
     SendMessageDelayed(msg, RECEIVE_POLL_INTERVAL_MS, &result);
 //   } catch (IOException e) {
@@ -256,7 +256,7 @@ void CDnsPinger::HandleActionListenForResponse(
 
     if (!mActivePings.IsEmpty()) {
         AutoPtr<IMessage> msg;
-        ObtainMessageEx2(ACTION_LISTEN_FOR_RESPONSE, mEventCounter, 0, (IMessage**)&msg);
+        ObtainMessage(ACTION_LISTEN_FOR_RESPONSE, mEventCounter, 0, (IMessage**)&msg);
         Boolean result;
         SendMessageDelayed(msg, RECEIVE_POLL_INTERVAL_MS, &result);
     }
@@ -289,7 +289,7 @@ ECode CDnsPinger::GetDnsList(
             objectcontainer->Add((*iter)->Probe(EIID_IInterface));
         }
         *dnslist = objectcontainer;
-        INTERFACE_ADDREF(*dnslist);
+        REFCOUNT_ADD(*dnslist);
         return NOERROR;
     }
 
@@ -305,12 +305,12 @@ ECode CDnsPinger::GetDnsList(
             objectcontainer->Add((IInterface*)*iter);
         }
         *dnslist = objectcontainer;
-        INTERFACE_ADDREF(*dnslist);
+        REFCOUNT_ADD(*dnslist);
         return NOERROR;
     }
 
     *dnslist = dnses;
-    INTERFACE_ADDREF(*dnslist);
+    REFCOUNT_ADD(*dnslist);
     return NOERROR;
 }
 
@@ -336,7 +336,7 @@ ECode CDnsPinger::PingDnsAsync(
     mCurrentToken->Get(&val);
     AutoPtr<DnsArg> newDnsArg = new DnsArg(dns, val);
     AutoPtr<IMessage> msg;
-    ObtainMessageEx3(ACTION_PING_DNS, id, timeout, newDnsArg, (IMessage**)&msg);
+    ObtainMessage(ACTION_PING_DNS, id, timeout, newDnsArg, (IMessage**)&msg);
     Boolean bval;
     return SendMessageDelayed(msg, delay, &bval);
 }
@@ -361,7 +361,7 @@ ECode CDnsPinger::SendResponse(
 //    }
 
     AutoPtr<IMessage> msg;
-    ObtainMessageEx2(DNS_PING_RESULT, internalId, responseVal, (IMessage**)&msg);
+    ObtainMessage(DNS_PING_RESULT, internalId, responseVal, (IMessage**)&msg);
     Boolean result;
     return mTarget->SendMessage(msg, &result);
 }
@@ -401,7 +401,7 @@ ECode CDnsPinger::GetDefaultDns(
         return ec;
     }
     *result = addr;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -4,9 +4,9 @@
 
 #include "_CContentValues.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IByte;

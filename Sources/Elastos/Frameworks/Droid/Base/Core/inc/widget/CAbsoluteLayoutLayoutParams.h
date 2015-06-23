@@ -3,7 +3,7 @@
 
 #include "_CAbsoluteLayoutLayoutParams.h"
 #include "widget/AbsoluteLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

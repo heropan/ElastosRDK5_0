@@ -76,7 +76,7 @@ ECode CLocationManager::GetProvider(
  * enabled are returned.
  * @return list of Strings containing names of the providers
  */
-ECode CLocationManager::GetProvidersEx(
+ECode CLocationManager::GetProviders(
     /* [in] */ ICriteria* criteria,
     /* [in] */ Boolean enabledOnly,
     /* [out] */ IObjectContainer** providers)
@@ -167,7 +167,7 @@ ECode CLocationManager::RequestLocationUpdates(
  * @throws IllegalArgumentException if listener is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestLocationUpdatesEx(
+ECode CLocationManager::RequestLocationUpdates(
     /* [in] */ const String& provider,
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
@@ -200,7 +200,7 @@ ECode CLocationManager::RequestLocationUpdatesEx(
  * @throws IllegalArgumentException if listener is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestLocationUpdatesEx2(
+ECode CLocationManager::RequestLocationUpdates(
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
     /* [in] */ ICriteria* criteria,
@@ -228,7 +228,7 @@ ECode CLocationManager::RequestLocationUpdatesEx2(
  * @throws IllegalArgumentException if intent is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestLocationUpdatesEx3(
+ECode CLocationManager::RequestLocationUpdates(
     /* [in] */ const String& provider,
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
@@ -329,7 +329,7 @@ ECode CLocationManager::RequestLocationUpdatesEx3(
  * @throws IllegalArgumentException if intent is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestLocationUpdatesEx4(
+ECode CLocationManager::RequestLocationUpdates(
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
     /* [in] */ ICriteria* criteria,
@@ -386,7 +386,7 @@ ECode CLocationManager::RequestSingleUpdate(
  * @throws IllegalArgumentException if listener is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestSingleUpdateEx(
+ECode CLocationManager::RequestSingleUpdate(
     /* [in] */ ICriteria* criteria,
     /* [in] */ ILocationListener* listener,
     /* [in] */ ILooper* looper)
@@ -407,7 +407,7 @@ ECode CLocationManager::RequestSingleUpdateEx(
  * @throws IllegalArgumentException if intent is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestSingleUpdateEx2(
+ECode CLocationManager::RequestSingleUpdate(
     /* [in] */ const String& provider,
     /* [in] */ IPendingIntent* intent)
 {
@@ -428,7 +428,7 @@ ECode CLocationManager::RequestSingleUpdateEx2(
  * @throws IllegalArgumentException if intent is null
  * @throws SecurityException if no suitable permission is present
  */
-ECode CLocationManager::RequestSingleUpdateEx3(
+ECode CLocationManager::RequestSingleUpdate(
     /* [in] */ ICriteria* criteria,
     /* [in] */ IPendingIntent* intent)
 {
@@ -492,7 +492,7 @@ ECode CLocationManager::RequestSingleUpdateEx3(
  *
  * @hide
  */
-ECode CLocationManager::RequestLocationUpdatesEx5(
+ECode CLocationManager::RequestLocationUpdates(
     /* [in] */ ILocationRequest* request,
     /* [in] */ ILocationListener* listener,
     /* [in] */ ILooper* looper)
@@ -520,7 +520,7 @@ ECode CLocationManager::RequestLocationUpdatesEx5(
  *
  * @hide
  */
-ECode CLocationManager::RequestLocationUpdatesEx6(
+ECode CLocationManager::RequestLocationUpdates(
     /* [in] */ ILocationRequest* request,
     /* [in] */ IPendingIntent* intent)
 {
@@ -550,7 +550,7 @@ ECode CLocationManager::RemoveUpdates(
  * @param intent pending intent object that no longer needs location updates
  * @throws IllegalArgumentException if intent is null
  */
-ECode CLocationManager::RemoveUpdatesEx(
+ECode CLocationManager::RemoveUpdates(
     /* [in] */ IPendingIntent* intent)
 {
     return LocationManager::RemoveUpdates(intent);

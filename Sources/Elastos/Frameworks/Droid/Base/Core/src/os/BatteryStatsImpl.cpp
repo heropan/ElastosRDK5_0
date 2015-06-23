@@ -12,8 +12,8 @@
 #include "net/CNetworkStats.h"
 #include "os/CSystemProperties.h"
 #endif
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::ICharSequence;
@@ -22,8 +22,8 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;
@@ -1058,7 +1058,7 @@ ECode BatteryStatsImpl::Uid::Wakelock::GetWakeTime(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
             // throw new IllegalArgumentException("type = " + type);
     }
-    INTERFACE_ADDREF(*timer);
+    REFCOUNT_ADD(*timer);
     return NOERROR;
 }
 
@@ -1993,7 +1993,7 @@ Int64 BatteryStatsImpl::Uid::ComputeCurrentTcpBytesReceived()
     AutoPtr<IInteger32> integer;
     CInteger32::New(mUid, (IInteger32**)&integer);
     container->Add((IInterface*)integer);
-    ns->GetTotalEx2(NULL, container, (INetworkStatsEntry**)&entry);
+    ns->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);
     Int64 uidRxBytes;
     entry->GetRxBytes(&uidRxBytes);
     return mCurrentTcpBytesReceived + (mStartedTcpBytesReceived >= 0
@@ -2246,7 +2246,7 @@ Int64 BatteryStatsImpl::Uid::ComputeCurrentTcpBytesSent()
     AutoPtr<IInteger32> integer;
     CInteger32::New(mUid, (IInteger32**)&integer);
     container->Add((IInterface*)integer);
-    ns->GetTotalEx2(NULL, container, (INetworkStatsEntry**)&entry);
+    ns->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);
     Int64 uidTxBytes;
     entry->GetTxBytes(&uidTxBytes);
     return mCurrentTcpBytesSent + (mStartedTcpBytesSent >= 0
@@ -2696,7 +2696,7 @@ ECode BatteryStatsImpl::Uid::GetWakeTimerLocked(
                 wl->mTimerPartial = t;
             }
             *timer = t;
-            INTERFACE_ADDREF(*timer)
+            REFCOUNT_ADD(*timer)
             return NOERROR;
         case WAKE_TYPE_FULL:
             t = wl->mTimerFull;
@@ -2706,7 +2706,7 @@ ECode BatteryStatsImpl::Uid::GetWakeTimerLocked(
                 wl->mTimerFull = t;
             }
             *timer = t;
-            INTERFACE_ADDREF(*timer)
+            REFCOUNT_ADD(*timer)
             return NOERROR;
         case WAKE_TYPE_WINDOW:
             t = wl->mTimerWindow;
@@ -2716,7 +2716,7 @@ ECode BatteryStatsImpl::Uid::GetWakeTimerLocked(
                 wl->mTimerWindow = t;
             }
             *timer = t;
-            INTERFACE_ADDREF(*timer)
+            REFCOUNT_ADD(*timer)
             return NOERROR;
         default:
             Logger::E(TAG, "type=%d", type);
@@ -3767,7 +3767,7 @@ void BatteryStatsImpl::DoUnplugLocked(
     }
 
     AutoPtr<INetworkStatsEntry> temp;
-    ifaceStats->GetTotalEx2(entry, container, (INetworkStatsEntry**)&temp);
+    ifaceStats->GetTotal(entry, container, (INetworkStatsEntry**)&temp);
     entry = temp;
     Int64 rxBytes, txBytes;
     entry->GetRxBytes(&rxBytes);
@@ -3825,7 +3825,7 @@ void BatteryStatsImpl::DoPlugLocked(
     }
 
     AutoPtr<INetworkStatsEntry> entry;
-    ifaceStats->GetTotalEx2(NULL, container, (INetworkStatsEntry**)&entry);
+    ifaceStats->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);
     Int64 rxBytes, txBytes;
     entry->GetRxBytes(&rxBytes);
     entry->GetTxBytes(&txBytes);
@@ -5190,7 +5190,7 @@ void BatteryStatsImpl::SetOnBatteryLocked(
     Boolean doWrite = FALSE;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_REPORT_POWER_CHANGE,
+    mHandler->ObtainMessage(MSG_REPORT_POWER_CHANGE,
         onBattery ? 1 : 0, 0, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -5527,7 +5527,7 @@ Int64 BatteryStatsImpl::GetMobileTcpBytesSent(
         CStringWrapper::New(*it, (ICharSequence**)&cs);
         container->Add(cs);
     }
-    ns->GetTotalEx2(NULL, container, (INetworkStatsEntry**)&entry);
+    ns->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);
     Int64 mobileTxBytes;
     entry->GetTxBytes(&mobileTxBytes);
     return GetTcpBytes(mobileTxBytes, mMobileDataTx, which);
@@ -5546,7 +5546,7 @@ Int64 BatteryStatsImpl::GetMobileTcpBytesReceived(
         CStringWrapper::New(*it, (ICharSequence**)&cs);
         container->Add(cs);
     }
-    ns->GetTotalEx2(NULL, container, (INetworkStatsEntry**)&entry);
+    ns->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);
     Int64 mobileRxBytes;
     entry->GetRxBytes(&mobileRxBytes);
     return GetTcpBytes(mobileRxBytes, mMobileDataRx, which);
@@ -5892,14 +5892,14 @@ ECode BatteryStatsImpl::ReadFully(
     AutoPtr< ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(avail);
     while (TRUE) {
         Int32 amt;
-        stream->ReadBytesEx(data, pos, data->GetLength() - pos, &amt);
+        stream->ReadBytes(data, pos, data->GetLength() - pos, &amt);
         //Log.i("foo", "Read " + amt + " bytes at " + pos
         //        + " of avail " + data.length);
         if (amt <= 0) {
             //Log.i("foo", "**** FINISHED READING: pos=" + pos
             //        + " len=" + data.length);
             *bytes = data;
-            INTERFACE_ADDREF(*bytes);
+            REFCOUNT_ADD(*bytes);
             return NOERROR;
         }
         pos += amt;

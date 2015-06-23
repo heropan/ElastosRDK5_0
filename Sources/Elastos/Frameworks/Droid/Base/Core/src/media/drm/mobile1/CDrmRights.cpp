@@ -58,7 +58,7 @@ ECode CDrmRights::GetConstraint(
     }
 
     *constraint = (IDrmConstraintInfo*)c.Get();
-    INTERFACE_ADDREF(*constraint);
+    REFCOUNT_ADD(*constraint);
 
     return NOERROR;
 }

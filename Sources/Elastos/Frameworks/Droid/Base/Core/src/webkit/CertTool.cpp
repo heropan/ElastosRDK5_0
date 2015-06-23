@@ -1,7 +1,7 @@
 
 #include "webkit/CertTool.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

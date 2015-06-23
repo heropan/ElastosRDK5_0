@@ -65,7 +65,7 @@ void TextAppearanceSpan::Init(
             const_cast<Int32 *>(R::styleable::TextAppearance),
             ARRAY_SIZE(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx(appearance, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(appearance, attrIds, (ITypedArray**)&a);
 
     a->GetColorStateList(R::styleable::TextAppearance_textColor, (IColorStateList**)&textColor);
     a->GetColorStateList(R::styleable::TextAppearance_textColorLink, (IColorStateList**)&mTextColorLink);
@@ -107,7 +107,7 @@ void TextAppearanceSpan::Init(
         attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::Theme),
                 ARRAY_SIZE(R::styleable::Theme));
-        context->ObtainStyledAttributesEx(R::style::Theme, attrIds, (ITypedArray**)&a);
+        context->ObtainStyledAttributes(R::style::Theme, attrIds, (ITypedArray**)&a);
 
         textColor = NULL;
         a->GetColorStateList(colorList, (IColorStateList**)&textColor);

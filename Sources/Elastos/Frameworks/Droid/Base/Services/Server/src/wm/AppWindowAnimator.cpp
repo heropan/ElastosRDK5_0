@@ -381,7 +381,7 @@ ECode AppWindowAnimator::DummyAnimation::SetInterpolator(
     return Animation::SetInterpolator(context, resID);
 }
 
-ECode AppWindowAnimator::DummyAnimation::SetInterpolatorEx(
+ECode AppWindowAnimator::DummyAnimation::SetInterpolator(
     /* [in] */ IInterpolator* i)
 {
     return Animation::SetInterpolator(i);
@@ -612,14 +612,14 @@ ECode AppWindowAnimator::DummyAnimation::GetTransformation(
     return NOERROR;
 }
 
-ECode AppWindowAnimator::DummyAnimation::GetTransformationEx(
+ECode AppWindowAnimator::DummyAnimation::GetTransformation(
     /* [in] */ Int64 currentTime,
     /* [in, out] */ ITransformation* outTransformation,
     /* [in] */ Float scale,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = Animation::GetTransformationEx(currentTime, outTransformation, scale);
+    *result = Animation::GetTransformation(currentTime, outTransformation, scale);
     return NOERROR;
 }
 

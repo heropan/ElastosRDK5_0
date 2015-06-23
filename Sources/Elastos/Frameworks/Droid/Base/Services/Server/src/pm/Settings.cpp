@@ -10,9 +10,9 @@
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
 #include "util/JournaledFile.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -1061,7 +1061,7 @@ void Settings::ReadPackageRestrictionsLPr(
             FAIL_GOTO(ecode = CFileInputStream::New(userPackagesStateFile, (IFileInputStream**)&str), EXIT);
         }
         AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-        FAIL_GOTO(ecode = parser->SetInputEx(str, String(NULL)), EXIT);
+        FAIL_GOTO(ecode = parser->SetInput(str, String(NULL)), EXIT);
 
         Int32 type;
         while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
@@ -1093,7 +1093,7 @@ void Settings::ReadPackageRestrictionsLPr(
             FAIL_GOTO(ecode = parser->GetName(&tagName), EXIT);
             if (tagName.Equals(TAG_PACKAGE)) {
                 String name;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_NAME, &name), EXIT);
                 HashMap<String, AutoPtr<PackageSetting> >::Iterator it2 = mPackages.Find(name);
                 ps = (it2 != mPackages.End() ? it2->mSecond : NULL);
                 if (ps == NULL) {
@@ -1103,19 +1103,19 @@ void Settings::ReadPackageRestrictionsLPr(
                     continue;
                 }
                 String enabledStr;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_ENABLED, &enabledStr), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_ENABLED, &enabledStr), EXIT);
                 Int32 enabled = enabledStr == NULL
                         ? IPackageManager::COMPONENT_ENABLED_STATE_DEFAULT : StringUtils::ParseInt32(enabledStr);
                 String installedStr;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_INSTALLED, &installedStr), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_INSTALLED, &installedStr), EXIT);
                 Boolean installed = installedStr == NULL
                         ? TRUE : StringUtils::ParseInt32(installedStr);
                 String stoppedStr;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_STOPPED, &stoppedStr), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_STOPPED, &stoppedStr), EXIT);
                 Boolean stopped = stoppedStr == NULL
                         ? FALSE : StringUtils::ParseInt32(stoppedStr);
                 String notLaunchedStr;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_NOT_LAUNCHED, &notLaunchedStr), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_NOT_LAUNCHED, &notLaunchedStr), EXIT);
                 Boolean notLaunched = stoppedStr == NULL
                         ? FALSE : StringUtils::ParseInt32(notLaunchedStr);
 
@@ -1229,7 +1229,7 @@ AutoPtr< HashSet<String> > Settings::ReadComponentsLPr(
         parser->GetName(&tagName);
         if (tagName.Equals(TAG_ITEM)) {
             String componentName;
-            parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &componentName);
+            parser->GetAttributeValue(String(NULL), ATTR_NAME, &componentName);
             if (!componentName.IsNull()) {
                 if (components == NULL) {
                     components = new HashSet<String>();
@@ -1455,7 +1455,7 @@ void Settings::ReadStoppedLPw()
             CFileInputStream::New(mStoppedPackagesFilename, (IFileInputStream**)&str);
         }
         AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-        parser->SetInputEx(str, String(NULL));
+        parser->SetInput(str, String(NULL));
 
         Int32 type;
         while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
@@ -1488,12 +1488,12 @@ void Settings::ReadStoppedLPw()
             parser->GetName(&tagName);
             if (tagName.Equals(TAG_PACKAGE)) {
                 String name;
-                parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
+                parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
                 HashMap<String, AutoPtr<PackageSetting> >::Iterator it2 = mPackages.Find(name);
                 AutoPtr<PackageSetting> ps = (it2 != mPackages.End() ? it2->mSecond : NULL);
                 if (ps != NULL) {
                     ps->SetStopped(TRUE, 0);
-                    parser->GetAttributeValueEx(String(NULL), ATTR_NOT_LAUNCHED, &temp);
+                    parser->GetAttributeValue(String(NULL), ATTR_NOT_LAUNCHED, &temp);
                     if (CString("1").Equals(temp)) {
                         ps->SetNotLaunched(TRUE, 0);
                     }
@@ -2042,7 +2042,7 @@ Boolean Settings::ReadLPw(
     }
     {
         AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-        parser->SetInputEx(str, String(NULL));
+        parser->SetInput(str, String(NULL));
         Int32 type;
         while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
                 && type != IXmlPullParser::END_DOCUMENT) {
@@ -2099,11 +2099,11 @@ Boolean Settings::ReadLPw(
             }
             else if (tagName.Equals("cleaning-package")) {
                 String name;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_NAME, &name), EXIT);
                 String userStr;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_USER, &userStr), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_USER, &userStr), EXIT);
                 String codeStr;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_CODE, &codeStr), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_CODE, &codeStr), EXIT);
                 if (!name.IsNull()) {
                     Int32 userId = 0;
                     Boolean andCode = TRUE;
@@ -2124,9 +2124,9 @@ Boolean Settings::ReadLPw(
             }
             else if (tagName.Equals("renamed-package")) {
                 String nname;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), String("new"), &nname), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), String("new"), &nname), EXIT);
                 String oname;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), String("old"), &oname), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), String("old"), &oname), EXIT);
                 if (!nname.IsNull() && !oname.IsNull()) {
                     mRenamedPackages[nname] = oname;
                 }
@@ -2135,12 +2135,12 @@ Boolean Settings::ReadLPw(
                 mInternalSdkPlatform = mExternalSdkPlatform = 0;
                 //try {
                     String internal;
-                    FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), String("internal"), &internal), EXIT);
+                    FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), String("internal"), &internal), EXIT);
                     if (!internal.IsNull()) {
                         mInternalSdkPlatform = StringUtils::ParseInt32(internal);
                     }
                     String external;
-                    FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), String("external"), &external), EXIT);
+                    FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), String("external"), &external), EXIT);
                     if (!external.IsNull()) {
                         mExternalSdkPlatform = StringUtils::ParseInt32(external);
                     }
@@ -2149,7 +2149,7 @@ Boolean Settings::ReadLPw(
             }
             else if (tagName.Equals("verifier")) {
                 String deviceIdentity;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), String("device"), &deviceIdentity), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), String("device"), &deviceIdentity), EXIT);
                 //try {
                     AutoPtr<IVerifierDeviceIdentityHelper> vdiHelper;
                     CVerifierDeviceIdentityHelper::AcquireSingleton((IVerifierDeviceIdentityHelper**)&vdiHelper);
@@ -2165,7 +2165,7 @@ Boolean Settings::ReadLPw(
             }
             else if (TAG_READ_EXTERNAL_STORAGE.Equals(tagName)) {
                 String enforcement;
-                FAIL_GOTO(ecode = parser->GetAttributeValueEx(String(NULL), ATTR_ENFORCEMENT, &enforcement), EXIT);
+                FAIL_GOTO(ecode = parser->GetAttributeValue(String(NULL), ATTR_ENFORCEMENT, &enforcement), EXIT);
                 mReadExternalStorageEnforced = NULL;
                 CBoolean::New(CString("1").Equals(enforcement), (IBoolean**)&mReadExternalStorageEnforced);
             }
@@ -2314,7 +2314,7 @@ void Settings::ReadDefaultPreferredAppsLPw(
         {
             FAIL_GOTO(ecode = CFileInputStream::New(f, (IFileInputStream**)&str), EXIT);
             AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-            FAIL_GOTO(ecode = parser->SetInputEx(str, String(NULL)), EXIT);
+            FAIL_GOTO(ecode = parser->SetInput(str, String(NULL)), EXIT);
 
             Int32 type;
             while ((parser->Next(&type), type) != IXmlPullParser::START_TAG
@@ -2370,7 +2370,7 @@ Int32 Settings::ReadInt32(
     /* [in] */ Int32 defValue)
 {
     String v;
-    parser->GetAttributeValueEx(ns, name, &v);
+    parser->GetAttributeValue(ns, name, &v);
     // try {
     if (v.IsNull()) {
         return defValue;
@@ -2407,11 +2407,11 @@ ECode Settings::ReadPermissionsLPw(
         parser->GetName(&tagName);
         if (tagName.Equals(TAG_ITEM)) {
             String name;
-            parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
+            parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
             String sourcePackage;
-            parser->GetAttributeValueEx(String(NULL), String("package"), &sourcePackage);
+            parser->GetAttributeValue(String(NULL), String("package"), &sourcePackage);
             String ptype;
-            parser->GetAttributeValueEx(String(NULL), String("type"), &ptype);
+            parser->GetAttributeValue(String(NULL), String("type"), &ptype);
             if (!name.IsNull() && !sourcePackage.IsNull()) {
                 Boolean dynamic = CString("dynamic").Equals(ptype);
                 AutoPtr<BasePermission> bp = new BasePermission(name, sourcePackage,
@@ -2429,7 +2429,7 @@ ECode Settings::ReadPermissionsLPw(
                     pi->SetName(name);
                     pi->SetIcon(ReadInt32(parser, String(NULL), String("icon"), 0));
 
-                    parser->GetAttributeValueEx(String(NULL), String("label"), &temp);
+                    parser->GetAttributeValue(String(NULL), String("label"), &temp);
                     AutoPtr<ICharSequence> csq;
                     CStringWrapper::New(temp, (ICharSequence**)&csq);
 
@@ -2459,20 +2459,20 @@ ECode Settings::ReadDisabledSysPackageLPw(
 {
     String temp;
     String name;
-    parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
+    parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
     String realName;
-    parser->GetAttributeValueEx(String(NULL), String("realName"), &realName);
+    parser->GetAttributeValue(String(NULL), String("realName"), &realName);
     String codePathStr;
-    parser->GetAttributeValueEx(String(NULL), String("codePath"), &codePathStr);
+    parser->GetAttributeValue(String(NULL), String("codePath"), &codePathStr);
     String resourcePathStr;
-    parser->GetAttributeValueEx(String(NULL), String("resourcePath"), &resourcePathStr);
+    parser->GetAttributeValue(String(NULL), String("resourcePath"), &resourcePathStr);
     String nativeLibraryPathStr;
-    parser->GetAttributeValueEx(String(NULL), String("nativeLibraryPath"), &nativeLibraryPathStr);
+    parser->GetAttributeValue(String(NULL), String("nativeLibraryPath"), &nativeLibraryPathStr);
     if (resourcePathStr.IsNull()) {
         resourcePathStr = codePathStr;
     }
     String version;
-    parser->GetAttributeValueEx(String(NULL), String("version"), &version);
+    parser->GetAttributeValue(String(NULL), String("version"), &version);
     Int32 versionCode = 0;
     if (!version.IsNull()) {
         //try {
@@ -2489,7 +2489,7 @@ ECode Settings::ReadDisabledSysPackageLPw(
     AutoPtr<PackageSetting> ps = new PackageSetting(name, realName, codePathFile,
             resourcePathFile, nativeLibraryPathStr, versionCode, pkgFlags);
     String timeStampStr;
-    parser->GetAttributeValueEx(String(NULL), String("ft"), &timeStampStr);
+    parser->GetAttributeValue(String(NULL), String("ft"), &timeStampStr);
     if (!timeStampStr.IsNull()) {
         //try {
         Int64 timeStamp = StringUtils::ParseInt64(timeStampStr, 16);
@@ -2497,7 +2497,7 @@ ECode Settings::ReadDisabledSysPackageLPw(
         // } catch (NumberFormatException e) {
         // }
     } else {
-        parser->GetAttributeValueEx(String(NULL), String("ts"), &timeStampStr);
+        parser->GetAttributeValue(String(NULL), String("ts"), &timeStampStr);
         if (!timeStampStr.IsNull()) {
             //try {
                 Int64 timeStamp = StringUtils::ParseInt64(timeStampStr);
@@ -2507,14 +2507,14 @@ ECode Settings::ReadDisabledSysPackageLPw(
         }
     }
 
-    parser->GetAttributeValueEx(String(NULL), String("it"), &timeStampStr);
+    parser->GetAttributeValue(String(NULL), String("it"), &timeStampStr);
     if (!timeStampStr.IsNull()) {
         //try {
             ps->mFirstInstallTime = StringUtils::ParseInt64(timeStampStr, 16);
         // } catch (NumberFormatException e) {
         // }
     }
-    parser->GetAttributeValueEx(String(NULL), String("ut"), &timeStampStr);
+    parser->GetAttributeValue(String(NULL), String("ut"), &timeStampStr);
     if (!timeStampStr.IsNull()) {
         //try {
             ps->mLastUpdateTime = StringUtils::ParseInt64(timeStampStr, 16);
@@ -2523,11 +2523,11 @@ ECode Settings::ReadDisabledSysPackageLPw(
     }
 
     String idStr;
-    parser->GetAttributeValueEx(String(NULL), String("userId"), &idStr);
+    parser->GetAttributeValue(String(NULL), String("userId"), &idStr);
     ps->mAppId = !idStr.IsNull() ? StringUtils::ParseInt32(idStr) : 0;
     if (ps->mAppId <= 0) {
         String sharedIdStr;
-        parser->GetAttributeValueEx(String(NULL), String("sharedUserId"), &sharedIdStr);
+        parser->GetAttributeValue(String(NULL), String("sharedUserId"), &sharedIdStr);
         ps->mAppId = !sharedIdStr.IsNull() ? StringUtils::ParseInt32(sharedIdStr) : 0;
     }
     Int32 outerDepth, outerDepth1;
@@ -2574,24 +2574,24 @@ ECode Settings::ReadPackageLPw(
     String version;
     Int32 versionCode = 0;
 //     try {
-    parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
-    parser->GetAttributeValueEx(String(NULL), String("realName"), &realName);
-    parser->GetAttributeValueEx(String(NULL), String("userId"), &idStr);
-    parser->GetAttributeValueEx(String(NULL), String("uidError"), &uidError);
-    parser->GetAttributeValueEx(String(NULL), String("sharedUserId"), &sharedIdStr);
-    parser->GetAttributeValueEx(String(NULL), String("codePath"), &codePathStr);
-    parser->GetAttributeValueEx(String(NULL), String("resourcePath"), &resourcePathStr);
-    parser->GetAttributeValueEx(String(NULL), String("nativeLibraryPath"), &nativeLibraryPathStr);
-    parser->GetAttributeValueEx(String(NULL), String("version"), &version);
+    parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
+    parser->GetAttributeValue(String(NULL), String("realName"), &realName);
+    parser->GetAttributeValue(String(NULL), String("userId"), &idStr);
+    parser->GetAttributeValue(String(NULL), String("uidError"), &uidError);
+    parser->GetAttributeValue(String(NULL), String("sharedUserId"), &sharedIdStr);
+    parser->GetAttributeValue(String(NULL), String("codePath"), &codePathStr);
+    parser->GetAttributeValue(String(NULL), String("resourcePath"), &resourcePathStr);
+    parser->GetAttributeValue(String(NULL), String("nativeLibraryPath"), &nativeLibraryPathStr);
+    parser->GetAttributeValue(String(NULL), String("version"), &version);
     if (!version.IsNull()) {
         // try {
         versionCode = StringUtils::ParseInt32(version);
         // } catch (NumberFormatException e) {
         // }
     }
-    parser->GetAttributeValueEx(String(NULL), String("installer"), &installerPackageName);
+    parser->GetAttributeValue(String(NULL), String("installer"), &installerPackageName);
 
-    parser->GetAttributeValueEx(String(NULL), String("flags"), &systemStr);
+    parser->GetAttributeValue(String(NULL), String("flags"), &systemStr);
     if (!systemStr.IsNull()) {
         // try {
         pkgFlags = StringUtils::ParseInt32(systemStr);
@@ -2600,7 +2600,7 @@ ECode Settings::ReadPackageLPw(
     }
     else {
         // For backward compatibility
-        parser->GetAttributeValueEx(String(NULL), String("system"), &systemStr);
+        parser->GetAttributeValue(String(NULL), String("system"), &systemStr);
         if (!systemStr.IsNull()) {
             pkgFlags |= (CString("true").EqualsIgnoreCase(systemStr)) ? IApplicationInfo::FLAG_SYSTEM
                     : 0;
@@ -2612,7 +2612,7 @@ ECode Settings::ReadPackageLPw(
         }
     }
     String timeStampStr;
-    parser->GetAttributeValueEx(String(NULL), String("ft"), &timeStampStr);
+    parser->GetAttributeValue(String(NULL), String("ft"), &timeStampStr);
     if (!timeStampStr.IsNull()) {
         // try {
         timeStamp = StringUtils::ParseInt64(timeStampStr, 16);
@@ -2620,7 +2620,7 @@ ECode Settings::ReadPackageLPw(
         // }
     }
     else {
-        parser->GetAttributeValueEx(String(NULL), String("ts"), &timeStampStr);
+        parser->GetAttributeValue(String(NULL), String("ts"), &timeStampStr);
         if (!timeStampStr.IsNull()) {
             // try {
             timeStamp = StringUtils::ParseInt64(timeStampStr);
@@ -2628,14 +2628,14 @@ ECode Settings::ReadPackageLPw(
             // }
         }
     }
-    parser->GetAttributeValueEx(String(NULL), String("it"), &timeStampStr);
+    parser->GetAttributeValue(String(NULL), String("it"), &timeStampStr);
     if (!timeStampStr.IsNull()) {
         // try {
         firstInstallTime = StringUtils::ParseInt64(timeStampStr, 16);
         // } catch (NumberFormatException e) {
         // }
     }
-    parser->GetAttributeValueEx(String(NULL), String("ut"), &timeStampStr);
+    parser->GetAttributeValue(String(NULL), String("ut"), &timeStampStr);
     if (!timeStampStr.IsNull()) {
         // try {
         lastUpdateTime = StringUtils::ParseInt64(timeStampStr, 16);
@@ -2742,7 +2742,7 @@ ECode Settings::ReadPackageLPw(
         packageSetting->mNativeLibraryPathString = nativeLibraryPathStr;
         // Handle legacy string here for single-user mode
         String enabledStr;
-        parser->GetAttributeValueEx(String(NULL), ATTR_ENABLED, &enabledStr);
+        parser->GetAttributeValue(String(NULL), ATTR_ENABLED, &enabledStr);
         if (!enabledStr.IsNull()) {
             // try {
             packageSetting->SetEnabled(StringUtils::ParseInt32(enabledStr), 0 /* userId */);
@@ -2766,7 +2766,7 @@ ECode Settings::ReadPackageLPw(
         }
 
         String installStatusStr;
-        parser->GetAttributeValueEx(String(NULL), String("installStatus"), &installStatusStr);
+        parser->GetAttributeValue(String(NULL), String("installStatus"), &installStatusStr);
         if (!installStatusStr.IsNull()) {
             if (installStatusStr.EqualsIgnoreCase("false")) {
                 packageSetting->mInstallStatus = PackageSettingBase::PKG_INSTALL_INCOMPLETE;
@@ -2842,7 +2842,7 @@ ECode Settings::ReadDisabledComponentsLPw(
         parser->GetName(&tagName);
         if (tagName.Equals(TAG_ITEM)) {
             String name;
-            parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
+            parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
             if (!name.IsNull()) {
                 packageSetting->AddDisabledComponent(name, userId);
             } else {
@@ -2882,7 +2882,7 @@ ECode Settings::ReadEnabledComponentsLPw(
         parser->GetName(&tagName);
         if (tagName.Equals(TAG_ITEM)) {
             String name;
-            parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
+            parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
             if (!name.IsNull()) {
                 packageSetting->AddEnabledComponent(name, userId);
             } else {
@@ -2909,10 +2909,10 @@ ECode Settings::ReadSharedUserLPw(
     AutoPtr<SharedUserSetting> su;
     //try
     {
-        parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
-        parser->GetAttributeValueEx(String(NULL), String("userId"), &idStr);
+        parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
+        parser->GetAttributeValue(String(NULL), String("userId"), &idStr);
         Int32 userId = !idStr.IsNull() ? StringUtils::ParseInt32(idStr) : 0;
-        parser->GetAttributeValueEx(String(NULL), String("system"), &temp);
+        parser->GetAttributeValue(String(NULL), String("system"), &temp);
         if (CString("true").Equals(temp)) {
             pkgFlags |= IApplicationInfo::FLAG_SYSTEM;
         }
@@ -2994,7 +2994,7 @@ ECode Settings::ReadGrantedPermissionsLPw(
         parser->GetName(&tagName);
         if (tagName.Equals(TAG_ITEM)) {
             String name;
-            parser->GetAttributeValueEx(String(NULL), ATTR_NAME, &name);
+            parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
             if (!name.IsNull()) {
                 outPerms.Insert(name);
             } else {

@@ -1,7 +1,7 @@
 
 #include "gesture/Instance.h"
 #include "gesture/GestureUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +30,7 @@ Instance::Instance(
     /* [in] */ ArrayOf<Float> *sample,
     /* [in] */ const String& sampleName)
     : mVector(sample)
-    , mLabel(sampleName)    
+    , mLabel(sampleName)
     , mId(id)
 {}
 
@@ -83,7 +83,7 @@ ECode Instance::SpatialSampler(
     VALIDATE_NOT_NULL(sampler);
     AutoPtr<ArrayOf<Float> > temp = GestureUtils::SpatialSampling(gesture, PATCH_SAMPLE_SIZE, FALSE);
     *sampler = temp;
-    INTERFACE_ADDREF(*sampler);
+    REFCOUNT_ADD(*sampler);
     return NOERROR;
 }
 

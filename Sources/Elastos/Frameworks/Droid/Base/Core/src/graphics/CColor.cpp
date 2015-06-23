@@ -1,9 +1,9 @@
 
 #include "graphics/CColor.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <skia/core/SkScalar.h>
 #include <skia/core/SkColor.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -221,10 +221,10 @@ ECode CColor::HSBtoColor(
 {
     VALIDATE_NOT_NULL(color);
 
-    return HSBtoColorEx(hsb[0], hsb[1], hsb[2], color);
+    return HSBtoColor(hsb[0], hsb[1], hsb[2], color);
 }
 
-ECode CColor::HSBtoColorEx(
+ECode CColor::HSBtoColor(
     /* [in] */ Float h,
     /* [in] */ Float s,
     /* [in] */ Float b,
@@ -317,10 +317,10 @@ ECode CColor::HSVToColor(
 {
     VALIDATE_NOT_NULL(color);
 
-    return HSVToColorEx(0xFF, hsv, color);
+    return HSVToColor(0xFF, hsv, color);
 }
 
-ECode CColor::HSVToColorEx(
+ECode CColor::HSVToColor(
     /* [in] */ Int32 alpha,
     /* [in] */ const ArrayOf<Float>& hsv,
     /* [out] */ Int32* color)

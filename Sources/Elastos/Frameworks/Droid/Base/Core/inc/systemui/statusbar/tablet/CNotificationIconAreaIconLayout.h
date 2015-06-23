@@ -2,9 +2,9 @@
 #define __CNOTIFICATIONICONAREAICONLAYOUT_H_
 
 #include "_CNotificationIconAreaIconLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/NotificationIconAreaIconLayout.h"
 
 namespace Elastos {

@@ -3,7 +3,7 @@
 
 #include "_CSpinner.h"
 #include "widget/Spinner.h"
-#include "widget/AdapterViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -40,7 +40,7 @@ public:
         /* [in] */ IDialogInterface* dialog,
         /* [in] */ Int32 which);
 
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 position,
         /* [in] */ Boolean animate);
 

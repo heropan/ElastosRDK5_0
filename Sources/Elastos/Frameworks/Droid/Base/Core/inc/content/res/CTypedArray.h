@@ -298,7 +298,7 @@ public:
      * @return Attribute dimension value multiplied by the appropriate
      * metric and truncated to integer pixels.
      */
-    CARAPI GetLayoutDimensionEx(
+    CARAPI GetLayoutDimension(
         /* [in] */ Int32 index,
         /* [in] */ Int32 defValue,
         /* [out] */ Int32* dimension);

@@ -30,7 +30,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlTexParameterfvEx(
+        GlTexParameterfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -64,7 +64,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetIntegervEx(
+        GlGetIntegerv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -84,7 +84,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlTexEnvfvEx(
+        GlTexEnvfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -100,7 +100,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexEnvxvEx(
+        GlTexEnvxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);

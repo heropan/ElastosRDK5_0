@@ -145,7 +145,7 @@ public:
      * @param cursor the cursor to print
      * @param stream the stream to print to
      */
-    CARAPI DumpCursorEx(
+    CARAPI DumpCursor(
         /* [in] */ ICursor* cursor,
         /* [in] */ IPrintStream* stream);
 
@@ -156,7 +156,7 @@ public:
      * @param cursor the cursor to print
      * @param sb the StringBuilder to print to
      */
-    CARAPI DumpCursorEx2(
+    CARAPI DumpCursor(
         /* [in] */ ICursor* cursor,
         /* [in] */ IStringBuilder* sb);
 
@@ -185,7 +185,7 @@ public:
      * @param cursor the cursor to print
      * @param stream the stream to print to
      */
-    CARAPI DumpCurrentRowEx(
+    CARAPI DumpCurrentRow(
         /* [in] */ ICursor* cursor,
         /* [in] */ IPrintStream* stream);
 
@@ -195,7 +195,7 @@ public:
      * @param cursor the cursor to print
      * @param sb the StringBuilder to print to
      */
-    CARAPI DumpCurrentRowEx2(
+    CARAPI DumpCurrentRow(
         /* [in] */ ICursor* cursor,
         /* [in] */ IStringBuilder* sb);
 
@@ -243,7 +243,7 @@ public:
      * @param values The {@link ContentValues} to put the value into, with the field as the key
      * @param key The key to store the value with in the map
      */
-    CARAPI CursorStringToContentValuesEx(
+    CARAPI CursorStringToContentValues(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& field,
         /* [in] */ IContentValues* values,
@@ -269,7 +269,7 @@ public:
      * @param values The {@link ContentValues} to put the value into, with the field as the key
      * @param key The key to store the value with in the map
      */
-    CARAPI CursorInt32ToContentValuesEx(
+    CARAPI CursorInt32ToContentValues(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& field,
         /* [in] */ IContentValues* values,
@@ -295,7 +295,7 @@ public:
      * @param values The {@link ContentValues} to put the value into
      * @param key The key to store the value with in the map
      */
-    CARAPI CursorInt64ToContentValuesEx(
+    CARAPI CursorInt64ToContentValues(
         /* [in] */ ICursor* cursor,
         /* [in] */ const String& field,
         /* [in] */ IContentValues* values,
@@ -357,7 +357,7 @@ public:
      *              Passing null will count all rows for the given table
      * @return the number of rows in the table filtered by the selection
      */
-    CARAPI QueryNumEntriesEx(
+    CARAPI QueryNumEntries(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ const String& table,
         /* [in] */ const String& selection,
@@ -376,7 +376,7 @@ public:
      *              The values will be bound as Strings.
      * @return the number of rows in the table filtered by the selection
      */
-    CARAPI QueryNumEntriesEx2(
+    CARAPI QueryNumEntries(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ const String& table,
         /* [in] */ const String& selection,
@@ -397,7 +397,7 @@ public:
      * Utility method to run the pre-compiled query and return the value in the
      * first column of the first row.
      */
-    CARAPI Int64ForQueryEx(
+    CARAPI Int64ForQuery(
         /* [in] */ ISQLiteStatement* prog,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ Int64* result);
@@ -416,7 +416,7 @@ public:
      * Utility method to run the pre-compiled query and return the value in the
      * first column of the first row.
      */
-    CARAPI StringForQueryEx(
+    CARAPI StringForQuery(
         /* [in] */ ISQLiteStatement* prog,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ String* result);
@@ -439,7 +439,7 @@ public:
      *
      * @return A read-only file descriptor for a copy of the blob value.
      */
-    CARAPI BlobFileDescriptorForQueryEx(
+    CARAPI BlobFileDescriptorForQuery(
         /* [in] */ ISQLiteStatement* prog,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ IParcelFileDescriptor** result);

@@ -1,6 +1,6 @@
 
 #include "os/storage/CStorageVolume.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Content::Res::IResources;
@@ -95,7 +95,7 @@ ECode CStorageVolume::GetPathFile(
 {
     VALIDATE_NOT_NULL(pPathFile);
     *pPathFile = mPath;
-    INTERFACE_ADDREF(*pPathFile);
+    REFCOUNT_ADD(*pPathFile);
     return NOERROR;
 }
 
@@ -233,11 +233,11 @@ ECode  CStorageVolume::GetOwner(
 {
     VALIDATE_NOT_NULL(pOwner);
     *pOwner = mOwner;
-    INTERFACE_ADDREF(*pOwner);
+    REFCOUNT_ADD(*pOwner);
     return NOERROR;
 }
 
-ECode CStorageVolume::EqualsEx(
+ECode CStorageVolume::Equals(
     /* [in] */ IStorageVolume * pObj,
     /* [out] */ Boolean * pEqu)
 {
@@ -265,7 +265,7 @@ ECode CStorageVolume::Equals(
     *pEqu = FALSE;
     VALIDATE_NOT_NULL(pObj);
 
-    return EqualsEx(IStorageVolume::Probe(pObj), pEqu);
+    return Equals(IStorageVolume::Probe(pObj), pEqu);
 }
 
 ECode CStorageVolume::GetHashCode(

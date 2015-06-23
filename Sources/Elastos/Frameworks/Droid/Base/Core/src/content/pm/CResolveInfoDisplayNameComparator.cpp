@@ -56,7 +56,7 @@ ECode CResolveInfoDisplayNameComparator::Compare(
         sb->ToString(&bStr);
     }
 
-    return mCollator->CompareEx(aStr, bStr, result);
+    return mCollator->Compare(aStr, bStr, result);
 }
 
 } // namespace Pm

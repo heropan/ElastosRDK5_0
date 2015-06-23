@@ -2,11 +2,11 @@
 #include "os/Handler.h"
 #include "os/ServiceManager.h"
 #include "Manifest.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 #include "os/Binder.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::StringBuilder;

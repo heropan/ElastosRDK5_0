@@ -9,12 +9,12 @@
 #include "webkit/CAutoFillProfile.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/Character.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "webkit/DebugFlags.h"
 
 using Elastos::Core::ICharSequence;
@@ -346,7 +346,7 @@ WebSettingsClassic::WebSettingsClassic(
     AutoPtr<ISettingsSystem> settingSystem;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingSystem);
     Int32 Int;
-    settingSystem->GetInt32Ex(resolver, ISettingsSystem::TEXT_SHOW_PASSWORD, &Int);
+    settingSystem->GetInt32(resolver, ISettingsSystem::TEXT_SHOW_PASSWORD, &Int);
     mPasswordEchoEnabled = Int != 0;
     //} catch (SettingNotFoundException e) {
     //    mPasswordEchoEnabled = true;
@@ -1933,7 +1933,7 @@ ECode WebSettingsClassic::SetRenderPriority(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx3(NULL, EventHandler::PRIORITY, (IMessage**)&msg);
+        helper->Obtain(NULL, EventHandler::PRIORITY, (IMessage**)&msg);
         mEventHandler->SendMessage(msg);
     }
     return NOERROR;
@@ -2129,7 +2129,7 @@ ECode WebSettingsClassic::SetDoubleTapToastCount(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx3(NULL, EventHandler::SET_DOUBLE_TAP_TOAST_COUNT, (IMessage**)&msg);
+        helper->Obtain(NULL, EventHandler::SET_DOUBLE_TAP_TOAST_COUNT, (IMessage**)&msg);
         mEventHandler->SendMessage(msg);
     }
     return NOERROR;
@@ -2211,7 +2211,7 @@ void WebSettingsClassic::PostSync()
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx3(NULL, EventHandler::SYNC, (IMessage**)&msg);
+        helper->Obtain(NULL, EventHandler::SYNC, (IMessage**)&msg);
         mSyncPending = mEventHandler->SendMessage(msg);
     }
 }

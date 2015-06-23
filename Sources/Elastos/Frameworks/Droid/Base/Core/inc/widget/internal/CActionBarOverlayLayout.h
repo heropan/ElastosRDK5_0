@@ -2,10 +2,10 @@
 #define __CACTIONBAROVERLAYLAYOUT_H_
 
 #include "_CActionBarOverlayLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/internal/ActionBarOverlayLayout.h"
-#include "widget/FrameLayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

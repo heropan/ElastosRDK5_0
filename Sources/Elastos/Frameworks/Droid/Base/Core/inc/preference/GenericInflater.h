@@ -3,12 +3,11 @@
 #define  __GENERICINFLATER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elrefbase.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Org::Xmlpull::V1::IXmlPullParser;

@@ -1,9 +1,9 @@
 #include "CMonkeySourceNetworkViews.h"
 #include "MonkeySourceNetwork.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include <elastos/StringBuilder.h>
 #include "CMonkeyCommandReturn.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 #include "CMonkeySourceNetworkViews.h"
 
 using Elastos::Core::ICharSequence;

@@ -4,7 +4,7 @@
 
 #include "_CCanvas.h"
 #include "graphics/Canvas.h"
-#include "graphics/CanvasMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

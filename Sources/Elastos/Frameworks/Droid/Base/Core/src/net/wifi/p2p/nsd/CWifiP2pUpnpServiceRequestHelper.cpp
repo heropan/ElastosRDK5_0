@@ -15,7 +15,7 @@ ECode CWifiP2pUpnpServiceRequestHelper::NewInstance(
     return CWifiP2pUpnpServiceRequest::NewInstance(instance);
 }
 
-ECode CWifiP2pUpnpServiceRequestHelper::NewInstanceEx(
+ECode CWifiP2pUpnpServiceRequestHelper::NewInstance(
     /* [in] */ const String& st,
     /* [out] */ IWifiP2pUpnpServiceRequest** instance)
 {

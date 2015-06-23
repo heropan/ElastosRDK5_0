@@ -44,10 +44,10 @@ ECode CCompatModeButton::Refresh()
     return CompatModeButton::Refresh();
 }
 
-ECode CCompatModeButton::SetAlphaEx(
+ECode CCompatModeButton::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    return CompatModeButton::SetAlphaEx(alpha);
+    return CompatModeButton::SetAlpha(alpha);
 }
 
 }// namespace Policy

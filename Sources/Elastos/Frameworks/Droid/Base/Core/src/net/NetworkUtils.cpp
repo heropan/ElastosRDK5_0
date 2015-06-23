@@ -5,13 +5,13 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Math.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 #include <netutils/ifc.h>
 #include <cutils/properties.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::CInetAddressHelper;
@@ -185,7 +185,7 @@ ECode NetworkUtils::Int32ToInetAddress(
     CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
     inetaddresshelper->GetByAddress(addressBytes, (IInetAddress**)&inetaddress);
     *result = inetaddress;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -266,7 +266,7 @@ ECode NetworkUtils::NumericToInetAddress(
     CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
     FAIL_RETURN(inetaddresshelper->ParseNumericAddress(addrString, (IInetAddress**)&inetAddress));
     *result = inetAddress;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -314,7 +314,7 @@ ECode NetworkUtils::GetNetworkPart(
     CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
     inetaddresshelper->GetByAddress(array, (IInetAddress**)&netPart);
     *result = netPart;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -367,7 +367,7 @@ ECode NetworkUtils::HexToInet6Address(
 //        throw new IllegalArgumentException(e);
 //    }
     *result = inetaddress;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

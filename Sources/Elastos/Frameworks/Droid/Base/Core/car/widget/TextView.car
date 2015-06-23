@@ -90,7 +90,7 @@ module
          * @attr ref android.R.styleable#TextView_typeface
          * @attr ref android.R.styleable#TextView_textStyle
          */
-        SetTypefaceEx(
+        SetTypeface(
             [in] ITypeface* tf,
             [in] Int32 style);
 
@@ -360,7 +360,7 @@ module
          * @attr ref android.R.styleable#TextView_drawableRight
          * @attr ref android.R.styleable#TextView_drawableBottom
          */
-        SetCompoundDrawablesWithIntrinsicBoundsEx(
+        SetCompoundDrawablesWithIntrinsicBounds(
             [in] IDrawable* left,
             [in] IDrawable* top,
             [in] IDrawable* right,
@@ -416,7 +416,7 @@ module
          * @attr ref android.R.styleable#TextView_drawableEnd
          * @attr ref android.R.styleable#TextView_drawableBottom
          */
-        SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(
+        SetCompoundDrawablesRelativeWithIntrinsicBounds(
             [in] IDrawable* start,
             [in] IDrawable* top,
             [in] IDrawable* end,
@@ -518,7 +518,7 @@ module
          *
          * @attr ref android.R.styleable#TextView_textSize
          */
-        SetTextSizeEx(
+        SetTextSize(
             [in] Int32 unit,
             [in] Float size);
 
@@ -563,7 +563,7 @@ module
          *
          * @attr ref android.R.styleable#TextView_textColor
          */
-        SetTextColorEx(
+        SetTextColor(
             [in] Int32 color);
 
         /**
@@ -737,7 +737,7 @@ module
          *
          * @attr ref android.R.styleable#TextView_textColorHint
          */
-        SetHintTextColorEx(
+        SetHintTextColor(
             [in] Int32 color);
 
         /**
@@ -769,7 +769,7 @@ module
          *
          * @attr ref android.R.styleable#TextView_textColorLink
          */
-        SetLinkTextColorEx(
+        SetLinkTextColor(
             [in] Int32 color);
 
         /**
@@ -1072,7 +1072,7 @@ module
          * display buffer, upgrading it to BufferType.EDITABLE if it was
          * not already editable.
          */
-        AppendEx(
+        Append(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end);
@@ -1149,7 +1149,7 @@ module
          * @attr ref android.R.styleable#TextView_text
          * @attr ref android.R.styleable#TextView_bufferType
          */
-        SetTextEx(
+        SetText(
             [in] ICharSequence* text,
             [in] BufferType type);
 
@@ -1160,7 +1160,7 @@ module
          * since the TextView has no way to know that the text
          * has changed and that it needs to invalidate and re-layout.
          */
-        SetTextEx2(
+        SetText(
             [in] ArrayOf<Char32>* text,
             [in] Int32 start,
             [in] Int32 len);
@@ -1171,14 +1171,14 @@ module
          *
          * @see #setText(CharSequence, android.widget.TextView.BufferType)
          */
-        SetTextKeepStateEx(
+        SetTextKeepState(
             [in] ICharSequence* text,
             [in] BufferType type);
 
-        SetTextEx3(
+        SetText(
             [in] Int32 resid);
 
-        SetTextEx4(
+        SetText(
             [in] Int32 resid,
             [in] BufferType type);
 
@@ -1198,7 +1198,7 @@ module
          *
          * @attr ref android.R.styleable#TextView_hint
          */
-        SetHintEx(
+        SetHint(
             [in] Int32 resid);
 
         /**
@@ -1407,7 +1407,7 @@ module
          * If the <code>error</code> is <code>null</code>, the error message will
          * be cleared (and you should provide a <code>null</code> icon as well).
          */
-        SetErrorEx(
+        SetError(
             [in] ICharSequence* error,
             [in] IDrawable* icon);
 
@@ -1663,7 +1663,7 @@ module
          *
          * @attr ref android.R.styleable#TextView_singleLine
          */
-        SetSingleLineEx(
+        SetSingleLine(
             [in] Boolean singleLine);
 
         /**

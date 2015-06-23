@@ -167,7 +167,7 @@ ECode CStringUri::Equals(
     return StringUri::Equals(IUri::Probe(other), isEqual);
 }
 
-ECode CStringUri::EqualsEx(
+ECode CStringUri::Equals(
     /* [in]*/ IUri* other,
     /* [out] */ Boolean* isEqual)
 {

@@ -6,12 +6,12 @@
 #include "text/TextUtils.h"
 //#include "net/Uri.h"
 //#include "net/CUriBuilder.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Libcore::ICU::CLocale;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CObjectContainer;

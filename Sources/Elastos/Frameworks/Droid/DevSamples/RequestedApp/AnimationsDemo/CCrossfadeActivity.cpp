@@ -129,7 +129,7 @@ ECode CCrossfadeActivity::OnOptionsItemSelected(
 //                NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("AnimationsDemo"), String("AnimationsDemo.CMainActivity"));
+            intent->SetClassName(String("AnimationsDemo"), String("AnimationsDemo.CMainActivity"));
             StartActivity(intent);
             Finish();
             *res = TRUE;

@@ -25,7 +25,7 @@ public:
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
-    CARAPI AddLayerEx(
+    CARAPI AddLayer(
         /* [in] */ IPaint* paint);
 
     CARAPI_(PInterface) Probe(

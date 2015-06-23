@@ -2,7 +2,7 @@
 #include "ext/frameworkdef.h"
 #include "net/wifi/CScanResult.h"
 #include "net/wifi/CWifiSsid.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
 
@@ -74,7 +74,7 @@ ECode CScanResult::GetWifiSsid(
 {
     VALIDATE_NOT_NULL(ssid)
     *ssid = mWifiSsid;
-    INTERFACE_ADDREF(*ssid)
+    REFCOUNT_ADD(*ssid)
     return NOERROR;
 }
 

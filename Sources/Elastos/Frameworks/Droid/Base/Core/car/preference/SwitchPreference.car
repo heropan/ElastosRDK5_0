@@ -1,11 +1,11 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    
+
     namespace Elastos {
     namespace Droid {
     namespace Preference {
-    
+
         interface ISwitchPreference extends ITwoStatePreference {
             /**
              * Set the text displayed on the switch widget in the on state.
@@ -15,7 +15,7 @@ module
              */
             SetSwitchTextOn(
                 [in] ICharSequence* onText);
-        
+
             /**
              * Set the text displayed on the switch widget in the off state.
              * This should be a very short string; one word if possible.
@@ -24,38 +24,38 @@ module
              */
             SetSwitchTextOff(
                 [in] ICharSequence* offText);
-        
+
             /**
              * Set the text displayed on the switch widget in the on state.
              * This should be a very short string; one word if possible.
              *
              * @param resId The text as a string resource ID
              */
-            SetSwitchTextOnEx(
+            SetSwitchTextOn(
                 [in] Int32 resId);
-        
+
             /**
              * Set the text displayed on the switch widget in the off state.
              * This should be a very short string; one word if possible.
              *
              * @param resId The text as a string resource ID
              */
-            SetSwitchTextOffEx(
+            SetSwitchTextOff(
                 [in] Int32 resId);
-        
+
             /**
              * @return The text that will be displayed on the switch widget in the on state
              */
             GetSwitchTextOn(
                 [out] ICharSequence** textOn);
-        
+
             /**
              * @return The text that will be displayed on the switch widget in the off state
              */
             GetSwitchTextOff(
                 [out] ICharSequence** textOff);
         }
-    
+
     } // Preference
     } // Droid
     } // Elastos

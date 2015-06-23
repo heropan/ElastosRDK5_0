@@ -145,7 +145,7 @@ ECode CActivityOne::CreateNavigationBar()
         lp->SetTitle(cs);
 
         AutoPtr<IWindowManager> windowManager = GetWindowManager();
-        windowManager->AddViewEx5(navigationBar, IViewGroupLayoutParams::Probe(lp.Get()));
+        windowManager->AddView(navigationBar, IViewGroupLayoutParams::Probe(lp.Get()));
     }
 
     return NOERROR;

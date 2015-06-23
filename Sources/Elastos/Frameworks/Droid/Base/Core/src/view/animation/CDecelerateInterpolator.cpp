@@ -1,7 +1,7 @@
 
 #include "view/animation/CDecelerateInterpolator.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -38,7 +38,7 @@ ECode CDecelerateInterpolator::constructor(
             const_cast<Int32 *>(R::styleable::DecelerateInterpolator),
             ARRAY_SIZE(R::styleable::DecelerateInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::DecelerateInterpolator_factor, 1.0f, &mFactor);
 

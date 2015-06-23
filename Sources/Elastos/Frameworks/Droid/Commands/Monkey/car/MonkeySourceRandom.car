@@ -28,7 +28,7 @@ module
         SetFactors(
             [in] ArrayOf<Float>* factors);
 
-        SetFactorsEx(
+        SetFactors(
             [in] Int32 index,
             [in] Float v);
 

@@ -51,7 +51,7 @@ ECode CInputBinding::GetConnection(
     VALIDATE_NOT_NULL(inputConnection);
 
     *inputConnection = mConnection;
-    INTERFACE_ADDREF(*inputConnection);
+    REFCOUNT_ADD(*inputConnection);
 
     return NOERROR;
 }
@@ -62,7 +62,7 @@ ECode CInputBinding::GetConnectionToken(
     VALIDATE_NOT_NULL(binder);
 
     *binder = mConnectionToken;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
 
     return NOERROR;
 }

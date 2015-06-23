@@ -192,17 +192,17 @@ ECode MyThread::Join()
     return Thread::Join();
 }
 
-ECode MyThread::JoinEx(
+ECode MyThread::Join(
     /* [in] */ Int64 millis)
 {
-    return Thread::JoinEx(millis);
+    return Thread::Join(millis);
 }
 
-ECode MyThread::JoinEx2(
+ECode MyThread::Join(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
-    return Thread::JoinEx2(millis, nanos);
+    return Thread::Join(millis, nanos);
 }
 
 ECode MyThread::Resume()
@@ -274,13 +274,13 @@ ECode MyThread::Wait()
     return Thread::Wait();
 }
 
-ECode MyThread::WaitEx(
+ECode MyThread::Wait(
     /* [in] */ Int64 millis)
 {
     return Thread::Wait(millis);
 }
 
-ECode MyThread::WaitEx2(
+ECode MyThread::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {

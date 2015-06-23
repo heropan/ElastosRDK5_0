@@ -23,7 +23,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI SetAnimationEx(
+    CARAPI SetAnimation(
         /* [in] */ IAnimation* animation);
 
     CARAPI GetAnimation(
@@ -33,7 +33,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI SetInterpolatorEx(
+    CARAPI SetInterpolator(
         /* [in] */ IInterpolator* interpolator);
 
     CARAPI GetInterpolator(

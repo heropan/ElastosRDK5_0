@@ -38,7 +38,7 @@ ZoomControlExternal::ExtendedZoomControls::ExtendedZoomControls(
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
     AutoPtr<IView> view;
-    inflater->InflateEx2(R::layout::zoom_magnify, this, TRUE, (IView**)&view);
+    inflater->Inflate(R::layout::zoom_magnify, this, TRUE, (IView**)&view);
     FindViewById(R::id::zoomControls, (IView**)&mPlusMinusZoomControls);
     AutoPtr<IView> v;
     FindViewById(R::id::zoomMagnify, (IView**)&v);

@@ -3,7 +3,7 @@
 #define  __CCOMPOSINGVIEW_H__
 
 #include "_CComposingView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

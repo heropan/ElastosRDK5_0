@@ -20,7 +20,7 @@ public:
         /* [in] */ Int32 height,
         /* [out] */ IBitmap** bitmap);
 
-    CARAPI ScreenshotEx(
+    CARAPI Screenshot(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 minLayer,

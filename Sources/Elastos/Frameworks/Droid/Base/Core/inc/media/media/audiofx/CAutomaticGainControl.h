@@ -5,7 +5,7 @@
 #include "_CAutomaticGainControl.h"
 #include <ext/frameworkext.h>
 #include "media/media/audiofx/AudioEffect.h"
-#include "media/media/audiofx/AudioEffectMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

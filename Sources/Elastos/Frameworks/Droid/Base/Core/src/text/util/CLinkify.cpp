@@ -13,7 +13,7 @@ ECode CLinkify::GetStaticUrlMatchFilter(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ILinkifyMatchFilter> lmf = Linkify::GetStaticUrlMatchFilter();
     *ret = lmf;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -23,7 +23,7 @@ ECode CLinkify::GetStaticPhoneNumberMatchFilter(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ILinkifyMatchFilter> lmf = Linkify::GetStaticPhoneNumberMatchFilter();
     *ret = lmf;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -33,7 +33,7 @@ ECode CLinkify::GetStaticPhoneNumberTransformFilter(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ILinkifyTransformFilter > ltf = Linkify::GetStaticPhoneNumberTransformFilter();
     *ret = ltf;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -48,7 +48,7 @@ ECode CLinkify::AddLinks(
     return NOERROR;
 }
 
-ECode CLinkify::AddLinksEx(
+ECode CLinkify::AddLinks(
     /* [in] */ ITextView* text,
     /* [in] */ Int32 mask,
     /* [out] */ Boolean* ret)
@@ -59,7 +59,7 @@ ECode CLinkify::AddLinksEx(
     return NOERROR;
 }
 
-ECode CLinkify::AddLinksEx2(
+ECode CLinkify::AddLinks(
     /* [in] */ ITextView* text,
     /* [in] */ IPattern* pattern,
     /* [in] */ const String& scheme)
@@ -69,7 +69,7 @@ ECode CLinkify::AddLinksEx2(
     return NOERROR;
 }
 
-ECode CLinkify::AddLinksEx3(
+ECode CLinkify::AddLinks(
     /* [in] */ ITextView* text,
     /* [in] */ IPattern* p,
     /* [in] */ const String& scheme,
@@ -81,7 +81,7 @@ ECode CLinkify::AddLinksEx3(
     return NOERROR;
 }
 
-ECode CLinkify::AddLinksEx4(
+ECode CLinkify::AddLinks(
     /* [in] */ ISpannable* text,
     /* [in] */ IPattern* pattern,
     /* [in] */ const String& scheme,
@@ -93,7 +93,7 @@ ECode CLinkify::AddLinksEx4(
     return NOERROR;
 }
 
-ECode CLinkify::AddLinksEx5(
+ECode CLinkify::AddLinks(
     /* [in] */ ISpannable* s,
     /* [in] */ IPattern* p,
     /* [in] */ const String& scheme,

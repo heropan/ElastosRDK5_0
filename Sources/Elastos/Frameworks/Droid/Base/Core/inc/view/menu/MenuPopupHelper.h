@@ -3,7 +3,7 @@
 #define  __MENUPOPUPHELPER_H__
 
 #include "widget/BaseAdapter.h"
-#include "widget/AdapterMacro.h"
+
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IViewOnKeyListener;

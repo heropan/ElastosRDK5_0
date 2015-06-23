@@ -1,7 +1,7 @@
 
 #include "view/animation/CCycleInterpolator.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +24,7 @@ ECode CCycleInterpolator::constructor(
             const_cast<Int32 *>(R::styleable::CycleInterpolator),
             ARRAY_SIZE(R::styleable::CycleInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::CycleInterpolator_cycles, 1.0f, &mCycles);
 

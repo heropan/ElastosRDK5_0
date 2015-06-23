@@ -412,7 +412,7 @@ ECode CompoundButton::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::CompoundButton),
             ARRAY_SIZE(R::styleable::CompoundButton));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx3(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     AutoPtr<IDrawable> d;

@@ -86,7 +86,7 @@ public:
      * instead.
      */
     //@Deprecated
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ Int64 downTime,
         /* [in] */ Int64 eventTime,
         /* [in] */ Int32 action,
@@ -131,7 +131,7 @@ public:
      * @param edgeFlags A bitfield indicating which edges, if any, were touched by this
      * MotionEvent.
      */
-    CARAPI ObtainEx2(
+    CARAPI Obtain(
         /* [in] */ Int64 downTime,
         /* [in] */ Int64 eventTime,
         /* [in] */ Int32 action,
@@ -180,7 +180,7 @@ public:
      * instead.
      */
     //@Deprecated
-    CARAPI ObtainEx3(
+    CARAPI Obtain(
         /* [in] */ Int64 downTime,
         /* [in] */ Int64 eventTime,
         /* [in] */ Int32 action,
@@ -211,7 +211,7 @@ public:
      * @param metaState The state of any meta / modifier keys that were in effect when
      * the event was generated.
      */
-    CARAPI ObtainEx4(
+    CARAPI Obtain(
         /* [in] */ Int64 downTime,
         /* [in] */ Int64 eventTime,
         /* [in] */ Int32 action,
@@ -223,7 +223,7 @@ public:
     /**
      * Create a new MotionEvent, copying from an existing one.
      */
-    CARAPI ObtainEx5(
+    CARAPI Obtain(
         /* [in] */ IMotionEvent* o,
         /* [out] */ IMotionEvent** event);
 

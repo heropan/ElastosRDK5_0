@@ -32,7 +32,7 @@ public:
     CARAPI Read(
         /* [out] */ Int32* result);
 
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,

@@ -3,9 +3,9 @@
 
 #include "_CMediaController.h"
 #include "widget/MediaController.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -46,7 +46,7 @@ public:
 
     CARAPI Show();
 
-    CARAPI ShowEx(
+    CARAPI Show(
         /* [in] */ Int32 timeout);
 
     CARAPI IsShowing(

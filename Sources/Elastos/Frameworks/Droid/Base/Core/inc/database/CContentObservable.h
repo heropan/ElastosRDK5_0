@@ -22,7 +22,7 @@ public:
     CARAPI DispatchChange(
         /* [in] */ Boolean selfChange);
 
-    CARAPI DispatchChangeEx(
+    CARAPI DispatchChange(
         /* [in] */ Boolean selfChange,
         /* [in] */ IUri* uri);
 

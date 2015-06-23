@@ -7,7 +7,7 @@
 #include <EGL/egl.h>
 #include <gui/SurfaceTexture.h>
 #include <gui/SurfaceTextureClient.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #include <ui/ANativeObjectBase.h>
 

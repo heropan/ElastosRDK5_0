@@ -1,9 +1,9 @@
 
 #include "view/inputmethod/CInputMethodSubtypeHelper.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::CObjectContainer;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

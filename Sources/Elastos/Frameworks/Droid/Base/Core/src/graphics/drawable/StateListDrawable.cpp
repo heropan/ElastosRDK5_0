@@ -136,11 +136,11 @@ ECode StateListDrawable::Inflate(
             attrs->GetAttributeNameResource(i, &stateResId);
             if (stateResId == 0) break;
             if (stateResId == R::attr::drawable) {
-                attrs->GetAttributeResourceValueEx(i, 0, &drawableRes);
+                attrs->GetAttributeResourceValue(i, 0, &drawableRes);
             }
             else {
                 Boolean value;
-                attrs->GetAttributeBooleanValueEx(i, FALSE, &value);
+                attrs->GetAttributeBooleanValue(i, FALSE, &value);
                 (*states)[j++] = value ? stateResId : -stateResId;
             }
         }
@@ -313,7 +313,7 @@ ECode StateListDrawable::StateListState::NewDrawable(
         (IStateListDrawable**)drawable);
 }
 
-ECode StateListDrawable::StateListState::NewDrawableEx(
+ECode StateListDrawable::StateListState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {

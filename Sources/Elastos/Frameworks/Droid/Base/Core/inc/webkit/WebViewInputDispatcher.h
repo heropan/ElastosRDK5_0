@@ -3,7 +3,6 @@
 #define __WEBVIEWINPUTDISPATCHER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
 using Elastos::Droid::Content::IContext;

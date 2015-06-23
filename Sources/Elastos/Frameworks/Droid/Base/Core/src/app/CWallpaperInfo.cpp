@@ -6,7 +6,7 @@
 #include "util/Xml.h"
 #include "service/wallpaper/WallpaperService.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -185,7 +185,7 @@ ECode CWallpaperInfo::GetService(
 {
     VALIDATE_NOT_NULL(service);
     *service = mService;
-    INTERFACE_ADDREF(*service);
+    REFCOUNT_ADD(*service);
     return NOERROR;
 }
 

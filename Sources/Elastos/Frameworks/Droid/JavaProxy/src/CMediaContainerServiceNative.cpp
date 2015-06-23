@@ -1,7 +1,7 @@
 
 #include "CMediaContainerServiceNative.h"
 #include "Util.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::Pm::IContainerEncryptionParams;

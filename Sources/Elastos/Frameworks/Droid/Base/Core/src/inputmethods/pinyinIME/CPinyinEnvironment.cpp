@@ -82,7 +82,7 @@ ECode CPinyinEnvironment::GetConfiguration(
 {
     VALIDATE_NOT_NULL(config);
     *config = mConfig;
-    INTERFACE_ADDREF(*config);
+    REFCOUNT_ADD(*config);
     return NOERROR;
 }
 

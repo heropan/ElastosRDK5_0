@@ -6,8 +6,8 @@
 #include "graphics/CBitmap.h"
 #include "text/TextUtils.h"
 #include "net/Uri.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::IStringBuilder;
 using Elastos::Droid::Text::TextUtils;
@@ -147,7 +147,7 @@ ECode CClipData::GetDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mClipDescription;
-    INTERFACE_ADDREF(*description);
+    REFCOUNT_ADD(*description);
     return NOERROR;
 }
 
@@ -168,7 +168,7 @@ ECode CClipData::GetIcon(
 {
     VALIDATE_NOT_NULL(icon);
     *icon = mIcon;
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
     return NOERROR;
 }
 
@@ -186,7 +186,7 @@ ECode CClipData::GetItemAt(
 {
     VALIDATE_NOT_NULL(item);
     *item = mItems[index];
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 

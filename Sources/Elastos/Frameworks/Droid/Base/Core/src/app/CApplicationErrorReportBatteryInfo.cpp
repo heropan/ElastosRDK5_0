@@ -1,5 +1,5 @@
 #include "app/CApplicationErrorReportBatteryInfo.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 

@@ -58,7 +58,7 @@ ECode TabHost::TabSpec::SetIndicator(
 /**
  * Specify a label and icon as the tab indicator.
  */
-ECode TabHost::TabSpec::SetIndicatorEx(
+ECode TabHost::TabSpec::SetIndicator(
     /* [in] */ ICharSequence* label,
     /* [in] */ IDrawable* icon)
 {
@@ -69,7 +69,7 @@ ECode TabHost::TabSpec::SetIndicatorEx(
 /**
  * Specify a view as the tab indicator.
  */
-ECode TabHost::TabSpec::SetIndicatorEx2(
+ECode TabHost::TabSpec::SetIndicator(
     /* [in] */ IView* view)
 {
     mIndicatorStrategy = new TabHost::ViewIndicatorStrategy(view);
@@ -91,7 +91,7 @@ ECode TabHost::TabSpec::SetContent(
  * Specify a {@link android.widget.TabHost.TabContentFactory} to use to
  * create the content of the tab.
  */
-ECode TabHost::TabSpec::SetContentEx(
+ECode TabHost::TabSpec::SetContent(
     /* [in] */ ITabHostTabContentFactory* contentFactory)
 {
     AutoPtr<ICharSequence> tag;
@@ -103,7 +103,7 @@ ECode TabHost::TabSpec::SetContentEx(
 /**
  * Specify an intent to use to launch an activity as the tab content.
  */
-ECode TabHost::TabSpec::SetContentEx2(
+ECode TabHost::TabSpec::SetContent(
     /* [in] */ IIntent* intent)
 {
     mContentStrategy = new TabHost::IntentContentStrategy(mTag, intent, mHost);
@@ -139,7 +139,7 @@ ECode TabHost::LabelIndicatorStrategy::CreateIndicatorView(
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
 
     AutoPtr<IView> tabIndicator;
-    inflater->InflateEx2(mHost->mTabLayoutId,
+    inflater->Inflate(mHost->mTabLayoutId,
            mHost->mTabWidget, // tab widget is the parent
            FALSE,
            (IView**)&tabIndicator); // no inflate params
@@ -192,7 +192,7 @@ ECode TabHost::LabelAndIconIndicatorStrategy::CreateIndicatorView(
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
     AutoPtr<IView> tabIndicator;
-    inflater->InflateEx2(mHost->mTabLayoutId,
+    inflater->Inflate(mHost->mTabLayoutId,
            mHost->mTabWidget, // tab widget is the parent
            FALSE, (IView**)&tabIndicator); // no inflate params
 
@@ -433,7 +433,7 @@ ECode TabHost::TabKeyListener::OnKey(
             return NOERROR;
     }
 
-    mHost->mTabContent->RequestFocusEx(IView::FOCUS_FORWARD, result);
+    mHost->mTabContent->RequestFocus(IView::FOCUS_FORWARD, result);
     return mHost->mTabContent->DispatchKeyEvent(event, result);
 }
 
@@ -455,7 +455,7 @@ ECode TabHost::TabSelectionListener::OnTabSelectionChanged(
     mHost->SetCurrentTab(tabIndex);
     if (clicked) {
         Boolean res;
-        mHost->mTabContent->RequestFocusEx(IView::FOCUS_FORWARD, &res);
+        mHost->mTabContent->RequestFocus(IView::FOCUS_FORWARD, &res);
     }
     return NOERROR;
 }
@@ -532,7 +532,7 @@ ECode TabHost::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::TabWidget),
             ARRAY_SIZE(R::styleable::TabWidget));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds,
+    context->ObtainStyledAttributes(attrs, attrIds,
             R::attr::tabWidgetStyle, 0, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::TabWidget_tabLayout, 0, &mTabLayoutId);
@@ -940,7 +940,7 @@ ECode TabHost::SetCurrentTab(
                 IViewGroupLayoutParams::MATCH_PARENT,
                 IViewGroupLayoutParams::MATCH_PARENT,
                 (IViewGroupLayoutParams**)&lp);
-        mTabContent->AddViewEx3(mCurrentView, lp);
+        mTabContent->AddView(mCurrentView, lp);
     }
 
     Boolean hasFocus;

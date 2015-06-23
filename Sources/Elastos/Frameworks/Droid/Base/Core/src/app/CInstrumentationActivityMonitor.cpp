@@ -42,7 +42,7 @@ ECode CInstrumentationActivityMonitor::GetFilter(
 {
     VALIDATE_NOT_NULL(filter)
     *filter = mWhich;
-    INTERFACE_ADDREF(*filter)
+    REFCOUNT_ADD(*filter)
     return NOERROR;
 }
 
@@ -51,7 +51,7 @@ ECode CInstrumentationActivityMonitor::GetResult(
 {
     VALIDATE_NOT_NULL(result)
     *result = mResult;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -83,7 +83,7 @@ ECode CInstrumentationActivityMonitor::GetLastActivity(
 {
     VALIDATE_NOT_NULL(activity)
     *activity = mLastActivity;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
@@ -103,7 +103,7 @@ ECode CInstrumentationActivityMonitor::WaitForActivity(
     }
 
     *activity = mLastActivity;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     mLastActivity = NULL;
     return NOERROR;
 }
@@ -129,7 +129,7 @@ ECode CInstrumentationActivityMonitor::WaitForActivityWithTimeout(
     }
     else {
         *activity = mLastActivity;
-        INTERFACE_ADDREF(*activity)
+        REFCOUNT_ADD(*activity)
         mLastActivity = NULL;
         return NOERROR;
     }

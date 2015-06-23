@@ -160,7 +160,7 @@ ECode WebView::PrivateAccess::AwakenScrollBars(
     return NOERROR;
 }
 
-ECode WebView::PrivateAccess::AwakenScrollBarsEx(
+ECode WebView::PrivateAccess::AwakenScrollBars(
     /* [in] */ Int32 duration,
     /* [in] */ Boolean invalidate)
 {
@@ -737,7 +737,7 @@ ECode WebView::LoadUrl(
     /* [in] */ IMap* additionalHttpHeaders)
 {
     CheckThread();
-    return mProvider->LoadUrlEx(url, additionalHttpHeaders);
+    return mProvider->LoadUrl(url, additionalHttpHeaders);
 }
 
 /**
@@ -870,7 +870,7 @@ ECode WebView::SaveWebArchive(
     /* [in] */ IValueCallback* callback)
 {
     CheckThread();
-    return mProvider->SaveWebArchiveEx(basename, autoname, callback);
+    return mProvider->SaveWebArchive(basename, autoname, callback);
 }
 
 /**

@@ -2,9 +2,9 @@
 #define __CIMAGEVIEW_H_
 
 #include "_CImageView.h"
-#include "view/ViewMacro.h"
+
 #include "widget/ImageView.h"
-#include "widget/ImageViewMacro.h"
+
 
 namespace Elastos{
 namespace Droid{
@@ -34,7 +34,7 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

@@ -8,9 +8,9 @@
 #include "os/Process.h"
 // #include "os/SystemClock.h"
 #include "os/Build.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

@@ -5,9 +5,9 @@
 #include <R.h>
 #include <ext/frameworkext.h>
 #include <widget/AdapterViewAnimator.h>
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "view/VelocityTracker.h"
 #include "widget/FrameLayout.h"
 

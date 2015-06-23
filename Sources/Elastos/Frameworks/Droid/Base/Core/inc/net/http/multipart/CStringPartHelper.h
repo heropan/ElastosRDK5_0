@@ -26,7 +26,7 @@ public:
         /* [in] */ ArrayOf<IPart *>* iparts,
         /* [out] */ Int64* length);
 
-    CARAPI GetLengthOfPartsEx(
+    CARAPI GetLengthOfParts(
         /* [in] */ ArrayOf<IPart *>* iparts,
         /* [in] */ ArrayOf<Byte>* partBoundary,
         /* [out] */ Int64* length);

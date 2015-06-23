@@ -5,15 +5,14 @@
 #include "ext/frameworkdef.h"
 #include "os/HandlerBase.h"
 #include "util/State.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Vector.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Vector;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::HandlerBase;

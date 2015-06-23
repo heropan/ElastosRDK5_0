@@ -1,5 +1,5 @@
 #include "util/CharSequences.h"
-#include "elastos/Character.h"
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 

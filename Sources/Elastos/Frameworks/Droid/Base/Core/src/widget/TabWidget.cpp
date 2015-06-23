@@ -1,6 +1,6 @@
 
 #include "widget/TabWidget.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/Build.h"
 #include "widget/CLinearLayoutLayoutParams.h"
 #include "widget/CImageView.h"
@@ -105,7 +105,7 @@ ECode TabWidget::InitFromAttributes(
         const_cast<Int32 *>(R::styleable::TabWidget),
         ARRAY_SIZE(R::styleable::TabWidget));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
         attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     Boolean res;

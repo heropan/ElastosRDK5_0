@@ -2,9 +2,9 @@
 #define __CPANELVIEW_H_
 
 #include "_CPanelView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/phone/PanelView.h"
 
 namespace Elastos {

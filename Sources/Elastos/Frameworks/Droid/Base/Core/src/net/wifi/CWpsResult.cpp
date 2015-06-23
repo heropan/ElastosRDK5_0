@@ -1,8 +1,8 @@
 
 #include "net/wifi/CWpsResult.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

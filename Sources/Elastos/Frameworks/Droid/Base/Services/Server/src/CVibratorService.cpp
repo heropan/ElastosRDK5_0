@@ -5,8 +5,8 @@
 #include "os/Process.h"
 #include "os/SystemClock.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 #include <hardware_legacy/vibrator.h>
 
 using Elastos::Core::EIID_IRunnable;
@@ -163,7 +163,7 @@ CVibratorService::VibrateThread::VibrateThread(
     , mDone(FALSE)
     , mOwner(owner)
 {
-    mOwner->mTmpWorkSource->SetEx(vib->mUid);
+    mOwner->mTmpWorkSource->Set(vib->mUid);
     mOwner->mWakeLock->SetWorkSource(mOwner->mTmpWorkSource);
     mOwner->mWakeLock->AcquireLock();
     CThread::New((IThread**)&mThread);
@@ -178,7 +178,7 @@ void CVibratorService::VibrateThread::Delay(
         Int64 bedtime = duration + SystemClock::GetUptimeMillis();
         do {
             //try {
-            mThread->WaitEx(duration);
+            mThread->Wait(duration);
             //}
             //catch (InterruptedException e) {
             //}
@@ -341,15 +341,15 @@ ECode CVibratorService::SystemReady()
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsSystem> settingsSystem;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
-    settingsSystem->GetUriForEx(ISettingsSystem::VIBRATE_INPUT_DEVICES, (IUri**)&uri);
+    settingsSystem->GetUriFor(ISettingsSystem::VIBRATE_INPUT_DEVICES, (IUri**)&uri);
     AutoPtr<MyContentObserver> myCO = new MyContentObserver(mH, this);
-    resolver->RegisterContentObserverEx(uri, TRUE, myCO.Get(), IUserHandle::USER_ALL);
+    resolver->RegisterContentObserver(uri, TRUE, myCO.Get(), IUserHandle::USER_ALL);
 
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New(IIntent::ACTION_USER_SWITCHED, (IIntentFilter**)&filter);
     AutoPtr<MyBroadcastReceiver> myBR = new MyBroadcastReceiver(this);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiverEx(myBR.Get(), filter, String(NULL), mH, (IIntent**)&intent);
+    mContext->RegisterReceiver(myBR.Get(), filter, String(NULL), mH, (IIntent**)&intent);
 
     UpdateInputDeviceVibrators();
     return NOERROR;
@@ -584,7 +584,7 @@ void CVibratorService::UpdateInputDeviceVibrators()
         Int32 value = 0;
         AutoPtr<ISettingsSystem> settingsSystem;
         CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
-        settingsSystem->GetInt32ForUserEx(
+        settingsSystem->GetInt32ForUser(
                 resolver,
                 String("vibrate_input_devices"),
                 IUserHandle::USER_CURRENT,

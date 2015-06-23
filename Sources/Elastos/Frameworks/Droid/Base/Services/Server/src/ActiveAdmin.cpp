@@ -1,6 +1,6 @@
 
 #include "ActiveAdmin.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 namespace Elastos {
 namespace Droid {
@@ -266,85 +266,85 @@ ECode ActiveAdmin::ReadFromXml(
             }
         } else if (tag.Equals("password-quality")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mPasswordQuality = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-length")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordLength = StringUtils::ParseInt32(val);
         } else if (tag.Equals("password-history-length")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mPasswordHistoryLength = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-uppercase")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordUpperCase = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-lowercase")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordLowerCase = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-letters")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordLetters = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-numeric")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordNumeric = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-symbols")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordSymbols = StringUtils::ParseInt32(val);
         } else if (tag.Equals("min-password-nonletter")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMinimumPasswordNonLetter = StringUtils::ParseInt32(val);
         } else if (tag.Equals("max-time-to-unlock")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMaximumTimeToUnlock = StringUtils::ParseInt64(val);
         } else if (tag.Equals("max-failed-password-wipe")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mMaximumFailedPasswordsForWipe = StringUtils::ParseInt32(val);
         } else if (tag.Equals("specifies-global-proxy")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
 
             Int32 result = StringUtils::ParseInt32(val);
             mSpecifiesGlobalProxy = (result != 0) ? TRUE : FALSE;
         } else if (tag.Equals("global-proxy-spec")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mGlobalProxySpec = val;
         } else if (tag.Equals("global-proxy-exclusion-list")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mGlobalProxyExclusionList = val;
         } else if (tag.Equals("password-expiration-timeout")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mPasswordExpirationTimeout = StringUtils::ParseInt64(val);
         } else if (tag.Equals("password-expiration-date")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mPasswordExpirationDate = StringUtils::ParseInt64(val);
         } else if (tag.Equals("encryption-requested")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
 
             Int32 result = StringUtils::ParseInt32(val);
             mEncryptionRequested = (result != 0) ? TRUE : FALSE;
         } else if (tag.Equals("disable-camera")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
 
             Int32 result = StringUtils::ParseInt32(val);
             mDisableCamera = (result != 0) ? TRUE : FALSE;
         } else if (tag.Equals("disable-keyguard-features")) {
             String val;
-            parser->GetAttributeValueEx(String(), "value", &val);
+            parser->GetAttributeValue(String(), "value", &val);
             mDisabledKeyguardFeatures = StringUtils::ParseInt32(val);
         } else {
             StringBuffer buf;

@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "app/CResultInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -77,7 +77,7 @@ ECode CResultInfo::GetData(
 {
     VALIDATE_NOT_NULL(data);
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

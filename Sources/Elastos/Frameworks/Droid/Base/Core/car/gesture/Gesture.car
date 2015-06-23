@@ -53,18 +53,18 @@ module
         ToPath(
             [out] IPath **outPath);
 
-        ToPathEx(
+        ToPath(
             [in] IPath * path,
             [out] IPath ** outPath);
 
-        ToPathEx2(
+        ToPath(
             [in] Int32 width,
             [in] Int32 height,
             [in] Int32 edge,
             [in] Int32 numSample,
             [out] IPath **outPath);
 
-        ToPathEx3(
+        ToPath(
             [in] IPath *path,
             [in] Int32 width,
             [in] Int32 height,
@@ -113,7 +113,7 @@ module
          * @param color
          * @return the bitmap
          */
-        ToBitmapEx(
+        ToBitmap(
             [in] Int32 width,
             [in] Int32 height,
             [in] Int32 inset,

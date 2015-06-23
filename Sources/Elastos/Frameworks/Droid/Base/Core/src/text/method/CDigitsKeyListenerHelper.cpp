@@ -16,11 +16,11 @@ ECode CDigitsKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IDigitsKeyListener> dkl = CDigitsKeyListener::GetInstance();
     *ret = dkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDigitsKeyListenerHelper::GetInstanceEx(
+ECode CDigitsKeyListenerHelper::GetInstance(
     /* [in] */ Boolean sign,
     /* [in] */ Boolean decimal,
     /* [out] */ IDigitsKeyListener** ret)
@@ -28,18 +28,18 @@ ECode CDigitsKeyListenerHelper::GetInstanceEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IDigitsKeyListener> dkl = CDigitsKeyListener::GetInstance(sign, decimal);
     *ret = dkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDigitsKeyListenerHelper::GetInstanceEx2(
+ECode CDigitsKeyListenerHelper::GetInstance(
     /* [in] */ const String& accepted,
     /* [out] */ IDigitsKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IDigitsKeyListener> dkl = CDigitsKeyListener::GetInstance(accepted);
     *ret = dkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

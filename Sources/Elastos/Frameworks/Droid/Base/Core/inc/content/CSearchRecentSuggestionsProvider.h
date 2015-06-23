@@ -103,7 +103,7 @@ public:
         /* [in] */ const String& sortOrder,
         /* [out] */ ICursor** cursor);
 
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ const String& selection,

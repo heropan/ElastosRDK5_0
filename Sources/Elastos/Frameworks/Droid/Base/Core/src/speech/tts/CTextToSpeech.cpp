@@ -28,7 +28,7 @@ ECode CTextToSpeech::AddSpeech(
     return NOERROR;
 }
 
-ECode CTextToSpeech::AddSpeechEx(
+ECode CTextToSpeech::AddSpeech(
     /* [in] */ const String& text,
     /* [in] */ const String& filename,
     /* [out] */ Int32* ret)
@@ -49,7 +49,7 @@ ECode CTextToSpeech::AddEarcon(
     return NOERROR;
 }
 
-ECode CTextToSpeech::AddEarconEx(
+ECode CTextToSpeech::AddEarcon(
     /* [in] */ const String& earcon,
     /* [in] */ const String& filename,
     /* [out] */ Int32* ret)
@@ -109,7 +109,7 @@ ECode CTextToSpeech::GetFeatures(
         oc->Add(cs.Get());
     }
     *ret = oc;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode CTextToSpeech::GetLanguage(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ILocale> l = TextToSpeech::GetLanguage();
     *ret = l;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -252,7 +252,7 @@ ECode CTextToSpeech::GetEngines(
         oc->Add((IInterface*)(temp.Get()));
     }
     *ret = oc;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

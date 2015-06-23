@@ -2,11 +2,11 @@
 #include "CWifiP2pDnsSdServiceResponse.h"
 #include "CWifiP2pUpnpServiceResponse.h"
 #include "CWifiP2pDevice.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
@@ -241,7 +241,7 @@ L_ERR_EXIT:
     }
 
     *list = ret;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 

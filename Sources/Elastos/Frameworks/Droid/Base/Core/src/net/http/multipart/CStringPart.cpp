@@ -1,7 +1,7 @@
 
 #include "CStringPart.h"
 // #include "EncodingUtils.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 #include "ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;

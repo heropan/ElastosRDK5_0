@@ -49,7 +49,7 @@ ECode CUlawEncoderInputStream::ReadBytes(
     return UlawEncoderInputStream::ReadBytes(buffer, number);
 }
 
-ECode CUlawEncoderInputStream::ReadBytesEx(
+ECode CUlawEncoderInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -57,7 +57,7 @@ ECode CUlawEncoderInputStream::ReadBytesEx(
 {
     VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
-    return UlawEncoderInputStream::ReadBytesEx(buffer, offset, length, number);
+    return UlawEncoderInputStream::ReadBytes(buffer, offset, length, number);
 }
 
 ECode CUlawEncoderInputStream::Reset()
@@ -94,7 +94,7 @@ ECode CUlawEncoderInputStream::GetLock(
 
     AutoPtr<IInterface> obj = UlawEncoderInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

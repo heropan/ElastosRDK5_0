@@ -204,7 +204,7 @@ public:
     CARAPI SetPlaybackPositionUpdateListener(
         /* [in] */ IOnPlaybackPositionUpdateListener* listener);
 
-    CARAPI SetPlaybackPositionUpdateListenerEx(
+    CARAPI SetPlaybackPositionUpdateListener(
         /* [in] */ IOnPlaybackPositionUpdateListener* listener,
         /* [in] */ IHandler* handler);
 
@@ -249,7 +249,7 @@ public:
         /* [in] */ Int32 sizeInBytes,
         /* [out] */ Int32* num);
 
-    CARAPI WriteEx(
+    CARAPI Write(
         /* [in] */ ArrayOf<Int16>* audioData,
         /* [in] */ Int32 offsetInShorts,
         /* [in] */ Int32 sizeInShorts,

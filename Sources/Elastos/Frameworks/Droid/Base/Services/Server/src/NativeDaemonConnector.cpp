@@ -3,17 +3,17 @@
 #include "os/SystemClock.h"
 #include "os/Handler.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
 using Elastos::IO::IInputStream;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Concurrent::IArrayBlockingQueue;
@@ -180,7 +180,7 @@ AutoPtr<NativeDaemonEvent> NativeDaemonConnector::ResponseQueue::Remove(
     //AutoPtr<ITimeUnit> MILLISECONDS;
     //helper->GetMILLISECONDS((ITimeUnit**)&MILLISECONDS);
     //AutoPtr<IInterface> obj;
-    //found->mResponses->PollEx(timeoutMs, MILLISECONDS, (IInterface**)&obj);
+    //found->mResponses->Poll(timeoutMs, MILLISECONDS, (IInterface**)&obj);
     // if (obj != NULL) {
     //     result = reinterpret_cast<NativeDaemonEvent*>(obj->Probe(EIID_NativeDaemonEvent));
     // }
@@ -371,7 +371,7 @@ ECode NativeDaemonConnector::ListenToSocket()
 
     while (TRUE) {
         Int32 count;
-        ec = inputStream->ReadBytesEx(buffer, start, BUFFER_SIZE - start, &count);
+        ec = inputStream->ReadBytes(buffer, start, BUFFER_SIZE - start, &count);
         if (FAILED(ec)) {
             goto _EXIT_;
         }
@@ -402,7 +402,7 @@ ECode NativeDaemonConnector::ListenToSocket()
                     AutoPtr<ICharSequence> seq;
                     CStringWrapper::New(event->GetRawEvent(), (ICharSequence**)&seq);
                     AutoPtr<IMessage> msg;
-                    helper->ObtainEx4(mCallbackHandler, event->GetCode(), seq, (IMessage**)&msg);
+                    helper->Obtain(mCallbackHandler, event->GetCode(), seq, (IMessage**)&msg);
                     mCallbackHandler->SendMessage(msg, &result);
                 }
                 else {

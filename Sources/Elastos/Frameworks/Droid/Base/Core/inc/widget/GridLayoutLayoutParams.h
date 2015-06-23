@@ -34,7 +34,7 @@ private:
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI_(void) InitEx(
+    CARAPI_(void) Init(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 

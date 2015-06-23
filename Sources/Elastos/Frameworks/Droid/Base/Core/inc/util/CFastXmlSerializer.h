@@ -2,7 +2,7 @@
 #define __CFASTXMLSERIALIZER_H__
 
 #include "_CFastXmlSerializer.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::IBoolean;
 using Elastos::IO::IWriter;
@@ -40,7 +40,7 @@ public:
         /* [in] */ IOutputStream* os,
         /* [in] */ const String& encoding);
 
-    CARAPI SetOutputEx(
+    CARAPI SetOutput(
         /* [in] */ IWriter* writer);
 
     CARAPI StartDocument(
@@ -83,7 +83,7 @@ public:
     CARAPI WriteText(
         /* [in] */ const String& text);
 
-    CARAPI WriteTextEx(
+    CARAPI WriteText(
         /* [in] */ const ArrayOf<Char32>& buf,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len);

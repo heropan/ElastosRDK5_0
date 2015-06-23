@@ -32,7 +32,7 @@ public:
         /* [in] */ const String& mimetype,
         /* [in] */ Int64 contentLength) {
 
-        return OnDownloadStartEx(url, userAgent, contentDisposition, mimetype, String(NULL),
+        return OnDownloadStart(url, userAgent, contentDisposition, mimetype, String(NULL),
                       contentLength);
     }
 };

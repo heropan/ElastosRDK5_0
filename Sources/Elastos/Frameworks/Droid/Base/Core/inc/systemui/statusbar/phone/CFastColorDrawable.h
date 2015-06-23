@@ -2,7 +2,7 @@
 #define __CFASTCOLORDRAWABLE_H_
 
 #include "_CFastColorDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 #include "systemui/statusbar/phone/FastColorDrawable.h"
 
 namespace Elastos {

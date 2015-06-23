@@ -1,7 +1,7 @@
 #include "os/TokenWatcher.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/Set.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Set;
@@ -108,7 +108,7 @@ ECode TokenWatcher::Dump()
     return NOERROR;
 }
 
-ECode TokenWatcher::DumpEx(
+ECode TokenWatcher::Dump(
     /* [in] */ IPrintWriter* pw)
 {
     AutoPtr< List<String> > a = DumpInternal();

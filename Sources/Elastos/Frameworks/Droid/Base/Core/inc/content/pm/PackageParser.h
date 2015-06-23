@@ -5,14 +5,13 @@
 #include "ext/frameworkext.h"
 #include "content/IntentFilter.h"
 #include "content/pm/PackageUserState.h"
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::Utility::Jar::IJarFile;
 using Elastos::Utility::Jar::IJarEntry;
@@ -571,7 +570,7 @@ public:
             /* [in] */ const String& logTag,
             /* [out] */ Int32* result);
 
-        CARAPI MatchEx(
+        CARAPI Match(
             /* [in] */ const String& action,
             /* [in] */ const String& type,
             /* [in] */ const String& scheme,

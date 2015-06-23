@@ -3,7 +3,7 @@
 #include "graphics/CPoint.h"
 #include "graphics/CBitmapFactory.h"
 #include "graphics/CBitmapFactoryOptions.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 
 using Elastos::IO::IFile;

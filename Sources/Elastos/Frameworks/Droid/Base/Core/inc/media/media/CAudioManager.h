@@ -5,7 +5,7 @@
 #include "_CAudioManager.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBinder;
@@ -14,7 +14,7 @@ using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Bluetooth::IBluetoothDevice;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -354,7 +354,7 @@ public:
      *
      * @hide
      */
-    CARAPI SetMasterMuteEx(
+    CARAPI SetMasterMute(
         /* [in] */ Boolean state,
         /* [in] */ Int32 flags);
 
@@ -764,7 +764,7 @@ public:
      * NOTE: This version is for applications that have their own
      * settings panel for enabling and controlling volume.
      */
-    CARAPI PlaySoundEffectEx(
+    CARAPI PlaySoundEffect(
         /* [in] */ Int32 effectType,
         /* [in] */ Float volume);
 

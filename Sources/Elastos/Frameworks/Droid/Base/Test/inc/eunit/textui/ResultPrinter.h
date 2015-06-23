@@ -8,11 +8,10 @@
 #else
 #include <Eunit.h>
 #endif
-#include <elastos/Mutex.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using namespace Elastos;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintStream;
 using Elastos::Utility::IEnumeration;
 using Eunit::Framework::ITestListener;

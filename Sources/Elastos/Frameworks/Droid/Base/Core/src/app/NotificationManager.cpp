@@ -4,7 +4,7 @@
 #ifdef DROID_CORE
 #include "os/CUserHandleHelper.h"
 #endif
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::IUserHandleHelper;
@@ -54,10 +54,10 @@ ECode NotificationManager::Notify(
     /* [in] */ INotification* notification)
 {
     String nullStr;
-    return NotifyEx(nullStr, id, notification);
+    return Notify(nullStr, id, notification);
 }
 
-ECode NotificationManager::NotifyEx(
+ECode NotificationManager::Notify(
     /* [in] */ const String& tag,
     /* [in] */ Int32 id,
     /* [in] */ INotification* notification)
@@ -136,10 +136,10 @@ ECode NotificationManager::NotifyAsUser(
 ECode NotificationManager::Cancel(
     /* [in] */ Int32 id)
 {
-    return CancelEx(String(NULL), id);
+    return Cancel(String(NULL), id);
 }
 
-ECode NotificationManager::CancelEx(
+ECode NotificationManager::Cancel(
     /* [in] */ const String& tag,
     /* [in] */ Int32 id)
 {

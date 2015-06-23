@@ -28,7 +28,7 @@ Mutex UsbCameraDeviceManagerObserver::mStaticLock;
 CARAPI UsbCameraDeviceManagerObserver::BootCompletedReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
-{        
+{
     //monitor usb camera
     mHost->StartObserving(uEventSubsystem);
     AutoPtr<IHardwareCameraHelper> helper;
@@ -56,7 +56,7 @@ UsbCameraDeviceManagerObserver::UsbCameraDeviceManagerObserver(
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New(IIntent::ACTION_BOOT_COMPLETED, (IIntentFilter**)&filter);
     AutoPtr<IIntent> intent;
-    context->RegisterReceiverEx((IBroadcastReceiver*)receiver->Probe(EIID_IBroadcastReceiver) ,filter
+    context->RegisterReceiver((IBroadcastReceiver*)receiver->Probe(EIID_IBroadcastReceiver) ,filter
             , String(NULL), NULL, (IIntent**)&intent);
 }
 
@@ -87,7 +87,7 @@ void UsbCameraDeviceManagerObserver::OnUEvent(
             if(mUsbCameraTotalNumber>0){
                 mUsbCameraTotalNumber--;
             }
-            Logger::I(TAG,"action.equals(remove) mUsbCameraTotalNumber = %d", mUsbCameraTotalNumber); 
+            Logger::I(TAG,"action.equals(remove) mUsbCameraTotalNumber = %d", mUsbCameraTotalNumber);
             UpdateState(devName, mUsbCameraTotalNumber, IUsbCameraManager::PLUG_OUT);
         }
 //     }catch(Exception e){
@@ -124,7 +124,7 @@ void UsbCameraDeviceManagerObserver::UpdateState(
     if(extraMng != NULL){
         bundle->PutString(IUsbCameraManager::EXTRA_MNG, extraMng);
     }
-    intent->PutExtrasEx(bundle);
+    intent->PutExtras(bundle);
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
 }
 

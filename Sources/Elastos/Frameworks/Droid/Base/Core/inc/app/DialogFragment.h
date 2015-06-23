@@ -58,7 +58,7 @@ public:
         /* [in] */ IFragmentManager* manager,
         /* [in] */ const String& tag);
 
-    virtual CARAPI ShowEx(
+    virtual CARAPI Show(
         /* [in] */ IFragmentTransaction* transaction,
         /* [in] */ const String& tag,
         /* [out] */ Int32* id);

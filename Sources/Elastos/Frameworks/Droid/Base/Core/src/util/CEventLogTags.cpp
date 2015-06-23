@@ -31,7 +31,7 @@ namespace Utility {
 //     return NOERROR;
 // }
 
-// ECode CEventLogTags::GetEx(
+// ECode CEventLogTags::Get(
 //     /* [in] */ Int32 tag,
 //     /* [out] */ IEventLogTagsDescription** desc)
 // {

@@ -4,11 +4,11 @@
 #include <Org.Xmlpull.V1.h>
 #include <unistd.h>
 #include <util/Xml.h>
-#include <elastos/List.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/System.h>
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::System;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::CStringWrapper;
@@ -196,7 +196,7 @@ Slogger::D("jiazhenjiang", "====================BEGIN=====================");
 
     GetResources((IResources**)&res);
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bf);
-    bf->DecodeResourceEx(res.Get(), R::drawable::test1, (IBitmap**)&bm);
+    bf->DecodeResource(res.Get(), R::drawable::test1, (IBitmap**)&bm);
     mNotificationBuilder->SetLargeIcon(bm.Get());
 
     mNotificationBuilder->Build((INotification**)&targetNotification);

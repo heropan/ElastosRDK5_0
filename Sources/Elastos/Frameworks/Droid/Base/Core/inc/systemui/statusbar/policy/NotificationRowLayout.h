@@ -3,9 +3,9 @@
 
 #include "widget/LinearLayout.h"
 #include "ext/frameworkext.h"
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::ICanvas;
@@ -79,7 +79,7 @@ public:
         /* [in] */ Float touchX,
         /* [in] */ Float touchY);
 
-    CARAPI_(AutoPtr<IView>) GetChildAtPositionEx(
+    CARAPI_(AutoPtr<IView>) GetChildAtPosition(
         /* [in] */ Float touchX,
         /* [in] */ Float touchY);
 
@@ -95,7 +95,7 @@ public:
     CARAPI DismissRowAnimated(
         /* [in] */ IView* child);
 
-    CARAPI DismissRowAnimatedEx(
+    CARAPI DismissRowAnimated(
         /* [in] */ IView* child,
         /* [in] */ Int32 vel);
 

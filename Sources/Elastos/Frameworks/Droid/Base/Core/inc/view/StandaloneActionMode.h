@@ -34,10 +34,10 @@ public:
     CARAPI SetSubtitle(
         /* [in] */ ICharSequence* subtitle);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 resId);
 
-    CARAPI SetSubtitleEx(
+    CARAPI SetSubtitle(
         /* [in] */ Int32 resId);
 
     CARAPI SetTitleOptionalHint(

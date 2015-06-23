@@ -300,7 +300,7 @@ void SpellChecker::SpellCheck()
         if (mIsSentenceSpellCheckSupported) {
             mSpellCheckerSession->GetSentenceSuggestions(textInfos, ISuggestionSpan::SUGGESTIONS_MAX_SIZE);
         } else {
-            mSpellCheckerSession->GetSuggestionsEx(textInfos, ISuggestionSpan::SUGGESTIONS_MAX_SIZE, FALSE);
+            mSpellCheckerSession->GetSuggestions(textInfos, ISuggestionSpan::SUGGESTIONS_MAX_SIZE, FALSE);
         }
     }*/
 }

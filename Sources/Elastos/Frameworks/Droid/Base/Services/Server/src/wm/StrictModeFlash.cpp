@@ -66,22 +66,22 @@ void StrictModeFlash::DrawIfNeeded()
     Boolean result;
     AutoPtr<IRect> r;
     CRect::New(0, 0, dw, mThickness, (IRect**)&r);
-    c->ClipRectEx(r , Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
+    c->ClipRect(r , Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
     c->DrawColor(IColor::RED);
     // Left
     r = NULL;
     CRect::New(0, 0, mThickness, dh, (IRect**)&r);
-    c->ClipRectEx(r, Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
+    c->ClipRect(r, Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
     c->DrawColor(IColor::RED);
     // Right
     r = NULL;
     CRect::New(dw - mThickness, 0, dw, dh, (IRect**)&r);
-    c->ClipRectEx(r, Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
+    c->ClipRect(r, Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
     c->DrawColor(IColor::RED);
     // Bottom
     r = NULL;
     CRect::New(0, dh - mThickness, dw, dh, (IRect**)&r);
-    c->ClipRectEx(r, Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
+    c->ClipRect(r, Elastos::Droid::Graphics::RegionOp_REPLACE, &result);
     c->DrawColor(IColor::RED);
 
     mSurface->UnlockCanvasAndPost(c);

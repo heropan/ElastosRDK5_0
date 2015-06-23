@@ -3,12 +3,11 @@
 
 #include "_CBatteryService.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/UEventObserver.h"
 #include "os/Runnable.h"
 #include "LightsService.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::UEventObserver;

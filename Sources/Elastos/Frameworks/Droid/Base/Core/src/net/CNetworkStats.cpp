@@ -5,10 +5,10 @@
 #include "os/SystemClock.h"
 #include "util/ArrayUtils.h"
 #include "util/SparseArray.h"
-#include <elastos/Math.h>
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Utility::SparseArray;
@@ -16,8 +16,8 @@ using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::IO::ICharArrayWriter;
 using Elastos::IO::CCharArrayWriter;
 using Elastos::IO::CPrintWriter;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::ICharSequence;
@@ -87,10 +87,10 @@ ECode CNetworkStats::Clone(
     for (Int32 i = 0; i < mSize; i++) {
         AutoPtr<INetworkStatsEntry> entry;
         GetValues(i, entry, (INetworkStatsEntry**)&entry);
-        clone->AddValuesEx(entry);
+        clone->AddValues(entry);
     }
     *result = clone;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -121,14 +121,14 @@ ECode CNetworkStats::AddValues(
     AutoPtr<INetworkStatsEntry> ent;
     CNetworkStatsEntry::New(
             iface, uid, set, tag, rxBytes, rxPackets, txBytes, txPackets, operations, (INetworkStatsEntry**)&ent);
-    return AddValuesEx(ent);
+    return AddValues(ent);
 }
 
 /**
  * Add new stats entry, copying from given {@link Entry}. The {@link Entry}
  * object can be recycled across multiple calls.
  */
-ECode CNetworkStats::AddValuesEx(
+ECode CNetworkStats::AddValues(
     /* [in] */ INetworkStatsEntry* entry)
 {
     if (mSize >= mIface->GetLength()) {
@@ -213,7 +213,7 @@ ECode CNetworkStats::GetValues(
     entry->SetTxPackets((*mTxPackets)[i]);
     entry->SetOperations((*mOperations)[i]);
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -265,11 +265,11 @@ ECode CNetworkStats::CombineValues(
     /* [in] */ Int64 txPackets,
     /* [in] */ Int64 operations)
 {
-    return CombineValuesEx(iface, uid, SET_DEFAULT,
+    return CombineValues(iface, uid, SET_DEFAULT,
         tag, rxBytes, rxPackets, txBytes, txPackets, operations);
 }
 
-ECode CNetworkStats::CombineValuesEx(
+ECode CNetworkStats::CombineValues(
     /* [in] */ const String& iface,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 set,
@@ -283,7 +283,7 @@ ECode CNetworkStats::CombineValuesEx(
     AutoPtr<INetworkStatsEntry> ent;
     CNetworkStatsEntry::New(iface, uid, set, tag,
         rxBytes, rxPackets, txBytes, txPackets, operations, (INetworkStatsEntry**)&ent);
-    return CombineValuesEx2(ent);
+    return CombineValues(ent);
 }
 
 /**
@@ -291,7 +291,7 @@ ECode CNetworkStats::CombineValuesEx(
  * {@link #findIndex(String, int, int, int)} is unable to find match. Can
  * also be used to subtract values from existing rows.
  */
-ECode CNetworkStats::CombineValuesEx2(
+ECode CNetworkStats::CombineValues(
     /* [in] */ INetworkStatsEntry* entry)
 {
     String iface;
@@ -305,7 +305,7 @@ ECode CNetworkStats::CombineValuesEx2(
 
     if (i == -1) {
         // only create new entry when positive contribution
-        AddValuesEx(entry);
+        AddValues(entry);
     }
     else {
         Int64 rxBytes, rxPackets, txBytes, txPackets, operations;
@@ -335,7 +335,7 @@ ECode CNetworkStats::CombineAllValues(
     for (Int32 i = 0; i < n; i++) {
         AutoPtr<INetworkStatsEntry> outEntry;
         another->GetValues(i, entry, (INetworkStatsEntry**)&outEntry);
-        CombineValuesEx2(outEntry);
+        CombineValues(outEntry);
         entry = outEntry;
     }
     return NOERROR;
@@ -498,7 +498,7 @@ ECode CNetworkStats::GetTotal(
     VALIDATE_NOT_NULL(result);
     AutoPtr<INetworkStatsEntry> entry = GetTotal(recycle, NULL, UID_ALL, FALSE);
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -506,7 +506,7 @@ ECode CNetworkStats::GetTotal(
  * Return total of all fields represented by this snapshot object matching
  * the requested {@link #uid}.
  */
-ECode CNetworkStats::GetTotalEx(
+ECode CNetworkStats::GetTotal(
     /* [in] */ INetworkStatsEntry* recycle,
     /* [in] */ Int32 limitUid,
     /* [out] */ INetworkStatsEntry** result)
@@ -514,7 +514,7 @@ ECode CNetworkStats::GetTotalEx(
     VALIDATE_NOT_NULL(result);
     AutoPtr<INetworkStatsEntry> entry = GetTotal(recycle, NULL, limitUid, FALSE);
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -522,7 +522,7 @@ ECode CNetworkStats::GetTotalEx(
  * Return total of all fields represented by this snapshot object matching
  * the requested {@link #iface}.
  */
-ECode CNetworkStats::GetTotalEx2(
+ECode CNetworkStats::GetTotal(
     /* [in] */ INetworkStatsEntry* recycle,
     /* [in] */ IObjectContainer* limitIface,
     /* [out] */ INetworkStatsEntry** result)
@@ -530,7 +530,7 @@ ECode CNetworkStats::GetTotalEx2(
     VALIDATE_NOT_NULL(result);
     AutoPtr<INetworkStatsEntry> entry = GetTotal(recycle, limitIface, UID_ALL, FALSE);
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -541,7 +541,7 @@ ECode CNetworkStats::GetTotalIncludingTags(
     VALIDATE_NOT_NULL(result);
     AutoPtr<INetworkStatsEntry> entry = GetTotal(recycle, NULL, UID_ALL, TRUE);
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -621,7 +621,7 @@ ECode CNetworkStats::Subtract(
     AutoPtr<INetworkStats> networkstats;
     Subtract(this, right, NULL, NULL, (INetworkStats**)&networkstats);
     *result = networkstats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -733,10 +733,10 @@ ECode CNetworkStats::Subtract(
             }
         }
 
-        networkstats->AddValuesEx(entry);
+        networkstats->AddValues(entry);
     }
     *result = networkstats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -768,10 +768,10 @@ ECode CNetworkStats::GroupedByIface(
         entry->SetRxPackets((*mRxPackets)[i]);
         entry->SetTxBytes((*mTxBytes)[i]);
         entry->SetTxPackets((*mTxPackets)[i]);
-        stats->CombineValuesEx2(entry);
+        stats->CombineValues(entry);
     }
     *result = stats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -803,10 +803,10 @@ ECode CNetworkStats::GroupedByUid(
         entry->SetTxBytes((*mTxBytes)[i]);
         entry->SetTxPackets((*mTxPackets)[i]);
         entry->SetOperations((*mOperations)[i]);
-        stats->CombineValuesEx2(entry);
+        stats->CombineValues(entry);
     }
     *result = stats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -831,12 +831,12 @@ ECode CNetworkStats::WithoutUids(
         Int32 uid;
         newEntry->GetUid(&uid);
         if (!ArrayUtils::Contains((ArrayOf<Int32>*)&uids, uid)) {
-            stats->AddValuesEx(newEntry);
+            stats->AddValues(newEntry);
         }
         entry = newEntry;
     }
     *result = stats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

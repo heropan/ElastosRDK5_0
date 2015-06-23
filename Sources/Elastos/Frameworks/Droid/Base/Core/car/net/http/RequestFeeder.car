@@ -12,7 +12,7 @@ module
         GetRequest(
             [out] IRequest** request);
 
-        GetRequestEx(
+        GetRequest(
             [in] IHttpHost* host,
             [out] IRequest** request);
 

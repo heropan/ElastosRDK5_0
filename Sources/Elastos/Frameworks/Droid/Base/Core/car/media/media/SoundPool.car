@@ -59,7 +59,7 @@ module
          *                 a value of 1 for future compatibility.
          * @return a sound ID. This value can be used to play or unload the sound.
          */
-        LoadEx(
+        Load(
             [in] IContext* ctx,
             [in] Int32 resId,
             [in] Int32 priority,
@@ -73,7 +73,7 @@ module
          *                 a value of 1 for future compatibility.
          * @return a sound ID. This value can be used to play or unload the sound.
          */
-        LoadEx2(
+        Load(
             [in] IAssetFileDescriptor* afd,
             [in] Int32 priority,
             [out] Int32* result);
@@ -92,7 +92,7 @@ module
          *                 a value of 1 for future compatibility.
          * @return a sound ID. This value can be used to play or unload the sound.
          */
-        LoadEx3(
+        Load(
             [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length,

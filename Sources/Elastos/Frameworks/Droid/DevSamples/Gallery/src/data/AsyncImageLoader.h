@@ -3,17 +3,17 @@
 #define __ASYNCIMAGELOADER_H__
 
 #include "app/Activity.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "ImageCacheService.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Widget::IImageView;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Gallery {
 

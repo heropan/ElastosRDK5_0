@@ -231,7 +231,7 @@ Boolean NotificationData::ReadBooleanTag(
 {
     if (view != NULL) {
         AutoPtr<IInterface> value;
-        view->GetTagEx(id, (IInterface**)&value);
+        view->GetTag(id, (IInterface**)&value);
         if (IBoolean::Probe(value) != NULL) {
             Boolean result;
             IBoolean::Probe(value)->GetValue(&result);
@@ -250,7 +250,7 @@ Boolean NotificationData::WriteBooleanTag(
     if (view != NULL) {
         AutoPtr<IBoolean> bVal;
         CBoolean::New(value, (IBoolean**)&bVal);
-        view->SetTagEx(id, bVal);
+        view->SetTag(id, bVal);
         return value;
     }
 

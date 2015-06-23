@@ -3,7 +3,7 @@
 #include "net/Uri.h"
 #include "content/CContentValues.h"
 #include "content/CContentUris.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 #include "R.h"
 
 using Elastos::Core::IDouble;
@@ -78,7 +78,7 @@ ECode CContactsContactMethods::DecodeImProtocol(
         AutoPtr<IInteger32> result;
         FAIL_RETURN(CInteger32::New(num, (IInteger32**)&result))
         *value = (IInterface*)result;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
 
@@ -87,7 +87,7 @@ ECode CContactsContactMethods::DecodeImProtocol(
         AutoPtr<ICharSequence> result;
         FAIL_RETURN(CStringWrapper::New(str, (ICharSequence**)&result))
         *value = (IInterface*)result;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
 
@@ -210,7 +210,7 @@ ECode CContactsContactMethods::GetDisplayLabel(
             display = cstr;
     }
     *lb = display;
-    INTERFACE_ADDREF(*lb);
+    REFCOUNT_ADD(*lb);
     return NOERROR;
 }
 

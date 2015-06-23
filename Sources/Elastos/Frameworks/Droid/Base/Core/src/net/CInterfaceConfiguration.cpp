@@ -1,6 +1,6 @@
 
 #include "net/CInterfaceConfiguration.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -50,7 +50,7 @@ ECode CInterfaceConfiguration::GetFlags(
         (*resArray)[i++] = *iter;
     }
     *result = resArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -101,7 +101,7 @@ ECode CInterfaceConfiguration::GetLinkAddress(
 {
     VALIDATE_NOT_NULL(result);
     *result = mAddr;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

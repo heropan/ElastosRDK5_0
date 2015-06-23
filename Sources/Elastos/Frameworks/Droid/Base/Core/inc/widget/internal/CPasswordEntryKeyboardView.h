@@ -3,7 +3,7 @@
 
 #include "_CPasswordEntryKeyboardView.h"
 #include "PasswordEntryKeyboardView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

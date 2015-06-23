@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "CMtpDatabase.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "text/TextUtils.h"
 #include "media/media/CMediaScanner.h"
 #include "content/CIntent.h"
@@ -1125,7 +1125,7 @@ ECode CMtpDatabase::constructor(
     mContext = context;
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
-    cr->AcquireProviderEx(String("media"), (IIContentProvider**)&mMediaProvider);
+    cr->AcquireProvider(String("media"), (IIContentProvider**)&mMediaProvider);
     mVolumeName = volumeName;
     mMediaStoragePath = storagePath;
     AutoPtr<IMediaStoreFiles> files;
@@ -1235,7 +1235,7 @@ void CMtpDatabase::InitDeviceProperties(
                 s->Set(0, String("_id"));
                 s->Set(1, String("code"));
                 s->Set(2, String("value"));
-                db->QueryEx2(String("properties"), s, String(NULL), NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
+                db->Query(String("properties"), s, String(NULL), NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
                 if (c != NULL) {
                     AutoPtr<ISharedPreferencesEditor> e;
                     mDeviceProperties->Edit((ISharedPreferencesEditor**)&e);
@@ -2071,7 +2071,7 @@ Int32 CMtpDatabase::DeleteFile(
         AutoPtr<IUri> uri;
         AutoPtr<IMediaStoreFiles> files;
         CMediaStoreFiles::AcquireSingleton((IMediaStoreFiles**)&files);
-        files->GetMtpObjectsUriEx(mVolumeName, handle, (IUri**)&uri);
+        files->GetMtpObjectsUri(mVolumeName, handle, (IUri**)&uri);
         Int32 v;
         mMediaProvider->Delete(uri, String(NULL), NULL, &v);
         if (v > 0) {

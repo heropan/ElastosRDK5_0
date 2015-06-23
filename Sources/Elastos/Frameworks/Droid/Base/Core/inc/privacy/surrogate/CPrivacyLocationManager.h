@@ -4,9 +4,7 @@
 
 #include "_CPrivacyLocationManager.h"
 #include "location/LocationManager.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Location::ICriteria;
@@ -71,7 +69,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ ILocationProvider** provider);
 
-    CARAPI GetProvidersEx(
+    CARAPI GetProviders(
         /* [in] */ ICriteria* criteria,
         /* [in] */ Boolean enabledOnly,
         /* [out] */ IObjectContainer** providers);
@@ -87,13 +85,13 @@ public:
         /* [in] */ Float minDistance,
         /* [in] */ ILocationListener* listener);
 
-    CARAPI RequestLocationUpdatesEx3(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ IPendingIntent* intent);
 
-    CARAPI RequestLocationUpdatesEx4(
+    CARAPI RequestLocationUpdates(
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ICriteria* criteria,
@@ -123,48 +121,48 @@ public:
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
 
-    CARAPI RequestLocationUpdatesEx(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
 
-    CARAPI RequestLocationUpdatesEx2(
+    CARAPI RequestLocationUpdates(
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ICriteria* criteria,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
 
-    CARAPI RequestSingleUpdateEx(
+    CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
 
 
-    CARAPI RequestSingleUpdateEx2(
+    CARAPI RequestSingleUpdate(
         /* [in] */ const String& provider,
         /* [in] */ IPendingIntent* intent);
 
-    CARAPI RequestSingleUpdateEx3(
+    CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ IPendingIntent* intent);
 
-    CARAPI RequestLocationUpdatesEx5(
+    CARAPI RequestLocationUpdates(
         /* [in] */ ILocationRequest* request,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
 
 
-    CARAPI RequestLocationUpdatesEx6(
+    CARAPI RequestLocationUpdates(
         /* [in] */ ILocationRequest* request,
         /* [in] */ IPendingIntent* intent);
 
     CARAPI RemoveUpdates(
         /* [in] */ ILocationListener* listener);
 
-    CARAPI RemoveUpdatesEx(
+    CARAPI RemoveUpdates(
         /* [in] */ IPendingIntent* intent);
 
     CARAPI AddProximityAlert(

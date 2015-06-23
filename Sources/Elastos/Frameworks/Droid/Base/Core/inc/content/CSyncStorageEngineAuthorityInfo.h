@@ -4,9 +4,9 @@
 
 #include "_CSyncStorageEngineAuthorityInfo.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using namespace Elastos::Core;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Utility::IPair;

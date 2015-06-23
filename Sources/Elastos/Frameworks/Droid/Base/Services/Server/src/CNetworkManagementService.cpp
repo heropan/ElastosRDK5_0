@@ -5,10 +5,10 @@
 #include "os/Binder.h"
 #include "os/SystemClock.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuffer.h>
-#include <Elastos.Core.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuffer.h>
+#include <Elastos.CoreLibrary.h>
 #include <cutils/log.h>
 
 using Elastos::Core::ICharSequence;
@@ -1632,7 +1632,7 @@ ECode CNetworkManagementService::GetNetworkStatsDetail(
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
-    return mStatsFactory->ReadNetworkStatsDetailEx(INetworkStats::UID_ALL, result);
+    return mStatsFactory->ReadNetworkStatsDetail(INetworkStats::UID_ALL, result);
 }
 
 ECode CNetworkManagementService::SetInterfaceQuota(
@@ -1872,7 +1872,7 @@ ECode CNetworkManagementService::GetNetworkStatsUidDetail(
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
-    return mStatsFactory->ReadNetworkStatsDetailEx(uid, result);
+    return mStatsFactory->ReadNetworkStatsDetail(uid, result);
 }
 
 ECode CNetworkManagementService::GetNetworkStatsTethering(
@@ -1898,7 +1898,7 @@ ECode CNetworkManagementService::GetNetworkStatsTethering(
         if (ifaceIn != NULL && ifaceOut != NULL) {
             AutoPtr<INetworkStatsEntry> entry;
             GetNetworkStatsTethering(ifaceIn, ifaceOut, (INetworkStatsEntry**)&entry);
-            stats->CombineValuesEx2(entry);
+            stats->CombineValues(entry);
         }
     }
     *result = stats;

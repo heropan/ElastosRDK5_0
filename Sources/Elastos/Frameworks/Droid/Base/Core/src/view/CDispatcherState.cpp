@@ -1,7 +1,7 @@
 
 #include "view/CDispatcherState.h"
 #include "view/CKeyEvent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -29,7 +29,7 @@ ECode CDispatcherState::Reset()
     return NOERROR;
 }
 
-ECode CDispatcherState::ResetEx(
+ECode CDispatcherState::Reset(
     /* [in] */ IInterface* target)
 {
     if (mDownTarget.Get() == target) {

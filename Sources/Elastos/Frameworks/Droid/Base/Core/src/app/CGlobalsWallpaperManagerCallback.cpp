@@ -7,7 +7,7 @@
 #include "graphics/CBitmapFactoryOptions.h"
 #include "graphics/CBitmapFactory.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFileDescriptor;
@@ -99,8 +99,8 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
         (IBundle**)&params, (IParcelFileDescriptor**)&fd));
     if (fd != NULL) {
         Int32 width, height;
-        params->GetInt32Ex(String("width"), 0, &width);
-        params->GetInt32Ex(String("height"), 0, &height);
+        params->GetInt32(String("width"), 0, &width);
+        params->GetInt32(String("height"), 0, &height);
 
         // try {
         AutoPtr<IBitmapFactoryOptions> options;

@@ -42,7 +42,7 @@ ECode CPermissionGroupInfo::LoadDescription(
 
     if (mNonLocalizedDescription != NULL) {
         *description = mNonLocalizedDescription;
-        INTERFACE_ADDREF(*description);
+        REFCOUNT_ADD(*description);
         return NOERROR;
     }
 
@@ -229,7 +229,7 @@ ECode CPermissionGroupInfo::GetNonLocalizedDescription(
 {
     VALIDATE_NOT_NULL(nonLocalizedDescription);
     *nonLocalizedDescription = mNonLocalizedDescription;
-    INTERFACE_ADDREF(*nonLocalizedDescription);
+    REFCOUNT_ADD(*nonLocalizedDescription);
     return NOERROR;
 }
 

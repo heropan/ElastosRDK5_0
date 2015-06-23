@@ -2,7 +2,7 @@
 #include "CPlayActivity.h"
 #include <unistd.h>
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::EIID_IRunnable;

@@ -1,6 +1,6 @@
 
 #include "wm/WindowBinder.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <binder/Binder.h>
 #include <binder/IServiceManager.h>
 

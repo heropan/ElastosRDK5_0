@@ -19,17 +19,17 @@ namespace Telephony {
 CarClass(CCallerInfoHelper)
 {
 public:
-    CARAPI GetCallerInfoEx(
+    CARAPI GetCallerInfo(
         /* [in] */ IContext* context,
         /* [in] */ const String& number,
         /* [out] */ ICallerInfo** callerInfo);
 
-    CARAPI GetCallerInfoEx2(
+    CARAPI GetCallerInfo(
         /* [in] */ IContext* context,
         /* [in] */ IUri* contactRef,
         /* [out] */ ICallerInfo** callerInfo);
 
-    CARAPI GetCallerInfoEx3(
+    CARAPI GetCallerInfo(
         /* [in] */ IContext* context,
         /* [in] */ IUri* contactRef,
         /* [in] */ ICursor* cursor,

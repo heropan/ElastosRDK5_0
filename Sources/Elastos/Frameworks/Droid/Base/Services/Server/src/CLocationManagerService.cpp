@@ -11,9 +11,9 @@
 #include "ServiceWatcher.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Math;
 using Elastos::Core::ISystem;
@@ -21,8 +21,8 @@ using Elastos::Core::CSystem;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::IProcess;
@@ -420,13 +420,13 @@ Boolean CLocationManagerService::Receiver::CallStatusChangedLocked(
         CIntent::New((IIntent**)&statusChanged);
         AutoPtr<IBundle> bundle;
         CBundle::New(extras, (IBundle**)&bundle);
-        statusChanged->PutExtrasEx(bundle);
+        statusChanged->PutExtras(bundle);
         statusChanged->PutInt32Extra(ILocationManager::KEY_STATUS_CHANGED, status);
 //        try {
         Mutex::Autolock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
-        if (FAILED(mPendingIntent->SendEx5(mHost->mContext, 0, statusChanged,
+        if (FAILED(mPendingIntent->Send(mHost->mContext, 0, statusChanged,
                 this, mHost->mLocationHandler, mHost->GetResolutionPermission(mAllowedResolutionLevel)))) {
             return FALSE;
         }
@@ -469,7 +469,7 @@ Boolean CLocationManagerService::Receiver::CallLocationChangedLocked(
         Mutex::Autolock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
-        if (FAILED(mPendingIntent->SendEx5(mHost->mContext, 0, locationChanged,
+        if (FAILED(mPendingIntent->Send(mHost->mContext, 0, locationChanged,
                 this, mHost->mLocationHandler, mHost->GetResolutionPermission(mAllowedResolutionLevel)))) {
             return FALSE;
         }
@@ -519,7 +519,7 @@ Boolean CLocationManagerService::Receiver::CallProviderEnabledLocked(
         Mutex::Autolock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
-        if (FAILED(mPendingIntent->SendEx5(mHost->mContext, 0, providerIntent,
+        if (FAILED(mPendingIntent->Send(mHost->mContext, 0, providerIntent,
                 this, mHost->mLocationHandler, mHost->GetResolutionPermission(mAllowedResolutionLevel)))) {
             return FALSE;
         }
@@ -679,8 +679,8 @@ void CLocationManagerService::Init()
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    settingsSecure->GetUriForEx(ISettingsSecure::LOCATION_PROVIDERS_ALLOWED, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, TRUE, lcObserver.Get(), IUserHandle::USER_ALL);
+    settingsSecure->GetUriFor(ISettingsSecure::LOCATION_PROVIDERS_ALLOWED, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, TRUE, lcObserver.Get(), IUserHandle::USER_ALL);
     AutoPtr<ILooper> myLooper = Looper::MyLooper();
     mPackageMonitor->Register(mContext, myLooper, TRUE);
 
@@ -761,7 +761,7 @@ ECode CLocationManagerService::EnsureFallbackFusedProviderPresentLocked(
         }
 
         Int32 version;
-        metaData->GetInt32Ex(
+        metaData->GetInt32(
                 ServiceWatcher::EXTRA_SERVICE_VERSION, -1, &version);
         if (version == 0) {
             // This should be the fallback fused location provider.
@@ -1440,7 +1440,7 @@ void CLocationManagerService::ApplyRequirementsLocked(
                     locationRequest->GetInterval(&locationInterval);
                     if (locationInterval <= thresholdInterval) {
                         Boolean addRst;
-                        worksource->AddEx(record->mReceiver->mUid, &addRst);
+                        worksource->Add(record->mReceiver->mUid, &addRst);
                     }
                 }
             }
@@ -2109,9 +2109,9 @@ ECode CLocationManagerService::ReportLocation(
         return NOERROR;
     }
 
-    mLocationHandler->RemoveMessagesEx(MSG_LOCATION_CHANGED, location);
+    mLocationHandler->RemoveMessages(MSG_LOCATION_CHANGED, location);
     AutoPtr<IMessage> msg;
-    mLocationHandler->ObtainMessageEx(MSG_LOCATION_CHANGED, location, (IMessage**)&msg);
+    mLocationHandler->ObtainMessage(MSG_LOCATION_CHANGED, location, (IMessage**)&msg);
     msg->SetArg1(passive ? 1 : 0);
     Boolean result;
     return mLocationHandler->SendMessageAtFrontOfQueue(msg, &result);

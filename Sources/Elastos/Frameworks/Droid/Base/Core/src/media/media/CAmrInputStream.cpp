@@ -52,13 +52,13 @@ ECode CAmrInputStream::ReadBytes(
     return AmrInputStream::ReadBytes(buffer, number);
 }
 
-ECode CAmrInputStream::ReadBytesEx(
+ECode CAmrInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
-    return AmrInputStream::ReadBytesEx(buffer, byteOffset, byteCount, number);
+    return AmrInputStream::ReadBytes(buffer, byteOffset, byteCount, number);
 }
 
 ECode CAmrInputStream::Reset()
@@ -80,7 +80,7 @@ ECode CAmrInputStream::GetLock(
 
     AutoPtr<IInterface> obj = AmrInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

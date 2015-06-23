@@ -18,7 +18,7 @@ module
         GetHashCode(
             [out] Int32* hashcode);
 
-        EqualsEx(
+        Equals(
             [in] IMessenger* other,
             [out] Boolean* equals);
 

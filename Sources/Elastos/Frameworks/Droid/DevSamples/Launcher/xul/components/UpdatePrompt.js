@@ -86,7 +86,7 @@ UpdatePrompt.prototype = {
       let prompt = Services.prompt;
       let flags = prompt.BUTTON_POS_0 * prompt.BUTTON_TITLE_IS_STRING + prompt.BUTTON_POS_1 * prompt.BUTTON_TITLE_IS_STRING;
 
-      let download = (prompt.confirmEx(window, title, message, flags, button0, button1, null, null, {value: false}) == 0);
+      let download = (prompt.confirm(window, title, message, flags, button0, button1, null, null, {value: false}) == 0);
       if (download) {
         // Start downloading the update in the background
         let aus = Cc["@mozilla.org/updates/update-service;1"].getService(Ci.nsIApplicationUpdateService);
@@ -173,7 +173,7 @@ UpdatePrompt.prototype = {
     AddonManager.getAddonsByTypes(["locale"], (function (aAddons) {
       if (aAddons.length > 0) {
         let listener = this.getAddonListener(aUpdate, this);
-        AddonManager.addAddonListener(listener);  
+        AddonManager.addAddonListener(listener);
         aAddons.forEach(function(aAddon) {
           listener._uninstalling.push(aAddon.id);
           aAddon.uninstall();
@@ -236,11 +236,11 @@ UpdatePrompt.prototype = {
   showUpdateHistory: function UP_showUpdateHistory(aParent) {
     // NOT IMPL
   },
-  
+
   // ----------------------------
   // nsIRequestObserver interface
   // ----------------------------
-  
+
   // When the data transfer begins
   onStartRequest: function(request, context) {
     // NOT IMPL
@@ -261,7 +261,7 @@ UpdatePrompt.prototype = {
   // ------------------------------
   // nsIProgressEventSink interface
   // ------------------------------
-  
+
   // When new data has been downloaded
   onProgress: function(request, context, progress, maxProgress) {
     this._updateDownloadProgress(progress, maxProgress);
@@ -283,13 +283,13 @@ UpdatePrompt.prototype = {
         let index = this._installing.indexOf(aAddon.id);
         if (index > -1)
           this._installing.splice(index, 1);
-    
+
         if (this._installing.length == 0) {
           aUpdatePrompt._showDownloadedNotification(aUpdate);
           AddonManager.removeAddonListener(this);
         }
       },
-    
+
       onUninstalling: function(aAddon, aNeedsRestart) {
         let pending = [];
         let index = this._uninstalling.indexOf(aAddon.id);

@@ -4,9 +4,9 @@
 
 #include "_CViewConfiguration.h"
 #include "ext/frameworkdef.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {

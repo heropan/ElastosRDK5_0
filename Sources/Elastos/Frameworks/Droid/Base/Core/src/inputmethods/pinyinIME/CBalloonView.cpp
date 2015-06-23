@@ -44,7 +44,7 @@ void BalloonView::OnMeasure(
         measuredHeight += (mIcon->GetIntrinsicHeight(&value), value);
     } else if (NULL != mLabel) {
         Float value = 0.f;
-        measuredWidth += (Int32) (mPaintLabel->MeasureTextEx2(mLabel, &value), value);
+        measuredWidth += (Int32) (mPaintLabel->MeasureText(mLabel, &value), value);
 
         Int32 bottom = 0, top = 0;
         mFmi->GetBottom(&bottom);
@@ -92,7 +92,7 @@ void BalloonView::OnDraw(
         mIcon->Draw(canvas);
     } else if (NULL != mLabel) {
         Float labelMeasuredWidth = 0.f;
-        mPaintLabel->MeasureTextEx2(mLabel, &labelMeasuredWidth);
+        mPaintLabel->MeasureText(mLabel, &labelMeasuredWidth);
         Float x = mPaddingLeft;
         x += (width - labelMeasuredWidth - mPaddingLeft - mPaddingRight) / 2.0f;
         String labelToDraw = mLabel;
@@ -108,7 +108,7 @@ void BalloonView::OnDraw(
         Int32 fontHeight = bottom - top;
         Float marginY = (height - fontHeight) / 2.0f;
         Float y = marginY - top;
-        canvas->DrawTextEx(labelToDraw, x, y, mPaintLabel);
+        canvas->DrawText(labelToDraw, x, y, mPaintLabel);
     }
 }
 
@@ -121,7 +121,7 @@ String BalloonView::GetLimitedLabelForDrawing(
     do {
         subLen--;
         Float width = 0.f;
-        mPaintLabel->MeasureTextEx(rawLabel, 0, subLen, &width);
+        mPaintLabel->MeasureText(rawLabel, 0, subLen, &width);
         if (width + mSuspensionPointsWidth <= widthToDraw || 1 >= subLen) {
             return rawLabel.Substring(0, subLen) + SUSPENSION_POINTS;
         }
@@ -145,7 +145,7 @@ ECode CBalloonView::constructor(
     mPaintLabel->SetColor(mLabeColor);
     mPaintLabel->SetAntiAlias(TRUE);
     mPaintLabel->SetFakeBoldText(TRUE);
-    mPaintLabel->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmi);
+    mPaintLabel->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
     return NOERROR;
 }
 
@@ -168,8 +168,8 @@ ECode CBalloonView::SetTextConfig(
     mPaintLabel->SetTextSize(fontSize);
     mPaintLabel->SetFakeBoldText(textBold);
     mPaintLabel->SetColor(textColor);
-    mPaintLabel->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmi);
-    mPaintLabel->MeasureTextEx2(SUSPENSION_POINTS, &mSuspensionPointsWidth);
+    mPaintLabel->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
+    mPaintLabel->MeasureText(SUSPENSION_POINTS, &mSuspensionPointsWidth);
     return NOERROR;
 }
 

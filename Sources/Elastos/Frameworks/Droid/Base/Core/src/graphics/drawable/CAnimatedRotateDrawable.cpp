@@ -61,7 +61,7 @@ ECode CAnimatedRotateDrawable::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> temp = AnimatedRotateDrawable::GetDrawable();
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

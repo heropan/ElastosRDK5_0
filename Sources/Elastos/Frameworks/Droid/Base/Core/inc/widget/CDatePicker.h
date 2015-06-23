@@ -3,8 +3,8 @@
 
 #include "_CDatePicker.h"
 #include "widget/DatePicker.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{

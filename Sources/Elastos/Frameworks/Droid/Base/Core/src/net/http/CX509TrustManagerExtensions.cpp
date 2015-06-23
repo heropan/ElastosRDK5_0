@@ -1,7 +1,7 @@
 
 #include "CX509TrustManagerExtensions.h"
 #include "ext/frameworkext.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 

@@ -56,7 +56,7 @@ ECode CUsbDeviceConnection::GetRawDescriptors(
     VALIDATE_NOT_NULL(descriptors);
     AutoPtr<ArrayOf<Byte> > tmp = NativeGetDesc();
     *descriptors = tmp;
-    INTERFACE_ADDREF(*descriptors);
+    REFCOUNT_ADD(*descriptors);
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode CUsbDeviceConnection::RequestWait(
 
     AutoPtr<IUsbRequest> r = NativeRequestWait();
     *request = r;
-    INTERFACE_ADDREF(*request);
+    REFCOUNT_ADD(*request);
 
     if (*request != NULL) {
         (*request)->Dequeue();

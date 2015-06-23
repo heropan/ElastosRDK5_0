@@ -237,7 +237,7 @@ module
         SetImageLevel(
             [in] Int32 level);
 
-        SetAlphaEx(
+        SetAlpha(
             [in] Int32 alpha);
 
         /**
@@ -349,7 +349,7 @@ module
          *
          * @attr ref android.R.styleable#ImageView_tint
          */
-        SetColorFilterEx(
+        SetColorFilter(
             [in] Int32 color,
             [in] PorterDuffMode mode);
 
@@ -372,7 +372,7 @@ module
          *
          * @see #getColorFilter()
          */
-        SetColorFilterEx2(
+        SetColorFilter(
             [in] IColorFilter* cf);
 
         /**

@@ -17,7 +17,7 @@ module
             [in] Float y,
             [in] IPaint* paint);
 
-        DrawEx(
+        Draw(
             [in] ICanvas* canvas,
             [in] Float x,
             [in] Float y);

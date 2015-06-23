@@ -258,7 +258,7 @@ ECode CRatingBar::SetInterpolator(
     return RatingBar::SetInterpolator(ctx, resID);
 }
 
-ECode CRatingBar::SetInterpolatorEx(
+ECode CRatingBar::SetInterpolator(
     /* [in] */ IInterpolator* interpolator)
 {
     return RatingBar::SetInterpolator(interpolator);

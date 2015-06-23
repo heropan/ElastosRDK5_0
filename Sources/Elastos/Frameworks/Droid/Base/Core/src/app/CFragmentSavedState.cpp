@@ -27,7 +27,7 @@ ECode CFragmentSavedState::GetState(
 {
     VALIDATE_NOT_NULL(state);
     *state = mState;
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 

@@ -2,7 +2,7 @@
 #include "ext/frameworkdef.h"
 #include "net/LocalSocketImpl.h"
 #include "net/CCredentials.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/un.h>
@@ -67,7 +67,7 @@ ECode LocalSocketImpl::SocketInputStream::GetLock(
 
     AutoPtr<IInterface> obj = InputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -105,10 +105,10 @@ ECode LocalSocketImpl::SocketInputStream::ReadBytes(
     /* [out] */ Int32* result)
 {
     assert(b != NULL);
-    return ReadBytesEx(b, 0, b->GetLength(), result);
+    return ReadBytes(b, 0, b->GetLength(), result);
 }
 
-ECode LocalSocketImpl::SocketInputStream::ReadBytesEx(
+ECode LocalSocketImpl::SocketInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
@@ -159,7 +159,7 @@ ECode LocalSocketImpl::SocketInputStream::Skip(
     while (skipped < byteCount) {
         Int32 toRead = (Int32)Elastos::Core::Math::Min(byteCount - skipped, (Int64)buffer->GetLength());
         Int32 read = 0;
-        FAIL_RETURN(ReadBytesEx(buffer.Get(), 0, toRead, &read));
+        FAIL_RETURN(ReadBytes(buffer.Get(), 0, toRead, &read));
         if (read == -1) {
             break;
         }
@@ -240,7 +240,7 @@ ECode LocalSocketImpl::SocketOutputStream::Write (
 ECode LocalSocketImpl::SocketOutputStream::WriteBytes (
     /* [in] */ const ArrayOf<Byte>& b)
 {
-    return WriteBytesEx(b, 0, b.GetLength());
+    return WriteBytes(b, 0, b.GetLength());
 }
 
 ECode LocalSocketImpl::SocketOutputStream::WriteBytesEx (
@@ -283,7 +283,7 @@ ECode LocalSocketImpl::SocketOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = OutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -798,7 +798,7 @@ ECode LocalSocketImpl::NativeGetPeerCredentials(
     AutoPtr<ICredentials>  crden;
     CCredentials::New(creds.pid, creds.uid, creds.gid, (ICredentials**)&crden);
     *credentials = crden;
-    INTERFACE_ADDREF(*credentials);
+    REFCOUNT_ADD(*credentials);
     return NOERROR;
 }
 
@@ -1129,7 +1129,7 @@ ECode LocalSocketImpl::GetInputStream(
         }
 
         *is = mFis;
-        INTERFACE_ADDREF(*is);
+        REFCOUNT_ADD(*is);
         return NOERROR;
     }
 }
@@ -1158,7 +1158,7 @@ ECode LocalSocketImpl::GetOutputStream(
         }
 
         *os = mFos;
-        INTERFACE_ADDREF(*os);
+        REFCOUNT_ADD(*os);
         return NOERROR;
     }
 }

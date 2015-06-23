@@ -61,7 +61,7 @@ ECode AmrInputStream::Read(
     VALIDATE_NOT_NULL(value);
     *value = -1;
 
-    FAIL_RETURN(ReadBytesEx(mOneByte, 0, 1, value));
+    FAIL_RETURN(ReadBytes(mOneByte, 0, 1, value));
     *value = *value == 1 ? (0xff & (*mOneByte)[0]) : -1;
     return NOERROR;
 }
@@ -74,10 +74,10 @@ ECode AmrInputStream::ReadBytes(
     *number = -1;
     VALIDATE_NOT_NULL(buffer);
 
-    return ReadBytesEx(buffer,0, buffer->GetLength(), number);
+    return ReadBytes(buffer,0, buffer->GetLength(), number);
 }
 
-ECode AmrInputStream::ReadBytesEx(
+ECode AmrInputStream::ReadBytes(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -102,7 +102,7 @@ ECode AmrInputStream::ReadBytesEx(
         // fetch a 20 msec frame of pcm
         for (Int32 i = 0; i < SAMPLES_PER_FRAME * 2; ) {
             Int32 n;
-            mInputStream->ReadBytesEx(mBuf, i, SAMPLES_PER_FRAME * 2 - i, &n);
+            mInputStream->ReadBytes(mBuf, i, SAMPLES_PER_FRAME * 2 - i, &n);
             if (n == -1) return NOERROR;
             i += n;
         }

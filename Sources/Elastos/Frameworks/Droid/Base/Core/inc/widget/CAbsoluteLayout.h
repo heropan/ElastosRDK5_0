@@ -2,7 +2,7 @@
 #define __CABSOLUTELAYOUT_H_
 
 #include "_CAbsoluteLayout.h"
-#include "view/ViewMacro.h"
+
 #include "widget/AbsoluteLayout.h"
 
 namespace Elastos{

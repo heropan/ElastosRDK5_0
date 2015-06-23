@@ -194,7 +194,7 @@ module
             [in] Int32 appFlags,
             [out] IComponentName** receiver);
 
-        GetErrorReportReceiverEx(
+        GetErrorReportReceiver(
                 [in] IPackageManager* pm,
                 [in] String errorPackage,
                 [in] String receiverPackage,

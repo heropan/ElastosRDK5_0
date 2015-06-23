@@ -111,7 +111,7 @@ module
          *               HTTP request header
          * @hide Used by Browser, no intention to publish.
          */
-        GetCookieEx(
+        GetCookie(
             [in] String url,
             [in] Boolean privateBrowsing,
             [out] String* cookie);
@@ -126,7 +126,7 @@ module
          * @hide Used by RequestHandle, no intention to publish.
          */
         //synchronized
-        GetCookieEx2(
+        GetCookie(
             [in] IWebAddress* uri,
             [out] String* cookie);
 
@@ -157,7 +157,7 @@ module
          * @hide Used by Browser, no intention to publish.
          */
         //synchronized
-        HasCookiesEx(
+        HasCookies(
             [in] Boolean privateBrowsing,
             [out] Boolean* result);
 

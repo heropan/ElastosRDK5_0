@@ -4,8 +4,8 @@
 #include "CBluetoothAdapter.h"
 #include "BluetoothUuid.h"
 #include "content/CIntent.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;

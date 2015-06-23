@@ -7,15 +7,15 @@
 #include "os/UserHandle.h"
 #include "util/ArrayUtils.h"
 #include "Manifest.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
-#include <elastos/HashSet.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuilder;
@@ -522,31 +522,31 @@ void CNetworkStatsService::SystemReady()
     AutoPtr<IIntentFilter> connFilter;
     CIntentFilter::New(IConnectivityManager::CONNECTIVITY_ACTION_IMMEDIATE, (IIntentFilter**)&connFilter);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiverEx(mConnReceiver, connFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(mConnReceiver, connFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent);
 
     // watch for tethering changes
     AutoPtr<IIntentFilter> tetherFilter;
     CIntentFilter::New(IConnectivityManager::ACTION_TETHER_STATE_CHANGED, (IIntentFilter**)&tetherFilter);
     AutoPtr<IIntent> intent2;
-    mContext->RegisterReceiverEx(mTetherReceiver, tetherFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent2);
+    mContext->RegisterReceiver(mTetherReceiver, tetherFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent2);
 
     // listen for periodic polling events
     AutoPtr<IIntentFilter> pollFilter;
     CIntentFilter::New(ACTION_NETWORK_STATS_POLL, (IIntentFilter**)&pollFilter);
     AutoPtr<IIntent> intent3;
-    mContext->RegisterReceiverEx(mPollReceiver, pollFilter, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY, mHandler, (IIntent**)&intent3);
+    mContext->RegisterReceiver(mPollReceiver, pollFilter, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY, mHandler, (IIntent**)&intent3);
 
     // listen for uid removal to clean stats
     AutoPtr<IIntentFilter> removedFilter;
     CIntentFilter::New(IIntent::ACTION_UID_REMOVED, (IIntentFilter**)&removedFilter);
     AutoPtr<IIntent> intent4;
-    mContext->RegisterReceiverEx(mRemovedReceiver, removedFilter, String(NULL), mHandler, (IIntent**)&intent4);
+    mContext->RegisterReceiver(mRemovedReceiver, removedFilter, String(NULL), mHandler, (IIntent**)&intent4);
 
     // listen for user changes to clean stats
     AutoPtr<IIntentFilter> userFilter;
     CIntentFilter::New(IIntent::ACTION_USER_REMOVED, (IIntentFilter**)&userFilter);
     AutoPtr<IIntent> intent5;
-    mContext->RegisterReceiverEx(mUserReceiver, userFilter, String(NULL), mHandler, (IIntent**)&intent5);
+    mContext->RegisterReceiver(mUserReceiver, userFilter, String(NULL), mHandler, (IIntent**)&intent5);
 
     // persist stats during clean shutdown
     AutoPtr<IIntentFilter> shutdownFilter;
@@ -798,7 +798,7 @@ ECode CNetworkStatsService::GetDataLayerSnapshotForUid(
         entry = NULL;
         networkLayer->GetValues(i, entry, (INetworkStatsEntry**)&entry);
         entry->SetIface(INetworkStats::IFACE_ALL);
-        dataLayer->CombineValuesEx2(entry);
+        dataLayer->CombineValues(entry);
     }
     *datalayerOut = dataLayer;
     INTERFACE_ADDREF(*datalayerOut)
@@ -840,8 +840,8 @@ ECode CNetworkStatsService::IncrementOperationCount(
     if(iter != mActiveUidCounterSet.End()) {
         set = iter->mSecond;
     }
-    mUidOperations->CombineValuesEx(mActiveIface, uid, set, tag, 0, 0, 0, 0, operationCount);
-    mUidOperations->CombineValuesEx(
+    mUidOperations->CombineValues(mActiveIface, uid, set, tag, 0, 0, 0, 0, operationCount);
+    mUidOperations->CombineValues(
             mActiveIface, uid, set, INetworkStats::TAG_NONE, 0, 0, 0, 0, operationCount);
     return NOERROR;
 }
@@ -1181,7 +1181,7 @@ void CNetworkStatsService::PerformPollLocked(
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
     AutoPtr<IUserHandle> userHandle;
     userHandleHelper->GetALL((IUserHandle**)&userHandle);
-    mContext->SendBroadcastAsUserEx(updatedIntent, userHandle, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY);
+    mContext->SendBroadcastAsUser(updatedIntent, userHandle, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY);
 }
 
 void CNetworkStatsService::PerformSampleLocked()

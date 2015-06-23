@@ -313,7 +313,7 @@ ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilter(
     return _OverflowMenuButton::SetColorFilter(color);
 }
 
-ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilterEx(
+ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilter(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode)
 {
@@ -335,7 +335,7 @@ ECode ActionMenuPresenter::OverflowMenuButton::GetColorFilter(
     return NOERROR;
 }
 
-ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilterEx2(
+ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilter(
         /* [in] */ IColorFilter* cf)
 {
     return _OverflowMenuButton::SetColorFilter(cf);
@@ -355,10 +355,10 @@ ECode ActionMenuPresenter::OverflowMenuButton::SetImageAlpha(
     return _OverflowMenuButton::SetImageAlpha(alpha);
 }
 
-ECode ActionMenuPresenter::OverflowMenuButton::SetAlphaEx(
+ECode ActionMenuPresenter::OverflowMenuButton::SetAlpha(
         /* [in] */ Int32 alpha)
 {
-    return _OverflowMenuButton::SetAlphaEx(alpha);
+    return _OverflowMenuButton::SetAlpha(alpha);
 }
 
 ActionMenuPresenter::OverflowPopup::OverflowPopup(
@@ -611,7 +611,7 @@ ActionMenuPresenter::ActionButtonSubmenu::ActionButtonSubmenu(
 
     AutoPtr<IMenuItemImpl> item;
     AutoPtr<ISubMenu> sm = ISubMenu::Probe(subMenu);
-    sm->GetItemEx((IMenuItem**)&item);
+    sm->GetItem((IMenuItem**)&item);
 
     Boolean tmp = FALSE;
     if (!(item->IsActionButton(&tmp), tmp)) {
@@ -883,7 +883,7 @@ ECode ActionMenuPresenter::PopupPresenterCallback::OnOpenSubMenu(
 
     AutoPtr<IMenuItem> item;
     AutoPtr<ISubMenu> sm = ISubMenu::Probe(subMenu);
-    sm->GetItemEx((IMenuItem**)&item);
+    sm->GetItem((IMenuItem**)&item);
     item->GetItemId(&(mHost->mOpenSubMenuId));
     return NOERROR;
 }
@@ -895,7 +895,7 @@ ECode ActionMenuPresenter::PopupPresenterCallback::OnCloseMenu(
     if (ISubMenuBuilder::Probe(menu) != NULL) {
         AutoPtr<IMenuBuilder> root;
         ISubMenuBuilder::Probe(menu)->GetRootMenu((IMenuBuilder**)&root);
-        root->CloseEx(FALSE);
+        root->Close(FALSE);
     }
 
     return NOERROR;
@@ -1157,7 +1157,7 @@ ECode ActionMenuPresenter::UpdateMenuView(
             AutoPtr<IActionMenuView> menuView = IActionMenuView::Probe(mMenuView);
             AutoPtr<IViewGroupLayoutParams> lp;
             menuView->GenerateOverflowButtonLayoutParams((IViewGroupLayoutParams**)&lp);
-            menuView->AddViewEx3(mOverflowButton, lp);
+            menuView->AddView(mOverflowButton, lp);
         }
     } else if (mOverflowButton != NULL && parent.Get() == IViewGroup::Probe(mMenuView)) {
         assert(IViewManager::Probe(parent) != NULL);
@@ -1201,7 +1201,7 @@ ECode ActionMenuPresenter::OnSubMenuSelected(
     }
 
     AutoPtr<IMenuItem> item;
-    (ISubMenu::Probe(topSubMenu))->GetItemEx((IMenuItem**)&item);
+    (ISubMenu::Probe(topSubMenu))->GetItem((IMenuItem**)&item);
     AutoPtr<IView> anchor = FindViewForItem(item);
     if (anchor == NULL) {
         if (mOverflowButton == NULL) {
@@ -1213,7 +1213,7 @@ ECode ActionMenuPresenter::OnSubMenuSelected(
     }
 
     item = NULL;
-    (ISubMenu::Probe(subMenu))->GetItemEx((IMenuItem**)&item);
+    (ISubMenu::Probe(subMenu))->GetItem((IMenuItem**)&item);
     assert(item != NULL);
 
     item->GetItemId(&mOpenSubMenuId);

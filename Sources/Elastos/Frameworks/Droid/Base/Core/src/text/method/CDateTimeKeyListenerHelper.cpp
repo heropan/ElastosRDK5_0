@@ -16,7 +16,7 @@ ECode CDateTimeKeyListenerHelper::GetCHARACTERS(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Char32> > o = CDateTimeKeyListener::GetCHARACTERS();
     *ret = o;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -26,7 +26,7 @@ ECode CDateTimeKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IDateTimeKeyListener> dtkl = CDateTimeKeyListener::GetInstance();
     *ret = dtkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

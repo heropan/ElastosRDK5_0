@@ -14,7 +14,7 @@ ECode CInstrumentationHelper::NewApplication(
     return CInstrumentation::NewApplication(clazz, context, app);
 }
 
-ECode CInstrumentationHelper::NewApplicationEx(
+ECode CInstrumentationHelper::NewApplication(
     /* [in] */ const ClassID& clsid,
     /* [in] */ IContext* context,
     /* [out] */ IApplication** app)

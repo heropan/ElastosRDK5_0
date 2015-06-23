@@ -36,9 +36,9 @@
 #include "os/Build.h"
 #include "hardware/display/DisplayManagerGlobal.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 #include "R.h"
 
 using Libcore::ICU::CLocaleHelper;
@@ -47,7 +47,7 @@ using Libcore::ICU::ILocale;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::CObjectContainer;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResourcesTheme;
@@ -719,7 +719,7 @@ ECode View::AttachInfo::InvalidateInfo::InvalidateInfoManager::NewInstance(
     VALIDATE_NOT_NULL(element);
     *element = new InvalidateInfo();
     assert(*element);
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
 
     return NOERROR;
 }
@@ -757,7 +757,7 @@ ECode View::AttachInfo::InvalidateInfo::GetNextPoolable(
 {
     VALIDATE_NOT_NULL(element);
     *element = mNext;
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
 
     return NOERROR;
 };
@@ -1800,7 +1800,7 @@ ECode View::GetOnFocusChangeListener(
     AutoPtr<ListenerInfo> li = mListenerInfo;
     if (li != NULL) {
         *l = li->mOnFocusChangeListener;
-        INTERFACE_ADDREF(*l);
+        REFCOUNT_ADD(*l);
     }
 
     return NOERROR;
@@ -1984,7 +1984,7 @@ AutoPtr<IActionMode> View::StartActionMode(
     if (parent == NULL)
         return NULL;
     AutoPtr<IActionMode> mode;
-    parent->StartActionModeForChildEx(
+    parent->StartActionModeForChild(
         IVIEW_PROBE(this), callback, (IActionMode**)&mode);
 
     return mode;
@@ -2153,7 +2153,7 @@ Boolean View::RequestRectangleOnScreen(
         CRectF::New((IRectF**)&position);
     }
 
-    position->SetEx2(rectangle);
+    position->Set(rectangle);
     AutoPtr<IViewParent> parent = mParent;
     Boolean scrolled = FALSE;
     while (parent != NULL) {
@@ -2172,7 +2172,7 @@ Boolean View::RequestRectangleOnScreen(
 
         if (!child->HasIdentityMatrix()) {
             Boolean res;
-            child->GetMatrix()->MapRectEx(position.Get(), &res);
+            child->GetMatrix()->MapRect(position.Get(), &res);
         }
 
         position->Offset(child->mLeft, child->mTop);
@@ -2368,7 +2368,7 @@ void View::OnFocusChanged(
     }
 
     if (mAttachInfo != NULL) {
-        mAttachInfo->mKeyDispatchState->ResetEx(this->Probe(EIID_IInterface));
+        mAttachInfo->mKeyDispatchState->Reset(this->Probe(EIID_IInterface));
     }
 }
 
@@ -2541,7 +2541,7 @@ void View::OnInitializeAccessibilityEventInternal(
         for (; it != mAttachInfo->mTempArrayList.End(); ++it) {
             bc->Add((*it)->Probe(EIID_IView));
         }
-        view->AddFocusablesEx(bc, IView::FOCUS_FORWARD, IView::FOCUSABLES_ALL);
+        view->AddFocusables(bc, IView::FOCUS_FORWARD, IView::FOCUSABLES_ALL);
         event->SetItemCount(mAttachInfo->mTempArrayList.GetSize());
 
         Int32 index = -1;
@@ -2598,7 +2598,7 @@ void View::GetBoundsOnScreen(
 
     if (!HasIdentityMatrix()) {
         Boolean res;
-        GetMatrix()->MapRectEx(position, &res);
+        GetMatrix()->MapRect(position, &res);
     }
 
     position->Offset(mLeft, mTop);
@@ -2611,7 +2611,7 @@ void View::GetBoundsOnScreen(
 
         if (!parentView->HasIdentityMatrix()) {
             Boolean res;
-            parentView->GetMatrix()->MapRectEx(position, &res);
+            parentView->GetMatrix()->MapRect(position, &res);
         }
 
         position->Offset(parentView->mLeft, parentView->mTop);
@@ -2790,7 +2790,7 @@ Boolean View::IsVisibleToUser(
             offset->GetY(&y);
             visibleRect->Offset(-x, -y);
             Boolean res;
-            boundInView->IntersectEx(visibleRect, &res);
+            boundInView->Intersect(visibleRect, &res);
             return res;
         }
         return TRUE;
@@ -3274,7 +3274,7 @@ Boolean View::FitsSystemWindows()
 ECode View::RequestFitSystemWindows()
 {
     if (mParent != NULL) {
-        return mParent->RequestFitSystemWindowsEx();
+        return mParent->RequestFitSystemWindows();
     }
     return NOERROR;
 }
@@ -3533,7 +3533,7 @@ ECode View::SetHasTransientState(
         mPrivateFlags2 = (mPrivateFlags2 & ~PFLAG2_HAS_TRANSIENT_STATE) |
                 (hasTransientState ? PFLAG2_HAS_TRANSIENT_STATE : 0);
         if (mParent != NULL) {
-            mParent->ChildHasTransientStateChangedEx(IVIEW_PROBE(this), hasTransientState);
+            mParent->ChildHasTransientStateChanged(IVIEW_PROBE(this), hasTransientState);
             // } catch (AbstractMethodError e) {
             //     Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() +
             //             " does not fully implement ViewParent", e);
@@ -3841,7 +3841,7 @@ AutoPtr<IView> View::FocusSearch(
 {
     if (mParent != NULL) {
         AutoPtr<IView> view;
-        mParent->FocusSearchEx(IVIEW_PROBE(this), direction, (IView**)&view);
+        mParent->FocusSearch(IVIEW_PROBE(this), direction, (IView**)&view);
         return view;
     }
     else {
@@ -4344,7 +4344,7 @@ AutoPtr<IViewParent> View::GetParentForAccessibility()
         }
         else {
             AutoPtr<IViewParent> parent;
-            mParent->GetParentForAccessibilityEx((IViewParent**)&parent);
+            mParent->GetParentForAccessibility((IViewParent**)&parent);
             return parent;
         }
     }
@@ -4769,7 +4769,7 @@ ECode View::GetKeyDispatcherState(
 {
     VALIDATE_NOT_NULL(state);
     *state = mAttachInfo != NULL ? mAttachInfo->mKeyDispatchState : NULL;
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
 
     return NOERROR;
 }
@@ -4822,7 +4822,7 @@ Boolean View::DispatchKeyEvent(
     }
 
     Boolean result = FALSE;
-    event->DispatchEx(
+    event->Dispatch(
         THIS_PROBE(IKeyEventCallback),
         mAttachInfo != NULL ? mAttachInfo->mKeyDispatchState : NULL,
         THIS_PROBE(IInterface), &result);
@@ -5568,7 +5568,7 @@ ECode View::CreateContextMenu(
     IMenuBuilder::Probe(menu)->SetCurrentMenuInfo(NULL);
 
     if (mParent != NULL) {
-        mParent->CreateContextMenuEx(menu);
+        mParent->CreateContextMenu(menu);
     }
 
     return NOERROR;
@@ -5894,7 +5894,7 @@ Boolean View::IsInScrollingContainer()
             return TRUE;
         }
         AutoPtr<IViewParent> temp;
-        p->GetParentEx((IViewParent**)&temp);
+        p->GetParent((IViewParent**)&temp);
         p = temp;
     }
 
@@ -5991,7 +5991,7 @@ ECode View::GetTouchDelegate(
 {
     VALIDATE_NOT_NULL(touchDelegate);
     *touchDelegate = mTouchDelegate;
-    INTERFACE_ADDREF(*touchDelegate);
+    REFCOUNT_ADD(*touchDelegate);
 
     return NOERROR;
 }
@@ -7134,7 +7134,7 @@ ECode View::GetHitRect(
         tmpRect->Set(-info->mPivotX, -info->mPivotY,
                 GetWidth() - info->mPivotX, GetHeight() - info->mPivotY);
         Boolean res;
-        info->mMatrix->MapRectEx(tmpRect, &res);
+        info->mMatrix->MapRect(tmpRect, &res);
         Float l, r, t, b;
         tmpRect->GetLeft(&l);
         tmpRect->GetRight(&r);
@@ -7786,10 +7786,10 @@ void View::TransformRect(
 
     if (!res) {
         AutoPtr<IRectF> boundingRect = mAttachInfo->mTmpTransformRect;
-        boundingRect->SetEx2(rect);
+        boundingRect->Set(rect);
 
         matrix =GetMatrix();
-        matrix->MapRectEx(boundingRect, &res);
+        matrix->MapRect(boundingRect, &res);
         Float l, r, t, b;
         boundingRect->GetLeft(&l);
         boundingRect->GetRight(&r);
@@ -10125,7 +10125,7 @@ void View::BuildDrawingCache(
 
             AutoPtr<IDisplayMetrics> displayMetrics;
             mResources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
-            ECode ec = factory->CreateBitmapEx6(displayMetrics, width, height, quality, (IBitmap**)&bitmap);
+            ECode ec = factory->CreateBitmap(displayMetrics, width, height, quality, (IBitmap**)&bitmap);
             if (FAILED(ec)) {
                 if (ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
                     // If there is not enough memory to create the bitmap cache, just
@@ -10218,7 +10218,7 @@ void View::BuildDrawingCache(
             ////canvas->DrawCircle(20.0, 20.0, 10.0, paint);
             //AutoPtr<IRect> rc;
             //CRect::New(0, 0, w/2, h/2, (IRect**)&rc);
-            //canvas->DrawRectEx(rc, paint);
+            //canvas->DrawRect(rc, paint);
         }
 
         canvas->RestoreToCount(restoreCount);
@@ -10257,7 +10257,7 @@ ECode View::CreateSnapshot(
 
     AutoPtr<IDisplayMetrics> displayMetrics;
     mResources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
-    factory->CreateBitmapEx6(displayMetrics, width > 0 ? width : 1, height > 0 ? height : 1, quality, (IBitmap**)&bitmap);
+    factory->CreateBitmap(displayMetrics, width > 0 ? width : 1, height > 0 ? height : 1, quality, (IBitmap**)&bitmap);
     if (bitmap == NULL) {
         //throw new OutOfMemoryError();
         return E_OUT_OF_MEMORY_ERROR;
@@ -10323,7 +10323,7 @@ ECode View::CreateSnapshot(
     }
 
     *bm = bitmap;
-    INTERFACE_ADDREF(*bm);
+    REFCOUNT_ADD(*bm);
     return NOERROR;
 }
 
@@ -10472,7 +10472,7 @@ Boolean View::DrawAnimation(
      }
 
      Boolean more = FALSE;
-     a->GetTransformationEx(drawingTime, parent->mChildTransformation, 1.0f, &more);
+     a->GetTransformation(drawingTime, parent->mChildTransformation, 1.0f, &more);
      if (scalingRequired && mAttachInfo->mApplicationScale != 1.0f) {
          if (parent->mInvalidationTransformation == NULL) {
              CTransformation::New((ITransformation**)&(parent->mInvalidationTransformation));
@@ -10480,7 +10480,7 @@ Boolean View::DrawAnimation(
 
          invalidationTransform = parent->mInvalidationTransformation;
          Boolean res;
-         a->GetTransformationEx(drawingTime, invalidationTransform, 1.0f, &res);
+         a->GetTransformation(drawingTime, invalidationTransform, 1.0f, &res);
      }
      else {
          invalidationTransform = parent->mChildTransformation;
@@ -10671,7 +10671,7 @@ Boolean View::Draw(
     Boolean isNotIntersect = FALSE;
     if (!concatMatrix && (flags & (ViewGroup::FLAG_SUPPORT_STATIC_TRANSFORMATIONS |
         ViewGroup::FLAG_CLIP_CHILDREN)) == ViewGroup::FLAG_CLIP_CHILDREN &&
-        (canvas->QuickRejectEx2(mLeft, mTop, mRight, mBottom, CanvasEdgeType_BW, &isNotIntersect),
+        (canvas->QuickReject(mLeft, mTop, mRight, mBottom, CanvasEdgeType_BW, &isNotIntersect),
         isNotIntersect) && (mPrivateFlags & PFLAG_DRAW_ANIMATION) == 0) {
         mPrivateFlags2 |= PFLAG2_VIEW_QUICK_REJECTED;
         return more;
@@ -10839,7 +10839,7 @@ Boolean View::Draw(
                         const Int32 scrollX = hasDisplayList ? 0 : sx;
                         const Int32 scrollY = hasDisplayList ? 0 : sy;
                         Int32 result;
-                        canvas->SaveLayerAlphaEx(
+                        canvas->SaveLayerAlpha(
                             (Float)scrollX, (Float)scrollY, (Float)(scrollX + mRight - mLeft),
                             (Float)(scrollY + mBottom - mTop), multipliedAlpha, layerFlags, &result);
                     }
@@ -10860,17 +10860,17 @@ Boolean View::Draw(
             !useDisplayListProperties) {
         Boolean res;
         if (offsetForScroll) {
-            canvas->ClipRectEx5(sx, sy, sx + (mRight - mLeft), sy + (mBottom - mTop), &res);
+            canvas->ClipRect(sx, sy, sx + (mRight - mLeft), sy + (mBottom - mTop), &res);
         }
         else {
             if (!scalingRequired || cache == NULL) {
-                canvas->ClipRectEx5(0, 0, mRight - mLeft, mBottom - mTop, &res);
+                canvas->ClipRect(0, 0, mRight - mLeft, mBottom - mTop, &res);
             }
             else {
                 Int32 w = 0, h = 0;
                 cache->GetWidth(&w);
                 cache->GetHeight(&h);
-                canvas->ClipRectEx5(0, 0, w, h, &res);
+                canvas->ClipRect(0, 0, w, h, &res);
             }
         }
     }
@@ -10902,7 +10902,7 @@ Boolean View::Draw(
                 const Int32 scrollX = hasDisplayList ? 0 : sx;
                 const Int32 scrollY = hasDisplayList ? 0 : sy;
                 Int32 result;
-                canvas->SaveLayerEx(scrollX, scrollY,
+                canvas->SaveLayer(scrollX, scrollY,
                     scrollX + mRight - mLeft, scrollY + mBottom - mTop, mLayerPaint,
                     ICanvas::HAS_ALPHA_LAYER_SAVE_FLAG | ICanvas::CLIP_TO_LAYER_SAVE_FLAG, &result);
             //}
@@ -11131,19 +11131,19 @@ ECode View::Draw(
         Int32 flags = CCanvas::HAS_ALPHA_LAYER_SAVE_FLAG;
 
         if (drawTop) {
-            canvas->SaveLayerEx(left, top, right, top + length, NULL, flags, &count);
+            canvas->SaveLayer(left, top, right, top + length, NULL, flags, &count);
         }
 
         if (drawBottom) {
-            canvas->SaveLayerEx(left, bottom - length, right, bottom, NULL, flags, &count);
+            canvas->SaveLayer(left, bottom - length, right, bottom, NULL, flags, &count);
         }
 
         if (drawLeft) {
-            canvas->SaveLayerEx(left, top, left + length, bottom, NULL, flags, &count);
+            canvas->SaveLayer(left, top, left + length, bottom, NULL, flags, &count);
         }
 
         if (drawRight) {
-            canvas->SaveLayerEx(right - length, top, right, bottom, NULL, flags, &count);
+            canvas->SaveLayer(right - length, top, right, bottom, NULL, flags, &count);
         }
     }
     else {
@@ -11165,34 +11165,34 @@ ECode View::Draw(
 
     Boolean result;
     if (drawTop) {
-        matrix->SetScaleEx(1, fadeHeight * topFadeStrength);
+        matrix->SetScale(1, fadeHeight * topFadeStrength);
         matrix->PostTranslate(left, top, &result);
         fade->SetLocalMatrix(matrix);
-        canvas->DrawRectEx2(left, top, right, top + length, p);
+        canvas->DrawRect(left, top, right, top + length, p);
     }
 
     if (drawBottom) {
-        matrix->SetScaleEx(1, fadeHeight * bottomFadeStrength);
-        matrix->PostRotateEx(180, &result);
+        matrix->SetScale(1, fadeHeight * bottomFadeStrength);
+        matrix->PostRotate(180, &result);
         matrix->PostTranslate(left, bottom, &result);
         fade->SetLocalMatrix(matrix);
-        canvas->DrawRectEx2(left, bottom - length, right, bottom, p);
+        canvas->DrawRect(left, bottom - length, right, bottom, p);
     }
 
     if (drawLeft) {
-        matrix->SetScaleEx(1, fadeHeight * leftFadeStrength);
-        matrix->PostRotateEx(-90, &result);
+        matrix->SetScale(1, fadeHeight * leftFadeStrength);
+        matrix->PostRotate(-90, &result);
         matrix->PostTranslate(left, top, &result);
         fade->SetLocalMatrix(matrix);
-        canvas->DrawRectEx2(left, top, left + length, bottom, p);
+        canvas->DrawRect(left, top, left + length, bottom, p);
     }
 
     if (drawRight) {
-        matrix->SetScaleEx(1, fadeHeight * rightFadeStrength);
-        matrix->PostRotateEx(90, &result);
+        matrix->SetScale(1, fadeHeight * rightFadeStrength);
+        matrix->PostRotate(90, &result);
         matrix->PostTranslate(right, top, &result);
         fade->SetLocalMatrix(matrix);
-        canvas->DrawRectEx2(right - length, top, right, bottom, p);
+        canvas->DrawRect(right - length, top, right, bottom, p);
     }
 
     canvas->RestoreToCount(saveCount);
@@ -11814,7 +11814,7 @@ ECode View::OnCreateDrawableState(
     }
 
     *_drawableState = fullState;
-    INTERFACE_ADDREF(*_drawableState);
+    REFCOUNT_ADD(*_drawableState);
     return NOERROR;
 }
 
@@ -12472,7 +12472,7 @@ ECode View::GetLocationInWindow(
     if (!HasIdentityMatrix()) {
         AutoPtr<IMatrix> matrix = GetMatrix();
         assert(matrix != NULL);
-        matrix->MapPointsEx2(&position);
+        matrix->MapPoints(&position);
     }
 
     position[0] += mLeft;
@@ -12488,7 +12488,7 @@ ECode View::GetLocationInWindow(
         if (!view->HasIdentityMatrix()) {
             AutoPtr<IMatrix> matrix = view->GetMatrix();
             assert(matrix != NULL);
-            matrix->MapPointsEx2(&position);
+            matrix->MapPoints(&position);
         }
 
         position[0] += view->mLeft;
@@ -12964,9 +12964,9 @@ ECode View::RequestLayout()
 
     if (mParent != NULL) {
         Boolean requested = FALSE;
-        mParent->IsLayoutRequestedEx(&requested);
+        mParent->IsLayoutRequested(&requested);
         if (!requested) {
-            mParent->RequestLayoutEx();
+            mParent->RequestLayout();
         }
     }
 
@@ -13395,7 +13395,7 @@ Boolean View::GatherTransparentRegion(
             Int32* location = attachInfo->mTransparentLocation;
             GetLocationInWindow(location, location + 1);
             Boolean result;
-            region->OpEx(location[0], location[1], location[0] + mRight - mLeft,
+            region->Op(location[0], location[1], location[0] + mRight - mLeft,
                     location[1] + mBottom - mTop, RegionOp_DIFFERENCE, &result);
         }
         else if ((pflags & PFLAG_ONLY_DRAWS_BACKGROUND) != 0 && mBackground != NULL) {
@@ -13624,7 +13624,7 @@ Boolean View::StartDrag(
                 break;
             }
 
-            ec = canvas->DrawColorEx(0, PorterDuffMode_CLEAR);
+            ec = canvas->DrawColor(0, PorterDuffMode_CLEAR);
             if (FAILED(ec)) {
                 surface->UnlockCanvasAndPost(canvas);
                 break;
@@ -13736,24 +13736,24 @@ ECode View::ApplyDrawableToTransparentRegion(
         CRect* db = (CRect*)_db.Get();
         if (db->mLeft > 0) {
             //Log.i("VIEW", "Drawable left " + db.left + " > view 0");
-            r->OpEx(0, 0, db->mLeft, h, RegionOp_UNION, &result);
+            r->Op(0, 0, db->mLeft, h, RegionOp_UNION, &result);
         }
         if (db->mRight < w) {
             //Log.i("VIEW", "Drawable right " + db.right + " < view " + w);
-            r->OpEx(db->mRight, 0, w, h, RegionOp_UNION, &result);
+            r->Op(db->mRight, 0, w, h, RegionOp_UNION, &result);
         }
         if (db->mTop > 0) {
             //Log.i("VIEW", "Drawable top " + db.top + " > view 0");
-            r->OpEx(0, 0, w, db->mTop, RegionOp_UNION, &result);
+            r->Op(0, 0, w, db->mTop, RegionOp_UNION, &result);
         }
         if (db->mBottom < h) {
             //Log.i("VIEW", "Drawable bottom " + db.bottom + " < view " + h);
-            r->OpEx(0, db->mBottom, w, h, RegionOp_UNION, &result);
+            r->Op(0, db->mBottom, w, h, RegionOp_UNION, &result);
         }
         Int32* location = attachInfo->mTransparentLocation;
         GetLocationInWindow(location, location + 1);
         r->Translate(location[0], location[1]);
-        region->OpEx2(r, RegionOp_INTERSECT, &result);
+        region->Op(r, RegionOp_INTERSECT, &result);
     }
     else {
         region->Op(_db, RegionOp_DIFFERENCE, &result);
@@ -14298,7 +14298,7 @@ ECode View::Init(
         const_cast<Int32 *>(R::styleable::View),
         ARRAY_SIZE(R::styleable::View));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx3(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
     AutoPtr<IDrawable> background;
 
@@ -14841,7 +14841,7 @@ ECode View::GetInflaterContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mInflaterContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 

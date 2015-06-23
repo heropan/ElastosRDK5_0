@@ -3,7 +3,7 @@
 #define __PACKAGEITEMINFO_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::ICharSequence;
 

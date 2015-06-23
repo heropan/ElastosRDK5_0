@@ -2,7 +2,7 @@
 #include "content/CNativeLibraryHelper.h"
 #include "os/Build.h"
 #include <ext/frameworkext.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <utils/Log.h>
 #include <utils/ZipFileRO.h>
 #include <zlib.h>

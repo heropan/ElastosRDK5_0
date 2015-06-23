@@ -92,14 +92,14 @@ ECode CContactsContractContacts::GetLookupUri(
     return ContactsContractContacts::GetLookupUri(resolver, contactUri, uri);
 }
 
-ECode CContactsContractContacts::GetLookupUriEx(
+ECode CContactsContractContacts::GetLookupUri(
     /* [in] */ Int64 contactId,
     /* [in] */ const String& lookupKey,
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return ContactsContractContacts::GetLookupUriEx(contactId, lookupKey, uri);
+    return ContactsContractContacts::GetLookupUri(contactId, lookupKey, uri);
 }
 
 ECode CContactsContractContacts::LookupContact(
@@ -130,14 +130,14 @@ ECode CContactsContractContacts::OpenContactPhotoInputStream(
     return ContactsContractContacts::OpenContactPhotoInputStream(cr, contactUri, preferHighres, stream);
 }
 
-ECode CContactsContractContacts::OpenContactPhotoInputStreamEx(
+ECode CContactsContractContacts::OpenContactPhotoInputStream(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* contactUri,
     /* [out] */ IInputStream** stream)
 {
     VALIDATE_NOT_NULL(stream);
 
-    return ContactsContractContacts::OpenContactPhotoInputStreamEx(cr, contactUri, stream);
+    return ContactsContractContacts::OpenContactPhotoInputStream(cr, contactUri, stream);
 }
 
 } //Provider

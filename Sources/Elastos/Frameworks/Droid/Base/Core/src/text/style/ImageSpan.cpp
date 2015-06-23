@@ -231,7 +231,7 @@ AutoPtr<IDrawable> ImageSpan::GetDrawable()
             cr->OpenInputStream(mContentUri, (IInputStream**)&is);
             AutoPtr<IBitmapFactory> bf;
             CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bf);
-            bf->DecodeStreamEx(is.Get(), (IBitmap**)&bitmap);
+            bf->DecodeStream(is.Get(), (IBitmap**)&bitmap);
             AutoPtr<IResources> rs;
             mContext->GetResources((IResources**)&rs);
             CBitmapDrawable::New(rs, bitmap, (IBitmapDrawable**)&drawable);

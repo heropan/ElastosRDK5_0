@@ -339,7 +339,7 @@ module
          * @sa #getScaledWidth
          * @sa DisplayMetrics
          */
-        GetScaledWidthEx(
+        GetScaledWidth(
             [in] IDisplayMetrics* metrics,
             [out] Int32* width);
 
@@ -350,7 +350,7 @@ module
          * @sa #getScaledHeight
          * @sa DisplayMetrics
          */
-        GetScaledHeightEx(
+        GetScaledHeight(
             [in] IDisplayMetrics* metrics,
             [out] Int32* height);
 
@@ -361,7 +361,7 @@ module
          * @param targetDensity The density of the target canvas of the bitmap.
          * @return The scaled width of this bitmap, according to the density scale factor.
          */
-        GetScaledWidthEx2(
+        GetScaledWidth(
             [in] Int32 targetDensity,
             [out] Int32* width);
 
@@ -372,7 +372,7 @@ module
          * @param targetDensity The density of the target canvas of the bitmap.
          * @return The scaled height of this bitmap, according to the density scale factor.
          */
-        GetScaledHeightEx2(
+        GetScaledHeight(
             [in] Int32 targetDensity,
             [out] Int32* height);
 
@@ -631,7 +631,7 @@ module
          *         Canvas.drawBitmap(), where the color(s) will be taken from the
          *         paint that is passed to the draw call.
          */
-        ExtractAlphaEx(
+        ExtractAlpha(
             [in] IPaint* paint,
             [in] ArrayOf<Int32>* offsetXY,
             [out] IBitmap** bitmap);

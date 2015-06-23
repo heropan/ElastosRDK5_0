@@ -3,9 +3,8 @@
 #define __CBITMAP_H__
 
 #include "_CBitmap.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IBuffer;
 using Elastos::IO::IOutputStream;
 using Elastos::Droid::Utility::IDisplayMetrics;
@@ -431,19 +430,19 @@ public:
         /* [in] */ ICanvas* canvas,
         /* [out] */ Int32* height);
 
-    CARAPI GetScaledWidthEx(
+    CARAPI GetScaledWidth(
         /* [in] */ IDisplayMetrics* metrics,
         /* [out] */ Int32* width);
 
-    CARAPI GetScaledHeightEx(
+    CARAPI GetScaledHeight(
         /* [in] */ IDisplayMetrics* metrics,
         /* [out] */ Int32* height);
 
-    CARAPI GetScaledWidthEx2(
+    CARAPI GetScaledWidth(
         /* [in] */ Int32 targetDensity,
         /* [out] */ Int32* width);
 
-    CARAPI GetScaledHeightEx2(
+    CARAPI GetScaledHeight(
         /* [in] */ Int32 targetDensity,
         /* [out] */ Int32* height);
 
@@ -604,7 +603,7 @@ public:
     CARAPI ExtractAlpha(
         /* [out] */ IBitmap** bitmap);
 
-    CARAPI ExtractAlphaEx(
+    CARAPI ExtractAlpha(
         /* [in] */ IPaint* paint,
         /* [in] */ ArrayOf<Int32>* offsetXY,
         /* [out] */ IBitmap** bitmap);

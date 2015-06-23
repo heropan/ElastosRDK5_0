@@ -1,6 +1,6 @@
 
 #include "zigbee/ZigbeeDevice.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IZigbeeManager;
 using Elastos::Droid::Os::CZigbeeManager;

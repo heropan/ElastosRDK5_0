@@ -29,7 +29,7 @@ ECode CSyncOperation::GetAccount(
 {
     VALIDATE_NOT_NULL(account)
     *account = mAccount;
-    INTERFACE_ADDREF(*account);
+    REFCOUNT_ADD(*account);
     return NOERROR;
 }
 
@@ -84,7 +84,7 @@ ECode CSyncOperation::GetExtras(
 {
     VALIDATE_NOT_NULL(extras)
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
     return NOERROR;
 }
 
@@ -138,7 +138,7 @@ ECode CSyncOperation::GetPendingOperation(
 {
     VALIDATE_NOT_NULL(pendingOperation)
     *pendingOperation = mPendingOperation;
-    INTERFACE_ADDREF(*pendingOperation);
+    REFCOUNT_ADD(*pendingOperation);
     return NOERROR;
 }
 
@@ -256,21 +256,21 @@ ECode CSyncOperation::IsInitialization(
     /* [out] */ Boolean* isInitialization)
 {
     VALIDATE_NOT_NULL(isInitialization)
-    return mExtras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, isInitialization);
+    return mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, isInitialization);
 }
 
 ECode CSyncOperation::IsExpedited(
     /* [out] */ Boolean* isExpedited)
 {
     VALIDATE_NOT_NULL(isExpedited)
-    return mExtras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, isExpedited);
+    return mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, isExpedited);
 }
 
 ECode CSyncOperation::IgnoreBackoff(
     /* [out] */ Boolean* ignoreBackoff)
 {
     VALIDATE_NOT_NULL(ignoreBackoff)
-    return mExtras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, ignoreBackoff);
+    return mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, ignoreBackoff);
 }
 
 ECode CSyncOperation::UpdateEffectiveRunTime()
@@ -435,7 +435,7 @@ ECode CSyncOperation::RemoveFalseExtra(
     /* [in] */ const String& extraName)
 {
     Boolean ret = FALSE;
-    FAIL_RETURN(mExtras->GetBooleanEx(extraName, FALSE, &ret))
+    FAIL_RETURN(mExtras->GetBoolean(extraName, FALSE, &ret))
 
     if (!ret) {
         FAIL_RETURN(mExtras->Remove(extraName))

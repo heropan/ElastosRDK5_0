@@ -1,6 +1,6 @@
 #include "widget/GridLayout.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include "graphics/Insets.h"
 #include "graphics/CPaint.h"
 #include "graphics/CColor.h"
@@ -173,7 +173,7 @@ ECode GridLayout::Init(
             const_cast<Int32 *>(R::styleable::GridLayout),
             ARRAY_SIZE(R::styleable::GridLayout));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
 
 //    try {
     Int32 rowCount = 0;
@@ -1966,7 +1966,7 @@ Int32 GridLayout::Spec::GetFlexibility()
     return (mAlignment == GridLayout::UNDEFINED_ALIGNMENT) ? GridLayout::INFLEXIBLE : GridLayout::CAN_STRETCH;
 }
 
-ECode GridLayout::Spec::EqualsEx(
+ECode GridLayout::Spec::Equals(
     /* [in] */ ISpec* that,
     /* [out] */ Boolean* res)
 {
@@ -1994,7 +1994,7 @@ ECode GridLayout::Spec::Equals(
     VALIDATE_NOT_NULL(res);
     *res = FALSE;
     VALIDATE_NOT_NULL(that);
-    return EqualsEx(ISpec::Probe(that), res);
+    return Equals(ISpec::Probe(that), res);
 }
 
 ECode GridLayout::Spec::GetHashCode(

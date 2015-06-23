@@ -6,12 +6,11 @@
 #include "_CWifiManager.h"
 #include "os/HandlerBase.h"
 #include "util/AsyncChannel.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Concurrent::ICountDownLatch;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IWorkSource;
 using Elastos::Droid::Os::IBinder;
@@ -516,7 +515,7 @@ public:
         /* [in] */ IWifiConfiguration* config,
         /* [in] */ IWifiManagerActionListener* listener);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ Int32 networkId,
         /* [in] */ IWifiManagerActionListener* listener);
 
@@ -565,7 +564,7 @@ public:
         /* [in] */ const String& tag,
         /* [out] */ IWifiLock** lock);
 
-    CARAPI CreateWifiLockEx(
+    CARAPI CreateWifiLock(
         /* [in] */ const String& tag,
         /* [out] */ IWifiLock** lock);
 

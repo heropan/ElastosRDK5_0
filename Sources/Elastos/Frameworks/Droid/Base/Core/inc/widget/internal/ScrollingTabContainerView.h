@@ -3,12 +3,12 @@
 #define __SCROLLINGTABCONTAINERVIEW_H__
 
 #include "widget/HorizontalScrollView.h"
-#include "widget/LinearLayoutMacro.h"
+
 #include "widget/BaseAdapter.h"
-#include "widget/AdapterMacro.h"
+
 #include "widget/LinearLayout.h"
 #include "os/Runnable.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_IView;

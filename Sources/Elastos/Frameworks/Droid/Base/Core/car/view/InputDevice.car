@@ -471,7 +471,7 @@ module
          * @see MotionEvent#AXIS_Y
          * @see #getSupportedAxes()
          */
-        GetMotionRangeEx(
+        GetMotionRange(
             [in] Int32 axis,
             [in] Int32 source,
             [out] IMotionRange** motionRange);

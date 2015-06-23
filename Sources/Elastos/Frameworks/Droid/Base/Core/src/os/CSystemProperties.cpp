@@ -15,7 +15,7 @@ ECode CSystemProperties::Get(
     return SystemProperties::Get(key, value);
 }
 
-ECode CSystemProperties::GetEx(
+ECode CSystemProperties::Get(
     /* [in] */ const String& key,
     /* [in] */ const String& def,
     /* [out] */ String* value)

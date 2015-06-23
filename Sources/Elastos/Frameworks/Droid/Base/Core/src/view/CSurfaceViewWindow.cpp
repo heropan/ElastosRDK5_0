@@ -3,7 +3,7 @@
 #include "os/Handler.h"
 #include "view/CSurfaceView.h"
 #include "view/SurfaceView.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;

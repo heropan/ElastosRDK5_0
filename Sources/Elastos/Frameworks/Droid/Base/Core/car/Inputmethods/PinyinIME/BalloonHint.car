@@ -54,7 +54,7 @@ module
          *        determined by the desired width and balloon's measuring
          *        specification.
          */
-        SetBalloonConfigEx(
+        SetBalloonConfig(
             [in] IDrawable* icon,
             [in] Int32 width,
             [in] Int32 height);

@@ -12,7 +12,7 @@
 #include "speech/tts/EventLogger.h"
 #include "speech/tts/AudioPlaybackQueueItem.h"
 //#include "os/RemoteCallbackList.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/Set.h>
 
 
@@ -28,10 +28,8 @@ using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Speech::Tts::IITextToSpeechService;
 using Elastos::Droid::App::Service;
 //using Elastos::Droid::Provider::ISettingsSecure;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Set;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Speech {

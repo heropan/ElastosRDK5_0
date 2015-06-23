@@ -2,9 +2,9 @@
 #define __CTABLELAYOUTLAYOUTPARAMS_H_
 
 #include "_CTableLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 #include "widget/TableLayoutLayoutParams.h"
-#include "widget/LinearLayoutMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

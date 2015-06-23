@@ -149,7 +149,7 @@ ECode CLocalSocket::GetLocalSocketAddress(
 {
     VALIDATE_NOT_NULL(address);
     *address = mLocalAddress;
-    INTERFACE_ADDREF(*address)
+    REFCOUNT_ADD(*address)
     return NOERROR;
 }
 
@@ -322,7 +322,7 @@ ECode CLocalSocket::IsInputShutdown(
 }
 
 //???SEC
-ECode CLocalSocket::ConnectEx(
+ECode CLocalSocket::Connect(
   /* [in] */ ILocalSocketAddress* endpoint,
   /* [in] */ Int32 timeout)
 {
@@ -361,7 +361,7 @@ ECode CLocalSocket::GetAncillaryFileDescriptors(
     VALIDATE_NOT_NULL(result);
     AutoPtr< ArrayOf<IFileDescriptor*> > fds = mImpl->GetAncillaryFileDescriptors();
     *result = fds;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -390,7 +390,7 @@ ECode CLocalSocket::GetFileDescriptor(
     VALIDATE_NOT_NULL(fd);
     AutoPtr<IFileDescriptor> _fd = mImpl->GetFileDescriptor();
     *fd = _fd;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 

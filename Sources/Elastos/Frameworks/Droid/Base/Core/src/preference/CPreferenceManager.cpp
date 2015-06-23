@@ -2,14 +2,14 @@
 #include "CPreferenceManager.h"
 #include "CPreferenceScreen.h"
 #include "PreferenceInflater.h"
-#include <elastos/Slogger.h>
-#include <elastos/HashSet.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -47,7 +47,7 @@ ECode CPreferenceManager::GetFragment(
 {
     VALIDATE_NOT_NULL(fragment)
     *fragment = mFragment;
-    INTERFACE_ADDREF(*fragment)
+    REFCOUNT_ADD(*fragment)
     return NOERROR;
 }
 
@@ -137,7 +137,7 @@ ECode CPreferenceManager::InflateFromIntent(
     rootPreferences->OnAttachedToHierarchy(this);
 
     *screen = IPreferenceScreen::Probe(rootPreferences);
-    INTERFACE_ADDREF(*screen)
+    REFCOUNT_ADD(*screen)
     return NOERROR;
 }
 
@@ -160,7 +160,7 @@ ECode CPreferenceManager::InflateFromResource(
     // Unblock commits
     SetNoCommit(FALSE);
     *screen = IPreferenceScreen::Probe(pf);
-    INTERFACE_ADDREF(*screen)
+    REFCOUNT_ADD(*screen)
     return NOERROR;
 }
 
@@ -173,7 +173,7 @@ ECode CPreferenceManager::CreatePreferenceScreen(
     CPreferenceScreen::New(context, NULL, (IPreferenceScreen**)&preferenceScreen);
     IPreference::Probe(preferenceScreen)->OnAttachedToHierarchy(this);
     *screen = preferenceScreen;
-    INTERFACE_ADDREF(*screen)
+    REFCOUNT_ADD(*screen)
     return NOERROR;
 }
 
@@ -229,7 +229,7 @@ ECode CPreferenceManager::GetSharedPreferences(
     }
 
     *sp = mSharedPreferences;
-    INTERFACE_ADDREF(*sp)
+    REFCOUNT_ADD(*sp)
     return NOERROR;
 }
 
@@ -260,7 +260,7 @@ ECode CPreferenceManager::GetPreferenceScreen(
 {
     VALIDATE_NOT_NULL(screen)
     *screen = mPreferenceScreen;
-    INTERFACE_ADDREF(*screen)
+    REFCOUNT_ADD(*screen)
     return NOERROR;
 }
 
@@ -344,7 +344,7 @@ ECode CPreferenceManager::GetEditor(
             sp->Edit((ISharedPreferencesEditor**)&mEditor);
         }
         *editor = mEditor;
-        INTERFACE_ADDREF(*editor)
+        REFCOUNT_ADD(*editor)
         return NOERROR;
     }
     else {
@@ -353,7 +353,7 @@ ECode CPreferenceManager::GetEditor(
         GetSharedPreferences((ISharedPreferences**)&share);
         share->Edit((ISharedPreferencesEditor**)&mEditor);
         *editor = mEditor;
-        INTERFACE_ADDREF(*editor)
+        REFCOUNT_ADD(*editor)
         return NOERROR;
     }
 }
@@ -387,7 +387,7 @@ ECode CPreferenceManager::GetActivity(
 {
     VALIDATE_NOT_NULL(activity)
     *activity = mActivity;
-    INTERFACE_ADDREF(*activity)
+    REFCOUNT_ADD(*activity)
     return NOERROR;
 }
 
@@ -396,7 +396,7 @@ ECode CPreferenceManager::GetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = mContext;
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -626,7 +626,7 @@ ECode CPreferenceManager::GetOnPreferenceTreeClickListener(
 {
     VALIDATE_NOT_NULL(listener)
     *listener = mOnPreferenceTreeClickListener;
-    INTERFACE_ADDREF(*listener)
+    REFCOUNT_ADD(*listener)
     return NOERROR;
 }
 

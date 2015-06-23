@@ -40,10 +40,10 @@
 #include "provider/CSettingsGlobal.h"
 #include "provider/Settings.h"
 #include "Manifest.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <sys/reboot.h>
 
 // #include "provider/Settings.h"
@@ -265,7 +265,7 @@ ECode CPhoneWindowManager::PromptEnterMouseModeRunnable::Run()
     if (mHost->mMouseToast == NULL) {
         AutoPtr<IToastHelper> helper;
         CToastHelper::AcquireSingleton((IToastHelper**)&helper);
-        helper->MakeTextEx(mHost->mContext, R::string::enter_key_mouse_mode,
+        helper->MakeText(mHost->mContext, R::string::enter_key_mouse_mode,
                 IToast::LENGTH_SHORT, (IToast**)&mHost->mMouseToast);
         if (mHost->mMouseToast == NULL) {
             // Logger::W(TAG, "Fail in creating toast.");
@@ -335,40 +335,40 @@ void CPhoneWindowManager::SettingsObserver::Observe()
     AutoPtr<IContentResolver> resolver;
     mHost->mContext->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<IUri> uri;
-    Settings::System::GetUriForEx(ISettingsSystem::END_BUTTON_BEHAVIOR, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(ISettingsSystem::END_BUTTON_BEHAVIOR, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::Secure::GetUriForEx(ISettingsSecure::INCALL_POWER_BUTTON_BEHAVIOR, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::Secure::GetUriFor(ISettingsSecure::INCALL_POWER_BUTTON_BEHAVIOR, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::System::GetUriForEx(ISettingsSystem::ACCELEROMETER_ROTATION, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(ISettingsSystem::ACCELEROMETER_ROTATION, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::System::GetUriForEx(ISettingsSystem::USER_ROTATION, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(ISettingsSystem::USER_ROTATION, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::System::GetUriForEx(ISettingsSystem::SCREEN_OFF_TIMEOUT, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(ISettingsSystem::SCREEN_OFF_TIMEOUT, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::System::GetUriForEx(ISettingsSystem::POINTER_LOCATION, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(ISettingsSystem::POINTER_LOCATION, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::Secure::GetUriForEx(ISettingsSecure::DEFAULT_INPUT_METHOD, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::Secure::GetUriFor(ISettingsSecure::DEFAULT_INPUT_METHOD, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::System::GetUriForEx(String("fancy_rotation_anim"), (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(String("fancy_rotation_anim"), (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     uri = NULL;
-    Settings::System::GetUriForEx(ISettingsSystem::BOOT_FAST_ENABLE, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE, this, IUserHandle::USER_ALL);
+    Settings::System::GetUriFor(ISettingsSystem::BOOT_FAST_ENABLE, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE, this, IUserHandle::USER_ALL);
 
     mHost->UpdateSettings();
 }
@@ -491,7 +491,7 @@ ECode CPhoneWindowManager::HideNavInputEventReceiverFactory::CreateInputEventRec
 {
     VALIDATE_NOT_NULL(receiver);
     *receiver = new HideNavInputEventReceiver(inputChannel, looper, mHost);
-    INTERFACE_ADDREF(*receiver);
+    REFCOUNT_ADD(*receiver);
     return NOERROR;
 }
 
@@ -1311,7 +1311,7 @@ ECode CPhoneWindowManager::ScreenshotServiceConnection::OnServiceConnected(
     AutoPtr<IMessageHelper> messageHelper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&messageHelper);
     AutoPtr<IMessage> msg;
-    messageHelper->ObtainEx3(NULL, 1, (IMessage**)&msg);
+    messageHelper->Obtain(NULL, 1, (IMessage**)&msg);
     const AutoPtr<IServiceConnection> myConn = this;
     AutoPtr<ILooper> looper;
     mHost->mHandler->GetLooper((ILooper**)&looper);
@@ -1539,7 +1539,7 @@ ECode CPhoneWindowManager::BootMsgRunnable::Run()
     if (mHost->mBootMsgDialog == NULL) {
         mHost->mBootMsgDialog = new BootMsgDialog();
         mHost->mBootMsgDialog->Init(mHost->mContext);
-        mHost->mBootMsgDialog->SetTitleEx(R::string::android_upgrading_title);
+        mHost->mBootMsgDialog->SetTitle(R::string::android_upgrading_title);
         mHost->mBootMsgDialog->SetProgressStyle(IProgressDialog::STYLE_SPINNER);
         mHost->mBootMsgDialog->SetIndeterminate(TRUE);
         AutoPtr<IWindow> window;
@@ -2128,7 +2128,7 @@ ECode CPhoneWindowManager::Init(
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
     String equalsStr;
-    sp->GetEx(String("ro.config.headless"), String("0"), &equalsStr);
+    sp->Get(String("ro.config.headless"), String("0"), &equalsStr);
     mHeadless = String("1").Equals(equalsStr);
     // if (!mHeadless) {
     //     // don't create KeyguardViewMediator if headless
@@ -2519,7 +2519,7 @@ void CPhoneWindowManager::EnablePointerLocation()
         lp->GetInputFeatures(&inputFeatures);
         lp->SetInputFeatures(inputFeatures | IWindowManagerLayoutParams::INPUT_FEATURE_NO_INPUT_CHANNEL);
         AutoPtr<IViewManager> vm = IViewManager::Probe(wm);
-        vm->AddViewEx5(mPointerLocationView, lp);
+        vm->AddView(mPointerLocationView, lp);
 
         mPointerLocationInputChannel = NULL;
         mWindowManagerFuncs->MonitorInput(
@@ -2591,7 +2591,7 @@ void CPhoneWindowManager::AcquireBootAnimationView()
         lp->GetInputFeatures(&inputFeatures);
         lp->SetInputFeatures(inputFeatures | IWindowManagerLayoutParams::INPUT_FEATURE_NO_INPUT_CHANNEL);
         AutoPtr<IViewManager> vm = IViewManager::Probe(wm);
-        vm->AddViewEx5(mBootAnimationView, lp);
+        vm->AddView(mBootAnimationView, lp);
         // if(DEBUG_BOOTFAST)
         //     Log.d(TAG,"acquireBootAnimationView finish");
     }
@@ -3181,7 +3181,7 @@ ECode CPhoneWindowManager::AddStartingWindow(
         AutoPtr<IResources> r;
         context->GetResources((IResources**)&r);
         AutoPtr<ICharSequence> title;
-        r->GetTextEx(labelRes, nonLocalizedLabel, (ICharSequence**)&title);
+        r->GetText(labelRes, nonLocalizedLabel, (ICharSequence**)&title);
         win->SetTitle(title);
 
         win->SetType(IWindowManagerLayoutParams::TYPE_APPLICATION_STARTING);
@@ -3248,7 +3248,7 @@ ECode CPhoneWindowManager::AddStartingWindow(
            return NOERROR;
         }
 
-        ec = wm->AddViewEx5(view, lp);
+        ec = wm->AddView(view, lp);
         if (FAILED(ec)) {
             return ec;
         }
@@ -3259,7 +3259,7 @@ ECode CPhoneWindowManager::AddStartingWindow(
         AutoPtr<IViewParent> parent;
         view->GetParent((IViewParent**)&parent);
         *window = parent != NULL ? view : NULL;
-        INTERFACE_ADDREF(*window);
+        REFCOUNT_ADD(*window);
 
         if (DEBUG_STARTING_WINDOW) {
             Slogger::V(TAG, "Adding starting window for %s/%p: window %p",
@@ -4264,7 +4264,7 @@ ECode CPhoneWindowManager::DispatchUnhandledKey(
     //     }
     // }
     *keyEvent =  fallbackEvent;
-    INTERFACE_ADDREF(*keyEvent);
+    REFCOUNT_ADD(*keyEvent);
 
     return NOERROR;
 }
@@ -4318,7 +4318,7 @@ void CPhoneWindowManager::LaunchAssistAction()
     AutoPtr<ISearchManager> searchManager;
     mContext->GetSystemService(IContext::SEARCH_SERVICE, (IInterface**)&searchManager);
     AutoPtr<IIntent> intent;
-    searchManager->GetAssistIntentEx(mContext, IUserHandle::USER_CURRENT, (IIntent**)&intent);
+    searchManager->GetAssistIntent(mContext, IUserHandle::USER_CURRENT, (IIntent**)&intent);
 
     if (intent != NULL) {
         intent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK
@@ -4698,7 +4698,7 @@ void CPhoneWindowManager::SetAttachedWindowFrames(
         if (adjust != IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_RESIZE) {
             AutoPtr<IRect> tempRc;
             attached->GetDisplayFrameLw((IRect**)&tempRc);
-            cf->SetEx(tempRc);
+            cf->Set(tempRc);
         }
         else {
             // If the window is resizing, then we want to base the content
@@ -4709,7 +4709,7 @@ void CPhoneWindowManager::SetAttachedWindowFrames(
             // we end up using is not covering the IM dock.
             AutoPtr<IRect> tempRc;
             attached->GetContentFrameLw((IRect**)&tempRc);
-            cf->SetEx(tempRc);
+            cf->Set(tempRc);
             if (attackedLayer < mDockLayer) {
                 if (cf->mLeft < mContentLeft)
                     cf->mLeft = mContentLeft;
@@ -4723,17 +4723,17 @@ void CPhoneWindowManager::SetAttachedWindowFrames(
         }
         AutoPtr<IRect> tempRc;
         attached->GetDisplayFrameLw((IRect**)&tempRc);
-        df->SetEx(insetDecors ? tempRc : cf);
+        df->Set(insetDecors ? tempRc : cf);
         tempRc = NULL;
         attached->GetVisibleFrameLw((IRect**)&tempRc);
-        vf->SetEx(tempRc);
+        vf->Set(tempRc);
     }
     // The LAYOUT_IN_SCREEN flag is used to determine whether the attached
     // window should be positioned relative to its parent or the entire
     // screen.
     AutoPtr<IRect> tempRc;
     attached->GetFrameLw((IRect**)&tempRc);
-    pf->SetEx((fl & IWindowManagerLayoutParams::FLAG_LAYOUT_IN_SCREEN) == 0 ? tempRc : df);
+    pf->Set((fl & IWindowManagerLayoutParams::FLAG_LAYOUT_IN_SCREEN) == 0 ? tempRc : df);
 }
 
 void CPhoneWindowManager::ApplyStableConstraints(
@@ -4902,7 +4902,7 @@ ECode CPhoneWindowManager::LayoutWindowLw(
                     vf->mRight = mCurRight;
                     vf->mBottom = mCurBottom;
                 } else {
-                    vf->SetEx(cf);
+                    vf->Set(cf);
                 }
             }
         } else if ((fl & IWindowManagerLayoutParams::FLAG_LAYOUT_IN_SCREEN) != 0 || (sysUiFl
@@ -5011,7 +5011,7 @@ ECode CPhoneWindowManager::LayoutWindowLw(
                 vf->mRight = mCurRight;
                 vf->mBottom = mCurBottom;
             } else {
-                vf->SetEx(cf);
+                vf->Set(cf);
             }
         } else if (attached != NULL) {
             // if (DEBUG_LAYOUT)
@@ -5056,7 +5056,7 @@ ECode CPhoneWindowManager::LayoutWindowLw(
                     vf->mRight = mCurRight;
                     vf->mBottom = mCurBottom;
                 } else {
-                    vf->SetEx(cf);
+                    vf->Set(cf);
                 }
             }
         }
@@ -5587,7 +5587,7 @@ void CPhoneWindowManager::TakeScreenshot()
     intent->SetComponent(cn);
     AutoPtr<ScreenshotServiceConnection> conn = new ScreenshotServiceConnection(this);
     Boolean isSuccess = FALSE;
-    if (mContext->BindServiceEx(
+    if (mContext->BindService(
             intent, conn, IContext::BIND_AUTO_CREATE, IUserHandle::USER_CURRENT,
             &isSuccess), isSuccess) {
         mScreenshotConnection = conn;
@@ -6106,7 +6106,7 @@ void CPhoneWindowManager::DispatchMediaKeyWithWakeLock(
         mHavePendingMediaKeyRepeatWithWakeLock = TRUE;
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx(MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK, event, (IMessage**)&msg);
+        mHandler->ObtainMessage(MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK, event, (IMessage**)&msg);
         // TODO: SetAsynchronous is not implement in Message.
         // msg->SetAsynchronous(TRUE);
         Boolean isSuccess = FALSE;
@@ -6127,7 +6127,7 @@ void CPhoneWindowManager::DispatchMediaKeyRepeatWithWakeLock(
     AutoPtr<IKeyEventHelper> helper;
     CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
     AutoPtr<IKeyEvent> repeatEvent;
-    helper->ChangeTimeRepeatEx(event, SystemClock::GetUptimeMillis(),
+    helper->ChangeTimeRepeat(event, SystemClock::GetUptimeMillis(),
         1, flags | IKeyEvent::FLAG_LONG_PRESS, (IKeyEvent**)&repeatEvent);
     if (DEBUG_INPUT) {
         Slogger::D(TAG, "dispatchMediaKeyRepeatWithWakeLock: %p", repeatEvent.Get());
@@ -6998,7 +6998,7 @@ ECode CPhoneWindowManager::PerformHapticFeedbackLw(
         mVibrator->Vibrate((*pattern)[0]);
     } else {
         // Pattern vibration
-        mVibrator->VibrateEx(*pattern, -1);
+        mVibrator->Vibrate(*pattern, -1);
     }
     *isSucceed = TRUE;
     return NOERROR;

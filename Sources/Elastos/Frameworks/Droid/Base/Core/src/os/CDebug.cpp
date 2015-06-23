@@ -1,7 +1,7 @@
 
 #include "os/CDebug.h"
 #include "os/CDebugMemoryInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <cutils/debugger.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -320,10 +320,10 @@ void Load_Maps(
 ECode CDebug::GetMemoryInfo(
     /* [in] */ IDebugMemoryInfo* memoryInfo)
 {
-    return GetMemoryInfoEx(getpid(), memoryInfo);
+    return GetMemoryInfo(getpid(), memoryInfo);
 }
 
-ECode CDebug::GetMemoryInfoEx(
+ECode CDebug::GetMemoryInfo(
     /* [in] */ Int32 pid,
     /* [in] */ IDebugMemoryInfo* memoryInfo)
 {
@@ -368,10 +368,10 @@ ECode CDebug::GetMemoryInfoEx(
 ECode CDebug::GetPss(
     /* [out] */ Int64* pss)
 {
-    return GetPssEx(getpid(), pss);
+    return GetPss(getpid(), pss);
 }
 
-ECode CDebug::GetPssEx(
+ECode CDebug::GetPss(
     /* [in] */ Int32 pid,
     /* [out] */ Int64* _pss)
 {

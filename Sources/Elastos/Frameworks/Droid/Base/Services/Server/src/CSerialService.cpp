@@ -1,14 +1,14 @@
 
 #include "CSerialService.h"
 #include "ext/frameworkdef.h"
-#include <elastos/List.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "Manifest.h"
 #include "R.h"
 #include <fcntl.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;

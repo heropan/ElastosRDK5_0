@@ -3,8 +3,8 @@
 #define __CPROXYPROPERTIES_H__
 
 #include "_CProxyProperties.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuffer;
@@ -60,7 +60,7 @@ public:
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IProxyProperties* o,
         /* [out] */ Boolean* result);
     /*

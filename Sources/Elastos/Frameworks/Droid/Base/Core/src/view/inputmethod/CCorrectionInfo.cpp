@@ -44,7 +44,7 @@ ECode CCorrectionInfo::GetOldText(
 {
     assert(text != NULL);
     *text = mOldText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
 
     return NOERROR;
 }
@@ -54,7 +54,7 @@ ECode CCorrectionInfo::GetNewText(
 {
     assert(text != NULL);
     *text = mNewText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
 
     return NOERROR;
 }

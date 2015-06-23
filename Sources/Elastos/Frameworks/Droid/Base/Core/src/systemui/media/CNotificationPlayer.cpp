@@ -1,5 +1,5 @@
 #include "systemui/media/CNotificationPlayer.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 #include "os/SystemClock.h"
 #include "os/Looper.h"
 #include "media/media/CMediaPlayer.h"

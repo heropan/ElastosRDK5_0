@@ -2,8 +2,8 @@
 #include "ext/frameworkext.h"
 #include "app/CUiModeManager.h"
 #include "os/ServiceManager.h"
-#include <elastos/Logger.h>
-#include <Elastos.Core.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::IServiceManager;

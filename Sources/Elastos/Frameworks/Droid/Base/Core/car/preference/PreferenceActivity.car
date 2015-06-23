@@ -272,7 +272,7 @@ module
          * @param shortTitleRes Resource ID of string to display for the short title of
          * this set of preferences.
          */
-        StartWithFragmentEx(
+        StartWithFragment(
             [in] String fragmentName,
             [in] IBundle* args,
             [in] IFragment* resultTo,
@@ -318,7 +318,7 @@ module
          *
          * @param header The new header to display.
          */
-        SwitchToHeaderEx(
+        SwitchToHeader(
             [in] IPreferenceActivityHeader* header);
 
         /**

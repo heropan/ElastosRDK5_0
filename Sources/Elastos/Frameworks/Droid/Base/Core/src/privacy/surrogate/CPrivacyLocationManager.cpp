@@ -5,9 +5,9 @@
 #include "location/CLocation.h"
 #include "os/ServiceManager.h"
 #include "os/Binder.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -62,7 +62,7 @@ ECode CPrivacyLocationManager::GetProvider(
     AutoPtr<IPrivacySettings> pSet;
     String packageName;
     mContext->GetPackageName(&packageName);
-    mPrivacySetMan->GetSettingsEx(packageName, Binder::GetCallingUid(), (IPrivacySettings**)&pSet);
+    mPrivacySetMan->GetSettings(packageName, Binder::GetCallingUid(), (IPrivacySettings**)&pSet);
     AutoPtr<ILocationProvider> output;
 
     if (pSet != NULL) {
@@ -97,11 +97,11 @@ ECode CPrivacyLocationManager::GetProvider(
     }
 
     *provider = output;
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 
-ECode CPrivacyLocationManager::GetProvidersEx(
+ECode CPrivacyLocationManager::GetProviders(
     /* [in] */ ICriteria* criteria,
     /* [in] */ Boolean enabledOnly,
     /* [out] */ IObjectContainer** providers)
@@ -169,7 +169,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPrivacyLocationManager::RequestLocationUpdatesEx3(
+ECode CPrivacyLocationManager::RequestLocationUpdates(
     /* [in] */ const String& provider,
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
@@ -189,7 +189,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdatesEx3(
     return LocationManager::RequestLocationUpdates(provider, minTime, minDistance, intent);
 }
 
-ECode CPrivacyLocationManager::RequestLocationUpdatesEx4(
+ECode CPrivacyLocationManager::RequestLocationUpdates(
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
     /* [in] */ ICriteria* criteria,
@@ -237,7 +237,7 @@ ECode CPrivacyLocationManager::RequestSingleUpdate(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CPrivacyLocationManager::RequestSingleUpdateEx2(
+ECode CPrivacyLocationManager::RequestSingleUpdate(
     /* [in] */ const String& provider,
     /* [in] */ IPendingIntent* intent)
 {
@@ -255,7 +255,7 @@ ECode CPrivacyLocationManager::RequestSingleUpdateEx2(
     return LocationManager::RequestSingleUpdate(provider, intent);
 }
 
-ECode CPrivacyLocationManager::RequestSingleUpdateEx3(
+ECode CPrivacyLocationManager::RequestSingleUpdate(
     /* [in] */ ICriteria* criteria,
     /* [in] */ IPendingIntent* intent)
 {
@@ -273,7 +273,7 @@ ECode CPrivacyLocationManager::RequestSingleUpdateEx3(
     return LocationManager::RequestSingleUpdate(criteria, intent);
 }
 
-ECode CPrivacyLocationManager::RequestLocationUpdatesEx6(
+ECode CPrivacyLocationManager::RequestLocationUpdates(
     /* [in] */ ILocationRequest* request,
     /* [in] */ IPendingIntent* intent)
 {
@@ -286,7 +286,7 @@ ECode CPrivacyLocationManager::RemoveUpdates(
     return LocationManager::RemoveUpdates(listener);
 }
 
-ECode CPrivacyLocationManager::RemoveUpdatesEx(
+ECode CPrivacyLocationManager::RemoveUpdates(
     /* [in] */ IPendingIntent* intent)
 {
     return LocationManager::RemoveUpdates(intent);
@@ -343,7 +343,7 @@ ECode CPrivacyLocationManager::IsProviderEnabled(
     AutoPtr<IPrivacySettings> pSet;
     Boolean output = FALSE;
     mContext->GetPackageName(&packageName);
-    mPrivacySetMan->GetSettingsEx(packageName, Binder::GetCallingUid(), (IPrivacySettings**)&pSet);
+    mPrivacySetMan->GetSettings(packageName, Binder::GetCallingUid(), (IPrivacySettings**)&pSet);
 
     if (pSet != NULL) {
         if (provider.Equals(ILocationManager::GPS_PROVIDER)) {
@@ -407,7 +407,7 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
     mContext->GetPackageName(&packageName);
     Int32 uid = Binder::GetCallingUid();
     AutoPtr<IPrivacySettings> pSet;
-    mPrivacySetMan->GetSettingsEx(packageName, uid, (IPrivacySettings**)&pSet);
+    mPrivacySetMan->GetSettings(packageName, uid, (IPrivacySettings**)&pSet);
     AutoPtr<ILocation> output;
 
     if (pSet != NULL) {
@@ -418,11 +418,11 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
             switch (GetLocationSetting(0, pSet)) {
                 case IPrivacySettings::REAL:
                     LocationManager::GetLastKnownLocation(provider, (ILocation**)&output);
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
                     break;
 
                 case IPrivacySettings::EMPTY:
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
                     break;
 
                 case IPrivacySettings::CUSTOM:
@@ -432,7 +432,7 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
                     output->SetLatitude(StringUtils::ParseDouble(latStr));
                     output->SetLongitude(StringUtils::ParseDouble(lngStr));
 
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
                     break;
 
                 case IPrivacySettings::RANDOM:
@@ -442,18 +442,18 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
                     output->SetLatitude(StringUtils::ParseDouble(latStr));
                     output->SetLongitude(StringUtils::ParseDouble(lngStr));
 
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
                     break;
             }
         } else if (provider.Equals(ILocationManager::NETWORK_PROVIDER)) {
             switch (GetLocationSetting(1, pSet)) {
                 case IPrivacySettings::REAL:
                     LocationManager::GetLastKnownLocation(provider, (ILocation**)&output);
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
                     break;
 
                 case IPrivacySettings::EMPTY:
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
                     break;
 
                 case IPrivacySettings::CUSTOM:
@@ -463,7 +463,7 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
                     output->SetLatitude(StringUtils::ParseDouble(latStr));
                     output->SetLongitude(StringUtils::ParseDouble(lngStr));
 
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
                     break;
                 case IPrivacySettings::RANDOM:
                     CLocation::New(provider, (ILocation**)&output);
@@ -472,7 +472,7 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
                     output->SetLatitude(StringUtils::ParseDouble(latStr));
                     output->SetLongitude(StringUtils::ParseDouble(lngStr));
 
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
                     break;
             }
         } else if (provider.Equals(ILocationManager::PASSIVE_PROVIDER) &&
@@ -480,20 +480,20 @@ ECode CPrivacyLocationManager::GetLastKnownLocation(
                 GetLocationSetting(1, pSet) == IPrivacySettings::REAL) {
             // only output real location if both gps and network are allowed
             LocationManager::GetLastKnownLocation(provider, (ILocation**)&output);
-            mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
+            mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
         }
     } else {
         LocationManager::GetLastKnownLocation(provider, (ILocation**)&output);
 
         if (provider.Equals(ILocationManager::NETWORK_PROVIDER)) {
-            mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
+            mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, GetLocationNotificatonString(output), pSet.Get());
         } else { // including GPS and passive providers
-            mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
+            mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, GetLocationNotificatonString(output), pSet.Get());
         }
     }
 
     *location = output;
-    INTERFACE_ADDREF(*location)
+    REFCOUNT_ADD(*location)
     return NOERROR;
 }
 
@@ -587,17 +587,17 @@ ECode CPrivacyLocationManager::AddNmeaListener(
     Int32 uid = Binder::GetCallingUid();
 
     AutoPtr<IPrivacySettings> pSet;
-    mPrivacySetMan->GetSettingsEx(packageName, uid, (IPrivacySettings**)&pSet);
+    mPrivacySetMan->GetSettings(packageName, uid, (IPrivacySettings**)&pSet);
 
     Byte gpsSetting = 0;
     pSet->GetLocationGpsSetting(&gpsSetting);
 
     if (pSet != NULL && gpsSetting != IPrivacySettings::REAL) {
-        mPrivacySetMan->NotificationEx2(packageName, uid, (Byte)IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet);
+        mPrivacySetMan->Notification(packageName, uid, (Byte)IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet);
         *result = FALSE;
         return NOERROR;
     } else {
-        mPrivacySetMan->NotificationEx2(packageName, uid, (Byte)IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet);
+        mPrivacySetMan->Notification(packageName, uid, (Byte)IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet);
     }
 
 //    Log.d(TAG, "addNmeaListener - " + context.getPackageName() + " (" + Binder.getCallingUid() + ") output: [real value]");
@@ -654,7 +654,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 
         Int32 uid = Binder::GetCallingUid();
         AutoPtr<IPrivacySettings> pSet;
-        mPrivacySetMan->GetSettingsEx(packageName, uid, (IPrivacySettings**)&pSet);
+        mPrivacySetMan->GetSettings(packageName, uid, (IPrivacySettings**)&pSet);
 
         Boolean output = FALSE;
 
@@ -665,7 +665,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
             if (provider.Equals(ILocationManager::GPS_PROVIDER)) {
                 switch (GetLocationSetting(0, pSet)) {
                     case IPrivacySettings::REAL:
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
                         break;
 
                     case IPrivacySettings::EMPTY:
@@ -673,7 +673,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
                             intent->Cancel();
                         }
                         output = TRUE;
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
                         break;
 
                     case IPrivacySettings::CUSTOM:
@@ -694,7 +694,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 //                            Logger::E(TAG, "requestLocationUpdates: invalid coordinates");
 //                            output = TRUE;
 //                        }
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_LOCATION_GPS,
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::CUSTOM, IPrivacySettings::DATA_LOCATION_GPS,
                                 String("Lat: ") + lat + " Lon: " + lng, pSet.Get());
                     }
                         break;
@@ -716,7 +716,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 //                            Logger::E(TAG, "requestLocationUpdates: invalid coordinates");
 //                            output = true;
 //                        }
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_GPS,
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_GPS,
                                 String("Lat: ") + lat + " Lon: " + lng, pSet.Get());
                     }
                         break;
@@ -724,14 +724,14 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
             } else if (provider.Equals(ILocationManager::NETWORK_PROVIDER)) {
                 switch (GetLocationSetting(1, pSet)) {
                     case IPrivacySettings::REAL:
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
                         break;
                     case IPrivacySettings::EMPTY:
                         if (intent != NULL) {
                             intent->Cancel();
                         }
                         output = true;
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
                         break;
                     case IPrivacySettings::CUSTOM:
                     {
@@ -750,7 +750,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 //                            Log.e(TAG, "requestLocationUpdates: invalid coordinates");
 //                            output = true;
 //                        }
-                        mPrivacySetMan->NotificationEx2(
+                        mPrivacySetMan->Notification(
                             packageName, uid,
                             IPrivacySettings::CUSTOM,
                             IPrivacySettings::DATA_LOCATION_NETWORK,
@@ -773,7 +773,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 //                            Log.e(TAG, "requestLocationUpdates: invalid coordinates");
 //                            output = true;
 //                        }
-                        mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_NETWORK,
+                        mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::RANDOM, IPrivacySettings::DATA_LOCATION_NETWORK,
                                 String("Lat: ") + lat + " Lon: " + lng, pSet.Get());
                     }
                         break;
@@ -782,17 +782,17 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
                 if (GetLocationSetting(0, pSet) == IPrivacySettings::REAL &&
                     GetLocationSetting(1, pSet) == IPrivacySettings::REAL) {
                     output = FALSE;
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
                 } else {
                     output = TRUE;
-                    mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
+                    mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::EMPTY, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
                 }
             }
         } else {
             if (provider.Equals(ILocationManager::NETWORK_PROVIDER)) {
-                mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
+                mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL), pSet.Get());
             } else { // including GPS and passive providers
-                mPrivacySetMan->NotificationEx2(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
+                mPrivacySetMan->Notification(packageName, uid, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_GPS, String(NULL), pSet.Get());
             }
         }
 
@@ -840,7 +840,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
     return NOERROR;
 }
 
-ECode CPrivacyLocationManager::RequestLocationUpdatesEx(
+ECode CPrivacyLocationManager::RequestLocationUpdates(
     /* [in] */ const String& provider,
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
@@ -850,7 +850,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdatesEx(
     return NOERROR;
 }
 
-ECode CPrivacyLocationManager::RequestLocationUpdatesEx2(
+ECode CPrivacyLocationManager::RequestLocationUpdates(
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
     /* [in] */ ICriteria* criteria,
@@ -860,7 +860,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdatesEx2(
     return NOERROR;
 }
 
-ECode CPrivacyLocationManager::RequestSingleUpdateEx(
+ECode CPrivacyLocationManager::RequestSingleUpdate(
     /* [in] */ ICriteria* criteria,
     /* [in] */ ILocationListener* listener,
     /* [in] */ ILooper* looper)
@@ -868,7 +868,7 @@ ECode CPrivacyLocationManager::RequestSingleUpdateEx(
     return NOERROR;
 }
 
-ECode CPrivacyLocationManager::RequestLocationUpdatesEx5(
+ECode CPrivacyLocationManager::RequestLocationUpdates(
     /* [in] */ ILocationRequest* request,
     /* [in] */ ILocationListener* listener,
     /* [in] */ ILooper* looper)

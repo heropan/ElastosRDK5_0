@@ -1,12 +1,12 @@
 #include "AsyncImageLoader.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 #include <unistd.h>
 #include <elastos/StringBuilder.h>
 
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::CThread;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::CThread;
+using Elastos::Core::IThread;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;

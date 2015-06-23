@@ -1,8 +1,8 @@
 #include "widget/CRemoteViewsBitmapCache.h"
 #include "widget/RemoteViews.h"
 #include "graphics/CBitmap.h"
-#include <elastos/Algorithm.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Graphics::CBitmap;

@@ -4,8 +4,8 @@
 #include "view/accessibility/CAccessibilityEvent.h"
 #include "view/accessibility/CAccessibilityManager.h"
 #include "view/SoundEffectConstants.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 #include <R.h>
 
 using Elastos::Droid::View::SoundEffectConstants;
@@ -984,7 +984,7 @@ Boolean AdapterView::OnRequestSendAccessibilityEvent(
         // Add a record for ourselves as well.
 
         AutoPtr<IAccessibilityEvent> record;
-        CAccessibilityEvent::ObtainEx2((IAccessibilityEvent**)&record);
+        CAccessibilityEvent::Obtain((IAccessibilityEvent**)&record);
         OnInitializeAccessibilityEvent(record);
         // Populate with the text of the requesting child.
         Boolean temp;

@@ -132,7 +132,7 @@ public:
         /* [in] */ ArrayOf<Int32>* textures_buf,
         /* [in] */ Int32 offset);
 
-    CARAPI GlDeleteTexturesEx(
+    CARAPI GlDeleteTextures(
         /* [in] */ Int32 n,
         /* [in] */ Elastos::IO::IInt32Buffer* textures_buf);
 
@@ -186,7 +186,7 @@ public:
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlFogfvEx(
+    CARAPI GlFogfv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
@@ -199,7 +199,7 @@ public:
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlFogxvEx(
+    CARAPI GlFogxv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
@@ -227,7 +227,7 @@ public:
         /* [in] */ ArrayOf<Int32>* textures_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlGenTexturesEx(
+    CARAPI GlGenTextures(
         /* [in] */ Int32 n,
         /* [in] */ Elastos::IO::IInt32Buffer* textures_buf);
 
@@ -239,7 +239,7 @@ public:
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlGetIntegervEx(
+    CARAPI GlGetIntegerv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
@@ -260,7 +260,7 @@ public:
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightModelfvEx(
+    CARAPI GlLightModelfv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
 
@@ -273,7 +273,7 @@ public:
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightModelxvEx(
+    CARAPI GlLightModelxv(
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
 
@@ -288,7 +288,7 @@ public:
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightfvEx(
+    CARAPI GlLightfv(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
@@ -304,7 +304,7 @@ public:
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLightxvEx(
+    CARAPI GlLightxv(
         /* [in] */ Int32 light,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
@@ -321,14 +321,14 @@ public:
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLoadMatrixfEx(
+    CARAPI GlLoadMatrixf(
         /* [in] */ Elastos::IO::IFloatBuffer* m);
 
     CARAPI GlLoadMatrixx(
         /* [in] */ ArrayOf<Int32>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlLoadMatrixxEx(
+    CARAPI GlLoadMatrixx(
         /* [in] */ Elastos::IO::IInt32Buffer* m);
 
     CARAPI GlLogicOp(
@@ -345,7 +345,7 @@ public:
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMaterialfvEx(
+    CARAPI GlMaterialfv(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
@@ -361,7 +361,7 @@ public:
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMaterialxvEx(
+    CARAPI GlMaterialxv(
         /* [in] */ Int32 face,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);
@@ -373,14 +373,14 @@ public:
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMultMatrixfEx(
+    CARAPI GlMultMatrixf(
         /* [in] */ Elastos::IO::IFloatBuffer* m);
 
     CARAPI GlMultMatrixx(
         /* [in] */ ArrayOf<Int32>* m,
         /* [in] */ Int32 offset);
 
-    CARAPI GlMultMatrixxEx(
+    CARAPI GlMultMatrixx(
         /* [in] */ Elastos::IO::IInt32Buffer* m);
 
     CARAPI GlMultiTexCoord4f(
@@ -528,7 +528,7 @@ public:
         /* [in] */ ArrayOf<Float>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlTexEnvfvEx(
+    CARAPI GlTexEnvfv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IFloatBuffer* params_buf);
@@ -544,7 +544,7 @@ public:
         /* [in] */ ArrayOf<Int32>* params_ref,
         /* [in] */ Int32 offset);
 
-    CARAPI GlTexEnvxvEx(
+    CARAPI GlTexEnvxv(
         /* [in] */ Int32 target,
         /* [in] */ Int32 pname,
         /* [in] */ Elastos::IO::IInt32Buffer* params_buf);

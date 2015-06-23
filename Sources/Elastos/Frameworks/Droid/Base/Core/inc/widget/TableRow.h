@@ -4,7 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "os/CZigbeeManager.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 namespace Elastos {
 namespace Droid {
@@ -63,7 +63,7 @@ ECode CZigbeeManager::GetAllActions(
 {
     VALIDATE_NOT_NULL(actions)
     *actions = sActions;
-    INTERFACE_ADDREF(*actions)
+    REFCOUNT_ADD(*actions)
     return NOERROR;
 }
 

@@ -4,8 +4,7 @@
 
 #include "_CContentQueryMap.h"
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "database/ContentObserver.h"
 
 using Elastos::Droid::Database::ICursor;
@@ -13,7 +12,7 @@ using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::ContentObserver;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Utility::IObjectStringMap;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IObserver;
 using Elastos::Utility::IList;
 
@@ -165,7 +164,7 @@ public:
      * @param data
      *            the argument passed to {@code update()}.
      */
-    CARAPI NotifyObserversEx(
+    CARAPI NotifyObservers(
         /* [in] */ IInterface* data);
 
     /**

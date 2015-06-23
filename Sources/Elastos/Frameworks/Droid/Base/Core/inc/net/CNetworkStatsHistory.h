@@ -4,9 +4,8 @@
 
 #include "_CNetworkStatsHistory.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::Core::IRandom;
@@ -119,7 +118,7 @@ public:
         /* [in] */ Int64 rxBytes,
         /* [in] */ Int64 txBytes);
 
-    CARAPI RecordDataEx(
+    CARAPI RecordData(
         /* [in] */ Int64 start,
         /* [in] */ Int64 end,
         /* [in] */ INetworkStatsEntry* entry);
@@ -135,13 +134,13 @@ public:
     CARAPI RemoveBucketsBefore(
         /* [in] */ Int64 cutoff);
 
-    CARAPI GetValuesEx(
+    CARAPI GetValues(
         /* [in] */ Int64 start,
         /* [in] */ Int64 end,
         /* [in] */ INetworkStatsHistoryEntry* recycle,
         /* [out] */ INetworkStatsHistoryEntry** result);
 
-    CARAPI GetValuesEx2(
+    CARAPI GetValues(
         /* [in] */ Int64 start,
         /* [in] */ Int64 end,
         /* [in] */ Int64 now,
@@ -153,7 +152,7 @@ public:
         /* [in] */ Int64 end,
         /* [in] */ Int64 bytes);
 
-    CARAPI GenerateRandomEx(
+    CARAPI GenerateRandom(
         /* [in] */ Int64 start,
         /* [in] */ Int64 end,
         /* [in] */ Int64 rxBytes,

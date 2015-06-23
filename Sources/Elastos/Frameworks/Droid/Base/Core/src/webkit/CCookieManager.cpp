@@ -37,7 +37,7 @@ ECode CCookieManager::GetCookie(
     return NOERROR;
 }
 
-ECode CCookieManager::GetCookieEx(
+ECode CCookieManager::GetCookie(
     /* [in] */ const String& url,
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ String* cookie)
@@ -47,7 +47,7 @@ ECode CCookieManager::GetCookieEx(
     return NOERROR;
 }
 
-ECode CCookieManager::GetCookieEx2(
+ECode CCookieManager::GetCookie(
     /* [in] */ IWebAddress* uri,
     /* [out] */ String* cookie)
 {
@@ -76,7 +76,7 @@ ECode CCookieManager::HasCookies(
     return NOERROR;
 }
 
-ECode CCookieManager::HasCookiesEx(
+ECode CCookieManager::HasCookies(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ Boolean* result)
 {

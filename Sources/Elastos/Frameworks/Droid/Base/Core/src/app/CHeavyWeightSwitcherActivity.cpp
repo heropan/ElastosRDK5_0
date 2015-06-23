@@ -156,7 +156,7 @@ void CHeavyWeightSwitcherActivity::SetIconAndText(
     String str;
     AutoPtr<ArrayOf<IInterface*> > appNameArray= ArrayOf<IInterface*>::Alloc(1);
     appNameArray->Set(0, appName);
-    GetStringEx(actionStr, appNameArray, &str);
+    GetString(actionStr, appNameArray, &str);
     AutoPtr<ICharSequence> strSequence;
     CStringWrapper::New(str, (ICharSequence**)&strSequence);
     SetText(actionId, strSequence);

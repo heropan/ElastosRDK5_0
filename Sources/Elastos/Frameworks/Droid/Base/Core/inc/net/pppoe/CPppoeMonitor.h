@@ -5,9 +5,7 @@
 #include "_CPppoeMonitor.h"
 #include "ext/frameworkext.h"
 #include "CPppoeStateTracker.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Droid::Net::Pppoe::IPppoeStateTracker;
 
 namespace Elastos {

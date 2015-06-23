@@ -114,7 +114,7 @@ public:
     virtual CARAPI SetImageAlpha(
         /* [in] */ Int32 alpha);
 
-    virtual CARAPI SetAlphaEx(
+    virtual CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 
     CARAPI GetBaseline(

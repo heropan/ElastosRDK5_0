@@ -44,7 +44,7 @@ ECode CMediaCodecCryptoInfo::GetNumBytesOfClearData(
 {
     VALIDATE_NOT_NULL(result);
     *result = mNumBytesOfClearData;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -53,7 +53,7 @@ ECode CMediaCodecCryptoInfo::GetNumBytesOfEncryptedData(
 {
     VALIDATE_NOT_NULL(result);
     *result = mNumBytesOfEncryptedData;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -62,7 +62,7 @@ ECode CMediaCodecCryptoInfo::GetKey(
 {
     VALIDATE_NOT_NULL(result);
     *result = mKey;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -71,7 +71,7 @@ ECode CMediaCodecCryptoInfo::GetInitVector(
 {
     VALIDATE_NOT_NULL(result);
     *result = mInitVector;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

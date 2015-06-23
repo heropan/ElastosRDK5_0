@@ -1,6 +1,6 @@
 
 #include "widget/Gallery.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "view/CViewConfiguration.h"
 #include "view/SoundEffectConstants.h"
 #include "view/CGestureDetector.h"
@@ -69,7 +69,7 @@ void Gallery::FlingRunnable::StartUsingDistance(
     StartCommon();
 
     mLastFlingX = 0;
-    mScroller->StartScrollEx(0, 0, -distance, 0, mHost->mAnimationDuration);
+    mScroller->StartScroll(0, 0, -distance, 0, mHost->mAnimationDuration);
     AutoPtr<IRunnable> r = (IRunnable*)this;
     mHost->Post(r);
 }
@@ -228,7 +228,7 @@ ECode Gallery::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::Gallery),
             ARRAY_SIZE(R::styleable::Gallery));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
         attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     Int32 index = 0;
@@ -1156,7 +1156,7 @@ Boolean Gallery::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
     Boolean result = FALSE;
-    event->DispatchEx(THIS_PROBE(IKeyEventCallback), NULL, NULL, &result);
+    event->Dispatch(THIS_PROBE(IKeyEventCallback), NULL, NULL, &result);
 
     return result;
 }
@@ -1328,7 +1328,7 @@ void Gallery::OnFocusChanged(
 
     if (gainFocus && mSelectedChild != NULL) {
         Boolean isFocus = FALSE;
-        mSelectedChild->RequestFocusEx(direction, &isFocus);
+        mSelectedChild->RequestFocus(direction, &isFocus);
         mSelectedChild->SetSelected(TRUE);
     }
 }

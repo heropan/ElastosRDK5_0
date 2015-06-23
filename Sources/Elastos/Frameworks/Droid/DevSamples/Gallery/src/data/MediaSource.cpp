@@ -1,9 +1,8 @@
 #include "MediaSource.h"
 #include "DataManager.h"
-#include <elastos/Mutex.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Gallery {

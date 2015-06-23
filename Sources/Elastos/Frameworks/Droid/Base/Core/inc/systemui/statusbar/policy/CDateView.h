@@ -2,8 +2,8 @@
 #define __CDATEVIEW_H_
 
 #include "_CDateView.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 #include "systemui/statusbar/policy/DateView.h"
 
 namespace Elastos {

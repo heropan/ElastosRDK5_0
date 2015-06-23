@@ -56,7 +56,7 @@ ECode WeightedLinearLayout::Init(
             const_cast<Int32 *>(R::styleable::WeightedLinearLayout),
             ARRAY_SIZE(R::styleable::WeightedLinearLayout));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::WeightedLinearLayout_majorWeightMin, 0.0f, &mMajorWeightMin);
     a->GetFloat(R::styleable::WeightedLinearLayout_minorWeightMin, 0.0f, &mMinorWeightMin);

@@ -33,7 +33,7 @@ ECode CVideoEditorProfile::Get(
     /* [out] */ IVideoEditorProfile** result)
 {
     *result = NativeGetVideoeditorProfile();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

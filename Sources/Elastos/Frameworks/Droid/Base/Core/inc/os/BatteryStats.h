@@ -7,15 +7,15 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/StringBuilder.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IInteger32;
 using Elastos::IO::IPrintWriter;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IFormatter;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Utility::IPrinter;

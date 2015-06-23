@@ -2,10 +2,10 @@
 #include "CPinyinIME.h"
 #include "KeyMapDream.h"
 #include "CInputModeSwitcher.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 #include <R.h>
 
@@ -126,7 +126,7 @@ ECode CPinyinIME::PopupTimer::Run()
     } else {
         Int32 width = 0;
         mHost->mFloatingWindow->GetWidth(&width);
-        mHost->mFloatingWindow->UpdateEx2(mParentLocation[0],
+        mHost->mFloatingWindow->Update(mParentLocation[0],
                 mParentLocation[1] - height,
                 width,
                 height);
@@ -658,7 +658,7 @@ Boolean CPinyinIME::ProcessStateInput(
     if (pressed) {
         Int32 metaState = 0, unicodeChar = 0;
         event->GetMetaState(&metaState);
-        if ('\'' != (event->GetUnicodeCharEx(metaState, &unicodeChar), unicodeChar)) {
+        if ('\'' != (event->GetUnicodeChar(metaState, &unicodeChar), unicodeChar)) {
             if (realAction) {
                 Char32 fullwidth_char = KeyMapDream::GetChineseLabel(keyCode);
                 if (0 != fullwidth_char) {
@@ -856,7 +856,7 @@ Boolean CPinyinIME::ProcessStateEditComposing(
     if (event->IsAltPressed(&pressed), pressed) {
         Int32 metaState = 0, unicodeChar = 0;
         event->GetMetaState(&metaState);
-        if ('\'' != (event->GetUnicodeCharEx(metaState, &unicodeChar), unicodeChar)) {
+        if ('\'' != (event->GetUnicodeChar(metaState, &unicodeChar), unicodeChar)) {
             Char32 fullwidth_char = KeyMapDream::GetChineseLabel(keyCode);
             if (0 != fullwidth_char) {
                 String retStr;
@@ -1054,7 +1054,7 @@ void CPinyinIME::CommitResultText(
     }
     if (NULL != mComposingView) {
         mComposingView->SetVisibility(IView::INVISIBLE);
-        mComposingView->InvalidateEx2();
+        mComposingView->Invalidate();
     }
 }
 
@@ -1067,7 +1067,7 @@ void CPinyinIME::UpdateComposingText(
         mComposingView->SetDecodingInfo(mDecInfo, mImeState);
         mComposingView->SetVisibility(IView::VISIBLE);
     }
-    mComposingView->InvalidateEx2();
+    mComposingView->Invalidate();
 }
 
 void CPinyinIME::InputCommaPeriod(
@@ -1585,13 +1585,13 @@ ECode CPinyinIME::ShowOptionsMenu()
     items->Set(1, itemInputMethod);
 
     AutoPtr<BuilderListener> listener = new BuilderListener(this);
-    builder->SetItemsEx(items, listener);
+    builder->SetItems(items, listener);
 
     String name;
     InputMethodService::GetString(R::string::ime_name, &name);
     AutoPtr<ICharSequence> csName;
     CStringWrapper::New(name, (ICharSequence**)&csName);
-    builder->SetTitleEx(csName);
+    builder->SetTitle(csName);
     builder->Create((IAlertDialog**)&mOptionsDialog);
     mOptionsDialog->SetOnDismissListener((IDialogInterfaceOnDismissListener*)listener.Get());
 
@@ -1700,30 +1700,30 @@ ECode CPinyinIME::ObtainStyledAttributes(
     return InputMethodService::ObtainStyledAttributes(attrs, styles);
 }
 
-ECode CPinyinIME::ObtainStyledAttributesEx(
+ECode CPinyinIME::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return InputMethodService::ObtainStyledAttributesEx(resid, attrs, styles);
+    return InputMethodService::ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode CPinyinIME::ObtainStyledAttributesEx2(
+ECode CPinyinIME::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
-    return InputMethodService::ObtainStyledAttributesEx2(set, attrs, styles);
+    return InputMethodService::ObtainStyledAttributes(set, attrs, styles);
 }
 
-ECode CPinyinIME::ObtainStyledAttributesEx3(
+ECode CPinyinIME::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes,
     /* [out] */ ITypedArray** styles)
 {
-    return InputMethodService::ObtainStyledAttributesEx3(set, attrs, defStyleAttr, defStyleRes, styles);
+    return InputMethodService::ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes, styles);
 }
 
 ECode CPinyinIME::GetClassLoader(
@@ -1874,7 +1874,7 @@ ECode CPinyinIME::CheckPermission(
     return InputMethodService::CheckPermission(permission, pid, uid, result);
 }
 
-ECode CPinyinIME::CheckUriPermissionEx(
+ECode CPinyinIME::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1883,7 +1883,7 @@ ECode CPinyinIME::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32 * result)
 {
-    return InputMethodService::CheckUriPermissionEx(uri, readPermission, writePermission, pid, uid, modeFlags, result);
+    return InputMethodService::CheckUriPermission(uri, readPermission, writePermission, pid, uid, modeFlags, result);
 }
 
 ECode CPinyinIME::CheckUriPermission(
@@ -2323,12 +2323,12 @@ ECode CPinyinIME::UnregisterComponentCallbacks(
     return InputMethodService::UnregisterComponentCallbacks(componentCallback);
 }
 
-ECode CPinyinIME::GetStringEx(
+ECode CPinyinIME::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
-    return InputMethodService::GetStringEx(resId, formatArgs, str);
+    return InputMethodService::GetString(resId, formatArgs, str);
 }
 
 ECode CPinyinIME::GetThemeResId(
@@ -2407,14 +2407,14 @@ ECode CPinyinIME::OpenOrCreateDatabase(
     return InputMethodService::OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode CPinyinIME::OpenOrCreateDatabaseEx(
+ECode CPinyinIME::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return InputMethodService::OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return InputMethodService::OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode CPinyinIME::DeleteDatabase(
@@ -2467,10 +2467,10 @@ ECode CPinyinIME::SetWallpaper(
     return InputMethodService::SetWallpaper(bitmap);
 }
 
-ECode CPinyinIME::SetWallpaperEx(
+ECode CPinyinIME::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return InputMethodService::SetWallpaperEx(data);
+    return InputMethodService::SetWallpaper(data);
 }
 
 ECode CPinyinIME::ClearWallpaper()
@@ -2485,22 +2485,22 @@ ECode CPinyinIME::StartActivityAsUser(
     return InputMethodService::StartActivityAsUser(intent, user);
 }
 
-ECode CPinyinIME::StartActivityAsUserEx(
+ECode CPinyinIME::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
 {
-    return InputMethodService::StartActivityAsUserEx(intent, options, user);
+    return InputMethodService::StartActivityAsUser(intent, options, user);
 }
 
-ECode CPinyinIME::StartActivitiesEx(
+ECode CPinyinIME::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
-    return InputMethodService::StartActivitiesEx(intents, options);
+    return InputMethodService::StartActivities(intents, options);
 }
 
-ECode CPinyinIME::StartIntentSenderEx(
+ECode CPinyinIME::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -2508,14 +2508,14 @@ ECode CPinyinIME::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return InputMethodService::StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
+    return InputMethodService::StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
 }
 
-ECode CPinyinIME::SendBroadcastEx(
+ECode CPinyinIME::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return InputMethodService::SendBroadcastEx(intent, receiverPermission);
+    return InputMethodService::SendBroadcast(intent, receiverPermission);
 }
 
 ECode CPinyinIME::SendOrderedBroadcast(
@@ -2525,7 +2525,7 @@ ECode CPinyinIME::SendOrderedBroadcast(
     return InputMethodService::SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode CPinyinIME::SendOrderedBroadcastEx(
+ECode CPinyinIME::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -2534,7 +2534,7 @@ ECode CPinyinIME::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return InputMethodService::SendOrderedBroadcastEx(intent, receiverPermission, resultReceiver, scheduler, initialCode, initialData, initialExtras);
+    return InputMethodService::SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler, initialCode, initialData, initialExtras);
 }
 
 ECode CPinyinIME::SendBroadcastAsUser(
@@ -2544,12 +2544,12 @@ ECode CPinyinIME::SendBroadcastAsUser(
     return InputMethodService::SendBroadcastAsUser(intent, user);
 }
 
-ECode CPinyinIME::SendBroadcastAsUserEx(
+ECode CPinyinIME::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return InputMethodService::SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return InputMethodService::SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode CPinyinIME::SendOrderedBroadcastAsUser(
@@ -2658,11 +2658,11 @@ ECode CPinyinIME::GetExternalCacheDir(
     return InputMethodService::GetExternalCacheDir(externalDir);
 }
 
-ECode CPinyinIME::StartActivityEx(
+ECode CPinyinIME::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return InputMethodService::StartActivityEx(intent, options);
+    return InputMethodService::StartActivity(intent, options);
 }
 
 ECode CPinyinIME::StartActivities(
@@ -2706,14 +2706,14 @@ ECode CPinyinIME::StopServiceAsUser(
     return InputMethodService::StopServiceAsUser(service, user, succeeded);
 }
 
-ECode CPinyinIME::BindServiceEx(
+ECode CPinyinIME::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return InputMethodService::BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return InputMethodService::BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode CPinyinIME::CheckCallingUriPermission(
@@ -2758,7 +2758,7 @@ ECode CPinyinIME::EnforceCallingOrSelfUriPermission(
     return InputMethodService::EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode CPinyinIME::EnforceUriPermissionEx(
+ECode CPinyinIME::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -2767,7 +2767,7 @@ ECode CPinyinIME::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return InputMethodService::EnforceUriPermissionEx(uri, readPermission, writePermission, pid, uid, modeFlags, message);
+    return InputMethodService::EnforceUriPermission(uri, readPermission, writePermission, pid, uid, modeFlags, message);
 }
 
 ECode CPinyinIME::CreatePackageContextAsUser(
@@ -2820,14 +2820,14 @@ ECode CPinyinIME::RegisterReceiver(
     return InputMethodService::RegisterReceiver(receiver, filter, intent);
 }
 
-ECode CPinyinIME::RegisterReceiverEx(
+ECode CPinyinIME::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** intent)
 {
-    return InputMethodService::RegisterReceiverEx(receiver, filter, broadcastPermission, scheduler, intent);
+    return InputMethodService::RegisterReceiver(receiver, filter, broadcastPermission, scheduler, intent);
 }
 
 ECode CPinyinIME::StopSelf()
@@ -2835,10 +2835,10 @@ ECode CPinyinIME::StopSelf()
     return InputMethodService::StopSelf();
 }
 
-ECode CPinyinIME::StopSelfEx(
+ECode CPinyinIME::StopSelf(
     /* [in] */ Int32 startId)
 {
-    return InputMethodService::StopSelfEx(startId);
+    return InputMethodService::StopSelf(startId);
 }
 
 ECode CPinyinIME::StopSelfResult(

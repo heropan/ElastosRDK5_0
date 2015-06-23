@@ -5,7 +5,7 @@
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
 #include "R.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

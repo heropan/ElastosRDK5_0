@@ -125,7 +125,7 @@ module
      */
     interface ISpec
     {
-        EqualsEx(
+        Equals(
             [in] ISpec* that,
             [out] Boolean* res);
 

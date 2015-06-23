@@ -267,7 +267,7 @@ ECode CExternalStorageFormatter::GetMountService(
     }
 
     *result = mMountService;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

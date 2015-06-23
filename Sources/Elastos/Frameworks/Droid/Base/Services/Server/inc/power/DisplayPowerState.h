@@ -5,10 +5,9 @@
 #include "Elastos.Droid.Server_server.h"
 #include "power/ElectronBeam.h"
 #include "LightsService.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::View::IChoreographer;

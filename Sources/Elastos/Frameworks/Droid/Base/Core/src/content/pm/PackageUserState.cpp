@@ -1,6 +1,6 @@
 
 #include "content/pm/PackageUserState.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

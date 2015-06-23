@@ -100,7 +100,7 @@ ECode AlphaAnimation::Init(
             const_cast<Int32 *>(R::styleable::AlphaAnimation),
             ARRAY_SIZE(R::styleable::AlphaAnimation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(
+    context->ObtainStyledAttributes(
         attrs, attrIds, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::AlphaAnimation_fromAlpha, 1.0f, &mFromAlpha);

@@ -11,7 +11,7 @@ module
         ToString(
             [out] String* result);
 
-        EqualsEx(
+        Equals(
             [in] ILinkAddress* obj,
             [out] Boolean* result);
 

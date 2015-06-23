@@ -1,6 +1,6 @@
 
 #include "graphics/CColorMatrix.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "ext/frameworkext.h"
 
 using namespace Elastos::Core;
@@ -46,7 +46,7 @@ ECode CColorMatrix::GetArray(
 {
     VALIDATE_NOT_NULL(array);
     *array = mArray;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 
@@ -70,7 +70,7 @@ ECode CColorMatrix::Set(
     return NOERROR;
 }
 
-ECode CColorMatrix::SetEx(
+ECode CColorMatrix::Set(
     /* [in] */ const ArrayOf<Float>& src)
 {
     mArray->Copy(0, &src, 0, 20);

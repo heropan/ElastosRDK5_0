@@ -71,10 +71,10 @@ ECode CPlugin::DefaultClickHandler::HandleClickEvent(
     CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&builder);
     AutoPtr<ICharSequence> name;
     CStringWrapper::New(mOwner->mName, (ICharSequence**)&name);
-    builder->SetTitleEx(name);
+    builder->SetTitle(name);
     AutoPtr<ICharSequence> description;
     CStringWrapper::New(mOwner->mDescription, (ICharSequence**)&description);
-    builder->SetMessageEx(description);
+    builder->SetMessage(description);
     builder->SetPositiveButton(R::string::ok, this);
     builder->SetCancelable(FALSE);
     return builder->Show((IAlertDialog**)&mDialog);

@@ -39,7 +39,7 @@ ECode CKeyframeHelper::OfInt32(
  * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
  * of time elapsed of the overall animation duration.
  */
-ECode CKeyframeHelper::OfInt32Ex(
+ECode CKeyframeHelper::OfInt32(
     /* [in] */ Float fraction,
     /* [out] */ IKeyframe** obj)
 {
@@ -80,7 +80,7 @@ ECode CKeyframeHelper::OfFloat(
  * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
  * of time elapsed of the overall animation duration.
  */
-ECode CKeyframeHelper::OfFloatEx(
+ECode CKeyframeHelper::OfFloat(
     /* [in] */ Float fraction,
     /* [out] */ IKeyframe** obj)
 {
@@ -121,7 +121,7 @@ ECode CKeyframeHelper::OfObject(
  * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
  * of time elapsed of the overall animation duration.
  */
-ECode CKeyframeHelper::OfObjectEx(
+ECode CKeyframeHelper::OfObject(
     /* [in] */ Float fraction,
     /* [out] */ IKeyframe** obj)
 {

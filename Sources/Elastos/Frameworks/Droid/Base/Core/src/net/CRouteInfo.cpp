@@ -2,7 +2,7 @@
 #include "net/CRouteInfo.h"
 #include "net/CLinkAddress.h"
 #include "net/NetworkUtils.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
@@ -140,10 +140,10 @@ ECode CRouteInfo::MakeHostRoute(
     /* [out] */ IRouteInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    return MakeHostRouteEx(host, NULL, info);
+    return MakeHostRoute(host, NULL, info);
 }
 
-ECode CRouteInfo::MakeHostRouteEx(
+ECode CRouteInfo::MakeHostRoute(
     /* [in] */ IInetAddress* host,
     /* [in] */ IInetAddress* gateway,
     /* [out] */ IRouteInfo** info)
@@ -172,7 +172,7 @@ ECode CRouteInfo::GetDestination(
 {
     VALIDATE_NOT_NULL(address);
     *address = mDestination;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -181,7 +181,7 @@ ECode CRouteInfo::GetGateway(
 {
     VALIDATE_NOT_NULL(address);
     *address = mGateway;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -286,11 +286,11 @@ ECode CRouteInfo::Equals(
     /* [out] */ Boolean* result )
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(IRouteInfo::Probe(obj), result);
+    return Equals(IRouteInfo::Probe(obj), result);
 }
 
 //@Override
-ECode CRouteInfo::EqualsEx(
+ECode CRouteInfo::Equals(
     /* [in] */ IRouteInfo* obj,
     /* [out] */ Boolean* result)
 {
@@ -424,7 +424,7 @@ ECode CRouteInfo::SelectBestRoute(
         }
     }
     *info = bestRoute;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

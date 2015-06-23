@@ -1,10 +1,10 @@
 
 #include "content/CSearchRecentSuggestionsProvider.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 //***#include "content/CUriMatcher.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -178,7 +178,7 @@ ECode CSearchRecentSuggestionsProvider::Query(
             suggestSelection = mSuggestSuggestionClause;
         }
         // Suggestions are always performed with the default sort order
-        FAIL_RETURN(db->QueryEx3(sSuggestions, mSuggestionProjection, suggestSelection, myArgs,
+        FAIL_RETURN(db->Query(sSuggestions, mSuggestionProjection, suggestSelection, myArgs,
             String(NULL), String(NULL), ORDER_BY, String(NULL), cursor))
         FAIL_RETURN((*cursor)->SetNotificationUri(contentResolver, uri))
         return NOERROR;
@@ -225,13 +225,13 @@ ECode CSearchRecentSuggestionsProvider::Query(
 
     // And perform the generic query as requested
     String nullStr;
-    FAIL_RETURN(db->QueryEx3(base, useProjection, whereClause.ToString(),
+    FAIL_RETURN(db->Query(base, useProjection, whereClause.ToString(),
         selectionArgs, nullStr, nullStr, sortOrder, nullStr, cursor))
     FAIL_RETURN((*cursor)->SetNotificationUri(contentResolver, uri))
     return NOERROR;
 }
 
-ECode CSearchRecentSuggestionsProvider::QueryEx(
+ECode CSearchRecentSuggestionsProvider::Query(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String& selection,
@@ -240,7 +240,7 @@ ECode CSearchRecentSuggestionsProvider::QueryEx(
     /* [in] */ ICancellationSignal* cancellationSignal,
     /* [out] */ ICursor** cursor)
 {
-    return ContentProvider::QueryEx(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal, cursor);
+    return ContentProvider::Query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal, cursor);
 }
 
 ECode CSearchRecentSuggestionsProvider::GetType(

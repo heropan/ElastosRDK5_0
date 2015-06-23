@@ -5,7 +5,7 @@
 #include "app/Activity.h"
 #include "CGeckoSurfaceView.h"
 #include <Elastos.Core.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elautoptr.h>
 #include "CGeckoSmsManager.h"
 

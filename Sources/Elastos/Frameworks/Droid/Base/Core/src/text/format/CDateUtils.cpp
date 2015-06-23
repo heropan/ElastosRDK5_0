@@ -28,7 +28,7 @@ ECode CDateUtils::FormatDateRange(
     return NOERROR;
 }
 
-ECode CDateUtils::FormatDateRangeEx(
+ECode CDateUtils::FormatDateRange(
     /* [in] */ IContext* context,
     /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
     /* [in] */ Int64 startMillis,
@@ -39,11 +39,11 @@ ECode CDateUtils::FormatDateRangeEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IInterface> formatterRet = DateUtils::FormatDateRange(context, formatter, startMillis, endMillis, flags);
     *ret = formatterRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDateUtils::FormatDateRangeEx2(
+ECode CDateUtils::FormatDateRange(
     /* [in] */ IContext* context,
     /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
     /* [in] */ Int64 startMillis,
@@ -55,7 +55,7 @@ ECode CDateUtils::FormatDateRangeEx2(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IInterface> formatterRet = DateUtils::FormatDateRange(context, formatter, startMillis, endMillis, flags, timeZone);
     *ret = formatterRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CDateUtils::FormatDuration(
     VALIDATE_NOT_NULL(rst);
     AutoPtr<ICharSequence> temp = DateUtils::FormatDuration(millis);
     *rst = temp;
-    INTERFACE_ADDREF(*rst);
+    REFCOUNT_ADD(*rst);
     return NOERROR;
 }
 
@@ -90,7 +90,7 @@ ECode CDateUtils::FormatElapsedTime(
     return NOERROR;
 }
 
-ECode CDateUtils::FormatElapsedTimeEx(
+ECode CDateUtils::FormatElapsedTime(
     /* [in] */ const String& recycle,
     /* [in] */ Int64 elapsedSeconds,
     /* [out] */ String* ret)
@@ -110,7 +110,7 @@ ECode CDateUtils::FormatSameDayTime(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::FormatSameDayTime(then, now, dateStyle, timeStyle);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -154,7 +154,7 @@ ECode CDateUtils::GetRelativeDateTimeString(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeDateTimeString(c, time, minResolution, transitionResolution, flags);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -165,11 +165,11 @@ ECode CDateUtils::GetRelativeTimeSpanString(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeTimeSpanString(startTime);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDateUtils::GetRelativeTimeSpanStringEx(
+ECode CDateUtils::GetRelativeTimeSpanString(
     /* [in] */ Int64 time,
     /* [in] */ Int64 now,
     /* [in] */ Int64 minResolution,
@@ -178,11 +178,11 @@ ECode CDateUtils::GetRelativeTimeSpanStringEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeTimeSpanString(time, now, minResolution);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDateUtils::GetRelativeTimeSpanStringEx2(
+ECode CDateUtils::GetRelativeTimeSpanString(
     /* [in] */ Int64 time,
     /* [in] */ Int64 now,
     /* [in] */ Int64 minResolution,
@@ -192,11 +192,11 @@ ECode CDateUtils::GetRelativeTimeSpanStringEx2(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeTimeSpanString(time, now, minResolution, flags);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDateUtils::GetRelativeTimeSpanStringEx3(
+ECode CDateUtils::GetRelativeTimeSpanString(
     /* [in] */ IContext* c,
     /* [in] */ Int64 millis,
     /* [in] */ Boolean withPreposition,
@@ -205,11 +205,11 @@ ECode CDateUtils::GetRelativeTimeSpanStringEx3(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeTimeSpanString(c, millis, withPreposition);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CDateUtils::GetRelativeTimeSpanStringEx4(
+ECode CDateUtils::GetRelativeTimeSpanString(
     /* [in] */ IContext* c,
     /* [in] */ Int64 millis,
     /* [out] */ ICharSequence** ret)
@@ -217,7 +217,7 @@ ECode CDateUtils::GetRelativeTimeSpanStringEx4(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::GetRelativeTimeSpanString(c, millis);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode CDateUtils::GetSameMonthTable(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Int32> > sameMT = DateUtils::GetSameMonthTable();
     *ret = sameMT;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -237,7 +237,7 @@ ECode CDateUtils::GetSameYearTable(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Int32> > sameYT = DateUtils::GetSameYearTable();
     *ret = sameYT;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -276,7 +276,7 @@ ECode CDateUtils::NewCalendar(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICalendar> cRet = DateUtils::NewCalendar(zulu);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -287,7 +287,7 @@ ECode CDateUtils::TimeString(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cRet = DateUtils::TimeString(millis);
     *ret = cRet;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -300,7 +300,7 @@ ECode CDateUtils::WriteDateTime(
     return NOERROR;
 }
 
-ECode CDateUtils::WriteDateTimeEx(
+ECode CDateUtils::WriteDateTime(
     /* [in] */ ICalendar* cal,
     /* [in] */ Boolean zulu,
     /* [out] */ String* ret)
@@ -310,7 +310,7 @@ ECode CDateUtils::WriteDateTimeEx(
     return NOERROR;
 }
 
-ECode CDateUtils::WriteDateTimeEx2(
+ECode CDateUtils::WriteDateTime(
     /* [in] */ ICalendar* cal,
     /* [in,out] */ String* sb,
     /* [out] */ String* ret)

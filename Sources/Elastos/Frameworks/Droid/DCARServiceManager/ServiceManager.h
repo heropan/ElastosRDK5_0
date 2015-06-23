@@ -7,12 +7,11 @@
 #endif
 
 #include <elastos.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using namespace Elastos;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 
 class ServiceManager : public ElLightRefBase
 {

@@ -73,7 +73,7 @@ ECode CMultiAutoCompleteTextView::SetSelection(
     return MultiAutoCompleteTextView::SetSelection(start, stop);
 }
 
-ECode CMultiAutoCompleteTextView::SetSelectionEx(
+ECode CMultiAutoCompleteTextView::SetSelection(
     /* [in] */ Int32 index)
 {
     return MultiAutoCompleteTextView::SetSelection(index);

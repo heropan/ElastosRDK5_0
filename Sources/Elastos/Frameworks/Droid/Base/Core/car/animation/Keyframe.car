@@ -145,7 +145,7 @@ module
          * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
          * of time elapsed of the overall animation duration.
          */
-        OfInt32Ex(
+        OfInt32(
             [in] Float fraction,
             [out] IKeyframe** obj);
 
@@ -180,7 +180,7 @@ module
          * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
          * of time elapsed of the overall animation duration.
          */
-        OfFloatEx(
+        OfFloat(
             [in] Float fraction,
             [out] IKeyframe** obj);
 
@@ -215,7 +215,7 @@ module
          * @param fraction The time, expressed as a value between 0 and 1, representing the fraction
          * of time elapsed of the overall animation duration.
          */
-        OfObjectEx(
+        OfObject(
             [in] Float fraction,
             [out] IKeyframe** obj);
     }

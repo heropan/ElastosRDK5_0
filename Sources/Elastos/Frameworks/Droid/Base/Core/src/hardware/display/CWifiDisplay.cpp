@@ -1,8 +1,8 @@
 
 #include "hardware/display/CWifiDisplay.h"
 #include "ext/frameworkext.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
@@ -99,7 +99,7 @@ ECode CWifiDisplay::GetFriendlyDisplayName(
 //     return o instanceof WifiDisplay && equals((WifiDisplay)o);
 // }
 
-ECode CWifiDisplay::EqualsEx(
+ECode CWifiDisplay::Equals(
     /* [in] */ IWifiDisplay* other,
     /* [out] */ Boolean* res)
 {
@@ -125,7 +125,7 @@ ECode CWifiDisplay::Equals(
 {
     VALIDATE_NOT_NULL(res);
     *res = FALSE;
-    return EqualsEx(IWifiDisplay::Probe(other), res);
+    return Equals(IWifiDisplay::Probe(other), res);
 }
 
 ECode CWifiDisplay::GetHashCode(

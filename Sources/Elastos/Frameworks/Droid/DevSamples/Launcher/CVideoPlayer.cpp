@@ -1,7 +1,7 @@
 
 #include "CVideoPlayer.h"
 #include "ext/frameworkext.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <stdio.h>
 
 using Elastos::Net::IURL;

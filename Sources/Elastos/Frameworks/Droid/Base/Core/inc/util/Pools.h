@@ -7,9 +7,6 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

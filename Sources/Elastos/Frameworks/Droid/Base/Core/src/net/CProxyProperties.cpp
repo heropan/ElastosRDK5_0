@@ -4,7 +4,7 @@
 #include "net/NetworkUtils.h"
 #include "text/TextUtils.h"
 #include "net/Uri.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Net::Uri;
@@ -54,7 +54,7 @@ ECode CProxyProperties::GetSocketAddress(
     AutoPtr<IInetSocketAddress> inetSocketAddress;
     CInetSocketAddress::New(mHost, mPort, (IInetSocketAddress**)&inetSocketAddress);
     *address = inetSocketAddress;
-    INTERFACE_ADDREF(*address);
+    REFCOUNT_ADD(*address);
     return NOERROR;
 }
 
@@ -166,7 +166,7 @@ ECode CProxyProperties::MakeProxy(
         Elastos::Net::CProxy::New(Elastos::Net::ProxyType_HTTP,inetSocketAddress, (Elastos::Net::IProxy**)&proxyTemp);
     }
     *proxy = proxyTemp;
-    INTERFACE_ADDREF(*proxy);
+    REFCOUNT_ADD(*proxy);
     return NOERROR;
 }
 //@Override
@@ -201,11 +201,11 @@ ECode CProxyProperties::Equals(
     /* [out] */ Boolean* result )
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(IProxyProperties::Probe(obj), result);
+    return Equals(IProxyProperties::Probe(obj), result);
 }
 
 //@Override
-ECode CProxyProperties::EqualsEx(
+ECode CProxyProperties::Equals(
     /* [in] */ IProxyProperties* o,
     /* [out] */ Boolean* result)
 {

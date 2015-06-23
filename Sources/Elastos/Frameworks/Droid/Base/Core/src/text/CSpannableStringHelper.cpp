@@ -11,7 +11,7 @@ ECode CSpannableStringHelper::ValueOf(
 {
     AutoPtr<ISpannableString> span = CSpannableString::ValueOf(source);
     *spannedString = span;
-    INTERFACE_ADDREF(*spannedString);
+    REFCOUNT_ADD(*spannedString);
     return NOERROR;
 }
 

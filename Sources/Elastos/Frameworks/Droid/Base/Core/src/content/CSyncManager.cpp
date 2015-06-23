@@ -11,7 +11,7 @@
 //***#include "os/CBundle.h"
 //***#include "os/CApartment.h"
 #include "util/CPair.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 #include "app/CActivityManager.h"
 
 using Elastos::Droid::App::CActivityManager;
@@ -165,7 +165,7 @@ ECode CSyncManager::ActiveSyncContext::OnServiceConnected(
 {
     AutoPtr<ServiceConnectionData> connData = new ServiceConnectionData(this, mSyncAdapter.Get());
     AutoPtr<IMessage> msg;
-    mSyncMgr->mSyncHandler->ObtainMessageEx(
+    mSyncMgr->mSyncHandler->ObtainMessage(
         CSyncManager::SyncHandler::MESSAGE_SERVICE_CONNECTED,
         connData, (IMessage**)&msg);
     Boolean result;
@@ -177,7 +177,7 @@ ECode CSyncManager::ActiveSyncContext::OnServiceDisconnected(
 {
     AutoPtr<ServiceConnectionData> connData = new ServiceConnectionData(this, NULL);
     AutoPtr<IMessage> msg;
-    mSyncMgr->mSyncHandler->ObtainMessageEx(
+    mSyncMgr->mSyncHandler->ObtainMessage(
         CSyncManager::SyncHandler::MESSAGE_SERVICE_DISCONNECTED,
         connData.Get(), (IMessage**)&msg);
     Boolean result;
@@ -217,7 +217,7 @@ ECode CSyncManager::ActiveSyncContext::BindToSyncAdapter(
     AutoPtr<IServiceConnection> serviceConn = (IServiceConnection*) this->Probe(EIID_IServiceConnection);
     Int32 id = 0;
     FAIL_RETURN(mSyncOperation->GetUserId(&id))
-    FAIL_RETURN(mSyncMgr->mContext->BindServiceEx(intent, serviceConn, IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND
+    FAIL_RETURN(mSyncMgr->mContext->BindService(intent, serviceConn, IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND
             | IContext::BIND_ALLOW_OOM_MANAGEMENT, id, &bindResult))
     if (!bindResult) {
         mBound = FALSE;
@@ -543,7 +543,7 @@ ECode CSyncManager::SyncHandler::GetSyncWakeLock(
     FAIL_RETURN(CPair::New(account, authObj, (IPair**)&wakeLockKey))
     HashMap<AutoPtr<IPair>, AutoPtr<IPowerManagerWakeLock> >::Iterator it = mWakeLocks.Find(wakeLockKey);
     *wakeLock = it->mSecond;
-    INTERFACE_ADDREF(*wakeLock);
+    REFCOUNT_ADD(*wakeLock);
 
     if (NULL == *wakeLock) {
         String name(CSyncManager::SYNC_WAKE_LOCK_PREFIX);
@@ -882,7 +882,7 @@ ECode CSyncManager::SyncHandler::MaybeStartNextSyncLocked(
             // disconnected for the target UID.
             AutoPtr<IBundle> extras;
             FAIL_RETURN(op->GetExtras((IBundle**)&extras))
-            FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &ret))
+            FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &ret))
             Boolean ret2 = FALSE;
             Boolean ret3 = FALSE;
 
@@ -1465,7 +1465,7 @@ ECode CSyncManager::SyncHandler::ManageSyncNotificationLocked()
                     AutoPtr<IBundle> extras;
                     FAIL_RETURN(activeSyncContext->mSyncOperation->GetExtras((IBundle**)&extras))
                     Boolean manualSync = FALSE;
-                    FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &manualSync))
+                    FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &manualSync))
                     if (manualSync) {
                         shouldInstall = TRUE;
                         break;
@@ -2105,7 +2105,7 @@ ECode CSyncManager::GetSyncStorageEngine(
 {
     VALIDATE_NOT_NULL(engine)
     *engine = mSyncStorageEngine;
-    INTERFACE_ADDREF(*engine);
+    REFCOUNT_ADD(*engine);
     return NOERROR;
 }
 
@@ -2129,7 +2129,7 @@ ECode CSyncManager::ScheduleSync(
     }
 
     Boolean expedited = FALSE;
-    FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &expedited))
+    FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &expedited))
     if (expedited) {
         delay = -1; // this means schedule at the front of the queue
     }
@@ -2154,15 +2154,15 @@ ECode CSyncManager::ScheduleSync(
     }
 
     Boolean uploadOnly = FALSE;
-    FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_UPLOAD, FALSE, &uploadOnly))
+    FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_UPLOAD, FALSE, &uploadOnly))
     Boolean manualSync = FALSE;
-    FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &manualSync))
+    FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &manualSync))
     if (manualSync) {
         FAIL_RETURN(extras->PutBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, TRUE))
         FAIL_RETURN(extras->PutBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, TRUE))
     }
     Boolean ignoreSettings = FALSE;
-    FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &ignoreSettings))
+    FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &ignoreSettings))
 
     Int32 source = 0;
     if (uploadOnly) {
@@ -2328,7 +2328,7 @@ ECode CSyncManager::GetSyncAdapterTypes(
         types->Set(i, type.Get());
     }
     *syncAdapterTypes = types;
-    INTERFACE_ADDREF(*syncAdapterTypes);
+    REFCOUNT_ADD(*syncAdapterTypes);
     return NOERROR;
 }
 
@@ -2368,7 +2368,7 @@ ECode CSyncManager::ClearScheduledSyncOperations(
     /* [in] */ const String& authority)
 {
     Mutex::Autolock lock(mSyncQueueLock);
-    FAIL_RETURN(mSyncQueue->RemoveEx(account, userId, authority))
+    FAIL_RETURN(mSyncQueue->Remove(account, userId, authority))
     FAIL_RETURN(mSyncStorageEngine->SetBackoff(account, userId, authority,
             ISyncStorageEngine::NOT_IN_BACKOFF_MODE, ISyncStorageEngine::NOT_IN_BACKOFF_MODE))
     return NOERROR;
@@ -2886,7 +2886,7 @@ ECode CSyncManager::GetAllUsers(
         }
 
         *allUsers = users;
-        INTERFACE_ADDREF(*allUsers);
+        REFCOUNT_ADD(*allUsers);
     }
 
     return NOERROR;
@@ -2918,7 +2918,7 @@ ECode CSyncManager::DoDatabaseCleanup()
 {
     AutoPtr<IObjectContainer> objContainer;
     AutoPtr<IObjectEnumerator> objEnumerator;
-    FAIL_RETURN(mUserManager->GetUsersEx(TRUE, (IObjectContainer**)&objContainer))
+    FAIL_RETURN(mUserManager->GetUsers(TRUE, (IObjectContainer**)&objContainer))
 
     if (NULL != objContainer) {
         FAIL_RETURN(objContainer->GetObjectEnumerator((IObjectEnumerator**)&objEnumerator))
@@ -2970,7 +2970,7 @@ ECode CSyncManager::GetConnectivityManager(
     }
 
     *connManager = mConnManagerDoNotUseDirectly;
-    INTERFACE_ADDREF(*connManager);
+    REFCOUNT_ADD(*connManager);
     return NOERROR;
 }
 
@@ -3025,7 +3025,7 @@ ECode CSyncManager::SendSyncFinishedOrCanceledMessage(
 //***    if (Logger::IsLoggable(TAG, Logger::VERBOSE)) Logger::V(TAG, String("sending MESSAGE_SYNC_FINISHED"));
     AutoPtr<SyncHandlerMessagePayload> msgPayload = new SyncHandlerMessagePayload(syncContext, syncResult);
     AutoPtr<IMessage> msg;
-    mSyncHandler->ObtainMessageEx(SyncHandler::MESSAGE_SYNC_FINISHED,
+    mSyncHandler->ObtainMessage(SyncHandler::MESSAGE_SYNC_FINISHED,
         msgPayload.Get(), (IMessage**)&msg);
     Boolean result;
     return mSyncHandler->SendMessage(msg, &result);
@@ -3043,7 +3043,7 @@ ECode CSyncManager::SendCancelSyncsMessage(
     FAIL_RETURN(CPair::New(account, authCS, (IPair**)&pair))
 
     AutoPtr<IMessage> msg;
-    mSyncHandler->ObtainMessageEx3(SyncHandler::MESSAGE_CANCEL,
+    mSyncHandler->ObtainMessage(SyncHandler::MESSAGE_CANCEL,
         userId, 0, pair, (IMessage**)&msg);
     Boolean result;
     return mSyncHandler->SendMessage(msg, &result);
@@ -3785,7 +3785,7 @@ ECode CSyncManager::MaybeRescheduleSync(
     // The SYNC_EXTRAS_IGNORE_BACKOFF only applies to the first attempt to sync a given
     // request. Retries of the request will always honor the backoff, so clear the
     // flag in case we retry this request.
-    FAIL_RETURN(extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &ret))
+    FAIL_RETURN(extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &ret))
     if (ret) {
         FAIL_RETURN(extras->Remove(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF))
     }
@@ -3796,11 +3796,11 @@ ECode CSyncManager::MaybeRescheduleSync(
     // If this was a two-way sync then retry soft errors with an exponential backoff.
     // If this was an upward sync then schedule a two-way sync immediately.
     // Otherwise do not reschedule.
-    if ((extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &ret), ret)) {
+    if ((extras->GetBoolean(IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY, FALSE, &ret), ret)) {
 //        Log.d(TAG, "not retrying sync operation because SYNC_EXTRAS_DO_NOT_RETRY was specified "
 //                + newOperation);
     }
-    else if ((extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_UPLOAD, FALSE, &ret), ret)
+    else if ((extras->GetBoolean(IContentResolver::SYNC_EXTRAS_UPLOAD, FALSE, &ret), ret)
             && !(syncResult->GetSyncAlreadyInProgress(&syncAlreadyInProgress), syncAlreadyInProgress)) {
         FAIL_RETURN(extras->Remove(IContentResolver::SYNC_EXTRAS_UPLOAD))
 //        Log.d(TAG, "retrying sync operation as a two-way sync because an upload-only sync "

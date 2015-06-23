@@ -11,7 +11,7 @@ ECode CAccessibilityManagerClient::SetState(
     /* [in] */ Int32 stateFlags)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx2(
+    mHost->mHandler->ObtainMessage(
         CAccessibilityManager::DO_SET_STATE, stateFlags, 0, (IMessage**)&msg);
     Boolean result;
     return mHost->mHandler->SendMessage(msg, &result);

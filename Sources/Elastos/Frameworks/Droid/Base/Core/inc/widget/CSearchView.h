@@ -3,9 +3,9 @@
 
 #include "_CSearchView.h"
 #include "widget/SearchView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{

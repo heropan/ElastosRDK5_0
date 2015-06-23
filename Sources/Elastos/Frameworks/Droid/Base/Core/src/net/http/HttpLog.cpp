@@ -1,11 +1,10 @@
 
 #include "HttpLog.h"
 // #include <SystemClock.h>
-#include <elastos/Logger.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Thread.h>
 
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 using namespace Elastos::Utility::Logging;
 
 

@@ -6,8 +6,8 @@
 #include "net/CUriHelper.h"
 #include "net/Uri.h"
 #include "content/CContentValues.h"
-#include "cmdef.h"
-#include <elastos/StringUtils.h>
+#include <elastos/coredef.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -74,7 +74,7 @@ ECode CCalls::GetCONTENTURI(
     VALIDATE_NOT_NULL(uri);
 
     *uri = CONTENT_URI;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -84,7 +84,7 @@ ECode CCalls::GetCONTENTFILTERURI(
     VALIDATE_NOT_NULL(uri);
 
     *uri = CONTENT_FILTER_URI;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ ECode CCalls::GetCONTENTURIWITHVOICEMAIL(
     VALIDATE_NOT_NULL(uri);
 
     *uri = CONTENT_URI_WITH_VOICEMAIL;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -259,7 +259,7 @@ EXIT:
     FAIL_RETURN(resolver->Insert(CONTENT_URI, values, (IUri**)&result))
     FAIL_RETURN(RemoveExpiredEntries(context))
     *uri = result;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 

@@ -1,5 +1,5 @@
 #include "ext/frameworkext.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 #include "CMatrixIdenty.h"
 #include "Graphics.h"
 
@@ -7,8 +7,8 @@
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
-    
-    void CMatrixIdenty::Oops() 
+
+    void CMatrixIdenty::Oops()
     {
         //throw new IllegalStateException("Matrix can not be modified");
     }
@@ -29,7 +29,7 @@ namespace Graphics {
     //@Override
     CMatrixIdenty::SetTranslate(
         /* [in] */ Float dx,
-        /* [in] */ Float dy) 
+        /* [in] */ Float dy)
     {
         Oops();
     }
@@ -45,7 +45,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::SetScaleEx(
+    CMatrixIdenty::SetScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy)
     {
@@ -62,7 +62,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::SetRotateEx(
+    CMatrixIdenty::SetRotate(
         /* [in] */ Float degrees)
     {
         Oops();
@@ -79,7 +79,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::SetSinCosEx(
+    CMatrixIdenty::SetSinCos(
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue)
     {
@@ -97,7 +97,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::SetSkewEx(
+    CMatrixIdenty::SetSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky)
     {
@@ -135,7 +135,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::PreScaleEx(
+    CMatrixIdenty::PreScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result
@@ -154,7 +154,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::PreRotateEx(
+    CMatrixIdenty::PreRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result)
     {
@@ -173,7 +173,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::PreSkewEx(
+    CMatrixIdenty::PreSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result)
@@ -195,7 +195,7 @@ namespace Graphics {
     CMatrixIdenty::PostTranslate(
         /* [in] */ Float dx,
         /* [in] */ Float dy,
-        /* [out] */ Boolean* result) 
+        /* [out] */ Boolean* result)
     {
         Oops();
     }
@@ -212,7 +212,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::PostScaleEx(
+    CMatrixIdenty::PostScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result)
@@ -231,7 +231,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::PostRotateEx(
+    CMatrixIdenty::PostRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result)
     {
@@ -250,7 +250,7 @@ namespace Graphics {
     }
 
     //@Override
-    CMatrixIdenty::PostSkewEx(
+    CMatrixIdenty::PostSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result)

@@ -66,7 +66,7 @@ public:
         /* [in] */ Int32 column,
         /* [out] */ Int64* result);
 
-    CARAPI SetNotificationUriEx(
+    CARAPI SetNotificationUri(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* notifyUri,
         /* [in] */ Int32 userHandle);

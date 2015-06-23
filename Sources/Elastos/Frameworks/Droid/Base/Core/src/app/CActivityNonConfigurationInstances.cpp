@@ -37,7 +37,7 @@ ECode CActivityNonConfigurationInstances::GetActivity(
 {
     VALIDATE_NOT_NULL(activity);
     *activity = mActivity;
-    INTERFACE_ADDREF(*activity);
+    REFCOUNT_ADD(*activity);
     return NOERROR;
 }
 
@@ -53,7 +53,7 @@ ECode CActivityNonConfigurationInstances::GetChildren(
 {
     VALIDATE_NOT_NULL(children);
     *children = mChildren;
-    INTERFACE_ADDREF(*children);
+    REFCOUNT_ADD(*children);
     return NOERROR;
 }
 
@@ -69,7 +69,7 @@ ECode CActivityNonConfigurationInstances::GetFragments(
 {
     VALIDATE_NOT_NULL(fragments);
     *fragments = mFragments;
-    INTERFACE_ADDREF(*fragments);
+    REFCOUNT_ADD(*fragments);
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode CActivityNonConfigurationInstances::GetLoaders(
 {
     VALIDATE_NOT_NULL(loaders);
     *loaders = mLoaders;
-    INTERFACE_ADDREF(*loaders);
+    REFCOUNT_ADD(*loaders);
     return NOERROR;
 }
 

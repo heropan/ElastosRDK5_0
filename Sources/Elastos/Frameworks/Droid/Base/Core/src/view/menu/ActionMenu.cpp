@@ -35,17 +35,17 @@ ECode ActionMenu::Add(
     /* [in] */ ICharSequence* title,
     /* [out] */ IMenuItem** item)
 {
-    return AddEx2(0, 0, 0, title, item);
+    return Add(0, 0, 0, title, item);
 }
 
-ECode ActionMenu::AddEx(
+ECode ActionMenu::Add(
     /* [in] */ Int32 titleRes,
     /* [out] */ IMenuItem** item)
 {
-    return AddEx3(0, 0, 0, titleRes, item);
+    return Add(0, 0, 0, titleRes, item);
 }
 
-ECode ActionMenu::AddEx3(
+ECode ActionMenu::Add(
     /* [in] */ Int32 groupId,
     /* [in] */ Int32 itemId,
     /* [in] */ Int32 order,
@@ -61,10 +61,10 @@ ECode ActionMenu::AddEx3(
 
     AutoPtr<ICharSequence> title;
     CStringWrapper::New(str, (ICharSequence**)&title);
-    return AddEx2(groupId, itemId, order, title, item);
+    return Add(groupId, itemId, order, title, item);
 }
 
-ECode ActionMenu::AddEx2(
+ECode ActionMenu::Add(
     /* [in] */ Int32 groupId,
     /* [in] */ Int32 itemId,
     /* [in] */ Int32 order,
@@ -75,7 +75,7 @@ ECode ActionMenu::AddEx2(
     AutoPtr<IActionMenuItem> res;
     CActionMenuItem::New(GetContext(), groupId, itemId, 0, order, title, (IActionMenuItem**)&res);
     *item = IMenuItem::Probe(res);
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     mItems.Insert(order, (IActionMenuItem*)*item);
 
     return NOERROR;
@@ -141,7 +141,7 @@ ECode ActionMenu::AddIntentOptions(
         AutoPtr<IMenuItem> item;
         AutoPtr<ICharSequence> label;
         ri->LoadLabel(pm, (ICharSequence**)&label);
-        AddEx2(groupId, itemId, order, label, (IMenuItem**)&item);
+        Add(groupId, itemId, order, label, (IMenuItem**)&item);
 
         AutoPtr<IDrawable> icon;
         ri->LoadIcon(pm, (IDrawable**)&icon);
@@ -166,7 +166,7 @@ ECode ActionMenu::AddSubMenu(
     return NOERROR;
 }
 
-ECode ActionMenu::AddSubMenuEx(
+ECode ActionMenu::AddSubMenu(
     /* [in] */ Int32 titleRes,
     /* [out] */ ISubMenu** menu)
 {
@@ -176,7 +176,7 @@ ECode ActionMenu::AddSubMenuEx(
     return NOERROR;
 }
 
-ECode ActionMenu::AddSubMenuEx2(
+ECode ActionMenu::AddSubMenu(
     /* [in] */ Int32 groupId,
     /* [in] */ Int32 itemId,
     /* [in] */ Int32 order,
@@ -189,7 +189,7 @@ ECode ActionMenu::AddSubMenuEx2(
     return NOERROR;
 }
 
-ECode ActionMenu::AddSubMenuEx3(
+ECode ActionMenu::AddSubMenu(
     /* [in] */ Int32 groupId,
     /* [in] */ Int32 itemId,
     /* [in] */ Int32 order,
@@ -237,7 +237,7 @@ ECode ActionMenu::FindItem(
 {
     assert(item != NULL);
     *item = mItems[FindItemIndex(id)];
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
 
     return NOERROR;
 }
@@ -248,7 +248,7 @@ ECode ActionMenu::GetItem(
 {
     assert(item != NULL);
     *item = mItems[index];
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
 
     return NOERROR;
 }

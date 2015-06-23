@@ -14,11 +14,11 @@
 #include "_CMusicService.h"
 #include <app/Service.h>
 #include <ext/frameworkdef.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Utility::HashMap;
+using Elastos::Core::IThread;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnCompletionListener;

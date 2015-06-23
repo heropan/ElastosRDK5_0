@@ -3,10 +3,9 @@
 #define __ACTIVITYRECORD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/StringBuilder.h>
 #include "os/SystemClock.h"
 #include "am/ActivityResult.h"
 #include "am/ActivityState.h"
@@ -19,10 +18,10 @@
 #include "am/UriPermissionOwner.h"
 
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IBinder;

@@ -1,8 +1,8 @@
 #include <ext/frameworkdef.h>
 #include "os/CBundle.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
 #include <binder/Parcel.h>
 
 using android::Parcel;
@@ -736,7 +736,7 @@ ECode CBundle::GetClassLoader(
 {
     VALIDATE_NOT_NULL(loader);
     *loader = mClassLoader;
-    INTERFACE_ADDREF(*loader);
+    REFCOUNT_ADD(*loader);
     return NOERROR;
 }
 
@@ -748,7 +748,7 @@ ECode CBundle::SetAllowFds(
     return NOERROR;
 }
 
-ECode CBundle::SetAllowFdsEx(
+ECode CBundle::SetAllowFds(
     /* [in] */ Boolean allowFds,
     /* [out] */ Boolean* prev)
 {
@@ -847,7 +847,7 @@ ECode CBundle::Get(
     HashMap<String, AutoPtr<IInterface> >::Iterator it = mMap->Find(key);
     if (it != mMap->End()) {
         *value = it->mSecond;
-        INTERFACE_ADDREF(*value)
+        REFCOUNT_ADD(*value)
     }
     return NOERROR;
 }
@@ -1465,10 +1465,10 @@ ECode CBundle::GetBoolean(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetBooleanEx(key, FALSE, value);
+    return GetBoolean(key, FALSE, value);
 }
 
-ECode CBundle::GetBooleanEx(
+ECode CBundle::GetBoolean(
     /* [in] */ const String& key,
     /* [in] */ Boolean defaultValue,
     /* [out] */ Boolean* value)
@@ -1503,10 +1503,10 @@ ECode CBundle::GetByte(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetByteEx(key, 0, value);
+    return GetByte(key, 0, value);
 }
 
-ECode CBundle::GetByteEx(
+ECode CBundle::GetByte(
     /* [in] */ const String& key,
     /* [in] */ Byte defaultValue,
     /* [out] */ Byte* value)
@@ -1541,10 +1541,10 @@ ECode CBundle::GetChar(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetCharEx(key, 0, value);
+    return GetChar(key, 0, value);
 }
 
-ECode CBundle::GetCharEx(
+ECode CBundle::GetChar(
     /* [in] */ const String& key,
     /* [in] */ Char32 defaultValue,
     /* [out] */ Char32* value)
@@ -1579,10 +1579,10 @@ ECode CBundle::GetInt16(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetInt16Ex(key, 0, value);
+    return GetInt16(key, 0, value);
 }
 
-ECode CBundle::GetInt16Ex(
+ECode CBundle::GetInt16(
     /* [in] */ const String& key,
     /* [in] */ Int16 defaultValue,
     /* [out] */ Int16* value)
@@ -1617,10 +1617,10 @@ ECode CBundle::GetInt32(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetInt32Ex(key, 0, value);
+    return GetInt32(key, 0, value);
 }
 
-ECode CBundle::GetInt32Ex(
+ECode CBundle::GetInt32(
     /* [in] */ const String& key,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
@@ -1655,10 +1655,10 @@ ECode CBundle::GetInt64(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetInt64Ex(key, 0ll, value);
+    return GetInt64(key, 0ll, value);
 }
 
-ECode CBundle::GetInt64Ex(
+ECode CBundle::GetInt64(
     /* [in] */ const String& key,
     /* [in] */ Int64 defaultValue,
     /* [out] */ Int64* value)
@@ -1693,10 +1693,10 @@ ECode CBundle::GetFloat(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetFloatEx(key, 0.0f, value);
+    return GetFloat(key, 0.0f, value);
 }
 
-ECode CBundle::GetFloatEx(
+ECode CBundle::GetFloat(
     /* [in] */ const String& key,
     /* [in] */ Float defaultValue,
     /* [out] */ Float* value)
@@ -1732,10 +1732,10 @@ ECode CBundle::GetDouble(
     VALIDATE_STRING_NOT_NULL(key);
 
     Unparcel();
-    return GetDoubleEx(key, 0.0, value);
+    return GetDouble(key, 0.0, value);
 }
 
-ECode CBundle::GetDoubleEx(
+ECode CBundle::GetDouble(
     /* [in] */ const String& key,
     /* [in] */ Double defaultValue,
     /* [out] */ Double* value)
@@ -1788,7 +1788,7 @@ ECode CBundle::GetString(
     // }
 }
 
-ECode CBundle::GetStringEx(
+ECode CBundle::GetString(
     /* [in] */ const String& key,
     /* [in] */ const String& defaultValue,
     /* [out] */ String* value)
@@ -1835,7 +1835,7 @@ ECode CBundle::GetCharSequence(
         TypeWarning(key, it->mSecond, String("ICharSequence"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "CharSequence", defaultValue, e);
@@ -1862,7 +1862,7 @@ ECode CBundle::GetBundle(
         TypeWarning(key, it->mSecond, String("IBundle"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "Bundle", defaultValue, e);
@@ -1889,7 +1889,7 @@ ECode CBundle::GetParcelable(
         TypeWarning(key, it->mSecond, String("IParcelable"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "Parcelable", defaultValue, e);
@@ -1916,7 +1916,7 @@ ECode CBundle::GetObjectStringMap(
         TypeWarning(key, it->mSecond, String("IObjectStringMap"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "ObjectStringMap", defaultValue, e);
@@ -1961,7 +1961,7 @@ ECode CBundle::GetParcelableArray(
         }
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "Parcelable[]", defaultValue, e);
@@ -1989,7 +1989,7 @@ ECode CBundle::GetParcelableArrayList(
         TypeWarning(key, it->mSecond, String("IObjectContainer"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "ArrayList", defaultValue, e);
@@ -2016,7 +2016,7 @@ ECode CBundle::GetSparseParcelableArray(
         TypeWarning(key, it->mSecond, String("IObjectInt32Map"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -2036,7 +2036,7 @@ ECode CBundle::GetParcelableMap(
     }
 
     *parcelableMap = it->mSecond;
-    INTERFACE_ADDREF(*parcelableMap);
+    REFCOUNT_ADD(*parcelableMap);
     return NOERROR;
     // try {
     //     return (SparseArray<T>) value;
@@ -2074,7 +2074,7 @@ ECode CBundle::GetIntegerArrayList(
         TypeWarning(key, it->mSecond, String("IObjectContainer"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "ArrayList<Integer>", defaultValue, e);
@@ -2102,7 +2102,7 @@ ECode CBundle::GetStringArrayList(
         TypeWarning(key, it->mSecond, String("IObjectContainer"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "ArrayList<String>", defaultValue, e);
@@ -2131,7 +2131,7 @@ ECode CBundle::GetCharSequenceArrayList(
         TypeWarning(key, it->mSecond, String("IObjectContainer"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "ArrayList<CharSequence>", defaultValue, e);
@@ -2178,7 +2178,7 @@ ECode CBundle::GetBooleanArray(
         (*array)[i] = bv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "boolean[]", defaultValue, e);
@@ -2224,7 +2224,7 @@ ECode CBundle::GetByteArray(
         (*array)[i] = bv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "byte[]", defaultValue, e);
@@ -2270,7 +2270,7 @@ ECode CBundle::GetInt16Array(
         (*array)[i] = iv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "short[]", defaultValue, e);
@@ -2315,7 +2315,7 @@ ECode CBundle::GetCharArray(
         (*array)[i] = cv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "char[]", defaultValue, e);
@@ -2360,7 +2360,7 @@ ECode CBundle::GetInt32Array(
         (*array)[i] = iv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "int[]", defaultValue, e);
@@ -2405,7 +2405,7 @@ ECode CBundle::GetInt64Array(
         (*array)[i] = iv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "long[]", defaultValue, e);
@@ -2450,7 +2450,7 @@ ECode CBundle::GetFloatArray(
         (*array)[i] = fv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "float[]", defaultValue, e);
@@ -2495,7 +2495,7 @@ ECode CBundle::GetDoubleArray(
         (*array)[i] = dv;
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "double[]", defaultValue, e);
@@ -2540,7 +2540,7 @@ ECode CBundle::GetStringArray(
         array->Set(i, sv);
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "String[]", defaultValue, e);
@@ -2585,7 +2585,7 @@ ECode CBundle::GetCharSequenceArray(
         }
     }
     *value = array;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "CharSequence[]", defaultValue, e);
@@ -2612,7 +2612,7 @@ ECode CBundle::GetIBinder(
         TypeWarning(key, it->mSecond, String("IBinder"));
         return NOERROR;
     }
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
     // } catch (ClassCastException e) {
     //     typeWarning(key, o, "IBinder", defaultValue, e);

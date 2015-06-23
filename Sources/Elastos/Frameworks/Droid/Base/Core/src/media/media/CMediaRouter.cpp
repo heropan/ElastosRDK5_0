@@ -9,10 +9,10 @@
 #include "media/CAudioRoutesInfo.h"
 #include "media/CMediaRouteInfo.h"
 #include "content/CIntentFilter.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "text/TextUtils.h"
 #include "media/CUserRouteInfo.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "media/CRouteGroup.h"
 
 using Elastos::Core::EIID_IRunnable;
@@ -145,7 +145,7 @@ ECode CMediaRouter::Static::OnDisplayRemoved(
 AutoPtr< ArrayOf<IDisplay*> > CMediaRouter::Static::GetAllPresentationDisplays()
 {
     AutoPtr< ArrayOf<IDisplay*> > display;
-    mDisplayService->GetDisplaysEx(IDisplayManager::DISPLAY_CATEGORY_PRESENTATION,
+    mDisplayService->GetDisplays(IDisplayManager::DISPLAY_CATEGORY_PRESENTATION,
         (ArrayOf<IDisplay*>**)&display);
     return display;
 }
@@ -155,7 +155,7 @@ void CMediaRouter::Static::StartMonitoringRoutes(
 {
     CMediaRouteInfo::New(mSystemCategory, (IRouteInfo**)&mDefaultAudioVideo);
 
-    mDefaultAudioVideo->SetNameEx(R::string::default_audio_route_name);
+    mDefaultAudioVideo->SetName(R::string::default_audio_route_name);
     mDefaultAudioVideo->SetSupportedTypes((ROUTE_TYPE_LIVE_AUDIO | ROUTE_TYPE_LIVE_VIDEO));
     AutoPtr<IDisplay> display;
     display = mOwner->ChoosePresentationDisplayForRoute(
@@ -230,7 +230,7 @@ void CMediaRouter::Static::UpdateAudioRoutes(
         else {
             name = R::string::default_audio_route_name;
         }
-        sStatic->mDefaultAudioVideo->SetNameEx(name);
+        sStatic->mDefaultAudioVideo->SetName(name);
         DispatchRouteChanged(sStatic->mDefaultAudioVideo);
     }
 
@@ -445,7 +445,7 @@ ECode CMediaRouter::GetSystemAudioRoute(
     VALIDATE_NOT_NULL(result);
 
     *result = sStatic->mDefaultAudioVideo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -455,7 +455,7 @@ ECode CMediaRouter::GetSystemAudioCategory(
     VALIDATE_NOT_NULL(result);
 
     *result = sStatic->mSystemCategory;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -479,7 +479,7 @@ ECode CMediaRouter::GetSelectedRoute(
     // consider the default selected.
     *result = sStatic->mDefaultAudioVideo;
 
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -590,7 +590,7 @@ ECode CMediaRouter::GetCategoryAt(
 {
     VALIDATE_NOT_NULL(result);
     *result = sStatic->mCategories[index];
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -609,7 +609,7 @@ ECode CMediaRouter::GetRouteAt(
     VALIDATE_NOT_NULL(result);
 
     *result = sStatic->mRoutes[index];
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -622,7 +622,7 @@ ECode CMediaRouter::CreateUserRoute(
     AutoPtr<IUserRouteInfo> userRouteInfo;
     CUserRouteInfo::New(category, (IUserRouteInfo**)&userRouteInfo);
     *result = userRouteInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -636,11 +636,11 @@ ECode CMediaRouter::CreateRouteCategory(
     AutoPtr<IRouteCategory> routeCategory;
     CRouteCategory::New(name, ROUTE_TYPE_USER, isGroupable, (IRouteCategory**)&routeCategory);
     *result = routeCategory;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CMediaRouter::CreateRouteCategoryEx(
+ECode CMediaRouter::CreateRouteCategory(
     /* [in] */ Int32 nameResId,
     /* [in] */ Boolean isGroupable,
     /* [out] */ IRouteCategory** result)
@@ -650,7 +650,7 @@ ECode CMediaRouter::CreateRouteCategoryEx(
     AutoPtr<IRouteCategory> routeCategory;
     CRouteCategory::New(nameResId, ROUTE_TYPE_USER, isGroupable, (IRouteCategory**)&routeCategory);
     *result = routeCategory;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

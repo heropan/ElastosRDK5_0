@@ -1,6 +1,6 @@
 
 #include "util/ArrayUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {

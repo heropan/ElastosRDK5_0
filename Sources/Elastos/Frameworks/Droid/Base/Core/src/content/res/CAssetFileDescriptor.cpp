@@ -60,7 +60,7 @@ ECode CAssetFileDescriptor::GetParcelFileDescriptor(
 {
     VALIDATE_NOT_NULL(fd);
     *fd = mFd;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -114,13 +114,13 @@ ECode CAssetFileDescriptor::CreateInputStream(
         AutoPtr<IParcelFileDescriptorAutoCloseInputStream> closeInputStream;
         FAIL_RETURN(CParcelFileDescriptorAutoCloseInputStream::New(mFd, (IParcelFileDescriptorAutoCloseInputStream**)&closeInputStream));
         *stream = IFileInputStream::Probe(closeInputStream);
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         return NOERROR;
     }
     AutoPtr<IAssetFileDescriptorAutoCloseInputStream> closeInputStream;
     FAIL_RETURN(CAssetFileDescriptorAutoCloseInputStream::New(this, (IAssetFileDescriptorAutoCloseInputStream**)&closeInputStream));
     *stream = IFileInputStream::Probe(closeInputStream);
-    INTERFACE_ADDREF(*stream);
+    REFCOUNT_ADD(*stream);
     return NOERROR;
 }
 
@@ -132,13 +132,13 @@ ECode CAssetFileDescriptor::CreateOutputStream(
         AutoPtr<IParcelFileDescriptorAutoCloseOutputStream> closeOutputStream;
         FAIL_RETURN(CParcelFileDescriptorAutoCloseOutputStream::New(mFd, (IParcelFileDescriptorAutoCloseOutputStream**)&closeOutputStream));
         *stream = IFileOutputStream::Probe(closeOutputStream);
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         return NOERROR;
     }
     AutoPtr<IAssetFileDescriptorAutoCloseOutputStream> closeOutputStream;
     FAIL_RETURN(CAssetFileDescriptorAutoCloseOutputStream::New(this, (IAssetFileDescriptorAutoCloseOutputStream**)&closeOutputStream));
     *stream = IFileOutputStream::Probe(closeOutputStream);
-    INTERFACE_ADDREF(*stream);
+    REFCOUNT_ADD(*stream);
     return NOERROR;
 }
 

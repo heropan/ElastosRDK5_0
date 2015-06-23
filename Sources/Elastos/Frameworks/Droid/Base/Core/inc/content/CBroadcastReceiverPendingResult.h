@@ -4,7 +4,6 @@
 
 #include "_CBroadcastReceiverPendingResult.h"
 #include <ext/frameworkext.h>
-#include <elastos/Mutex.h>
 #include "content/BroadcastReceiver.h"
 
 namespace Elastos {

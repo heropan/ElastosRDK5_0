@@ -1,8 +1,8 @@
 
 #include "power/ElectronBeam.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::IByteBufferHelper;
@@ -365,14 +365,14 @@ void ElectronBeam::SetQuad(
     if (DEBUG) {
         Slogger::D(TAG, "setQuad: x=%f, y=%f, w=%f, h=%f", x, y, w, h);
     }
-    vtx->PutFloatEx(0, x);
-    vtx->PutFloatEx(1, y);
-    vtx->PutFloatEx(2, x);
-    vtx->PutFloatEx(3, y + h);
-    vtx->PutFloatEx(4, x + w);
-    vtx->PutFloatEx(5, y + h);
-    vtx->PutFloatEx(6, x + w);
-    vtx->PutFloatEx(7, y);
+    vtx->PutFloat(0, x);
+    vtx->PutFloat(1, y);
+    vtx->PutFloat(2, x);
+    vtx->PutFloat(3, y + h);
+    vtx->PutFloat(4, x + w);
+    vtx->PutFloat(5, y + h);
+    vtx->PutFloat(6, x + w);
+    vtx->PutFloat(7, y);
 }
 
 Boolean ElectronBeam::CaptureScreenshotTextureAndSetViewport()
@@ -381,7 +381,7 @@ Boolean ElectronBeam::CaptureScreenshotTextureAndSetViewport()
     AutoPtr<ISurfaceHelper> helper;
     ASSERT_SUCCEEDED(CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&helper));
     AutoPtr<IBitmap> bitmap;
-    helper->ScreenshotEx(mDisplayWidth, mDisplayHeight,
+    helper->Screenshot(mDisplayWidth, mDisplayHeight,
             0, ELECTRON_BEAM_LAYER - 1, (IBitmap**)&bitmap);
     if (bitmap == NULL) {
         Slogger::E(TAG, "Could not take a screenshot!");
@@ -413,7 +413,7 @@ Boolean ElectronBeam::CaptureScreenshotTextureAndSetViewport()
 
     Float u = 1.0f;
     Float v = 1.0f;
-    glUtils->TexImage2DEx2(IGLES10::_GL_TEXTURE_2D, 0, bitmap, 0);
+    glUtils->TexImage2D(IGLES10::_GL_TEXTURE_2D, 0, bitmap, 0);
     if (CheckGlErrors(String("glTexImage2D), first try"), FALSE)) {
         // Try a power of two size texture instead.
         Int32 tw = NextPowerOfTwo(mDisplayWidth);
@@ -439,14 +439,14 @@ Boolean ElectronBeam::CaptureScreenshotTextureAndSetViewport()
     // Set up texture coordinates for a quad.
     // We might need to change this if the texture ends up being
     // a different size from the display for some reason.
-    mTexCoordBuffer->PutFloatEx(0, 0.f);
-    mTexCoordBuffer->PutFloatEx(1, v);
-    mTexCoordBuffer->PutFloatEx(2, 0.f);
-    mTexCoordBuffer->PutFloatEx(3, 0.f);
-    mTexCoordBuffer->PutFloatEx(4, u);
-    mTexCoordBuffer->PutFloatEx(5, 0.f);
-    mTexCoordBuffer->PutFloatEx(6, u);
-    mTexCoordBuffer->PutFloatEx(7, v);
+    mTexCoordBuffer->PutFloat(0, 0.f);
+    mTexCoordBuffer->PutFloat(1, v);
+    mTexCoordBuffer->PutFloat(2, 0.f);
+    mTexCoordBuffer->PutFloat(3, 0.f);
+    mTexCoordBuffer->PutFloat(4, u);
+    mTexCoordBuffer->PutFloat(5, 0.f);
+    mTexCoordBuffer->PutFloat(6, u);
+    mTexCoordBuffer->PutFloat(7, v);
 
     // Set up our viewport.
     gl10->GlViewport(0, 0, mDisplayWidth, mDisplayHeight);

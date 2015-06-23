@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "provider/CContactsContactMethodsHelper.h"
 
 namespace Elastos {

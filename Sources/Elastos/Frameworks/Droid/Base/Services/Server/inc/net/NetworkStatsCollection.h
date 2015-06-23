@@ -6,9 +6,9 @@
 #include "net/NetworkIdentitySet.h"
 #include "util/FileRotator.h"
 #include <elrefbase.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::IDataOutputStream;
 using Elastos::Droid::Net::INetworkTemplate;

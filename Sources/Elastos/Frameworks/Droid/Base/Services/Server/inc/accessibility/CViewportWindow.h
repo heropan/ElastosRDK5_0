@@ -6,7 +6,7 @@
 #include "_CViewportWindow.h"
 #include "ext/frameworkext.h"
 // #include "view/View.h"
-// #include "view/ViewMacro.h"
+//
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;

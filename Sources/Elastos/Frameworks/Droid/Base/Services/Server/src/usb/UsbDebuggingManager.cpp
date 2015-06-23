@@ -3,11 +3,11 @@
 #include "os/SystemClock.h"
 #include "os/Handler.h"
 #include "usb/UsbDebuggingManager.h"
-#include "elastos/Logger.h"
-#include <Elastos.Core.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;
@@ -20,7 +20,7 @@ using Elastos::Core::StringBuffer;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
@@ -371,9 +371,9 @@ String UsbDebuggingManager::GetFingerprints(
 //    AutoPtr<IBase64> base64;
 //    CBase64::AcquireSingleton((IBase64**)&base64);
     AutoPtr<ArrayOf<Byte> > decodedResult;
-//    base64->DecodeEx(base64_data, IBase64::DEFAULT, (ArrayOf<Byte>**)&decodedResult);
+//    base64->Decode(base64_data, IBase64::DEFAULT, (ArrayOf<Byte>**)&decodedResult);
     AutoPtr<ArrayOf<Byte> > digest;
-//    digester->DigestEx2((ArrayOf<Byte>*)decodedResult, (ArrayOf<Byte>**)&digest);
+//    digester->Digest((ArrayOf<Byte>*)decodedResult, (ArrayOf<Byte>**)&digest);
 //[Vince]-
     StringBuffer buf;
 
@@ -396,7 +396,7 @@ void UsbDebuggingManager::ShowConfirmationDialog(
     AutoPtr<IIntent> dialogIntent;
     CIntent::New((IIntent**)&dialogIntent);
 
-    dialogIntent->SetClassNameEx(String("com.android.systemui"),
+    dialogIntent->SetClassName(String("com.android.systemui"),
         String("com.android.systemui.usb.UsbDebuggingActivity"));
     dialogIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     dialogIntent->PutStringExtra(String("key"), key);

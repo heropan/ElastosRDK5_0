@@ -7,13 +7,13 @@
 #include "os/CLooperHelper.h"
 #endif
 
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::EIID_ISynchronize;
+using Elastos::Core::EIID_ISynchronize;
 
 namespace Elastos {
 namespace Droid {
@@ -100,13 +100,13 @@ ECode Handler::BlockingRunnable::Wait()
     return Object::Wait();
 }
 
-ECode Handler::BlockingRunnable::WaitEx(
+ECode Handler::BlockingRunnable::Wait(
     /* [in] */ Int64 millis)
 {
     return Object::Wait(millis);
 }
 
-ECode Handler::BlockingRunnable::WaitEx2(
+ECode Handler::BlockingRunnable::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {
@@ -151,7 +151,7 @@ Boolean Handler::BlockingRunnable::PostAndWait(
                     return FALSE; // timeout
                 }
                 // try {
-                WaitEx(delay);
+                Wait(delay);
                 // } catch (InterruptedException ex) {
                 // }
             }
@@ -252,27 +252,27 @@ ECode Handler::ObtainMessage(
     /* [in] */ Int32 what,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageEx3(what, 0, 0, NULL, msg);
+    return ObtainMessage(what, 0, 0, NULL, msg);
 }
 
-ECode Handler::ObtainMessageEx(
+ECode Handler::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageEx3(what, 0, 0, obj, msg);
+    return ObtainMessage(what, 0, 0, obj, msg);
 }
 
-ECode Handler::ObtainMessageEx2(
+ECode Handler::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageEx3(what, arg1, arg2, NULL, msg);
+    return ObtainMessage(what, arg1, arg2, NULL, msg);
 }
 
-ECode Handler::ObtainMessageEx3(
+ECode Handler::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -282,7 +282,7 @@ ECode Handler::ObtainMessageEx3(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
-    return helper->ObtainEx6(THIS_PROBE(IHandler), what, arg1, arg2, obj, msg);
+    return helper->Obtain(THIS_PROBE(IHandler), what, arg1, arg2, obj, msg);
 }
 
 AutoPtr<IMessage> Handler::GetPostMessage(
@@ -298,7 +298,7 @@ AutoPtr<IMessage> Handler::GetPostMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx2(THIS_PROBE(IHandler), (IMessage**)&msg);
+    helper->Obtain(THIS_PROBE(IHandler), (IMessage**)&msg);
     msg->SetWhat((Int32)r);  // as Id
     msg->SetObj(token);
     msg->SetCallback(r);
@@ -317,10 +317,10 @@ ECode Handler::PostAtTime(
     /* [in] */ Int64 uptimeMillis,
     /* [out] */ Boolean* result)
 {
-   return PostAtTimeEx(action, NULL, uptimeMillis, result);
+   return PostAtTime(action, NULL, uptimeMillis, result);
 }
 
-ECode Handler::PostAtTimeEx(
+ECode Handler::PostAtTime(
     /* [in] */ IRunnable* action,
     /* [in] */ IInterface* token,
     /* [in] */ Int64 uptimeMillis,
@@ -356,11 +356,11 @@ ECode Handler::RemoveCallbacks(
     return RemoveMessages((Int32)action);
 }
 
-ECode Handler::RemoveCallbacksEx(
+ECode Handler::RemoveCallbacks(
     /* [in] */ IRunnable* action,
     /* [in] */ IInterface* token)
 {
-    return RemoveMessagesEx((Int32)action, token);
+    return RemoveMessages((Int32)action, token);
 }
 
 ECode Handler::GetIMessenger(
@@ -374,7 +374,7 @@ ECode Handler::GetIMessenger(
         CMessengerImpl::New(THIS_PROBE(IHandler), (IIMessenger**)&mMessenger);
     }
     *mgr = mMessenger;
-    INTERFACE_ADDREF(*mgr);
+    REFCOUNT_ADD(*mgr);
     return NOERROR;
 }
 
@@ -393,7 +393,7 @@ ECode Handler::SendEmptyMessageDelayed(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx2(THIS_PROBE(IHandler), (IMessage**)&msg);
+    helper->Obtain(THIS_PROBE(IHandler), (IMessage**)&msg);
     msg->SetWhat(what);
     return Handler::SendMessageDelayed(msg, delayMillis, result);
 }
@@ -406,7 +406,7 @@ ECode Handler::SendEmptyMessageAtTime(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx2(THIS_PROBE(IHandler), (IMessage**)&msg);
+    helper->Obtain(THIS_PROBE(IHandler), (IMessage**)&msg);
     msg->SetWhat(what);
     return Handler::SendMessageAtTime(msg, uptimeMillis, result);
 }
@@ -495,33 +495,33 @@ ECode Handler::HasCallbacks(
         return E_RUNTIME_EXCEPTION;
     }
 
-    return queue->HasMessagesEx(THIS_PROBE(IHandler), action, NULL, result);
+    return queue->HasMessages(THIS_PROBE(IHandler), action, NULL, result);
 }
 
 ECode Handler::HasMessages(
     /* [in] */ Int32 what,
     /* [out] */ Boolean* result)
 {
-    return HasMessagesEx3(what, what, NULL, result);
+    return HasMessages(what, what, NULL, result);
 }
 
-ECode Handler::HasMessagesEx(
+ECode Handler::HasMessages(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return HasMessagesEx3(what, what, obj, result);
+    return HasMessages(what, what, obj, result);
 }
 
-ECode Handler::HasMessagesEx2(
+ECode Handler::HasMessages(
     /* [in] */ Int32 id,
     /* [in] */ Int32 what,
     /* [out] */ Boolean* result)
 {
-    return HasMessagesEx3(id, what, NULL, result);
+    return HasMessages(id, what, NULL, result);
 }
 
-ECode Handler::HasMessagesEx3(
+ECode Handler::HasMessages(
     /* [in] */ Int32 id,
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj,
@@ -542,17 +542,17 @@ ECode Handler::HasMessagesEx3(
 ECode Handler::RemoveMessages(
     /* [in] */ Int32 what)
 {
-    return RemoveMessagesEx2(what, what, NULL);
+    return RemoveMessages(what, what, NULL);
 }
 
-ECode Handler::RemoveMessagesEx(
+ECode Handler::RemoveMessages(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
 {
-    return RemoveMessagesEx2(what, what, obj);
+    return RemoveMessages(what, what, obj);
 }
 
-ECode Handler::RemoveMessagesEx2(
+ECode Handler::RemoveMessages(
     /* [in] */ Int32 id,
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)

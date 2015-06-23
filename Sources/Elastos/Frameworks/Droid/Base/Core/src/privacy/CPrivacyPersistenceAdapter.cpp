@@ -4,12 +4,12 @@
 #include "privacy/PrivacySettingsStub.h"
 #include "privacy/CPrivacySettings.h"
 #include "database/sqlite/SQLiteDatabase.h"
-#include <elastos/Logger.h>
-#include <elastos/HashSet.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -539,7 +539,7 @@ ECode CPrivacyPersistenceAdapter::GetSettings(
             if (IPrivacySettings::Probe(cacheResult) != NULL) {
                 if (LOG_CACHE) Logger::D(TAG, "PrivacyPersistenceAdapter:Cached result is not a stub:%s", packageName.string());
                 *_privacySettings = IPrivacySettings::Probe(cacheResult);
-                INTERFACE_ADDREF(*_privacySettings);
+                REFCOUNT_ADD(*_privacySettings);
                 return NOERROR;
             }
             else {
@@ -784,7 +784,7 @@ ECode CPrivacyPersistenceAdapter::GetSettings(
 //    }
 
     *_privacySettings = privacySettings;
-    INTERFACE_ADDREF(*_privacySettings);
+    REFCOUNT_ADD(*_privacySettings);
     return NOERROR;
 }
 
@@ -1059,7 +1059,7 @@ ECode CPrivacyPersistenceAdapter::SaveSettings(
             AutoPtr< ArrayOf<String> > nArray = ArrayOf<String>::Alloc(1);
             (*nArray)[0] = pkgName;
             cursor = NULL;
-            db->QueryEx2(TABLE_SETTINGS, idArray, String("packageName=?"),
+            db->Query(TABLE_SETTINGS, idArray, String("packageName=?"),
                     nArray, String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
             if (cursor != NULL) {
                 Int32 count;
@@ -1300,7 +1300,7 @@ ECode CPrivacyPersistenceAdapter::DeleteSettings(
         AutoPtr< ArrayOf<String> > nArray = ArrayOf<String>::Alloc(1);
         (*nArray)[0] = packageName;
         AutoPtr<ICursor> c;
-        db->QueryEx2(TABLE_SETTINGS, idArray, String("packageName=?"),
+        db->Query(TABLE_SETTINGS, idArray, String("packageName=?"),
                 nArray, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
 
         Int32 count;
@@ -1406,7 +1406,7 @@ ECode CPrivacyPersistenceAdapter::Query(
             c->Close();
             c = NULL;
         }
-        ec = db->QueryEx3(table, columns, selection, selectionArgs,
+        ec = db->Query(table, columns, selection, selectionArgs,
             groupBy, having, orderBy, limit, (ICursor**)&c);
         if (FAILED(ec)) {
             if (db != NULL && (db->IsOpen(&opened), opened)) {
@@ -1425,7 +1425,7 @@ ECode CPrivacyPersistenceAdapter::Query(
     }
 
     *cursor = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -1469,7 +1469,7 @@ ECode CPrivacyPersistenceAdapter::RawQuery(
     }
 
     *cursor = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 

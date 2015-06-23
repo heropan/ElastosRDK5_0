@@ -18,7 +18,7 @@ ECode CLooperHelper::MyLooper(
     VALIDATE_NOT_NULL(looper);
     AutoPtr<ILooper> l = Looper::MyLooper();
     *looper = l;
-    INTERFACE_ADDREF(*looper);
+    REFCOUNT_ADD(*looper);
     return NOERROR;
 }
 
@@ -28,7 +28,7 @@ ECode CLooperHelper::MyQueue(
     VALIDATE_NOT_NULL(queue);
     AutoPtr<IMessageQueue> q = Looper::MyQueue();
     *queue = q;
-    INTERFACE_ADDREF(*queue);
+    REFCOUNT_ADD(*queue);
     return NOERROR;
 }
 
@@ -38,7 +38,7 @@ ECode CLooperHelper::GetMainLooper(
     VALIDATE_NOT_NULL(looper);
     AutoPtr<ILooper> l = Looper::GetMainLooper();
     *looper = l;
-    INTERFACE_ADDREF(*looper);
+    REFCOUNT_ADD(*looper);
     return NOERROR;
 }
 

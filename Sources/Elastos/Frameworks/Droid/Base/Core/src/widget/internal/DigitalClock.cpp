@@ -4,7 +4,7 @@
 #include "content/CIntentFilter.h"
 #include "provider/Settings.h"
 #include "graphics/CTypefaceHelper.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/CHandler.h"
 
 using Elastos::Droid::Os::CHandler;
@@ -34,7 +34,7 @@ static AutoPtr<ITypeface> CreateStaticTypeface(
     AutoPtr<ITypefaceHelper> helper;
     AutoPtr<ITypeface> result;
     CTypefaceHelper::AcquireSingleton((ITypefaceHelper**)&helper);
-    helper->CreateFromFileEx(fileName, (ITypeface**)&result);
+    helper->CreateFromFile(fileName, (ITypeface**)&result);
     return result;
 }
 

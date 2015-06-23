@@ -2,7 +2,7 @@
 #define __CLAYOUTHELPER_H__
 
 #include "_CLayoutHelper.h"
-#include "text/LayoutMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 

@@ -1,6 +1,6 @@
 
 #include "content/pm/CLimitedLengthInputStream.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 #include "ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -76,10 +76,10 @@ ECode CLimitedLengthInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode CLimitedLengthInputStream::ReadBytesEx(
+ECode CLimitedLengthInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
@@ -105,7 +105,7 @@ ECode CLimitedLengthInputStream::ReadBytesEx(
     }
 
     Int32 numRead;
-    FilterInputStream::ReadBytesEx(buffer, offset, byteCount, &numRead);
+    FilterInputStream::ReadBytes(buffer, offset, byteCount, &numRead);
     mOffset += numRead;
 
     *number = numRead;
@@ -154,7 +154,7 @@ ECode CLimitedLengthInputStream::GetLock(
 
     AutoPtr<IInterface> obj = FilterInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

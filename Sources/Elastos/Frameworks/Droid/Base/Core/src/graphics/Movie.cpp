@@ -127,7 +127,7 @@ ECode Movie::Draw(
     return NOERROR;
 }
 
-ECode Movie::DrawEx(
+ECode Movie::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ Float x,
     /* [in] */ Float y)
@@ -145,7 +145,7 @@ static ECode CreateMovie(
     }
 
     *movie = new Movie((Int32)moov);
-    INTERFACE_ADDREF(*movie);
+    REFCOUNT_ADD(*movie);
     return NOERROR;
 }
 

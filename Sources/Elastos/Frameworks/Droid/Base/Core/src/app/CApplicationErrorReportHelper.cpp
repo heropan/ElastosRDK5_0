@@ -26,7 +26,7 @@ ECode CApplicationErrorReportHelper::GetErrorReportReceiver(
     return NOERROR;
 }
 
-ECode CApplicationErrorReportHelper::GetErrorReportReceiverEx(
+ECode CApplicationErrorReportHelper::GetErrorReportReceiver(
     /* [in] */ IPackageManager* pm,
     /* [in] */ const String& errorPackage,
     /* [in] */ const String& receiverPackage,

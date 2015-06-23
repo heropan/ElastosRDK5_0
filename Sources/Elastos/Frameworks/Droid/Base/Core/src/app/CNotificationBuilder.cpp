@@ -5,7 +5,7 @@
 #include "app/CNotificationAction.h"
 #include "app/CNotification.h"
 #include "widget/CRemoteViews.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
@@ -133,7 +133,7 @@ ECode CNotificationBuilder::SetSmallIcon(
  * @see Notification#icon
  * @see Notification#iconLevel
  */
-ECode CNotificationBuilder::SetSmallIconEx(
+ECode CNotificationBuilder::SetSmallIcon(
     /* [in] */ Int32 icon,
     /* [in] */ Int32 level)
 {
@@ -301,7 +301,7 @@ ECode CNotificationBuilder::SetTicker(
  * @see Notification#tickerText
  * @see Notification#tickerView
  */
-ECode CNotificationBuilder::SetTickerEx(
+ECode CNotificationBuilder::SetTicker(
     /* [in] */ ICharSequence *tickerText,
     /* [in] */ IRemoteViews *views)
 {
@@ -347,7 +347,7 @@ ECode CNotificationBuilder::SetSound(
  *
  * @see Notification#sound
  */
-ECode CNotificationBuilder::SetSoundEx(
+ECode CNotificationBuilder::SetSound(
     /* [in] */ IUri *sound,
     /* [in] */ Int32 streamType)
 {
@@ -573,7 +573,7 @@ ECode CNotificationBuilder::GetSubText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mSubText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -582,7 +582,7 @@ ECode CNotificationBuilder::GetContentText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mContentText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -627,7 +627,7 @@ ECode CNotificationBuilder::ApplyStandardTemplateWithActions(
     }
 
     *remoteViews = rv;
-    INTERFACE_ADDREF(*remoteViews);
+    REFCOUNT_ADD(*remoteViews);
     return NOERROR;
 }
 
@@ -933,7 +933,7 @@ ECode CNotificationBuilder::BuildUnstyled(
     }
 
     *notification = n;
-    INTERFACE_ADDREF(*notification);
+    REFCOUNT_ADD(*notification);
     return NOERROR;
 }
 

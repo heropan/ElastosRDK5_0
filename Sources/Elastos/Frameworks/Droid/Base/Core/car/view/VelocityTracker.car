@@ -18,7 +18,7 @@ module
         ComputeCurrentVelocity(
             [in] Int32 units);
 
-        ComputeCurrentVelocityEx(
+        ComputeCurrentVelocity(
             [in] Int32 units,
             [in] Float maxVelocity);
 
@@ -28,11 +28,11 @@ module
         GetYVelocity(
             [out] Float* velocity);
 
-        GetXVelocityEx(
+        GetXVelocity(
             [in] Int32 id,
             [out] Float* velocity);
 
-        GetYVelocityEx(
+        GetYVelocity(
             [in] Int32 id,
             [out] Float* velocity);
     }
@@ -41,7 +41,7 @@ module
         Obtain(
             [out] IVelocityTracker** velocity);
 
-        ObtainEx(
+        Obtain(
             [in] String strategy,
             [out] IVelocityTracker** velocity);
     }

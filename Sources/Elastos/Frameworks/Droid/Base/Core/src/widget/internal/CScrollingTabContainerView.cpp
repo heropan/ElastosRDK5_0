@@ -83,7 +83,7 @@ ECode CScrollingTabContainerView::AddTab(
     return ScrollingTabContainerView::AddTab(tab, setSelected);
 }
 
-ECode CScrollingTabContainerView::AddTabEx(
+ECode CScrollingTabContainerView::AddTab(
     /* [in] */ IActionBarTab* tab,
     /* [in] */ Int32 position,
     /* [in] */ Boolean setSelected)

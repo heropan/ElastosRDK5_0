@@ -3,9 +3,9 @@
 
 #include "app/Activity.h"
 #include "_CActivityOne.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Widget::IImageButton;
 using Elastos::Droid::App::Activity;

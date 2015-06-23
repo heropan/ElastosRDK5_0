@@ -1,7 +1,7 @@
 #ifndef __CPOINTERLOCATIONVIEW_H__
 #define __CPOINTERLOCATIONVIEW_H__
 
-#include "view/ViewMacro.h"
+
 #include "_CPointerLocationView.h"
 #include "widget/internal/PointerLocationView.h"
 

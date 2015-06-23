@@ -3,8 +3,8 @@
 
 #include "_CCompoundButton.h"
 #include "widget/CompoundButton.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {
@@ -90,7 +90,7 @@ public:
          *
          * @param d The Drawable to use as the background
          */
-    CARAPI SetButtonDrawableEx(
+    CARAPI SetButtonDrawable(
         /* [in] */ IDrawable* d);
 
     CARAPI GetButtonDrawable(

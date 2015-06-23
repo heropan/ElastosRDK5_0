@@ -8,12 +8,11 @@
 #include "app/CDownloadManager.h"
 #include "app/SharedPreferencesImpl.h"
 #include "content/ContentResolver.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IFileOutputStream;
@@ -146,7 +145,7 @@ public:
         /* [in] */ Int32 resId,
         /* [out] */ String* str);
 
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* str);
@@ -164,17 +163,17 @@ public:
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ Int32 resid,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx2(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx3(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -256,7 +255,7 @@ public:
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [out] */ ISQLiteDatabase** sqliteDB);
 
-    CARAPI OpenOrCreateDatabaseEx(
+    CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& name,
         /* [in] */ Int32 mode,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -289,7 +288,7 @@ public:
     CARAPI SetWallpaper(
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI SetWallpaperEx(
+    CARAPI SetWallpaper(
         /* [in] */ IInputStream* data);
 
     CARAPI ClearWallpaper();
@@ -297,7 +296,7 @@ public:
     CARAPI StartActivity(
         /* [in] */ IIntent* intent);
 
-    CARAPI StartActivityEx(
+    CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
@@ -305,7 +304,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
-    CARAPI StartActivityAsUserEx(
+    CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [in] */ IUserHandle* user);
@@ -313,7 +312,7 @@ public:
     CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents);
 
-    CARAPI StartActivitiesEx(
+    CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents,
         /* [in] */ IBundle* options);
 
@@ -329,7 +328,7 @@ public:
         /* [in] */ Int32 flagsValues,
         /* [in] */ Int32 extraFlags);
 
-    CARAPI StartIntentSenderEx(
+    CARAPI StartIntentSender(
         /* [in] */ IIntentSender* intent,
         /* [in] */ IIntent* fillInIntent,
         /* [in] */ Int32 flagsMask,
@@ -340,7 +339,7 @@ public:
     CARAPI SendBroadcast(
         /* [in] */ IIntent* intent);
 
-    CARAPI SendBroadcastEx(
+    CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
@@ -348,7 +347,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
-    CARAPI SendOrderedBroadcastEx(
+    CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission,
         /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -361,7 +360,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
-    CARAPI SendBroadcastAsUserEx(
+    CARAPI SendBroadcastAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission);
@@ -412,7 +411,7 @@ public:
         /* [in] */ IIntentFilter* filter,
         /* [out] */ IIntent** intent);
 
-    CARAPI RegisterReceiverEx(
+    CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
         /* [in] */ IIntentFilter* filter,
         /* [in] */ const String& broadcastPermission,
@@ -454,7 +453,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI BindServiceEx(
+    CARAPI BindService(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
@@ -531,7 +530,7 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [out] */ Int32* result);
 
-    CARAPI CheckUriPermissionEx(
+    CARAPI CheckUriPermission(
         /* [in] */ IUri * uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,
@@ -557,7 +556,7 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [in] */ const String& message);
 
-    CARAPI EnforceUriPermissionEx(
+    CARAPI EnforceUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,

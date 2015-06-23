@@ -3,7 +3,7 @@
 #define __CRASTERIZERSPANHELPER_H__
 
 #include "_CRasterizerSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "accessibility/CMagnificationSpec.h"
 #include "accessibility/ScreenMagnifier.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::IRect;
 

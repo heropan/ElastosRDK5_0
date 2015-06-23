@@ -3,7 +3,7 @@
 #define __ASYNCTASKLOADER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "Loader.h"
 #include "os/AsyncTask.h"
 

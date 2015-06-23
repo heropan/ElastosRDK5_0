@@ -69,7 +69,7 @@ public:
         /* [in] */ IContentResolver* contentResolver,
         /* [in] */ IInputStream* inStream);
 
-    CARAPI InsertEx(
+    CARAPI Insert(
         /* [in] */ IContentResolver* contentResolver,
         /* [in] */ const String& inStr);
 

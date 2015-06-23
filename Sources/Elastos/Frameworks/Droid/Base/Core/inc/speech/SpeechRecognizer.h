@@ -4,9 +4,9 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "os/HandlerBase.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;

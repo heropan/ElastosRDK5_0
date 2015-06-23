@@ -151,7 +151,7 @@ ECode CRootElement::Handler::Characters(
     /* [in] */ Int32 length)
 {
     if (mBodyBuilder != NULL) {
-        mBodyBuilder->AppendCharsEx(buffer, start, length);
+        mBodyBuilder->AppendChars(buffer, start, length);
     }
     return NOERROR;
 }
@@ -315,7 +315,7 @@ ECode CRootElement::GetContentHandler(
     VALIDATE_NOT_NULL(handler);
 
     *handler = (IContentHandler*)mHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
 
     return NOERROR;
 }
@@ -327,12 +327,12 @@ ECode CRootElement::GetChild(
     return Element::GetChild(localName, result);
 }
 
-ECode CRootElement::GetChildEx(
+ECode CRootElement::GetChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return Element::GetChildEx(uri, localName, result);
+    return Element::GetChild(uri, localName, result);
 }
 
 ECode CRootElement::RequireChild(
@@ -342,12 +342,12 @@ ECode CRootElement::RequireChild(
     return Element::RequireChild(localName, result);
 }
 
-ECode CRootElement::RequireChildEx(
+ECode CRootElement::RequireChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return Element::RequireChildEx(uri, localName, result);
+    return Element::RequireChild(uri, localName, result);
 }
 
 ECode CRootElement::SetElementListener(

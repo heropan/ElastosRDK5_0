@@ -71,7 +71,7 @@ module
             /**
              * @hide
              */
-            UpdateAppWidgetSizeEx(
+            UpdateAppWidgetSize(
                 [in] IBundle* newOptions,
                 [in] Int32 minWidth,
                 [in] Int32 minHeight,

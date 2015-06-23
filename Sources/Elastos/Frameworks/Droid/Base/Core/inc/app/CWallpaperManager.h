@@ -5,10 +5,9 @@
 #include "ext/frameworkdef.h"
 #include "app/CGlobalsWallpaperManagerCallback.h"
 #include "graphics/drawable/Drawable.h"
-#include "graphics/drawable/DrawableMacro.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+
+using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Droid::Graphics::IBitmap;

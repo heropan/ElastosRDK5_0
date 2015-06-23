@@ -12,9 +12,9 @@
 #include "os/CBundle.h"
 #include "text/TextUtils.h"
 #include <os/SystemProperties.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -122,11 +122,11 @@ ECode Settings::NameValueCache::LazyGetProvider(
         if (mContentProvider == NULL) {
             String authority;
             mUri->GetAuthority(&authority);
-            ec = cr->AcquireProviderEx(authority, (IIContentProvider**)&mContentProvider);
+            ec = cr->AcquireProvider(authority, (IIContentProvider**)&mContentProvider);
         }
     }
     *provider = mContentProvider;
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return ec;
 }
 
@@ -419,7 +419,7 @@ static AutoPtr<IUri> InitSystemDefaultUri(
     /* [in] */ const String& type)
 {
     AutoPtr<IUri> uri;
-    Settings::System::GetUriForEx(type, (IUri**)&uri);
+    Settings::System::GetUriFor(type, (IUri**)&uri);
     return uri;
 }
 
@@ -649,7 +649,7 @@ ECode Settings::System::PutStringForUser(
     return sNameValueCache->PutStringForUser(resolver, name, value, userHandle, result);
 }
 
-ECode Settings::System::GetUriForEx(
+ECode Settings::System::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
@@ -1305,7 +1305,7 @@ ECode Settings::Secure::PutStringForUser(
     return sNameValueCache->PutStringForUser(resolver, name, value, userHandle, result);
 }
 
-ECode Settings::Secure::GetUriForEx(
+ECode Settings::Secure::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
@@ -1784,7 +1784,7 @@ ECode Settings::Global::PutStringForUser(
     return sNameValueCache->PutStringForUser(resolver, name, value, userHandle, result);
 }
 
-ECode Settings::Global::GetUriForEx(
+ECode Settings::Global::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
@@ -2039,7 +2039,7 @@ ECode Settings::Bookmarks::GetIntentForShortcut(
         c->Close();
     }
     *intent = _intent;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -2127,7 +2127,7 @@ ECode Settings::Bookmarks::GetTitle(
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         *title = cs;
-        INTERFACE_ADDREF(*title)
+        REFCOUNT_ADD(*title)
         return NOERROR;
     }
 
@@ -2137,7 +2137,7 @@ ECode Settings::Bookmarks::GetTitle(
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(String(""), (ICharSequence**)&cs);
         *title = cs;
-        INTERFACE_ADDREF(*title)
+        REFCOUNT_ADD(*title)
         return NOERROR;
     }
 
@@ -2147,7 +2147,7 @@ ECode Settings::Bookmarks::GetTitle(
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(String(""), (ICharSequence**)&cs);
         *title = cs;
-        INTERFACE_ADDREF(*title)
+        REFCOUNT_ADD(*title)
         return NOERROR;
     }
     // } catch (URISyntaxException e) {
@@ -2165,7 +2165,7 @@ ECode Settings::Bookmarks::GetTitle(
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(String(""), (ICharSequence**)&cs);
         *title = cs;
-        INTERFACE_ADDREF(*title)
+        REFCOUNT_ADD(*title)
         return NOERROR;
     }
 }

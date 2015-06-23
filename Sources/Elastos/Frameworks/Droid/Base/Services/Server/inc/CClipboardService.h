@@ -4,13 +4,12 @@
 #include "_CClipboardService.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Net::IUri;

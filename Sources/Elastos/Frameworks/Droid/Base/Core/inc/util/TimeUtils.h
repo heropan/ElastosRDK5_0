@@ -2,11 +2,10 @@
 #define __ELASTOS_DROID_UTILITY_TRUSTEDTIME_H__
 
 #include "ext/frameworkext.h"
-#include <Elastos.Core.h>
-#include "elastos/StringBuilder.h"
-#include <elastos/Mutex.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::ITimeZone;
 using Elastos::IO::IPrintWriter;

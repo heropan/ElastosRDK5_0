@@ -34,11 +34,11 @@ ECode CMonkeySourceRandom::SetFactors(
     return MonkeySourceRandom::SetFactors(factors);
 }
 
-ECode CMonkeySourceRandom::SetFactorsEx(
+ECode CMonkeySourceRandom::SetFactors(
     /* [in] */ Int32 index,
     /* [in] */ Float v)
 {
-    return MonkeySourceRandom::SetFactorsEx(index, v);
+    return MonkeySourceRandom::SetFactors(index, v);
 }
 
 ECode CMonkeySourceRandom::GenerateActivity()

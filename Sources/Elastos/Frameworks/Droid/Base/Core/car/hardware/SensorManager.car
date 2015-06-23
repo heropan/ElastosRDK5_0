@@ -412,7 +412,7 @@ module
          *         enabled
          */
         //@Deprecated
-        RegisterListenerEx(
+        RegisterListener(
             [in] ISensorListener* listener,
             [in] Int32 sensors,
             [in] Int32 rate,
@@ -446,7 +446,7 @@ module
          *        a bit masks of the sensors to unregister from
          */
         //@Deprecated
-        UnregisterListenerEx(
+        UnregisterListener(
             [in] ISensorListener* listener,
             [in] Int32 sensors);
 
@@ -463,7 +463,7 @@ module
          * @see #registerListener(SensorEventListener, Sensor, int)
          *
          */
-        UnregisterListenerEx2(
+        UnregisterListener(
             [in] ISensorEventListener* listener,
             [in] ISensor* sensor);
 
@@ -477,7 +477,7 @@ module
          * @see #registerListener(SensorEventListener, Sensor, int)
          *
          */
-        UnregisterListenerEx3(
+        UnregisterListener(
             [in] ISensorEventListener* listener);
 
         /**
@@ -508,7 +508,7 @@ module
          * @see #unregisterListener(SensorEventListener, Sensor)
          *
          */
-        RegisterListenerEx2(
+        RegisterListener(
             [in] ISensorEventListener* listener,
             [in] ISensor* sensor,
             [in] Int32 rate,
@@ -546,7 +546,7 @@ module
          * @see #unregisterListener(SensorEventListener, Sensor)
          *
          */
-        RegisterListenerEx3(
+        RegisterListener(
             [in] ISensorEventListener* listener,
             [in] ISensor* sensor,
             [in] Int32 rate,

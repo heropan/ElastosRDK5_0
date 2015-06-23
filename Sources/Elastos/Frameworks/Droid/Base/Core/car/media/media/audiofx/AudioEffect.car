@@ -479,7 +479,7 @@ module
          * @see #setParameter(byte[], byte[])
          * @hide
          */
-        SetParameterEx(
+        SetParameter(
             [in] Int32 param,
             [in] Int32 value,
             [out] Int32* result);
@@ -491,7 +491,7 @@ module
          * @see #setParameter(byte[], byte[])
          * @hide
          */
-        SetParameterEx2(
+        SetParameter(
             [in] Int32 param,
             [in] Int16 value,
             [out] Int32* result);
@@ -503,7 +503,7 @@ module
          * @see #setParameter(byte[], byte[])
          * @hide
          */
-        SetParameterEx3(
+        SetParameter(
             [in] Int32 param,
             [in] ArrayOf<Byte>* value,
             [out] Int32* result);
@@ -515,7 +515,7 @@ module
          * @see #setParameter(byte[], byte[])
          * @hide
          */
-        SetParameterEx4(
+        SetParameter(
             [in] ArrayOf<Int32>* param,
             [in] ArrayOf<Int32>* value,
             [out] Int32* result);
@@ -527,7 +527,7 @@ module
          * @see #setParameter(byte[], byte[])
          * @hide
          */
-        SetParameterEx5(
+        SetParameter(
             [in] ArrayOf<Int32>* param,
             [in] ArrayOf<Int16>* value,
             [out] Int32* result);
@@ -539,7 +539,7 @@ module
          * @see #setParameter(byte[], byte[])
          * @hide
          */
-        SetParameterEx6(
+        SetParameter(
             [in] ArrayOf<Int32>* param,
             [in] ArrayOf<Byte>* value,
             [out] Int32* result);
@@ -574,7 +574,7 @@ module
          * @see #getParameter(byte[], byte[])
          * @hide
          */
-        GetParameterEx(
+        GetParameter(
             [in] Int32 param,
             [in] ArrayOf<Byte>* value,
             [out] Int32* status);
@@ -586,7 +586,7 @@ module
          * @see #getParameter(byte[], byte[])
          * @hide
          */
-        GetParameterEx2(
+        GetParameter(
             [in] Int32 param,
             [in] ArrayOf<Int32>* value,
             [out] Int32* status);
@@ -598,7 +598,7 @@ module
          * @see #getParameter(byte[], byte[])
          * @hide
          */
-        GetParameterEx3(
+        GetParameter(
             [in] Int32 param,
             [in] ArrayOf<Int16>* value,
             [out] Int32* status);
@@ -610,7 +610,7 @@ module
          * @see #getParameter(byte[], byte[])
          * @hide
          */
-        GetParameterEx4(
+        GetParameter(
             [in] ArrayOf<Int32>* param,
             [in] ArrayOf<Int32>* value,
             [out] Int32* status);
@@ -622,7 +622,7 @@ module
          * @see #getParameter(byte[], byte[])
          * @hide
          */
-        GetParameterEx5(
+        GetParameter(
             [in] ArrayOf<Int32>* param,
             [in] ArrayOf<Int16>* value,
             [out] Int32* status);
@@ -634,7 +634,7 @@ module
          * @see #getParameter(byte[], byte[])
          * @hide
          */
-        GetParameterEx6(
+        GetParameter(
             [in] ArrayOf<Int32>* param,
             [in] ArrayOf<Byte>* value,
             [out] Int32* status);
@@ -737,7 +737,7 @@ module
         /**
          * @hide
          */
-        ByteArrayToInt32Ex(
+        ByteArrayToInt32(
             [in] ArrayOf<Byte>* valueBuf,
             [in] Int32 offset,
             [out] Int32* result);
@@ -759,7 +759,7 @@ module
         /**
          * @hide
          */
-        ByteArrayToInt16Ex(
+        ByteArrayToInt16(
             [in] ArrayOf<Byte>* valueBuf,
             [in] Int32 offset,
             [out] Int16* result);

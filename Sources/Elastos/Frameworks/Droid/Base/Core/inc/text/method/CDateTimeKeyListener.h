@@ -4,9 +4,9 @@
 
 #include "_CDateTimeKeyListener.h"
 #include "text/method/DateTimeKeyListener.h"
-#include "text/method/BaseKeyListenerMacro.h"
-#include "text/method/KeyListenerMacro.h"
-#include "text/InputFilterMacro.h"
+
+
+
 
 namespace Elastos {
 namespace Droid {

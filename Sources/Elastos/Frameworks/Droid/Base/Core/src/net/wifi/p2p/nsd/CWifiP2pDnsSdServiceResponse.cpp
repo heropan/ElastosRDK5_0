@@ -1,8 +1,8 @@
 
 #include "CWifiP2pDnsSdServiceResponse.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -198,7 +198,7 @@ ECode CWifiP2pDnsSdServiceResponse::GetTxtRecord(
     VALIDATE_NOT_NULL(txtRecord);
 
     *txtRecord = mTxtRecord;
-    INTERFACE_ADDREF(*txtRecord);
+    REFCOUNT_ADD(*txtRecord);
 
     return NOERROR;
 }
@@ -391,7 +391,7 @@ ECode CWifiP2pDnsSdServiceResponse::NewInstance(
             transId, dev, NULL, (CWifiP2pDnsSdServiceResponse**)&resp);
 
         *instance = resp;
-        INTERFACE_ADDREF(*instance);
+        REFCOUNT_ADD(*instance);
         return NOERROR;
     }
 
@@ -399,7 +399,7 @@ ECode CWifiP2pDnsSdServiceResponse::NewInstance(
     FAIL_RETURN(CWifiP2pDnsSdServiceResponse::NewByFriend(status,
         transId, dev, data, (CWifiP2pDnsSdServiceResponse**)&resp));
     *instance = resp;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

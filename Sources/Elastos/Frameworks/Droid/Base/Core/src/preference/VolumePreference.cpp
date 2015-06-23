@@ -145,7 +145,7 @@ void VolumePreference::SeekBarVolumizer::InitSeekBar(
     seekBar->SetOnSeekBarChangeListener(this);
 
     AutoPtr<IUri> uri;
-    Settings::System::GetUriForEx((*Settings::System::VOLUME_SETTINGS)[mStreamType], (IUri**)&uri);
+    Settings::System::GetUriFor((*Settings::System::VOLUME_SETTINGS)[mStreamType], (IUri**)&uri);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     cr->RegisterContentObserver(uri, FALSE, mVolumeObserver);
@@ -317,7 +317,7 @@ VolumePreference::VolumePreference(
             const_cast<Int32 *>(R::styleable::VolumePreference),
             ARRAY_SIZE(R::styleable::VolumePreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetInt32(R::styleable::VolumePreference_streamType, 0, &mStreamType);
     a->Recycle();
 }
@@ -502,7 +502,7 @@ ECode VolumePreference::OnSaveInstanceState(
     if (IsPersistent(&isPersistent), isPersistent) {
         // No need to save instance state since it's persistent
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -513,7 +513,7 @@ ECode VolumePreference::OnSaveInstanceState(
         mSeekBarVolumizer->OnSaveInstanceState(store);
     }
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 

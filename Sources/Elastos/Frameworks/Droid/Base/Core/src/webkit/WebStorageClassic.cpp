@@ -3,13 +3,13 @@
 #include "webkit/CWebViewCore.h"
 #include "webkit/WebStorageClassic.h"
 
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::CInteger64;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Os::IMessageHelper;
@@ -144,7 +144,7 @@ ECode WebStorageClassic::InnerHandler::HandleMessage(
             AutoPtr<IMessageHelper> mh;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
             AutoPtr<IMessage> UImsg;
-            mh->ObtainEx4(NULL, RETURN_ORIGINS, values, (IMessage**)&UImsg);
+            mh->Obtain(NULL, RETURN_ORIGINS, values, (IMessage**)&UImsg);
             mOwner->PostUIMessage(UImsg);
             } break;
 
@@ -179,7 +179,7 @@ ECode WebStorageClassic::InnerHandler::HandleMessage(
             AutoPtr<IMessageHelper> mh;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
             AutoPtr<IMessage> UImsg;
-            mh->ObtainEx4(NULL, RETURN_USAGE_ORIGIN, retValues, (IMessage**)&UImsg);
+            mh->Obtain(NULL, RETURN_USAGE_ORIGIN, retValues, (IMessage**)&UImsg);
             mOwner->PostUIMessage(UImsg);
             } break;
 
@@ -214,7 +214,7 @@ ECode WebStorageClassic::InnerHandler::HandleMessage(
             AutoPtr<IMessageHelper> mh;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
             AutoPtr<IMessage> UImsg;
-            mh->ObtainEx4(NULL, RETURN_QUOTA_ORIGIN, retValues, (IMessage**)&UImsg);
+            mh->Obtain(NULL, RETURN_QUOTA_ORIGIN, retValues, (IMessage**)&UImsg);
             mOwner->PostUIMessage(UImsg);
             } break;
 
@@ -321,7 +321,7 @@ void WebStorageClassic::CreateUIHandler()
 //synchronized
 void WebStorageClassic::CreateHandler()
 {
-    Elastos::Core::Threading::Mutex::Autolock lock(mLock);
+    Elastos::Core::Mutex::Autolock lock(mLock);
 
     if (mHandler == NULL) {
         mHandler = new InnerHandler(this);
@@ -353,7 +353,7 @@ ECode WebStorageClassic::GetOrigins(
         else {
             AutoPtr<IMessageHelper> mh;
             AutoPtr<IMessage> msg;
-            mh->ObtainEx4(NULL, GET_ORIGINS, callback, (IMessage**)&msg);
+            mh->Obtain(NULL, GET_ORIGINS, callback, (IMessage**)&msg);
             PostMessage(msg);
         }
     }
@@ -422,7 +422,7 @@ ECode WebStorageClassic::GetUsageForOrigin(
         AutoPtr<IMessageHelper> mh;
         AutoPtr<IMessage> msg;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        mh->ObtainEx4(NULL, GET_USAGE_ORIGIN, values, (IMessage**)&msg);
+        mh->Obtain(NULL, GET_USAGE_ORIGIN, values, (IMessage**)&msg);
         PostMessage(msg);
     }
 
@@ -472,7 +472,7 @@ ECode WebStorageClassic::GetQuotaForOrigin(
         AutoPtr<IMessage> msg;
         AutoPtr<IMessageHelper> mh;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        mh->ObtainEx4(NULL, GET_QUOTA_ORIGIN, values, (IMessage**)&msg);
+        mh->Obtain(NULL, GET_QUOTA_ORIGIN, values, (IMessage**)&msg);
         PostMessage(msg);
     }
 
@@ -496,7 +496,7 @@ ECode WebStorageClassic::SetQuotaForOrigin(
             AutoPtr<IMessageHelper> mh;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
             AutoPtr<IWebStorageOrigin> webStorageOrigin = new WebStorage::Origin(origin, quota);
-            mh->ObtainEx4(NULL, SET_QUOTA_ORIGIN, webStorageOrigin, (IMessage**)&msg);
+            mh->Obtain(NULL, SET_QUOTA_ORIGIN, webStorageOrigin, (IMessage**)&msg);
             PostMessage(msg);
         }
     }
@@ -520,7 +520,7 @@ ECode WebStorageClassic::DeleteOrigin(
             AutoPtr<IMessageHelper> mh;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
             AutoPtr<IWebStorageOrigin> webStorageOrigin = new WebStorage::Origin(origin);
-            mh->ObtainEx4(NULL, DELETE_ORIGIN, webStorageOrigin, (IMessage**)&msg);
+            mh->Obtain(NULL, DELETE_ORIGIN, webStorageOrigin, (IMessage**)&msg);
             PostMessage(msg);
         }
     }
@@ -540,7 +540,7 @@ ECode WebStorageClassic::DeleteAllData()
         AutoPtr<IMessage> msg;
         AutoPtr<IMessageHelper> mh;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        mh->ObtainEx3(NULL, DELETE_ALL, (IMessage**)&msg);
+        mh->Obtain(NULL, DELETE_ALL, (IMessage**)&msg);
         PostMessage(msg);
     }
 
@@ -586,7 +586,7 @@ void WebStorageClassic::Update()
     else {
         AutoPtr<IMessage> msg;
         AutoPtr<IMessageHelper> mh;
-        mh->ObtainEx3(NULL, UPDATE, (IMessage**)&msg);
+        mh->Obtain(NULL, UPDATE, (IMessage**)&msg);
         PostMessage(msg);
     }
 }
@@ -598,7 +598,7 @@ void WebStorageClassic::Update()
 void WebStorageClassic::PostMessage(
     /* [in] */ IMessage* msg)
 {
-    Elastos::Core::Threading::Mutex::Autolock lock(mLock);
+    Elastos::Core::Mutex::Autolock lock(mLock);
     if (mHandler != NULL) {
         Boolean result = FALSE;
         mHandler->SendMessage(msg, &result);

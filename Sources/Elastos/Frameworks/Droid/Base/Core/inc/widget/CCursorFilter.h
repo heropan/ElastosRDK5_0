@@ -18,7 +18,7 @@ public:
     CARAPI DoFilter(
         /* [in] */ ICharSequence * pConstraint);
 
-    CARAPI DoFilterEx(
+    CARAPI DoFilter(
         /* [in] */ ICharSequence * pConstraint,
         /* [in] */ IFilterListener * pListener);
 

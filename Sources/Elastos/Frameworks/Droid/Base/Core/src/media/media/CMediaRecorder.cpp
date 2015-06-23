@@ -7,8 +7,8 @@
 #include "os/ServiceManager.h"
 #include "hardware/CHardwareCamera.h"
 #include "privacy/CPrivacySettingsManager.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 #include <gui/Surface.h>
 #include <hardware/camera.h>
 #include <camera/Camera.h>
@@ -598,7 +598,7 @@ Int32 CMediaRecorder::CheckIfPackagesAllowed(
                 case MODE_RECORD_AUDIO:
                     for (Int32 i = 0; i < package_names->GetLength(); i++) {
                         pSet = NULL;
-                        mPrivacySettingsManager->GetSettingsEx(
+                        mPrivacySettingsManager->GetSettings(
                             (*package_names)[i], uid,(IPrivacySettings**)&pSet);
                         //if pSet is NULL, we allow application to access to mic
                         if (pSet != NULL) {
@@ -615,7 +615,7 @@ Int32 CMediaRecorder::CheckIfPackagesAllowed(
                 case MODE_RECORD_BOTH: {
                     for (Int32 i = 0; i < package_names->GetLength(); i++) {
                         pSet = NULL;
-                        mPrivacySettingsManager->GetSettingsEx(
+                        mPrivacySettingsManager->GetSettings(
                             (*package_names)[i], uid,(IPrivacySettings**)&pSet);
                         //if pSet is NULL, we allow application to access to mic
                         if (pSet != NULL) {
@@ -1011,7 +1011,7 @@ ECode CMediaRecorder::SetAuxiliaryOutputFile(
     return NOERROR;
 }
 
-ECode CMediaRecorder::SetAuxiliaryOutputFileEx(
+ECode CMediaRecorder::SetAuxiliaryOutputFile(
     /* [in] */ const String& path)
 {
     Logger::W(TAG, "setAuxiliaryOutputFile(String) is no longer supported.");
@@ -1027,7 +1027,7 @@ ECode CMediaRecorder::SetOutputFile(
     return NOERROR;
 }
 
-ECode CMediaRecorder::SetOutputFileEx(
+ECode CMediaRecorder::SetOutputFile(
     /* [in] */ const String& path)
 {
     mFileDescriptor = NULL;
@@ -1099,7 +1099,7 @@ ECode CMediaRecorder::Prepare()
             /* || checkIfPackagesAllowed(MODE_RECORD_BOTH) == IS_NOT_ALLOWED*/) {
                 AutoPtr<ArrayOf<String> > x = GetPackageName();
                 if(x != NULL && x->GetLength() > 0)
-                    mPrivacySettingsManager->NotificationEx2(
+                    mPrivacySettingsManager->Notification(
                         (*x)[0], 0, IPrivacySettings::EMPTY,
                         IPrivacySettings::DATA_RECORD_AUDIO, nullStr, NULL);
 
@@ -1131,7 +1131,7 @@ ECode CMediaRecorder::Prepare()
             if (CheckIfPackagesAllowed(MODE_RECORD_BOTH) == IS_NOT_ALLOWED){
                 AutoPtr<ArrayOf<String> > x = GetPackageName();
                 if(x != NULL && x->GetLength() > 0)
-                    mPrivacySettingsManager->NotificationEx2(
+                    mPrivacySettingsManager->Notification(
                         (*x)[0], 0, IPrivacySettings::EMPTY,
                         IPrivacySettings::DATA_CAMERA, nullStr, NULL);
 
@@ -1162,12 +1162,12 @@ ECode CMediaRecorder::Prepare()
     AutoPtr<ArrayOf<String> > packageName = GetPackageName();
     if(!skip){
         if (ACTUAL_STATE == STATE_RECORD_BOTH && packageName != NULL && packageName->GetLength() > 0) {
-            mPrivacySettingsManager->NotificationEx2(
+            mPrivacySettingsManager->Notification(
                 (*packageName)[0], 0, IPrivacySettings::REAL,
                 IPrivacySettings::DATA_CAMERA, nullStr, NULL);
         }
         else if (packageName != NULL && packageName->GetLength() > 0) {
-            mPrivacySettingsManager->NotificationEx2(
+            mPrivacySettingsManager->Notification(
                 (*packageName)[0], 0, IPrivacySettings::REAL,
                 IPrivacySettings::DATA_RECORD_AUDIO, nullStr, NULL);
         }
@@ -1364,7 +1364,7 @@ ECode CMediaRecorder::PostEventFromNative(
     CMediaRecorder* mr = (CMediaRecorder*)strongObj.Get();
     if (mr->mEventHandler != NULL) {
         AutoPtr<IMessage> message;
-        mr->mEventHandler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&message);
+        mr->mEventHandler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&message);
         Boolean bval;
         return mr->mEventHandler->SendMessage(message, &bval);
     }

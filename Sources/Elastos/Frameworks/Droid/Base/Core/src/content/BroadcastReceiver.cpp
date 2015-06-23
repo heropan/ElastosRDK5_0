@@ -4,12 +4,12 @@
 #ifdef DROID_CORE
 #include "os/CBundle.h"
 #endif
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -107,7 +107,7 @@ ECode BroadcastReceiver::PendingResult::GetResultExtras(
     VALIDATE_NOT_NULL(resultExtras);
     *resultExtras = mResultExtras;
     if (!makeMap) {
-        INTERFACE_ADDREF(*resultExtras)
+        REFCOUNT_ADD(*resultExtras)
         return NOERROR;
     }
 
@@ -209,7 +209,7 @@ ECode BroadcastReceiver::PendingResult::SendFinished(
 
     if (NULL != mResultExtras) {
         Boolean result = FALSE;
-        FAIL_RETURN(mResultExtras->SetAllowFdsEx(FALSE, &result));
+        FAIL_RETURN(mResultExtras->SetAllowFds(FALSE, &result));
     }
 
     VALIDATE_NOT_NULL(am);
@@ -411,7 +411,7 @@ ECode BroadcastReceiver::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -420,7 +420,7 @@ ECode BroadcastReceiver::GoAsync(
 {
     VALIDATE_NOT_NULL(pendingResult);
     *pendingResult = mPendingResult;
-    INTERFACE_ADDREF(*pendingResult);
+    REFCOUNT_ADD(*pendingResult);
     mPendingResult = NULL;
     return NOERROR;
 }
@@ -605,7 +605,7 @@ ECode BroadcastReceiver::GetPendingResult(
 {
     VALIDATE_NOT_NULL(pendingResult);
     *pendingResult = mPendingResult;
-    INTERFACE_ADDREF(*pendingResult);
+    REFCOUNT_ADD(*pendingResult);
     return NOERROR;
 }
 

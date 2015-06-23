@@ -54,7 +54,7 @@ ECode CXml::Parse(
  * Parses xml from the given reader and fires events on the given SAX
  * handler.
  */
-ECode CXml::ParseEx(
+ECode CXml::Parse(
     /* [in] */ IReader *in,
     /* [in] */ IContentHandler *contentHandler)
 {
@@ -72,7 +72,7 @@ ECode CXml::ParseEx(
  * Parses xml from the given input stream and fires events on the given SAX
  * handler.
  */
-ECode CXml::ParseEx2(
+ECode CXml::Parse(
     /* [in] */ IInputStream *in,
     // /* [in] */ IEncoding *encoding,
     /* [in] */ IContentHandler *contentHandler)
@@ -163,7 +163,7 @@ ECode CXml::AsAttributeSet(
 {
     VALIDATE_NOT_NULL(attrSet);
     *attrSet = (IAttributeSet*)parser->Probe(EIID_IAttributeSet);
-    INTERFACE_ADDREF(*attrSet);
+    REFCOUNT_ADD(*attrSet);
 
     if (*attrSet == NULL) {
         // CXmlPullAttributes::New(parser, attrSet);

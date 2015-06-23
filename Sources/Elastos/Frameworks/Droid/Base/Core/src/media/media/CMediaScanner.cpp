@@ -24,12 +24,12 @@
 #include "os/CSystemProperties.h"
 #include "os/Environment.h"
 #include "sax/CRootElement.h"
-#include <elastos/StringUtils.h>
-#include <elastos/HashSet.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/Character.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/Character.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Mtp::IMtpConstants;
 using Elastos::Droid::Mtp::CMtpConstants;
@@ -83,7 +83,7 @@ using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuffer;
@@ -333,7 +333,7 @@ ECode CMediaScanner::WplHandler::Start(
    /* [in] */ IAttributes* attributes)
 {
    String path;
-   attributes->GetValueEx(String(""), String("src"), &path);
+   attributes->GetValue(String(""), String("src"), &path);
    if (!path.IsNull()) {
        mOwner->CachePlaylistEntry(path, mPlayListDirectory);
    }
@@ -1775,7 +1775,7 @@ ECode CMediaScanner::Initialize(
 {
     AutoPtr<IContentResolver> contentResolver;
     mContext->GetContentResolver((IContentResolver**)&contentResolver);
-    contentResolver->AcquireProviderEx(String("media"), (IIContentProvider**)&mMediaProvider);
+    contentResolver->AcquireProvider(String("media"), (IIContentProvider**)&mMediaProvider);
 
     AutoPtr<IMediaStoreImagesMedia> images;
     CMediaStoreImagesMedia::AcquireSingleton((IMediaStoreImagesMedia**)&images);
@@ -1907,7 +1907,7 @@ ECode CMediaScanner::ScanSingleFile(
     file->GetLength(&tempValue);
     temp = mClient->DoScanFile(path, mimeType, lastModifiedSeconds, tempValue, FALSE, TRUE, FALSE);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 
 _EXIT_:
@@ -2470,7 +2470,7 @@ void CMediaScanner::ProcessWplPlayList(
             assert(0 && "TODO");
             // AutoPtr<WplHandler> wpl = new WplHandler(playListDirectory, uri, fileList);
             // handler = wpl->GetContentHandler();
-            xml->ParseEx2(fis, /* encoding, */ handler);
+            xml->Parse(fis, /* encoding, */ handler);
 
             ProcessCachedPlaylist(fileList, values, uri);
         }

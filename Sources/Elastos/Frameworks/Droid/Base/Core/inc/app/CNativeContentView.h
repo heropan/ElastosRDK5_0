@@ -4,7 +4,7 @@
 
 #include "_CNativeContentView.h"
 #include "view/View.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Droid::View::View;
 

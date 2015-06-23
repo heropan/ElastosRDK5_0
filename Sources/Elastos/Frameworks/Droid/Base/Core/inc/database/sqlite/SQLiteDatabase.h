@@ -5,16 +5,16 @@
 #include "ext/frameworkext.h"
 #include "database/sqlite/SQLiteClosable.h"
 #include "database/sqlite/SQLiteDebug.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <pthread.h>
 
 using Libcore::ICU::ILocale;
 using Elastos::Core::CObjectContainer;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileFilter;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::ICancellationSignal;
@@ -329,7 +329,7 @@ public:
      *   more progress than they would if we started the transaction immediately.
      * @return true if the transaction was yielded
      */
-    CARAPI YieldIfContendedSafelyEx(
+    CARAPI YieldIfContendedSafely(
         /* [in] */ Int64 sleepAfterYieldDelay,
         /* [out] */ Boolean* result);
 
@@ -374,7 +374,7 @@ public:
      * @return the newly opened database
      * @throws SQLiteException if the database cannot be opened
      */
-    static CARAPI OpenDatabaseEx(
+    static CARAPI OpenDatabase(
         /* [in] */ const String& path,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [in] */ Int32 flags,
@@ -392,7 +392,7 @@ public:
     /**
      * Equivalent to openDatabase(path, factory, CREATE_IF_NECESSARY).
      */
-    static CARAPI OpenOrCreateDatabaseEx(
+    static CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& path,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [out] */ ISQLiteDatabase** db);
@@ -400,7 +400,7 @@ public:
     /**
      * Equivalent to openDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler).
      */
-    static CARAPI OpenOrCreateDatabaseEx2(
+    static CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& path,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [in] */ IDatabaseErrorHandler* errorHandler,
@@ -535,7 +535,7 @@ public:
      *          updateTable
      * @param updateTable this is the table that will have its _sync_dirty
      */
-    CARAPI MarkTableSyncableEx(
+    CARAPI MarkTableSyncable(
         /* [in] */ const String& table,
         /* [in] */ const String& foreignKey,
         /* [in] */ const String& updateTable);
@@ -643,7 +643,7 @@ public:
      * {@link Cursor}s are not synchronized, see the documentation for more details.
      * @see Cursor
      */
-    CARAPI QueryEx(
+    CARAPI Query(
         /* [in] */ Boolean distinct,
         /* [in] */ const String& table,
         /* [in] */ ArrayOf<String>* columns,
@@ -736,7 +736,7 @@ public:
      * {@link Cursor}s are not synchronized, see the documentation for more details.
      * @see Cursor
      */
-    CARAPI QueryWithFactoryEx(
+    CARAPI QueryWithFactory(
         /* [in] */ ISQLiteDatabaseCursorFactory* cursorFactory,
         /* [in] */ Boolean distinct,
         /* [in] */ const String& table,
@@ -778,7 +778,7 @@ public:
      * {@link Cursor}s are not synchronized, see the documentation for more details.
      * @see Cursor
      */
-    CARAPI QueryEx2(
+    CARAPI Query(
         /* [in] */ const String& table,
         /* [in] */ ArrayOf<String>* columns,
         /* [in] */ const String& selection,
@@ -818,7 +818,7 @@ public:
      * {@link Cursor}s are not synchronized, see the documentation for more details.
      * @see Cursor
      */
-    CARAPI QueryEx3(
+    CARAPI Query(
         /* [in] */ const String& table,
         /* [in] */ ArrayOf<String>* columns,
         /* [in] */ const String& selection,
@@ -857,7 +857,7 @@ public:
      * @return A {@link Cursor} object, which is positioned before the first entry. Note that
      * {@link Cursor}s are not synchronized, see the documentation for more details.
      */
-    CARAPI RawQueryEx(
+    CARAPI RawQuery(
         /* [in] */ const String& sql,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [in] */ ICancellationSignal* cancellationSignal,
@@ -897,7 +897,7 @@ public:
      * @return A {@link Cursor} object, which is positioned before the first entry. Note that
      * {@link Cursor}s are not synchronized, see the documentation for more details.
      */
-    CARAPI RawQueryWithFactoryEx(
+    CARAPI RawQueryWithFactory(
         /* [in] */ ISQLiteDatabaseCursorFactory* cursorFactory,
         /* [in] */ const String& sql,
         /* [in] */ ArrayOf<String>* selectionArgs,
@@ -1112,7 +1112,7 @@ public:
      * @param bindArgs only byte[], String, Long and Double are supported in bindArgs.
      * @throws SQLException if the SQL string is invalid
      */
-    CARAPI ExecSQLEx(
+    CARAPI ExecSQL(
         /* [in] */ const String& sql,
         /* [in] */ ArrayOf<IInterface*>* bindArgs);
 

@@ -115,14 +115,14 @@ ECode CStackView::SetOutAnimation(
     return StackView::SetOutAnimation(outAnimation);
 }
 
-ECode CStackView::SetInAnimationEx(
+ECode CStackView::SetInAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {
      return StackView::SetInAnimation(context, resourceID);
 }
 
-ECode CStackView::SetOutAnimationEx(
+ECode CStackView::SetOutAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {

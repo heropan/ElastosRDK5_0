@@ -213,7 +213,7 @@ module
      * @param y scale factor y
      * @param z scale factor z
      */
-        ScaleMEx(
+        ScaleM(
             [in] ArrayOf<Float>* m,
             [in] Int32 mOffset,
             [in] Float x,
@@ -247,7 +247,7 @@ module
      * @param y translation factor y
      * @param z translation factor z
      */
-        TranslateMEx(
+        TranslateM(
             [in] ArrayOf<Float>* m,
             [in] Int32 mOffset,
             [in] Float x,
@@ -285,7 +285,7 @@ module
      * @param y scale factor y
      * @param z scale factor z
      */
-        RotateMEx(
+        RotateM(
             [in] ArrayOf<Float>* m,
             [in] Int32 mOffset,
             [in] Float a,

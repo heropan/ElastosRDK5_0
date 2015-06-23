@@ -113,7 +113,7 @@ ECode CStrictModeThreadPolicyBuilder::Build(
     }
     AutoPtr<IStrictModeThreadPolicy> tp = new CStrictMode::ThreadPolicy(mMask);
     *policy = tp;
-    INTERFACE_ADDREF(*policy);
+    REFCOUNT_ADD(*policy);
     return NOERROR;
 }
 

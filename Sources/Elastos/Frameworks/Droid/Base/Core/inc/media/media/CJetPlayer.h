@@ -5,10 +5,10 @@
 #include "_CJetPlayer.h"
 #include "ext/frameworkext.h"
 #include "CAudioTrack.h"
-#include "elastos/StringBuffer.h"
+#include <elastos/core/StringBuffer.h>
 #include "os/HandlerBase.h"
 #include <media/JetPlayer.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Core::StringBuffer;
@@ -98,7 +98,7 @@ public:
      * @param afd the asset file descriptor.
      * @return true if loading the .jet file was successful, false if loading failed.
      */
-    CARAPI LoadJetFileEx(
+    CARAPI LoadJetFile(
         /* [in] */ IAssetFileDescriptor* afd,
         /* [out] */ Boolean* result);
 
@@ -256,7 +256,7 @@ public:
     CARAPI SetEventListener(
         /* [in] */ IOnJetEventListener* listener);
 
-    CARAPI SetEventListenerEx(
+    CARAPI SetEventListener(
         /* [in] */ IOnJetEventListener* listener,
         /* [in] */ IHandler* handler);
 

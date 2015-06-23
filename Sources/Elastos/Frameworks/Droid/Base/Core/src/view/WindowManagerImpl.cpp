@@ -38,7 +38,7 @@ AutoPtr<WindowManagerImpl> WindowManagerImpl::CreatePresentationWindowManager(
     return new WindowManagerImpl(display, mParentWindow);
 }
 
-ECode WindowManagerImpl::AddViewEx5(
+ECode WindowManagerImpl::AddView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
 {
@@ -69,7 +69,7 @@ ECode WindowManagerImpl::GetDefaultDisplay(
 {
     VALIDATE_NOT_NULL(display);
     *display = mDisplay;
-    INTERFACE_ADDREF(*display);
+    REFCOUNT_ADD(*display);
     return NOERROR;
 }
 

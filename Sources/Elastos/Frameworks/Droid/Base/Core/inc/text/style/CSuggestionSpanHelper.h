@@ -3,7 +3,7 @@
 #define __CSUGGESTIONSPANHELPER_H__
 
 #include "_CSuggestionSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 #include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {

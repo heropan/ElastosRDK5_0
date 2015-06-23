@@ -1,13 +1,13 @@
 
 #include "os/FileObserver.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <sys/inotify.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <errno.h>
 
 using Elastos::Utility::Logging::Logger;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
@@ -236,7 +236,7 @@ ECode FileObserver::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 

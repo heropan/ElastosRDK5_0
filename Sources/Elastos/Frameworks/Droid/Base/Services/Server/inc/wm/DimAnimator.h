@@ -3,7 +3,7 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::View::ISurfaceSession;
 using Elastos::Droid::View::ISurface;

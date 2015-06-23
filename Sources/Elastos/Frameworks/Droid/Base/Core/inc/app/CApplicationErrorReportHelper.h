@@ -23,7 +23,7 @@ public:
         /* [in] */ Int32 appFlags,
         /* [out] */ IComponentName** receiver);
 
-    CARAPI GetErrorReportReceiverEx(
+    CARAPI GetErrorReportReceiver(
         /* [in] */ IPackageManager* pm,
         /* [in] */ const String& errorPackage,
         /* [in] */ const String& receiverPackage,

@@ -8,9 +8,9 @@
 #include "view/menu/IconMenuItemView.h"
 #include "os/CBundle.h"
 #include "R.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::View::IContextThemeWrapper;
@@ -86,7 +86,7 @@ ECode IconMenuPresenter::SubMenuPresenterCallback::OnOpenSubMenu(
     assert(result != NULL);
     if (subMenu != NULL) {
         AutoPtr<IMenuItem> item;
-        ISubMenu::Probe(subMenu)->GetItemEx((IMenuItem**)&item);
+        ISubMenu::Probe(subMenu)->GetItem((IMenuItem**)&item);
         assert(item != NULL);
 
         item->GetItemId(&(mHost->mOpenSubMenuId));
@@ -210,7 +210,7 @@ ECode IconMenuPresenter::OnSubMenuSelected(
     mOpenSubMenu = helper;
 
     AutoPtr<IMenuItemImpl> item;
-    (ISubMenu::Probe(subMenu))->GetItemEx((IMenuItem**)&item);
+    (ISubMenu::Probe(subMenu))->GetItem((IMenuItem**)&item);
     assert(item != NULL);
 
     item->GetItemId(&mOpenSubMenuId);
@@ -316,7 +316,7 @@ ECode IconMenuPresenter::RestoreHierarchyState(
     }
 
     Int32 subMenuId;
-    inState->GetInt32Ex(OPEN_SUBMENU_KEY, 0, &subMenuId);
+    inState->GetInt32(OPEN_SUBMENU_KEY, 0, &subMenuId);
     if (subMenuId > 0 && mMenu != NULL) {
         AutoPtr<IMenuItem> item;
         mMenu->FindItem(subMenuId, (IMenuItem**)&item);

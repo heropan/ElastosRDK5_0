@@ -83,7 +83,7 @@ ECode CActivityManagerRunningServiceInfo::GetService(
 {
     VALIDATE_NOT_NULL(service);
     *service = mService;
-    INTERFACE_ADDREF(*service);
+    REFCOUNT_ADD(*service);
     return NOERROR;
 }
 

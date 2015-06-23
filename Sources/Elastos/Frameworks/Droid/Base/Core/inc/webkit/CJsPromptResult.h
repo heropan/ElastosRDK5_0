@@ -22,7 +22,7 @@ public:
     CARAPI GetResult(
         /* [out] */ Boolean* result);
 
-    CARAPI ConfirmEx(
+    CARAPI Confirm(
         /* [in] */ const String& result);
 
     CARAPI GetStringResult(

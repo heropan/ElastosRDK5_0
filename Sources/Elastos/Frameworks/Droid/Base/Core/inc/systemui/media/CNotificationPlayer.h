@@ -3,12 +3,10 @@
 
 #include "_CNotificationPlayer.h"
 #include "ext/frameworkext.h"
-#include "elastos/List.h"
-#include <elastos/ThreadBase.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IPowerManagerWakeLock;

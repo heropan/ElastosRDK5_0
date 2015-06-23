@@ -2,8 +2,8 @@
 #define __CDIALOGTITLE_H_
 
 #include "_CDialogTitle.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 #include "widget/internal/DialogTitle.h"
 
 namespace Elastos {

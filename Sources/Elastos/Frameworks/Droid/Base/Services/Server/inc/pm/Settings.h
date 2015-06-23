@@ -10,7 +10,7 @@
 #include "pm/DumpState.h"
 #include "pm/PendingPackage.h"
 #include "content/pm/PackageParser.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::StringBuilder;

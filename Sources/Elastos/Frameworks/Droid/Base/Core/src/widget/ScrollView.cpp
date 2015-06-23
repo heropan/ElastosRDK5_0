@@ -1,6 +1,6 @@
 
 #include "widget/ScrollView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <R.h>
 #include "view/FocusFinder.h"
 #include "view/CViewConfiguration.h"
@@ -139,7 +139,7 @@ ECode ScrollView::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::ScrollView),
             ARRAY_SIZE(R::styleable::ScrollView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     Boolean value;
@@ -362,7 +362,7 @@ Boolean ScrollView::ExecuteKeyEvent(
 
             if (nextFocused != NULL && nextFocused.Get() != THIS_PROBE(IView)) {
                 Boolean isFocus;
-                nextFocused->RequestFocusEx(IView::FOCUS_DOWN, &isFocus);
+                nextFocused->RequestFocus(IView::FOCUS_DOWN, &isFocus);
                 return isFocus;
             }
             else return FALSE;
@@ -514,7 +514,7 @@ Boolean ScrollView::OnInterceptTouchEvent(
             }
 
             Float y;
-            ev->GetYEx(pointerIndex, &y);
+            ev->GetY(pointerIndex, &y);
             Int32 yDiff = (Int32)Elastos::Core::Math::Abs(y - mLastMotionY);
             if (yDiff > mTouchSlop) {
                 mIsBeingDragged = TRUE;
@@ -638,7 +638,7 @@ Boolean ScrollView::OnTouchEvent(
             }
 
             Float lasty;
-            ev->GetYEx(activePointerIndex, &lasty);
+            ev->GetY(activePointerIndex, &lasty);
             Int32 y = lasty;
             Int32 deltaY = mLastMotionY - y;
             if (!mIsBeingDragged && Elastos::Core::Math::Abs(deltaY) > mTouchSlop) {
@@ -707,9 +707,9 @@ Boolean ScrollView::OnTouchEvent(
         break;
         case IMotionEvent::ACTION_UP:
             if (mIsBeingDragged) {
-                mVelocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+                mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
                 Float y;
-                mVelocityTracker->GetYVelocityEx(mActivePointerId, &y);
+                mVelocityTracker->GetYVelocity(mActivePointerId, &y);
                 Int32 initialVelocity = (Int32)y;
 
                 if (GetChildCount() > 0) {
@@ -741,7 +741,7 @@ Boolean ScrollView::OnTouchEvent(
             Int32 index;
             ev->GetActionIndex(&index);
             Float lasty;
-            ev->GetYEx(index, &lasty);
+            ev->GetY(index, &lasty);
             mLastMotionY = lasty;
             ev->GetPointerId(index, &mActivePointerId);
             break;
@@ -751,7 +751,7 @@ Boolean ScrollView::OnTouchEvent(
             Int32 index;
             ev->FindPointerIndex(mActivePointerId, &index);
             Float lasty;
-            ev->GetYEx(index, &lasty);
+            ev->GetY(index, &lasty);
             mLastMotionY = lasty;
             break;
     }
@@ -811,7 +811,7 @@ void ScrollView::OnSecondaryPointerUp(
         // TODO: Make this decision more intelligent.
         Int32 newPointerIndex = pointerIndex == 0 ? 1 : 0;
         Float lastY;
-        ev->GetYEx(newPointerIndex, &lastY);
+        ev->GetY(newPointerIndex, &lastY);
         mLastMotionY = lastY;
         ev->GetPointerId(newPointerIndex, &mActivePointerId);
         if (mVelocityTracker != NULL) {
@@ -1113,7 +1113,7 @@ Boolean ScrollView::ScrollAndFocus(
 
     AutoPtr<IView> currentFocused = FindFocus();
     if (newFocused != currentFocused)
-        newFocused->RequestFocusEx(direction, &up);
+        newFocused->RequestFocus(direction, &up);
 
     return handled;
 }
@@ -1140,7 +1140,7 @@ Boolean ScrollView::ArrowScroll(
         Int32 scrollDelta = ComputeScrollDeltaToGetChildRectOnScreen(mTempRect);
         DoScrollY(scrollDelta);
         Boolean result;
-        nextFocused->RequestFocusEx(direction, &result);
+        nextFocused->RequestFocus(direction, &result);
     }
     else {
         // no new focus
@@ -1561,7 +1561,7 @@ Boolean ScrollView::OnRequestFocusInDescendants(
     }
 
     Boolean result;
-    ASSERT_SUCCEEDED(nextFocus->RequestFocusEx2(
+    ASSERT_SUCCEEDED(nextFocus->RequestFocus(
             direction, previouslyFocusedRect, &result));
 
     return result;
@@ -1776,7 +1776,7 @@ ECode ScrollView::Draw(
             Int32 height = GetHeight();
 
             canvas->Translate(-width + mPaddingLeft, Elastos::Core::Math::Max(GetScrollRange(), scrollY) + height);
-            canvas->RotateEx(180, width, 0);
+            canvas->Rotate(180, width, 0);
             mEdgeGlowBottom->SetSize(width, height);
 
             if (mEdgeGlowBottom->Draw(canvas, &result), result) {

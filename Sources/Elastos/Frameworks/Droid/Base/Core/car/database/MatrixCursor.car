@@ -59,7 +59,7 @@ module
          * @param columnValues in the same order as the the column names specified
          *  at cursor construction time
          */
-        AddRowEx(
+        AddRow(
             [in] IObjectContainer* columnValues);
     }
 

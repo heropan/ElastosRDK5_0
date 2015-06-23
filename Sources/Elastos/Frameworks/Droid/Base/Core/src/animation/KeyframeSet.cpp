@@ -2,7 +2,7 @@
 #include "animation/KeyframeSet.h"
 #include "animation/Int32KeyframeSet.h"
 #include "animation/FloatKeyframeSet.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 namespace Elastos {
 namespace Droid {
 namespace Animation {
@@ -155,7 +155,7 @@ ECode KeyframeSet::GetValue(
 {
     AutoPtr<IInterface> temp = KeyframeSetBase::GetValue(fraction);
     *value = temp;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode KeyframeSet::Clone(
     }
     AutoPtr<IKeyframeSet> newSet = new KeyframeSet(newKeyframes);
     *object = newSet;
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -180,7 +180,7 @@ ECode KeyframeSet::GetKeyframes(
 {
     VALIDATE_NOT_NULL(frames);
     *frames = mKeyframes;
-    INTERFACE_ADDREF(*frames);
+    REFCOUNT_ADD(*frames);
     return NOERROR;
 }
 

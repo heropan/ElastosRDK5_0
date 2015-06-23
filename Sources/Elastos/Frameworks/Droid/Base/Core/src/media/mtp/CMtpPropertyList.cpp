@@ -44,7 +44,7 @@ ECode CMtpPropertyList::Append(
     return NOERROR;
 }
 
-ECode CMtpPropertyList::AppendEx(
+ECode CMtpPropertyList::Append(
         /* [in] */ Int32 handle,
         /* [in] */ Int32 property,
         /* [in] */ const String& value)

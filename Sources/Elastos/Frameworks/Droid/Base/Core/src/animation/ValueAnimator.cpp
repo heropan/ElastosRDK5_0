@@ -3,8 +3,8 @@
 #include "animation/ValueAnimator.h"
 #include "animation/CValueAnimator.h"
 #include <unistd.h>
-#include "elastos/Math.h"
-#include <elastos/Algorithm.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/Algorithm.h>
 #include "os/Looper.h"
 #include "os/SystemProperties.h"
 #include "view/animation/AnimationUtils.h"
@@ -813,7 +813,7 @@ ECode ValueAnimator::Clone(
     CloneSuperData(newObject.Get());
     CloneInternal(newObject);
     *object = (IAnimator*)newObject->Probe(EIID_IAnimator);
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

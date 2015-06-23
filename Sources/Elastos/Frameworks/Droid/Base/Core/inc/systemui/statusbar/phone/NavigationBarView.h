@@ -2,13 +2,12 @@
 #define __NAVIGATIONBARVIEW_H_
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/Runnable.h"
 #include "widget/LinearLayout.h"
 #include "systemui/statusbar/DelegateViewHelper.h"
 #include "animation/AnimatorListenerAdapter.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::View::IViewOnTouchListener;

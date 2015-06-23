@@ -53,7 +53,7 @@ ECode CSslCertificateHelper::SaveState(
 
     }
     *bundle = localbundle;
-    INTERFACE_ADDREF(*bundle);
+    REFCOUNT_ADD(*bundle);
     return NOERROR;
 }
 
@@ -98,7 +98,7 @@ ECode CSslCertificateHelper::RestoreState(
 
     CSslCertificate* cert = new CSslCertificate(issuedTo, issuedBy, dateNOtBefore, dateNOtAfter, x509Certificate);
     *certificate = (ISslCertificate*)cert->Probe(EIID_ISslCertificate);
-    INTERFACE_ADDREF(*certificate);
+    REFCOUNT_ADD(*certificate);
     return NOERROR;
 }
 

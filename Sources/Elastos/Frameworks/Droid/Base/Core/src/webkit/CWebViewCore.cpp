@@ -22,8 +22,8 @@
 #include "webkit/DebugFlags.h"
 #include "webkit/GeolocationService.h"
 #include "location/CLocation.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/IntegralToString.h>
 
 using Elastos::Core::IFloat;
@@ -958,7 +958,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(modifiedSelectionString, (ICharSequence**)&cs);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx4(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+            helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                     CWebViewClassic::SELECTION_STRING_CHANGED, cs.Get(), (IMessage**)&msg);
             msg->SendToTarget();
             mOwner->mOwner->mTextSelectionChangeReason
@@ -1029,7 +1029,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx4(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+            helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                     CWebViewClassic::SAVE_WEBARCHIVE_FINISHED, (IInterface*)saveMessage, (IMessage**)&msg);
             msg->SendToTarget();
             break;
@@ -1124,7 +1124,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx4(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+            helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                     CWebViewClassic::AUTOFILL_COMPLETE, NULL, (IMessage**)&msg);
             msg->SendToTarget();
             break;
@@ -1195,7 +1195,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
                 AutoPtr<ICharSequence> cs;
                 CStringWrapper::New(copiedText, (ICharSequence**)&cs);
                 AutoPtr<IMessage> msg;
-                helper->ObtainEx4(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+                helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                         CWebViewClassic::COPY_TO_CLIPBOARD, cs, (IMessage**)&msg);
                 msg->SendToTarget();
             }
@@ -1231,7 +1231,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
                 AutoPtr<IMessageHelper> helper;
                 CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
                 AutoPtr<IMessage> msg;
-                helper->ObtainEx3(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+                helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                         CWebViewClassic::SHOW_CARET_HANDLE, (IMessage**)&msg);
                 msg->SendToTarget();
             }
@@ -1262,7 +1262,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx4(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+            helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                     CWebViewClassic::UPDATE_MATCH_COUNT, (IInterface*)request, (IMessage**)&msg);
             msg->SendToTarget();
             break;
@@ -1281,7 +1281,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx4(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
+            helper->Obtain(mOwner->mOwner->mWebViewClassic->mPrivateHandler,
                     CWebViewClassic::UPDATE_MATCH_COUNT, (IInterface*)request, (IMessage**)&msg);
             msg->SendToTarget();
             break;
@@ -1460,7 +1460,7 @@ ECode CWebViewCore::EventHub::DispatchWebKitEvent(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx4(mOwner->mWebViewClassic->mPrivateHandler,
+            helper->Obtain(mOwner->mWebViewClassic->mPrivateHandler,
                     CWebViewClassic::HIT_TEST_RESULT, (IInterface*)hit.Get(), (IMessage**)&msg);
             msg->SendToTarget();
             *result = FALSE;
@@ -1481,8 +1481,8 @@ ECode CWebViewCore::EventHub::DispatchWebKitEvent(
                 Int32 id;
                 Float fx, fy;
                 event->GetPointerId(i, &id);
-                event->GetXEx(i, &fx);
-                event->GetYEx(i, &fy);
+                event->GetX(i, &fx);
+                event->GetY(i, &fy);
                 (*idArray)[i] = id;
                 (*xArray)[i] = (Int32)fx;
                 (*yArray)[i] = (Int32)fy;
@@ -1943,7 +1943,7 @@ ECode CWebViewCore::constructor(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> init;
-    helper->ObtainEx4(sWebCoreHandler, WebCoreThread::INITIALIZE,
+    helper->Obtain(sWebCoreHandler, WebCoreThread::INITIALIZE,
             (IWebViewCore*)this, (IMessage**)&init);
     Boolean result;
     sWebCoreHandler->SendMessage(init, &result);
@@ -1980,7 +1980,7 @@ void CWebViewCore::Initialize()
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx5(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::WEBCORE_INITIALIZED_MSG_ID,
                 mNativeClass, 0, (IMessage**)&msg);
         msg->SendToTarget();
@@ -1996,7 +1996,7 @@ void CWebViewCore::InitializeSubwindow()
     // Go ahead and initialize the core components.
     Initialize();
     // Remove the INITIALIZE method so we don't try to initialize twice.
-    sWebCoreHandler->RemoveMessagesEx(WebCoreThread::INITIALIZE, (IWebViewCore*)this);
+    sWebCoreHandler->RemoveMessages(WebCoreThread::INITIALIZE, (IWebViewCore*)this);
 }
 
 /* Get the BrowserFrame component. This is used for subwindow creation and
@@ -2113,7 +2113,7 @@ void CWebViewCore::FocusNodeChanged(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx6(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::FOCUS_NODE_CHANGED,
             nodePointer, 0, hitTest, (IMessage**)&msg);
     msg->SendToTarget();
@@ -2129,7 +2129,7 @@ void CWebViewCore::ChromeTakeFocus(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::TAKE_FOCUS, (IMessage**)&msg);
     msg->SetArg1(MapDirection(webkitDirection));
     msg->SendToTarget();
@@ -2339,7 +2339,7 @@ void CWebViewCore::ExitFullscreenVideo()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::EXIT_FULLSCREEN_VIDEO, (IMessage**)&msg);
     msg->SendToTarget();
 }
@@ -2739,7 +2739,7 @@ void CWebViewCore::SendMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(NULL, what, (IMessage**)&msg);
+    helper->Obtain(NULL, what, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -2752,7 +2752,7 @@ void CWebViewCore::SendMessageAtFrontOfQueue(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx6(NULL, what, arg1, arg2, obj, (IMessage**)&msg);
+    helper->Obtain(NULL, what, arg1, arg2, obj, (IMessage**)&msg);
     mEventHub->SendMessageAtFrontOfQueue(msg);
 }
 
@@ -2763,7 +2763,7 @@ void CWebViewCore::SendMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(NULL, what, obj, (IMessage**)&msg);
+    helper->Obtain(NULL, what, obj, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -2775,7 +2775,7 @@ void CWebViewCore::SendMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx5(NULL, what, arg1, 0, (IMessage**)&msg);
+    helper->Obtain(NULL, what, arg1, 0, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -2787,7 +2787,7 @@ void CWebViewCore::SendMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx5(NULL, what, arg1, arg2, (IMessage**)&msg);
+    helper->Obtain(NULL, what, arg1, arg2, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -2800,7 +2800,7 @@ void CWebViewCore::SendMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx6(NULL, what, arg1, 0, obj, (IMessage**)&msg);
+    helper->Obtain(NULL, what, arg1, 0, obj, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -2814,7 +2814,7 @@ void CWebViewCore::SendMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx6(NULL, what, arg1, arg2, obj, (IMessage**)&msg);
+    helper->Obtain(NULL, what, arg1, arg2, obj, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -2825,7 +2825,7 @@ void CWebViewCore::SendMessageAtFrontOfQueue(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(NULL, what, obj, (IMessage**)&msg);
+    helper->Obtain(NULL, what, obj, (IMessage**)&msg);
     mEventHub->SendMessageAtFrontOfQueue(msg);
 }
 
@@ -2837,7 +2837,7 @@ void CWebViewCore::SendMessageDelayed(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(NULL, what, obj, (IMessage**)&msg);
+    helper->Obtain(NULL, what, obj, (IMessage**)&msg);
     mEventHub->SendMessageDelayed(msg, delay);
 }
 
@@ -2866,7 +2866,7 @@ void CWebViewCore::Destroy()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(NULL, EventHub::DESTROY, (IMessage**)&msg);
+    helper->Obtain(NULL, EventHub::DESTROY, (IMessage**)&msg);
     mEventHub->SendMessageAtFrontOfQueue(msg);
     mEventHub->BlockMessages();
     WebCoreThreadWatchdog::UnregisterWebView(mWebViewClassic);
@@ -2961,7 +2961,7 @@ void CWebViewCore::Key(
                 AutoPtr<IMessageHelper> helper;
                 CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
                 AutoPtr<IMessage> msg;
-                helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+                helper->Obtain(mWebViewClassic->mPrivateHandler,
                         CWebViewClassic::TAKE_FOCUS, (IMessage**)&msg);
                 msg->SetArg1(canTakeFocusDirection);
                 msg->SendToTarget();
@@ -3083,7 +3083,7 @@ void CWebViewCore::ResumeWebKitDraw()
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx3(NULL, EventHub::WEBKIT_DRAW, (IMessage**)&msg);
+        helper->Obtain(NULL, EventHub::WEBKIT_DRAW, (IMessage**)&msg);
         mEventHub->SendMessage(msg);
     }
     mSkipDrawFlag = FALSE;
@@ -3110,7 +3110,7 @@ void CWebViewCore::WebkitDraw()
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx3(NULL, EventHub::WEBKIT_DRAW, (IMessage**)&msg);
+            helper->Obtain(NULL, EventHub::WEBKIT_DRAW, (IMessage**)&msg);
             mEventHub->SendMessageDelayed(msg, 10);
         }
         else {
@@ -3149,7 +3149,7 @@ void CWebViewCore::WebkitDraw(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::NEW_PICTURE_MSG_ID, (IInterface*)draw, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3191,7 +3191,7 @@ void CWebViewCore::ReducePriority()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(sWebCoreHandler,
+    helper->Obtain(sWebCoreHandler,
             WebCoreThread::REDUCE_PRIORITY, (IMessage**)&msg);
     Boolean result;
     sWebCoreHandler->SendMessageAtFrontOfQueue(msg, &result);
@@ -3205,7 +3205,7 @@ void CWebViewCore::ResumePriority()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(sWebCoreHandler,
+    helper->Obtain(sWebCoreHandler,
             WebCoreThread::RESUME_PRIORITY, (IMessage**)&msg);
     Boolean result;
     sWebCoreHandler->SendMessageAtFrontOfQueue(msg, &result);
@@ -3220,7 +3220,7 @@ void CWebViewCore::SendStaticMessage(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(sWebCoreHandler, messageType, argument, (IMessage**)&msg);
+    helper->Obtain(sWebCoreHandler, messageType, argument, (IMessage**)&msg);
     Boolean result;
     sWebCoreHandler->SendMessage(msg, &result);
 }
@@ -3317,7 +3317,7 @@ void CWebViewCore::ContentDraw()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(NULL, EventHub::WEBKIT_DRAW, (IMessage**)&msg);
+    helper->Obtain(NULL, EventHub::WEBKIT_DRAW, (IMessage**)&msg);
     mEventHub->SendMessage(msg);
 }
 
@@ -3347,11 +3347,11 @@ void CWebViewCore::ContentScrollTo(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx6(mWebViewClassic->mPrivateHandler, CWebViewClassic::SCROLL_TO_MSG_ID,
+        helper->Obtain(mWebViewClassic->mPrivateHandler, CWebViewClassic::SCROLL_TO_MSG_ID,
                 animate ? 1 : 0, onlyIfImeIsShowing ? 1 : 0, p, (IMessage**)&msg);
         if (mDrawIsScheduled) {
             AutoPtr<IMessage> m;
-            helper->ObtainEx4(NULL, EventHub::MESSAGE_RELAY, msg, (IMessage**)&m);
+            helper->Obtain(NULL, EventHub::MESSAGE_RELAY, msg, (IMessage**)&m);
             mEventHub->SendMessage(m);
         }
         else {
@@ -3385,7 +3385,7 @@ void CWebViewCore::SendViewInvalidate(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::INVAL_RECT_MSG_ID, r, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3551,7 +3551,7 @@ void CWebViewCore::SetupViewport(
         AutoPtr<IMessage> msg;
         AutoPtr<IFloat> adjustObj;
         CFloat::New(adjust, (IFloat**)&adjustObj);
-        helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::UPDATE_ZOOM_DENSITY, adjustObj.Get(), (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3606,7 +3606,7 @@ void CWebViewCore::SetupViewport(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::UPDATE_ZOOM_RANGE, viewState.Get(), (IMessage**)&msg);
         msg->SendToTarget();
         return;
@@ -3708,7 +3708,7 @@ void CWebViewCore::SetupViewport(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx4(NULL,
+        helper->Obtain(NULL,
                 EventHub::VIEW_SIZE_CHANGED, data.Get(), (IMessage**)&msg);
         mEventHub->SendMessageAtFrontOfQueue(msg);
     }
@@ -3801,7 +3801,7 @@ void CWebViewCore::NeedTouchEvents(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx5(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::WEBCORE_NEED_TOUCH_EVENTS, need ? 1 : 0, 0, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3819,7 +3819,7 @@ void CWebViewCore::UpdateTextfield(
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(text, (ICharSequence**)&cs);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx6(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::UPDATE_TEXTFIELD_TEXT_MSG_ID, ptr, textGeneration, cs, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3848,7 +3848,7 @@ void CWebViewCore::UpdateTextSelection(
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<CWebViewCoreTextSelectionData> data = CreateTextSelection(start, end, selectionPtr);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx6(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::UPDATE_TEXT_SELECTION_MSG_ID, pointer, textGeneration, data.Get(), (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3869,7 +3869,7 @@ void CWebViewCore::UpdateTextSizeAndScroll(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx6(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::EDIT_TEXT_SIZE_CHANGED, pointer, 0, rect.Get(), (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -3882,7 +3882,7 @@ void CWebViewCore::ClearTextEntry()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::CLEAR_TEXT_ENTRY, (IMessage**)&msg);
     msg->SendToTarget();
 }
@@ -3900,12 +3900,12 @@ void CWebViewCore::InitEditField(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::INIT_EDIT_FIELD, initData, (IMessage**)&msg);
     msg->SendToTarget();
     AutoPtr<CWebViewCoreTextSelectionData> data = CreateTextSelection(start, end, selectionPtr);
     msg = NULL;
-    helper->ObtainEx6(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::UPDATE_TEXT_SELECTION_MSG_ID, initData->mFieldPointer, 0, data, (IMessage**)&msg);
     msg->SendToTarget();
 }
@@ -3985,7 +3985,7 @@ void CWebViewCore::RequestKeyboard(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx5(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::REQUEST_KEYBOARD, showKeyboard ? 1 : 0, 0, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -4000,7 +4000,7 @@ void CWebViewCore::SetWebTextViewAutoFillable(
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<CWebViewCoreAutoFillData> data = new CWebViewCoreAutoFillData(queryId, preview);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::SET_AUTOFILLABLE, (IInterface*)data.Get(), (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -4022,7 +4022,7 @@ void CWebViewCore::KeepScreenOn(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::SCREEN_ON, (IMessage**)&msg);
         msg->SetArg1(screenOn ? 1 : 0);
         msg->SendToTarget();
@@ -4075,7 +4075,7 @@ void CWebViewCore::ShowFullScreenPlugin(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::SHOW_FULLSCREEN, (IMessage**)&msg);
     msg->SetObj(((ViewManager::ChildView*)childView)->mView);
     msg->SetArg1(orientation);
@@ -4092,7 +4092,7 @@ void CWebViewCore::HideFullScreenPlugin()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::HIDE_FULLSCREEN, (IMessage**)&msg);
     msg->SendToTarget();
 }
@@ -4183,7 +4183,7 @@ void CWebViewCore::ShowRect(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+        helper->Obtain(mWebViewClassic->mPrivateHandler,
                 CWebViewClassic::SHOW_RECT_MSG_ID, data.Get(), (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -4204,7 +4204,7 @@ void CWebViewCore::CenterFitRect(
     AutoPtr<IRect> r;
     CRect::New(x, y, x + width, y + height, (IRect**)&r);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::CENTER_FIT_RECT, r.Get(), (IMessage**)&msg);
     msg->SendToTarget();
 }
@@ -4220,7 +4220,7 @@ void CWebViewCore::SetScrollbarModes(
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx5(mWebViewClassic->mPrivateHandler,
+    helper->Obtain(mWebViewClassic->mPrivateHandler,
             CWebViewClassic::SET_SCROLLBAR_MODES, hMode, vMode, (IMessage**)&msg);
     msg->SendToTarget();
 }

@@ -4,7 +4,7 @@
 #include "view/animation/CAnimationUtils.h"
 #include "os/SystemClock.h"
 #include "view/animation/CDecelerateInterpolator.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "graphics/CRect.h"
 
 using Elastos::Droid::Graphics::CRect;

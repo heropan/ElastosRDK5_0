@@ -5,12 +5,11 @@
 #include "ext/frameworkext.h"
 #include "os/BatteryStats.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFileInputStream;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;

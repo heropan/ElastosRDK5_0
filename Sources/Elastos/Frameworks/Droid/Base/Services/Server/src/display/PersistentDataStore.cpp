@@ -2,7 +2,7 @@
 #include "display/PersistentDataStore.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -208,7 +208,7 @@ void PersistentDataStore::Load()
     AutoPtr<IBufferedInputStream> bis;
     ec = CBufferedInputStream::New(is, (IBufferedInputStream**)&bis);
     if (FAILED(ec)) goto _Exit_;
-    ec = parser->SetInputEx(bis, String(NULL));
+    ec = parser->SetInput(bis, String(NULL));
     if (FAILED(ec)) goto _Exit_;
     ec = LoadFromXml(parser);
 
@@ -279,11 +279,11 @@ ECode PersistentDataStore::LoadRememberedWifiDisplaysFromXml(
         FAIL_RETURN(parser->GetName(&name));
         if (name.Equals("wifi-display")) {
             String deviceAddress;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("deviceAddress"), &deviceAddress));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("deviceAddress"), &deviceAddress));
             String deviceName;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("deviceName"), &deviceName));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("deviceName"), &deviceName));
             String deviceAlias;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("deviceAlias"), &deviceAlias));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("deviceAlias"), &deviceAlias));
             if (deviceAddress.IsNull() || deviceName.IsNull()) {
                 Slogger::E(TAG, "Missing deviceAddress or deviceName attribute on wifi-display.");
                 return E_XML_PULL_PARSER_EXCEPTION;

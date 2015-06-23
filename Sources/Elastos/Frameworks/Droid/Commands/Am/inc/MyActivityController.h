@@ -3,15 +3,15 @@
 #define __MYACTIVITYCONTROLLER_H__
 
 #include <ext/frameworkext.h>
-#include "elastos/Object.h"
+#include <elastos/Core/Object.h>
 #include "CAm.h"
 #include "os/Runnable.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::IThread;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

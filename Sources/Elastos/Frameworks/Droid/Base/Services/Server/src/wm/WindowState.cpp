@@ -1,7 +1,7 @@
 
 #include "wm/WindowState.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
@@ -263,10 +263,10 @@ ECode WindowState::ComputeFrameLw(
     mHaveFrame = TRUE;
 
     AutoPtr<IRect> container = mContainingFrame;
-    container->SetEx(pf);
+    container->Set(pf);
 
     AutoPtr<IRect> display = mDisplayFrame;
-    display->SetEx(df);
+    display->Set(df);
 
     Int32 right, left, bottom, top;
     container->GetRight(&right);
@@ -336,7 +336,7 @@ ECode WindowState::ComputeFrameLw(
         // Slogger::I(TAG, "Window %p content frame from (%d, %d, %d, %d) to (%d, %d, %d, %d)",
         //         this, pl, pt, pr, pb, l, t, r, b);
 
-        mParentFrame->SetEx(pf);
+        mParentFrame->Set(pf);
         mContentChanged = TRUE;
     }
     if (mRequestedWidth != mLastRequestedWidth || mRequestedHeight != mLastRequestedHeight) {
@@ -346,10 +346,10 @@ ECode WindowState::ComputeFrameLw(
     }
 
     AutoPtr<IRect> content = mContentFrame;
-    content->SetEx(cf);
+    content->Set(cf);
 
     AutoPtr<IRect> visible = mVisibleFrame;
-    visible->SetEx(vf);
+    visible->Set(vf);
 
     AutoPtr<IRect> frame = mFrame;
     Int32 fw, fh;
@@ -379,7 +379,7 @@ ECode WindowState::ComputeFrameLw(
     mAttrs->GetVerticalMargin(&attrsVMargin);
     AutoPtr<IGravity> gravity;
     CGravity::AcquireSingleton((IGravity**)&gravity);
-    gravity->ApplyEx2(attrsGravity, w, h, container,
+    gravity->Apply(attrsGravity, w, h, container,
             (Int32)(x + attrsHMargin * pw),
             (Int32)(y + attrsVMargin * ph), frame);
 
@@ -451,7 +451,7 @@ ECode WindowState::ComputeFrameLw(
     mVisibleInsets->SetRight(frameRight - visibleRight);
     mVisibleInsets->SetBottom(frameBottom - visibleBottom);
 
-    mCompatFrame->SetEx(frame);
+    mCompatFrame->Set(frame);
     if (mEnforceSizeCompat) {
         // If there is a size compatibility scale being applied to the
         // window, we need to apply this to its insets so that they are
@@ -1156,7 +1156,7 @@ void WindowState::ApplyInsets(
     inset->GetRight(&insetRight);
     inset->GetBottom(&insetBottom);
     Boolean result;
-    outRegion->SetEx2(left + insetLeft, top + insetTop,
+    outRegion->Set(left + insetLeft, top + insetTop,
             right - insetRight, bottom - insetBottom, &result);
 }
 
@@ -1168,7 +1168,7 @@ void WindowState::GetTouchableRegion(
         default:
         case IInternalInsetsInfo::TOUCHABLE_INSETS_FRAME:
             Boolean result;
-            outRegion->SetEx(frame, &result);
+            outRegion->Set(frame, &result);
             break;
         case IInternalInsetsInfo::TOUCHABLE_INSETS_CONTENT:
             ApplyInsets(outRegion, frame, mGivenContentInsets);

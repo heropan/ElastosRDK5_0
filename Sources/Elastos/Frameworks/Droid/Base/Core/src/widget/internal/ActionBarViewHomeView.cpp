@@ -2,7 +2,7 @@
 #include "text/TextUtils.h"
 #include "widget/internal/ActionBarViewHomeView.h"
 #include "widget/CFrameLayoutLayoutParams.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Droid::Text::TextUtils;

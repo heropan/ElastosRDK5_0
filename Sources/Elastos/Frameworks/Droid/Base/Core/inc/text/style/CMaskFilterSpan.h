@@ -4,7 +4,7 @@
 
 #include "_CMaskFilterSpan.h"
 #include "text/style/MaskFilterSpan.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

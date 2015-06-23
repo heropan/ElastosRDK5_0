@@ -107,7 +107,7 @@ ECode ZoomControlEmbedded::Show()
             if (mZoomManager->IsInZoomOverview() && count > 0) {
                 settings->SetDoubleTapToastCount(--count);
                 AutoPtr<IToast> toast;
-                CToast::MakeTextEx(mWebView->GetContext(), R::string::double_tap_toast,
+                CToast::MakeText(mWebView->GetContext(), R::string::double_tap_toast,
                         IToast::LENGTH_LONG, (IToast**)&toast);
                 toast->Show();
             }

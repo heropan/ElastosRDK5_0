@@ -1,7 +1,7 @@
 
 #include "content/pm/CManifestDigest.h"
 #include "util/CBase64.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/IntegralToString.h>
 
 using Elastos::Core::IntegralToString;
@@ -33,7 +33,7 @@ ECode CManifestDigest::FromAttributes(
     String encodedDigest;
     for (Int32 i = 0; i < DIGEST_TYPES->GetLength(); i++) {
         String value;
-        attributes->GetValueEx((*DIGEST_TYPES)[i], &value);
+        attributes->GetValue((*DIGEST_TYPES)[i], &value);
         if (!value.IsNull()) {
             encodedDigest = value;
             break;

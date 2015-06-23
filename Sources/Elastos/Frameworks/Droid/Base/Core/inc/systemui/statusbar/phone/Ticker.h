@@ -2,10 +2,10 @@
 #define __PHONE_TICKER_H__
 
 #include "ext/frameworkext.h"
-#include "elastos/List.h"
+#include <elastos/utility/etl/List.h>
 #include "os/Runnable.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;

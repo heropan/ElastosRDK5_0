@@ -134,7 +134,7 @@ ECode LocationBasedCountryDetector::DetectCountry(
         AutoPtr<DetectCountryTimerTask> timerTask = new DetectCountryTimerTask(this);
         mTimer = NULL;
         CTimer::New((ITimer**)&mTimer);
-        mTimer->ScheduleEx(timerTask, GetQueryLocationTimeout());
+        mTimer->Schedule(timerTask, GetQueryLocationTimeout());
     } else {
         // There is no provider enabled.
         QueryCountryCode(GetLastKnownLocation());

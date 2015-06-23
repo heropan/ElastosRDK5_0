@@ -1,5 +1,5 @@
 
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "view/CGestureDetector.h"
 #include "view/CViewConfigurationHelper.h"
 #include "view/CMotionEvent.h"
@@ -243,8 +243,8 @@ ECode CGestureDetector::OnTouchEvent(
         if (skipIndex == i) continue;
 
         Float tmp = 0.f;
-        sumX += (ev->GetXEx(i, &tmp), tmp);
-        sumY += (ev->GetYEx(i, &tmp), tmp);
+        sumX += (ev->GetX(i, &tmp), tmp);
+        sumY += (ev->GetY(i, &tmp), tmp);
     }
 
     const Int32 div = pointerUp ? count - 1 : count;
@@ -268,26 +268,26 @@ ECode CGestureDetector::OnTouchEvent(
 
             // Check the dot product of current velocities.
             // If the pointer that left was opposing another velocity vector, clear.
-            mVelocityTracker->ComputeCurrentVelocityEx(1000, mMaximumFlingVelocity);
+            mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumFlingVelocity);
             Int32 upIndex = 0;
             ev->GetActionIndex(&upIndex);
 
             Int32 id1 = 0;
             ev->GetPointerId(upIndex, &id1);
             Float x1;
-            mVelocityTracker->GetXVelocityEx(id1, &x1);
+            mVelocityTracker->GetXVelocity(id1, &x1);
             Float y1;
-            mVelocityTracker->GetYVelocityEx(id1, &y1);
+            mVelocityTracker->GetYVelocity(id1, &y1);
             for (Int32 i = 0; i < count; i++) {
                 if (i == upIndex) continue;
 
                 Int32 id2 = 0;
                 ev->GetPointerId(i, &id2);
                 Float x;
-                mVelocityTracker->GetXVelocityEx(id2, &x);
-                x *= x1; 
+                mVelocityTracker->GetXVelocity(id2, &x);
+                x *= x1;
                 Float y;
-                mVelocityTracker->GetYVelocityEx(id2, &y);
+                mVelocityTracker->GetYVelocity(id2, &y);
                 y *= y1;
 
                 const Float dot = x + y;
@@ -411,11 +411,11 @@ ECode CGestureDetector::OnTouchEvent(
                 AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
                 Int32 pointerId = 0;
                 ev->GetPointerId(0, &pointerId);
-                velocityTracker->ComputeCurrentVelocityEx(1000, mMaximumFlingVelocity);
+                velocityTracker->ComputeCurrentVelocity(1000, mMaximumFlingVelocity);
                 Float velocityY;
-                velocityTracker->GetYVelocityEx(pointerId, &velocityY);
+                velocityTracker->GetYVelocity(pointerId, &velocityY);
                 Float velocityX;
-                velocityTracker->GetXVelocityEx(pointerId, &velocityX);
+                velocityTracker->GetXVelocity(pointerId, &velocityX);
 
                 if ((Elastos::Core::Math::Abs(velocityY) > mMinimumFlingVelocity)
                         || (Elastos::Core::Math::Abs(velocityX) > mMinimumFlingVelocity)){

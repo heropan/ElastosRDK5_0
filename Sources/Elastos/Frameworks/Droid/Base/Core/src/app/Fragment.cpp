@@ -7,8 +7,8 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "app/Activity.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IClassLoader;
@@ -99,7 +99,7 @@ FragmentState::ParcelableCreatorFragmentState::CreateFromParcel(
 {
     VALIDATE_NOT_NULL(ret);
     *ret = new FragmentState(in);
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -109,7 +109,7 @@ FragmentState::ParcelableCreatorFragmentState::NewArray(
 {
     VALIDATE_NOT_NULL(ret);
     *ret = ArrayOf<FragmentState*>::Alloc(size);
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -166,7 +166,7 @@ ECode FragmentState::Instantiate(
 
     if (mInstance != NULL) {
         *fragment = mInstance;
-        INTERFACE_ADDREF(*fragment);
+        REFCOUNT_ADD(*fragment);
         return NOERROR;
     }
 
@@ -176,7 +176,7 @@ ECode FragmentState::Instantiate(
         mArguments->SetClassLoader(classLoader);
     }
 
-    Fragment::InstantiateEx(activity, mClassName, mArguments, (IFragment**)&mInstance);
+    Fragment::Instantiate(activity, mClassName, mArguments, (IFragment**)&mInstance);
 
     if (mSavedFragmentState != NULL) {
         AutoPtr<IClassLoader> classLoader;
@@ -203,7 +203,7 @@ ECode FragmentState::Instantiate(
             "Instantiated fragment %p", mInstance.Get());
 
     *fragment = mInstance;
-    INTERFACE_ADDREF(*fragment);
+    REFCOUNT_ADD(*fragment);
     return NOERROR;
 }
 
@@ -299,7 +299,7 @@ ECode Fragment::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -323,7 +323,7 @@ ECode Fragment::GetAnimatingAway(
 {
     VALIDATE_NOT_NULL(animator);
     *animator = mAnimatingAway;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 
@@ -354,7 +354,7 @@ ECode Fragment::GetSavedFragmentState(
 {
     VALIDATE_NOT_NULL(fState);
     *fState = mSavedFragmentState;
-    INTERFACE_ADDREF(*fState);
+    REFCOUNT_ADD(*fState);
     return NOERROR;
 }
 
@@ -370,7 +370,7 @@ ECode Fragment::GetSavedViewState(
 {
     VALIDATE_NOT_NULL(viewState);
     *viewState = mSavedViewState;
-    INTERFACE_ADDREF(*viewState);
+    REFCOUNT_ADD(*viewState);
     return NOERROR;
 }
 
@@ -409,7 +409,7 @@ ECode Fragment::GetTarget(
 {
     VALIDATE_NOT_NULL(target);
     *target = mTarget;
-    INTERFACE_ADDREF(*target);
+    REFCOUNT_ADD(*target);
     return NOERROR;
 }
 
@@ -549,7 +549,7 @@ ECode Fragment::GetChildFragmentManagerValue(
 {
     VALIDATE_NOT_NULL(cfManager);
     *cfManager = mChildFragmentManager;
-    INTERFACE_ADDREF(*cfManager);
+    REFCOUNT_ADD(*cfManager);
     return NOERROR;
 }
 
@@ -691,7 +691,7 @@ ECode Fragment::GetContainer(
 {
     VALIDATE_NOT_NULL(container);
     *container = mContainer;
-    INTERFACE_ADDREF(*container);
+    REFCOUNT_ADD(*container);
     return NOERROR;
 }
 
@@ -736,7 +736,7 @@ ECode Fragment::GetLoaderManagerValue(
 {
     VALIDATE_NOT_NULL(lManager);
     *lManager = mLoaderManager;
-    INTERFACE_ADDREF(*lManager);
+    REFCOUNT_ADD(*lManager);
     return NOERROR;
 }
 
@@ -776,10 +776,10 @@ ECode Fragment::Instantiate(
     /* [out] */ IFragment** fragment)
 {
     VALIDATE_NOT_NULL(fragment);
-    return InstantiateEx(context, fname, NULL, fragment);
+    return Instantiate(context, fname, NULL, fragment);
 }
 
-ECode Fragment::InstantiateEx(
+ECode Fragment::Instantiate(
     /* [in] */ IContext* context,
     /* [in] */ const String& fname,
     /* [in] */ IBundle* args,
@@ -810,7 +810,7 @@ ECode Fragment::InstantiateEx(
             f->SetArguments(args);
         }
         *fragment = f;
-        INTERFACE_ADDREF(*fragment);
+        REFCOUNT_ADD(*fragment);
         return NOERROR;
 //     } catch (ClassNotFoundException e) {
 //         throw new InstantiationException("Unable to instantiate fragment " + fname
@@ -945,7 +945,7 @@ ECode Fragment::GetArguments(
     VALIDATE_NOT_NULL(args);
 
     *args = mArguments;
-    INTERFACE_ADDREF(*args);
+    REFCOUNT_ADD(*args);
     return NOERROR;
 }
 
@@ -977,7 +977,7 @@ ECode Fragment::GetTargetFragment(
     VALIDATE_NOT_NULL(fragment);
 
     *fragment = mTarget;
-    INTERFACE_ADDREF(*fragment);
+    REFCOUNT_ADD(*fragment);
     return NOERROR;
 }
 
@@ -996,7 +996,7 @@ ECode Fragment::GetActivity(
     VALIDATE_NOT_NULL(activity);
 
     *activity = mActivity;
-    INTERFACE_ADDREF(*activity);
+    REFCOUNT_ADD(*activity);
     return NOERROR;
 }
 
@@ -1037,7 +1037,7 @@ ECode Fragment::GetString(
     return NOERROR;
 }
 
-ECode Fragment::GetStringEx(
+ECode Fragment::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* string)
@@ -1046,7 +1046,7 @@ ECode Fragment::GetStringEx(
 
     AutoPtr<IResources> resources;
     GetResources((IResources**)&resources);
-    resources->GetStringEx(resId, formatArgs, string);
+    resources->GetString(resId, formatArgs, string);
     return NOERROR;
 }
 
@@ -1056,7 +1056,7 @@ ECode Fragment::GetFragmentManager(
     VALIDATE_NOT_NULL(manager);
 
     *manager = mFragmentManager;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -1078,7 +1078,7 @@ ECode Fragment::GetChildFragmentManager(
         }
     }
     *manager = mChildFragmentManager;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -1088,7 +1088,7 @@ ECode Fragment::GetParentFragment(
     VALIDATE_NOT_NULL(fragment);
 
     *fragment = mParentFragment;
-    INTERFACE_ADDREF(*fragment);
+    REFCOUNT_ADD(*fragment);
     return NOERROR;
 }
 
@@ -1243,7 +1243,7 @@ ECode Fragment::GetLoaderManager(
 
     if (mLoaderManager != NULL) {
         *manager = mLoaderManager;
-        INTERFACE_ADDREF(*manager);
+        REFCOUNT_ADD(*manager);
     }
     if (mActivity == NULL) {
 //         throw new IllegalStateException("Fragment " + this + " not attached to Activity");
@@ -1253,7 +1253,7 @@ ECode Fragment::GetLoaderManager(
     AutoPtr<Activity> act = reinterpret_cast<Activity*>(mActivity->Probe(EIID_Activity));
     mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, TRUE);
     *manager = mLoaderManager;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -1262,11 +1262,11 @@ ECode Fragment::StartActivity(
 {
     VALIDATE_NOT_NULL(intent);
 
-    StartActivityEx(intent, NULL);
+    StartActivity(intent, NULL);
     return NOERROR;
 }
 
-ECode Fragment::StartActivityEx(
+ECode Fragment::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
@@ -1278,7 +1278,7 @@ ECode Fragment::StartActivityEx(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (options != NULL) {
-        mActivity->StartActivityFromFragmentEx((IFragment*)this->Probe(EIID_IFragment), intent, -1, options);
+        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, -1, options);
     } else {
         // Note we want to go through this call for compatibility with
         // applications that may have overridden the method.
@@ -1291,10 +1291,10 @@ ECode Fragment::StartActivityForResult(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode)
 {
-    return StartActivityForResultEx(intent, requestCode, NULL);
+    return StartActivityForResult(intent, requestCode, NULL);
 }
 
-ECode Fragment::StartActivityForResultEx(
+ECode Fragment::StartActivityForResult(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options)
@@ -1304,11 +1304,11 @@ ECode Fragment::StartActivityForResultEx(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (options != NULL) {
-        mActivity->StartActivityFromFragmentEx((IFragment*)this->Probe(EIID_IFragment), intent, requestCode, options);
+        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, requestCode, options);
     } else {
         // Note we want to go through this call for compatibility with
         // applications that may have overridden the method.
-        mActivity->StartActivityFromFragmentEx((IFragment*)this->Probe(EIID_IFragment), intent, requestCode, options);
+        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, requestCode, options);
     }
     return NOERROR;
 }
@@ -1337,7 +1337,7 @@ ECode Fragment::OnInflate(
     return NOERROR;
 }
 
-ECode Fragment::OnInflateEx(
+ECode Fragment::OnInflate(
     /* [in] */ IActivity* activity,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ IBundle* savedInstanceState)
@@ -1395,7 +1395,7 @@ ECode Fragment::GetView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -1697,14 +1697,14 @@ Fragment::FindFragmentByWho(
     VALIDATE_NOT_NULL(f);
     if (who.Equals(mWho)) {
         *f = (IFragment*)this;
-        INTERFACE_ADDREF(*f);
+        REFCOUNT_ADD(*f);
         return NOERROR;
     }
     if (mChildFragmentManager != NULL) {
         AutoPtr<IFragment> fragment;
         mChildFragmentManager->FindFragmentByWho(who, (IFragment**)&fragment);
         *f = fragment;
-        INTERFACE_ADDREF(*f);
+        REFCOUNT_ADD(*f);
         return NOERROR;
     }
     *f = NULL;
@@ -1758,7 +1758,7 @@ ECode Fragment::PerformCreateView(
     AutoPtr<IView> view;
     OnCreateView(inflater, container, savedInstanceState, (IView**)&view);
     *v = view;
-    INTERFACE_ADDREF(*v);
+    REFCOUNT_ADD(*v);
     return NOERROR;
 }
 

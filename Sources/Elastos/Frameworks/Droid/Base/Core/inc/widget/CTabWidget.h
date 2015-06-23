@@ -3,9 +3,9 @@
 #define __CTABWIDGET_H_
 
 #include "_CTabWidget.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "widget/TabWidget.h"
 
 
@@ -63,7 +63,7 @@ public:
      * @param resId the resource identifier of the drawable to use as a
      * divider.
      */
-    CARAPI SetDividerDrawableEx(
+    CARAPI SetDividerDrawable(
         /* [in] */ Int32 resId);
 
     /**
@@ -80,7 +80,7 @@ public:
      * @param resId the resource identifier of the drawable to use as the
      * left strip drawable
      */
-    CARAPI SetLeftStripDrawableEx(
+    CARAPI SetLeftStripDrawable(
         /* [in] */ Int32 resId);
 
     /**
@@ -97,7 +97,7 @@ public:
      * @param resId the resource identifier of the drawable to use as the
      * right strip drawable
      */
-    CARAPI SetRightStripDrawableEx(
+    CARAPI SetRightStripDrawable(
         /* [in] */ Int32 resId);
 
     /**

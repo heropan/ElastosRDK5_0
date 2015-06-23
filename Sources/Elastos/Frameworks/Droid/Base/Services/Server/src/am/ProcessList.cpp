@@ -2,8 +2,8 @@
 #include "am/ProcessList.h"
 #include "am/CActivityManagerService.h"
 #include "wm/CWindowManagerService.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;

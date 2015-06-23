@@ -6,8 +6,7 @@
 #include "app/CActivityThread.h"
 #include "content/BroadcastReceiver.h"
 #include "os/Runnable.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::IHandler;

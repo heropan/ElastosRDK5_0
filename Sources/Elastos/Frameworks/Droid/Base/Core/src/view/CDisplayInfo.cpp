@@ -309,7 +309,7 @@ ECode CDisplayInfo::SetPhysicalYDpi(
     return NOERROR;
 }
 
-ECode CDisplayInfo::EqualsEx(
+ECode CDisplayInfo::Equals(
     /* [in] */ IDisplayInfo* otherObj,
     /* [out] */ Boolean* isEquals)
 {
@@ -347,7 +347,7 @@ ECode CDisplayInfo::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    return EqualsEx(IDisplayInfo::Probe(other), result);
+    return Equals(IDisplayInfo::Probe(other), result);
 }
 
 ECode CDisplayInfo::GetHashCode(

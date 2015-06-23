@@ -1,7 +1,7 @@
 
 #include "CInputModeSwitcher.h"
 #include "CToggleStates.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "R.h"
 
 using Elastos::Core::StringUtils;

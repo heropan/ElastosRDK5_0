@@ -4,9 +4,8 @@
 
 #include "_CMediaScannerConnection.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;

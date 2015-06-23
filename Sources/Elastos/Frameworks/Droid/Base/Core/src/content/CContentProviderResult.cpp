@@ -5,7 +5,7 @@
 //***#include "net/CHierarchicalUri.h"
 //***#include "net/CPart.h"
 //***#include "net/CPathPart.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 namespace Elastos {
@@ -25,7 +25,7 @@ ECode CContentProviderResult::GetUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mUri;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 

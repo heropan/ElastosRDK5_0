@@ -7,12 +7,12 @@
 #include "webkit/PluginManager.h"
 #include "webkit/WebCoreElastosBridge.h"
 #include "webkit/CPluginManager.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IMessageHelper;
@@ -213,7 +213,7 @@ ECode PluginManager::RefreshPlugins(
     AutoPtr<IBoolean> iReloadOpenPages;
     CBoolean::New(reloadOpenPages, (IBoolean**)&iReloadOpenPages);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx4(BrowserFrame::sElastosBridge, WebCoreElastosBridge::REFRESH_PLUGINS, iReloadOpenPages,
+    mh->Obtain(BrowserFrame::sElastosBridge, WebCoreElastosBridge::REFRESH_PLUGINS, iReloadOpenPages,
         (IMessage**)&msg);
     return msg->SendToTarget();
 }

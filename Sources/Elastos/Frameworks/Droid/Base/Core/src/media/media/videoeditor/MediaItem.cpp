@@ -165,7 +165,7 @@ ECode MediaItem::GetBeginTransition(
     VALIDATE_NOT_NULL(result);
 
     *result = mBeginTransition;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode MediaItem::GetEndTransition(
     VALIDATE_NOT_NULL(result);
 
     *result = mEndTransition;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -272,7 +272,7 @@ ECode MediaItem::RemoveEffect(
                 mRegenerateClip = FALSE;
             }
             *result = effect;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -309,7 +309,7 @@ ECode MediaItem::GetEffect(
         effect->GetId(&id);
         if(id.Equals(effectId)) {
             *result = effect;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -330,7 +330,7 @@ ECode MediaItem::GetAllEffects(
             tmp->Set(i, *it);
         }
         *result = tmp;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
     return NOERROR;
 }
@@ -452,7 +452,7 @@ ECode MediaItem::RemoveOverlay(
             overlay->GetDuration(&eDuration);
             InvalidateTransitions(sTime, eDuration);
             *result = overlay;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -473,7 +473,7 @@ ECode MediaItem::GetOverlay(
         overlay->GetId(&id);
         if(id.Equals(overlayId)) {
             *result = overlay;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -494,12 +494,12 @@ ECode MediaItem::GetAllOverlays(
             tmp->Set(i, *it);
         }
         *result = tmp;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
     return NOERROR;
 }
 
-ECode MediaItem::GetThumbnailListEx(
+ECode MediaItem::GetThumbnailList(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int64 startMs,
@@ -519,7 +519,7 @@ ECode MediaItem::GetThumbnailListEx(
     GetThumbnailList(width, height, startMs, endMs, thumbnailCount, indices, cb);
 
     *result = bitmaps;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -676,7 +676,7 @@ ECode MediaItem::GenerateBlankFrame(
         Int32 tmp = 0;
         while(tmp < mHeight) {
             byteBuffer->AsInt32Buffer((IInt32Buffer**)&intBuffer);
-            intBuffer->PutInt32sEx(*framingBuffer, 0, mWidth);
+            intBuffer->PutInt32s(*framingBuffer, 0, mWidth);
             //try {
                 dos->WriteBytes(*array);
             //} catch (IOException e) {

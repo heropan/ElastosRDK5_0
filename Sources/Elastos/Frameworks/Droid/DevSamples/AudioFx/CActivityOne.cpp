@@ -1,7 +1,7 @@
 #include "ext/frameworkdef.h"
 #include "CActivityOne.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/StringBuilder.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -114,7 +114,7 @@ ECode CActivityOne::myVisualizerOnDataCaptureListener::OnWaveFormDataCapture(
     /* [in] */ Int32 samplingRate)
 {
     AutoPtr<ICanvas> canvas;
-    mHost->mSurfaceHolder->LockCanvasEx(NULL, (ICanvas**)&canvas);
+    mHost->mSurfaceHolder->LockCanvas(NULL, (ICanvas**)&canvas);
     assert(canvas != NULL);
 
     AutoPtr<IPaint> clearPaint;
@@ -174,7 +174,7 @@ ECode CActivityOne::myVisualizerOnDataCaptureListener::OnWaveFormDataCapture(
         (*mPoints)[i * 4 + 3] = 50.0f * ((*waveform)[i + 1] / 256.0f);
     }
 
-    canvas->DrawLinesEx(*mPoints, mPaint);
+    canvas->DrawLines(*mPoints, mPaint);
 
     mHost->mSurfaceHolder->UnlockCanvasAndPost(canvas);
     return NOERROR;
@@ -240,7 +240,7 @@ ECode CActivityOne::CMySurfaceHolderCallback::SurfaceCreated(
 {
     PRINT_ENTER_LEAVE("CMySurfaceHolderCallback::SurfaceCreated");
     AutoPtr<ICanvas> canvas;
-    holder->LockCanvasEx(NULL, (ICanvas**)&canvas);
+    holder->LockCanvas(NULL, (ICanvas**)&canvas);
     assert(canvas != NULL);
 
     Int32 canvasWidth, canvasHeight;
@@ -278,11 +278,11 @@ ECode CActivityOne::OnCreate(
     CLinearLayout::New(this, (ILinearLayout**)&mLinearLayout);
     mLinearLayout->SetOrientation(ILinearLayout::VERTICAL);
     mLinearLayout->AddView(mStatusTextView);
-    SetContentViewEx(mLinearLayout);
+    SetContentView(mLinearLayout);
 
     AutoPtr<IMediaPlayerHelper> helper;
     CMediaPlayerHelper::AcquireSingleton((IMediaPlayerHelper**)&helper);
-    helper->CreateEx2(this, R::raw::test_cbr, (IMediaPlayer**)&mMediaPlayer);
+    helper->Create(this, R::raw::test_cbr, (IMediaPlayer**)&mMediaPlayer);
 
     SetupVisualizerFxAndUI();
     SetupEqualizerFxAndUI();

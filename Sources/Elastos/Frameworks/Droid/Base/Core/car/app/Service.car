@@ -519,7 +519,7 @@ module
          *
          * @see #stopSelfResult
          */
-        StopSelfEx(
+        StopSelf(
             [in] Int32 startId);
 
         /**

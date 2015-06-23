@@ -28,7 +28,7 @@ ClipDrawable::ClipState::ClipState(
         AutoPtr<IDrawableConstantState> state;
         orig->mDrawable->GetConstantState((IDrawableConstantState**)&state);
         if (res != NULL) {
-            state->NewDrawableEx(res, (IDrawable**)&mDrawable);
+            state->NewDrawable(res, (IDrawable**)&mDrawable);
         }
         else {
             state->NewDrawable((IDrawable**)&mDrawable);
@@ -49,7 +49,7 @@ ECode ClipDrawable::ClipState::NewDrawable(
     return CClipDrawable::New(this, NULL, (IClipDrawable**)drawable);
 }
 
-ECode ClipDrawable::ClipState::NewDrawableEx(
+ECode ClipDrawable::ClipState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -257,7 +257,7 @@ Boolean ClipDrawable::OnLevelChange(
 void ClipDrawable::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
-    mClipState->mDrawable->SetBoundsEx(bounds);
+    mClipState->mDrawable->SetBounds(bounds);
 }
 
 ECode ClipDrawable::Draw(
@@ -287,13 +287,13 @@ ECode ClipDrawable::Draw(
     Int32 layoutDirection = GetLayoutDirection();
     AutoPtr<IGravity> gravity;
     CGravity::AcquireSingleton((IGravity**)&gravity);
-    gravity->ApplyEx(mClipState->mGravity, w, h, bounds, r, layoutDirection);
+    gravity->Apply(mClipState->mGravity, w, h, bounds, r, layoutDirection);
 
     if (w > 0 && h > 0) {
         Int32 count;
         canvas->Save(&count);
         Boolean nonEmpty;
-        canvas->ClipRectEx3(r, &nonEmpty);
+        canvas->ClipRect(r, &nonEmpty);
         mClipState->mDrawable->Draw(canvas);
         canvas->Restore();
     }

@@ -1,8 +1,8 @@
 
 #include "ext/frameworkext.h"
 #include "net/CNetworkPolicy.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -152,7 +152,7 @@ ECode CNetworkPolicy::GetHashCode(
 }
 
 //@Override
-ECode CNetworkPolicy::EqualsEx(
+ECode CNetworkPolicy::Equals(
     /* [in] */ INetworkPolicy* obj,
     /* [out] */ Boolean* result)
 {
@@ -202,7 +202,7 @@ ECode CNetworkPolicy::Equals(
     /* [out] */ Boolean* result )
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(INetworkPolicy::Probe(obj), result);
+    return Equals(INetworkPolicy::Probe(obj), result);
 }
 
 //@Override
@@ -275,7 +275,7 @@ ECode CNetworkPolicy::GetTemplate(
 {
     VALIDATE_NOT_NULL(result);
     *result = mTemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

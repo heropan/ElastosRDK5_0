@@ -3,11 +3,10 @@
 #define __LAYOUTINFLATER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -46,7 +45,7 @@ private:
             /* [in] */ IAttributeSet* attrs,
             /* [out] */ IView** view);
 
-        CARAPI OnCreateViewEx(
+        CARAPI OnCreateView(
             /* [in] */ IView* parent,
             /* [in] */ const String& name,
             /* [in] */ IContext* ctx,
@@ -104,18 +103,18 @@ public:
         /* [in] */ IViewGroup* root,
         /* [out] */ IView** view);
 
-    CARAPI InflateEx(
+    CARAPI Inflate(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IViewGroup* root,
         /* [out] */ IView** view);
 
-    CARAPI InflateEx2(
+    CARAPI Inflate(
         /* [in] */ Int32 resource,
         /* [in] */ IViewGroup* root,
         /* [in] */ Boolean attachToRoot,
         /* [out] */ IView** view);
 
-    CARAPI InflateEx3(
+    CARAPI Inflate(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IViewGroup* root,
         /* [in] */ Boolean attachToRoot,

@@ -1,6 +1,6 @@
 
 #include "view/menu/SubMenuBuilderBase.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -100,7 +100,7 @@ ECode SubMenuBuilderBase::SetIcon(
 ECode SubMenuBuilderBase::SetIcon(
     /* [in] */ Int32 iconRes)
 {
-    return mItem->SetIconEx(iconRes);
+    return mItem->SetIcon(iconRes);
 }
 
 ECode SubMenuBuilderBase::SetHeaderIcon(

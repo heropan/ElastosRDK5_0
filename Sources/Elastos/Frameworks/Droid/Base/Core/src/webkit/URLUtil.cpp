@@ -3,7 +3,7 @@
 //#include "net/WebAddress.h"
 #include "webkit/URLUtil.h"
 #include "webkit/MimeTypeMap.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Regex::CPatternHelper;
@@ -23,7 +23,7 @@ static AutoPtr<IPattern> CreatePattern()
     AutoPtr<IPatternHelper> patternHelper;
     CPatternHelper::AcquireSingleton((IPatternHelper**)&patternHelper);
     AutoPtr<IPattern> pattern;
-    patternHelper->CompileEx(String("attachment;\\s*filename\\s*=\\s*(\"?)([^\"]*)\\1\\s*$"),
+    patternHelper->Compile(String("attachment;\\s*filename\\s*=\\s*(\"?)([^\"]*)\\1\\s*$"),
             IPattern::CASE_INSENSITIVE, (IPattern**)&pattern);
     return pattern;
 }
@@ -113,7 +113,7 @@ String URLUtil::ComposeSearchUrl(
     AutoPtr<IURLEncoder> URLEncoder;
     assert(0);
 //    	CURLEncoder::New((IURLEncoder**)&URLEncoder);
-    if (FAILED(URLEncoder->EncodeEx(inQuery, String("utf-8"), &query))){
+    if (FAILED(URLEncoder->Encode(inQuery, String("utf-8"), &query))){
         return String(NULL);
     }
     buffer.AppendString(query);
@@ -437,7 +437,7 @@ String URLUtil::ParseContentDisposition(
     Boolean bFind = FALSE;
     if (m->Find(&bFind), bFind) {
         String str;
-        m->GroupEx(2, &str);
+        m->Group(2, &str);
         return str;
     }
     //} catch (IllegalStateException ex) {

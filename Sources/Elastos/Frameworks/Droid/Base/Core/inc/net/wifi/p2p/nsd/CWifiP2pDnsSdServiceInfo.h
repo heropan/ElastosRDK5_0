@@ -5,9 +5,9 @@
 #include "_CWifiP2pDnsSdServiceInfo.h"
 #include "WifiP2pServiceInfo.h"
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Net::Nsd::IDnsSdTxtRecord;
 

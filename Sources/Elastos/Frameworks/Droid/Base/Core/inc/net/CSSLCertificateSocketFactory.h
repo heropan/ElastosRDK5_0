@@ -3,7 +3,6 @@
 #define __CSSLCERTIFICATESOCKETFACTORY_H__
 
 #include "_CSSLCertificateSocketFactory.h"
-#include <elastos/Mutex.h>
 
 using namespace Org::Apache::Harmony::Xnet::Provider::Jsse;
 
@@ -163,7 +162,7 @@ public:
      * the socket to avoid man-in-the-middle attacks.</p>
      */
     //@Override
-    CARAPI CreateSocketEx(
+    CARAPI CreateSocket(
         /* [out] */ ISocket** socket);
 
     /**
@@ -174,7 +173,7 @@ public:
      * the socket to avoid man-in-the-middle attacks.</p>
      */
     //@Override
-    CARAPI CreateSocketEx2(
+    CARAPI CreateSocket(
         /* [in] */ IInetAddress* addr,
         /* [in] */ Int32 port,
         /* [in] */ IInetAddress* localAddr,
@@ -189,7 +188,7 @@ public:
      * the socket to avoid man-in-the-middle attacks.</p>
      */
     //@Override
-    CARAPI CreateSocketEx3(
+    CARAPI CreateSocket(
         /* [in] */ IInetAddress* addr,
         /* [in] */ Int32 port,
         /* [out] */ ISocket** socket);
@@ -201,7 +200,7 @@ public:
      * (unless created with {@link #getInsecure(int, SSLSessionCache)}).
      */
     //@Override
-    CARAPI CreateSocketEx4(
+    CARAPI CreateSocket(
         /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ IInetAddress* localAddr,
@@ -215,7 +214,7 @@ public:
      * (unless created with {@link #getInsecure(int, SSLSessionCache)}).
      */
     //@Override
-    CARAPI CreateSocketEx5(
+    CARAPI CreateSocket(
         /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [out] */ ISocket** socket);

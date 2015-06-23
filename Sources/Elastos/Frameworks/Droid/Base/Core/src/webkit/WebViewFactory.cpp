@@ -3,7 +3,7 @@
 #include "os/SystemProperties.h"
 #include "webkit/WebViewFactory.h"
 #include "webkit/CWebViewClassic.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::Build;

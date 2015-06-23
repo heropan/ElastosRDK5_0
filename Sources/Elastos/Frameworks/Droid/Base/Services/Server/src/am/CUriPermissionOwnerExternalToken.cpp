@@ -1,5 +1,5 @@
 
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "am/CUriPermissionOwnerExternalToken.h"
 
 using Elastos::Core::StringBuilder;

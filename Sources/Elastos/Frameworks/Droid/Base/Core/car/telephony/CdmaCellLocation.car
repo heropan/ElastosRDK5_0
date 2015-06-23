@@ -30,7 +30,7 @@ module
             [in] Int32 baseStationLatitude,
             [in] Int32 baseStationLongitude);
 
-        SetCellLocationDataEx(
+        SetCellLocationData(
             [in] Int32 baseStationId,
             [in] Int32 baseStationLatitude,
             [in] Int32 baseStationLongitude,

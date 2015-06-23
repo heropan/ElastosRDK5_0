@@ -58,7 +58,7 @@ ECode FixedSizeDrawable::SetBounds(
 ECode FixedSizeDrawable::SetBounds(
     /* [in] */ IRect* bounds)
 {
-    return mDrawable->SetBoundsEx(bounds);
+    return mDrawable->SetBounds(bounds);
 }
 
 ECode FixedSizeDrawable::Draw(

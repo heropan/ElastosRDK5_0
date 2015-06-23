@@ -3,12 +3,11 @@
 #define __SLIDINGTAB_H__
 
 #include "view/ViewGroup.h"
-#include <elastos/Mutex.h>
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "R.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;

@@ -46,7 +46,7 @@ ECode ComponentInfo::LoadLabel(
 
     if (mNonLocalizedLabel != NULL) {
         *label = mNonLocalizedLabel;
-        INTERFACE_ADDREF(*label);
+        REFCOUNT_ADD(*label);
         return NOERROR;
     }
 
@@ -61,7 +61,7 @@ ECode ComponentInfo::LoadLabel(
     ai->GetNonLocalizedLabel((ICharSequence**)&nonLocalizedLabel);
     if (nonLocalizedLabel != NULL) {
         *label = nonLocalizedLabel;
-        INTERFACE_ADDREF(*label);
+        REFCOUNT_ADD(*label);
         return NOERROR;
     }
     Int32 labelRes;
@@ -185,7 +185,7 @@ ECode ComponentInfo::GetApplicationInfo(
 {
     assert(info != NULL);
     *info = mApplicationInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

@@ -550,7 +550,7 @@ module
          * @see Notification#icon
          * @see Notification#iconLevel
          */
-        SetSmallIconEx(
+        SetSmallIcon(
             [in] Int32 icon,
             [in] Int32 level);
 
@@ -678,7 +678,7 @@ module
          * @see Notification#tickerText
          * @see Notification#tickerView
          */
-        SetTickerEx(
+        SetTicker(
             [in] ICharSequence* tickerText,
             [in] IRemoteViews* views);
 
@@ -716,7 +716,7 @@ module
          *
          * @see Notification#sound
          */
-        SetSoundEx(
+        SetSound(
             [in] IUri* sound,
             [in] Int32 streamType);
 

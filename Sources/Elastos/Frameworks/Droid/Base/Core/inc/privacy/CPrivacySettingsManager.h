@@ -18,7 +18,7 @@ public:
         /* [in] */ const String& packageName,
         /* [out] */ Elastos::Droid::Privacy::IPrivacySettings** privactySettings);
 
-    CARAPI GetSettingsEx(
+    CARAPI GetSettings(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid,
         /* [out] */ Elastos::Droid::Privacy::IPrivacySettings** privactySettings);
@@ -31,7 +31,7 @@ public:
         /* [in] */ const String& packageName,
         /* [out] */ Boolean* result);
 
-    CARAPI DeleteSettingsEx(
+    CARAPI DeleteSettings(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid,
         /* [out] */ Boolean* result);
@@ -45,14 +45,14 @@ public:
         /* [in] */ const String& dataType,
         /* [in] */ const String& output);
 
-    CARAPI NotificationEx(
+    CARAPI Notification(
         /* [in] */ const String& packageName,
         /* [in] */ Byte accessMode,
         /* [in] */ const String& dataType,
         /* [in] */ const String& output,
         /* [in] */ Elastos::Droid::Privacy::IPrivacySettings* set);
 
-    CARAPI NotificationEx2(
+    CARAPI Notification(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 uid,
         /* [in] */ Byte accessMode,

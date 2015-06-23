@@ -1,6 +1,6 @@
 
 #include "net/CCompareResult.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CObjectContainer;
@@ -82,7 +82,7 @@ ECode CCompareResult::GetRemoved(
         removed->Add(*iter);
     }
     *result = removed.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -106,7 +106,7 @@ ECode CCompareResult::GetAdded(
         added->Add(*iter);
     }
     *result = added.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -5,8 +5,8 @@
 #include "view/CWindowManagerLayoutParams.h"
 #include "impl/CPolicyManager.h"
 #include <R.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
@@ -190,7 +190,7 @@ ECode MediaController::Show(
 
         DisableUnsupportedButtons();
         UpdateFloatingWindowLayout();
-        mWindowManager->AddViewEx5(mDecor, mDecorLayoutParams);
+        mWindowManager->AddView(mDecor, mDecorLayoutParams);
         mShowing = TRUE;
     }
     UpdatePausePlay();
@@ -374,7 +374,7 @@ ECode MediaController::InitFloatingWindow()
     FAIL_RETURN(mWindow->GetDecorView((IView**)&mDecor));
     AutoPtr<MediaControllerOnTouchListener> mTouchListener = new MediaControllerOnTouchListener(this);
     mDecor->SetOnTouchListener(mTouchListener);
-    mWindow->SetContentViewEx((IView*)this->Probe(EIID_IView));
+    mWindow->SetContentView((IView*)this->Probe(EIID_IView));
     FAIL_RETURN(mWindow->SetBackgroundDrawableResource(R::color::transparent));
 
     mWindow->SetVolumeControlStream(IAudioManager::STREAM_MUSIC);

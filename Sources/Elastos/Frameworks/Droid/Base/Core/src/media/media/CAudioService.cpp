@@ -28,9 +28,9 @@
 #include "view/CKeyEventHelper.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 #include <unistd.h>
 
 using Elastos::Droid::Os::IUserHandle;
@@ -1766,7 +1766,7 @@ void CAudioService::AudioHandler::PlaySoundEffect(
                 String filePath = text +
                     mAudioService->SOUND_EFFECTS_PATH +
                     mAudioService->SOUND_EFFECT_FILES[soundFileIndex];
-                mediaPlayer->SetDataSourceEx2(filePath);
+                mediaPlayer->SetDataSource(filePath);
                 mediaPlayer->SetAudioStreamType(IAudioSystem::STREAM_SYSTEM);
                 mediaPlayer->Prepare();
                 mediaPlayer->SetVolume(volFloat, volFloat);
@@ -1840,11 +1840,11 @@ CAudioService::SettingsObserver::SettingsObserver(
     CHandler::New((IHandler**)&mHandler);
 
     AutoPtr<IUri> uri;
-    Settings::System::GetUriForEx(ISettingsSystem::MODE_RINGER_STREAMS_AFFECTED, (IUri**)&uri);
+    Settings::System::GetUriFor(ISettingsSystem::MODE_RINGER_STREAMS_AFFECTED, (IUri**)&uri);
     mAudioService->mContentResolver->RegisterContentObserver(uri, FALSE, this);
 
     uri = NULL;
-    Settings::Global::GetUriForEx(ISettingsGlobal::DOCK_AUDIO_MEDIA_ENABLED, (IUri**)&uri);
+    Settings::Global::GetUriFor(ISettingsGlobal::DOCK_AUDIO_MEDIA_ENABLED, (IUri**)&uri);
     mAudioService->mContentResolver->RegisterContentObserver(uri, FALSE, this);
 }
 
@@ -5054,7 +5054,7 @@ ECode CAudioService::SendMsg(
     }
 
     AutoPtr<IMessage> message;
-    mAudioHandler->ObtainMessageEx3(msg, arg1, arg2, obj, (IMessage**)&message);
+    mAudioHandler->ObtainMessage(msg, arg1, arg2, obj, (IMessage**)&message);
     return mAudioHandler->SendMessageDelayed(message, delay, &bval);
 }
 
@@ -5197,7 +5197,7 @@ void CAudioService::MakeA2dpDeviceUnavailableLater(
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(address, (ICharSequence**)&seq);
     AutoPtr<IMessage> message;
-    mAudioHandler->ObtainMessageEx(MSG_BTA2DP_DOCK_TIMEOUT, seq, (IMessage**)&message);
+    mAudioHandler->ObtainMessage(MSG_BTA2DP_DOCK_TIMEOUT, seq, (IMessage**)&message);
     Boolean bval;
     mAudioHandler->SendMessageDelayed(message, BTA2DP_DOCK_TIMEOUT_MILLIS, &bval);
 }
@@ -5803,7 +5803,7 @@ void CAudioService::FilterMediaKeyEvent(
     if (IsValidVoiceInputKeyCode(tempValue)) {
         FilterVoiceInputKeyEvent(keyEvent, needWakeLock);
     } else {
-        DispatchMediaKeyEventEx(keyEvent, needWakeLock);
+        DispatchMediaKeyEvent(keyEvent, needWakeLock);
     }
 }
 
@@ -5836,7 +5836,7 @@ void CAudioService::DispatchMediaKeyEventForCalls(
 //    }
 }
 
-void CAudioService::DispatchMediaKeyEventEx(
+void CAudioService::DispatchMediaKeyEvent(
     /* [in] */ IKeyEvent* keyEvent,
     /* [in] */ Boolean needWakeLock)
 {
@@ -5956,12 +5956,12 @@ void CAudioService::SendSimulatedMediaButtonEvent(
     CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&keyEventHelper);
     AutoPtr<IKeyEvent> keyEvent;
     keyEventHelper->ChangeAction(originalKeyEvent, IKeyEvent::ACTION_DOWN, (IKeyEvent**)&keyEvent);
-    DispatchMediaKeyEventEx(keyEvent, needWakeLock);
+    DispatchMediaKeyEvent(keyEvent, needWakeLock);
 
     // send UP event
     keyEvent = NULL;
     keyEventHelper->ChangeAction(originalKeyEvent, IKeyEvent::ACTION_UP, (IKeyEvent**)&keyEvent);
-    DispatchMediaKeyEventEx(keyEvent, needWakeLock);
+    DispatchMediaKeyEvent(keyEvent, needWakeLock);
 }
 
 /*static*/
@@ -6151,7 +6151,7 @@ void CAudioService::RemoveMediaButtonReceiverForPackage(
 //            }
 //            if (mRCStack->Empty()) {
             // AutoPtr<IMessage> message;
-            // mAudioHandler->ObtainMessageEx3(msg, arg1, arg2, obj, (IMessage**)&message);
+            // mAudioHandler->ObtainMessage(msg, arg1, arg2, obj, (IMessage**)&message);
 //                // no saved media button receiver
 //                mAudioHandler->SendMessage(
 //                        mAudioHandler->ObtainMessage(MSG_PERSIST_MEDIABUTTONRECEIVER, 0, 0,
@@ -6222,7 +6222,7 @@ void CAudioService::PushMediaButtonReceiver(
 
    // post message to persist the default media button receiver
     AutoPtr<IMessage> message;
-    mAudioHandler->ObtainMessageEx(MSG_PERSIST_MEDIABUTTONRECEIVER, target, (IMessage**)&message);
+    mAudioHandler->ObtainMessage(MSG_PERSIST_MEDIABUTTONRECEIVER, target, (IMessage**)&message);
     Boolean bval;
     mAudioHandler->SendMessage(message, &bval);
 }
@@ -6398,7 +6398,7 @@ void CAudioService::UpdateRemoteControlDisplay_syncAfRcs(
 //    }
     // // will cause onRcDisplayUpdate() to be called in AudioService's handler thread
     // AutoPtr<IMessage> message;
-    // mAudioHandler->ObtainMessageEx3(MSG_RCDISPLAY_UPDATE, infoFlagsAboutToBeUsed, 0, rcse, (IMessage**)&message);
+    // mAudioHandler->ObtainMessage(MSG_RCDISPLAY_UPDATE, infoFlagsAboutToBeUsed, 0, rcse, (IMessage**)&message);
     // Boolean bval;
     // mAudioHandler->SendMessage(message, &bval);
 }
@@ -7302,7 +7302,7 @@ ECode CAudioService::GetRingtonePlayer(
 {
     VALIDATE_NOT_NULL(result);
     *result = mRingtonePlayer;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -7320,7 +7320,7 @@ ECode CAudioService::StartWatchingRoutes(
         Boolean tempState;
         mRoutesObservers->Register(observer, &tempState);
         *result = routes;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
 
     return NOERROR;

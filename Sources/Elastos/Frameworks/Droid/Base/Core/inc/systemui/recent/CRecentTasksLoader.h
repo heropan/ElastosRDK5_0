@@ -5,13 +5,10 @@
 #include "app/Activity.h"
 #include "os/Runnable.h"
 #include "os/AsyncTask.h"
-#include <elastos/Mutex.h>
-#include <elastos/ThreadBase.h>
 
 using Elastos::Utility::Concurrent::IBlockingQueue;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::AsyncTask;
@@ -180,7 +177,7 @@ public:
 
     CARAPI LoadTasksInBackground();
 
-    CARAPI LoadTasksInBackgroundEx(
+    CARAPI LoadTasksInBackground(
         /* [in] */ Boolean zeroeth);
 
 private:

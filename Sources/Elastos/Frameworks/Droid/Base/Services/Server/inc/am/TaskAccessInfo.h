@@ -4,7 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "app/ActivityManagerTaskThumbnails.h"
 #include "am/ThumbnailHolder.h"
 #include "am/ActivityRecord.h"

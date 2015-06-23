@@ -1,8 +1,8 @@
 
 #include "PreferredComponent.h"
 #include "util/XmlUtils.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::IComponentNameHelper;
@@ -59,7 +59,7 @@ PreferredComponent::PreferredComponent(
     /* [in] */ IXmlPullParser* parser)
 {
     mCallbacks = callbacks;
-    parser->GetAttributeValueEx(String(NULL), String("name"), &mShortComponent);
+    parser->GetAttributeValue(String(NULL), String("name"), &mShortComponent);
     AutoPtr<IComponentNameHelper> componentNameHelper;
     CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&componentNameHelper);
     componentNameHelper->UnflattenFromString(mShortComponent, (IComponentName**)&mComponent);
@@ -67,10 +67,10 @@ PreferredComponent::PreferredComponent(
         mParseError = String("Bad activity name ") + mShortComponent;
     }
     String matchStr;
-    parser->GetAttributeValueEx(String(NULL), String("match"), &matchStr);
+    parser->GetAttributeValue(String(NULL), String("match"), &matchStr);
     mMatch = matchStr != NULL ? StringUtils::ParseInt32(matchStr, 16) : 0;
     String setCountStr;
-    parser->GetAttributeValueEx(String(NULL), String("set"), &setCountStr);
+    parser->GetAttributeValue(String(NULL), String("set"), &setCountStr);
     Int32 setCount = setCountStr != NULL ? StringUtils::ParseInt32(setCountStr) : 0;
 
     AutoPtr<ArrayOf<String> > myPackages = setCount > 0 ? ArrayOf<String>::Alloc(setCount) : NULL;
@@ -96,7 +96,7 @@ PreferredComponent::PreferredComponent(
         //        + parser.getDepth() + " tag=" + tagName);
         if (tagName.Equals("set")) {
             String name;
-            parser->GetAttributeValueEx(String(NULL), String("name"), &name);
+            parser->GetAttributeValue(String(NULL), String("name"), &name);
             if (name.IsNull()) {
                 if (mParseError.IsNull()) {
                     mParseError = String("No name in set tag in preferred activity ")

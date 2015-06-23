@@ -2,7 +2,7 @@
 #include "systemui/SystemUIR.h"
 #include "content/CIntentFilter.h"
 #include "text/format/DateFormat.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::IDate;
@@ -156,7 +156,7 @@ void DateView::SetUpdates()
             filter->AddAction(IIntent::ACTION_TIMEZONE_CHANGED);
             AutoPtr<IIntent> stickyIntent;
             String nullStr;
-            mContext->RegisterReceiverEx(mIntentReceiver, filter, nullStr, NULL,
+            mContext->RegisterReceiver(mIntentReceiver, filter, nullStr, NULL,
                 (IIntent**)&stickyIntent);
             UpdateClock();
         }

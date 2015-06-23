@@ -2,10 +2,9 @@
 #define __DATEFORMAT_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IDate;
 using Libcore::ICU::ILocale;

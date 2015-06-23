@@ -3,10 +3,10 @@
 
 #include "widget/ScrollView.h"
 #include "systemui/recent/RecentsScrollViewPerformanceHelper.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::View::IViewOnTouchListener;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IViewOnLongClickListener;

@@ -4,7 +4,7 @@
 #include "os/SystemProperties.h"
 #include <elastos/System.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elautoptr.h>
 #include <stdio.h>
 #include "R.h"

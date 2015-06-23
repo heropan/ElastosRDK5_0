@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "util/CIndentingPrintWriter.h"
 
 using Elastos::Core::EIID_IAppendable;
@@ -79,7 +79,7 @@ ECode CIndentingPrintWriter::PrintPair(
     return PrintString(sb.ToString());
 }
 
-ECode CIndentingPrintWriter::WriteCharsEx(
+ECode CIndentingPrintWriter::WriteChars(
     /* [in] */ const ArrayOf<Char32>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -91,7 +91,7 @@ ECode CIndentingPrintWriter::WriteCharsEx(
         Char32 ch = buffer[lineEnd++];
         if (ch == '\n') {
             FAIL_RETURN(WriteIndent())
-            FAIL_RETURN(PrintWriter::WriteCharsEx(buffer, lineStart, lineEnd - lineStart))
+            FAIL_RETURN(PrintWriter::WriteChars(buffer, lineStart, lineEnd - lineStart))
             lineStart = lineEnd;
             mEmptyLine = TRUE;
         }
@@ -99,7 +99,7 @@ ECode CIndentingPrintWriter::WriteCharsEx(
 
     if (lineStart != lineEnd) {
         FAIL_RETURN(WriteIndent())
-        FAIL_RETURN(PrintWriter::WriteCharsEx(buffer, lineStart, lineEnd - lineStart))
+        FAIL_RETURN(PrintWriter::WriteChars(buffer, lineStart, lineEnd - lineStart))
     }
 
     return NOERROR;
@@ -118,7 +118,7 @@ ECode CIndentingPrintWriter::WriteIndent()
                     (*mCurrent)[i] = str.GetChar(i);
                 }
             }
-            return PrintWriter::WriteCharsEx(*mCurrent, 0, mCurrent->GetLength());
+            return PrintWriter::WriteChars(*mCurrent, 0, mCurrent->GetLength());
         }
     }
 
@@ -137,12 +137,12 @@ ECode CIndentingPrintWriter::AppendCharSequence(
     return PrintWriter::AppendCharSequence(csq);
 }
 
-ECode CIndentingPrintWriter::AppendCharSequenceEx(
+ECode CIndentingPrintWriter::AppendCharSequence(
     /* [in] */ ICharSequence* csq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return PrintWriter::AppendCharSequenceEx(csq, start, end);
+    return PrintWriter::AppendCharSequence(csq, start, end);
 }
 
 ECode CIndentingPrintWriter::Write(
@@ -163,12 +163,12 @@ ECode CIndentingPrintWriter::WriteString(
     return PrintWriter::WriteString(str);
 }
 
-ECode CIndentingPrintWriter::WriteStringEx(
+ECode CIndentingPrintWriter::WriteString(
     /* [in] */ const String& str,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
-    return PrintWriter::WriteStringEx(str, offset, count);
+    return PrintWriter::WriteString(str, offset, count);
 }
 
 ECode CIndentingPrintWriter::CheckError(
@@ -186,12 +186,12 @@ ECode CIndentingPrintWriter::Format(
     return PrintWriter::Format(format, args);
 }
 
-ECode CIndentingPrintWriter::FormatEx(
+ECode CIndentingPrintWriter::Format(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return PrintWriter::FormatEx(l, format, args);
+    return PrintWriter::Format(l, format, args);
 }
 
 ECode CIndentingPrintWriter::Printf(
@@ -201,12 +201,12 @@ ECode CIndentingPrintWriter::Printf(
     return PrintWriter::Printf(format, args);
 }
 
-ECode CIndentingPrintWriter::PrintfEx(
+ECode CIndentingPrintWriter::Printf(
     /* [in] */ ILocale* l,
     /* [in] */ const String& format,
     /* [in] */ ArrayOf<IInterface*>* args)
 {
-    return PrintWriter::PrintfEx(l, format, args);
+    return PrintWriter::Printf(l, format, args);
 }
 
 ECode CIndentingPrintWriter::PrintChars(
@@ -338,7 +338,7 @@ ECode CIndentingPrintWriter::GetLock(
     VALIDATE_NOT_NULL(lockobj);
     AutoPtr<IInterface> obj = PrintWriter::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

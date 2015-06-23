@@ -534,7 +534,7 @@ module
              *
              * @see #generateDefaultLayoutParams()
              */
-            AddViewEx(
+            AddView(
                 [in] IView* child,
                 [in] Int32 index);
 
@@ -548,7 +548,7 @@ module
              *
              * @param child the child view to add
              */
-            AddViewEx2(
+            AddView(
                 [in] IView* child,
                 [in] Int32 width,
                 [in] Int32 height);
@@ -563,7 +563,7 @@ module
              * @param child the child view to add
              * @param params the layout parameters to set on the child
              */
-            AddViewEx3(
+            AddView(
                 [in] IView* child,
                 [in] IViewGroupLayoutParams* params);
 
@@ -578,7 +578,7 @@ module
              * @param index the position at which to add the child
              * @param params the layout parameters to set on the child
              */
-            AddViewEx4(
+            AddView(
                 [in] IView* child,
                 [in] Int32 index,
                 [in] IViewGroupLayoutParams* params);

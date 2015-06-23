@@ -2,7 +2,7 @@
 #include "Part.h"
 #include "ext/frameworkext.h"
 // #include "EncodingUtils.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::Utility::Logging::Logger;

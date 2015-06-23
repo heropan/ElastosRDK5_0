@@ -50,7 +50,7 @@ public:
      * @return A linear interpolation between the start and end values, given the
      *         <code>fraction</code> parameter.
      */
-    CARAPI EvaluateEx(
+    CARAPI Evaluate(
         /* [in] */ Float fraction,
         /* [in] */ Int32 startValue,
         /* [in] */ Int32 endValue,

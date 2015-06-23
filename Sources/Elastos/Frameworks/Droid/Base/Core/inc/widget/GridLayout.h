@@ -4,16 +4,16 @@
 
 #include "ext/frameworkext.h"
 #include "view/ViewGroup.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <R.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Pair.h>
-#include <elastos/HashMap.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::Pair;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Pair;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Droid::View::IView;
@@ -427,7 +427,7 @@ public:
 
         CARAPI_(Int32) GetFlexibility();
 
-        CARAPI EqualsEx(
+        CARAPI Equals(
             /* [in] */ ISpec* that,
             /* [out] */ Boolean* res);
 

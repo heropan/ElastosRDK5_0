@@ -1,7 +1,7 @@
 
 #include "widget/Spinner.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "view/Gravity.h"
 #include "view/CViewGroupLayoutParams.h"
 #include "app/CAlertDialogBuilder.h"
@@ -89,7 +89,7 @@ ECode Spinner::InitImpl(
             const_cast<Int32 *>(R::styleable::Spinner),
             ARRAY_SIZE(R::styleable::Spinner));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     if (mode == MODE_THEME) {
         a->GetInt32(R::styleable::Spinner_spinnerMode, MODE_DIALOG, &mode);
@@ -103,7 +103,7 @@ ECode Spinner::InitImpl(
 
         case MODE_DROPDOWN: {
             AutoPtr<ISpinnerPopup> popup = new DropdownPopup(context, attrs, defStyle, this);
-            a->GetLayoutDimensionEx(R::styleable::Spinner_dropDownWidth, IViewGroupLayoutParams::WRAP_CONTENT, &mDropDownWidth);
+            a->GetLayoutDimension(R::styleable::Spinner_dropDownWidth, IViewGroupLayoutParams::WRAP_CONTENT, &mDropDownWidth);
             AutoPtr<IDrawable> d;
             a->GetDrawable(R::styleable::Spinner_popupBackground, (IDrawable**)&d);
             popup->SetBackgroundDrawable(d);
@@ -831,9 +831,9 @@ ECode Spinner::DialogPopup::Show()
     AutoPtr<IAlertDialogBuilder> builder;
     CAlertDialogBuilder::New(mHost->GetContext(), (IAlertDialogBuilder**)&builder);
     if (mPrompt) {
-        builder->SetTitleEx(mPrompt);
+        builder->SetTitle(mPrompt);
     }
-    builder->SetSingleChoiceItemsEx3(mListAdapter, mHost->GetSelectedItemPosition(), this);
+    builder->SetSingleChoiceItems(mListAdapter, mHost->GetSelectedItemPosition(), this);
 
     mPopup = NULL;
     builder->Show((IAlertDialog**)&mPopup);

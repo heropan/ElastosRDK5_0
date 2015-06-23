@@ -4,7 +4,7 @@
 
 #include "_CUsbAccessory.h"
 #include "ext/frameworkext.h"
-#include "elastos/StringBuffer.h"
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
 

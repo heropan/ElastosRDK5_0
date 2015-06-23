@@ -10,14 +10,14 @@
 #include "graphics/CreateOutputStreamAdaptor.h"
 #include "util/CDisplayMetrics.h"
 #include "util/droid_nio_utils.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkUnPreMultiply.h>
 #include <skia/images/SkImageEncoder.h>
 #include <skia/core/SkDither.h>
 #include <skia/core/SkBitmap.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::AutoBufferPointer;
@@ -339,7 +339,7 @@ ECode CBitmap::Copy(
         b->mDensity = mDensity;
     }
     *bitmap = (IBitmap*)b.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -370,7 +370,7 @@ ECode CBitmap::CreateScaledBitmap(
     src->GetHeight(&height);
     Float sx = dstWidth  / (Float)width;
     Float sy = dstHeight / (Float)height;
-    m->SetScaleEx(sx, sy);
+    m->SetScale(sx, sy);
     FAIL_RETURN(CreateBitmap(src, 0, 0, width, height, m, filter, bitmap));
 
     {
@@ -443,7 +443,7 @@ ECode CBitmap::CreateBitmap(
         && x == 0 && y == 0 && width == sourceWidth && height == sourceHeight
         && (m == NULL || (m->IsIdentity(&isIdentity), isIdentity))) {
         *bitmap = source;
-        INTERFACE_ADDREF(*bitmap);
+        REFCOUNT_ADD(*bitmap);
         return NOERROR;
     }
 
@@ -524,12 +524,12 @@ ECode CBitmap::CreateBitmap(
     bmp->SetDensity(density);
 
     canvas->SetBitmap(bmp);
-    FAIL_RETURN(canvas->DrawBitmapEx(source,
+    FAIL_RETURN(canvas->DrawBitmap(source,
         (IRect*)srcR.Get(), (IRectF*)dstR.Get(), (IPaint*)paint.Get()));
     canvas->SetBitmap(NULL);
 
     *bitmap = (IBitmap*)bmp.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -597,7 +597,7 @@ ECode CBitmap::CreateBitmap(
         //nativeErase(bm.mNativeBitmap, 0);
     }
     *bitmap = (IBitmap*)bm.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -651,7 +651,7 @@ ECode CBitmap::CreateBitmap(
         bm->mDensity = densityDpi;
     }
     *bitmap = (IBitmap*)bm.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -683,7 +683,7 @@ ECode CBitmap::GetNinePatchChunk(
 {
     VALIDATE_NOT_NULL(data);
     *data = mNinePatchChunk;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -692,7 +692,7 @@ ECode CBitmap::GetLayoutBounds(
 {
     VALIDATE_NOT_NULL(bounds);
     *bounds = mLayoutBounds;
-    INTERFACE_ADDREF(*bounds);
+    REFCOUNT_ADD(*bounds);
     return NOERROR;
 }
 
@@ -787,7 +787,7 @@ ECode CBitmap::GetScaledHeight(
     return NOERROR;
 }
 
-ECode CBitmap::GetScaledWidthEx(
+ECode CBitmap::GetScaledWidth(
     /* [in] */ IDisplayMetrics* metrics,
     /* [out] */ Int32* width)
 {
@@ -801,7 +801,7 @@ ECode CBitmap::GetScaledWidthEx(
     return NOERROR;
 }
 
-ECode CBitmap::GetScaledHeightEx(
+ECode CBitmap::GetScaledHeight(
     /* [in] */ IDisplayMetrics* metrics,
     /* [out] */ Int32* height)
 {
@@ -815,7 +815,7 @@ ECode CBitmap::GetScaledHeightEx(
     return NOERROR;
 }
 
-ECode CBitmap::GetScaledWidthEx2(
+ECode CBitmap::GetScaledWidth(
     /* [in] */ Int32 targetDensity,
     /* [out] */ Int32* width)
 {
@@ -827,7 +827,7 @@ ECode CBitmap::GetScaledWidthEx2(
     return NOERROR;
 }
 
-ECode CBitmap::GetScaledHeightEx2(
+ECode CBitmap::GetScaledHeight(
     /* [in] */ Int32 targetDensity,
     /* [out] */ Int32* height)
 {
@@ -1089,10 +1089,10 @@ ECode CBitmap::ExtractAlpha(
 {
     VALIDATE_NOT_NULL(bitmap);
 
-    return ExtractAlphaEx(NULL, NULL, bitmap);
+    return ExtractAlpha(NULL, NULL, bitmap);
 }
 
-ECode CBitmap::ExtractAlphaEx(
+ECode CBitmap::ExtractAlpha(
     /* [in] */ IPaint* paint,
     /* [in] */ ArrayOf<Int32>* offsetXY,
     /* [out] */ IBitmap** bitmap)
@@ -1109,7 +1109,7 @@ ECode CBitmap::ExtractAlphaEx(
     }
     bm->mDensity = mDensity;
     *bitmap = (IBitmap*)bm.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 

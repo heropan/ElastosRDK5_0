@@ -2,12 +2,9 @@
 #define __CUPDATELOCK_H__
 
 #include "_CUpdateLock.h"
-#include <elastos/Mutex.h>
 #include "ext/frameworkdef.h"
 
 using Elastos::Droid::Os::IIUpdateLock;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Os {

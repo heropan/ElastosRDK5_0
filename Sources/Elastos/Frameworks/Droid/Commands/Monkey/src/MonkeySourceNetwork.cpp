@@ -1,7 +1,7 @@
 #include "MonkeySourceNetwork.h"
-#include "elastos/StringUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
 #include "os/SystemClock.h"
 #include "CMonkeySourceNetworkVars.h"
 #include "CMonkeyCommandReturn.h"

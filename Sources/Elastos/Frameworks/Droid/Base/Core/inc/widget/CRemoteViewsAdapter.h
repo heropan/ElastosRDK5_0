@@ -3,7 +3,7 @@
 
 #include "_CRemoteViewsAdapter.h"
 #include "RemoteViewsAdapter.h"
-#include "widget/AdapterMacro.h"
+
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

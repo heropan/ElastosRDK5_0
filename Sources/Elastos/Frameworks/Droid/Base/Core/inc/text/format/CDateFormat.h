@@ -52,7 +52,7 @@ public:
         /* [in] */ Int64 inTimeInMillis,
         /* [out] */ ICharSequence** result);
 
-    CARAPI FormatEx(
+    CARAPI Format(
         /* [in] */ ICharSequence* inFormat,
         /* [in] */ IDate* inDate,
         /* [out] */ ICharSequence** result);
@@ -61,7 +61,7 @@ public:
         /* [in] */ ICharSequence* inFormat,
         /* [out] */ Boolean* result);
 
-    CARAPI FormatEx2(
+    CARAPI Format(
         /* [in] */ ICharSequence* inFormat,
         /* [in] */ ICalendar* inDate,
         /* [out] */ ICharSequence** result);

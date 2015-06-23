@@ -77,7 +77,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI ReplaceEx(
+    CARAPI Replace(
         /* [in] */ Int32 st,
         /* [in] */ Int32 en,
         /* [in] */ ICharSequence* text);
@@ -88,7 +88,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI InsertEx(
+    CARAPI Insert(
         /* [in] */ Int32 where,
         /* [in] */ ICharSequence* text);
 
@@ -99,12 +99,12 @@ public:
     CARAPI Append(
         /* [in] */ ICharSequence* text);
 
-    CARAPI AppendEx(
+    CARAPI Append(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    CARAPI AppendEx2(
+    CARAPI Append(
         /* [in] */ Char32 text);
 
     CARAPI Clear();
@@ -178,7 +178,7 @@ public:
      * Don't call this yourself -- exists for Paint to use internally.
      * {@hide}
      */
-    CARAPI GetTextRunAdvancesEx(
+    CARAPI GetTextRunAdvances(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,

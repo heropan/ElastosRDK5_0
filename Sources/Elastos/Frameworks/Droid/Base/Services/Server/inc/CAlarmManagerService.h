@@ -5,18 +5,15 @@
 #include "ext/frameworkext.h"
 #include "_CAlarmManagerService.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Pair.h>
-#include <elastos/Mutex.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/core/StringBuffer.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Utility::List;
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::IComparator;
 using Elastos::Droid::App::IPendingIntent;

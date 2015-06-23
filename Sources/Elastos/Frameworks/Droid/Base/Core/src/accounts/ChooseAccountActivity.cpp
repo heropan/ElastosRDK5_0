@@ -5,7 +5,7 @@
 #include "accounts/CAuthenticatorDescription.h"
 #include "os/CBundle.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Slogger;
@@ -171,10 +171,10 @@ ECode ChooseAccountActivity::AccountArrayAdapter::AddAll(
     return ArrayAdapter::AddAll(collection);
 }
 
-ECode ChooseAccountActivity::AccountArrayAdapter::AddAllEx(
+ECode ChooseAccountActivity::AccountArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    return ArrayAdapter::AddAllEx(items);
+    return ArrayAdapter::AddAll(items);
 }
 
 ECode ChooseAccountActivity::AccountArrayAdapter::Insert(
@@ -212,7 +212,7 @@ ECode ChooseAccountActivity::AccountArrayAdapter::GetContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = ArrayAdapter::GetContext();
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -267,7 +267,7 @@ ECode ChooseAccountActivity::AccountArrayAdapter::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> tdView = ArrayAdapter::GetDropDownView(position, convertView, parent);
     *view = tdView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -298,7 +298,7 @@ ECode ChooseAccountActivity::AccountArrayAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> i = ArrayAdapter::GetItem(position);
     *item = i;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -352,7 +352,7 @@ ECode ChooseAccountActivity::AccountArrayAdapter::GetView(
     holder->mIcon->SetImageDrawable((*mInfos)[position]->mDrawable);
 
     *view = convertView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

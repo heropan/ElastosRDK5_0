@@ -113,7 +113,7 @@ interface Elastos.Droid.Os.IParcelFileDescriptor;
          * @return {@code true} on success.
          * @see #protect(int)
          */
-        ProtectEx(
+        Protect(
             [in] ISocket* socket,
             [out] Boolean* result);
 
@@ -124,7 +124,7 @@ interface Elastos.Droid.Os.IParcelFileDescriptor;
          * @return {@code true} on success.
          * @see #protect(int)
          */
-        ProtectEx2(
+        Protect(
             [in] IDatagramSocket* socket,
             [out] Boolean* reault);
     }
@@ -200,7 +200,7 @@ interface Elastos.Droid.Os.IParcelFileDescriptor;
          * @throws IllegalArgumentException if the address is invalid.
          * @see #addAddress(InetAddress, int)
          */
-        AddAddressEx(
+        AddAddress(
             [in] String address,
             [in] Int32 prefixLength);
 
@@ -222,7 +222,7 @@ interface Elastos.Droid.Os.IParcelFileDescriptor;
          * @throws IllegalArgumentException if the route is invalid.
          * @see #addRoute(InetAddress, int)
          */
-        AddRouteEx(
+        AddRoute(
             [in] String address,
             [in] Int32 prefixLength);
 
@@ -244,7 +244,7 @@ interface Elastos.Droid.Os.IParcelFileDescriptor;
          * @throws IllegalArgumentException if the address is invalid.
          * @see #addDnsServer(InetAddress)
          */
-        AddDnsServerEx(
+        AddDnsServer(
             [in] String address);
 
         /**

@@ -1,6 +1,6 @@
 
 #include "CVideoPlayer.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include <Elastos.Core.h>
 #include <stdio.h>
 

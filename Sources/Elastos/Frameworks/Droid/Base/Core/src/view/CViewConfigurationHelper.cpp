@@ -13,7 +13,7 @@ ECode CViewConfigurationHelper::Get(
     VALIDATE_NOT_NULL(viewConfig);
     AutoPtr<CViewConfiguration> temp = CViewConfiguration::Get(context);
     *viewConfig = temp.Get();
-    INTERFACE_ADDREF(*viewConfig);
+    REFCOUNT_ADD(*viewConfig);
 
     return NOERROR;
 }

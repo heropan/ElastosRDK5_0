@@ -35,7 +35,7 @@ public:
      *
      * @return an Insets instance with the appropriate values
      */
-    CARAPI OfEx(
+    CARAPI Of(
         /* [in] */ IRect* r,
         /* [out] */ IInsets** insets);
 };

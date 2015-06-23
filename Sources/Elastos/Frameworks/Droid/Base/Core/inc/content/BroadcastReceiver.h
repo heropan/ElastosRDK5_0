@@ -7,10 +7,9 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using namespace Elastos::Droid::Os;
 using namespace Elastos::Droid::App;
 

@@ -3,7 +3,7 @@
 
 #include "_CStaticLayout.h"
 #include "text/StaticLayout.h"
-#include "text/LayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

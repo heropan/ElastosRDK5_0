@@ -149,7 +149,7 @@ module
          *
          * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
          */
-        AddSpeechEx(
+        AddSpeech(
             [in] String text,
             [in] String filename,
             [out] Int32* ret);
@@ -201,7 +201,7 @@ module
          *
          * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
          */
-        AddEarconEx(
+        AddEarcon(
             [in] String earcon,
             [in] String filename,
             [out] Int32* ret);

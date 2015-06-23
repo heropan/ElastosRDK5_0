@@ -2,10 +2,10 @@
 #define __CTABLEROWLAYOUTPRARAMS_H_
 
 #include "_CTableRowLayoutParams.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/TableRowLayoutParams.h"
-#include "widget/LinearLayoutMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

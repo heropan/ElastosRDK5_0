@@ -1,8 +1,6 @@
 #include "speech/tts/UtteranceProgressListener.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Speech {

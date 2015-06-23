@@ -39,7 +39,7 @@ ECode CAnticipateOvershootInterpolator::constructor(
             const_cast<Int32 *>(R::styleable::AnticipateOvershootInterpolator),
             ARRAY_SIZE(R::styleable::AnticipateOvershootInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     Float tension, extraTension;
     a->GetFloat(R::styleable::AnticipateOvershootInterpolator_tension, 2.0f, &tension);

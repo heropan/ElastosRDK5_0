@@ -35,7 +35,7 @@ ECode CAnimatorSet::PlayTogether(
  *
  * @param items The animations that will be started simultaneously.
  */
-ECode CAnimatorSet::PlayTogetherEx(
+ECode CAnimatorSet::PlayTogether(
     /* [in] */ IObjectContainer* items)
 {
     return AnimatorSet::PlayTogether(items);
@@ -59,7 +59,7 @@ ECode CAnimatorSet::PlaySequentially(
  *
  * @param items The animations that will be started one after another.
  */
-ECode CAnimatorSet::PlaySequentiallyEx(
+ECode CAnimatorSet::PlaySequentially(
     /* [in] */ IObjectContainer* items)
 {
     return AnimatorSet::PlaySequentially(items);
@@ -79,7 +79,7 @@ ECode CAnimatorSet::GetChildAnimations(
     return AnimatorSet::GetChildAnimations(childAnimations);
 }
 
-ECode CAnimatorSet::GetChildAnimationsEx(
+ECode CAnimatorSet::GetChildAnimations(
     /* [out] */ IObjectContainer** childAnimations)
 {
     return AnimatorSet::GetChildAnimations(childAnimations);
@@ -120,7 +120,7 @@ ECode CAnimatorSet::Play(
     VALIDATE_NOT_NULL(builder);
     AutoPtr<IAnimatorSetBuilder> b = AnimatorSet::Play(anim);
     *builder = b;
-    INTERFACE_ADDREF(*builder);
+    REFCOUNT_ADD(*builder);
     return NOERROR;
 }
 

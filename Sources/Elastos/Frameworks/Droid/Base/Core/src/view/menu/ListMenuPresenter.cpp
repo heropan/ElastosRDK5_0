@@ -2,13 +2,13 @@
 #include "view/menu/ListMenuPresenter.h"
 #include "view/menu/MenuBuilderBase.h"
 #include "view/menu/CMenuDialogHelper.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "view/LayoutInflater.h"
 #include "os/CBundle.h"
 #include "view/CContextThemeWrapper.h"
 #include "R.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Widget::EIID_IBaseAdapter;
@@ -76,7 +76,7 @@ AutoPtr<IView> ListMenuPresenter::_MenuAdapter::GetView(
     /* [in] */ IViewGroup* parent)
 {
     if (convertView == NULL) {
-        mHost->mInflater->InflateEx2(mHost->mItemLayoutRes, parent, FALSE, (IView**)&convertView);
+        mHost->mInflater->Inflate(mHost->mItemLayoutRes, parent, FALSE, (IView**)&convertView);
     }
 
     AutoPtr<IMenuItemView> itemView = IMenuItemView::Probe(convertView);
@@ -246,7 +246,7 @@ ECode ListMenuPresenter::GetMenuView(
     assert(view != NULL);
     if (mMenuView == NULL) {
         AutoPtr<IView> tmpView;
-        mInflater->InflateEx2(R::layout::expanded_menu_layout, root, FALSE, (IView**)&tmpView);
+        mInflater->Inflate(R::layout::expanded_menu_layout, root, FALSE, (IView**)&tmpView);
         mMenuView = IExpandedMenuView::Probe(tmpView);
         if (mAdapter == NULL) {
             mAdapter = new MenuAdapter(this);

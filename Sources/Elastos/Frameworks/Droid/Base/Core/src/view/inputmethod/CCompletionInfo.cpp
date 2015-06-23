@@ -65,7 +65,7 @@ ECode CCompletionInfo::GetText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
 
     return NOERROR;
 }
@@ -75,7 +75,7 @@ ECode CCompletionInfo::GetLabel(
 {
     VALIDATE_NOT_NULL(label);
     *label = mLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 

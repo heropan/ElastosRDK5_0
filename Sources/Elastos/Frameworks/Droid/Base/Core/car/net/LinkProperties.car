@@ -85,7 +85,7 @@ module
             [in] ILinkProperties* target,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] ILinkProperties* target,
             [out] Boolean* result);
 

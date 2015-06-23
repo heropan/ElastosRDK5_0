@@ -115,7 +115,7 @@ LaunchWarningWindow::LaunchWarningWindow(
     AutoPtr<ArrayOf<IInterface*> > labelcs = ArrayOf<IInterface*>::Alloc(1);
     labelcs->Set(0, label);
     String s;
-    res->GetStringEx(R::string::launch_warning_replace, labelcs, &s);
+    res->GetString(R::string::launch_warning_replace, labelcs, &s);
     AutoPtr<ICharSequence> ss;
     CStringWrapper::New(s, (ICharSequence**)&ss);
     text->SetText(ss);
@@ -133,7 +133,7 @@ LaunchWarningWindow::LaunchWarningWindow(
     curAppInfo->LoadLabel(pkgManager, (ICharSequence**)&curLabel);
     AutoPtr<ArrayOf<IInterface*> > curLabelcs = ArrayOf<IInterface*>::Alloc(1);
     curLabelcs->Set(0, curLabel);
-    res->GetStringEx(R::string::launch_warning_original, curLabelcs, &s);
+    res->GetString(R::string::launch_warning_original, curLabelcs, &s);
     ss = NULL;
     CStringWrapper::New(s, (ICharSequence**)&ss);
     text->SetText(ss);

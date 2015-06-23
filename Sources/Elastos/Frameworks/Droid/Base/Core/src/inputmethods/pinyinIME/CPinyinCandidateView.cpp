@@ -2,8 +2,8 @@
 #include "CPinyinCandidateView.h"
 #include "CDecodingInfo.h"
 #include "CBalloonHint.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 #include "graphics/CPaint.h"
 
 
@@ -131,13 +131,13 @@ void PinyinCandidateView::OnSizeChanged()
     Int32 textSize = 1;
     mCandidatesPaint->SetTextSize(textSize);
     mFmiCandidates = NULL;
-    mCandidatesPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiCandidates);
+    mCandidatesPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiCandidates);
     Int32 bottom = 0, top = 0;
     while ((mFmiCandidates->GetBottom(&bottom), bottom) - (mFmiCandidates->GetTop(&top), top) < mContentHeight) {
         textSize++;
         mCandidatesPaint->SetTextSize(textSize);
         mFmiCandidates = NULL;
-        mCandidatesPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiCandidates);
+        mCandidatesPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiCandidates);
     }
 
     mImeCandidateTextSize = textSize;
@@ -146,8 +146,8 @@ void PinyinCandidateView::OnSizeChanged()
         mCandidateTextSize = mImeCandidateTextSize;
         mCandidatesPaint->SetTextSize(mCandidateTextSize);
         mFmiCandidates = NULL;
-        mCandidatesPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiCandidates);
-        mCandidatesPaint->MeasureTextEx2(SUSPENSION_POINTS, &mSuspensionPointsWidth);
+        mCandidatesPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiCandidates);
+        mCandidatesPaint->MeasureText(SUSPENSION_POINTS, &mSuspensionPointsWidth);
     } else {
         // Reset the decoding information to update members for painting.
         SetDecodingInfo(mDecInfo);
@@ -156,17 +156,17 @@ void PinyinCandidateView::OnSizeChanged()
     textSize = 1;
     mFootnotePaint->SetTextSize(textSize);
     mFmiFootnote = NULL;
-    mFootnotePaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiFootnote);
+    mFootnotePaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiFootnote);
     while ((mFmiFootnote->GetBottom(&bottom), bottom) - (mFmiFootnote->GetTop(&top), top) < mContentHeight / 2) {
         textSize++;
         mFootnotePaint->SetTextSize(textSize);
         mFmiFootnote = NULL;
-        mFootnotePaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiFootnote);
+        mFootnotePaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiFootnote);
     }
     textSize--;
     mFootnotePaint->SetTextSize(textSize);
     mFmiFootnote = NULL;
-    mFootnotePaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiFootnote);
+    mFootnotePaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiFootnote);
 
     // When the size is changed, the first page will be displayed.
     // mPageNo = 0;
@@ -210,7 +210,7 @@ Boolean PinyinCandidateView::CalculatePage(
         while (xPos < mContentWidth && pStart + pSize < candSize) {
             itemPos = pStart + pSize;
             itemStr = decInfo->mCandidatesList[itemPos];
-            mCandidatesPaint->MeasureTextEx2(itemStr, &itemWidth);
+            mCandidatesPaint->MeasureText(itemStr, &itemWidth);
             if (itemWidth < MIN_ITEM_WIDTH) itemWidth = MIN_ITEM_WIDTH;
 
             itemWidth += mCandidateMargin * 2;
@@ -284,12 +284,12 @@ void PinyinCandidateView::OnDraw(
         String footnote;
         if (mShowFootnote) {
             footnote = StringUtils::Int32ToString(i + 1);
-            mFootnotePaint->MeasureTextEx2(footnote, &footnoteSize);
+            mFootnotePaint->MeasureText(footnote, &footnoteSize);
         }
 
         String cand = decInfo->mCandidatesList[pStart + i];
         Float candidateWidth = 0.f;
-        mCandidatesPaint->MeasureTextEx2(cand, &candidateWidth);
+        mCandidatesPaint->MeasureText(cand, &candidateWidth);
         Float centerOffset = 0;
         if (candidateWidth < MIN_ITEM_WIDTH) {
             centerOffset = (MIN_ITEM_WIDTH - candidateWidth) / 2;
@@ -321,7 +321,7 @@ void PinyinCandidateView::OnDraw(
 
         // Draw footnote
         if (mShowFootnote) {
-            canvas->DrawTextEx(footnote, xPos + (candMargin - footnoteSize)
+            canvas->DrawText(footnote, xPos + (candMargin - footnoteSize)
                     / 2, yPos, mFootnotePaint);
         }
 
@@ -336,7 +336,7 @@ void PinyinCandidateView::OnDraw(
         } else {
             mCandidatesPaint->SetColor(mNormalCandidateColor);
         }
-        canvas->DrawTextEx(cand, xPos + centerOffset, yPos, mCandidatesPaint);
+        canvas->DrawText(cand, xPos + centerOffset, yPos, mCandidatesPaint);
 
         // Candidate and right margin
         xPos += candidateWidth + candMargin;
@@ -361,7 +361,7 @@ String PinyinCandidateView::GetLimitedCandidateForDrawing(
     Float width;
     do {
         subLen--;
-        mCandidatesPaint->MeasureTextEx(rawCandidate, 0, subLen, &width);
+        mCandidatesPaint->MeasureText(rawCandidate, 0, subLen, &width);
         if (width + mSuspensionPointsWidth <= widthToDraw || 1 >= subLen) {
             return rawCandidate.Substring(0, subLen) + SUSPENSION_POINTS;
         }
@@ -514,8 +514,8 @@ ECode PinyinCandidateView::SetDecodingInfo(
     if ((mCandidatesPaint->GetTextSize(&size), size) != mCandidateTextSize) {
         mCandidatesPaint->SetTextSize(mCandidateTextSize);
         mFmiCandidates = NULL;
-        mCandidatesPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmiCandidates);
-        mCandidatesPaint->MeasureTextEx2(SUSPENSION_POINTS, &mSuspensionPointsWidth);
+        mCandidatesPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmiCandidates);
+        mCandidatesPaint->MeasureText(SUSPENSION_POINTS, &mSuspensionPointsWidth);
     }
 
     // Remove any pending timer for the previous list.

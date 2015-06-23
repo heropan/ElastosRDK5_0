@@ -11,7 +11,7 @@
 #include "webkit/HTML5VideoViewProxy.h"
 #include "webkit/CWebViewCore.h"
 #include "webkit/CWebViewClassic.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 #include <skia/core/SkBitmap.h>
 
@@ -192,7 +192,7 @@ ECode HTML5VideoViewProxy::PosterDownloader::Data(
     if (mPosterBytes == NULL) {
         CByteArrayOutputStream::New((IByteArrayOutputStream**)&mPosterBytes);
     }
-    mPosterBytes->WriteBytesEx(data, 0, len);
+    mPosterBytes->WriteBytes(data, 0, len);
     return NOERROR;
 }
 
@@ -207,7 +207,7 @@ ECode HTML5VideoViewProxy::PosterDownloader::EndData()
             CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
             AutoPtr< ArrayOf<Byte> > array = ArrayOf<Byte>::Alloc(size);
             mPosterBytes->ToByteArray((ArrayOf<Byte>**)&array);
-            factory->DecodeByteArrayEx(*array, 0, size, (IBitmap**)&poster);
+            factory->DecodeByteArray(*array, 0, size, (IBitmap**)&poster);
             mProxy->DoSetPoster(poster);
         }
         Cleanup();
@@ -752,7 +752,7 @@ ECode HTML5VideoViewProxy::OnPrepared(
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, PREPARED, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, PREPARED, (IMessage**)&msg);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
     Int32 duration, width, height;
@@ -782,7 +782,7 @@ ECode HTML5VideoViewProxy::OnCompletion(
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx5(this, ENDED, 1, 0, (IMessage**)&msg);
+    mh->Obtain(this, ENDED, 1, 0, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 
@@ -799,7 +799,7 @@ ECode HTML5VideoViewProxy::OnError(
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(this, ERROR, (IMessage**)&msg);
+    mh->Obtain(this, ERROR, (IMessage**)&msg);
     Boolean flag = FALSE;
     SendMessage(msg, &flag);
 
@@ -813,7 +813,7 @@ void HTML5VideoViewProxy::DispatchOnEnded()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, ENDED, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, ENDED, (IMessage**)&msg);
     Boolean result = FALSE;
     mWebCoreHandler->SendMessage(msg, &result);
 }
@@ -823,7 +823,7 @@ void HTML5VideoViewProxy::DispatchOnPaused()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, PAUSED, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, PAUSED, (IMessage**)&msg);
     Boolean result = FALSE;
     mWebCoreHandler->SendMessage(msg, &result);
 }
@@ -834,7 +834,7 @@ void HTML5VideoViewProxy::DispatchOnStopFullScreen(
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, STOPFULLSCREEN, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, STOPFULLSCREEN, (IMessage**)&msg);
     msg->SetArg1(stillPlaying ? 1 : 0);
     Boolean result = FALSE;
     mWebCoreHandler->SendMessage(msg, &result);
@@ -845,7 +845,7 @@ void HTML5VideoViewProxy::DispatchOnRestoreState()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, RESTORESTATE, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, RESTORESTATE, (IMessage**)&msg);
     Boolean result = FALSE;
     mWebCoreHandler->SendMessage(msg, &result);
 }
@@ -855,7 +855,7 @@ void HTML5VideoViewProxy::OnTimeupdate()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(this, TIMEUPDATE, (IMessage**)&msg);
+    mh->Obtain(this, TIMEUPDATE, (IMessage**)&msg);
     Boolean result = FALSE;
     SendMessage(msg, &result);
 }
@@ -992,7 +992,7 @@ void HTML5VideoViewProxy::Play(
     AutoPtr<IMessage> message;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(this, PLAY, (IMessage**)&message);
+    mh->Obtain(this, PLAY, (IMessage**)&message);
     message->SetArg1(videoLayerID);
     AutoPtr<ICharSequence> _url;
     CStringWrapper::New(url, (ICharSequence**)&_url);
@@ -1016,7 +1016,7 @@ void HTML5VideoViewProxy::EnterFullscreenForVideoLayer(
     AutoPtr<IMessage> message;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(this, ENTER_FULLSCREEN, (IMessage**)&message);
+    mh->Obtain(this, ENTER_FULLSCREEN, (IMessage**)&message);
     message->SetArg1(videoLayerID);
     AutoPtr<ICharSequence> _url;
     CStringWrapper::New(url, (ICharSequence**)&_url);
@@ -1035,7 +1035,7 @@ void HTML5VideoViewProxy::Seek(
     AutoPtr<IMessage> message;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(this, SEEK, (IMessage**)&message);
+    mh->Obtain(this, SEEK, (IMessage**)&message);
     AutoPtr<IInteger32> iTime;
     CInteger32::New(time, (IInteger32**)&iTime);
     message->SetObj(iTime);
@@ -1051,7 +1051,7 @@ void HTML5VideoViewProxy::Pause()
     AutoPtr<IMessage> message;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(this, PAUSE, (IMessage**)&message);
+    mh->Obtain(this, PAUSE, (IMessage**)&message);
     Boolean result = FALSE;
     SendMessage(message, &result);
 }
@@ -1080,7 +1080,7 @@ void HTML5VideoViewProxy::LoadPoster(
         AutoPtr<IMessageHelper> mh;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
         AutoPtr<IMessage> message;
-        mh->ObtainEx3(this, LOAD_DEFAULT_POSTER, (IMessage**)&message);
+        mh->Obtain(this, LOAD_DEFAULT_POSTER, (IMessage**)&message);
         Boolean result = FALSE;
         SendMessage(message, &result);
         return;
@@ -1148,13 +1148,13 @@ ECode HTML5VideoViewProxy::OnInfo(
     if (what == IMediaPlayer::MEDIA_INFO_BUFFERING_START) {
         AutoPtr<IMessage> msg;
         Boolean result = FALSE;
-        mh->ObtainEx5(this, BUFFERING_START, what, extra, (IMessage**)&msg);
+        mh->Obtain(this, BUFFERING_START, what, extra, (IMessage**)&msg);
         SendMessage(msg, &result);
     }
     else if (what == IMediaPlayer::MEDIA_INFO_BUFFERING_END) {
         AutoPtr<IMessage> msg;
         Boolean result = FALSE;
-        mh->ObtainEx5(this, BUFFERING_END, what, extra, (IMessage**)&msg);
+        mh->Obtain(this, BUFFERING_END, what, extra, (IMessage**)&msg);
         SendMessage(msg, &result);
     }
 
@@ -1208,7 +1208,7 @@ void HTML5VideoViewProxy::DoSetPoster(
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, POSTER_FETCHED, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, POSTER_FETCHED, (IMessage**)&msg);
     msg->SetObj(poster);
     Boolean result = FALSE;
     mWebCoreHandler->SendMessage(msg, &result);
@@ -1219,7 +1219,7 @@ void HTML5VideoViewProxy::SendTimeupdate()
     AutoPtr<IMessage> msg;
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    mh->ObtainEx3(mWebCoreHandler, TIMEUPDATE, (IMessage**)&msg);
+    mh->Obtain(mWebCoreHandler, TIMEUPDATE, (IMessage**)&msg);
     msg->SetArg1(VideoPlayer::GetCurrentPosition());
     Boolean result = FALSE;
     mWebCoreHandler->SendMessage(msg, &result);

@@ -62,7 +62,7 @@ module
          * @param bodyProvider InputStream providing HTTP body, null if none
          * @param bodyLength length of body, must be 0 if bodyProvider is null
          */
-        QueueRequestEx(
+        QueueRequest(
             [in] String url,
             [in] IWebAddress* uri,
             [in] String method,
@@ -91,7 +91,7 @@ module
         /**
          * @return a request for given host if possible
          */
-        GetRequestEx(
+        GetRequest(
             [in] IHttpHost* host,
             [out] IRequest** request);
 

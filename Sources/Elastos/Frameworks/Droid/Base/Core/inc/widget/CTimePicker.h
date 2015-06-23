@@ -4,8 +4,8 @@
 
 #include "_CTimePicker.h"
 #include "widget/TimePicker.h"
-#include "view/ViewMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{

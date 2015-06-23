@@ -17,11 +17,11 @@ public:
     CARAPI NewInstance(
         /* [out] */ IWifiP2pDnsSdServiceRequest** instance);
 
-    CARAPI NewInstanceEx(
+    CARAPI NewInstance(
         /* [in] */ const String& serviceType,
         /* [out] */ IWifiP2pDnsSdServiceRequest** instance);
 
-    CARAPI NewInstanceEx2(
+    CARAPI NewInstance(
         /* [in] */ const String& instanceName,
         /* [in] */ const String& serviceType,
         /* [out] */ IWifiP2pDnsSdServiceRequest** instance);

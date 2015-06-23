@@ -5,7 +5,7 @@
 #include "os/SystemClock.h"
 #include "os/Handler.h"
 #include "os/BatteryStats.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::View::EIID_IScreenOnListener;
@@ -46,7 +46,7 @@ ECode Notifier::ScreenOnListener::OnScreenOn()
     Mutex::Autolock lock(mHost->mLock);
     if (mHost->mScreenOnBlockerAcquired && !mHost->mPendingWakeUpBroadcast) {
         mHost->mScreenOnBlockerAcquired = FALSE;
-        mHost->mScreenOnBlocker->ReleaseEx();
+        mHost->mScreenOnBlocker->Release();
     }
     return NOERROR;
 }
@@ -408,7 +408,7 @@ void Notifier::UpdatePendingBroadcastLocked()
 void Notifier::FinishPendingBroadcastLocked()
 {
     mBroadcastInProgress = FALSE;
-    mSuspendBlocker->ReleaseEx();
+    mSuspendBlocker->Release();
 }
 
 void Notifier::SendUserActivity()

@@ -3,8 +3,8 @@
 #include "os/SystemClock.h"
 #include "os/Handler.h"
 #include "Manifest.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::CIntent;
@@ -484,7 +484,7 @@ void GeofenceManager::SendIntent(
     /* [in] */ IIntent* intent)
 {
     mWakeLock->AcquireLock();
-    ECode ec = pendingIntent->SendEx5(mContext, 0, intent, this, NULL,
+    ECode ec = pendingIntent->Send(mContext, 0, intent, this, NULL,
             Elastos::Droid::Manifest::Permission::ACCESS_FINE_LOCATION);
     if(FAILED(ec))
     {

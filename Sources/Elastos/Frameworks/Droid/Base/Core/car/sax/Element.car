@@ -28,7 +28,7 @@ module
         /**
          * Gets the child element with the given name.
          */
-        GetChildEx(
+        GetChild(
             [in] String uri,
             [in] String localName,
             [out] IElement** result);
@@ -48,7 +48,7 @@ module
          * {@link org.xml.sax.SAXException} at parsing time if the specified child
          * is missing. This helps you ensure that your listeners are called.
          */
-        RequireChildEx(
+        RequireChild(
             [in] String uri,
             [in] String localName,
             [out] IElement** result);

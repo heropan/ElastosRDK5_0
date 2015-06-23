@@ -52,12 +52,12 @@ public:
     /**
      * Returns true if the point's coordinates equal (x,y)
      */
-    CARAPI EqualsEx2(
+    CARAPI Equals(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IPoint* p,
         /* [out] */ Boolean* result);
 

@@ -94,7 +94,7 @@ ECode CAppWidgetHostView::UpdateAppWidgetSize(
     return AppWidgetHostView::UpdateAppWidgetSize(newOptions, minWidth, minHeight, maxWidth, maxHeight);
 }
 
-ECode CAppWidgetHostView::UpdateAppWidgetSizeEx(
+ECode CAppWidgetHostView::UpdateAppWidgetSize(
     /* [in] */ IBundle* newOptions,
     /* [in] */ Int32 minWidth,
     /* [in] */ Int32 minHeight,
@@ -102,7 +102,7 @@ ECode CAppWidgetHostView::UpdateAppWidgetSizeEx(
     /* [in] */ Int32 maxHeight,
     /* [in] */ Boolean ignorePadding)
 {
-    return AppWidgetHostView::UpdateAppWidgetSizeEx(newOptions, minWidth, minHeight, maxWidth, maxHeight, ignorePadding);
+    return AppWidgetHostView::UpdateAppWidgetSize(newOptions, minWidth, minHeight, maxWidth, maxHeight, ignorePadding);
 }
 
 ECode CAppWidgetHostView::UpdateAppWidgetOptions(
@@ -147,7 +147,7 @@ ECode CAppWidgetHostView::GetForeground(
     VALIDATE_NOT_NULL(foreground);
     AutoPtr<IDrawable> d = AppWidgetHostView::GetForeground();
     *foreground = d.Get();
-    INTERFACE_ADDREF(*foreground);
+    REFCOUNT_ADD(*foreground);
     return NOERROR;
 }
 

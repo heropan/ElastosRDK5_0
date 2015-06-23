@@ -11,7 +11,7 @@ ECode CCancellationSignalHelper::CreateTransport(
     VALIDATE_NOT_NULL(cancellationSignal);
     AutoPtr<IICancellationSignal> transport = CCancellationSignal::CreateTransport();
     *cancellationSignal = transport.Get();
-    INTERFACE_ADDREF(*cancellationSignal);
+    REFCOUNT_ADD(*cancellationSignal);
     return NOERROR;
 }
 
@@ -22,7 +22,7 @@ ECode CCancellationSignalHelper::FromTransport(
     VALIDATE_NOT_NULL(cancellationSignal)
     AutoPtr<ICancellationSignal> value = CCancellationSignal::FromTransport(transport);
     *cancellationSignal = value;
-    INTERFACE_ADDREF(*cancellationSignal)
+    REFCOUNT_ADD(*cancellationSignal)
     return NOERROR;
 }
 

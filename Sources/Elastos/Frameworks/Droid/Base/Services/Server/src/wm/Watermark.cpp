@@ -80,8 +80,8 @@ Watermark::Watermark(
     mTextPaint->SetTypeface(t);
 
     AutoPtr<IPaintFontMetricsInt> fm;
-    mTextPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&fm);
-    mTextPaint->MeasureTextEx2(mText, (Float*)&mTextWidth);
+    mTextPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
+    mTextPaint->MeasureText(mText, (Float*)&mTextWidth);
     fm->GetAscent(&mTextAscent);
     fm->GetDescent(&mTextDescent);
     mTextHeight = mTextDescent - mTextAscent;
@@ -146,7 +146,7 @@ void Watermark::DrawIfNeeded()
         // } catch (OutOfResourcesException e) {
         // }
         if (c != NULL) {
-            c->DrawColorEx(0, Elastos::Droid::Graphics::PorterDuffMode_CLEAR);
+            c->DrawColor(0, Elastos::Droid::Graphics::PorterDuffMode_CLEAR);
 
             Int32 deltaX = mDeltaX;
             Int32 deltaY = mDeltaY;
@@ -163,7 +163,7 @@ void Watermark::DrawIfNeeded()
             Int32 y = -mTextHeight;
             Int32 x = -mTextWidth;
             while (y < (dh + mTextHeight)) {
-                c->DrawTextEx(mText, x, y, mTextPaint);
+                c->DrawText(mText, x, y, mTextPaint);
                 x += deltaX;
                 if (x >= dw) {
                     x -= (dw + mTextWidth);

@@ -4,8 +4,8 @@
 #include "text/Selection.h"
 #endif
 
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -22,7 +22,7 @@ Int32 NumberKeyListener::Lookup(
     Int32 metaState;
     ;
     Char32 c;
-    event->GetMatchEx( *((GetAcceptedChars()).Get()) , (event->GetMetaState(&metaState), metaState)|GetMetaState(content), &c);
+    event->GetMatch( *((GetAcceptedChars()).Get()) , (event->GetMetaState(&metaState), metaState)|GetMetaState(content), &c);
     return (Int32)c;
 }
 
@@ -118,7 +118,7 @@ Boolean NumberKeyListener::OnKeyDown(
 
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(StringUtils::Int32ToString(i), (ICharSequence**)&cs);
-            content->ReplaceEx(selStart, selEnd, cs);
+            content->Replace(selStart, selEnd, cs);
 
             AdjustMetaAfterKeypress(content);
             return TRUE;
@@ -131,7 +131,7 @@ Boolean NumberKeyListener::OnKeyDown(
 
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(String("+"), (ICharSequence**)&cs);
-            content->ReplaceEx(selStart - 1, selEnd, cs);
+            content->Replace(selStart - 1, selEnd, cs);
             AdjustMetaAfterKeypress(content);
             return TRUE;
         }

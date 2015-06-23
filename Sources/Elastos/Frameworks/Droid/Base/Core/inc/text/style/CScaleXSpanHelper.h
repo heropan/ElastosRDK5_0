@@ -3,7 +3,7 @@
 #define __CSCALEXSPANHELPER_H__
 
 #include "_CScaleXSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

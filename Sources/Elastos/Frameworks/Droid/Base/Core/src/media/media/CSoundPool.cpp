@@ -3,8 +3,8 @@
 #include "os/CParcelFileDescriptorHelper.h"
 #include "os/CLooperHelper.h"
 #include <media/SoundPool.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::EIID_IHandler;
@@ -154,7 +154,7 @@ _EXIT_:
     return ec;
 }
 
-ECode CSoundPool::LoadEx(
+ECode CSoundPool::Load(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resId,
     /* [in] */ Int32 priority,
@@ -186,7 +186,7 @@ ECode CSoundPool::LoadEx(
     return ec;
 }
 
-ECode CSoundPool::LoadEx2(
+ECode CSoundPool::Load(
     /* [in] */ IAssetFileDescriptor* afd,
     /* [in] */ Int32 priority,
     /* [out] */ Int32* result)
@@ -211,7 +211,7 @@ ECode CSoundPool::LoadEx2(
     return NOERROR;
 }
 
-ECode CSoundPool::LoadEx3(
+ECode CSoundPool::Load(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length,
@@ -476,7 +476,7 @@ ECode CSoundPool::PostEventFromNative(
     CSoundPool* soundPool = (CSoundPool*)pool.Get();
     if (soundPool->mEventHandler != NULL) {
         AutoPtr<IMessage> message;
-        soundPool->mEventHandler->ObtainMessageEx3(msg, arg1, arg2, obj, (IMessage**)&message);
+        soundPool->mEventHandler->ObtainMessage(msg, arg1, arg2, obj, (IMessage**)&message);
         Boolean bval;
         soundPool->mEventHandler->SendMessage(message, &bval);
     }

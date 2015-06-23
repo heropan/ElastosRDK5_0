@@ -3,9 +3,8 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Net::IUri;
@@ -120,7 +119,7 @@ public:
      * @param selfChange True if this is a self-change notification.
      * @param uri The Uri of the changed content, or null if unknown.
      */
-    virtual CARAPI OnChangeEx(
+    virtual CARAPI OnChange(
         /* [in] */ Boolean selfChange,
         /* [in] */ IUri* uri);
 
@@ -152,7 +151,7 @@ public:
      * @param selfChange True if this is a self-change notification.
      * @param uri The Uri of the changed content, or null if unknown.
      */
-    virtual CARAPI DispatchChangeEx(
+    virtual CARAPI DispatchChange(
         /* [in] */ Boolean selfChange,
         /* [in] */ IUri* uri);
 

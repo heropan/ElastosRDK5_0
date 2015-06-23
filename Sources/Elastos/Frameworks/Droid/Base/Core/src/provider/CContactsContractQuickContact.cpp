@@ -50,10 +50,10 @@ ECode CContactsContractQuickContact::ComposeQuickContactsIntent(
     FAIL_RETURN(target->GetWidth(&height))
     FAIL_RETURN(rect->SetBottom((Int32) (((*pos)[1] + height) * appScale + 0.5f)))
 
-    return ComposeQuickContactsIntentEx(context, rect, lookupUri, mode, excludeMimes, intent);
+    return ComposeQuickContactsIntent(context, rect, lookupUri, mode, excludeMimes, intent);
 }
 
-ECode CContactsContractQuickContact::ComposeQuickContactsIntentEx(
+ECode CContactsContractQuickContact::ComposeQuickContactsIntent(
     /* [in] */ IContext* context,
     /* [in] */ IRect* target,
     /* [in] */ IUri* lookupUri,
@@ -82,7 +82,7 @@ ECode CContactsContractQuickContact::ComposeQuickContactsIntentEx(
     FAIL_RETURN(_intent->PutInt32Extra(IContactsContractQuickContact::EXTRA_MODE, mode))
     FAIL_RETURN(_intent->PutStringArrayExtra(IContactsContractQuickContact::EXTRA_EXCLUDE_MIMES, excludeMimes))
     *intent =  _intent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -99,7 +99,7 @@ ECode CContactsContractQuickContact::ShowQuickContact(
     return context->StartActivity(intent);
 }
 
-ECode CContactsContractQuickContact::ShowQuickContactEx(
+ECode CContactsContractQuickContact::ShowQuickContact(
     /* [in] */ IContext* context,
     /* [in] */ IRect* target,
     /* [in] */ IUri* lookupUri,
@@ -107,7 +107,7 @@ ECode CContactsContractQuickContact::ShowQuickContactEx(
     /* [in] */ ArrayOf<String>* excludeMimes)
 {
     AutoPtr<IIntent> intent;
-    FAIL_RETURN(ComposeQuickContactsIntentEx(context, target, lookupUri, mode, excludeMimes, (IIntent**)&intent))
+    FAIL_RETURN(ComposeQuickContactsIntent(context, target, lookupUri, mode, excludeMimes, (IIntent**)&intent))
     return context->StartActivity(intent);
 }
 

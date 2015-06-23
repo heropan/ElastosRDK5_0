@@ -116,7 +116,7 @@ ECode GraphicsNative::CreateBitmapRegionDecoder(
     SkASSERT(bitmap != NULL);
 
     *decoder = new BitmapRegionDecoder((Handle32)bitmap);
-    INTERFACE_ADDREF(*decoder);
+    REFCOUNT_ADD(*decoder);
     return NOERROR;
 }
 
@@ -224,7 +224,7 @@ ECode GraphicsNative::AllocateDroidPixelRef(
     }
 
     *pixelRef = arrayObj;
-    INTERFACE_ADDREF(*pixelRef);
+    REFCOUNT_ADD(*pixelRef);
     return NOERROR;
 }
 

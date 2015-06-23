@@ -1,6 +1,6 @@
 
 #include "display/DisplayViewport.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Graphics::CRect;
@@ -79,8 +79,8 @@ ECode DisplayViewport::CopyFrom(
     mValid = viewport->mValid;
     mDisplayId = viewport->mDisplayId;
     mOrientation = viewport->mOrientation;
-    mLogicalFrame->SetEx(viewport->mLogicalFrame);
-    mPhysicalFrame->SetEx(viewport->mPhysicalFrame);
+    mLogicalFrame->Set(viewport->mLogicalFrame);
+    mPhysicalFrame->Set(viewport->mPhysicalFrame);
     mDeviceWidth = viewport->mDeviceWidth;
     mDeviceHeight = viewport->mDeviceHeight;
     return NOERROR;

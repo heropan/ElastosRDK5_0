@@ -78,7 +78,7 @@ ECode Keyframe::OfInt32(
 {
     AutoPtr<IInt32Keyframe> rTmp = new Int32Keyframe(fraction, value);
     *obj = rTmp.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -102,7 +102,7 @@ ECode Keyframe::OfInt32(
 {
     AutoPtr<IInt32Keyframe> rTmp = new Int32Keyframe(fraction);
     *obj = rTmp.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode Keyframe::OfFloat(
 {
     AutoPtr<IFloatKeyframe> rTmp = new FloatKeyframe(fraction, value);
     *obj = rTmp.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -149,7 +149,7 @@ ECode Keyframe::OfFloat(
 {
     AutoPtr<IFloatKeyframe> rTmp = new FloatKeyframe(fraction);
     *obj = rTmp.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -172,7 +172,7 @@ ECode Keyframe::OfObject(
 {
     AutoPtr<IObjectKeyframe> rTmp = new ObjectKeyframe(fraction, value);
     *obj = rTmp.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -196,7 +196,7 @@ ECode Keyframe::OfObject(
 {
     AutoPtr<IObjectKeyframe> rTmp = new ObjectKeyframe(fraction, NULL);
     *obj = rTmp.Get();
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -237,7 +237,7 @@ ECode ObjectKeyframe::Clone(
     AutoPtr<IObjectKeyframe> kfClone = new ObjectKeyframe(mFraction, mValue);
     kfClone->SetInterpolator(Keyframe::GetInterpolator());
     *object = kfClone.Get();
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
@@ -302,7 +302,7 @@ ECode Int32Keyframe::Clone(
     }
     kfClone->SetInterpolator(Keyframe::GetInterpolator());
     *object = kfClone.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 
@@ -366,7 +366,7 @@ ECode FloatKeyframe::Clone(
     }
     kfClone->SetInterpolator(Keyframe::GetInterpolator());
     *object = kfClone.Get();
-    INTERFACE_ADDREF(*object)
+    REFCOUNT_ADD(*object)
     return NOERROR;
 }
 

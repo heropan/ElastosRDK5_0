@@ -23,7 +23,7 @@ public:
         /* [in] */ Int32 resId,
         /* [in] */ Boolean readAgain);
 
-    CARAPI SetDefaultValuesEx(
+    CARAPI SetDefaultValues(
         /* [in] */ IContext* context,
         /* [in] */ const String& sharedPreferencesName,
         /* [in] */ Int32 sharedPreferencesMode,

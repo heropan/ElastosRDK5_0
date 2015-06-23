@@ -108,8 +108,8 @@ ECode EventHole::OnComputeInternalInsets(
         top->GetWidth(&w);
         top->GetHeight(&h);
         Boolean bval;
-        region->SetEx2(0, 0, w, h, &bval);
-        region->OpEx(l, t, r, b, RegionOp_DIFFERENCE, &bval);
+        region->Set(0, 0, w, h, &bval);
+        region->Op(l, t, r, b, RegionOp_DIFFERENCE, &bval);
     }
     else {
         info->SetTouchableInsets(IInternalInsetsInfo::TOUCHABLE_INSETS_FRAME);

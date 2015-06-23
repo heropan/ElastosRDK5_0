@@ -7,7 +7,7 @@
 #include "media/CToneGenerator.h"
 #include "media/CRingtoneManagerHelper.h"
 #include "app/CAlertDialogBuilder.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -397,7 +397,7 @@ ECode CVolumePanel::constructor(
     AutoPtr<IDialogInterfaceOnDismissListener> dl = new DialogOnDismissListener(this);
 
     mDialog->SetTitle(titleSeq); // No need to localize
-    mDialog->SetContentViewEx(mView);
+    mDialog->SetContentView(mView);
     mDialog->SetOnDismissListener(dl);
 
     // Change some window properties
@@ -719,7 +719,7 @@ ECode CVolumePanel::PostVolumeChanged(
     RemoveMessages(MSG_FREE_RESOURCES);
 
     AutoPtr<IMessage> message;
-    ObtainMessageEx2(MSG_VOLUME_CHANGED, streamType, flags, (IMessage**)&message);
+    ObtainMessage(MSG_VOLUME_CHANGED, streamType, flags, (IMessage**)&message);
     Boolean bval;
     return SendMessage(message, &bval);
 }
@@ -743,7 +743,7 @@ ECode CVolumePanel::PostRemoteVolumeChanged(
     RemoveMessages(MSG_FREE_RESOURCES);
 
     AutoPtr<IMessage> message;
-    ObtainMessageEx2(MSG_REMOTE_VOLUME_CHANGED, streamType, flags, (IMessage**)&message);
+    ObtainMessage(MSG_REMOTE_VOLUME_CHANGED, streamType, flags, (IMessage**)&message);
     Boolean bval;
     return SendMessage(message, &bval);
 }
@@ -752,7 +752,7 @@ ECode CVolumePanel::PostRemoteSliderVisibility(
     /* [in] */ Boolean visible)
 {
     AutoPtr<IMessage> message;
-    ObtainMessageEx2(MSG_SLIDER_VISIBILITY_CHANGED, IAudioService::STREAM_REMOTE_MUSIC,
+    ObtainMessage(MSG_SLIDER_VISIBILITY_CHANGED, IAudioService::STREAM_REMOTE_MUSIC,
         visible ? 1 : 0, (IMessage**)&message);
     Boolean bval;
     return SendMessage(message, &bval);
@@ -797,7 +797,7 @@ ECode CVolumePanel::PostMuteChanged(
     RemoveMessages(MSG_FREE_RESOURCES);
 
     AutoPtr<IMessage> message;
-    ObtainMessageEx2(MSG_MUTE_CHANGED, streamType, flags, (IMessage**)&message);
+    ObtainMessage(MSG_MUTE_CHANGED, streamType, flags, (IMessage**)&message);
     Boolean bval;
     return SendMessage(message, &bval);
 }
@@ -815,7 +815,7 @@ ECode CVolumePanel::PostDisplaySafeVolumeWarning()
     if (hasMessage) return NOERROR;
 
     AutoPtr<IMessage> message;
-    ObtainMessageEx2(MSG_DISPLAY_SAFE_VOLUME_WARNING, 0, 0, (IMessage**)&message);
+    ObtainMessage(MSG_DISPLAY_SAFE_VOLUME_WARNING, 0, 0, (IMessage**)&message);
     Boolean bval;
     return SendMessage(message, &bval);
 }
@@ -839,7 +839,7 @@ void CVolumePanel::OnVolumeChanged(
         RemoveMessages(MSG_PLAY_SOUND);
 
         AutoPtr<IMessage> message;
-        ObtainMessageEx2(MSG_PLAY_SOUND, streamType, flags, (IMessage**)&message);
+        ObtainMessage(MSG_PLAY_SOUND, streamType, flags, (IMessage**)&message);
         SendMessageDelayed(message, PLAY_SOUND_DELAY, &bval);
     }
 
@@ -1013,7 +1013,7 @@ void CVolumePanel::OnShowVolumeChanged(
         Int32 stream = (streamType == IAudioService::STREAM_REMOTE_MUSIC) ? -1 : streamType;
         // when the stream is for remote playback, use -1 to reset the stream type evaluation
         mAudioManager->ForceVolumeControlStream(stream);
-        mDialog->SetContentViewEx(mView);
+        mDialog->SetContentView(mView);
         // Showing dialog - use collapsed state
         if (mShowCombinedVolumes) {
             Collapse();
@@ -1119,7 +1119,7 @@ void CVolumePanel::OnRemoteVolumeChanged(
     if ((flags & IAudioManager::FLAG_PLAY_SOUND) != 0 && ! mRingIsSilent) {
         RemoveMessages(MSG_PLAY_SOUND);
         AutoPtr<IMessage> message;
-        ObtainMessageEx2(MSG_PLAY_SOUND, streamType, flags, (IMessage**)&message);
+        ObtainMessage(MSG_PLAY_SOUND, streamType, flags, (IMessage**)&message);
         SendMessageDelayed(message, PLAY_SOUND_DELAY, &bval);
     }
 

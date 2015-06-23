@@ -6,10 +6,10 @@
 #include "os/CPatternMatcher.h"
 #endif
 #include "util/XmlUtils.h"
-#include <elastos/Algorithm.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -730,7 +730,7 @@ Int32 IntentFilter::Match(
     String action, type, scheme;
     intent->GetAction(&action);
     if (resolver != NULL) {
-        intent->ResolveTypeEx(resolver, &type);
+        intent->ResolveType(resolver, &type);
     }
     else {
         intent->GetType(&type);
@@ -891,21 +891,21 @@ ECode IntentFilter::ReadFromXml(
         FAIL_RETURN(parser->GetName(&tagName));
         if (tagName.Equals(ACTION_STR)) {
             String name;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), NAME_STR, &name));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), NAME_STR, &name));
             if (!name.IsNull()) {
                 AddAction(name);
             }
         }
         else if (tagName.Equals(CAT_STR)) {
             String name;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), NAME_STR, &name));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), NAME_STR, &name));
             if (!name.IsNull()) {
                 AddCategory(name);
             }
         }
         else if (tagName.Equals(TYPE_STR)) {
             String name;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), NAME_STR, &name));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), NAME_STR, &name));
             if (!name.IsNull()) {
 //                try {
                 AddDataType(name);
@@ -915,32 +915,32 @@ ECode IntentFilter::ReadFromXml(
         }
         else if (tagName.Equals(SCHEME_STR)) {
             String name;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), NAME_STR, &name));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), NAME_STR, &name));
             if (!name.IsNull()) {
                 AddDataScheme(name);
             }
         }
         else if (tagName.Equals(AUTH_STR)) {
             String host, port;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), HOST_STR, &host));
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), PORT_STR, &port));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), HOST_STR, &host));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), PORT_STR, &port));
             if (!host.IsNull()) {
                 AddDataAuthority(host, port);
             }
         }
         else if (tagName.Equals(PATH_STR)) {
             String path;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), LITERAL_STR, &path));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), LITERAL_STR, &path));
             if (!path.IsNull()) {
                 AddDataPath(path, IPatternMatcher::PATTERN_LITERAL);
             }
             else {
-                FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), PREFIX_STR, &path));
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), PREFIX_STR, &path));
                 if (!path.IsNull()) {
                     AddDataPath(path, IPatternMatcher::PATTERN_PREFIX);
                 }
                 else {
-                    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), SGLOB_STR, &path));
+                    FAIL_RETURN(parser->GetAttributeValue(String(NULL), SGLOB_STR, &path));
                     if (!path.IsNull()) {
                         AddDataPath(path, IPatternMatcher::PATTERN_SIMPLE_GLOB);
                     }

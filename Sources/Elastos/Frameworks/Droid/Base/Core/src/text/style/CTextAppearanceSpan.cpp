@@ -31,7 +31,7 @@ ECode CTextAppearanceSpan::GetTextColor(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IColorStateList> csl = TextAppearanceSpan::GetTextColor();
     *ret = csl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -41,7 +41,7 @@ ECode CTextAppearanceSpan::GetLinkTextColor(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IColorStateList> csl = TextAppearanceSpan::GetLinkTextColor();
     *ret = csl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

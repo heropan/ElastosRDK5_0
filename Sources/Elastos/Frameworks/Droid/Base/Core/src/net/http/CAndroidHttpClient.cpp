@@ -1,8 +1,8 @@
 
 #include "CAndroidHttpClient.h"
-#include "elastos/Logger.h"
-#include "elastos/StringBuffer.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringBuffer;

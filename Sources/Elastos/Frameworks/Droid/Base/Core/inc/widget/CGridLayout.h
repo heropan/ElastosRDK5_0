@@ -2,8 +2,8 @@
 #define __CGRIDLAYOUT_H__
 
 #include "_CGridLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/GridLayout.h"
 
 namespace Elastos{

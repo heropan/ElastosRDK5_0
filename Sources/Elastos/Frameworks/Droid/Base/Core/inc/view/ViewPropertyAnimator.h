@@ -3,11 +3,11 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Animation::IAnimator;
@@ -95,7 +95,7 @@ private:
     class InnerRunnableEx : public Runnable
     {
     public:
-        InnerRunnableEx(
+        InnerRunnable(
             /* [in] */ ViewPropertyAnimator* host,
             /* [in] */ Int32 type);
 

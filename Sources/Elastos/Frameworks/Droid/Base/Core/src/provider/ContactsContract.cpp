@@ -9,8 +9,8 @@
 #else
 #include "Elastos.Core.h"
 #endif
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Core::IInteger32;

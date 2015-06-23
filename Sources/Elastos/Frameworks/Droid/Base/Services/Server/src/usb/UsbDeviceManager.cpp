@@ -4,10 +4,10 @@
 #include "os/SystemClock.h"
 #include "os/UserHandle.h"
 #include "usb/UsbDeviceManager.h"
-#include "elastos/Character.h"
-#include <elastos/Slogger.h>
+#include <elastos/core/Character.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <fcntl.h>
 #include <linux/ioctl.h>
 #include <linux/usb/f_accessory.h>
@@ -192,7 +192,7 @@ ECode UsbDeviceManager::UsbHandler::UserSwitchedReceiver::OnReceive(
     intent->GetInt32Extra(IIntent::EXTRA_USER_HANDLE, -1, &userId);
 
     AutoPtr<IMessage> msg;
-    mHost->mHost->mHandler->ObtainMessageEx2(MSG_USER_SWITCHED, userId, 0, (IMessage**)&msg);
+    mHost->mHost->mHandler->ObtainMessage(MSG_USER_SWITCHED, userId, 0, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -211,7 +211,7 @@ ECode UsbDeviceManager::UsbHandler::BootFastReceiver::OnReceive(
     intent->GetInt32Extra(IIntent::EXTRA_BOOT_FAST, 0, &boot);
 
     AutoPtr<IMessage> msg;
-    mHost->mHost->mHandler->ObtainMessageEx2(MSG_BOOTFAST_SWITCHED, boot, 0, (IMessage**)&msg);
+    mHost->mHost->mHandler->ObtainMessage(MSG_BOOTFAST_SWITCHED, boot, 0, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -242,7 +242,7 @@ ECode UsbDeviceManager::UsbHandler::Init()
     // so we have a chance of debugging what happened.
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    sysProp->GetEx(String("persist.sys.usb.config"), String("adb"), &mDefaultFunctions);
+    sysProp->Get(String("persist.sys.usb.config"), String("adb"), &mDefaultFunctions);
 
     // Check if USB mode needs to be overridden depending on OEM specific bootmode.
     mDefaultFunctions = mHost->ProcessOemUsbOverride(mDefaultFunctions);
@@ -250,7 +250,7 @@ ECode UsbDeviceManager::UsbHandler::Init()
     // sanity check the sys.usb.config system property
     // this may be necessary if we crashed while switching USB configurations
     String config;
-    sysProp->GetEx(String("sys.usb.config"), String("none"), &config);
+    sysProp->Get(String("sys.usb.config"), String("none"), &config);
     if (!config.Equals(mDefaultFunctions)) {
         Slogger::W(TAG, "resetting config to persistent property: %s", mDefaultFunctions.string());
         sysProp->Set(String("sys.usb.config"), mDefaultFunctions);
@@ -273,7 +273,7 @@ ECode UsbDeviceManager::UsbHandler::Init()
 
     // Upgrade step for previous versions that used persist.service.adb.enable
     String value;
-    sysProp->GetEx(String("persist.service.adb.enable"), String(NULL), &value);
+    sysProp->Get(String("persist.service.adb.enable"), String(NULL), &value);
     if (!value.IsNullOrEmpty()) {
         Char32 enable = value.GetChar(0);
         if (enable == '1') {
@@ -290,7 +290,7 @@ ECode UsbDeviceManager::UsbHandler::Init()
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    ec = settingsGlobal->GetUriForEx(ISettingsGlobal::ADB_ENABLED, (IUri**)&uri);
+    ec = settingsGlobal->GetUriFor(ISettingsGlobal::ADB_ENABLED, (IUri**)&uri);
     if (FAILED(ec)) {
         Slogger::E(TAG, "Error initializing UsbHandler 0x%08x", ec);
     }
@@ -371,7 +371,7 @@ void UsbDeviceManager::UsbHandler::SendMessage(
 {
     RemoveMessages(what);
     AutoPtr<IMessage> m;
-    this->ObtainMessageEx(what, arg, (IMessage**)&m);
+    this->ObtainMessage(what, arg, (IMessage**)&m);
     Boolean result;
     SendMessage(m, &result);
 }
@@ -383,7 +383,7 @@ void UsbDeviceManager::UsbHandler::SendMessage(
 {
     RemoveMessages(what);
     AutoPtr<IMessage> m;
-    this->ObtainMessageEx(what, arg0, (IMessage**)&m);
+    this->ObtainMessage(what, arg0, (IMessage**)&m);
     m->SetArg1(arg1 ? 1 : 0);
     Boolean result;
     SendMessage(m, &result);
@@ -1128,7 +1128,7 @@ void UsbDeviceManager::InitRndisAddress()
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String serial;
-    sysProp->GetEx(String("ro.serialno"), String("1234567890ABCDEF"), &serial);
+    sysProp->Get(String("ro.serialno"), String("1234567890ABCDEF"), &serial);
     Int32 serialLength = serial.GetLength();
     // XOR the USB serial across the remaining 5 bytes
     for (Int32 i = 0; i < serialLength; i++) {
@@ -1294,7 +1294,7 @@ Boolean UsbDeviceManager::NeedsOemUsbOverride()
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String bootMode;
-    sysProp->GetEx(BOOT_MODE_PROPERTY, String("unknown"), &bootMode);
+    sysProp->Get(BOOT_MODE_PROPERTY, String("unknown"), &bootMode);
     HashMap<String, AutoPtr<StringPairList> >::Iterator it = mOemModeMap->Find(bootMode);
     if (it != mOemModeMap->End() && it->mSecond != NULL) {
         return TRUE;
@@ -1312,7 +1312,7 @@ String UsbDeviceManager::ProcessOemUsbOverride(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String bootMode;
-    sysProp->GetEx(BOOT_MODE_PROPERTY, String("unknown"), &bootMode);
+    sysProp->Get(BOOT_MODE_PROPERTY, String("unknown"), &bootMode);
 
     AutoPtr<StringPairList> overrides;
     HashMap<String, AutoPtr<StringPairList> >::Iterator it = mOemModeMap->Find(bootMode);

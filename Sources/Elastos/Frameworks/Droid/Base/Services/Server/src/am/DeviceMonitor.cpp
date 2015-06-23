@@ -1,7 +1,7 @@
 
 #include "am/DeviceMonitor.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFileInputStream;
@@ -172,7 +172,7 @@ void DeviceMonitor::Dump(
     CFileInputStream::New(from, (IFileInputStream**)&in);
     Int32 count;
     while (in->ReadBytes(mBuffer, &count), count != -1) {
-        out->WriteBytesEx(*mBuffer, 0, count);
+        out->WriteBytes(*mBuffer, 0, count);
     }
     // } finally {
     CloseQuietly(in);

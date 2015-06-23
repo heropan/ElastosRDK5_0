@@ -1,9 +1,9 @@
 #include "webkit/DeviceMotionAndOrientationManager.h"
 #include "webkit/CWebViewCore.h"
 
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {

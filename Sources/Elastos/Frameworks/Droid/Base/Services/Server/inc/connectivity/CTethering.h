@@ -6,7 +6,7 @@
 #include "content/BroadcastReceiver.h"
 #include "util/State.h"
 #include "util/StateMachine.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -17,7 +17,7 @@ using Elastos::Droid::Net::IIConnectivityManager;
 using Elastos::Droid::Net::INetworkStatsService;
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

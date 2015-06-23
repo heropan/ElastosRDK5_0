@@ -66,7 +66,7 @@ ECode CStatFs::DoStat(
         libcore->GetOs((IOs**)&ios);
         ec = ios->Statfs(path, (IStructStatFs**)&_fs);
         *fs = _fs;
-        INTERFACE_ADDREF(*fs);
+        REFCOUNT_ADD(*fs);
     //} catch (ErrnoException e) {
         if(ec != (ECode)NOERROR)
         {

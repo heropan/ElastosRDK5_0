@@ -169,7 +169,7 @@ public:
         /* [in] */ IContext* context,
         /* [out] */ String* type);
 
-    CARAPI ResolveTypeEx(
+    CARAPI ResolveType(
         /* [in] */ IContentResolver* resolver,
         /* [out] */ String* type);
 
@@ -324,7 +324,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IBundle** value);
 
-    CARAPI GetExtraEx(
+    CARAPI GetExtra(
         /* [in] */ const String& name,
         /* [in] */ IInterface* defaultValue,
         /* [out] */ IInterface** obj);
@@ -506,13 +506,13 @@ public:
     CARAPI PutExtras(
         /* [in] */ IIntent* src);
 
-    CARAPI PutExtrasEx(
+    CARAPI PutExtras(
         /* [in] */ IBundle* extras);
 
     CARAPI ReplaceExtras(
         /* [in] */ IIntent* src);
 
-    CARAPI ReplaceExtrasEx(
+    CARAPI ReplaceExtras(
         /* [in] */ IBundle* extras);
 
     CARAPI RemoveExtra(
@@ -534,7 +534,7 @@ public:
         /* [in] */ IContext* packageContext,
         /* [in] */ const String& className);
 
-    CARAPI SetClassNameEx(
+    CARAPI SetClassName(
         /* [in] */ const String& packageName,
         /* [in] */ const String& className);
 
@@ -573,7 +573,7 @@ public:
         /* [in] */ Boolean clip,
         /* [out] */ String* str);
 
-    CARAPI ToShortStringEx(
+    CARAPI ToShortString(
         /* [in] */ IStringBuilder* b,
         /* [in] */ Boolean secure,
         /* [in] */ Boolean comp,

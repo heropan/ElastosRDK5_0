@@ -14,12 +14,12 @@ ECode CChildren::Child::GetChild(
     return Element::GetChild(localName, result);
 }
 
-ECode CChildren::Child::GetChildEx(
+ECode CChildren::Child::GetChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return Element::GetChildEx(uri, localName, result);
+    return Element::GetChild(uri, localName, result);
 }
 
 ECode CChildren::Child::RequireChild(
@@ -29,12 +29,12 @@ ECode CChildren::Child::RequireChild(
     return Element::RequireChild(localName, result);
 }
 
-ECode CChildren::Child::RequireChildEx(
+ECode CChildren::Child::RequireChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return Element::RequireChildEx(uri, localName, result);
+    return Element::RequireChild(uri, localName, result);
 }
 
 ECode CChildren::Child::SetElementListener(
@@ -107,7 +107,7 @@ ECode CChildren::GetOrCreate(
         current = new Child(parent, uri, localName, cparent->mDepth + 1, hash);
         mChildren->Set(index, current);
         *result = (IElement*)current;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else {
@@ -119,7 +119,7 @@ ECode CChildren::GetOrCreate(
                     && current->mLocalName.Compare(localName) == 0) {
                 // We already have a child with that name.
                 *result = (IElement*)current;
-                INTERFACE_ADDREF(*result);
+                REFCOUNT_ADD(*result);
                 return NOERROR;
             }
 
@@ -131,7 +131,7 @@ ECode CChildren::GetOrCreate(
         current = new Child(parent, uri, localName, cparent->mDepth + 1, hash);
         previous->mNext = current;
         *result = current;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     return NOERROR;
@@ -158,7 +158,7 @@ ECode CChildren::Get(
                     && current->mUri.Compare(uri) == 0
                     && current->mLocalName.Compare(localName) == 0) {
                 *result = current;
-                INTERFACE_ADDREF(*result);
+                REFCOUNT_ADD(*result);
                 return NOERROR;
             }
             current = current->mNext;

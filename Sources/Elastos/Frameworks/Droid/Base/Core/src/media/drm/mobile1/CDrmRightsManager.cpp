@@ -4,7 +4,7 @@
 #include "media/drm/mobile1/CDrmRights.h"
 #include "media/drm/mobile1/CDrmRawContent.h"
 #include <objmng/svc_drm.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 using namespace Elastos::Core;
 using namespace Elastos::Utility::Logging;
 
@@ -134,7 +134,7 @@ Int32 ReadInputStreamData(
         return 0;
 
     AutoPtr<ArrayOf<Byte> > tmp = ArrayOf<Byte>::Alloc(bufLen);
-    inputStream->ReadBytesEx(tmp, 0, bufLen, &len);
+    inputStream->ReadBytes(tmp, 0, bufLen, &len);
     memcpy(buf, tmp->GetPayload(), len);
 
     if (-1 == len)
@@ -300,7 +300,7 @@ ECode CDrmRightsManager::GetInstance(
     }
 
     *manager = sSingleton;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -348,7 +348,7 @@ ECode CDrmRightsManager::InstallRights(
     }
 
     *rights = rightsObj;
-    INTERFACE_ADDREF(*rights);
+    REFCOUNT_ADD(*rights);
     return NOERROR;
 }
 
@@ -372,7 +372,7 @@ ECode CDrmRightsManager::QueryRights(
     }
 
     *rights = rightsObj;
-    INTERFACE_ADDREF(*rights);
+    REFCOUNT_ADD(*rights);
     return NOERROR;
 }
 
@@ -419,7 +419,7 @@ ECode CDrmRightsManager::GetRightsList(
     }
 
     *rightsList = list;
-    INTERFACE_ADDREF(*rightsList);
+    REFCOUNT_ADD(*rightsList);
     return NOERROR;
 }
 

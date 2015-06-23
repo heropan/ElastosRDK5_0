@@ -6,11 +6,11 @@
 #include "_CAccessibilityServiceConnection.h"
 #include "accessibility/CAccessibilityManagerService.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IResolveInfo;

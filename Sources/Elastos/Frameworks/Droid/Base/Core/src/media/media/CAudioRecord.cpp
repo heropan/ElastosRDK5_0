@@ -7,9 +7,9 @@
 #include "os/Process.h"
 #include "os/ServiceManager.h"
 #include "privacy/CPrivacySettingsManager.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::EIID_IHandler;
@@ -194,8 +194,8 @@ ECode CAudioRecord::StartRecording() // throws IllegalStateException
         AutoPtr< ArrayOf<String> > packageName = GetPackageName();
         if (packageName != NULL && packageName->GetLength() > 0) {
             AutoPtr<IPrivacySettings> ps;
-            mPrivacySettingsManager->GetSettingsEx((*packageName)[0], Process::MyUid(), (IPrivacySettings**)&ps);
-            mPrivacySettingsManager->NotificationEx2((*packageName)[0], 0,
+            mPrivacySettingsManager->GetSettings((*packageName)[0], Process::MyUid(), (IPrivacySettings**)&ps);
+            mPrivacySettingsManager->Notification((*packageName)[0], 0,
                 IPrivacySettings::EMPTY, IPrivacySettings::DATA_RECORD_AUDIO,
                 String(NULL), ps);
             // throw(new IllegalStateException("startRecording() called on an "+"uninitialized AudioRecord."));
@@ -207,8 +207,8 @@ ECode CAudioRecord::StartRecording() // throws IllegalStateException
     AutoPtr< ArrayOf<String> > packageName = GetPackageName();
     if (packageName != NULL && packageName->GetLength() > 0) {
         AutoPtr<IPrivacySettings> ps;
-        mPrivacySettingsManager->GetSettingsEx((*packageName)[0], Process::MyUid(), (IPrivacySettings**)&ps);
-        mPrivacySettingsManager->NotificationEx2((*packageName)[0], 0,
+        mPrivacySettingsManager->GetSettings((*packageName)[0], Process::MyUid(), (IPrivacySettings**)&ps);
+        mPrivacySettingsManager->Notification((*packageName)[0], 0,
             IPrivacySettings::REAL, IPrivacySettings::DATA_RECORD_AUDIO,
             String(NULL), ps);
     }
@@ -226,7 +226,7 @@ ECode CAudioRecord::StartRecording() // throws IllegalStateException
     return NOERROR;
 }
 
-ECode CAudioRecord::StartRecordingEx( // throws IllegalStateException
+ECode CAudioRecord::StartRecording( // throws IllegalStateException
     /* [in] */ IMediaSyncEvent* syncEvent)
 {
     if (mState != STATE_INITIALIZED) {
@@ -294,7 +294,7 @@ ECode CAudioRecord::Read(
     return NOERROR;
 }
 
-ECode CAudioRecord::ReadEx(
+ECode CAudioRecord::Read(
     /* [in] */ ArrayOf<Int16>* audioData,
     /* [in] */ Int32 offsetInShorts,
     /* [in] */ Int32 sizeInShorts,
@@ -317,7 +317,7 @@ ECode CAudioRecord::ReadEx(
     return NOERROR;
 }
 
-ECode CAudioRecord::ReadEx2(
+ECode CAudioRecord::Read(
     /* [in] */ IByteBuffer* audioBuffer,
     /* [in] */ Int32 sizeInBytes,
     /* [out] */ Int32* result)
@@ -344,10 +344,10 @@ ECode CAudioRecord::ReadEx2(
 ECode CAudioRecord::SetRecordPositionUpdateListener(
     /* [in] */ IAudioRecordOnRecordPositionUpdateListener* listener)
 {
-    return SetRecordPositionUpdateListenerEx(listener, NULL);
+    return SetRecordPositionUpdateListener(listener, NULL);
 }
 
-ECode CAudioRecord::SetRecordPositionUpdateListenerEx(
+ECode CAudioRecord::SetRecordPositionUpdateListener(
     /* [in] */ IAudioRecordOnRecordPositionUpdateListener* listener,
     /* [in] */ IHandler* handler)
 {
@@ -452,7 +452,7 @@ Int32 CAudioRecord::CheckIfPackagesAllowed()
             Int32 uid = Process::MyUid();
             for (Int32 i = 0; i < packageNames->GetLength(); i++){
                 AutoPtr< IPrivacySettings > pSet;
-                mPrivacySettingsManager->GetSettingsEx((*packageNames)[i], uid, (IPrivacySettings**)&pSet);
+                mPrivacySettingsManager->GetSettings((*packageNames)[i], uid, (IPrivacySettings**)&pSet);
                 if (pSet != NULL) {
                     pSet->GetRecordAudioSetting(&t);
                     if (t != IPrivacySettings::REAL) {
@@ -777,7 +777,7 @@ void CAudioRecord::PostEventFromNative(
     CAudioRecord* car = (CAudioRecord*)recorder.Get();
     if (car->mEventHandler != NULL) {
         AutoPtr<IMessage> m;
-        car->mEventHandler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&m);
+        car->mEventHandler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&m);
         Boolean result;
         car->mEventHandler->SendMessage(m, &result);
     }

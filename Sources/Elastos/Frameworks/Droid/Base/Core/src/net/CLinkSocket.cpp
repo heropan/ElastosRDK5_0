@@ -59,7 +59,7 @@ ECode CLinkSocket::GetLinkProperties(
     AutoPtr<ILinkProperties> linkPro;
     CLinkProperties::New((ILinkProperties**)&linkPro);
     *result = linkPro;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -91,7 +91,7 @@ ECode CLinkSocket::GetNeededCapabilities(
     AutoPtr<ILinkCapabilities> linkCap;
 //    if (DBG) log("getNeeds() EX");
     *result = linkCap;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -105,7 +105,7 @@ ECode CLinkSocket::GetCapabilities(
     AutoPtr<ILinkCapabilities> linkCap;
     //    if (DBG) log("getCapabilities() EX");
     *result = linkCap;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -117,7 +117,7 @@ ECode CLinkSocket::GetCapabilities(
  * @param capabilities {@code Set} of capabilities requested
  * @return the filtered {@code LinkCapabilities} of this LinkSocket, may be empty
  */
-ECode CLinkSocket::GetCapabilitiesEx(
+ECode CLinkSocket::GetCapabilities(
     /* [in] */ IObjectContainer* capabilities,
     /* [out] */ ILinkCapabilities** result)
 {
@@ -126,7 +126,7 @@ ECode CLinkSocket::GetCapabilitiesEx(
     AutoPtr<ILinkCapabilities> linkCap;
     CLinkCapabilities::New((ILinkCapabilities**)&linkCap);
     *result = linkCap;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -153,7 +153,7 @@ ECode CLinkSocket::GetTrackedCapabilities(
     CObjectContainer::New((IObjectContainer**)&out);
 //    if (DBG) log("getTrackedCapabilities(capabilities) EX");
     *result = out;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 /**
@@ -188,7 +188,7 @@ ECode CLinkSocket::Connect(
  * @throws SocketTimeoutException if the timeout expires
  */
 //@Override
-ECode CLinkSocket::ConnectEx(
+ECode CLinkSocket::Connect(
     /* [in] */ ISocketAddress* remoteAddr,
     /* [in] */ Int32 timeout)
 {
@@ -206,7 +206,7 @@ ECode CLinkSocket::ConnectEx(
  *                     while connecting
  * @throws SocketTimeoutException if the timeout fires
  */
-ECode CLinkSocket::ConnectEx2(
+ECode CLinkSocket::Connect(
     /* [in] */ const String&  dstName,
     /* [in] */ Int32 dstPort,
     /* [in] */ Int32 timeout)
@@ -223,7 +223,7 @@ ECode CLinkSocket::ConnectEx2(
  * @throws IOException if the socket is already connected or an error occurs
  *                     while connecting
  */
-ECode CLinkSocket::ConnectEx3(
+ECode CLinkSocket::Connect(
     /* [in] */ const String&  dstName,
     /* [in] */ Int32 dstPort)
 {
@@ -238,7 +238,7 @@ ECode CLinkSocket::ConnectEx3(
  * @throws IOException if the socket is already connected or an error occurs
  *                     while connecting
  */
-ECode CLinkSocket::ConnectEx4(
+ECode CLinkSocket::Connect(
     /* [in] */ Int32 timeout)
 {
 //    if (DBG) log("connect(timeout) EX");
@@ -251,7 +251,7 @@ ECode CLinkSocket::ConnectEx4(
  * @throws IOException if the socket is already connected or an error occurs
  *                     while connecting
  */
-ECode CLinkSocket::ConnectEx5()
+ECode CLinkSocket::Connect()
 {
 //    if (DBG) log("connect() EX");
     return NOERROR;

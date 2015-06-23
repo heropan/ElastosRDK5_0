@@ -3,8 +3,8 @@
 
 #include "_CDialerFilter.h"
 #include "widget/DialerFilter.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 
 
 using Elastos::Core::ICharSequence;

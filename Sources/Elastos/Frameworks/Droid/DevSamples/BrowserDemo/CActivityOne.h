@@ -66,7 +66,7 @@ private:
             /* [in] */ IView* view,
             /* [in] */ IWebChromeClientCustomViewCallback* callBack);
 
-        CARAPI OnShowCustomViewEx(
+        CARAPI OnShowCustomView(
             /* [in] */ IView* view,
             /* [in] */ Int32 requestedOrientation,
             /* [in] */ IWebChromeClientCustomViewCallback* callBack);
@@ -142,7 +142,7 @@ private:
             /* [in] */ Int32 lineNumber,
             /* [in] */ const String& sourceID);
 
-        CARAPI OnConsoleMessageEx(
+        CARAPI OnConsoleMessage(
             /* [in] */ IConsoleMessage* consoleMessage,
             /* [out] */ Boolean* result);
 

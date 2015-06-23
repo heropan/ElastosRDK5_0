@@ -528,7 +528,7 @@ module
          *
          * @hide
          */
-        StartSearchEx(
+        StartSearch(
             [in] String initialQuery,
             [in] Boolean selectInitialQuery,
             [in] IComponentName* launchActivity,
@@ -664,7 +664,7 @@ module
          *
          * @hide because SearchableInfo is not part of the API.
          */
-        GetSuggestionsEx(
+        GetSuggestions(
             [in] ISearchableInfo* searchable,
             [in] String query,
             [in] Int32 limit,
@@ -696,7 +696,7 @@ module
          *
          * @hide
          */
-        GetAssistIntentEx(
+        GetAssistIntent(
             [in] IContext* ctx,
             [in] Int32 userHandle,
             [out] IIntent** intent);

@@ -5,7 +5,7 @@
 #include "view/accessibility/CAccessibilityInteractionClientHelper.h"
 #include "os/Process.h"
 #include "os/SomeArgs.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::IInteger64;
@@ -483,7 +483,7 @@ ECode CAccessibilityInteractionController::FindAccessibilityNodeInfoByAccessibil
     /* [in] */ Int64 interrogatingTid)
 {
     AutoPtr<IMessage> message;
-    mHandler->ObtainMessageEx2(
+    mHandler->ObtainMessage(
         PrivateHandler::MSG_FIND_ACCESSIBLITY_NODE_INFO_BY_ACCESSIBILITY_ID,
         flags, 0, (IMessage**)&message);
 
@@ -530,7 +530,7 @@ ECode CAccessibilityInteractionController::FindAccessibilityNodeInfoByViewIdClie
     helper->GetAccessibilityViewId(accessibilityNodeId, &avId);
 
     AutoPtr<IMessage> message;
-    mHandler->ObtainMessageEx2(
+    mHandler->ObtainMessage(
         PrivateHandler::MSG_FIND_ACCESSIBLITY_NODE_INFO_BY_VIEW_ID,
         flags, avId, (IMessage**)&message);
 
@@ -568,7 +568,7 @@ ECode CAccessibilityInteractionController::FindAccessibilityNodeInfosByTextClien
     /* [in] */ Int64 interrogatingTid)
 {
     AutoPtr<IMessage> message;
-    mHandler->ObtainMessageEx2(
+    mHandler->ObtainMessage(
         PrivateHandler::MSG_FIND_ACCESSIBLITY_NODE_INFO_BY_TEXT,
         flags, 0, (IMessage**)&message);
 
@@ -614,7 +614,7 @@ ECode CAccessibilityInteractionController::FindFocusClientThread(
     /* [in] */ Int64 interrogatingTid)
 {
     AutoPtr<IMessage> message;
-    mHandler->ObtainMessageEx2(
+    mHandler->ObtainMessage(
         PrivateHandler::MSG_FIND_FOCUS,
         flags, focusType, (IMessage**)&message);
 
@@ -662,7 +662,7 @@ ECode CAccessibilityInteractionController::FocusSearchClientThread(
     helper->GetAccessibilityViewId(accessibilityNodeId, &avId);
 
     AutoPtr<IMessage> message;
-    mHandler->ObtainMessageEx2(
+    mHandler->ObtainMessage(
         PrivateHandler::MSG_FOCUS_SEARCH,
         flags, avId, (IMessage**)&message);
 
@@ -707,7 +707,7 @@ ECode CAccessibilityInteractionController::PerformAccessibilityActionClientThrea
     helper->GetAccessibilityViewId(accessibilityNodeId, &avId);
 
     AutoPtr<IMessage> message;
-    mHandler->ObtainMessageEx2(
+    mHandler->ObtainMessage(
         PrivateHandler::MSG_PERFORM_ACCESSIBILITY_ACTION,
         flags, avId, (IMessage**)&message);
 
@@ -990,7 +990,7 @@ void CAccessibilityInteractionController::FindFocusUiThread(
                     if (mViewRootImpl->mAccessibilityFocusedVirtualView != NULL) {
                         AutoPtr<IAccessibilityNodeInfoHelper> helper;
                         CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
-                        helper->ObtainEx3(
+                        helper->Obtain(
                             mViewRootImpl->mAccessibilityFocusedVirtualView,
                             (IAccessibilityNodeInfo**)&focused);
                     }

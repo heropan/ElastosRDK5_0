@@ -1,7 +1,7 @@
 
 #include "droid/test/ClassPathPackageInfoSource.h"
 #include "droid/test/EcoFile.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

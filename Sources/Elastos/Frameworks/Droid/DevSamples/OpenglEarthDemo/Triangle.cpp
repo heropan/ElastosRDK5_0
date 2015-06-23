@@ -1,7 +1,7 @@
 #include "Triangle.h"
 #include "ext/frameworkext.h"
 #include "ShaderUtil.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::IByteBufferHelper;
@@ -120,11 +120,11 @@ ECode Triangle::DrawSelf()
     AutoPtr<IMatrix> matrix;
     CMatrixGL::AcquireSingleton((IMatrix**)&matrix);
     ASSERT_SUCCEEDED(matrix->SetRotateM(mMMatrix, 0, 0, 0, 1, 0));
-    ASSERT_SUCCEEDED(matrix->TranslateMEx(mMMatrix, 0 ,0, 0, 1));
-    ASSERT_SUCCEEDED(matrix->RotateMEx(mMMatrix, 0, xAngle, 1, 0, 0));
+    ASSERT_SUCCEEDED(matrix->TranslateM(mMMatrix, 0 ,0, 0, 1));
+    ASSERT_SUCCEEDED(matrix->RotateM(mMMatrix, 0, xAngle, 1, 0, 0));
     //
     ASSERT_SUCCEEDED(gl->GlUniformMatrix4fv(muMVPMatrixHandle, 1, FALSE, GetFinalMatrix(mMMatrix), 0));
-    ASSERT_SUCCEEDED(gl->GlVertexAttribPointerEx(
+    ASSERT_SUCCEEDED(gl->GlVertexAttribPointer(
         maPositionHandle,
         3,
         IGLES20::_GL_FLOAT,

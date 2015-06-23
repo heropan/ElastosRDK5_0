@@ -1,6 +1,6 @@
 
 #include "CSystemBackupAgent.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/ServiceManager.h"
 #include "CWallpaperManagerService.h"
 

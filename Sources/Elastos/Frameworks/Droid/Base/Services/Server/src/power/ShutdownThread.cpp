@@ -7,9 +7,9 @@
 #include "os/ServiceManager.h"
 #include "app/ActivityManagerNative.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::Threading::ISynchronize;
+using Elastos::Core::ISynchronize;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
@@ -557,7 +557,7 @@ void ShutdownThread::BeginShutdownSequence(
     AutoPtr<IMediaPlayer> mediaplayer;
     CMediaPlayer::New((IMediaPlayer**)&mediaplayer);
     // try{
-    mediaplayer->SetDataSourceEx2(String("/system/media/shutdown.mp3"));
+    mediaplayer->SetDataSource(String("/system/media/shutdown.mp3"));
     mediaplayer->Prepare();
     mediaplayer->SetLooping(TRUE);
     mediaplayer->Start();
@@ -974,7 +974,7 @@ void ShutdownThread::ShutdownRadios(
 
     t->Start();
     // try {
-    t->JoinEx(timeout);
+    t->Join(timeout);
     // } catch (InterruptedException ex) {
     // }
     if (!(*done)[0]) {

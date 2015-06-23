@@ -5,14 +5,14 @@
 #include "os/Build.h"
 #include "os/Process.h"
 #include "os/SystemClock.h"
-#include <elastos/Thread.h>
-#include <elastos/Slogger.h>
-#include <elastos/HashSet.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::IInteger64;
-using Elastos::Core::Threading::Thread;
-using Elastos::Utility::HashSet;
+using Elastos::Core::Thread;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::IObjectInt32Map;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
@@ -114,7 +114,7 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByAccessibilityI
         AutoPtr<IAccessibilityNodeInfo> cachedInfo = sAccessibilityNodeInfoCache->Get(accessibilityNodeId);
         if (cachedInfo != NULL) {
             *info = cachedInfo;
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
             return NOERROR;
         }
 
@@ -142,7 +142,7 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByAccessibilityI
             FinalizeAndCacheAccessibilityNodeInfos(infos, connectionId, windowScale);
             if (infos != NULL && !infos->IsEmpty()) {
                 *info = *infos->Begin();
-                INTERFACE_ADDREF(*info);
+                REFCOUNT_ADD(*info);
                 return NOERROR;
             }
         }
@@ -196,7 +196,7 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByViewId(
             AutoPtr<IAccessibilityNodeInfo> info = GetFindAccessibilityNodeInfoResultAndClear(interactionId);
             FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
             *result = info;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -226,7 +226,7 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
     AutoPtr<IObjectContainer> container;
     CObjectContainer::New((IObjectContainer**)&container);
     *result = container;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
 
     // try {
     AutoPtr<IAccessibilityServiceConnection> connection;
@@ -310,7 +310,7 @@ ECode CAccessibilityInteractionClient::FindFocus(
             AutoPtr<IAccessibilityNodeInfo> info = GetFindAccessibilityNodeInfoResultAndClear(interactionId);
             FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
             *result = info;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -359,7 +359,7 @@ ECode CAccessibilityInteractionClient::FocusSearch(
             AutoPtr<IAccessibilityNodeInfo> info = GetFindAccessibilityNodeInfoResultAndClear(interactionId);
             FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
             *result = info;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -648,7 +648,7 @@ ECode CAccessibilityInteractionClient::GetConnection(
         = sConnectionCache.Find(connectionId);
     if (it != sConnectionCache.End()) {
         *connection = it->mSecond.Get();
-        INTERFACE_ADDREF(*connection);
+        REFCOUNT_ADD(*connection);
     }
     return NOERROR;
 }

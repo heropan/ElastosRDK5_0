@@ -751,7 +751,7 @@ module
          * @throws IllegalStateException if it is called in an invalid state
          * @hide pending API council
          */
-        SetDataSourceEx(
+        SetDataSource(
             [in] IContext* ctx,
             [in] IUri* uri,
             [in] IObjectStringMap* headers);
@@ -762,7 +762,7 @@ module
          * @param path the path of the file, or the http/rtsp URL of the stream you want to play
          * @throws IllegalStateException if it is called in an invalid state
          */
-        SetDataSourceEx2(
+        SetDataSource(
             [in] String path);
 
         /**
@@ -773,7 +773,7 @@ module
          * @throws IllegalStateException if it is called in an invalid state
          * @hide pending API council
          */
-        SetDataSourceEx3(
+        SetDataSource(
             [in] String path,
             [in] IObjectStringMap* headers);
 
@@ -784,7 +784,7 @@ module
          * @param fd the FileDescriptor for the file you want to play
          * @throws IllegalStateException if it is called in an invalid state
          */
-        SetDataSourceEx4(
+        SetDataSource(
             [in] IFileDescriptor* fd);
 
         /**
@@ -797,7 +797,7 @@ module
          * @param length the length in bytes of the data to be played
          * @throws IllegalStateException if it is called in an invalid state
          */
-        SetDataSourceEx5(
+        SetDataSource(
             [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length);
@@ -1137,7 +1137,7 @@ module
          * @return true if the parameter is set successfully, false otherwise
          * {@hide}
          */
-        SetParameterEx(
+        SetParameter(
             [in] Int32 key,
             [in] String value,
             [out] Boolean* result);
@@ -1149,7 +1149,7 @@ module
          * @return true if the parameter is set successfully, false otherwise
          * {@hide}
          */
-        SetParameterEx2(
+        SetParameter(
             [in] Int32 key,
             [in] Int32 value,
             [out] Boolean* result);
@@ -1252,7 +1252,7 @@ module
          * @throws IllegalArgumentException if the mimeType is not supported.
          * @throws IllegalStateException if called in an invalid state.
          */
-        AddTimedTextSourceEx(
+        AddTimedTextSource(
             [in] IContext* ctx,
             [in] IUri* uri,
             [in] String mimeType);
@@ -1273,7 +1273,7 @@ module
          * @throws IllegalArgumentException if the mimeType is not supported.
          * @throws IllegalStateException if called in an invalid state.
          */
-        AddTimedTextSourceEx2(
+        AddTimedTextSource(
             [in] IFileDescriptor* fd,
             [in] String mimeType);
 
@@ -1295,7 +1295,7 @@ module
          * @throws IllegalArgumentException if the mimeType is not supported.
          * @throws IllegalStateException if called in an invalid state.
          */
-        AddTimedTextSourceEx3(
+        AddTimedTextSource(
             [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length,
@@ -1977,7 +1977,7 @@ module
          * @param holder the SurfaceHolder to use for displaying the video
          * @return a MediaPlayer object, or NULL if creation failed
          */
-        CreateEx(
+        Create(
             [in] IContext* ctx,
             [in] IUri* uri,
             [in] ISurfaceHolder* holder,
@@ -1995,7 +1995,7 @@ module
          *              the resource to use as the datasource
          * @return a MediaPlayer object, or NULL if creation failed
          */
-        CreateEx2(
+        Create(
             [in] IContext* ctx,
             [in] Int32 resid,
             [out] IMediaPlayer** player);

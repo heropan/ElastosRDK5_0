@@ -5,7 +5,7 @@
 #include "view/animation/CAnimationUtils.h"
 #endif
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
 
 using Elastos::Droid::R;
@@ -95,7 +95,7 @@ ECode ListFragment::OnCreateView(
     /* [in] */ IBundle* savedInstanceState,
     /* [out] */ IView** view)
 {
-    return inflater->InflateEx2(R::layout::list_content,
+    return inflater->Inflate(R::layout::list_content,
             container, FALSE, view);
 }
 
@@ -183,7 +183,7 @@ ECode ListFragment::GetListView(
 
     EnsureList();
     *listview = mList;
-    INTERFACE_ADDREF(*listview);
+    REFCOUNT_ADD(*listview);
     return NOERROR;
 }
 
@@ -269,7 +269,7 @@ ECode ListFragment::GetListAdapter(
     VALIDATE_NOT_NULL(listadapter);
 
     *listadapter = mAdapter;
-    INTERFACE_ADDREF(*listadapter);
+    REFCOUNT_ADD(*listadapter);
     return NOERROR;
 }
 

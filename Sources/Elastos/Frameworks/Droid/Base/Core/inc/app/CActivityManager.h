@@ -195,7 +195,7 @@ public:
      * @throws SecurityException Throws SecurityException if the caller does
      * not hold the {@link android.Manifest.permission#GET_TASKS} permission.
      */
-    CARAPI GetRunningTasksEx(
+    CARAPI GetRunningTasks(
         /* [in] */ Int32 maxNum,
         /* [out] */ IObjectContainer** tasks);
 
@@ -268,7 +268,7 @@ public:
      * as per {@link Context#startActivity(Intent, android.os.Bundle)
      * Context.startActivity(Intent, Bundle)}.
      */
-    CARAPI MoveTaskToFrontEx(
+    CARAPI MoveTaskToFront(
         /* [in] */ Int32 taskId,
         /* [in] */ Int32 flags,
         /* [in] */ IBundle* options);

@@ -1,10 +1,10 @@
 #include "ext/frameworkext.h"
 #include "CNsdService.h"
 #include "util/IState.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "NativeDaemonEvent.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -31,8 +31,8 @@ using Elastos::Droid::Database::IContentObserver;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {
@@ -822,7 +822,7 @@ void CNsdService::NsdStateMachine::RegisterForNsdSetting()
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    settingsGlobal->GetUriForEx(ISettingsGlobal::NSD_ON, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::NSD_ON, (IUri**)&uri);
     cr->RegisterContentObserver(uri, FALSE, (IContentObserver*)contentObserver);
 }
 

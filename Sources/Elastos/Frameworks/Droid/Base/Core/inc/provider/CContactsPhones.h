@@ -51,7 +51,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     // @Deprecated
-    CARAPI GetDisplayLabelEx(
+    CARAPI GetDisplayLabel(
         /* [in] */ IContext* context,
         /* [in] */ Int32 type,
         /* [in] */ ICharSequence* sequence,

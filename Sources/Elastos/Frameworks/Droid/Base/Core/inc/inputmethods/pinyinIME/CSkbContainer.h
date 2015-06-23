@@ -5,8 +5,8 @@
 #include "_CSkbContainer.h"
 #include "SoftKey.h"
 #include "os/HandlerRunnableBase.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/RelativeLayout.h"
 
 using Elastos::Droid::InputMethodService::IInputMethodService;

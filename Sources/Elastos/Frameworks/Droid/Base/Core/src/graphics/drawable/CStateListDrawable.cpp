@@ -41,7 +41,7 @@ ECode CStateListDrawable::GetStateSet(
     VALIDATE_NOT_NULL(stateSet);
     AutoPtr< ArrayOf<Int32> > temp = StateListDrawable::GetStateSet(index);
     *stateSet = temp;
-    INTERFACE_ADDREF(*stateSet);
+    REFCOUNT_ADD(*stateSet);
     return NOERROR;
 }
 
@@ -52,7 +52,7 @@ ECode CStateListDrawable::GetStateDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> temp = StateListDrawable::GetStateDrawable(index);
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

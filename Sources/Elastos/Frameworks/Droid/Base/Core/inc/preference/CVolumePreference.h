@@ -166,7 +166,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 titleResId);
 
     CARAPI GetTitleRes(
@@ -178,7 +178,7 @@ public:
     CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ Int32 iconResId);
 
     CARAPI GetIcon(
@@ -190,7 +190,7 @@ public:
     CARAPI SetSummary(
         /* [in] */ ICharSequence* summary);
 
-    CARAPI SetSummaryEx(
+    CARAPI SetSummary(
         /* [in] */ Int32 summaryResId);
 
     CARAPI SetEnabled(
@@ -370,7 +370,7 @@ public:
     CARAPI SetDialogTitle(
         /* [in] */ ICharSequence* dialogTitle);
 
-    CARAPI SetDialogTitleEx(
+    CARAPI SetDialogTitle(
         /* [in] */ Int32 dialogTitleResId);
 
     CARAPI GetDialogTitle(
@@ -379,7 +379,7 @@ public:
     CARAPI SetDialogMessage(
         /* [in] */ ICharSequence* dialogMessage);
 
-    CARAPI SetDialogMessageEx(
+    CARAPI SetDialogMessage(
         /* [in] */ Int32 dialogMessageResId);
 
     CARAPI GetDialogMessage(
@@ -388,7 +388,7 @@ public:
     CARAPI SetDialogIcon(
         /* [in] */ IDrawable* dialogIcon);
 
-    CARAPI SetDialogIconEx(
+    CARAPI SetDialogIcon(
         /* [in] */ Int32 dialogIconRes);
 
     CARAPI GetDialogIcon(
@@ -397,7 +397,7 @@ public:
     CARAPI SetPositiveButtonText(
         /* [in] */ ICharSequence* positiveButtonText);
 
-    CARAPI SetPositiveButtonTextEx(
+    CARAPI SetPositiveButtonText(
         /* [in] */ Int32 positiveButtonTextResId);
 
     CARAPI GetPositiveButtonText(
@@ -406,7 +406,7 @@ public:
     CARAPI SetNegativeButtonText(
         /* [in] */ ICharSequence* negativeButtonText);
 
-    CARAPI SetNegativeButtonTextEx(
+    CARAPI SetNegativeButtonText(
         /* [in] */ Int32 negativeButtonTextResId);
 
     CARAPI GetNegativeButtonText(
@@ -430,7 +430,7 @@ public:
     CARAPI OnCreateDialogView(
         /* [out] */ IView** view);
 
-    CARAPI OnClickEx(
+    CARAPI OnClick(
         /* [in] */ IDialogInterface* dialog,
         /* [in] */ Int32 which);
 

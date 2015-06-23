@@ -3,8 +3,8 @@
 #define __CSHIRTPOCKET_H__
 
 #include "_CShirtPocket.h"
-#include "view/ViewMacro.h"
-#include "widget/ImageViewMacro.h"
+
+
 #include "systemui/statusbar/tablet/ShirtPocket.h"
 
 namespace Elastos {
@@ -40,7 +40,7 @@ public:
     CARAPI Stash(
         /* [in] */ IClipData* clipping);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

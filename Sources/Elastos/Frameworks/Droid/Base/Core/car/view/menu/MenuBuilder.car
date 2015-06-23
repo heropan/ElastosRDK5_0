@@ -74,7 +74,7 @@ module
                 [in] Int32 group,
                 [out] Int32* index);
 
-            FindGroupIndexEx(
+            FindGroupIndex(
                 [in] Int32 group,
                 [in] Int32 start,
                 [out] Int32* index);
@@ -112,7 +112,7 @@ module
                 [in] Int32 flags,
                 [out] Boolean* state);
 
-            CloseEx(
+            Close(
                 [in] Boolean flag);
 
             OnItemsChanged(

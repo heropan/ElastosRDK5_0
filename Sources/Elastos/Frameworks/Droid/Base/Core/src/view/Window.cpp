@@ -5,8 +5,8 @@
 #include "os/SystemProperties.h"
 #include "ext/frameworkdef.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
@@ -92,7 +92,7 @@ ECode Window::GetContext(
 {
     assert(context);
     *context = mContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode Window::GetWindowStyle(
         FAIL_RETURN(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&mWindowStyle));
     }
     *attrs = mWindowStyle;
-    INTERFACE_ADDREF(*attrs);
+    REFCOUNT_ADD(*attrs);
     return NOERROR;
 }
 
@@ -133,7 +133,7 @@ ECode Window::GetContainer(
 
     if (mContainer != NULL) {
         *container = (IWindow*)mContainer->Probe(EIID_IWindow);
-        INTERFACE_ADDREF(*container);
+        REFCOUNT_ADD(*container);
     }
     return NOERROR;
 }
@@ -167,10 +167,10 @@ ECode Window::SetWindowManager(
     /* [in] */ IBinder* appToken,
     /* [in] */ const String& appName)
 {
-    return SetWindowManagerEx(wm, appToken, appName, FALSE);
+    return SetWindowManager(wm, appToken, appName, FALSE);
 }
 
-ECode Window::SetWindowManagerEx(
+ECode Window::SetWindowManager(
     /* [in] */ IWindowManager* wm,
     /* [in] */ IBinder* appToken,
     /* [in] */ const String& appName,
@@ -263,7 +263,7 @@ ECode Window::GetWindowManager(
     /* [out] */ IWindowManager** wm)
 {
     *wm = mWindowManager.Get();
-    INTERFACE_ADDREF(*wm);
+    REFCOUNT_ADD(*wm);
     return NOERROR;
 }
 
@@ -287,7 +287,7 @@ ECode Window::GetCallback(
     /* [out] */ IWindowCallback** cb)
 {
     *cb = mCallback;
-    INTERFACE_ADDREF(*cb);
+    REFCOUNT_ADD(*cb);
     return NOERROR;
 }
 
@@ -426,7 +426,7 @@ ECode Window::GetAttributes(
     /* [out] */ IWindowManagerLayoutParams** params)
 {
     *params = (IWindowManagerLayoutParams*)mWindowAttributes.Get();
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -606,7 +606,7 @@ ECode Window::SetUiOptions(
     return NOERROR;
 }
 
-ECode Window::SetUiOptionsEx(
+ECode Window::SetUiOptions(
     /* [in] */ Int32 uiOptions,
     /* [in] */ Int32 mask)
 {

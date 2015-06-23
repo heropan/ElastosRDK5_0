@@ -92,7 +92,7 @@ ECode CWifiP2pServiceRequest::NewInstance(
     AutoPtr<CWifiP2pServiceRequest> obj;
     CWifiP2pServiceRequest::NewByFriend(protocolType, queryData, (CWifiP2pServiceRequest**)&obj);
     *instance = obj;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

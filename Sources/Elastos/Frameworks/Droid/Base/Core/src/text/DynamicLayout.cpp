@@ -456,7 +456,7 @@ ECode DynamicLayout::Init(
     dirs->Set(0, DIRS_ALL_LEFT_TO_RIGHT);
 
     AutoPtr<IPaintFontMetricsInt> fm;
-    paint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&fm);
+    paint->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
     Int32 asc, desc;
     fm->GetAscent(&asc);
     fm->GetDescent(&desc);

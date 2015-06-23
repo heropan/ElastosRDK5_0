@@ -43,7 +43,7 @@ ECode ExpandedMenuView::Init(
         const_cast<Int32 *>(R::styleable::MenuView),
         ARRAY_SIZE(R::styleable::MenuView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::MenuView_windowAnimationStyle, 0, &mAnimations);
     a->Recycle();

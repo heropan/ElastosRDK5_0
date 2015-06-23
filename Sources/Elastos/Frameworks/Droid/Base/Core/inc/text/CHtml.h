@@ -19,7 +19,7 @@ public:
         /* [in] */ const String& source,
         /* [out] */ ISpanned** ret);
 
-    CARAPI FromHtmlEx(
+    CARAPI FromHtml(
         /* [in] */ const String& source,
         /* [in] */ IHtmlImageGetter* imageGetter,
         /* [in] */ IHtmlTagHandler* tagHandler,

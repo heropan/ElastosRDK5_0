@@ -4,14 +4,14 @@
 
 #include "_CMediaInserter.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::IIContentProvider;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

@@ -1,8 +1,8 @@
 
 #include "text/CAlteredCharSequence.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 #include "ext/frameworkext.h"
 
 using Elastos::Core::StringBuilder;
@@ -168,7 +168,7 @@ ECode CAlteredCharSequence::AlteredSpanned::SubSequence(
 
     AutoPtr<IAlteredCharSequence> ret = CAlteredCharSequence::AlteredSpanned::Make(csq1, mChars, mStart - start, mEnd - start);
     *csq = ICharSequence::Probe(ret);
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 
@@ -285,7 +285,7 @@ ECode CAlteredCharSequence::SubSequence(
 
     AutoPtr<IAlteredCharSequence> acs = CAlteredCharSequence::Make(csq, mChars, mStart - start, mEnd - start);
     *ret = ICharSequence::Probe(acs);
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

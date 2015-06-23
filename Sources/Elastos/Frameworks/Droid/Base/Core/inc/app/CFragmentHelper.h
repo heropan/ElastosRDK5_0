@@ -17,7 +17,7 @@ public:
         /* [in] */ const String& fname,
         /* [out] */ IFragment** fragment);
 
-    CARAPI InstantiateEx(
+    CARAPI Instantiate(
         /* [in] */ IContext* context,
         /* [in] */ const String& fname,
         /* [in] */ IBundle* args,

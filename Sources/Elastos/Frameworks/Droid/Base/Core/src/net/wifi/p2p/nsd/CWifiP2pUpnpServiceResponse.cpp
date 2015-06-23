@@ -2,9 +2,9 @@
 #include "CWifiP2pUpnpServiceResponse.h"
 #include <ext/frameworkext.h>
 #include "CWifiP2pServiceResponseStatus.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -190,7 +190,7 @@ ECode CWifiP2pUpnpServiceResponse::GetUniqueServiceNames(
     VALIDATE_NOT_NULL(uniqueServiceNames);
 
     *uniqueServiceNames = mUniqueServiceNames;
-    INTERFACE_ADDREF(*uniqueServiceNames);
+    REFCOUNT_ADD(*uniqueServiceNames);
 
     return NOERROR;
 }
@@ -221,7 +221,7 @@ ECode CWifiP2pUpnpServiceResponse::NewInstance(
         CWifiP2pUpnpServiceResponse::NewByFriend(
             status, transId, dev, NULL, (CWifiP2pUpnpServiceResponse**)&resp);
         *instance = (IWifiP2pUpnpServiceResponse*)resp.Get();
-        INTERFACE_ADDREF(*instance);
+        REFCOUNT_ADD(*instance);
         return NOERROR;
     }
 
@@ -229,7 +229,7 @@ ECode CWifiP2pUpnpServiceResponse::NewInstance(
     FAIL_RETURN(CWifiP2pUpnpServiceResponse::NewByFriend(
         status, transId, dev, data, (CWifiP2pUpnpServiceResponse**)&resp));
     *instance = (IWifiP2pUpnpServiceResponse*)resp.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

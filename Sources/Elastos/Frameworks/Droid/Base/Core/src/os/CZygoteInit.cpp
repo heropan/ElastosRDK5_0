@@ -5,14 +5,14 @@
 #include "os/RuntimeInit.h"
 #include "net/CLocalServerSocket.h"
 #include <Elastos.Droid.System.h>
-#include <Elastos.Core.h>
-#include <elastos/Logger.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/Vector.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/select.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Vector;
@@ -140,7 +140,7 @@ ECode CZygoteInit::AcceptCommandPeer(
     AutoPtr<ILocalSocket> socket;
     FAIL_RETURN(sServerSocket->Accept((ILocalSocket**)&socket));
     *peer = new ZygoteConnection(socket);
-    INTERFACE_ADDREF(*peer);
+    REFCOUNT_ADD(*peer);
     return NOERROR;
     // } catch (IOException ex) {
     //     throw new RuntimeException(

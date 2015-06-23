@@ -129,7 +129,7 @@ ECode CScroller::StartScroll(
     return NOERROR;
 }
 
-ECode CScroller::StartScrollEx(
+ECode CScroller::StartScroll(
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
     /* [in] */ Int32 dx,

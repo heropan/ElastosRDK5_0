@@ -25,7 +25,7 @@ ECode CActionKeyInfo::constructor(
         const_cast<Int32 *>(R::styleable::SearchableActionKey),
         ARRAY_SIZE(R::styleable::SearchableActionKey));
     AutoPtr<ITypedArray>  a;
-    activityContext->ObtainStyledAttributesEx2(attr, attrIds, (ITypedArray**)&a);
+    activityContext->ObtainStyledAttributes(attr, attrIds, (ITypedArray**)&a);
 
     a->GetInt32(R::styleable::SearchableActionKey_keycode, 0, &mKeyCode);
     a->GetString(R::styleable::SearchableActionKey_queryActionMsg, &mQueryActionMsg);

@@ -2,17 +2,17 @@
 #include "ext/frameworkdef.h"
 #include "util/XmlUtils.h"
 #include "util/Xml.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/List.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
 
 #ifdef DROID_CORE
 #include "util/CFastXmlSerializer.h"
 #endif
 
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
 
 using Elastos::Core::StringBuilder;
@@ -35,7 +35,7 @@ using Elastos::Core::EIID_IInteger32;
 using Elastos::Droid::Utility::CFastXmlSerializer;
 using Elastos::Droid::Utility::IFastXmlSerializer;
 using Elastos::Utility::CObjectMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Slogger;
 using Org::Kxml2::IO::CKXmlSerializer;
 
@@ -478,7 +478,7 @@ AutoPtr<IObjectMap> XmlUtils::ReadMapXml(
     /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
 {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(in, String(NULL));
+    parser->SetInput(in, String(NULL));
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
     ReadValueXml(parser, name, (IInterface**)&obj);
@@ -489,7 +489,7 @@ AutoPtr<IArrayOf> XmlUtils::ReadListXml(
     /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
 {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(in, String(NULL));
+    parser->SetInput(in, String(NULL));
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
     ReadValueXml(parser, name, (IInterface**)&obj);
@@ -500,7 +500,7 @@ AutoPtr<IObjectContainer> XmlUtils::ReadSetXml(
     /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
 {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(in, String(NULL));
+    parser->SetInput(in, String(NULL));
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
     ReadValueXml(parser, name, (IInterface**)&obj);
@@ -634,7 +634,7 @@ ECode XmlUtils::ReadThisIntArrayXml(
 {
     VALIDATE_NOT_NULL(array);
     String value;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("num"), &value));
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("num"), &value));
     Int32 num = StringUtils::ParseInt32(value);;
 
     CArrayOf::New(EIID_IInteger32, num, array);
@@ -647,7 +647,7 @@ ECode XmlUtils::ReadThisIntArrayXml(
             String n;
             FAIL_RETURN(parser->GetName(&n));
             if (n.Equals("item")) {
-                FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value));
                 AutoPtr<IInteger32> iVal;
                 CInteger32::New(StringUtils::ParseInt32(value), (IInteger32**)&iVal);
                 (*array)->Put(i, iVal);
@@ -716,7 +716,7 @@ ECode XmlUtils::ReadThisValueXml(
 {
     VALIDATE_NOT_NULL(ret);
     String valueName;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("name"), &valueName));
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("name"), &valueName));
     String tagName;
     FAIL_RETURN(parser->GetName(&tagName));
 
@@ -740,7 +740,7 @@ ECode XmlUtils::ReadThisValueXml(
                     AutoPtr<ICharSequence> v;
                     CStringWrapper::New(value, (ICharSequence**)&v);
                     *ret = v;
-                    INTERFACE_ADDREF(*ret);
+                    REFCOUNT_ADD(*ret);
                     return NOERROR;
                 }
 
@@ -765,35 +765,35 @@ ECode XmlUtils::ReadThisValueXml(
     }
     else if (tagName.Equals("Int32")) {
         String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value));
         AutoPtr<IInteger32> iv;
         CInteger32::New(StringUtils::ParseInt32(value), (IInteger32**)&iv);
         res = iv;
     }
     else if (tagName.Equals("Int64")) {
         String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value));
         AutoPtr<IInteger64> iv;
         CInteger64::New(StringUtils::ParseInt64(value), (IInteger64**)&iv);
         res = iv;
     }
     else if (tagName.Equals("Float")) {
         String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value));
         AutoPtr<IFloat> fv;
         CFloat::New(StringUtils::ParseFloat(value), (IFloat**)&fv);
         res = fv;
     }
     else if (tagName.Equals("Double")) {
         String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value));
         AutoPtr<IDouble> dv;
         CDouble::New(StringUtils::ParseDouble(value), (IDouble**)&dv);
         res = dv;
     }
     else if (tagName.Equals("Boolean")) {
         String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value));
         AutoPtr<IBoolean> bv;
         CBoolean::New(value.EqualsIgnoreCase("true"), (IBoolean**)&bv);
         res = bv;
@@ -806,7 +806,7 @@ ECode XmlUtils::ReadThisValueXml(
         (*name)[0] = valueName;
         //System.out.println("Returning value for " + valueName + ": " + res);
         *ret = av;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
         return NOERROR;
     }
     else if (tagName.Equals("map")) {
@@ -816,7 +816,7 @@ ECode XmlUtils::ReadThisValueXml(
         FAIL_RETURN(ReadThisMapXml(parser, String("map"), name, (IObjectMap**)&mv));
         (*name)[0] = valueName;
         *ret = mv;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
         //System.out.println("Returning value for " + valueName + ": " + res);
         return NOERROR;
     }
@@ -828,7 +828,7 @@ ECode XmlUtils::ReadThisValueXml(
         (*name)[0] = valueName;
         //System.out.println("Returning value for " + valueName + ": " + res);
         *ret = av;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
         return NOERROR;
     }
     else if (tagName.Equals("set")) {
@@ -839,7 +839,7 @@ ECode XmlUtils::ReadThisValueXml(
         (*name)[0] = valueName;
         //System.out.println("Returning value for " + valueName + ": " + res);
         *ret = oc;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
         return NOERROR;
     }
     else {
@@ -857,7 +857,7 @@ ECode XmlUtils::ReadThisValueXml(
                 (*name)[0] = valueName;
                 //System.out.println("Returning value for " + valueName + ": " + res);
                 *ret = res;
-                INTERFACE_ADDREF(*ret);
+                REFCOUNT_ADD(*ret);
                 return NOERROR;
             }
 

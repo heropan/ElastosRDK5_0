@@ -56,7 +56,7 @@ ECode CMediaStoreVideoThumbnails::GetThumbnail(
             uri, TRUE, bitmap);
 }
 
-ECode CMediaStoreVideoThumbnails::GetThumbnailEx(
+ECode CMediaStoreVideoThumbnails::GetThumbnail(
     /* [in] */ IContentResolver* cr,
     /* [in] */ Int64 origId,
     /* [in] */ Int64 groupId,
@@ -74,7 +74,7 @@ ECode CMediaStoreVideoThumbnails::GetThumbnailEx(
             uri, TRUE, bitmap);
 }
 
-ECode CMediaStoreVideoThumbnails::CancelThumbnailRequestEx(
+ECode CMediaStoreVideoThumbnails::CancelThumbnailRequest(
     /* [in] */ IContentResolver* cr,
     /* [in] */ Int64 origId,
     /* [in] */ Int64 groupId)

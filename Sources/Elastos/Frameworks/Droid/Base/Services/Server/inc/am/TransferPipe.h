@@ -4,13 +4,13 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::Object;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IParcelFileDescriptorHelper;

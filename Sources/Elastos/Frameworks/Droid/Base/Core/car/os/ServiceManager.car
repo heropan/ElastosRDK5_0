@@ -10,7 +10,7 @@ module
             [in] String name,
             [in] IInterface* service);
 
-        AddServiceEx(
+        AddService(
             [in] String name,
             [in] IInterface* service,
             [in] Boolean allowIsolated);

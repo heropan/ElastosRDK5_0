@@ -5,7 +5,7 @@
 #include "src/util/Utils.h"
 #include "os/SomeArgs.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::SomeArgs;
 using Elastos::Droid::App::CWallpaperManagerHelper;
@@ -110,7 +110,7 @@ ECode CWallpaperActivity::MyLoadImageCallback::ImageLoaded(
     args->mArg2 = imageView;
 
     AutoPtr<IMessage> msg;
-    mHost->mMyHandler->ObtainMessageEx(CWallpaperActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
+    mHost->mMyHandler->ObtainMessage(CWallpaperActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
     Boolean result;
     return mHost->mMyHandler->SendMessage(msg, &result);
 }

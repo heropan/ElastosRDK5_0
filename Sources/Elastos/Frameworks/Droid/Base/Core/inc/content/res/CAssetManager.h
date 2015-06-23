@@ -5,10 +5,9 @@
 #include "_CAssetManager.h"
 #include "content/res/StringBlock.h"
 #include "content/res/XmlBlock.h"
-#include <elastos/Mutex.h>
 #include <elastos/io/InputStream.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::InputStream;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Utility::ITypedValue;
@@ -69,7 +68,7 @@ public:
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [out] */ Int32* number);
 
-        CARAPI ReadBytesEx(
+        CARAPI ReadBytes(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
@@ -208,7 +207,7 @@ public:
      * @see #open(String)
      * @see #list
      */
-    CARAPI OpenEx(
+    CARAPI Open(
         /* [in] */ const String& fileName,
         /* [in] */ Int32 accessMode,
         /* [out] */ IInputStream** stream);
@@ -255,7 +254,7 @@ public:
      *
      * @see #open(String, int)
      */
-    CARAPI OpenNonAssetEx(
+    CARAPI OpenNonAsset(
         /* [in] */ const String& fileName,
         /* [in] */ Int32 accessMode,
         /* [out] */ IInputStream ** stream);
@@ -267,7 +266,7 @@ public:
      * @param cookie Identifier of the package to be opened.
      * @param fileName Name of the asset to retrieve.
      */
-    CARAPI OpenNonAssetEx2(
+    CARAPI OpenNonAsset(
         /* [in] */ Int32 cookie,
         /* [in] */ const String& fileName,
         /* [out] */ IInputStream ** stream);
@@ -280,7 +279,7 @@ public:
      * @param fileName Name of the asset to retrieve.
      * @param accessMode Desired access mode for retrieving the data.
      */
-    CARAPI OpenNonAssetEx3(
+    CARAPI OpenNonAsset(
         /* [in] */ Int32 cookie,
         /* [in] */ const String& fileName,
         /* [in] */ Int32 accessMode,
@@ -290,7 +289,7 @@ public:
         /* [in] */ const String& fileName,
         /* [out] */ IAssetFileDescriptor ** fd);
 
-    CARAPI OpenNonAssetFdEx(
+    CARAPI OpenNonAssetFd(
         /* [in] */ Int32 cookie,
         /* [in] */ const String& fileName,
         /* [out] */ IAssetFileDescriptor ** fd);
@@ -310,7 +309,7 @@ public:
      * @param cookie Identifier of the package to be opened.
      * @param fileName The name of the file to retrieve.
      */
-    CARAPI OpenXmlResourceParserEx(
+    CARAPI OpenXmlResourceParser(
         /* [in] */ Int32 cookie,
         /* [in] */ const String& fileName,
         /* [out] */ IXmlResourceParser ** parser);

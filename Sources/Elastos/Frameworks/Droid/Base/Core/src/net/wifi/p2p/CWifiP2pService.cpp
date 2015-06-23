@@ -1,10 +1,10 @@
 #include "CWifiP2pService.h"
 #include "ext/frameworkdef.h"
-#include <Elastos.Core.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/Pair.h>
 
 #include "content/CIntent.h"
@@ -34,7 +34,7 @@
 #include "R.h"
 #include "Manifest.h"
 
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IInteger32;
@@ -175,7 +175,7 @@ ECode CWifiP2pService::ClientInfo::GetMessenger(
 {
     VALIDATE_NOT_NULL(messenger);
     *messenger = mMessenger;
-    INTERFACE_ADDREF(*messenger);
+    REFCOUNT_ADD(*messenger);
     return NOERROR;
 }
 
@@ -617,9 +617,9 @@ ECode CWifiP2pService::P2pStateMachine::NotifyP2pEnableFailure()
     CStringWrapper::New(msg, (ICharSequence**)&csMsg);
     CStringWrapper::New(ok, (ICharSequence**)&csOk);
 
-    builder->SetTitleEx(csTitle);
-    builder->SetMessageEx(csMsg);
-    builder->SetPositiveButtonEx(csOk, NULL);
+    builder->SetTitle(csTitle);
+    builder->SetMessage(csMsg);
+    builder->SetPositiveButton(csOk, NULL);
 
     AutoPtr<IAlertDialog> dialog;
     builder->Create((IAlertDialog**)&dialog);
@@ -643,7 +643,7 @@ ECode CWifiP2pService::P2pStateMachine::AddRowToDialog(
     AutoPtr<ILayoutInflater> inflater;
     LayoutInflater::From(mHost->mContext, (ILayoutInflater**)&inflater);
     AutoPtr<IView> row;
-    inflater->InflateEx2(R::layout::wifi_p2p_dialog_row, group, FALSE, (IView**)&row);
+    inflater->Inflate(R::layout::wifi_p2p_dialog_row, group, FALSE, (IView**)&row);
     AutoPtr<IView> tempView;
     row->FindViewById(Elastos::Droid::R::id::name, (IView**)&tempView);
     AutoPtr<ITextView> tx = ITextView::Probe(tempView);
@@ -702,9 +702,9 @@ ECode CWifiP2pService::P2pStateMachine::NotifyInvitationSent(
     CStringWrapper::New(title, (ICharSequence**)&csTitle);
     CStringWrapper::New(ok, (ICharSequence**)&csOk);
 
-    builder->SetTitleEx(csTitle);
+    builder->SetTitle(csTitle);
     builder->SetView(textEntryView);
-    builder->SetPositiveButtonEx(csOk, NULL);
+    builder->SetPositiveButton(csOk, NULL);
 
     AutoPtr<IAlertDialog> dialog;
     builder->Create((IAlertDialog**)&dialog);
@@ -751,7 +751,7 @@ ECode CWifiP2pService::P2pStateMachine::NotifyInvitationReceived()
     r->GetString(Elastos::Droid::R::string::accept, &accept);
     AutoPtr<ICharSequence> csTitle;
     CStringWrapper::New(title, (ICharSequence**)&csTitle);
-    builder->SetTitleEx(csTitle);
+    builder->SetTitle(csTitle);
     builder->SetView(textEntryView);
 //TODO: Need
     //builder->setPositiveButton(r->GetString(R.string.accept), new OnClickListener() {
@@ -943,7 +943,7 @@ Int32 CWifiP2pService::P2pStateMachine::Connect(
     }
     else if (join) {
         Int32 netId;
-        mGroups->GetNetworkIdEx(address, ssid, &netId);
+        mGroups->GetNetworkId(address, ssid, &netId);
         if (netId >= 0) {
             // Skip WPS and start 4way handshake immediately.
             b = mWifiNative->P2pGroupAdd(netId);
@@ -1300,7 +1300,7 @@ ECode CWifiP2pService::P2pStateMachine::HandleGroupCreationFailure()
      * at supplicant. Flush and restart discovery */
     mWifiNative->P2pFlush();
     Boolean b;
-    mPeers->RemoveEx(mPeersLostDuringConnection, &b);
+    mPeers->Remove(mPeersLostDuringConnection, &b);
     if (b) SendP2pPeersChangedBroadcast();
     mPeersLostDuringConnection->Clear(&b);
     mHost->mServiceDiscReqId = NULL;
@@ -1366,7 +1366,7 @@ ECode CWifiP2pService::P2pStateMachine::HandleGroupRemoved()
 
     mGroup = NULL;
     mWifiNative->P2pFlush();
-    mPeers->RemoveEx(mPeersLostDuringConnection, &b);
+    mPeers->Remove(mPeersLostDuringConnection, &b);
     if (b) SendP2pPeersChangedBroadcast();
     mPeersLostDuringConnection->Clear(&b);
     mHost->mServiceDiscReqId = NULL;
@@ -1812,7 +1812,7 @@ ECode CWifiP2pService::P2pStateMachine::GetClientInfo(
     }
 
     *result = clientInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1936,7 +1936,7 @@ Boolean CWifiP2pService::P2pStateMachine::IsForegroundApp(
     if (pkgName.IsNull()) return FALSE;
 
     AutoPtr<IObjectContainer> container;
-    mHost->mActivityMgr->GetRunningTasksEx(1, (IObjectContainer**)&container);
+    mHost->mActivityMgr->GetRunningTasks(1, (IObjectContainer**)&container);
     if (container == NULL) {
         return FALSE;
     }
@@ -3439,7 +3439,7 @@ ECode CWifiP2pService::P2pStateMachine::GroupNegotiationState::ProcessMessage(
                 mHost->mGroup->GetOwner((IWifiP2pDevice**)&dev);
                 dev->GetDeviceAddress(&devAddr);
                 mHost->mGroup->GetNetworkName(&netName);
-                mHost->mGroups->GetNetworkIdEx(devAddr, netName, &netId);
+                mHost->mGroups->GetNetworkId(devAddr, netName, &netId);
                 mHost->mGroup->SetNetworkId(netId);
             }
 
@@ -3636,23 +3636,23 @@ ECode CWifiP2pService::P2pStateMachine::FrequencyConflictState::NotifyFrequencyC
     CStringWrapper::New(addr, (ICharSequence**)&seq);
     AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(1);
     array->Set(0, seq->Probe(EIID_IInterface));
-    r->GetStringEx(R::string::wifi_p2p_frequency_conflict_message, array, &str);
+    r->GetString(R::string::wifi_p2p_frequency_conflict_message, array, &str);
     AutoPtr<ICharSequence> csMsg;
     CStringWrapper::New(str, (ICharSequence**)&csMsg);
-    builder->SetMessageEx(csMsg);
+    builder->SetMessage(csMsg);
 
     AutoPtr<IDialogInterfaceOnClickListener> listener;
     listener = new PositiveButtonListener(mHost);
     r->GetString(R::string::dlg_ok, &str);
     csMsg = NULL;
     CStringWrapper::New(str, (ICharSequence**)&csMsg);
-    builder->SetPositiveButtonEx(csMsg, listener);
+    builder->SetPositiveButton(csMsg, listener);
 
     listener = new NegativeButtonListener(mHost);
     r->GetString(R::string::decline, &str);
     csMsg = NULL;
     CStringWrapper::New(str, (ICharSequence**)&csMsg);
-    builder->SetNegativeButtonEx(csMsg, listener);
+    builder->SetNegativeButton(csMsg, listener);
 
     AutoPtr<IDialogInterfaceOnCancelListener> cancelListener;
     cancelListener = new DialogCancelListener(mHost);
@@ -3832,7 +3832,7 @@ ECode CWifiP2pService::P2pStateMachine::GroupCreatedState::ProcessMessage(
                 AutoPtr<IWifiP2pDevice> dev;
                 mHost->mPeers->Get(deviceAddress, (IWifiP2pDevice**)&dev);
                 if (dev != NULL) {
-                    mHost->mGroup->AddClientEx(dev);
+                    mHost->mGroup->AddClient(dev);
                 }
                 else {
                     mHost->mGroup->AddClient(deviceAddress);

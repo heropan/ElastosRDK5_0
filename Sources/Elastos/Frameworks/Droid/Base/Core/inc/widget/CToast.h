@@ -125,7 +125,7 @@ public:
      * Update the text in a Toast that was previously created using one of the makeText() methods.
      * @param s The new text for the Toast.
      */
-    CARAPI SetTextEx(
+    CARAPI SetText(
         /* [in] */ ICharSequence* s);
 
     CARAPI OnHide();

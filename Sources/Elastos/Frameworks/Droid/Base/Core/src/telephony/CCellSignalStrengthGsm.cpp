@@ -1,8 +1,8 @@
 
 #include "CCellSignalStrengthGsm.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -124,7 +124,7 @@ ECode CCellSignalStrengthGsm::Copy(
     AutoPtr<ICellSignalStrengthGsm> css;
     CCellSignalStrengthGsm::New(this, (ICellSignalStrengthGsm**)&css);
     *cssReturn = ICellSignalStrength::Probe(css);
-    INTERFACE_ADDREF(*cssReturn);
+    REFCOUNT_ADD(*cssReturn);
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode CCellSignalStrengthGsm::Initialize(
     return NOERROR;
 }
 
-ECode CCellSignalStrengthGsm::CopyEx(
+ECode CCellSignalStrengthGsm::Copy(
     /* [out] */ ICellSignalStrengthGsm** css)
 {
     VALIDATE_NOT_NULL(css);

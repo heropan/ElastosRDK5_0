@@ -134,7 +134,7 @@ ECode CPicture::BeginRecording(
     Int32 ni = NativeBeginRecording(mNativePicture, width, height);
     mRecordingCanvas = new RecordingCanvas(this, ni);
     *canvas = mRecordingCanvas;
-    INTERFACE_ADDREF(*canvas);
+    REFCOUNT_ADD(*canvas);
     return NOERROR;
 }
 

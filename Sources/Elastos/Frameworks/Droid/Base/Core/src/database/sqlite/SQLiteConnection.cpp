@@ -8,8 +8,8 @@
 #include "database/DatabaseUtils.h"
 #include "database/CCursorWindow.h"
 #include "os/CParcelFileDescriptor.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include <cutils/ashmem.h>
 #include <sys/mman.h>
 #include <stdio.h>
@@ -1289,7 +1289,7 @@ ECode SQLiteConnection::Open(
         return ec;
     }
     *connect = connection;
-    INTERFACE_ADDREF(*connect);
+    REFCOUNT_ADD(*connect);
     return NOERROR;
     // } catch (SQLiteException ex) {
     //     connection.dispose(false);
@@ -2075,7 +2075,7 @@ ECode SQLiteConnection::AcquirePreparedStatement(
     if (statement != NULL) {
         if (!statement->mInUse) {
             *_statement = statement;
-            INTERFACE_ADDREF(*_statement)
+            REFCOUNT_ADD(*_statement)
             return NOERROR;
         }
         // The statement is already in the cache but is in use (this statement appears
@@ -2105,7 +2105,7 @@ ECode SQLiteConnection::AcquirePreparedStatement(
     // }
     statement->mInUse = TRUE;
     *_statement = statement;
-    INTERFACE_ADDREF(*_statement)
+    REFCOUNT_ADD(*_statement)
     return NOERROR;
 }
 

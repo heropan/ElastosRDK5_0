@@ -4,10 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "webkit/WebViewDatabase.h"
-#include <elastos/Mutex.h>
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IMap;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;

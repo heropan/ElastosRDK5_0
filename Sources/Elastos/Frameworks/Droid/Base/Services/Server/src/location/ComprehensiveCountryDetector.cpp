@@ -4,7 +4,7 @@
 #include "text/TextUtils.h"
 #include "os/SystemClock.h"
 #include <elastos/TimerTask.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::ITimerTask;
 using Elastos::Utility::CTimer;
@@ -529,7 +529,7 @@ void ComprehensiveCountryDetector::ScheduleLocationRefresh()
     CTimer::New((ITimer**)&mLocationRefreshTimer);
     AutoPtr<ITimerTask> timerTask = new MyTimerTask(this);
 
-    mLocationRefreshTimer->ScheduleEx(timerTask, LOCATION_REFRESH_INTERVAL);
+    mLocationRefreshTimer->Schedule(timerTask, LOCATION_REFRESH_INTERVAL);
 }
 
 /**

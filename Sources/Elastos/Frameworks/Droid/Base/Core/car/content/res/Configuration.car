@@ -492,7 +492,7 @@ module
             [in] IInterface* that,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] IConfiguration* that,
             [out] Boolean* result);
 

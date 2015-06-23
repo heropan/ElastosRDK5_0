@@ -272,7 +272,7 @@ AutoPtr<ArrayOf<Byte> > SystemProperties::GetFakeImage()
     FAIL_GOTO(CFileInputStream::New(imagefile, (IFileInputStream**)&fis), _EXIT_);
 
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&fact);
-    FAIL_GOTO(fact->DecodeStreamEx(fis, (IBitmap**)&bm), _EXIT_);
+    FAIL_GOTO(fact->DecodeStream(fis, (IBitmap**)&bm), _EXIT_);
 
     FAIL_GOTO(CByteArrayOutputStream::New((IByteArrayOutputStream**)&helper), _EXIT_);
     FAIL_GOTO(bm->Compress(BitmapCompressFormat_JPEG, 100 , helper, &bval), _EXIT_);
@@ -334,7 +334,7 @@ Int32 SystemProperties::CheckIfPackagesAllowed()
         Byte cs;
         for (Int32 i = 0; i < packageNames->GetLength(); i++) {
             settings = NULL;
-            mPrivacySettingsManager->GetSettingsEx((*packageNames)[i], uid, (IPrivacySettings**)&settings);
+            mPrivacySettingsManager->GetSettings((*packageNames)[i], uid, (IPrivacySettings**)&settings);
             //if settings is NULL, we allow application to access to mic
             if (settings != NULL) {
                 settings->GetCameraSetting(&cs);

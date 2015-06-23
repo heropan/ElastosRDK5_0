@@ -69,7 +69,7 @@ ECode CDisplayMetrics::SetToDefaults()
     return NOERROR;
 }
 
-ECode CDisplayMetrics::EqualsEx(
+ECode CDisplayMetrics::Equals(
     /* [in] */ IDisplayMetrics* other,
     /* [out] */ Boolean* result)
 {
@@ -91,7 +91,7 @@ ECode CDisplayMetrics::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    return EqualsEx(IDisplayMetrics::Probe(other), result);
+    return Equals(IDisplayMetrics::Probe(other), result);
 }
 
 ECode CDisplayMetrics::GetHashCode(

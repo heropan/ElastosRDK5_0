@@ -224,7 +224,7 @@ ECode CContentProviderOperationBuilder::GetUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mUri;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -241,7 +241,7 @@ ECode CContentProviderOperationBuilder::GetSelectionArgs(
 {
     VALIDATE_NOT_NULL(selectionArgs)
     *selectionArgs = mSelectionArgs;
-    INTERFACE_ADDREF(*selectionArgs)
+    REFCOUNT_ADD(*selectionArgs)
     return NOERROR;
 }
 
@@ -250,7 +250,7 @@ ECode CContentProviderOperationBuilder::GetValues(
 {
     VALIDATE_NOT_NULL(values)
     *values = mValues;
-    INTERFACE_ADDREF(*values)
+    REFCOUNT_ADD(*values)
     return NOERROR;
 }
 
@@ -267,7 +267,7 @@ ECode CContentProviderOperationBuilder::GetValuesBackReferences(
 {
     VALIDATE_NOT_NULL(valuesBackReferences)
     *valuesBackReferences = mValuesBackReferences;
-    INTERFACE_ADDREF(*valuesBackReferences)
+    REFCOUNT_ADD(*valuesBackReferences)
     return NOERROR;
 }
 

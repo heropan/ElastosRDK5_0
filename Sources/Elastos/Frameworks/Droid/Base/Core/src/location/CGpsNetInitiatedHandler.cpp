@@ -7,8 +7,8 @@
 #include "content/CIntent.h"
 #include "os/CUserHandle.h"
 #include "os/CUserHandleHelper.h"
-#include "elastos/StringBuffer.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuffer;

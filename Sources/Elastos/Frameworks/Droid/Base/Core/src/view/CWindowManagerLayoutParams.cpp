@@ -2,8 +2,8 @@
 #include "ext/frameworkext.h"
 #include "view/CWindowManagerLayoutParams.h"
 #include "text/TextUtils.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -78,7 +78,7 @@ ECode CWindowManagerLayoutParams::GetTitle(
     VALIDATE_NOT_NULL(title);
 
     *title = mTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
 
     return NOERROR;
 }
@@ -540,7 +540,7 @@ ECode CWindowManagerLayoutParams::GetToken(
 {
     VALIDATE_NOT_NULL(token);
     *token = mToken;
-    INTERFACE_ADDREF(*token);
+    REFCOUNT_ADD(*token);
     return NOERROR;
 }
 

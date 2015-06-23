@@ -5,7 +5,7 @@
 #include "text/CBoringLayout.h"
 #include "text/TextUtils.h"
 #include "text/TextLine.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ECLSID_CStringWrapper;
@@ -89,7 +89,7 @@ ECode BoringLayout::ReplaceOrMake(
     Init(source, paint, outerwidth, align, spacingmult, spacingadd,
         metrics, includepad, TRUE);
     *layout = THIS_PROBE(IBoringLayout);
-    INTERFACE_ADDREF(*layout);
+    REFCOUNT_ADD(*layout);
     return NOERROR;
 }
 
@@ -137,7 +137,7 @@ CARAPI BoringLayout::ReplaceOrMake(
          metrics, includepad, trust);
 
     *layout = THIS_PROBE(IBoringLayout);
-    INTERFACE_ADDREF(*layout);
+    REFCOUNT_ADD(*layout);
     return NOERROR;
 }
 
@@ -570,7 +570,7 @@ Int32 BoringLayout::GetEllipsizedWidth()
 
 // Override draw so it will be faster.
 //@Override
-ECode BoringLayout::DrawEx(
+ECode BoringLayout::Draw(
     /* [in] */ ICanvas* c,
     /* [in] */ IPath* highlight,
     /* [in] */ IPaint* highlightpaint,
@@ -579,9 +579,9 @@ ECode BoringLayout::DrawEx(
     assert(c != NULL);
 
     if (!mDirect.IsNull() && highlight == NULL) {
-        c->DrawTextEx(mDirect, 0, mBottom - mDesc, mPaint);
+        c->DrawText(mDirect, 0, mBottom - mDesc, mPaint);
     } else {
-        Layout::DrawEx(c, highlight, highlightpaint, cursorOffset);
+        Layout::Draw(c, highlight, highlightpaint, cursorOffset);
     }
 
     return NOERROR;

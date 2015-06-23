@@ -3,7 +3,7 @@
 #include "systemui/CSwipeHelper.h"
 #include "view/CViewConfigurationHelper.h"
 #include "systemui/SystemUIR.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -217,7 +217,7 @@ ECode RecentsVerticalScrollView::FindViewForTask(
         holder->mTaskDescription->GetPersistentTaskId(&pId);
         if (pId == persistentTaskId) {
             *view = v;
-            INTERFACE_ADDREF(*view);
+            REFCOUNT_ADD(*view);
             return NOERROR;
         }
     }
@@ -400,7 +400,7 @@ ECode RecentsVerticalScrollView::GetChildAtPosition(
                 && x >= left && x < right
                 && y >= top && y < bottom) {
             *view = item;
-            INTERFACE_ADDREF(*view);
+            REFCOUNT_ADD(*view);
             return NOERROR;
         }
     }

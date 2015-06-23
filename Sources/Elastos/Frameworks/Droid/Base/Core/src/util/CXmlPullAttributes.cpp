@@ -1,6 +1,6 @@
 #include "util/CXmlPullAttributes.h"
 #include "util/XmlUtils.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -37,12 +37,12 @@ ECode CXmlPullAttributes:: GetAttributeValue(
     return mParser->GetAttributeValue(index, value);
 }
 
-ECode CXmlPullAttributes:: GetAttributeValueEx(
+ECode CXmlPullAttributes:: GetAttributeValue(
     /* [in] */ const String& namespace1,
     /* [in] */ const String& name,
     /* [out] */ String * value)
 {
-    return mParser->GetAttributeValueEx(namespace1, name, value);
+    return mParser->GetAttributeValue(namespace1, name, value);
 }
 
 ECode CXmlPullAttributes:: GetPositionDescription(
@@ -67,7 +67,7 @@ ECode CXmlPullAttributes:: GetAttributeListValue(
     /* [out] */ Int32 * index)
 {
     String value;
-    GetAttributeValueEx(namespace1, attribute, &value);
+    GetAttributeValue(namespace1, attribute, &value);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(value, (ICharSequence**)&cs);
     *index = XmlUtils::ConvertValueToList(cs, options, defaultValue);
@@ -81,7 +81,7 @@ ECode CXmlPullAttributes:: GetAttributeBooleanValue(
     /* [out] */ Boolean * value)
 {
     String v;
-    GetAttributeValueEx(namespace1, attribute, &v);
+    GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(v, (ICharSequence**)&cs);
     *value = XmlUtils::ConvertValueToBoolean(cs, defaultValue);;
@@ -95,7 +95,7 @@ ECode CXmlPullAttributes:: GetAttributeResourceValue(
     /* [out] */ Int32 * value)
 {
     String v;
-    GetAttributeValueEx(namespace1, attribute, &v);
+    GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(v, (ICharSequence**)&cs);
     *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);;
@@ -109,7 +109,7 @@ ECode CXmlPullAttributes:: GetAttributeIntValue(
     /* [out] */ Int32 * value)
 {
     String v;
-    GetAttributeValueEx(namespace1, attribute, &v);
+    GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(v, (ICharSequence**)&cs);
     *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);;
@@ -123,7 +123,7 @@ ECode CXmlPullAttributes:: GetAttributeUnsignedIntValue(
     /* [out] */ Int32 * value)
 {
     String v;
-    GetAttributeValueEx(namespace1, attribute, &v);
+    GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(v, (ICharSequence**)&cs);
     *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
@@ -137,14 +137,14 @@ ECode CXmlPullAttributes:: GetAttributeFloatValue(
     /* [out] */ Float * value)
 {
     String v;
-    GetAttributeValueEx(namespace1, attribute, &v);
+    GetAttributeValue(namespace1, attribute, &v);
     if (v != NULL) {
         *value = StringUtils::ParseFloat(v);
     }
     return NOERROR;
 }
 
-ECode CXmlPullAttributes:: GetAttributeListValueEx(
+ECode CXmlPullAttributes:: GetAttributeListValue(
     /* [in] */ Int32 index,
     /* [in] */ const ArrayOf<String> &options,
     /* [in] */ Int32 defaultValue,
@@ -158,7 +158,7 @@ ECode CXmlPullAttributes:: GetAttributeListValueEx(
     return NOERROR;
 }
 
-ECode CXmlPullAttributes:: GetAttributeBooleanValueEx(
+ECode CXmlPullAttributes:: GetAttributeBooleanValue(
     /* [in] */ Int32 index,
     /* [in] */ Boolean defaultValue,
     /* [out] */ Boolean * value)
@@ -171,7 +171,7 @@ ECode CXmlPullAttributes:: GetAttributeBooleanValueEx(
     return NOERROR;
 }
 
-ECode CXmlPullAttributes:: GetAttributeResourceValueEx(
+ECode CXmlPullAttributes:: GetAttributeResourceValue(
     /* [in] */ Int32 index,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32 * value)
@@ -184,7 +184,7 @@ ECode CXmlPullAttributes:: GetAttributeResourceValueEx(
     return NOERROR;
 }
 
-ECode CXmlPullAttributes:: GetAttributeIntValueEx(
+ECode CXmlPullAttributes:: GetAttributeIntValue(
     /* [in] */ Int32 index,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32 * value)
@@ -197,7 +197,7 @@ ECode CXmlPullAttributes:: GetAttributeIntValueEx(
     return NOERROR;
 }
 
-ECode CXmlPullAttributes:: GetAttributeUnsignedIntValueEx(
+ECode CXmlPullAttributes:: GetAttributeUnsignedIntValue(
     /* [in] */ Int32 index,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32 * value)
@@ -210,7 +210,7 @@ ECode CXmlPullAttributes:: GetAttributeUnsignedIntValueEx(
     return NOERROR;
 }
 
-ECode CXmlPullAttributes:: GetAttributeFloatValueEx(
+ECode CXmlPullAttributes:: GetAttributeFloatValue(
     /* [in] */ Int32 index,
     /* [in] */ Float defaultValue,
     /* [out] */ Float * value)
@@ -226,13 +226,13 @@ ECode CXmlPullAttributes:: GetAttributeFloatValueEx(
 ECode CXmlPullAttributes:: GetIdAttribute(
     /* [out] */ String * attr)
 {
-    return GetAttributeValueEx(String(NULL), String("id"), attr);
+    return GetAttributeValue(String(NULL), String("id"), attr);
 }
 
 ECode CXmlPullAttributes:: GetClassAttribute(
     /* [out] */ String * attr)
 {
-    return GetAttributeValueEx(String(NULL), String("class"), attr);
+    return GetAttributeValue(String(NULL), String("class"), attr);
 }
 
 ECode CXmlPullAttributes:: GetIdAttributeResourceValue(

@@ -1,10 +1,8 @@
 #ifndef __GROUPOWNERSOCKETHANDLER_H__
 #define __GROUPOWNERSOCKETHANDLER_H__
 
-#include <elastos/ThreadBase.h>
 #include "Elastos.Droid.Core.h"
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Net::IServerSocket;
 using Elastos::Utility::Concurrent::IThreadPoolExecutor;
 using Elastos::Droid::Os::IHandler;

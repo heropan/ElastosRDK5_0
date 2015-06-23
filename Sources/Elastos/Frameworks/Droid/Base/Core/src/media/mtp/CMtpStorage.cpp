@@ -45,7 +45,7 @@ ECode CMtpStorage::GetStorageId(
     return NOERROR;
 }
 
-ECode CMtpStorage::GetStorageIdEx(
+ECode CMtpStorage::GetStorageId(
     /* [in] */ Int32 index,
     /* [out] */ Int32* result)
 {

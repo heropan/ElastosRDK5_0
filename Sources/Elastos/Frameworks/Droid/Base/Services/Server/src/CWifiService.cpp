@@ -5,9 +5,9 @@
 #include "os/Process.h"
 #include "os/UserHandle.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ISystem;
@@ -349,7 +349,7 @@ ECode CWifiService::AsyncServiceHandler::HandleMessage(
             if (mOwner->mEnableTrafficStatsPoll) {
                 mOwner->NotifyOnDataActivity();
                 AutoPtr<IMessage> m;
-                mOwner->mAsyncServiceHandler->ObtainMessageEx2(IWifiManager::TRAFFIC_STATS_POLL,
+                mOwner->mAsyncServiceHandler->ObtainMessage(IWifiManager::TRAFFIC_STATS_POLL,
                     mOwner->mTrafficStatsPollToken, 0, (IMessage**)&m);
 
                 Boolean result;
@@ -364,7 +364,7 @@ ECode CWifiService::AsyncServiceHandler::HandleMessage(
             if (arg1 == mOwner->mTrafficStatsPollToken) {
                 mOwner->NotifyOnDataActivity();
                 AutoPtr<IMessage> m;
-                mOwner->mAsyncServiceHandler->ObtainMessageEx2(IWifiManager::TRAFFIC_STATS_POLL,
+                mOwner->mAsyncServiceHandler->ObtainMessage(IWifiManager::TRAFFIC_STATS_POLL,
                     mOwner->mTrafficStatsPollToken, 0, (IMessage**)&m);
 
                 Boolean result;
@@ -375,49 +375,49 @@ ECode CWifiService::AsyncServiceHandler::HandleMessage(
         case IWifiManager::CONNECT_NETWORK: {
             if (DBG) Slogger::D(TAG, "AsyncServiceHandler HandleMessage CONNECT_NETWORK");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
         case IWifiManager::SAVE_NETWORK: {
             if (DBG) Slogger::D(TAG, "HandleMessage SAVE_NETWORK");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
         case IWifiManager::FORGET_NETWORK: {
             if (DBG) Slogger::D(TAG, "HandleMessage FORGET_NETWORK");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
         case IWifiManager::START_WPS: {
             if (DBG) Slogger::D(TAG, "HandleMessage START_WPS");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
         case IWifiManager::CANCEL_WPS: {
             if (DBG) Slogger::D(TAG, "HandleMessage CANCEL_WPS");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
         case IWifiManager::DISABLE_NETWORK: {
             if (DBG) Slogger::D(TAG, "HandleMessage DISABLE_NETWORK");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
         case IWifiManager::RSSI_PKTCNT_FETCH: {
             if (DBG) Slogger::D(TAG, "HandleMessage RSSI_PKTCNT_FETCH");
             AutoPtr<IMessage> m;
-            helper->ObtainEx(msg, (IMessage**)&m);
+            helper->Obtain(msg, (IMessage**)&m);
             mOwner->mWifiStateMachine->SendMessage(m);
             break;
         }
@@ -683,7 +683,7 @@ ECode CWifiService::NotificationEnabledSettingObserver::Register()
     AutoPtr<IContentResolver> cr;
     mOwner->mContext->GetContentResolver((IContentResolver**)&cr);
     AutoPtr<IUri> uri;
-    global->GetUriForEx(ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON,
+    global->GetUriFor(ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON,
         (IUri**)&uri);
 
     cr->RegisterContentObserver(uri, TRUE, this);
@@ -771,7 +771,7 @@ ECode CWifiService::constructor(
 
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    sysProp->GetEx(String("wifi.interface"), String("wlan0"), &mInterfaceName);
+    sysProp->Get(String("wifi.interface"), String("wlan0"), &mInterfaceName);
 
     mWifiStateMachine = new WifiStateMachine(mContext, mInterfaceName);
     mWifiStateMachine->EnableRssiPolling(TRUE);
@@ -896,7 +896,7 @@ Boolean CWifiService::TestAndClearWifiSavedState()
     AutoPtr<ISettingsGlobal> global;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
 
-    global->GetInt32Ex(cr, ISettingsGlobal::WIFI_SAVED_STATE, &wifiSavedState);
+    global->GetInt32(cr, ISettingsGlobal::WIFI_SAVED_STATE, &wifiSavedState);
     if(wifiSavedState == 1) {
         Boolean result;
         global->PutInt32(cr, ISettingsGlobal::WIFI_SAVED_STATE, 0, &result);
@@ -915,7 +915,7 @@ Int32 CWifiService::GetPersistedWifiState()
     AutoPtr<ISettingsGlobal> global;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     Int32 value;
-    ECode ec = global->GetInt32Ex(cr, ISettingsGlobal::WIFI_ON, &value);
+    ECode ec = global->GetInt32(cr, ISettingsGlobal::WIFI_ON, &value);
     if (SUCCEEDED(ec)) {
         return value;
     }
@@ -1940,11 +1940,11 @@ void CWifiService::EvaluateTrafficStatsPolling()
     NetworkInfoDetailedState state;
     mNetworkInfo->GetDetailedState(&state);
     if (state == Elastos::Droid::Net::NetworkInfoState_CONNECTED && !mScreenOff) {
-        mAsyncServiceHandler->ObtainMessageEx2(IWifiManager::ENABLE_TRAFFIC_STATS_POLL,
+        mAsyncServiceHandler->ObtainMessage(IWifiManager::ENABLE_TRAFFIC_STATS_POLL,
             1, 0, (IMessage**)&message);
     }
     else {
-        mAsyncServiceHandler->ObtainMessageEx2(IWifiManager::ENABLE_TRAFFIC_STATS_POLL,
+        mAsyncServiceHandler->ObtainMessage(IWifiManager::ENABLE_TRAFFIC_STATS_POLL,
             0, 0, (IMessage**)&message);
     }
 
@@ -2088,7 +2088,7 @@ void CWifiService::SetNotificationVisible(
             AutoPtr<IUserHandle> current;
             handleHelper->GetCURRENT((IUserHandle**)&current);
             AutoPtr<IPendingIntent> pendingIntent;
-            builder->GetPendingIntentEx2(0, 0, NULL, current, (IPendingIntent**)&pendingIntent);
+            builder->GetPendingIntent(0, 0, NULL, current, (IPendingIntent**)&pendingIntent);
         }
 
         AutoPtr<IResources> res;

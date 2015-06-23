@@ -158,7 +158,7 @@ ECode CStatusBarIconList::GetIcon(
 {
     VALIDATE_NOT_NULL(icon);
     *icon = (*mIcons)[index];
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
     return NOERROR;
 }
 
@@ -209,7 +209,7 @@ ECode CStatusBarIconList::GetSlots(
 {
     VALIDATE_NOT_NULL(slots);
     *slots = mSlots;
-    INTERFACE_ADDREF(*slots);
+    REFCOUNT_ADD(*slots);
     return NOERROR;
 }
 
@@ -218,7 +218,7 @@ ECode CStatusBarIconList::GetIcons(
 {
     VALIDATE_NOT_NULL(icons);
     *icons = mIcons;
-    INTERFACE_ADDREF(*icons);
+    REFCOUNT_ADD(*icons);
     return NOERROR;
 }
 

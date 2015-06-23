@@ -1,5 +1,5 @@
 #include "widget/ListView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/Build.h"
 #include "content/pm/CApplicationInfo.h"
 #include "view/ViewRootImpl.h"
@@ -10,10 +10,10 @@
 #include "widget/CArrayAdapter.h"
 #include "widget/CAbsListViewLayoutParams.h"
 #include "widget/CHeaderViewListAdapter.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::Pm::EIID_IApplicationInfo;
@@ -206,7 +206,7 @@ ECode ListView::Init(
         const_cast<Int32 *>(R::styleable::ListView),
         ARRAY_SIZE(R::styleable::ListView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     AutoPtr<ArrayOf<ICharSequence*> > entries;
     a->GetTextArray(R::styleable::ListView_entries, (ArrayOf<ICharSequence*>**)&entries);
@@ -2039,7 +2039,7 @@ ECode ListView::HandleHorizontalFocusWithinListItem(
                 OffsetDescendantRectToMyCoords(currentFocus, mTempRect);
                 OffsetRectIntoDescendantCoords(nextFocus, mTempRect);
                 Boolean res = FALSE;
-                nextFocus->RequestFocusEx2(direction, mTempRect, &res);
+                nextFocus->RequestFocus(direction, mTempRect, &res);
                 if (res) {
                     *rst = TRUE;
                     return NOERROR;
@@ -2443,12 +2443,12 @@ AutoPtr<ListView::ArrowScrollFocusResult> ListView::ArrowScrollFocused(
         Int32 maxScrollAmount = GetMaxScrollAmount();
         if (focusScroll < maxScrollAmount) {
             Boolean res = FALSE;
-            newFocus->RequestFocusEx(direction, &res);
+            newFocus->RequestFocus(direction, &res);
             mArrowScrollFocusResult->Populate(positionOfNewFocus, focusScroll);
             return mArrowScrollFocusResult;
         } else if (DistanceToView(newFocus) < maxScrollAmount) {
             Boolean res = FALSE;
-            newFocus->RequestFocusEx(direction, &res);
+            newFocus->RequestFocus(direction, &res);
             mArrowScrollFocusResult->Populate(positionOfNewFocus, maxScrollAmount);
             return mArrowScrollFocusResult;
         }
@@ -2691,7 +2691,7 @@ void ListView::DrawOverscrollHeader(
     Int32 saveCabvas = 0;
     Boolean clipCanvas = FALSE;
     canvas->Save(&saveCabvas);
-    canvas->ClipRectEx3(bounds, &clipCanvas);
+    canvas->ClipRect(bounds, &clipCanvas);
 
     AutoPtr<CRect> rect = (CRect*)IRect::Probe(bounds);
     Int32 span = rect->mTop - rect->mBottom;
@@ -2699,7 +2699,7 @@ void ListView::DrawOverscrollHeader(
         rect->mTop = rect->mBottom - height;
     }
 
-    drawable->SetBoundsEx(bounds);
+    drawable->SetBounds(bounds);
     drawable->Draw(canvas);
 
     canvas->Restore();
@@ -2715,7 +2715,7 @@ void ListView::DrawOverscrollFooter(
     Int32 saveCabvas = 0;
     Boolean clipCanvas = FALSE;
     canvas->Save(&saveCabvas);
-    canvas->ClipRectEx3(bounds, &clipCanvas);
+    canvas->ClipRect(bounds, &clipCanvas);
 
     AutoPtr<CRect> rect = (CRect*)IRect::Probe(bounds);
     Int32 span = rect->mBottom - rect->mTop;
@@ -2723,7 +2723,7 @@ void ListView::DrawOverscrollFooter(
         rect->mBottom = rect->mTop + height;
     }
 
-    drawable->SetBoundsEx(bounds);
+    drawable->SetBounds(bounds);
     drawable->Draw(canvas);
 
     canvas->Restore();
@@ -2805,7 +2805,7 @@ void ListView::DispatchDraw(
                         } else if (fillForMissingDividers) {
                             bounds->mTop = bottom;
                             bounds->mBottom = bottom + dividerHeight;
-                            canvas->DrawRectEx(bounds, paint);
+                            canvas->DrawRect(bounds, paint);
                         }
                     }
                 }
@@ -2847,7 +2847,7 @@ void ListView::DispatchDraw(
                         } else if (fillForMissingDividers) {
                             bounds->mTop = top - dividerHeight;
                             bounds->mBottom = top;
-                            canvas->DrawRectEx(bounds, paint);
+                            canvas->DrawRect(bounds, paint);
                         }
                     }
                 }
@@ -2890,7 +2890,7 @@ void ListView::DrawDivider(
     /* [in] */ Int32 childIndex)
 {
     AutoPtr<IDrawable> divider = mDivider;
-    divider->SetBoundsEx(bounds);
+    divider->SetBounds(bounds);
     divider->Draw(canvas);
 }
 

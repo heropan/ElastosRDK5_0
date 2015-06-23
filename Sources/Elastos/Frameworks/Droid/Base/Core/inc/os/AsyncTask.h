@@ -5,13 +5,12 @@
 #include "ext/frameworkext.h"
 #include <elastos/FutureTask.h>
 #include <elastos/Queue.h>
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Deque;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::IThread;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Concurrent::FutureTask;
 using Elastos::Utility::Concurrent::IThreadFactory;
 using Elastos::Utility::Concurrent::IExecutor;
@@ -320,7 +319,7 @@ private:
         CARAPI Get(
             /* [out] */ IInterface** result);
 
-        CARAPI GetEx(
+        CARAPI Get(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit,
             /* [out] */ IInterface** result);

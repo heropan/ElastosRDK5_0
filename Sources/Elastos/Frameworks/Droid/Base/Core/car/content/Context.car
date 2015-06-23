@@ -975,7 +975,7 @@ module
          * @param resId Resource id for the format string
          * @param formatArgs The format arguments that will be used for substitution.
          */
-        GetStringEx(
+        GetString(
             [in] Int32 resId,
             [in] ArrayOf<IInterface*>* formatArgs,
             [out] String* str);
@@ -1023,7 +1023,7 @@ module
          *
          * @see Resources.Theme#obtainStyledAttributes(int, int[])
          */
-        ObtainStyledAttributesEx(
+        ObtainStyledAttributes(
             [in] Int32 resid,
             [in] ArrayOf<Int32>* attrs,
             [out] ITypedArray** styles);
@@ -1035,7 +1035,7 @@ module
          *
          * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
          */
-        ObtainStyledAttributesEx2(
+        ObtainStyledAttributes(
             [in] IAttributeSet* set,
             [in] ArrayOf<Int32>* attrs,
             [out] ITypedArray** styles);
@@ -1047,7 +1047,7 @@ module
          *
          * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
          */
-        ObtainStyledAttributesEx3(
+        ObtainStyledAttributes(
             [in] IAttributeSet* set,
             [in] ArrayOf<Int32>* attrs,
             [in] Int32 defStyleAttr,
@@ -1479,7 +1479,7 @@ module
          * @see #MODE_ENABLE_WRITE_AHEAD_LOGGING
          * @see #deleteDatabase
          */
-        OpenOrCreateDatabaseEx(
+        OpenOrCreateDatabase(
             [in] String name,
             [in] Int32 mode,
             [in] ISQLiteDatabaseCursorFactory* factory,
@@ -1571,7 +1571,7 @@ module
          * <p>This method requires the caller to hold the permission
          * {@sa android.Manifest.permission#SET_WALLPAPER}.
          */
-        SetWallpaperEx(
+        SetWallpaper(
             [in] IInputStream* data);
 
         /**
@@ -1644,7 +1644,7 @@ module
          * @see #startActivity(Intent)
          * @see PackageManager#resolveActivity
          */
-        StartActivityEx(
+        StartActivity(
             [in] IIntent* intent,
             [in] IBundle* options);
 
@@ -1665,7 +1665,7 @@ module
          * ActivityNotFoundException
          * @hide
          */
-        StartActivityAsUserEx(
+        StartActivityAsUser(
             [in] IIntent* intent,
             [in] IBundle* options,
             [in] IUserHandle* userId);
@@ -1714,7 +1714,7 @@ module
          * @see {@sa #startActivities(Intent[])}
          * @see PackageManager#resolveActivity
          */
-        StartActivitiesEx(
+        StartActivities(
             [in] ArrayOf<IIntent*>* intents,
             [in] IBundle* options);
 
@@ -1800,7 +1800,7 @@ module
          * @see #startActivity(Intent, Bundle)
          * @see #startIntentSender(IntentSender, Intent, int, int, int)
          */
-        StartIntentSenderEx(
+        StartIntentSender(
             [in] IIntentSender* intent,
             [in] IIntent* fillInIntent,
             [in] Int32 flagsMask,
@@ -1855,7 +1855,7 @@ module
          * @see #sendOrderedBroadcast(Intent, String)
          * @see #sendOrderedBroadcast(Intent, String, BroadcastReceiver, Handler, int, String, Bundle)
          */
-        SendBroadcastEx(
+        SendBroadcast(
             [in] IIntent* intent,
             [in] String receiverPermission);
 
@@ -1925,7 +1925,7 @@ module
          * @see #registerReceiver
          * @see android.app.Activity#RESULT_OK
          */
-        SendOrderedBroadcastEx(
+        SendOrderedBroadcast(
             [in] IIntent* intent,
             [in] String receiverPermission,
             [in] IBroadcastReceiver* resultReceiver,
@@ -1962,7 +1962,7 @@ module
          *
          * @see #sendBroadcast(Intent, String)
          */
-        SendBroadcastAsUserEx(
+        SendBroadcastAsUser(
             [in] IIntent* intent,
             [in] IUserHandle* user,
             [in] String receiverPermission);
@@ -2248,7 +2248,7 @@ module
          * @see #sendBroadcast
          * @see #unregisterReceiver
          */
-        RegisterReceiverEx(
+        RegisterReceiver(
             [in] IBroadcastReceiver* receiver,
             [in] IIntentFilter* filter,
             [in] String broadcastPermission,
@@ -2463,7 +2463,7 @@ module
          * argument for use by system server and other multi-user aware code.
          * @hide
          */
-        BindServiceEx(
+        BindService(
             [in] IIntent* service,
             [in] IServiceConnection* conn,
             [in] Int32 flags,
@@ -2896,7 +2896,7 @@ module
          * is allowed to access that uri or holds one of the given permissions, or
          * {@sa PackageManager#PERMISSION_DENIED} if it is not.
          */
-        CheckUriPermissionEx(
+        CheckUriPermission(
             [in] IUri* uri,
             [in] String readPermission,
             [in] String writePermission,
@@ -2997,7 +2997,7 @@ module
          *
          * @see #checkUriPermission(Uri, String, String, int, int, int)
          */
-        EnforceUriPermissionEx(
+        EnforceUriPermission(
             [in] IUri* uri,
             [in] String readPermission,
             [in] String writePermission,

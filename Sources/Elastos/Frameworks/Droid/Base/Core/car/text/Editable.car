@@ -44,7 +44,7 @@ module
          * Convenience for replace(st, en, text, 0, text.length())
          * @see #replace(int, int, CharSequence, int, int)
          */
-        ReplaceEx(
+        Replace(
             [in] Int32 st,
             [in] Int32 en,
             [in] ICharSequence* text);
@@ -63,7 +63,7 @@ module
          * Convenience for replace(where, where, text, 0, text.length());
          * @see #replace(int, int, CharSequence, int, int)
          */
-        InsertEx(
+        Insert(
             [in] Int32 where,
             [in] ICharSequence* text);
 
@@ -86,7 +86,7 @@ module
          * Convenience for replace(length(), length(), text, start, end)
          * @see #replace(int, int, CharSequence, int, int)
          */
-        AppendEx(
+        Append(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end);
@@ -95,7 +95,7 @@ module
          * Convenience for append(String.valueOf(text)).
          * @see #replace(int, int, CharSequence, int, int)
          */
-        AppendEx2(
+        Append(
             [in] Char32 text);
 
         //Clear();

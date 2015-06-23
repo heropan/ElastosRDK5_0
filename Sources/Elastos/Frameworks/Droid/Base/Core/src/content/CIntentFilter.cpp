@@ -66,7 +66,7 @@ ECode CIntentFilter::GetActions(
     VALIDATE_NOT_NULL(actions)
     AutoPtr< ArrayOf<String> > acts = IntentFilter::GetActions();
     *actions = acts;
-    INTERFACE_ADDREF(*actions);
+    REFCOUNT_ADD(*actions);
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode CIntentFilter::GetTypes(
     VALIDATE_NOT_NULL(types)
     AutoPtr< ArrayOf<String> > typs = IntentFilter::GetTypes();
     *types = typs;
-    INTERFACE_ADDREF(*types);
+    REFCOUNT_ADD(*types);
     return NOERROR;
 }
 
@@ -150,7 +150,7 @@ ECode CIntentFilter::GetSchemes(
     VALIDATE_NOT_NULL(schemes)
     AutoPtr< ArrayOf<String> > schs = IntentFilter::GetSchemes();
     *schemes = schs;
-    INTERFACE_ADDREF(*schemes);
+    REFCOUNT_ADD(*schemes);
     return NOERROR;
 }
 
@@ -176,7 +176,7 @@ ECode CIntentFilter::GetDataAuthority(
     VALIDATE_NOT_NULL(authority)
     AutoPtr<IIntentFilterAuthorityEntry> tmp = IntentFilter::GetDataAuthority(index);
     *authority = tmp.Get();
-    INTERFACE_ADDREF(*authority)
+    REFCOUNT_ADD(*authority)
     return NOERROR;
 }
 
@@ -195,7 +195,7 @@ ECode CIntentFilter::GetAuthorities(
     VALIDATE_NOT_NULL(authorities)
     AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > auths = IntentFilter::GetAuthorities();
     *authorities = auths;
-    INTERFACE_ADDREF(*authorities)
+    REFCOUNT_ADD(*authorities)
     return NOERROR;
 }
 
@@ -221,7 +221,7 @@ ECode CIntentFilter::GetDataPath(
     VALIDATE_NOT_NULL(path)
     AutoPtr<IPatternMatcher> tmp = IntentFilter::GetDataPath(index);
     *path = tmp;
-    INTERFACE_ADDREF(*path)
+    REFCOUNT_ADD(*path)
     return NOERROR;
 }
 
@@ -240,7 +240,7 @@ ECode CIntentFilter::GetPaths(
     VALIDATE_NOT_NULL(paths)
     AutoPtr< ArrayOf<IPatternMatcher*> > pas = IntentFilter::GetPaths();
     *paths = pas;
-    INTERFACE_ADDREF(*paths)
+    REFCOUNT_ADD(*paths)
     return NOERROR;
 }
 
@@ -302,7 +302,7 @@ ECode CIntentFilter::GetCategories(
     VALIDATE_NOT_NULL(categories)
     AutoPtr< ArrayOf<String> > cats = IntentFilter::GetCategories();
     *categories = cats;
-    INTERFACE_ADDREF(*categories);
+    REFCOUNT_ADD(*categories);
     return NOERROR;
 }
 
@@ -327,7 +327,7 @@ ECode CIntentFilter::Match(
     return NOERROR;
 }
 
-ECode CIntentFilter::MatchEx(
+ECode CIntentFilter::Match(
     /* [in] */ const String& action,
     /* [in] */ const String& type,
     /* [in] */ const String& scheme,

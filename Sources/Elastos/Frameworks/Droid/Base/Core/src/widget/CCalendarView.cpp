@@ -147,7 +147,7 @@ ECode CCalendarView::SetSelectedDateVerticalBar(
     return CalendarView::SetSelectedDateVerticalBar(resourceId);
 }
 
-ECode CCalendarView::SetSelectedDateVerticalBarEx(
+ECode CCalendarView::SetSelectedDateVerticalBar(
     /* [in] */ IDrawable* drawable)
 {
     return CalendarView::SetSelectedDateVerticalBar(drawable);
@@ -259,7 +259,7 @@ ECode CCalendarView::SetDate(
     return CalendarView::SetDate(date);
 }
 
-ECode CCalendarView::SetDateEx(
+ECode CCalendarView::SetDate(
     /* [in] */ Int64 date,
     /* [in] */ Boolean animate,
     /* [in] */ Boolean center)

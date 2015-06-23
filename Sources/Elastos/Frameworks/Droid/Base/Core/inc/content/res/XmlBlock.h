@@ -3,9 +3,8 @@
 #define __XMLBLOCK_H__
 
 #include "content/res/StringBlock.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -66,7 +65,7 @@ public:
         CARAPI SetInput(
             /* [in]*/ IReader* reader);
 
-        CARAPI SetInputEx(
+        CARAPI SetInput(
             /* [in] */ IInputStream* pInputStream,
             /* [in] */ const String& inputEncoding);
 
@@ -121,7 +120,7 @@ public:
             /* [out] */ ArrayOf<Int32>* holderForStartAndLength,
             /* [out, callee] */ ArrayOf<Char32>** textChars);
 
-        CARAPI GetNamespaceEx(
+        CARAPI GetNamespace(
             /* [out] */ String* ns);
 
         CARAPI GetName(
@@ -163,7 +162,7 @@ public:
         CARAPI NextToken(
             /* [out] */ Int32* token);
 
-        CARAPI GetAttributeValueEx(
+        CARAPI GetAttributeValue(
             /* [in] */ const String& ns,
             /* [in] */ const String& name,
             /* [out] */ String* attrValue);
@@ -223,33 +222,33 @@ public:
             /* [in] */ Float defaultValue,
             /* [out] */ Float* value);
 
-        CARAPI GetAttributeListValueEx(
+        CARAPI GetAttributeListValue(
             /* [in] */ Int32 idx,
             /* [in] */ const ArrayOf<String>& options,
             /* [in] */ Int32 defaultValue,
             /* [out] */ Int32* value);
 
-        CARAPI GetAttributeBooleanValueEx(
+        CARAPI GetAttributeBooleanValue(
             /* [in] */ Int32 idx,
             /* [in] */ Boolean defaultValue,
             /* [out] */ Boolean* value);
 
-        CARAPI GetAttributeResourceValueEx(
+        CARAPI GetAttributeResourceValue(
             /* [in] */ Int32 idx,
             /* [in] */ Int32 defaultValue,
             /* [out] */ Int32* value);
 
-        CARAPI GetAttributeIntValueEx(
+        CARAPI GetAttributeIntValue(
             /* [in] */ Int32 idx,
             /* [in] */ Int32 defaultValue,
             /* [out] */ Int32* value);
 
-        CARAPI GetAttributeUnsignedIntValueEx(
+        CARAPI GetAttributeUnsignedIntValue(
             /* [in] */ Int32 idx,
             /* [in] */ Int32 defaultValue,
             /* [out] */ Int32* value);
 
-        CARAPI GetAttributeFloatValueEx(
+        CARAPI GetAttributeFloatValue(
             /* [in] */ Int32 idx,
             /* [in] */ Float defaultValue,
             /* [out] */ Float* value);

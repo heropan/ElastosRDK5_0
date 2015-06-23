@@ -46,7 +46,7 @@ ECode CActivityManagerHelper::GetMyMemoryState(
     VALIDATE_NOT_NULL(outState);
     AutoPtr<IActivityManagerRunningAppProcessInfo> info = CActivityManager::GetMyMemoryState();
     *outState = info.Get();
-    INTERFACE_ADDREF(*outState)
+    REFCOUNT_ADD(*outState)
     return NOERROR;
 }
 

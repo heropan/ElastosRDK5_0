@@ -53,7 +53,7 @@ ECode CStringPartHelper::GetLengthOfParts(
     return CStringPart::GetLengthOfParts(parts, length);
 }
 
-ECode CStringPartHelper::GetLengthOfPartsEx(
+ECode CStringPartHelper::GetLengthOfParts(
     /* [in] */ ArrayOf<IPart *>* iparts,
     /* [in] */ ArrayOf<Byte>* partBoundary,
     /* [out] */ Int64* length)

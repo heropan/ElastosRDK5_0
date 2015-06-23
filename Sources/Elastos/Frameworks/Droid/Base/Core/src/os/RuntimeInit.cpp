@@ -2,7 +2,7 @@
 #include "ext/frameworkdef.h"
 #include "os/RuntimeInit.h"
 #include "os/CZygoteInit.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <DroidRuntime.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -96,7 +96,7 @@ ECode RuntimeInit::InvokeStaticMain(
     }
 
     *task = new CZygoteInit::MethodAndArgsCaller(object, methodInfo, argv);
-    INTERFACE_ADDREF(*task);
+    REFCOUNT_ADD(*task);
     return NOERROR;
 }
 

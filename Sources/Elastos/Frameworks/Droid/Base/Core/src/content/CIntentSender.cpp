@@ -1,6 +1,6 @@
 
 #include "content/CIntentSender.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "app/ActivityManagerNative.h"
 #include "os/UserHandle.h"
 #include "os/CUserHandle.h"
@@ -153,10 +153,10 @@ ECode CIntentSender::SendIntent(
     /* [in] */ IIntentSenderOnFinished* onFinished,
     /* [in] */ IHandler* handler)
 {
-    return SendIntentEx(context, code, intent, onFinished, handler, String(NULL));
+    return SendIntent(context, code, intent, onFinished, handler, String(NULL));
 }
 
-ECode CIntentSender::SendIntentEx(
+ECode CIntentSender::SendIntent(
     /* [in] */ IContext* context,
     /* [in] */ Int32 code,
     /* [in] */ IIntent* intent,
@@ -230,7 +230,7 @@ ECode CIntentSender::GetCreatorUserHandle(
     }
 
     *userHandle = handle;
-    INTERFACE_ADDREF(*userHandle);
+    REFCOUNT_ADD(*userHandle);
     return NOERROR;
 }
 
@@ -278,7 +278,7 @@ ECode CIntentSender::GetTarget(
 {
     VALIDATE_NOT_NULL(intentSender)
     *intentSender = mTarget;
-    INTERFACE_ADDREF(*intentSender);
+    REFCOUNT_ADD(*intentSender);
     return NOERROR;
 }
 

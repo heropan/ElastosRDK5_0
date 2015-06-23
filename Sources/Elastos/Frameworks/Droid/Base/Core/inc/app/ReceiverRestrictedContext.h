@@ -29,7 +29,7 @@ public:
         /* [in] */ IIntentFilter* filter,
         /* [out] */ IIntent** intent);
 
-    CARAPI RegisterReceiverEx(
+    CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
         /* [in] */ IIntentFilter* filter,
         /* [in] */ const String& broadcastPermission,

@@ -31,7 +31,7 @@ ECode CStorageVolumeHelper::FromTemplate(
             allowMassStorage, maxFileSize, owner, (IStorageVolume**)&result);
 
     *volume = result;
-    INTERFACE_ADDREF(*volume);
+    REFCOUNT_ADD(*volume);
     return NOERROR;
 }
 

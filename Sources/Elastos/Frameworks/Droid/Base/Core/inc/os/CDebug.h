@@ -29,7 +29,7 @@ public:
      * as the caller.
      * @hide
      */
-    CARAPI GetMemoryInfoEx(
+    CARAPI GetMemoryInfo(
         /* [in] */ Int32 pid,
         /* [in] */ IDebugMemoryInfo* memoryInfo);
 
@@ -44,7 +44,7 @@ public:
      * Retrieves the PSS memory used by the process as given by the
      * smaps. @hide
      */
-    CARAPI GetPssEx(
+    CARAPI GetPss(
         /* [in] */ Int32 pid,
         /* [out] */ Int64* pss);
 

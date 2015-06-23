@@ -19,7 +19,7 @@ ECode CSyncStorageEngineHelper::GetEVENTS(
     (*tmpArray)[0] = String("START");
     (*tmpArray)[1] = String("STOP");
     *events = tmpArray;
-    INTERFACE_ADDREF(*events);
+    REFCOUNT_ADD(*events);
     return NOERROR;
 }
 
@@ -41,7 +41,7 @@ ECode CSyncStorageEngineHelper::GetSOURCES(
     (*tmpArray)[3] = String("USER");
     (*tmpArray)[4] = String("PERIODIC");
     *sources = tmpArray;
-    INTERFACE_ADDREF(*sources);
+    REFCOUNT_ADD(*sources);
     return NOERROR;
 }
 
@@ -79,7 +79,7 @@ ECode CSyncStorageEngineHelper::GetSingleton(
     }
 
     *syncStoregeEngine = (ISyncStorageEngine*) CSyncStorageEngine::sSyncStorageEngine;
-    INTERFACE_ADDREF(*syncStoregeEngine);
+    REFCOUNT_ADD(*syncStoregeEngine);
     return NOERROR;
 }
 

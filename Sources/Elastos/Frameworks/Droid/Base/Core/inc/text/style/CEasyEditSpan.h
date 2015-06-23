@@ -4,7 +4,7 @@
 
 #include "_CEasyEditSpan.h"
 #include "text/style/EasyEditSpan.h"
-#include "text/ParcelableSpanMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

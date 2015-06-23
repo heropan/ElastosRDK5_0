@@ -104,7 +104,7 @@ ECode CStrictModeVmPolicyBuilder::Build(
     AutoPtr<IStrictModeVmPolicy> vp = new CStrictMode::VmPolicy(mMask,
             !mClassInstanceLimit.IsEmpty() ? mClassInstanceLimit : CStrictMode::EMPTY_CLASS_LIMIT_MAP);
     *policy = vp;
-    INTERFACE_ADDREF(*policy);
+    REFCOUNT_ADD(*policy);
     return NOERROR;
 }
 

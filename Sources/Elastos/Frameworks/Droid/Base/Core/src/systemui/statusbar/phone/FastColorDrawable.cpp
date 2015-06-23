@@ -29,7 +29,7 @@ ECode FastColorDrawable::Init(
 ECode FastColorDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    return canvas->DrawColorEx(mColor, Elastos::Droid::Graphics::PorterDuffMode_SRC);
+    return canvas->DrawColor(mColor, Elastos::Droid::Graphics::PorterDuffMode_SRC);
 }
 
 ECode FastColorDrawable::SetAlpha(

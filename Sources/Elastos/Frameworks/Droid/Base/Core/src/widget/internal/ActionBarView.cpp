@@ -7,11 +7,11 @@
 #include "widget/CSpinner.h"
 #include "widget/CLinearLayout.h"
 #include "widget/CFrameLayoutLayoutParams.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "text/TextUtils.h"
 #include "app/CActionBarLayoutParams.h"
 #include "view/menu/CActionMenuPresenter.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Math;
 using Elastos::Droid::App::IActivity;
@@ -69,7 +69,7 @@ ECode ActionBarView::Init(
             const_cast<Int32 *>(R::styleable::ActionBar),
             ARRAY_SIZE(R::styleable::ActionBar));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds,
+    context->ObtainStyledAttributes(attrs, attrIds,
         R::attr::actionBarStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<IApplicationInfo> appInfo;
@@ -124,13 +124,13 @@ ECode ActionBarView::Init(
     a->GetResourceId(R::styleable::ActionBar_homeLayout, R::layout::action_bar_home, &homeResId);
 
     AutoPtr<IView> upView;
-    inflater->InflateEx2(R::layout::action_bar_up_container, THIS_PROBE(IViewGroup), FALSE, (IView**)&upView);
+    inflater->Inflate(R::layout::action_bar_up_container, THIS_PROBE(IViewGroup), FALSE, (IView**)&upView);
     mUpGoerFive = IViewGroup::Probe(upView);
     AutoPtr<IView> homev;
-    inflater->InflateEx2(homeResId, mUpGoerFive, FALSE, (IView**)&homev);
+    inflater->Inflate(homeResId, mUpGoerFive, FALSE, (IView**)&homev);
     mHomeLayout = IActionBarViewHomeView::Probe(homev);
     AutoPtr<IView> expv;
-    inflater->InflateEx2(homeResId, mUpGoerFive, FALSE, (IView**)&expv);
+    inflater->Inflate(homeResId, mUpGoerFive, FALSE, (IView**)&expv);
     mExpandedHomeLayout = IActionBarViewHomeView::Probe(expv);
     mExpandedHomeLayout->SetUp(TRUE);
     mExpandedHomeLayout->SetOnClickListener(mExpandedActionViewUpListener);
@@ -164,12 +164,12 @@ ECode ActionBarView::Init(
     Int32 customNavId = 0;
     a->GetResourceId(R::styleable::ActionBar_customNavigationLayout, 0, &customNavId);
     if (customNavId != 0) {
-        inflater->InflateEx2(customNavId, THIS_PROBE(IViewGroup), FALSE, (IView**)&mCustomNavView);
+        inflater->Inflate(customNavId, THIS_PROBE(IViewGroup), FALSE, (IView**)&mCustomNavView);
         mNavigationMode = IActionBar::NAVIGATION_MODE_STANDARD;
         SetDisplayOptions(mDisplayOptions | IActionBar::DISPLAY_SHOW_CUSTOM);
     }
 
-    a->GetLayoutDimensionEx(R::styleable::ActionBar_height, 0, &mContentHeight);
+    a->GetLayoutDimension(R::styleable::ActionBar_height, 0, &mContentHeight);
 
     a->Recycle();
 
@@ -429,7 +429,7 @@ ECode ActionBarView::SetMenu(
                 mg->RemoveView(menuView);
             }
             menuView->SetVisibility(GetAnimatedVisibility());
-            mSplitView->AddViewEx3(menuView, layoutParams);
+            mSplitView->AddView(menuView, layoutParams);
         } else {
             // We'll add this later if we missed it this time.
             menuView->SetLayoutParams(layoutParams);
@@ -689,7 +689,7 @@ ECode ActionBarView::SetIcon(
         AutoPtr<IDrawableConstantState> state;
         mIcon->GetConstantState((IDrawableConstantState**)&state);
         AutoPtr<IDrawable> drawable;
-        state->NewDrawableEx(GetResources(), (IDrawable**)&drawable);
+        state->NewDrawable(GetResources(), (IDrawable**)&drawable);
         mExpandedHomeLayout->SetIcon(drawable);
     }
     return NOERROR;
@@ -756,7 +756,7 @@ ECode ActionBarView::SetNavigationMode(
                 CLinearLayoutLayoutParams::New(
                         IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::MATCH_PARENT, (ILinearLayoutLayoutParams**)&params);
                 params->SetGravity(IGravity::CENTER);
-                mListNavLayout->AddViewEx3(mSpinner, params);
+                mListNavLayout->AddView(mSpinner, params);
             }
 
             AutoPtr<ISpinnerAdapter> spinnerAdapter;
@@ -833,7 +833,7 @@ AutoPtr<IViewGroupLayoutParams> ActionBarView::GenerateDefaultLayoutParams()
 ECode ActionBarView::OnFinishInflate()
 {
     AbsActionBarView::OnFinishInflate();
-    mUpGoerFive->AddViewEx(mHomeLayout, 0);
+    mUpGoerFive->AddView(mHomeLayout, 0);
     AddView(mUpGoerFive);
 
     if (mCustomNavView && (mDisplayOptions & IActionBar::DISPLAY_SHOW_CUSTOM) != 0) {
@@ -857,7 +857,7 @@ void ActionBarView::InitTitle()
         AutoPtr<ILayoutInflater> inflater;
         LayoutInflater::From(GetContext(), (ILayoutInflater**)&inflater);
         AutoPtr<IView> v;
-        inflater->InflateEx2(R::layout::action_bar_title_item,
+        inflater->Inflate(R::layout::action_bar_title_item,
                 THIS_PROBE(IViewGroup), FALSE, (IView**)&v);
         mTitleLayout = ILinearLayout::Probe(v);
         AutoPtr<IView> title;
@@ -1612,7 +1612,7 @@ ECode ActionBarView::ExpandedActionViewMenuPresenter::ExpandItemActionView(
     AutoPtr<IDrawableConstantState> state;
     mHost->mIcon->GetConstantState((IDrawableConstantState**)&state);
     AutoPtr<IDrawable> d;
-    state->NewDrawableEx(mHost->GetResources(), (IDrawable**)&d);
+    state->NewDrawable(mHost->GetResources(), (IDrawable**)&d);
     mHost->mExpandedHomeLayout->SetIcon(d);
     mCurrentExpandedItem = item;
     AutoPtr<IViewParent> eavParent;

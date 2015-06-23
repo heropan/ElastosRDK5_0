@@ -1,6 +1,6 @@
 #include "ChatManager.h"
 #include "CActivityOne.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::EIID_IRunnable;
@@ -86,7 +86,7 @@ ECode ChatManager::Run()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx4(mHandler, CActivityOne::MY_HANDLE, this->Probe(EIID_IInterface),
+    helper->Obtain(mHandler, CActivityOne::MY_HANDLE, this->Probe(EIID_IInterface),
         (IMessage**)&msg);
     msg->SendToTarget();
 
@@ -109,7 +109,7 @@ ECode ChatManager::Run()
             CStringWrapper::New(content, (ICharSequence**)&seq);
 
             AutoPtr<IMessage> readMsg;
-            helper->ObtainEx4(mHandler, CActivityOne::MESSAGE_READ, seq, (IMessage**)&readMsg);
+            helper->Obtain(mHandler, CActivityOne::MESSAGE_READ, seq, (IMessage**)&readMsg);
             readMsg->SendToTarget();
         // } catch (IOException e) {
         //     Log.e(TAG, "disconnected", e);

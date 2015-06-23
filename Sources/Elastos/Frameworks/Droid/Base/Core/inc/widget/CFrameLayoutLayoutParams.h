@@ -3,7 +3,7 @@
 
 #include "_CFrameLayoutLayoutParams.h"
 #include "widget/FrameLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

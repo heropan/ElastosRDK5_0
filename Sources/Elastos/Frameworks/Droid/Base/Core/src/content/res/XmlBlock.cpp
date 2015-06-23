@@ -3,11 +3,11 @@
 #include "content/res/CAssetManager.h"
 #include "util/CTypedValue.h"
 #include "util/XmlUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Character.h>
 #include <androidfw/ResourceTypes.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
@@ -148,7 +148,7 @@ ECode XmlBlock::Parser::SetInput(
     return E_XML_PULL_PARSER_EXCEPTION;
 }
 
-ECode XmlBlock::Parser::SetInputEx(
+ECode XmlBlock::Parser::SetInput(
     /* [in] */ IInputStream * inputStream,
     /* [in] */ const String& inputEncoding)
 {
@@ -293,11 +293,11 @@ ECode XmlBlock::Parser::GetTextCharacters(
         chars = txt.GetChars();
     }
     *textChars = chars;
-    INTERFACE_ADDREF(*textChars);
+    REFCOUNT_ADD(*textChars);
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetNamespaceEx(
+ECode XmlBlock::Parser::GetNamespace(
     /* [out] */ String* ns)
 {
     VALIDATE_NOT_NULL(ns);
@@ -449,7 +449,7 @@ ECode XmlBlock::Parser::NextToken(
     return Next(token);
 }
 
-ECode XmlBlock::Parser::GetAttributeValueEx(
+ECode XmlBlock::Parser::GetAttributeValue(
     /* [in] */ const String& ns,
     /* [in] */ const String& name,
     /* [out] */ String* attrValue)
@@ -517,7 +517,7 @@ ECode XmlBlock::Parser::Require(
     Int32 t;
     String n1, n2;
     if ((GetEventType(&t), type != t)
-        || (!ns.IsNull() && (GetNamespaceEx(&n1), !ns.Equals(n1)))
+        || (!ns.IsNull() && (GetNamespace(&n1), !ns.Equals(n1)))
         || (!name.IsNull() && (GetName(&n2), !name.Equals(n2)))) {
         String des;
         GetPositionDescription(&des);
@@ -611,7 +611,7 @@ ECode XmlBlock::Parser::GetAttributeListValue(
 
     Int32 idx = mHost->NativeGetAttributeIndex(mParseState, ns, attribute);
     if (idx >= 0) {
-        return GetAttributeListValueEx(idx, options, defaultValue, value);
+        return GetAttributeListValue(idx, options, defaultValue, value);
     }
     *value = defaultValue;
     return NOERROR;
@@ -627,7 +627,7 @@ ECode XmlBlock::Parser::GetAttributeBooleanValue(
 
     Int32 idx = mHost->NativeGetAttributeIndex(mParseState, ns, attribute);
     if (idx >= 0) {
-        return GetAttributeBooleanValueEx(idx, defaultValue, value);
+        return GetAttributeBooleanValue(idx, defaultValue, value);
     }
     *value = defaultValue;
     return NOERROR;
@@ -643,7 +643,7 @@ ECode XmlBlock::Parser::GetAttributeResourceValue(
 
     Int32 idx = mHost->NativeGetAttributeIndex(mParseState, ns, attribute);
     if (idx >= 0) {
-        return GetAttributeResourceValueEx(idx, defaultValue, value);
+        return GetAttributeResourceValue(idx, defaultValue, value);
     }
     *value = defaultValue;
     return NOERROR;
@@ -659,7 +659,7 @@ ECode XmlBlock::Parser::GetAttributeIntValue(
 
     Int32 idx = mHost->NativeGetAttributeIndex(mParseState, ns, attribute);
     if (idx >= 0) {
-        return GetAttributeIntValueEx(idx, defaultValue, value);
+        return GetAttributeIntValue(idx, defaultValue, value);
     }
     *value = defaultValue;
     return NOERROR;
@@ -675,7 +675,7 @@ ECode XmlBlock::Parser::GetAttributeUnsignedIntValue(
 
     Int32 idx = mHost->NativeGetAttributeIndex(mParseState, ns, attribute);
     if (idx >= 0) {
-        return GetAttributeUnsignedIntValueEx(idx, defaultValue, value);
+        return GetAttributeUnsignedIntValue(idx, defaultValue, value);
     }
     *value = defaultValue;
     return NOERROR;
@@ -691,13 +691,13 @@ ECode XmlBlock::Parser::GetAttributeFloatValue(
 
     Int32 idx = mHost->NativeGetAttributeIndex(mParseState, ns, attribute);
     if (idx >= 0) {
-        return GetAttributeFloatValueEx(idx, defaultValue, value);
+        return GetAttributeFloatValue(idx, defaultValue, value);
     }
     *value = defaultValue;
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetAttributeListValueEx(
+ECode XmlBlock::Parser::GetAttributeListValue(
     /* [in] */ Int32 idx,
     /* [in] */ const ArrayOf<String>& options,
     /* [in] */ Int32 defaultValue,
@@ -716,7 +716,7 @@ ECode XmlBlock::Parser::GetAttributeListValueEx(
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetAttributeBooleanValueEx(
+ECode XmlBlock::Parser::GetAttributeBooleanValue(
     /* [in] */ Int32 idx,
     /* [in] */ Boolean defaultValue,
     /* [out] */ Boolean* value)
@@ -735,7 +735,7 @@ ECode XmlBlock::Parser::GetAttributeBooleanValueEx(
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetAttributeResourceValueEx(
+ECode XmlBlock::Parser::GetAttributeResourceValue(
     /* [in] */ Int32 idx,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
@@ -753,7 +753,7 @@ ECode XmlBlock::Parser::GetAttributeResourceValueEx(
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetAttributeIntValueEx(
+ECode XmlBlock::Parser::GetAttributeIntValue(
     /* [in] */ Int32 idx,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
@@ -772,7 +772,7 @@ ECode XmlBlock::Parser::GetAttributeIntValueEx(
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetAttributeUnsignedIntValueEx(
+ECode XmlBlock::Parser::GetAttributeUnsignedIntValue(
     /* [in] */ Int32 idx,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
@@ -791,7 +791,7 @@ ECode XmlBlock::Parser::GetAttributeUnsignedIntValueEx(
     return NOERROR;
 }
 
-ECode XmlBlock::Parser::GetAttributeFloatValueEx(
+ECode XmlBlock::Parser::GetAttributeFloatValue(
     /* [in] */ Int32 idx,
     /* [in] */ Float defaultValue,
     /* [out] */ Float* value)
@@ -876,7 +876,7 @@ ECode XmlBlock::Parser::GetPooledString(
     VALIDATE_NOT_NULL(csq);
     AutoPtr<ICharSequence> temp = mHost->mStrings->Get(id);
     *csq = temp;
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 

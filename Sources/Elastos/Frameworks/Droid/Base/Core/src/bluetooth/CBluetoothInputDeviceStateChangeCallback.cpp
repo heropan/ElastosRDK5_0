@@ -1,7 +1,7 @@
 
 #include "CBluetoothInputDeviceStateChangeCallback.h"
 #include "content/CIntent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;

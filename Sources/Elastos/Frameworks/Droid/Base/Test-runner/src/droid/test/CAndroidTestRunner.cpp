@@ -1,7 +1,7 @@
 
 #include "droid/test/CAndroidTestRunner.h"
 #include "droid/test/TestCaseUtil.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
@@ -335,10 +335,10 @@ ECode CAndroidTestRunner::GetTestResult(
 
 ECode CAndroidTestRunner::RunTest()
 {
-    return RunTestEx(CreateTestResult());
+    return RunTest(CreateTestResult());
 }
 
-ECode CAndroidTestRunner::RunTestEx(
+ECode CAndroidTestRunner::RunTest(
     /* [in] */ ITestResult* testResult)
 {
     mTestResult = testResult;

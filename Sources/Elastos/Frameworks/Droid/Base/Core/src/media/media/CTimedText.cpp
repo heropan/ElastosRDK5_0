@@ -1,8 +1,8 @@
 
 #include "media/CTimedText.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "graphics/CRect.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CInteger32;
@@ -121,7 +121,7 @@ ECode CTimedText::GetBounds(
     VALIDATE_NOT_NULL(result);
 
     *result = mTextBounds;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

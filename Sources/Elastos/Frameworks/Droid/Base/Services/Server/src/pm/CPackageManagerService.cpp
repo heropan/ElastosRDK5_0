@@ -18,12 +18,12 @@
 #include "util/XmlUtils.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
-#include <Elastos.Core.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Droid::Content::Pm::CVerificationParams;
 using Elastos::Core::EIID_IRunnable;
@@ -334,7 +334,7 @@ ECode CPackageManagerService::DefaultContainerConnection::OnServiceConnected(
     assert(imcs != NULL);
 
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx(CPackageManagerService::MCS_BOUND, imcs, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(CPackageManagerService::MCS_BOUND, imcs, (IMessage**)&msg);
     Boolean result;
     return mHost->mHandler->SendMessage(msg, &result);
 }
@@ -3800,7 +3800,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
         parser->GetName(&name);
         if (CString("group").Equals(name)) {
             String gidStr;
-            parser->GetAttributeValueEx(String(NULL), String("gid"), &gidStr);
+            parser->GetAttributeValue(String(NULL), String("gid"), &gidStr);
             if (!gidStr.IsNull()) {
                 Int32 gid = StringUtils::ParseInt32(gidStr);
                 mGlobalGids = AppendInt(mGlobalGids.Get(), gid);
@@ -3815,7 +3815,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
         }
         else if (CString("permission").Equals(name)) {
             String perm;
-            parser->GetAttributeValueEx(String(NULL), String("name"), &perm);
+            parser->GetAttributeValue(String(NULL), String("name"), &perm);
             if (perm.IsNull()) {
                 // Slog.w(TAG, "<permission> without name at "
                 //         + parser.getPositionDescription());
@@ -3826,7 +3826,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
         }
         else if (CString("assign-permission").Equals(name)) {
             String perm;
-            parser->GetAttributeValueEx(String(NULL), String("name"), &perm);
+            parser->GetAttributeValue(String(NULL), String("name"), &perm);
             if (perm.IsNull()) {
                 String parserPosition;
                 parser->GetPositionDescription(&parserPosition);
@@ -3835,7 +3835,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
                 continue;
             }
             String uidStr;
-            parser->GetAttributeValueEx(String(NULL), String("uid"), &uidStr);
+            parser->GetAttributeValue(String(NULL), String("uid"), &uidStr);
             if (uidStr.IsNull()) {
                 String parserPosition;
                 parser->GetPositionDescription(&parserPosition);
@@ -3863,8 +3863,8 @@ void CPackageManagerService::ReadPermissionsFromXml(
         }
         else if (CString("library").Equals(name)) {
             String lname, lfile;
-            parser->GetAttributeValueEx(String(NULL), String("name"), &lname);
-            parser->GetAttributeValueEx(String(NULL), String("file"), &lfile);
+            parser->GetAttributeValue(String(NULL), String("name"), &lname);
+            parser->GetAttributeValue(String(NULL), String("file"), &lfile);
             if (lname.IsNull()) {
                 // Slog.w(TAG, "<library> without name at "
                 //         + parser.getPositionDescription());
@@ -3882,7 +3882,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
         }
         else if (CString("feature").Equals(name)) {
             String fname;
-            parser->GetAttributeValueEx(String(NULL), String("name"), &fname);
+            parser->GetAttributeValue(String(NULL), String("name"), &fname);
             if (fname.IsNull()) {
                 // Slog.w(TAG, "<feature> without name at "
                 //         + parser.getPositionDescription());
@@ -3941,7 +3941,7 @@ void CPackageManagerService::ReadPermission(
         parser->GetName(&tagName);
         if (CString("group").Equals(tagName)) {
             String gidStr;
-            parser->GetAttributeValueEx(String(NULL), String("gid"), &gidStr);
+            parser->GetAttributeValue(String(NULL), String("gid"), &gidStr);
             if (!gidStr.IsNull()) {
                 Int32 gid = Process::GetGidForName(gidStr);
                 bp->mGids = AppendInt(bp->mGids, gid);
@@ -7137,7 +7137,7 @@ ECode CPackageManagerService::PerformBootDexOpt()
                 CInteger32::New(pkgs.GetSize(), (IInteger32**)&arg2);
                 intArray->Set(0, arg1);
                 intArray->Set(1, arg2);
-                resources->GetStringEx(R::string::android_upgrading_apk,
+                resources->GetString(R::string::android_upgrading_apk,
                                    intArray, &value);
                 AutoPtr<ICharSequence> cs;
                 CStringWrapper::New(value, (ICharSequence**)&cs);
@@ -9064,7 +9064,7 @@ void CPackageManagerService::SendPackageBroadcast(
             AutoPtr<IIntent> intent;
             CIntent::New(action, uri, (IIntent**)&intent);
             if (extras != NULL) {
-                intent->PutExtrasEx(extras);
+                intent->PutExtras(extras);
             }
             if (!targetPkg.IsNull()) {
                 intent->SetPackage(targetPkg);
@@ -9167,7 +9167,7 @@ void CPackageManagerService::SchedulePackageCleaning(
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(packageName, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx3(START_CLEANING_PACKAGE,
+    mHandler->ObtainMessage(START_CLEANING_PACKAGE,
         userId, andCode ? 1 : 0, seq, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -9424,7 +9424,7 @@ ECode CPackageManagerService::BroadcastPackageVerified(
     intent->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_ID, verificationId);
     intent->PutInt32Extra(IPackageManager::EXTRA_VERIFICATION_RESULT, verificationCode);
 
-    mContext->SendBroadcastAsUserEx(intent, user,
+    mContext->SendBroadcastAsUser(intent, user,
             Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT);
     return NOERROR;
 }
@@ -10669,7 +10669,7 @@ void CPackageManagerService::DeleteTempPackageFilesInDirectory(
     /* [in] */ IFilenameFilter* filter)
 {
     AutoPtr<ArrayOf<String> > tmpFilesList;
-    directory->ListEx(filter, (ArrayOf<String>**)&tmpFilesList);
+    directory->List(filter, (ArrayOf<String>**)&tmpFilesList);
     if (tmpFilesList == NULL) {
         return;
     }
@@ -10687,7 +10687,7 @@ AutoPtr<IFile> CPackageManagerService::CreateTempPackageFile(
     AutoPtr<IFileHelper> fh;
     CFileHelper::AcquireSingleton((IFileHelper**)&fh);
     AutoPtr<IFile> tmpPackageFile;
-    if (FAILED(fh->CreateTempFileEx(String("vmdl"), String(".tmp"), installDir, (IFile**)&tmpPackageFile))) {
+    if (FAILED(fh->CreateTempFile(String("vmdl"), String(".tmp"), installDir, (IFile**)&tmpPackageFile))) {
         Slogger::E(TAG, "Couldn't create temp file for downloaded package file.");
         return NULL;
     }
@@ -11106,7 +11106,7 @@ void CPackageManagerService::ClearExternalStorageDataSync(
     AutoPtr<ClearStorageConnection> conn = new ClearStorageConnection();
 
     Boolean res = FALSE;
-    mContext->BindServiceEx(containerIntent, conn,
+    mContext->BindService(containerIntent, conn,
         IContext::BIND_AUTO_CREATE, IUserHandle::USER_OWNER, &res);
     if (res) {
         // try {
@@ -13064,7 +13064,7 @@ Boolean CPackageManagerService::ConnectToService()
     service->SetComponent(DEFAULT_CONTAINER_COMPONENT);
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_DEFAULT);
     Boolean res;
-    mContext->BindServiceEx(service, mDefContainerConn,
+    mContext->BindService(service, mDefContainerConn,
         IContext::BIND_AUTO_CREATE, IUserHandle::USER_OWNER, &res);
     if (res) {
         Process::SetThreadPriority(IProcess::THREAD_PRIORITY_BACKGROUND);

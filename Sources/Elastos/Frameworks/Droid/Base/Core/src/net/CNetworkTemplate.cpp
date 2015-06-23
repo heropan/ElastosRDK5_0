@@ -6,8 +6,8 @@
 #include "net/CNetworkIdentity.h"
 #include "telephony/CTelephonyManagerHelper.h"
 #include "util/ArrayUtils.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
@@ -60,7 +60,7 @@ ECode CNetworkTemplate::BuildTemplateMobileAll(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_ALL, subscriberId, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -77,7 +77,7 @@ ECode CNetworkTemplate::BuildTemplateMobile3gLower(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_3G_LOWER, subscriberId, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -94,7 +94,7 @@ ECode CNetworkTemplate::BuildTemplateMobile4g(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_4G, subscriberId, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -109,7 +109,7 @@ ECode CNetworkTemplate::BuildTemplateMobileWildcard(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_MOBILE_WILDCARD, str, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -124,7 +124,7 @@ ECode CNetworkTemplate::BuildTemplateWifiWildcard(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_WIFI_WILDCARD, str, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -139,7 +139,7 @@ ECode CNetworkTemplate::BuildTemplateWifi(
  * Template to match {@link ConnectivityManager#TYPE_WIFI} networks with the
  * given SSID.
  */
-ECode CNetworkTemplate::BuildTemplateWifiEx(
+ECode CNetworkTemplate::BuildTemplateWifi(
     /* [in] */ const String& networkId,
     /* [out] */ INetworkTemplate** result)
 {
@@ -147,7 +147,7 @@ ECode CNetworkTemplate::BuildTemplateWifiEx(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_WIFI, str, networkId, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -162,7 +162,7 @@ ECode CNetworkTemplate::BuildTemplateEthernet(
     AutoPtr<INetworkTemplate> networktemplate;
     CNetworkTemplate::New(MATCH_ETHERNET, str, str, (INetworkTemplate**)&networktemplate);
     *result = networktemplate;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -204,7 +204,7 @@ ECode CNetworkTemplate::GetHashCode(
 }
 
 //@Override
-ECode CNetworkTemplate::EqualsEx(
+ECode CNetworkTemplate::Equals(
     /* [in] */ INetworkTemplate* obj,
     /* [out] */ Boolean* result)
 {
@@ -232,7 +232,7 @@ ECode CNetworkTemplate::Equals(
     /* [out] */ Boolean* result )
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(INetworkTemplate::Probe(obj), result);
+    return Equals(INetworkTemplate::Probe(obj), result);
 }
 
 ECode CNetworkTemplate::GetMatchRule(

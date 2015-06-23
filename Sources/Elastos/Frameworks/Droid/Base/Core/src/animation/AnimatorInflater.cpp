@@ -1,5 +1,5 @@
 #include "animation/AnimatorInflater.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "R.h"
 #include "view/animation/AnimationUtils.h"
 #include "animation/CAnimatorSet.h"
@@ -7,7 +7,7 @@
 #include "animation/CArgbEvaluator.h"
 #include "animation/CObjectAnimator.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Content::Res::IResources;
@@ -107,7 +107,7 @@ AutoPtr<IAnimator> AnimatorInflater::CreateAnimatorFromXml(
                     ARRAY_SIZE(R::styleable::AnimatorSet));
 
             AutoPtr<ITypedArray> a;
-            c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+            c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
             Int32 ordering = 0;
             a->GetInt32(R::styleable::AnimatorSet_ordering, TOGETHER, &ordering);
             CreateAnimatorFromXml(c, parser, attrs, animatorSet,  ordering);
@@ -154,7 +154,7 @@ AutoPtr<IObjectAnimator> AnimatorInflater::LoadObjectAnimator(
             const_cast<Int32 *>(R::styleable::PropertyAnimator),
             ARRAY_SIZE(R::styleable::PropertyAnimator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     String propertyName;
     a->GetString(R::styleable::PropertyAnimator_propertyName, &propertyName);
@@ -176,7 +176,7 @@ AutoPtr<IValueAnimator> AnimatorInflater::LoadAnimator(
             const_cast<Int32 *>(R::styleable::Animator),
             ARRAY_SIZE(R::styleable::Animator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     Int32 value = 0;
     a->GetInt32(R::styleable::Animator_duration, 0, &value);

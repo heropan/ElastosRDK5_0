@@ -75,7 +75,7 @@ void ProgressDialog::OnCreate(
             const_cast<Int32 *>(R::styleable::AlertDialog),
             ARRAY_SIZE(R::styleable::AlertDialog));
     AutoPtr<ITypedArray> a;
-    mContext->ObtainStyledAttributesEx3(NULL,
+    mContext->ObtainStyledAttributes(NULL,
             attrIds, R::attr::alertDialogStyle, 0, (ITypedArray**)&a);
 
     if (mProgressStyle == IProgressDialog::STYLE_HORIZONTAL) {

@@ -16,11 +16,11 @@
 #include "CProgressBarSavedState.h"
 #include "graphics/CBitmapShader.h"
 #include "view/accessibility/CAccessibilityManager.h"
-#include <elastos/Math.h>
-#include <elastos/Thread.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::R;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::ILayerDrawable;
@@ -266,7 +266,7 @@ ECode ProgressBar::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::ProgressBar),
             ARRAY_SIZE(R::styleable::ProgressBar));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
         attrs, attrIds, defStyle, styleRes, (ITypedArray**)&a);
 
     mNoInvalidate = TRUE;
@@ -1004,7 +1004,7 @@ void ProgressBar::StartAnimation()
         mAnimation->SetRepeatMode(mBehavior);
         mAnimation->SetRepeatCount(IAnimation::ANIMATION_INFINITE);
         mAnimation->SetDuration(mDuration);
-        mAnimation->SetInterpolatorEx(mInterpolator);
+        mAnimation->SetInterpolator(mInterpolator);
         mAnimation->SetStartTime(IAnimation::START_ON_FIRST_FRAME);
     }
 

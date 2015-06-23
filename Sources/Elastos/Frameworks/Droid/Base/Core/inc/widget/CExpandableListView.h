@@ -3,10 +3,10 @@
 
 #include "_CExpandableListView.h"
 #include "widget/ExpandableListView.h"
-#include "view/ViewMacro.h"
-#include "widget/AdapterViewMacro.h"
-#include "widget/AbsListViewMacro.h"
-#include "widget/ListViewMacro.h"
+
+
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -46,7 +46,7 @@ public:
     CARAPI SetChildDivider(
         /* [in] */ IDrawable* childDivider);
 
-    CARAPI SetAdapterEx(
+    CARAPI SetAdapter(
         /* [in] */ IExpandableListAdapter* adapter);
 
     CARAPI GetExpandableListAdapter(
@@ -56,7 +56,7 @@ public:
         /* [in] */ Int32 groupPos,
         /* [out] */ Boolean* expanded);
 
-    CARAPI ExpandGroupEx(
+    CARAPI ExpandGroup(
         /* [in] */ Int32 groupPos,
         /* [in] */ Boolean animate,
         /* [out] */ Boolean* expanded);

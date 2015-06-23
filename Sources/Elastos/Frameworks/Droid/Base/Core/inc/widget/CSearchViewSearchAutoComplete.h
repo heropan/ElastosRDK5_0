@@ -43,7 +43,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 stop);
 
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 index);
 
     CARAPI SelectAll();

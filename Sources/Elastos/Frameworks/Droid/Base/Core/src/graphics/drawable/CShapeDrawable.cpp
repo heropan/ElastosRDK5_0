@@ -50,7 +50,7 @@ ECode CShapeDrawable::GetShape(
     VALIDATE_NOT_NULL(shape);
     AutoPtr<IShape> s = ShapeDrawable::GetShape();
     *shape = s;
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode CShapeDrawable::GetShaderFactory(
     VALIDATE_NOT_NULL(fact);
     AutoPtr<IShaderFactory> f = ShapeDrawable::GetShaderFactory();
     *fact = f;
-    INTERFACE_ADDREF(*fact);
+    REFCOUNT_ADD(*fact);
     return NOERROR;
 }
 
@@ -98,7 +98,7 @@ ECode CShapeDrawable::GetPaint(
     VALIDATE_NOT_NULL(paint);
     AutoPtr<IPaint> p = ShapeDrawable::GetPaint();
     *paint = p;
-    INTERFACE_ADDREF(*paint);
+    REFCOUNT_ADD(*paint);
     return NOERROR;
 }
 
@@ -123,7 +123,7 @@ ECode CShapeDrawable::SetPadding(
  * Sets padding for this shape, defined by a Rect object.
  * Define the padding in the Rect object as: left, top, right, bottom.
  */
-ECode CShapeDrawable::SetPaddingEx(
+ECode CShapeDrawable::SetPadding(
     /* [in] */ IRect* padding)
 {
     return ShapeDrawable::SetPadding(padding);

@@ -5,14 +5,13 @@
 #include "Elastos.Droid.Core_server.h"
 #include "database/sqlite/SQLiteDatabaseConfiguration.h"
 #include "database/sqlite/SQLiteConnection.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Core::IThread;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::Utility::IPrinter;

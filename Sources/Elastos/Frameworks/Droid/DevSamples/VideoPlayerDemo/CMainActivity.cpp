@@ -3,7 +3,7 @@
 
 #include "CMainActivity.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ICharSequence;
@@ -154,7 +154,7 @@ ECode CMainActivity::OnCreate(
 
     if (NULL != mDataList) {
         Logger::D("CMainActivity", "InitStatus setup mAdapter");
-        mAdapter->AddAllEx(mDataList);
+        mAdapter->AddAll(mDataList);
         mAdapter->NotifyDataSetChanged();
     }
     else {

@@ -3,12 +3,12 @@
 
 #include "widget/LinearLayout.h"
 #include "ext/frameworkext.h"
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 #include "elastos/Pair.h"
 #include "content/BroadcastReceiver.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::Pair;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::BroadcastReceiver;

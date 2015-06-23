@@ -214,7 +214,7 @@ module
         Obtain(
             [out] IDragEvent** event);
 
-        ObtainEx(
+        Obtain(
             [in] Int32 action,
             [in] Float x,
             [in] Float y,
@@ -224,7 +224,7 @@ module
             [in] Boolean result,
             [out] IDragEvent** event);
 
-        ObtainEx2(
+        Obtain(
             [in] IDragEvent* source,
             [out] IDragEvent** event);
     }

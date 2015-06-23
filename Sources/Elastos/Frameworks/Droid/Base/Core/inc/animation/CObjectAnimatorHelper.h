@@ -17,7 +17,7 @@ public:
         /* [in] */ ArrayOf<Int32>* values,
         /* [out] */ IObjectAnimator** anim);
 
-    CARAPI OfInt32Ex(
+    CARAPI OfInt32(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Int32>* values,
@@ -29,7 +29,7 @@ public:
         /* [in] */ ArrayOf<Float>* values,
         /* [out] */ IObjectAnimator** anim);
 
-    CARAPI OfFloatEx(
+    CARAPI OfFloat(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Float>* values,
@@ -42,7 +42,7 @@ public:
         /* [in] */ ArrayOf<IInterface*>* values,
         /* [out] */ IObjectAnimator** anim);
 
-    CARAPI OfObjectEx(
+    CARAPI OfObject(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* property,
         /* [in] */ ITypeEvaluator* evaluator,

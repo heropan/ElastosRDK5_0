@@ -81,7 +81,7 @@ public:
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* val);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IDnsSdTxtRecord* o,
         /* [out] */ Boolean* val);
 

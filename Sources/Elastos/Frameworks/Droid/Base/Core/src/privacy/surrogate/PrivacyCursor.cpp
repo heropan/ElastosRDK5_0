@@ -1,9 +1,9 @@
 #include "PrivacyCursor.h"
 #include "os/CBundle.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 //#include <Math/CBigInteger.h>
 #include <stdlib.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::CBundle;
@@ -364,7 +364,7 @@ ECode PrivacyCursor::GetColumnNames(
     }
 
     *columnNames = ArrayOf<String>::Alloc(1);
-    INTERFACE_ADDREF(*columnNames);
+    REFCOUNT_ADD(*columnNames);
     (**columnNames)[0] = String("");
     return NOERROR;
 }
@@ -393,7 +393,7 @@ ECode PrivacyCursor::GetBlob(
     }
 
     *blob = ArrayOf<Byte>::Alloc(0);
-    INTERFACE_ADDREF(*blob);
+    REFCOUNT_ADD(*blob);
     return NOERROR;
 }
 

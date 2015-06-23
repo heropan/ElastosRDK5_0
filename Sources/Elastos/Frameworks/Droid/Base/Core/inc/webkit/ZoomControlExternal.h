@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
-#include "view/ViewMacro.h"
+
 #include "webkit/ZoomControlBase.h"
 #include "widget/FrameLayout.h"
-#include "widget/FrameLayoutMacro.h"
+
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;

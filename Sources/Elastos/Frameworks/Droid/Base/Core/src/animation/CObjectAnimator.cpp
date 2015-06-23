@@ -40,7 +40,7 @@ AutoPtr<IObjectAnimator> CObjectAnimator::OfInt32(
     return anim;
 }
 
-AutoPtr<IObjectAnimator> CObjectAnimator::OfInt32Ex(
+AutoPtr<IObjectAnimator> CObjectAnimator::OfInt32(
     /* [in] */ IInterface* target,
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Int32>* values)
@@ -64,7 +64,7 @@ AutoPtr<IObjectAnimator> CObjectAnimator::OfFloat(
     return anim;
 }
 
-AutoPtr<IObjectAnimator> CObjectAnimator::OfFloatEx(
+AutoPtr<IObjectAnimator> CObjectAnimator::OfFloat(
     /* [in] */ IInterface* target,
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Float>* values)
@@ -90,7 +90,7 @@ AutoPtr<IObjectAnimator> CObjectAnimator::OfObject(
     return anim;
 }
 
-AutoPtr<IObjectAnimator> CObjectAnimator::OfObjectEx(
+AutoPtr<IObjectAnimator> CObjectAnimator::OfObject(
     /* [in] */ IInterface* target,
     /* [in] */ IProperty* property,
     /* [in] */ ITypeEvaluator* evaluator,
@@ -141,7 +141,7 @@ ECode CObjectAnimator::GetTarget(
     VALIDATE_NOT_NULL(object);
     AutoPtr<IInterface> tmp = ObjectAnimator::GetTarget();
     *object = tmp;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

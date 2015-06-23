@@ -292,7 +292,7 @@ module
              * @see #setTitle(CharSequence)
              * @param titleResId The title as a resource ID.
              */
-            SetTitleEx(
+            SetTitle(
                 [in] Int32 titleResId);
 
             /**
@@ -331,7 +331,7 @@ module
              * @see #setIcon(Drawable)
              * @param iconResId The icon as a resource ID.
              */
-            SetIconEx(
+            SetIcon(
                 [in] Int32 iconResId);
 
             /**
@@ -366,7 +366,7 @@ module
              * @see #setSummary(CharSequence)
              * @param summaryResId The summary as a resource.
              */
-            SetSummaryEx(
+            SetSummary(
                 [in] Int32 summaryResId);
 
             /**

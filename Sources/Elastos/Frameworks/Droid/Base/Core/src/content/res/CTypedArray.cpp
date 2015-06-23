@@ -2,8 +2,8 @@
 #include "content/res/CTypedArray.h"
 #include "content/res/CAssetManager.h"
 #include "util/XmlUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <stdlib.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -52,7 +52,7 @@ ECode CTypedArray::GetResources(
     VALIDATE_NOT_NULL(res);
 
     *res = (IResources*)mResources;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -72,7 +72,7 @@ ECode CTypedArray::GetText(
     else if (type == ITypedValue::TYPE_STRING) {
         AutoPtr<ICharSequence> temp = LoadStringValueAt(index);
         *csq = temp;
-        INTERFACE_ADDREF(*csq);
+        REFCOUNT_ADD(*csq);
         return NOERROR;
     }
 
@@ -452,7 +452,7 @@ ECode CTypedArray::GetLayoutDimension(
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CTypedArray::GetLayoutDimensionEx(
+ECode CTypedArray::GetLayoutDimension(
     /* [in] */ Int32 index,
     /* [in] */ Int32 defValue,
     /* [out] */ Int32* dimension)
@@ -605,7 +605,7 @@ ECode CTypedArray::PeekValue(
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index * CAssetManager::STYLE_NUM_ENTRIES, v)) {
         *value = (ITypedValue*)v;
-        INTERFACE_ADDREF(*value);
+        REFCOUNT_ADD(*value);
         return NOERROR;
     }
     *value = NULL;

@@ -3,11 +3,10 @@
 #define __COOKIEMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 using Elastos::Droid::Net::IWebAddress;
 
 namespace Elastos {
@@ -91,7 +90,7 @@ public:
      *               HTTP request header
      * @hide Used by Browser, no intention to publish.
      */
-    virtual CARAPI GetCookieEx(
+    virtual CARAPI GetCookie(
         /* [in] */ const String& url,
         /* [in] */ Boolean privateBrowsing,
         /* [out] */ String* cookie);
@@ -106,7 +105,7 @@ public:
      * @hide Used by RequestHandle, no intention to publish.
      */
     //synchronized
-    virtual CARAPI GetCookieEx2(
+    virtual CARAPI GetCookie(
         /* [in] */ IWebAddress* uri,
         /* [out] */ String* cookie);
 
@@ -137,7 +136,7 @@ public:
      * @hide Used by Browser, no intention to publish.
      */
     //synchronized
-    virtual CARAPI HasCookiesEx(
+    virtual CARAPI HasCookies(
         /* [in] */ Boolean privateBrowsing,
         /* [out] */ Boolean* result);
 

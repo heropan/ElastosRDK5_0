@@ -2,7 +2,7 @@
 #include "ElAudioTrack.h"
 #include <stdio.h>
 #include <utils/Log.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <assert.h>
 
 using namespace Elastos::Utility::Logging;

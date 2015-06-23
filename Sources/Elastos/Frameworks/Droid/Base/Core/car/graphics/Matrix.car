@@ -64,7 +64,7 @@ module
 
         /** Returns true iff obj is a Matrix and its values equal our values.
         */
-        EqualsEx(
+        Equals(
             [in] IMatrix* matrix,
             [out] Boolean* isEqual);
 
@@ -123,7 +123,7 @@ module
          * @param dst   The array of dst points (x,y pairs)
          * @param src   The array of src points (x,y pairs)
          */
-        MapPointsEx(
+        MapPoints(
             [out] ArrayOf<Float> dst,
             [in] ArrayOf<Float> src);
 
@@ -133,7 +133,7 @@ module
          *
          * @param pts The array [x0, y0, x1, y1, ...] of points to transform.
          */
-        MapPointsEx2(
+        MapPoints(
             [/*in, */out] ArrayOf<Float> pts);
 
         /**
@@ -167,7 +167,7 @@ module
          * @param rect The rectangle to transform.
          * @return the result of calling rectStaysRect()
          */
-        MapRectEx(
+        MapRect(
             [in] IRectF* rect,
             [out] Boolean* result);
 
@@ -207,7 +207,7 @@ module
          * @param dst   The array of dst vectors (x,y pairs)
          * @param src   The array of src vectors (x,y pairs)
          */
-        MapVectorsEx(
+        MapVectors(
             [out] ArrayOf<Float> dst,
             [in] ArrayOf<Float> src);
 
@@ -222,7 +222,7 @@ module
          *
          * @param vecs The array [x0, y0, x1, y1, ...] of vectors to transform.
          */
-        MapVectorsEx2(
+        MapVectors(
             [/* in, */out] ArrayOf<Float> vecs);
 
         /**
@@ -247,7 +247,7 @@ module
          * Postconcats the matrix with the specified rotation.
          * M' = R(degrees) * M
          */
-        PostRotateEx(
+        PostRotate(
             [in] Float degrees,
             [out] Boolean* result);
 
@@ -266,7 +266,7 @@ module
          * Postconcats the matrix with the specified scale.
          * M' = S(sx, sy) * M
          */
-        PostScaleEx(
+        PostScale(
             [in] Float sx,
             [in] Float sy,
             [out] Boolean* result);
@@ -286,7 +286,7 @@ module
          * Postconcats the matrix with the specified skew.
          * M' = K(kx, ky) * M
          */
-        PostSkewEx(
+        PostSkew(
             [in] Float kx,
             [in] Float ky,
             [out] Boolean* result);
@@ -322,7 +322,7 @@ module
          * Preconcats the matrix with the specified rotation.
          * M' = M * R(degrees)
          */
-        PreRotateEx(
+        PreRotate(
             [in] Float degrees,
             [out] Boolean* result);
 
@@ -341,7 +341,7 @@ module
          * Preconcats the matrix with the specified scale.
          * M' = M * S(sx, sy)
          */
-        PreScaleEx(
+        PreScale(
             [in] Float sx,
             [in] Float sy,
             [out] Boolean* result);
@@ -361,7 +361,7 @@ module
          * Preconcats the matrix with the specified skew.
          * M' = M * K(kx, ky)
          */
-        PreSkewEx(
+        PreSkew(
             [in] Float kx,
             [in] Float ky,
             [out] Boolean* result);
@@ -461,7 +461,7 @@ module
         /**
          * Set the matrix to rotate about (0,0) by the specified number of degrees.
          */
-        SetRotateEx(
+        SetRotate(
             [in] Float degrees);
 
         /**
@@ -478,7 +478,7 @@ module
         /**
          * Set the matrix to scale by sx and sy.
          */
-        SetScaleEx(
+        SetScale(
             [in] Float sx,
             [in] Float sy);
 
@@ -496,7 +496,7 @@ module
         /**
          * Set the matrix to rotate by the specified sine and cosine values.
          */
-        SetSinCosEx(
+        SetSinCos(
             [in] Float sinValue,
             [in] Float cosValue);
 
@@ -514,7 +514,7 @@ module
         /**
          * Set the matrix to skew by sx and sy.
          */
-        SetSkewEx(
+        SetSkew(
             [in] Float kx,
             [in] Float ky);
 
@@ -544,7 +544,7 @@ module
         /**
          * @hide
          */
-        ToShortStringEx(
+        ToShortString(
             [in] IStringBuilder* sb);
     }
 

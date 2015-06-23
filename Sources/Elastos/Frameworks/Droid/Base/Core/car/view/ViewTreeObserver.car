@@ -145,7 +145,7 @@ module
         GetTouchableInsets(
             [out] Int32* set);
 
-        EqualsEx(
+        Equals(
             [in] IInternalInsetsInfo* o,
             [out] Boolean* res);
 

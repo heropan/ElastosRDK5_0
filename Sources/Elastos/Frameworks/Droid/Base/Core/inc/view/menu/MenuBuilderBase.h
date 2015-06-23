@@ -5,13 +5,12 @@
 
 #include "ext/frameworkext.h"
 #include "widget/BaseAdapter.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using namespace Elastos::Core::Threading;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::IComponentName;

@@ -3,7 +3,7 @@
 #include "view/LayoutInflater.h"
 #include "systemui/SystemUIR.h"
 #include "systemui/CExpandHelper.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "animation/CObjectAnimator.h"
 #include "animation/CAnimatorSet.h"
 #include "view/animation/CAccelerateInterpolator.h"
@@ -436,7 +436,7 @@ Boolean NotificationPanel::DispatchKeyEvent(
         // We exclusively handle the back key by hiding this panel.
         case IKeyEvent::KEYCODE_BACK: {
             if (action == IKeyEvent::ACTION_UP) {
-                mBar->AnimateCollapsePanelsEx();
+                mBar->AnimateCollapsePanels();
             }
             return TRUE;
         }
@@ -444,7 +444,7 @@ Boolean NotificationPanel::DispatchKeyEvent(
         // We react to the home key but let the system handle it.
         case IKeyEvent::KEYCODE_HOME: {
             if (action == IKeyEvent::ACTION_UP) {
-                mBar->AnimateCollapsePanelsEx();
+                mBar->AnimateCollapsePanels();
             }
         }
         break;
@@ -595,7 +595,7 @@ void NotificationPanel::AddSettingsView()
     LayoutInflater::From(context, (ILayoutInflater**)&infl);
 
     mSettingsView = NULL;
-    infl->InflateEx2(SystemUIR::layout::system_bar_settings_view, mContentFrame,
+    infl->Inflate(SystemUIR::layout::system_bar_settings_view, mContentFrame,
         FALSE, (IView**)&mSettingsView);
     mSettingsView->SetVisibility(IView::GONE);
     mContentFrame->AddView(mSettingsView);
@@ -607,7 +607,7 @@ Boolean NotificationPanel::OnInterceptTouchEvent(
     AutoPtr<IMotionEventHelper> helper;
     CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     AutoPtr<IMotionEvent> cancellation;
-    helper->ObtainEx5(ev, (IMotionEvent**)&cancellation);
+    helper->Obtain(ev, (IMotionEvent**)&cancellation);
     cancellation->SetAction(IMotionEvent::ACTION_CANCEL);
 
     Boolean intercept;

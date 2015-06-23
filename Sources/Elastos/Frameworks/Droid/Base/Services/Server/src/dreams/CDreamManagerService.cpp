@@ -5,12 +5,12 @@
 #include "os/UserHandle.h"
 #include "os/Binder.h"
 #include "Manifest.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
@@ -83,7 +83,7 @@ ECode CDreamManagerService::SystemReady()
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New(IIntent::ACTION_USER_SWITCHED, (IIntentFilter**)&filter);
     AutoPtr<IIntent> intent;
-    FAIL_RETURN(mContext->RegisterReceiverEx((IBroadcastReceiver*)br->Probe(EIID_IBroadcastReceiver),
+    FAIL_RETURN(mContext->RegisterReceiver((IBroadcastReceiver*)br->Probe(EIID_IBroadcastReceiver),
             filter, String(NULL), mHandler, (IIntent**)&intent));
     return NOERROR;
 }

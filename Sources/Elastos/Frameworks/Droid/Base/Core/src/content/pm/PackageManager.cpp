@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "content/pm/PackageManager.h"
 #include "content/pm/PackageParser.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #ifdef DROID_CORE
 #include "os/CUserHandleHelper.h"
 #include "os/CEnvironment.h"
@@ -51,7 +51,7 @@ ECode PackageManager::GetPackageArchiveInfo(
     AutoPtr<PackageUserState> state = new PackageUserState();
     AutoPtr<IPackageInfo> temp = PackageParser::GeneratePackageInfo(pkg, NULL, flags, 0LL, 0LL, NULL, state);
     *pkgInfo = temp;
-    INTERFACE_ADDREF(*pkgInfo)
+    REFCOUNT_ADD(*pkgInfo)
     return NOERROR;
 }
 

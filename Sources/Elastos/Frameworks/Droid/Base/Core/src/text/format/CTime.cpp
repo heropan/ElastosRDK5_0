@@ -4,7 +4,7 @@
 #include "text/format/DateUtils.h"
 #include "content/res/CResources.h"
 #include "R.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <cutils/tztime.h>
 #include <utils/String8.h>
 
@@ -203,7 +203,7 @@ ECode CTime::constructor(
 ECode CTime::constructor(
     /* [in] */ ITime* other)
 {
-    return SetEx(other);
+    return Set(other);
 }
 
 ECode CTime::Normalize(
@@ -987,7 +987,7 @@ ECode CTime::Format2445(
     }
 }
 
-ECode CTime::SetEx(
+ECode CTime::Set(
     /* [in] */ ITime* that)
 {
     CTime* thatTime = (CTime*)that;
@@ -1006,7 +1006,7 @@ ECode CTime::SetEx(
     return NOERROR;
 }
 
-CTime::SetEx2(
+CTime::Set(
     /* [in] */ Int32 second,
     /* [in] */ Int32 minute,
     /* [in] */ Int32 hour,
@@ -1028,7 +1028,7 @@ CTime::SetEx2(
     return NOERROR;
 }
 
-ECode CTime::SetEx3(
+ECode CTime::Set(
     /* [in] */ Int32 monthDay,
     /* [in] */ Int32 month,
     /* [in] */ Int32 year)

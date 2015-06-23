@@ -1,7 +1,7 @@
 
 #include "internal/SizeAdaptiveLayout.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "R.h"
 #include "util/StateSet.h"
 #include "widget/CView.h"

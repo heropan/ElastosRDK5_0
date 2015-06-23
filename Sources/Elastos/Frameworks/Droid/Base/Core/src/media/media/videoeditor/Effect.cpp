@@ -92,7 +92,7 @@ ECode Effect::SetDuration(
     Int64 oldDurationMs = mDurationMs;
     mDurationMs = durationMs;
 
-    (reinterpret_cast<MediaItem*>(mMediaItem->Probe(EIID_MediaItem)))->InvalidateTransitionsEx(mStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
+    (reinterpret_cast<MediaItem*>(mMediaItem->Probe(EIID_MediaItem)))->InvalidateTransitions(mStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
 
     return NOERROR;
 }
@@ -125,7 +125,7 @@ ECode Effect::SetStartTime(
     Int64 oldStartTimeMs = mStartTimeMs;
     mStartTimeMs = startTimeMs;
 
-    (reinterpret_cast<MediaItem*>(mMediaItem->Probe(EIID_MediaItem)))->InvalidateTransitionsEx(oldStartTimeMs, mDurationMs, mStartTimeMs, mDurationMs);
+    (reinterpret_cast<MediaItem*>(mMediaItem->Probe(EIID_MediaItem)))->InvalidateTransitions(oldStartTimeMs, mDurationMs, mStartTimeMs, mDurationMs);
     return NOERROR;
 }
 
@@ -161,7 +161,7 @@ ECode Effect::SetStartTimeAndDuration(
     mStartTimeMs = startTimeMs;
     mDurationMs = durationMs;
 
-    (reinterpret_cast<MediaItem*>(mMediaItem->Probe(EIID_MediaItem)))->InvalidateTransitionsEx(oldStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
+    (reinterpret_cast<MediaItem*>(mMediaItem->Probe(EIID_MediaItem)))->InvalidateTransitions(oldStartTimeMs, oldDurationMs, mStartTimeMs, mDurationMs);
 
     return NOERROR;
 }

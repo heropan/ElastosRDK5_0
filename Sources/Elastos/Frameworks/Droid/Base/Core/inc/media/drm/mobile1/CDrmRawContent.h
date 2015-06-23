@@ -3,7 +3,7 @@
 #define __CDRMRAWCONTENT_H__
 
 #include "_CDrmRawContent.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <ext/frameworkext.h>
 #include <elastos/io/InputStream.h>
 
@@ -60,7 +60,7 @@ public:
             /* [in] */ ArrayOf<Byte>* b,
             /* [out] */ Int32* number);
 
-        CARAPI ReadBytesEx(
+        CARAPI ReadBytes(
             /* [in] */ ArrayOf<Byte>* b,
             /* [in] */ Int32 off,
             /* [in] */ Int32 len,

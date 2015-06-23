@@ -6,7 +6,7 @@
 #include "widget/CFrameLayout.h"
 #include "widget/CFrameLayoutLayoutParams.h"
 
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Media::IMetadata;
@@ -73,7 +73,7 @@ ECode HTML5VideoFullScreen::FullScreenMediaController::Show()
     return NOERROR;
 }
 
-ECode HTML5VideoFullScreen::FullScreenMediaController::ShowEx(
+ECode HTML5VideoFullScreen::FullScreenMediaController::Show(
     /* [in] */ Int32 timeout)
 {
     MediaController::Show(timeout);
@@ -556,7 +556,7 @@ void HTML5VideoFullScreen::EnterFullScreenVideoState(
                         IGravity::CENTER,
                         (IFrameLayoutLayoutParams**)&layoutParams);
 
-   mLayout->AddViewEx3(GetSurfaceView(), layoutParams);
+   mLayout->AddView(GetSurfaceView(), layoutParams);
 
     mLayout->SetVisibility(IView::VISIBLE);
     AutoPtr<IWebChromeClient> client;
@@ -572,7 +572,7 @@ void HTML5VideoFullScreen::EnterFullScreenVideoState(
         mProgressView = NULL;
         client->GetVideoLoadingProgressView((IView**)&mProgressView);
         if (mProgressView != NULL) {
-            mLayout->AddViewEx3(mProgressView, layoutParams);
+            mLayout->AddView(mProgressView, layoutParams);
             mProgressView->SetVisibility(IView::VISIBLE);
         }
     }
@@ -631,7 +631,7 @@ ECode HTML5VideoFullScreen::GetBufferPercentage(
 void HTML5VideoFullScreen::ShowControllerInFullScreen()
 {
     if (mMediaController != NULL) {
-        mMediaController->ShowEx(0);
+        mMediaController->Show(0);
     }
 }
 

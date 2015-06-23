@@ -59,7 +59,7 @@ ECode CNotificationBigPictureStyle::Build(
     wip->SetBigContentView(rv);
 
     *notification = wip;
-    INTERFACE_ADDREF(*notification);
+    REFCOUNT_ADD(*notification);
     return NOERROR;
 }
 

@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_OS_SOME_ARGS_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

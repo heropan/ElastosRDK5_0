@@ -5,7 +5,7 @@
 #ifdef DROID_CORE
 #include "os/CUserHandle.h"
 #endif
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 

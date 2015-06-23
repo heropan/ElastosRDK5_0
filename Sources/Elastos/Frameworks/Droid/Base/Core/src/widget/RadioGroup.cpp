@@ -159,7 +159,7 @@ ECode RadioGroup::Init(
             const_cast<Int32 *>(R::styleable::RadioGroup),
             ARRAY_SIZE(R::styleable::RadioGroup));
     AutoPtr<ITypedArray> attributes;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, R::attr::radioButtonStyle, 0, (ITypedArray**)&attributes);
 
     Int32 value;

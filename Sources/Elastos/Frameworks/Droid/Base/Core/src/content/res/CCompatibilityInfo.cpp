@@ -167,10 +167,10 @@ ECode CCompatibilityInfo::Translator::GetTranslatedContentInsets(
         FAIL_RETURN(CRect::New((IRect**)&mContentInsetsBuffer));
     }
 
-    mContentInsetsBuffer->SetEx(contentInsets);
+    mContentInsetsBuffer->Set(contentInsets);
     TranslateRectInAppWindowToScreen(mContentInsetsBuffer);
     *rect = mContentInsetsBuffer;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
 
     return NOERROR;
 }
@@ -185,10 +185,10 @@ ECode CCompatibilityInfo::Translator::GetTranslatedVisibleInsets(
         FAIL_RETURN(CRect::New((IRect**)&mVisibleInsetsBuffer));
     }
 
-    mVisibleInsetsBuffer->SetEx(visibleInsets);
+    mVisibleInsetsBuffer->Set(visibleInsets);
     TranslateRectInAppWindowToScreen(mVisibleInsetsBuffer);
     *rect = mVisibleInsetsBuffer;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
 
     return NOERROR;
 }
@@ -222,7 +222,7 @@ ECode CCompatibilityInfo::Translator::GetTranslatedTouchableArea(
     mTouchableAreaBuffer->Set(touchableArea, &result);
     mTouchableAreaBuffer->Scale(mApplicationScale);
     *region = mTouchableAreaBuffer;
-    INTERFACE_ADDREF(*region);
+    REFCOUNT_ADD(*region);
     return NOERROR;
 }
 
@@ -290,7 +290,7 @@ ECode CCompatibilityInfo::GetTranslator(
     IsScalingRequired(&isRequire);
     if (isRequire) {
         *translator = (ICompatibilityInfoTranslator*)new Translator();
-        INTERFACE_ADDREF(*translator);
+        REFCOUNT_ADD(*translator);
     }
     else {
         *translator = NULL;

@@ -81,7 +81,7 @@ public:
     CARAPI AddAll(
         /* [in] */ IObjectContainer* collection);
 
-    CARAPI AddAllEx(
+    CARAPI AddAll(
         /* [in] */ ArrayOf<IInterface* >* items) ;
 
     CARAPI Insert(

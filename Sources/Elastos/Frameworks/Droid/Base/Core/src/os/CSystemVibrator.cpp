@@ -1,6 +1,6 @@
 
 #include "os/CSystemVibrator.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/ServiceManager.h"
 #include "os/CBinder.h"
 
@@ -56,7 +56,7 @@ ECode CSystemVibrator::Vibrate(
     return NOERROR;
 }
 
-ECode CSystemVibrator::VibrateEx(
+ECode CSystemVibrator::Vibrate(
     /* [in] */ const ArrayOf<Int64>& pattern,
     /* [in] */ Int32 repeat)
 {

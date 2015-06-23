@@ -54,7 +54,7 @@ public:
     CARAPI Remove(
         /* [in] */ Int32 netId);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ const String& deviceAddress);
 
     CARAPI Clear(
@@ -64,7 +64,7 @@ public:
         /* [in] */ const String& deviceAddress,
         /* [out] */ Int32* networkId);
 
-    CARAPI GetNetworkIdEx(
+    CARAPI GetNetworkId(
         /* [in] */ const String& deviceAddress,
         /* [in] */ const String& ssid,
         /* [out] */ Int32* networkId);

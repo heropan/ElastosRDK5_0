@@ -31,12 +31,12 @@ module
             [in] Int32 position);
 
         AddTab(
-            [in] IActionBarTab* tab, 
+            [in] IActionBarTab* tab,
             [in] Boolean setSelected);
 
-        AddTabEx(
-            [in] IActionBarTab* tab, 
-            [in] Int32 position, 
+        AddTab(
+            [in] IActionBarTab* tab,
+            [in] Int32 position,
             [in] Boolean setSelected);
 
         UpdateTab(
@@ -55,4 +55,4 @@ module
 
 }
 
-  
+

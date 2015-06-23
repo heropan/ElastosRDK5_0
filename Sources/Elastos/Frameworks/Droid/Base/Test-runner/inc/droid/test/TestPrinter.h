@@ -4,9 +4,9 @@
 
 #include <ext/frameworkdef.h>
 #include "Elastos.Droid.Test_server.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::IList;
 using Eunit::Framework::ITest;
 using Eunit::Framework::ITestListener;

@@ -101,7 +101,7 @@ ECode CLabeledIntent::GetNonLocalizedLabel(
 {
     VALIDATE_NOT_NULL(label);
     *label = mNonLocalizedLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -122,7 +122,7 @@ ECode CLabeledIntent::LoadLabel(
 
     if (mNonLocalizedLabel != NULL) {
         *label = mNonLocalizedLabel;
-        INTERFACE_ADDREF(*label);
+        REFCOUNT_ADD(*label);
         return NOERROR;
     }
 
@@ -233,12 +233,12 @@ ECode CLabeledIntent::ResolveType(
     return Intent::ResolveType(context, type);
 }
 
-ECode CLabeledIntent::ResolveTypeEx(
+ECode CLabeledIntent::ResolveType(
     /* [in] */ IContentResolver* resolver,
     /* [out] */ String* type)
 {
     VALIDATE_NOT_NULL(type);
-    return Intent::ResolveTypeEx(resolver, type);
+    return Intent::ResolveType(resolver, type);
 }
 
 ECode CLabeledIntent::ResolveTypeIfNeeded(
@@ -539,13 +539,13 @@ ECode CLabeledIntent::GetBundleExtra(
     return Intent::GetBundleExtra(name, value);
 }
 
-ECode CLabeledIntent::GetExtraEx(
+ECode CLabeledIntent::GetExtra(
     /* [in] */ const String& name,
     /* [in] */ IInterface* defaultValue,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj);
-    return Intent::GetExtraEx(name, defaultValue, obj);
+    return Intent::GetExtra(name, defaultValue, obj);
 }
 
 ECode CLabeledIntent::GetExtras(
@@ -877,10 +877,10 @@ ECode CLabeledIntent::PutExtras(
     return Intent::PutExtras(src);
 }
 
-ECode CLabeledIntent::PutExtrasEx(
+ECode CLabeledIntent::PutExtras(
     /* [in] */ IBundle* extras)
 {
-    return Intent::PutExtrasEx(extras);
+    return Intent::PutExtras(extras);
 }
 
 ECode CLabeledIntent::ReplaceExtras(
@@ -889,10 +889,10 @@ ECode CLabeledIntent::ReplaceExtras(
     return Intent::ReplaceExtras(src);
 }
 
-ECode CLabeledIntent::ReplaceExtrasEx(
+ECode CLabeledIntent::ReplaceExtras(
     /* [in] */ IBundle* extras)
 {
-    return Intent::ReplaceExtrasEx(extras);
+    return Intent::ReplaceExtras(extras);
 }
 
 ECode CLabeledIntent::RemoveExtra(
@@ -932,11 +932,11 @@ ECode CLabeledIntent::SetClassName(
     return Intent::SetClassName(packageContext, className);
 }
 
-ECode CLabeledIntent::SetClassNameEx(
+ECode CLabeledIntent::SetClassName(
     /* [in] */ const String& packageName,
     /* [in] */ const String& className)
 {
-    return Intent::SetClassNameEx(packageName, className);
+    return Intent::SetClassName(packageName, className);
 }
 
 ECode CLabeledIntent::SetClass(
@@ -1008,14 +1008,14 @@ ECode CLabeledIntent::ToShortString(
     return Intent::ToShortString(secure, comp, extras, clip, str);
 }
 
-ECode CLabeledIntent::ToShortStringEx(
+ECode CLabeledIntent::ToShortString(
     /* [in] */ IStringBuilder* sb,
     /* [in] */ Boolean secure,
     /* [in] */ Boolean comp,
     /* [in] */ Boolean extras,
     /* [in] */ Boolean clip)
 {
-    return Intent::ToShortStringEx(sb, secure, comp, extras, clip);
+    return Intent::ToShortString(sb, secure, comp, extras, clip);
 }
 
 ECode CLabeledIntent::ToURI(

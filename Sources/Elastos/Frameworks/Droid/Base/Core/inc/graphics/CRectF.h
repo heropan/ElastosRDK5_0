@@ -59,7 +59,7 @@ public:
     CARAPI constructor(
         /* [in] */ IRect* r);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IRectF* r,
         /* [out] */ Boolean* result);
 
@@ -170,7 +170,7 @@ public:
      * @param src The rectangle whose coordinates are copied into this
      *           rectangle.
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ IRectF* src);
 
     /**
@@ -179,7 +179,7 @@ public:
      * @param src The rectangle whose coordinates are copied into this
      *           rectangle.
      */
-    CARAPI SetEx2(
+    CARAPI Set(
         /* [in] */ IRect* src);
 
     /**
@@ -245,7 +245,7 @@ public:
      * @return true iff the the 4 specified sides of a rectangle are inside or
      *              equal to this rectangle
      */
-    CARAPI ContainsEx(
+    CARAPI Contains(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -260,7 +260,7 @@ public:
      * @return true iff the specified rectangle r is inside or equal to this
      *              rectangle
      */
-    CARAPI ContainsEx2(
+    CARAPI Contains(
         /* [in] */ IRectF* r,
         /* [out] */ Boolean* isContained);
 
@@ -300,7 +300,7 @@ public:
      *              (and this rectangle is then set to that intersection) else
      *              return false and do not change this rectangle.
      */
-    CARAPI IntersectEx(
+    CARAPI Intersect(
         /* [in] */ IRectF* r,
         /* [out] */ Boolean* result);
 
@@ -365,7 +365,7 @@ public:
      *
      * @param r The rectangle being unioned with this rectangle
      */
-    CARAPI UnionEx(
+    CARAPI Union(
         /* [in] */ IRectF* r);
 
     /**
@@ -375,7 +375,7 @@ public:
      * @param x The x coordinate of the point to add to the rectangle
      * @param y The y coordinate of the point to add to the rectangle
      */
-    CARAPI UnionEx2(
+    CARAPI Union(
         /* [in] */ Float x,
         /* [in] */ Float y);
 

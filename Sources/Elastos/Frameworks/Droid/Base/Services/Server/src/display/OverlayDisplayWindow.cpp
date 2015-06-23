@@ -1,7 +1,7 @@
 
 #include "display/OverlayDisplayWindow.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "R.h"
 
 using Elastos::Core::ICharSequence;
@@ -283,7 +283,7 @@ void OverlayDisplayWindow::Show()
 
         ClearLiveState();
         UpdateWindowParams();
-        mWindowManager->AddViewEx5(mWindowContent, mWindowParams);
+        mWindowManager->AddView(mWindowContent, mWindowParams);
         mWindowVisible = TRUE;
     }
 }

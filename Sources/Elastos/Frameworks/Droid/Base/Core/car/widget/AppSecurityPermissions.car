@@ -31,14 +31,14 @@ module
         GetPermissionCount(
             [out] Int32* count);
 
-        GetPermissionCountEx(
+        GetPermissionCount(
             [in] Int32 which,
             [out] Int32* count);
 
         GetPermissionsView(
             [out] IView** view);
 
-        GetPermissionsViewEx(
+        GetPermissionsView(
             [in] Int32 which,
             [out] IView** view);
     }

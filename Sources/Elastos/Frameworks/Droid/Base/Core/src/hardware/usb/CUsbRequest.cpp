@@ -1,7 +1,7 @@
 
 #include "hardware/usb/CUsbRequest.h"
 #include "hardware/usb/CUsbDeviceConnection.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <usbhost/usbhost.h>
 
 namespace Elastos {
@@ -57,7 +57,7 @@ ECode CUsbRequest::GetEndpoint(
 {
     VALIDATE_NOT_NULL(endpoint);
     *endpoint = mEndpoint;
-    INTERFACE_ADDREF(*endpoint);
+    REFCOUNT_ADD(*endpoint);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CUsbRequest::GetClientData(
 {
     VALIDATE_NOT_NULL(data);
     *data = mClientData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

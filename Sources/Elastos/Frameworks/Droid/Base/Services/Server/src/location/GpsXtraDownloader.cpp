@@ -96,7 +96,7 @@ AutoPtr<ArrayOf<Byte> > GpsXtraDownloader::DoDownload(
 //    CAndroidHttpClientHelper::AcquireSingleton((IAndroidHttpClientHelper**)&atcHelper)
 //
 //    //try {
-//        atcHelper->NewInstanceEx(String("Android"), (IAndroidHttpClient**)&client);
+//        atcHelper->NewInstance(String("Android"), (IAndroidHttpClient**)&client);
 //        HttpUriRequest req = new HttpGet(url);
 //
 //        if (isProxySet) {

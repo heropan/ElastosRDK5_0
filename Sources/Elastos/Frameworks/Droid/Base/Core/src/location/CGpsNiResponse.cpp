@@ -36,7 +36,7 @@ ECode CGpsNiResponse::GetExtras(
 {
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
     return NOERROR;
 }
 

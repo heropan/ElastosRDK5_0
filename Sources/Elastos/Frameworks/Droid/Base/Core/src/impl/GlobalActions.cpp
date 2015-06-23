@@ -18,7 +18,7 @@
 #include "util/CTypedValue.h"
 #include "view/CMotionEventHelper.h"
 #include "view/CViewConfigurationHelper.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CInteger32;
 using Elastos::Core::CStringWrapper;
@@ -178,7 +178,7 @@ ECode GlobalActions::MyAdapter::GetItem(
         }
         if (filteredPos == position) {
             *item = action;
-            INTERFACE_ADDREF(*item);
+            REFCOUNT_ADD(*item);
             return NOERROR;
         }
         filteredPos++;
@@ -239,7 +239,7 @@ ECode GlobalActions::MyAdapter::GetView(
     AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(service);
     AutoPtr<IView> viewTemp = action->Create(mHost->mContext, convertView, parent, inflater);
     *view = viewTemp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -341,7 +341,7 @@ AutoPtr<IView> GlobalActions::SinglePressAction::Create(
     /* [in] */ ILayoutInflater* inflater)
 {
     AutoPtr<IView> v;
-    inflater->InflateEx2(R::layout::global_actions_item, parent, FALSE, (IView**)&v);
+    inflater->Inflate(R::layout::global_actions_item, parent, FALSE, (IView**)&v);
 
     AutoPtr<IView> viewTemp;
     v->FindViewById(R::id::icon, (IView**)&viewTemp);
@@ -369,7 +369,7 @@ AutoPtr<IView> GlobalActions::SinglePressAction::Create(
         messageView->SetText(mMessage);
     }
     else {
-        messageView->SetTextEx3(mMessageResId);
+        messageView->SetText(mMessageResId);
     }
 
     return v;
@@ -415,7 +415,7 @@ AutoPtr<IView> GlobalActions::ToggleAction::Create(
     WillCreate();
 
     AutoPtr<IView> v;
-    inflater->InflateEx2(R::layout::global_actions_item, parent, FALSE, (IView**)&v);
+    inflater->Inflate(R::layout::global_actions_item, parent, FALSE, (IView**)&v);
 
     AutoPtr<IView> viewTemp;
     v->FindViewById(R::id::icon, (IView**)&viewTemp);
@@ -431,7 +431,7 @@ AutoPtr<IView> GlobalActions::ToggleAction::Create(
     const Boolean enabled = IsEnabled();
 
     if (messageView != NULL) {
-        messageView->SetTextEx3(mMessageResId);
+        messageView->SetText(mMessageResId);
         messageView->SetEnabled(enabled);
     }
 
@@ -446,7 +446,7 @@ AutoPtr<IView> GlobalActions::ToggleAction::Create(
     }
 
     if (statusView != NULL) {
-        statusView->SetTextEx3(on ? mEnabledStatusMessageResId : mDisabledStatusMessageResId);
+        statusView->SetText(on ? mEnabledStatusMessageResId : mDisabledStatusMessageResId);
         statusView->SetVisibility(IView::VISIBLE);
         statusView->SetEnabled(enabled);
     }
@@ -583,7 +583,7 @@ AutoPtr<IView> GlobalActions::SilentModeTriStateAction::Create(
     /* [in] */ ILayoutInflater* inflater)
 {
     AutoPtr<IView> v;
-    inflater->InflateEx2(R::layout::global_actions_silent_mode, parent, FALSE, (IView**)&v);
+    inflater->Inflate(R::layout::global_actions_silent_mode, parent, FALSE, (IView**)&v);
 
     Int32 ringerMode = 0;
     mAudioManager->GetRingerMode(&ringerMode);
@@ -728,7 +728,7 @@ Boolean GlobalActions::GlobalActionsDialog::DispatchTouchEvent(
                 AutoPtr<IMotionEventHelper> helper;
                 CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
                 event = NULL;
-                helper->ObtainEx4(now, now,
+                helper->Obtain(now, now,
                     IMotionEvent::ACTION_CANCEL, 0.0f, 0.0f, 0, (IMotionEvent**)&event);
                 event->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
                 mCancelOnUp = TRUE;
@@ -1200,7 +1200,7 @@ GlobalActions::GlobalActions(
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
     AutoPtr<IUri> uri;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::AIRPLANE_MODE_ON, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::AIRPLANE_MODE_ON, (IUri**)&uri);
     contentResolver->RegisterContentObserver(
             uri, TRUE,
             mAirplaneModeObserver);

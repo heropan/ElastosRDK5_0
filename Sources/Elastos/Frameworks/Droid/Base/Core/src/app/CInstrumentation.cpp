@@ -217,22 +217,22 @@ ECode CInstrumentation::AddMonitor(
     return Instrumentation::AddMonitor(monitor);
 }
 
-ECode CInstrumentation::AddMonitorEx(
+ECode CInstrumentation::AddMonitor(
     /* [in] */ IIntentFilter* filter,
     /* [in] */ IInstrumentationActivityResult* result,
     /* [in] */ Boolean block,
     /* [out] */ IInstrumentationActivityMonitor** monitor)
 {
-    return Instrumentation::AddMonitorEx(filter, result, block, monitor);
+    return Instrumentation::AddMonitor(filter, result, block, monitor);
 }
 
-ECode CInstrumentation::AddMonitorEx2(
+ECode CInstrumentation::AddMonitor(
     /* [in] */ const String& cls,
     /* [in] */ IInstrumentationActivityResult* result,
     /* [in] */ Boolean block,
     /* [out] */ IInstrumentationActivityMonitor** monitor)
 {
-    return Instrumentation::AddMonitorEx2(cls, result, block, monitor);
+    return Instrumentation::AddMonitor(cls, result, block, monitor);
 }
 
 ECode CInstrumentation::CheckMonitorHit(
@@ -350,13 +350,13 @@ ECode CInstrumentation::NewActivity(
             title, parent, id, lastNonConfigurationInstance, activity);
 }
 
-ECode CInstrumentation::NewActivityEx(
+ECode CInstrumentation::NewActivity(
     /* [in] */ IClassLoader* cl,
     /* [in] */ const String& className,
     /* [in] */ IIntent* intent,
     /* [out] */ IActivity** activity)
 {
-    return Instrumentation::NewActivityEx(cl, className, intent, activity);
+    return Instrumentation::NewActivity(cl, className, intent, activity);
 }
 
 ECode CInstrumentation::CallActivityOnCreate(
@@ -494,7 +494,7 @@ ECode CInstrumentation::ExecStartActivitiesAsUser(
     return Instrumentation::ExecStartActivitiesAsUser(who, contextThread, token, target, intents, options, userId);
 }
 
-ECode CInstrumentation::ExecStartActivityEx(
+ECode CInstrumentation::ExecStartActivity(
     /* [in] */ IContext* who,
     /* [in] */ IBinder* contextThread,
     /* [in] */ IBinder* token,
@@ -504,10 +504,10 @@ ECode CInstrumentation::ExecStartActivityEx(
     /* [in] */ IBundle* options,
     /* [out] */ IInstrumentationActivityResult** activityResult)
 {
-    return Instrumentation::ExecStartActivityEx(who, contextThread, token, target, intent, requestCode, options, activityResult);
+    return Instrumentation::ExecStartActivity(who, contextThread, token, target, intent, requestCode, options, activityResult);
 }
 
-ECode CInstrumentation::ExecStartActivityEx2(
+ECode CInstrumentation::ExecStartActivity(
     /* [in] */ IContext* who,
     /* [in] */ IBinder* contextThread,
     /* [in] */ IBinder* token,
@@ -518,7 +518,7 @@ ECode CInstrumentation::ExecStartActivityEx2(
     /* [in] */ IUserHandle* user,
     /* [out] */ IInstrumentationActivityResult** activityResult)
 {
-    return Instrumentation::ExecStartActivityEx2(who, contextThread, token, target, intent, requestCode, options, user, activityResult);
+    return Instrumentation::ExecStartActivity(who, contextThread, token, target, intent, requestCode, options, user, activityResult);
 }
 
 ECode CInstrumentation::Init(

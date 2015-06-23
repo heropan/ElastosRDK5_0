@@ -1,9 +1,9 @@
 #include "systemui/statusbar/policy/Clock.h"
-#include "elastos/Character.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/Character.h>
+#include <elastos/core/StringBuilder.h>
 #include "R.h"
 #include "content/CIntentFilter.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "text/CSpannableStringBuilder.h"
 #include "text/format/CDateFormat.h"
 #include "text/style/CRelativeSizeSpan.h"
@@ -66,7 +66,7 @@ ECode ClockBroadcastReceiver::OnReceive(
         AutoPtr<ICalendarHelper> helper;
         CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
         mHost->mCalendar = NULL;
-        helper->GetInstanceEx2(timeZone, (ICalendar**)&mHost->mCalendar);
+        helper->GetInstance(timeZone, (ICalendar**)&mHost->mCalendar);
 
         if (mHost->mClockFormat != NULL) {
             AutoPtr<ITimeZone> ctz;
@@ -171,7 +171,7 @@ ECode Clock::OnAttachedToWindow()
         AutoPtr<IHandler> handler = GetHandler();
         AutoPtr<IIntent> stickyIntent;
         String nullStr;
-        context->RegisterReceiverEx(
+        context->RegisterReceiver(
             (IBroadcastReceiver*)mIntentReceiver, filter, nullStr,
             handler, (IIntent**)&stickyIntent);
     }
@@ -187,7 +187,7 @@ ECode Clock::OnAttachedToWindow()
     AutoPtr<ICalendarHelper> helper;
     CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     mCalendar = NULL;
-    helper->GetInstanceEx2(defaultTimeZone, (ICalendar**)&mCalendar);
+    helper->GetInstance(defaultTimeZone, (ICalendar**)&mCalendar);
 
     // Make sure we update to the current time
     UpdateClock();

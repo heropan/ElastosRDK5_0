@@ -4,7 +4,7 @@
 #include "os/Looper.h"
 #include "os/Handler.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #ifdef DROID_CORE
 #include "impl/CPolicyManager.h"
 #include "util/CTypedValue.h"
@@ -380,7 +380,7 @@ ECode Dialog::Show()
         l = nl;
     }
 
-    mWindowManager->AddViewEx5(mDecor, l);
+    mWindowManager->AddView(mDecor, l);
     mShowing = TRUE;
 
     SendShowMessage();
@@ -453,7 +453,7 @@ void Dialog::SendDismissMessage()
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx(mDismissMessage, (IMessage**)&msg);
+        helper->Obtain(mDismissMessage, (IMessage**)&msg);
         // Obtain a new message so this dialog can be re-used
         msg->SendToTarget();
     }
@@ -465,7 +465,7 @@ void Dialog::SendShowMessage()
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx(mShowMessage, (IMessage**)&msg);
+        helper->Obtain(mShowMessage, (IMessage**)&msg);
         // Obtain a new message so this dialog can be re-used
         msg->SendToTarget();
     }
@@ -637,7 +637,7 @@ ECode Dialog::SetContentView(
 ECode Dialog::SetContentView(
     /* [in] */ IView* view)
 {
-    return mWindow->SetContentViewEx(view);
+    return mWindow->SetContentView(view);
 }
 
 /**
@@ -652,7 +652,7 @@ ECode Dialog::SetContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    return mWindow->SetContentViewEx2(view, params);
+    return mWindow->SetContentView(view, params);
 }
 
 /**
@@ -941,7 +941,7 @@ Boolean Dialog::DispatchKeyEvent(
         mDecor->GetKeyDispatcherState((IDispatcherState**)&state);
     }
 
-    event->DispatchEx(THIS_PROBE(IKeyEventCallback),
+    event->Dispatch(THIS_PROBE(IKeyEventCallback),
         state, this->Probe(EIID_IInterface), &res);
 
     return res;
@@ -1482,7 +1482,7 @@ ECode Dialog::Cancel()
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx(mCancelMessage, (IMessage**)&msg);
+        helper->Obtain(mCancelMessage, (IMessage**)&msg);
         // Obtain a new message so this dialog can be re-used
         msg->SendToTarget();
 
@@ -1516,7 +1516,7 @@ ECode Dialog::SetOnCancelListener(
 
     mCancelMessage = NULL;
     if (listener != NULL) {
-        mListenersHandler->ObtainMessageEx(CANCEL, listener, (IMessage**)&mCancelMessage);
+        mListenersHandler->ObtainMessage(CANCEL, listener, (IMessage**)&mCancelMessage);
     }
     return NOERROR;
 }
@@ -1549,7 +1549,7 @@ ECode Dialog::SetOnDismissListener(
 
     mDismissMessage = NULL;
     if (listener != NULL) {
-        mListenersHandler->ObtainMessageEx(DISMISS, listener, (IMessage**)&mDismissMessage);
+        mListenersHandler->ObtainMessage(DISMISS, listener, (IMessage**)&mDismissMessage);
     }
     return NOERROR;
 }
@@ -1563,7 +1563,7 @@ ECode Dialog::SetOnShowListener(
 {
     mShowMessage = NULL;
     if (listener != NULL) {
-        mListenersHandler->ObtainMessageEx(SHOW, listener, (IMessage**)&mShowMessage);
+        mListenersHandler->ObtainMessage(SHOW, listener, (IMessage**)&mShowMessage);
     }
 
     return NOERROR;

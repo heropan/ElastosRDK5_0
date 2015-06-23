@@ -55,7 +55,7 @@ ECode SQLiteDirectCursorDriver::Query(
     // }
     mQuery = query;
     *cs = cursor;
-    INTERFACE_ADDREF(*cs)
+    REFCOUNT_ADD(*cs)
     return NOERROR;
 }
 

@@ -3,7 +3,7 @@
 #define  __CPINYINCANDIDATEVIEW_H__
 
 #include "_CPinyinCandidateView.h"
-#include "view/ViewMacro.h"
+
 #include "os/HandlerRunnableBase.h"
 
 using Elastos::Droid::Os::HandlerRunnableBase;

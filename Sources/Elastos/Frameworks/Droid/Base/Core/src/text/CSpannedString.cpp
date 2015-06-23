@@ -34,7 +34,7 @@ CARAPI CSpannedString::SubSequence(
     VALIDATE_NOT_NULL(res);
     AutoPtr<ICharSequence> seq = SpannedString::SubSequence(start, end);
     *res = seq;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

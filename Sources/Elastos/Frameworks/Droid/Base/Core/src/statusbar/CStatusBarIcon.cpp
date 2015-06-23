@@ -1,6 +1,6 @@
 #include "statusbar/CStatusBarIcon.h"
 #include "os/CUserHandle.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -228,7 +228,7 @@ ECode CStatusBarIcon::GetContentDescription(
 {
     VALIDATE_NOT_NULL(seq);
     *seq = mContentDescription;
-    INTERFACE_ADDREF(*seq);
+    REFCOUNT_ADD(*seq);
     return NOERROR;
 }
 
@@ -251,7 +251,7 @@ ECode CStatusBarIcon::GetUser(
 {
     VALIDATE_NOT_NULL(user);
     *user = mUser;
-    INTERFACE_ADDREF(*user);
+    REFCOUNT_ADD(*user);
     return NOERROR;
 }
 

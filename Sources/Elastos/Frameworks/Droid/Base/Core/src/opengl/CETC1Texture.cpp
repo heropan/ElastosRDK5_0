@@ -24,7 +24,7 @@ ECode CETC1Texture::GetData(
     /* [out] */ Elastos::IO::IByteBuffer** data)
 {
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

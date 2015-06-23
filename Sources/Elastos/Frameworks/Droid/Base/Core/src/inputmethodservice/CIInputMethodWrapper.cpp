@@ -5,7 +5,7 @@
 #include "view/inputmethod/CInputBinding.h"
 #include "os/SomeArgs.h"
 #include "os/HandlerCaller.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <stdio.h>
 #include <unistd.h>
 

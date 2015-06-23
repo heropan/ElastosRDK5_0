@@ -2,14 +2,14 @@
 #include "database/sqlite/SQLiteConnectionPool.h"
 #include "database/sqlite/SQLiteGlobal.h"
 #include "os/SystemClock.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Thread.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
@@ -68,7 +68,7 @@ ECode SQLiteConnectionPool::Open(
     AutoPtr<SQLiteConnectionPool> pool = new SQLiteConnectionPool(configuration);
     FAIL_RETURN(pool->Open()) // might throw
     *result = pool;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -530,7 +530,7 @@ ECode SQLiteConnectionPool::WaitForConnection(
         }
         if (connection != NULL) {
             *result = connection;
-            INTERFACE_ADDREF(*result)
+            REFCOUNT_ADD(*result)
             return NOERROR;
         }
 
@@ -595,7 +595,7 @@ ECode SQLiteConnectionPool::WaitForConnection(
             RecycleConnectionWaiterLocked(waiter);
             if (connection != NULL) {
                 *result = connection;
-                INTERFACE_ADDREF(*result)
+                REFCOUNT_ADD(*result)
                 ec = NOERROR;
             }
             goto fail; // rethrow!
@@ -810,7 +810,7 @@ ECode SQLiteConnectionPool::TryAcquirePrimaryConnectionLocked(
         mAvailablePrimaryConnection = NULL;
         FinishAcquireConnectionLocked(connection, connectionFlags); // might throw
         *_connection = connection;
-        INTERFACE_ADDREF(*_connection)
+        REFCOUNT_ADD(*_connection)
         return NOERROR;
     }
 
@@ -829,7 +829,7 @@ ECode SQLiteConnectionPool::TryAcquirePrimaryConnectionLocked(
     FAIL_RETURN(OpenConnectionLocked(mConfiguration, TRUE /*primaryConnection*/, (SQLiteConnection**)&connection)) // might throw
     FinishAcquireConnectionLocked(connection, connectionFlags); // might throw
     *_connection = connection;
-    INTERFACE_ADDREF(*_connection)
+    REFCOUNT_ADD(*_connection)
     return NOERROR;
 }
 
@@ -853,7 +853,7 @@ ECode SQLiteConnectionPool::TryAcquireNonPrimaryConnectionLocked(
                 mAvailableNonPrimaryConnections.Erase(it);
                 FinishAcquireConnectionLocked(connection, connectionFlags); // might throw
                 *_connection = connection;
-                INTERFACE_ADDREF(*_connection)
+                REFCOUNT_ADD(*_connection)
                 return NOERROR;
             }
         }
@@ -865,7 +865,7 @@ ECode SQLiteConnectionPool::TryAcquireNonPrimaryConnectionLocked(
         mAvailableNonPrimaryConnections.Erase(--(rIt.GetBase()));
         FinishAcquireConnectionLocked(connection, connectionFlags); // might throw
         *_connection = connection;
-        INTERFACE_ADDREF(*_connection)
+        REFCOUNT_ADD(*_connection)
         return NOERROR;
     }
 
@@ -881,7 +881,7 @@ ECode SQLiteConnectionPool::TryAcquireNonPrimaryConnectionLocked(
     FAIL_RETURN(OpenConnectionLocked(mConfiguration, FALSE /*primaryConnection*/, (SQLiteConnection**)&connection)) // might throw
     FinishAcquireConnectionLocked(connection, connectionFlags); // might throw
     *_connection = connection;
-    INTERFACE_ADDREF(*_connection)
+    REFCOUNT_ADD(*_connection)
     return NOERROR;
 }
 

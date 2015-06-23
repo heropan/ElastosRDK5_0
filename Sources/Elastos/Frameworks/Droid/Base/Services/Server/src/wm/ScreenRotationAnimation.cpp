@@ -1,8 +1,8 @@
 
 #include "wm/ScreenRotationAnimation.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::ISystemProperties;
@@ -164,7 +164,7 @@ failed:
     // AutoPtr<ISystemProperties> sysProp;
     // CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     // String hwrotation;
-    // sysProp->GetEx(String("ro.sf.hwrotation"), String("0"), &hwrotation);
+    // sysProp->Get(String("ro.sf.hwrotation"), String("0"), &hwrotation);
     // if(String("180").Equals(hwrotation)){
     //     mHwrotation = ISurface::ROTATION_180;
     // }

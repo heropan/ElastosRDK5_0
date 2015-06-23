@@ -7,9 +7,9 @@
 #include "os/SystemClock.h"
 #include "os/HandlerBase.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IPendingIntentOnFinished;
 using Elastos::Droid::Content::IIntent;

@@ -18,9 +18,9 @@ ECode CInputChannelHelper::OpenInputChannelPair(
     AutoPtr<IInputChannel> channel0, channel1;
     FAIL_RETURN(CInputChannel::OpenInputChannelPair(name, (CInputChannel**)&channel0, (CInputChannel**)&channel1));
     *inputChannel0 = channel0;
-    INTERFACE_ADDREF(*inputChannel0);
+    REFCOUNT_ADD(*inputChannel0);
     *inputChannel1 = channel1;
-    INTERFACE_ADDREF(*inputChannel1);
+    REFCOUNT_ADD(*inputChannel1);
 
     return NOERROR;
 }

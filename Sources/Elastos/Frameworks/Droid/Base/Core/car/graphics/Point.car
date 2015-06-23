@@ -12,12 +12,12 @@ module
         /**
          * Returns true if the point's coordinates equal (x,y)
          */
-        EqualsEx2(
+        Equals(
             [in] Int32 x,
             [in] Int32 y,
             [out] Boolean* result);
 
-        EqualsEx(
+        Equals(
             [in] IPoint* p,
             [out] Boolean* result);
 

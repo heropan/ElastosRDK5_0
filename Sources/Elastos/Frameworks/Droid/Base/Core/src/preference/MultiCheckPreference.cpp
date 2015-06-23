@@ -2,7 +2,7 @@
 #include "MultiCheckPreference.h"
 #include "CMultiCheckPreferenceSavedState.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;
@@ -66,7 +66,7 @@ void MultiCheckPreference::Init(
             const_cast<Int32 *>(R::styleable::ListPreference),
             ARRAY_SIZE(R::styleable::ListPreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     mEntries = NULL;
     a->GetTextArray(R::styleable::ListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
     if (mEntries != NULL) {
@@ -84,7 +84,7 @@ void MultiCheckPreference::Init(
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Preference),
             ARRAY_SIZE(R::styleable::Preference));
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetString(R::styleable::Preference_summary, &mSummary);
     a->Recycle();
 }
@@ -273,7 +273,7 @@ ECode MultiCheckPreference::OnPrepareDialogBuilder(
 
     mOrigValues->Copy(mSetValues);
     AutoPtr<IDialogInterfaceOnMultiChoiceClickListener> listener = new MultiChoiceClickListener(this);
-    return builder->SetMultiChoiceItemsEx(mEntries, mSetValues, listener);
+    return builder->SetMultiChoiceItems(mEntries, mSetValues, listener);
 }
 
 ECode MultiCheckPreference::OnDialogClosed(
@@ -311,7 +311,7 @@ ECode MultiCheckPreference::OnGetDefaultValue(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(str, (ICharSequence**)&cs);
     *value = (IInterface*)cs;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -333,7 +333,7 @@ ECode MultiCheckPreference::OnSaveInstanceState(
     if (IsPersistent(&isPersistent), isPersistent) {
         // No need to save instance state since it's persistent
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -342,7 +342,7 @@ ECode MultiCheckPreference::OnSaveInstanceState(
     AutoPtr< ArrayOf<Boolean> > values = GetValues();
     myState->SetValues(values);
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 
@@ -371,10 +371,10 @@ ECode MultiCheckPreference::SetDialogTitle(
     return DialogPreference::SetDialogTitle(dialogTitle);
 }
 
-ECode MultiCheckPreference::SetDialogTitleEx(
+ECode MultiCheckPreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
-    return DialogPreference::SetDialogTitleEx(dialogTitleResId);
+    return DialogPreference::SetDialogTitle(dialogTitleResId);
 }
 
 ECode MultiCheckPreference::GetDialogTitle(
@@ -389,10 +389,10 @@ ECode MultiCheckPreference::SetDialogMessage(
     return DialogPreference::SetDialogMessage(dialogMessage);
 }
 
-ECode MultiCheckPreference::SetDialogMessageEx(
+ECode MultiCheckPreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
-    return DialogPreference::SetDialogMessageEx(dialogMessageResId);
+    return DialogPreference::SetDialogMessage(dialogMessageResId);
 }
 
 ECode MultiCheckPreference::GetDialogMessage(
@@ -407,10 +407,10 @@ ECode MultiCheckPreference::SetDialogIcon(
     return DialogPreference::SetDialogIcon(dialogIcon);
 }
 
-ECode MultiCheckPreference::SetDialogIconEx(
+ECode MultiCheckPreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
-    return DialogPreference::SetDialogIconEx(dialogIconRes);
+    return DialogPreference::SetDialogIcon(dialogIconRes);
 }
 
 ECode MultiCheckPreference::GetDialogIcon(
@@ -425,10 +425,10 @@ ECode MultiCheckPreference::SetPositiveButtonText(
     return DialogPreference::SetPositiveButtonText(positiveButtonText);
 }
 
-ECode MultiCheckPreference::SetPositiveButtonTextEx(
+ECode MultiCheckPreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
-    return DialogPreference::SetPositiveButtonTextEx(positiveButtonTextResId);
+    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
 }
 
 ECode MultiCheckPreference::GetPositiveButtonText(
@@ -443,10 +443,10 @@ ECode MultiCheckPreference::SetNegativeButtonText(
     return DialogPreference::SetNegativeButtonText(negativeButtonText);
 }
 
-ECode MultiCheckPreference::SetNegativeButtonTextEx(
+ECode MultiCheckPreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
-    return DialogPreference::SetNegativeButtonTextEx(negativeButtonTextResId);
+    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
 }
 
 ECode MultiCheckPreference::GetNegativeButtonText(

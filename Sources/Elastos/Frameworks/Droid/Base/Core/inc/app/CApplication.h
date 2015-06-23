@@ -6,12 +6,11 @@
 #include "_CApplication.h"
 #include "app/LoadedPkg.h"
 #include "content/ContextWrapper.h"
-#include "content/ContextMacro.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContext;

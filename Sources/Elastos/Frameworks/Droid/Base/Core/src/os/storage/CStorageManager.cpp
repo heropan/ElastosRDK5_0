@@ -5,8 +5,8 @@
 #include "os/storage/CMountServiceBinderListener.h"
 #include "os/CServiceManager.h"
 #include "os/CMessageHelper.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
@@ -506,7 +506,7 @@ ECode CStorageManager::GetVolumeList(
 
     if (mMountService == NULL) {
         *ppVolumelists = ArrayOf<IStorageVolume*>::Alloc(0);
-        INTERFACE_ADDREF(*ppVolumelists);
+        REFCOUNT_ADD(*ppVolumelists);
         return NOERROR;
     }
 
@@ -518,12 +518,12 @@ ECode CStorageManager::GetVolumeList(
     }
     if (list == NULL) {
         *ppVolumelists = ArrayOf<IStorageVolume*>::Alloc(0);
-        INTERFACE_ADDREF(*ppVolumelists);
+        REFCOUNT_ADD(*ppVolumelists);
         return NOERROR;
     }
 
     *ppVolumelists = list;
-    INTERFACE_ADDREF(*ppVolumelists);
+    REFCOUNT_ADD(*ppVolumelists);
     return NOERROR;
     //} catch (RemoteException e) {
     //    Log.e(TAG, "Failed to get volume list", e);
@@ -546,7 +546,7 @@ ECode CStorageManager::GetVolumePaths(
         (*volumes)[i]->GetPath(&(*paths)[i]);
     }
     *ppVolumepaths = paths;
-    INTERFACE_ADDREF(*ppVolumepaths);
+    REFCOUNT_ADD(*ppVolumepaths);
     return NOERROR;
 }
 

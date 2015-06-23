@@ -2,9 +2,9 @@
 #include "text/TextUtils.h"
 #include "os/SystemClock.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -266,25 +266,25 @@ void CThrottleService::SettingsObserver::Register(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_POLLING_SEC, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_POLLING_SEC, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_THRESHOLD_BYTES, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_THRESHOLD_BYTES, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_VALUE_KBITSPS, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_VALUE_KBITSPS, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_RESET_DAY, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_RESET_DAY, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_NOTIFICATION_TYPE, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_NOTIFICATION_TYPE, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_HELP_URI, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_HELP_URI, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::THROTTLE_MAX_NTP_CACHE_AGE_SEC, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::THROTTLE_MAX_NTP_CACHE_AGE_SEC, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
 }
 
@@ -671,7 +671,7 @@ ECode CThrottleService::MyHandler::OnPolicyChanged()
         AutoPtr<IRandom> g;
         CRandom::New((IRandom**)&g);
         Int32 i;
-        g->NextInt32Ex(28, &i);
+        g->NextInt32(28, &i);
         mHost->mPolicyResetDay = 1 + i; // 1-28
         Boolean result;
         settingsGlobal->PutInt32(resolver,
@@ -959,7 +959,7 @@ void CThrottleService::MyHandler::PostNotification(
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
     // TODO - fix up intent
-    intent->SetClassNameEx(String("com.android.phone"), String("com.android.phone.DataUsage"));
+    intent->SetClassName(String("com.android.phone"), String("com.android.phone.DataUsage"));
     intent->SetFlags(IIntent::FLAG_ACTIVITY_NO_HISTORY);
 
     AutoPtr<IPendingIntentHelper> pendingIntenthelper;

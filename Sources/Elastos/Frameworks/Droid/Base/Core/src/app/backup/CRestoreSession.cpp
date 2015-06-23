@@ -1,5 +1,5 @@
 #include "app/backup/CRestoreSession.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "app/backup/CRestoreObserverWrapper.h"
 
 using Elastos::Utility::Logging::Logger;

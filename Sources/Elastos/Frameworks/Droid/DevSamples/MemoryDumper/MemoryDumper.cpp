@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #if 1
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "CMemoryDumper.h"
 
 using Elastos::Utility::Logging::Slogger;

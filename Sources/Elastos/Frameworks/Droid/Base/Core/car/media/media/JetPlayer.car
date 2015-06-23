@@ -97,7 +97,7 @@ module
          * @param afd the asset file descriptor.
          * @return true if loading the .jet file was successful, false if loading failed.
          */
-        LoadJetFileEx(
+        LoadJetFile(
             [in] IAssetFileDescriptor* afd,
             [out] Boolean* result);
 
@@ -273,7 +273,7 @@ module
          * @param listener
          * @param handler the Handler that will receive the event notification messages.
          */
-        SetEventListenerEx(
+        SetEventListener(
             [in] IOnJetEventListener* listener,
             [in] IHandler* handler);
     }

@@ -4,7 +4,7 @@
 #include "app/backup/CBackupDataOutput.h"
 #include "app/backup/CFullBackupDataOutput.h"
 #include "os/Binder.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::IO::CFileOutputStream;

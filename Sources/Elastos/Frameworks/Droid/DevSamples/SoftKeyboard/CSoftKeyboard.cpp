@@ -2,7 +2,7 @@
 #include "CSoftKeyboard.h"
 #include "LatinKeyboard.h"
 #include "R.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -131,25 +131,25 @@ ECode CSoftKeyboard::ObtainStyledAttributes(
     return InputMethodService::ObtainStyledAttributes(attrs, styles);
 }
 
-ECode CSoftKeyboard::ObtainStyledAttributesEx(
+ECode CSoftKeyboard::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
-    return InputMethodService::ObtainStyledAttributesEx(resid, attrs, styles);
+    return InputMethodService::ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode CSoftKeyboard::ObtainStyledAttributesEx2(
+ECode CSoftKeyboard::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
-    return InputMethodService::ObtainStyledAttributesEx2(set, attrs, styles);
+    return InputMethodService::ObtainStyledAttributes(set, attrs, styles);
 }
 
-ECode CSoftKeyboard::ObtainStyledAttributesEx3(
+ECode CSoftKeyboard::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -157,7 +157,7 @@ ECode CSoftKeyboard::ObtainStyledAttributesEx3(
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
-    return InputMethodService::ObtainStyledAttributesEx3(set, attrs, defStyleAttr, defStyleRes, styles);
+    return InputMethodService::ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes, styles);
 }
 
 ECode CSoftKeyboard::GetClassLoader(
@@ -323,7 +323,7 @@ ECode CSoftKeyboard::CheckPermission(
     return InputMethodService::CheckPermission(permission, pid, uid, result);
 }
 
-ECode CSoftKeyboard::CheckUriPermissionEx(
+ECode CSoftKeyboard::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -332,7 +332,7 @@ ECode CSoftKeyboard::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32 * result)
 {
-    return InputMethodService::CheckUriPermissionEx(
+    return InputMethodService::CheckUriPermission(
             uri,
             readPermission,
             writePermission,
@@ -1300,10 +1300,10 @@ ECode CSoftKeyboard::StopSelf()
     return InputMethodService::StopSelf();
 }
 
-ECode CSoftKeyboard::StopSelfEx(
+ECode CSoftKeyboard::StopSelf(
     /* [in] */ Int32 startId)
 {
-    return InputMethodService::StopSelfEx(startId);
+    return InputMethodService::StopSelf(startId);
 }
 
 ECode CSoftKeyboard::StopSelfResult(
@@ -1413,14 +1413,14 @@ ECode CSoftKeyboard::RegisterReceiver(
     return InputMethodService::RegisterReceiver(receiver,filter,intent);
 }
 
-ECode CSoftKeyboard::RegisterReceiverEx(
+ECode CSoftKeyboard::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** intent)
 {
-    return InputMethodService::RegisterReceiverEx(receiver,filter,
+    return InputMethodService::RegisterReceiver(receiver,filter,
         broadcastPermission,scheduler,intent);
 }
 
@@ -1440,7 +1440,7 @@ Boolean CSoftKeyboard::TranslateKeyDown(
     Int32 c = 0;
 
     //TODO
-    // event->GetUnicodeCharEx(MetaKeyKeyListener::GetMetaState(mMetaState), &c);
+    // event->GetUnicodeChar(MetaKeyKeyListener::GetMetaState(mMetaState), &c);
     // mMetaState = MetaKeyKeyListener::AdjustMetaAfterKeypress(mMetaState);
 
     AutoPtr<IInputConnection> ic;
@@ -1720,12 +1720,12 @@ ECode CSoftKeyboard::UnregisterComponentCallbacks(
     return InputMethodService::UnregisterComponentCallbacks(componentCallback);
 }
 
-ECode CSoftKeyboard::GetStringEx(
+ECode CSoftKeyboard::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
-    return InputMethodService::GetStringEx(resId, formatArgs, str);
+    return InputMethodService::GetString(resId, formatArgs, str);
 }
 
 ECode CSoftKeyboard::GetThemeResId(
@@ -1805,14 +1805,14 @@ ECode CSoftKeyboard::OpenOrCreateDatabase(
     return InputMethodService::OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode CSoftKeyboard::OpenOrCreateDatabaseEx(
+ECode CSoftKeyboard::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return InputMethodService::OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return InputMethodService::OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode CSoftKeyboard::DeleteDatabase(
@@ -1865,10 +1865,10 @@ ECode CSoftKeyboard::SetWallpaper(
     return InputMethodService::SetWallpaper(bitmap);
 }
 
-ECode CSoftKeyboard::SetWallpaperEx(
+ECode CSoftKeyboard::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return InputMethodService::SetWallpaperEx(data);
+    return InputMethodService::SetWallpaper(data);
 }
 
 ECode CSoftKeyboard::ClearWallpaper()
@@ -1883,22 +1883,22 @@ ECode CSoftKeyboard::StartActivityAsUser(
     return InputMethodService::StartActivityAsUser(intent, user);
 }
 
-ECode CSoftKeyboard::StartActivityAsUserEx(
+ECode CSoftKeyboard::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
 {
-    return InputMethodService::StartActivityAsUserEx(intent, options, user);
+    return InputMethodService::StartActivityAsUser(intent, options, user);
 }
 
-ECode CSoftKeyboard::StartActivitiesEx(
+ECode CSoftKeyboard::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
-    return InputMethodService::StartActivitiesEx(intents, options);
+    return InputMethodService::StartActivities(intents, options);
 }
 
-ECode CSoftKeyboard::StartIntentSenderEx(
+ECode CSoftKeyboard::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -1906,14 +1906,14 @@ ECode CSoftKeyboard::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return InputMethodService::StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
+    return InputMethodService::StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
 }
 
-ECode CSoftKeyboard::SendBroadcastEx(
+ECode CSoftKeyboard::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return InputMethodService::SendBroadcastEx(intent, receiverPermission);
+    return InputMethodService::SendBroadcast(intent, receiverPermission);
 }
 
 ECode CSoftKeyboard::SendOrderedBroadcast(
@@ -1923,7 +1923,7 @@ ECode CSoftKeyboard::SendOrderedBroadcast(
     return InputMethodService::SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode CSoftKeyboard::SendOrderedBroadcastEx(
+ECode CSoftKeyboard::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -1932,7 +1932,7 @@ ECode CSoftKeyboard::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return InputMethodService::SendOrderedBroadcastEx(intent, receiverPermission,
+    return InputMethodService::SendOrderedBroadcast(intent, receiverPermission,
             resultReceiver, scheduler, initialCode, initialData, initialExtras);
 }
 
@@ -1943,12 +1943,12 @@ ECode CSoftKeyboard::SendBroadcastAsUser(
     return InputMethodService::SendBroadcastAsUser(intent, user);
 }
 
-ECode CSoftKeyboard::SendBroadcastAsUserEx(
+ECode CSoftKeyboard::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return InputMethodService::SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return InputMethodService::SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode CSoftKeyboard::SendOrderedBroadcastAsUser(
@@ -2116,11 +2116,11 @@ ECode CSoftKeyboard::GetExternalCacheDir(
     return InputMethodService::GetExternalCacheDir(externalDir);
 }
 
-ECode CSoftKeyboard::StartActivityEx(
+ECode CSoftKeyboard::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return InputMethodService::StartActivityEx(intent, options);
+    return InputMethodService::StartActivity(intent, options);
 }
 
 ECode CSoftKeyboard::StartActivities(
@@ -2165,14 +2165,14 @@ ECode CSoftKeyboard::StopServiceAsUser(
     return InputMethodService::StopServiceAsUser(service, user, succeeded);
 }
 
-ECode CSoftKeyboard::BindServiceEx(
+ECode CSoftKeyboard::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return InputMethodService::BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return InputMethodService::BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode CSoftKeyboard::CheckCallingUriPermission(
@@ -2217,7 +2217,7 @@ ECode CSoftKeyboard::EnforceCallingOrSelfUriPermission(
     return InputMethodService::EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode CSoftKeyboard::EnforceUriPermissionEx(
+ECode CSoftKeyboard::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -2226,7 +2226,7 @@ ECode CSoftKeyboard::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return InputMethodService::EnforceUriPermissionEx(uri, readPermission, writePermission,
+    return InputMethodService::EnforceUriPermission(uri, readPermission, writePermission,
             pid, uid, modeFlags, message);
 }
 

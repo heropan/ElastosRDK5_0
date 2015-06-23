@@ -3,10 +3,10 @@
 #include "am/ContentProviderRecord.h"
 #include "am/ProcessRecord.h"
 #include "am/CContentProviderConnection.h"
-#include "elastos/StringUtils.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "os/UserHandle.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -305,13 +305,13 @@ ECode ContentProviderRecord::Wait()
     return Object::Wait();
 }
 
-ECode ContentProviderRecord::WaitEx(
+ECode ContentProviderRecord::Wait(
     /* [in] */ Int64 millis)
 {
     return Object::Wait(millis);
 }
 
-ECode ContentProviderRecord::WaitEx2(
+ECode ContentProviderRecord::Wait(
     /* [in] */ Int64 millis,
     /* [in] */ Int32 nanos)
 {

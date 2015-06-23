@@ -91,7 +91,7 @@ module {
             [in] Int32 groupPos,
             [out] Boolean* res);
 
-        ExpandGroupEx(
+        ExpandGroup(
             [in] IPositionMetadata* posMetadata,
             [out] Boolean* res);
 
@@ -99,7 +99,7 @@ module {
             [in] Int32 groupPos,
             [out] Boolean* res);
 
-        CollapseGroupEx(
+        CollapseGroup(
             [in] IPositionMetadata* posMetadata,
             [out] Boolean* res);
     }

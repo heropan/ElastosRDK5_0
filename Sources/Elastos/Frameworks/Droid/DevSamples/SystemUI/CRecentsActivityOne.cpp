@@ -1,10 +1,10 @@
 #include "CRecentsActivityOne.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Content::CIntent;
@@ -377,7 +377,7 @@ void CRecentsActivityOne::HandleIntent(
                 recentTasksLoader->IsFirstScreenful(&b);
                 AutoPtr<IObjectContainer> tasks;
                 recentTasksLoader->GetLoadedTasks((IObjectContainer**)&tasks);
-                mRecentsPanel->ShowEx(TRUE, tasks, b, waitingForWindowAnimation);
+                mRecentsPanel->Show(TRUE, tasks, b, waitingForWindowAnimation);
             }
         }
     }

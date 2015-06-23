@@ -4,9 +4,9 @@
 
 #include "_CDialerKeyListener.h"
 #include "text/method/DialerKeyListener.h"
-#include "text/method/BaseKeyListenerMacro.h"
-#include "text/method/KeyListenerMacro.h"
-#include "text/InputFilterMacro.h"
+
+
+
 
 namespace Elastos {
 namespace Droid {

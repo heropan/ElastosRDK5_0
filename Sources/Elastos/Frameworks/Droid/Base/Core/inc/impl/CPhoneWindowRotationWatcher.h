@@ -4,12 +4,11 @@
 #include "_CPhoneWindowRotationWatcher.h"
 #include "os/Runnable.h"
 #include "ext/frameworkext.h"
-#include "elastos/List.h"
-#include "elastos/Slogger.h"
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::EIID_IWindow;

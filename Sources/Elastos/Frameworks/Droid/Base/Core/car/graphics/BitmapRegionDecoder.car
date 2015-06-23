@@ -116,7 +116,7 @@ module
          * :-|:------------|
          *  IOException | if the image format is not supported or can not be decoded.
          */
-        NewInstanceEx(
+        NewInstance(
             [in] IFileDescriptor* fd,
             [in] Boolean isShareable,
             [out] IBitmapRegionDecoder** result);
@@ -142,7 +142,7 @@ module
          * :-|:------------|
          * IOException | if the image format is not supported or can not be decoded.
          */
-        NewInstanceEx2(
+        NewInstance(
             [in] IInputStream* is,
             [in] Boolean isShareable,
             [out] IBitmapRegionDecoder** result);
@@ -165,7 +165,7 @@ module
          * :-|:------------|
          * IOException | if the image format is not supported or can not be decoded.
          */
-        NewInstanceEx3(
+        NewInstance(
             [in] String pathName,
             [in] Boolean isShareable,
             [out] IBitmapRegionDecoder** result);

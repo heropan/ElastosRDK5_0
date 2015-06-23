@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Utility::Logging::Slogger;
@@ -35,7 +35,7 @@ ECode CAssetFileDescriptorAutoCloseOutputStream::constructor(
     return NOERROR;
 }
 
-ECode CAssetFileDescriptorAutoCloseOutputStream::WriteBytesEx(
+ECode CAssetFileDescriptorAutoCloseOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -43,12 +43,12 @@ ECode CAssetFileDescriptorAutoCloseOutputStream::WriteBytesEx(
     if (mRemaining >= 0) {
         if (mRemaining == 0) return NOERROR;
         if (count > mRemaining) count = (Int32)mRemaining;
-        FAIL_RETURN(ParcelFileDescriptor::AutoCloseOutputStream::WriteBytesEx(buffer, offset, count));
+        FAIL_RETURN(ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer, offset, count));
         mRemaining -= count;
         return NOERROR;
     }
 
-    return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytesEx(buffer, offset, count);
+    return ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(buffer, offset, count);
 }
 
 ECode CAssetFileDescriptorAutoCloseOutputStream::WriteBytes(
@@ -118,7 +118,7 @@ ECode CAssetFileDescriptorAutoCloseOutputStream::GetLock(
 
     AutoPtr<IInterface> obj = ParcelFileDescriptor::AutoCloseOutputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

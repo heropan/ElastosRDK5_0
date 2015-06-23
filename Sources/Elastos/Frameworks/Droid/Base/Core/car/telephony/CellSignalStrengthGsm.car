@@ -12,7 +12,7 @@ module
             [in] Int32 ss,
             [in] Int32 ber);
 
-        CopyEx(
+        Copy(
             [out] ICellSignalStrengthGsm** res);
 
         ToString(

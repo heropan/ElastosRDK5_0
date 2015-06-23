@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "text/CLengthFilter.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;

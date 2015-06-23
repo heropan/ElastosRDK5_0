@@ -4,14 +4,12 @@
 
 #include "_CAsyncPlayer.h"
 #include "ext/frameworkext.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

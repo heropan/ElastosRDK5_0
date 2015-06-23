@@ -864,7 +864,7 @@ public:
      * @param metaState The meta key modifier state.
      * @return The associated character or combining accent, or 0 if none.
      */
-    CARAPI GetUnicodeCharEx(
+    CARAPI GetUnicodeChar(
         /* [in] */ Int32 metaState,
         /* [out] */ Int32* unicodeChar);
 
@@ -907,7 +907,7 @@ public:
      * @param metaState The preferred meta key modifier state.
      * @return The matching associated character, or 0 if none.
      */
-    CARAPI GetMatchEx(
+    CARAPI GetMatch(
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 modifiers,
         /* [out] */ Char32* match);
@@ -962,7 +962,7 @@ public:
      *
      * @return The return value from the Callback method that was called.
      */
-    CARAPI DispatchEx(
+    CARAPI Dispatch(
         /* [in] */ IKeyEventCallback* receiver,
         /* [in] */ IDispatcherState* state,
         /* [in] */ IInterface* target,

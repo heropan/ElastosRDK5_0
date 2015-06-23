@@ -4,7 +4,7 @@
 #include "animation/CAnimatorSet.h"
 #include "view/animation/CDecelerateInterpolator.h"
 #include "view/menu/CActionMenuView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Animation::CAnimatorSet;
 using Elastos::Droid::Animation::CObjectAnimator;
@@ -73,11 +73,11 @@ void AbsActionBarView::OnConfigurationChanged(
         const_cast<Int32*>(R::styleable::ActionBar),
         ARRAY_SIZE(R::styleable::ActionBar));
 
-    GetContext()->ObtainStyledAttributesEx3(NULL, values,
+    GetContext()->ObtainStyledAttributes(NULL, values,
         R::attr::actionBarStyle, 0, (ITypedArray**)&a);
 
     Int32 h = 0;
-    a->GetLayoutDimensionEx(R::styleable::ActionBar_height, 0, &h);
+    a->GetLayoutDimension(R::styleable::ActionBar_height, 0, &h);
     SetContentHeight(h);
 
     a->Recycle();

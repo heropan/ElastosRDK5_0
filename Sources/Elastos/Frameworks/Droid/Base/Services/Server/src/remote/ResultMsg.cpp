@@ -1,6 +1,6 @@
 
 #include "remote/ResultMsg.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 

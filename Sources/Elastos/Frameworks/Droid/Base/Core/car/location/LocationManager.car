@@ -193,7 +193,7 @@ module
          * enabled are returned.
          * @return list of Strings containing names of the providers
          */
-        GetProvidersEx(
+        GetProviders(
             [in] ICriteria* criteria,
             [in] Boolean enabledOnly,
             [out] IObjectContainer** providers);
@@ -272,7 +272,7 @@ module
          * @throws IllegalArgumentException if listener is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestLocationUpdatesEx(
+        RequestLocationUpdates(
             [in] String provider,
             [in] Int64 minTime,
             [in] Float minDistance,
@@ -301,7 +301,7 @@ module
          * @throws IllegalArgumentException if listener is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestLocationUpdatesEx2(
+        RequestLocationUpdates(
             [in] Int64 minTime,
             [in] Float minDistance,
             [in] ICriteria* criteria,
@@ -325,7 +325,7 @@ module
          * @throws IllegalArgumentException if intent is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestLocationUpdatesEx3(
+        RequestLocationUpdates(
             [in] String provider,
             [in] Int64 minTime,
             [in] Float minDistance,
@@ -422,7 +422,7 @@ module
          * @throws IllegalArgumentException if intent is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestLocationUpdatesEx4(
+        RequestLocationUpdates(
             [in] Int64 minTime,
             [in] Float minDistance,
             [in] ICriteria* criteria,
@@ -472,7 +472,7 @@ module
          * @throws IllegalArgumentException if listener is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestSingleUpdateEx(
+        RequestSingleUpdate(
             [in] ICriteria* criteria,
             [in] ILocationListener* listener,
             [in] ILooper* looper);
@@ -490,7 +490,7 @@ module
          * @throws IllegalArgumentException if intent is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestSingleUpdateEx2(
+        RequestSingleUpdate(
             [in] String provider,
             [in] IPendingIntent* intent);
 
@@ -508,7 +508,7 @@ module
          * @throws IllegalArgumentException if intent is null
          * @throws SecurityException if no suitable permission is present
          */
-        RequestSingleUpdateEx3(
+        RequestSingleUpdate(
             [in] ICriteria* criteria,
             [in] IPendingIntent* intent);
 
@@ -569,7 +569,7 @@ module
          *
          * @hide
          */
-        RequestLocationUpdatesEx5(
+        RequestLocationUpdates(
             [in] ILocationRequest* request,
             [in] ILocationListener* listener,
             [in] ILooper* looper);
@@ -595,7 +595,7 @@ module
          *
          * @hide
          */
-        RequestLocationUpdatesEx6(
+        RequestLocationUpdates(
             [in] ILocationRequest* request,
             [in] IPendingIntent* intent);
 
@@ -619,7 +619,7 @@ module
          * @param intent pending intent object that no longer needs location updates
          * @throws IllegalArgumentException if intent is null
          */
-        RemoveUpdatesEx(
+        RemoveUpdates(
             [in] IPendingIntent* intent);
 
         /**

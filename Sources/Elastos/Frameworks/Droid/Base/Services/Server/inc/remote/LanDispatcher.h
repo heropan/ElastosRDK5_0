@@ -3,12 +3,10 @@
 #define __LANDISPATCHER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/ThreadBase.h>
 #include "remote/ServerSocketTimer.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Utility::Etl::List;
 using Elastos::Net::IDatagramSocket;
 using Elastos::Droid::Content::IContext;
 

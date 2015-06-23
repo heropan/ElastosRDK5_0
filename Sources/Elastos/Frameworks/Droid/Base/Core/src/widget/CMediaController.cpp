@@ -66,7 +66,7 @@ ECode CMediaController::Show()
     return MediaController::Show();
 }
 
-ECode CMediaController::ShowEx(
+ECode CMediaController::Show(
         /* [in] */ Int32 timeout)
 {
     return MediaController::Show(timeout);

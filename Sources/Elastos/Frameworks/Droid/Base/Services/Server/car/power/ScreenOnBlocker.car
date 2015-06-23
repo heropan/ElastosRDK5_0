@@ -27,7 +27,7 @@ module
          * It is an error to call release() if the screen on blocker has not been acquired.
          * The system may crash.
          */
-        ReleaseEx();
+        Release();
     }
 
     } // namespace Power

@@ -43,7 +43,7 @@ module
         SetView(
             [in] IView* view);
 
-        SetViewEx(
+        SetView(
             [in] IView* view,
             [in] Int32 viewSpacingLeft,
             [in] Int32 viewSpacingTop,
@@ -59,7 +59,7 @@ module
         SetIcon(
             [in] Int32 resId);
 
-        SetIconEx(
+        SetIcon(
             [in] IDrawable* icon);
 
         GetIconAttributeResId(

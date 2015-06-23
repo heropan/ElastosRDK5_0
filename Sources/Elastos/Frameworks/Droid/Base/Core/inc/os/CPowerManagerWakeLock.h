@@ -4,11 +4,8 @@
 
 #include "_CPowerManagerWakeLock.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -89,7 +86,7 @@ public:
      *
      * @param timeout The timeout after which to release the wake lock, in milliseconds.
      */
-    CARAPI AcquireLockEx(
+    CARAPI AcquireLock(
         /* [in] */ Int64 timeout);
 
     /**
@@ -115,7 +112,7 @@ public:
      *
      * {@hide}
      */
-     CARAPI ReleaseLockEx(
+     CARAPI ReleaseLock(
         /* [in] */ Int32 flags);
 
     /**

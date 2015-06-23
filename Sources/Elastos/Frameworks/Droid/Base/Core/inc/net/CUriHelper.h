@@ -3,7 +3,7 @@
 #define __CURIHELPER_H__
 
 #include "_CUriHelper.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFile;
 
@@ -43,7 +43,7 @@ public:
         /* [in] */ const String& s,
         /* [out] */ String* encoded);
 
-    CARAPI EncodeEx(
+    CARAPI Encode(
         /* [in] */ const String& s,
         /* [in] */ const String& allow,
         /* [out] */ String* result);

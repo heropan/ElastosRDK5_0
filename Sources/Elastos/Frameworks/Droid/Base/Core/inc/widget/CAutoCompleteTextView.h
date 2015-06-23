@@ -1,7 +1,6 @@
 #include "_CAutoCompleteTextView.h"
 #include "AutoCompleteTextView.h"
-#include "view/ViewMacro.h"
-#include "TextViewMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::EIID_View;
@@ -50,7 +49,7 @@ public:
     /**
      * Convenience for {@link Selection#setSelection(Spannable, Int32)}.
      */
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 index);
 
     /**

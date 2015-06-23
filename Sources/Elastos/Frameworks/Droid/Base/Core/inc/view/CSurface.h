@@ -4,7 +4,7 @@
 
 #include "_CSurface.h"
 #include "graphics/Canvas.h"
-#include "graphics/CanvasMacro.h"
+
 #include <gui/Surface.h>
 
 using namespace Elastos::Droid::Graphics;
@@ -49,7 +49,7 @@ private:
         CARAPI SetMatrix(
             /* [in] */ IMatrix* matrix);
 
-        CARAPI GetMatrixEx(
+        CARAPI GetMatrix(
             /* [out] */ IMatrix** ctm);
 
     private:
@@ -86,7 +86,7 @@ public:
         /* [in] */ Int32 height,
         /* [out] */ IBitmap** bitmap);
 
-    static CARAPI ScreenshotEx(
+    static CARAPI Screenshot(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 minLayer,

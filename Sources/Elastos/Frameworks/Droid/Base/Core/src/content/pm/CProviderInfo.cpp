@@ -352,7 +352,7 @@ ECode CProviderInfo::GetUriPermissionPatterns(
 {
     VALIDATE_NOT_NULL(patterns);
     *patterns = mUriPermissionPatterns;
-    INTERFACE_ADDREF(*patterns);
+    REFCOUNT_ADD(*patterns);
     return NOERROR;
 }
 
@@ -368,7 +368,7 @@ ECode CProviderInfo::GetPathPermissions(
 {
     VALIDATE_NOT_NULL(pathPermissions);
     *pathPermissions = mPathPermissions;
-    INTERFACE_ADDREF(*pathPermissions);
+    REFCOUNT_ADD(*pathPermissions);
     return NOERROR;
 }
 

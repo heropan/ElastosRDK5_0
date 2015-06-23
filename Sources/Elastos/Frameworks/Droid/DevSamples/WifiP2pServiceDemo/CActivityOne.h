@@ -6,11 +6,11 @@
 #include "_CActivityOne.h"
 #include <elrefbase.h>
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "ChatManager.h"
 
 using Elastos::ElRefBase;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::App::Activity;

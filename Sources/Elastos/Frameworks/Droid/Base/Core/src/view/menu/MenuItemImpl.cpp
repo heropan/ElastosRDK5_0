@@ -4,7 +4,7 @@
 #include "view/menu/CIconMenuItemView.h"
 #include "view/ActionProvider.h"
 #include "view/LayoutInflater.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include "widget/CLinearLayout.h"
 #include "R.h"
 
@@ -412,7 +412,7 @@ ECode MenuItemImpl::SetSubMenu(
 
     AutoPtr<ICharSequence> csq;
     GetTitle((ICharSequence**)&csq);
-    ISubMenu::Probe(subMenu)->SetHeaderTitleEx(csq);
+    ISubMenu::Probe(subMenu)->SetHeaderTitle(csq);
     return NOERROR;
 }
 
@@ -456,13 +456,13 @@ ECode MenuItemImpl::SetTitle(
     mMenu->OnItemsChanged(FALSE);
 
     if (mSubMenu != NULL) {
-        ISubMenu::Probe(mSubMenu)->SetHeaderTitleEx(title);
+        ISubMenu::Probe(mSubMenu)->SetHeaderTitle(title);
     }
 
     return NOERROR;
 }
 
-ECode MenuItemImpl::SetTitleEx(
+ECode MenuItemImpl::SetTitle(
     /* [in] */ Int32 title)
 {
     String str;
@@ -541,7 +541,7 @@ ECode MenuItemImpl::SetIcon(
     return NOERROR;
 }
 
-ECode MenuItemImpl::SetIconEx(
+ECode MenuItemImpl::SetIcon(
     /* [in] */Int32 iconResId)
 {
     mIconDrawable = NULL;
@@ -798,7 +798,7 @@ ECode MenuItemImpl::SetActionView(
     return NOERROR;
 }
 
-ECode MenuItemImpl::SetActionViewEx(
+ECode MenuItemImpl::SetActionView(
     /* [in] */ Int32 resId)
 {
     AutoPtr<IContext> context;
@@ -809,7 +809,7 @@ ECode MenuItemImpl::SetActionViewEx(
     AutoPtr<ILinearLayout> linearLayout;
     CLinearLayout::New(context, (ILinearLayout**)&linearLayout);
     AutoPtr<IView> view;
-    inflater->InflateEx2(resId, linearLayout, FALSE, (IView**)&view);
+    inflater->Inflate(resId, linearLayout, FALSE, (IView**)&view);
 
     SetActionView(view);
 
@@ -828,7 +828,7 @@ ECode MenuItemImpl::GetActionView(
         return NOERROR;
     }
     else if (mActionProvider != NULL) {
-        mActionProvider->OnCreateActionViewEx((IMenuItem*)this->Probe(EIID_IMenuItem), (IView**)&mActionView);
+        mActionProvider->OnCreateActionView((IMenuItem*)this->Probe(EIID_IMenuItem), (IView**)&mActionView);
         *view = mActionView;
         INTERFACE_ADDREF(*view);
         return NOERROR;

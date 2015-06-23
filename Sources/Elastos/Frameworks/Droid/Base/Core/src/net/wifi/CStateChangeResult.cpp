@@ -30,7 +30,7 @@ ECode CStateChangeResult::GetWifiSsid(
 {
     VALIDATE_NOT_NULL(ssid);
     *ssid = mWifiSsid;
-    INTERFACE_ADDREF(*ssid);
+    REFCOUNT_ADD(*ssid);
     return NOERROR;
 }
 

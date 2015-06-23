@@ -1,7 +1,7 @@
 #ifndef __NUMBERPICKER_H__
 #define __NUMBERPICKER_H__
 
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "ext/frameworkext.h"
 #include "view/VelocityTracker.h"
 #include "view/accessibility/AccessibilityNodeProvider.h"
@@ -74,7 +74,7 @@ public:
             /* [in] */ Int32 dend,
             /* [out] */ ICharSequence** sou);
 
-        CARAPI ClearMetaKeyStateEx(
+        CARAPI ClearMetaKeyState(
             /* [in] */ Int64 state,
             /* [in] */ Int32 which,
             /* [out] */ Int64* ret);

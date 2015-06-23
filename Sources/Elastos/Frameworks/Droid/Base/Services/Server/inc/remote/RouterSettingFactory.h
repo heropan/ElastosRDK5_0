@@ -3,9 +3,7 @@
 #define __ROUTERSETTINGFACTORY_H__
 
 #include "remote/AbstractDeviceFactory.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Net::IServerSocket;
 
 namespace Elastos {

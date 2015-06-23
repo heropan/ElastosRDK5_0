@@ -1,10 +1,10 @@
 #include "speech/tts/AudioPlaybackHandler.h"
-#include <elastos/Logger.h>
-#include <Elastos.Core.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
 #include "ext/frameworkext.h"
 
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

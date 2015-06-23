@@ -45,7 +45,7 @@ public:
         /* [in] */ Int64 txPackets,
         /* [in] */ Int64 operations);
 
-    CARAPI AddValuesEx(
+    CARAPI AddValues(
         /* [in] */ INetworkStatsEntry* entry);
 
     CARAPI GetValues(
@@ -75,7 +75,7 @@ public:
         /* [in] */ Int64 txPackets,
         /* [in] */ Int64 operations);
 
-    CARAPI CombineValuesEx(
+    CARAPI CombineValues(
         /* [in] */ const String& iface,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 set,
@@ -86,7 +86,7 @@ public:
         /* [in] */ Int64 txPackets,
         /* [in] */ Int64 operations);
 
-    CARAPI CombineValuesEx2(
+    CARAPI CombineValues(
         /* [in] */ INetworkStatsEntry* entry);
 
     CARAPI CombineAllValues(
@@ -123,12 +123,12 @@ public:
         /* [in] */ INetworkStatsEntry* recycle,
         /* [out] */ INetworkStatsEntry** result);
 
-    CARAPI GetTotalEx(
+    CARAPI GetTotal(
         /* [in] */ INetworkStatsEntry* recycle,
         /* [in] */ Int32 limitUid,
         /* [out] */ INetworkStatsEntry** result);
 
-    CARAPI GetTotalEx2(
+    CARAPI GetTotal(
         /* [in] */ INetworkStatsEntry* recycle,
         /* [in] */ IObjectContainer* limitIface,
         /* [out] */ INetworkStatsEntry** result);

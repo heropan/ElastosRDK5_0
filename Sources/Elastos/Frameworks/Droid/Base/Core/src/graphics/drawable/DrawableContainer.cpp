@@ -48,7 +48,7 @@ Boolean DrawableContainer::GetPadding(
 {
     AutoPtr<IRect> r = mDrawableContainerState->GetConstantPadding();
     if (r != NULL) {
-        padding->SetEx(r);
+        padding->Set(r);
         return TRUE;
     }
     if (mCurrDrawable != NULL) {
@@ -136,10 +136,10 @@ void DrawableContainer::OnBoundsChange(
     /* [in] */ IRect* bounds)
 {
     if (mLastDrawable != NULL) {
-        mLastDrawable->SetBoundsEx(bounds);
+        mLastDrawable->SetBounds(bounds);
     }
     if (mCurrDrawable != NULL) {
-        mCurrDrawable->SetBoundsEx(bounds);
+        mCurrDrawable->SetBounds(bounds);
     }
 }
 
@@ -363,7 +363,7 @@ Boolean DrawableContainer::SelectDrawable(
             d->SetColorFilter(mColorFilter);
             d->SetState(GetState(), &isDifferent);
             d->SetLevel(GetLevel(), &isDifferent);
-            d->SetBoundsEx(GetBounds());
+            d->SetBounds(GetBounds());
         }
     }
     else {
@@ -520,7 +520,7 @@ DrawableContainer::DrawableContainerState::DrawableContainerState(
             if (res != NULL) {
                 AutoPtr<IDrawableConstantState> state;
                 (*origDr)[i]->GetConstantState((IDrawableConstantState**)&state);
-                state->NewDrawableEx(res, (IDrawable**)&dr);
+                state->NewDrawable(res, (IDrawable**)&dr);
                 mDrawables->Set(i, dr);
             }
             else {

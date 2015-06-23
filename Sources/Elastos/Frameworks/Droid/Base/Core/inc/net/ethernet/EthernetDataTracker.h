@@ -5,9 +5,8 @@
 #include "net/DhcpInfoInternal.h"
 #include "content/BroadcastReceiver.h"
 #include "os/Runnable.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Content::BroadcastReceiver;

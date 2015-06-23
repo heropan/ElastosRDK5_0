@@ -47,7 +47,7 @@ ECode CListenerTransport::OnLocationChanged(
     /* [in] */ ILocation* location)
 {
     AutoPtr<IMessage> msg;
-    mListenerHandler->ObtainMessageEx(TYPE_LOCATION_CHANGED, location, (IMessage**)&msg);
+    mListenerHandler->ObtainMessage(TYPE_LOCATION_CHANGED, location, (IMessage**)&msg);
     Boolean result;
     return mListenerHandler->SendMessage(msg, &result);
 }
@@ -66,7 +66,7 @@ ECode CListenerTransport::OnStatusChanged(
     }
 
     AutoPtr<IMessage> msg;
-    mListenerHandler->ObtainMessageEx(TYPE_STATUS_CHANGED, b, (IMessage**)&msg);
+    mListenerHandler->ObtainMessage(TYPE_STATUS_CHANGED, b, (IMessage**)&msg);
     Boolean result;
     return mListenerHandler->SendMessage(msg, &result);
 }
@@ -78,7 +78,7 @@ ECode CListenerTransport::OnProviderEnabled(
     CStringWrapper::New(provider, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
-    mListenerHandler->ObtainMessageEx(TYPE_PROVIDER_ENABLED, seq, (IMessage**)&msg);
+    mListenerHandler->ObtainMessage(TYPE_PROVIDER_ENABLED, seq, (IMessage**)&msg);
     Boolean result;
     return mListenerHandler->SendMessage(msg, &result);
 }
@@ -90,7 +90,7 @@ ECode CListenerTransport::OnProviderDisabled(
     CStringWrapper::New(provider, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
-    mListenerHandler->ObtainMessageEx(TYPE_PROVIDER_DISABLED, seq, (IMessage**)&msg);
+    mListenerHandler->ObtainMessage(TYPE_PROVIDER_DISABLED, seq, (IMessage**)&msg);
     Boolean result;
     return mListenerHandler->SendMessage(msg, &result);
 }

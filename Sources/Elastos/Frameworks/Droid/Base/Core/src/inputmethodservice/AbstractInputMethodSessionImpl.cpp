@@ -92,7 +92,7 @@ ECode AbstractInputMethodSessionImpl::DispatchKeyEvent(
     assert(event != NULL && mAbstractHost != NULL);
 
     Boolean handled = FALSE;
-    event->DispatchEx((IKeyEventCallback*)mAbstractHost->Probe(EIID_IKeyEventCallback),
+    event->Dispatch((IKeyEventCallback*)mAbstractHost->Probe(EIID_IKeyEventCallback),
             mAbstractHost->mDispatcherState, this->Probe(EIID_IInputMethodSession), &handled);
     if (callback != NULL) {
         return callback->FinishedEvent(seq, handled);

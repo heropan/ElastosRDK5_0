@@ -3,9 +3,9 @@
 #define __CTABHOST_H_
 
 #include "_CTabHost.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "widget/TabHost.h"
 
 
@@ -41,7 +41,7 @@ public:
 
     CARAPI Setup();
 
-    CARAPI SetupEx(
+    CARAPI Setup(
         /* [in] */ ILocalActivityManager* activityGroup);
 
     CARAPI AddTab(

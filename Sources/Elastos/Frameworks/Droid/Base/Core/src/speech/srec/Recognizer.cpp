@@ -1,8 +1,8 @@
 #include "speech/srec/Recognizer.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Logger.h>
-#include <Elastos.Core.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Libcore::ICU::ILocaleHelper;

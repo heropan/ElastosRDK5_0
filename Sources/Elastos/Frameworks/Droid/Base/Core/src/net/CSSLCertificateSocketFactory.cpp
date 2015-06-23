@@ -420,7 +420,7 @@ ECode CSSLCertificateSocketFactory::CreateSocket(
  * the socket to avoid man-in-the-middle attacks.</p>
  */
 //@Override
-ECode CSSLCertificateSocketFactory::CreateSocketEx(
+ECode CSSLCertificateSocketFactory::CreateSocket(
     /* [out] */ ISocket** socket)
 {
     VALLIDATE_NOT_NULL(socket);
@@ -439,7 +439,7 @@ ECode CSSLCertificateSocketFactory::CreateSocketEx(
  * the socket to avoid man-in-the-middle attacks.</p>
  */
 //@Override
-ECode CreateSocketEx2(
+ECode CreateSocket(
     /* [in] */ IInetAddress* addr,
     /* [in] */ Int32 port,
     /* [in] */ IInetAddress* localAddr,
@@ -462,7 +462,7 @@ ECode CreateSocketEx2(
  * the socket to avoid man-in-the-middle attacks.</p>
  */
 //@Override
-ECode CSSLCertificateSocketFactory::CreateSocketEx3(
+ECode CSSLCertificateSocketFactory::CreateSocket(
     /* [in] */ IInetAddress* addr,
     /* [in] */ Int32 port,
     /* [out] */ ISocket** socket)
@@ -482,7 +482,7 @@ ECode CSSLCertificateSocketFactory::CreateSocketEx3(
  * (unless created with {@link #getInsecure(int, SSLSessionCache)}).
  */
 //@Override
-ECode CSSLCertificateSocketFactory::CreateSocketEx4(
+ECode CSSLCertificateSocketFactory::CreateSocket(
     /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [in] */ IInetAddress* localAddr,
@@ -512,7 +512,7 @@ ECode CSSLCertificateSocketFactory::CreateSocketEx4(
  * (unless created with {@link #getInsecure(int, SSLSessionCache)}).
  */
 //@Override
-ECode CSSLCertificateSocketFactory::CreateSocketEx5(
+ECode CSSLCertificateSocketFactory::CreateSocket(
     /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [out] */ ISocket** socket)

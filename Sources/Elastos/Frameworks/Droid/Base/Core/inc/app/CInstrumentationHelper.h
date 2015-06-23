@@ -22,7 +22,7 @@ public:
         /* [in] */ IContext* context,
         /* [out] */ IApplication** app);
 
-    CARAPI NewApplicationEx(
+    CARAPI NewApplication(
         /* [in] */ const ClassID& clsid,
         /* [in] */ IContext* context,
         /* [out] */ IApplication** app);

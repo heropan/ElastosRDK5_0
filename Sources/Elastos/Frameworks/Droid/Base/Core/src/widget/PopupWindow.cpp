@@ -1,6 +1,6 @@
 #include "widget/PopupWindow.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include <R.h>
 #include "os/Build.h"
 #include "view/CWindowManagerLayoutParams.h"
@@ -512,7 +512,7 @@ ECode PopupWindow::Init(
             const_cast<Int32 *>(R::styleable::PopupWindow),
             ARRAY_SIZE(R::styleable::PopupWindow));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(ctx->ObtainStyledAttributesEx3(
+    FAIL_RETURN(ctx->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     a->GetDrawable(R::styleable::PopupWindow_popupBackground, (IDrawable**)&mBackground);
@@ -986,7 +986,7 @@ ECode PopupWindow::PreparePopup(
         CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, height,
                 (IFrameLayoutLayoutParams**)&listParams);
         popupViewContainer->SetBackgroundDrawable(mBackground);
-        popupViewContainer->AddViewEx3(mContentView, (IViewGroupLayoutParams*)listParams);
+        popupViewContainer->AddView(mContentView, (IViewGroupLayoutParams*)listParams);
 
         mPopupView = (IView*)(popupViewContainer->Probe(EIID_IView));
     }
@@ -1015,7 +1015,7 @@ void PopupWindow::InvokePopup(
     mPopupView->SetFitsSystemWindows(mLayoutInsetDecor);
     SetLayoutDirectionFromAnchor();
 
-    mWindowManager->AddViewEx5(mPopupView, p);
+    mWindowManager->AddView(mPopupView, p);
 }
 
 void PopupWindow::SetLayoutDirectionFromAnchor()
@@ -1176,7 +1176,7 @@ Boolean PopupWindow::FindDropDownPosition(
             ASSERT_SUCCEEDED(CRect::New(scrollX, scrollY,  scrollX + mPopupWidth + xoff,
                     scrollY + mPopupHeight + anchorHeight + yoff, (IRect**)&r));
             Boolean result;
-            anchor->RequestRectangleOnScreenEx(r, TRUE, &result);
+            anchor->RequestRectangleOnScreen(r, TRUE, &result);
         }
 
         // now we re-evaluate the space available, and decide from that

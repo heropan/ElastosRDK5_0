@@ -1,11 +1,10 @@
 
 #include "media/CMediaActionSound.h"
 #include "media/CSoundPool.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 
 namespace Elastos {
 namespace Droid {

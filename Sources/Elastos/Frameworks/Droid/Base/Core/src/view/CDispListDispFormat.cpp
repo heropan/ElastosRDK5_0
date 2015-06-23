@@ -1,5 +1,5 @@
 #include "view/CDispListDispFormat.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
 

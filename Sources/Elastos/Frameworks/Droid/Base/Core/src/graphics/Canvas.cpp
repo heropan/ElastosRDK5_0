@@ -13,8 +13,8 @@
 #include "graphics/DrawFilter.h"
 #include "graphics/TextLayout.h"
 #include "graphics/TextLayoutCache.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkCanvas.h>
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkPaint.h>
@@ -317,7 +317,7 @@ ECode Canvas::Save(
  *                  to save/restore
  * @return The value to pass to restoreToCount() to balance this save()
  */
-ECode Canvas::SaveEx(
+ECode Canvas::Save(
     /* [in] */ Int32 saveFlags,
     /* [out] */ Int32* count)
 {
@@ -362,7 +362,7 @@ ECode Canvas::SaveLayer(
 /**
  * Helper version of saveLayer() that takes 4 values rather than a RectF.
  */
-ECode Canvas::SaveLayerEx(
+ECode Canvas::SaveLayer(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -395,7 +395,7 @@ ECode Canvas::SaveLayerAlpha(
     return NOERROR;
 }
 
-ECode Canvas::SaveLayerAlphaEx(
+ECode Canvas::SaveLayerAlpha(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -461,7 +461,7 @@ ECode Canvas::Scale(
     return NOERROR;
 }
 
-ECode Canvas::ScaleEx(
+ECode Canvas::Scale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [in] */ Float px,
@@ -481,7 +481,7 @@ ECode Canvas::Rotate(
     return NOERROR;
 }
 
-ECode Canvas::RotateEx(
+ECode Canvas::Rotate(
     /* [in] */ Float degrees,
     /* [in] */ Float px,
     /* [in] */ Float py)
@@ -533,7 +533,7 @@ ECode Canvas::GetMatrix(
     return NOERROR;
 }
 
-ECode Canvas::GetMatrixEx(
+ECode Canvas::GetMatrix(
     /* [out] */ IMatrix** metrix)
 {
     assert(metrix != NULL);
@@ -556,7 +556,7 @@ ECode Canvas::ClipRect(
     return NOERROR;
 }
 
-ECode Canvas::ClipRectEx(
+ECode Canvas::ClipRect(
     /* [in] */ IRect* rect,
     /* [in] */ RegionOp op,
     /* [out] */ Boolean* isNotEmpty)
@@ -570,7 +570,7 @@ ECode Canvas::ClipRectEx(
     return NOERROR;
 }
 
-ECode Canvas::ClipRectEx2(
+ECode Canvas::ClipRect(
     /* [in] */ IRectF* rect,
     /* [out] */ Boolean* isNotEmpty)
 {
@@ -585,7 +585,7 @@ ECode Canvas::ClipRectEx2(
     return NOERROR;
 }
 
-ECode Canvas::ClipRectEx3(
+ECode Canvas::ClipRect(
     /* [in] */ IRect* rect,
     /* [out] */ Boolean* isNotEmpty)
 {
@@ -600,7 +600,7 @@ ECode Canvas::ClipRectEx3(
     return NOERROR;
 }
 
-ECode Canvas::ClipRectEx4(
+ECode Canvas::ClipRect(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -614,7 +614,7 @@ ECode Canvas::ClipRectEx4(
     return NOERROR;
 }
 
-ECode Canvas::ClipRectEx5(
+ECode Canvas::ClipRect(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -630,7 +630,7 @@ ECode Canvas::ClipRectEx5(
     return NOERROR;
 }
 
-ECode Canvas::ClipRectEx6(
+ECode Canvas::ClipRect(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -659,7 +659,7 @@ ECode Canvas::ClipPath(
     return NOERROR;
 }
 
-ECode Canvas::ClipPathEx(
+ECode Canvas::ClipPath(
     /* [in] */ IPath* path,
     /* [out] */ Boolean* isNotEmpty)
 {
@@ -679,7 +679,7 @@ ECode Canvas::ClipRegion(
     return NOERROR;
 }
 
-ECode Canvas::ClipRegionEx(
+ECode Canvas::ClipRegion(
     /* [in] */ IRegion* region,
     /* [out] */ Boolean* isNotEmpty)
 {
@@ -692,7 +692,7 @@ ECode Canvas::GetDrawFilter(
     assert(filter != NULL);
 
     *filter = mDrawFilter;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -719,7 +719,7 @@ ECode Canvas::QuickReject(
     return NOERROR;
 }
 
-ECode Canvas::QuickRejectEx(
+ECode Canvas::QuickReject(
     /* [in] */ IPath* path,
     /* [in] */ CanvasEdgeType type,
     /* [out] */ Boolean* isNotIntersect)
@@ -732,7 +732,7 @@ ECode Canvas::QuickRejectEx(
     return NOERROR;
 }
 
-ECode Canvas::QuickRejectEx2(
+ECode Canvas::QuickReject(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -756,7 +756,7 @@ ECode Canvas::GetClipBounds(
     return NOERROR;
 }
 
-ECode Canvas::GetClipBoundsEx(
+ECode Canvas::GetClipBounds(
     /* [out] */ IRect** bounds)
 {
     assert(bounds != NULL);
@@ -792,7 +792,7 @@ ECode Canvas::DrawColor(
     return NOERROR;
 }
 
-ECode Canvas::DrawColorEx(
+ECode Canvas::DrawColor(
     /* [in] */ Int32 color,
     /* [in] */ PorterDuffMode mode)
 {
@@ -827,7 +827,7 @@ ECode Canvas::DrawPoints(
             SkCanvas::kPoints_PointMode);
 }
 
-ECode Canvas::DrawPointsEx(
+ECode Canvas::DrawPoints(
     /* [in] */ const ArrayOf<Float>& pts,
     /* [in] */ IPaint* paint)
 {
@@ -868,7 +868,7 @@ ECode Canvas::DrawLines(
             SkCanvas::kLines_PointMode);
 }
 
-ECode Canvas::DrawLinesEx(
+ECode Canvas::DrawLines(
     /* [in] */ const ArrayOf<Float> & pts,
     /* [in] */ IPaint* paint)
 {
@@ -886,17 +886,17 @@ ECode Canvas::DrawRect(
     return NOERROR;
 }
 
-ECode Canvas::DrawRectEx(
+ECode Canvas::DrawRect(
     /* [in] */ IRect* r,
     /* [in] */ IPaint* paint)
 {
     assert(r != NULL);
 
     CRect* r_ = (CRect*)r;
-    return DrawRectEx2(r_->mLeft, r_->mTop, r_->mRight, r_->mBottom, paint);
+    return DrawRect(r_->mLeft, r_->mTop, r_->mRight, r_->mBottom, paint);
 }
 
-ECode Canvas::DrawRectEx2(
+ECode Canvas::DrawRect(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -1031,7 +1031,7 @@ ECode Canvas::DrawBitmap(
     return NOERROR;
 }
 
-ECode Canvas::DrawBitmapEx(
+ECode Canvas::DrawBitmap(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ IRect* src,
     /* [in] */ IRectF* dst,
@@ -1054,7 +1054,7 @@ ECode Canvas::DrawBitmapEx(
     return NOERROR;
 }
 
-ECode Canvas::DrawBitmapEx2(
+ECode Canvas::DrawBitmap(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ IRect* src,
     /* [in] */ IRect* dst,
@@ -1077,7 +1077,7 @@ ECode Canvas::DrawBitmapEx2(
     return NOERROR;
 }
 
-ECode Canvas::DrawBitmapEx3(
+ECode Canvas::DrawBitmap(
     /* [in] */ const ArrayOf<Int32>& colors,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 stride,
@@ -1122,7 +1122,7 @@ ECode Canvas::DrawBitmapEx3(
     return NOERROR;
 }
 
-ECode Canvas::DrawBitmapEx4(
+ECode Canvas::DrawBitmap(
     /* [in] */ const ArrayOf<Int32> & colors,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 stride,
@@ -1134,11 +1134,11 @@ ECode Canvas::DrawBitmapEx4(
     /* [in] */ IPaint* paint)
 {
     // call through to the common float version
-    return DrawBitmapEx3(colors, offset, stride, (Float)x, (Float)y, width, height,
+    return DrawBitmap(colors, offset, stride, (Float)x, (Float)y, width, height,
             hasAlpha, paint);
 }
 
-ECode Canvas::DrawBitmapEx5(
+ECode Canvas::DrawBitmap(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ IMatrix* matrix,
     /* [in] */ IPaint* paint)
@@ -1258,7 +1258,7 @@ ECode Canvas::DrawText(
     return NOERROR;
 }
 
-ECode Canvas::DrawTextEx(
+ECode Canvas::DrawText(
     /* [in] */ const String& text,
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -1277,7 +1277,7 @@ ECode Canvas::DrawTextEx(
     return NOERROR;
 }
 
-ECode Canvas::DrawTextEx2(
+ECode Canvas::DrawText(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1302,7 +1302,7 @@ ECode Canvas::DrawTextEx2(
     return NOERROR;
 }
 
-ECode Canvas::DrawTextEx3(
+ECode Canvas::DrawText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1332,7 +1332,7 @@ ECode Canvas::DrawTextEx3(
         if (subSeq) {
             String str;
             subSeq->ToString(&str);
-            return DrawTextEx2(str, 0, str.GetLength(), x, y, paint);
+            return DrawText(str, 0, str.GetLength(), x, y, paint);
         }
     }
 
@@ -1369,7 +1369,7 @@ ECode Canvas::DrawTextRun(
      return NOERROR;
 }
 
-ECode Canvas::DrawTextRunEx(
+ECode Canvas::DrawTextRun(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1442,7 +1442,7 @@ ECode Canvas::DrawPosText(
     return NOERROR;
 }
 
-ECode Canvas::DrawPosTextEx(
+ECode Canvas::DrawPosText(
     /* [in] */ const String& text,
     /* [in] */ const ArrayOf<Float>& pos,
     /* [in] */ IPaint* paint)
@@ -1481,7 +1481,7 @@ ECode Canvas::DrawTextOnPath(
     return NOERROR;
 }
 
-ECode Canvas::DrawTextOnPathEx(
+ECode Canvas::DrawTextOnPath(
     /* [in] */ const String& text,
     /* [in] */ IPath* path,
     /* [in] */ Float hOffset,
@@ -1510,7 +1510,7 @@ ECode Canvas::DrawPicture(
     return NOERROR;
 }
 
-ECode Canvas::DrawPictureEx(
+ECode Canvas::DrawPicture(
     /* [in] */ IPicture* picture,
     /* [in] */ IRectF* dst)
 {
@@ -1531,7 +1531,7 @@ ECode Canvas::DrawPictureEx(
     return NOERROR;
 }
 
-ECode Canvas::DrawPictureEx2(
+ECode Canvas::DrawPicture(
     /* [in] */ IPicture* picture,
     /* [in] */ IRect* dst)
 {

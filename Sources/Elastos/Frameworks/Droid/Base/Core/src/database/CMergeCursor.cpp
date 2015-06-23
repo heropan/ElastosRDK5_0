@@ -18,12 +18,12 @@ PInterface CMergeCursor::Probe(
     return _CMergeCursor::Probe(riid);
 }
 
-ECode CMergeCursor::SetNotificationUriEx(
+ECode CMergeCursor::SetNotificationUri(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* notifyUri,
     /* [in] */ Int32 userHandle)
 {
-    return MergeCursor::SetNotificationUriEx(cr, notifyUri, userHandle);
+    return MergeCursor::SetNotificationUri(cr, notifyUri, userHandle);
 }
 
 ECode CMergeCursor::GetNotificationUri(

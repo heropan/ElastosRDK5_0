@@ -79,7 +79,7 @@ module
          * Just like {@link Paint#getTextRunAdvances}.
          * @hide
          */
-        GetTextRunAdvancesEx(
+        GetTextRunAdvances(
             [in] Int32 start,
             [in] Int32 end,
             [in] Int32 contextStart,

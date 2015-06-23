@@ -3,7 +3,7 @@
 
 #include "_CRootElement.h"
 #include "sax/Element.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IStringBuilder;
@@ -431,7 +431,7 @@ public:
     /**
      * Gets the child element with the given name.
      */
-    CARAPI GetChildEx(
+    CARAPI GetChild(
         /* [in] */ const String&  uri,
         /* [in] */ const String&  localName,
         /* [out] */ IElement** result);
@@ -451,7 +451,7 @@ public:
      * {@link org.xml.sax.SAXException} at parsing time if the specified child
      * is missing. This helps you ensure that your listeners are called.
      */
-    CARAPI RequireChildEx(
+    CARAPI RequireChild(
         /* [in] */ const String&  uri,
         /* [in] */ const String&  localName,
         /* [out] */ IElement** result);

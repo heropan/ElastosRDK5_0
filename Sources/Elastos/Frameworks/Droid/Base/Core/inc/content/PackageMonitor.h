@@ -3,13 +3,12 @@
 #define __PACKAGEMONITOR_H__
 
 #include "BroadcastReceiver.h"
-#include "content/ContextMacro.h"
-#include <ext/frameworkext.h>
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Core::Threading::Mutex;
+#include <ext/frameworkext.h>
+#include <elastos/utility/etl/HashSet.h>
+
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
 using Elastos::Droid::Content::IContext;
@@ -67,7 +66,7 @@ public:
         /* [in] */ ILooper* thread,
         /* [in] */ Boolean externalStorage);
 
-    CARAPI RegisterEx(
+    CARAPI Register(
         /* [in] */ IContext* context,
         /* [in] */ ILooper* thread,
         /* [in] */ IUserHandle* user,

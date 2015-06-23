@@ -2,9 +2,9 @@
 #include "media/CAsyncPlayer.h"
 #include "os/SystemClock.h"
 #include "media/CMediaPlayer.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

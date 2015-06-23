@@ -83,7 +83,7 @@ ECode CSearchableInfo::Init(
         const_cast<Int32 *>(R::styleable::Searchable),
         ARRAY_SIZE(R::styleable::Searchable));
     AutoPtr<ITypedArray> a;
-    activityContext->ObtainStyledAttributesEx2(attr, attrIds, (ITypedArray**)&a);
+    activityContext->ObtainStyledAttributes(attr, attrIds, (ITypedArray**)&a);
     a->GetResourceId(R::styleable::Searchable_label, 0, &mLabelId);
     a->GetResourceId(R::styleable::Searchable_hint, 0, &mHintId);
     a->GetResourceId(R::styleable::Searchable_icon, 0, &mIconId);
@@ -147,7 +147,7 @@ ECode CSearchableInfo::GetSearchActivity(
     /* [out] */ IComponentName** nameRst)
 {
     *nameRst = mSearchActivity;
-    INTERFACE_ADDREF(*nameRst);
+    REFCOUNT_ADD(*nameRst);
     return NOERROR;
 }
 
@@ -239,7 +239,7 @@ ECode CSearchableInfo::GetProviderContext(
     if (pkgName.Equals(mSuggestProviderPackage))
     {
         *rstCtx = activityCtx;
-        INTERFACE_ADDREF(*rstCtx);
+        REFCOUNT_ADD(*rstCtx);
         return NOERROR;
     }
     if (mSuggestProviderPackage != NULL)
@@ -265,7 +265,7 @@ ECode CSearchableInfo::FindActionKey(
     HashMap<Int32 , AutoPtr<IActionKeyInfo> >::Iterator it = mActionKeys.Find(keyCode);
     if (it != mActionKeys.End()) {
         *info = it->mSecond;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
     return NOERROR;
@@ -609,7 +609,7 @@ ECode CSearchableInfo::GetActivityMetaData(
     }
 
     *info = result;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

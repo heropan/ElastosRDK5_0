@@ -2,7 +2,7 @@
 #include "database/BulkCursorToCursorAdaptor.h"
 #include "database/DatabaseUtils.h"
 #include "os/CBundle.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::ICloseable;
@@ -280,7 +280,7 @@ ECode BulkCursorToCursorAdaptor::Respond(
      if(FAILED(ec)) {
         Slogger::W(TAG, "respond() threw RemoteException, returning an empty bundle. 0x%08x");
         *v =  CBundle::EMPTY;
-        INTERFACE_ADDREF(*v)
+        REFCOUNT_ADD(*v)
      }
     //}
     return ec;

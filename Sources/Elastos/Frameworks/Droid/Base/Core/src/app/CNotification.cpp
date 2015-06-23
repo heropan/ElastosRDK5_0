@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "os/UserHandle.h"
 #include "os/CBundle.h"
 #include "text/TextUtils.h"
@@ -150,7 +150,7 @@ ECode CNotification::GetContentIntent(
 {
     VALIDATE_NOT_NULL(intent);
     *intent = mContentIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -166,7 +166,7 @@ ECode CNotification::GetDeleteIntent(
 {
     VALIDATE_NOT_NULL(intent);
     *intent = mDeleteIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode CNotification::GetFullScreenIntent(
 {
     VALIDATE_NOT_NULL(intent);
     *intent = mFullScreenIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CNotification::GetTickerText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mTickerText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -214,7 +214,7 @@ ECode CNotification::GetTickerView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mTickerView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -230,7 +230,7 @@ ECode CNotification::GetContentView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mContentView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -246,7 +246,7 @@ ECode CNotification::GetBigContentView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mBigContentView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -262,7 +262,7 @@ ECode CNotification::GetLargeIcon(
 {
     VALIDATE_NOT_NULL(bitmap);
     *bitmap = mLargeIcon;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -278,7 +278,7 @@ ECode CNotification::GetSound(
 {
     VALIDATE_NOT_NULL(sound);
     *sound = mSound;
-    INTERFACE_ADDREF(*sound)
+    REFCOUNT_ADD(*sound)
     return NOERROR;
 }
 
@@ -309,7 +309,7 @@ ECode CNotification::GetVibrate(
 {
     VALIDATE_NOT_NULL(vibrate);
     *vibrate = mVibrate;
-    INTERFACE_ADDREF(*vibrate);
+    REFCOUNT_ADD(*vibrate);
     return NOERROR;
 }
 
@@ -415,7 +415,7 @@ ECode CNotification::GetKind(
 {
     VALIDATE_NOT_NULL(kind);
     *kind = mKind;
-    INTERFACE_ADDREF(*kind);
+    REFCOUNT_ADD(*kind);
     return NOERROR;
 }
 
@@ -431,7 +431,7 @@ ECode CNotification::GetExtras(
 {
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras)
+    REFCOUNT_ADD(*extras)
     return NOERROR;
 }
 
@@ -447,7 +447,7 @@ ECode CNotification::GetActions(
 {
     VALIDATE_NOT_NULL(actions);
     *actions = mActions;
-    INTERFACE_ADDREF(*actions);
+    REFCOUNT_ADD(*actions);
     return NOERROR;
 }
 

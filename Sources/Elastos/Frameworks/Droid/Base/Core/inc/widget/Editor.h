@@ -3,15 +3,14 @@
 #define __EDITOR_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "view/ViewTreeObserver.h"
 #include "view/ViewGroup.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "text/style/CSuggestionSpan.h"
-#include "widget/PopupWindowMacro.h"
+
 #include "widget/BaseAdapter.h"
-#include "widget/AdapterMacro.h"
+
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"
 #include "os/HandlerRunnableBase.h"
@@ -19,7 +18,7 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IComparator;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::HandlerRunnableBase;
 using Elastos::Droid::Os::Runnable;

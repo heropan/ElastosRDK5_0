@@ -55,7 +55,7 @@ ECode CTextView::OnPreDraw(
     return NOERROR;
 }
 
-ECode CTextView::SetTypefaceEx(
+ECode CTextView::SetTypeface(
     /* [in] */ ITypeface* tf,
     /* [in] */ Int32 style)
 {
@@ -293,7 +293,7 @@ ECode CTextView::SetCompoundDrawablesWithIntrinsicBounds(
     return TextView::SetCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom);
 }
 
-ECode CTextView::SetCompoundDrawablesWithIntrinsicBoundsEx(
+ECode CTextView::SetCompoundDrawablesWithIntrinsicBounds(
     /* [in] */ IDrawable* left,
     /* [in] */ IDrawable* top,
     /* [in] */ IDrawable* right,
@@ -320,13 +320,13 @@ ECode CTextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     return TextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(start, top, end, bottom);
 }
 
-ECode CTextView::SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(
+ECode CTextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     /* [in] */ IDrawable* start,
     /* [in] */ IDrawable* top,
     /* [in] */ IDrawable* end,
     /* [in] */ IDrawable* bottom)
 {
-    return TextView::SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(start, top, end, bottom);
+    return TextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(start, top, end, bottom);
 }
 
 ECode CTextView::GetCompoundDrawables(
@@ -408,7 +408,7 @@ ECode CTextView::SetTextSize(
     return TextView::SetTextSize(size);
 }
 
-ECode CTextView::SetTextSizeEx(
+ECode CTextView::SetTextSize(
     /* [in] */ Int32 unit,
     /* [in] */ Float size)
 {
@@ -445,7 +445,7 @@ ECode CTextView::GetTypeface(
     return NOERROR;
 }
 
-ECode CTextView::SetTextColorEx(
+ECode CTextView::SetTextColor(
     /* [in] */ Int32 color)
 {
     return TextView::SetTextColor(color);
@@ -584,7 +584,7 @@ ECode CTextView::GetUrls(
     return NOERROR;
 }
 
-ECode CTextView::SetHintTextColorEx(
+ECode CTextView::SetHintTextColor(
     /* [in] */ Int32 color)
 {
     return TextView::SetHintTextColor(color);
@@ -614,7 +614,7 @@ ECode CTextView::GetCurrentHintTextColor(
     return NOERROR;
 }
 
-ECode CTextView::SetLinkTextColorEx(
+ECode CTextView::SetLinkTextColor(
     /* [in] */ Int32 color)
 {
     return TextView::SetLinkTextColor(color);
@@ -835,7 +835,7 @@ ECode CTextView::Append(
     return TextView::Append(text);
 }
 
-ECode CTextView::AppendEx(
+ECode CTextView::Append(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -881,14 +881,14 @@ ECode CTextView::SetTextKeepState(
     return TextView::SetTextKeepState(text);
 }
 
-ECode CTextView::SetTextEx(
+ECode CTextView::SetText(
     /* [in] */ ICharSequence* text,
     /* [in] */ BufferType type)
 {
     return TextView::SetText(text, type);
 }
 
-ECode CTextView::SetTextEx2(
+ECode CTextView::SetText(
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 len)
@@ -896,20 +896,20 @@ ECode CTextView::SetTextEx2(
     return TextView::SetText(text, start, len);
 }
 
-ECode CTextView::SetTextKeepStateEx(
+ECode CTextView::SetTextKeepState(
     /* [in] */ ICharSequence* text,
     /* [in] */ BufferType type)
 {
     return TextView::SetTextKeepState(text, type);
 }
 
-ECode CTextView::SetTextEx3(
+ECode CTextView::SetText(
     /* [in] */ Int32 resid)
 {
     return TextView::SetText(resid);
 }
 
-ECode CTextView::SetTextEx4(
+ECode CTextView::SetText(
     /* [in] */ Int32 resid,
     /* [in] */ BufferType type)
 {
@@ -922,7 +922,7 @@ ECode CTextView::SetHint(
     return TextView::SetHint(hint);
 }
 
-ECode CTextView::SetHintEx(
+ECode CTextView::SetHint(
     /* [in] */ Int32 resid)
 {
     return TextView::SetHint(resid);
@@ -1056,7 +1056,7 @@ ECode CTextView::SetError(
     return TextView::SetError(error);
 }
 
-ECode CTextView::SetErrorEx(
+ECode CTextView::SetError(
     /* [in] */ ICharSequence* error,
     /* [in] */ IDrawable* icon)
 {
@@ -1251,7 +1251,7 @@ ECode CTextView::SetAllCaps(
     return TextView::SetAllCaps(allCaps);
 }
 
-ECode CTextView::SetSingleLineEx(
+ECode CTextView::SetSingleLine(
     /* [in] */ Boolean singleLine)
 {
     return TextView::SetSingleLine(singleLine);

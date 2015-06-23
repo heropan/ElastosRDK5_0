@@ -121,7 +121,7 @@ ECode TranslateAnimation::Init(
             const_cast<Int32 *>(R::styleable::TranslateAnimation),
             ARRAY_SIZE(R::styleable::TranslateAnimation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     AutoPtr<ITypedValue> value;
     a->PeekValue(R::styleable::TranslateAnimation_fromXDelta, (ITypedValue**)&value);

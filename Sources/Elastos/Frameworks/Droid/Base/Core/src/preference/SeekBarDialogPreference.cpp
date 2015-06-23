@@ -58,8 +58,8 @@ ECode SeekBarDialogPreference::GetInterfaceID(
 
 void SeekBarDialogPreference::CreateActionButtons()
 {
-    SetPositiveButtonTextEx(R::string::ok);
-    SetNegativeButtonTextEx(R::string::cancel);
+    SetPositiveButtonText(R::string::ok);
+    SetNegativeButtonText(R::string::cancel);
 }
 
 ECode SeekBarDialogPreference::OnBindDialogView(
@@ -94,10 +94,10 @@ ECode SeekBarDialogPreference::SetDialogTitle(
     return DialogPreference::SetDialogTitle(dialogTitle);
 }
 
-ECode SeekBarDialogPreference::SetDialogTitleEx(
+ECode SeekBarDialogPreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
-    return DialogPreference::SetDialogTitleEx(dialogTitleResId);
+    return DialogPreference::SetDialogTitle(dialogTitleResId);
 }
 
 ECode SeekBarDialogPreference::GetDialogTitle(
@@ -112,10 +112,10 @@ ECode SeekBarDialogPreference::SetDialogMessage(
     return DialogPreference::SetDialogMessage(dialogMessage);
 }
 
-ECode SeekBarDialogPreference::SetDialogMessageEx(
+ECode SeekBarDialogPreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
-    return DialogPreference::SetDialogMessageEx(dialogMessageResId);
+    return DialogPreference::SetDialogMessage(dialogMessageResId);
 }
 
 ECode SeekBarDialogPreference::GetDialogMessage(
@@ -130,10 +130,10 @@ ECode SeekBarDialogPreference::SetDialogIcon(
     return DialogPreference::SetDialogIcon(dialogIcon);
 }
 
-ECode SeekBarDialogPreference::SetDialogIconEx(
+ECode SeekBarDialogPreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
-    return DialogPreference::SetDialogIconEx(dialogIconRes);
+    return DialogPreference::SetDialogIcon(dialogIconRes);
 }
 
 ECode SeekBarDialogPreference::GetDialogIcon(
@@ -148,10 +148,10 @@ ECode SeekBarDialogPreference::SetPositiveButtonText(
     return DialogPreference::SetPositiveButtonText(positiveButtonText);
 }
 
-ECode SeekBarDialogPreference::SetPositiveButtonTextEx(
+ECode SeekBarDialogPreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
-    return DialogPreference::SetPositiveButtonTextEx(positiveButtonTextResId);
+    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
 }
 
 ECode SeekBarDialogPreference::GetPositiveButtonText(
@@ -166,10 +166,10 @@ ECode SeekBarDialogPreference::SetNegativeButtonText(
     return DialogPreference::SetNegativeButtonText(negativeButtonText);
 }
 
-ECode SeekBarDialogPreference::SetNegativeButtonTextEx(
+ECode SeekBarDialogPreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
-    return DialogPreference::SetNegativeButtonTextEx(negativeButtonTextResId);
+    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
 }
 
 ECode SeekBarDialogPreference::GetNegativeButtonText(

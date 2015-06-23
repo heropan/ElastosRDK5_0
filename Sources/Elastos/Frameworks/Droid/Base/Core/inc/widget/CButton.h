@@ -4,8 +4,8 @@
 
 #include "_CButton.h"
 #include "widget/Button.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{

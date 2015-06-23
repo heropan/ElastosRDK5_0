@@ -4,14 +4,11 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
 
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::ITextPaint;
 using Elastos::Droid::Text::ISpannable;
@@ -76,7 +73,7 @@ public:
             /* [in] */ Int32 v,
             /* [in] */ IPaintFontMetricsInt* fm);
 
-        CARAPI ChooseHeightEx(
+        CARAPI ChooseHeight(
             /* [in] */ ICharSequence* text,
             /* [in] */ Int32 start,
             /* [in] */ Int32 end,

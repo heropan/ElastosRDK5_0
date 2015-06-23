@@ -168,7 +168,7 @@ ECode CNetworkPolicyManager::ComputeLastCycleBoundary(
         lastMonth->SetMonth(month - 1);
         Int64 ret;
         lastMonth->Normalize(TRUE, &ret);
-        cycle->SetEx(lastMonth);
+        cycle->Set(lastMonth);
         SnapToCycleDay(cycle, cycleday);
     }
     cycle->ToMillis(TRUE, result);
@@ -216,7 +216,7 @@ ECode CNetworkPolicyManager::ComputeNextCycleBoundary(
         nextMonth->SetMonth(month + 1);
         Int64 ret;
         nextMonth->Normalize(TRUE, &ret);
-        cycle->SetEx(nextMonth);
+        cycle->Set(nextMonth);
         SnapToCycleDay(cycle, cycleday);
     }
     cycle->ToMillis(TRUE, result);

@@ -1,6 +1,6 @@
 #include "speech/tts/TtsEngines.h"
 #include "content/CIntent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "util/Xml.h"
 #include "content/pm/CResolveInfo.h"
 #include "content/pm/CServiceInfo.h"
@@ -24,7 +24,7 @@ using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::CLocale;
 using Libcore::ICU::CLocaleHelper;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -295,7 +295,7 @@ AutoPtr<IIntent> TtsEngines::GetSettingsIntent(
             if (!settings.IsNull()) {
                 AutoPtr<IIntent> i;
                 CIntent::New((IIntent**)&i);
-                i->SetClassNameEx(engine, settings);
+                i->SetClassName(engine, settings);
                 return i;
             }
         }

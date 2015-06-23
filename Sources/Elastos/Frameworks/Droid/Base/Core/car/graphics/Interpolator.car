@@ -13,8 +13,8 @@ module
 
     [deprecated]
     /**
-     * An interpolator defines the rate of change of an animation. This allows the 
-     * basic animation effects (alpha, scale, translate, rotate) to be accelerated, 
+     * An interpolator defines the rate of change of an animation. This allows the
+     * basic animation effects (alpha, scale, translate, rotate) to be accelerated,
      * decelerated, repeated, etc.
      */
     interface IInterpolator {
@@ -37,7 +37,7 @@ module
          * keyFrames. After this call the values for each keyFrame must be assigned
          * using setKeyFrame().
          */
-        ResetEx(
+        Reset(
             [in] Int32 valueCount,
             [in] Int32 frameCount);
 
@@ -66,7 +66,7 @@ module
          * @param values Array of values associated with theis key frame
          * @param blend (may be null) Optional array of 4 blend values
          */
-        SetKeyFrameEx(
+        SetKeyFrame(
             [in] Int32 index,
             [in] Int32 msec,
             [in] ArrayOf<Float> values,
@@ -100,7 +100,7 @@ module
          * @param values Where to write the computed values (may be NULL).
          * @return how the values were computed (even if values == null)
          */
-        TimeToValuesEx(
+        TimeToValues(
             [in] Int32 msec,
             [out] ArrayOf<Float> values,
             [out] InterpolatorResult* result);

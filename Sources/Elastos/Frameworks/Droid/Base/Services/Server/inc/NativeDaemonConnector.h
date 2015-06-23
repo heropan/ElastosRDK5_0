@@ -4,21 +4,20 @@
 
 #include "ext/frameworkdef.h"
 #include "NativeDaemonEvent.h"
-#include <Elastos.Core.h>
-#include <elastos/List.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Queue.h>  // TODO delete
 #include <elastos/BlockingQueue.h>  // TODO delete
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Queue;  // TODO delete
 using Elastos::Utility::BlockingQueue; // TODO delete
 using Elastos::Utility::Concurrent::IBlockingQueue;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IOutputStream;

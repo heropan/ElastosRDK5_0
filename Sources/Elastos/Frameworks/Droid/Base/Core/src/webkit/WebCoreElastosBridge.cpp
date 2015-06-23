@@ -10,14 +10,14 @@
 #include "webkit/WebCoreElastosBridge.h"
 #include "webkit/CWebViewClassic.h"
 #include "webkit/CPluginManagerHelper.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Net::IUri;
@@ -297,7 +297,7 @@ void WebCoreElastosBridge::SignalServiceFuncPtrQueue()
     AutoPtr<IMessageHelper> helper;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
-    helper->ObtainEx3(this, FUNCPTR_MESSAGE, (IMessage**)&msg);
+    helper->Obtain(this, FUNCPTR_MESSAGE, (IMessage**)&msg);
     Boolean result;
     SendMessage(msg, &result);
 }
@@ -412,7 +412,7 @@ void WebCoreElastosBridge::SetSharedTimer(
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
-            helper->ObtainEx3(this, TIMER_MESSAGE, (IMessage**)&msg);
+            helper->Obtain(this, TIMER_MESSAGE, (IMessage**)&msg);
             Boolean result;
             SendMessageDelayed(msg, timemillis, &result);
         }
@@ -421,7 +421,7 @@ void WebCoreElastosBridge::SetSharedTimer(
         AutoPtr<IMessageHelper> helper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
         AutoPtr<IMessage> msg;
-        helper->ObtainEx3(this, TIMER_MESSAGE, (IMessage**)&msg);
+        helper->Obtain(this, TIMER_MESSAGE, (IMessage**)&msg);
         Boolean result;
         SendMessageDelayed(msg, timemillis, &result);
         //if (DebugFlags::J_WEB_CORE_JAVA_BRIDGE) Logger::W(LOGTAG, "SendMessageDelayed, TIMER_MESSAGE, time:%lld", timemillis);

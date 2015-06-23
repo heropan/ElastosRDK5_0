@@ -42,13 +42,13 @@ public:
 
     /** Set the region to the specified rectangle
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ IRect* r,
         /* [out] */ Boolean* result);
 
     /** Set the region to the specified rectangle
      */
-    CARAPI SetEx2(
+    CARAPI Set(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -95,7 +95,7 @@ public:
      * Set the Rect to the bounds of the region. If the region is empty, the
      * Rect will be set to [0, 0, 0, 0]
      */
-    CARAPI GetBoundsEx(
+    CARAPI GetBounds(
         /* [in, out] */ IRect* r,
         /* [out] */ Boolean* result);
 
@@ -110,7 +110,7 @@ public:
      * Set the path to the boundary of the region. If the region is empty, the
      * path will also be empty.
      */
-    CARAPI GetBoundaryPathEx(
+    CARAPI GetBoundaryPath(
         /* [in, out] */ IPath* path,
         /* [out] */ Boolean* result);
 
@@ -138,7 +138,7 @@ public:
      * that the rectangle is not contained by this region, but return true is a
      * guarantee that the rectangle is contained by this region.
      */
-    CARAPI QuickContainsEx(
+    CARAPI QuickContains(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -159,7 +159,7 @@ public:
      * not intersect the region. Returning false is not a guarantee that they
      * intersect, but returning true is a guarantee that they do not.
      */
-    CARAPI QuickRejectEx(
+    CARAPI QuickReject(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -171,7 +171,7 @@ public:
      * intersect the region. Returning false is not a guarantee that they
      * intersect, but returning true is a guarantee that they do not.
      */
-    CARAPI QuickRejectEx2(
+    CARAPI QuickReject(
         /* [in] */ IRegion* rgn,
         /* [out] */ Boolean* result);
 
@@ -186,7 +186,7 @@ public:
      * Set the dst region to the result of translating this region by [dx, dy].
      * If this region is empty, then dst will be set to empty.
      */
-    CARAPI TranslateEx(
+    CARAPI Translate(
         /* [in] */ Int32 dx,
         /* [in] */ Int32 dy,
         /* [in] */ IRegion* dst);
@@ -208,7 +208,7 @@ public:
      * If this region is empty, then dst will be set to empty.
      * @hide
      */
-    CARAPI ScaleEx(
+    CARAPI Scale(
         /* [in] */ Float scale,
         /* [in] */ IRegion* dst);
 
@@ -229,7 +229,7 @@ public:
      * Perform the specified Op on this region and the specified rect. Return
      * true if the result of the op is not empty.
      */
-    CARAPI OpEx(
+    CARAPI Op(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -241,7 +241,7 @@ public:
      * Perform the specified Op on this region and the specified region. Return
      * true if the result of the op is not empty.
      */
-    CARAPI OpEx2(
+    CARAPI Op(
         /* [in] */ IRegion* region,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* result);
@@ -250,7 +250,7 @@ public:
      * Set this region to the result of performing the Op on the specified rect
      * and region. Return true if the result is not empty.
      */
-    CARAPI OpEx3(
+    CARAPI Op(
         /* [in] */ IRect* rect,
         /* [in] */ IRegion* region,
         /* [in] */ RegionOp op,
@@ -260,13 +260,13 @@ public:
      * Set this region to the result of performing the Op on the specified
      * regions. Return true if the result is not empty.
      */
-    CARAPI OpEx4(
+    CARAPI Op(
         /* [in] */ IRegion* region1,
         /* [in] */ IRegion* region2,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IRegion* region,
         /* [out] */ Boolean* result);
 

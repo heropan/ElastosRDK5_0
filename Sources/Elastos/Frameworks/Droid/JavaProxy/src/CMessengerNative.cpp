@@ -1,7 +1,7 @@
 
 #include "CMessengerNative.h"
 #include "Util.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 

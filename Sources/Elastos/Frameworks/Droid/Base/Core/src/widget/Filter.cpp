@@ -143,10 +143,10 @@ ECode Filter::SetDelayer(
 ECode Filter::DoFilter(
     /* [in] */ ICharSequence* constraint)
 {
-    return DoFilterEx(constraint, NULL);
+    return DoFilter(constraint, NULL);
 }
 
-ECode Filter::DoFilterEx(
+ECode Filter::DoFilter(
     /* [in] */ ICharSequence* constraint,
     /* [in] */ IFilterListener* listener)
 {
@@ -180,7 +180,7 @@ ECode Filter::DoFilterEx(
     args->mListener = listener;
 
     AutoPtr<IMessage> message;
-    mThreadHandler->ObtainMessageEx(FILTER_TOKEN, args, (IMessage**)&message);
+    mThreadHandler->ObtainMessage(FILTER_TOKEN, args, (IMessage**)&message);
 
     Boolean result;
     mThreadHandler->RemoveMessages(FILTER_TOKEN);
@@ -216,7 +216,7 @@ ECode Filter::HandleFilterMessage(
     }
 
     AutoPtr<IMessage> message;
-    mResultHandler->ObtainMessageEx(FILTER_TOKEN, args, (IMessage**)&message);
+    mResultHandler->ObtainMessage(FILTER_TOKEN, args, (IMessage**)&message);
     message->SendToTarget();
 
     Mutex::Autolock lock(mLock);

@@ -51,7 +51,7 @@ module
 
         LoadTasksInBackground();
 
-        LoadTasksInBackgroundEx(
+        LoadTasksInBackground(
             [in] Boolean zeroeth);
     }
 

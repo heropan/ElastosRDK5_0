@@ -4,10 +4,9 @@
 
 #include "_CSyncManager.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/StringBuilder.h>
 #include "BroadcastReceiver.h"
 #include "SyncAdaptersCache.h"
 #include "SyncQueue.h"

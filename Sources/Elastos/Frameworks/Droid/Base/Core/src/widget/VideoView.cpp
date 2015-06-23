@@ -1,13 +1,13 @@
 
 #include "widget/VideoView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <Elastos.Droid.Core_server.h>
 #include "net/Uri.h"
 #include "content/CIntent.h"
 #include "app/CAlertDialogBuilder.h"
 #include "R.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;
 using Elastos::Droid::Media::IMetadata;
@@ -123,7 +123,7 @@ ECode VideoView::VVOnPreparedListener::OnPrepared(
                     (seekToPosition != 0 || mHost->GetCurrentPosition() > 0)) {
                 if (mHost->mMediaController != NULL) {
                     // Show the media controls when we're paused into a video and make 'em stick.
-                    mHost->mMediaController->ShowEx(0);
+                    mHost->mMediaController->Show(0);
                 }
             }
         }
@@ -533,7 +533,7 @@ void VideoView::OpenVideo()
     mMediaPlayer->SetOnInfoListener(mOnInfoListener);
     ASSERT_SUCCEEDED(mMediaPlayer->SetOnBufferingUpdateListener(mBufferingUpdateListener));
     mCurrentBufferPercentage = 0;
-    ec = mMediaPlayer->SetDataSourceEx(mContext, mUri, NULL/*mHeaders*/);
+    ec = mMediaPlayer->SetDataSource(mContext, mUri, NULL/*mHeaders*/);
     if (FAILED(ec)) goto exit;
     ASSERT_SUCCEEDED(mMediaPlayer->SetDisplay(mSurfaceHolder));
     ASSERT_SUCCEEDED(mMediaPlayer->SetAudioStreamType(IAudioManager::STREAM_MUSIC));

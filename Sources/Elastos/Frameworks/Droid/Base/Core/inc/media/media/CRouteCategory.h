@@ -42,7 +42,7 @@ public:
      * @param context Context to resolve name resources
      * @return the name of this route category
      */
-    CARAPI GetNameEx(
+    CARAPI GetName(
         /* [in] */ IContext* context,
         /* [out] */ ICharSequence** result);
 

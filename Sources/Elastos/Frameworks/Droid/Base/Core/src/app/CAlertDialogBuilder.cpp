@@ -85,7 +85,7 @@ ECode CAlertDialogBuilder::SetTitle(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetTitleEx(
+ECode CAlertDialogBuilder::SetTitle(
     /* [in] */ ICharSequence* title)
 {
     return mP->SetTitle(title);
@@ -128,7 +128,7 @@ ECode CAlertDialogBuilder::SetMessage(
   *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetMessageEx(
+ECode CAlertDialogBuilder::SetMessage(
     /* [in] */ ICharSequence* message)
 {
     return mP->SetMessage(message);
@@ -150,7 +150,7 @@ ECode CAlertDialogBuilder::SetIcon(
   *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetIconEx(
+ECode CAlertDialogBuilder::SetIcon(
     /* [in] */ IDrawable* icon)
 {
     return mP->SetIcon(icon);
@@ -197,7 +197,7 @@ ECode CAlertDialogBuilder::SetPositiveButton(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetPositiveButtonEx(
+ECode CAlertDialogBuilder::SetPositiveButton(
     /* [in] */ ICharSequence* text,
     /* [in] */ IDialogInterfaceOnClickListener* listener)
 {
@@ -232,7 +232,7 @@ ECode CAlertDialogBuilder::SetNegativeButton(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetNegativeButtonEx(
+ECode CAlertDialogBuilder::SetNegativeButton(
     /* [in] */ ICharSequence* text,
     /* [in] */ IDialogInterfaceOnClickListener* listener)
 {
@@ -267,7 +267,7 @@ ECode CAlertDialogBuilder::SetNeutralButton(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetNeutralButtonEx(
+ECode CAlertDialogBuilder::SetNeutralButton(
     /* [in] */ ICharSequence* text,
     /* [in] */ IDialogInterfaceOnClickListener* listener)
 {
@@ -353,7 +353,7 @@ ECode CAlertDialogBuilder::SetItems(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetItemsEx(
+ECode CAlertDialogBuilder::SetItems(
     /* [in] */ ArrayOf<ICharSequence*>* _items,
     /* [in] */ IDialogInterfaceOnClickListener* listener)
 {
@@ -468,7 +468,7 @@ ECode CAlertDialogBuilder::SetMultiChoiceItems(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetMultiChoiceItemsEx(
+ECode CAlertDialogBuilder::SetMultiChoiceItems(
     /* [in] */ ArrayOf<ICharSequence*>* _items,
     /* [in] */ ArrayOf<Boolean>* _checkedItems,
     /* [in] */ IDialogInterfaceOnMultiChoiceClickListener* listener)
@@ -512,7 +512,7 @@ ECode CAlertDialogBuilder::SetMultiChoiceItemsEx(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetMultiChoiceItemsEx2(
+ECode CAlertDialogBuilder::SetMultiChoiceItems(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& isCheckedColumn,
     /* [in] */ const String& labelColumn,
@@ -576,7 +576,7 @@ ECode CAlertDialogBuilder::SetSingleChoiceItems(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetSingleChoiceItemsEx(
+ECode CAlertDialogBuilder::SetSingleChoiceItems(
     /* [in] */ ICursor* cursor,
     /* [in] */ Int32 checkedItem,
     /* [in] */ const String& labelColumn,
@@ -604,7 +604,7 @@ ECode CAlertDialogBuilder::SetSingleChoiceItemsEx(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetSingleChoiceItemsEx2(
+ECode CAlertDialogBuilder::SetSingleChoiceItems(
     /* [in] */ ArrayOf<ICharSequence*>* _items,
     /* [in] */ Int32 checkedItem,
     /* [in] */ IDialogInterfaceOnClickListener* listener)
@@ -636,7 +636,7 @@ ECode CAlertDialogBuilder::SetSingleChoiceItemsEx2(
  *
  * @return This Builder object to allow for chaining of calls to Set methods
  */
-ECode CAlertDialogBuilder::SetSingleChoiceItemsEx3(
+ECode CAlertDialogBuilder::SetSingleChoiceItems(
     /* [in] */ IListAdapter* adapter,
     /* [in] */ Int32 checkedItem,
     /* [in] */ IDialogInterfaceOnClickListener* listener)
@@ -701,7 +701,7 @@ ECode CAlertDialogBuilder::SetView(
  * be able to put padding around the view.
  * @hide
  */
-ECode CAlertDialogBuilder::SetViewEx(
+ECode CAlertDialogBuilder::SetView(
     /* [in] */ IView* view,
     /* [in] */ Int32 viewSpacingLeft,
     /* [in] */ Int32 viewSpacingTop,
@@ -781,7 +781,7 @@ ECode CAlertDialogBuilder::Create(
     }
 
     *dialog = cdialog.Get();
-    INTERFACE_ADDREF(*dialog);
+    REFCOUNT_ADD(*dialog);
 
     return NOERROR;
 }

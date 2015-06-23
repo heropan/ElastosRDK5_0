@@ -76,7 +76,7 @@ ECode CSQLiteQueryBuilder::Query(
             selectionArgs, groupBy, having, sortOrder, cursor);
 }
 
-ECode CSQLiteQueryBuilder::QueryEx(
+ECode CSQLiteQueryBuilder::Query(
     /* [in] */ ISQLiteDatabase *db,
     /* [in] */ ArrayOf<String>* projectionIn,
     /* [in] */ const String& selection,
@@ -88,11 +88,11 @@ ECode CSQLiteQueryBuilder::QueryEx(
     /* [out] */ ICursor **cursor)
 {
     VALIDATE_NOT_NULL(cursor);
-    return SQLiteQueryBuilder::QueryEx(db, projectionIn, selection,
+    return SQLiteQueryBuilder::Query(db, projectionIn, selection,
             selectionArgs, groupBy, having, sortOrder, limit, cursor);
 }
 
-ECode CSQLiteQueryBuilder::QueryEx2(
+ECode CSQLiteQueryBuilder::Query(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ ArrayOf<String>* projectionIn,
     /* [in] */ const String& selection,
@@ -105,7 +105,7 @@ ECode CSQLiteQueryBuilder::QueryEx2(
     /* [out] */ ICursor** cursor)
 {
     VALIDATE_NOT_NULL(cursor)
-    return SQLiteQueryBuilder::QueryEx2(db, projectionIn, selection,
+    return SQLiteQueryBuilder::Query(db, projectionIn, selection,
             selectionArgs, groupBy, having, sortOrder, limit, cancellationSignal, cursor);
 }
 
@@ -122,7 +122,7 @@ ECode CSQLiteQueryBuilder::BuildQuery(
     return SQLiteQueryBuilder::BuildQuery(projectionIn, selection, groupBy, having, sortOrder, limit, str);
 }
 
-ECode CSQLiteQueryBuilder::BuildQueryEx(
+ECode CSQLiteQueryBuilder::BuildQuery(
     /* [in] */ ArrayOf<String>* projectionIn,
     /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
@@ -133,7 +133,7 @@ ECode CSQLiteQueryBuilder::BuildQueryEx(
     /* [out] */ String *str)
 {
     VALIDATE_NOT_NULL(str);
-    return SQLiteQueryBuilder::BuildQueryEx(projectionIn, selection,
+    return SQLiteQueryBuilder::BuildQuery(projectionIn, selection,
             selectionArgs, groupBy, having, sortOrder, limit, str);
 }
 
@@ -154,7 +154,7 @@ ECode CSQLiteQueryBuilder::BuildUnionSubQuery(
             selection, groupBy, having, str);
 }
 
-ECode CSQLiteQueryBuilder::BuildUnionSubQueryEx(
+ECode CSQLiteQueryBuilder::BuildUnionSubQuery(
     /* [in] */ const String& typeDiscriminatorColumn,
     /* [in] */ const ArrayOf<String>& unionColumns,
     /* [in] */ IObjectStringMap* columnsPresentInTable,
@@ -167,7 +167,7 @@ ECode CSQLiteQueryBuilder::BuildUnionSubQueryEx(
     /* [out] */ String *str)
 {
     VALIDATE_NOT_NULL(str);
-    return SQLiteQueryBuilder::BuildUnionSubQueryEx(typeDiscriminatorColumn ,
+    return SQLiteQueryBuilder::BuildUnionSubQuery(typeDiscriminatorColumn ,
             unionColumns, columnsPresentInTable, computedColumnsOffset, typeDiscriminatorValue,
             selection, selectionArgs, groupBy, having, str);
 }

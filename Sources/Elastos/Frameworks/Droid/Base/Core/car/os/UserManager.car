@@ -136,7 +136,7 @@ module
          * @return the list of users that were created.
          * @hide
          */
-        GetUsersEx(
+        GetUsers(
             [in] Boolean excludeDying,
             [out] IObjectContainer** users);
 
@@ -230,7 +230,7 @@ module
          * is not valid.
          * @hide
          */
-        GetUserHandleEx(
+        GetUserHandle(
             [in] Int32 userSerialNumber,
             [out] Int32* userHandle);
     }

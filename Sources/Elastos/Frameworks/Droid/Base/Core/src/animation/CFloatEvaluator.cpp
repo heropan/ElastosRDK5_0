@@ -27,11 +27,11 @@ ECode CFloatEvaluator::Evaluate(
     CFloat::New(startFloat + fraction * (endFloat - startFloat),
             (IFloat**)&r);
     *result = r;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CFloatEvaluator::EvaluateEx(
+ECode CFloatEvaluator::Evaluate(
     /* [in] */ Float fraction,
     /* [in] */ Float startValue,
     /* [in] */ Float endValue,

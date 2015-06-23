@@ -5,9 +5,9 @@
 #include "os/SystemProperties.h"
 #include "os/CSystemProperties.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CRandom;
 using Elastos::Core::IRandom;
@@ -42,7 +42,7 @@ static String InitsLteOnCdmaProductType() {
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
     String result;
-    sp->GetEx(ITelephonyProperties::PROPERTY_LTE_ON_CDMA_PRODUCT_TYPE, String(""), &result);
+    sp->Get(ITelephonyProperties::PROPERTY_LTE_ON_CDMA_PRODUCT_TYPE, String(""), &result);
     return result;
 }
 
@@ -72,7 +72,7 @@ ECode CTelephonyManager::GetDefault(
         CTelephonyManager::New((ITelephonyManager**)&sInstance);
     }
     *tm = CTelephonyManager::sInstance;
-    INTERFACE_ADDREF(*tm);
+    REFCOUNT_ADD(*tm);
     return NOERROR;
 }
 
@@ -140,7 +140,7 @@ ECode CTelephonyManager::GetCellLocation(
         return NOERROR;
     }
     *res = cl;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     // } catch (RemoteException ex) {
     //     return null;
     // } catch (NullPointerException ex) {
@@ -929,7 +929,7 @@ ECode CTelephonyManager::GetSubscriberInfo(
     service = ServiceManager::GetService(String("iphonesubinfo"));
     assert(service != NULL);
     *res = IIPhoneSubInfo::Probe(service.Get());
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -941,7 +941,7 @@ ECode CTelephonyManager::GetITelephony(
     telephonyService = ServiceManager::GetService(IContext::TELEPHONY_SERVICE);
     assert(telephonyService != NULL);
     *res = IITelephony::Probe(telephonyService.Get());
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1006,7 +1006,7 @@ ECode CTelephonyManager::GetLteOnCdmaModeStatic(
         Boolean isFind;
         sProductTypePattern->Matcher(sKernelCmdLine, (IMatcher**)&matcher);
         if (matcher->Find(&isFind), isFind) {
-            matcher->GroupEx(1, &productType);
+            matcher->Group(1, &productType);
             if (sLteOnCdmaProductType.Equals(productType)) {
                 retVal = IPhoneConstants::LTE_ON_CDMA_TRUE;
             } else {

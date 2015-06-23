@@ -132,7 +132,7 @@ ECode CParceledListSlice::PopulateList(
     mParcel = NULL;
 
     *obj = item;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

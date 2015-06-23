@@ -11,9 +11,9 @@
 #include "os/UserHandle.h"
 #include "util/TimeUtils.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
@@ -74,7 +74,7 @@ AutoPtr<CServiceRecord> ActiveServices::ServiceMap::GetServiceByName(
     return record;
 }
 
-AutoPtr<CServiceRecord> ActiveServices::ServiceMap::GetServiceByNameEx(
+AutoPtr<CServiceRecord> ActiveServices::ServiceMap::GetServiceByName(
     /* [in] */ IComponentName* name)
 {
     return GetServiceByName(name, -1);
@@ -97,7 +97,7 @@ AutoPtr<CServiceRecord> ActiveServices::ServiceMap::GetServiceByIntent(
     return record;
 }
 
-AutoPtr<CServiceRecord> ActiveServices::ServiceMap::GetServiceByIntentEx(
+AutoPtr<CServiceRecord> ActiveServices::ServiceMap::GetServiceByIntent(
     /* [in] */ IIntentFilterComparison* filter)
 {
     return GetServiceByIntent(filter, -1);
@@ -1784,7 +1784,7 @@ ECode ActiveServices::ServiceDoneExecutingLocked(
             if (DEBUG_SERVICE || DEBUG_SERVICE_EXECUTING) Slogger::V(TAG,
                     "No more executingServices of %s", r->mShortName.string());
 
-            mAm->mHandler->RemoveMessagesEx(
+            mAm->mHandler->RemoveMessages(
                 CActivityManagerService::SERVICE_TIMEOUT_MSG,
                 r->mApp->Probe(EIID_IInterface));
         }

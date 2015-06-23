@@ -23,11 +23,11 @@ ECode CTextKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ITextKeyListener> tkl = CTextKeyListener::GetInstance();
     *ret = tkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-ECode CTextKeyListenerHelper::GetInstanceEx(
+ECode CTextKeyListenerHelper::GetInstance(
     /* [in] */ Boolean autotext,
     /* [in] */ Capitalize cap,
     /* [out] */ ITextKeyListener** ret)
@@ -35,7 +35,7 @@ ECode CTextKeyListenerHelper::GetInstanceEx(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ITextKeyListener> tkl = CTextKeyListener::GetInstance(autotext, cap);
     *ret = tkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

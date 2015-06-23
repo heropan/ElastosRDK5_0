@@ -3,7 +3,7 @@
 #define __CSUGGESTIONRANGESPANHELPER_H__
 
 #include "_CSuggestionRangeSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

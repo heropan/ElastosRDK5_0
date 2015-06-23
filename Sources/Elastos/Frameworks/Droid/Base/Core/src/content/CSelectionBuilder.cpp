@@ -1,6 +1,6 @@
 
 #include "content/CSelectionBuilder.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -123,7 +123,7 @@ ECode CSelectionBuilder::GetSelectionArgs(
             (*tmpArray)[index] = *it;
         }
         *selectionArgs = tmpArray;
-        INTERFACE_ADDREF(*selectionArgs);
+        REFCOUNT_ADD(*selectionArgs);
     }
     return NOERROR;
 }
@@ -135,10 +135,10 @@ ECode CSelectionBuilder::Query(
     /* [in] */ const String& orderBy,
     /* [out] */ ICursor** cursor)
 {
-    return QueryEx(db, table, columns, String(NULL), String(NULL), orderBy, String(NULL), cursor);
+    return Query(db, table, columns, String(NULL), String(NULL), orderBy, String(NULL), cursor);
 }
 
-ECode CSelectionBuilder::QueryEx(
+ECode CSelectionBuilder::Query(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& table,
     /* [in] */ ArrayOf<String>* columns,
@@ -154,7 +154,7 @@ ECode CSelectionBuilder::QueryEx(
     FAIL_RETURN(GetSelection(&selection))
     AutoPtr<ArrayOf<String> > selectionArgs;
     FAIL_RETURN(GetSelectionArgs((ArrayOf<String>**)&selectionArgs))
-    return db->QueryEx3(table, columns, selection, selectionArgs, groupBy, having,
+    return db->Query(table, columns, selection, selectionArgs, groupBy, having,
             orderBy, limit, cursor);
 }
 

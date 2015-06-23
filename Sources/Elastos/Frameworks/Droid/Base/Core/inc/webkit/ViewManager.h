@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ISurfaceView;

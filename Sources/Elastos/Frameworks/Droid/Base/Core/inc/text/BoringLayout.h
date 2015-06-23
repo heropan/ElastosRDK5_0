@@ -228,7 +228,7 @@ public:
 
     // Override draw so it will be faster.
     //@Override
-    CARAPI DrawEx(
+    CARAPI Draw(
         /* [in] */ ICanvas* c,
         /* [in] */ IPath* highlight,
         /* [in] */ IPaint* highlightpaint,

@@ -3,10 +3,8 @@
 #define __KEHSTOREHANDLER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 #include "webkit/ByteArrayBuilder.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;

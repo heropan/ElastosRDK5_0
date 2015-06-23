@@ -47,7 +47,7 @@ LoginManagerPrompter.prototype = {
                 getService(Ci.nsIPromptService2);
         return this.__promptService;
     },
-    
+
     __strBundle : null, // String bundle for L10N
     get _strBundle() {
         if (!this.__strBundle) {
@@ -244,7 +244,7 @@ LoginManagerPrompter.prototype = {
                 label:     notNowButtonText,
                 accessKey: notNowButtonAccessKey,
                 popup:     null,
-                callback:  function() { /* NOP */ } 
+                callback:  function() { /* NOP */ }
             }
         ];
 
@@ -291,7 +291,7 @@ LoginManagerPrompter.prototype = {
                                         "notNowButtonText");
 
         this.log("Prompting user to save/ignore login");
-        var userChoice = this._promptService.confirmEx(null,
+        var userChoice = this._promptService.confirm(null,
                                             dialogTitle, dialogText,
                                             buttonFlags, rememberButtonText,
                                             notNowButtonText, neverButtonText,
@@ -407,7 +407,7 @@ LoginManagerPrompter.prototype = {
                                     "passwordChangeTitle");
 
         // returns 0 for yes, 1 for no.
-        var ok = !this._promptService.confirmEx(null,
+        var ok = !this._promptService.confirm(null,
                                 dialogTitle, dialogText, buttonFlags,
                                 null, null, null,
                                 null, {});
@@ -428,7 +428,7 @@ LoginManagerPrompter.prototype = {
      * Note: The caller doesn't know the username for aNewLogin, so this
      *       function fills in .username and .usernameField with the values
      *       from the login selected by the user.
-     * 
+     *
      * Note; XPCOM stupidity: |count| is just |logins.length|.
      */
     promptToChangePasswordWithUsernames : function (logins, count, aNewLogin) {
@@ -503,7 +503,7 @@ LoginManagerPrompter.prototype = {
         return notifyBox;
     },
 
-    
+
     /*
      * _getLocalizedString
      *
@@ -516,7 +516,7 @@ LoginManagerPrompter.prototype = {
      * Returns the localized string for the specified key,
      * formatted if required.
      *
-     */ 
+     */
     _getLocalizedString : function (key, formatArgs) {
         if (formatArgs)
             return this._strBundle.formatStringFromName(

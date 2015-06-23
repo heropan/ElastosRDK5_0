@@ -23,7 +23,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ ISQLiteDatabase** result);
 
-    CARAPI OpenDatabaseEx(
+    CARAPI OpenDatabase(
         /* [in] */ const String& path,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [in] */ Int32 flags,
@@ -35,12 +35,12 @@ public:
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [out] */ ISQLiteDatabase** result);
 
-    CARAPI OpenOrCreateDatabaseEx(
+    CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& path,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [out] */ ISQLiteDatabase** result);
 
-    CARAPI OpenOrCreateDatabaseEx2(
+    CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& path,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [in] */ IDatabaseErrorHandler* errorHandler,

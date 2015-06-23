@@ -37,7 +37,7 @@ ECode CDisplayManager::GetDisplay(
 
     AutoPtr<IDisplay> temp = GetOrCreateDisplayLocked(displayId, FALSE /*assumeValid*/);
     *display = temp;
-    INTERFACE_ADDREF(*display);
+    REFCOUNT_ADD(*display);
 
     return NOERROR;
 }
@@ -45,10 +45,10 @@ ECode CDisplayManager::GetDisplay(
 ECode CDisplayManager::GetDisplays(
     /* [out] */ ArrayOf<IDisplay*>** displays)
 {
-    return GetDisplaysEx(String(NULL), displays);
+    return GetDisplays(String(NULL), displays);
 }
 
-ECode CDisplayManager::GetDisplaysEx(
+ECode CDisplayManager::GetDisplays(
     /* [in] */ const String& category,
     /* [out] */ ArrayOf<IDisplay*>** displays)
 {
@@ -73,7 +73,7 @@ ECode CDisplayManager::GetDisplaysEx(
             mTempDisplays.Clear();
             return E_OUT_OF_MEMORY_ERROR;
         }
-        INTERFACE_ADDREF(*displays);
+        REFCOUNT_ADD(*displays);
         List<AutoPtr<IDisplay> >::Iterator iter = mTempDisplays.Begin();
         for (Int32 i = 0; iter != mTempDisplays.End(); ++iter, i++) {
             (*displays)->Set(i, *iter);

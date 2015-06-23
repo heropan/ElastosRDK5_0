@@ -2,7 +2,7 @@
 #define __AMRINPUTSTREAM_H__
 
 #include <ext/frameworkext.h>
-#include "elastos/io/InputStream.h"
+#include <elastos/io/InputStream.h>
 
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
@@ -26,7 +26,7 @@ public:
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [out] */ Int32* number);
 
-    virtual CARAPI ReadBytesEx(
+    virtual CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

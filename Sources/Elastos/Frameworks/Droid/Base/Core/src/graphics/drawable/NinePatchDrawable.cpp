@@ -78,7 +78,7 @@ ECode NinePatchDrawable::NinePatchState::NewDrawable(
         reinterpret_cast<Handle32>(this), NULL, (INinePatchDrawable**)drawable);
 }
 
-ECode NinePatchDrawable::NinePatchState::NewDrawableEx(
+ECode NinePatchDrawable::NinePatchState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -323,7 +323,7 @@ void NinePatchDrawable::ComputeBitmapSize()
 ECode NinePatchDrawable::Draw(
     /* [in] */ ICanvas* canvas)
 {
-    return mNinePatch->DrawEx2(canvas, GetBounds(), mPaint);
+    return mNinePatch->Draw(canvas, GetBounds(), mPaint);
 }
 
 Int32 NinePatchDrawable::GetChangingConfigurations()
@@ -336,7 +336,7 @@ Boolean NinePatchDrawable::GetPadding(
     /* [in] */ IRect* padding)
 {
     assert(padding != NULL);
-    padding->SetEx(mPadding);
+    padding->Set(mPadding);
     return TRUE;
 }
 
@@ -427,7 +427,7 @@ ECode NinePatchDrawable::Inflate(
     AutoPtr<ITypedValue> value;
     CTypedValue::New((ITypedValue**)&value);
     AutoPtr<IInputStream> is;
-    r->OpenRawResourceEx(id, value, (IInputStream**)&is);
+    r->OpenRawResource(id, value, (IInputStream**)&is);
 
     AutoPtr<IBitmapFactory> bmFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);

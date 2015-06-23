@@ -2,9 +2,9 @@
 #define __CSCROLLINGTABCONTAINERVIEW_H_
 
 #include "_CScrollingTabContainerView.h"
-#include "view/ViewMacro.h"
-#include "widget/FrameLayoutMacro.h"
-#include "widget/HorizontalScrollViewMacro.h"
+
+
+
 #include "widget/internal/ScrollingTabContainerView.h"
 
 namespace Elastos {
@@ -56,7 +56,7 @@ public:
         /* [in] */ IActionBarTab* tab,
         /* [in] */ Boolean setSelected);
 
-    CARAPI AddTabEx(
+    CARAPI AddTab(
         /* [in] */ IActionBarTab* tab,
         /* [in] */ Int32 position,
         /* [in] */ Boolean setSelected);

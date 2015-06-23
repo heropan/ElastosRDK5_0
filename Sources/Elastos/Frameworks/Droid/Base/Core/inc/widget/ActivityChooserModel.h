@@ -4,9 +4,9 @@
 #include "database/DataSetObservable.h"
 #include "content/PackageMonitor.h"
 #include "os/AsyncTask.h"
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IComparable;
 using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Content::IIntent;

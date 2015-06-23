@@ -2,7 +2,7 @@
 #include "CEthernetManager.h"
 #include "ext/frameworkdef.h"
 #include "os/ServiceManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Content::IContext;

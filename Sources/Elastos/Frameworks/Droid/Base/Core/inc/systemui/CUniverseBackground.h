@@ -2,9 +2,9 @@
 #define __CUNHIVERSEBZACKGROUND_H_
 
 #include "_CUniverseBackground.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/UniverseBackground.h"
 
 namespace Elastos {
@@ -34,7 +34,7 @@ public:
 
     CARAPI AnimateCollapse();
 
-    CARAPI AnimateCollapseEx(
+    CARAPI AnimateCollapse(
         /* [in] */ Float velocityMultiplier);
 
     CARAPI ConsumeEvent(

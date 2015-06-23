@@ -2,7 +2,7 @@
 #include "pm/PreferredActivity.h"
 #include "pm/CPackageManagerService.h"
 #include "util/XmlUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -418,7 +418,7 @@ ECode PreferredActivity::Match(
     return NOERROR;
 }
 
-ECode PreferredActivity::MatchEx(
+ECode PreferredActivity::Match(
     /* [in] */ const String& action,
     /* [in] */ const String& type,
     /* [in] */ const String& scheme,

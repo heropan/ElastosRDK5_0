@@ -1,6 +1,6 @@
 
 #include "hardware/usb/CUsbEndpoint.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 namespace Elastos {
 namespace Droid {

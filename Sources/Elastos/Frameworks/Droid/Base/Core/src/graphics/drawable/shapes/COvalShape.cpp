@@ -59,7 +59,7 @@ ECode COvalShape::Clone(
     COvalShape::NewByFriend((COvalShape**)&s);
     OvalShape::Clone((OvalShape*)s.Get());
     *shape = (IShape*)s.Get();
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 

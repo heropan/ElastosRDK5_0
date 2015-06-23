@@ -4,7 +4,7 @@
 #include "graphics/drawable/CScaleDrawable.h"
 #include "view/CGravity.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::View::IGravity;
@@ -32,7 +32,7 @@ ScaleDrawable::ScaleState::ScaleState(
         AutoPtr<IDrawableConstantState> state;
         orig->mDrawable->GetConstantState((IDrawableConstantState**)&state);
         if (res != NULL) {
-            state->NewDrawableEx(res, (IDrawable**)&mDrawable);
+            state->NewDrawable(res, (IDrawable**)&mDrawable);
         }
         else {
             state->NewDrawable((IDrawable**)&mDrawable);
@@ -53,7 +53,7 @@ ECode ScaleDrawable::ScaleState::NewDrawable(
     return CScaleDrawable::New((Handle32)this, NULL, (IScaleDrawable**)drawable);
 }
 
-ECode ScaleDrawable::ScaleState::NewDrawableEx(
+ECode ScaleDrawable::ScaleState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -326,7 +326,7 @@ void ScaleDrawable::OnBoundsChange(
     Int32 layoutDirection = GetLayoutDirection();
     AutoPtr<IGravity> gravity;
     CGravity::AcquireSingleton((IGravity**)&gravity);
-    gravity->ApplyEx(mScaleState->mGravity, w, h, bounds, r, layoutDirection);
+    gravity->Apply(mScaleState->mGravity, w, h, bounds, r, layoutDirection);
 
     if (w > 0 && h > 0) {
         mScaleState->mDrawable->SetBounds(r->mLeft, r->mTop, r->mRight, r->mBottom);

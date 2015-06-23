@@ -5,8 +5,8 @@
 #include "graphics/CMatrix.h"
 #include "graphics/CCanvas.h"
 #include "graphics/CPaint.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::Res::IAssetManager;
@@ -61,7 +61,7 @@ ECode BootAnimationView::BootHandler::HandleMessage(
                 }
                 mHost->DrawBatteryFrame();
                 mHost->cframe++;
-                mHost->mSlef->InvalidateEx2();
+                mHost->mSlef->Invalidate();
                 AutoPtr<IMessage> message;
                 ObtainMessage(BootAnimationView::MSG_UPDATE_FRAME, (IMessage**)&message);
                 Boolean isSuccess = FALSE;
@@ -70,7 +70,7 @@ ECode BootAnimationView::BootHandler::HandleMessage(
                 break;
             }
         case BootAnimationView::MSG_UPDATE:
-            mHost->mSlef->InvalidateEx2();
+            mHost->mSlef->Invalidate();
             break;
 
     }
@@ -91,7 +91,7 @@ AutoPtr<IBitmap> BootAnimationView::GetImageFromAssetsFile(
     am->Open(filepath, (IInputStream**)&is);
     AutoPtr<IBitmapFactory> factory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-    factory->DecodeStreamEx(is, (IBitmap**)&image);
+    factory->DecodeStream(is, (IBitmap**)&image);
     is->Close();
     // }catch (IOException e){
         // e.printStackTrace();
@@ -111,7 +111,7 @@ AutoPtr<IBitmap> BootAnimationView::GetImageFromSystemPath(
     CFileInputStream::New(fp, (IFileInputStream**)&is);
     AutoPtr<IBitmapFactory> factory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-    factory->DecodeStreamEx(is, (IBitmap**)&image);
+    factory->DecodeStream(is, (IBitmap**)&image);
     is->Close();
     // }catch (IOException e){
         // e.printStackTrace();
@@ -181,7 +181,7 @@ AutoPtr<IBitmap> BootAnimationView::ZoomBitmap(
     Float scaleWidth = ((Float)w / width);
     Float scaleHeight = ((Float)h / height);
     Boolean isSuccess = FALSE;
-    matrix->PostScaleEx(scaleWidth, scaleHeight, &isSuccess);
+    matrix->PostScale(scaleWidth, scaleHeight, &isSuccess);
     AutoPtr<IBitmap> image;
     CBitmap::CreateBitmap(bmp, 0, 0, width, height, matrix, TRUE, (IBitmap**)&image);
     return image;
@@ -275,7 +275,7 @@ void BootAnimationView::OnDraw(
             Int32 height = 0;
             canvas->GetWidth(&width);
             canvas->GetHeight(&height);
-            canvas->DrawRectEx2(0, 0, width, height, mMemPaint);
+            canvas->DrawRect(0, 0, width, height, mMemPaint);
             canvas->DrawBitmap(mMemBitmap, width/2 - mW/2, height/2 - mH/2, mMemPaint);
             break;
         }
@@ -290,7 +290,7 @@ void BootAnimationView::OnDraw(
             Int32 height = 0;
             canvas->GetWidth(&width);
             canvas->GetHeight(&height);
-            canvas->DrawRectEx2(0, 0, width, height, mMemPaint);
+            canvas->DrawRect(0, 0, width, height, mMemPaint);
             break;
         }
     case 3:
@@ -303,7 +303,7 @@ void BootAnimationView::OnDraw(
             canvas->GetHeight(&height);
             mBootLogo->GetWidth(&bootLogoWidth);
             mBootLogo->GetHeight(&bootLogoHeight);
-            canvas->DrawRectEx2(0, 0, width, height, mMemPaint);
+            canvas->DrawRect(0, 0, width, height, mMemPaint);
             canvas->DrawBitmap(mBootLogo, width/2 - bootLogoWidth/2, height/2 - bootLogoHeight/2, mMemPaint);
             break;
         }

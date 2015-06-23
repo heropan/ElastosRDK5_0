@@ -155,7 +155,7 @@ ECode CViewAnimator::SetOutAnimation(
      * @see #getInAnimation()
      * @see #setInAnimation(android.view.animation.Animation)
      */
-ECode CViewAnimator::SetInAnimationEx(
+ECode CViewAnimator::SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID)
 {
@@ -171,7 +171,7 @@ ECode CViewAnimator::SetInAnimationEx(
      * @see #getOutAnimation()
      * @see #setOutAnimation(android.view.animation.Animation)
      */
-ECode CViewAnimator::SetOutAnimationEx(
+ECode CViewAnimator::SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID)
 {

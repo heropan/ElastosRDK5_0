@@ -99,7 +99,7 @@ ECode CActivityManagerWaitResult::GetWho(
 {
     VALIDATE_NOT_NULL(who);
     *who = mWho;
-    INTERFACE_ADDREF(*who);
+    REFCOUNT_ADD(*who);
     return NOERROR;
 }
 

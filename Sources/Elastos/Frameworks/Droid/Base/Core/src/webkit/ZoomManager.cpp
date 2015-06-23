@@ -7,8 +7,8 @@
 #include "webkit/CWebViewCore.h"
 #include "webkit/CWebViewClassic.h"
 #include "webkit/WebSettingsClassic.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;
@@ -1243,9 +1243,9 @@ void ZoomManager::RestoreZoomState(
     // as getWidth() / getHeight() of the view are not available yet, set up
     // mActualScale, so that when onSizeChanged() is called, the rest will
     // be set correctly
-    b->GetFloatEx(String("scale"), 1.0f, &mActualScale);
+    b->GetFloat(String("scale"), 1.0f, &mActualScale);
     mInvActualScale = 1 / mActualScale;
-    b->GetFloatEx(String("textwrapScale"), mActualScale, &mTextWrapScale);
+    b->GetFloat(String("textwrapScale"), mActualScale, &mTextWrapScale);
     b->GetBoolean(String("overview"), &mInZoomOverview);
 }
 

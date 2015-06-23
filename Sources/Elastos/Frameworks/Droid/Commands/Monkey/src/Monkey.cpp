@@ -1,11 +1,11 @@
 #include "Monkey.h"
 #include <unistd.h>
 #include "os/Process.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 #include "app/ActivityManagerNative.h"
 #include <stdlib.h>
 #include "MonkeyUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/SystemClock.h"
 #include <elastos/StringBuilder.h>
 
@@ -410,7 +410,7 @@ Int32 Monkey::Run(
         // set any of the factors that has been set
         for (Int32 i = 0; i < IMonkeySourceRandom::FACTORZ_COUNT; i++) {
             if ((*mFactors)[i] <= 0.0f) {
-                source->SetFactorsEx(i, (*mFactors)[i]);
+                source->SetFactors(i, (*mFactors)[i]);
             }
         }
 

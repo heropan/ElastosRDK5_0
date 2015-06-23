@@ -309,7 +309,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordQualityEx(
+        GetPasswordQuality(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -350,7 +350,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordMinimumLengthEx(
+        GetPasswordMinimumLength(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -398,7 +398,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordMinimumUpperCaseEx(
+        GetPasswordMinimumUpperCase(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -446,7 +446,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordMinimumLowerCaseEx(
+        GetPasswordMinimumLowerCase(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -492,7 +492,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordMinimumLettersEx(
+        GetPasswordMinimumLetters(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -538,7 +538,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordMinimumNumericEx(
+        GetPasswordMinimumNumeric(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -585,7 +585,7 @@ module
 
 
         /** @hide per-user version*/
-        GetPasswordMinimumSymbolsEx(
+        GetPasswordMinimumSymbols(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -631,7 +631,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordMinimumNonLetterEx(
+        GetPasswordMinimumNonLetter(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -723,7 +723,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetPasswordHistoryLengthEx(
+        GetPasswordHistoryLength(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -799,7 +799,7 @@ module
             [out] Int32* password);
 
         /** @hide per-user version */
-        GetMaximumFailedPasswordsForWipeEx(
+        GetMaximumFailedPasswordsForWipe(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* password);
@@ -859,7 +859,7 @@ module
             [out] Int64* time);
 
         /** @hide per-user version */
-        GetMaximumTimeToLockEx(
+        GetMaximumTimeToLock(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int64* time);
@@ -998,7 +998,7 @@ module
             [out] Int32* st);
 
         /** @hide per-user version */
-        GetStorageEncryptionStatusEx(
+        GetStorageEncryptionStatus(
             [in] Int32 userHandle,
             [out] Int32* st);
 
@@ -1029,7 +1029,7 @@ module
             [out] Boolean* disabled);
 
         /** @hide per-user version */
-        GetCameraDisabledEx(
+        GetCameraDisabled(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Boolean* disabled);
@@ -1065,7 +1065,7 @@ module
             [out] Int32* which);
 
         /** @hide per-user version */
-        GetKeyguardDisabledFeaturesEx(
+        GetKeyguardDisabledFeatures(
             [in] IComponentName* admin,
             [in] Int32 userHandle,
             [out] Int32* which);

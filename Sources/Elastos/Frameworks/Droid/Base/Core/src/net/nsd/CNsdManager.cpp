@@ -1,6 +1,6 @@
 #include "CNsdManager.h"
 #include "CNsdServiceInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "os/CHandlerThread.h"
 
 using Elastos::Utility::Logging::Slogger;
@@ -212,7 +212,7 @@ ECode CNsdManager::GetListener(
     HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
     if(it != mListenerMap.End()) {
         *listener = it->mSecond;
-        INTERFACE_ADDREF(*listener);
+        REFCOUNT_ADD(*listener);
     }
 
     return NOERROR;

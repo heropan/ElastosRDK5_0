@@ -13,13 +13,13 @@
 #include "location/LocationProviderProxy.h"
 #include "os/HandlerBase.h"
 #include "database/ContentObserver.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::ContentObserver;

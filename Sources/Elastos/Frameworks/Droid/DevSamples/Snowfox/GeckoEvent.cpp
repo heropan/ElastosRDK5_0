@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "GeckoEvent.h"
 #include "GeckoApp.h"
-#include "elastos/Math.h"
+#include <elastos/core/Math.h>
 #include "os/Build.h"
 #include <stdio.h>
 
@@ -154,8 +154,8 @@ ECode GeckoEvent::AddMotionPoint(
     DBG_LOG("\t + AddMotionPoint()");
     Float x;
     Float y;
-    event->GetXEx(eventIndex, &x);
-    event->GetYEx(eventIndex, &y);
+    event->GetX(eventIndex, &x);
+    event->GetY(eventIndex, &y);
     AutoPtr<IPointF> geckoPoint;
     ASSERT_SUCCEEDED(CPointF::New(x, y, (IPointF**)&geckoPoint));
     ASSERT_SUCCEEDED(CPoint::New((Int32)Elastos::Core::Math::Round(x), (Int32)Elastos::Core::Math::Round(y), (IPoint**)&((*mPoints)[index])));
@@ -163,7 +163,7 @@ ECode GeckoEvent::AddMotionPoint(
     // getToolMajor, getToolMinor and getOrientation are API Level 9 features
     if (Build::VERSION::SDK_INT >= 9) {
         Double radians;
-        FAIL_RETURN(event->GetOrientationEx(eventIndex, (Float*)&radians));
+        FAIL_RETURN(event->GetOrientation(eventIndex, (Float*)&radians));
         (*mOrientations)[index] = (Float) Elastos::Core::Math::ToDegrees(radians);
         // w3c touchevents spec does not allow orientations == 90
         // this shifts it to -90, which will be shifted to zero below
@@ -180,21 +180,21 @@ ECode GeckoEvent::AddMotionPoint(
         if ((*mOrientations)[index] < 0) {
             (*mOrientations)[index] += 90;
             Float pointX;
-            FAIL_RETURN(event->GetToolMajorEx(eventIndex, &pointX));
+            FAIL_RETURN(event->GetToolMajor(eventIndex, &pointX));
             Float pointY;
-            FAIL_RETURN(event->GetToolMinorEx(eventIndex, &pointY));
+            FAIL_RETURN(event->GetToolMinor(eventIndex, &pointY));
             ASSERT_SUCCEEDED(CPoint::New((Int32)pointX/2, (Int32)pointY/2, (IPoint**)&((*mPointRadii)[index])));
         } else {
             Float pointX;
-            FAIL_RETURN(event->GetToolMinorEx(eventIndex, &pointX));
+            FAIL_RETURN(event->GetToolMinor(eventIndex, &pointX));
             Float pointY;
-            FAIL_RETURN(event->GetToolMajorEx(eventIndex, &pointY));
+            FAIL_RETURN(event->GetToolMajor(eventIndex, &pointY));
             ASSERT_SUCCEEDED(CPoint::New((Int32)pointX/2, (Int32)pointY/2, (IPoint**)&((*mPointRadii)[index])));
         }
     }
     else {
         Float size;
-        FAIL_RETURN(event->GetSizeEx(eventIndex, &size));
+        FAIL_RETURN(event->GetSize(eventIndex, &size));
         AutoPtr<IDisplayMetrics> displaymetrics;
         ASSERT_SUCCEEDED(CDisplayMetrics::New((IDisplayMetrics**)&displaymetrics));
 
@@ -211,7 +211,7 @@ ECode GeckoEvent::AddMotionPoint(
         ASSERT_SUCCEEDED(CPoint::New((Int32)size,(Int32)size, (IPoint**)&((*mPointRadii)[index])));
         (*mOrientations)[index] = 0;
     }
-    FAIL_RETURN(event->GetPressureEx(eventIndex, &((*mPressures)[index])));
+    FAIL_RETURN(event->GetPressure(eventIndex, &((*mPressures)[index])));
     return NOERROR;
 }
 

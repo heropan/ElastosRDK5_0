@@ -89,7 +89,7 @@ module
          *
          * @param src The path that is appended to the current path
          */
-        AddPathEx(
+        AddPath(
             [in] IPath* src);
 
         /**
@@ -97,7 +97,7 @@ module
          *
          * @param src The path to add as a new contour
          */
-        AddPathEx2(
+        AddPath(
             [in] IPath* src,
             [in] IMatrix* matrix);
 
@@ -120,7 +120,7 @@ module
          * @param bottom The bottom of a rectangle to add to the path
          * @param dir    The direction to wind the rectangle's contour
          */
-        AddRectEx(
+        AddRect(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -150,7 +150,7 @@ module
          * @param radii Array of 8 values, 4 pairs of [X,Y] radii
          * @param dir  The direction to wind the round-rectangle's contour
          */
-        AddRoundRectEx(
+        AddRoundRect(
             [in] IRectF* rect,
             [in] ArrayOf<Float> radii,
             [in] PathDirection dir);
@@ -185,7 +185,7 @@ module
          * @param startAngle  Starting angle (in degrees) where the arc begins
          * @param sweepAngle  Sweep angle (in degrees) measured clockwise
          */
-        ArcToEx(
+        ArcTo(
             [in] IRectF* oval,
             [in] Float startAngle,
             [in] Float sweepAngle);
@@ -317,7 +317,7 @@ module
          * @param dx The amount in the X direction to offset the entire path
          * @param dy The amount in the Y direction to offset the entire path
          */
-        OffsetEx(
+        Offset(
             [in] Float dx,
             [in] Float dy);
 
@@ -455,7 +455,7 @@ module
          *
          * @param matrix The matrix to apply to the path
          */
-        TransformEx(
+        Transform(
             [in] IMatrix* matrix);
     }
 

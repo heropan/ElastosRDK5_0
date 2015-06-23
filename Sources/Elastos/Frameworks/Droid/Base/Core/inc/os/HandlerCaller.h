@@ -65,7 +65,7 @@ public:
     CARAPI RemoveMessages(
         /* [in] */ Int32 what);
 
-    CARAPI RemoveMessagesEx(
+    CARAPI RemoveMessages(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj);
 

@@ -7,10 +7,9 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "text/SpanSet.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 //using Elastos::Droid::Emoji::IEmojiFactory;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
@@ -233,7 +232,7 @@ public:
      * @param cursorOffsetVertical the amount to temporarily translate the
      *        canvas while rendering the highlight
      */
-    virtual CARAPI DrawEx(
+    virtual CARAPI Draw(
         /* [in] */ ICanvas* canvas,
         /* [in] */ IPath* highlight,
         /* [in] */ IPaint* highlightPaint,

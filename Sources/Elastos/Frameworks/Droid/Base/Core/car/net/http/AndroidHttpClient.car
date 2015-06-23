@@ -61,7 +61,7 @@ module
          * @param userAgent to report in your HTTP requests.
          * @return AndroidHttpClient for you to use for all your requests.
          */
-        NewInstanceEx(
+        NewInstance(
             [in] String userAgent,
             [out] IAndroidHttpClient** client);
 

@@ -5,7 +5,7 @@
 #include "os/Process.h"
 #include "os/Binder.h"
 #include "os/UserHandle.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Slogger;

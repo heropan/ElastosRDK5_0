@@ -9,7 +9,7 @@ module
             [in] IInterface* cb,
             [out] Boolean* result);
 
-        RegisterEx(
+        Register(
             [in] IInterface* cb,
             [in] IInterface* cookie,
             [out] Boolean* result);
@@ -23,7 +23,7 @@ module
         OnCallbackDied(
             [in] IInterface* cb);
 
-        OnCallbackDiedEx(
+        OnCallbackDied(
             [in] IInterface* cb,
             [in] IInterface* cookie);
 

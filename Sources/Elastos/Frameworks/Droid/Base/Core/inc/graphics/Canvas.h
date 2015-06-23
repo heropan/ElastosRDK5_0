@@ -58,7 +58,7 @@ public:
     virtual CARAPI Save(
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveEx(
+    virtual CARAPI Save(
         /* [in] */ Int32 saveFlags,
         /* [out] */ Int32* count);
 
@@ -68,7 +68,7 @@ public:
         /* [in] */ Int32 saveFlags,
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveLayerEx(
+    virtual CARAPI SaveLayer(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -83,7 +83,7 @@ public:
         /* [in] */ Int32 saveFlags,
         /* [out] */ Int32* count);
 
-    virtual CARAPI SaveLayerAlphaEx(
+    virtual CARAPI SaveLayerAlpha(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -108,7 +108,7 @@ public:
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
-    CARAPI ScaleEx(
+    CARAPI Scale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [in] */ Float px,
@@ -117,7 +117,7 @@ public:
     virtual CARAPI Rotate(
         /* [in] */ Float degrees);
 
-    CARAPI RotateEx(
+    CARAPI Rotate(
         /* [in] */ Float degrees,
         /* [in] */ Float px,
         /* [in] */ Float py);
@@ -135,7 +135,7 @@ public:
     virtual CARAPI GetMatrix(
         /* [in] */ IMatrix* ctm);
 
-    virtual CARAPI GetMatrixEx(
+    virtual CARAPI GetMatrix(
         /* [out] */ IMatrix** metrix);
 
     virtual CARAPI ClipRect(
@@ -143,20 +143,20 @@ public:
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRectEx(
+    virtual CARAPI ClipRect(
         /* [in] */ IRect* rect,
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRectEx2(
+    virtual CARAPI ClipRect(
         /* [in] */ IRectF* rect,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRectEx3(
+    virtual CARAPI ClipRect(
         /* [in] */ IRect* rect,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRectEx4(
+    virtual CARAPI ClipRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -164,14 +164,14 @@ public:
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRectEx5(
+    virtual CARAPI ClipRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
         /* [in] */ Float bottom,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRectEx6(
+    virtual CARAPI ClipRect(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -183,7 +183,7 @@ public:
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipPathEx(
+    virtual CARAPI ClipPath(
         /* [in] */ IPath* path,
         /* [out] */ Boolean* isNotEmpty);
 
@@ -192,7 +192,7 @@ public:
         /* [in] */ RegionOp op,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI ClipRegionEx(
+    virtual CARAPI ClipRegion(
         /* [in] */ IRegion* region,
         /* [out] */ Boolean* isNotEmpty);
 
@@ -207,12 +207,12 @@ public:
         /* [in] */ CanvasEdgeType type,
         /* [out] */ Boolean* isNotIntersect);
 
-    virtual CARAPI QuickRejectEx(
+    virtual CARAPI QuickReject(
         /* [in] */ IPath* path,
         /* [in] */ CanvasEdgeType type,
         /* [out] */ Boolean* isNotIntersect);
 
-    virtual CARAPI QuickRejectEx2(
+    virtual CARAPI QuickReject(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -224,7 +224,7 @@ public:
         /* [in] */ IRect* bounds,
         /* [out] */ Boolean* isNotEmpty);
 
-    virtual CARAPI GetClipBoundsEx(
+    virtual CARAPI GetClipBounds(
         /* [out] */ IRect** bounds);
 
     virtual CARAPI DrawRGB(
@@ -241,7 +241,7 @@ public:
     virtual CARAPI DrawColor(
         /* [in] */ Int32 color);
 
-    virtual CARAPI DrawColorEx(
+    virtual CARAPI DrawColor(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode);
 
@@ -254,7 +254,7 @@ public:
         /* [in] */ Int32 count,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPointsEx(
+    virtual CARAPI DrawPoints(
         /* [in] */ const ArrayOf<Float>& pts,
         /* [in] */ IPaint* paint);
 
@@ -276,7 +276,7 @@ public:
         /* [in] */ Int32 count,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawLinesEx(
+    virtual CARAPI DrawLines(
         /* [in] */ const ArrayOf<Float>& pts,
         /* [in] */ IPaint* paint);
 
@@ -284,11 +284,11 @@ public:
         /* [in] */ IRectF* rect,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawRectEx(
+    virtual CARAPI DrawRect(
         /* [in] */ IRect* r,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawRectEx2(
+    virtual CARAPI DrawRect(
         /* [in] */ Float left,
         /* [in] */ Float top,
         /* [in] */ Float right,
@@ -334,19 +334,19 @@ public:
         /* [in] */ Float top,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmapEx(
+    virtual CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ IRect* src,
         /* [in] */ IRectF* dst,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmapEx2(
+    virtual CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ IRect* src,
         /* [in] */ IRect* dst,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmapEx3(
+    virtual CARAPI DrawBitmap(
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
@@ -357,7 +357,7 @@ public:
         /* [in] */ Boolean hasAlpha,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmapEx4(
+    virtual CARAPI DrawBitmap(
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
@@ -368,7 +368,7 @@ public:
         /* [in] */ Boolean hasAlpha,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawBitmapEx5(
+    virtual CARAPI DrawBitmap(
         /* [in] */ IBitmap* bitmap,
         /* [in] */ IMatrix* matrix,
         /* [in] */ IPaint* paint);
@@ -405,13 +405,13 @@ public:
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextEx(
+    virtual CARAPI DrawText(
         /* [in] */ const String& text,
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextEx2(
+    virtual CARAPI DrawText(
         /* [in] */ const String& text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -419,7 +419,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextEx3(
+    virtual CARAPI DrawText(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -438,7 +438,7 @@ public:
         /* [in] */ Int32 dir,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextRunEx(
+    virtual CARAPI DrawTextRun(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
@@ -456,7 +456,7 @@ public:
         /* [in] */ const ArrayOf<Float>& pos,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawPosTextEx(
+    virtual CARAPI DrawPosText(
         /* [in] */ const String& text,
         /* [in] */ const ArrayOf<Float>& pos,
         /* [in] */ IPaint* paint);
@@ -470,7 +470,7 @@ public:
         /* [in] */ Float vOffset,
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI DrawTextOnPathEx(
+    virtual CARAPI DrawTextOnPath(
         /* [in] */ const String& text,
         /* [in] */ IPath* path,
         /* [in] */ Float hOffset,
@@ -480,11 +480,11 @@ public:
     virtual CARAPI DrawPicture(
         /* [in] */ IPicture* picture);
 
-    virtual CARAPI DrawPictureEx(
+    virtual CARAPI DrawPicture(
         /* [in] */ IPicture* picture,
         /* [in] */ IRectF* dst);
 
-    virtual CARAPI DrawPictureEx2(
+    virtual CARAPI DrawPicture(
         /* [in] */ IPicture* picture,
         /* [in] */ IRect* dst);
 

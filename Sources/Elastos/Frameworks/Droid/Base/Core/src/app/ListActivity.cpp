@@ -170,7 +170,7 @@ ECode ListActivity::GetListView(
     VALIDATE_NOT_NULL(listView)
     EnsureList();
     *listView = mList;
-    INTERFACE_ADDREF(*listView)
+    REFCOUNT_ADD(*listView)
     return NOERROR;
 }
 
@@ -179,7 +179,7 @@ ECode ListActivity::GetListAdapter(
 {
     VALIDATE_NOT_NULL(listAdapter)
     *listAdapter = mAdapter;
-    INTERFACE_ADDREF(*listAdapter)
+    REFCOUNT_ADD(*listAdapter)
     return NOERROR;
 }
 

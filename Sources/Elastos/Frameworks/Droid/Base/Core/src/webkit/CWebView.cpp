@@ -192,7 +192,7 @@ ECode CWebView::RestoreState(
     return NOERROR;
 }
 
-ECode CWebView::LoadUrlEx(
+ECode CWebView::LoadUrl(
     /* [in] */ const String& url,
     /* [in] */ IMap* additionalHttpHeaders)
 {
@@ -237,7 +237,7 @@ ECode CWebView::SaveWebArchive(
     return WebView::SaveWebArchive(filename);
 }
 
-ECode CWebView::SaveWebArchiveEx(
+ECode CWebView::SaveWebArchive(
     /* [in] */ const String& basename,
     /* [in] */ Boolean autoname,
     /* [in] */ IValueCallback* callBack)

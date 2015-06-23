@@ -3,7 +3,7 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <cmdef.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #define LOGD(msg) SLOGGERD("CGLES10Ext", msg)
 
@@ -69,7 +69,7 @@ ECode CGLES10Ext::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLES10Ext::GlQueryMatrixxOESEx(
+ECode CGLES10Ext::GlQueryMatrixxOES(
     /* [in] */ Elastos::IO::IInt32Buffer* mantissa_buf,
     /* [in] */ Elastos::IO::IInt32Buffer* exponent_buf,
     /* [out] */ Int32* matrixx)

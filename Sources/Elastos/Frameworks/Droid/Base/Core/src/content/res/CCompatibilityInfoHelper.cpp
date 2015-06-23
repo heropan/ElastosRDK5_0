@@ -23,7 +23,7 @@ ECode CCompatibilityInfoHelper::GetDefault(
 {
     VALIDATE_NOT_NULL(info);
     *info = CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

@@ -17,7 +17,7 @@ ECode CWifiP2pServiceRequestHelper::NewInstance(
     return CWifiP2pServiceRequest::NewInstance(protocolType, queryData, instance);
 }
 
-ECode CWifiP2pServiceRequestHelper::NewInstanceEx(
+ECode CWifiP2pServiceRequestHelper::NewInstance(
     /* [in] */ Int32 protocolType,
     /* [out] */ IWifiP2pServiceRequest** instance)
 {

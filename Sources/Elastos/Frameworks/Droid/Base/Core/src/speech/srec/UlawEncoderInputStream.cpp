@@ -1,6 +1,6 @@
 #include "speech/srec/UlawEncoderInputStream.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 //#include "ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -103,7 +103,7 @@ void UlawEncoderInputStream::Init(
     mOneByte = ArrayOf<Byte>::Alloc(1);
 }
 
-ECode UlawEncoderInputStream::ReadBytesEx(
+ECode UlawEncoderInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -118,7 +118,7 @@ ECode UlawEncoderInputStream::ReadBytesEx(
     // return at least one byte, but try to fill 'length'
     while (mBufCount < 2) {
         Int32 n;
-        mIn->ReadBytesEx(mBuf, mBufCount, Elastos::Core::Math::Min(length * 2, mBuf->GetLength() - mBufCount), &n);
+        mIn->ReadBytes(mBuf, mBufCount, Elastos::Core::Math::Min(length * 2, mBuf->GetLength() - mBufCount), &n);
         if (n == -1){
             *number = -1;
             return NOERROR;
@@ -144,7 +144,7 @@ ECode UlawEncoderInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [out] */ Int32* number)// throws IOException
 {
-    ReadBytesEx(buf, 0, buf->GetLength(), number);
+    ReadBytes(buf, 0, buf->GetLength(), number);
     return NOERROR;
 }
 
@@ -152,7 +152,7 @@ ECode UlawEncoderInputStream::Read(
     /* [out] */ Int32* value) //throws IOException
 {
     Int32 n;
-    ReadBytesEx(mOneByte, 0, 1, &n);
+    ReadBytes(mOneByte, 0, 1, &n);
     if (n == -1){
         *value = -1;
         return NOERROR;

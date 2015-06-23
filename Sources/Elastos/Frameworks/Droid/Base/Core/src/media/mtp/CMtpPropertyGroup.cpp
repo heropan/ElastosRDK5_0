@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <cutils/tztime.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "media/mtp/CMtpPropertyList.h"
 #include "provider/CMediaStoreFiles.h"
 #include "provider/CMediaStoreAudioMedia.h"
@@ -183,7 +183,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
                         // special case - need to extract file name from full path
                         c->GetString(column, &str);
                         if (str != NULL) {
-                            result->AppendEx(handle, propertyCode, NameFromPath(str));
+                            result->Append(handle, propertyCode, NameFromPath(str));
                         } else {
                             result->SetResult(IMtpConstants::RESPONSE_INVALID_OBJECT_HANDLE);
                         }
@@ -203,7 +203,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
                             }
                         }
                         if (name != NULL) {
-                            result->AppendEx(handle, propertyCode, name);
+                            result->Append(handle, propertyCode, name);
                         } else {
                             result->SetResult(IMtpConstants::RESPONSE_INVALID_OBJECT_HANDLE);
                         }
@@ -212,13 +212,13 @@ ECode CMtpPropertyGroup::GetPropertyList(
                     case IMtpConstants::PROPERTY_DATE_ADDED:
                         // convert from seconds to DateTime
                         c->GetInt32(column, &value);
-                        result->AppendEx(handle, propertyCode, NativeFormatDateTime(value));
+                        result->Append(handle, propertyCode, NativeFormatDateTime(value));
                         break;
                     case IMtpConstants::PROPERTY_ORIGINAL_RELEASE_DATE:
                         // release date is stored internally as just the year
                         c->GetInt32(column, &year);
                         dateTime = StringUtils::Int32ToString(year) + "0101T000000";
-                        result->AppendEx(handle, propertyCode, dateTime);
+                        result->Append(handle, propertyCode, dateTime);
                         break;
                     case IMtpConstants::PROPERTY_PERSISTENT_UID:
                         // PUID is concatenation of storageID and object handle
@@ -233,17 +233,17 @@ ECode CMtpPropertyGroup::GetPropertyList(
                         result->Append(handle, propertyCode, IMtpConstants::TYPE_UINT16, value);
                         break;
                     case IMtpConstants::PROPERTY_ARTIST:
-                        result->AppendEx(handle, propertyCode,
+                        result->Append(handle, propertyCode,
                                 QueryAudio(handle, IMediaStoreAudioAudioColumns::ARTIST));
                         break;
                     case IMtpConstants::PROPERTY_ALBUM_NAME:
-                        result->AppendEx(handle, propertyCode,
+                        result->Append(handle, propertyCode,
                                 QueryAudio(handle, IMediaStoreAudioAudioColumns::ALBUM));
                         break;
                     case IMtpConstants::PROPERTY_GENRE:
                         genre = QueryGenre(handle);
                         if (genre != NULL) {
-                            result->AppendEx(handle, propertyCode, genre);
+                            result->Append(handle, propertyCode, genre);
                         } else {
                             result->SetResult(IMtpConstants::RESPONSE_INVALID_OBJECT_HANDLE);
                         }
@@ -251,7 +251,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
                     default:
                         if (property->mType == IMtpConstants::TYPE_STR) {
                             c->GetString(column, &str);
-                            result->AppendEx(handle, propertyCode, str);
+                            result->Append(handle, propertyCode, str);
                         } else if (property->mType == IMtpConstants::TYPE_UNDEFINED) {
                             result->Append(handle, propertyCode, property->mType, 0);
                         } else {
@@ -264,7 +264,7 @@ ECode CMtpPropertyGroup::GetPropertyList(
         }
 
         *list = result;
-        INTERFACE_ADDREF(*list);
+        REFCOUNT_ADD(*list);
         return NOERROR;
     //} catch (RemoteException e) {
     //  return new MtpPropertyList(0, IMtpConstants::RESPONSE_GENERAL_ERROR);

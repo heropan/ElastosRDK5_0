@@ -3,10 +3,9 @@
 
 #include "_CVisualizer.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::HandlerBase;

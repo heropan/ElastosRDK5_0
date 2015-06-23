@@ -1,6 +1,6 @@
 
 #include "widget/AnalogClock.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "content/CIntentFilter.h"
 #include "text/format/CDateUtils.h"
 
@@ -258,7 +258,7 @@ ECode AnalogClock::InitImpl(
             const_cast<Int32 *>(R::styleable::AnalogClock),
             ARRAY_SIZE(R::styleable::AnalogClock));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
         attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetDrawable(R::styleable::AnalogClock_dial, (IDrawable**)&mDial);
@@ -296,7 +296,7 @@ ECode AnalogClock::OnAttachedToWindow()
         filter->AddAction(IIntent::ACTION_TIME_CHANGED);
         filter->AddAction(IIntent::ACTION_TIMEZONE_CHANGED);
         AutoPtr<IIntent> rst;
-        GetContext()->RegisterReceiverEx(mIntentReceiver, filter, String(NULL), mHandler, (IIntent**)&rst);
+        GetContext()->RegisterReceiver(mIntentReceiver, filter, String(NULL), mHandler, (IIntent**)&rst);
     }
 
     // NOTE: It's safe to do these after registering the receiver since the receiver always runs
@@ -388,7 +388,7 @@ void AnalogClock::OnDraw(
         Float scale = Elastos::Core::Math::Min((Float) availableWidth / (Float) w,
             (Float) availableHeight / (Float) h);
         canvas->Save(&res);
-        canvas->ScaleEx(scale, scale, x, y);
+        canvas->Scale(scale, scale, x, y);
     }
 
     if (changed) {
@@ -397,7 +397,7 @@ void AnalogClock::OnDraw(
     dial->Draw(canvas);
 
     canvas->Save(&res);
-    canvas->RotateEx(mHour / 12.0f * 360.0f, x, y);
+    canvas->Rotate(mHour / 12.0f * 360.0f, x, y);
     AutoPtr<IDrawable> hourHand = mHourHand;
     if (changed) {
         hourHand->GetIntrinsicWidth(&w);
@@ -408,7 +408,7 @@ void AnalogClock::OnDraw(
     canvas->Restore();
 
     canvas->Save(&res);
-    canvas->RotateEx(mMinutes / 60.0f * 360.0f, x, y);
+    canvas->Rotate(mMinutes / 60.0f * 360.0f, x, y);
 
     AutoPtr<IDrawable> minuteHand = mMinuteHand;
     if (changed) {

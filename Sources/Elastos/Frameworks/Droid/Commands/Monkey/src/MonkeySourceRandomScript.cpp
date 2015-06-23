@@ -75,7 +75,7 @@ CARAPI MonkeySourceRandomScript::GetNextEvent(
         else if (numSources > 1) {
             if (mRandomizeScript) {
                 Int32 rdm;
-                mRandom->NextInt32Ex(numSources, &rdm);
+                mRandom->NextInt32(numSources, &rdm);
                 mCurrentSource = (*mScriptSources)[rdm];
             }
             else {

@@ -2,9 +2,9 @@
 #define __CPANELHOLDER_H_
 
 #include "_CPanelHolder.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/phone/PanelHolder.h"
 
 namespace Elastos {

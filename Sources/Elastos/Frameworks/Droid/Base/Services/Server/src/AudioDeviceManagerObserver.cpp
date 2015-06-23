@@ -1,8 +1,8 @@
 #include "AudioDeviceManagerObserver.h"
 #include "app/ActivityManagerNative.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::ICloseable;
@@ -166,7 +166,7 @@ AudioDeviceManagerObserver::AudioDeviceManagerObserver(
     CIntentFilter::New(IIntent::ACTION_BOOT_COMPLETED, (IIntentFilter**)&intentFilter);
     AutoPtr<BootCompletedReceiver> receiver = new BootCompletedReceiver(this);
     AutoPtr<IIntent> intent;
-    context->RegisterReceiverEx(receiver, intentFilter, String(NULL), NULL, (IIntent**)&intent);
+    context->RegisterReceiver(receiver, intentFilter, String(NULL), NULL, (IIntent**)&intent);
 }
 
 AutoPtr<AudioDeviceManagerObserver> AudioDeviceManagerObserver::GetInstance(
@@ -202,7 +202,7 @@ void AudioDeviceManagerObserver::Init()
             if (FAILED(ec))
                 break;
             Int32 len;
-            ec = file->ReadCharsEx(buffer, 0, 1024, &len);
+            ec = file->ReadChars(buffer, 0, 1024, &len);
             if (FAILED(ec))
                 break;
             ec = ICloseable::Probe(file)->Close();
@@ -402,7 +402,7 @@ void AudioDeviceManagerObserver::OnUEvent(
                         if (FAILED(ec))
                             break;
                         Int32 len = 0;
-                        ec = file->ReadCharsEx(buffer, 0, 64, &len);
+                        ec = file->ReadChars(buffer, 0, 64, &len);
                         if (FAILED(ec))
                             break;
                         ec = ICloseable::Probe(file)->Close();
@@ -488,7 +488,7 @@ void AudioDeviceManagerObserver::UpdateState(
     if (extraMng != NULL) {
         bundle->PutString(EXTRA_MNG, extraMng);
     }
-    intent->PutExtrasEx(bundle);
+    intent->PutExtras(bundle);
     ActivityManagerNative::BroadcastStickyIntent(intent, String(NULL), IUserHandle::USER_ALL);
 }
 
@@ -513,7 +513,7 @@ Int32 AudioDeviceManagerObserver::GetDevState(
         if (FAILED(ec))
             break;
         Int32 i = 0;
-        ec = i_stream->ReadBytesEx(data, 0, buffer, &i);
+        ec = i_stream->ReadBytes(data, 0, buffer, &i);
         if (FAILED(ec))
             break;
         if (i != -1) {

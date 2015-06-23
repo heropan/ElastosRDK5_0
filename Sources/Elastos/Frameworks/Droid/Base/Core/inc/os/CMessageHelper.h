@@ -16,33 +16,33 @@ public:
     CARAPI Obtain(
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ IMessage* orig,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx2(
+    CARAPI Obtain(
         /* [in] */ IHandler* target,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx3(
+    CARAPI Obtain(
         /* [in] */ IHandler* target,
         /* [in] */ Int32 what,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx4(
+    CARAPI Obtain(
         /* [in] */ IHandler* target,
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx5(
+    CARAPI Obtain(
         /* [in] */ IHandler* target,
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx6(
+    CARAPI Obtain(
         /* [in] */ IHandler* target,
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
@@ -50,7 +50,7 @@ public:
         /* [in] */ IInterface* obj,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainEx7(
+    CARAPI Obtain(
         /* [in] */ IHandler* target,
         /* [in] */ IRunnable* callback,
         /* [out] */ IMessage** msg);

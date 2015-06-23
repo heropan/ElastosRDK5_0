@@ -9,7 +9,7 @@
 #include "net/wifi/CEnterpriseField.h"
 #include "net/wifi/CWifiSsid.h"
 #include "net/CLinkProperties.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::CBitSet;
@@ -448,7 +448,7 @@ ECode CWifiConfiguration::GetEap(
 {
     VALIDATE_NOT_NULL(eap);
     *eap = mEap;
-    INTERFACE_ADDREF(*eap);
+    REFCOUNT_ADD(*eap);
     return NOERROR;
 }
 
@@ -457,7 +457,7 @@ ECode CWifiConfiguration::GetPhase2(
 {
     VALIDATE_NOT_NULL(phase2);
     *phase2 = mPhase2;
-    INTERFACE_ADDREF(*phase2);
+    REFCOUNT_ADD(*phase2);
     return NOERROR;
 }
 
@@ -466,7 +466,7 @@ ECode CWifiConfiguration::GetIdentity(
 {
     VALIDATE_NOT_NULL(identity);
     *identity = mIdentity;
-    INTERFACE_ADDREF(*identity);
+    REFCOUNT_ADD(*identity);
     return NOERROR;
 }
 
@@ -475,7 +475,7 @@ ECode CWifiConfiguration::GetAnonymousIdentity(
 {
     VALIDATE_NOT_NULL(anonymousIdentity);
     *anonymousIdentity = mAnonymousIdentity;
-    INTERFACE_ADDREF(*anonymousIdentity);
+    REFCOUNT_ADD(*anonymousIdentity);
     return NOERROR;
 }
 
@@ -484,7 +484,7 @@ ECode CWifiConfiguration::GetPassword(
 {
     VALIDATE_NOT_NULL(password);
     *password = mPassword;
-    INTERFACE_ADDREF(*password);
+    REFCOUNT_ADD(*password);
     return NOERROR;
 }
 
@@ -493,7 +493,7 @@ ECode CWifiConfiguration::GetClientCert(
 {
     VALIDATE_NOT_NULL(clientCert);
     *clientCert = mClientCert;
-    INTERFACE_ADDREF(*clientCert);
+    REFCOUNT_ADD(*clientCert);
     return NOERROR;
 }
 
@@ -502,7 +502,7 @@ ECode CWifiConfiguration::GetEngine(
 {
     VALIDATE_NOT_NULL(engine);
     *engine = mEngine;
-    INTERFACE_ADDREF(*engine);
+    REFCOUNT_ADD(*engine);
     return NOERROR;
 }
 
@@ -511,7 +511,7 @@ ECode CWifiConfiguration::GetEngineId(
 {
     VALIDATE_NOT_NULL(engineId);
     *engineId = mEngineId;
-    INTERFACE_ADDREF(*engineId);
+    REFCOUNT_ADD(*engineId);
     return NOERROR;
 }
 
@@ -520,7 +520,7 @@ ECode CWifiConfiguration::GetKeyId(
 {
     VALIDATE_NOT_NULL(keyId);
     *keyId = mKeyId;
-    INTERFACE_ADDREF(*keyId);
+    REFCOUNT_ADD(*keyId);
     return NOERROR;
 }
 
@@ -529,7 +529,7 @@ ECode CWifiConfiguration::GetCaCert(
 {
     VALIDATE_NOT_NULL(caCert);
     *caCert = mCaCert;
-    INTERFACE_ADDREF(*caCert);
+    REFCOUNT_ADD(*caCert);
     return NOERROR;
 }
 
@@ -538,7 +538,7 @@ ECode CWifiConfiguration::GetEnterpriseFields(
 {
     VALIDATE_NOT_NULL(fields);
     *fields = mEnterpriseFields;
-    INTERFACE_ADDREF(*fields);
+    REFCOUNT_ADD(*fields);
     return NOERROR;
 }
 
@@ -698,7 +698,7 @@ ECode CWifiConfiguration::GetAllowedKeyManagement(
 {
     VALIDATE_NOT_NULL(allowedKeyManagement);
     *allowedKeyManagement = mAllowedKeyManagement;
-    INTERFACE_ADDREF(*allowedKeyManagement);
+    REFCOUNT_ADD(*allowedKeyManagement);
     return NOERROR;
 }
 
@@ -714,7 +714,7 @@ ECode CWifiConfiguration::GetAllowedProtocols(
 {
     VALIDATE_NOT_NULL(allowedProtocols);
     *allowedProtocols = mAllowedProtocols;
-    INTERFACE_ADDREF(*allowedProtocols);
+    REFCOUNT_ADD(*allowedProtocols);
     return NOERROR;
 }
 
@@ -730,7 +730,7 @@ ECode CWifiConfiguration::GetAllowedAuthAlgorithms(
 {
     VALIDATE_NOT_NULL(allowedAuthAlgorithms);
     *allowedAuthAlgorithms = mAllowedAuthAlgorithms;
-    INTERFACE_ADDREF(*allowedAuthAlgorithms);
+    REFCOUNT_ADD(*allowedAuthAlgorithms);
     return NOERROR;
 }
 
@@ -746,7 +746,7 @@ ECode CWifiConfiguration::GetAllowedPairwiseCiphers(
 {
     VALIDATE_NOT_NULL(allowedPairwiseCiphers);
     *allowedPairwiseCiphers = mAllowedPairwiseCiphers;
-    INTERFACE_ADDREF(*allowedPairwiseCiphers);
+    REFCOUNT_ADD(*allowedPairwiseCiphers);
     return NOERROR;
 }
 
@@ -762,7 +762,7 @@ ECode CWifiConfiguration::GetAllowedGroupCiphers(
 {
     VALIDATE_NOT_NULL(allowedGroupCiphers);
     *allowedGroupCiphers = mAllowedGroupCiphers;
-    INTERFACE_ADDREF(*allowedGroupCiphers);
+    REFCOUNT_ADD(*allowedGroupCiphers);
     return NOERROR;
 }
 
@@ -808,7 +808,7 @@ ECode CWifiConfiguration::GetLinkProperties(
 {
     VALIDATE_NOT_NULL(linkProperties);
     *linkProperties = mLinkProperties;
-    INTERFACE_ADDREF(*linkProperties);
+    REFCOUNT_ADD(*linkProperties);
     return NOERROR;
 }
 

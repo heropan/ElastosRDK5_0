@@ -112,7 +112,7 @@ module
             [in] String key,
             [out] String* sKey);
 
-        EqualsEx(
+        Equals(
             [in] IInputMethodSubtype* o,
             [out] Boolean* e);
 

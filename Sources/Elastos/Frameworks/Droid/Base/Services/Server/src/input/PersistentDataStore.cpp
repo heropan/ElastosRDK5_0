@@ -2,7 +2,7 @@
 #include "input/PersistentDataStore.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -175,13 +175,13 @@ ECode PersistentDataStore::InputDeviceState::LoadFromXml(
         FAIL_RETURN(parser->GetName(&name));
         if (name.Equals("keyboard-layout")) {
             String descriptor;
-            parser->GetAttributeValueEx(String(NULL), String("descriptor"), &descriptor);
+            parser->GetAttributeValue(String(NULL), String("descriptor"), &descriptor);
             if (descriptor.IsNull()) {
                 Slogger::E(TAG, "Missing descriptor attribute on keyboard-layout.");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
             String current;
-            parser->GetAttributeValueEx(String(NULL), String("current"), &current);
+            parser->GetAttributeValue(String(NULL), String("current"), &current);
             if (Find(mKeyboardLayouts.Begin(), mKeyboardLayouts.End(), descriptor)
                 != mKeyboardLayouts.End()) {
                 Slogger::E(TAG, "Found duplicate keyboard layout.");
@@ -385,7 +385,7 @@ void PersistentDataStore::Load()
     if (FAILED(ec))
         goto _Exit_;
 
-    ec = parser->SetInputEx(bis, String(NULL));
+    ec = parser->SetInput(bis, String(NULL));
     if (FAILED(ec))
         goto _Exit_;
 
@@ -482,7 +482,7 @@ ECode PersistentDataStore::LoadInputDevicesFromXml(
         FAIL_RETURN(parser->GetName(&name));
         if (name.Equals("input-device")) {
             String descriptor;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("descriptor"), &descriptor));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("descriptor"), &descriptor));
             if (descriptor.IsNull()) {
                 Slogger::E(TAG, "Missing descriptor attribute on input-device.");
                 return E_XML_PULL_PARSER_EXCEPTION;

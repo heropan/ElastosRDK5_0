@@ -83,10 +83,10 @@ ECode CCheckBoxPreference::SetSummaryOn(
     return TwoStatePreference::SetSummaryOn(summary);
 }
 
-ECode CCheckBoxPreference::SetSummaryOnEx(
+ECode CCheckBoxPreference::SetSummaryOn(
     /* [in] */ Int32 summaryResId)
 {
-    return TwoStatePreference::SetSummaryOnEx(summaryResId);
+    return TwoStatePreference::SetSummaryOn(summaryResId);
 }
 
 ECode CCheckBoxPreference::GetSummaryOn(
@@ -101,10 +101,10 @@ ECode CCheckBoxPreference::SetSummaryOff(
     return TwoStatePreference::SetSummaryOff(summary);
 }
 
-ECode CCheckBoxPreference::SetSummaryOffEx(
+ECode CCheckBoxPreference::SetSummaryOff(
     /* [in] */ Int32 summaryResId)
 {
-    return TwoStatePreference::SetSummaryOffEx(summaryResId);
+    return TwoStatePreference::SetSummaryOff(summaryResId);
 }
 
 ECode CCheckBoxPreference::GetSummaryOff(
@@ -136,7 +136,7 @@ ECode CCheckBoxPreference::constructor(
             const_cast<Int32 *>(R::styleable::CheckBoxPreference),
             ARRAY_SIZE(R::styleable::CheckBoxPreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     String summaryOn;
     a->GetString(R::styleable::CheckBoxPreference_summaryOn, &summaryOn);

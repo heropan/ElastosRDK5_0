@@ -3,11 +3,11 @@
 
 #include "_CGridView.h"
 #include "widget/GridView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
-#include "widget/AbsListViewMacro.h"
-#include "widget/AdapterViewMacro.h"
+
+
+
+
+
 
 
 namespace Elastos{

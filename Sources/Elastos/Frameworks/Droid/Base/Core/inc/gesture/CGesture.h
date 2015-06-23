@@ -3,7 +3,7 @@
 
 #include "ext/frameworkext.h"
 #include "_CGesture.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IDataInputStream;
@@ -12,7 +12,7 @@ using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -65,18 +65,18 @@ public:
     CARAPI ToPath(
         /* [out] */ IPath **outPath);
 
-    CARAPI ToPathEx(
+    CARAPI ToPath(
         /* [in] */ IPath *path,
         /* [out] */ IPath **outPath);
 
-    CARAPI ToPathEx2(
+    CARAPI ToPath(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 edge,
         /* [in] */ Int32 numSample,
         /* [out] */ IPath **outPath);
 
-    CARAPI ToPathEx3(
+    CARAPI ToPath(
         /* [in] */ IPath *path,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
@@ -117,7 +117,7 @@ public:
      * @param color
      * @return the bitmap
      */
-    CARAPI ToBitmapEx(
+    CARAPI ToBitmap(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 inset,

@@ -5,12 +5,9 @@
 #include "speech/tts/BlockingAudioTrack.h"
 #include "speech/tts/EventLogger.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::List;
 namespace Elastos {
 namespace Droid {
 namespace Speech {

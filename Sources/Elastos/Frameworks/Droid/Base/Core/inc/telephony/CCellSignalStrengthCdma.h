@@ -47,7 +47,7 @@ public:
     CARAPI Copy(
         /* [out] */ ICellSignalStrength** css);
 
-    CARAPI CopyEx(
+    CARAPI Copy(
         /* [out] */ ICellSignalStrengthCdma** css);
 
     CARAPI GetHashCode(

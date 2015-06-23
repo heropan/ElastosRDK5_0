@@ -96,7 +96,7 @@ void FakeWindowImpl::Layout(
 {
     if (mTouchFullscreen) {
         Boolean res;
-        mWindowHandle->mTouchableRegion->SetEx2(0, 0, dw, dh, &res);
+        mWindowHandle->mTouchableRegion->Set(0, 0, dw, dh, &res);
     }
     else {
         mWindowHandle->mTouchableRegion->SetEmpty();

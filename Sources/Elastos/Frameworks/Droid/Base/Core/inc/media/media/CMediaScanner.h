@@ -4,8 +4,8 @@
 
 #include "_CMediaScanner.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
 #include "media/mediascanner.h"
 
 using Elastos::Droid::Net::IUri;
@@ -20,7 +20,7 @@ using Elastos::Droid::Sax::IEndElementListener;
 using Org::Xml::Sax::IContentHandler;
 using Org::Xml::Sax::IAttributes;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {

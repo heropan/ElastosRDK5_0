@@ -1,7 +1,7 @@
 #include "MediaSet.h"
 #include "MediaDetails.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Math;

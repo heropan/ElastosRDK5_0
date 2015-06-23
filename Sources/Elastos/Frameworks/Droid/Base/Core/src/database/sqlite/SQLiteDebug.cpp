@@ -3,9 +3,9 @@
 #include "database/sqlite/SQLiteDatabase.h"
 #include "os/Build.h"
 #include "os/SystemProperties.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <sqlite3.h>
 
 using Elastos::Utility::Logging::Logger;

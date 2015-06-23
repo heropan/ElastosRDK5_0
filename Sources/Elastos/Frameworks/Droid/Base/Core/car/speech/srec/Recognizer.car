@@ -211,7 +211,7 @@ module
          * <code>Recognizer</code>.
          * @param audio <code>InputStream</code> containing PCM audio samples.
          */
-        PutAudioEx(
+        PutAudio(
             [in] IInputStream* audio);
 
         /**

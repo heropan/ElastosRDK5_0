@@ -5,9 +5,9 @@
 #include "widget/CArrayAdapter.h"
 //#include "utils/AutoStringArray.h"
 #include "util/CParcelableObjectContainer.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Utility::CParcelableObjectContainer;
 using Elastos::Droid::View::CViewGroupLayoutParams;
@@ -76,7 +76,7 @@ ECode AbsSpinner::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::AbsSpinner),
             ARRAY_SIZE(R::styleable::AbsSpinner));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<ArrayOf<ICharSequence*> > entries;

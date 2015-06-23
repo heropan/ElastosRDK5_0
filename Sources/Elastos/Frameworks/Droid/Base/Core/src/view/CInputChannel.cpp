@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "view/CInputChannel.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 //using Elastos::Core;
 using Elastos::Utility::Logging::Slogger;

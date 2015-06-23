@@ -7,9 +7,9 @@
 #include "os/Process.h"
 #include "os/Binder.h"
 #include "R.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
-#include <elastos/Character.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Character;
@@ -979,7 +979,7 @@ ECode CursorWindow::NewFromParcel(
     AutoPtr<IParcelable> p = IParcelable::Probe(cursorWindow);
     p->ReadFromParcel(parcel);
     *cw = cursorWindow;
-    INTERFACE_ADDREF(*cw)
+    REFCOUNT_ADD(*cw)
     return NOERROR;
 }
 
@@ -1076,7 +1076,7 @@ String CursorWindow::PrintStats()
     // limit the returned string size to 1000
     String s;
     if (buff.GetLength() > 980) {
-        buff.SubstringEx(0, 980, &s);
+        buff.Substring(0, 980, &s);
     }
     else {
         s = buff.ToString();

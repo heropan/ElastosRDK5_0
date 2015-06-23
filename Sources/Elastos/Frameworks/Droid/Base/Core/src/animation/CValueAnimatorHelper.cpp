@@ -27,7 +27,7 @@ ECode CValueAnimatorHelper::OfInt32(
     VALIDATE_NOT_NULL(obj);
     AutoPtr<IValueAnimator> tmp = CValueAnimator::OfInt32(values);
     *obj = tmp;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -38,7 +38,7 @@ ECode CValueAnimatorHelper::OfFloat(
     VALIDATE_NOT_NULL(obj);
     AutoPtr<IValueAnimator> tmp = CValueAnimator::OfFloat(values);
     *obj = tmp;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CValueAnimatorHelper::OfPropertyValuesHolder(
     VALIDATE_NOT_NULL(obj);
     AutoPtr<IValueAnimator> tmp = CValueAnimator::OfPropertyValuesHolder(values);
     *obj = tmp;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -61,7 +61,7 @@ ECode CValueAnimatorHelper::OfObject(
     VALIDATE_NOT_NULL(obj);
     AutoPtr<IValueAnimator> tmp = CValueAnimator::OfObject(evaluator, values);
     *obj = tmp;
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 

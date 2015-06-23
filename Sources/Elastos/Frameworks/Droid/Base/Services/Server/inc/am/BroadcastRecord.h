@@ -6,10 +6,10 @@
 #include "am/BroadcastFilter.h"
 #include "am/BroadcastQueue.h"
 #include <Elastos.Droid.Core.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IComponentName;

@@ -57,7 +57,7 @@ module
          *
          * @sa ContentProvider#query ContentProvider.query
          */
-        QueryEx(
+        Query(
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
             [in] String selection,

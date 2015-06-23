@@ -111,7 +111,7 @@ ECode CRestoreObserverWrapper::RestoreSetsAvailable(
         }
     }
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_RESTORE_SETS_AVAILABLE, container, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_RESTORE_SETS_AVAILABLE, container, (IMessage**)&msg);
     Boolean r;
     return  mHandler->SendMessage(msg, &r);
 }
@@ -120,7 +120,7 @@ ECode CRestoreObserverWrapper::RestoreStarting(
     /* [in] */ Int32 numPackages)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_RESTORE_STARTING, numPackages, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_RESTORE_STARTING, numPackages, 0, (IMessage**)&msg);
     Boolean r;
     return  mHandler->SendMessage(msg, &r);
 }
@@ -132,7 +132,7 @@ ECode CRestoreObserverWrapper::OnUpdate(
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(currentPackage, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx3(MSG_UPDATE, nowBeingRestored, 0, seq, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_UPDATE, nowBeingRestored, 0, seq, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
 }
@@ -141,7 +141,7 @@ ECode CRestoreObserverWrapper::RestoreFinished(
     /* [in] */ Int32 error)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_RESTORE_FINISHED, error, 0, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_RESTORE_FINISHED, error, 0, (IMessage**)&msg);
     Boolean r;
     return  mHandler->SendMessage(msg, &r);
 }

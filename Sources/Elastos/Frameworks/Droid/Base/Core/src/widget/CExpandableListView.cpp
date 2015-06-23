@@ -59,7 +59,7 @@ ECode CExpandableListView::SetChildDivider(
     return ExpandableListView::SetChildDivider(childDivider);
 }
 
-ECode CExpandableListView::SetAdapterEx(
+ECode CExpandableListView::SetAdapter(
     /* [in] */ IExpandableListAdapter* adapter)
 {
     return ExpandableListView::SetAdapter(adapter);
@@ -82,7 +82,7 @@ ECode CExpandableListView::ExpandGroup(
     return NOERROR;
 }
 
-ECode CExpandableListView::ExpandGroupEx(
+ECode CExpandableListView::ExpandGroup(
     /* [in] */ Int32 groupPos,
     /* [in] */ Boolean animate,
     /* [out] */ Boolean* expanded)

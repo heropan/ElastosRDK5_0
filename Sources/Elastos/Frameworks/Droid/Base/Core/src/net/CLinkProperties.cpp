@@ -3,8 +3,8 @@
 #include "net/CProxyProperties.h"
 #include "util/CParcelableObjectContainer.h"
 #include "text/TextUtils.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Algorithm.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
@@ -108,7 +108,7 @@ ECode CLinkProperties::GetAddresses(
         addresses->Add(InetAddr);
     }
     *result = addresses.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -132,7 +132,7 @@ ECode CLinkProperties::GetLinkAddresses(
         out->Add(*iter);
     }
     *result = out.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -156,7 +156,7 @@ ECode CLinkProperties::GetDnses(
         out->Add(*iter);
     }
     *result = out.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode CLinkProperties::GetRoutes(
         out->Add(*iter);
     }
     *result = out.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CLinkProperties::GetHttpProxy(
 {
     VALIDATE_NOT_NULL(result);
     *result = mHttpProxy;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -430,7 +430,7 @@ ECode CLinkProperties::IsIdenticalHttpProxy(
  * @param obj the object to be tested for equality.
  * @return {@code TRUE} if both objects are equal, {@code FALSE} otherwise.
  */
-ECode CLinkProperties::EqualsEx(
+ECode CLinkProperties::Equals(
     /* [in] */ ILinkProperties* obj,
     /* [out] */ Boolean* result)
 {
@@ -456,7 +456,7 @@ ECode CLinkProperties::Equals(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
     VALIDATE_NOT_NULL(obj);
-    return EqualsEx(ILinkProperties::Probe(obj), result);
+    return Equals(ILinkProperties::Probe(obj), result);
 }
 
 /**
@@ -513,7 +513,7 @@ ECode CLinkProperties::CompareAddresses(
     }
 
     *result = cprResult;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -569,7 +569,7 @@ ECode CLinkProperties::CompareDnses(
         cprResult->AddRemoved(*iter);
     }
     *result = cprResult;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -617,7 +617,7 @@ ECode CLinkProperties::CompareRoutes(
         cprResult->AddRemoved(*iter);
     }
     *result = cprResult;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -85,7 +85,7 @@ module {
         * @return A String containing the value of the attribute, or null if the
         *         attribute cannot be found.
         */
-        GetAttributeValueEx(
+        GetAttributeValue(
             [in] String namespace1,
             [in] String name,
             [out] String * value);
@@ -225,7 +225,7 @@ module {
          *
          * @return Index in to 'options' or defaultValue.
          */
-        GetAttributeListValueEx(
+        GetAttributeListValue(
             [in] Int32 index,
             [in] ArrayOf<String> options,
             [in] Int32 defaultValue,
@@ -239,7 +239,7 @@ module {
          *
          * @return Resulting value.
          */
-        GetAttributeBooleanValueEx(
+        GetAttributeBooleanValue(
             [in] Int32 index,
             [in] Boolean defaultValue,
             [out] Boolean * value);
@@ -258,7 +258,7 @@ module {
          *
          * @return Resulting value.
          */
-        GetAttributeResourceValueEx(
+        GetAttributeResourceValue(
             [in] Int32 index,
             [in] Int32 defaultValue,
             [out] Int32 * value);
@@ -271,7 +271,7 @@ module {
          *
          * @return Resulting value.
          */
-        GetAttributeIntValueEx(
+        GetAttributeIntValue(
             [in] Int32 index,
             [in] Int32 defaultValue,
             [out] Int32 * value);
@@ -286,7 +286,7 @@ module {
          *
          * @return Resulting value.
          */
-        GetAttributeUnsignedIntValueEx(
+        GetAttributeUnsignedIntValue(
             [in] Int32 index,
             [in] Int32 defaultValue,
             [out] Int32 * value);
@@ -299,7 +299,7 @@ module {
          *
          * @return Resulting value.
          */
-        GetAttributeFloatValueEx(
+        GetAttributeFloatValue(
             [in] Int32 index,
             [in] Float defaultValue,
             [out] Float * value);

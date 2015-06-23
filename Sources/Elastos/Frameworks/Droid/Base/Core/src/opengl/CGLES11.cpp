@@ -4,7 +4,7 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <cmdef.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #define LOGD(msg) SLOGGERD("CGLES11", msg)
 
@@ -215,11 +215,11 @@ ECode CGLES11::GlDeleteTextures(
     return sGl10->GlDeleteTextures(n,  textures_buf, offset);
 }
 
-ECode CGLES11::GlDeleteTexturesEx(
+ECode CGLES11::GlDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* textures_buf)
 {
-    return sGl10->GlDeleteTexturesEx(n, textures_buf);
+    return sGl10->GlDeleteTextures(n, textures_buf);
 }
 
 ECode CGLES11::GlDepthFunc(
@@ -314,11 +314,11 @@ ECode CGLES11::GlFogfv(
     return sGl10->GlFogfv(pname, params_ref, offset);
 }
 
-ECode CGLES11::GlFogfvEx(
+ECode CGLES11::GlFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
-    return sGl10->GlFogfvEx(pname, params_buf);
+    return sGl10->GlFogfv(pname, params_buf);
 }
 
 ECode CGLES11::GlFogx(
@@ -336,11 +336,11 @@ ECode CGLES11::GlFogxv(
     return sGl10->GlFogxv(pname, params_ref, offset);
 }
 
-ECode CGLES11::GlFogxvEx(
+ECode CGLES11::GlFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
-    return sGl10->GlFogxvEx(pname, params_buf);
+    return sGl10->GlFogxv(pname, params_buf);
 }
 
 ECode CGLES11::GlFrontFace(
@@ -379,11 +379,11 @@ ECode CGLES11::GlGenTextures(
     return sGl10->GlGenTextures(n, textures_ref, offset);
 }
 
-ECode CGLES11::GlGenTexturesEx(
+ECode CGLES11::GlGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* textures_buf)
 {
-    return sGl10->GlGenTexturesEx(n, textures_buf);
+    return sGl10->GlGenTextures(n, textures_buf);
 }
 
 ECode CGLES11::GlGetError(
@@ -400,11 +400,11 @@ ECode CGLES11::GlGetIntegerv(
     return sGl10->GlGetIntegerv(pname, params_ref, offset);
 }
 
-ECode CGLES11::GlGetIntegervEx(
+ECode CGLES11::GlGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
-    return sGl10->GlGetIntegervEx(pname, params_buf);
+    return sGl10->GlGetIntegerv(pname, params_buf);
 }
 
 ECode CGLES11::GlGetString(
@@ -436,11 +436,11 @@ ECode CGLES11::GlLightModelfv(
     return sGl10->GlLightModelfv(pname, params_ref, offset);
 }
 
-ECode CGLES11::GlLightModelfvEx(
+ECode CGLES11::GlLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
-    return sGl10->GlLightModelfvEx(pname, params_buf);
+    return sGl10->GlLightModelfv(pname, params_buf);
 }
 
 ECode CGLES11::GlLightModelx(
@@ -458,11 +458,11 @@ ECode CGLES11::GlLightModelxv(
     return sGl10->GlLightModelxv(pname, params_ref, offset);
 }
 
-ECode CGLES11::GlLightModelxvEx(
+ECode CGLES11::GlLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
-    return sGl10->GlLightModelxvEx(pname, params_buf);
+    return sGl10->GlLightModelxv(pname, params_buf);
 }
 
 ECode CGLES11::GlLightf(
@@ -482,12 +482,12 @@ ECode CGLES11::GlLightfv(
     return sGl10->GlLightfv(light, pname, params_ref, offset);
 }
 
-ECode CGLES11::GlLightfvEx(
+ECode CGLES11::GlLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
-    return sGl10->GlLightfvEx(light, pname, params_buf);
+    return sGl10->GlLightfv(light, pname, params_buf);
 }
 
 ECode CGLES11::GlLightx(
@@ -507,12 +507,12 @@ ECode CGLES11::GlLightxv(
     return sGl10->GlLightxv(light, pname, params_ref, offset);
 }
 
-ECode CGLES11::GlLightxvEx(
+ECode CGLES11::GlLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
-    return sGl10->GlLightxvEx(light, pname, params_buf);
+    return sGl10->GlLightxv(light, pname, params_buf);
 }
 
 ECode CGLES11::GlLineWidth(
@@ -539,10 +539,10 @@ ECode CGLES11::GlLoadMatrixf(
     return sGl10->GlLoadMatrixf(m, offset);
 }
 
-ECode CGLES11::GlLoadMatrixfEx(
+ECode CGLES11::GlLoadMatrixf(
     /* [in] */ Elastos::IO::IFloatBuffer* m)
 {
-    return sGl10->GlLoadMatrixfEx(m);
+    return sGl10->GlLoadMatrixf(m);
 }
 
 ECode CGLES11::GlLoadMatrixx(
@@ -552,10 +552,10 @@ ECode CGLES11::GlLoadMatrixx(
     return sGl10->GlLoadMatrixx(m, offset);
 }
 
-ECode CGLES11::GlLoadMatrixxEx(
+ECode CGLES11::GlLoadMatrixx(
     /* [in] */ Elastos::IO::IInt32Buffer* m)
 {
-    return sGl10->GlLoadMatrixxEx(m);
+    return sGl10->GlLoadMatrixx(m);
 }
 
 ECode CGLES11::GlLogicOp(
@@ -581,12 +581,12 @@ ECode CGLES11::GlMaterialfv(
     return sGl10->GlMaterialfv(face, pname, params_ref, offset);
 }
 
-ECode CGLES11::GlMaterialfvEx(
+ECode CGLES11::GlMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
-    return sGl10->GlMaterialfvEx(face, pname, params_buf);
+    return sGl10->GlMaterialfv(face, pname, params_buf);
 }
 
 ECode CGLES11::GlMaterialx(
@@ -606,12 +606,12 @@ ECode CGLES11::GlMaterialxv(
     return sGl10->GlMaterialxv(face, pname, params_ref, offset);
 }
 
-ECode CGLES11::GlMaterialxvEx(
+ECode CGLES11::GlMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
-    return sGl10->GlMaterialxvEx(face, pname, params_buf);
+    return sGl10->GlMaterialxv(face, pname, params_buf);
 }
 
 ECode CGLES11::GlMatrixMode(
@@ -627,10 +627,10 @@ ECode CGLES11::GlMultMatrixf(
     return sGl10->GlMultMatrixf(m, offset);
 }
 
-ECode CGLES11::GlMultMatrixfEx(
+ECode CGLES11::GlMultMatrixf(
     /* [in] */ Elastos::IO::IFloatBuffer* m)
 {
-    return sGl10->GlMultMatrixfEx(m);
+    return sGl10->GlMultMatrixf(m);
 }
 
 ECode CGLES11::GlMultMatrixx(
@@ -640,10 +640,10 @@ ECode CGLES11::GlMultMatrixx(
     return sGl10->GlMultMatrixx(m, offset);
 }
 
-ECode CGLES11::GlMultMatrixxEx(
+ECode CGLES11::GlMultMatrixx(
     /* [in] */ Elastos::IO::IInt32Buffer* m)
 {
-    return sGl10->GlMultMatrixxEx(m);
+    return sGl10->GlMultMatrixx(m);
 }
 
 ECode CGLES11::GlMultiTexCoord4f(
@@ -878,12 +878,12 @@ ECode CGLES11::GlTexEnvfv(
     return sGl10->GlTexEnvfv(target, pname, params_ref, offset);
 }
 
-ECode CGLES11::GlTexEnvfvEx(
+ECode CGLES11::GlTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
-    return sGl10->GlTexEnvfvEx(target, pname, params_buf);
+    return sGl10->GlTexEnvfv(target, pname, params_buf);
 }
 
 ECode CGLES11::GlTexEnvx(
@@ -903,12 +903,12 @@ ECode CGLES11::GlTexEnvxv(
     return sGl10->GlTexEnvxv(target, pname, params_ref, offset);
 }
 
-ECode CGLES11::GlTexEnvxvEx(
+ECode CGLES11::GlTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
-    return sGl10->GlTexEnvxvEx(target, pname, params_buf);
+    return sGl10->GlTexEnvxv(target, pname, params_buf);
 }
 
 ECode CGLES11::GlTexImage2D(
@@ -1091,7 +1091,7 @@ ECode CGLES11::GlClipPlanef(
     return NOERROR;
 }
 
-ECode CGLES11::GlClipPlanefEx(
+ECode CGLES11::GlClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ Elastos::IO::IFloatBuffer* equation_buf)
 {
@@ -1141,7 +1141,7 @@ ECode CGLES11::GlClipPlanex(
 }
 
 
-ECode CGLES11::GlClipPlanexEx(
+ECode CGLES11::GlClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ Elastos::IO::IInt32Buffer* equation_buf)
 {
@@ -1179,7 +1179,7 @@ ECode CGLES11::GlColor4ub(
     return NOERROR;
 }
 
-ECode CGLES11::GlColorPointerEx(
+ECode CGLES11::GlColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -1226,7 +1226,7 @@ ECode CGLES11::GlDeleteBuffers(
     return NOERROR;
 }
 
-ECode CGLES11::GlDeleteBuffersEx(
+ECode CGLES11::GlDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* buffers_buf)
 {
@@ -1253,7 +1253,7 @@ ECode CGLES11::GlDeleteBuffersEx(
     return NOERROR;
 }
 
-ECode CGLES11::GlDrawElementsEx(
+ECode CGLES11::GlDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -1300,7 +1300,7 @@ ECode CGLES11::GlGenBuffers(
     return NOERROR;
 }
 
-ECode CGLES11::GlGenBuffersEx(
+ECode CGLES11::GlGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ Elastos::IO::IInt32Buffer* buffers_buf)
 {
@@ -1353,7 +1353,7 @@ ECode CGLES11::GlGetBooleanv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetBooleanvEx(
+ECode CGLES11::GlGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1410,7 +1410,7 @@ ECode CGLES11::GlGetBufferParameteriv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetBufferParameterivEx(
+ECode CGLES11::GlGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1465,7 +1465,7 @@ ECode CGLES11::GlGetClipPlanef(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetClipPlanefEx(
+ECode CGLES11::GlGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* eqn_buf)
 {
@@ -1514,7 +1514,7 @@ ECode CGLES11::GlGetClipPlanex(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetClipPlanexEx(
+ECode CGLES11::GlGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* eqn_buf)
 {
@@ -1563,7 +1563,7 @@ ECode CGLES11::GlGetFixedv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetFixedvEx(
+ECode CGLES11::GlGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -1612,7 +1612,7 @@ ECode CGLES11::GlGetFloatv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetFloatvEx(
+ECode CGLES11::GlGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
@@ -1712,7 +1712,7 @@ ECode CGLES11::GlGetLightfv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetLightfvEx(
+ECode CGLES11::GlGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -1859,7 +1859,7 @@ ECode CGLES11::GlGetLightxv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetLightxvEx(
+ECode CGLES11::GlGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -1992,7 +1992,7 @@ ECode CGLES11::GlGetMaterialfv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetMaterialfvEx(
+ECode CGLES11::GlGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2111,7 +2111,7 @@ ECode CGLES11::GlGetMaterialxv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetMaterialxvEx(
+ECode CGLES11::GlGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2224,7 +2224,7 @@ ECode CGLES11::GlGetTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetTexEnvfvEx(
+ECode CGLES11::GlGetTexEnvfv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -2331,7 +2331,7 @@ ECode CGLES11::GlGetTexEnviv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetTexEnvivEx(
+ECode CGLES11::GlGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2438,7 +2438,7 @@ ECode CGLES11::GlGetTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetTexEnvxvEx(
+ECode CGLES11::GlGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2586,7 +2586,7 @@ ECode CGLES11::GlGetTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetTexParameterivEx(
+ECode CGLES11::GlGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2649,7 +2649,7 @@ ECode CGLES11::GlGetTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLES11::GlGetTexParameterxvEx(
+ECode CGLES11::GlGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -2714,7 +2714,7 @@ ECode CGLES11::GlIsTexture(
     return NOERROR;
 }
 
-ECode CGLES11::GlNormalPointerEx(
+ECode CGLES11::GlNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Int32 offset)
@@ -2770,7 +2770,7 @@ ECode CGLES11::GlPointParameterfv(
     return NOERROR;
 }
 
-ECode CGLES11::GlPointParameterfvEx(
+ECode CGLES11::GlPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
 {
@@ -2840,7 +2840,7 @@ ECode CGLES11::GlPointParameterxv(
     return NOERROR;
 }
 
-ECode CGLES11::GlPointParameterxvEx(
+ECode CGLES11::GlPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
 {
@@ -2913,7 +2913,7 @@ ECode CGLES11::GlPointSizePointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLES11::GlTexCoordPointerEx(
+ECode CGLES11::GlTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -2997,7 +2997,7 @@ ECode CGLES11::GlTexEnviv(
     return NOERROR;
 }
 
-ECode CGLES11::GlTexEnvivEx(
+ECode CGLES11::GlTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -3082,7 +3082,7 @@ ECode CGLES11::GlTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLES11::GlTexParameterfvEx(
+ECode CGLES11::GlTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IFloatBuffer* params_buf)
@@ -3158,7 +3158,7 @@ ECode CGLES11::GlTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLES11::GlTexParameterivEx(
+ECode CGLES11::GlTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -3221,7 +3221,7 @@ ECode CGLES11::GlTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLES11::GlTexParameterxvEx(
+ECode CGLES11::GlTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ Elastos::IO::IInt32Buffer* params_buf)
@@ -3250,7 +3250,7 @@ ECode CGLES11::GlTexParameterxvEx(
     return NOERROR;
 }
 
-ECode CGLES11::GlVertexPointerEx(
+ECode CGLES11::GlVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,

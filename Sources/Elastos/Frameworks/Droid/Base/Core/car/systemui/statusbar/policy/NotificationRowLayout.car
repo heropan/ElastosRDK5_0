@@ -30,7 +30,7 @@ module
         DismissRowAnimated(
             [in] IView* child);
 
-        DismissRowAnimatedEx(
+        DismissRowAnimated(
             [in] IView* child,
             [in] Int32 vel);
     }

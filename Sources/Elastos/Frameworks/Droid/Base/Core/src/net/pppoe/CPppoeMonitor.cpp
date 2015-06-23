@@ -2,8 +2,8 @@
 #include "CPppoeMonitor.h"
 #include "CPppoeNative.h"
 #include "os/CSystemProperties.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
@@ -147,7 +147,7 @@ ECode CPppoeMonitor::GetPppoeStateTracker(IPppoeStateTracker** tracker)
 {
     VALIDATE_NOT_NULL(tracker);
     *tracker = mTracker;
-    INTERFACE_ADDREF(*tracker);
+    REFCOUNT_ADD(*tracker);
     return NOERROR;
 }
 

@@ -63,7 +63,7 @@ ECode TimePicker::Init(
             const_cast<Int32 *>(R::styleable::TimePicker),
             ARRAY_SIZE(R::styleable::TimePicker));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
     Int32 layoutResourceId = 0;
     a->GetResourceId(R::styleable::TimePicker_internalLayout, R::layout::time_picker, &layoutResourceId);
     a->Recycle();
@@ -72,7 +72,7 @@ ECode TimePicker::Init(
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inter);
     AutoPtr<ILayoutInflater> infalter = ILayoutInflater::Probe(inter);
     AutoPtr<IView> v;
-    infalter->InflateEx2(layoutResourceId, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&v);
+    infalter->Inflate(layoutResourceId, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&v);
 
     mHourSpinner = INumberPicker::Probe(FindViewById(R::id::hour));
     AutoPtr<HourChangeListener> hourChangeListener = new HourChangeListener(this);
@@ -85,7 +85,7 @@ ECode TimePicker::Init(
 
     mDivider = ITextView::Probe(FindViewById(R::id::divider));
     if (mDivider) {
-        mDivider->SetTextEx3(R::string::time_picker_separator);
+        mDivider->SetText(R::string::time_picker_separator);
     }
 
     mMinuteSpinner = INumberPicker::Probe(FindViewById(R::id::minute));
@@ -391,7 +391,7 @@ ECode TimePicker::SetCurrentLocale(
     mCurrentLocale = locale;
     AutoPtr<ICalendarHelper> helper;
     CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
-    helper->GetInstanceEx(locale, (ICalendar**)&mTempCalendar);
+    helper->GetInstance(locale, (ICalendar**)&mTempCalendar);
 
     return NOERROR;
 }

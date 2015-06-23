@@ -4,21 +4,21 @@
 #include "view/CInputDevice.h"
 #include "os/SystemClock.h"
 #include "hardware/input/CInputManager.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
-#include <elastos/Character.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Character.h>
 #include <utils/String8.h>
 #include <binder/Parcel.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Hardware::Input::CInputManager;
 using Elastos::Droid::Hardware::Input::IInputManager;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Vector;
 using Elastos::Utility::Logging::Slogger;
 
@@ -329,7 +329,7 @@ ECode CKeyCharacterMap::GetFallbackAction(
     if (NativeGetFallbackAction(keyCode, metaState, action)) {
         action->mMetaState = CKeyEvent::NormalizeMetaState(action->mMetaState);
         *fallbackAction = action;
-        INTERFACE_ADDREF(*fallbackAction);
+        REFCOUNT_ADD(*fallbackAction);
         return NOERROR;
     }
 
@@ -355,10 +355,10 @@ ECode CKeyCharacterMap::GetMatch(
     /* [out] */ Char32* match)
 {
     VALIDATE_NOT_NULL (match);
-    return GetMatchEx(keyCode, chars, 0, match);
+    return GetMatch(keyCode, chars, 0, match);
 }
 
-ECode CKeyCharacterMap::GetMatchEx(
+ECode CKeyCharacterMap::GetMatch(
     /* [in] */ Int32 keyCode,
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 metaState,
@@ -449,7 +449,7 @@ ECode CKeyCharacterMap::GetEvents(
     VALIDATE_NOT_NULL(keyEvents);
     AutoPtr<ArrayOf<IKeyEvent*> > temp = NativeGetEvents(*chars);
     *keyEvents = temp;
-    INTERFACE_ADDREF(*keyEvents)
+    REFCOUNT_ADD(*keyEvents)
 
     return NOERROR;
 }

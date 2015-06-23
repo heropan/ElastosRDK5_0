@@ -3,7 +3,7 @@
 #include "net/CConnectivityManager.h"
 #include "net/NetworkUtils.h"
 #include "os/CBinder.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Net::NetworkUtils;
@@ -137,7 +137,7 @@ ECode CConnectivityManager::GetActiveNetworkInfo(
     ECode ec = mService->GetActiveNetworkInfo((INetworkInfo**)&networkInfo);
     if (FAILED(ec)) networkInfo = NULL;
     *result = networkInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -151,7 +151,7 @@ ECode CConnectivityManager::GetActiveNetworkInfoForUid(
     ECode ec = mService->GetActiveNetworkInfoForUid(uid, (INetworkInfo**)&networkInfo);
     if (FAILED(ec)) networkInfo = NULL;
     *result = networkInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -164,7 +164,7 @@ ECode CConnectivityManager::GetNetworkInfo(
     ECode ec = mService->GetNetworkInfo(networkType, (INetworkInfo**)&networkInfo);
     if (FAILED(ec)) networkInfo = NULL;
     *result = networkInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -189,7 +189,7 @@ ECode CConnectivityManager::GetActiveLinkProperties(
     ECode ec = mService->GetActiveLinkProperties((ILinkProperties**)&linkp);
     if (FAILED(ec)) linkp = NULL;
     *result = linkp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -203,7 +203,7 @@ ECode CConnectivityManager::GetLinkProperties(
     ECode ec = mService->GetLinkProperties(networkType, (ILinkProperties**)&linkp);
     if (FAILED(ec)) linkp = NULL;
     *result = linkp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -386,7 +386,7 @@ ECode CConnectivityManager::GetActiveNetworkQuotaInfo(
     ECode ec = mService->GetActiveNetworkQuotaInfo((INetworkQuotaInfo**)&quotaInfo);
     if (FAILED(ec)) quotaInfo = NULL;
     *result = quotaInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -655,7 +655,7 @@ ECode CConnectivityManager::GetGlobalProxy(
     ECode ec = mService->GetGlobalProxy((IProxyProperties**)&proxyp);
     if (FAILED(ec)) proxyp = NULL;
     *result = proxyp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -671,7 +671,7 @@ ECode CConnectivityManager::GetProxy(
     ECode ec = mService->GetProxy((IProxyProperties**)&proxyp);
     if (FAILED(ec)) proxyp = NULL;
     *result = proxyp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

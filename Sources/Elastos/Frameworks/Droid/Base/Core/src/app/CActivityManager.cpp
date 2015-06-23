@@ -8,7 +8,7 @@
 #include "os/SystemProperties.h"
 #include "app/AppGlobals.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::CObjectStringMap;
@@ -185,7 +185,7 @@ ECode CActivityManager::GetRecentTasks(
     FAIL_RETURN(ActivityManagerNative::GetDefault()->GetRecentTasks(
             maxNum, flags, UserHandle::GetMyUserId(), (IObjectContainer**)&temp));
     *tasks = temp;
-    INTERFACE_ADDREF(*tasks);
+    REFCOUNT_ADD(*tasks);
     return NOERROR;
     // } catch (RemoteException e) {
     //     // System dead, we will be dead too soon!
@@ -207,7 +207,7 @@ ECode CActivityManager::GetRecentTasksForUser(
     FAIL_RETURN(ActivityManagerNative::GetDefault()->GetRecentTasks(
         maxNum, flags, userId, (IObjectContainer**)&temp));
     *tasks = temp;
-    INTERFACE_ADDREF(*tasks);
+    REFCOUNT_ADD(*tasks);
     return NOERROR;
     // } catch (RemoteException e) {
     //     // System dead, we will be dead too soon!
@@ -228,7 +228,7 @@ ECode CActivityManager::GetRunningTasks(
     FAIL_RETURN(ActivityManagerNative::GetDefault()->GetTasks(
         maxNum, flags, receiver, (IObjectContainer**)&temp));
     *tasks = temp;
-    INTERFACE_ADDREF(*tasks);
+    REFCOUNT_ADD(*tasks);
     return NOERROR;
     // } catch (RemoteException e) {
     //     // System dead, we will be dead too soon!
@@ -236,7 +236,7 @@ ECode CActivityManager::GetRunningTasks(
     // }
 }
 
-ECode CActivityManager::GetRunningTasksEx(
+ECode CActivityManager::GetRunningTasks(
     /* [in] */ Int32 maxNum,
     /* [out] */ IObjectContainer** tasks)
 {
@@ -312,10 +312,10 @@ ECode CActivityManager::MoveTaskToFront(
     /* [in] */ Int32 taskId,
     /* [in] */ Int32 flags)
 {
-    return MoveTaskToFrontEx(taskId, flags, NULL);
+    return MoveTaskToFront(taskId, flags, NULL);
 }
 
-ECode CActivityManager::MoveTaskToFrontEx(
+ECode CActivityManager::MoveTaskToFront(
     /* [in] */ Int32 taskId,
     /* [in] */ Int32 flags,
     /* [in] */ IBundle* options)
@@ -611,7 +611,7 @@ ECode CActivityManager::GetAllPackageLaunchCounts(
     }
 
     *counts = launchCounts;
-    INTERFACE_ADDREF(*counts);
+    REFCOUNT_ADD(*counts);
     return NOERROR;
     // } catch (RemoteException e) {
     //     Log.w(TAG, "Could not query launch counts", e);
@@ -633,7 +633,7 @@ ECode CActivityManager::GetAllPackageUsageStats(
             Slogger::W(TAG, "Could not query launch counts");
             AutoPtr< ArrayOf<IPkgUsageStats*> > array = ArrayOf<IPkgUsageStats*>::Alloc(0);
             *stats = array;
-            INTERFACE_ADDREF(*stats);
+            REFCOUNT_ADD(*stats);
         }
     }
     return NOERROR;

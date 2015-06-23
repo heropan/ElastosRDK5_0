@@ -3,8 +3,8 @@
 
 #include "_CZoomControls.h"
 #include "widget/ZoomControls.h"
-#include "widget/LinearLayoutMacro.h"
-#include "view/ViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

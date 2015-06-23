@@ -29,7 +29,7 @@ module
             [in] ILooper* thread,
             [in] Boolean externalStorage);
 
-        RegisterEx(
+        Register(
             [in] IContext* ctx,
             [in] ILooper* thread,
             [in] IUserHandle* user,

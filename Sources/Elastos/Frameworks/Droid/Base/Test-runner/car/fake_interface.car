@@ -83,7 +83,7 @@ module
          * @param label short description of the metric that was measured
          * @param value float value of the measurement
          */
-        WriteMeasurementEx(
+        WriteMeasurement(
             [in] String label,
             [in] Float value);
 
@@ -95,7 +95,7 @@ module
          * @param label short description of the metric that was measured
          * @param value string summary of the measurement
          */
-        WriteMeasurementEx2(
+        WriteMeasurement(
             [in] String label,
             [in] String value);
     }
@@ -261,7 +261,7 @@ module
          *
          * @param keys The series of key codes to send through instrumentation.
          */
-        SendKeysEx(
+        SendKeys(
             [in] ArrayOf<Int32>* keys);
 
         /**

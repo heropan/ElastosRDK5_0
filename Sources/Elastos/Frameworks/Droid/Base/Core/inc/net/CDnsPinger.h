@@ -6,12 +6,12 @@
 #include "ext/frameworkdef.h"
 #include "os/SystemClock.h"
 #include "os/Handler.h"
-#include "os/HandlerMacro.h"
-#include <elastos/List.h>
+
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Net::IDatagramSocket;
 using Elastos::Net::IInetAddress;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Handler;

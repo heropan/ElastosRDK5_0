@@ -4,9 +4,8 @@
 
 #include "_CBatteryStatsService.h"
 #include "os/BatteryStatsImpl.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Os::IWorkSource;

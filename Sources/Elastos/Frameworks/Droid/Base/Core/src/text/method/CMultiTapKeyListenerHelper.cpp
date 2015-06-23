@@ -18,7 +18,7 @@ ECode CMultiTapKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IMultiTapKeyListener> mtkl = CMultiTapKeyListener::GetInstance(autotext, cap);
     *ret = mtkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

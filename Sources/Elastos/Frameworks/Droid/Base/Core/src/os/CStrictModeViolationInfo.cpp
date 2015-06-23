@@ -4,8 +4,8 @@
 #include "os/CStrictModeSpan.h"
 #include "app/CActivityThreadHelper.h"
 #include "animation/CValueAnimatorHelper.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <pthread.h>
 
 using Elastos::Core::StringUtils;
@@ -243,7 +243,7 @@ ECode CStrictModeViolationInfo::GetTags(
 {
     VALIDATE_NOT_NULL(tags);
     *tags = mTags;
-    INTERFACE_ADDREF(*tags);
+    REFCOUNT_ADD(*tags);
     return NOERROR;
 }
 
@@ -253,7 +253,7 @@ CARAPI CStrictModeViolationInfo::GetCrashInfo(
     VALIDATE_NOT_NULL(crashInfo);
 
     *crashInfo = mCrashInfo;
-    INTERFACE_ADDREF(*crashInfo);
+    REFCOUNT_ADD(*crashInfo);
     return NOERROR;
 }
 

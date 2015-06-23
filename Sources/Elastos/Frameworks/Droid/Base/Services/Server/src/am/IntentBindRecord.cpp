@@ -2,8 +2,8 @@
 #include "am/IntentBindRecord.h"
 #include "am/CServiceRecord.h"
 #include "am/ProcessRecord.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -50,7 +50,7 @@ String IntentBindRecord::ToString()
     if (mIntent != NULL) {
         AutoPtr<IIntent> intent;
         mIntent->GetIntent((IIntent**)&intent);
-        intent->ToShortStringEx((IStringBuilder*)&sb, FALSE, FALSE, FALSE, FALSE);
+        intent->ToShortString((IStringBuilder*)&sb, FALSE, FALSE, FALSE, FALSE);
     }
     sb += ('}');
     return mStringName = sb.ToString();

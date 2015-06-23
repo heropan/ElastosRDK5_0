@@ -4,7 +4,7 @@
 
 #include "_CKeyboardView.h"
 #include "inputmethodservice/KeyboardView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

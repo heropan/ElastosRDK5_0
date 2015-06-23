@@ -54,7 +54,7 @@ public:
      * @return The number of bytes of data read, or zero if all of the entity's
      *   data has already been read.
      */
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

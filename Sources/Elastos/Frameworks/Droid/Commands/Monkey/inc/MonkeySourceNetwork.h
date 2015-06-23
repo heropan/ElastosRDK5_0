@@ -2,8 +2,8 @@
 #define __MONKEYSOURCENETWORK_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
 #include <elrefbase.h>
 #include <elautoptr.h>
 #include "CMonkeyFlipEvent.h"
@@ -12,12 +12,11 @@
 #include "CMonkeyKeyEvent.h"
 #include "CMonkeyThrottleEvent.h"
 #include "CMonkeyNoopEvent.h"
-#include <elastos/Mutex.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Object;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::IPrintWriter;
 using Elastos::Net::IServerSocket;

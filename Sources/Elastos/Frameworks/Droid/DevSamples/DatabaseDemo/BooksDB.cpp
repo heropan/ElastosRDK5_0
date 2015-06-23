@@ -1,6 +1,6 @@
 #include "BooksDB.h"
 #include <stdio.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -55,7 +55,7 @@ AutoPtr<ICursor> BooksDB::Select()
     AutoPtr<ISQLiteDatabase> db;
     GetReadableDatabase((ISQLiteDatabase**)&db);
     AutoPtr<ICursor> cursor;
-    db->QueryEx2(TABLE_NAME, NULL, String(NULL), NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
+    db->Query(TABLE_NAME, NULL, String(NULL), NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
     return cursor;
 }
 

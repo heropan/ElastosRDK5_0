@@ -74,7 +74,7 @@ StrictModeViolationDialog::StrictModeViolationDialog(
         CStringWrapper::New(processName, (ICharSequence**)&pNameCs);
         args->Set(0, (IInterface*)name.Get());
         args->Set(1, (IInterface*)pNameCs.Get());
-        res->GetStringEx(R::string::smv_application, args, &resString);
+        res->GetString(R::string::smv_application, args, &resString);
         assert(0);
         AutoPtr<ICharSequence> resCs;
         CStringWrapper::New(resString,(ICharSequence**)&resCs);

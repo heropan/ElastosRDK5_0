@@ -1,6 +1,6 @@
 
 #include "googleremote/VmouseController.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <fcntl.h>
 #include <unistd.h>
 

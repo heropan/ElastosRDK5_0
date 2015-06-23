@@ -9,7 +9,7 @@
 #include "inputmethodservice/AbstractInputMethodService.h"
 #include "inputmethodservice/AbstractInputMethodSessionImpl.h"
 #include "view/ViewTreeObserver.h"
-#include "content/ContextMacro.h"
+
 #include "content/ContextWrapper.h"
 #else
 #include "Elastos.Droid.Core.h"

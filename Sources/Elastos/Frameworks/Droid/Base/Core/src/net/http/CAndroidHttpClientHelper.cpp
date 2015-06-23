@@ -83,7 +83,7 @@ ECode CAndroidHttpClientHelper::NewInstance(
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CAndroidHttpClientHelper::NewInstanceEx(
+ECode CAndroidHttpClientHelper::NewInstance(
     /* [in] */ const String& userAgent,
     /* [out] */ Elastos::Droid::Net::Http::IAndroidHttpClient** client)
 {
@@ -113,14 +113,14 @@ ECode CAndroidHttpClientHelper::GetUngzippedContent(
     // entity->GetContentEncoding((IHeader**)&header);
     if (header == NULL) {
         *stream = responseStream;
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         return NOERROR;
     }
     String contentEncoding;
     // header->GetValue(&contentEncoding);
     if (contentEncoding.IsNullOrEmpty()) {
         *stream = responseStream;
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         return NOERROR;
     }
     AutoPtr<IInputStream> gzipResponseStream;
@@ -128,7 +128,7 @@ ECode CAndroidHttpClientHelper::GetUngzippedContent(
         CGZIPInputStream::New(responseStream, (IInputStream**)&gzipResponseStream);
     }
     *stream = gzipResponseStream;
-    INTERFACE_ADDREF(*stream);
+    REFCOUNT_ADD(*stream);
     return NOERROR;
 }
 

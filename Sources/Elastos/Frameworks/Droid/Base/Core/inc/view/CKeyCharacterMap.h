@@ -4,14 +4,11 @@
 
 #include "_CKeyCharacterMap.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <androidfw/KeyCharacterMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IStringBuilder;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -343,7 +340,7 @@ public:
      * @param metaState The preferred meta key modifier state.
      * @return The matching associated character, or 0 if none.
      */
-    CARAPI GetMatchEx(
+    CARAPI GetMatch(
         /* [in] */ Int32 keyCode,
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ Int32 metaState,

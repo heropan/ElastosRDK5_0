@@ -3,13 +3,13 @@
 #include "webkit/DeviceMotionService.h"
 #include "webkit/DeviceMotionAndOrientationManager.h"
 
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Hardware::EIID_ISensorEventListener;
 using Elastos::Droid::Os::CHandler;
 
@@ -255,14 +255,14 @@ Boolean DeviceMotionService::RegisterForAccelerometerSensor()
     CreateHandler();
     // TODO: Consider handling multiple sensors.
     Boolean result = FALSE;
-    GetSensorManager()->RegisterListenerEx3(
+    GetSensorManager()->RegisterListener(
             this, (*sensors)[0], ISensorManager::SENSOR_DELAY_UI, mHandler, &result);
     return result;
 }
 
 void DeviceMotionService::UnregisterFromSensor()
 {
-    GetSensorManager()->UnregisterListenerEx3(this);
+    GetSensorManager()->UnregisterListener(this);
 }
 
 } // namespace Webkit

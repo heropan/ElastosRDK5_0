@@ -3,9 +3,9 @@
 
 #include "_CTwoLineListItem.h"
 #include "widget/TwoLineListItem.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/RelativeLayoutMacro.h"
+
+
+
 
 namespace Elastos {
 namespace Droid {

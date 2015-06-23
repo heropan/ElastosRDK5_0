@@ -18,11 +18,11 @@ ECode CInsetsHelper::Of(
 
     AutoPtr<Insets> o = Insets::Of(left, top, right, bottom);
     *insets = (IInsets*)o.Get();
-    INTERFACE_ADDREF(*insets);
+    REFCOUNT_ADD(*insets);
     return NOERROR;
 }
 
-ECode CInsetsHelper::OfEx(
+ECode CInsetsHelper::Of(
     /* [in] */ IRect* r,
     /* [out] */ IInsets** insets)
 {
@@ -30,7 +30,7 @@ ECode CInsetsHelper::OfEx(
 
     AutoPtr<Insets> o = Insets::Of(r);
     *insets = (IInsets*)o.Get();
-    INTERFACE_ADDREF(*insets);
+    REFCOUNT_ADD(*insets);
     return NOERROR;
 }
 

@@ -15,14 +15,14 @@ ECode CWifiP2pDnsSdServiceRequestHelper::NewInstance(
     return CWifiP2pDnsSdServiceRequest::NewInstance(instance);
 }
 
-ECode CWifiP2pDnsSdServiceRequestHelper::NewInstanceEx(
+ECode CWifiP2pDnsSdServiceRequestHelper::NewInstance(
     /* [in] */ const String& serviceType,
     /* [out] */ IWifiP2pDnsSdServiceRequest** instance)
 {
     return CWifiP2pDnsSdServiceRequest::NewInstance(serviceType, instance);
 }
 
-ECode CWifiP2pDnsSdServiceRequestHelper::NewInstanceEx2(
+ECode CWifiP2pDnsSdServiceRequestHelper::NewInstance(
     /* [in] */ const String& instanceName,
     /* [in] */ const String& serviceType,
     /* [out] */ IWifiP2pDnsSdServiceRequest** instance)

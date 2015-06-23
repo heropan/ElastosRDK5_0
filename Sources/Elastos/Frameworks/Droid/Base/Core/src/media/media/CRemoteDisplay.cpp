@@ -4,7 +4,7 @@
 #include <media/IRemoteDisplay.h>
 #include <media/IMediaPlayerService.h>
 #include <media/IRemoteDisplayClient.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "view/CSurface.h"
 
 using Elastos::Core::ICloseGuardHelper;
@@ -130,7 +130,7 @@ ECode CRemoteDisplay::Listen(
 
     display->StartListening(iface);
     *result = (IRemoteDisplay*)display.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

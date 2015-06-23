@@ -33,22 +33,6 @@
    } while(0);
 #endif
 
-#ifndef INTERFACE_ADDREF
-#define INTERFACE_ADDREF(i) if (i) { (i)->AddRef(); }
-#endif
-
-#ifndef INTERFACE_RELEASE
-#define INTERFACE_RELEASE(i) if (i) { (i)->Release(); }
-#endif
-
-#ifndef ARRAYOF_ADDREF
-#define ARRAYOF_ADDREF(i) if (i) { (i)->AddRef(); }
-#endif
-
-#ifndef ARRAYOF_RELEASE
-#define ARRAYOF_RELEASE(i) if (i) { (i)->Release(); }
-#endif
-
 #ifndef FAIL_RETURN
 #define FAIL_RETURN(expr) \
     do { \

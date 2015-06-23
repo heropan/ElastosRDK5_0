@@ -2,8 +2,8 @@
 #define __CANIMATEDIMAGEVIEW_H__
 
 #include "_CAnimatedImageView.h"
-#include "view/ViewMacro.h"
-#include "widget/ImageViewMacro.h"
+
+
 #include "systemui/statusbar/AnimatedImageView.h"
 
 namespace Elastos {
@@ -30,7 +30,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

@@ -1,8 +1,8 @@
 #include "MonkeyMotionEvent.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 #include "os/SystemClock.h"
 #include "Elastos.Core.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::SystemClock;
@@ -122,8 +122,8 @@ Int32 MonkeyMotionEvent::InjectEvent(
         for (Int32 i = 0; i < pointerCount; i++) {
             Int32 pointerId;
             Float x, y;
-            me->GetXEx(i, &x);
-            me->GetYEx(i, &y);
+            me->GetX(i, &x);
+            me->GetY(i, &y);
             me->GetPointerId(i, &pointerId);
             msg.AppendString(String(" "));
             msg.AppendInt32(pointerId);
@@ -273,7 +273,7 @@ AutoPtr<IMotionEvent> MonkeyMotionEvent::GetEvent()
 
     AutoPtr<IMotionEventHelper> helper;
     ASSERT_SUCCEEDED(CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper))
-    helper->ObtainEx(mDownTime, mEventTime < 0 ? SystemClock::GetUptimeMillis() : mEventTime
+    helper->Obtain(mDownTime, mEventTime < 0 ? SystemClock::GetUptimeMillis() : mEventTime
         , mAction, pointerCount, pointerIds, pointerCoords, mMetaState, mXPrecision
         , mYPrecision, mDeviceId, mEdgeFlags, mSource, mFlags, (IMotionEvent**)&pMe);
     return pMe;

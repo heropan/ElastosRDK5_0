@@ -1,8 +1,8 @@
 
 #include "ext/frameworkdef.h"
 #include "net/wifi/WifiMonitor.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include <cutils/properties.h>
 #ifdef DROID_CORE
 #include "net/wifi/CWifiSsidHelper.h"
@@ -378,9 +378,9 @@ void WifiMonitor::MonitorThread::HandleWpsFailEvent(
     Boolean find;
     if (match->Find(&find), find) {
         String cfgErr;
-        match->GroupEx(1, &cfgErr);
+        match->Group(1, &cfgErr);
         String reason;
-        match->GroupEx(2, &reason);
+        match->Group(2, &reason);
 
         if (!reason.IsNull()) {
             switch(StringUtils::ParseInt32(reason)) {
@@ -694,10 +694,10 @@ void WifiMonitor::HandleNetworkStateChange(
             if (DBG) Logger::D(TAG, "Could not find BSSID in CONNECTED event string");
         }
         else {
-            match->GroupEx(1, &BSSID);
+            match->Group(1, &BSSID);
             // try {
             String id;
-            match->GroupEx(2, &id);
+            match->Group(2, &id);
             networkId = StringUtils::ParseInt32(id);
             // } catch (NumberFormatException e) {
             //     networkId = -1;

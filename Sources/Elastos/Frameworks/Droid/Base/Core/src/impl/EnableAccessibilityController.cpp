@@ -223,10 +223,10 @@ Boolean EnableAccessibilityController::OnInterceptTouchEvent(
     Int32 count = 0;
     if ((event->GetActionMasked(&eventType), eventType) == IMotionEvent::ACTION_POINTER_DOWN
             && (event->GetPointerCount(&count), count) == 2) {
-        event->GetXEx(0, &mFirstPointerDownX);
-        event->GetYEx(0, &mFirstPointerDownY);
-        event->GetXEx(1, &mSecondPointerDownX);
-        event->GetYEx(1, &mSecondPointerDownY);
+        event->GetX(0, &mFirstPointerDownX);
+        event->GetY(0, &mFirstPointerDownY);
+        event->GetX(1, &mSecondPointerDownX);
+        event->GetY(1, &mSecondPointerDownY);
 
         AutoPtr<IMessage> messageWarning;
         mHandler->ObtainMessage(MESSAGE_SPEAK_WARNING, (IMessage**)&messageWarning);

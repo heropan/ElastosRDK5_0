@@ -41,7 +41,7 @@ ECode CWebChromeClient::OnShowCustomView(
     return WebChromeClient::OnShowCustomView(view, callBack);
 }
 
-ECode CWebChromeClient::OnShowCustomViewEx(
+ECode CWebChromeClient::OnShowCustomView(
     /* [in] */ IView* view,
     /* [in] */ Int32 requestedOrientation,
     /* [in] */ IWebChromeClientCustomViewCallback* callBack)
@@ -173,7 +173,7 @@ ECode CWebChromeClient::OnConsoleMessage(
     return WebChromeClient::OnConsoleMessage(message, lineNumber, sourceID);
 }
 
-ECode CWebChromeClient::OnConsoleMessageEx(
+ECode CWebChromeClient::OnConsoleMessage(
     /* [in] */ IConsoleMessage* consoleMessage,
     /* [out] */ Boolean* result)
 {

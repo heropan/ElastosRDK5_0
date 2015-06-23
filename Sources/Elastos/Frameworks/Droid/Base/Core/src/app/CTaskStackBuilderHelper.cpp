@@ -14,7 +14,7 @@ ECode CTaskStackBuilderHelper::Create(
     CTaskStackBuilder::NewByFriend((CTaskStackBuilder**)&cb);
     cb->SetContext(context);
     *builder = (ITaskStackBuilder*)cb.Get();
-    INTERFACE_ADDREF(*builder);
+    REFCOUNT_ADD(*builder);
     return NOERROR;
 }
 

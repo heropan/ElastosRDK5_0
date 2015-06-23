@@ -5,14 +5,13 @@
 #include "_CInputManager.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <ext/frameworkext.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IVibrator;
@@ -68,7 +67,7 @@ private:
         CARAPI Vibrate(
             /* [in] */ Int64 milliseconds);
 
-        CARAPI VibrateEx(
+        CARAPI Vibrate(
             /* [in] */ const ArrayOf<Int64>& pattern,
             /* [in] */ Int32 repeat);
 

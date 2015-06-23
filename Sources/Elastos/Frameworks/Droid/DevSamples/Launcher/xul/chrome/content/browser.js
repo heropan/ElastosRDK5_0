@@ -438,7 +438,7 @@ var Browser = {
 #ifdef MOZ_PLATFORM_MAEMO
         window.QueryInterface(Ci.nsIDOMChromeWindow).restore();
 #endif
-        let pressed = prompt.confirmEx(window, title, message, buttons, closeText, null, null, checkText, warnOnClose);
+        let pressed = prompt.confirm(window, title, message, buttons, closeText, null, null, checkText, warnOnClose);
         this._waitingToClose = false;
 
         // Don't set the pref unless they press OK and it's false
@@ -1215,7 +1215,7 @@ var Browser = {
         this._sidebarTimeout = setTimeout(function(self) {
           Browser.updateMetadata(browser, json);
         }, 800, this);
-       
+
         break;
       }
       case "Browser:CanCaptureMouse:Return": {
@@ -2601,7 +2601,7 @@ var ContentCrashObserver = {
         submitText = null;
 
       let submit = { value: true };
-      let reload = Services.prompt.confirmEx(window, title, message, buttons, closeText, reloadText, null, submitText, submit);
+      let reload = Services.prompt.confirm(window, title, message, buttons, closeText, reloadText, null, submitText, submit);
       if (reload) {
         // Fire a TabSelect event to kick start the restore process
         let event = document.createEvent("Events");

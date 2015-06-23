@@ -18,14 +18,14 @@ ECode CWindowManagerPolicyThread::GetThread(
     /* [out] */ IThread** thread)
 {
     *thread = mThread;
-    INTERFACE_ADDREF(mThread);
+    REFCOUNT_ADD(mThread);
     return NOERROR;
 }
 ECode CWindowManagerPolicyThread::GetLooper(
     /* [out] */ ILooper** looper)
 {
     *looper = mLooper;
-    INTERFACE_ADDREF(mLooper);
+    REFCOUNT_ADD(mLooper);
     return NOERROR;
 }
 

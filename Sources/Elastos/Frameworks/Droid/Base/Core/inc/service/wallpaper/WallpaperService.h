@@ -6,7 +6,6 @@
 #include "content/BroadcastReceiver.h"
 #include "view/BaseSurfaceHolder.h"
 #include "view/InputEventReceiver.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::BroadcastReceiver;

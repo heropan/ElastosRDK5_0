@@ -20,7 +20,7 @@ public:
         /* [in] */ Int32 exponentOffset,
         /* [out] */ Int32* matrixx);
 
-    CARAPI GlQueryMatrixxOESEx(
+    CARAPI GlQueryMatrixxOES(
         /* [in] */ Elastos::IO::IInt32Buffer* mantissa_buf,
         /* [in] */ Elastos::IO::IInt32Buffer* exponent_buf,
         /* [out] */ Int32* matrixx);

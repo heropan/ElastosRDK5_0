@@ -8,7 +8,7 @@
 #include <string.h>
 #include <assert.h>
 #include <dlfcn.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 namespace android {
 extern void setGLDebugLevel(int level);
@@ -86,7 +86,7 @@ ECode CGLUtils::TexImage2D(
     return NOERROR;
 }
 
-ECode CGLUtils::TexImage2DEx(
+ECode CGLUtils::TexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 internalformat,
@@ -110,7 +110,7 @@ ECode CGLUtils::TexImage2DEx(
     return NOERROR;
 }
 
-ECode CGLUtils::TexImage2DEx2(
+ECode CGLUtils::TexImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ IBitmap* bitmap,
@@ -142,7 +142,7 @@ ECode CGLUtils::TexSubImage2D(
     return NOERROR;
 }
 
-ECode CGLUtils::TexSubImage2DEx(
+ECode CGLUtils::TexSubImage2D(
     /* [in] */ Int32 target,
     /* [in] */ Int32 level,
     /* [in] */ Int32 xoffset,

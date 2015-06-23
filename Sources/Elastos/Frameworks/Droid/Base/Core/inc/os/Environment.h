@@ -2,10 +2,9 @@
 #define __ENVIRONMENT_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
 
 using Elastos::IO::IFile;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Storage::IMountService;
 using Elastos::Droid::Os::Storage::IStorageVolume;
 

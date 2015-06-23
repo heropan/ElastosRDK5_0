@@ -4,7 +4,7 @@
 
 #include "_CPaintDrawable.h"
 #include "graphics/drawable/PaintDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -37,7 +37,7 @@ public:
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    CARAPI SetPaddingEx(
+    CARAPI SetPadding(
         /* [in] */ IRect* padding);
 
     CARAPI SetIntrinsicWidth(

@@ -3,15 +3,14 @@
 
 #include "_CStatusBarManagerService.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "wm/CWindowManagerService.h"
 #include "content/BroadcastReceiver.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;

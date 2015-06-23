@@ -45,7 +45,7 @@ module
             [out] Boolean* ret);
 
         /** Returns true if any device the list was removed @hide */
-        RemoveEx(
+        Remove(
             [in] IWifiP2pDeviceList* list,
             [out] Boolean* ret);
 

@@ -101,7 +101,7 @@ public:
     CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ Int32 iconRes);
 
     CARAPI SetIntent(
@@ -120,7 +120,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 title);
 
     CARAPI SetTitleCondensed(
@@ -142,7 +142,7 @@ public:
         /* [out] */ IView** view);
 
     //@Override
-    CARAPI SetActionViewEx(
+    CARAPI SetActionView(
         /* [in] */ Int32 resId);
 
     //@Override

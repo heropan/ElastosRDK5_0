@@ -3,12 +3,11 @@
 
 #include "ext/frameworkdef.h"
 #include "_CAccessibilityNodeInfo.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectInt32Map;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Graphics::IRect;
@@ -65,7 +64,7 @@ public:
     CARAPI SetSource(
         /* [in] */ IView* source);
 
-    CARAPI SetSourceEx(
+    CARAPI SetSource(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -93,7 +92,7 @@ public:
     CARAPI AddChild(
         /* [in] */ IView* child);
 
-    CARAPI AddChildEx(
+    CARAPI AddChild(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -113,7 +112,7 @@ public:
         /* [in] */ Int32 action,
         /* [out] */ Boolean* result);
 
-    CARAPI PerformActionEx(
+    CARAPI PerformAction(
         /* [in] */ Int32 action,
         /* [in] */ IBundle* arguments,
         /* [out] */ Boolean* result);
@@ -131,7 +130,7 @@ public:
     CARAPI SetParent(
         /* [in] */ IView* parent);
 
-    CARAPI SetParentEx(
+    CARAPI SetParent(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -246,7 +245,7 @@ public:
     CARAPI SetLabelFor(
         /* [in] */ IView* labeled);
 
-    CARAPI SetLabelForEx(
+    CARAPI SetLabelFor(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -256,7 +255,7 @@ public:
     CARAPI SetLabeledBy(
         /* [in] */ IView* label);
 
-    CARAPI SetLabeledByEx(
+    CARAPI SetLabeledBy(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -292,7 +291,7 @@ public:
      *
      * @see #setSource(View, int)
      */
-    static CARAPI ObtainEx(
+    static CARAPI Obtain(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId,
         /* [out] */ IAccessibilityNodeInfo** info);
@@ -302,7 +301,7 @@ public:
      *
      * @return An instance.
      */
-    static CARAPI ObtainEx2(
+    static CARAPI Obtain(
         /* [out] */ IAccessibilityNodeInfo** info);
 
     /**
@@ -313,7 +312,7 @@ public:
      * @param info The other info.
      * @return An instance.
      */
-    static CARAPI ObtainEx3(
+    static CARAPI Obtain(
         /* [in] */ IAccessibilityNodeInfo* info,
         /* [out] */ IAccessibilityNodeInfo** infoClone);
 

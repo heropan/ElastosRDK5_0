@@ -8,7 +8,7 @@
 #include "os/Handler.h"
 #include "app/AppGlobals.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -906,7 +906,7 @@ void BroadcastQueue::SetBroadcastTimeoutLocked(
 void BroadcastQueue::CancelBroadcastTimeoutLocked()
 {
     if (mPendingBroadcastTimeoutMessage) {
-        mHandler->RemoveMessagesEx(BROADCAST_TIMEOUT_MSG, (IInterface*)this);
+        mHandler->RemoveMessages(BROADCAST_TIMEOUT_MSG, (IInterface*)this);
         mPendingBroadcastTimeoutMessage = FALSE;
     }
 }

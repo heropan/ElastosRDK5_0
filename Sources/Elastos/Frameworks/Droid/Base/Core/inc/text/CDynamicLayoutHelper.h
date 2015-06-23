@@ -3,7 +3,7 @@
 #define __CDYNAMICLAYOUTHELPER_H__
 
 #include "_CDynamicLayoutHelper.h"
-#include "text/LayoutMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 

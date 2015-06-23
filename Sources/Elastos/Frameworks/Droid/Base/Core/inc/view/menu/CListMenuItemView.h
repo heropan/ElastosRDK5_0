@@ -3,8 +3,8 @@
 #define _CLISTMENUITEMVIEW_H__
 
 #include "_CListMenuItemView.h"
-#include "view/ViewMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
 #include "view/menu/ListMenuItemView.h"
 
 namespace Elastos {
@@ -50,7 +50,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetEnabledEx(
+    CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
     CARAPI SetCheckable(

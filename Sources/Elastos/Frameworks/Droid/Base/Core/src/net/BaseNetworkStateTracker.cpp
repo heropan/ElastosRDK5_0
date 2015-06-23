@@ -64,7 +64,7 @@ void BaseNetworkStateTracker::DispatchStateChanged()
     AutoPtr<INetworkInfo> netInfo;
     GetNetworkInfo((INetworkInfo**)&netInfo);
     AutoPtr<IMessage> msg;
-    mTarget->ObtainMessageEx(EVENT_STATE_CHANGED, netInfo, (IMessage**)&msg);
+    mTarget->ObtainMessage(EVENT_STATE_CHANGED, netInfo, (IMessage**)&msg);
     msg->SendToTarget();
 }
 
@@ -74,7 +74,7 @@ void BaseNetworkStateTracker::DispatchConfigurationChanged()
     AutoPtr<INetworkInfo> netInfo;
     GetNetworkInfo((INetworkInfo**)&netInfo);
     AutoPtr<IMessage> msg;
-    mTarget->ObtainMessageEx(EVENT_CONFIGURATION_CHANGED, netInfo, (IMessage**)&msg);
+    mTarget->ObtainMessage(EVENT_CONFIGURATION_CHANGED, netInfo, (IMessage**)&msg);
     msg->SendToTarget();
 }
 

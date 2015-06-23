@@ -1,6 +1,6 @@
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <R.h>
 #include "view/Gravity.h"
 
@@ -126,7 +126,7 @@ ECode LinearLayout::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::LinearLayout),
             ARRAY_SIZE(R::styleable::LinearLayout));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     Int32 index;

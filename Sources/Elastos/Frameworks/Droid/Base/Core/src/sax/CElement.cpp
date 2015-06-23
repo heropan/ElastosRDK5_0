@@ -26,12 +26,12 @@ ECode CElement::GetChild(
     return Element::GetChild(localName, result);
 }
 
-ECode CElement::GetChildEx(
+ECode CElement::GetChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return Element::GetChildEx(uri, localName, result);
+    return Element::GetChild(uri, localName, result);
 }
 
 ECode CElement::RequireChild(
@@ -41,12 +41,12 @@ ECode CElement::RequireChild(
     return Element::RequireChild(localName, result);
 }
 
-ECode CElement::RequireChildEx(
+ECode CElement::RequireChild(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,
     /* [out] */ IElement** result)
 {
-    return Element::RequireChildEx(uri, localName, result);
+    return Element::RequireChild(uri, localName, result);
 }
 
 ECode CElement::SetElementListener(

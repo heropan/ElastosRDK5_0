@@ -40,7 +40,7 @@ ECode AccountAuthenticatorCache::MySerializer::CreateFromXml(
     *obj = NULL;
 
     String s;
-    parser->GetAttributeValueEx(String(NULL), String("type"), &s);
+    parser->GetAttributeValue(String(NULL), String("type"), &s);
     AutoPtr<IAuthenticatorDescriptionHelper> helper;
     ASSERT_SUCCEEDED(CAuthenticatorDescriptionHelper::AcquireSingleton(
             (IAuthenticatorDescriptionHelper**)&helper));

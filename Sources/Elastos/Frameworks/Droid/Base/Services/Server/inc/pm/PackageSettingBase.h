@@ -6,9 +6,9 @@
 #include "pm/GrantedPermissions.h"
 #include "pm/PackageSignatures.h"
 #include "content/pm/PackageUserState.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFile;
 
 using Elastos::Droid::Content::Pm::PackageUserState;

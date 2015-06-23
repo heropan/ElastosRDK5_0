@@ -3,7 +3,7 @@
 #include "SoftKeyboard.h"
 #include "SkbTemplate.h"
 #include "SkbPool.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Regex::IPatternHelper;
@@ -323,14 +323,14 @@ AutoPtr<SoftKeyboard> XmlKeyboardLoader::LoadKeyboard(
                 }
 
                 String splitter;
-                xrp->GetAttributeValueEx(String(NULL), XMLATTR_KEY_SPLITTER, &splitter);
+                xrp->GetAttributeValue(String(NULL), XMLATTR_KEY_SPLITTER, &splitter);
                 AutoPtr<IPatternHelper> helper;
                 CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
                 helper->Quote(splitter, &splitter);
                 String labels;
-                xrp->GetAttributeValueEx(String(NULL), XMLATTR_KEY_LABELS, &labels);
+                xrp->GetAttributeValue(String(NULL), XMLATTR_KEY_LABELS, &labels);
                 String codes;
-                xrp->GetAttributeValueEx(String(NULL), XMLATTR_KEY_CODES, &codes);
+                xrp->GetAttributeValue(String(NULL), XMLATTR_KEY_CODES, &codes);
                 if (NULL == splitter || NULL == labels) {
                     return NULL;
                 }
@@ -511,7 +511,7 @@ ECode XmlKeyboardLoader::GetSoftKey(
 
     softKey->SetKeyDimensions(left, top, right, bottom);
     *key = softKey;
-    INTERFACE_ADDREF(*key);
+    REFCOUNT_ADD(*key);
     return NOERROR;
 }
 
@@ -587,7 +587,7 @@ Int32 XmlKeyboardLoader::GetInteger(
     IAttributeSet::Probe(xrp)->GetAttributeResourceValue(String(NULL), name, 0, &resId);
     String s;
     if (resId == 0) {
-        xrp->GetAttributeValueEx(String(NULL), name, &s);
+        xrp->GetAttributeValue(String(NULL), name, &s);
         if (NULL == s) return defValue;
         // try {
         Int32 ret = 0;
@@ -621,7 +621,7 @@ Int32 XmlKeyboardLoader::GetColor(
     IAttributeSet::Probe(xrp)->GetAttributeResourceValue(String(NULL), name, 0, &resId);
     String s;
     if (resId == 0) {
-        xrp->GetAttributeValueEx(String(NULL), name, &s);
+        xrp->GetAttributeValue(String(NULL), name, &s);
         if (NULL == s) return defValue;
         // try {
         Int32 ret = 0;
@@ -654,7 +654,7 @@ String XmlKeyboardLoader::GetString(
 
     String retValue;
     if (resId == 0) {
-        xrp->GetAttributeValueEx(String(NULL), name, &retValue);
+        xrp->GetAttributeValue(String(NULL), name, &retValue);
         return retValue;
     } else {
         AutoPtr<IResources> res;
@@ -675,7 +675,7 @@ Float XmlKeyboardLoader::GetFloat(
     IAttributeSet::Probe(xrp)->GetAttributeResourceValue(String(NULL), name, 0, &resId);
     if (resId == 0) {
         String s;
-        xrp->GetAttributeValueEx(String(NULL), name, &s);
+        xrp->GetAttributeValue(String(NULL), name, &s);
         if (s.IsNullOrEmpty()) return defValue;
         // try {
         Float ret;
@@ -712,7 +712,7 @@ Boolean XmlKeyboardLoader::GetBoolean(
 {
     assert(xrp != NULL);
     String s;
-    xrp->GetAttributeValueEx(String(NULL), name, &s);
+    xrp->GetAttributeValue(String(NULL), name, &s);
     if (NULL == s) return defValue;
     // try {
     // TODO

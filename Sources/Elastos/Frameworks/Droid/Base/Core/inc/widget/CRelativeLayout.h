@@ -2,8 +2,8 @@
 #define __CRELATIVELAYOUT_H_
 
 #include "_CRelativeLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/RelativeLayout.h"
 
 namespace Elastos{

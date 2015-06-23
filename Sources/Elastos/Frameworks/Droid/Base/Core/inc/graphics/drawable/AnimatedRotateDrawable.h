@@ -24,7 +24,7 @@ public:
         CARAPI NewDrawable(
             /* [out] */ IDrawable** drawable);
 
-        CARAPI NewDrawableEx(
+        CARAPI NewDrawable(
             /* [in] */ IResources* res,
             /* [out] */ IDrawable** drawable);
 

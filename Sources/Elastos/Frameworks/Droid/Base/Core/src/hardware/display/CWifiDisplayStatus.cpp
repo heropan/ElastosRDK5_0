@@ -2,8 +2,8 @@
 #include "hardware/display/CWifiDisplayStatus.h"
 #include "hardware/display/CWifiDisplay.h"
 #include "ext/frameworkext.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
@@ -81,7 +81,7 @@ ECode CWifiDisplayStatus::GetActiveDisplay(
 {
     VALIDATE_NOT_NULL(display)
     *display = mActiveDisplay;
-    INTERFACE_ADDREF(*display);
+    REFCOUNT_ADD(*display);
 
     return NOERROR;
 }
@@ -91,7 +91,7 @@ ECode CWifiDisplayStatus::GetAvailableDisplays(
 {
     VALIDATE_NOT_NULL(displays);
     *displays = mAvailableDisplays;
-    INTERFACE_ADDREF(*displays);
+    REFCOUNT_ADD(*displays);
 
     return NOERROR;
 }
@@ -101,7 +101,7 @@ ECode CWifiDisplayStatus::GetRememberedDisplays(
 {
     VALIDATE_NOT_NULL(displays);
     *displays = mRememberedDisplays;
-    INTERFACE_ADDREF(*displays);
+    REFCOUNT_ADD(*displays);
 
     return NOERROR;
 }

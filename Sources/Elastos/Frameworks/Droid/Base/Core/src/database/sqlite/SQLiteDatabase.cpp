@@ -13,9 +13,9 @@
 #include "os/SystemClock.h"
 #include "os/Looper.h"
 #include "text/TextUtils.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <sqlite3_android.h>
 #include <sqlite3.h>
 
@@ -244,7 +244,7 @@ ECode SQLiteDatabase::GetThreadSession(
         sqliteSession->AddRef();
     }
     *session = sqliteSession;
-    INTERFACE_ADDREF(*session);
+    REFCOUNT_ADD(*session);
     return NOERROR;
 }
 
@@ -259,7 +259,7 @@ ECode SQLiteDatabase::CreateSession(
     }
     AutoPtr<SQLiteSession> s = new SQLiteSession(pool);
     *session = s;
-    INTERFACE_ADDREF(*session);
+    REFCOUNT_ADD(*session);
     return  NOERROR;
 }
 
@@ -417,7 +417,7 @@ ECode SQLiteDatabase::YieldIfContendedSafely(
     return YieldIfContendedHelper(TRUE /* check yielding */, -1 /* sleepAfterYieldDelay*/, result);
 }
 
-ECode SQLiteDatabase::YieldIfContendedSafelyEx(
+ECode SQLiteDatabase::YieldIfContendedSafely(
     /* [in] */ Int64 sleepAfterYieldDelay,
     /* [out] */ Boolean* result)
 {
@@ -459,10 +459,10 @@ ECode SQLiteDatabase::OpenDatabase(
     /* [in] */ Int32 flags,
     /* [out] */ ISQLiteDatabase** db)
 {
-    return OpenDatabaseEx(path, factory, flags, NULL, db);
+    return OpenDatabase(path, factory, flags, NULL, db);
 }
 
-ECode SQLiteDatabase::OpenDatabaseEx(
+ECode SQLiteDatabase::OpenDatabase(
     /* [in] */ const String& path,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ Int32 flags,
@@ -472,7 +472,7 @@ ECode SQLiteDatabase::OpenDatabaseEx(
     VALIDATE_NOT_NULL(db);
     AutoPtr<SQLiteDatabase> sqliteDatabase = new SQLiteDatabase(path, flags, factory, errorHandler);
     *db = ISQLiteDatabase::Probe(sqliteDatabase);
-    INTERFACE_ADDREF(*db);
+    REFCOUNT_ADD(*db);
     return sqliteDatabase->Open();
 }
 
@@ -484,10 +484,10 @@ ECode SQLiteDatabase::OpenOrCreateDatabase(
     VALIDATE_NOT_NULL(db);
     String path;
     file->GetPath(&path);
-    return OpenOrCreateDatabaseEx(path, factory, db);
+    return OpenOrCreateDatabase(path, factory, db);
 }
 
-ECode SQLiteDatabase::OpenOrCreateDatabaseEx(
+ECode SQLiteDatabase::OpenOrCreateDatabase(
     /* [in] */ const String& path,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [out] */ ISQLiteDatabase** db)
@@ -496,14 +496,14 @@ ECode SQLiteDatabase::OpenOrCreateDatabaseEx(
     return OpenDatabase(path, factory, CREATE_IF_NECESSARY, db);
 }
 
-ECode SQLiteDatabase::OpenOrCreateDatabaseEx2(
+ECode SQLiteDatabase::OpenOrCreateDatabase(
     /* [in] */ const String& path,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** db)
 {
     VALIDATE_NOT_NULL(db);
-    return OpenDatabaseEx(path, factory, CREATE_IF_NECESSARY, errorHandler, db);
+    return OpenDatabase(path, factory, CREATE_IF_NECESSARY, errorHandler, db);
 }
 
 ECode SQLiteDatabase::DeleteDatabase(
@@ -713,7 +713,7 @@ ECode SQLiteDatabase::MarkTableSyncable(
     return NOERROR;
 }
 
-ECode SQLiteDatabase::MarkTableSyncableEx(
+ECode SQLiteDatabase::MarkTableSyncable(
     /* [in] */ const String& table,
     /* [in] */ const String& foreignKey,
     /* [in] */ const String& updateTable)
@@ -780,7 +780,7 @@ ECode SQLiteDatabase::Query(
             groupBy, having, orderBy, limit, cursor);
 }
 
-ECode SQLiteDatabase::QueryEx(
+ECode SQLiteDatabase::Query(
     /* [in] */ Boolean distinct,
     /* [in] */ const String& table,
     /* [in] */ ArrayOf<String>* columns,
@@ -793,7 +793,7 @@ ECode SQLiteDatabase::QueryEx(
     /* [in] */ ICancellationSignal* cancellationSignal,
     /* [out] */ ICursor** cursor)
 {
-    return QueryWithFactoryEx(NULL, distinct, table, columns, selection, selectionArgs,
+    return QueryWithFactory(NULL, distinct, table, columns, selection, selectionArgs,
                 groupBy, having, orderBy, limit, cancellationSignal, cursor);
 }
 
@@ -830,7 +830,7 @@ fail:
     return ec;
 }
 
-ECode SQLiteDatabase::QueryWithFactoryEx(
+ECode SQLiteDatabase::QueryWithFactory(
     /* [in] */ ISQLiteDatabaseCursorFactory* cursorFactory,
     /* [in] */ Boolean distinct,
     /* [in] */ const String& table,
@@ -858,7 +858,7 @@ ECode SQLiteDatabase::QueryWithFactoryEx(
     if (FAILED(ec)) {
         goto fail;
     }
-    ec = RawQueryWithFactoryEx(cursorFactory, sql, selectionArgs, editTable, cancellationSignal, cursor);
+    ec = RawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable, cancellationSignal, cursor);
     // } finally {
     //     releaseReference();
     // }
@@ -867,7 +867,7 @@ fail:
     return ec;
 }
 
-ECode SQLiteDatabase::QueryEx2(
+ECode SQLiteDatabase::Query(
     /* [in] */ const String& table,
     /* [in] */ ArrayOf<String>* columns,
     /* [in] */ const String& selection,
@@ -881,7 +881,7 @@ ECode SQLiteDatabase::QueryEx2(
             having, orderBy, String(NULL) /* limit */, cursor);
 }
 
-ECode SQLiteDatabase::QueryEx3(
+ECode SQLiteDatabase::Query(
     /* [in] */ const String& table,
     /* [in] */ ArrayOf<String>* columns,
     /* [in] */ const String& selection,
@@ -904,13 +904,13 @@ ECode SQLiteDatabase::RawQuery(
     return RawQueryWithFactory(NULL, sql, selectionArgs, String(NULL), cursor);
 }
 
-ECode SQLiteDatabase::RawQueryEx(
+ECode SQLiteDatabase::RawQuery(
     /* [in] */ const String& sql,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [in] */ ICancellationSignal* cancellationSignal,
     /* [out] */ ICursor** cursor)
 {
-    return RawQueryWithFactoryEx(NULL, sql, selectionArgs, String(NULL), cancellationSignal, cursor);
+    return RawQueryWithFactory(NULL, sql, selectionArgs, String(NULL), cancellationSignal, cursor);
 }
 
 ECode SQLiteDatabase::RawQueryWithFactory(
@@ -932,7 +932,7 @@ ECode SQLiteDatabase::RawQueryWithFactory(
     return ec;
 }
 
-ECode SQLiteDatabase::RawQueryWithFactoryEx(
+ECode SQLiteDatabase::RawQueryWithFactory(
     /* [in] */ ISQLiteDatabaseCursorFactory* cursorFactory,
     /* [in] */ const String& sql,
     /* [in] */ ArrayOf<String>* selectionArgs,
@@ -1200,7 +1200,7 @@ ECode SQLiteDatabase::ExecSQL(
     return ExecuteSql(sql, NULL);
 }
 
-ECode SQLiteDatabase::ExecSQLEx(
+ECode SQLiteDatabase::ExecSQL(
     /* [in] */ const String& sql,
     /* [in] */ ArrayOf<IInterface*>* bindArgs)
 {
@@ -1540,7 +1540,7 @@ ECode SQLiteDatabase::GetAttachedDbs(
             CStringWrapper::New(mConfigurationLocked->mPath, (ICharSequence**)&cs);
             attachedDbs->Put(String("main"), cs);
             *dbs = attachedDbs;
-            INTERFACE_ADDREF(*dbs);
+            REFCOUNT_ADD(*dbs);
             return NOERROR;
         }
 
@@ -1580,7 +1580,7 @@ fail:
     ReleaseReference();
     //}
     *dbs = attachedDbs;
-    INTERFACE_ADDREF(*dbs);
+    REFCOUNT_ADD(*dbs);
     return ec;
 }
 

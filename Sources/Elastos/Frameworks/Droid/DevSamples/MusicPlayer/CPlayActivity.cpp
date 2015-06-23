@@ -13,7 +13,7 @@
 #include "CPlayActivity.h"
 #include "CPlayActivityListener.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;

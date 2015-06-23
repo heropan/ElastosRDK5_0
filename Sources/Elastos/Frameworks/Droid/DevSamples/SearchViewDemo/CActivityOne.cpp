@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <stdio.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
@@ -149,7 +149,7 @@ ECode CActivityOne::InitActionbar() {
     AutoPtr<IActionBarLayoutParams> params;
     CActionBarLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::WRAP_CONTENT, (IActionBarLayoutParams**)&params);
-    bar->SetCustomViewEx(mTitleView, params);
+    bar->SetCustomView(mTitleView, params);
     mTitleView->FindViewById(R::id::search_view, (IView**)&mSearch);
     return NOERROR;
 }

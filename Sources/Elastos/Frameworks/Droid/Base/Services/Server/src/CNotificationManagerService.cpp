@@ -1,9 +1,9 @@
 
 #include "CNotificationManagerService.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include "os/ServiceManager.h"
 #include "app/ActivityManagerNative.h"
 #include "app/AppGlobals.h"
@@ -419,7 +419,7 @@ void CNotificationManagerService::SettingsObserver::Observe()
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&systemSettings);
 
     AutoPtr<IUri> uri;
-    systemSettings->GetUriForEx(ISettingsSystem::NOTIFICATION_LIGHT_PULSE, (IUri**)&uri);
+    systemSettings->GetUriFor(ISettingsSystem::NOTIFICATION_LIGHT_PULSE, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, this);
 
     Update();
@@ -667,7 +667,7 @@ void CNotificationManagerService::LoadBlockDb()
 
     String nullStr;
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(infile, nullStr);
+    parser->SetInput(infile, nullStr);
 
     Int32 type;
     String tag;
@@ -682,7 +682,7 @@ void CNotificationManagerService::LoadBlockDb()
 
         if (TAG_BODY.Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(nullStr, ATTR_VERSION, &value);
+            parser->GetAttributeValue(nullStr, ATTR_VERSION, &value);
             version = StringUtils::ParseInt32(value);
         }
         else if (TAG_BLOCKED_PKGS.Equals(tag)) {
@@ -693,7 +693,7 @@ void CNotificationManagerService::LoadBlockDb()
 
                 if (TAG_PACKAGE.Equals(tag)) {
                     String value;
-                    parser->GetAttributeValueEx(nullStr, ATTR_NAME, &value);
+                    parser->GetAttributeValue(nullStr, ATTR_NAME, &value);
                     mBlockedPackages.Insert(value);
                 }
                 else if (TAG_BLOCKED_PKGS.Equals(tag) && type == IXmlPullParser::END_TAG) {
@@ -1105,7 +1105,7 @@ void CNotificationManagerService::ScheduleTimeoutLocked(
     assert(record);
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MESSAGE_TIMEOUT, (IInterface*)record, (IMessage**)&msg);
+    mHandler->ObtainMessage(MESSAGE_TIMEOUT, (IInterface*)record, (IMessage**)&msg);
     Int64 delay = immediate ? 0 :
         (record->mDuration == IToast::LENGTH_LONG ? LONG_DELAY : SHORT_DELAY);
     mHandler->RemoveCallbacksAndMessages((IInterface*)record);
@@ -1557,7 +1557,7 @@ ECode CNotificationManagerService::EnqueueNotificationInternal(
                         Int64 identity;
                         binderHelper->ClearCallingIdentity(&identity);
 
-                        mVibrator->VibrateEx(useDefaultVibrate
+                        mVibrator->Vibrate(useDefaultVibrate
                             ? *mDefaultVibrationPattern : *mFallbackVibrationPattern,
                             ((flags & INotification::FLAG_INSISTENT) != 0) ? 0: -1);
 
@@ -1565,7 +1565,7 @@ ECode CNotificationManagerService::EnqueueNotificationInternal(
                     }
                     else if (vibrate->GetLength() > 1) {
                         // If you want your own vibration pattern, you need the VIBRATE permission
-                        mVibrator->VibrateEx(*vibrate, ((flags & INotification::FLAG_INSISTENT) != 0) ? 0: -1);
+                        mVibrator->Vibrate(*vibrate, ((flags & INotification::FLAG_INSISTENT) != 0) ? 0: -1);
                     }
                 }
             }

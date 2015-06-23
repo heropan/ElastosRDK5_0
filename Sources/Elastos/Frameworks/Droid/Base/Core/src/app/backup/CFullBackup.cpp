@@ -1,7 +1,7 @@
 
 #include "app/backup/CFullBackup.h"
 #include "app/backup/CBackupDataOutput.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <androidfw/BackupHelpers.h>
 
 using Elastos::IO::CFileInputStream;
@@ -99,14 +99,14 @@ ECode CFullBackup::RestoreFile(
         while (size > 0) {
             Int32 toRead = (size > buffer->GetLength()) ? buffer->GetLength() : (Int32)size;
             Int32 got = 0;
-            in->ReadBytesEx(buffer, 0, toRead, &got);
+            in->ReadBytes(buffer, 0, toRead, &got);
             if (got <= 0) {
                 Logger::W(TAG, "Incomplete read: expected:%d, but got:%d", size, (origSize - size));
                 break;
             }
             if (out != NULL) {
                 //try {
-                ECode ec = out->WriteBytesEx(*buffer, 0, got);
+                ECode ec = out->WriteBytes(*buffer, 0, got);
                 if (FAILED(ec)) {
                     String path;
                     outFile->GetPath(&path);

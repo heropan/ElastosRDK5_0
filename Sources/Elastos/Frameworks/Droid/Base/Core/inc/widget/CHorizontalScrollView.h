@@ -3,9 +3,9 @@
 
 #include "_CHorizontalScrollView.h"
 #include "widget/HorizontalScrollView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{

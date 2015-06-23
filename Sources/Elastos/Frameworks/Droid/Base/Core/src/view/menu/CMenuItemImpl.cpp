@@ -133,10 +133,10 @@ ECode CMenuItemImpl::SetTitle(
     return MenuItemImpl::SetTitle(title);
 }
 
-ECode CMenuItemImpl::SetTitleEx(
+ECode CMenuItemImpl::SetTitle(
     /* [in] */ Int32 title)
 {
-    return MenuItemImpl::SetTitleEx(title);
+    return MenuItemImpl::SetTitle(title);
 }
 
 ECode CMenuItemImpl::GetTitle(
@@ -163,10 +163,10 @@ ECode CMenuItemImpl::SetIcon(
     return MenuItemImpl::SetIcon(icon);
 }
 
-ECode CMenuItemImpl::SetIconEx(
+ECode CMenuItemImpl::SetIcon(
     /* [in] */ Int32 iconRes)
 {
-    return MenuItemImpl::SetIconEx(iconRes);
+    return MenuItemImpl::SetIcon(iconRes);
 }
 
 ECode CMenuItemImpl::GetIcon(
@@ -308,10 +308,10 @@ ECode CMenuItemImpl::SetActionView(
     return MenuItemImpl::SetActionView(view);
 }
 
-ECode CMenuItemImpl::SetActionViewEx(
+ECode CMenuItemImpl::SetActionView(
     /* [in] */ Int32 resId)
 {
-    return MenuItemImpl::SetActionViewEx(resId);
+    return MenuItemImpl::SetActionView(resId);
 }
 
 ECode CMenuItemImpl::GetActionView(

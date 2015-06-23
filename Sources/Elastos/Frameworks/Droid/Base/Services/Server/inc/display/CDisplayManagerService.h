@@ -11,11 +11,11 @@
 #include "display/LogicalDisplay.h"
 #include "display/PersistentDataStore.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashMap.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Object;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Hardware::Display::IDisplayManagerCallback;
 

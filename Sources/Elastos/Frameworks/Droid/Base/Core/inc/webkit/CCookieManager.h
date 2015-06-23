@@ -28,12 +28,12 @@ public:
         /* [in] */ const String& url,
         /* [out] */ String* cookie);
 
-    CARAPI GetCookieEx(
+    CARAPI GetCookie(
         /* [in] */ const String& url,
         /* [in] */ Boolean privateBrowsing,
         /* [out] */ String* cookie);
 
-    CARAPI GetCookieEx2(
+    CARAPI GetCookie(
         /* [in] */ IWebAddress* uri,
         /* [out] */ String* cookie);
 
@@ -44,7 +44,7 @@ public:
     CARAPI HasCookies(
         /* [out] */ Boolean* result);
 
-    CARAPI HasCookiesEx(
+    CARAPI HasCookies(
         /* [in] */ Boolean privateBrowsing,
         /* [out] */ Boolean* result);
 

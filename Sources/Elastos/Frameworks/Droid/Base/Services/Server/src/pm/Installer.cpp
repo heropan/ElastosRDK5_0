@@ -1,8 +1,8 @@
 
 #include "pm/Installer.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -104,7 +104,7 @@ Boolean Installer::ReadBytes(
     }
     while (off != len) {
         // try {
-        if (SUCCEEDED(mIn->ReadBytesEx(buffer, off, len - off, &count))) {
+        if (SUCCEEDED(mIn->ReadBytes(buffer, off, len - off, &count))) {
             if (count <= 0) {
                 Slogger::E(TAG, "read error %d", count);
                 break;
@@ -161,8 +161,8 @@ Boolean Installer::WriteCommand(
     (*mBuf)[0] = (Byte) (len & 0xff);
     (*mBuf)[1] = (Byte) ((len >> 8) & 0xff);
     // try {
-    mOut->WriteBytesEx(*mBuf, 0, 2);
-    mOut->WriteBytesEx(*cmd, 0, len);
+    mOut->WriteBytes(*mBuf, 0, 2);
+    mOut->WriteBytes(*cmd, 0, len);
     // } catch (IOException ex) {
     //     Slog.e(TAG, "write error");
     //     disconnect();

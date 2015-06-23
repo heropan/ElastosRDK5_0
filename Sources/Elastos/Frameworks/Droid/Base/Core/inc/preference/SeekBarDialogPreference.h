@@ -30,7 +30,7 @@ public:
     virtual CARAPI SetDialogTitle(
         /* [in] */ ICharSequence* dialogTitle);
 
-    virtual CARAPI SetDialogTitleEx(
+    virtual CARAPI SetDialogTitle(
         /* [in] */ Int32 dialogTitleResId);
 
     virtual CARAPI GetDialogTitle(
@@ -39,7 +39,7 @@ public:
     virtual CARAPI SetDialogMessage(
         /* [in] */ ICharSequence* dialogMessage);
 
-    virtual CARAPI SetDialogMessageEx(
+    virtual CARAPI SetDialogMessage(
         /* [in] */ Int32 dialogMessageResId);
 
     virtual CARAPI GetDialogMessage(
@@ -48,7 +48,7 @@ public:
     virtual CARAPI SetDialogIcon(
         /* [in] */ IDrawable* dialogIcon);
 
-    virtual CARAPI SetDialogIconEx(
+    virtual CARAPI SetDialogIcon(
         /* [in] */ Int32 dialogIconRes);
 
     virtual CARAPI GetDialogIcon(
@@ -57,7 +57,7 @@ public:
     virtual CARAPI SetPositiveButtonText(
         /* [in] */ ICharSequence* positiveButtonText);
 
-    virtual CARAPI SetPositiveButtonTextEx(
+    virtual CARAPI SetPositiveButtonText(
         /* [in] */ Int32 positiveButtonTextResId);
 
     virtual CARAPI GetPositiveButtonText(
@@ -66,7 +66,7 @@ public:
     virtual CARAPI SetNegativeButtonText(
         /* [in] */ ICharSequence* negativeButtonText);
 
-    virtual CARAPI SetNegativeButtonTextEx(
+    virtual CARAPI SetNegativeButtonText(
         /* [in] */ Int32 negativeButtonTextResId);
 
     virtual CARAPI GetNegativeButtonText(

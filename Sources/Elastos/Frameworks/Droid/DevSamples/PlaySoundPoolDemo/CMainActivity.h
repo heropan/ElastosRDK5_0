@@ -4,13 +4,13 @@
 
 #include "_CMainActivity.h"
 #include "app/Activity.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::Media::ISoundPool;
 using Elastos::Droid::Widget::IButton;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

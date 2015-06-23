@@ -33,7 +33,7 @@ ECode CPrivacySettingsManager::GetSettings(
 //    }
 }
 
-ECode CPrivacySettingsManager::GetSettingsEx(
+ECode CPrivacySettingsManager::GetSettings(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid,
     /* [out] */ Elastos::Droid::Privacy::IPrivacySettings** privactySettings)
@@ -80,7 +80,7 @@ ECode CPrivacySettingsManager::DeleteSettings(
 //    }
 }
 
-ECode CPrivacySettingsManager::DeleteSettingsEx(
+ECode CPrivacySettingsManager::DeleteSettings(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid,
     /* [out] */ Boolean* result)
@@ -119,7 +119,7 @@ ECode CPrivacySettingsManager::Notification(
 //    }
 }
 
-ECode CPrivacySettingsManager::NotificationEx(
+ECode CPrivacySettingsManager::Notification(
     /* [in] */ const String& packageName,
     /* [in] */ Byte accessMode,
     /* [in] */ const String& dataType,
@@ -130,7 +130,7 @@ ECode CPrivacySettingsManager::NotificationEx(
     return Notification(packageName, accessMode, dataType, output);
 }
 
-ECode CPrivacySettingsManager::NotificationEx2(
+ECode CPrivacySettingsManager::Notification(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid,
     /* [in] */ Byte accessMode,

@@ -1,6 +1,6 @@
 
 #include "hardware/GeomagneticField.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Utility::IGregorianCalendar;
 using Elastos::Utility::CGregorianCalendar;

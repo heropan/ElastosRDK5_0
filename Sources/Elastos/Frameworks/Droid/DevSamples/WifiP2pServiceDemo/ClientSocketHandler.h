@@ -1,10 +1,8 @@
 #ifndef __CLIENTSOCKETHANDLER_H__
 #define __CLIENTSOCKETHANDLER_H__
 
-#include <elastos/ThreadBase.h>
 #include "Elastos.Droid.Core.h"
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Net::IInetAddress;
 using Elastos::Droid::Os::IHandler;
 

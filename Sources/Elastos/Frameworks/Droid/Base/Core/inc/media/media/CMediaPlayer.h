@@ -671,7 +671,7 @@ public:
      * @throws IllegalStateException if it is called in an invalid state
      * @hide pending API council
      */
-    CARAPI SetDataSourceEx(
+    CARAPI SetDataSource(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
         /* [in] */ IObjectStringMap* headers);
@@ -689,7 +689,7 @@ public:
      * As an alternative, the application could first open the file for reading,
      * and then use the file descriptor form {@link #setDataSource(FileDescriptor)}.
      */
-    CARAPI SetDataSourceEx2(
+    CARAPI SetDataSource(
         /* [in] */ const String& path);
 
     /**
@@ -700,7 +700,7 @@ public:
      * @throws IllegalStateException if it is called in an invalid state
      * @hide pending API council
      */
-    CARAPI SetDataSourceEx3(
+    CARAPI SetDataSource(
         /* [in] */ const String& path,
         /* [in] */ IObjectStringMap* headers);
 
@@ -711,7 +711,7 @@ public:
      * @param fd the FileDescriptor for the file you want to play
      * @throws IllegalStateException if it is called in an invalid state
      */
-    CARAPI SetDataSourceEx4(
+    CARAPI SetDataSource(
         /* [in] */ IFileDescriptor* fd);
 
     /**
@@ -724,7 +724,7 @@ public:
      * @param length the length in bytes of the data to be played
      * @throws IllegalStateException if it is called in an invalid state
      */
-    CARAPI SetDataSourceEx5(
+    CARAPI SetDataSource(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length);
@@ -1078,7 +1078,7 @@ public:
      * @return true if the parameter is set successfully, false otherwise
      * {@hide}
      */
-    CARAPI SetParameterEx(
+    CARAPI SetParameter(
         /* [in] */ Int32 key,
         /* [in] */ const String& value,
         /* [out] */ Boolean* result);
@@ -1090,7 +1090,7 @@ public:
      * @return true if the parameter is set successfully, false otherwise
      * {@hide}
      */
-    CARAPI SetParameterEx2(
+    CARAPI SetParameter(
         /* [in] */ Int32 key,
         /* [in] */ Int32 value,
         /* [out] */ Boolean* result);
@@ -1193,7 +1193,7 @@ public:
      * @throws IllegalArgumentException if the mimeType is not supported.
      * @throws IllegalStateException if called in an invalid state.
      */
-    CARAPI AddTimedTextSourceEx(
+    CARAPI AddTimedTextSource(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
         /* [in] */ const String& mimeType);
@@ -1214,7 +1214,7 @@ public:
      * @throws IllegalArgumentException if the mimeType is not supported.
      * @throws IllegalStateException if called in an invalid state.
      */
-    CARAPI AddTimedTextSourceEx2(
+    CARAPI AddTimedTextSource(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ const String& mimeType);
 
@@ -1236,7 +1236,7 @@ public:
      * @throws IllegalArgumentException if the mimeType is not supported.
      * @throws IllegalStateException if called in an invalid state.
      */
-    CARAPI AddTimedTextSourceEx3(
+    CARAPI AddTimedTextSource(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length,

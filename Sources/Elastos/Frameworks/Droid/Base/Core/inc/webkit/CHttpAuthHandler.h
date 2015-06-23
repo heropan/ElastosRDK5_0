@@ -3,7 +3,7 @@
 #define __CHTTPAUTHHANDLER_H__
 
 #include "_CHttpAuthHandler.h"
-#include "os/HandlerMacro.h"
+
 #include "webkit/HttpAuthHandler.h"
 
 namespace Elastos {

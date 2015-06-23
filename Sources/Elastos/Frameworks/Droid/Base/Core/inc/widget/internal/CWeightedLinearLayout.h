@@ -3,9 +3,9 @@
 #define __CWEIGHTEDLINEARLAYOUT_H_
 
 #include "_CWeightedLinearLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "widget/internal/WeightedLinearLayout.h"
 
 

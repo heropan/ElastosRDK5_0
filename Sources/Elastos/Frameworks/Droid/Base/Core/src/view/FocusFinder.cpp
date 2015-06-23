@@ -3,8 +3,8 @@
 #include "view/View.h"
 #include "view/ViewGroup.h"
 #include "view/CViewConfiguration.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Logger;
@@ -130,7 +130,7 @@ ECode FocusFinder::FindNextFocus(
     VALIDATE_NOT_NULL(nextFocus);
     AutoPtr<IView> temp = FindNextFocus(root, focused, NULL, direction);
     *nextFocus = temp;
-    INTERFACE_ADDREF(*nextFocus);
+    REFCOUNT_ADD(*nextFocus);
 
     return NOERROR;
 }
@@ -142,10 +142,10 @@ ECode FocusFinder::FindNextFocusFromRect(
     /* [out] */ IView** nextFocus)
 {
     VALIDATE_NOT_NULL(nextFocus);
-    mFocusedRect->SetEx(focusedRect);
+    mFocusedRect->Set(focusedRect);
     AutoPtr<IView> temp = FindNextFocus(root, NULL, mFocusedRect, direction);
     *nextFocus = temp;
-    INTERFACE_ADDREF(*nextFocus);
+    REFCOUNT_ADD(*nextFocus);
 
     return NOERROR;
 }
@@ -332,7 +332,7 @@ AutoPtr<IView> FocusFinder::FindNextFocusInAbsoluteDirection(
     // initialize the best candidate to something impossible
     // (so the first plausible view will become the best choice)
     //
-    mBestCandidateRect->SetEx(focusedRect);
+    mBestCandidateRect->Set(focusedRect);
     Int32 width, height;
     focusedRect->GetWidth(&width);
     focusedRect->GetHeight(&height);
@@ -368,7 +368,7 @@ AutoPtr<IView> FocusFinder::FindNextFocusInAbsoluteDirection(
         root->OffsetDescendantRectToMyCoords(focusable, mOtherRect);
 
         if (IsBetterCandidate(direction, focusedRect, mOtherRect, mBestCandidateRect)) {
-            mBestCandidateRect->SetEx(mOtherRect);
+            mBestCandidateRect->Set(mOtherRect);
             closest = focusable;
         }
     }
@@ -837,14 +837,14 @@ ECode FocusFinder::FindNearestTouchable(
 
         if (distance < edgeSlop) {
             Boolean isContains1, isContains2;
-            closestBounds->ContainsEx2(touchableBounds, &isContains1);
-            touchableBounds->ContainsEx2(closestBounds, &isContains2);
+            closestBounds->Contains(touchableBounds, &isContains1);
+            touchableBounds->Contains(closestBounds, &isContains2);
             // Give preference to innermost views
             if (closest == NULL || isContains1 ||
                 (!isContains2 && distance < minDistance)) {
                 minDistance = distance;
                 closest = item;
-                closestBounds->SetEx(touchableBounds);
+                closestBounds->Set(touchableBounds);
                 switch (direction) {
                 case IView::FOCUS_LEFT:
                     (*deltas)[0] = -distance;
@@ -864,7 +864,7 @@ ECode FocusFinder::FindNearestTouchable(
     }
 
     *touchable = closest;
-    INTERFACE_ADDREF(*touchable);
+    REFCOUNT_ADD(*touchable);
 
     return NOERROR;
 }

@@ -6,14 +6,13 @@
 #include "os/Runnable.h"
 #include "webkit/AccessibilityInjectorFallback.h"
 //#include "webkit/CWebViewClassic.h"
-#include <elastos/Object.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/Core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;

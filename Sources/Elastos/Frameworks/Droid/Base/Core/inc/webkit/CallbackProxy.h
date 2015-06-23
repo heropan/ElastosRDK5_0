@@ -8,9 +8,9 @@
 #include "webkit/WebBackForwardListClassic.h"
 #include "webkit/BrowserFrame.h"
 #include "webkit/CJsPromptResult.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
@@ -175,7 +175,7 @@ private:
         , public IDialogInterfaceOnClickListener
     {
     public:
-        InnerDialogOnClickListenerEx(
+        InnerDialogOnClickListener(
             /* [in] */ IJsPromptResult* res,
             /* [in] */ IEditText* text,
             /* [in] */ CallbackProxy* owner);

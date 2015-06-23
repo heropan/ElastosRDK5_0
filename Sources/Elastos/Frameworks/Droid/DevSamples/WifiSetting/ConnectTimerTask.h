@@ -5,7 +5,6 @@
 #include <Elastos.Core.h>
 #include <Elastos.Core.h>
 #include <elrefbase.h>
-#include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>
 #include <elautoptr.h>
 #include "WifiFun.h"
@@ -17,7 +16,6 @@ enum CONNECTWAY {
     CONNECTWAY_ETH
 };
 
-using namespace Elastos::Core::Threading;
 
 class ConnectTimerTask : public TimerTask
 {

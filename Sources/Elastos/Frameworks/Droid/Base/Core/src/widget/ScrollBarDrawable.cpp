@@ -1,6 +1,6 @@
 
 #include "widget/ScrollBarDrawable.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "graphics/CRect.h"
 
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -89,7 +89,7 @@ ECode ScrollBarDrawable::Draw(
     Int32 l, t, r, b;
     rect->Get(&l, &t, &r, &b);
     Boolean notIntersected;
-    FAIL_RETURN(canvas->QuickRejectEx2(l, t, r, b, CanvasEdgeType_AA, &notIntersected));
+    FAIL_RETURN(canvas->QuickReject(l, t, r, b, CanvasEdgeType_AA, &notIntersected));
     if (notIntersected) {
         return NOERROR;
     }
@@ -141,7 +141,7 @@ void ScrollBarDrawable::DrawTrack(
     }
     if (track != NULL) {
         if (mChanged) {
-            track->SetBoundsEx(bounds);
+            track->SetBounds(bounds);
         }
         track->Draw(canvas);
     }
@@ -169,7 +169,7 @@ void ScrollBarDrawable::DrawThumb(
     if (vertical) {
         if (mVerticalThumb != NULL) {
             if (changed) {
-                mVerticalThumb->SetBoundsEx(thumbRect);
+                mVerticalThumb->SetBounds(thumbRect);
             }
             mVerticalThumb->Draw(canvas);
         }
@@ -177,7 +177,7 @@ void ScrollBarDrawable::DrawThumb(
     else {
         if (mHorizontalThumb != NULL) {
             if (changed) {
-                mHorizontalThumb->SetBoundsEx(thumbRect);
+                mHorizontalThumb->SetBounds(thumbRect);
             }
             mHorizontalThumb->Draw(canvas);
         }

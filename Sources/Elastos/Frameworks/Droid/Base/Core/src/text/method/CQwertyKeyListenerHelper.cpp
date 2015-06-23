@@ -17,7 +17,7 @@ ECode CQwertyKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IQwertyKeyListener> qkl = CQwertyKeyListener::GetInstance(autoText, cap);
     *ret = qkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -27,7 +27,7 @@ ECode CQwertyKeyListenerHelper::GetInstanceForFullKeyboard(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IQwertyKeyListener> qkl = CQwertyKeyListener::GetInstanceForFullKeyboard();
     *ret = qkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

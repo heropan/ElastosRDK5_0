@@ -290,7 +290,7 @@ void ListMenuItemView::InsertIconView()
 {
     AutoPtr<ILayoutInflater> inflater = GetInflater();
     mIconView = NULL;
-    inflater->InflateEx2(R::layout::list_menu_item_icon,
+    inflater->Inflate(R::layout::list_menu_item_icon,
             (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&mIconView);
     AddView(mIconView, 0);
 }
@@ -299,7 +299,7 @@ void ListMenuItemView::InsertRadioButton()
 {
     AutoPtr<ILayoutInflater> inflater = GetInflater();
     mRadioButton = NULL;
-    inflater->InflateEx2(R::layout::list_menu_item_radio,
+    inflater->Inflate(R::layout::list_menu_item_radio,
             (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&mRadioButton);
     AddView(mRadioButton);
 }
@@ -308,7 +308,7 @@ void ListMenuItemView::InsertCheckBox()
 {
     AutoPtr<ILayoutInflater> inflater = GetInflater();
     mCheckBox = NULL;
-    inflater->InflateEx2(R::layout::list_menu_item_checkbox,
+    inflater->Inflate(R::layout::list_menu_item_checkbox,
             (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&mCheckBox);
     AddView(mCheckBox);
 }
@@ -351,7 +351,7 @@ ECode ListMenuItemView::InitFromAttributes(
         const_cast<Int32 *>(R::styleable::MenuView),
         ARRAY_SIZE(R::styleable::MenuView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetDrawable(R::styleable::MenuView_itemBackground, (IDrawable**)&mBackground);
     a->GetResourceId(R::styleable::MenuView_itemTextAppearance, -1, &mTextAppearance);

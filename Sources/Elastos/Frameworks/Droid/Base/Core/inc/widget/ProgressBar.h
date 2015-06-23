@@ -6,10 +6,9 @@
 #include "view/View.h"
 #include "util/Pools.h"
 #include "os/Runnable.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::R;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Utility::IPool;
 using Elastos::Droid::Utility::Pools;

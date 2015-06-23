@@ -3,8 +3,8 @@
 #include "net/Uri.h"
 #include "util/XmlUtils.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 #ifdef DROID_CORE
 #include "content/CIntent.h"
@@ -170,7 +170,7 @@ ECode Intent::ParseUri(
             AutoPtr<CIntent> cintent;
             ASSERT_SUCCEEDED(CIntent::NewByFriend(IIntent::ACTION_VIEW, (CIntent**)&cintent));
             *_intent = cintent;
-            INTERFACE_ADDREF(*_intent);
+            REFCOUNT_ADD(*_intent);
             // try {
             AutoPtr<IUri> data;
             if (FAILED(Uri::Parse(uri, (IUri**)&data))) {
@@ -192,7 +192,7 @@ ECode Intent::ParseUri(
         AutoPtr<CIntent> cintent;
         FAIL_RETURN(CIntent::NewByFriend(IIntent::ACTION_VIEW, data, (CIntent**)&cintent));
         *_intent = cintent;
-        INTERFACE_ADDREF(*_intent);
+        REFCOUNT_ADD(*_intent);
         return NOERROR;
     }
 
@@ -341,7 +341,7 @@ ECode Intent::ParseUri(
     }
 
     *_intent = (IIntent*)intent.Get();
-    INTERFACE_ADDREF(*_intent);
+    REFCOUNT_ADD(*_intent);
 
 //    } catch (IndexOutOfBoundsException e) {
 //        throw new URISyntaxException(uri, "illegal Intent URI format", i);
@@ -538,7 +538,7 @@ ECode Intent::GetIntentOld(
     }
 
     *_intent = (IIntent*)intent.Get();
-    INTERFACE_ADDREF(*_intent);
+    REFCOUNT_ADD(*_intent);
     return NOERROR;
 }
 
@@ -553,7 +553,7 @@ ECode Intent::GetData(
     /* [out] */ IUri** data)
 {
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -590,10 +590,10 @@ ECode Intent::ResolveType(
 {
     AutoPtr<IContentResolver> resolver;
     ASSERT_SUCCEEDED(context->GetContentResolver((IContentResolver**)&resolver));
-    return ResolveTypeEx(resolver, type);
+    return ResolveType(resolver, type);
 }
 
-ECode Intent::ResolveTypeEx(
+ECode Intent::ResolveType(
     /* [in] */ IContentResolver* resolver,
     /* [out] */ String* type)
 {
@@ -622,7 +622,7 @@ ECode Intent::ResolveTypeIfNeeded(
         return NOERROR;
     }
 
-    return ResolveTypeEx(resolver, type);
+    return ResolveType(resolver, type);
 }
 
 ECode Intent::HasCategory(
@@ -657,7 +657,7 @@ ECode Intent::GetCategories(
         }
 
         *_categories = categories;
-        INTERFACE_ADDREF(*_categories);
+        REFCOUNT_ADD(*_categories);
         return NOERROR;
     }
 
@@ -668,7 +668,7 @@ ECode Intent::GetSelector(
     /* [out] */ IIntent** intent)
 {
     *intent = mSelector;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -676,7 +676,7 @@ ECode Intent::GetClipData(
     /* [out] */ IClipData** clipData)
 {
     *clipData = mClipData;
-    INTERFACE_ADDREF(*clipData);
+    REFCOUNT_ADD(*clipData);
     return NOERROR;
 }
 
@@ -727,7 +727,7 @@ ECode Intent::GetExtra(
     /* [in] */ const String& name,
     /* [out] */ IInterface** obj)
 {
-    return GetExtraEx(name, NULL, obj);
+    return GetExtra(name, NULL, obj);
 }
 
 ECode Intent::GetBooleanExtra(
@@ -740,7 +740,7 @@ ECode Intent::GetBooleanExtra(
         return NOERROR;
     }
     else {
-        return mExtras->GetBooleanEx(name, defaultValue, value);
+        return mExtras->GetBoolean(name, defaultValue, value);
     }
 }
 
@@ -754,7 +754,7 @@ ECode Intent::GetByteExtra(
         return NOERROR;
     }
     else {
-        return mExtras->GetByteEx(name, defaultValue, value);
+        return mExtras->GetByte(name, defaultValue, value);
     }
 }
 
@@ -768,7 +768,7 @@ ECode Intent::GetInt16Extra(
         return NOERROR;
     }
     else {
-        return mExtras->GetInt16Ex(name, defaultValue, value);
+        return mExtras->GetInt16(name, defaultValue, value);
     }
 }
 
@@ -782,7 +782,7 @@ ECode Intent::GetCharExtra(
         return NOERROR;
     }
     else {
-        return mExtras->GetCharEx(name, defaultValue, value);
+        return mExtras->GetChar(name, defaultValue, value);
     }
 }
 
@@ -796,7 +796,7 @@ ECode Intent::GetInt32Extra(
         return NOERROR;
     }
     else {
-        return mExtras->GetInt32Ex(name, defaultValue, value);
+        return mExtras->GetInt32(name, defaultValue, value);
     }
 }
 
@@ -810,7 +810,7 @@ ECode Intent::GetInt64Extra(
         return NOERROR;
     }
     else {
-        return mExtras->GetInt64Ex(name, defaultValue, value);
+        return mExtras->GetInt64(name, defaultValue, value);
     }
 }
 
@@ -824,7 +824,7 @@ ECode Intent::GetFloatExtra(
         return NOERROR;
     }
     else {
-        return mExtras->GetFloatEx(name, defaultValue, value);
+        return mExtras->GetFloat(name, defaultValue, value);
     }
 }
 
@@ -838,7 +838,7 @@ ECode Intent::GetDoubleExtra(
         return NOERROR;
     }
     else {
-        return mExtras->GetDoubleEx(name, defaultValue, value);
+        return mExtras->GetDouble(name, defaultValue, value);
     }
 }
 
@@ -1102,7 +1102,7 @@ ECode Intent::GetBundleExtra(
     }
 }
 
-ECode Intent::GetExtraEx(
+ECode Intent::GetExtra(
     /* [in] */ const String& name,
     /* [in] */ IInterface* defaultValue,
     /* [out] */ IInterface** obj)
@@ -1113,12 +1113,12 @@ ECode Intent::GetExtraEx(
         mExtras->Get(name, (IInterface**)&newObj);
         if (newObj != NULL) {
             *obj = newObj;
-            INTERFACE_ADDREF(*obj);
+            REFCOUNT_ADD(*obj);
             return NOERROR;
         }
     }
 
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -1161,7 +1161,7 @@ ECode Intent::GetComponent(
     /* [out] */ IComponentName** componentName)
 {
     *componentName = mComponent;
-    INTERFACE_ADDREF(*componentName);
+    REFCOUNT_ADD(*componentName);
     return NOERROR;
 }
 
@@ -1169,7 +1169,7 @@ ECode Intent::GetSourceBounds(
     /* [out] */ IRect** sourceBounds)
 {
     *sourceBounds = mSourceBounds;
-    INTERFACE_ADDREF(*sourceBounds);
+    REFCOUNT_ADD(*sourceBounds);
     return NOERROR;
 }
 
@@ -1179,7 +1179,7 @@ ECode Intent::ResolveActivity(
 {
     if (mComponent != NULL) {
         *componentName = mComponent;
-        INTERFACE_ADDREF(*componentName);
+        REFCOUNT_ADD(*componentName);
         return NOERROR;
     }
 
@@ -1226,7 +1226,7 @@ ECode Intent::ResolveActivityInfo(
     }
 
     *result = ai;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1636,7 +1636,7 @@ ECode Intent::PutExtras(
     return NOERROR;
 }
 
-ECode Intent::PutExtrasEx(
+ECode Intent::PutExtras(
     /* [in] */ IBundle* extras)
 {
     if (mExtras == NULL) {
@@ -1657,7 +1657,7 @@ ECode Intent::ReplaceExtras(
     return NOERROR;
 }
 
-ECode Intent::ReplaceExtrasEx(
+ECode Intent::ReplaceExtras(
     /* [in] */ IBundle* extras)
 {
     mExtras = NULL;
@@ -1725,7 +1725,7 @@ ECode Intent::SetClassName(
     return CComponentName::New(packageContext, className, (IComponentName**)&mComponent);
 }
 
-ECode Intent::SetClassNameEx(
+ECode Intent::SetClassName(
     /* [in] */ const String& packageName,
     /* [in] */ const String& className)
 {
@@ -2013,7 +2013,7 @@ ECode Intent::ToString(
 {
     StringBuilder b(128);
     b.AppendCStr("Intent { ");
-    ToShortStringEx((IStringBuilder*)&b, TRUE, TRUE, TRUE, FALSE);
+    ToShortString((IStringBuilder*)&b, TRUE, TRUE, TRUE, FALSE);
     b.AppendCStr(" }");
     return b.ToString(str);
 }
@@ -2023,7 +2023,7 @@ ECode Intent::ToInsecureString(
 {
     StringBuilder b(128);
     b.AppendCStr("Intent { ");
-    ToShortStringEx((IStringBuilder*)&b, FALSE, TRUE, TRUE, FALSE);
+    ToShortString((IStringBuilder*)&b, FALSE, TRUE, TRUE, FALSE);
     b.AppendCStr(" }");
     return b.ToString(str);
 }
@@ -2033,7 +2033,7 @@ ECode Intent::ToInsecureStringWithClip(
 {
     StringBuilder b(128);
     b.AppendCStr("Intent { ");
-    ToShortStringEx((IStringBuilder*)&b, FALSE, TRUE, TRUE, TRUE);
+    ToShortString((IStringBuilder*)&b, FALSE, TRUE, TRUE, TRUE);
     b.AppendCStr(" }");
     return b.ToString(str);
 }
@@ -2046,11 +2046,11 @@ ECode Intent::ToShortString(
     /* [out] */ String* str)
 {
     StringBuilder b(128);
-    ToShortStringEx((IStringBuilder*)&b, secure, comp, extras, clip);
+    ToShortString((IStringBuilder*)&b, secure, comp, extras, clip);
     return b.ToString(str);
 }
 
-ECode Intent::ToShortStringEx(
+ECode Intent::ToShortString(
     /* [in] */ IStringBuilder* sb,
     /* [in] */ Boolean secure,
     /* [in] */ Boolean comp,
@@ -2162,7 +2162,7 @@ ECode Intent::ToShortStringEx(
 
     if (mSelector != NULL) {
         sb->AppendString(String(" sel={"));
-        mSelector->ToShortStringEx(sb, secure, comp, extras, clip);
+        mSelector->ToShortString(sb, secure, comp, extras, clip);
         sb->AppendString(String("}"));
     }
 
@@ -2549,7 +2549,7 @@ ECode Intent::ParseIntent(
     }
 
     *_intent = (IIntent*)intent;
-    INTERFACE_ADDREF(*_intent);
+    REFCOUNT_ADD(*_intent);
 
     return NOERROR;
 }

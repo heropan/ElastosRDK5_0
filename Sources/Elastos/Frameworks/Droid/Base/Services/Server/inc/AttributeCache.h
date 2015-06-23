@@ -3,11 +3,11 @@
 #define __ATTRIBUTECACHE_H__
 
 #include "ext/frameworkext.h"
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 #include "elastos/Mutex.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;

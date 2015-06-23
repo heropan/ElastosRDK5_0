@@ -140,7 +140,7 @@ module
          * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
          */
         //@Deprecated
-        GetSuggestionsEx(
+        GetSuggestions(
             [in] ArrayOf<ITextInfo*>* textInfos,
             [in] Int32 suggestionsLimit,
             [in] Boolean sequentialWords);

@@ -1,6 +1,6 @@
 
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <text/TextUtils.h>
 #include "CLockSettingsService.h"
 #include "os/Binder.h"
@@ -464,7 +464,7 @@ ECode CLockSettingsService::CheckPattern(
     raf->GetLength(&len);
     AutoPtr<ArrayOf<Byte> > stored = ArrayOf<Byte>::Alloc((Int32)len);
     Int32 got = 0;
-    FAIL_GOTO(raf->ReadBytesEx(stored, 0, stored->GetLength(), &got), ERROR);
+    FAIL_GOTO(raf->ReadBytes(stored, 0, stored->GetLength(), &got), ERROR);
     raf->Close();
     if (got <= 0) {
         *res = TRUE;
@@ -512,7 +512,7 @@ ECode CLockSettingsService::CheckPassword(
     raf->GetLength(&len);
     AutoPtr<ArrayOf<Byte> > stored = ArrayOf<Byte>::Alloc((Int32)len);
     Int32 got = 0;
-    FAIL_GOTO(raf->ReadBytesEx(stored, 0, stored->GetLength(), &got), ERROR);
+    FAIL_GOTO(raf->ReadBytes(stored, 0, stored->GetLength(), &got), ERROR);
     raf->Close();
     if (got <= 0) {
         *res = TRUE;
@@ -578,7 +578,7 @@ void CLockSettingsService::WriteFile(
     if (hash == NULL || hash->GetLength() == 0) {
         raf->SetLength(0);
     } else {
-        raf->WriteBytesEx(*hash, 0, hash->GetLength());
+        raf->WriteBytes(*hash, 0, hash->GetLength());
     }
     raf->Close();
     // } catch (IOException ioe) {
@@ -648,7 +648,7 @@ ECode CLockSettingsService::ReadFromDb(
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(2);
     args->Set(0, StringUtils::Int32ToString(userId));
     args->Set(1, key);
-    FAIL_RETURN(db->QueryEx2(TABLE, COLUMNS_FOR_QUERY, selection, args, String(NULL),
+    FAIL_RETURN(db->Query(TABLE, COLUMNS_FOR_QUERY, selection, args, String(NULL),
         String(NULL), String(NULL), (ICursor**)&cursor))
 
     if (cursor != NULL) {

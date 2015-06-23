@@ -19,7 +19,7 @@ module
             [in] IInterface* obj,
             [out] Boolean* result );
 
-        EqualsEx(
+        Equals(
             [in] INetworkIdentity* obj,
             [out] Boolean* result );
 

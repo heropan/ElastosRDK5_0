@@ -308,7 +308,7 @@ ECode ViewGroupMarginLayoutParams::Init(
         const_cast<Int32 *>(R::styleable::ViewGroup_MarginLayout),
         ARRAY_SIZE(R::styleable::ViewGroup_MarginLayout));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a));
+    ASSERT_SUCCEEDED(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
 
     ECode ec = SetBaseAttributes(a,
                 R::styleable::ViewGroup_MarginLayout_layout_width,

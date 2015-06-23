@@ -1,9 +1,9 @@
 
 #include "widget/AbsListView.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
 #include "R.h"
 #include "util/StateSet.h"
 #include "os/CStrictMode.h"
@@ -418,9 +418,9 @@ ECode AbsListView::FlingRunnableInner::Run()
         return NOERROR;
     }
 
-    mMainHost->mVelocityTracker->ComputeCurrentVelocityEx(1000, mMainHost->mMaximumVelocity);
+    mMainHost->mVelocityTracker->ComputeCurrentVelocity(1000, mMainHost->mMaximumVelocity);
     Float y;
-    mMainHost->mVelocityTracker->GetYVelocityEx(activeId, &y);
+    mMainHost->mVelocityTracker->GetYVelocity(activeId, &y);
     Float yvel = -y;
 
     if (Elastos::Core::Math::Abs(yvel) >= mMainHost->mMinimumVelocity
@@ -3197,7 +3197,7 @@ ECode AbsListView::SetFilterText(
         AutoPtr<ICharSequence> cFilterText;
         FAIL_RETURN(CStringWrapper::New(filterText, (ICharSequence**)&cFilterText));
         mTextFilter->SetText(cFilterText);
-        mTextFilter->SetSelectionEx(filterText.GetLength());
+        mTextFilter->SetSelection(filterText.GetLength());
 
         AutoPtr<IFilterable> filterable = (IFilterable*)mAdapter->Probe(EIID_IFilterable);
         if (filterable) {
@@ -3767,7 +3767,7 @@ void AbsListView::DispatchDraw(
         canvas->Save(&saveCount);
 
         Boolean result;
-        canvas->ClipRectEx6(
+        canvas->ClipRect(
             mScrollX + mPaddingLeft, mScrollY + mPaddingTop,
             mScrollX + mRight - mLeft - mPaddingRight,
             mScrollY + mBottom - mTop - mPaddingBottom,
@@ -3871,7 +3871,7 @@ void AbsListView::DrawSelector(
     mSelectorRect->IsEmpty(&empty);
     if (!empty)
     {
-         mSelector->SetBoundsEx(mSelectorRect);
+         mSelector->SetBounds(mSelectorRect);
          mSelector->Draw(canvas);
     }
 }
@@ -4878,7 +4878,7 @@ Boolean AbsListView::OnTouchEvent(
                 ev->GetPointerId(pointerIndex,&mActivePointerId);
             }
             Float pify;
-            ev->GetYEx(pointerIndex, &pify);
+            ev->GetY(pointerIndex, &pify);
             Int32 y = (Int32)pify;
 
             if (mDataChanged) {
@@ -4997,9 +4997,9 @@ Boolean AbsListView::OnTouchEvent(
                                 ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
                         }
                         else {
-                            mVelocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+                            mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
                             Float y;
-                            mVelocityTracker->GetYVelocityEx(mActivePointerId, &y);
+                            mVelocityTracker->GetYVelocity(mActivePointerId, &y);
                             Int32 initialVelocity = (Int32)(y * mVelocityScale);
 
                             // Fling if we have enough velocity and we aren't at a boundary.
@@ -5043,9 +5043,9 @@ Boolean AbsListView::OnTouchEvent(
                         mFlingRunnable = new FlingRunnable(this);
                     }
 
-                    mVelocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+                    mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
                     Float y;
-                    mVelocityTracker->GetYVelocityEx(mActivePointerId, &y);
+                    mVelocityTracker->GetYVelocity(mActivePointerId, &y);
                     Int32 initialVelocity = (Int32)y;
 
                     ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_FLING);
@@ -5266,7 +5266,7 @@ ECode AbsListView::Draw(
             Int32 edgeX = -width + leftPadding;
             Int32 edgeY = Elastos::Core::Math::Max(height, scrollY + mLastPositionDistanceGuess);
             canvas->Translate(edgeX, edgeY);
-            canvas->RotateEx(180, width, 0);
+            canvas->Rotate(180, width, 0);
             mEdgeGlowBottom->SetSize(width, height);
             mEdgeGlowBottom->Draw(canvas, &temp);
             if (temp) {
@@ -5419,7 +5419,7 @@ Boolean AbsListView::OnInterceptTouchEvent(
                         ev->GetPointerId(pointerIndex, &mActivePointerId);
                     }
                     Float fy;
-                    ev->GetYEx(pointerIndex, &fy);
+                    ev->GetY(pointerIndex, &fy);
                     Int32 y = (Int32)fy;
                     InitVelocityTrackerIfNotExists();
                     mVelocityTracker->AddMovement(ev);
@@ -5469,8 +5469,8 @@ void AbsListView::OnSecondaryPointerUp(
         // TODO: Make this decision more intelligent.
         Int32 newPointerIndex = pointerIndex == 0 ? 1 : 0;
         Float fx, fy;
-        ev->GetXEx(newPointerIndex, &fx);
-        ev->GetYEx(newPointerIndex, &fy);
+        ev->GetX(newPointerIndex, &fx);
+        ev->GetY(newPointerIndex, &fy);
         mMotionX = (Int32)fx;
         mMotionY = (Int32)fy;
         mMotionCorrection = 0;
@@ -5707,7 +5707,7 @@ ECode AbsListView::SmoothScrollByOffset(
             AutoPtr<IRect> visibleRect;
             CRect::New((IRect**)&visibleRect);
             Boolean childVisible;
-            if (child->GetGlobalVisibleRectEx(visibleRect, &childVisible), childVisible) {
+            if (child->GetGlobalVisibleRect(visibleRect, &childVisible), childVisible) {
                 // the child is partially visible
                 Int32 childRectArea ;
                 child->GetWidth(&childRectArea);
@@ -6446,7 +6446,7 @@ void AbsListView::PositionPopup()
                 IGravity::BOTTOM | IGravity::CENTER_HORIZONTAL, x, bottomGap);
     }
     else {
-        mPopup->UpdateEx2(x, bottomGap, -1, -1);
+        mPopup->Update(x, bottomGap, -1, -1);
     }
 }
 
@@ -6845,7 +6845,7 @@ ECode AbsListView::OnTextChanged(
             filterable->GetFilter((IFilter**)&f);
             // Filter should not be NULL when we reach this part
             if (f != NULL) {
-                f->DoFilterEx(s, (IFilterListener*)this->Probe(EIID_IFilterListener));
+                f->DoFilter(s, (IFilterListener*)this->Probe(EIID_IFilterListener));
             } else {
                 return E_ILLEGAL_STATE_EXCEPTION;
             }
@@ -7200,7 +7200,7 @@ ECode AbsListView::Init(
     layout->Copy(R::styleable::AbsListView, size);
 
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
         attrs, layout, defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<IDrawable> d;

@@ -5,11 +5,10 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "webkit/GeolocationPermissions.h"
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashSet.h>
 #include <elastos/Vector.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IMenu;

@@ -5,11 +5,11 @@
 #include "_CApplicationThreadNative.h"
 #include <jni.h>
 #include "ext/frameworkdef.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::App::IInstrumentationWatcher;
 using Elastos::Droid::App::IResultInfo;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentReceiver;

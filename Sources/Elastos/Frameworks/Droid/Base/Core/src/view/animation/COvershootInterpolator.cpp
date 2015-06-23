@@ -30,7 +30,7 @@ ECode COvershootInterpolator::constructor(
             const_cast<Int32 *>(R::styleable::OvershootInterpolator),
             ARRAY_SIZE(R::styleable::OvershootInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::OvershootInterpolator_tension, 2.0f, &mTension);
 

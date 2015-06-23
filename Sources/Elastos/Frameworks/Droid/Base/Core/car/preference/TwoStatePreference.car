@@ -36,7 +36,7 @@ module
              * @see #setSummaryOn(CharSequence)
              * @param summaryResId The summary as a resource.
              */
-            SetSummaryOnEx(
+            SetSummaryOn(
                 [in] Int32 summaryResId);
 
             /**
@@ -58,7 +58,7 @@ module
              * @see #setSummaryOff(CharSequence)
              * @param summaryResId The summary as a resource.
              */
-            SetSummaryOffEx(
+            SetSummaryOff(
                 [in] Int32 summaryResId);
 
             /**

@@ -388,7 +388,7 @@ module
             [in] IIntent* intent);
 
         //    @Deprecated
-        SetRemoteAdapterEx(
+        SetRemoteAdapter(
             [in] Int32 appWidgetId,
             [in] Int32 viewId,
             [in] IIntent* intent);
@@ -637,7 +637,7 @@ module
             [out] IView** view);
 
         /** @hide */
-        ApplyEx(
+        Apply(
             [in] IContext* ctx,
             [in] IViewGroup* parent,
             [in] IRemoteViewsOnClickHandler* handler,
@@ -656,7 +656,7 @@ module
             [in] IView* v);
 
         /** @hide */
-        ReapplyEx(
+        Reapply(
             [in] IContext* ctx,
             [in] IView* v,
             [in] IRemoteViewsOnClickHandler* handler);

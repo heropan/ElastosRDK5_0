@@ -4,7 +4,7 @@
 
 #include "_CAlphaAnimation.h"
 #include "view/animation/AlphaAnimation.h"
-#include "view/animation/AnimationMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

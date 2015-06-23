@@ -1,7 +1,7 @@
 #include "view/CDispList.h"
 #include "view/CDispListHelper.h"
 #include "view/LayoutInflater.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include "R.h"
 
 using Elastos::Core::StringBuffer;
@@ -134,10 +134,10 @@ ECode CDispList::MyToast::SetText(
     return Toast::SetText(resId);
 }
 
-ECode CDispList::MyToast::SetTextEx(
+ECode CDispList::MyToast::SetText(
     /* [in] */ ICharSequence* s)
 {
-    return Toast::SetTextEx(s);
+    return Toast::SetText(s);
 }
 
 
@@ -201,7 +201,7 @@ ECode CDispList::ShowItem(
     InitToast();
 
     AutoPtr<IMessage> msg;
-    ObtainMessageEx(MSG_SHOW_ITEM, item, (IMessage**)&msg);
+    ObtainMessage(MSG_SHOW_ITEM, item, (IMessage**)&msg);
     Boolean result;
     return SendMessage(msg, &result);
 }

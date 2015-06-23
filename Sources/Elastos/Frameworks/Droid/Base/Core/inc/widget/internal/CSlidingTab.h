@@ -2,7 +2,7 @@
 #define __CSLIDINGTAB_H_
 
 #include "_CSlidingTab.h"
-#include "view/ViewMacro.h"
+
 #include "widget/internal/SlidingTab.h"
 
 namespace Elastos {

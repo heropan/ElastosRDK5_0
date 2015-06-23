@@ -5,11 +5,11 @@
 #include "ext/frameworkdef.h"
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 #include <elastos/Stack.h>
 
 using Elastos::Utility::Stack;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IComponentName;

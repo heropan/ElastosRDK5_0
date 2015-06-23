@@ -241,7 +241,7 @@ module
          * Registers an OnParameterChangeListener interface.
          * @param listener OnParameterChangeListener interface registered
          */
-        SetParameterListenerEx(
+        SetParameterListener(
             [in] IEqualizerOnParameterChangeListener* listener);
 
         /**

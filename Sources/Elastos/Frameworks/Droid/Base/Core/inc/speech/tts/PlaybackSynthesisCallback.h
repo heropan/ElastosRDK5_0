@@ -6,8 +6,6 @@
 #include "speech/tts/EventLogger.h"
 #include "speech/tts/AudioPlaybackHandler.h"
 
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Speech {

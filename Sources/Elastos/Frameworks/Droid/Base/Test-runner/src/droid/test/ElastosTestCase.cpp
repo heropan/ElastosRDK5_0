@@ -97,7 +97,7 @@ ECode ElastosTestCase::AssertActivityRequiresPermission(
 {
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
-    intent->SetClassNameEx(packageName, className);
+    intent->SetClassName(packageName, className);
     intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
 
     // try {

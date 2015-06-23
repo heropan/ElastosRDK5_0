@@ -1,5 +1,5 @@
 #include "speech/RecognitionService.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -189,7 +189,7 @@ ECode RecognitionService::RecognitionServiceBinder::StartListening(
         AutoPtr<RecognitionServiceStartListeningArgs> rslArgs =
             new RecognitionServiceStartListeningArgs(recognizerIntent, listener);
         AutoPtr<IMessage> msg;
-        mInternalService->mHandler->ObtainMessageEx(
+        mInternalService->mHandler->ObtainMessage(
             RecognitionService::MSG_START_LISTENING, rslArgs.Get(), (IMessage**)&msg);
         Boolean result;
         return mInternalService->mHandler->SendMessage(msg, &result);
@@ -208,7 +208,7 @@ ECode RecognitionService::RecognitionServiceBinder::StopListening(
     }
     if (mInternalService != NULL && mInternalService->CheckPermissions(listener)) {
         AutoPtr<IMessage> msg;
-        mInternalService->mHandler->ObtainMessageEx(
+        mInternalService->mHandler->ObtainMessage(
             RecognitionService::MSG_STOP_LISTENING, listener, (IMessage**)&msg);
         Boolean result;
         return mInternalService->mHandler->SendMessage(msg, &result);
@@ -226,7 +226,7 @@ ECode RecognitionService::RecognitionServiceBinder::Cancel(
     }
     if (mInternalService != NULL && mInternalService->CheckPermissions(listener)) {
         AutoPtr<IMessage> msg;
-        mInternalService->mHandler->ObtainMessageEx(
+        mInternalService->mHandler->ObtainMessage(
             RecognitionService::MSG_CANCEL, listener, (IMessage**)&msg);
         Boolean result;
         return mInternalService->mHandler->SendMessage(msg, &result);

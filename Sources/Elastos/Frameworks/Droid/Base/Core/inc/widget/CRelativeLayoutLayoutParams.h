@@ -3,7 +3,7 @@
 
 #include "_CRelativeLayoutLayoutParams.h"
 #include "widget/RelativeLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos{
 namespace Droid{
@@ -60,7 +60,7 @@ public:
      *        (for example, ALIGN_WITH_PARENT_BOTTOM) just use -1.
      * @see #addRule(int)
      */
-    CARAPI AddRuleEx(
+    CARAPI AddRule(
         /* [in] */ Int32 verb,
         /* [in] */ Int32 anchor);
 
@@ -101,7 +101,7 @@ public:
      *
      * @hide
      */
-    CARAPI GetRulesEx(
+    CARAPI GetRules(
         /* [in] */ Int32 layoutDirection,
         /* [out, callee] */ ArrayOf<Int32>** rules);
 

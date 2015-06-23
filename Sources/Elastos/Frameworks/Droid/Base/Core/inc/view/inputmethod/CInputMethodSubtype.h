@@ -4,9 +4,9 @@
 
 #include "ext/frameworkdef.h"
 #include "_CInputMethodSubtype.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Libcore::ICU::ILocale;
 using Elastos::Droid::Content::IContext;
@@ -233,7 +233,7 @@ public:
         /* [out] */ Int32* hashCode);
 
     //@Override
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IInputMethodSubtype* o,
         /* [out] */ Boolean* equals);
 

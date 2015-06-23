@@ -577,7 +577,7 @@ module
          * is not desirable, and will not be supported.
          * @hide
          */
-        SetAuxiliaryOutputFileEx(
+        SetAuxiliaryOutputFile(
             [in] String path);
 
         /**
@@ -599,7 +599,7 @@ module
          * @throws IllegalStateException if it is called before
          * setOutputFormat() or after prepare()
          */
-        SetOutputFileEx(
+        SetOutputFile(
             [in] String path);
 
         /**

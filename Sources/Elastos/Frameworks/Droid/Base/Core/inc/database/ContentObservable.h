@@ -53,7 +53,7 @@ public:
      * @param selfChange True if this is a self-change notification.
      * @param uri The Uri of the changed content, or null if unknown.
      */
-    virtual CARAPI DispatchChangeEx(
+    virtual CARAPI DispatchChange(
         /* [in] */ Boolean selfChange,
         /* [in] */ IUri* uri);
 

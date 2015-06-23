@@ -20,15 +20,15 @@ module
         GetTotalSharedDirty(
             [out] Int32* totalSharedDirty);
 
-        GetOtherPssEx(
+        GetOtherPss(
             [in] Int32 which,
             [out] Int32* otherPss);
 
-        GetOtherPrivateDirtyEx(
+        GetOtherPrivateDirty(
             [in] Int32 which,
             [out] Int32* otherPrivateDirty);
 
-        GetOtherSharedDirtyEx(
+        GetOtherSharedDirty(
             [in] Int32 which,
             [out] Int32* otherSharedDirty);
 

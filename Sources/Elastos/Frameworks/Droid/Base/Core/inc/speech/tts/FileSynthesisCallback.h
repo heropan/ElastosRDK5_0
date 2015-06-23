@@ -2,13 +2,10 @@
 #define __FileSynthesisCallback_H__
 
 #include "speech/tts/AbstractSynthesisCallback.h"
-#include <Elastos.Core.h>
-#include <elastos/Mutex.h>
+#include <Elastos.CoreLibrary.h>
 //
 using Elastos::IO::IFile;
 using Elastos::IO::IRandomAccessFile;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Speech {

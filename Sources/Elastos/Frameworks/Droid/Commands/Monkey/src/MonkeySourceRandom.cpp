@@ -1,6 +1,6 @@
 #include "MonkeySourceRandom.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IKeyEventHelper;
@@ -264,7 +264,7 @@ ECode MonkeySourceRandom::SetFactors(
     return NOERROR;
 }
 
-ECode MonkeySourceRandom::SetFactorsEx(
+ECode MonkeySourceRandom::SetFactors(
     /* [in] */ Int32 index,
     /* [in] */ Float v)
 {
@@ -312,7 +312,7 @@ void MonkeySourceRandom::GeneratePointerEvent(
     // sometimes we'll move during the touch
     if (gesture == GESTURE_DRAG) {
         Int32 count;
-        random->NextInt32Ex(10, &count);
+        random->NextInt32(10, &count);
         for (Int32 i = 0; i < count; ++i) {
             RandomWalk(random, display, p1, v1);
             event = NULL;
@@ -345,7 +345,7 @@ void MonkeySourceRandom::GeneratePointerEvent(
             mQ->AddLast(IMonkeyEvent::Probe(event));
 
         Int32 count;
-        random->NextInt32Ex(10, &count);
+        random->NextInt32(10, &count);
         for (Int32 i = 0; i < count; ++i) {
             RandomWalk(random, display, p1, v1);
             RandomWalk(random, display, p2, v2);
@@ -399,8 +399,8 @@ AutoPtr<IPointF> MonkeySourceRandom::RandomPoint(
     Int32 heigth;
     display->GetWidth(&width);
     display->GetHeight(&heigth);
-    random->NextInt32Ex(width, &width);
-    random->NextInt32Ex(heigth, &heigth);
+    random->NextInt32(width, &width);
+    random->NextInt32(heigth, &heigth);
     CPointF::New(width, heigth, (IPointF**)&point);
     return point;
 }
@@ -446,10 +446,10 @@ void MonkeySourceRandom::GenerateTrackballEvent(
     for (Int32 i = 0; i < 10; ++i) {
         // generate a small random step
         Int32 dX;
-        random->NextInt32Ex(10, &dX);
+        random->NextInt32(10, &dX);
         dX = dX - 5;
         Int32 dY;
-        random->NextInt32Ex(10, &dY);
+        random->NextInt32(10, &dY);
         dY = dY - 5;
 
         AutoPtr<IMonkeyMotionEvent> event;
@@ -461,7 +461,7 @@ void MonkeySourceRandom::GenerateTrackballEvent(
 
     // 10% of trackball moves end with a click
     Int32 rdm;
-    random->NextInt32Ex(10, &rdm);
+    random->NextInt32(10, &rdm);
     if (0 == rdm) {
         Int64 downAt = SystemClock::GetUptimeMillis();
         AutoPtr<IMonkeyMotionEvent> event;
@@ -486,7 +486,7 @@ void MonkeySourceRandom::GenerateRotationEvent(
     AutoPtr<IMonkeyRotationEvent> event;
     Int32 rdmInt32;
     Boolean rdmBool;
-    random->NextInt32Ex(SCREEN_ROTATION_DEGREES->GetLength(), &rdmInt32);
+    random->NextInt32(SCREEN_ROTATION_DEGREES->GetLength(), &rdmInt32);
     random->NextBoolean(&rdmBool);
     CMonkeyRotationEvent::New((*SCREEN_ROTATION_DEGREES)[rdmInt32],
         rdmBool, (IMonkeyRotationEvent**)&event);
@@ -523,21 +523,21 @@ void MonkeySourceRandom::GenerateEvents()
     // The remaining event categories are injected as key events
     for (;;) {
         if (cls < (*mFactors)[IMonkeySourceRandom::FACTOR_NAV]) {
-            mRandom->NextInt32Ex(NAV_KEYS->GetLength(), &lastKey);
+            mRandom->NextInt32(NAV_KEYS->GetLength(), &lastKey);
             lastKey = (*NAV_KEYS)[lastKey];
         }
         else if (cls < (*mFactors)[IMonkeySourceRandom::FACTOR_MAJORNAV]) {
-            mRandom->NextInt32Ex(MAJOR_NAV_KEYS->GetLength(), &lastKey);
+            mRandom->NextInt32(MAJOR_NAV_KEYS->GetLength(), &lastKey);
             lastKey = (*MAJOR_NAV_KEYS)[lastKey];
         }
         else if (cls < (*mFactors)[IMonkeySourceRandom::FACTOR_SYSOPS]) {
-            mRandom->NextInt32Ex(SYS_KEYS->GetLength(), &lastKey);
+            mRandom->NextInt32(SYS_KEYS->GetLength(), &lastKey);
             lastKey = (*SYS_KEYS)[lastKey];
         }
         else if (cls < (*mFactors)[IMonkeySourceRandom::FACTOR_APPSWITCH]) {
             AutoPtr<IMonkeyActivityEvent> e;
             Int32 size = mMainApps->GetSize();
-            mRandom->NextInt32Ex(size, &size);
+            mRandom->NextInt32(size, &size);
             CMonkeyActivityEvent::New((*mMainApps)[size], (IMonkeyActivityEvent**)&e);
             mQ->AddLast(IMonkeyEvent::Probe(e));
             return;
@@ -554,7 +554,7 @@ void MonkeySourceRandom::GenerateEvents()
             ASSERT_SUCCEEDED(CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper));
             Int32 length = 0;
             helper->GetMaxKeyCode(&length);
-            mRandom->NextInt32Ex(--length, &lastKey);
+            mRandom->NextInt32(--length, &lastKey);
             ++lastKey;
         }
 
@@ -595,7 +595,7 @@ ECode MonkeySourceRandom::GenerateActivity()
 {
     AutoPtr<IMonkeyActivityEvent> e;
     Int32 size = mMainApps->GetSize();
-    mRandom->NextInt32Ex(size, &size);
+    mRandom->NextInt32(size, &size);
     CMonkeyActivityEvent::New((*mMainApps)[size], (IMonkeyActivityEvent**)&e);
     mQ->AddLast(IMonkeyEvent::Probe(e));
     return NOERROR;

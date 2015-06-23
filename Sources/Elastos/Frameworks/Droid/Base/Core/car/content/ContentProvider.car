@@ -236,7 +236,7 @@ module
          * @sa OperationCanceledException
          * @return a Cursor or null.
          */
-        QueryEx(
+        Query(
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
             [in] String selection,

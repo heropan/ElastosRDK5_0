@@ -3,7 +3,7 @@
 
 #include "_CUiTestAutomationBridge.h"
 #include "ext/frameworkext.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
@@ -11,7 +11,7 @@ using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Internal::Utility::IPredicate;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 
 namespace Elastos {

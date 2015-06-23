@@ -607,7 +607,7 @@ module
          * @see Intent#getData
          * @see Intent#getCategories
          */
-        MatchEx(
+        Match(
             [in] String action,
             [in] String type,
             [in] String scheme,

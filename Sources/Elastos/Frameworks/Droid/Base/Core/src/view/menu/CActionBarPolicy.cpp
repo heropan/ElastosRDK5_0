@@ -85,10 +85,10 @@ ECode CActionBarPolicy::GetTabContainerHeight(
             const_cast<Int32 *>(R::styleable::ActionBar),
             ARRAY_SIZE(R::styleable::ActionBar));
     AutoPtr<ITypedArray> a;
-    mContext->ObtainStyledAttributesEx3(NULL, attrIds, R::attr::actionBarStyle, 0, (ITypedArray**)&a);
+    mContext->ObtainStyledAttributes(NULL, attrIds, R::attr::actionBarStyle, 0, (ITypedArray**)&a);
 
     Int32 height;
-    a->GetLayoutDimensionEx(R::styleable::ActionBar_height, 0, &height);
+    a->GetLayoutDimension(R::styleable::ActionBar_height, 0, &height);
     Boolean isHas;
     if(HasEmbeddedTabs(&isHas), !isHas)
     {

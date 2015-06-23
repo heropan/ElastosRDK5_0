@@ -65,13 +65,13 @@ module
             [in] String b,
             [out] Boolean* res);
 
-        CompareEx(
+        Compare(
             [in] IContext* ctx,
             [in] String a,
             [in] String b,
             [out] Boolean* res);
 
-        CompareEx2(
+        Compare(
             [in] String a,
             [in] String b,
             [in] Boolean useStrictComparation,
@@ -87,7 +87,7 @@ module
             [in] String b,
             [out] Boolean* res);
 
-        CompareStrictlyEx(
+        CompareStrictly(
             [in] String a,
             [in] String b,
             [in] Boolean acceptInvalidCCCPrefix,
@@ -146,7 +146,7 @@ module
             [in] String source,
             [out] String* res);
 
-        FormatNumberEx(
+        FormatNumber(
             [in] String source,
             [in] Int32 defaultFormattingType,
             [out] String* res);
@@ -155,7 +155,7 @@ module
             [in] ILocale* locale,
             [out] Int32* res);
 
-        FormatNumberEx2(
+        FormatNumber(
             [in] IEditable* text,
             [in] Int32 defaultFormattingType);
 
@@ -170,12 +170,12 @@ module
             [in] String defaultCountryIso,
             [out] String* res);
 
-        FormatNumberEx3(
+        FormatNumber(
             [in] String phoneNumber,
             [in] String defaultCountryIso,
             [out] String* res);
 
-        FormatNumberEx4(
+        FormatNumber(
             [in] String phoneNumber,
             [in] String phoneNumberE164,
             [in] String defaultCountryIso,
@@ -197,12 +197,12 @@ module
             [in] String number,
             [out] Boolean* res);
 
-        IsEmergencyNumberEx(
+        IsEmergencyNumber(
             [in] String number,
             [in] String defaultCountryIso,
             [out] Boolean* res);
 
-        IsPotentialEmergencyNumberEx(
+        IsPotentialEmergencyNumber(
             [in] String number,
             [in] String defaultCountryIso,
             [out] Boolean* res);

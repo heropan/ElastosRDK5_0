@@ -1,6 +1,6 @@
 #include "ext/frameworkdef.h"
 #include "CWifiP2pManagerChannel.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Utility::IObjectStringMap;
@@ -213,7 +213,7 @@ ECode CWifiP2pManagerChannel::GetHandler(
 {
     VALIDATE_NOT_NULL(handler);
     *handler = mHandler;
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 
@@ -229,7 +229,7 @@ ECode CWifiP2pManagerChannel::GetContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -245,7 +245,7 @@ ECode CWifiP2pManagerChannel::GetChannelListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mChannelListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -261,7 +261,7 @@ ECode CWifiP2pManagerChannel::GetServRspListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mServRspListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -277,7 +277,7 @@ ECode CWifiP2pManagerChannel::GetDnsSdServRspListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mDnsSdServRspListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -293,7 +293,7 @@ ECode CWifiP2pManagerChannel::GetDnsSdTxtListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mDnsSdTxtListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -309,7 +309,7 @@ ECode CWifiP2pManagerChannel::GetUpnpServRspListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mUpnpServRspListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -425,7 +425,7 @@ ECode CWifiP2pManagerChannel::GetListener(
     HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
     if (it != mListenerMap.End()) {
         *obj = it->mSecond;
-        INTERFACE_ADDREF(*obj);
+        REFCOUNT_ADD(*obj);
         mListenerMap.Erase(it);
     }
 

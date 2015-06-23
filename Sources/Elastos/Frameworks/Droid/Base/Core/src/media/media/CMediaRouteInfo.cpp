@@ -23,11 +23,11 @@ ECode CMediaRouteInfo::GetName(
     return MediaRouteInfo::GetName(result);
 }
 
-ECode CMediaRouteInfo::GetNameEx(
+ECode CMediaRouteInfo::GetName(
     /* [in] */ IContext* context,
     /* [out] */ ICharSequence** result)
 {
-    return MediaRouteInfo::GetNameEx(context, result);
+    return MediaRouteInfo::GetName(context, result);
 }
 
 ECode CMediaRouteInfo::GetStatus(
@@ -150,10 +150,10 @@ ECode CMediaRouteInfo::ToString(
     return MediaRouteInfo::ToString(result);
 }
 
-ECode CMediaRouteInfo::SetNameEx(
+ECode CMediaRouteInfo::SetName(
     /* [in] */ Int32 nameResId)
 {
-    return MediaRouteInfo::SetNameEx(nameResId);
+    return MediaRouteInfo::SetName(nameResId);
 }
 
 ECode CMediaRouteInfo::SetSupportedTypes(

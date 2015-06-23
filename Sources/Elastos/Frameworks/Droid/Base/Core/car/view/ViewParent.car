@@ -25,7 +25,7 @@ module
              * tree.
              */
             //IView has RequestLayout method
-            RequestLayoutEx();
+            RequestLayout();
 
             /**
              * Indicates whether layout was requested on this view parent.
@@ -33,7 +33,7 @@ module
              * @param result true if layout was requested, false otherwise
              */
             //IView has IsLayoutRequested method
-            IsLayoutRequestedEx(
+            IsLayoutRequested(
                 [out] Boolean* result);
 
             /**
@@ -91,7 +91,7 @@ module
              * @param parent a ViewParent or null if this ViewParent does not have a parent
              */
             //IView has GetParent method
-            GetParentEx(
+            GetParent(
                 [out] IViewParent** parent);
 
             /**
@@ -157,7 +157,7 @@ module
              * @param direction One of FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, and FOCUS_RIGHT
              */
             //IView has FocusSearch method;
-            FocusSearchEx(
+            FocusSearch(
                 [in] IView* focused,
                 [in] Int32 direction,
                 [out] IView** focus);
@@ -201,7 +201,7 @@ module
              *
              * @param menu The menu to populate
              */
-            CreateContextMenuEx(
+            CreateContextMenu(
                 [in] IContextMenu* menu);
 
             /**
@@ -216,7 +216,7 @@ module
              * @param callback The callback that will handle lifecycle events for the action mode
              * @return The new action mode if it was started, null otherwise
              */
-            StartActionModeForChildEx(
+            StartActionModeForChild(
                 [in] IView* originalView,
                 [in] IActionModeCallback* cb,
                 [out] IActionMode** mode);
@@ -303,7 +303,7 @@ module
              *
              * @hide
              */
-            ChildHasTransientStateChangedEx(
+            ChildHasTransientStateChanged(
                 [in] IView* child,
                 [in] Boolean hasTransientState);
 
@@ -311,7 +311,7 @@ module
              * Ask that a new dispatch of {@link View#fitSystemWindows(Rect)
              * View.fitSystemWindows(Rect)} be performed.
              */
-            RequestFitSystemWindowsEx();
+            RequestFitSystemWindows();
 
             /**
              * Gets the parent of a given View for accessibility. Since some Views are not
@@ -320,7 +320,7 @@ module
              *
              * @return The parent or <code>null</code> if no such is found.
              */
-            GetParentForAccessibilityEx(
+            GetParentForAccessibility(
                 [out] IViewParent** parent);
 
             /**

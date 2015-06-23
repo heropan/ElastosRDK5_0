@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "net/Uri.h"
 #include "provider/CDownloadsImpl.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::App::IDownloadManagerRequest;

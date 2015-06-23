@@ -3,7 +3,7 @@
 #include "media/CToneGenerator.h"
 #include <media/AudioSystem.h>
 #include <media/ToneGenerator.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using namespace Elastos::Core;
@@ -32,10 +32,10 @@ ECode CToneGenerator::StartTone(
     /* [in] */ Int32 toneType,
     /* [out] */ Boolean* result)
 {
-    return StartToneEx(toneType, -1, result);
+    return StartTone(toneType, -1, result);
 }
 
-ECode CToneGenerator::StartToneEx(
+ECode CToneGenerator::StartTone(
     /* [in] */ Int32 toneType,
     /* [in] */ Int32 durationMs,
     /* [out] */ Boolean* result)

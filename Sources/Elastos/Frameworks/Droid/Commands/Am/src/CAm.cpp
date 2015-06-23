@@ -1,14 +1,14 @@
 
 #include "CAm.h"
-#include "elastos/StringUtils.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "app/ActivityManagerNative.h"
 #include "CIntentReceiver.h"
 #include <unistd.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <CInstrumentationWatcher.h>
 #include <CMyActivityController.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/StringToIntegral.h>
 
 #define FAILED_AND_RETURN(ec) \
@@ -20,7 +20,7 @@ do { \
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringToIntegral;
 using Elastos::Droid::App::CActivityManagerWaitResult;
 using Elastos::Droid::App::ActivityManagerNative;
@@ -508,10 +508,10 @@ ECode CAm::MakeIntent(
     if (baseIntent != NULL) {
         AutoPtr<IBundle> extras;
         intent->GetExtras((IBundle**)&extras);
-        intent->ReplaceExtrasEx((IBundle*)NULL);
+        intent->ReplaceExtras((IBundle*)NULL);
         AutoPtr<IBundle> uriExtras;
         baseIntent->GetExtras((IBundle**)&uriExtras);
-        baseIntent->ReplaceExtrasEx((IBundle*)NULL);
+        baseIntent->ReplaceExtras((IBundle*)NULL);
         String action;
         AutoPtr<ArrayOf<String> > categories;
         if (!(intent->GetAction(&action), action).IsNull() &&
@@ -531,7 +531,7 @@ ECode CAm::MakeIntent(
             uriExtras->PutAll(extras);
             extras = uriExtras;
         }
-        intent->ReplaceExtrasEx(extras);
+        intent->ReplaceExtras(extras);
         hasIntentInfo = TRUE;
     }
 

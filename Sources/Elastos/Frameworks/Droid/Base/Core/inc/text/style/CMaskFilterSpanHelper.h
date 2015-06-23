@@ -3,7 +3,7 @@
 #define __CMASKFILTERSPANHELPER_H__
 
 #include "_CMaskFilterSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

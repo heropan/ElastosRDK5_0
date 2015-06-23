@@ -4,7 +4,6 @@
 
 #include "_CCursorLoader.h"
 #include <ext/frameworkext.h>
-#include <elastos/Mutex.h>
 #include "AsyncTaskLoader.h"
 
 using namespace Elastos;

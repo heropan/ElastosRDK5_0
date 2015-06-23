@@ -40,7 +40,7 @@ AutoPtr<IView> CAlertControllerAlertParams::_RecycleCursorAdapter::NewView(
     if (layoutInfater) {
         Int32 layout;
         mAlertController->GetMultiChoiceItemLayout(&layout);
-        layoutInfater->InflateEx2(layout, parent, FALSE, (IView**)&rst);
+        layoutInfater->Inflate(layout, parent, FALSE, (IView**)&rst);
     }
     return rst;
 }
@@ -150,7 +150,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::NewView(
 {
     AutoPtr<IView> temp = _RecycleCursorAdapter::NewView(context, cursor, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -162,7 +162,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::NewDropDownView(
 {
     AutoPtr<IView> temp = _RecycleCursorAdapter::NewDropDownView(context, cursor, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -180,7 +180,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::GetFilterQueryProvider(
     VALIDATE_NOT_NULL(*filterQueryProvider);
     AutoPtr<IFilterQueryProvider> temp = _RecycleCursorAdapter::GetFilterQueryProvider();
     *filterQueryProvider = temp;
-    INTERFACE_ADDREF(*filterQueryProvider);
+    REFCOUNT_ADD(*filterQueryProvider);
     return NOERROR;
 }
 
@@ -196,7 +196,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::SwapCursor(
 {
     AutoPtr<ICursor> temp = _RecycleCursorAdapter::SwapCursor(newCursor);
     *cursor = temp;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -254,7 +254,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> temp = _RecycleCursorAdapter::GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -284,7 +284,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::GetView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = _RecycleCursorAdapter::GetView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -322,7 +322,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = _RecycleCursorAdapter::GetDropDownView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -332,7 +332,7 @@ ECode CAlertControllerAlertParams::RecycleCursorAdapter::GetFilter(
     VALIDATE_NOT_NULL(filter);
     AutoPtr<IFilter> temp = _RecycleCursorAdapter::GetFilter();
     *filter = temp;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -467,7 +467,7 @@ ECode CAlertControllerAlertParams::RecycleArrayAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> temp = ArrayAdapter::GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -497,7 +497,7 @@ ECode CAlertControllerAlertParams::RecycleArrayAdapter::GetView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = ArrayAdapter::GetView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -549,10 +549,10 @@ ECode CAlertControllerAlertParams::RecycleArrayAdapter::AddAll(
     return ArrayAdapter::AddAll(collection);
 }
 
-ECode CAlertControllerAlertParams::RecycleArrayAdapter::AddAllEx(
+ECode CAlertControllerAlertParams::RecycleArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    return ArrayAdapter::AddAllEx(items);
+    return ArrayAdapter::AddAll(items);
 }
 
 ECode CAlertControllerAlertParams::RecycleArrayAdapter::Insert(
@@ -591,7 +591,7 @@ ECode CAlertControllerAlertParams::RecycleArrayAdapter::GetContext(
     VALIDATE_NOT_NULL(context);
     AutoPtr<IContext> temp = ArrayAdapter::GetContext();
     *context = temp;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -619,7 +619,7 @@ ECode CAlertControllerAlertParams::RecycleArrayAdapter::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = ArrayAdapter::GetDropDownView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -647,7 +647,7 @@ ECode CAlertControllerAlertParams::RecycleArrayAdapter::GetFilter(
     AutoPtr<IFilter> temp;
     temp = ArrayAdapter::GetFilter();
     *filter = temp;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -678,7 +678,7 @@ ECode CAlertControllerAlertParams::AdapterListener::OnItemClick(
         return DoClick(position);
     }
     else {
-        return DoClickEx(position);
+        return DoClick(position);
     }
 }
 
@@ -702,7 +702,7 @@ ECode CAlertControllerAlertParams::AdapterListener::DoClick(
     return NOERROR;
 }
 
-ECode CAlertControllerAlertParams::AdapterListener::DoClickEx(
+ECode CAlertControllerAlertParams::AdapterListener::DoClick(
     /* [in] */ Int32 position)
 {
     Boolean checked = FALSE;
@@ -756,7 +756,7 @@ ECode CAlertControllerAlertParams::GetContext(
 {
     VALIDATE_NOT_NULL(cxt);
     *cxt = mContext;
-    INTERFACE_ADDREF(*cxt);
+    REFCOUNT_ADD(*cxt);
     return NOERROR;
 }
 
@@ -772,7 +772,7 @@ ECode CAlertControllerAlertParams::GetInflater(
 {
     VALIDATE_NOT_NULL(inflater);
     *inflater = mInflater;
-    INTERFACE_ADDREF(*inflater);
+    REFCOUNT_ADD(*inflater);
     return NOERROR;
 }
 
@@ -803,7 +803,7 @@ ECode CAlertControllerAlertParams::GetIcon(
 {
     VALIDATE_NOT_NULL(icon);
     *icon = mIcon;
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
     return NOERROR;
 }
 
@@ -834,7 +834,7 @@ ECode CAlertControllerAlertParams::GetTitle(
 {
     VALIDATE_NOT_NULL(title);
     *title = mTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
     return NOERROR;
 }
 
@@ -850,7 +850,7 @@ ECode CAlertControllerAlertParams::GetCustomTitleView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mCustomTitleView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -866,7 +866,7 @@ ECode CAlertControllerAlertParams::GetMessage(
 {
     VALIDATE_NOT_NULL(message);
     *message = mMessage;
-    INTERFACE_ADDREF(*message);
+    REFCOUNT_ADD(*message);
     return NOERROR;
 }
 
@@ -882,7 +882,7 @@ ECode CAlertControllerAlertParams::GetPositiveButtonText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mPositiveButtonText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -898,7 +898,7 @@ ECode CAlertControllerAlertParams::GetPositiveButtonListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mPositiveButtonListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -914,7 +914,7 @@ ECode CAlertControllerAlertParams::GetNegativeButtonText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mNegativeButtonText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -930,7 +930,7 @@ ECode CAlertControllerAlertParams::GetNegativeButtonListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mNegativeButtonListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -946,7 +946,7 @@ ECode CAlertControllerAlertParams::GetNeutralButtonText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mNeutralButtonText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -962,7 +962,7 @@ ECode CAlertControllerAlertParams::GetNeutralButtonListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mNeutralButtonListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -993,7 +993,7 @@ ECode CAlertControllerAlertParams::GetOnCancelListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnCancelListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1009,7 +1009,7 @@ ECode CAlertControllerAlertParams::GetOnDismissListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnDismissListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1025,7 +1025,7 @@ ECode CAlertControllerAlertParams::GetOnKeyListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnKeyListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1041,7 +1041,7 @@ ECode CAlertControllerAlertParams::GetItems(
 {
     VALIDATE_NOT_NULL(items);
     *items = mItems;
-    INTERFACE_ADDREF(*items);
+    REFCOUNT_ADD(*items);
     return NOERROR;
 }
 
@@ -1057,7 +1057,7 @@ ECode CAlertControllerAlertParams::GetAdapter(
 {
     VALIDATE_NOT_NULL(adapter);
     *adapter = mAdapter;
-    INTERFACE_ADDREF(*adapter);
+    REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
 
@@ -1073,7 +1073,7 @@ ECode CAlertControllerAlertParams::GetOnClickListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnClickListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1089,7 +1089,7 @@ ECode CAlertControllerAlertParams::GetView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -1180,7 +1180,7 @@ ECode CAlertControllerAlertParams::GetCheckedItems(
 {
     VALIDATE_NOT_NULL(items);
     *items = mCheckedItems;
-    INTERFACE_ADDREF(*items);
+    REFCOUNT_ADD(*items);
     return NOERROR;
 }
 
@@ -1241,7 +1241,7 @@ ECode CAlertControllerAlertParams::GetOnCheckboxClickListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnCheckboxClickListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1257,7 +1257,7 @@ ECode CAlertControllerAlertParams::GetCursor(
 {
     VALIDATE_NOT_NULL(cursor);
     *cursor = mCursor;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -1318,7 +1318,7 @@ ECode CAlertControllerAlertParams::GetOnItemSelectedListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnItemSelectedListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1334,7 +1334,7 @@ ECode CAlertControllerAlertParams::GetOnPrepareListViewListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mOnPrepareListViewListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -1375,7 +1375,7 @@ ECode CAlertControllerAlertParams::Apply(
             dialog->SetTitle(mTitle);
         }
         if (mIcon != NULL) {
-            dialog->SetIconEx(mIcon);
+            dialog->SetIcon(mIcon);
         }
         if (mIconId >= 0) {
             dialog->SetIcon(mIconId);
@@ -1414,7 +1414,7 @@ ECode CAlertControllerAlertParams::Apply(
 
     if (mView != NULL) {
         if (mViewSpacingSpecified) {
-            dialog->SetViewEx(mView, mViewSpacingLeft, mViewSpacingTop, mViewSpacingRight,
+            dialog->SetView(mView, mViewSpacingLeft, mViewSpacingTop, mViewSpacingRight,
                     mViewSpacingBottom);
         } else {
             dialog->SetView(mView);

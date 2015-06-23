@@ -3,7 +3,7 @@
 #define __CONTEXTMENUBUILDERBASE_H__
 
 #include "view/menu/MenuBuilderBase.h"
-#include "view/menu/MenuBuilderMacro.h"
+
 #include "view/menu/MenuDialogHelper.h"
 
 

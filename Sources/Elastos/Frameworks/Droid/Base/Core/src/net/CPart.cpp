@@ -86,7 +86,7 @@ ECode Part::NonNull(
     VALIDATE_NOT_NULL(result);
 
     *result = (part == NULL) ? (IPart*)Part::PartNULL : part;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
 
     return NOERROR;
 }
@@ -116,23 +116,23 @@ ECode Part::From(
     // NOT_CACHED.
     if (encoded.IsNull()) {
         *result = Part::PartNULL;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     if (encoded.IsEmpty()) {
         *result = Part::EMPTY;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
     if (decoded.IsNull()) {
         *result = Part::PartNULL;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     if (decoded.IsEmpty()) {
         *result = Part::EMPTY;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 

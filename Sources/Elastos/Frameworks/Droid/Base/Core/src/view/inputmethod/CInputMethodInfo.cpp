@@ -149,7 +149,7 @@ ECode CInputMethodInfo::GetServiceInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mService->mServiceInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -200,7 +200,7 @@ ECode CInputMethodInfo::GetSubtypeAt(
 {
     VALIDATE_NOT_NULL(subtype);
     *subtype = mSubtypes[index];
-    INTERFACE_ADDREF(*subtype);
+    REFCOUNT_ADD(*subtype);
     return NOERROR;
 }
 
@@ -228,7 +228,7 @@ ECode CInputMethodInfo::GetHashCode(
     return NOERROR;
 }
 
-ECode CInputMethodInfo::EqualsEx(
+ECode CInputMethodInfo::Equals(
     /* [in] */ IInputMethodInfo* o,
     /* [out] */ Boolean* equal)
 {
@@ -258,7 +258,7 @@ ECode CInputMethodInfo::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    return EqualsEx(IInputMethodInfo::Probe(other), result);
+    return Equals(IInputMethodInfo::Probe(other), result);
 }
 
 ECode CInputMethodInfo::Init(

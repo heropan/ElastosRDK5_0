@@ -12,7 +12,7 @@ ECode CInputManagerHelper::GetInstance(
 {
     VALIDATE_NOT_NULL(manager)
     *manager = CInputManager::GetInstance();
-    INTERFACE_ADDREF(*manager)
+    REFCOUNT_ADD(*manager)
     return NOERROR;
 }
 

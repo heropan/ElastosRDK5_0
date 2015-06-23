@@ -9,11 +9,11 @@
 #include "os/HandlerBase.h"
 #include "CStatusBarManagerService.h"
 #include "LightsService.h"
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Os::HandlerBase;

@@ -77,7 +77,7 @@ module
          * @param cap when, if ever, to automatically capitalize.
          * @param autotext whether to automatically do spelling corrections.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] Boolean autotext,
             [in] Capitalize cap,
             [out] ITextKeyListener** ret);

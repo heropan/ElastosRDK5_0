@@ -6,7 +6,7 @@
 #include "graphics/CPaint.h"
 #include "graphics/CRegion.h"
 #include "graphics/GraphicsNative.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <androidfw/ResourceTypes.h>
 #include <skia/core/SkCanvas.h>
 
@@ -89,7 +89,7 @@ ECode NinePatch::Draw(
             ((CBitmap*)mBitmap.Get())->mDensity);
     }
     else {
-        mRect->SetEx2(location);
+        mRect->Set(location);
         return canvas->DrawPatch(mBitmap, *mChunk, mRect, mPaint);
     }
 }
@@ -109,7 +109,7 @@ ECode NinePatch::Draw(
             ((CBitmap*)mBitmap.Get())->mDensity);
     }
     else {
-        mRect->SetEx2(location);
+        mRect->Set(location);
         return canvas->DrawPatch(mBitmap, *mChunk, mRect, paint);
     }
 }

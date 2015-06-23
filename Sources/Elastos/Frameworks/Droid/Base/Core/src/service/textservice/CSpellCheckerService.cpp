@@ -1,6 +1,6 @@
 
 #include "media/CSpellCheckerService.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using namespace Elastos::Core;
 using namespace Elastos::Utility::Logging;
@@ -62,7 +62,7 @@ ECode CSpellCheckerService::Session::OnGetSuggestionsMultiple(
                 textInfos[i]->GetCookie(), textInfos[i]->GetSequence());
     }
     *result = retval;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -74,7 +74,7 @@ ECode CSpellCheckerService::Session::OnGetSentenceSuggestionsMultiple(
     VALIDATE_NOT_NULL(result);
     if (textInfos == NULL || textInfos::length == 0) {
         *result = SentenceLevelAdapter.EMPTY_SENTENCE_SUGGESTIONS_INFOS;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     if (DBG) {
@@ -94,7 +94,7 @@ ECode CSpellCheckerService::Session::OnGetSentenceSuggestionsMultiple(
     }
     if (mSentenceLevelAdapter == NULL) {
         *result = SentenceLevelAdapter::EMPTY_SENTENCE_SUGGESTIONS_INFOS;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     const Int32 infosSize = textInfos::length;
@@ -113,7 +113,7 @@ ECode CSpellCheckerService::Session::OnGetSentenceSuggestionsMultiple(
                 textInfoParams, OnGetSuggestionsMultiple(splitTextInfos, suggestionsLimit, TRUE));
     }
     *result = retval;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -140,7 +140,7 @@ ECode CSpellCheckerService::Session::GetBundle(
 {
     VALIDATE_NOT_NULL(result);
     *result = mInternalSession.getBundle();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -225,7 +225,7 @@ ECode CSpellCheckerService::InternalISpellCheckerSession::GetBundle(
 {
     VALIDATE_NOT_NULL(result);
     *result = mBundle;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -248,7 +248,7 @@ ECode CSpellCheckerService::SpellCheckerServiceBinder::GetISpellCheckerSession(
     const InternalISpellCheckerSession internalSession = new InternalISpellCheckerSession(locale, listener, bundle, session);
     session->OnCreate();
     *result = internalSession;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

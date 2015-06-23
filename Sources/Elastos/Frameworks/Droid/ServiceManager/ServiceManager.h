@@ -17,13 +17,13 @@
 #include <unistd.h>
 #include <clsinfo.h>
 #include <utils/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 #define MAX_SERVICE_NUMBER 32
 #define ELASTOS_SERVICEMGR_NAME "elastos.servicemanager"
 
 using namespace Elastos;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 // come from marshal_ipc.h
 typedef struct InterfacePack

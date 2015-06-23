@@ -64,7 +64,7 @@ ECode CYuvImage::CompressToJpeg(
     CRect::New(0, 0, mWidth, mHeight, (IRect**)&wholeImage);
 
     Boolean res;
-    if (wholeImage->ContainsEx2(rectangle, &res), !res) {
+    if (wholeImage->Contains(rectangle, &res), !res) {
         // throw new IllegalArgumentException(
         //             "rectangle is not inside the image");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -109,7 +109,7 @@ ECode CYuvImage::GetYuvData(
     VALIDATE_NOT_NULL(data);
 
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -128,7 +128,7 @@ ECode CYuvImage::GetStrides(
     VALIDATE_NOT_NULL(strides);
 
     *strides = mStrides;
-    INTERFACE_ADDREF(*strides);
+    REFCOUNT_ADD(*strides);
     return NOERROR;
 }
 

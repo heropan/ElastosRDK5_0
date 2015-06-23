@@ -2,7 +2,7 @@
 #include "content/res/CObbScanner.h"
 #include "content/res/CObbInfo.h"
 #include <androidfw/ObbFile.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;

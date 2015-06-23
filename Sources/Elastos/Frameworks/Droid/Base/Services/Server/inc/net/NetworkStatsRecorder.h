@@ -3,9 +3,9 @@
 #define __NETWORKSTATSRECORDER_H__
 
 #include "NetworkStatsCollection.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;

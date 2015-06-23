@@ -5,10 +5,9 @@
 #include "_CAppWidgetHost.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::AppWidget::IAppWidgetHostView;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;

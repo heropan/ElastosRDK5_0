@@ -169,7 +169,7 @@ ECode COpaqueUri::Equals(
     return OpaqueUri::Equals(IUri::Probe(other), isEqual);
 }
 
-ECode COpaqueUri::EqualsEx(
+ECode COpaqueUri::Equals(
     /* [in]*/ IUri* other,
     /* [out] */ Boolean* isEqual)
 {

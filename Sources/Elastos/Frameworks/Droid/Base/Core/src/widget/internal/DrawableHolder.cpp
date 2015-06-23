@@ -167,7 +167,7 @@ ECode DrawableHolder::Draw(
     if (mAlpha <= threshold) // don't bother if it won't show up
         return NOERROR;
     Int32 result;
-    canvas->SaveEx(ICanvas::MATRIX_SAVE_FLAG, &result);
+    canvas->Save(ICanvas::MATRIX_SAVE_FLAG, &result);
     canvas->Translate(mX, mY);
     canvas->Scale(mScaleX, mScaleY);
     canvas->Translate(-0.5f*GetWidth(), -0.5f*GetHeight());

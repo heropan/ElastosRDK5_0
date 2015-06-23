@@ -4,11 +4,11 @@
 
 #include "_CDisplayManager.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::View::IDisplay;
@@ -74,7 +74,7 @@ public:
      *
      * @see #DISPLAY_CATEGORY_PRESENTATION
      */
-    CARAPI GetDisplaysEx(
+    CARAPI GetDisplays(
         /* [in] */ const String& category,
         /* [out] */ ArrayOf<IDisplay*>** displays);
 

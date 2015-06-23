@@ -4,7 +4,7 @@
 
 #include "_CInsetDrawable.h"
 #include "graphics/drawable/InsetDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

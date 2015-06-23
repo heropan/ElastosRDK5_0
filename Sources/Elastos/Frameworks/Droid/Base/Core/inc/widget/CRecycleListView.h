@@ -1,9 +1,9 @@
 #include "_CRecycleListView.h"
 #include "widget/RecycleListView.h"
-#include "view/ViewMacro.h"
-#include "widget/ListViewMacro.h"
-#include "widget/AbsListViewMacro.h"
-#include "widget/AdapterViewMacro.h"
+
+
+
+
 
 namespace Elastos {
 namespace Droid {

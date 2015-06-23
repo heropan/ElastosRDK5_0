@@ -3,10 +3,10 @@
 #define __ALPHABETINDEXER_H__
 
 #include "ext/frameworkext.h"
-#include "elastos/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Text::ICollator;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CObjectContainer;
 using Elastos::Droid::Database::ICursor;

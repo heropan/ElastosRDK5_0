@@ -2,8 +2,8 @@
 #define __CACTIONBARVIEW_H_
 
 #include "_CActionBarView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/internal/ActionBarView.h"
 
 namespace Elastos {
@@ -84,13 +84,13 @@ public:
     CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ Int32 resId);
 
     CARAPI SetLogo(
         /* [in] */ IDrawable* logo);
 
-    CARAPI SetLogoEx(
+    CARAPI SetLogo(
         /* [in] */ Int32 resId);
 
     CARAPI SetNavigationMode(

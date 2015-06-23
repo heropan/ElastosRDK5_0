@@ -5,7 +5,6 @@
 #include "_CMediaRecorder.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
-#include <elastos/ThreadBase.h>
 
 using Elastos::Droid::Hardware::IHardwareCamera;
 using Elastos::Droid::View::ISurface;
@@ -429,7 +428,7 @@ public:
      * is not desirable, and will not be supported.
      * @hide
      */
-    CARAPI SetAuxiliaryOutputFileEx(
+    CARAPI SetAuxiliaryOutputFile(
         /* [in] */ const String& path);
 
     /**
@@ -451,7 +450,7 @@ public:
      * @throws IllegalStateException if it is called before
      * setOutputFormat() or after prepare()
      */
-    CARAPI SetOutputFileEx(
+    CARAPI SetOutputFile(
         /* [in] */ const String& path);
 
     /**

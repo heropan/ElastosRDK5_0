@@ -2,7 +2,7 @@
 #include "os/Process.h"
 #include "os/Looper.h"
 #include "content/CIntent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "speech/tts/CSynthesisRequest.h"
 #include "speech/tts/EventLogger.h"
 #include "speech/tts/PlaybackSynthesisCallback.h"
@@ -14,7 +14,7 @@
 #include "content/pm/CApplicationInfo.h"
 //#include "provider/Settings.h"
 #include "speech/tts/TextToSpeech.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::CFile;
@@ -29,7 +29,7 @@ using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::EIID_IHandler;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -410,7 +410,7 @@ String TextToSpeechService::SpeechItem::GetStringParam(
         return defaultValue;
     } else {
         String strParam;
-        mParams->GetStringEx(key, defaultValue, &strParam);
+        mParams->GetString(key, defaultValue, &strParam);
         return strParam;
     }
 }
@@ -425,7 +425,7 @@ Int32 TextToSpeechService::SpeechItem::GetIntParam(
         return defaultValue;
     } else {
         Int32 nParam;
-        mParams->GetInt32Ex(key, defaultValue, &nParam);
+        mParams->GetInt32(key, defaultValue, &nParam);
         return nParam;
 
     }
@@ -441,7 +441,7 @@ Float TextToSpeechService::SpeechItem::GetFloatParam(
         return defaultValue;
     } else {
         Float fParam;
-        mParams->GetFloatEx(key, defaultValue, &fParam);
+        mParams->GetFloat(key, defaultValue, &fParam);
         return fParam;
     }
 }
@@ -870,7 +870,7 @@ ECode TextToSpeechService::TextToSpeechServiceStub::GetFeaturesForLanguage(
     }
 
     *result = featuresArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

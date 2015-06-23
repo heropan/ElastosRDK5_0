@@ -41,7 +41,7 @@ ECode CAppWidgetProviderInfo::GetProvider(
 {
     VALIDATE_NOT_NULL(name);
     *name = mProvider;
-    INTERFACE_ADDREF(*name);
+    REFCOUNT_ADD(*name);
     return NOERROR;
 }
 
@@ -162,7 +162,7 @@ ECode CAppWidgetProviderInfo::GetConfigure(
 {
     VALIDATE_NOT_NULL(name);
     *name = mConfigure;
-    INTERFACE_ADDREF(*name);
+    REFCOUNT_ADD(*name);
     return NOERROR;
 }
 
@@ -330,7 +330,7 @@ ECode CAppWidgetProviderInfo::Clone(
     that->SetResizeMode(mResizeMode);
     that->SetWidgetCategory(mWidgetCategory);
     *info = that;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

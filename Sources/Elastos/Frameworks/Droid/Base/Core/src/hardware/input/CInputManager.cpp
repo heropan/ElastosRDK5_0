@@ -6,7 +6,7 @@
 #include "os/CServiceManager.h"
 #include "os/ServiceManager.h"
 #include "os/SystemClock.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IContentResolver;
@@ -89,10 +89,10 @@ ECode CInputManager::InputDeviceVibrator::Vibrate(
     AutoPtr<ArrayOf<Int64> > temp = ArrayOf<Int64>::Alloc(2);
     (*temp)[0] = 0;
     (*temp)[1] = milliseconds;
-    return VibrateEx(*temp, -1);
+    return Vibrate(*temp, -1);
 }
 
-ECode CInputManager::InputDeviceVibrator::VibrateEx(
+ECode CInputManager::InputDeviceVibrator::Vibrate(
     /* [in] */ const ArrayOf<Int64>& pattern,
     /* [in] */ Int32 repeat)
 {
@@ -169,7 +169,7 @@ ECode CInputManager::GetInputDevice(
     find->mSecond = inputDevice;
     assert(inputDevice != NULL);
     *device = inputDevice;
-    INTERFACE_ADDREF(*device);
+    REFCOUNT_ADD(*device);
 
     return NOERROR;
 }
@@ -206,7 +206,7 @@ ECode CInputManager::GetInputDeviceByDescriptor(
         inputDevice->GetDescriptor(&descriptor2);
         if (descriptor.Equals(descriptor2)) {
             *device = inputDevice;
-            INTERFACE_ADDREF(*device);
+            REFCOUNT_ADD(*device);
             return NOERROR;
         }
     }
@@ -228,7 +228,7 @@ ECode CInputManager::GetInputDeviceIds(
     if (*deviceIds != NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*deviceIds);
+    REFCOUNT_ADD(*deviceIds);
 
     HashMap<Int32, AutoPtr<IInputDevice> >::Iterator iter = mInputDevices->Begin();
     for (Int32 i = 0; iter != mInputDevices->End(); ++iter, ++i) {
@@ -306,7 +306,7 @@ ECode CInputManager::GetKeyboardLayouts(
     if (FAILED(mIm->GetKeyboardLayouts(layouts))) {
         Logger::W(TAG, "Could not get list of keyboard layout informations.");
         *layouts = ArrayOf<IKeyboardLayout*>::Alloc(0);
-        INTERFACE_ADDREF(*layouts);
+        REFCOUNT_ADD(*layouts);
     }
 
     return NOERROR;
@@ -389,7 +389,7 @@ ECode CInputManager::GetKeyboardLayoutsForInputDevice(
         inputDeviceDescriptor, keyboardLayoutDescriptors))) {
         Logger::W(TAG, "Could not get keyboard layouts for input device.");
         *keyboardLayoutDescriptors = ArrayOf<String>::Alloc(0);
-        INTERFACE_ADDREF(*keyboardLayoutDescriptors);
+        REFCOUNT_ADD(*keyboardLayoutDescriptors);
     }
 
     return NOERROR;
@@ -499,7 +499,7 @@ ECode CInputManager::DeviceHasKeys(
     if (NULL == *hasKeys)
         return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*hasKeys);
+    REFCOUNT_ADD(*hasKeys);
     Boolean res;
     mIm->HasKeys(-1, IInputDevice::SOURCE_ANY, keyCodes, *hasKeys, &res);
 
@@ -645,7 +645,7 @@ void CInputManager::SendMessageToInputDeviceListenersLocked(
     List<AutoPtr<InputDeviceListenerDelegate> >::Iterator iter = mInputDeviceListeners.Begin();
     for (; iter != mInputDeviceListeners.End(); ++iter) {
         AutoPtr<IMessage> msg;
-        (*iter)->ObtainMessageEx2(what, deviceId, 0, (IMessage**)&msg);
+        (*iter)->ObtainMessage(what, deviceId, 0, (IMessage**)&msg);
         Boolean result;
         (*iter)->SendMessage(msg, &result);
     }
@@ -673,7 +673,7 @@ ECode CInputManager::GetInputDeviceVibrator(
     if (NULL == *vibrator)
         return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*vibrator);
+    REFCOUNT_ADD(*vibrator);
     return NOERROR;
 }
 

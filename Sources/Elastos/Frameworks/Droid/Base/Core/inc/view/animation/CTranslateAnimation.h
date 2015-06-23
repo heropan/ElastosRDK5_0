@@ -4,7 +4,7 @@
 
 #include "_CTranslateAnimation.h"
 #include "view/animation/TranslateAnimation.h"
-#include "view/animation/AnimationMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

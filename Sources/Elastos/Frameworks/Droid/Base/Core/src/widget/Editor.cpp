@@ -1,7 +1,7 @@
 
 #include "widget/Editor.h"
-#include "elastos/Math.h"
-#include "elastos/Character.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
 #include "R.h"
 #include "util/ArrayUtils.h"
 #include "os/SystemClock.h"
@@ -359,7 +359,7 @@ void PinnedPopupWindow::UpdatePosition(
     positionX = Elastos::Core::Math::Max(0, positionX);
 
     if (IsShowing()) {
-        mPopupWindow->UpdateEx2(positionX, positionY, -1, -1);
+        mPopupWindow->Update(positionX, positionY, -1, -1);
     }
     else {
         mPopupWindow->ShowAtLocation((IView*)(mEditor->mTextView->Probe(EIID_IView)),
@@ -445,7 +445,7 @@ ECode EasyEditPopupWindow::InitContentView()
 
     inflater->Inflate(POPUP_TEXT_LAYOUT, NULL, (IView**)&mDeleteTextView);
     mDeleteTextView->SetLayoutParams(wrapContent);
-    mDeleteTextView->SetTextEx3(R::string::delete_);
+    mDeleteTextView->SetText(R::string::delete_);
     mDeleteTextView->SetOnClickListener(this);
     mContentView->AddView(mDeleteTextView);
     return NOERROR;
@@ -560,7 +560,7 @@ AutoPtr<IView> _SuggestionAdapter::GetView(
     if (textView == NULL) {
         TextView* tv = (TextView*)mEditor->mTextView->Probe(EIID_TextView);
         AutoPtr<IView> view;
-        mInflater->InflateEx2(tv->mTextEditSuggestionItemLayout, parent, FALSE, (IView**)&view);
+        mInflater->Inflate(tv->mTextEditSuggestionItemLayout, parent, FALSE, (IView**)&view);
         textView = ITextView::Probe(view);
     }
 
@@ -996,7 +996,7 @@ Boolean SuggestionsPopupWindow::UpdateSuggestions()
                     suggestionInfo->mText->GetLength(&textLength);
                     AutoPtr<ICharSequence> seq;
                     CStringWrapper::New(suggestion, (ICharSequence**)&seq);
-                    suggestionInfo->mText->ReplaceEx(0, textLength, seq);
+                    suggestionInfo->mText->Replace(0, textLength, seq);
 
                     mNumberOfSuggestions++;
 
@@ -1030,7 +1030,7 @@ Boolean SuggestionsPopupWindow::UpdateSuggestions()
             suggestionInfo->mText->GetLength(&textLength);
             AutoPtr<ICharSequence> seq;
             CStringWrapper::New(infoStr, (ICharSequence**)&seq);
-            suggestionInfo->mText->ReplaceEx(0, textLength, seq);
+            suggestionInfo->mText->Replace(0, textLength, seq);
             suggestionInfo->mText->SetSpan(suggestionInfo->mHighlightSpan, 0, 0,
                     ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -1047,7 +1047,7 @@ Boolean SuggestionsPopupWindow::UpdateSuggestions()
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(infoStr, (ICharSequence**)&seq);
     suggestionInfo->mText->GetLength(&textLength);
-    suggestionInfo->mText->ReplaceEx(0, textLength, seq);
+    suggestionInfo->mText->Replace(0, textLength, seq);
     suggestionInfo->mText->SetSpan(suggestionInfo->mHighlightSpan, 0, 0,
             ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
     mNumberOfSuggestions++;
@@ -1102,7 +1102,7 @@ void SuggestionsPopupWindow::HighlightTextDifferences(
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(subStr, (ICharSequence**)&cs);
-    suggestionInfo->mText->InsertEx(0, cs);
+    suggestionInfo->mText->Insert(0, cs);
 
     cs = NULL;
     subStr = textAsString.Substring(spanEnd, unionEnd);
@@ -1354,40 +1354,40 @@ ECode SelectionActionModeCallback::OnCreateActionMode(
     }
 
     AutoPtr<IMenuItem> menuItem;
-    menu->AddEx3(0, R::id::selectAll, 0, R::string::selectAll, (IMenuItem**)&menuItem);
-    menuItem->SetIconEx(selectAllIconId);
+    menu->Add(0, R::id::selectAll, 0, R::string::selectAll, (IMenuItem**)&menuItem);
+    menuItem->SetIcon(selectAllIconId);
     menuItem->SetAlphabeticShortcut('a');
     menuItem->SetShowAsAction(IMenuItem::SHOW_AS_ACTION_ALWAYS | IMenuItem::SHOW_AS_ACTION_WITH_TEXT);
 
     if (mEditor->mTextView->CanCut()) {
         AutoPtr<IMenuItem> item, temp;
-        menu->AddEx3(0, R::id::cut, 0, R::string::cut, (IMenuItem**)&item);
+        menu->Add(0, R::id::cut, 0, R::string::cut, (IMenuItem**)&item);
 
         Int32 id = 0;
         styledAttributes->GetResourceId(R::styleable::SelectionModeDrawables_actionModeCutDrawable, 0, &id);
-        item->SetIconEx(id);
+        item->SetIcon(id);
         item->SetAlphabeticShortcut('x');
         item->SetShowAsAction(IMenuItem::SHOW_AS_ACTION_ALWAYS | IMenuItem::SHOW_AS_ACTION_WITH_TEXT);
     }
 
     if (mEditor->mTextView->CanCopy()) {
         AutoPtr<IMenuItem> item, temp;
-        menu->AddEx3(0, R::id::copy, 0, R::string::copy, (IMenuItem**)&item);
+        menu->Add(0, R::id::copy, 0, R::string::copy, (IMenuItem**)&item);
 
         Int32 id = 0;
         styledAttributes->GetResourceId(R::styleable::SelectionModeDrawables_actionModeCopyDrawable, 0, &id);
-        item->SetIconEx(id);
+        item->SetIcon(id);
         item->SetAlphabeticShortcut('c');
         item->SetShowAsAction(IMenuItem::SHOW_AS_ACTION_ALWAYS | IMenuItem::SHOW_AS_ACTION_WITH_TEXT);
     }
 
     if (mEditor->mTextView->CanPaste()) {
         AutoPtr<IMenuItem> item;
-        menu->AddEx3(0, R::id::paste, 0, R::string::paste, (IMenuItem**)&item);
+        menu->Add(0, R::id::paste, 0, R::string::paste, (IMenuItem**)&item);
 
         Int32 id = 0;
         styledAttributes->GetResourceId(R::styleable::SelectionModeDrawables_actionModePasteDrawable, 0, &id);
-        item->SetIconEx(id);
+        item->SetIcon(id);
         item->SetAlphabeticShortcut('v');
         item->SetShowAsAction(IMenuItem::SHOW_AS_ACTION_ALWAYS | IMenuItem::SHOW_AS_ACTION_WITH_TEXT);
     }
@@ -1527,13 +1527,13 @@ ECode ActionPopupWindow::InitContentView()
 
     inflater->Inflate(POPUP_TEXT_LAYOUT, NULL, (IView**)&mPasteTextView);
     mPasteTextView->SetLayoutParams(wrapContent);
-    mPasteTextView->SetTextEx3(R::string::paste);
+    mPasteTextView->SetText(R::string::paste);
     mPasteTextView->SetOnClickListener(this);
     mContentView->AddView(mPasteTextView);
 
     inflater->Inflate(POPUP_TEXT_LAYOUT, NULL, (IView**)&mReplaceTextView);
     mReplaceTextView->SetLayoutParams(wrapContent);
-    mReplaceTextView->SetTextEx3(R::string::replace);
+    mReplaceTextView->SetText(R::string::replace);
     mReplaceTextView->SetOnClickListener(this);
     mContentView->AddView(mReplaceTextView);
 
@@ -1925,7 +1925,7 @@ void HandleView::UpdatePosition(
             Int32 positionX = parentPositionX + mPositionX;
             Int32 positionY = parentPositionY + mPositionY;
             if (IsShowing()) {
-                mContainer->UpdateEx2(positionX, positionY, -1, -1);
+                mContainer->Update(positionX, positionY, -1, -1);
             } else {
                 mContainer->ShowAtLocation(
                         (IView*)mEditor->mTextView->Probe(EIID_IView),
@@ -2633,8 +2633,8 @@ void SelectionModifierCursorController::UpdateMinAndMaxOffsets(
     event->GetPointerCount(&pointerCount);
     for (Int32 index = 0; index < pointerCount; index++) {
         Float x, y;
-        event->GetXEx(index, &x);
-        event->GetYEx(index, &y);
+        event->GetX(index, &x);
+        event->GetY(index, &y);
         Int32 offset = mEditor->mTextView->GetOffsetForPosition(x, y);
         if (offset < mMinTouchOffset) mMinTouchOffset = offset;
         if (offset > mMaxTouchOffset) mMaxTouchOffset = offset;
@@ -3404,7 +3404,7 @@ void Editor::ShowError()
     ChooseSize(mErrorPopup, mError, tv);
     tv->SetText(mError);
 
-    mErrorPopup->ShowAsDropDownEx((IView*)(mTextView->Probe(EIID_IView)),
+    mErrorPopup->ShowAsDropDown((IView*)(mTextView->Probe(EIID_IView)),
             GetErrorX(), GetErrorY());
     Boolean isAboveAnchor;
     mErrorPopup->IsAboveAnchor(&isAboveAnchor);
@@ -3744,7 +3744,7 @@ void Editor::SetFrame()
         Int32 w, h;
         mErrorPopup->GetWidth(&w);
         mErrorPopup->GetHeight(&h);
-        mErrorPopup->UpdateEx5((IView*)(mTextView->Probe(EIID_IView)),
+        mErrorPopup->Update((IView*)(mTextView->Probe(EIID_IView)),
             GetErrorX(), GetErrorY(), w, h);
     }
 }
@@ -3952,7 +3952,7 @@ Boolean Editor::IsPositionVisible(
             view->GetMatrix((IMatrix**)&matrix);
             matrix->IsIdentity(&isIdentity);
             if (!isIdentity) {
-                matrix->MapPointsEx2(position);
+                matrix->MapPoints(position);
             }
 
             view->GetLeft(&l);
@@ -4426,7 +4426,7 @@ Boolean Editor::ExtractTextInternal(
         AutoPtr<IMetaKeyKeyListenerHelper> helper;
         CMetaKeyKeyListenerHelper::AcquireSingleton((IMetaKeyKeyListenerHelper**)&helper);
         Int32 state;
-        helper->GetMetaStateEx(content, IMetaKeyKeyListener::META_SELECTING, &state);
+        helper->GetMetaState(content, IMetaKeyKeyListener::META_SELECTING, &state);
         if (state != 0) {
             Int32 flags;
             outText->GetFlags(&flags);
@@ -4538,8 +4538,8 @@ void Editor::OnDraw(
                 ims->mTmpOffset->Set(1, 0);
 
                 AutoPtr<IMatrix> matrix;
-                canvas->GetMatrixEx((IMatrix**)&matrix);
-                matrix->MapPointsEx2(ims->mTmpOffset);
+                canvas->GetMatrix((IMatrix**)&matrix);
+                matrix->MapPoints(ims->mTmpOffset);
                 ims->mTmpRectF->Offset((*(ims->mTmpOffset))[0], (*(ims->mTmpOffset))[1]);
 
                 ims->mTmpRectF->Offset(0, cursorOffsetVertical);
@@ -4574,7 +4574,7 @@ void Editor::OnDraw(
         DrawHardwareAccelerated(canvas, layout, highlight, highlightPaint,
                 cursorOffsetVertical);
     } else {
-        layout->DrawEx(canvas, highlight, highlightPaint, cursorOffsetVertical);
+        layout->Draw(canvas, highlight, highlightPaint, cursorOffsetVertical);
     }
 }
 
@@ -5160,7 +5160,7 @@ AutoPtr<IDragShadowBuilder> Editor::GetTextThumbnailBuilder(
     shadowView->GetMeasuredWidth(&mw);
     shadowView->GetMeasuredHeight(&mh);
     shadowView->Layout(0, 0, mw, mh);
-    shadowView->InvalidateEx2();
+    shadowView->Invalidate();
 
     AutoPtr<IDragShadowBuilder> builder;
     CDragShadowBuilder::New(shadowView, (IDragShadowBuilder**)&builder);

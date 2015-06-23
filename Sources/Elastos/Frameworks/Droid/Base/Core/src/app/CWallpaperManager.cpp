@@ -10,7 +10,7 @@
 #include "view/CWindowManagerGlobal.h"
 #include "util/CDisplayMetrics.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFileOutputStream;
@@ -73,7 +73,7 @@ ECode CWallpaperManager::GetIWallpaperManager(
 {
     VALIDATE_NOT_NULL(manager);
     *manager = sGlobals->mService;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CWallpaperManager::GetDrawable(
         CBitmapDrawable::New(res, bm, (IBitmapDrawable**)&dr);
         dr->SetDither(FALSE);
         *drawable = (IDrawable*)dr;
-        INTERFACE_ADDREF(*drawable);
+        REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
     *drawable = NULL;
@@ -108,7 +108,7 @@ ECode CWallpaperManager::PeekDrawable(
         CBitmapDrawable::New(res, bm, (IBitmapDrawable**)&dr);
         dr->SetDither(FALSE);
         *drawable = (IDrawable*)dr;
-        INTERFACE_ADDREF(*drawable);
+        REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
     *drawable = NULL;
@@ -124,7 +124,7 @@ ECode CWallpaperManager::GetFastDrawable(
         AutoPtr<IFastBitmapDrawable> fd;
         CFastBitmapDrawable::New(bm, (IFastBitmapDrawable**)&fd);
         *drawable = IDrawable::Probe(fd.Get());
-        INTERFACE_ADDREF(*drawable);
+        REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
     *drawable = NULL;
@@ -140,7 +140,7 @@ ECode CWallpaperManager::PeekFastDrawable(
         AutoPtr<IFastBitmapDrawable> fd;
         CFastBitmapDrawable::New(bm, (IFastBitmapDrawable**)&fd);
         *drawable = IDrawable::Probe(fd.Get());
-        INTERFACE_ADDREF(*drawable);
+        REFCOUNT_ADD(*drawable);
         return NOERROR;
     }
     *drawable = NULL;
@@ -153,7 +153,7 @@ ECode CWallpaperManager::GetBitmap(
     VALIDATE_NOT_NULL(bitmap);
     AutoPtr<IBitmap> bm = sGlobals->PeekWallpaperBitmap(mContext, TRUE);
     *bitmap = bm;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -295,7 +295,7 @@ void CWallpaperManager::SetWallpaper(
     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(32768);
     Int32 amt;
     while (data->ReadBytes(buffer, &amt), amt > 0) {
-        fos->WriteBytesEx(*buffer, 0, amt);
+        fos->WriteBytes(*buffer, 0, amt);
     }
     return;
 }
@@ -473,7 +473,7 @@ AutoPtr<IBitmap> CWallpaperManager::GenerateBitmap(
     AutoPtr<IBitmapFactory> factory;
     ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     AutoPtr<IBitmap> newbm;
-    ECode ec = factory->CreateBitmapEx3(width, height,
+    ECode ec = factory->CreateBitmap(width, height,
             Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&newbm);
     if (ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
         Slogger::W(TAG, "Can't generate default bitmap");
@@ -520,7 +520,7 @@ AutoPtr<IBitmap> CWallpaperManager::GenerateBitmap(
     ASSERT_SUCCEEDED(CPorterDuffXfermode::New(Elastos::Droid::Graphics::PorterDuffMode_SRC,
             (IPorterDuffXfermode**)&mode));
     paint->SetXfermode((IXfermode*)mode.Get());
-    c->DrawBitmapEx2(bm, NULL, targetRect, paint);
+    c->DrawBitmap(bm, NULL, targetRect, paint);
 
     bm->Recycle();
     c->SetBitmap(NULL);

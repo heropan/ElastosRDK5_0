@@ -1,7 +1,7 @@
 #ifndef __QUEUEDWORK_H__
 #define __QUEUEDWORK_H__
 
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Utility::Concurrent::IExecutorService;
 using Elastos::Core::IRunnable;

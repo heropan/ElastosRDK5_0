@@ -57,7 +57,7 @@ ECode CPreferenceActivityHeaderAdapter::GetItem(
 {
     VALIDATE_NOT_NULL(item)
     *item = ArrayAdapter::GetItem(position);
-    INTERFACE_ADDREF(*item)
+    REFCOUNT_ADD(*item)
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CPreferenceActivityHeaderAdapter::GetView(
     AutoPtr<IView> lView;
 
     if (convertView == NULL) {
-        mInflater->InflateEx2(R::layout::preference_header_item, parent, FALSE, (IView**)&lView);
+        mInflater->Inflate(R::layout::preference_header_item, parent, FALSE, (IView**)&lView);
         holder = new HeaderViewHolder();
         AutoPtr<IView> tempView;
         lView->FindViewById(R::id::icon, (IView**)&tempView);
@@ -122,10 +122,10 @@ ECode CPreferenceActivityHeaderAdapter::GetView(
     AutoPtr<IResources> resource;
     context->GetResources((IResources**)&resource);
     AutoPtr<ICharSequence> title;
-    header->GetTitleEx(resource, (ICharSequence**)&title);
+    header->GetTitle(resource, (ICharSequence**)&title);
     holder->mTitle->SetText(title);
     AutoPtr<ICharSequence> summary;
-    header->GetSummaryEx(resource, (ICharSequence**)&summary);\
+    header->GetSummary(resource, (ICharSequence**)&summary);\
     if (!TextUtils::IsEmpty(summary)) {
         holder->mSummary->SetVisibility(IView::VISIBLE);
         holder->mSummary->SetText(summary);
@@ -135,7 +135,7 @@ ECode CPreferenceActivityHeaderAdapter::GetView(
     }
 
     *view = lView;
-    INTERFACE_ADDREF(*view)
+    REFCOUNT_ADD(*view)
 
     return NOERROR;
 }
@@ -187,10 +187,10 @@ ECode CPreferenceActivityHeaderAdapter::AddAll(
     return ArrayAdapter::AddAll(collection);
 }
 
-ECode CPreferenceActivityHeaderAdapter::AddAllEx(
+ECode CPreferenceActivityHeaderAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface*>* items)
 {
-    return ArrayAdapter::AddAllEx(items);
+    return ArrayAdapter::AddAll(items);
 }
 
 ECode CPreferenceActivityHeaderAdapter::Insert(
@@ -228,7 +228,7 @@ ECode CPreferenceActivityHeaderAdapter::GetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = ArrayAdapter::GetContext();
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode CPreferenceActivityHeaderAdapter::GetDropDownView(
 {
     VALIDATE_NOT_NULL(view)
     *view = ArrayAdapter::GetDropDownView(position, convertView, parent);
-    INTERFACE_ADDREF(*view)
+    REFCOUNT_ADD(*view)
     return NOERROR;
 }
 
@@ -281,7 +281,7 @@ ECode CPreferenceActivityHeaderAdapter::GetFilter(
 {
     VALIDATE_NOT_NULL(filter)
     *filter = ArrayAdapter::GetFilter();
-    INTERFACE_ADDREF(*filter)
+    REFCOUNT_ADD(*filter)
     return NOERROR;
 }
 

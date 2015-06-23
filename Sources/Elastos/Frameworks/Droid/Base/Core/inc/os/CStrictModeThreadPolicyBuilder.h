@@ -3,8 +3,8 @@
 
 #include "_CStrictModeThreadPolicyBuilder.h"
 #include "ext/frameworkdef.h"
-#include <elastos/List.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
 #include "os/CStrictMode.h"
 
 using Elastos::Droid::Os::IStrictModeThreadPolicy;

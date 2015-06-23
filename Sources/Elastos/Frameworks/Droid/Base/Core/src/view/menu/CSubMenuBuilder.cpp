@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "view/menu/CSubMenuBuilder.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -32,7 +32,7 @@ PInterface CSubMenuBuilder::Probe(
 IMENU_METHODS_IMPL(CSubMenuBuilder, SubMenuBuilderBase, SubMenuBuilderBase);
 IMENUBUILDER_METHODS_IMPL(CSubMenuBuilder, SubMenuBuilderBase, SubMenuBuilderBase);
 
-ECode CSubMenuBuilder::SetIconEx(
+ECode CSubMenuBuilder::SetIcon(
     /* [in] */ IDrawable* icon)
 {
     SubMenuBuilderBase::SetIcon(icon);
@@ -46,7 +46,7 @@ ECode CSubMenuBuilder::SetIcon(
     return NOERROR;
 }
 
-ECode CSubMenuBuilder::SetHeaderIconEx(
+ECode CSubMenuBuilder::SetHeaderIcon(
     /* [in] */ IDrawable* icon)
 {
     SubMenuBuilderBase::SetHeaderIcon(icon);
@@ -60,7 +60,7 @@ ECode CSubMenuBuilder::SetHeaderIcon(
     return NOERROR;
 }
 
-ECode CSubMenuBuilder::SetHeaderTitleEx(
+ECode CSubMenuBuilder::SetHeaderTitle(
     /* [in] */ ICharSequence* title)
 {
     SubMenuBuilderBase::SetHeaderTitle(title);
@@ -81,7 +81,7 @@ ECode CSubMenuBuilder::SetHeaderView(
     return NOERROR;
 }
 
-ECode CSubMenuBuilder::GetItemEx(
+ECode CSubMenuBuilder::GetItem(
     /* [out] */ IMenuItem** menuItem)
 {
     VALIDATE_NOT_NULL(menuItem);

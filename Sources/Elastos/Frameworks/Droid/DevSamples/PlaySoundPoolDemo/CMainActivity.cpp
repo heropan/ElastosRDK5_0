@@ -1,7 +1,7 @@
 
 #include "CMainActivity.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Media::IAudioManager;
@@ -74,7 +74,7 @@ ECode CMainActivity::OnCreate(
     CSoundPool::New(2, IAudioManager::STREAM_MUSIC, 0, (ISoundPool**)&mSoundPool);
     Int32 sound;
     Logger::D("CMainActivity::OnCreate", "before LoadEx");
-    mSoundPool->LoadEx(this, R::raw::supermario, 1, &sound);
+    mSoundPool->Load(this, R::raw::supermario, 1, &sound);
     Logger::D("CMainActivity::OnCreate", "after LoadEx");
     mSoundPoolMap[1] = sound;
 

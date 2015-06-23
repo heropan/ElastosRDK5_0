@@ -4,10 +4,10 @@
 
 #include "_CCompareResult.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuffer.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::StringBuffer;
 
 namespace Elastos {

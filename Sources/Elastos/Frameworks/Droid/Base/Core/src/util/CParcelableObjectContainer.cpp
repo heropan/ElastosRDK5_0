@@ -86,7 +86,7 @@ public:
         }
 
         *object = mCurrent->mObject;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
 
@@ -207,7 +207,7 @@ ECode CParcelableObjectContainer::GetObjectEnumerator(
     if (NULL == objEnum) return E_OUT_OF_MEMORY_ERROR;
 
     *enumerator = (IObjectEnumerator *)objEnum;
-    INTERFACE_ADDREF(*enumerator);
+    REFCOUNT_ADD(*enumerator);
     return NOERROR;
 }
 

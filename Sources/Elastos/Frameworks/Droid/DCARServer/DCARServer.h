@@ -7,11 +7,11 @@
 #endif
 
 #include <elastos.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "DataWrapper.h"
 
 using namespace Elastos;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 // come from marshal_rpc.h
 typedef struct InterfacePack

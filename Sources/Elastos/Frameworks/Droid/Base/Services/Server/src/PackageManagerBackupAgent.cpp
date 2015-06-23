@@ -1,7 +1,7 @@
 
 #include "PackageManagerBackupAgent.h"
 #include "os/Build.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IArrayList;

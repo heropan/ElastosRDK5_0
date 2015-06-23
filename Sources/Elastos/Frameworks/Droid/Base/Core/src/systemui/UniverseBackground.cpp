@@ -1,5 +1,5 @@
 #include "systemui/UniverseBackground.h"
-#include "elastos/Math.h"
+#include <elastos/core/Math.h>
 #include "R.h"
 #include "systemui/SystemUIR.h"
 #include "app/CActivityManager.h"
@@ -477,9 +477,9 @@ void UniverseBackground::ComputeAveragePos(
     Float x = 0, y = 0;
     for (Int32 i = 0; i < num; i++) {
         Float temp;
-        event->GetXEx(i, &temp);
+        event->GetX(i, &temp);
         x += temp;
-        event->GetYEx(i, &temp);
+        event->GetY(i, &temp);
         y += temp;
     }
     mAverageX = x / num;

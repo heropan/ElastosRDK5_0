@@ -83,7 +83,7 @@ ECode CPreferenceScreen::GetRootAdapter(
     }
 
     *adapter = mRootAdapter;
-    INTERFACE_ADDREF(*adapter)
+    REFCOUNT_ADD(*adapter)
     return NOERROR;
 }
 
@@ -93,7 +93,7 @@ ECode CPreferenceScreen::OnCreateRootAdapter(
     VALIDATE_NOT_NULL(adapter)
     AutoPtr<PreferenceGroupAdapter> preferenceAdapter = new PreferenceGroupAdapter(THIS_PROBE(IPreferenceGroup));
     *adapter = (IListAdapter*)preferenceAdapter;
-    INTERFACE_ADDREF(*adapter)
+    REFCOUNT_ADD(*adapter)
     return NOERROR;
 }
 
@@ -156,7 +156,7 @@ ECode CPreferenceScreen::ShowDialog(
     else {
         dialog->SetTitle(title);
     }
-    dialog->SetContentViewEx(childPrefScreen);
+    dialog->SetContentView(childPrefScreen);
     dialog->SetOnDismissListener(THIS_PROBE(IDialogInterfaceOnDismissListener));
     if (state != NULL) {
         dialog->OnRestoreInstanceState(state);
@@ -185,7 +185,7 @@ ECode CPreferenceScreen::GetDialog(
 {
     VALIDATE_NOT_NULL(dialog)
     *dialog = mDialog;
-    INTERFACE_ADDREF(*dialog)
+    REFCOUNT_ADD(*dialog)
     return NOERROR;
 }
 
@@ -228,7 +228,7 @@ ECode CPreferenceScreen::OnSaveInstanceState(
     Boolean isShow;
     if (dialog == NULL || (dialog->IsShowing(&isShow), !isShow)) {
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -240,7 +240,7 @@ ECode CPreferenceScreen::OnSaveInstanceState(
     myState->SetDialogBundle(b);
 
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 

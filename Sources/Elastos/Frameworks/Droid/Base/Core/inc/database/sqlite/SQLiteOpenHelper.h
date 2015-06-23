@@ -6,9 +6,8 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IDatabaseErrorHandler;
 

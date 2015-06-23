@@ -16,7 +16,7 @@ ECode CGravity::Apply(
     return Gravity::Apply(gravity, w, h, container, outRect);
 }
 
-ECode CGravity::ApplyEx(
+ECode CGravity::Apply(
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
@@ -27,7 +27,7 @@ ECode CGravity::ApplyEx(
     return Gravity::Apply(gravity, w, h, container, outRect, layoutDirection);
 }
 
-ECode CGravity::ApplyEx2(
+ECode CGravity::Apply(
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
@@ -39,7 +39,7 @@ ECode CGravity::ApplyEx2(
     return Gravity::Apply(gravity, w, h, container, xAdj, yAdj, outRect);
 }
 
-ECode CGravity::ApplyEx3(
+ECode CGravity::Apply(
     /* [in] */ Int32 gravity,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
@@ -60,7 +60,7 @@ ECode CGravity::ApplyDisplay(
     return Gravity::ApplyDisplay(gravity, display, inoutObj);
 }
 
-ECode CGravity::ApplyDisplayEx(
+ECode CGravity::ApplyDisplay(
     /* [in] */ Int32 gravity,
     /* [in] */ IRect* display,
     /* [in] */ IRect* inoutObj,

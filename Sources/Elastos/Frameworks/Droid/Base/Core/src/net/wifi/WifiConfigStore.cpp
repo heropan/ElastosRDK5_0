@@ -24,10 +24,10 @@
 #include "util/CParcelableObjectContainer.h"
 #endif
 #include "text/TextUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 
 using Elastos::Core::StringBuilder;
@@ -1937,7 +1937,7 @@ String WifiConfigStore::MakeString(
     /* Make sure all set bits are in [0, strings.length) to avoid
      * going out of bounds on strings.  (Shouldn't happen, but...) */
     AutoPtr<IBitSet> newSet;
-    set->GetEx(0, strings->GetLength(), (IBitSet**)&newSet);
+    set->Get(0, strings->GetLength(), (IBitSet**)&newSet);
     while (newSet->NextSetBit(nextSetBit + 1, &nextSetBit), nextSetBit != -1) {
         buf.AppendString((*strings)[nextSetBit].Replace('_', '-'));
         buf.AppendChar(' ');
@@ -1947,7 +1947,7 @@ String WifiConfigStore::MakeString(
     Int32 number;
     if (set->Cardinality(&number), number > 0) {
         String str;
-        buf.SubstringEx(0, buf.GetLength() - 1, &str);
+        buf.Substring(0, buf.GetLength() - 1, &str);
         return str;
     }
     else {

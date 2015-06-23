@@ -17,7 +17,7 @@ public:
         /* [in] */ IInetAddress* host,
         /* [out] */ IRouteInfo** info);
 
-    CARAPI MakeHostRouteEx(
+    CARAPI MakeHostRoute(
         /* [in] */ IInetAddress* host,
         /* [in] */ IInetAddress* gateway,
         /* [out] */ IRouteInfo** info);

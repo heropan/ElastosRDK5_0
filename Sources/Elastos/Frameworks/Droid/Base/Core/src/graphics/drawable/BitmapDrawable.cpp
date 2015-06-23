@@ -7,7 +7,7 @@
 #include "graphics/CBitmapShader.h"
 #include "view/CGravity.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -58,7 +58,7 @@ ECode BitmapDrawable::BitmapState::NewDrawable(
     return CBitmapDrawable::New((Handle32)this, NULL, (IBitmapDrawable**)drawable);
 }
 
-ECode BitmapDrawable::BitmapState::NewDrawableEx(
+ECode BitmapDrawable::BitmapState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -188,8 +188,8 @@ AutoPtr<IBitmap> BitmapDrawable::GetBitmap()
 
 void BitmapDrawable::ComputeBitmapSize()
 {
-    mBitmap->GetScaledWidthEx2(mTargetDensity, &mBitmapWidth);
-    mBitmap->GetScaledHeightEx2(mTargetDensity, &mBitmapHeight);
+    mBitmap->GetScaledWidth(mTargetDensity, &mBitmapWidth);
+    mBitmap->GetScaledHeight(mTargetDensity, &mBitmapHeight);
 }
 
 void BitmapDrawable::SetBitmap(
@@ -354,18 +354,18 @@ ECode BitmapDrawable::Draw(
                 Int32 layoutDirection = GetLayoutDirection();
                 AutoPtr<IGravity> gravity;
                 CGravity::AcquireSingleton((IGravity**)&gravity);
-                gravity->ApplyEx(state->mGravity, mBitmapWidth, mBitmapHeight,
+                gravity->Apply(state->mGravity, mBitmapWidth, mBitmapHeight,
                         GetBounds(), mDstRect, layoutDirection);
                 mApplyGravity = FALSE;
             }
-            canvas->DrawBitmapEx2(bitmap, NULL, mDstRect, state->mPaint);
+            canvas->DrawBitmap(bitmap, NULL, mDstRect, state->mPaint);
         }
         else {
             if (mApplyGravity) {
                 CopyBounds(mDstRect);
                 mApplyGravity = FALSE;
             }
-            canvas->DrawRectEx(mDstRect, state->mPaint);
+            canvas->DrawRect(mDstRect, state->mPaint);
         }
     }
     return NOERROR;
@@ -425,7 +425,7 @@ ECode BitmapDrawable::Inflate(
     AutoPtr<IBitmapFactory> bmFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
     AutoPtr<IBitmap> bitmap;
-    bmFactory->DecodeResourceEx(r, id, (IBitmap**)&bitmap);
+    bmFactory->DecodeResource(r, id, (IBitmap**)&bitmap);
     if (bitmap == NULL) {
         String str;
         parser->GetPositionDescription(&str);
@@ -564,7 +564,7 @@ ECode BitmapDrawable::Init(
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
     FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeFileEx(filepath, (IBitmap**)&bitmap));
+    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     Init(state, NULL);
@@ -581,7 +581,7 @@ ECode BitmapDrawable::Init(
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
     FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeFileEx(filepath, (IBitmap**)&bitmap));
+    FAIL_RETURN(factory->DecodeFile(filepath, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     Init(state, NULL);
@@ -598,7 +598,7 @@ ECode BitmapDrawable::Init(
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
     FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeStreamEx(is, (IBitmap**)&bitmap));
+    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     Init(state, NULL);
@@ -615,7 +615,7 @@ ECode BitmapDrawable::Init(
     AutoPtr<IBitmapFactory> factory;
     AutoPtr<IBitmap> bitmap;
     FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    FAIL_RETURN(factory->DecodeStreamEx(is, (IBitmap**)&bitmap));
+    FAIL_RETURN(factory->DecodeStream(is, (IBitmap**)&bitmap));
 
     AutoPtr<BitmapState> state = new BitmapState(bitmap);
     Init(state, NULL);

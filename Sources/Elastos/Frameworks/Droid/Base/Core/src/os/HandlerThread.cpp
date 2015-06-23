@@ -69,7 +69,7 @@ ECode HandlerThread::GetLooper(
         Unlock();
     }
     *looper = mLooper;
-    INTERFACE_ADDREF(*looper);
+    REFCOUNT_ADD(*looper);
     return NOERROR;
 }
 

@@ -2,9 +2,9 @@
 #define __CRADIOGROUP_H_
 
 #include "_CRadioGroup.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "widget/RadioGroup.h"
 
 namespace Elastos{

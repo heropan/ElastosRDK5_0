@@ -3,12 +3,9 @@
 
 #include "_CStrictModeSpan.h"
 #include "ext/frameworkdef.h"
-#include <elastos/List.h>
-#include <elastos/Object.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/Core/Object.h>
 #include "os/CStrictMode.h"
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

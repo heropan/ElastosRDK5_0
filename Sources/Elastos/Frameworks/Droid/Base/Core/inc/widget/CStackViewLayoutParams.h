@@ -3,7 +3,7 @@
 
 #include "_CStackViewLayoutParams.h"
 #include "widget/StackViewLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 namespace Elastos{
 namespace Droid{

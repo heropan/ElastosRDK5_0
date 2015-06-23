@@ -1,8 +1,8 @@
 
 #include "database/MatrixCursor.h"
 #include "database/DatabaseUtils.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::INumber;
 using Elastos::Core::IDouble;
@@ -94,7 +94,7 @@ ECode MatrixCursor::Get(
         return E_CURSOR_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     *obj = (*mData)[mPos * mColumnCount + column];
-    INTERFACE_ADDREF(*obj)
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
@@ -109,7 +109,7 @@ ECode MatrixCursor::NewRow(
     Int32 start = endIndex - mColumnCount;
     AutoPtr<IRowBuilder> m_builder = new RowBuilder(start, endIndex, this);
     *builder = m_builder;
-    INTERFACE_ADDREF(*builder)
+    REFCOUNT_ADD(*builder)
     return NOERROR;
 }
 

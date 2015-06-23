@@ -6,10 +6,10 @@
 #include "gesture/InstanceLearner.h"
 #include "gesture/Instance.h"
 #include "os/SystemClock.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CObjectContainer;
@@ -96,7 +96,7 @@ ECode CGestureStore::GetGestureEntries(
 
     }
     *entries = container;
-    INTERFACE_ADDREF(*entries);
+    REFCOUNT_ADD(*entries);
     return NOERROR;
 }
 
@@ -109,7 +109,7 @@ ECode CGestureStore::Recognize(
     AutoPtr<Instance> instance = Instance::CreateInstance(mSequenceType, mOrientationStyle,
         gesture, String(NULL));
     *list = mClassifier->Classify(mSequenceType, mOrientationStyle, instance->mVector);
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -212,10 +212,10 @@ ECode CGestureStore::HasChanged(
 ECode CGestureStore::Save(
     /* [in] */ IOutputStream *stream)
 {
-    return SaveEx(stream, FALSE);
+    return Save(stream, FALSE);
 }
 
-ECode CGestureStore::SaveEx(
+ECode CGestureStore::Save(
     /* [in] */ IOutputStream *stream,
     /* [in] */ Boolean closeStream)
 {
@@ -281,10 +281,10 @@ ECode CGestureStore::SaveEx(
 ECode CGestureStore::Load(
     /* [in] */ IInputStream *stream)
 {
-    return LoadEx(stream, FALSE);
+    return Load(stream, FALSE);
 }
 
-ECode CGestureStore::LoadEx(
+ECode CGestureStore::Load(
     /* [in] */ IInputStream *stream,
     /* [in] */ Boolean closeStream)
 {

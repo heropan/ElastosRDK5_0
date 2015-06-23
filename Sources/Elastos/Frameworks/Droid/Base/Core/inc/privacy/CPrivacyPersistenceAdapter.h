@@ -4,15 +4,14 @@
 
 #include "ext/frameworkdef.h"
 #include "_CPrivacyPersistenceAdapter.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <elastos/RWLock.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::RWLock;
+using Elastos::Core::Mutex;
+using Elastos::Core::RWLock;
 using Elastos::IO::IFile;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;

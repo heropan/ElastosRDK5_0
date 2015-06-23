@@ -12,7 +12,7 @@ ECode CUriHelper::GetEMPTY(
     VALIDATE_NOT_NULL(uri);
     AutoPtr<IUri> empty = Uri::GetEMPTY();
     *uri = empty;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -60,7 +60,7 @@ ECode CUriHelper::Encode(
     return Uri::Encode(s, encoded);
 }
 
-ECode CUriHelper::EncodeEx(
+ECode CUriHelper::Encode(
     /* [in] */ const String& s,
     /* [in] */ const String& allow,
     /* [out] */ String* result)

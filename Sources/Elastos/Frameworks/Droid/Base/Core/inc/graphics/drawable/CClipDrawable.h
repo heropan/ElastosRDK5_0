@@ -4,7 +4,7 @@
 
 #include "_CClipDrawable.h"
 #include "graphics/drawable/ClipDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

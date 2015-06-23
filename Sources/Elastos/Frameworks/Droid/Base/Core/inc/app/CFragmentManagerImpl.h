@@ -4,18 +4,17 @@
 
 #include "_CFragmentManagerImpl.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 #include "animation/AnimatorListenerAdapter.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IObjectInt32Map;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::App::IBackStackRecord;
@@ -171,7 +170,7 @@ private:
 class AnimatorListenerEx : public AnimatorListenerAdapter
 {
 public:
-    AnimatorListenerEx(
+    AnimatorListener(
         /* [in] */ IFragment* fragment);
 
     virtual CARAPI OnAnimationEnd(
@@ -202,20 +201,20 @@ public:
     CARAPI PopBackStackImmediate(
         /* [out] */ Boolean* hasPopped);
 
-    CARAPI PopBackStackEx(
+    CARAPI PopBackStack(
         /* [in] */ const String& name,
         /* [in] */ Int32 flags);
 
-    CARAPI PopBackStackImmediateEx(
+    CARAPI PopBackStackImmediate(
         /* [in] */ const String& name,
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* hasPopped);
 
-    CARAPI PopBackStackEx2(
+    CARAPI PopBackStack(
         /* [in] */ Int32 id,
         /* [in] */ Int32 flags);
 
-    CARAPI PopBackStackImmediateEx2(
+    CARAPI PopBackStackImmediate(
         /* [in] */ Int32 id,
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* hasPopped);
@@ -276,14 +275,14 @@ public:
         /* [in] */ Int32 transitionStyle,
         /* [in] */ Boolean keepActive);
 
-    CARAPI MoveToStateEx(
+    CARAPI MoveToState(
         /* [in] */ IFragment* f);
 
-    CARAPI MoveToStateEx2(
+    CARAPI MoveToState(
         /* [in] */ Int32 newState,
         /* [in] */ Boolean always);
 
-    CARAPI MoveToStateEx3(
+    CARAPI MoveToState(
         /* [in] */ Int32 newState,
         /* [in] */ Int32 transit,
         /* [in] */ Int32 transitStyle,

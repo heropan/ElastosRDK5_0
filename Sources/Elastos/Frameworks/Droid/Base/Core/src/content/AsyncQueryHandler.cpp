@@ -1,7 +1,7 @@
 
 #include "content/AsyncQueryHandler.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "os/CHandlerThread.h"
 
 using Elastos::Core::StringUtils;
@@ -116,7 +116,7 @@ ECode AsyncQueryHandler::WorkerHandler::HandleMessage(
     AutoPtr<IHandler> replyHandler = args->mHandler;
 
     AutoPtr<IMessage> reply;
-    replyHandler->ObtainMessageEx3(token, 1, 0, args, (IMessage**)&reply);
+    replyHandler->ObtainMessage(token, 1, 0, args, (IMessage**)&reply);
     return reply->SendToTarget();
 }
 
@@ -195,7 +195,7 @@ ECode AsyncQueryHandler::StartQuery(
     args->mCookie = cookie;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessageEx3(token, EVENT_ARG_QUERY, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_QUERY, 0, args, (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -220,7 +220,7 @@ ECode AsyncQueryHandler::StartInsert(
     args->mValues = initialValues;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessageEx3(token, EVENT_ARG_INSERT, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_INSERT, 0, args, (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -243,7 +243,7 @@ ECode AsyncQueryHandler::StartUpdate(
     args->mSelectionArgs = selectionArgs;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessageEx3(token, EVENT_ARG_UPDATE, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_UPDATE, 0, args, (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -264,7 +264,7 @@ ECode AsyncQueryHandler::StartDelete(
     args->mSelectionArgs = selectionArgs;
 
     AutoPtr<IMessage> msg;
-    mWorkerThreadHandler->ObtainMessageEx3(token, EVENT_ARG_DELETE, 0, args, (IMessage**)&msg);
+    mWorkerThreadHandler->ObtainMessage(token, EVENT_ARG_DELETE, 0, args, (IMessage**)&msg);
     Boolean result;
     return mWorkerThreadHandler->SendMessage(msg, &result);
 }
@@ -318,7 +318,7 @@ ECode AsyncQueryHandler::CreateHandler(
     VALIDATE_NOT_NULL(handler)
     AutoPtr<WorkerHandler> worker = new WorkerHandler(looper, this);
     *handler = (IHandler*)worker.Get();
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 

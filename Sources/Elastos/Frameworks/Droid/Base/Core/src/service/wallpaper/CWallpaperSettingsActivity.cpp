@@ -6,8 +6,8 @@
 //#include "text/TextUtils.h"
 #include <eltypes.h>
 #include <elstring.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuffer.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/socket.h>
@@ -18,7 +18,7 @@
 #include <cutils/sockets.h>
 #include <cutils/log.h>
 #include <linux/netlink.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 #include "service/wallpaper/CWallpaperSettingsActivity.h"
 #include "content/CResourcesTheme.h"

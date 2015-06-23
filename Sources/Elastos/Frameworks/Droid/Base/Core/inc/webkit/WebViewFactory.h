@@ -4,11 +4,8 @@
 
 #include "ext/frameworkext.h"
 #include "webkit/WebViewFactoryProvider.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

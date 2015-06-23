@@ -1,4 +1,4 @@
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 #include "text/method/BaseKeyListener.h"
 #include "text/TextUtils.h"
@@ -215,7 +215,7 @@ Boolean BaseKeyListener::OnKeyOther(
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(text, (ICharSequence**)&cs);
-    content->ReplaceEx(selectionStart, selectionEnd, cs);
+    content->Replace(selectionStart, selectionEnd, cs);
     return TRUE;
 }
 

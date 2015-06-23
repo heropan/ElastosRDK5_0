@@ -1,9 +1,9 @@
 #include "text/method/WordIterator.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/Character.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

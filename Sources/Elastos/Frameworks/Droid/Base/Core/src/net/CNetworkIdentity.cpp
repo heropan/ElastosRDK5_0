@@ -3,8 +3,8 @@
 #include "net/CNetworkIdentity.h"
 #include "net/CConnectivityManager.h"
 #include "telephony/CTelephonyManagerHelper.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;
@@ -50,7 +50,7 @@ ECode CNetworkIdentity::GetHashCode(
 }
 
 //@Override
-ECode CNetworkIdentity::EqualsEx(
+ECode CNetworkIdentity::Equals(
     /* [in] */ INetworkIdentity* obj,
     /* [out] */ Boolean* result )
 {
@@ -83,7 +83,7 @@ ECode CNetworkIdentity::Equals(
     /* [out] */ Boolean* result )
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(INetworkIdentity::Probe(obj), result);
+    return Equals(INetworkIdentity::Probe(obj), result);
 }
 
 //@Override

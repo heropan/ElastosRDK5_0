@@ -3,8 +3,8 @@
 #define  __CACTIONBARCONTEXTVIEW_H__
 
 #include "_CActionBarContextView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 #include "widget/internal/ActionBarContextView.h"
 
 namespace Elastos {

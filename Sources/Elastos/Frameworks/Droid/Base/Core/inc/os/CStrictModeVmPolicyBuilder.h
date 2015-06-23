@@ -3,11 +3,11 @@
 
 #include "_CStrictModeVmPolicyBuilder.h"
 #include "ext/frameworkdef.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

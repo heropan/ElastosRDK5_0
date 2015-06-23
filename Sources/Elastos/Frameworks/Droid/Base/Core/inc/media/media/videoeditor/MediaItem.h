@@ -3,10 +3,10 @@
 #define __MEDIAITEM_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "MediaArtistNativeHelper.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Media::Videoeditor::MediaArtistNativeHelper;
 
@@ -284,7 +284,7 @@ public:
         /* [in] */ IMediaItemGetThumbnailListCallback* listcallback) = 0;
 
     // This is for compatibility, only used in tests.
-    CARAPI GetThumbnailListEx(
+    CARAPI GetThumbnailList(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int64 startMs,
@@ -362,7 +362,7 @@ public:
      * @param newStartTimeMs The new start time of the effect or overlay
      * @param newDurationMs The new duration of the effect or overlay
      */
-    virtual CARAPI InvalidateTransitionsEx(
+    virtual CARAPI InvalidateTransitions(
         /* [in ]*/ Int64 oldStartTimeMs,
         /* [in ]*/ Int64 oldDurationMs,
         /* [in ]*/ Int64 newStartTimeMs,

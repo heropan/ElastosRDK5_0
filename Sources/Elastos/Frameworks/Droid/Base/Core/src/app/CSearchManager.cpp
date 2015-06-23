@@ -71,7 +71,7 @@ ECode CSearchManager::StartSearch(
     /* [in] */ IBundle *appSearchData,
     /* [in] */ Boolean globalSearch)
 {
-    return StartSearchEx(initialQuery, selectInitialQuery, launchActivity,
+    return StartSearch(initialQuery, selectInitialQuery, launchActivity,
             appSearchData, globalSearch, NULL);
 }
 
@@ -81,7 +81,7 @@ ECode CSearchManager::StartSearch(
  *
  * @hide
  */
-ECode CSearchManager::StartSearchEx(
+ECode CSearchManager::StartSearch(
     /* [in] */ const String &initialQuery,
     /* [in] */ Boolean selectInitialQuery,
     /* [in] */ IComponentName launchActivity,
@@ -284,7 +284,7 @@ ECode CSearchManager::GetSuggestions(
     /* [out] */ ICursor **cursor)
 {
 
-    return GetSuggestionsEx(searchable, query, -1, cursor);
+    return GetSuggestions(searchable, query, -1, cursor);
 }
 
 /**
@@ -298,7 +298,7 @@ ECode CSearchManager::GetSuggestions(
  *
  * @hide because SearchableInfo is not part of the API.
  */
-ECode CSearchManager::GetSuggestionsEx(
+ECode CSearchManager::GetSuggestions(
     /* [in] */ ISearchableInfo *searchable,
     /* [in] */ const String &query,
     /* [in] */ Int32 limit,
@@ -383,7 +383,7 @@ ECode CSearchManager::GetAssistIntent(
     /* [in] */ IContext *context,
     /* [out] */ IIntent **intent)
 {
-    return GetAssistIntentEx(context, UserHandle::MyUserId(), intent);
+    return GetAssistIntent(context, UserHandle::MyUserId(), intent);
 }
 
 /**
@@ -392,7 +392,7 @@ ECode CSearchManager::GetAssistIntent(
  *
  * @hide
  */
-ECode CSearchManager::GetAssistIntentEx(
+ECode CSearchManager::GetAssistIntent(
     /* [in] */ IContext *context,
     /* [in] */ Int32 userHandle,
     /* [out] */ IIntent **intent)
@@ -414,7 +414,7 @@ ECode CSearchManager::GetAssistIntentEx(
     CIntent::New(IIntent::ACTION_ASSIST, &pIntent);
     pIntent->SetComponent(comp);
     *intent = pIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     //} catch (RemoteException re) {
     //    Log.e(TAG, "getAssistIntent() failed: " + re);
     //    return null;

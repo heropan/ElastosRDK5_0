@@ -4,8 +4,8 @@
 #include "app/CBackupAgentBackupServiceBinder.h"
 #include "app/backup/CFullBackup.h"
 #endif
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 //#include "os/Binder.h"
 //#include "utils/log.h"
 //#include "app/backup/CBackupDataOutput.h"
@@ -403,7 +403,7 @@ ECode BackupAgent::OnBind(
 {
     VALIDATE_NOT_NULL(binder);
     *binder = mBinder;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -541,7 +541,7 @@ ECode BackupAgent::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -565,7 +565,7 @@ ECode BackupAgent::GetBaseContext(
     VALIDATE_NOT_NULL(ctx);
 
     *ctx = mBase;
-    INTERFACE_ADDREF(*ctx)
+    REFCOUNT_ADD(*ctx)
     return NOERROR;
 }
 
@@ -649,7 +649,7 @@ ECode BackupAgent::GetString(
     return res->GetString(resId, str);
 }
 
-ECode BackupAgent::GetStringEx(
+ECode BackupAgent::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
@@ -658,7 +658,7 @@ ECode BackupAgent::GetStringEx(
     *str = String(NULL);
     AutoPtr<IResources> res;
     GetResources((IResources**)&res);
-    //return res->GetStringEx(resId, formatArgs, str);
+    //return res->GetString(resId, formatArgs, str);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -693,7 +693,7 @@ ECode BackupAgent::ObtainStyledAttributes(
     return theme->ObtainStyledAttributes(attrs, styles);
 }
 
-ECode BackupAgent::ObtainStyledAttributesEx(
+ECode BackupAgent::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
@@ -702,10 +702,10 @@ ECode BackupAgent::ObtainStyledAttributesEx(
     *styles = NULL;
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    return theme->ObtainStyledAttributesEx(resid, attrs, styles);
+    return theme->ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode BackupAgent::ObtainStyledAttributesEx2(
+ECode BackupAgent::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
@@ -714,10 +714,10 @@ ECode BackupAgent::ObtainStyledAttributesEx2(
     *styles = NULL;
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    return theme->ObtainStyledAttributesEx2(set, attrs, 0, 0, styles);
+    return theme->ObtainStyledAttributes(set, attrs, 0, 0, styles);
 }
 
-ECode BackupAgent::ObtainStyledAttributesEx3(
+ECode BackupAgent::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -728,7 +728,7 @@ ECode BackupAgent::ObtainStyledAttributesEx3(
     *styles = NULL;
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    return theme->ObtainStyledAttributesEx2(set, attrs,
+    return theme->ObtainStyledAttributes(set, attrs,
             defStyleAttr, defStyleRes, styles);
 }
 
@@ -879,7 +879,7 @@ ECode BackupAgent::OpenOrCreateDatabase(
     return mBase->OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode BackupAgent::OpenOrCreateDatabaseEx(
+ECode BackupAgent::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -887,7 +887,7 @@ ECode BackupAgent::OpenOrCreateDatabaseEx(
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
     VALIDATE_NOT_NULL(sqliteDB)
-    return mBase->OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return mBase->OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode BackupAgent::DeleteDatabase(
@@ -947,10 +947,10 @@ ECode BackupAgent::SetWallpaper(
     return mBase->SetWallpaper(bitmap);
 }
 
-ECode BackupAgent::SetWallpaperEx(
+ECode BackupAgent::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return mBase->SetWallpaperEx(data);
+    return mBase->SetWallpaper(data);
 }
 
 ECode BackupAgent::ClearWallpaper()
@@ -964,11 +964,11 @@ ECode BackupAgent::StartActivity(
     return mBase->StartActivity(intent);
 }
 
-ECode BackupAgent::StartActivityEx(
+ECode BackupAgent::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return mBase->StartActivityEx(intent, options);
+    return mBase->StartActivity(intent, options);
 }
 
 ECode BackupAgent::StartActivityAsUser(
@@ -978,12 +978,12 @@ ECode BackupAgent::StartActivityAsUser(
     return mBase->StartActivityAsUser(intent, user);
 }
 
-ECode BackupAgent::StartActivityAsUserEx(
+ECode BackupAgent::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
 {
-    return mBase->StartActivityAsUserEx(intent, options, user);
+    return mBase->StartActivityAsUser(intent, options, user);
 }
 
 ECode BackupAgent::StartActivities(
@@ -992,11 +992,11 @@ ECode BackupAgent::StartActivities(
     return mBase->StartActivities(intents);
 }
 
-ECode BackupAgent::StartActivitiesEx(
+ECode BackupAgent::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
-    return mBase->StartActivitiesEx(intents, options);
+    return mBase->StartActivities(intents, options);
 }
 
 ECode BackupAgent::StartActivitiesAsUser(
@@ -1017,7 +1017,7 @@ ECode BackupAgent::StartIntentSender(
     return mBase->StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags);
 }
 
-ECode BackupAgent::StartIntentSenderEx(
+ECode BackupAgent::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -1025,7 +1025,7 @@ ECode BackupAgent::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return mBase->StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
+    return mBase->StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
 }
 
 ECode BackupAgent::SendBroadcast(
@@ -1034,11 +1034,11 @@ ECode BackupAgent::SendBroadcast(
     return mBase->SendBroadcast(intent);
 }
 
-ECode BackupAgent::SendBroadcastEx(
+ECode BackupAgent::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return mBase->SendBroadcastEx(intent, receiverPermission);
+    return mBase->SendBroadcast(intent, receiverPermission);
 }
 
 ECode BackupAgent::SendOrderedBroadcast(
@@ -1048,7 +1048,7 @@ ECode BackupAgent::SendOrderedBroadcast(
     return mBase->SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode BackupAgent::SendOrderedBroadcastEx(
+ECode BackupAgent::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -1057,7 +1057,7 @@ ECode BackupAgent::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return mBase->SendOrderedBroadcastEx(intent, receiverPermission, resultReceiver, scheduler,
+    return mBase->SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler,
         initialCode, initialData, initialExtras);
 }
 
@@ -1068,12 +1068,12 @@ ECode BackupAgent::SendBroadcastAsUser(
     return mBase->SendBroadcastAsUser(intent, user);
 }
 
-ECode BackupAgent::SendBroadcastAsUserEx(
+ECode BackupAgent::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return mBase->SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return mBase->SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode BackupAgent::SendOrderedBroadcastAsUser(
@@ -1149,14 +1149,14 @@ ECode BackupAgent::RegisterReceiver(
     return mBase->RegisterReceiver(receiver, filter, stickyIntent);
 }
 
-ECode BackupAgent::RegisterReceiverEx(
+ECode BackupAgent::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** stickyIntent)
 {
-    return mBase->RegisterReceiverEx(receiver, filter, broadcastPermission, scheduler, stickyIntent);
+    return mBase->RegisterReceiver(receiver, filter, broadcastPermission, scheduler, stickyIntent);
 }
 
 ECode BackupAgent::RegisterReceiverAsUser(
@@ -1220,7 +1220,7 @@ ECode BackupAgent::BindService(
     return mBase->BindService(service, conn, flags, succeeded);
 }
 
-ECode BackupAgent::BindServiceEx(
+ECode BackupAgent::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
     /* [in] */ Int32 flags,
@@ -1228,7 +1228,7 @@ ECode BackupAgent::BindServiceEx(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    return mBase->BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return mBase->BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode BackupAgent::UnbindService(
@@ -1347,7 +1347,7 @@ ECode BackupAgent::CheckCallingOrSelfUriPermission(
     return mBase->CheckCallingOrSelfUriPermission(uri, modeFlags, permissionId);
 }
 
-ECode BackupAgent::CheckUriPermissionEx(
+ECode BackupAgent::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1356,7 +1356,7 @@ ECode BackupAgent::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32 * result)
 {
-    return mBase->CheckUriPermissionEx(uri, readPermission, writePermission,
+    return mBase->CheckUriPermission(uri, readPermission, writePermission,
                     pid, uid, modeFlags, result);
 }
 
@@ -1386,7 +1386,7 @@ ECode BackupAgent::EnforceCallingOrSelfUriPermission(
     return mBase->EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode BackupAgent::EnforceUriPermissionEx(
+ECode BackupAgent::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1395,7 +1395,7 @@ ECode BackupAgent::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return mBase->EnforceUriPermissionEx(uri, readPermission, writePermission,
+    return mBase->EnforceUriPermission(uri, readPermission, writePermission,
             pid, uid, modeFlags, message);
 }
 

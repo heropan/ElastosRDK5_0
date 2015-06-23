@@ -63,11 +63,11 @@ public:
         /* [in] */ Int32 cqi,
         /* [in] */ Int32 timingAdvance);
 
-    CARAPI InitializeEx(
+    CARAPI Initialize(
         /* [in] */ ISignalStrength* ss,
         /* [in] */ Int32 timingAdvance);
 
-    CARAPI CopyEx(
+    CARAPI Copy(
         /* [out] */ ICellSignalStrengthLte** css);
 
     CARAPI ToString(

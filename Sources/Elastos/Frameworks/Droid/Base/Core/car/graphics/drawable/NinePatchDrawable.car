@@ -47,7 +47,7 @@ module
              * @see android.graphics.Bitmap#setDensity(int)
              * @see android.graphics.Bitmap#getDensity()
              */
-            SetTargetDensityEx(
+            SetTargetDensity(
                 [in] IDisplayMetrics* metrics);
 
             /**
@@ -58,7 +58,7 @@ module
              * @see android.graphics.Bitmap#setDensity(int)
              * @see android.graphics.Bitmap#getDensity()
              */
-            SetTargetDensityEx2(
+            SetTargetDensity(
                 [in] Int32 density);
 
             GetPaint(

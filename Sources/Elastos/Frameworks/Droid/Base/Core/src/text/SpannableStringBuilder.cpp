@@ -3,10 +3,10 @@
 #include "text/CSpannableStringBuilder.h"
 #include "text/TextUtils.h"
 #include "util/ArrayUtils.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 #include "text/Selection.h"
-#include <elastos/Math.h>
-#include <elastos/Character.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::IComparable;
@@ -310,7 +310,7 @@ ECode SpannableStringBuilder::Replace(
     /* [in] */ Int32 tbend)
 {
     FAIL_RETURN(CheckRange(String("replace"), start, end));
-    FAIL_RETURN(CheckRangeEx(_tb, tbstart, tbend));
+    FAIL_RETURN(CheckRange(_tb, tbstart, tbend));
     Int32 filtercount = mFilters->GetLength();
     AutoPtr<ICharSequence> tb = _tb;
     for (Int32 i = 0; i < filtercount; i++) {
@@ -634,7 +634,7 @@ ECode SpannableStringBuilder::SubSequence(
         (ICharSequence*)this->Probe(Elastos::Core::EIID_ICharSequence), start, end,
         (ISpannableStringBuilder**)&sub));
     *cs = ICharSequence::Probe(sub);
-    INTERFACE_ADDREF(*cs);
+    REFCOUNT_ADD(*cs);
     return NOERROR;
 }
 
@@ -844,15 +844,15 @@ Float SpannableStringBuilder::GetTextRunAdvances(
     Int32 len = end - start;
 
     if (end <= mGapStart) {
-        p->GetTextRunAdvancesEx(*mText, start, len, contextStart, contextLen,
+        p->GetTextRunAdvances(*mText, start, len, contextStart, contextLen,
                 flags, advances, advancesPos, reserved, &ret);
     } else if (start >= mGapStart) {
-        p->GetTextRunAdvancesEx(*mText, start + mGapLength, len,
+        p->GetTextRunAdvances(*mText, start + mGapLength, len,
                 contextStart + mGapLength, contextLen, flags, advances, advancesPos, reserved, &ret);
     } else {
         AutoPtr< ArrayOf<Char32> > buf = TextUtils::Obtain(contextLen);
         GetChars(contextStart, contextEnd, buf, 0);
-        p->GetTextRunAdvancesEx(*buf, start - contextStart, len,
+        p->GetTextRunAdvances(*buf, start - contextStart, len,
                0, contextLen, flags, advances, advancesPos, reserved, &ret);
         TextUtils::Recycle(buf);
     }
@@ -1407,7 +1407,7 @@ ECode SpannableStringBuilder::CheckRange(
     return NOERROR;
 }
 
-ECode SpannableStringBuilder::CheckRangeEx(
+ECode SpannableStringBuilder::CheckRange(
     /* [in] */ ICharSequence* tb,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

@@ -3,8 +3,8 @@
 #define __CINPUTMETHODBUTTON_H__
 
 #include "_CInputMethodButton.h"
-#include "view/ViewMacro.h"
-#include "widget/ImageViewMacro.h"
+
+
 #include "systemui/statusbar/tablet/InputMethodButton.h"
 
 namespace Elastos {
@@ -42,7 +42,7 @@ public:
     CARAPI SetScreenLocked(
         /* [in] */ Boolean available);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

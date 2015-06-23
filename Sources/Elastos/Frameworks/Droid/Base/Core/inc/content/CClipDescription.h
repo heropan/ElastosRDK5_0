@@ -4,7 +4,7 @@
 
 #include "_CClipDescription.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;

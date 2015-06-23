@@ -1,7 +1,7 @@
 
 #include "util/FinitePool.h"
 #include "ext/frameworkdef.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -77,7 +77,7 @@ ECode FinitePool::Acquire(
 
     if (mRoot != NULL) {
         *element = mRoot;
-        INTERFACE_ADDREF(*element);
+        REFCOUNT_ADD(*element);
 
         mRoot = NULL;
         (*element)->GetNextPoolable((IPoolable**)&mRoot);

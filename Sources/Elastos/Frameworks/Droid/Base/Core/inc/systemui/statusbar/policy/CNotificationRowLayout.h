@@ -2,9 +2,9 @@
 #define __CNOTIFICATIONROWLAYOUT_H_
 
 #include "_CNotificationRowLayout.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/policy/NotificationRowLayout.h"
 
 namespace Elastos {
@@ -82,7 +82,7 @@ public:
         /* [in] */ Float touchY,
         /* [out] */ IView** view);
 
-    CARAPI GetChildAtPositionEx(
+    CARAPI GetChildAtPosition(
         /* [in] */ Float touchX,
         /* [in] */ Float touchY,
         /* [out] */ IView** view);
@@ -100,7 +100,7 @@ public:
     CARAPI DismissRowAnimated(
         /* [in] */ IView* child);
 
-    CARAPI DismissRowAnimatedEx(
+    CARAPI DismissRowAnimated(
         /* [in] */ IView* child,
         /* [in] */ Int32 vel);
 };

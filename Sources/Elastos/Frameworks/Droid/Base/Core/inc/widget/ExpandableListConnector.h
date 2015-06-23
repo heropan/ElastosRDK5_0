@@ -7,7 +7,7 @@
 #include "widget/BaseAdapter.h"
 #include "widget/GroupMetadata.h"
 #include "widget/PositionMetadata.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {

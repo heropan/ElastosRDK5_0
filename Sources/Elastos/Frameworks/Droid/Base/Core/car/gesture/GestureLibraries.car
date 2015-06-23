@@ -15,7 +15,7 @@ module
             [in] String path,
             [out] IGestureLibrary **gestureLib);
 
-        FromFileEx(
+        FromFile(
             [in] IFile *path,
             [out] IGestureLibrary **gestureLib);
 

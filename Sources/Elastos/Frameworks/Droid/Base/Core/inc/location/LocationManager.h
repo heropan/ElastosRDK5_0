@@ -7,11 +7,10 @@
 #endif
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::App::IPendingIntent;

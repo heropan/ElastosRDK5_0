@@ -1,6 +1,6 @@
 #include "CAccessibilityServiceInfoHelper.h"
 #include "CAccessibilityServiceInfo.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 

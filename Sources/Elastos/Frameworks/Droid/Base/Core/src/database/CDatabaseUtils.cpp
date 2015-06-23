@@ -101,19 +101,19 @@ ECode CDatabaseUtils::DumpCursor(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::DumpCursorEx(
+ECode CDatabaseUtils::DumpCursor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IPrintStream* stream)
 {
-    DatabaseUtils::DumpCursorEx(cursor, stream);
+    DatabaseUtils::DumpCursor(cursor, stream);
     return NOERROR;
 }
 
-ECode CDatabaseUtils::DumpCursorEx2(
+ECode CDatabaseUtils::DumpCursor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IStringBuilder* sb)
 {
-    DatabaseUtils::DumpCursorEx2(cursor, sb);
+    DatabaseUtils::DumpCursor(cursor, sb);
     return NOERROR;
 }
 
@@ -133,19 +133,19 @@ ECode CDatabaseUtils::DumpCurrentRow(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::DumpCurrentRowEx(
+ECode CDatabaseUtils::DumpCurrentRow(
     /* [in] */ ICursor* cursor,
     /* [in] */ IPrintStream* stream)
 {
-    DatabaseUtils::DumpCurrentRowEx(cursor, stream);
+    DatabaseUtils::DumpCurrentRow(cursor, stream);
     return NOERROR;
 }
 
-ECode CDatabaseUtils::DumpCurrentRowEx2(
+ECode CDatabaseUtils::DumpCurrentRow(
     /* [in] */ ICursor* cursor,
     /* [in] */ IStringBuilder* sb)
 {
-    DatabaseUtils::DumpCurrentRowEx2(cursor, sb);
+    DatabaseUtils::DumpCurrentRow(cursor, sb);
     return NOERROR;
 }
 
@@ -177,13 +177,13 @@ ECode CDatabaseUtils::CursorStringToInsertHelper(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::CursorStringToContentValuesEx(
+ECode CDatabaseUtils::CursorStringToContentValues(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values,
     /* [in] */ const String& key)
 {
-    DatabaseUtils::CursorStringToContentValuesEx(cursor, field, values, key);
+    DatabaseUtils::CursorStringToContentValues(cursor, field, values, key);
     return NOERROR;
 }
 
@@ -196,13 +196,13 @@ ECode CDatabaseUtils::CursorInt32ToContentValues(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::CursorInt32ToContentValuesEx(
+ECode CDatabaseUtils::CursorInt32ToContentValues(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values,
     /* [in] */ const String& key)
 {
-    DatabaseUtils::CursorInt32ToContentValuesEx(cursor, field, values, key);
+    DatabaseUtils::CursorInt32ToContentValues(cursor, field, values, key);
     return NOERROR;
 }
 
@@ -215,13 +215,13 @@ ECode CDatabaseUtils::CursorInt64ToContentValues(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::CursorInt64ToContentValuesEx(
+ECode CDatabaseUtils::CursorInt64ToContentValues(
     /* [in] */ ICursor* cursor,
     /* [in] */ const String& field,
     /* [in] */ IContentValues* values,
     /* [in] */ const String& key)
 {
-    DatabaseUtils::CursorInt64ToContentValuesEx(cursor, field, values, key);
+    DatabaseUtils::CursorInt64ToContentValues(cursor, field, values, key);
     return NOERROR;
 }
 
@@ -262,18 +262,18 @@ ECode CDatabaseUtils::QueryNumEntries(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::QueryNumEntriesEx(
+ECode CDatabaseUtils::QueryNumEntries(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& table,
     /* [in] */ const String& selection,
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = DatabaseUtils::QueryNumEntriesEx(db, table, selection);
+    *result = DatabaseUtils::QueryNumEntries(db, table, selection);
     return NOERROR;
 }
 
-ECode CDatabaseUtils::QueryNumEntriesEx2(
+ECode CDatabaseUtils::QueryNumEntries(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& table,
     /* [in] */ const String& selection,
@@ -281,7 +281,7 @@ ECode CDatabaseUtils::QueryNumEntriesEx2(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = DatabaseUtils::QueryNumEntriesEx2(db, table, selection, selectionArgs);
+    *result = DatabaseUtils::QueryNumEntries(db, table, selection, selectionArgs);
     return NOERROR;
 }
 
@@ -296,13 +296,13 @@ ECode CDatabaseUtils::Int64ForQuery(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::Int64ForQueryEx(
+ECode CDatabaseUtils::Int64ForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = DatabaseUtils::Int64ForQueryEx(prog, selectionArgs);
+    *result = DatabaseUtils::Int64ForQuery(prog, selectionArgs);
     return NOERROR;
 }
 
@@ -317,13 +317,13 @@ ECode CDatabaseUtils::StringForQuery(
     return NOERROR;
 }
 
-ECode CDatabaseUtils::StringForQueryEx(
+ECode CDatabaseUtils::StringForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = DatabaseUtils::StringForQueryEx(prog, selectionArgs);
+    *result = DatabaseUtils::StringForQuery(prog, selectionArgs);
     return NOERROR;
 }
 
@@ -336,19 +336,19 @@ ECode CDatabaseUtils::BlobFileDescriptorForQuery(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IParcelFileDescriptor> desc = DatabaseUtils::BlobFileDescriptorForQuery(db, query, selectionArgs);
     *result = desc;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
-ECode CDatabaseUtils::BlobFileDescriptorForQueryEx(
+ECode CDatabaseUtils::BlobFileDescriptorForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ IParcelFileDescriptor** result)
 {
     VALIDATE_NOT_NULL(result)
-    AutoPtr<IParcelFileDescriptor> desc = DatabaseUtils::BlobFileDescriptorForQueryEx(prog, selectionArgs);
+    AutoPtr<IParcelFileDescriptor> desc = DatabaseUtils::BlobFileDescriptorForQuery(prog, selectionArgs);
     *result = desc;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

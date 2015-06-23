@@ -48,7 +48,7 @@ ECode StandaloneActionMode::SetSubtitle(
     return mContextView->SetSubtitle(subtitle);
 }
 
-ECode StandaloneActionMode::SetTitleEx(
+ECode StandaloneActionMode::SetTitle(
     /* [in] */ Int32 resId)
 {
     String str;
@@ -58,7 +58,7 @@ ECode StandaloneActionMode::SetTitleEx(
     return SetTitle(title);
 }
 
-ECode StandaloneActionMode::SetSubtitleEx(
+ECode StandaloneActionMode::SetSubtitle(
     /* [in] */ Int32 resId)
 {
     String str;
@@ -117,7 +117,7 @@ ECode StandaloneActionMode::GetMenu(
 {
     VALIDATE_NOT_NULL(menu);
     *menu = mMenu;
-    INTERFACE_ADDREF(*menu);
+    REFCOUNT_ADD(*menu);
     return NOERROR;
 }
 

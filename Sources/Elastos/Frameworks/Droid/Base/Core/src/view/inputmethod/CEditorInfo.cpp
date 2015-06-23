@@ -125,7 +125,7 @@ ECode CEditorInfo::GetActionLabel(
 {
     VALIDATE_NOT_NULL(actionLabel);
     *actionLabel = mActionLabel;
-    INTERFACE_ADDREF(*actionLabel);
+    REFCOUNT_ADD(*actionLabel);
     return NOERROR;
 }
 
@@ -201,7 +201,7 @@ ECode CEditorInfo::GetHintText(
 {
     VALIDATE_NOT_NULL(hintText);
     *hintText = mHintText;
-    INTERFACE_ADDREF(*hintText);
+    REFCOUNT_ADD(*hintText);
     return NOERROR;
 }
 
@@ -217,7 +217,7 @@ ECode CEditorInfo::GetLabel(
 {
     VALIDATE_NOT_NULL(label);
     *label = mLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -278,7 +278,7 @@ ECode CEditorInfo::GetExtras(
 {
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
     return NOERROR;
 }
 

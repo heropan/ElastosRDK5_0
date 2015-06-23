@@ -3,16 +3,16 @@
 #include "webkit/NativeUtil.h"
 #include "webkit/WebTextView.h"
 #include "webkit/WebViewDatabaseClassic.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CInteger64;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
@@ -210,7 +210,7 @@ void WebViewDatabaseClassic::UpgradeDatabaseFromV10ToV11()
 
     // Update form autocomplete  URLs to match new ICS formatting.
     AutoPtr<ICursor> c;
-    sDatabase->QueryEx2(mTableNames[TABLE_FORMURL_ID], NULL, String(NULL),
+    sDatabase->Query(mTableNames[TABLE_FORMURL_ID], NULL, String(NULL),
             NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
     Boolean succeeded = FALSE;
     while (c->MoveToNext(&succeeded), succeeded) {
@@ -395,7 +395,7 @@ Boolean WebViewDatabaseClassic::HasEntries(
     AutoPtr<ICursor> cursor;
     Boolean ret = FALSE;
     //try {
-    sDatabase->QueryEx2(mTableNames[tableId], ID_PROJECTION,
+    sDatabase->Query(mTableNames[tableId], ID_PROJECTION,
             String(NULL), NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
     Boolean succeeded = FALSE;
     cursor->MoveToFirst(&succeeded);
@@ -479,7 +479,7 @@ AutoPtr< ArrayOf<String> > WebViewDatabaseClassic::GetUsernamePassword(
         //try {
         AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
         (*selectionArgs)[0] = schemePlusHost;
-        sDatabase->QueryEx2(mTableNames[TABLE_PASSWORD_ID],
+        sDatabase->Query(mTableNames[TABLE_PASSWORD_ID],
                 columns, selection, selectionArgs, String(NULL),
                 String(NULL), String(NULL), (ICursor**)&cursor);
         Boolean succeeded = FALSE;
@@ -613,7 +613,7 @@ AutoPtr< ArrayOf<String> > WebViewDatabaseClassic::GetHttpAuthUsernamePassword(
         AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(2);
         (*selectionArgs)[0] = host;
         (*selectionArgs)[1] = realm;
-        sDatabase->QueryEx2(mTableNames[TABLE_HTTPAUTH_ID],
+        sDatabase->Query(mTableNames[TABLE_HTTPAUTH_ID],
                 columns, selection, selectionArgs, String(NULL),
                 String(NULL), String(NULL), (ICursor**)&cursor);
         Boolean succeeded = FALSE;
@@ -697,7 +697,7 @@ void WebViewDatabaseClassic::SetFormData(
         //try {
         AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
         (*selectionArgs)[0] = url;
-        sDatabase->QueryEx2(mTableNames[TABLE_FORMURL_ID],
+        sDatabase->Query(mTableNames[TABLE_FORMURL_ID],
                 ID_PROJECTION, selection, selectionArgs, String(NULL), String(NULL),
                 String(NULL), (ICursor**)&cursor);
         Boolean succeeded = FALSE;
@@ -781,7 +781,7 @@ AutoPtr<IArrayList> WebViewDatabaseClassic::GetFormData(
         //try {
             AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
             (*selectionArgs)[0] = url;
-            sDatabase->QueryEx2(mTableNames[TABLE_FORMURL_ID],
+            sDatabase->Query(mTableNames[TABLE_FORMURL_ID],
                     ID_PROJECTION, urlSelection, selectionArgs, String(NULL),
                     String(NULL), String(NULL), (ICursor**)&cursor);
             Boolean succeeded = FALSE;
@@ -798,7 +798,7 @@ AutoPtr<IArrayList> WebViewDatabaseClassic::GetFormData(
                     AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(2);
                     (*selectionArgs)[0] = StringUtils::Int64ToString(urlid);
                     (*selectionArgs)[1] = name;
-                    sDatabase->QueryEx2(
+                    sDatabase->Query(
                             mTableNames[TABLE_FORMDATA_ID],
                             columns,
                             dataSelection,

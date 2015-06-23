@@ -3,10 +3,10 @@
 #define  __ACTIONMENU_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "view/menu/ActionMenuItem.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
@@ -37,18 +37,18 @@ public:
         /* [in] */ ICharSequence* title,
         /* [out] */ IMenuItem** item);
 
-    CARAPI AddEx(
+    CARAPI Add(
         /* [in] */ Int32 titleRes,
         /* [out] */ IMenuItem** item);
 
-    CARAPI AddEx3(
+    CARAPI Add(
         /* [in] */ Int32 groupId,
         /* [in] */ Int32 itemId,
         /* [in] */ Int32 order,
         /* [in] */ Int32 titleRes,
         /* [out] */ IMenuItem** item);
 
-    CARAPI AddEx2(
+    CARAPI Add(
         /* [in] */ Int32 groupId,
         /* [in] */ Int32 itemId,
         /* [in] */ Int32 order,
@@ -70,18 +70,18 @@ public:
         /* [in] */ ICharSequence* title,
         /* [out] */ ISubMenu** menu);
 
-    CARAPI AddSubMenuEx(
+    CARAPI AddSubMenu(
         /* [in] */ Int32 titleRes,
         /* [out] */ ISubMenu** menu);
 
-    CARAPI AddSubMenuEx2(
+    CARAPI AddSubMenu(
         /* [in] */ Int32 groupId,
         /* [in] */ Int32 itemId,
         /* [in] */ Int32 order,
         /* [in] */ ICharSequence* title,
         /* [out] */ ISubMenu** menu);
 
-    CARAPI AddSubMenuEx3(
+    CARAPI AddSubMenu(
         /* [in] */ Int32 groupId,
         /* [in] */ Int32 itemId,
         /* [in] */ Int32 order,

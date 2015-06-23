@@ -2,13 +2,13 @@
 #define __SERVICEWATCHER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/Math.h>
-#include <elastos/List.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/List.h>
 #include <Elastos.Droid.Core.h>
 #include <content/PackageMonitor.h>
 #include <os/UserHandle.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::UserHandle;

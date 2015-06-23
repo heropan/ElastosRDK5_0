@@ -57,7 +57,7 @@ ECode CAudioRoutesInfo::GetBluetoothName(
 {
     VALIDATE_NOT_NULL(result);
     *result = mBluetoothName;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

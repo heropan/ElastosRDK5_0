@@ -4,9 +4,8 @@
 
 #include "_CGLSurfaceView.h"
 #include "GLSurfaceView.h"
-#include "view/ViewMacro.h"
-#include "view/SurfaceViewMacro.h"
-#include "GLSurfaceViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

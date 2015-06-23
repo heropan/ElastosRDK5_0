@@ -320,7 +320,7 @@ module
          * @param event The other event.
          * @return An instance.
          */
-        ObtainEx(
+        Obtain(
             [in] IAccessibilityEvent* otherEvent,
             [out] IAccessibilityEvent** event);
 
@@ -330,7 +330,7 @@ module
          *
          * @return An instance.
          */
-        ObtainEx2(
+        Obtain(
             [out] IAccessibilityEvent** event);
 
         /**

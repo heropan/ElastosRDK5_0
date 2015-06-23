@@ -3,7 +3,7 @@
 #include "content/res/CResources.h"
 #include "util/XmlUtils.h"
 #include "R.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -175,7 +175,7 @@ void CAutoText::Init(
             }
 
             String src;
-            parser->GetAttributeValueEx(String(NULL), String("src"), &src);
+            parser->GetAttributeValue(String(NULL), String("src"), &src);
             Int32 next;
             if ((parser->Next(&next), next) == IXmlPullParser::TEXT) {
                 String dest;

@@ -55,7 +55,7 @@ public:
         /* [in] */ Int32 ss,
         /* [in] */ Int32 ber);
 
-    CARAPI CopyEx(
+    CARAPI Copy(
         /* [out] */ ICellSignalStrengthGsm** css);
 
     CARAPI ToString(

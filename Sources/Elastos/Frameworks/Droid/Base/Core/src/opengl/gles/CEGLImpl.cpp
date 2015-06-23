@@ -13,7 +13,7 @@
 #include <skia/core/SkPixelRef.h>
 #include <ui/ANativeObjectBase.h>
 #include <ext/frameworkext.h>
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastosx::Microedition::Khronos::Egl::IEGL10;
 using Elastosx::Microedition::Khronos::Egl::IEGL11;
@@ -169,7 +169,7 @@ ECode CEGLImpl::EglCreateContext(
         AutoPtr<XIEGLContext> noContext;
         helper->GetNoContext((XIEGLContext**)&noContext);
         *context = noContext;
-        INTERFACE_ADDREF(*context);
+        REFCOUNT_ADD(*context);
         return NOERROR;
     }
     CEGLContextImpl::New(eglContextId, context);
@@ -198,7 +198,7 @@ ECode CEGLImpl::EglCreatePbufferSurface(
         AutoPtr<XIEGLSurface> noSurface;
         helper->GetNoSurface((XIEGLSurface**)&noSurface);
         *surface = noSurface;
-        INTERFACE_ADDREF(*surface);
+        REFCOUNT_ADD(*surface);
         return NOERROR;
     }
     CEGLSurfaceImpl::New(eglSurfaceId, surface);
@@ -264,11 +264,11 @@ ECode CEGLImpl::EglCreatePixmapSurface(
         AutoPtr<XIEGLSurface> noSurface;
         helper->GetNoSurface((XIEGLSurface**)&noSurface);
         *surface = noSurface;
-        INTERFACE_ADDREF(*surface);
+        REFCOUNT_ADD(*surface);
         return NOERROR;
     }
     *surface = out_sur;
-    INTERFACE_ADDREF(*surface)
+    REFCOUNT_ADD(*surface)
     return NOERROR;
 }
 
@@ -309,7 +309,7 @@ ECode CEGLImpl::EglCreateWindowSurface(
         AutoPtr<XIEGLSurface> noSurface;
         helper->GetNoSurface((XIEGLSurface**)&noSurface);
         *surface = noSurface;
-        INTERFACE_ADDREF(*surface);
+        REFCOUNT_ADD(*surface);
         return NOERROR;
     }
     CEGLSurfaceImpl::New(eglSurfaceId, surface);
@@ -422,7 +422,7 @@ ECode CEGLImpl::EglGetCurrentContext(
         AutoPtr<XIEGLContext> noContext;
         helper->GetNoContext((XIEGLContext**)&noContext);
         *context = noContext;
-        INTERFACE_ADDREF(*context);
+        REFCOUNT_ADD(*context);
         return NOERROR;
     }
     if (mContext->mEGLContext != value) {
@@ -430,7 +430,7 @@ ECode CEGLImpl::EglGetCurrentContext(
         CEGLContextImpl::New(value, (XIEGLContext**)&mContext);
     }
     *context = mContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -444,7 +444,7 @@ ECode CEGLImpl::EglGetCurrentDisplay(
         AutoPtr<XIEGLDisplay> noDisplay;
         helper->GetNoDisplay((XIEGLDisplay**)&noDisplay);
         *display = noDisplay;
-        INTERFACE_ADDREF(*display);
+        REFCOUNT_ADD(*display);
         return NOERROR;
     }
     if (mDisplay->mEGLDisplay != value){
@@ -452,7 +452,7 @@ ECode CEGLImpl::EglGetCurrentDisplay(
         CEGLDisplayImpl::New(value, (XIEGLDisplay**)&mDisplay);
     }
     *display = mDisplay;
-    INTERFACE_ADDREF(*display);
+    REFCOUNT_ADD(*display);
     return NOERROR;
 }
 
@@ -467,13 +467,13 @@ ECode CEGLImpl::EglGetCurrentSurface(
 
     if ((readdraw != EGL_READ) && (readdraw != EGL_DRAW)) {
         *surface = noSurface;
-        INTERFACE_ADDREF(*surface)
+        REFCOUNT_ADD(*surface)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 value = (Int32)eglGetCurrentSurface(readdraw);
     if (value == 0) {
         *surface = noSurface;
-        INTERFACE_ADDREF(*surface)
+        REFCOUNT_ADD(*surface)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (mSurface->mEGLSurface != value){
@@ -481,7 +481,7 @@ ECode CEGLImpl::EglGetCurrentSurface(
         CEGLSurfaceImpl::New(value, (XIEGLSurface**)&mSurface);
     }
     *surface = mSurface;
-    INTERFACE_ADDREF(*surface);
+    REFCOUNT_ADD(*surface);
     return NOERROR;
 }
 
@@ -496,7 +496,7 @@ ECode CEGLImpl::EglGetDisplay(
         AutoPtr<XIEGLDisplay> noDisplay;
         helper->GetNoDisplay((XIEGLDisplay**)&noDisplay);
         *display = noDisplay;
-        INTERFACE_ADDREF(*display);
+        REFCOUNT_ADD(*display);
         return NOERROR;
     }
     if (mDisplay->mEGLDisplay != value) {
@@ -504,7 +504,7 @@ ECode CEGLImpl::EglGetDisplay(
         CEGLDisplayImpl::New(value, (XIEGLDisplay**)&mDisplay);
     }
     *display = mDisplay;
-    INTERFACE_ADDREF(*display);
+    REFCOUNT_ADD(*display);
     return NOERROR;
 }
 

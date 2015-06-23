@@ -4,10 +4,9 @@
 
 #include "_CCommandQueue.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::StatusBar::IStatusBarIcon;

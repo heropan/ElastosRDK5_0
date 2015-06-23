@@ -4,8 +4,8 @@
 #include "view/NativeInputChannel.h"
 #include "power/CPowerManagerService.h"
 #include <input/InputManager.h>
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 #include <skia/images/SkImageDecoder.h>
 #include <skia/core/SkStream.h>

@@ -1,5 +1,5 @@
 #include "widget/CRemoteViews.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -249,7 +249,7 @@ ECode CRemoteViews::SetRemoteAdapter(
 }
 
 //    @Deprecated
-ECode CRemoteViews::SetRemoteAdapterEx(
+ECode CRemoteViews::SetRemoteAdapter(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ Int32 viewId,
     /* [in] */ IIntent* intent)
@@ -420,7 +420,7 @@ ECode CRemoteViews::Apply(
 }
 
 /** @hide */
-ECode CRemoteViews::ApplyEx(
+ECode CRemoteViews::Apply(
     /* [in] */ IContext* context,
     /* [in] */ IViewGroup* parent,
     /* [in] */ IRemoteViewsOnClickHandler* handler,
@@ -441,7 +441,7 @@ ECode CRemoteViews::Reapply(
 }
 
 /** @hide */
-ECode CRemoteViews::ReapplyEx(
+ECode CRemoteViews::Reapply(
     /* [in] */ IContext* context,
     /* [in] */ IView* v,
     /* [in] */ IRemoteViewsOnClickHandler* handler)

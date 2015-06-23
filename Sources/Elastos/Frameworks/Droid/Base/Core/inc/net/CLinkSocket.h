@@ -4,9 +4,8 @@
 
 #include "_CLinkSocket.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::IInetAddress;
 using Elastos::IO::IInputStream;
@@ -43,7 +42,7 @@ public:
     CARAPI GetCapabilities(
         /* [out] */ ILinkCapabilities** result);
 
-    CARAPI GetCapabilitiesEx(
+    CARAPI GetCapabilities(
         /* [in] */ IObjectContainer* capabilities,
         /* [out] */ ILinkCapabilities** result);
 
@@ -56,23 +55,23 @@ public:
     CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr,
         /* [in] */ Int32 timeout);
 
-    CARAPI ConnectEx2(
+    CARAPI Connect(
         /* [in] */ const String& dstName,
         /* [in] */ Int32 dstPort,
         /* [in] */ Int32 timeout);
 
-    CARAPI ConnectEx3(
+    CARAPI Connect(
         /* [in] */ const String&  dstName,
         /* [in] */ Int32 dstPort);
 
-    CARAPI ConnectEx4(
+    CARAPI Connect(
         /* [in] */ Int32 timeout);
 
-    CARAPI ConnectEx5();
+    CARAPI Connect();
 
     CARAPI Close();
 

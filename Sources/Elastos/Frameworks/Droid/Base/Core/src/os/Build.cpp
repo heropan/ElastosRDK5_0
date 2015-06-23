@@ -2,7 +2,7 @@
 #ifdef DROID_CORE
 #include "os/CSystemProperties.h"
 #endif
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 
@@ -126,7 +126,7 @@ String Build::GetString(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
-    sysProp->GetEx(property, UNKNOWN, &value);
+    sysProp->Get(property, UNKNOWN, &value);
     return value;
 }
 
@@ -136,7 +136,7 @@ Int64 Build::GetLong(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String retStr;
-    sysProp->GetEx(property, UNKNOWN, &retStr);
+    sysProp->Get(property, UNKNOWN, &retStr);
     if (retStr.Equals(UNKNOWN))
         return -1;
 

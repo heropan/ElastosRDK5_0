@@ -1090,7 +1090,7 @@ module {
          * @return an EntityIterator containing one entity per event in the
          *         cursor
          */
-        NewEntityIteratorEx(
+        NewEntityIterator(
             [in] ICursor* cursor,
             [in] IContentProviderClient* provider,
             [out] IEntityIterator** iterator);
@@ -1375,7 +1375,7 @@ module {
          * @return A Cursor of instances matching the search terms in the given
          *         time range
          */
-        QueryEx(
+        Query(
             [in] IContentResolver* cr,
             [in] ArrayOf<String>* projection,
             [in] Int64 begin,

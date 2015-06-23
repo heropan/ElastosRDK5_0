@@ -3,14 +3,12 @@
 #define __DEVICEMONITOR_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Object.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/Core/Object.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IOutputStream;
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

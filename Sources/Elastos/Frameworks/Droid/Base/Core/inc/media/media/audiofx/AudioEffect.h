@@ -3,10 +3,9 @@
 #define __AUDIOEFFECT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
@@ -180,7 +179,7 @@ public:
      * @see #setParameter(byte[], byte[])
      * @hide
      */
-    CARAPI SetParameterEx(
+    CARAPI SetParameter(
         /* [in] */ Int32 param,
         /* [in] */ Int32 value,
         /* [out] */ Int32* result);
@@ -192,7 +191,7 @@ public:
      * @see #setParameter(byte[], byte[])
      * @hide
      */
-    CARAPI SetParameterEx2(
+    CARAPI SetParameter(
         /* [in] */ Int32 param,
         /* [in] */ Int16 value,
         /* [out] */ Int32* result);
@@ -204,7 +203,7 @@ public:
      * @see #setParameter(byte[], byte[])
      * @hide
      */
-    CARAPI SetParameterEx3(
+    CARAPI SetParameter(
         /* [in] */ Int32 param,
         /* [in] */ ArrayOf<Byte>* value,
         /* [out] */ Int32* result);
@@ -216,7 +215,7 @@ public:
      * @see #setParameter(byte[], byte[])
      * @hide
      */
-    CARAPI SetParameterEx4(
+    CARAPI SetParameter(
         /* [in] */ ArrayOf<Int32>* param,
         /* [in] */ ArrayOf<Int32>* value,
         /* [out] */ Int32* result);
@@ -228,7 +227,7 @@ public:
      * @see #setParameter(byte[], byte[])
      * @hide
      */
-    CARAPI SetParameterEx5(
+    CARAPI SetParameter(
         /* [in] */ ArrayOf<Int32>* param,
         /* [in] */ ArrayOf<Int16>* value,
         /* [out] */ Int32* result);
@@ -240,7 +239,7 @@ public:
      * @see #setParameter(byte[], byte[])
      * @hide
      */
-    CARAPI SetParameterEx6(
+    CARAPI SetParameter(
         /* [in] */ ArrayOf<Int32>* param,
         /* [in] */ ArrayOf<Byte>* value,
         /* [out] */ Int32* result);
@@ -275,7 +274,7 @@ public:
      * @see #getParameter(byte[], byte[])
      * @hide
      */
-    CARAPI GetParameterEx(
+    CARAPI GetParameter(
         /* [in] */ Int32 param,
         /* [out] */ ArrayOf<Byte>* value,
         /* [out] */ Int32* status);
@@ -287,7 +286,7 @@ public:
      * @see #getParameter(byte[], byte[])
      * @hide
      */
-    CARAPI GetParameterEx2(
+    CARAPI GetParameter(
         /* [in] */ Int32 param,
         /* [out] */ ArrayOf<Int32>* value,
         /* [out] */ Int32* status);
@@ -299,7 +298,7 @@ public:
      * @see #getParameter(byte[], byte[])
      * @hide
      */
-    CARAPI GetParameterEx3(
+    CARAPI GetParameter(
         /* [in] */ Int32 param,
         /* [out] */ ArrayOf<Int16>* value,
         /* [out] */ Int32* status);
@@ -311,7 +310,7 @@ public:
      * @see #getParameter(byte[], byte[])
      * @hide
      */
-    CARAPI GetParameterEx4(
+    CARAPI GetParameter(
         /* [in] */ ArrayOf<Int32>* param,
         /* [out] */ ArrayOf<Int32>* value,
         /* [out] */ Int32* status);
@@ -323,7 +322,7 @@ public:
      * @see #getParameter(byte[], byte[])
      * @hide
      */
-    CARAPI GetParameterEx5(
+    CARAPI GetParameter(
         /* [in] */ ArrayOf<Int32>* param,
         /* [out] */ ArrayOf<Int16>* value,
         /* [out] */ Int32* status);
@@ -335,7 +334,7 @@ public:
      * @see #getParameter(byte[], byte[])
      * @hide
      */
-    CARAPI GetParameterEx6(
+    CARAPI GetParameter(
         /* [in] */ ArrayOf<Int32>* param,
         /* [in] */ ArrayOf<Byte>* value,
         /* [out] */ Int32* status);
@@ -445,7 +444,7 @@ public:
     /**
      * @hide
      */
-    CARAPI ByteArrayToInt32Ex(
+    CARAPI ByteArrayToInt32(
         /* [in] */ ArrayOf<Byte>* valueBuf,
         /* [in] */ Int32 offset,
         /* [out] */ Int32* result);
@@ -467,7 +466,7 @@ public:
     /**
      * @hide
      */
-    CARAPI ByteArrayToInt16Ex(
+    CARAPI ByteArrayToInt16(
         /* [in] */ ArrayOf<Byte>* valueBuf,
         /* [in] */ Int32 offset,
         /* [out] */ Int16* result);

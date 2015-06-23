@@ -11,10 +11,10 @@
 #include "util/Xml.h"
 #include "os/UserHandle.h"
 #include "os/Handler.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
@@ -607,7 +607,7 @@ ECode RegisteredServicesCache::ParseServiceInfo(
     Int32 uid;
     applicationInfo->GetUid(&uid);
     *info = new ServiceInfo(v, componentName, uid);
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     if (parser != NULL) parser->Close();
 
     return NOERROR;
@@ -646,7 +646,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
         return;
     }
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    if (FAILED(parser->SetInputEx(fis, String(NULL)))) {
+    if (FAILED(parser->SetInput(fis, String(NULL)))) {
         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
         if (fis != NULL) {
             // try {
@@ -721,7 +721,7 @@ void RegisteredServicesCache::ReadPersistentServicesLocked()
                         break;
                     }
                     String uidString;
-                    if (FAILED(parser->GetAttributeValueEx(String(NULL), String("uid"), &uidString))) {
+                    if (FAILED(parser->GetAttributeValue(String(NULL), String("uid"), &uidString))) {
                         Slogger::W(TAG, "Error reading persistent services, starting from scratch");
                         if (fis != NULL) {
                             // try {

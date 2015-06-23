@@ -4,14 +4,14 @@
 
 #include "_CDecodingInfo.h"
 #include "ext/frameworkdef.h"
-#include <elastos/List.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::IStringBuffer;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::Inputmethods::PinyinIME::IPinyinIME;
 

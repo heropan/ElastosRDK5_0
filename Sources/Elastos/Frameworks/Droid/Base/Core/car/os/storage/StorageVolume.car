@@ -102,7 +102,7 @@ module
         GetOwner(
             [out] IUserHandle** owner);
 
-        EqualsEx(
+        Equals(
             [in] IStorageVolume* obj,
             [out] Boolean* result);
 

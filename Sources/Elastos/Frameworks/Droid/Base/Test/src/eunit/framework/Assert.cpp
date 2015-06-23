@@ -1,8 +1,8 @@
 
 #include "eunit/framework/Assert.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <elastos/StringBuilder.h>
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <utils/CallStack.h>
 
 using Elastos::Core::IDouble;

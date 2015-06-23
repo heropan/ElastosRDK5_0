@@ -5,7 +5,7 @@
 #include "ext/frameworkext.h"
 #include "app/Activity.h"
 #include "_CCrashReporter.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IBufferedReader;

@@ -157,7 +157,7 @@ ECode CVideoEditorOverlayData::RenderOverlay(
         }
 
         destBitmap->EraseColor(IColor::TRANSPARENT);
-        overlayCanvas->DrawBitmapEx2(mOverlayBitmap, srcRect, destRect, sResizePaint);
+        overlayCanvas->DrawBitmap(mOverlayBitmap, srcRect, destRect, sResizePaint);
 
         mOverlayBitmap->Recycle();
     }

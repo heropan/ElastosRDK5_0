@@ -81,7 +81,7 @@ ECode FrameLayoutLayoutParams::Init(
             const_cast<Int32 *>(R::styleable::FrameLayout_Layout),
             ARRAY_SIZE(R::styleable::FrameLayout_Layout));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a));
+    ASSERT_SUCCEEDED(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
     a->GetInt32(R::styleable::FrameLayout_Layout_layout_gravity, -1, &mGravity);
 
     a->Recycle();

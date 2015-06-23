@@ -55,7 +55,7 @@ module
          *
          * @return an Insets instance with the appropriate values
          */
-        OfEx(
+        Of(
             [in] IRect* r,
             [out] IInsets** insets);
     }

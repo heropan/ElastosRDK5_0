@@ -37,7 +37,7 @@ public:
     /**
      * Set the point's x and y coordinates to the coordinates of p
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ IPointF* p);
 
     CARAPI GetX(
@@ -55,12 +55,12 @@ public:
     /**
      * Returns true if the point's coordinates equal (x,y)
      */
-    CARAPI EqualsEx2(
+    CARAPI Equals(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [out] */ Boolean* result);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IPointF* x,
         /* [out] */ Boolean* result);
 

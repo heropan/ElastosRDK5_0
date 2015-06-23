@@ -2,16 +2,15 @@
 #define __TEXTVIEW_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
 #include "view/View.h"
-#include "view/ViewMacro.h"
+
 #include "widget/Scroller.h"
 #include "widget/Editor.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 using Libcore::ICU::ILocale;
@@ -233,7 +232,7 @@ public:
         /* [in] */ IPaint* p,
         /* [out] */ Float* advance);
 
-    CARAPI GetTextRunAdvancesEx(
+    CARAPI GetTextRunAdvances(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 contextStart,
@@ -729,7 +728,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableEnd
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(
+    virtual CARAPI SetCompoundDrawablesRelativeWithIntrinsicBounds(
         /* [in] */ IDrawable* start,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* end,

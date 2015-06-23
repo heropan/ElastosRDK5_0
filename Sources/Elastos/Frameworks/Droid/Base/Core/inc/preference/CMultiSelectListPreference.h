@@ -57,7 +57,7 @@ public:
     CARAPI SetEntries(
         /* [in] */ ArrayOf<ICharSequence*>* entries);
 
-    CARAPI SetEntriesEx(
+    CARAPI SetEntries(
         /* [in] */ Int32 entriesResId);
 
     CARAPI GetEntries(
@@ -66,7 +66,7 @@ public:
     CARAPI SetEntryValues(
         /* [in] */ ArrayOf<ICharSequence*>* entryValues);
 
-    CARAPI SetEntryValuesEx(
+    CARAPI SetEntryValues(
         /* [in] */ Int32 entryValuesResId);
 
     CARAPI GetEntryValues(
@@ -85,7 +85,7 @@ public:
     CARAPI SetDialogTitle(
         /* [in] */ ICharSequence* dialogTitle);
 
-    CARAPI SetDialogTitleEx(
+    CARAPI SetDialogTitle(
         /* [in] */ Int32 dialogTitleResId);
 
     CARAPI GetDialogTitle(
@@ -94,7 +94,7 @@ public:
     CARAPI SetDialogMessage(
         /* [in] */ ICharSequence* dialogMessage);
 
-    CARAPI SetDialogMessageEx(
+    CARAPI SetDialogMessage(
         /* [in] */ Int32 dialogMessageResId);
 
     CARAPI GetDialogMessage(
@@ -103,7 +103,7 @@ public:
     CARAPI SetDialogIcon(
         /* [in] */ IDrawable* dialogIcon);
 
-    CARAPI SetDialogIconEx(
+    CARAPI SetDialogIcon(
         /* [in] */ Int32 dialogIconRes);
 
     CARAPI GetDialogIcon(
@@ -112,7 +112,7 @@ public:
     CARAPI SetPositiveButtonText(
         /* [in] */ ICharSequence* positiveButtonText);
 
-    CARAPI SetPositiveButtonTextEx(
+    CARAPI SetPositiveButtonText(
         /* [in] */ Int32 positiveButtonTextResId);
 
     CARAPI GetPositiveButtonText(
@@ -121,7 +121,7 @@ public:
     CARAPI SetNegativeButtonText(
         /* [in] */ ICharSequence* negativeButtonText);
 
-    CARAPI SetNegativeButtonTextEx(
+    CARAPI SetNegativeButtonText(
         /* [in] */ Int32 negativeButtonTextResId);
 
     CARAPI GetNegativeButtonText(

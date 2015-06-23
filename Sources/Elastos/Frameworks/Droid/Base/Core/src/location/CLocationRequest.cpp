@@ -2,7 +2,7 @@
 #include "location/CLocationRequest.h"
 #include "location/LocationManager.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::SystemClock;
 

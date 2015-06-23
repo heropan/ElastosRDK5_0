@@ -1,7 +1,7 @@
 #include "ext/frameworkdef.h"
 #include "CActivityOne.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <stdio.h>
 #include "R.h"
 

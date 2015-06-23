@@ -714,7 +714,7 @@ module
          * the actual duration will be the minimum of durationMs and the defined tone duration. Setting durationMs to -1,
          * is equivalent to calling {@link #startTone(int)}.
         */
-        StartToneEx(
+        StartTone(
             [in] Int32 toneType,
             [in] Int32 durationMs,
             [out] Boolean* result);

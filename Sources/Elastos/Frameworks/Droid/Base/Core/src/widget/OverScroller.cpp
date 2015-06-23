@@ -1,7 +1,7 @@
 
 #include "widget/OverScroller.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/SystemClock.h"
 #include "view/animation/AnimationUtils.h"
 #include "view/CViewConfigurationHelper.h"

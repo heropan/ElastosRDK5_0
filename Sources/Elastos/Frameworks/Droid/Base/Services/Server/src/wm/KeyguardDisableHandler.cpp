@@ -2,7 +2,7 @@
 #include "wm/KeyguardDisableHandler.h"
 #include "app/ActivityManagerNative.h"
 #include "os/SomeArgs.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 
 using Elastos::Utility::Logging::Logger;
@@ -37,7 +37,7 @@ ECode KeyguardDisableHandler::KeyguardTokenWatcher::Acquired()
             Int32 id;
             uInfo->GetId(&id);
             Int32 pwd;
-            dpm->GetPasswordQualityEx(NULL, id, &pwd);
+            dpm->GetPasswordQuality(NULL, id, &pwd);
             mHost->mAllowDisableKeyguard = pwd == IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED ?
                             ALLOW_DISABLE_YES : ALLOW_DISABLE_NO;
             // } catch (RemoteException re) {

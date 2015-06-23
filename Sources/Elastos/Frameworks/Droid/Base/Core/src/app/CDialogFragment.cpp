@@ -92,12 +92,12 @@ ECode CDialogFragment::Show(
     return _DialogFragment::Show(manager, tag);
 }
 
-ECode CDialogFragment::ShowEx(
+ECode CDialogFragment::Show(
     /* [in] */ IFragmentTransaction* transaction,
     /* [in] */ const String& tag,
     /* [out] */ Int32* id)
 {
-    return _DialogFragment::ShowEx(transaction, tag, id);
+    return _DialogFragment::Show(transaction, tag, id);
 }
 
 ECode CDialogFragment::Dismiss()

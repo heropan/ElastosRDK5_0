@@ -3,8 +3,8 @@
 #include "media/CMediaExtractor.h"
 #include "media/CMediaFormat.h"
 #include <media/Media_Utils.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <media/stagefright/foundation/AMessage.h>
 #include <media/stagefright/foundation/ABuffer.h>
 #include <media/stagefright/MediaSource.h>
@@ -110,7 +110,7 @@ ECode CMediaExtractor::SetDataSource(
     return NOERROR;
 }
 
-ECode CMediaExtractor::SetDataSourceEx(
+ECode CMediaExtractor::SetDataSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
     /* [in] */ IObjectStringMap* headers)
@@ -122,7 +122,7 @@ ECode CMediaExtractor::SetDataSourceEx(
     if(scheme.IsNull() || scheme.Equals("file")) {
         String path;
         uri->GetPath(&path);
-        return SetDataSourceEx3(path);
+        return SetDataSource(path);
     }
 
     AutoPtr<IAssetFileDescriptor> fd;
@@ -144,14 +144,14 @@ ECode CMediaExtractor::SetDataSourceEx(
     FAIL_GOTO(fd->GetDeclaredLength(&intVal), _EXIT_);
     if (intVal < 0) {
         FAIL_GOTO(fd->GetFileDescriptor((IFileDescriptor**)&tmpFd), _EXIT_);
-        ec = SetDataSourceEx4(tmpFd);
+        ec = SetDataSource(tmpFd);
     }
     else {
         FAIL_GOTO(fd->GetFileDescriptor((IFileDescriptor**)&tmpFd), _EXIT_);
         FAIL_GOTO(fd->GetStartOffset(&intVal), _EXIT_);
         FAIL_GOTO(fd->GetDeclaredLength(&intVal2), _EXIT_);
 
-        ec = SetDataSourceEx5(tmpFd, intVal, intVal2);
+        ec = SetDataSource(tmpFd, intVal, intVal2);
     }
 
 _EXIT_:
@@ -165,10 +165,10 @@ _EXIT_:
     }
 
     uri->ToString(&tempString);
-    return SetDataSourceEx2(tempString, headers);
+    return SetDataSource(tempString, headers);
 }
 
-ECode CMediaExtractor::SetDataSourceEx2(
+ECode CMediaExtractor::SetDataSource(
     /* [in] */ const String& path,
     /* [in] */ IObjectStringMap* headers)
 {
@@ -238,20 +238,20 @@ ECode  CMediaExtractor::NativeSetDataSource(
     return NativeSetDataSource(path, &headers);
 }
 
-ECode CMediaExtractor::SetDataSourceEx3(
+ECode CMediaExtractor::SetDataSource(
     /* [in] */ const String& path)
 {
     return NativeSetDataSource(path, NULL, NULL);
 }
 
-ECode CMediaExtractor::SetDataSourceEx4(
+ECode CMediaExtractor::SetDataSource(
     /* [in] */ IFileDescriptor* fd)
 {
-    return SetDataSourceEx5(fd, 0, 0x7ffffffffffffffL);
+    return SetDataSource(fd, 0, 0x7ffffffffffffffL);
 }
 
 //native code
-ECode CMediaExtractor::SetDataSourceEx5(
+ECode CMediaExtractor::SetDataSource(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)

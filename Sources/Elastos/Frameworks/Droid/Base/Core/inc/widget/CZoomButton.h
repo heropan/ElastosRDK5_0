@@ -3,8 +3,8 @@
 
 #include "_CZoomButton.h"
 #include "widget/ZoomButton.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -110,7 +110,7 @@ public:
     CARAPI SetColorFilter(
         /* [in] */ Int32 color);
 
-    CARAPI SetColorFilterEx(
+    CARAPI SetColorFilter(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode);
 
@@ -119,7 +119,7 @@ public:
     CARAPI GetColorFilter(
         /* [out] */ IColorFilter** filter);
 
-    CARAPI SetColorFilterEx2(
+    CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
     CARAPI GetImageAlpha(
@@ -128,7 +128,7 @@ public:
     CARAPI SetImageAlpha(
         /* [in] */ Int32 alpha);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

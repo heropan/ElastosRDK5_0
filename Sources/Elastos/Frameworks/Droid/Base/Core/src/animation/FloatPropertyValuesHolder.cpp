@@ -121,7 +121,7 @@ ECode FloatPropertyValuesHolder::Clone(
     v->mFloatKeyframeSet = mFloatKeyframeSet;
     v->mFloatAnimatedValue = mFloatAnimatedValue;
     *holder = v;
-    INTERFACE_ADDREF(*holder);
+    REFCOUNT_ADD(*holder);
 
     return NOERROR;
 }

@@ -42,7 +42,7 @@ ECode CPolicy::MakeNewFallbackEventHandler(
     AutoPtr<IPhoneFallbackEventHandler> phoneHandler;
     FAIL_RETURN(CPhoneFallbackEventHandler::New(context, (IPhoneFallbackEventHandler**)&phoneHandler));
     *handler = (IFallbackEventHandler*)phoneHandler.Get();
-    INTERFACE_ADDREF(*handler);
+    REFCOUNT_ADD(*handler);
     return NOERROR;
 }
 

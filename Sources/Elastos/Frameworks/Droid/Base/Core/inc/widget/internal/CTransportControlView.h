@@ -1,7 +1,6 @@
 #include "_CTransportControlView.h"
 #include "TransportControlView.h"
-#include "FrameLayoutMacro.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

@@ -3,7 +3,6 @@
 #define __CMUTABLECONTEXTWRAPPER_H__
 
 #include "_CMutableContextWrapper.h"
-#include "ContextMacro.h"
 #include "ContextWrapper.h"
 
 using namespace Elastos::IO;

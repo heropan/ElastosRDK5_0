@@ -32,7 +32,7 @@ public:
     /**
      * Handle a confirmation response from the user.
      */
-    virtual CARAPI ConfirmEx(
+    virtual CARAPI Confirm(
         /* [in] */ const String& result);
 
     /**

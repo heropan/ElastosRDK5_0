@@ -4,7 +4,7 @@
 #include "view/menu/CActionMenuItemView.h"
 #include "view/menu/CActionMenuViewLayoutParams.h"
 #include "widget/CLinearLayoutLayoutParams.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -781,7 +781,7 @@ void ActionMenuView::InitActionMenu(
         const_cast<Int32 *>(R::styleable::ActionBar),
         ARRAY_SIZE(R::styleable::ActionBar));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds,
+    context->ObtainStyledAttributes(attrs, attrIds,
             R::attr::actionBarStyle, 0, (ITypedArray**)&a);
 
     a->GetDimensionPixelSize(R::styleable::ActionBar_height, 0, &mMaxItemHeight);

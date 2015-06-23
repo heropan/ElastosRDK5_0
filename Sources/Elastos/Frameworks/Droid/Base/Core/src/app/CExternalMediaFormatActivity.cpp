@@ -2,7 +2,7 @@
 #include "app/CExternalMediaFormatActivity.h"
 #include "content/CIntentFilter.h"
 #include "content/CIntent.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::ICharSequence;

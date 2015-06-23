@@ -1,5 +1,5 @@
-#include <elastos/Math.h>
-//#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+//#include <elastos/utility/logging/Logger.h>
 #include "os/CHandler.h"
 #include "text/TextUtils.h"
 #include "util/CDisplayMetrics.h"
@@ -371,7 +371,7 @@ ECode ListPopupWindow::Show()
 
         mPopup->SetOutsideTouchable(!mForceIgnoreOutsideTouch && ! mDropDownAlwaysVisible);
 
-        mPopup->UpdateEx5(GetAnchorView(), mDropDownHorizontalOffset,
+        mPopup->Update(GetAnchorView(), mDropDownHorizontalOffset,
             mDropDownVerticalOffset, widthSpec, heightSpec);
     } else {
         if (mDropDownWidth == IViewGroupLayoutParams::MATCH_PARENT) {
@@ -403,7 +403,7 @@ ECode ListPopupWindow::Show()
         // only set this if the dropdown is not always visible
         mPopup->SetOutsideTouchable(!mForceIgnoreOutsideTouch && !mDropDownAlwaysVisible);
         mPopup->SetTouchInterceptor(mTouchInterceptor);
-        mPopup->ShowAsDropDownEx(GetAnchorView(),
+        mPopup->ShowAsDropDown(GetAnchorView(),
             mDropDownHorizontalOffset, mDropDownVerticalOffset);
         mDropDownList->SetSelection(IListView::INVALID_POSITION);
 
@@ -726,7 +726,7 @@ Int32 ListPopupWindow::BuildDropDown()
 
         mDropDownList = DropDownListView::GetNewInstance(context, !mModal, this);
         if (mDropDownListHighlight != NULL) {
-            mDropDownList->SetSelectorEx(mDropDownListHighlight);
+            mDropDownList->SetSelector(mDropDownListHighlight);
         }
 
         AutoPtr<IAdapter> temp = IAdapter::Probe(mAdapter);
@@ -756,12 +756,12 @@ Int32 ListPopupWindow::BuildDropDown()
 
             switch (mPromptPosition) {
             case IListPopupWindow::POSITION_PROMPT_BELOW:
-                hintcontainer->AddViewEx3(dropDownView, hintParams);
+                hintcontainer->AddView(dropDownView, hintParams);
                 hintcontainer->AddView(hintView);
                 break;
             case IListPopupWindow::POSITION_PROMPT_ABOVE:
                 hintcontainer->AddView(hintView);
-                hintcontainer->AddViewEx3(dropDownView, hintParams);
+                hintcontainer->AddView(dropDownView, hintParams);
                 break;
             default:
                 //log.e();
@@ -831,7 +831,7 @@ Int32 ListPopupWindow::BuildDropDown()
     mPopup->GetInputMethodMode(&ipmMode);
     Boolean ignoreBottomDecorations = ipmMode == IPopupWindow::INPUT_METHOD_NOT_NEEDED;
     Int32 maxHeight = 0;
-    mPopup->GetMaxAvailableHeightEx2(GetAnchorView(),
+    mPopup->GetMaxAvailableHeight(GetAnchorView(),
         mDropDownVerticalOffset, ignoreBottomDecorations, &maxHeight);
 
     if (mDropDownAlwaysVisible || mDropDownHeight == IViewGroupLayoutParams::MATCH_PARENT) {

@@ -100,7 +100,7 @@ public:
      * @return {@code true} on success.
      * @see #protect(int)
      */
-    CARAPI ProtectEx(
+    CARAPI Protect(
         /* [in] */ ISocket* socket,
         /* [out] */ Boolean* result);
 
@@ -111,7 +111,7 @@ public:
      * @return {@code true} on success.
      * @see #protect(int)
      */
-    CARAPI ProtectEx2(
+    CARAPI Protect(
         /* [in] */ IDatagramSocket* socket,
         /* [out] */ Boolean* reault);
 

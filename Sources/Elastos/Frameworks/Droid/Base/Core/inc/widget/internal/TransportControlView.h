@@ -3,8 +3,8 @@
 #define __TRANSPORTCONTROLVIEW_H__
 
 #include "widget/FrameLayout.h"
-#include "os/HandlerMacro.h"
-#include <elastos/Math.h>
+
+#include <elastos/core/Math.h>
 #include "media/media/CAudioManager.h"
 #include "R.h"
 

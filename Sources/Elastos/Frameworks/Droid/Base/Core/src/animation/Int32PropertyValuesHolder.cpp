@@ -119,7 +119,7 @@ ECode Int32PropertyValuesHolder::Clone(
     v->mInt32KeyframeSet = mInt32KeyframeSet;
     v->mInt32AnimatedValue = mInt32AnimatedValue;
     *holder = v;
-    INTERFACE_ADDREF(*holder);
+    REFCOUNT_ADD(*holder);
 
     return NOERROR;
 }

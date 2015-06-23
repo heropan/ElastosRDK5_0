@@ -5,7 +5,7 @@
 #include "_COverlayFrame.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Overlay.h"
-#include "media/media/videoeditor/OverlayMacro.h"
+
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IPaint;

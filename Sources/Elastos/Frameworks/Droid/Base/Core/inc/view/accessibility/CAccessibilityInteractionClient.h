@@ -4,15 +4,14 @@
 #include "ext/frameworkext.h"
 #include "_CAccessibilityInteractionClient.h"
 #include "view/accessibility/AccessibilityNodeInfoCache.h"
-#include <elastos/Mutex.h>
-#include <elastos/Object.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/Core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Object;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBundle;

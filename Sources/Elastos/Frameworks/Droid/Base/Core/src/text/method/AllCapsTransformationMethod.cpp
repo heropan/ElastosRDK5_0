@@ -1,6 +1,6 @@
 #include "text/method/AllCapsTransformationMethod.h"
 #include "content/res/CConfiguration.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;

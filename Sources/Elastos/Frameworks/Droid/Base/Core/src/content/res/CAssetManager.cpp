@@ -5,9 +5,9 @@
 #include "content/res/CAssetFileDescriptor.h"
 #include "util/CTypedValue.h"
 #include "os/CParcelFileDescriptor.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 #include <androidfw/AssetManager.h>
 #include <androidfw/ResourceTypes.h>
 
@@ -150,7 +150,7 @@ ECode CAssetManager::AssetInputStream::ReadBytes(
         0, buffer->GetLength(), number);
 }
 
-ECode CAssetManager::AssetInputStream::ReadBytesEx(
+ECode CAssetManager::AssetInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -187,7 +187,7 @@ ECode CAssetManager::AssetInputStream::GetLock(
 
     AutoPtr<IInterface> obj = InputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 
@@ -462,10 +462,10 @@ ECode CAssetManager::Open(
     /* [in] */ const String& fileName,
     /* [out] */ IInputStream** stream)
 {
-    return OpenEx(fileName, ACCESS_STREAMING, stream);
+    return Open(fileName, ACCESS_STREAMING, stream);
 }
 
-ECode CAssetManager::OpenEx(
+ECode CAssetManager::Open(
     /* [in] */ const String& fileName,
     /* [in] */ Int32 accessMode,
     /* [out] */ IInputStream** stream)
@@ -484,7 +484,7 @@ ECode CAssetManager::OpenEx(
     ECode ec = OpenAsset(fileName, accessMode, &asset);
     if (SUCCEEDED(ec) && asset != 0) {
         *stream = new AssetInputStream(this, asset);
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         IncRefsLocked((Int32)*stream, "AssetManager::OpenEx");
         return NOERROR;
     }
@@ -555,7 +555,7 @@ ECode CAssetManager::List(
     delete dir;
 
     *names = array;
-    INTERFACE_ADDREF(*names);
+    REFCOUNT_ADD(*names);
     return NOERROR;
 }
 
@@ -563,26 +563,26 @@ ECode CAssetManager::OpenNonAsset(
     /* [in] */ const String& fileName,
     /* [out] */ IInputStream** stream)
 {
-    return OpenNonAssetEx3(0, fileName, ACCESS_STREAMING, stream);
+    return OpenNonAsset(0, fileName, ACCESS_STREAMING, stream);
 }
 
-ECode CAssetManager::OpenNonAssetEx(
+ECode CAssetManager::OpenNonAsset(
     /* [in] */ const String& fileName,
     /* [in] */ Int32 accessMode,
     /* [out] */ IInputStream ** stream)
 {
-    return OpenNonAssetEx3(0, fileName, accessMode, stream);
+    return OpenNonAsset(0, fileName, accessMode, stream);
 }
 
-ECode CAssetManager::OpenNonAssetEx2(
+ECode CAssetManager::OpenNonAsset(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& fileName,
     /* [out] */ IInputStream ** stream)
 {
-    return OpenNonAssetEx3(cookie, fileName, ACCESS_STREAMING, stream);
+    return OpenNonAsset(cookie, fileName, ACCESS_STREAMING, stream);
 }
 
-ECode CAssetManager::OpenNonAssetEx3(
+ECode CAssetManager::OpenNonAsset(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& fileName,
     /* [in] */ Int32 accessMode,
@@ -601,7 +601,7 @@ ECode CAssetManager::OpenNonAssetEx3(
         FAIL_RETURN(OpenNonAssetNative(cookie, fileName, accessMode, &asset));
         if (asset != 0) {
             *stream = new AssetInputStream(this, asset);
-            INTERFACE_ADDREF(*stream);
+            REFCOUNT_ADD(*stream);
             IncRefsLocked((Int32)*stream, "AssetManager::OpenNonAssetEx3");
             return NOERROR;
         }
@@ -615,10 +615,10 @@ ECode CAssetManager::OpenNonAssetFd(
     /* [in] */ const String& fileName,
     /* [out] */ IAssetFileDescriptor** fd)
 {
-    return OpenNonAssetFdEx(0, fileName, fd);
+    return OpenNonAssetFd(0, fileName, fd);
 }
 
-ECode CAssetManager::OpenNonAssetFdEx(
+ECode CAssetManager::OpenNonAssetFd(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& fileName,
     /* [out] */ IAssetFileDescriptor** fd)
@@ -647,10 +647,10 @@ ECode CAssetManager::OpenXmlResourceParser(
     /* [in] */ const String& fileName,
     /* [out] */ IXmlResourceParser** parser)
 {
-    return OpenXmlResourceParserEx(0, fileName, parser);
+    return OpenXmlResourceParser(0, fileName, parser);
 }
 
-ECode CAssetManager::OpenXmlResourceParserEx(
+ECode CAssetManager::OpenXmlResourceParser(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& fileName,
     /* [out] */ IXmlResourceParser** parser)
@@ -680,7 +680,7 @@ ECode CAssetManager::OpenXmlResourceParserEx(
 
     block->Close();
     *parser = rp;
-    INTERFACE_ADDREF(*parser);
+    REFCOUNT_ADD(*parser);
     return NOERROR;
 }
 
@@ -710,7 +710,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
     FAIL_RETURN(OpenXmlAssetNative(cookie, fileName, &xmlBlock));
     if (xmlBlock != 0) {
         *res = new XmlBlock(this, xmlBlock);
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
         IncRefsLocked((Int32)*res, "AssetManager::OpenXmlBlockAsset");
         return NOERROR;
     }

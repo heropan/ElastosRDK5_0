@@ -2,9 +2,9 @@
 #define __CNOTIFICATIONPEEKPANEL_H_
 
 #include "_CNotificationPeekPanel.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/RelativeLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/NotificationPeekPanel.h"
 
 namespace Elastos {

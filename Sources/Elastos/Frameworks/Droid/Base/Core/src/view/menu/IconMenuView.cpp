@@ -7,7 +7,7 @@
 #include "view/menu/MenuItemImpl.h"
 #include "view/LayoutInflater.h"
 #include "view/CViewConfiguration.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "R.h"
 
 using Elastos::Core::EIID_IRunnable;
@@ -72,7 +72,7 @@ ECode IconMenuView::Init(
         const_cast<Int32 *>(R::styleable::IconMenuView),
         ARRAY_SIZE(R::styleable::IconMenuView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
 
     a->GetDimensionPixelSize(R::styleable::IconMenuView_rowHeight, 64, &mRowHeight);
     a->GetInt32(R::styleable::IconMenuView_maxRows, 2, &mMaxRows);
@@ -85,7 +85,7 @@ ECode IconMenuView::Init(
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::MenuView),
             ARRAY_SIZE(R::styleable::MenuView));
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
 
     a->GetDrawable(R::styleable::MenuView_itemBackground, (IDrawable**)&mItemBackground);
     a->GetDrawable(R::styleable::MenuView_horizontalDivider, (IDrawable**)&mHorizontalDivider);
@@ -219,7 +219,7 @@ AutoPtr<IDrawable> IconMenuView::GetItemBackgroundDrawable()
     GetContext()->GetResources((IResources**)&res);
 
     AutoPtr<IDrawable> drawable;
-    state->NewDrawableEx(res, (IDrawable**)&drawable);
+    state->NewDrawable(res, (IDrawable**)&drawable);
     return drawable;
 }
 
@@ -400,7 +400,7 @@ void IconMenuView::OnDraw(
         List<AutoPtr<IRect> >::ReverseIterator riter = mHorizontalDividerRects.RBegin();
         for (; riter != mHorizontalDividerRects.REnd(); ++riter) {
             IRect* rect = *riter;
-            drawable->SetBoundsEx(rect);
+            drawable->SetBounds(rect);
             drawable->Draw(canvas);
         }
     }
@@ -411,7 +411,7 @@ void IconMenuView::OnDraw(
         List<AutoPtr<IRect> >::ReverseIterator riter = mVerticalDividerRects.RBegin();
         for (; riter != mVerticalDividerRects.REnd(); ++riter) {
             IRect* rect = *riter;
-            drawable->SetBoundsEx(rect);
+            drawable->SetBounds(rect);
             drawable->Draw(canvas);
         }
     }

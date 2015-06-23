@@ -44,28 +44,28 @@ ECode CAccessibilityNodeInfoHelper::Obtain(
     return CAccessibilityNodeInfo::Obtain(source, info);
 }
 
-ECode CAccessibilityNodeInfoHelper::ObtainEx(
+ECode CAccessibilityNodeInfoHelper::Obtain(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId,
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    return CAccessibilityNodeInfo::ObtainEx(root, virtualDescendantId, info);
+    return CAccessibilityNodeInfo::Obtain(root, virtualDescendantId, info);
 }
 
-ECode CAccessibilityNodeInfoHelper::ObtainEx2(
+ECode CAccessibilityNodeInfoHelper::Obtain(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    return CAccessibilityNodeInfo::ObtainEx2(info);
+    return CAccessibilityNodeInfo::Obtain(info);
 }
 
-ECode CAccessibilityNodeInfoHelper::ObtainEx3(
+ECode CAccessibilityNodeInfoHelper::Obtain(
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [out] */ IAccessibilityNodeInfo** infoClone)
 {
     VALIDATE_NOT_NULL(infoClone);
-    return CAccessibilityNodeInfo::ObtainEx3(info, infoClone);
+    return CAccessibilityNodeInfo::Obtain(info, infoClone);
 }
 
 } // Accessibility

@@ -203,7 +203,7 @@ Boolean RecentApplicationsDialog::OnKeyDown(
             Int32 direction = backward ? IView::FOCUS_BACKWARD : IView::FOCUS_FORWARD;
             AutoPtr<ITextView> icon = (*mIcons)[nextFocus];
             Boolean bval;
-            if (icon->RequestFocusEx(direction, &bval), bval) {
+            if (icon->RequestFocus(direction, &bval), bval) {
                 icon->PlaySoundEffect(
                     SoundEffectConstants::GetContantForFocusDirection(direction));
             }

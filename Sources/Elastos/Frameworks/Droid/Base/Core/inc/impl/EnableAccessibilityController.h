@@ -4,9 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IRingtone;

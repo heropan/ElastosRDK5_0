@@ -9,9 +9,9 @@
 #include "provider/CDownloadsImpl.h"
 #include "provider/CSettingsGlobal.h"
 #include "text/TextUtils.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::IO::CFile;
 using Elastos::Core::CInteger32;
@@ -644,7 +644,7 @@ ECode CDownloadManager::Query(
         return NOERROR;
     }
     *cursor = new CursorTranslator(underlyingCursor, mBaseUri);
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -836,7 +836,7 @@ ECode CDownloadManager::GetMaxBytesOverMobile(
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsGlobal> global;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
-    return global->GetInt64Ex(resolver,
+    return global->GetInt64(resolver,
             ISettingsGlobal::DOWNLOAD_MAX_BYTES_OVER_MOBILE, size);
 //     } catch (SettingNotFoundException exc) {
 //         return null;
@@ -854,7 +854,7 @@ ECode CDownloadManager::GetRecommendedMaxBytesOverMobile(
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsGlobal> global;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
-    return global->GetInt64Ex(resolver,
+    return global->GetInt64(resolver,
             ISettingsGlobal::DOWNLOAD_RECOMMENDED_MAX_BYTES_OVER_MOBILE, size);
     // } catch (SettingNotFoundException exc) {
     //     return null;

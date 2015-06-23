@@ -1,13 +1,13 @@
 
 #include "WifiP2pServiceResponse.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -104,7 +104,7 @@ ECode WifiP2pServiceResponse::GetRawData(
 {
     VALIDATE_NOT_NULL(rawData);
     *rawData = mData;
-    INTERFACE_ADDREF(*rawData);
+    REFCOUNT_ADD(*rawData);
     return NOERROR;
 }
 
@@ -114,7 +114,7 @@ ECode WifiP2pServiceResponse::GetSrcDevice(
     VALIDATE_NOT_NULL(srcDevice);
 
     *srcDevice = mDevice;
-    INTERFACE_ADDREF(*srcDevice);
+    REFCOUNT_ADD(*srcDevice);
 
     return NOERROR;
 }
@@ -156,7 +156,7 @@ ECode WifiP2pServiceResponse::HexStr2Bin(
     }
 
     *array = b;
-    INTERFACE_ADDREF(*array);
+    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 

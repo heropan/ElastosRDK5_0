@@ -4,11 +4,10 @@
 #include "wm/MagnificationSpec.h"
 #include "wm/WindowState.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IDisplayInfo;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::Os::IRemoteCallbackList;

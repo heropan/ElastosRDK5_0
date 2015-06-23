@@ -3,12 +3,10 @@
 #define __APPERRORRESULT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Object.h>
-#include <elastos/Mutex.h>
+#include <elastos/Core/Object.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 
 namespace Elastos {
 namespace Droid {

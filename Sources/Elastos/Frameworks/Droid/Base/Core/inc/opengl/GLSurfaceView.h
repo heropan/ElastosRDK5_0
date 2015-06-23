@@ -2,18 +2,16 @@
 #define __GLSURFACEVIEW_H__
 
 #include "view/SurfaceView.h"
-#include "elastos/ThreadBase.h"
-#include "elastos/Object.h"
+#include <elastos/Core/Object.h>
 #include "elastos/io/Writer.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::IO::IWriter;
 using Elastos::IO::IFlushable;
 using Elastos::IO::ICloseable;
 using Elastos::IO::Writer;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Core::Object;
 using Elastos::Droid::View::SurfaceView;
 using Elastos::Droid::View::ISurfaceHolder;
 using Elastosx::Microedition::Khronos::Egl::IEGL10;
@@ -342,7 +340,7 @@ private:
         CARAPI WriteChars(
             /* [in] */ const ArrayOf<Char32>& buffer);
 
-        CARAPI WriteCharsEx(
+        CARAPI WriteChars(
             /* [in] */ const ArrayOf<Char32>& buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 count);
@@ -350,7 +348,7 @@ private:
         CARAPI WriteString(
             /* [in] */ const String& str);
 
-        CARAPI WriteStringEx(
+        CARAPI WriteString(
             /* [in] */ const String& str,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 count);
@@ -368,7 +366,7 @@ private:
         CARAPI AppendCharSequence(
             /* [out] */ ICharSequence* csq);
 
-        CARAPI AppendCharSequenceEx(
+        CARAPI AppendCharSequence(
             /* [out] */ ICharSequence* csq,
             /* [out] */ Int32 start,
             /* [out] */ Int32 end);
@@ -424,10 +422,10 @@ public:
     CARAPI SetEGLConfigChooser(
         /* [in] */ IEGLConfigChooser* configChooser);
 
-    CARAPI SetEGLConfigChooserEx(
+    CARAPI SetEGLConfigChooser(
         /* [in] */ Boolean needDepth);
 
-    CARAPI SetEGLConfigChooserEx2(
+    CARAPI SetEGLConfigChooser(
         /* [in] */ Int32 redSize,
         /* [in] */ Int32 greenSize,
         /* [in] */ Int32 blueSize,

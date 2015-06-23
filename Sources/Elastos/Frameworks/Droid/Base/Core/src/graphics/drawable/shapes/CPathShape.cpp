@@ -62,7 +62,7 @@ ECode CPathShape::Clone(
     CPathShape::NewByFriend(NULL, 0, 0, (CPathShape**)&s);
     PathShape::Clone((PathShape*)s.Get());
     *shape = (IShape*)s.Get();
-    INTERFACE_ADDREF(*shape);
+    REFCOUNT_ADD(*shape);
     return NOERROR;
 }
 

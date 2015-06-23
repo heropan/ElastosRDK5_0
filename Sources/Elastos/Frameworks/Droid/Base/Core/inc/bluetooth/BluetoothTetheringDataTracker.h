@@ -4,10 +4,9 @@
 #include "net/NetworkStateTracker.h"
 #include "BluetoothPan.h"
 #include "os/Runnable.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::Mutex;
+using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Content::IContext;

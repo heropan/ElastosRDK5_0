@@ -167,7 +167,7 @@ ECode FileUtils::CopyToFile(
 
     buffer = ArrayOf<Byte>::Alloc(4096);
     while (inputStream->ReadBytes(buffer, &bytesRead), bytesRead >= 0) {
-        out->WriteBytesEx(*buffer, 0, bytesRead);
+        out->WriteBytes(*buffer, 0, bytesRead);
     }
 
     IFlushable::Probe(out)->Flush();
@@ -297,7 +297,7 @@ ECode FileUtils::ReadTextFile(
         data = ArrayOf<Byte>::Alloc(1024);
         do {
             bis->ReadBytes(data, &length);
-            if (length > 0) contents->WriteBytesEx(*data, 0, length);
+            if (length > 0) contents->WriteBytes(*data, 0, length);
         } while (length == data->GetLength());
 
         contents->ToString(result);

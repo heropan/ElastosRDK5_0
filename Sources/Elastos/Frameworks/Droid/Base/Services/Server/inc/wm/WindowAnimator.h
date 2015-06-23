@@ -8,12 +8,12 @@
 #include "wm/ScreenRotationAnimation.h"
 #include "wm/DimAnimator.h"
 #include "wm/DimSurface.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 #include <os/Runnable.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IWindowManagerPolicy;

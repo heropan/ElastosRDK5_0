@@ -40,7 +40,7 @@ public:
      * @param route route to add
      * @param insertAt insert the new route before this index
      */
-    CARAPI AddRouteEx(
+    CARAPI AddRoute(
         /* [in] */ IRouteInfo* route,
         /* [in] */ Int32 insertAt);
 
@@ -57,7 +57,7 @@ public:
      *
      * @param index index of the route to remove
      */
-    CARAPI RemoveRouteEx(
+    CARAPI RemoveRoute(
         /* [in] */ Int32 index);
 
     /**
@@ -124,7 +124,7 @@ public:
      * @return The user-friendly name of the media route. This is the string presented
      * to users who may select this as the active route.
      */
-    CARAPI GetNameEx(
+    CARAPI GetName(
         /* [in] */ IContext* context,
         /* [out] */ ICharSequence** result);
 
@@ -270,7 +270,7 @@ public:
     CARAPI IsEnabled(
         /* [out] */ Boolean* result);
 
-    CARAPI SetNameEx(
+    CARAPI SetName(
         /* [in] */ Int32 nameResId);
 
     CARAPI SetSupportedTypes(

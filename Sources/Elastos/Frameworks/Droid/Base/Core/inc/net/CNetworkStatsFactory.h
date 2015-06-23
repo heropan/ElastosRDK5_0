@@ -50,7 +50,7 @@ public:
      *
      * @throws IllegalStateException when problem parsing stats.
      */
-    CARAPI ReadNetworkStatsDetailEx(
+    CARAPI ReadNetworkStatsDetail(
         /* [in] */ Int32 limitUid,
         /* [out] */ INetworkStats** stats);
 

@@ -1,6 +1,6 @@
 
 #include "hardware/usb/CUsbInterface.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 namespace Elastos {
 namespace Droid {
@@ -91,7 +91,7 @@ ECode CUsbInterface::GetEndpoint(
 
     AutoPtr<IUsbEndpoint> tmpEndpoint = IUsbEndpoint::Probe((*mEndpoints)[index]);
     *endpoint = tmpEndpoint;
-    INTERFACE_ADDREF(*endpoint);
+    REFCOUNT_ADD(*endpoint);
 
     return NOERROR;
 }

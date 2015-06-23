@@ -4,10 +4,9 @@
 
 #include "text/method/BaseKeyListener.h"
 #include "database/ContentObserver.h"
-#include <elastos/Mutex.h>
 //#include "Elastos.Droid.Core_server.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IContentObserver;

@@ -4,9 +4,9 @@
 
 #include "_CWifiP2pGroup.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
@@ -49,14 +49,14 @@ public:
     CARAPI AddClient(
         /* [in] */ const String& address);
 
-    CARAPI AddClientEx(
+    CARAPI AddClient(
         /* [in] */ IWifiP2pDevice* device);
 
     CARAPI RemoveClient(
         /* [in] */ const String& address,
         /* [out] */ Boolean* ret);
 
-    CARAPI RemoveClientEx(
+    CARAPI RemoveClient(
         /* [in] */ IWifiP2pDevice* device,
         /* [out] */ Boolean* ret);
 

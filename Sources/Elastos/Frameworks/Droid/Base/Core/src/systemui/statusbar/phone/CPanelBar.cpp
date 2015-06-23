@@ -72,7 +72,7 @@ ECode CPanelBar::SelectPanelForTouch(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IPanelView> v = PanelBar::SelectPanelForTouch(touch);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

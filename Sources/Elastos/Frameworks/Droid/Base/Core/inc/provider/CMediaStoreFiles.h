@@ -32,7 +32,7 @@ public:
      * @param rowId the file to get the URI for
      * @return the URI to the files table on the given volume
      */
-    CARAPI GetContentUriEx(
+    CARAPI GetContentUri(
         /* [in] */ const String& volumeName,
         /* [in] */ Int64 rowId,
         /* [out] */ IUri** uri);
@@ -49,7 +49,7 @@ public:
      * For use only by the MTP implementation.
      * @hide
      */
-    CARAPI GetMtpObjectsUriEx(
+    CARAPI GetMtpObjectsUri(
         /* [in] */ const String& volumeName,
         /* [in] */ Int64 fileId,
         /* [out] */ IUri** uri);

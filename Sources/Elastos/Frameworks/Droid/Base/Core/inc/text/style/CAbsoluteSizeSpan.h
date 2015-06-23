@@ -4,9 +4,9 @@
 
 #include "_CAbsoluteSizeSpan.h"
 #include "text/style/AbsoluteSizeSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/style/MetricAffectingSpanMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
+
 
 using Elastos::Droid::Text::Style::AbsoluteSizeSpan;
 

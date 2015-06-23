@@ -94,7 +94,7 @@ ECode CNotificationAction::GetTitle(
 {
     VALIDATE_NOT_NULL(title);
     *title = mTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
     return NOERROR;
 }
 
@@ -103,7 +103,7 @@ ECode CNotificationAction::GetActionIntent(
 {
     VALIDATE_NOT_NULL(actionIntent);
     *actionIntent = mActionIntent;
-    INTERFACE_ADDREF(*actionIntent);
+    REFCOUNT_ADD(*actionIntent);
     return NOERROR;
 }
 

@@ -14,7 +14,7 @@ module
              * this resource is loaded from <var>res</var> and returned.  Otherwise
              * {@link #title} is returned.
              */
-            GetTitleEx(
+            GetTitle(
                 [in] IResources* res,
                 [out] ICharSequence** title);
 
@@ -23,7 +23,7 @@ module
              * this resource is loaded from <var>res</var> and returned.  Otherwise
              * {@link #summary} is returned.
              */
-            GetSummaryEx(
+            GetSummary(
                 [in] IResources* res,
                 [out] ICharSequence** summary);
 
@@ -32,7 +32,7 @@ module
              * this resource is loaded from <var>res</var> and returned.  Otherwise
              * {@link #breadCrumbTitle} is returned.
              */
-            GetBreadCrumbTitleEx(
+            GetBreadCrumbTitle(
                 [in] IResources* res,
                 [out] ICharSequence** title);
 
@@ -42,7 +42,7 @@ module
              * this resource is loaded from <var>res</var> and returned.  Otherwise
              * {@link #breadCrumbShortTitle} is returned.
              */
-            GetBreadCrumbShortTitleEx(
+            GetBreadCrumbShortTitle(
                 [in] IResources* res,
                 [out] ICharSequence** title);
 

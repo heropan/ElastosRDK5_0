@@ -4,7 +4,7 @@
 
 #include "_CStateListDrawable.h"
 #include "graphics/drawable/StateListDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

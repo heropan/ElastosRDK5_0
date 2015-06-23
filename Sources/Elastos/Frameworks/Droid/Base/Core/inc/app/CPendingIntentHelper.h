@@ -69,7 +69,7 @@ public:
       * parameters.  May return null only if {@link #FLAG_NO_CREATE} has been
       * supplied.
       */
-     CARAPI GetActivityEx(
+     CARAPI GetActivity(
          /* [in] */ IContext* context,
          /* [in] */ Int32 requestCode,
          /* [in] */ IIntent* intent,
@@ -180,7 +180,7 @@ public:
       * parameters.  May return null only if {@link #FLAG_NO_CREATE} has been
       * supplied.
       */
-     CARAPI GetActivitiesEx(
+     CARAPI GetActivities(
          /* [in] */ IContext* context,
          /* [in] */ Int32 requestCode,
          /* [in] */ ArrayOf<IIntent*>* intents,

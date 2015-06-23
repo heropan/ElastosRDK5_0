@@ -3,9 +3,9 @@
 #define __CROTATIONTOGGLE_H__
 
 #include "_CRotationToggle.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
-#include "widget/CompoundButtonMacro.h"
+
+
+
 #include "systemui/statusbar/RotationToggle.h"
 
 namespace Elastos {

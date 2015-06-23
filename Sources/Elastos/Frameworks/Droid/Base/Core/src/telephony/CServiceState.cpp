@@ -1,7 +1,7 @@
 
 #include "CServiceState.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <ext/frameworkdef.h>
 
 using Elastos::Core::StringBuilder;
@@ -487,7 +487,7 @@ ECode CServiceState::NewFromBundle(
     CServiceState::NewByFriend((CServiceState**)&ret);
     ret->SetFromNotifierBundle(m);
     *res = IServiceState::Probe(ret);
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

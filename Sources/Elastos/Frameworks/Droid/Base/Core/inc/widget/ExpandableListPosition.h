@@ -3,7 +3,6 @@
 #define __EXPANDABLELISTPOSITION_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "widget/ExpandableListView.h"
 
 namespace Elastos {

@@ -107,7 +107,7 @@ ECode CContentQueryMap::GetValues(
     HashMap<String, AutoPtr<IContentValues> >::Iterator it = mValues.Find(rowName);
     if (it != mValues.End()) {
         *contentValues = it->mSecond;
-        INTERFACE_ADDREF(*contentValues);
+        REFCOUNT_ADD(*contentValues);
     }
     return NOERROR;
 }
@@ -287,10 +287,10 @@ ECode CContentQueryMap::HasChanged(
 
 ECode CContentQueryMap::NotifyObservers()
 {
-    return NotifyObserversEx(NULL);
+    return NotifyObservers(NULL);
 }
 
-ECode CContentQueryMap::NotifyObserversEx(
+ECode CContentQueryMap::NotifyObservers(
     /* [in] */ IInterface* data)
 {
     Int32 size = 0;

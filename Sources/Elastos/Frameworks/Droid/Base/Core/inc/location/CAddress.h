@@ -4,11 +4,11 @@
 
 #include "ext/frameworkext.h"
 #include "_CAddress.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Libcore::ICU::ILocale;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

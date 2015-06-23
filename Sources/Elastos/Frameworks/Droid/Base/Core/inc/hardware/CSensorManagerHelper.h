@@ -3,9 +3,6 @@
 #define  __CSENSORMANAGERHELPER_H__
 
 #include "_CSensorManagerHelper.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

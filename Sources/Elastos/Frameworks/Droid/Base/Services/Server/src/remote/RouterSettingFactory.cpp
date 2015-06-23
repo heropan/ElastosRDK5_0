@@ -1,6 +1,6 @@
 
 #include "remote/RouterSettingFactory.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::CComponentName;
@@ -47,7 +47,7 @@ ECode RouterSettingFactory::SendIntentThread::Run()
     if (DBG) Slogger::D(TAG, "cmd =  %s", mHost->mRemoteCmd.string());
     bundle->PutString(String("cmd"), mHost->mRemoteCmd);
     bundle->PutInt64(String("port"), mHost->mPort);
-    intent->PutExtrasEx(bundle);
+    intent->PutExtras(bundle);
 
     AutoPtr<IComponentName> name;
     mHost->mContext->StartService(intent, (IComponentName**)&name);
@@ -153,7 +153,7 @@ String RouterSettingFactory::SocketCmd_Task()
             AutoPtr<IURLDecoder> urlDecoder;
             CURLDecoder::AcquireSingleton((IURLDecoder**)&urlDecoder);
             String temp;
-            if (FAILED(urlDecoder->DecodeEx(rspData, String("UTF-8"), &temp)))
+            if (FAILED(urlDecoder->Decode(rspData, String("UTF-8"), &temp)))
                 Slogger::E(TAG, "UnsupportedEncodingException!!");
             rspData = temp;
 

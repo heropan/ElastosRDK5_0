@@ -3,7 +3,7 @@
 #define __CBITMAPREGIONDECODERHELPER_H__
 
 #include "_CBitmapRegionDecoderHelper.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
@@ -22,17 +22,17 @@ public:
         /* [in] */ Boolean isShareable,
         /* [out] */ IBitmapRegionDecoder** decoder);
 
-    CARAPI NewInstanceEx(
+    CARAPI NewInstance(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Boolean isShareable,
         /* [out] */ IBitmapRegionDecoder** decoder);
 
-    CARAPI NewInstanceEx2(
+    CARAPI NewInstance(
         /* [in] */ IInputStream* is,
         /* [in] */ Boolean isShareable,
         /* [out] */ IBitmapRegionDecoder** decoder);
 
-    CARAPI NewInstanceEx3(
+    CARAPI NewInstance(
         /* [in] */ const String& pathName,
         /* [in] */ Boolean isShareable,
         /* [out] */ IBitmapRegionDecoder** decoder);

@@ -61,7 +61,7 @@ ECode CTransitionDrawable::FindDrawableByLayerId(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> temp = TransitionDrawable::FindDrawableByLayerId(id);
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -88,7 +88,7 @@ ECode CTransitionDrawable::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> temp = TransitionDrawable::GetDrawable(index);
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

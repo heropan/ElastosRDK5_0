@@ -3,7 +3,7 @@
 #define __SUGGESTIONSADAPTER_H__
 
 #include "widget/ResourceCursorAdapter.h"
-#include "widget/AdapterMacro.h"
+
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::App::ISearchManager;

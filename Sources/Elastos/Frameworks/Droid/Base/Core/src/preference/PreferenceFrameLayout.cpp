@@ -36,7 +36,7 @@ PreferenceFrameLayout::LayoutParams::LayoutParams(
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceFrameLayout_Layout),
             ARRAY_SIZE(R::styleable::PreferenceFrameLayout_Layout));
-    c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     a->GetBoolean(R::styleable::PreferenceFrameLayout_Layout_layout_removeBorders,
             FALSE, &mRemoveBorders);
     a->Recycle();
@@ -175,7 +175,7 @@ void PreferenceFrameLayout::Init(
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceFrameLayout),
             ARRAY_SIZE(R::styleable::PreferenceFrameLayout));
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
@@ -306,7 +306,7 @@ ECode PreferenceFrameLayout::GenerateLayoutParams(
     GetContext((IContext**)&ctx);
     AutoPtr<IViewGroupLayoutParams> lp = new LayoutParams(ctx, attrs);
     *params = lp;
-    INTERFACE_ADDREF(*params)
+    REFCOUNT_ADD(*params)
     return NOERROR;
 }
 
@@ -387,7 +387,7 @@ ECode PreferenceFrameLayout::GetForeground(
     VALIDATE_NOT_NULL(foreground)
     AutoPtr<IDrawable> g = FrameLayout::GetForeground();
     *foreground = g;
-    INTERFACE_ADDREF(*foreground)
+    REFCOUNT_ADD(*foreground)
     return NOERROR;
 }
 
@@ -435,7 +435,7 @@ ECode PreferenceFrameLayout::StartActionModeForChild(
     VALIDATE_NOT_NULL(mode)
     AutoPtr<IActionMode> m = FrameLayout::StartActionModeForChild(originalView, cb);
     *mode = m;
-    INTERFACE_ADDREF(*mode)
+    REFCOUNT_ADD(*mode)
     return NOERROR;
 }
 
@@ -462,7 +462,7 @@ ECode PreferenceFrameLayout::GetFocusedChild(
     VALIDATE_NOT_NULL(focusedChild)
     AutoPtr<IView> view = FrameLayout::GetFocusedChild();
     *focusedChild = view;
-    INTERFACE_ADDREF(*focusedChild)
+    REFCOUNT_ADD(*focusedChild)
     return NOERROR;
 }
 
@@ -489,14 +489,14 @@ ECode PreferenceFrameLayout::SetClipToPadding(
     return NOERROR;
 }
 
-ECode PreferenceFrameLayout::AddViewEx(
+ECode PreferenceFrameLayout::AddView(
     /* [in] */ IView* child,
     /* [in] */ Int32 index)
 {
     return FrameLayout::AddView(child, index);
 }
 
-ECode PreferenceFrameLayout::AddViewEx2(
+ECode PreferenceFrameLayout::AddView(
     /* [in] */ IView* child,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
@@ -504,14 +504,14 @@ ECode PreferenceFrameLayout::AddViewEx2(
     return FrameLayout::AddView(child, width, height);
 }
 
-ECode PreferenceFrameLayout::AddViewEx3(
+ECode PreferenceFrameLayout::AddView(
     /* [in] */ IView* child,
     /* [in] */ IViewGroupLayoutParams* params)
 {
     return FrameLayout::AddView(child, params);
 }
 
-ECode PreferenceFrameLayout::AddViewEx4(
+ECode PreferenceFrameLayout::AddView(
     /* [in] */ IView* child,
     /* [in] */ Int32 index,
     /* [in] */ IViewGroupLayoutParams* params)
@@ -603,7 +603,7 @@ ECode PreferenceFrameLayout::GetLayoutAnimation(
     VALIDATE_NOT_NULL(controller)
     AutoPtr<ILayoutAnimationController> ctrl= FrameLayout::GetLayoutAnimation();
     *controller = ctrl;
-    INTERFACE_ADDREF(*controller)
+    REFCOUNT_ADD(*controller)
     return NOERROR;
 }
 
@@ -673,7 +673,7 @@ ECode PreferenceFrameLayout::GetChildAt(
     VALIDATE_NOT_NULL(child)
     AutoPtr<IView> _child = ViewGroup::GetChildAt(index);
     *child = _child;
-    INTERFACE_ADDREF(*child)
+    REFCOUNT_ADD(*child)
     return NOERROR;
 }
 
@@ -688,7 +688,7 @@ ECode PreferenceFrameLayout::GetLayoutAnimationListener(
     VALIDATE_NOT_NULL(listener)
     AutoPtr<IAnimationListener> l = FrameLayout::GetLayoutAnimationListener();
     *listener = l;
-    INTERFACE_ADDREF(*listener)
+    REFCOUNT_ADD(*listener)
     return NOERROR;
 }
 
@@ -746,7 +746,7 @@ ECode PreferenceFrameLayout::GetLayoutTransition(
 {
     VALIDATE_NOT_NULL(transition)
     AutoPtr<ILayoutTransition> ransition = FrameLayout::GetLayoutTransition();
-    INTERFACE_ADDREF(*transition)
+    REFCOUNT_ADD(*transition)
     return NOERROR;
 }
 

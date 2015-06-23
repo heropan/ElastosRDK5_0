@@ -30,7 +30,7 @@ public:
      * @param event The other event.
      * @return An instance.
      */
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ IAccessibilityEvent* otherEvent,
         /* [out] */ IAccessibilityEvent** event);
 
@@ -40,7 +40,7 @@ public:
      *
      * @return An instance.
      */
-    CARAPI ObtainEx2(
+    CARAPI Obtain(
         /* [out] */ IAccessibilityEvent** event);
 
     /**

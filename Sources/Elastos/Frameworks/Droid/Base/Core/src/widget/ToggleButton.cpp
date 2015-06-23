@@ -33,7 +33,7 @@ ECode ToggleButton::InitFromAttributes(
         const_cast<Int32 *>(R::styleable::ToggleButton),
         ARRAY_SIZE(R::styleable::ToggleButton));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx3(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     a->GetText(R::styleable::ToggleButton_textOn, (ICharSequence**)&mTextOn);

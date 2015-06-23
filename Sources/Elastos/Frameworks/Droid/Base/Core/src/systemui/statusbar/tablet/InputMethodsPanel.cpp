@@ -4,7 +4,7 @@
 #include "content/CIntent.h"
 #include "content/CIntentFilter.h"
 #include "text/TextUtils.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;
@@ -67,7 +67,7 @@ ECode InputMethodsPanel::SettingsIconOnClickListener::OnClick(
 {
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_MAIN, (IIntent**)&intent);
-    intent->SetClassNameEx(mPackageName, mSettingsActivity);
+    intent->SetClassName(mPackageName, mSettingsActivity);
     intent->SetFlags(IIntent::FLAG_ACTIVITY_NEW_TASK
             | IIntent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
             | IIntent::FLAG_ACTIVITY_CLEAR_TOP);

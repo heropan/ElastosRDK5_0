@@ -19,7 +19,7 @@ ECode CContentResolverOpenResourceIdResult::GetResources(
 {
     VALIDATE_NOT_NULL(resources)
     *resources = mRes;
-    INTERFACE_ADDREF(*resources)
+    REFCOUNT_ADD(*resources)
     return NOERROR;
 }
 

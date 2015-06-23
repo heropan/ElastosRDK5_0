@@ -6,8 +6,8 @@
 #include "net/CLinkProperties.h"
 #endif
 #include "net/NetworkUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInet4Address;

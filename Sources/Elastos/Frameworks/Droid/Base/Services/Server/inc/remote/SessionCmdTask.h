@@ -3,7 +3,7 @@
 #define __LANDISPATCHER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elrefbase.h>
 
 using Elastos::Core::ICharSequence;

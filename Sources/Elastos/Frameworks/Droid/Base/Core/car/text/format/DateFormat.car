@@ -232,7 +232,7 @@ module
          * @param inDate the date to format
          * @return a {@link CharSequence} containing the requested text
          */
-        FormatEx(
+        Format(
             [in] ICharSequence* inFormat,
             [in] IDate* inDate,
             [out] ICharSequence** ret);
@@ -259,7 +259,7 @@ module
          * @param inDate the date to format
          * @return a {@link CharSequence} containing the requested text
          */
-        FormatEx2(
+        Format(
             [in] ICharSequence* inFormat,
             [in] ICalendar* inDate,
             [out] ICharSequence** ret);

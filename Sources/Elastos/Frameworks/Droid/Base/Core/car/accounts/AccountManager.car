@@ -614,7 +614,7 @@ module
          * authenticator-dependent.  The caller should verify the validity of the
          * account before requesting an auth token.
          */
-        GetAuthTokenEx(
+        GetAuthToken(
             [in] IAccount* account,
             [in] String authTokenType,
             [in] Boolean notifyAuthFailure,
@@ -692,7 +692,7 @@ module
          * authenticator-dependent.  The caller should verify the validity of the
          * account before requesting an auth token.
          */
-        GetAuthTokenEx2(
+        GetAuthToken(
             [in] IAccount* account,
             [in] String authTokenType,
             [in] IBundle* options,

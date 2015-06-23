@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_NET_CNETWORKQUOTAINFO_H__
 
 #include "_CNetworkQuotaInfo.h"
-#include <elastos/Mutex.h>
 
 namespace Elastos {
 namespace Droid {

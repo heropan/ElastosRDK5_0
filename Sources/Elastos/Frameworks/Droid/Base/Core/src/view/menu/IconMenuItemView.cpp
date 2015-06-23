@@ -54,7 +54,7 @@ ECode IconMenuItemView::Init(
         const_cast<Int32 *>(R::styleable::MenuView),
         ARRAY_SIZE(R::styleable::MenuView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetFloat(R::styleable::MenuView_itemIconDisabledAlpha, 0.8f, &mDisabledAlpha);
     a->GetResourceId(R::styleable::MenuView_itemTextAppearance, -1, &mTextAppearance);
@@ -336,9 +336,9 @@ void IconMenuItemView::PositionIcon()
 
     AutoPtr<IGravity> gravity;
     CGravity::AcquireSingleton((IGravity**)&gravity);
-    gravity->ApplyEx(IGravity::CENTER_VERTICAL | IGravity::START,
+    gravity->Apply(IGravity::CENTER_VERTICAL | IGravity::START,
         iconWidth, iconHeight, mPositionIconAvailable, mPositionIconOutput, layoutDirection);
-    mIcon->SetBoundsEx(mPositionIconOutput);
+    mIcon->SetBounds(mPositionIconOutput);
 }
 
 ECode IconMenuItemView::SetCheckable(

@@ -55,7 +55,7 @@ public:
     CARAPI CopyFrom(
         /* [in] */ IPointerProperties* other);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IPointerProperties* other,
         /* [out] */ Boolean* res);
 

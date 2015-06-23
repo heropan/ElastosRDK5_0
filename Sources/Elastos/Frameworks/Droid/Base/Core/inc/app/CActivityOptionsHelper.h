@@ -57,7 +57,7 @@ public:
      * supply these options as the options Bundle when starting an activity.
      * @hide
      */
-    CARAPI  MakeCustomAnimationEx(
+    CARAPI  MakeCustomAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 enterResId,
         /* [in] */ Int32 exitResId,
@@ -136,7 +136,7 @@ public:
      * supply these options as the options Bundle when starting an activity.
      * @hide
      */
-    CARAPI MakeThumbnailScaleUpAnimationEx(
+    CARAPI MakeThumbnailScaleUpAnimation(
         /* [in] */ IView* source,
         /* [in] */ IBitmap* thumbnail,
         /* [in] */ Int32 startX,

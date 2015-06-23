@@ -4,11 +4,11 @@
 #include "os/CLooperHelper.h"
 #endif
 #include <os/Process.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Utility::Concurrent::CLinkedBlockingQueue;
 using Elastos::Utility::Concurrent::EIID_IThreadFactory;
 using Elastos::Utility::Concurrent::EIID_IExecutor;
@@ -158,7 +158,7 @@ ECode AsyncTask::WorkerRunnable::Call(
     AutoPtr<IInterface> r = mOwner->DoInBackground(mParams);
     AutoPtr<IInterface> _r = mOwner->PostResult(r);
     *result = _r;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -218,13 +218,13 @@ ECode AsyncTask::MyFutureTask::Get(
     return FutureTask::Get(result);
 }
 
-ECode AsyncTask::MyFutureTask::GetEx(
+ECode AsyncTask::MyFutureTask::Get(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
-    return FutureTask::GetEx(timeout, unit, result);
+    return FutureTask::Get(timeout, unit, result);
 }
 
 
@@ -287,7 +287,7 @@ AutoPtr<IInterface> AsyncTask::PostResult(
     AutoPtr<AsyncTaskResult> atResult = new AsyncTaskResult(this, data);
 
     AutoPtr<IMessage> msg;
-    GetHandler()->ObtainMessageEx(MESSAGE_POST_RESULT, atResult, (IMessage**)&msg);
+    GetHandler()->ObtainMessage(MESSAGE_POST_RESULT, atResult, (IMessage**)&msg);
     msg->SendToTarget();
 
     return result;
@@ -325,7 +325,7 @@ ECode AsyncTask::Get(
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
-    return mFuture->GetEx(timeout, unit, result);
+    return mFuture->Get(timeout, unit, result);
 }
 
 ECode AsyncTask::Execute(
@@ -376,7 +376,7 @@ void AsyncTask::PublishProgress(
         AutoPtr<AsyncTaskResult> atResult = new AsyncTaskResult(this, values);
 
         AutoPtr<IMessage> msg;
-        GetHandler()->ObtainMessageEx(MESSAGE_POST_PROGRESS, atResult, (IMessage**)&msg);
+        GetHandler()->ObtainMessage(MESSAGE_POST_PROGRESS, atResult, (IMessage**)&msg);
         msg->SendToTarget();
     }
 }

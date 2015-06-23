@@ -4,8 +4,8 @@
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
-#include "view/ViewMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
 #include "content/BroadcastReceiver.h"
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"

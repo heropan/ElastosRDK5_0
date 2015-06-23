@@ -3,8 +3,8 @@
 #include "view/LayoutInflater.h"
 #include "util/Xml.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #ifdef DROID_CORE
 #include "widget/CBlinkLayout.h"
 #endif
@@ -161,11 +161,11 @@ ECode LayoutInflater::FactoryMerger::OnCreateView(
     }
 
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return ec;
 }
 
-ECode LayoutInflater::FactoryMerger::OnCreateViewEx(
+ECode LayoutInflater::FactoryMerger::OnCreateView(
     /* [in] */ IView* parent,
     /* [in] */ const String& name,
     /* [in] */ IContext* context,
@@ -177,7 +177,7 @@ ECode LayoutInflater::FactoryMerger::OnCreateViewEx(
     ECode ec = NOERROR;
     AutoPtr<IView> v;
     if (mF12 != NULL) {
-        ec = mF12->OnCreateViewEx(parent, name, context, attrs, (IView**)&v);
+        ec = mF12->OnCreateView(parent, name, context, attrs, (IView**)&v);
     }
     else {
         ec = mF1->OnCreateView(name, context, attrs, (IView**)&v);
@@ -185,7 +185,7 @@ ECode LayoutInflater::FactoryMerger::OnCreateViewEx(
 
     if (v == NULL) {
         if (mF22 != NULL) {
-            ec = mF22->OnCreateViewEx(parent, name, context, attrs, (IView**)&v);
+            ec = mF22->OnCreateView(parent, name, context, attrs, (IView**)&v);
         }
         else {
             ec = mF2->OnCreateView(name, context, attrs, (IView**)&v);
@@ -193,7 +193,7 @@ ECode LayoutInflater::FactoryMerger::OnCreateViewEx(
     }
 
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return ec;
 }
 
@@ -246,7 +246,7 @@ ECode LayoutInflater::GetFactory(
 {
     VALIDATE_NOT_NULL(factory);
     *factory = mFactory;
-    INTERFACE_ADDREF(*factory);
+    REFCOUNT_ADD(*factory);
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode LayoutInflater::GetFactory2(
 {
     VALIDATE_NOT_NULL(factory);
     *factory = mFactory2;
-    INTERFACE_ADDREF(*factory);
+    REFCOUNT_ADD(*factory);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode LayoutInflater::GetFilter(
 {
     VALIDATE_NOT_NULL(filter);
     *filter = mFilter;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -348,18 +348,18 @@ ECode LayoutInflater::Inflate(
     /* [in] */ IViewGroup* root,
     /* [out] */ IView** view)
 {
-    return InflateEx2(resource, root, root != NULL, view);
+    return Inflate(resource, root, root != NULL, view);
 }
 
-ECode LayoutInflater::InflateEx(
+ECode LayoutInflater::Inflate(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IViewGroup* root,
     /* [out] */ IView** view)
 {
-    return InflateEx3(parser, root, root != NULL, view);
+    return Inflate(parser, root, root != NULL, view);
 }
 
-ECode LayoutInflater::InflateEx2(
+ECode LayoutInflater::Inflate(
     /* [in] */ Int32 resource,
     /* [in] */ IViewGroup* root,
     /* [in] */ Boolean attachToRoot,
@@ -375,12 +375,12 @@ ECode LayoutInflater::InflateEx2(
     ASSERT_SUCCEEDED(mContext->GetResources((IResources**)&res));
     AutoPtr<IXmlResourceParser> parser;
     ASSERT_SUCCEEDED(res->GetLayout(resource, (IXmlResourceParser**)&parser));
-    ECode ec = InflateEx3(parser, root, attachToRoot, view);
+    ECode ec = Inflate(parser, root, attachToRoot, view);
     parser->Close();
     return ec;
 }
 
-ECode LayoutInflater::InflateEx3(
+ECode LayoutInflater::Inflate(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IViewGroup* root,
     /* [in] */ Boolean attachToRoot,
@@ -480,7 +480,7 @@ ECode LayoutInflater::InflateEx3(
         // We are supposed to attach all the views we found (int temp)
         // to root. Do that now.
         if (root != NULL && attachToRoot) {
-            root->AddViewEx3(temp.Get(), params.Get());
+            root->AddView(temp.Get(), params.Get());
         }
 
         // Decide whether to return the root that was passed in or the
@@ -507,7 +507,7 @@ ECode LayoutInflater::InflateEx3(
 //    }
 
     *view = result.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     mConstructorArgs->Set(0, lastContext);
     mConstructorArgs->Set(1, NULL);
@@ -604,7 +604,7 @@ ECode LayoutInflater::CreateView(
     LAYOUT_INFLATOR_CATCH_EXCEPTION1(constructor->CreateObject(args, (IInterface**)&obj));
     *view = (IView*)obj->Probe(EIID_IView);
     assert(*view != NULL);
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     if (IViewStub::Probe(*view) != NULL) {
         // always use ourselves when inflating ViewStub later
@@ -745,7 +745,7 @@ ECode LayoutInflater::CreateViewFromTag(
 {
     String name;
     if (!_name.Compare("view")) {
-        attrs->GetAttributeValueEx(String(NULL), String("class"), &name);
+        attrs->GetAttributeValue(String(NULL), String("class"), &name);
     }
     else {
         name = _name;
@@ -760,7 +760,7 @@ ECode LayoutInflater::CreateViewFromTag(
 
 //    try {
     if (mFactory2 != NULL) {
-        mFactory2->OnCreateViewEx(parent, name, mContext, attrs, view);
+        mFactory2->OnCreateView(parent, name, mContext, attrs, view);
     }
     else if (mFactory != NULL) {
         mFactory->OnCreateView(name, mContext, attrs, view);
@@ -768,7 +768,7 @@ ECode LayoutInflater::CreateViewFromTag(
     else *view = NULL;
 
     if (*view == NULL && mPrivateFactory != NULL) {
-        mPrivateFactory->OnCreateViewEx(parent, name, mContext, attrs, view);
+        mPrivateFactory->OnCreateView(parent, name, mContext, attrs, view);
     }
 
     if (*view == NULL) {
@@ -854,7 +854,7 @@ ECode LayoutInflater::RInflate(
             AutoPtr<IViewGroupLayoutParams> params;
             FAIL_RETURN(viewGroup->GenerateLayoutParams(attrs, (IViewGroupLayoutParams**)&params));
             FAIL_RETURN(RInflate(parser, view, attrs, TRUE));
-            FAIL_RETURN(viewGroup->AddViewEx3(view, params));
+            FAIL_RETURN(viewGroup->AddView(view, params));
             SetViewXmlPath( view, parser);
         }
         else {
@@ -864,7 +864,7 @@ ECode LayoutInflater::RInflate(
             AutoPtr<IViewGroupLayoutParams> params;
             FAIL_RETURN(viewGroup->GenerateLayoutParams(attrs, (IViewGroupLayoutParams**)&params));
             FAIL_RETURN(RInflate(parser, view, attrs, TRUE));
-            viewGroup->AddViewEx3(view, params);
+            viewGroup->AddView(view, params);
             SetViewXmlPath(view, parser);
         }
 
@@ -939,7 +939,7 @@ ECode LayoutInflater::ParseInclude(
         attrs->GetAttributeResourceValue(String(NULL), String("layout"), 0, &layout);
         if (layout == 0) {
             String value;
-            attrs->GetAttributeValueEx(String(NULL), String("layout"), &value);
+            attrs->GetAttributeValue(String(NULL), String("layout"), &value);
             if (value.IsNull()) {
 //                throw new InflateException("You must specifiy a layout in the"
 //                        + " include tag: <include layout=\"@layout/layoutID\" />");
@@ -1016,7 +1016,7 @@ ECode LayoutInflater::ParseInclude(
                     const_cast<Int32 *>(R::styleable::View),
                     ARRAY_SIZE(R::styleable::View));
                 AutoPtr<ITypedArray> a;
-                mContext->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+                mContext->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
                 Int32 id;
                 a->GetResourceId(R::styleable::View_id, IView::NO_ID, &id);
                 // While we're at it, let's try to override android:visibility.

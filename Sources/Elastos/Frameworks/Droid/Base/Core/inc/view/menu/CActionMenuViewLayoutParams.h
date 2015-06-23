@@ -2,7 +2,7 @@
 #define __CACTIONMENUVIEWLAYOUTPARAMS_H__
 
 #include "_CActionMenuViewLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 #include "widget/LinearLayoutLayoutParams.h"
 
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;

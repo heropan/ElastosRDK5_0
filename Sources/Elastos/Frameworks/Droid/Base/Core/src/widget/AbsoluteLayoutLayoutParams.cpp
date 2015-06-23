@@ -73,7 +73,7 @@ ECode AbsoluteLayoutLayoutParams::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::AbsoluteLayout_Layout),
             ARRAY_SIZE(R::styleable::AbsoluteLayout_Layout));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a));
+    FAIL_RETURN(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
     FAIL_RETURN(a->GetDimensionPixelOffset(
             R::styleable::AbsoluteLayout_Layout_layout_x, 0, &mX));
     FAIL_RETURN(a->GetDimensionPixelOffset(

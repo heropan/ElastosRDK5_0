@@ -84,7 +84,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 title);
 
     CARAPI GetTitle(
@@ -99,7 +99,7 @@ public:
     CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ Int32 iconRes);
 
     CARAPI GetIcon(
@@ -172,7 +172,7 @@ public:
     CARAPI SetActionView(
         /* [in] */ IView* view);
 
-    CARAPI SetActionViewEx(
+    CARAPI SetActionView(
         /* [in] */ Int32 resId);
 
     CARAPI GetActionView(

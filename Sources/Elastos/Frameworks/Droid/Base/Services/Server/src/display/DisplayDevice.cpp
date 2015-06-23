@@ -78,12 +78,12 @@ void DisplayDevice::SetProjectionInTransactionLocked(
         if (mCurrentLayerStackRect == NULL) {
             ASSERT_SUCCEEDED(CRect::New((IRect**)&mCurrentLayerStackRect));
         }
-        mCurrentLayerStackRect->SetEx(layerStackRect);
+        mCurrentLayerStackRect->Set(layerStackRect);
 
         if (mCurrentDisplayRect == NULL) {
             ASSERT_SUCCEEDED(CRect::New((IRect**)&mCurrentDisplayRect));
         }
-        mCurrentDisplayRect->SetEx(displayRect);
+        mCurrentDisplayRect->Set(displayRect);
 
         AutoPtr<ISurfaceHelper> surfaceHelper;
         CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
@@ -109,14 +109,14 @@ void DisplayDevice::PopulateViewportLocked(
     viewport->mOrientation = mCurrentOrientation;
 
     if (mCurrentLayerStackRect != NULL) {
-        viewport->mLogicalFrame->SetEx(mCurrentLayerStackRect);
+        viewport->mLogicalFrame->Set(mCurrentLayerStackRect);
     }
     else {
         viewport->mLogicalFrame->SetEmpty();
     }
 
     if (mCurrentDisplayRect != NULL) {
-        viewport->mPhysicalFrame->SetEx(mCurrentDisplayRect);
+        viewport->mPhysicalFrame->Set(mCurrentDisplayRect);
     }
     else {
         viewport->mPhysicalFrame->SetEmpty();

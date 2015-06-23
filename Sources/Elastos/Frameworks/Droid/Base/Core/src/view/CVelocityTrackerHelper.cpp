@@ -14,11 +14,11 @@ ECode CVelocityTrackerHelper::Obtain(
 
 	AutoPtr<VelocityTracker> tracker = VelocityTracker::Obtain();
 	*velocity = (IVelocityTracker*)tracker->Probe(EIID_IVelocityTracker);
-	INTERFACE_ADDREF(*velocity);
+	REFCOUNT_ADD(*velocity);
 	return NOERROR;
 }
 
-ECode CVelocityTrackerHelper::ObtainEx(
+ECode CVelocityTrackerHelper::Obtain(
     /* [in] */ const String& strategy,
     /* [out] */ IVelocityTracker** velocity)
 {
@@ -26,7 +26,7 @@ ECode CVelocityTrackerHelper::ObtainEx(
 
 	AutoPtr<VelocityTracker> tracker = VelocityTracker::Obtain(strategy);
 	*velocity = (IVelocityTracker*)tracker->Probe(EIID_IVelocityTracker);
-	INTERFACE_ADDREF(*velocity);
+	REFCOUNT_ADD(*velocity);
 	return NOERROR;
 }
 

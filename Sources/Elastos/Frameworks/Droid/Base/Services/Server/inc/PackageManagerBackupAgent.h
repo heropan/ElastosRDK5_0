@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "app/backup/BackupAgent.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::IDataOutputStream;
 using Elastos::Droid::App::Backup::BackupAgent;

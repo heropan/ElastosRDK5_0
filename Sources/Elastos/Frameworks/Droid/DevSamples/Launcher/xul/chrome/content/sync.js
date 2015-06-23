@@ -152,7 +152,7 @@ let WeaveGlue = {
                          (Ci.nsIPrompt.BUTTON_TITLE_IS_STRING * Ci.nsIPrompt.BUTTON_POS_1) +
                          (Ci.nsIPrompt.BUTTON_TITLE_CANCEL    * Ci.nsIPrompt.BUTTON_POS_2);
 
-        let button = Services.prompt.confirmEx(window,
+        let button = Services.prompt.confirm(window,
                                self._bundle.GetStringFromName("sync.setup.error.title"),
                                self._bundle.formatStringFromName("sync.setup.error.nodata", [brandShortName], 1),
                                buttonFlags, tryAgain, manualSetup, null, "", {});
@@ -529,7 +529,7 @@ let WeaveGlue = {
 
         let flags = Services.prompt.BUTTON_POS_0 * Services.prompt.BUTTON_TITLE_IS_STRING +
                     Services.prompt.BUTTON_POS_1 * Services.prompt.BUTTON_TITLE_IS_STRING;
-        let choice = Services.prompt.confirmEx(window, title, message, flags, button, close, null, null, {});
+        let choice = Services.prompt.confirm(window, title, message, flags, button, close, null, null, {});
         if (choice == 0)
           Browser.addTab("https://services.mozilla.com/update/", true, Browser.selectedTab);
       }

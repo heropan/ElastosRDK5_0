@@ -2,12 +2,9 @@
 #define __MONKEYUTILS_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Utility::IDate;
 using Elastos::Text::ISimpleDateFormat;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Commands {

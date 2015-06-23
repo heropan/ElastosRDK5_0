@@ -3,10 +3,10 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IComparator;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IPattern;

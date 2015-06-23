@@ -36,7 +36,7 @@ static AutoPtr<IPattern> InitWebAddressPattern()
     CPatternHelper::AcquireSingleton((IPatternHelper**)&patternHelper);
 
     AutoPtr<IPattern> pattern;
-    patternHelper->CompileEx((String)buf, IPattern::CASE_INSENSITIVE, (IPattern**)&pattern);
+    patternHelper->Compile((String)buf, IPattern::CASE_INSENSITIVE, (IPattern**)&pattern);
 
     return pattern;
 }
@@ -68,28 +68,28 @@ WebAddress::WebAddress(
 
     String t;
     if (isMatched) {
-        matcher->GroupEx(MATCH_GROUP_SCHEME, &t);
+        matcher->Group(MATCH_GROUP_SCHEME, &t);
         if (!t.IsNull()) {
             mScheme = t.ToLowerCase();
         }
 
-        matcher->GroupEx(MATCH_GROUP_AUTHORITY, &t);
+        matcher->Group(MATCH_GROUP_AUTHORITY, &t);
         if (!t.IsNull()) {
             mAuthInfo = t;
         }
 
-        matcher->GroupEx(MATCH_GROUP_HOST, &t);
+        matcher->Group(MATCH_GROUP_HOST, &t);
         if (!t.IsNull()) {
             mHost = t;
         }
 
-        matcher->GroupEx(MATCH_GROUP_PORT, &t);
+        matcher->Group(MATCH_GROUP_PORT, &t);
         if (!t.IsNull() && t.GetLength() > 0) {
             // The ':' character is not returned by the regex.
             mPort = StringUtils::ParseInt32(t);
         }
 
-        matcher->GroupEx(MATCH_GROUP_PATH, &t);
+        matcher->Group(MATCH_GROUP_PATH, &t);
         if (!t.IsNull() && t.GetLength() > 0) {
             /* handle busted myspace frontpage redirect with
                missing initial "/" */

@@ -2,9 +2,9 @@
 #define __CSETTINGSVIEW_H_
 
 #include "_CSettingsView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/SettingsView.h"
 
 namespace Elastos {

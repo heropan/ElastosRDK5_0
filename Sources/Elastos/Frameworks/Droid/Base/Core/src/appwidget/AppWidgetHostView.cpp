@@ -201,7 +201,7 @@ ECode AppWidgetHostView::GetAppWidgetInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -250,10 +250,10 @@ ECode AppWidgetHostView::UpdateAppWidgetSize(
     /* [in] */ Int32 maxWidth,
     /* [in] */ Int32 maxHeight)
 {
-    return UpdateAppWidgetSizeEx(newOptions, minWidth, minHeight, maxWidth, maxHeight, FALSE);
+    return UpdateAppWidgetSize(newOptions, minWidth, minHeight, maxWidth, maxHeight, FALSE);
 }
 
-ECode AppWidgetHostView::UpdateAppWidgetSizeEx(
+ECode AppWidgetHostView::UpdateAppWidgetSize(
     /* [in] */ IBundle* _newOptions,
     /* [in] */ Int32 minWidth,
     /* [in] */ Int32 minHeight,
@@ -333,7 +333,7 @@ ECode AppWidgetHostView::GenerateLayoutParams(
     AutoPtr<IFrameLayoutLayoutParams> lp;
     FAIL_RETURN(CFrameLayoutLayoutParams::New(context, attrs, (IFrameLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -365,7 +365,7 @@ ECode AppWidgetHostView::UpdateAppWidget(
                 AutoPtr<IBitmapFactory> factory;
                 ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
                             (IBitmapFactory**)&factory));
-                ECode ec = factory->CreateBitmapEx3(width, height,
+                ECode ec = factory->CreateBitmap(width, height,
                         BitmapConfig_ARGB_8888, (IBitmap**)&mOld);
                 if (FAILED(ec)) {
                     mOld = NULL;
@@ -401,7 +401,7 @@ ECode AppWidgetHostView::UpdateAppWidget(
         // layout matches, try recycling it
         if (content == NULL && layoutId == mLayoutId) {
             //try {
-            remoteViews->ReapplyEx(mContext, mView, mOnClickHandler);
+            remoteViews->Reapply(mContext, mView, mOnClickHandler);
             content = mView;
             recycled = TRUE;
             //if (LOGD) Log.d(TAG, "was able to recycled existing layout");
@@ -413,7 +413,7 @@ ECode AppWidgetHostView::UpdateAppWidget(
         // Try normal RemoteView inflation
         if (content == NULL) {
             //try {
-            remoteViews->ApplyEx(mContext, (IViewGroup*)this->Probe(EIID_IViewGroup),
+            remoteViews->Apply(mContext, (IViewGroup*)this->Probe(EIID_IViewGroup),
                 mOnClickHandler, (IView**)&content);
                 //if (LOGD) Log.d(TAG, "had to inflate new layout");
             // } catch (RuntimeException e) {
@@ -531,7 +531,7 @@ Boolean AppWidgetHostView::DrawChild(
         Int32 w, h;
         child->GetWidth(&w);
         child->GetHeight(&h);
-        canvas->SaveLayerAlphaEx(l, t, w, h, alpha,
+        canvas->SaveLayerAlpha(l, t, w, h, alpha,
                 ICanvas::HAS_ALPHA_LAYER_SAVE_FLAG | ICanvas::CLIP_TO_LAYER_SAVE_FLAG,
                 &restoreTo);
         Boolean rv = FrameLayout::DrawChild(canvas, child, drawingTime);
@@ -612,7 +612,7 @@ AutoPtr<IView> AppWidgetHostView::GetDefaultView()
                 layoutId = kgLayoutId == 0 ? layoutId : kgLayoutId;
             }
         }
-        inflater->InflateEx2(layoutId, (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&defaultView);
+        inflater->Inflate(layoutId, (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&defaultView);
     }
     else {
         //Log.w(TAG, "can't inflate defaultView because mInfo is missing");
@@ -639,7 +639,7 @@ AutoPtr<IView> AppWidgetHostView::GetErrorView()
 {
     AutoPtr<ITextView> tv;
     CTextView::New(mContext, (ITextView**)&tv);
-    tv->SetTextEx3(R::string::gadget_host_error_inflating);
+    tv->SetText(R::string::gadget_host_error_inflating);
     // TODO: get this color from somewhere.
     AutoPtr<IColor> c;
     CColor::AcquireSingleton((IColor**)&c);

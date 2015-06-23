@@ -1,5 +1,5 @@
 #include "media/media/audiofx/CVisualizer.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/CLooperHelper.h"
 #include "media/Visualizer.h"
 
@@ -206,7 +206,7 @@ ECode CVisualizer::GetCaptureSizeRange(
     (*jRange)[0] = android::Visualizer::getMinCaptureSize();
     (*jRange)[1] = android::Visualizer::getMaxCaptureSize();
     *captureSizeRange = jRange;
-    INTERFACE_ADDREF(*captureSizeRange);
+    REFCOUNT_ADD(*captureSizeRange);
     return NOERROR;
 }
 
@@ -444,7 +444,7 @@ void CVisualizer::ensureArraySize(
         uint32_t len = arrayIn->GetLength();
         if (len == size) {
             *arrayOut = arrayIn;
-            INTERFACE_ADDREF(*arrayOut);
+            REFCOUNT_ADD(*arrayOut);
             return;
         }
     }
@@ -453,7 +453,7 @@ void CVisualizer::ensureArraySize(
     if (NULL != localRef) {
         // Promote to global ref.
         *arrayOut = localRef;
-        INTERFACE_ADDREF(*arrayOut);
+        REFCOUNT_ADD(*arrayOut);
     }
 }
 
@@ -754,7 +754,7 @@ void CVisualizer::PostEventFromNative(
         AutoPtr<IHandler> handler = visu->mNativeEventHandler;
 
         AutoPtr<IMessage> msg;
-        handler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&msg);
+        handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
         Boolean result;
         handler->SendMessage(msg, &result);
     }

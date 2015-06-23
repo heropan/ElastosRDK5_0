@@ -3,15 +3,15 @@
 #include "os/Looper.h"
 #include "os/Binder.h"
 #include "os/SystemClock.h"
-#include <elastos/Thread.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
 #ifdef DROID_CORE
 #include "os/CMessageQueue.h"
 #endif
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 
 extern "C" pthread_key_t sLooperKey;
 extern "C" Boolean sLooperKeyInited;
@@ -226,7 +226,7 @@ ECode Looper::GetThread(
     VALIDATE_NOT_NULL(thread);
 
     *thread = mThread;
-    INTERFACE_ADDREF(*thread);
+    REFCOUNT_ADD(*thread);
     return NOERROR;
 }
 
@@ -240,7 +240,7 @@ ECode Looper::GetQueue(
 {
     VALIDATE_NOT_NULL(queue);
     *queue = mQueue;
-    INTERFACE_ADDREF(*queue);
+    REFCOUNT_ADD(*queue);
     return NOERROR;
 }
 

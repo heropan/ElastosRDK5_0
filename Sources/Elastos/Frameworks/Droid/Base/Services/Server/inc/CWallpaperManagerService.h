@@ -6,9 +6,9 @@
 #include "os/FileObserver.h"
 #include "content/PackageMonitor.h"
 #include "util/JournaledFile.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;

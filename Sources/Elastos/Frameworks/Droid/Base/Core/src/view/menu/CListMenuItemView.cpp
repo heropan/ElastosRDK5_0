@@ -67,7 +67,7 @@ ECode CListMenuItemView::SetTitle(
     return ListMenuItemView::SetTitle(title);
 }
 
-ECode CListMenuItemView::SetEnabledEx(
+ECode CListMenuItemView::SetEnabled(
     /* [in] */ Boolean enabled)
 {
     return ListMenuItemView::SetEnabled(enabled);

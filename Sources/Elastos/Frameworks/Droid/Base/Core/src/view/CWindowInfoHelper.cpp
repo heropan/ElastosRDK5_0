@@ -11,11 +11,11 @@ ECode CWindowInfoHelper::Obtain(
     return CWindowInfo::Obtain(info);
 }
 
-ECode CWindowInfoHelper::ObtainEx(
+ECode CWindowInfoHelper::Obtain(
     /* [in] */ IWindowInfo *other,
     /* [out] */ IWindowInfo** info)
 {
-    return CWindowInfo::ObtainEx(other, info);
+    return CWindowInfo::Obtain(other, info);
 }
 
 } // namespace View

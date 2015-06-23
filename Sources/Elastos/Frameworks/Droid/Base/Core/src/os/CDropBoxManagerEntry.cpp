@@ -191,7 +191,7 @@ ECode CDropBoxManagerEntry::GetText(
     Int32 readBytes = 0;
     Int32 n = 0;
     while (n >= 0 && (readBytes += n) < maxBytes) {
-        is->ReadBytesEx(buf, readBytes, maxBytes - readBytes, &n);
+        is->ReadBytes(buf, readBytes, maxBytes - readBytes, &n);
     }
 
     StringBuilder sb("");
@@ -234,12 +234,12 @@ ECode CDropBoxManagerEntry::GetInputStream(
         // TODO:
         //CGZIPInputStream::New(is, (IGZIPInputStream**)&gzipis);
         *stream = IInputStream::Probe(gzipis);
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         return NOERROR;
     }
     else {
         *stream = is;
-        INTERFACE_ADDREF(*stream);
+        REFCOUNT_ADD(*stream);
         return NOERROR;
     }
 }

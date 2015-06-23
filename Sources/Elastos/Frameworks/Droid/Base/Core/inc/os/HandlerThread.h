@@ -3,9 +3,7 @@
 #define __HANDLERTHREAD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 
 namespace Elastos {
 namespace Droid {

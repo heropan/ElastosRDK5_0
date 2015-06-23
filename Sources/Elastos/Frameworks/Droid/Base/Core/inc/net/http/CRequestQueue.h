@@ -38,7 +38,7 @@ public:
      * and pipelining.
      *
      * @param context application context
-     * @param connectionCount The number of simultaneous connections 
+     * @param connectionCount The number of simultaneous connections
      */
     CARAPI constructor(
         /* [in] */ Elastos::Droid::Content::IContext* context,
@@ -92,7 +92,7 @@ public:
      * @param bodyProvider InputStream providing HTTP body, null if none
      * @param bodyLength length of body, must be 0 if bodyProvider is null
      */
-    CARAPI QueueRequestEx(
+    CARAPI QueueRequest(
         /* [in] */ const String& url,
         /* [in] */ Elastos::Droid::Net::IWebAddress* uri,
         /* [in] */ const String& method,
@@ -121,7 +121,7 @@ public:
     /**
      * @return a request for given host if possible
      */
-    CARAPI GetRequestEx(
+    CARAPI GetRequest(
         /* [in] */ Org::Apache::Http::IHttpHost* host,
         /* [out] */ IRequest** request);
 

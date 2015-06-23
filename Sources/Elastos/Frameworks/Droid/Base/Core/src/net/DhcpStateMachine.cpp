@@ -7,7 +7,7 @@
 #endif
 #include "net/NetworkUtils.h"
 #include "os/SystemClock.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IPendingIntentHelper;
@@ -278,7 +278,7 @@ ECode DhcpStateMachine::MyBroadcastReceiver::OnReceive(
    //DHCP renew
 //    if (DBG) Log.d(TAG, "Sending a DHCP renewal " + this);
    //Lock released after 40s in worst case scenario
-   mOwner->mDhcpRenewWakeLock->AcquireLockEx(40000);
+   mOwner->mDhcpRenewWakeLock->AcquireLock(40000);
    mOwner->SendMessage(CMD_RENEW_DHCP);
    return NOERROR;
 }

@@ -6,8 +6,8 @@
 #include "view/View.h"
 #include "view/ViewGroup.h"
 #include "view/ViewGroupMarginLayoutParams.h"
-#include "view/ViewMacro.h"
-#include <elastos/List.h>
+
+#include <elastos/utility/etl/List.h>
 
 using namespace Elastos;
 using Elastos::Droid::View::ViewGroup;

@@ -1,7 +1,7 @@
 #include "CVideoEditorImpl.h"
 #include "os/CSystemProperties.h"
 #include "util/Xml.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "MediaItem.h"
 #include "CMediaImageItem.h"
 #include "COverlayFrame.h"
@@ -355,7 +355,7 @@ ECode CVideoEditorImpl::CancelExport(
     return NOERROR;
 }
 
-ECode CVideoEditorImpl::ExportEx(
+ECode CVideoEditorImpl::Export(
     /* [in] */ const String& filename,
     /* [in] */ Int32 height,
     /* [in] */ Int32 bitrate,
@@ -526,7 +526,7 @@ ECode CVideoEditorImpl::Export(
     Int32 defaultAudiocodec = IMediaArtistNativeHelperAudioFormat::AAC;
     Int32 defaultVideocodec = IMediaArtistNativeHelperVideoFormat::MPEG4;
 
-    return ExportEx(filename, height, bitrate, defaultAudiocodec, defaultVideocodec, listener);
+    return Export(filename, height, bitrate, defaultAudiocodec, defaultVideocodec, listener);
 }
 
 ECode CVideoEditorImpl::GeneratePreview(
@@ -585,7 +585,7 @@ ECode CVideoEditorImpl::GetAllAudioTracks(
     }
 
     *result = container;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -602,7 +602,7 @@ ECode CVideoEditorImpl::GetAllMediaItems(
     }
 
     *result = container;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -619,7 +619,7 @@ ECode CVideoEditorImpl::GetAllTransitions(
     }
 
     *result = container;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -644,7 +644,7 @@ ECode CVideoEditorImpl::GetAudioTrack(
         (*it)->GetId(&id);
         if(id.Equals(audioTrackId)) {
             *result = *it;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -686,7 +686,7 @@ ECode CVideoEditorImpl::GetMediaItem(
         (*it)->GetId(&id);
         if(id.Equals(mediaItemId)) {
             *result = *it;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -716,7 +716,7 @@ ECode CVideoEditorImpl::GetTransition(
         (*it)->GetId(&id);
         if(id.Equals(transitionId)) {
             *result = *it;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }
@@ -971,7 +971,7 @@ ECode CVideoEditorImpl::RemoveAudioTrack(
     }
 
     *result = audioTrack;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1033,7 +1033,7 @@ ECode CVideoEditorImpl::RemoveMediaItem(
         ((CMediaVideoItem*)item.Get())->Invalidate();
     }
     *result = mediaItem;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1108,7 +1108,7 @@ ECode CVideoEditorImpl::RemoveTransition(
     ComputeTimelineDuration();
 
     *result = transition;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1197,7 +1197,7 @@ void CVideoEditorImpl::Load()
         AutoPtr<List<String> > ignoredMediaItems = new List<String>();
 
         AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-        parser->SetInputEx(fis, String("UTF-8"));
+        parser->SetInput(fis, String("UTF-8"));
         Int32 eventType;
         parser->GetEventType(&eventType);
         String name;
@@ -1210,16 +1210,16 @@ void CVideoEditorImpl::Load()
                     parser->GetName(&name);
                     if (name.Equals(TAG_PROJECT)) {
                         String str;
-                        parser->GetAttributeValueEx(String(""), ATTR_ASPECT_RATIO, &str);
+                        parser->GetAttributeValue(String(""), ATTR_ASPECT_RATIO, &str);
                         mAspectRatio = StringUtils::ParseInt32(str);
 
-                        parser->GetAttributeValueEx(String(""), ATTR_REGENERATE_PCM, &str);
+                        parser->GetAttributeValue(String(""), ATTR_REGENERATE_PCM, &str);
                         Boolean mRegenPCM = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
                         mMANativeHelper->SetAudioflag(mRegenPCM);
                     }
                     else if (name.Equals(TAG_MEDIA_ITEM)) {
                         String mediaItemId;
-                        parser->GetAttributeValueEx(String(""), ATTR_ID, &mediaItemId);
+                        parser->GetAttributeValue(String(""), ATTR_ID, &mediaItemId);
                         //try {
                             currentMediaItem = ParseMediaItem(parser);
                             mMediaItems.PushBack(currentMediaItem);
@@ -1279,11 +1279,11 @@ void CVideoEditorImpl::Load()
                                 AutoPtr<IEffectKenBurns> ekb = IEffectKenBurns::Probe(effect);
                                 if (ekb != NULL) {
                                     String str;
-                                    parser->GetAttributeValueEx(String(""), ATTR_IS_IMAGE_CLIP_GENERATED, &str);
+                                    parser->GetAttributeValue(String(""), ATTR_IS_IMAGE_CLIP_GENERATED, &str);
                                     Boolean isImageClipGenerated = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
                                     if(isImageClipGenerated) {
                                         String filename;
-                                        parser->GetAttributeValueEx(String(""), ATTR_GENERATED_IMAGE_CLIP, &filename);
+                                        parser->GetAttributeValue(String(""), ATTR_GENERATED_IMAGE_CLIP, &filename);
                                         AutoPtr<IFile> file;
                                         CFile::New(filename, (IFile**)&file);
                                         Boolean b;
@@ -1351,48 +1351,48 @@ AutoPtr<IMediaItem> CVideoEditorImpl::ParseMediaItem(
     /* [in] */ IXmlPullParser* parser)
 {
     String mediaItemId;
-    parser->GetAttributeValueEx(String(""), ATTR_ID, &mediaItemId);
+    parser->GetAttributeValue(String(""), ATTR_ID, &mediaItemId);
     String type;
-    parser->GetAttributeValueEx(String(""), ATTR_TYPE, &type);
+    parser->GetAttributeValue(String(""), ATTR_TYPE, &type);
     String filename;
-    parser->GetAttributeValueEx(String(""), ATTR_FILENAME, &filename);
+    parser->GetAttributeValue(String(""), ATTR_FILENAME, &filename);
     String str;
-    parser->GetAttributeValueEx(String(""), ATTR_RENDERING_MODE, &str);
+    parser->GetAttributeValue(String(""), ATTR_RENDERING_MODE, &str);
     Int32 renderingMode = StringUtils::ParseInt32(str);
 
     AutoPtr<IMediaItem> currentMediaItem;
 assert(0);
     // if (MediaImageItem->Class->GetSimpleName()->Equals(type)) {
     if(type.Equals("MediaImageItem")) {
-        parser->GetAttributeValueEx(String(""), ATTR_DURATION, &str);
+        parser->GetAttributeValue(String(""), ATTR_DURATION, &str);
         Int64 durationMs = StringUtils::ParseInt64(str);
         CMediaImageItem::New(this, mediaItemId, filename,
             durationMs, renderingMode, (IMediaImageItem**)&currentMediaItem);
     }
     // else if (MediaVideoItem->Class->GetSimpleName()->Equals(type)) {
     else if(type.Equals("MediaVideoItem")) {
-        parser->GetAttributeValueEx(String(""), ATTR_BEGIN_TIME, &str);
+        parser->GetAttributeValue(String(""), ATTR_BEGIN_TIME, &str);
         Int64 beginMs = StringUtils::ParseInt64(str);
-        parser->GetAttributeValueEx(String(""), ATTR_END_TIME, &str);
+        parser->GetAttributeValue(String(""), ATTR_END_TIME, &str);
         Int64 endMs = StringUtils::ParseInt64(str);
-        parser->GetAttributeValueEx(String(""), ATTR_VOLUME, &str);
+        parser->GetAttributeValue(String(""), ATTR_VOLUME, &str);
         Int32 volume = StringUtils::ParseInt32(str);
-        parser->GetAttributeValueEx(String(""), ATTR_MUTED, &str);
+        parser->GetAttributeValue(String(""), ATTR_MUTED, &str);
         Boolean muted = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
         String audioWaveformFilename;
-        parser->GetAttributeValueEx(String(""),
+        parser->GetAttributeValue(String(""),
                 ATTR_AUDIO_WAVEFORM_FILENAME, &audioWaveformFilename);
         CMediaVideoItem::New(this, mediaItemId, filename, renderingMode,
             beginMs, endMs, volume, muted, audioWaveformFilename, (IMediaVideoItem**)&currentMediaItem);
 
-        parser->GetAttributeValueEx(String(""), ATTR_BEGIN_TIME, &str);
+        parser->GetAttributeValue(String(""), ATTR_BEGIN_TIME, &str);
         Int64 beginTimeMs = StringUtils::ParseInt64(str);
-        parser->GetAttributeValueEx(String(""), ATTR_END_TIME, &str);
+        parser->GetAttributeValue(String(""), ATTR_END_TIME, &str);
         Int64 endTimeMs = StringUtils::ParseInt64(str);
         AutoPtr<IMediaVideoItem> item = IMediaVideoItem::Probe(currentMediaItem);
         item->SetExtractBoundaries(beginTimeMs, endTimeMs);
 
-        parser->GetAttributeValueEx(String(""), ATTR_VOLUME, &str);
+        parser->GetAttributeValue(String(""), ATTR_VOLUME, &str);
         Int32 volumePercent = StringUtils::ParseInt32(str);
         item->SetVolume(volumePercent);
     } else {
@@ -1408,17 +1408,17 @@ AutoPtr<ITransition> CVideoEditorImpl::ParseTransition(
     /* [in] */ List<String>* ignoredMediaItems)
 {
     String transitionId;
-    parser->GetAttributeValueEx(String(""), ATTR_ID, &transitionId);
+    parser->GetAttributeValue(String(""), ATTR_ID, &transitionId);
     String type;
-    parser->GetAttributeValueEx(String(""), ATTR_TYPE, &type);
+    parser->GetAttributeValue(String(""), ATTR_TYPE, &type);
     String str;
-    parser->GetAttributeValueEx(String(""), ATTR_DURATION, &str);
+    parser->GetAttributeValue(String(""), ATTR_DURATION, &str);
     Int64 durationMs = StringUtils::ParseInt64(str);
-    parser->GetAttributeValueEx(String(""), ATTR_BEHAVIOR, &str);
+    parser->GetAttributeValue(String(""), ATTR_BEHAVIOR, &str);
     Int32 behavior = StringUtils::ParseInt32(str);
 
     String beforeMediaItemId;
-    parser->GetAttributeValueEx(String(""), ATTR_BEFORE_MEDIA_ITEM_ID, &str);
+    parser->GetAttributeValue(String(""), ATTR_BEFORE_MEDIA_ITEM_ID, &str);
     AutoPtr<IMediaItem> beforeMediaItem;
     if (beforeMediaItemId != NULL) {
         List<String>::Iterator it = ignoredMediaItems->Begin();
@@ -1436,7 +1436,7 @@ AutoPtr<ITransition> CVideoEditorImpl::ParseTransition(
     }
 
     String afterMediaItemId;
-    parser->GetAttributeValueEx(String(""), ATTR_AFTER_MEDIA_ITEM_ID, &afterMediaItemId);
+    parser->GetAttributeValue(String(""), ATTR_AFTER_MEDIA_ITEM_ID, &afterMediaItemId);
     AutoPtr<IMediaItem> afterMediaItem;
     if (afterMediaItemId != NULL) {
         List<String>::Iterator it = ignoredMediaItems->Begin();
@@ -1457,11 +1457,11 @@ AutoPtr<ITransition> CVideoEditorImpl::ParseTransition(
 assert(0);
     // if (TransitionAlpha->Class->GetSimpleName()->Equals(type)) {
     if(type.Equals("TransitionAlpha")) {
-        parser->GetAttributeValueEx(String(""), ATTR_BLENDING, &str);
+        parser->GetAttributeValue(String(""), ATTR_BLENDING, &str);
         Int32 blending = StringUtils::ParseInt32(str);
         String maskFilename;
-        parser->GetAttributeValueEx(String(""), ATTR_MASK, &maskFilename);
-        parser->GetAttributeValueEx(String(""), ATTR_INVERT, &str);
+        parser->GetAttributeValue(String(""), ATTR_MASK, &maskFilename);
+        parser->GetAttributeValue(String(""), ATTR_INVERT, &str);
         Boolean invert = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
         CTransitionAlpha::New(transitionId, afterMediaItem, beforeMediaItem,
                 durationMs, behavior, maskFilename, blending, invert, (ITransitionAlpha**)&transition);
@@ -1473,7 +1473,7 @@ assert(0);
     }
     // else if (TransitionSliding->Class->GetSimpleName()->Equals(type)) {
     else if(type.Equals("TransitionSliding")) {
-        parser->GetAttributeValueEx(String(""), ATTR_DIRECTION, &str);
+        parser->GetAttributeValue(String(""), ATTR_DIRECTION, &str);
         Int32 direction = StringUtils::ParseInt32(str);
         CTransitionSliding::New(transitionId, afterMediaItem, beforeMediaItem,
                 durationMs, behavior, direction, (ITransitionSliding**)&transition);
@@ -1488,11 +1488,11 @@ assert(0);
         return NULL;
     }
 
-    parser->GetAttributeValueEx(String(""), ATTR_IS_TRANSITION_GENERATED, &str);
+    parser->GetAttributeValue(String(""), ATTR_IS_TRANSITION_GENERATED, &str);
     Boolean isTransitionGenerated = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
     if (isTransitionGenerated == TRUE) {
         String transitionFile;
-        parser->GetAttributeValueEx(String(""), ATTR_GENERATED_TRANSITION_CLIP, &transitionFile);
+        parser->GetAttributeValue(String(""), ATTR_GENERATED_TRANSITION_CLIP, &transitionFile);
 
         AutoPtr<IFile> file;
         CFile::New(transitionFile, (IFile**)&file);
@@ -1523,13 +1523,13 @@ AutoPtr<IOverlay> CVideoEditorImpl::ParseOverlay(
     /* [in] */ IMediaItem* mediaItem)
 {
     String overlayId;
-    parser->GetAttributeValueEx(String(""), ATTR_ID, &overlayId);
+    parser->GetAttributeValue(String(""), ATTR_ID, &overlayId);
     String type;
-    parser->GetAttributeValueEx(String(""), ATTR_TYPE, &type);
+    parser->GetAttributeValue(String(""), ATTR_TYPE, &type);
     String str;
-    parser->GetAttributeValueEx(String(""), ATTR_DURATION, &str);
+    parser->GetAttributeValue(String(""), ATTR_DURATION, &str);
     Int64 durationMs = StringUtils::ParseInt64(str);
-    parser->GetAttributeValueEx(String(""), ATTR_BEGIN_TIME, &str);
+    parser->GetAttributeValue(String(""), ATTR_BEGIN_TIME, &str);
     Int64 startTimeMs = StringUtils::ParseInt64(str);
 
     AutoPtr<IOverlay> overlay;
@@ -1537,7 +1537,7 @@ assert(0);
     // if (OverlayFrame->Class->GetSimpleName()->Equals(type)) {
     if(type.Equals("OverlayFrame")) {
         String filename;
-        parser->GetAttributeValueEx(String(""), ATTR_FILENAME, &filename);
+        parser->GetAttributeValue(String(""), ATTR_FILENAME, &filename);
         COverlayFrame::New(mediaItem, overlayId, filename, startTimeMs, durationMs, (IOverlayFrame**)&overlay);
     }
     else {
@@ -1546,22 +1546,22 @@ assert(0);
     }
 
     String overlayRgbFileName;
-    parser->GetAttributeValueEx(String(""), ATTR_OVERLAY_RGB_FILENAME, &overlayRgbFileName);
+    parser->GetAttributeValue(String(""), ATTR_OVERLAY_RGB_FILENAME, &overlayRgbFileName);
     if (!overlayRgbFileName.IsNull()) {
         AutoPtr<IOverlayFrame> of = IOverlayFrame::Probe(overlay);
         ((COverlayFrame*)of.Get())->SetFilename(overlayRgbFileName);
 
-        parser->GetAttributeValueEx(String(""), ATTR_OVERLAY_FRAME_WIDTH, &str);
+        parser->GetAttributeValue(String(""), ATTR_OVERLAY_FRAME_WIDTH, &str);
         Int32 overlayFrameWidth = StringUtils::ParseInt32(str);
-        parser->GetAttributeValueEx(String(""), ATTR_OVERLAY_FRAME_HEIGHT, &str);
+        parser->GetAttributeValue(String(""), ATTR_OVERLAY_FRAME_HEIGHT, &str);
         Int32 overlayFrameHeight = StringUtils::ParseInt32(str);
 
         ((COverlayFrame*)of.Get())->SetOverlayFrameWidth(overlayFrameWidth);
         ((COverlayFrame*)of.Get())->SetOverlayFrameHeight(overlayFrameHeight);
 
-        parser->GetAttributeValueEx(String(""), ATTR_OVERLAY_RESIZED_RGB_FRAME_WIDTH, &str);
+        parser->GetAttributeValue(String(""), ATTR_OVERLAY_RESIZED_RGB_FRAME_WIDTH, &str);
         Int32 resizedRGBFrameWidth = StringUtils::ParseInt32(str);
-        parser->GetAttributeValueEx(String(""), ATTR_OVERLAY_RESIZED_RGB_FRAME_HEIGHT, &str);
+        parser->GetAttributeValue(String(""), ATTR_OVERLAY_RESIZED_RGB_FRAME_HEIGHT, &str);
         Int32 resizedRGBFrameHeight = StringUtils::ParseInt32(str);
 
         ((COverlayFrame*)of.Get())->SetResizedRGBSize(resizedRGBFrameWidth, resizedRGBFrameHeight);
@@ -1575,25 +1575,25 @@ AutoPtr<IEffect> CVideoEditorImpl::ParseEffect(
     /* [in] */ IMediaItem* mediaItem)
 {
     String effectId;
-    parser->GetAttributeValueEx(String(""), ATTR_ID, &effectId);
+    parser->GetAttributeValue(String(""), ATTR_ID, &effectId);
     String type;
-    parser->GetAttributeValueEx(String(""), ATTR_TYPE, &type);
+    parser->GetAttributeValue(String(""), ATTR_TYPE, &type);
     String str;
-    parser->GetAttributeValueEx(String(""), ATTR_DURATION, &str);
+    parser->GetAttributeValue(String(""), ATTR_DURATION, &str);
     Int64 durationMs = StringUtils::ParseInt64(str);
-    parser->GetAttributeValueEx(String(""), ATTR_BEGIN_TIME, &str);
+    parser->GetAttributeValue(String(""), ATTR_BEGIN_TIME, &str);
     Int64 startTimeMs = StringUtils::ParseInt64(str);
 
     AutoPtr<IEffect> effect;
 assert(0);
     // if (EffectColor->Class->GetSimpleName()->Equals(type)) {
     if(type.Equals("EffectColor")) {
-        parser->GetAttributeValueEx(String(""), ATTR_COLOR_EFFECT_TYPE, &str);
+        parser->GetAttributeValue(String(""), ATTR_COLOR_EFFECT_TYPE, &str);
         Int32 colorEffectType = StringUtils::ParseInt32(str);
         Int32 color;
         if (colorEffectType == IEffectColor::TYPE_COLOR
                 || colorEffectType == IEffectColor::TYPE_GRADIENT) {
-            parser->GetAttributeValueEx(String(""), ATTR_COLOR_EFFECT_VALUE, &str);
+            parser->GetAttributeValue(String(""), ATTR_COLOR_EFFECT_VALUE, &str);
             color = StringUtils::ParseInt32(str);
         }
         else {
@@ -1606,10 +1606,10 @@ assert(0);
     else if(type.Equals("EffectKenBurns")) {
         AutoPtr<IRect> startRect;
         String rl, rt, rr, rb;
-        parser->GetAttributeValueEx(String(""), ATTR_START_RECT_LEFT, &rl);
-        parser->GetAttributeValueEx(String(""), ATTR_START_RECT_TOP, &rt);
-        parser->GetAttributeValueEx(String(""), ATTR_START_RECT_RIGHT, &rr);
-        parser->GetAttributeValueEx(String(""), ATTR_START_RECT_BOTTOM, &rb);
+        parser->GetAttributeValue(String(""), ATTR_START_RECT_LEFT, &rl);
+        parser->GetAttributeValue(String(""), ATTR_START_RECT_TOP, &rt);
+        parser->GetAttributeValue(String(""), ATTR_START_RECT_RIGHT, &rr);
+        parser->GetAttributeValue(String(""), ATTR_START_RECT_BOTTOM, &rb);
         CRect::New(
                 StringUtils::ParseInt32(rl),
                 StringUtils::ParseInt32(rt),
@@ -1617,10 +1617,10 @@ assert(0);
                 StringUtils::ParseInt32(rb),
                 (IRect**)&startRect);
         AutoPtr<IRect> endRect;
-        parser->GetAttributeValueEx(String(""), ATTR_END_RECT_LEFT, &rl);
-        parser->GetAttributeValueEx(String(""), ATTR_END_RECT_TOP, &rt);
-        parser->GetAttributeValueEx(String(""), ATTR_END_RECT_RIGHT, &rr);
-        parser->GetAttributeValueEx(String(""), ATTR_END_RECT_BOTTOM, &rb);
+        parser->GetAttributeValue(String(""), ATTR_END_RECT_LEFT, &rl);
+        parser->GetAttributeValue(String(""), ATTR_END_RECT_TOP, &rt);
+        parser->GetAttributeValue(String(""), ATTR_END_RECT_RIGHT, &rr);
+        parser->GetAttributeValue(String(""), ATTR_END_RECT_BOTTOM, &rb);
         CRect::New(
                 StringUtils::ParseInt32(rl),
                 StringUtils::ParseInt32(rt),
@@ -1642,31 +1642,31 @@ AutoPtr<IAudioTrack2> CVideoEditorImpl::ParseAudioTrack(
     /* [in] */ IXmlPullParser* parser)
 {
     String audioTrackId;
-    parser->GetAttributeValueEx(String(""), ATTR_ID, &audioTrackId);
+    parser->GetAttributeValue(String(""), ATTR_ID, &audioTrackId);
     String filename;
-    parser->GetAttributeValueEx(String(""), ATTR_FILENAME, &filename);
+    parser->GetAttributeValue(String(""), ATTR_FILENAME, &filename);
     String str;
-    parser->GetAttributeValueEx(String(""), ATTR_START_TIME, &str);
+    parser->GetAttributeValue(String(""), ATTR_START_TIME, &str);
     Int64 startTimeMs = StringUtils::ParseInt64(str);
-    parser->GetAttributeValueEx(String(""), ATTR_BEGIN_TIME, &str);
+    parser->GetAttributeValue(String(""), ATTR_BEGIN_TIME, &str);
     Int64 beginMs = StringUtils::ParseInt64(str);
-    parser->GetAttributeValueEx(String(""), ATTR_END_TIME, &str);
+    parser->GetAttributeValue(String(""), ATTR_END_TIME, &str);
     Int64 endMs = StringUtils::ParseInt64(str);
-    parser->GetAttributeValueEx(String(""), ATTR_VOLUME, &str);
+    parser->GetAttributeValue(String(""), ATTR_VOLUME, &str);
     Int32 volume = StringUtils::ParseInt32(str);
-    parser->GetAttributeValueEx(String(""), ATTR_MUTED, &str);
+    parser->GetAttributeValue(String(""), ATTR_MUTED, &str);
     Boolean muted = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
-    parser->GetAttributeValueEx(String(""), ATTR_LOOP, &str);
+    parser->GetAttributeValue(String(""), ATTR_LOOP, &str);
     Boolean loop = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
-    parser->GetAttributeValueEx(String(""), ATTR_DUCK_ENABLED, &str);
+    parser->GetAttributeValue(String(""), ATTR_DUCK_ENABLED, &str);
     Boolean duckingEnabled = str.EqualsIgnoreCase("TRUE") ? TRUE : FALSE;
-    parser->GetAttributeValueEx(String(""), ATTR_DUCK_THRESHOLD, &str);
+    parser->GetAttributeValue(String(""), ATTR_DUCK_THRESHOLD, &str);
     Int32 duckThreshold = StringUtils::ParseInt32(str);
-    parser->GetAttributeValueEx(String(""), ATTR_DUCKED_TRACK_VOLUME, &str);
+    parser->GetAttributeValue(String(""), ATTR_DUCKED_TRACK_VOLUME, &str);
     Int32 duckedTrackVolume = StringUtils::ParseInt32(str);
 
     String waveformFilename;
-    parser->GetAttributeValueEx(String(""), ATTR_AUDIO_WAVEFORM_FILENAME, &waveformFilename);
+    parser->GetAttributeValue(String(""), ATTR_AUDIO_WAVEFORM_FILENAME, &waveformFilename);
     AutoPtr<IAudioTrack2> audioTrack;
     CAudioTrack2::New(this, audioTrackId,
         filename, startTimeMs,
@@ -1687,7 +1687,7 @@ ECode CVideoEditorImpl::Save()
     CKXmlSerializer::New((IXmlSerializer**)&serializer);
     AutoPtr<IStringWriter> writer;
     CStringWriter::New((IStringWriter**)&writer);
-    serializer->SetOutputEx(writer);
+    serializer->SetOutput(writer);
     AutoPtr<IBoolean> ib;
     CBoolean::New(TRUE, (IBoolean**)&ib);
     serializer->StartDocument(String("UTF-8"), ib);
@@ -2297,7 +2297,7 @@ void CVideoEditorImpl::GenerateProjectThumbnail()
             // CMediaMetadataRetriever::New((IMediaMetadataRetriever**)&retriever);
             retriever->SetDataSource(filename);
             AutoPtr<IBitmap> bitmap;
-            retriever->GetFrameAtTimeEx2((IBitmap**)&bitmap);
+            retriever->GetFrameAtTime((IBitmap**)&bitmap);
             retriever->ReleaseResources();
             retriever = NULL;
             if (bitmap == NULL) {
@@ -2397,7 +2397,7 @@ Boolean CVideoEditorImpl::Lock(
     tuHelper->GetMILLISECONDS((ITimeUnit**)&seconds);
 
     Boolean acquireSem;
-    mLock->TryAcquireEx(timeoutMs, seconds, &acquireSem);
+    mLock->TryAcquire(timeoutMs, seconds, &acquireSem);
     // if (Log->IsLoggable(TAG, Log->DEBUG)) {
         //Log->D(TAG, "lock: grabbed semaphore status " + acquireSem);
     // }

@@ -110,7 +110,7 @@ private:
     /**
      * Releases the relevant data.
      */
-    CARAPI ReleaseEx();
+    CARAPI Release();
 
     static const Boolean DBG = FALSE;
     static const String LOG_TAG/* = "CallerInfoAsyncQuery"*/;

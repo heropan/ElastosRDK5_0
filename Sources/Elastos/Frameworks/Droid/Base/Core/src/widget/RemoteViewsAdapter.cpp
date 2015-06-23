@@ -11,9 +11,9 @@
 #include "os/Looper.h"
 #include "content/CIntentFilterComparison.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Process;
@@ -168,7 +168,7 @@ ECode RemoteViewsFrameLayout::OnRemoteViewsLoaded(
         AutoPtr<IView> v;
         AutoPtr<IContext> ctx;
         GetContext((IContext**)&ctx);
-        ECode pe = view->ApplyEx(ctx, this, handler, (IView**)&v);
+        ECode pe = view->Apply(ctx, this, handler, (IView**)&v);
         if(!FAILED(pe) && v != NULL)
             AddView(v);
     // } catch (Exception e) {
@@ -344,7 +344,7 @@ AutoPtr<RemoteViewsFrameLayout> RemoteViewsAdapter::RemoteViewsMetaData::CreateL
             // Try to inflate user-specified loading view
             // try {
                 AutoPtr<IView> loadingView;
-                mUserLoadingView->ApplyEx(context, parent, handler, (IView**)&loadingView);
+                mUserLoadingView->Apply(context, parent, handler, (IView**)&loadingView);
                 AutoPtr<IInteger32> integer;
                 CInteger32::New(0, (IInteger32**)&integer);
                 loadingView->SetTagInternal(R::id::rowTypeId, integer);
@@ -361,7 +361,7 @@ AutoPtr<RemoteViewsFrameLayout> RemoteViewsAdapter::RemoteViewsMetaData::CreateL
             if (mFirstViewHeight < 0) {
                 // try {
                     AutoPtr<IView> firstView;
-                    ECode pe = mFirstView->ApplyEx(context, parent, handler, (IView**)&firstView);
+                    ECode pe = mFirstView->Apply(context, parent, handler, (IView**)&firstView);
                     if(FAILED(pe))
                     {
                         AutoPtr<IResources> rs;
@@ -390,7 +390,7 @@ AutoPtr<RemoteViewsFrameLayout> RemoteViewsAdapter::RemoteViewsMetaData::CreateL
 
             // Compose the loading view text
             AutoPtr<IView> vTemp;
-            layoutInflater->InflateEx2(R::layout::remote_views_adapter_default_loading_view,
+            layoutInflater->Inflate(R::layout::remote_views_adapter_default_loading_view,
                     layout, FALSE, (IView**)&vTemp);
             AutoPtr<ITextView> loadingTextView = ITextView::Probe(vTemp);
             loadingTextView->SetHeight(mFirstViewHeight);
@@ -508,7 +508,7 @@ AutoPtr<RemoteViewsAdapter::RemoteViewsIndexMetaData> RemoteViewsAdapter::FixedS
 ECode RemoteViewsAdapter::FixedSizeRemoteViewsCache::CommitTemporaryMetaData()
 {
     Mutex::Autolock lock(mTemporaryMetaDataLock);
-    Mutex::Autolock lockEx(mMetaDataLock);
+    Mutex::Autolock lock(mMetaDataLock);
     mMetaData->Set(mTemporaryMetaData);
     return NOERROR;
 }
@@ -698,7 +698,7 @@ ECode RemoteViewsAdapter::InnerRunnable::Run()
     return NOERROR;
 }
 /*--------------------------------InnerRunnableEx--------------------------------*/
-RemoteViewsAdapter::InnerRunnableEx::InnerRunnableEx(
+RemoteViewsAdapter::InnerRunnableEx::InnerRunnable(
     /* [in] */ RemoteViewsAdapter* host) : mHost(host)
 {}
 
@@ -728,7 +728,7 @@ ECode RemoteViewsAdapter::InnerRunnableEx::Run()
 }
 
 /*--------------------------------InnerRunnableEx2--------------------------------*/
-RemoteViewsAdapter::InnerRunnableEx2::InnerRunnableEx2(
+RemoteViewsAdapter::InnerRunnableEx2::InnerRunnable(
     /* [in] */ RemoteViewsAdapter* host) : mHost(host)
 {}
 
@@ -745,7 +745,7 @@ ECode RemoteViewsAdapter::InnerRunnableEx2::Run()
 }
 
 /*--------------------------------InnerRunnableEx3--------------------------------*/
-RemoteViewsAdapter::InnerRunnableEx3::InnerRunnableEx3(
+RemoteViewsAdapter::InnerRunnableEx3::InnerRunnable(
     /* [in] */ RemoteViewsAdapter* host) : mHost(host)
 {}
 
@@ -756,7 +756,7 @@ ECode RemoteViewsAdapter::InnerRunnableEx3::Run()
 }
 
 /*--------------------------------InnerRunnableEx4--------------------------------*/
-RemoteViewsAdapter::InnerRunnableEx4::InnerRunnableEx4(
+RemoteViewsAdapter::InnerRunnableEx4::InnerRunnable(
             /* [in] */ RemoteViewsFrameLayoutRefSet* refSet,
             /* [in] */ Int32 position,
             /* [in] */ IRemoteViews* rv)
@@ -772,7 +772,7 @@ ECode RemoteViewsAdapter::InnerRunnableEx4::Run()
 }
 
 /*--------------------------------InnerRunnableEx5--------------------------------*/
-RemoteViewsAdapter::InnerRunnableEx5::InnerRunnableEx5(
+RemoteViewsAdapter::InnerRunnableEx5::InnerRunnable(
     /* [in] */ RemoteViewsAdapter* host) : mHost(host)
 {}
 
@@ -996,7 +996,7 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
             // Reuse the convert view where possible
             if (layout != NULL) {
                 if (convertViewTypeId == typeId) {
-                    ECode pe = rv->ReapplyEx(context, convertViewChild, mRemoteViewsOnClickHandler);
+                    ECode pe = rv->Reapply(context, convertViewChild, mRemoteViewsOnClickHandler);
                     if(FAILED(pe))
                     {
                         SLOGGERW(TAG, String("Error inflating RemoteViews at position: ") + StringUtils::Int32ToString(position) + ", using" +
@@ -1022,7 +1022,7 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
 
             // Otherwise, create a new view to be returned
             AutoPtr<IView> newView;
-            rv->ApplyEx(context, parent, mRemoteViewsOnClickHandler, (IView**)&newView);
+            rv->Apply(context, parent, mRemoteViewsOnClickHandler, (IView**)&newView);
             AutoPtr<IInteger32> integer;
             CInteger32::New(typeId, (IInteger32**)&integer);
             newView->SetTagInternal(R::id::rowTypeId, integer);
@@ -1106,7 +1106,7 @@ ECode RemoteViewsAdapter::NotifyDataSetChanged()
         return NOERROR;
     }
 
-    AutoPtr<IRunnable> r = new InnerRunnableEx5(this);
+    AutoPtr<IRunnable> r = new InnerRunnable(this);
     Boolean rst;
     return mWorkerQueue->Post(r, &rst);
 }
@@ -1191,7 +1191,7 @@ ECode RemoteViewsAdapter::Init(
 
 ECode RemoteViewsAdapter::LoadNextIndexInBackground()
 {
-    AutoPtr<IRunnable> r = new InnerRunnableEx(this);
+    AutoPtr<IRunnable> r = new InnerRunnable(this);
     Boolean result;
     mWorkerQueue->Post(r, &result);
     return NOERROR;
@@ -1213,7 +1213,7 @@ ECode RemoteViewsAdapter::ProcessException(
         Mutex::Autolock lock(mCacheLock);
         mCache->Reset();
     }
-    AutoPtr<IRunnable> r = new InnerRunnableEx3(this);
+    AutoPtr<IRunnable> r = new InnerRunnable(this);
     Boolean rst;
     mMainQueue->Post(r, &rst);
     return NOERROR;
@@ -1350,7 +1350,7 @@ ECode RemoteViewsAdapter::UpdateRemoteViews(
             // there is new data for it.
             AutoPtr<IRemoteViews> rv = remoteViews;
             if (notifyWhenLoaded) {
-                AutoPtr<IRunnable> r = new InnerRunnableEx4(mRequestedViews, position, rv);
+                AutoPtr<IRunnable> r = new InnerRunnable(mRequestedViews, position, rv);
                 Boolean rst;
                 mMainQueue->Post(r, &rst);
             }
@@ -1372,7 +1372,7 @@ Int32 RemoteViewsAdapter::GetConvertViewTypeId(
     Int32 typeId = -1;
     if (convertView != NULL) {
         AutoPtr<IInterface> tag;
-        convertView->GetTagEx(R::id::rowTypeId, (IInterface**)&tag);
+        convertView->GetTag(R::id::rowTypeId, (IInterface**)&tag);
         if (tag != NULL) {
              IInteger32::Probe(tag)->GetValue(&typeId);
         }
@@ -1428,7 +1428,7 @@ ECode RemoteViewsAdapter::OnNotifyDataSetChanged()
     }
 
     // Propagate the notification back to the base adapter
-    AutoPtr<IRunnable> r = new InnerRunnableEx2(this);
+    AutoPtr<IRunnable> r = new InnerRunnable(this);
     Boolean rst;
     mMainQueue->Post(r, &rst);
 

@@ -44,7 +44,7 @@ ECode CMonkeyTouchEvent::AddPointer(
     return NOERROR;
 }
 
-ECode CMonkeyTouchEvent::AddPointerEx(
+ECode CMonkeyTouchEvent::AddPointer(
     /* [in] */ Int32 id,
     /* [in] */ Float x,
     /* [in] */ Float y,

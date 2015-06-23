@@ -3,17 +3,16 @@
 #define __ACTIVITY_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IClassLoader;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::Mutex;
+using Elastos::Core::IThread;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
@@ -490,7 +489,7 @@ public:
      * @deprecated Use {@link CursorLoader} instead.
      */
     //@Deprecated
-    CARAPI ManagedQueryEx(
+    CARAPI ManagedQuery(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
         /* [in] */ const String& selection,
@@ -598,7 +597,7 @@ public:
      *
      * @param view The desired content to display.
      */
-    CARAPI SetContentViewEx(
+    CARAPI SetContentView(
         /* [in] */ IView* view);
 
     /**
@@ -609,7 +608,7 @@ public:
      * @param view The desired content to display.
      * @param params Layout parameters for the view.
      */
-    CARAPI SetContentViewEx2(
+    CARAPI SetContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
 
@@ -1360,7 +1359,7 @@ public:
      * available on older platforms through the Android compatibility package.
      */
     //@Deprecated
-    CARAPI ShowDialogEx(
+    CARAPI ShowDialog(
         /* [in] */ Int32 id,
         /* [in] */ IBundle* args,
         /* [out] */ Boolean* res);
@@ -1602,7 +1601,7 @@ public:
      *
      * @see #startActivity
      */
-    CARAPI StartActivityForResultEx(
+    CARAPI StartActivityForResult(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IBundle* options);
@@ -1655,7 +1654,7 @@ public:
      * have also been supplied by the IntentSender, options given here will
      * override any that conflict with those given by the IntentSender.
      */
-    CARAPI StartIntentSenderForResultEx(
+    CARAPI StartIntentSenderForResult(
         /* [in] */ IIntentSender* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IIntent* fillInIntent,
@@ -1714,7 +1713,7 @@ public:
      * @see #startActivity
      * @see #startActivityForResult
      */
-    CARAPI  StartActivityIfNeededEx(
+    CARAPI  StartActivityIfNeeded(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IBundle* options,
@@ -1757,7 +1756,7 @@ public:
      * wasn't.  In general, if true is returned you will then want to call
      * finish() on yourself.
      */
-    CARAPI StartNextMatchingActivityEx(
+    CARAPI StartNextMatchingActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [out] */ Boolean* started);
@@ -1799,7 +1798,7 @@ public:
      * @see #startActivity
      * @see #startActivityForResult
      */
-    CARAPI StartActivityFromChildEx(
+    CARAPI StartActivityFromChild(
         /* [in] */ IActivity* child,
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
@@ -1843,7 +1842,7 @@ public:
      * @see Fragment#startActivity
      * @see Fragment#startActivityForResult
      */
-    CARAPI StartActivityFromFragmentEx(
+    CARAPI StartActivityFromFragment(
         /* [in] */ IFragment* fragment,
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
@@ -1868,7 +1867,7 @@ public:
      * {@link #startIntentSenderForResult(IntentSender, int, Intent, int, int, int)}
      * for more information.
      */
-    CARAPI StartIntentSenderFromChildEx(
+    CARAPI StartIntentSenderFromChild(
         /* [in] */ IActivity* child,
         /* [in] */ IIntentSender* intent,
         /* [in] */ Int32 requestCode,
@@ -1936,7 +1935,7 @@ public:
      * @see #RESULT_FIRST_USER
      * @see #setResult(int)
      */
-    CARAPI SetResultEx(
+    CARAPI SetResult(
         /* [in] */ Int32 resultCode,
         /* [in] */ IIntent* data);
 
@@ -2256,7 +2255,7 @@ public:
      * is an embedded activity, the parent can do whatever it wants
      * with it.
      */
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 titleId);
 
     CARAPI SetTitleColor(
@@ -2407,7 +2406,7 @@ public:
      * @see android.view.LayoutInflater#createView
      * @see android.view.Window#getLayoutInflater
      */
-    CARAPI OnCreateViewEx(
+    CARAPI OnCreateView(
         /* [in] */ IView* parent,
         /* [in] */ const String& name,
         /* [in] */ IContext* context,
@@ -2610,7 +2609,7 @@ public:
         /* [in] */ IInterface* lastNonConfigurationInstance,
         /* [in] */ IConfiguration* config);
 
-    CARAPI AttachEx(
+    CARAPI Attach(
         /* [in] */ IContext* context,
         /* [in] */ IActivityThread* thread,
         /* [in] */ IInstrumentation* instr,
@@ -2710,7 +2709,7 @@ public:
     CARAPI IsStartedActivity(
         /* [out] */ Boolean* isStartedActivity);
 
-    CARAPI GetWindowEx(
+    CARAPI GetWindow(
         /* [out] */ IWindow** window);
 
     CARAPI SetDecorView(
@@ -2734,7 +2733,7 @@ public:
     CARAPI IsWindowAdded(
         /* [out] */ Boolean* added);
 
-    CARAPI GetWindowManagerEx(
+    CARAPI GetWindowManager(
         /* [out] */ IWindowManager** mgr);
 
     CARAPI SetConfigChangeFlags(
@@ -2808,7 +2807,7 @@ public:
         /* [in] */ Int32 resId,
         /* [out] */ String* str);
 
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* str);
@@ -2826,17 +2825,17 @@ public:
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ Int32 resid,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx2(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
 
-    CARAPI ObtainStyledAttributesEx3(
+    CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -2914,7 +2913,7 @@ public:
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
         /* [out] */ ISQLiteDatabase** sqliteDB);
 
-    CARAPI OpenOrCreateDatabaseEx(
+    CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& name,
         /* [in] */ Int32 mode,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -2947,7 +2946,7 @@ public:
     CARAPI SetWallpaper(
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI SetWallpaperEx(
+    CARAPI SetWallpaper(
         /* [in] */ IInputStream* data);
 
     CARAPI ClearWallpaper();
@@ -2955,7 +2954,7 @@ public:
     CARAPI StartActivity(
         /* [in] */ IIntent* intent);
 
-    CARAPI StartActivityEx(
+    CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
@@ -2963,7 +2962,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
-    CARAPI StartActivityAsUserEx(
+    CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [in] */ IUserHandle* user);
@@ -2971,7 +2970,7 @@ public:
     CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents);
 
-    CARAPI StartActivitiesEx(
+    CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents,
         /* [in] */ IBundle* options);
 
@@ -2987,7 +2986,7 @@ public:
         /* [in] */ Int32 flagsValues,
         /* [in] */ Int32 extraFlags);
 
-    CARAPI StartIntentSenderEx(
+    CARAPI StartIntentSender(
         /* [in] */ IIntentSender* intent,
         /* [in] */ IIntent* fillInIntent,
         /* [in] */ Int32 flagsMask,
@@ -2998,7 +2997,7 @@ public:
     CARAPI SendBroadcast(
         /* [in] */ IIntent* intent);
 
-    CARAPI SendBroadcastEx(
+    CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
@@ -3006,7 +3005,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
-    CARAPI SendOrderedBroadcastEx(
+    CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission,
         /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -3019,7 +3018,7 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
-    CARAPI SendBroadcastAsUserEx(
+    CARAPI SendBroadcastAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission);
@@ -3070,7 +3069,7 @@ public:
         /* [in] */ IIntentFilter* filter,
         /* [out] */ IIntent** intent);
 
-    CARAPI RegisterReceiverEx(
+    CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
         /* [in] */ IIntentFilter* filter,
         /* [in] */ const String& broadcastPermission,
@@ -3112,7 +3111,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI BindServiceEx(
+    CARAPI BindService(
         /* [in] */ IIntent* service,
         /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
         /* [in] */ Int32 flags,
@@ -3186,7 +3185,7 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [out] */ Int32* result);
 
-    CARAPI CheckUriPermissionEx(
+    CARAPI CheckUriPermission(
         /* [in] */ IUri * uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,
@@ -3212,7 +3211,7 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [in] */ const String& message);
 
-    CARAPI EnforceUriPermissionEx(
+    CARAPI EnforceUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,

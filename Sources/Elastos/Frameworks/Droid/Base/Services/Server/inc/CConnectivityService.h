@@ -8,12 +8,12 @@
 #include "net/CaptivePortalTracker.h"
 #include "net/LockdownVpnTracker.h"
 #include "net/NetworkStateTracker.h"
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Security::IKeyStore;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;

@@ -2,7 +2,7 @@
 #define __CSLIDINGDRAWER_H__
 
 #include "_CSlidingDrawer.h"
-#include "view/ViewMacro.h"
+
 #include "widget/SlidingDrawer.h"
 
 namespace Elastos {

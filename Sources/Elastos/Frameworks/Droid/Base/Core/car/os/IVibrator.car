@@ -24,7 +24,7 @@ module
         Vibrate(
             [in] Int64 milliseconds);
 
-        VibrateEx(
+        Vibrate(
             [in] ArrayOf<Int64> pattern,
             [in] Int32 repeat);
 

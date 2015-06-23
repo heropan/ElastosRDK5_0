@@ -53,7 +53,7 @@ ECode CEffectKenBurns::GetStartRect(
     VALIDATE_NOT_NULL(result);
 
     *result = mStartRect;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -63,7 +63,7 @@ ECode CEffectKenBurns::GetEndRect(
     VALIDATE_NOT_NULL(result);
 
     *result = mEndRect;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

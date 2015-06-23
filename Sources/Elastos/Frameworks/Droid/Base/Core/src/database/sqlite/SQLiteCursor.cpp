@@ -2,7 +2,7 @@
 #include "database/sqlite/SQLiteCursor.h"
 #include "database/sqlite/CSQLiteQuery.h"
 #include "database/DatabaseUtils.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -81,7 +81,7 @@ ECode SQLiteCursor::GetDatabase(
     VALIDATE_NOT_NULL(database)
     AutoPtr<ISQLiteDatabase> temp = ((CSQLiteQuery*)mQuery.Get())->GetDatabase();
     *database = temp;
-    INTERFACE_ADDREF(*database);
+    REFCOUNT_ADD(*database);
     return NOERROR;
 }
 
@@ -97,7 +97,7 @@ ECode SQLiteCursor::OnMove(
     mWindow->GetNumRows(&numRows);
     if (mWindow == NULL || newPosition < startPosition ||
             newPosition >= (startPosition + numRows)) {
-        FillWindowEx(newPosition);
+        FillWindow(newPosition);
     }
 
     *result = TRUE;
@@ -109,13 +109,13 @@ ECode SQLiteCursor::GetCount(
 {
     VALIDATE_NOT_NULL(count)
     if (mCount == NO_COUNT) {
-        FillWindowEx(0);
+        FillWindow(0);
     }
     *count = mCount;
     return NOERROR;
 }
 
-void SQLiteCursor::FillWindowEx(
+void SQLiteCursor::FillWindow(
     /* [in] */ Int32 requiredPos)
 {
     AutoPtr<ISQLiteDatabase> database;

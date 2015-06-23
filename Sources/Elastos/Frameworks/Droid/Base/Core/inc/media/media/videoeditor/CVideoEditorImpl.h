@@ -4,10 +4,10 @@
 
 #include "_CVideoEditorImpl.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "MediaArtistNativeHelper.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::View::ISurfaceHolder;
 using Elastos::Utility::Concurrent::ISemaphore;
@@ -67,7 +67,7 @@ public:
     /*
      * {@inheritDoc}
      */
-    CARAPI ExportEx(
+    CARAPI Export(
         /* [in] */ const String& filename,
         /* [in] */ Int32 height,
         /* [in] */ Int32 bitrate,

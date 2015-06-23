@@ -1,10 +1,10 @@
 
 #include "location/CLocation.h"
 #include "os/CBundle.h"
-#include <elastos/Math.h>
-#include "elastos/StringBuffer.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Core::StringBuffer;
@@ -874,7 +874,7 @@ ECode CLocation::GetExtras(
 {
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
 
     return NOERROR;
 }

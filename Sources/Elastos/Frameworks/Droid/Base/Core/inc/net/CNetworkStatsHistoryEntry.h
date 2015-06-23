@@ -4,7 +4,6 @@
 
 #include "_CNetworkStatsHistoryEntry.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
 namespace Elastos {
 namespace Droid {

@@ -1,8 +1,8 @@
 #include "_CActionBarViewHomeView.h"
 #include "widget/internal/ActionBarViewHomeView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{

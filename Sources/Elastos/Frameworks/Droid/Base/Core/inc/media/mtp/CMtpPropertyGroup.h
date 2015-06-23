@@ -4,9 +4,9 @@
 
 #include "_CMtpPropertyGroup.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Mtp::IMtpDatabase;

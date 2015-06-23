@@ -3,11 +3,10 @@
 #define  __LOCALINPUTCONNECTIONWRAPPER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Internal::View::IInputContext;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IKeyEvent;

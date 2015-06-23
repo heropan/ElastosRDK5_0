@@ -2,7 +2,7 @@
 #include "TwilightService.h"
 #include "os/Handler.h"
 #include "os/SystemClock.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
@@ -287,7 +287,7 @@ void TwilightService::LocationHandler::RetrieveLocation()
     CCriteria::New((ICriteria**)&criteria);
 
     AutoPtr<IObjectContainer> providers;
-    mOwner->mLocationManager->GetProvidersEx(criteria, TRUE, (IObjectContainer**)&providers);
+    mOwner->mLocationManager->GetProviders(criteria, TRUE, (IObjectContainer**)&providers);
 
     AutoPtr<IObjectEnumerator> enumerator;
     providers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);

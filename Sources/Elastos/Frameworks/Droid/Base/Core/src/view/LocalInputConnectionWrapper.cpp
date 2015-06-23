@@ -75,7 +75,7 @@ ECode LocalInputConnectionWrapper::GetTextAfterCursor(
     // catch (RemoteException e) {
     //     return NULL;
     // }
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
 
     return NOERROR;
 }
@@ -94,7 +94,7 @@ ECode LocalInputConnectionWrapper::GetTextBeforeCursor(
         callback->WaitForResultLocked();
         if (callback->mHaveValue) {
             *text = callback->mTextBeforeCursor;
-            INTERFACE_ADDREF(*text);
+            REFCOUNT_ADD(*text);
         }
     }
 
@@ -126,7 +126,7 @@ ECode LocalInputConnectionWrapper::GetSelectedText(
     // } catch (RemoteException e) {
     //     return NULL;
     // }
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
 
     return NOERROR;
 }
@@ -178,7 +178,7 @@ ECode LocalInputConnectionWrapper::GetExtractedText(
     //     return NULL;
     // }
 
-    INTERFACE_ADDREF(*extractedText);
+    REFCOUNT_ADD(*extractedText);
 
     return NOERROR;
 }

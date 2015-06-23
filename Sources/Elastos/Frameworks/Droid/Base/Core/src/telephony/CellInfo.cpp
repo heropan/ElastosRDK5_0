@@ -1,7 +1,7 @@
 
 #include "CellInfo.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;

@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "accessibility/GestureUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -55,10 +55,10 @@ Double GestureUtils::ComputeDistance(
     assert(first != NULL && second != NULL);
 
     Float x1, y1, x2, y2;
-    first->GetXEx(pointerIndex, &x1);
-    first->GetYEx(pointerIndex, &y1);
-    second->GetXEx(pointerIndex, &x2);
-    second->GetYEx(pointerIndex, &y2);
+    first->GetX(pointerIndex, &x1);
+    first->GetY(pointerIndex, &y1);
+    second->GetX(pointerIndex, &x2);
+    second->GetY(pointerIndex, &y2);
 
     Float x = x2 - x1;
     Float y = y2 - y1;

@@ -1,6 +1,6 @@
 
 #include "NetworkManagementSocketTagger.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <cutils/qtaguid.h>
 #include <errno.h>
 
@@ -32,7 +32,7 @@ ECode NetworkManagementSocketTagger::SocketTaggerInner::Untag(
     return NOERROR;
 }
 
-ECode NetworkManagementSocketTagger::SocketTaggerInner::TagEx(
+ECode NetworkManagementSocketTagger::SocketTaggerInner::Tag(
     /* [in] */ ISocket* socket)
 {
     Boolean ret;
@@ -45,7 +45,7 @@ ECode NetworkManagementSocketTagger::SocketTaggerInner::TagEx(
     return NOERROR;
 }
 
-ECode NetworkManagementSocketTagger::SocketTaggerInner::UntagEx(
+ECode NetworkManagementSocketTagger::SocketTaggerInner::Untag(
     /* [in] */ ISocket* socket)
 {
     Boolean ret;
@@ -137,7 +137,7 @@ ECode NetworkManagementSocketTagger::Untag(
     UnTagSocketFd(fd);
 }
 
-ECode NetworkManagementSocketTagger::TagEx(
+ECode NetworkManagementSocketTagger::Tag(
     /* [in] */ ISocket* socket)
 {
     Boolean ret;
@@ -150,7 +150,7 @@ ECode NetworkManagementSocketTagger::TagEx(
     return NOERROR;
 }
 
-ECode NetworkManagementSocketTagger::UntagEx(
+ECode NetworkManagementSocketTagger::Untag(
     /* [in] */ ISocket* socket)
 {
     Boolean ret;

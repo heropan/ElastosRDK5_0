@@ -152,10 +152,10 @@ ECode CArrayAdapter::AddAll(
     return ArrayAdapter::AddAll(collection);
 }
 
-ECode CArrayAdapter::AddAllEx(
+ECode CArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
-    return ArrayAdapter::AddAllEx(items);
+    return ArrayAdapter::AddAll(items);
 }
 
 ECode CArrayAdapter::Insert(

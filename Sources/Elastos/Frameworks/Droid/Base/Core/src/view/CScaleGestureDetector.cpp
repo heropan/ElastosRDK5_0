@@ -1,6 +1,6 @@
 #include "view/CScaleGestureDetector.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "R.h"
 #include "os/SystemClock.h"
 #include "view/CViewConfigurationHelper.h"
@@ -90,9 +90,9 @@ void CScaleGestureDetector::AddTouchHistory(
         pointerSampleCount = historySize + 1;
         for (Int32 h = 0; h < pointerSampleCount; h++) {
             if (h < historySize) {
-                ev->GetHistoricalSizeEx(i, h, &major);
+                ev->GetHistoricalSize(i, h, &major);
             } else {
-                ev->GetTouchMajorEx(i, &major);
+                ev->GetTouchMajor(i, &major);
             }
             if (major < mTouchMinMajor) major = mTouchMinMajor;
             total += major;
@@ -192,8 +192,8 @@ ECode CScaleGestureDetector::OnTouchEvent(
     event->GetPointerCount(&count);
     for (Int32 i = 0; i < count; i++) {
         if (skipIndex == i) continue;
-        event->GetXEx(i, &x);
-        event->GetYEx(i, &y);
+        event->GetX(i, &x);
+        event->GetY(i, &y);
         sumX += x;
         sumY += y;
     }
@@ -210,8 +210,8 @@ ECode CScaleGestureDetector::OnTouchEvent(
 
         // Convert the resulting diameter into a radius.
         Float touchSize = mTouchHistoryLastAccepted / 2;
-        event->GetXEx(i, &x);
-        event->GetYEx(i, &y);
+        event->GetX(i, &x);
+        event->GetY(i, &y);
         devSumX += Math::Abs(x - focusX) + touchSize;
         devSumY += Math::Abs(y - focusY) + touchSize;
     }

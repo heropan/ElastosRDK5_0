@@ -1,5 +1,5 @@
 
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "ext/frameworkdef.h"
 #include "content/CIntent.h"
 #include "impl/CPhoneFallbackEventHandler.h"
@@ -394,7 +394,7 @@ ECode CPhoneFallbackEventHandler::GetSearchManager(
         mSearchManager = ISearchManager::Probe(service);
     }
     *sm = mSearchManager;
-    INTERFACE_ADDREF(*sm)
+    REFCOUNT_ADD(*sm)
     return NOERROR;
 }
 
@@ -408,7 +408,7 @@ ECode CPhoneFallbackEventHandler::GetTelephonyManager(
         mTelephonyManager = ITelephonyManager::Probe(service);
     }
     *tm = mTelephonyManager;
-    INTERFACE_ADDREF(*tm)
+    REFCOUNT_ADD(*tm)
     return NOERROR;
 }
 
@@ -422,7 +422,7 @@ ECode CPhoneFallbackEventHandler::GetKeyguardManager(
         mKeyguardManager = IKeyguardManager::Probe(service);
     }
     *km = mKeyguardManager;
-    INTERFACE_ADDREF(*km)
+    REFCOUNT_ADD(*km)
     return NOERROR;
 }
 
@@ -436,7 +436,7 @@ ECode CPhoneFallbackEventHandler::GetAudioManager(
         mAudioManager = IAudioManager::Probe(service);
     }
     *am = mAudioManager;
-    INTERFACE_ADDREF(*am)
+    REFCOUNT_ADD(*am)
     return NOERROR;
 }
 

@@ -32,7 +32,7 @@ ECode CInstrumentationActivityResult::GetResultData(
 {
     VALIDATE_NOT_NULL(resultData);
     *resultData = mResultData;
-    INTERFACE_ADDREF(*resultData);
+    REFCOUNT_ADD(*resultData);
     return NOERROR;
 }
 

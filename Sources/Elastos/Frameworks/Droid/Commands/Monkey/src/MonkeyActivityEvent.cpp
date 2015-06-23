@@ -70,7 +70,7 @@ Int32 MonkeyActivityEvent::InjectEvent(
         AutoPtr<IBundle> args;
         CBundle::New((IBundle**)&args);
         args->PutInt64(String("alarmTime"), mAlarmTime);
-        intent->PutExtrasEx(args);
+        intent->PutExtras(args);
     }
 
     Int32 status = 0;

@@ -2,8 +2,8 @@
 #define __CGALLERY_H_
 
 #include "_CGallery.h"
-#include "view/ViewMacro.h"
-#include "widget/AdapterViewMacro.h"
+
+
 #include "widget/Gallery.h"
 
 namespace Elastos {
@@ -57,7 +57,7 @@ public:
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 position,
         /* [in] */ Boolean animate);
 

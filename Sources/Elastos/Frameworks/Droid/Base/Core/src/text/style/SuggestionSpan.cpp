@@ -3,8 +3,8 @@
 #include "content/res/CConfiguration.h"
 #include "os/SystemClock.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SystemClock;
@@ -136,19 +136,19 @@ void SuggestionSpan::InitStyle(
 
     Int32 defStyle = R::attr::textAppearanceMisspelledSuggestion;
     AutoPtr<ITypedArray> typedArray;
-    context->ObtainStyledAttributesEx3( NULL, attrIds, defStyle, 0, (ITypedArray**)&typedArray);
+    context->ObtainStyledAttributes( NULL, attrIds, defStyle, 0, (ITypedArray**)&typedArray);
     typedArray->GetDimension( R::styleable::SuggestionSpan_textUnderlineThickness, 0, &mMisspelledUnderlineThickness);
     typedArray->GetColor( R::styleable::SuggestionSpan_textUnderlineColor, IColor::BLACK, &mMisspelledUnderlineColor);
 
     defStyle = R::attr::textAppearanceEasyCorrectSuggestion;
     typedArray = NULL;
-    context->ObtainStyledAttributesEx3( NULL, attrIds, defStyle, 0, (ITypedArray**)&typedArray);
+    context->ObtainStyledAttributes( NULL, attrIds, defStyle, 0, (ITypedArray**)&typedArray);
     typedArray->GetDimension( R::styleable::SuggestionSpan_textUnderlineThickness, 0, &mEasyCorrectUnderlineThickness);
     typedArray->GetColor( R::styleable::SuggestionSpan_textUnderlineColor, IColor::BLACK, &mEasyCorrectUnderlineColor);
 
     defStyle = R::attr::textAppearanceAutoCorrectionSuggestion;
     typedArray = NULL;
-    context->ObtainStyledAttributesEx3( NULL, attrIds, defStyle, 0, (ITypedArray**)&typedArray);
+    context->ObtainStyledAttributes( NULL, attrIds, defStyle, 0, (ITypedArray**)&typedArray);
     typedArray->GetDimension( R::styleable::SuggestionSpan_textUnderlineThickness, 0, &mAutoCorrectionUnderlineThickness);
     typedArray->GetColor( R::styleable::SuggestionSpan_textUnderlineColor, IColor::BLACK, &mAutoCorrectionUnderlineColor);
 }

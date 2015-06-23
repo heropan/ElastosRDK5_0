@@ -264,7 +264,7 @@ ECode CInputDevice::GetKeyCharacterMap(
 {
     VALIDATE_NOT_NULL(keyCharacterMap);
     *keyCharacterMap = mKeyCharacterMap;
-    INTERFACE_ADDREF(*keyCharacterMap);
+    REFCOUNT_ADD(*keyCharacterMap);
 
     return NOERROR;
 }
@@ -279,7 +279,7 @@ ECode CInputDevice::GetMotionRange(
     for (; iter != mMotionRanges.End(); ++iter) {
         if ((*iter)->mAxis == axis) {
             *montionRange = iter->Get();
-            INTERFACE_ADDREF(*montionRange);
+            REFCOUNT_ADD(*montionRange);
             return NOERROR;
         }
     }
@@ -288,7 +288,7 @@ ECode CInputDevice::GetMotionRange(
     return NOERROR;
 }
 
-ECode CInputDevice::GetMotionRangeEx(
+ECode CInputDevice::GetMotionRange(
     /* [in] */ Int32 axis,
     /* [in] */ Int32 source,
     /* [out] */ IMotionRange** montionRange)
@@ -299,7 +299,7 @@ ECode CInputDevice::GetMotionRangeEx(
     for (; iter != mMotionRanges.End(); ++iter) {
         if ((*iter)->mAxis == axis && (*iter)->mSource == source) {
             *montionRange = iter->Get();
-            INTERFACE_ADDREF(*montionRange);
+            REFCOUNT_ADD(*montionRange);
             return NOERROR;
         }
     }
@@ -352,7 +352,7 @@ ECode CInputDevice::GetVibrator(
         }
     }
     *vibrator = mVibrator;
-    INTERFACE_ADDREF(*vibrator);
+    REFCOUNT_ADD(*vibrator);
 
     return NOERROR;
 }

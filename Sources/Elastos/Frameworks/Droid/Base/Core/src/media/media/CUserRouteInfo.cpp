@@ -2,8 +2,8 @@
 #include "media/CUserRouteInfo.h"
 #include "media/CRouteGroup.h"
 
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -38,7 +38,7 @@ ECode CUserRouteInfo::SetName(
     return NOERROR;
 }
 
-ECode CUserRouteInfo::SetNameEx(
+ECode CUserRouteInfo::SetName(
     /* [in] */ Int32 resId)
 {
     mNameResId = resId;
@@ -68,7 +68,7 @@ ECode CUserRouteInfo::GetRemoteControlClient(
     VALIDATE_NOT_NULL(result);
 
     *result = mRcc;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -229,11 +229,11 @@ ECode CUserRouteInfo::GetName(
     return MediaRouteInfo::GetName(result);
 }
 
-ECode CUserRouteInfo::GetNameEx(
+ECode CUserRouteInfo::GetName(
     /* [in] */ IContext* context,
     /* [out] */ ICharSequence** result)
 {
-    return MediaRouteInfo::GetNameEx(context, result);
+    return MediaRouteInfo::GetName(context, result);
 }
 
 ECode CUserRouteInfo::GetStatus(

@@ -1,7 +1,7 @@
 
 #include "wm/AppWindowToken.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;
@@ -140,7 +140,7 @@ void AppWindowToken::UpdateReportedVisibilityLocked()
     if (nowDrawn != mReportedDrawn) {
         if (nowDrawn) {
             AutoPtr<IMessage> msg;
-            mService->mH->ObtainMessageEx(CWindowManagerService::H::REPORT_APPLICATION_TOKEN_DRAWN,
+            mService->mH->ObtainMessage(CWindowManagerService::H::REPORT_APPLICATION_TOKEN_DRAWN,
                 this, (IMessage**)&msg);
             Boolean result;
             mService->mH->SendMessage(msg, &result);
@@ -153,7 +153,7 @@ void AppWindowToken::UpdateReportedVisibilityLocked()
         //         + ": vis=" + nowVisible);
         mReportedVisible = nowVisible;
         AutoPtr<IMessage> msg;
-        mService->mH->ObtainMessageEx3(CWindowManagerService::H::REPORT_APPLICATION_TOKEN_WINDOWS,
+        mService->mH->ObtainMessage(CWindowManagerService::H::REPORT_APPLICATION_TOKEN_WINDOWS,
             nowVisible ? 1 : 0, nowGone ? 1 : 0, this, (IMessage**)&msg);
         Boolean result;
         mService->mH->SendMessage(msg, &result);

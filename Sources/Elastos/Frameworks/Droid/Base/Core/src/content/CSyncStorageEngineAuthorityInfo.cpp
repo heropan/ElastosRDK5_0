@@ -36,7 +36,7 @@ ECode CSyncStorageEngineAuthorityInfo::GetAccount(
 {
     VALIDATE_NOT_NULL(account)
     *account = mAccount;
-    INTERFACE_ADDREF(*account);
+    REFCOUNT_ADD(*account);
     return NOERROR;
 }
 
@@ -158,7 +158,7 @@ ECode CSyncStorageEngineAuthorityInfo::GetPeriodicSyncs(
 {
     VALIDATE_NOT_NULL(periodicSyncs)
     *periodicSyncs = mPeriodicSyncs;
-    INTERFACE_ADDREF(*periodicSyncs)
+    REFCOUNT_ADD(*periodicSyncs)
     return NOERROR;
 }
 

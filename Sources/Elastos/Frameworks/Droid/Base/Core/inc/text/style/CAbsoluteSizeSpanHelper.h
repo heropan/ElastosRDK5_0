@@ -3,7 +3,7 @@
 #define __CABSOLUTESIZESPANHELPER_H__
 
 #include "_CAbsoluteSizeSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

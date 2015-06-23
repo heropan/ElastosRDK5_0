@@ -167,7 +167,7 @@ ECode CExtractEditText::SetSelection(
 }
 
 
-ECode CExtractEditText::SetSelectionEx(
+ECode CExtractEditText::SetSelection(
     /* [in] */ Int32 index)
 {
     return EditText::SetSelection(index);

@@ -51,7 +51,7 @@ ECode CContentProviderHolder::GetProviderInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -67,7 +67,7 @@ ECode CContentProviderHolder::GetContentProvider(
 {
     VALIDATE_NOT_NULL(provider);
     *provider = mProvider;
-    INTERFACE_ADDREF(*provider);
+    REFCOUNT_ADD(*provider);
     return NOERROR;
 }
 
@@ -83,7 +83,7 @@ ECode CContentProviderHolder::GetConnection(
 {
     VALIDATE_NOT_NULL(connection);
     *connection = mConnection;
-    INTERFACE_ADDREF(*connection);
+    REFCOUNT_ADD(*connection);
     return NOERROR;
 }
 

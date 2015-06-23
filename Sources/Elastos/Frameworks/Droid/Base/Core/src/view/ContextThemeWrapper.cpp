@@ -51,13 +51,13 @@ ECode ContextThemeWrapper::GetResources(
 {
     if (mResources != NULL) {
         *resources = mResources;
-        INTERFACE_ADDREF(*resources);
+        REFCOUNT_ADD(*resources);
         return NOERROR;
     }
     if (mOverrideConfiguration == NULL) {
         ContextWrapper::GetResources((IResources**)&mResources);
         *resources = mResources;
-        INTERFACE_ADDREF(*resources);
+        REFCOUNT_ADD(*resources);
         return NOERROR;
     }
     else {
@@ -65,7 +65,7 @@ ECode ContextThemeWrapper::GetResources(
         FAIL_RETURN(CreateConfigurationContext(mOverrideConfiguration, (IContext**)&resc));
         FAIL_RETURN(resc->GetResources((IResources**)&mResources));
         *resources = mResources;
-        INTERFACE_ADDREF(*resources);
+        REFCOUNT_ADD(*resources);
         return NOERROR;
     }
 }
@@ -97,7 +97,7 @@ ECode ContextThemeWrapper::GetTheme(
     }
 
     *theme = mTheme;
-    INTERFACE_ADDREF(*theme);
+    REFCOUNT_ADD(*theme);
     return NOERROR;
     // if (mTheme != null) {
     //     return mTheme;
@@ -123,7 +123,7 @@ ECode ContextThemeWrapper::GetSystemService(
                 (ILayoutInflater**)&mInflater);
         }
         *object = mInflater;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return mBase->GetSystemService(name, object);

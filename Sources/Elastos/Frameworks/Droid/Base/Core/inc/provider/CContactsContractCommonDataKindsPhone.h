@@ -55,7 +55,7 @@ public:
      * @hide
      */
     // @Deprecated
-    CARAPI GetDisplayLabelEx(
+    CARAPI GetDisplayLabel(
         /* [in] */ IContext* context,
         /* [in] */ Int32 type,
         /* [in] */ ICharSequence* label,

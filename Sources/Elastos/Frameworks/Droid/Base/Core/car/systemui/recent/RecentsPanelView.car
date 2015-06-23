@@ -38,7 +38,7 @@ module
         Show(
             [in] Boolean show);
 
-        ShowEx(
+        Show(
             [in] Boolean show,
             [in] IObjectContainer* recentTaskDescriptions,
             [in] Boolean firstScreenful,

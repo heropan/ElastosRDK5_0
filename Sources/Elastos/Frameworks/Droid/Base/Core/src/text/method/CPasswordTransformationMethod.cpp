@@ -6,7 +6,7 @@
 #include "view/View.h"
 #include "os/Handler.h"
 #include "os/SystemClock.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;
@@ -126,7 +126,7 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::SubSequence(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(sb.ToString(), (ICharSequence**)&cs);
     *ret = cs;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -329,7 +329,7 @@ ECode CPasswordTransformationMethod::GetTransformation(
 
     AutoPtr<ICharSequence> cs = (ICharSequence*)(IGetChars*)(new PasswordCharSequence(source));
     *ret = cs;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

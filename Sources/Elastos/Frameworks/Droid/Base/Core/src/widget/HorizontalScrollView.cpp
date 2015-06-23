@@ -5,7 +5,7 @@
 #include "widget/CFrameLayoutLayoutParams.h"
 #include "view/FocusFinder.h"
 #include "view/CMotionEvent.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "view/accessibility/CAccessibilityEvent.h"
 #include "view/animation/AnimationUtils.h"
 #include "view/CViewGroupMarginLayoutParams.h"
@@ -100,7 +100,7 @@ ECode HorizontalScrollView::InitFromAttributes(
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::HorizontalScrollView),
             ARRAY_SIZE(R::styleable::HorizontalScrollView));
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs,
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs,
             attrIds, defStyle, 0, (ITypedArray**)&a));
 
     Boolean value;
@@ -328,7 +328,7 @@ Boolean HorizontalScrollView::ExecuteKeyEvent(
 
             if (nextFocused != NULL && nextFocused.Get() != (IView*)this->Probe(EIID_IView)) {
                 Boolean isFocus = FALSE;
-                nextFocused->RequestFocusEx(IView::FOCUS_RIGHT, &isFocus);
+                nextFocused->RequestFocus(IView::FOCUS_RIGHT, &isFocus);
                 return isFocus;
             } else {
                 return FALSE;
@@ -454,7 +454,7 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
             }
 
             Float x = 0;
-            ev->GetXEx(pointerIndex, &x);
+            ev->GetX(pointerIndex, &x);
             Int32 xDiff = (Int32)Elastos::Core::Math::Abs((Int32)x - mLastMotionX);
             if (xDiff > mTouchSlop) {
                 mIsBeingDragged = TRUE;
@@ -506,7 +506,7 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
             Int32 index = 0;
             ev->GetActionIndex(&index);
             Float f = 0;
-            ev->GetXEx(index, &f);
+            ev->GetX(index, &f);
             mLastMotionX = (Int32)f;
             ev->GetPointerId(index, &mActivePointerId);
             break;
@@ -517,7 +517,7 @@ Boolean HorizontalScrollView::OnInterceptTouchEvent(
             Int32 find = 0;
             ev->FindPointerIndex(mActivePointerId, &find);
             Float fx = 0;
-            ev->GetXEx(find, &fx);
+            ev->GetX(find, &fx);
             mLastMotionX = (Int32)fx;
             break;
     }
@@ -567,7 +567,7 @@ Boolean HorizontalScrollView::OnTouchEvent(
             }
             Int32 x = 0;
             Float fx = 0;
-            ev->GetXEx(activePointerIndex, &fx);
+            ev->GetX(activePointerIndex, &fx);
             x = (Int32)fx;
             Int32 deltaX = mLastMotionX - x;
             if(!mIsBeingDragged && Elastos::Core::Math::Abs(deltaX) > mTouchSlop) {
@@ -631,9 +631,9 @@ Boolean HorizontalScrollView::OnTouchEvent(
         case IMotionEvent::ACTION_UP:
             if(mIsBeingDragged) {
                 AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
-                velocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+                velocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
                 Float x;
-                velocityTracker->GetXVelocityEx(mActivePointerId, &x);
+                velocityTracker->GetXVelocity(mActivePointerId, &x);
                 Int32 initialVelocity = (Int32)x;
 
                 if(GetChildCount() > 0) {
@@ -694,7 +694,7 @@ void HorizontalScrollView::OnSecondaryPointerUp(
     if (pointerId == mActivePointerId) {
         Int32 newPointerIndex = pointerIndex == 0 ? 1 : 0;
         Float lastMotionX = 0;
-        ev->GetXEx(newPointerIndex, &lastMotionX);
+        ev->GetX(newPointerIndex, &lastMotionX);
         mLastMotionX = (Int32)lastMotionX;
         ev->GetPointerId(newPointerIndex, &mActivePointerId);
         if (mVelocityTracker != NULL) {
@@ -1021,7 +1021,7 @@ Boolean HorizontalScrollView::ScrollAndFocus(
 
     if(newFocused != FindFocus()) {
         Boolean res = FALSE;
-        newFocused->RequestFocusEx(direction, &res);
+        newFocused->RequestFocus(direction, &res);
     }
     return handled;
 }
@@ -1042,7 +1042,7 @@ Boolean HorizontalScrollView::ArrowScroll(
         Int32 scrollDelta = ComputeScrollDeltaToGetChildRectOnScreen(mTempRect);
         DoScrollX(scrollDelta);
         Boolean res = FALSE;
-        nextFocused->RequestFocusEx(direction, &res);
+        nextFocused->RequestFocus(direction, &res);
     } else {
         Int32 scrollDelta = maxJump;
         if(direction == IView::FOCUS_LEFT && GetScrollX() < scrollDelta) {
@@ -1364,7 +1364,7 @@ Boolean HorizontalScrollView::OnRequestFocusInDescendants(
 
     Boolean result = FALSE;
     ASSERT_SUCCEEDED(
-            nextFocus->RequestFocusEx2(direction, previouslyFocusedRect, &result));
+            nextFocus->RequestFocus(direction, previouslyFocusedRect, &result));
 
     return result;
 }
@@ -1470,7 +1470,7 @@ ECode HorizontalScrollView::Fling(
 
         if(newFocused.Get() != currentFocused.Get()) {
             Boolean res = FALSE;
-            newFocused->RequestFocusEx(movingRight ? IView::FOCUS_RIGHT
+            newFocused->RequestFocus(movingRight ? IView::FOCUS_RIGHT
                 : IView::FOCUS_LEFT, &res);
         }
         PostInvalidateOnAnimation();

@@ -3,9 +3,9 @@
 #include "view/accessibility/AccessibilityRecord.h"
 #include "view/accessibility/CAccessibilityNodeInfo.h"
 #include "view/accessibility/CAccessibilityInteractionClient.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CObjectContainer;
@@ -63,10 +63,10 @@ AccessibilityRecord::AccessibilityRecord()
 ECode AccessibilityRecord::SetSource(
     /* [in] */ IView* source)
 {
-    return SetSourceEx(source, UNDEFINED);
+    return SetSource(source, UNDEFINED);
 }
 
-ECode AccessibilityRecord::SetSourceEx(
+ECode AccessibilityRecord::SetSource(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
@@ -377,7 +377,7 @@ ECode AccessibilityRecord::GetClassName(
 {
     VALIDATE_NOT_NULL(name);
     *name = mClassName;
-    INTERFACE_ADDREF(*name);
+    REFCOUNT_ADD(*name);
     return NOERROR;
 }
 
@@ -400,7 +400,7 @@ ECode AccessibilityRecord::GetText(
         text->Add((IInterface*)(*it));
     }
     *container = text;
-    INTERFACE_ADDREF(*container);
+    REFCOUNT_ADD(*container);
     return NOERROR;
 }
 
@@ -409,7 +409,7 @@ ECode AccessibilityRecord::GetBeforeText(
 {
     VALIDATE_NOT_NULL(text);
     *text = mBeforeText;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -426,7 +426,7 @@ ECode AccessibilityRecord::GetContentDescription(
 {
     VALIDATE_NOT_NULL(contentDescription);
     *contentDescription = mContentDescription;
-    INTERFACE_ADDREF(*contentDescription);
+    REFCOUNT_ADD(*contentDescription);
     return NOERROR;
 }
 
@@ -443,7 +443,7 @@ ECode AccessibilityRecord::GetParcelableData(
 {
     VALIDATE_NOT_NULL(parcelableData);
     *parcelableData = mParcelableData;
-    INTERFACE_ADDREF(*parcelableData);
+    REFCOUNT_ADD(*parcelableData);
     return NOERROR;
 }
 

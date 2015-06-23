@@ -2,7 +2,7 @@
 #include "app/CInnerReceiver.h"
 #include "app/ActivityManagerNative.h"
 // #include "app/CActivityThread.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::App::LoadedPkg;
 using Elastos::Utility::Logging::Slogger;

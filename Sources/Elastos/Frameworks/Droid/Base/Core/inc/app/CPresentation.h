@@ -3,9 +3,9 @@
 
 #include "_CPresentation.h"
 #include "Presentation.h"
-#include "app/DialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::Content::IContext;

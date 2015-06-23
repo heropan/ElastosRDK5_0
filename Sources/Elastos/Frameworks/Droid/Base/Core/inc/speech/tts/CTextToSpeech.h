@@ -21,7 +21,7 @@ public:
         /* [in] */ Int32 resourceId,
         /* [out] */ Int32* ret);
 
-    CARAPI AddSpeechEx(
+    CARAPI AddSpeech(
         /* [in] */ const String& text,
         /* [in] */ const String& filename,
         /* [out] */ Int32* ret);
@@ -32,7 +32,7 @@ public:
         /* [in] */ Int32 resourceId,
         /* [out] */ Int32* ret);
 
-    CARAPI AddEarconEx(
+    CARAPI AddEarcon(
         /* [in] */ const String& earcon,
         /* [in] */ const String& filename,
         /* [out] */ Int32* ret);

@@ -8,10 +8,10 @@
 #include "os/Build.h"
 #include "os/ServiceManager.h"
 #include "os/Process.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include "CActiveRestoreSession.h"
 
 using Elastos::Core::CRandom;
@@ -1741,8 +1741,8 @@ void CBackupManagerService::PerformFullBackupTask::BackupOnePackage(
             while (chunkTotal > 0) {
                 Int32 toRead = (chunkTotal > buffer->GetLength()) ? buffer->GetLength() : chunkTotal;
                 Int32 nRead = 0;
-                in->ReadBytesEx(buffer, 0, toRead, &nRead);
-                out->WriteBytesEx(*buffer, 0, nRead);
+                in->ReadBytes(buffer, 0, toRead, &nRead);
+                out->WriteBytes(*buffer, 0, nRead);
                 chunkTotal -= nRead;
             }
         }
@@ -2674,7 +2674,7 @@ _Exit2_:
                         Int32 toRead = (toCopy > buffer->GetLength())
                         ? buffer->GetLength() : (Int32)toCopy;
                         Int32 nRead;
-                        FAIL_GOTO((ec = instream->ReadBytesEx(buffer, 0, toRead, &nRead)), _Exit_);
+                        FAIL_GOTO((ec = instream->ReadBytes(buffer, 0, toRead, &nRead)), _Exit_);
                         if (nRead >= 0) mBytes += nRead;
                         if (nRead <= 0) break;
                         toCopy -= nRead;
@@ -2683,7 +2683,7 @@ _Exit2_:
                         // are still good
                         if (pipeOkay) {
                             //try {
-                            ECode ee = pipe->WriteBytesEx(*buffer, 0, nRead);
+                            ECode ee = pipe->WriteBytes(*buffer, 0, nRead);
                             if (ee == E_IO_EXCEPTION) {
                                 Slogger::E(TAG, "Failed to write to restore pipe 0x%08x", ee);
                                 pipeOkay = FALSE;
@@ -2725,7 +2725,7 @@ _Exit2_:
                     Int32 toRead = (bytesToConsume > buffer->GetLength())
                     ? buffer->GetLength() : (Int32)bytesToConsume;
                     Int32 nRead;
-                    FAIL_GOTO((ec = instream->ReadBytesEx(buffer, 0, toRead, &nRead)), _Exit_);
+                    FAIL_GOTO((ec = instream->ReadBytes(buffer, 0, toRead, &nRead)), _Exit_);
                     if (nRead >= 0) mBytes += nRead;
                     if (nRead <= 0) break;
                     bytesToConsume -= nRead;
@@ -2849,9 +2849,9 @@ Boolean CBackupManagerService::PerformFullRestoreTask::InstallApk(
     while (size > 0) {
         Int64 toRead = (buffer->GetLength() < size) ? buffer->GetLength() : size;
         Int32 didRead;
-        FAIL_GOTO((ec = instream->ReadBytesEx(buffer, 0, (Int32)toRead, &didRead)), _Exit_);
+        FAIL_GOTO((ec = instream->ReadBytes(buffer, 0, (Int32)toRead, &didRead)), _Exit_);
         if (didRead >= 0) mBytes += didRead;
-        apkStream->WriteBytesEx(*buffer, 0, didRead);
+        apkStream->WriteBytes(*buffer, 0, didRead);
         size -= didRead;
     }
     FAIL_GOTO((ec = apkStream->Close()), _Exit_);
@@ -3375,7 +3375,7 @@ CARAPI CBackupManagerService::PerformFullRestoreTask::ReadExactly(
 
     while (*soFar < size) {
         Int32 nRead;
-        FAIL_RETURN(in->ReadBytesEx(buffer, offset + *soFar, size - *soFar, &nRead));
+        FAIL_RETURN(in->ReadBytes(buffer, offset + *soFar, size - *soFar, &nRead));
         if (nRead <= 0) {
             if (MORE_DEBUG) Slogger::W(TAG, "- wanted exactly %d, but got only %d", size, *soFar);
             break;
@@ -3831,7 +3831,7 @@ void CBackupManagerService::PerformRestoreTask::DownloadRestoreData()
         // EventLog->WriteEvent(EventLogTags.RESTORE_AGENT_FAILURE, PACKAGE_MANAGER_SENTINEL,
         // "Package manager restore metadata missing");
         mStatus = IBackupConstants::TRANSPORT_ERROR;
-        mHost->mBackupHandler->RemoveMessagesEx(MSG_BACKUP_RESTORE_STEP, this);
+        mHost->mBackupHandler->RemoveMessages(MSG_BACKUP_RESTORE_STEP, this);
         ExecuteNextState(FINAL);
         return;
     }
@@ -3839,7 +3839,7 @@ _Exit_:
     if (ec == E_REMOTE_EXCEPTION) {
         Slogger::E(TAG, "Error communicating with transport for restore");
         mStatus = IBackupConstants::TRANSPORT_ERROR;
-        mHost->mBackupHandler->RemoveMessagesEx(MSG_BACKUP_RESTORE_STEP, this);
+        mHost->mBackupHandler->RemoveMessages(MSG_BACKUP_RESTORE_STEP, this);
         ExecuteNextState(FINAL);
         return;
     }
@@ -4221,7 +4221,7 @@ void CBackupManagerService::PerformRestoreTask::AgentErrorCleanup()
 
     // The caller is responsible for reestablishing the state machine; our
     // responsibility here is to clear the decks for whatever comes next.
-    mHost->mBackupHandler->RemoveMessagesEx(MSG_TIMEOUT, this);
+    mHost->mBackupHandler->RemoveMessages(MSG_TIMEOUT, this);
     {
         Object::Autolock lock(mHost->mCurrentOpLock);
         mHost->mCurrentOperations.Clear();
@@ -4509,7 +4509,7 @@ ECode CBackupManagerService::TrackPackageInstallAndRemoval::OnReceive(
         }
 
         added = IIntent::ACTION_PACKAGE_ADDED.Equals(action);
-        extras->GetBooleanEx(IIntent::EXTRA_REPLACING, FALSE, &replacing);
+        extras->GetBoolean(IIntent::EXTRA_REPLACING, FALSE, &replacing);
     } else if (IIntent::ACTION_EXTERNAL_APPLICATIONS_AVAILABLE.Equals(action)) {
         added = TRUE;
         intent->GetStringArrayExtra(IIntent::EXTRA_CHANGED_PACKAGE_LIST, (ArrayOf<String>**)&pkgList);
@@ -4629,7 +4629,7 @@ ECode CBackupManagerService::constructor(
 
     mProvisionedObserver = new ProvisionedObserver(mBackupHandler, this);
     AutoPtr<IUri> uri;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::DEVICE_PROVISIONED, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::DEVICE_PROVISIONED, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, mProvisionedObserver);
 
     // If Encrypted file systems is enabled or disabled, this call will return the
@@ -4692,7 +4692,7 @@ _Exit_:
     filter->AddAction(RUN_BACKUP_ACTION);
 
     AutoPtr<IIntent> intent;
-    ctx->RegisterReceiverEx(mRunBackupReceiver, filter,
+    ctx->RegisterReceiver(mRunBackupReceiver, filter,
             Elastos::Droid::Manifest::Permission::BACKUP, NULL, (IIntent**)&intent);
 
     mRunInitReceiver = new RunInitializeReceiver(this);
@@ -4703,7 +4703,7 @@ _Exit_:
     filter->AddAction(RUN_INITIALIZE_ACTION);
 
     intent = NULL;
-    ctx->RegisterReceiverEx(mRunInitReceiver, filter,
+    ctx->RegisterReceiver(mRunInitReceiver, filter,
             Elastos::Droid::Manifest::Permission::BACKUP, NULL, (IIntent**)&intent);
 
     AutoPtr<IIntent> backupIntent;
@@ -4798,7 +4798,7 @@ _Exit_:
  *
  *        intent->SetComponent(transportComponent);
  *        mGoogleConnection = new GroupServiceConnection(this);
- *        ctx->BindServiceEx(intent, mGoogleConnection, IContext::BIND_AUTO_CREATE, IUserHandle::USER_OWNER, &succeeded);
+ *        ctx->BindService(intent, mGoogleConnection, IContext::BIND_AUTO_CREATE, IUserHandle::USER_OWNER, &succeeded);
  *    }
  *    else {
  *        String str;
@@ -5488,7 +5488,7 @@ ECode CBackupManagerService::AcknowledgeFullBackupOrRestore(
         Mutex::Autolock lock(&mFullConfirmationsLock);
         params = mFullConfirmations[token];
         if (params != NULL) {
-            mBackupHandler->RemoveMessagesEx(MSG_FULL_CONFIRMATION_TIMEOUT, params);
+            mBackupHandler->RemoveMessages(MSG_FULL_CONFIRMATION_TIMEOUT, params);
             mFullConfirmations.Erase(token);
 
             if (allow) {
@@ -5522,7 +5522,7 @@ ECode CBackupManagerService::AcknowledgeFullBackupOrRestore(
                 if (DEBUG) Slogger::D(TAG, "Sending conf message with verb %d", verb);
                 mWakelock->AcquireLock();
                 AutoPtr<IMessage> msg;
-                mBackupHandler->ObtainMessageEx(verb, params->Probe(EIID_IInterface), (IMessage**)&msg);
+                mBackupHandler->ObtainMessage(verb, params->Probe(EIID_IInterface), (IMessage**)&msg);
                 Boolean bTemp;
                 mBackupHandler->SendMessage(msg, &bTemp);
             }
@@ -5785,7 +5785,7 @@ ECode CBackupManagerService::OpComplete(
     // The completion callback, if any, is invoked on the handler
     if (op != NULL && op->mCallback != NULL) {
         AutoPtr<IMessage> msg;
-        mBackupHandler->ObtainMessageEx(MSG_OP_COMPLETE, op->mCallback->Probe(EIID_IInterface), (IMessage**)&msg);
+        mBackupHandler->ObtainMessage(MSG_OP_COMPLETE, op->mCallback->Probe(EIID_IInterface), (IMessage**)&msg);
         Boolean bResult;
         mBackupHandler->SendMessage(msg, &bResult);
     }
@@ -5835,7 +5835,7 @@ Boolean CBackupManagerService::StartConfirmationUi(
     AutoPtr<IIntent> confIntent;
     CIntent::New(action, (IIntent**)&confIntent);
 
-    confIntent->SetClassNameEx(String("com.android.backupconfirm"), String("com.android.backupconfirm.BackupRestoreConfirmation"));
+    confIntent->SetClassName(String("com.android.backupconfirm"), String("com.android.backupconfirm.BackupRestoreConfirmation"));
     confIntent->PutInt32Extra(IFullBackup::CONF_TOKEN_INTENT_EXTRA, token);
     confIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     ECode ec = mContext->StartActivity(confIntent);
@@ -5854,7 +5854,7 @@ void CBackupManagerService::StartConfirmationTimeout(
 {
     if (MORE_DEBUG) Slogger::D(TAG, "Posting conf timeout msg after %d millis", TIMEOUT_FULL_CONFIRMATION);
     AutoPtr<IMessage> msg;
-    mBackupHandler->ObtainMessageEx3(MSG_FULL_CONFIRMATION_TIMEOUT, token, 0, params->Probe(EIID_IInterface), (IMessage**)&msg);
+    mBackupHandler->ObtainMessage(MSG_FULL_CONFIRMATION_TIMEOUT, token, 0, params->Probe(EIID_IInterface), (IMessage**)&msg);
     Boolean result;
     mBackupHandler->SendMessageDelayed(msg, TIMEOUT_FULL_CONFIRMATION, &result);
 }
@@ -6070,7 +6070,7 @@ void CBackupManagerService::ParseLeftoverJournals()
         assert(f != NULL);
 
         Int32 result = 0;
-        if (mJournal == NULL || (f->CompareToEx(mJournal, &result), result != 0)) {
+        if (mJournal == NULL || (f->CompareTo(mJournal, &result), result != 0)) {
             // This isn't the current journal, so it must be a leftover.  Read
             // out the package names mentioned there and schedule them for
             // backup.
@@ -6915,7 +6915,7 @@ void CBackupManagerService::PrepareOperationTimeout(
         mCurrentOperations[token] = op;
 
         AutoPtr<IMessage> msg;
-        mBackupHandler->ObtainMessageEx3(MSG_TIMEOUT, token, 0, callback->Probe(EIID_IInterface), (IMessage**)&msg);
+        mBackupHandler->ObtainMessage(MSG_TIMEOUT, token, 0, callback->Probe(EIID_IInterface), (IMessage**)&msg);
         Boolean bOk;
         mBackupHandler->SendMessageDelayed(msg, interval, &bOk);
     }
@@ -7164,7 +7164,7 @@ void CBackupManagerService::WriteToJournalLocked(
     if (mJournal == NULL) {
         AutoPtr<IFileHelper> helper;
         CFileHelper::AcquireSingleton((IFileHelper**)&helper);
-        FAIL_GOTO((ec = helper->CreateTempFileEx(String("journal"), String(NULL), mJournalDir, (IFile**)&mJournal)), _Exit_);
+        FAIL_GOTO((ec = helper->CreateTempFile(String("journal"), String(NULL), mJournalDir, (IFile**)&mJournal)), _Exit_);
     }
 
     FAIL_GOTO((ec = CRandomAccessFile::New(mJournal, String("rws"), (IRandomAccessFile**)&out)), _Exit_);
@@ -7200,7 +7200,7 @@ void CBackupManagerService::StartBackupAlarmsLocked(
     CRandom::New((IRandom**)&random);
 
     Int32 full_millis;
-    random->NextInt32Ex(FUZZ_MILLIS, &full_millis);
+    random->NextInt32(FUZZ_MILLIS, &full_millis);
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 millis;
@@ -7473,7 +7473,7 @@ void CBackupManagerService::HandleRestore(
         params->mNeedFullBackup, params->mFilterSet, this);
 
     AutoPtr<IMessage> msg;
-    mBackupHandler->ObtainMessageEx(MSG_BACKUP_RESTORE_STEP, task->Probe(EIID_IInterface), (IMessage**)&msg);
+    mBackupHandler->ObtainMessage(MSG_BACKUP_RESTORE_STEP, task->Probe(EIID_IInterface), (IMessage**)&msg);
     Boolean bResult;
     mBackupHandler->SendMessage(msg, &bResult);
 }

@@ -406,7 +406,7 @@ ECode CPath::ArcTo(
  * @param startAngle  Starting angle (in degrees) where the arc begins
  * @param sweepAngle  Sweep angle (in degrees) measured clockwise
  */
-ECode CPath::ArcToEx(
+ECode CPath::ArcTo(
     /* [in] */ IRectF* oval,
     /* [in] */ Float startAngle,
     /* [in] */ Float sweepAngle)
@@ -446,7 +446,7 @@ void CPath::DetectSimplePath(
                 CRegion::New((IRegion**)&mRects);
             }
             Boolean result;
-            mRects->OpEx((Int32)left, (Int32)top, (Int32)right, (Int32)bottom, RegionOp_UNION, &result);
+            mRects->Op((Int32)left, (Int32)top, (Int32)right, (Int32)bottom, RegionOp_UNION, &result);
         }
     }
 }
@@ -480,7 +480,7 @@ ECode CPath::AddRect(
  * @param bottom The bottom of a rectangle to add to the path
  * @param dir    The direction to wind the rectangle's contour
  */
-ECode CPath::AddRectEx(
+ECode CPath::AddRect(
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
@@ -583,7 +583,7 @@ ECode CPath::AddRoundRect(
  * @param radii Array of 8 values, 4 pairs of [X,Y] radii
  * @param dir  The direction to wind the round-rectangle's contour
  */
-ECode CPath::AddRoundRectEx(
+ECode CPath::AddRoundRect(
     /* [in] */ IRectF* rect,
     /* [in] */ const ArrayOf<Float>& radii,
     /* [in] */ PathDirection dir)
@@ -622,7 +622,7 @@ ECode CPath::AddPath(
  *
  * @param src The path that is appended to the current path
  */
-ECode CPath::AddPathEx(
+ECode CPath::AddPath(
     /* [in] */ IPath* src)
 {
     mIsSimplePath = FALSE;
@@ -635,7 +635,7 @@ ECode CPath::AddPathEx(
  *
  * @param src The path to add as a new contour
  */
-ECode CPath::AddPathEx2(
+ECode CPath::AddPath(
     /* [in] */ IPath* src,
     /* [in] */ IMatrix* matrix)
 {
@@ -673,7 +673,7 @@ ECode CPath::Offset(
  * @param dx The amount in the X direction to offset the entire path
  * @param dy The amount in the Y direction to offset the entire path
  */
-ECode CPath::OffsetEx(
+ECode CPath::Offset(
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
@@ -723,7 +723,7 @@ ECode CPath::Transform(
  *
  * @param matrix The matrix to apply to the path
  */
-ECode CPath::TransformEx(
+ECode CPath::Transform(
     /* [in] */ IMatrix* matrix)
 {
     mIsSimplePath = FALSE;

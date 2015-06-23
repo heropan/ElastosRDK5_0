@@ -80,7 +80,7 @@ ECode COverlayFrame::constructor(
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> tmp;
-    return bitmapFactory->DecodeFileEx(filename, (IBitmap**)&mBitmap);
+    return bitmapFactory->DecodeFile(filename, (IBitmap**)&mBitmap);
 }
 
 ECode COverlayFrame::GetBitmap(
@@ -89,7 +89,7 @@ ECode COverlayFrame::GetBitmap(
     VALIDATE_NOT_NULL(result);
 
     *result = mBitmap;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -363,7 +363,7 @@ ECode COverlayFrame::GenerateOverlayWithRenderingMode(
         AutoPtr<IBitmapFactory> bitmapFactory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
         AutoPtr<IBitmap> destBitmap;
-        bitmapFactory->CreateBitmapEx3(width, height, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&destBitmap);
+        bitmapFactory->CreateBitmap(width, height, Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&destBitmap);
 
         AutoPtr<ICanvas> overlayCanvas;
         CCanvas::New(destBitmap, (ICanvas**)&overlayCanvas);
@@ -451,7 +451,7 @@ ECode COverlayFrame::GenerateOverlayWithRenderingMode(
             }
         }
 
-        overlayCanvas->DrawBitmapEx2(overlayBitmap, srcRect, destRect, sResizePaint);
+        overlayCanvas->DrawBitmap(overlayBitmap, srcRect, destRect, sResizePaint);
         overlayCanvas->SetBitmap(NULL);
 
         /*
@@ -491,7 +491,7 @@ ECode COverlayFrame::GenerateOverlayWithRenderingMode(
         while(tmp < height) {
             destBitmap->GetPixels(*framingBuffer, 0, width, 0, tmp, width, 1);
             byteBuffer->AsInt32Buffer((IInt32Buffer**)&intBuffer);
-            intBuffer->PutInt32sEx(*framingBuffer, 0, width);
+            intBuffer->PutInt32s(*framingBuffer, 0, width);
             dos->WriteBytes(*array);
             tmp += 1;
         }

@@ -8,13 +8,13 @@
 #include "content/CComponentName.h"
 #include "os/UserHandle.h"
 #include "net/Uri.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <ext/frameworkext.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemLongClickListener;
@@ -205,7 +205,7 @@ ECode ResolverActivity::GetIcon(
 //     }
 
     *drawable = result;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -226,13 +226,13 @@ ECode ResolverActivity::LoadIconForResolveInfo(
             String riPkgName;
             ri->GetResolvePackageName(&riPkgName);
             AutoPtr<IResources> resources;
-            mPm->GetResourcesForApplicationEx(riPkgName, (IResources**)&resources);
+            mPm->GetResourcesForApplication(riPkgName, (IResources**)&resources);
             Int32 riIcon;
             ri->GetIcon(&riIcon);
             GetIcon(resources, riIcon, (IDrawable**)&dr);
             if (dr != NULL) {
                 *drawable = dr;
-                INTERFACE_ADDREF(*drawable);
+                REFCOUNT_ADD(*drawable);
                 return NOERROR;
             }
         }
@@ -244,11 +244,11 @@ ECode ResolverActivity::LoadIconForResolveInfo(
             String riPkgName;
             activityInfo->GetPackageName(&riPkgName);
             AutoPtr<IResources> resources;
-            mPm->GetResourcesForApplicationEx(riPkgName, (IResources**)&resources);
+            mPm->GetResourcesForApplication(riPkgName, (IResources**)&resources);
             GetIcon(resources, iconRes, (IDrawable**)&dr);
             if (dr != NULL) {
                 *drawable = dr;
-                INTERFACE_ADDREF(*drawable);
+                REFCOUNT_ADD(*drawable);
                 return NOERROR;
             }
         }
@@ -866,7 +866,7 @@ ECode ResolverActivity::ResolveListAdapter::ResolveInfoForPosition(
     }
 
     *resInfo = mList[position]->mRi;
-    INTERFACE_ADDREF(*resInfo);
+    REFCOUNT_ADD(*resInfo);
     return NOERROR;
 }
 
@@ -901,7 +901,7 @@ ECode ResolverActivity::ResolveListAdapter::IntentForPosition(
     CComponentName::New(pkgName, name, (IComponentName**)&component);
     intent->SetComponent(component);
     *bkIntent = intent;
-    INTERFACE_ADDREF(*bkIntent);
+    REFCOUNT_ADD(*bkIntent);
     return NOERROR;
 }
 
@@ -941,7 +941,7 @@ ECode ResolverActivity::ResolveListAdapter::GetView(
     VALIDATE_NOT_NULL(bkView);
     AutoPtr<IView> view;
     if (convertView == NULL) {
-        mInflater->InflateEx2(R::layout::resolve_list_item, parent, FALSE, (IView**)&view);
+        mInflater->Inflate(R::layout::resolve_list_item, parent, FALSE, (IView**)&view);
 
         // Fix the icon size even if we have different sized resources
         AutoPtr<IImageView> icon;
@@ -955,7 +955,7 @@ ECode ResolverActivity::ResolveListAdapter::GetView(
     }
     BindView(view, mList[position]);
     *bkView = view;
-    INTERFACE_ADDREF(*bkView);
+    REFCOUNT_ADD(*bkView);
     return NOERROR;
 }
 

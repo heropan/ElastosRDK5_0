@@ -87,7 +87,7 @@ public:
      * enabled are returned.
      * @return list of Strings containing names of the providers
      */
-    CARAPI GetProvidersEx(
+    CARAPI GetProviders(
         /* [in] */ ICriteria* criteria,
         /* [in] */ Boolean enabledOnly,
         /* [out] */ IObjectContainer** providers);
@@ -166,7 +166,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestLocationUpdatesEx(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
@@ -195,7 +195,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestLocationUpdatesEx2(
+    CARAPI RequestLocationUpdates(
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ICriteria* criteria,
@@ -219,7 +219,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestLocationUpdatesEx3(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
@@ -316,7 +316,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestLocationUpdatesEx4(
+    CARAPI RequestLocationUpdates(
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ICriteria* criteria,
@@ -366,7 +366,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestSingleUpdateEx(
+    CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
@@ -384,7 +384,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestSingleUpdateEx2(
+    CARAPI RequestSingleUpdate(
         /* [in] */ const String& provider,
         /* [in] */ IPendingIntent* intent);
 
@@ -402,7 +402,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    CARAPI RequestSingleUpdateEx3(
+    CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ IPendingIntent* intent);
 
@@ -463,7 +463,7 @@ public:
      *
      * @hide
      */
-    CARAPI RequestLocationUpdatesEx5(
+    CARAPI RequestLocationUpdates(
         /* [in] */ ILocationRequest* request,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
@@ -488,7 +488,7 @@ public:
      *
      * @hide
      */
-    CARAPI RequestLocationUpdatesEx6(
+    CARAPI RequestLocationUpdates(
         /* [in] */ ILocationRequest* request,
         /* [in] */ IPendingIntent* intent);
 
@@ -512,7 +512,7 @@ public:
      * @param intent pending intent object that no longer needs location updates
      * @throws IllegalArgumentException if intent is null
      */
-    CARAPI RemoveUpdatesEx(
+    CARAPI RemoveUpdates(
         /* [in] */ IPendingIntent* intent);
 
     /**

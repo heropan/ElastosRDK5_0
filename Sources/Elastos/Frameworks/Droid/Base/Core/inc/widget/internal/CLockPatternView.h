@@ -2,7 +2,7 @@
 #define __CLOCKPATTERNVIEW__H_
 
 #include "_CLockPatternView.h"
-#include "view/ViewMacro.h"
+
 #include "widget/internal/LockPatternView.h"
 
 namespace Elastos{

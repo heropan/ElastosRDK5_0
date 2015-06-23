@@ -1,5 +1,5 @@
 #include "MonkeyGetFrameRateEvent.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Os::CEnvironment;
@@ -133,7 +133,7 @@ String MonkeyGetFrameRateEvent::GetNumberOfFrames(const String& input)
     if (ret) {
         AutoPtr<IMatchResult> mr;
         m->ToMatchResult((IMatchResult**)&mr);
-        mr->GroupEx(1, &noOfFrames);
+        mr->Group(1, &noOfFrames);
     }
     return noOfFrames;
 }

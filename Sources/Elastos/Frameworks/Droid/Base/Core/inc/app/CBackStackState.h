@@ -4,9 +4,9 @@
 #include "_CBackStackState.h"
 #include "ext/frameworkdef.h"
 #include "app/CFragmentManagerImpl.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IRunnable;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFileDescriptor;
@@ -128,11 +128,11 @@ public:
         /* [in] */ IFragment* fragment,
         /* [in] */ const String& tag);
 
-    virtual CARAPI AddEx(
+    virtual CARAPI Add(
         /* [in] */ Int32 containerViewId,
         /* [in] */ IFragment* fragment);
 
-    virtual CARAPI AddEx2(
+    virtual CARAPI Add(
         /* [in] */ Int32 containerViewId,
         /* [in] */ IFragment* fragment,
         /* [in] */ const String& tag);
@@ -141,7 +141,7 @@ public:
         /* [in] */ Int32 containerViewId,
         /* [in] */ IFragment* fragment);
 
-    virtual CARAPI ReplaceEx(
+    virtual CARAPI Replace(
         /* [in] */ Int32 containerViewId,
         /* [in] */ IFragment* fragment,
         /* [in] */ const String& tag);
@@ -165,7 +165,7 @@ public:
         /* [in] */ Int32 enter,
         /* [in] */ Int32 exit);
 
-    virtual CARAPI SetCustomAnimationsEx(
+    virtual CARAPI SetCustomAnimations(
         /* [in] */ Int32 enter,
         /* [in] */ Int32 exit,
         /* [in] */ Int32 popEnter,
@@ -188,13 +188,13 @@ public:
     virtual CARAPI SetBreadCrumbTitle(
         /* [in] */ Int32 res);
 
-    virtual CARAPI SetBreadCrumbTitleEx(
+    virtual CARAPI SetBreadCrumbTitle(
         /* [in] */ ICharSequence* text);
 
     virtual CARAPI SetBreadCrumbShortTitle(
         /* [in] */ Int32 res);
 
-    virtual CARAPI SetBreadCrumbShortTitleEx(
+    virtual CARAPI SetBreadCrumbShortTitle(
         /* [in] */ ICharSequence* text);
 
     virtual CARAPI Commit(

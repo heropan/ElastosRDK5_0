@@ -18,7 +18,7 @@ ECode CEnvironmentHelper::GetInstance(
         CEnvironment::New((IEnvironment**)&mInstance);
     }
     *env = mInstance;
-    INTERFACE_ADDREF(*env);
+    REFCOUNT_ADD(*env);
     return NOERROR;
 }
 

@@ -8,15 +8,14 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "location/CountryDetectorBase.h"
-#include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>
 #include "os/Runnable.h"
-#include "elastos/List.h"
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::TimerTask;
 using Elastos::Utility::ITimer;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Location::ICountry;

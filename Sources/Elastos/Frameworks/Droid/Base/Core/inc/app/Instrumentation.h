@@ -3,16 +3,14 @@
 #define __INSTRUMENTATION_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/Object.h>
-#include <elastos/List.h>
+#include <elastos/Core/Object.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Utility::List;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::App::IInstrumentationActivityMonitor;
@@ -448,7 +446,7 @@ public:
      * @see #addMonitor(ActivityMonitor)
      * @see #checkMonitorHit
      */
-    virtual CARAPI AddMonitorEx(
+    virtual CARAPI AddMonitor(
         /* [in] */ IIntentFilter* filter,
         /* [in] */ IInstrumentationActivityResult* result,
         /* [in] */ Boolean block,
@@ -470,7 +468,7 @@ public:
      * @see #addMonitor(ActivityMonitor)
      * @see #checkMonitorHit
      */
-    virtual CARAPI AddMonitorEx2(
+    virtual CARAPI AddMonitor(
         /* [in] */ const String& cls,
         /* [in] */ IInstrumentationActivityResult* result,
         /* [in] */ Boolean block,
@@ -664,7 +662,7 @@ public:
      *
      * @return The newly instantiated Activity object.
      */
-    virtual CARAPI NewActivityEx(
+    virtual CARAPI NewActivity(
         /* [in] */ IClassLoader* cl,
         /* [in] */ const String& className,
         /* [in] */ IIntent* intent,
@@ -890,7 +888,7 @@ public:
      *
      * {@hide}
      */
-    virtual CARAPI ExecStartActivityEx(
+    virtual CARAPI ExecStartActivity(
         /* [in] */ IContext* who,
         /* [in] */ IBinder* contextThread,
         /* [in] */ IBinder* token,
@@ -927,7 +925,7 @@ public:
      *
      * {@hide}
      */
-    virtual CARAPI ExecStartActivityEx2(
+    virtual CARAPI ExecStartActivity(
         /* [in] */ IContext* who,
         /* [in] */ IBinder* contextThread,
         /* [in] */ IBinder* token,

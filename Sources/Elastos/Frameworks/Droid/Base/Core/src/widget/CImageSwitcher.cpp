@@ -112,14 +112,14 @@ ECode CImageSwitcher::SetOutAnimation(
     return ImageSwitcher::SetOutAnimation(outAnimation);
 }
 
-ECode CImageSwitcher::SetInAnimationEx(
+ECode CImageSwitcher::SetInAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {
     return ImageSwitcher::SetInAnimation(context, resourceID);
 }
 
-ECode CImageSwitcher::SetOutAnimationEx(
+ECode CImageSwitcher::SetOutAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {

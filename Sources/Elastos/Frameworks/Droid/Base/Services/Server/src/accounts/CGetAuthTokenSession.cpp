@@ -4,7 +4,7 @@
 #include "accounts/CAccountManagerService.h"
 #include "os/Binder.h"
 #include "text/TextUtils.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;

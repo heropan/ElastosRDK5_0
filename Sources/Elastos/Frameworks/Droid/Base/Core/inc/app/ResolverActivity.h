@@ -4,7 +4,7 @@
 
 #include "app/AlertActivity.h"
 #include "content/PackageMonitor.h"
-#include "content/ContextMacro.h"
+
 #include "widget/BaseAdapter.h"
 #include "ext/frameworkext.h"
 

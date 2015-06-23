@@ -2,7 +2,7 @@
 #define __CSCROLLBARDRAWABLE_H__
 
 #include "_CScrollBarDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 #include "widget/ScrollBarDrawable.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;

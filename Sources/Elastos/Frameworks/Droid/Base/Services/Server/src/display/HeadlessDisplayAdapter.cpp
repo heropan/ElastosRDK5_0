@@ -1,7 +1,7 @@
 
 #include "display/HeadlessDisplayAdapter.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;

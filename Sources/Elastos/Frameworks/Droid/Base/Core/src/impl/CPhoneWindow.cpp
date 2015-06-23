@@ -26,8 +26,8 @@
 #include "widget/internal/CActionBarContextView.h"
 #include "util/CTypedValue.h"
 #include "util/CTypedValueHelper.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "impl/CPhoneWindowRotationWatcher.h"
 #include "R.h"
 
@@ -138,7 +138,7 @@ ECode CPhoneWindow::_DecorView::ShowActionModePopupRunnable::Run()
 {
     AutoPtr<IBinder> token;
     mHost->mActionModeView->GetApplicationWindowToken((IBinder**)&token);
-    return mHost->mActionModePopup->ShowAtLocationEx(token,
+    return mHost->mActionModePopup->ShowAtLocation(token,
             IGravity::TOP | IGravity::FILL_HORIZONTAL, 0, 0);
 }
 
@@ -223,7 +223,7 @@ ECode CPhoneWindow::_DecorView::DecorViewWeakReferenceImpl::Resolve(
     *objectReference = NULL;
     if (mObject && mRef && mRef->AttemptIncStrong(objectReference)) {
         *objectReference = mObject->Probe(riid);
-        INTERFACE_ADDREF(*objectReference);
+        REFCOUNT_ADD(*objectReference);
         ((DecorView*)(IFrameLayout*)mObject)->_Release();
     }
     return NOERROR;
@@ -253,7 +253,7 @@ ECode CPhoneWindow::_DecorView::WillYouTakeTheSurface(
     VALIDATE_NOT_NULL(cback);
     if (mFeatureId < 0) {
         *cback = mHost->mTakeSurfaceCallback;
-        INTERFACE_ADDREF(*cback);
+        REFCOUNT_ADD(*cback);
     }
     else {
         *cback = NULL;
@@ -293,7 +293,7 @@ ECode CPhoneWindow::_DecorView::WillYouTakeTheInputQueue(
     VALIDATE_NOT_NULL(inputQueueCallback);
     if (mFeatureId < 0) {
         *inputQueueCallback = mHost->mTakeInputQueueCallback;
-        INTERFACE_ADDREF(*inputQueueCallback);
+        REFCOUNT_ADD(*inputQueueCallback);
     }
     else {
         *inputQueueCallback = NULL;
@@ -728,7 +728,7 @@ Boolean CPhoneWindow::_DecorView::SetFrame(
             drawingBounds->SetTop(top + top1);
             drawingBounds->SetRight(right1 - right);
             drawingBounds->SetBottom(bottom1 - bottom);
-            fg->SetBoundsEx(drawingBounds);
+            fg->SetBounds(drawingBounds);
 
             Int32 left2 = 0, top2 = 0, right2 = 0, bottom2 = 0;
             mFramePadding->GetLeft(&left2);
@@ -744,7 +744,7 @@ Boolean CPhoneWindow::_DecorView::SetFrame(
 
         AutoPtr<IDrawable> bg = GetBackground();
         if (bg != NULL) {
-            bg->SetBoundsEx(drawingBounds);
+            bg->SetBounds(drawingBounds);
         }
 
         if (SWEEP_OPEN_MENU) {
@@ -1312,7 +1312,7 @@ ECode CPhoneWindow::DecorView::GetForeground(
     VALIDATE_NOT_NULL(foreground);
     AutoPtr<IDrawable> d = _DecorView::GetForeground();
     *foreground = d.Get();
-    INTERFACE_ADDREF(*foreground);
+    REFCOUNT_ADD(*foreground);
 
     return NOERROR;
 }
@@ -1345,7 +1345,7 @@ ECode CPhoneWindow::DecorView::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new DecorViewWeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -2032,7 +2032,7 @@ ECode CPhoneWindow::SetContentView(
     return NOERROR;
 }
 
-ECode CPhoneWindow::SetContentViewEx(
+ECode CPhoneWindow::SetContentView(
     /* [in] */ IView* view)
 {
     AutoPtr<IViewGroupLayoutParams> params;
@@ -2041,10 +2041,10 @@ ECode CPhoneWindow::SetContentViewEx(
         IWindowManagerLayoutParams::MATCH_PARENT,
         (IViewGroupLayoutParams**)&params);
 
-    return SetContentViewEx2(view, params);
+    return SetContentView(view, params);
 }
 
-ECode CPhoneWindow::SetContentViewEx2(
+ECode CPhoneWindow::SetContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
 {
@@ -2055,7 +2055,7 @@ ECode CPhoneWindow::SetContentViewEx2(
         mContentParent->RemoveAllViews();
     }
 
-    mContentParent->AddViewEx3(view, params);
+    mContentParent->AddView(view, params);
 
     AutoPtr<IWindowCallback> cb;
     GetCallback((IWindowCallback**)&cb);
@@ -2073,7 +2073,7 @@ ECode CPhoneWindow::AddContentView(
     if (mContentParent == NULL) {
         InstallDecor();
     }
-    FAIL_RETURN(mContentParent->AddViewEx3(view, params));
+    FAIL_RETURN(mContentParent->AddView(view, params));
     AutoPtr<IWindowCallback> cb;
     GetCallback((IWindowCallback**)&cb);
     Boolean destoryed = FALSE;
@@ -2125,7 +2125,7 @@ ECode CPhoneWindow::GetLayoutInflater(
 {
     VALIDATE_NOT_NULL(inflater);
     *inflater = mLayoutInflater;
-    INTERFACE_ADDREF(*inflater);
+    REFCOUNT_ADD(*inflater);
     return NOERROR;
 }
 
@@ -2147,7 +2147,7 @@ ECode CPhoneWindow::SetTitleColor(
     /* [in] */ Int32 textColor)
 {
     if (mTitleView != NULL) {
-        mTitleView->SetTextColorEx(textColor);
+        mTitleView->SetTextColor(textColor);
     }
     mTitleColor = textColor;
     return NOERROR;
@@ -2575,7 +2575,7 @@ void CPhoneWindow::OpenPanel(
             IViewManager::Probe(shownPanelParent)->RemoveView(st->mShownPanelView);
         }
 
-        IViewGroup::Probe((IViewParent*)st->mDecorView)->AddViewEx3(st->mShownPanelView, lp);
+        IViewGroup::Probe((IViewParent*)st->mDecorView)->AddView(st->mShownPanelView, lp);
 
         /*
          * Give focus to the view, if it or one of its children does not
@@ -2620,7 +2620,7 @@ void CPhoneWindow::OpenPanel(
 
     ((CWindowManagerLayoutParams*)wlp.Get())->mWindowAnimations = st->mWindowAnimations;
 
-    wm->AddViewEx5((IView*)st->mDecorView.Get(), wlp);
+    wm->AddView((IView*)st->mDecorView.Get(), wlp);
    // Log.v(TAG, "Adding main menu to window manager.");
 }
 
@@ -3330,7 +3330,7 @@ ECode CPhoneWindow::GetDecorView(
         InstallDecor();
     }
     *view = mDecor;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -3340,7 +3340,7 @@ ECode CPhoneWindow::PeekDecorView(
     VALIDATE_NOT_NULL(view);
 
     *view = (IView*)mDecor;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -3352,7 +3352,7 @@ ECode CPhoneWindow::SaveHierarchyState(
     CBundle::New((IBundle**)&state);
     if (mContentParent == NULL) {
         *instanceState = state;
-        INTERFACE_ADDREF(*instanceState);
+        REFCOUNT_ADD(*instanceState);
         return NOERROR;
     }
 
@@ -3393,7 +3393,7 @@ ECode CPhoneWindow::SaveHierarchyState(
     }
 
     *instanceState = state;
-    INTERFACE_ADDREF(*instanceState);
+    REFCOUNT_ADD(*instanceState);
     return NOERROR;
 }
 
@@ -3412,7 +3412,7 @@ ECode CPhoneWindow::RestoreHierarchyState(
 
     // restore the focused view
     Int32 focusedViewId = 0;
-    savedInstanceState->GetInt32Ex(FOCUSED_ID_TAG, IView::NO_ID, &focusedViewId);
+    savedInstanceState->GetInt32(FOCUSED_ID_TAG, IView::NO_ID, &focusedViewId);
     if (focusedViewId != IView::NO_ID) {
         AutoPtr<IView> needsFocus;
         mContentParent->FindViewById(focusedViewId, (IView**)&needsFocus);
@@ -3801,7 +3801,7 @@ ECode CPhoneWindow::GenerateLayout(
             IViewGroupLayoutParams::MATCH_PARENT,
             IViewGroupLayoutParams::MATCH_PARENT,
             (IViewGroupLayoutParams**)&vparams);
-    decor->AddViewEx3(in.Get(), vparams.Get());
+    decor->AddView(in.Get(), vparams.Get());
 
     AutoPtr<IView> tmp;
     FindViewById(ID_ANDROID_CONTENT, (IView**)&tmp);
@@ -3864,7 +3864,7 @@ ECode CPhoneWindow::GenerateLayout(
     mDecor->FinishChanging();
 
     *viewGroup = contentParent.Get();
-    INTERFACE_ADDREF(*viewGroup);
+    REFCOUNT_ADD(*viewGroup);
 
     return NOERROR;
 }
@@ -3886,13 +3886,13 @@ ECode CPhoneWindow::Destroy()
     return Window::Destroy();
 }
 
-ECode CPhoneWindow::SetWindowManagerEx(
+ECode CPhoneWindow::SetWindowManager(
     /* [in] */ IWindowManager* wm,
     /* [in] */ IBinder* appToken,
     /* [in] */ const String& appName,
     /* [in] */ Boolean hardwareAccelerated)
 {
-    return Window::SetWindowManagerEx(wm, appToken, appName, hardwareAccelerated);
+    return Window::SetWindowManager(wm, appToken, appName, hardwareAccelerated);
 }
 
 ECode CPhoneWindow::AdjustLayoutParamsForSubWindow(
@@ -3921,11 +3921,11 @@ ECode CPhoneWindow::ShouldCloseOnTouch(
     return Window::ShouldCloseOnTouch(context, event, res);
 }
 
-ECode CPhoneWindow::SetUiOptionsEx(
+ECode CPhoneWindow::SetUiOptions(
     /* [in] */ Int32 uiOptions,
     /* [in] */ Int32 mask)
 {
-    return Window::SetUiOptionsEx(uiOptions, mask);
+    return Window::SetUiOptions(uiOptions, mask);
 }
 
 void CPhoneWindow::InstallDecor()
@@ -4762,7 +4762,7 @@ ECode CPhoneWindow::GetDrawableState(
         ar->Set(featureId, st);
     }
     *state = st;
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -4829,7 +4829,7 @@ ECode CPhoneWindow::GetPanelState(
     }
 
     *state = st;
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 

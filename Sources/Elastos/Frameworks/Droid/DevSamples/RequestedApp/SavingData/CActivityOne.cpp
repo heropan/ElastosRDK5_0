@@ -2,8 +2,8 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <elautoptr.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 
 using Elastos::Utility::Logging::Slogger;
@@ -144,7 +144,7 @@ ECode CActivityOne::MyListener::OnClick(
 
         AutoPtr<ICursor> cursor;
         assert(db != NULL);
-        db->QueryEx2(FeedEntry::TABLE_NAME, NULL, String(NULL),
+        db->Query(FeedEntry::TABLE_NAME, NULL, String(NULL),
                 NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
 
         AutoPtr<ISimpleAdapter> adapter = mHost->GetSimpleAdapter(cursor);
@@ -164,7 +164,7 @@ ECode CActivityOne::MyListener::OnClick(
         assert(mHost->mDbHelper != NULL);
         AutoPtr<ISQLiteDatabase> db;
         mHost->mDbHelper->GetWritableDatabase((ISQLiteDatabase**)&db);
-        db->QueryEx2(FeedEntry::TABLE_NAME, NULL, String(NULL),
+        db->Query(FeedEntry::TABLE_NAME, NULL, String(NULL),
                 NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
 
         Int32 count = 0;
@@ -185,7 +185,7 @@ ECode CActivityOne::MyListener::OnClick(
                     dArray, &dNum);
 
             c = NULL;
-            db->QueryEx2(FeedEntry::TABLE_NAME, NULL, String(NULL),
+            db->Query(FeedEntry::TABLE_NAME, NULL, String(NULL),
                     NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c);
 
             AutoPtr<ISimpleAdapter> adapter = mHost->GetSimpleAdapter(c);
@@ -294,7 +294,7 @@ ECode CActivityOne::OnResume()
     mDbHelper->GetWritableDatabase((ISQLiteDatabase**)&db);
     AutoPtr<ICursor> cursor;
     assert(db != NULL);
-    db->QueryEx2(FeedEntry::TABLE_NAME, NULL, String(NULL),
+    db->Query(FeedEntry::TABLE_NAME, NULL, String(NULL),
             NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&cursor);
 
     AutoPtr<ISimpleAdapter> adapter = GetSimpleAdapter(cursor);

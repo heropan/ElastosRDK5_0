@@ -3,12 +3,11 @@
 #include "LocalAlbum.h"
 #include "LocalImage.h"
 #include "DataSourceHelper.h"
-#include <elastos/Mutex.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::CUriMatcher;
 using Elastos::Utility::Logging::Logger;
 
@@ -171,7 +170,7 @@ void LocalSource::Resume()
 
     AutoPtr<IContentResolver> resolver;
     mApplication->GetContentResolver((IContentResolver**)&resolver);
-    resolver->AcquireContentProviderClientEx(String("media") /*MediaStore.AUTHORITY*/, (IContentProviderClient**)&mClient);
+    resolver->AcquireContentProviderClient(String("media") /*MediaStore.AUTHORITY*/, (IContentProviderClient**)&mClient);
 }
 
 void LocalSource::Pause()

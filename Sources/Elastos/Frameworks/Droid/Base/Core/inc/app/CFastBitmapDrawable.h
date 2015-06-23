@@ -5,7 +5,7 @@
 #include "_CFastBitmapDrawable.h"
 #include "ext/frameworkdef.h"
 #include "app/FastBitmapDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 using Elastos::Droid::Graphics::IRect;
 

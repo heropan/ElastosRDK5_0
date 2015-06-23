@@ -15,9 +15,9 @@
 #include "CMusicService.h"
 #include "CmdDefine.h"
 #include "R.h"
-#include <elastos/Thread.h>
-#include <elastos/List.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/StringBuilder.h>
 #include <dirent.h>
 
@@ -26,9 +26,9 @@ using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IRandom;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::CThread;
-using Elastos::Utility::List;
+using Elastos::Core::Thread;
+using Elastos::Core::CThread;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::EIID_IService;
 using Elastos::Droid::Content::CIntent;
@@ -429,7 +429,7 @@ ECode CMusicService::OpenFile(
     Logger::D("CMusicService", "OpenFile() %s", path.string());
 
     mMediaPlayer->Reset();
-    mMediaPlayer->SetDataSourceEx2(path);
+    mMediaPlayer->SetDataSource(path);
     mMediaPlayer->Prepare();
     mMediaPlayer->Start();
     mFilePath = path;
@@ -824,7 +824,7 @@ ECode CMusicService:: OnCompletion(
         case IPlayController::MODE_RANDOM_PLAY:
             CRandom::New((IRandom**)&rnd);
             Int32 id;
-            rnd->NextInt32Ex(mAudioList->GetLength(), &id);
+            rnd->NextInt32(mAudioList->GetLength(), &id);
             Logger::D("CMusicService", "random play, random id=%d\n", id);
             SetAudioId(id);
             break;

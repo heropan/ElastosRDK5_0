@@ -35,10 +35,10 @@
 #include "os/Binder.h"
 #include "os/SomeArgs.h"
 #include "util/CTypedValue.h"
-#include <elastos/Thread.h>
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "R.h"
 #include <stdio.h>
 #include "opengl/CGLES20.h"
@@ -51,7 +51,7 @@ using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Droid::Opengl::CGLES20;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -81,7 +81,7 @@ using Elastos::Droid::Internal::Policy::IPolicyManager;
 using Elastos::Droid::Internal::Policy::CPolicyManager;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Vector;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
@@ -230,12 +230,12 @@ ECode ViewRootImpl::ViewRootHandler::HandleMessage(
     switch (what) {
         case ViewRootImpl::MSG_INVALIDATE: {
             IView* view = IView::Probe(obj);
-            view->InvalidateEx2();
+            view->Invalidate();
             break;
         }
         case ViewRootImpl::MSG_INVALIDATE_RECT: {
             View::AttachInfo::InvalidateInfo* info = (View::AttachInfo::InvalidateInfo*)obj.Get();
-            info->mTarget->InvalidateEx(info->mLeft, info->mTop, info->mRight, info->mBottom);
+            info->mTarget->Invalidate(info->mLeft, info->mTop, info->mRight, info->mBottom);
             info->ReleaseInfo();
             break;
         }
@@ -276,9 +276,9 @@ ECode ViewRootImpl::ViewRootHandler::HandleMessage(
                     mHost->UpdateConfiguration(config, FALSE);
                 }
 
-                mHost->mWinFrame->SetEx(IRect::Probe(args->mArg1));
-                mHost->mPendingContentInsets->SetEx(IRect::Probe(args->mArg2));
-                mHost->mPendingVisibleInsets->SetEx(IRect::Probe(args->mArg3));
+                mHost->mWinFrame->Set(IRect::Probe(args->mArg1));
+                mHost->mPendingContentInsets->Set(IRect::Probe(args->mArg2));
+                mHost->mPendingVisibleInsets->Set(IRect::Probe(args->mArg3));
 
                 if (what == MSG_RESIZED_REPORT) {
                     mHost->mReportNextDraw = TRUE;
@@ -612,13 +612,13 @@ ECode ViewRootImpl::InvalidateOnAnimationRunnable::Run()
     }
 
     for (Int32 i = 0; i < viewCount; i++) {
-        (*mTempViews)[i]->InvalidateEx2();
+        (*mTempViews)[i]->Invalidate();
         mTempViews->Set(i, NULL);
     }
 
     for (Int32 i = 0; i < viewRectCount; i++) {
         View::AttachInfo::InvalidateInfo* info = (*mTempViewRects)[i];
-        info->mTarget->InvalidateEx(info->mLeft, info->mTop, info->mRight, info->mBottom);
+        info->mTarget->Invalidate(info->mLeft, info->mTop, info->mRight, info->mBottom);
         info->ReleaseInfo();
     }
 
@@ -979,7 +979,7 @@ ECode ViewRootImpl::CSurfaceHolder::GetSurface(
         return E_INVALID_ARGUMENT;
     }
     *surface = mViewRoot->mSurface;
-    INTERFACE_ADDREF(*surface);
+    REFCOUNT_ADD(*surface);
 
     return NOERROR;
 }
@@ -1048,7 +1048,7 @@ ECode ViewRootImpl::CSurfaceHolder::LockCanvas(
     return NOERROR;
 }
 
-ECode ViewRootImpl::CSurfaceHolder::LockCanvasEx(
+ECode ViewRootImpl::CSurfaceHolder::LockCanvas(
     /* [in] */ IRect* dirty,
     /* [out] */ ICanvas** canvas)
 {
@@ -1449,7 +1449,7 @@ ViewRootImpl::ViewRootImpl(
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
     String temp;
-    sp->GetEx(PROPERTY_PROFILE_RENDERING, String("FALSE"), &temp);
+    sp->Get(PROPERTY_PROFILE_RENDERING, String("FALSE"), &temp);
     mProfileRendering = temp.EqualsIgnoreCase("TRUE");
     mChoreographer = Choreographer::GetInstance();
 
@@ -1558,7 +1558,7 @@ Boolean ViewRootImpl::IsRenderThreadRequested(
             AutoPtr<IBundle> metaData;
             applicationInfo->GetMetaData((IBundle**)&metaData);
             if (metaData != NULL) {
-                metaData->GetBooleanEx(String("android.graphics.renderThread"),
+                metaData->GetBoolean(String("android.graphics.renderThread"),
                     FALSE, &sUseRenderThread);
             }
 
@@ -1728,7 +1728,7 @@ ECode ViewRootImpl::SetView(
             (IInputChannel**)&tempInputChannel, &res);
 
         if (tempRect != NULL) {
-            mAttachInfo->mContentInsets->SetEx(tempRect);
+            mAttachInfo->mContentInsets->Set(tempRect);
         }
         if (tempInputChannel != NULL) {
             tempInputChannel->TransferTo(mInputChannel);
@@ -1759,7 +1759,7 @@ ECode ViewRootImpl::SetView(
             mTranslator->TranslateRectInScreenToAppWindow(mAttachInfo->mContentInsets);
         }
 
-        mPendingContentInsets->SetEx((IRect*)mAttachInfo->mContentInsets);
+        mPendingContentInsets->Set((IRect*)mAttachInfo->mContentInsets);
         mPendingVisibleInsets->Set(0, 0, 0, 0);
 
         if (DEBUG_LAYOUT)
@@ -2095,7 +2095,7 @@ void ViewRootImpl::HandleScreenStateChange(
     }
 }
 
-ECode ViewRootImpl::RequestFitSystemWindowsEx()
+ECode ViewRootImpl::RequestFitSystemWindows()
 {
     FAIL_RETURN(CheckThread());
     mFitSystemWindowsRequested = TRUE;
@@ -2114,7 +2114,7 @@ ECode ViewRootImpl::RequestLayout()
     return NOERROR;
 }
 
-ECode ViewRootImpl::RequestLayoutEx()
+ECode ViewRootImpl::RequestLayout()
 {
     return RequestLayout();
 }
@@ -2128,7 +2128,7 @@ ECode ViewRootImpl::IsLayoutRequested(
     return NOERROR;
 }
 
-ECode ViewRootImpl::IsLayoutRequestedEx(
+ECode ViewRootImpl::IsLayoutRequested(
     /* [out] */ Boolean* result)
 {
     return IsLayoutRequested(result);
@@ -2143,7 +2143,7 @@ void ViewRootImpl::Invalidate()
 void ViewRootImpl::InvalidateWorld(
     /* [in] */ IView* view)
 {
-    view->InvalidateEx2();
+    view->Invalidate();
     ViewGroup* parent = VIEWGROUP_PROBE(view);
     if (parent) {
         Int32 count = parent->GetChildCount();
@@ -2184,7 +2184,7 @@ ECode ViewRootImpl::InvalidateChildInParent(
     }
 
     if (mCurScrollY != 0 || mTranslator != NULL) {
-        mTempRect->SetEx(dirty);
+        mTempRect->Set(dirty);
         dirty = mTempRect;
         if (mCurScrollY != 0) {
             dirty->Offset(0, -mCurScrollY);
@@ -2200,14 +2200,14 @@ ECode ViewRootImpl::InvalidateChildInParent(
     CRect* localDirty = mDirty;
     localDirty->IsEmpty(&isEmpty);
     Boolean contains;
-    localDirty->ContainsEx2(dirty, &contains);
+    localDirty->Contains(dirty, &contains);
     if (!isEmpty && !contains) {
         mAttachInfo->mSetIgnoreDirtyState = TRUE;
         mAttachInfo->mIgnoreDirtyState = TRUE;
     }
 
     // Add the new dirty rect to the current one
-    localDirty->UnionEx(dirty);
+    localDirty->Union(dirty);
     // Intersect with the bounds of the window to skip
     // updates that lie outside of the visible region
     const Float appScale = mAttachInfo->mApplicationScale;
@@ -2246,7 +2246,7 @@ ECode ViewRootImpl::GetParent(
     return NOERROR;
 }
 
-ECode ViewRootImpl::GetParentEx(
+ECode ViewRootImpl::GetParent(
     /* [out] */ IViewParent** parent)
 {
     return GetParent(parent);
@@ -2595,7 +2595,7 @@ void ViewRootImpl::PerformTraversals()
             host->SetLayoutDirection(direction);
         }
         host->DispatchAttachedToWindow(attachInfo, 0);
-        mFitSystemWindowsInsets->SetEx(mAttachInfo->mContentInsets);
+        mFitSystemWindowsInsets->Set(mAttachInfo->mContentInsets);
         host->FitSystemWindows(mFitSystemWindowsInsets);
         Logger::I(TAG, "Screen on initialized: %d", attachInfo->mKeepScreenOn);
     }
@@ -2652,13 +2652,13 @@ void ViewRootImpl::PerformTraversals()
         }
         else {
             Boolean equals;
-            mPendingContentInsets->EqualsEx(mAttachInfo->mContentInsets, &equals);
+            mPendingContentInsets->Equals(mAttachInfo->mContentInsets, &equals);
             if (!equals) {
                 insetsChanged = TRUE;
             }
-            mPendingVisibleInsets->EqualsEx(mAttachInfo->mVisibleInsets, &equals);
+            mPendingVisibleInsets->Equals(mAttachInfo->mVisibleInsets, &equals);
             if (!equals) {
-                mAttachInfo->mVisibleInsets->SetEx(mPendingVisibleInsets);
+                mAttachInfo->mVisibleInsets->Set(mPendingVisibleInsets);
                 if (DEBUG_LAYOUT)
                     Logger::V(TAG, "Visible insets changing to: "
                         /*+ mAttachInfo->mVisibleInsets*/);
@@ -2736,7 +2736,7 @@ void ViewRootImpl::PerformTraversals()
 
     if (mFitSystemWindowsRequested) {
         mFitSystemWindowsRequested = FALSE;
-        mFitSystemWindowsInsets->SetEx(mAttachInfo->mContentInsets);
+        mFitSystemWindowsInsets->Set(mAttachInfo->mContentInsets);
         host->FitSystemWindows(mFitSystemWindowsInsets);
         if (mLayoutRequested) {
             // Short-circuit catching a new layout request here, so
@@ -2834,10 +2834,10 @@ void ViewRootImpl::PerformTraversals()
             mPendingConfiguration->SetSeq(0);
         }
 
-        mPendingContentInsets->EqualsEx(
+        mPendingContentInsets->Equals(
             mAttachInfo->mContentInsets, &contentInsetsChanged);
         contentInsetsChanged = !contentInsetsChanged;
-        mPendingVisibleInsets->EqualsEx(
+        mPendingVisibleInsets->Equals(
             mAttachInfo->mVisibleInsets, &visibleInsetsChanged);
         visibleInsetsChanged = !visibleInsetsChanged;
 
@@ -2929,7 +2929,7 @@ void ViewRootImpl::PerformTraversals()
             //         }
             //     //}
             // }
-            mAttachInfo->mContentInsets->SetEx(mPendingContentInsets);
+            mAttachInfo->mContentInsets->Set(mPendingContentInsets);
 
             if (DEBUG_LAYOUT) {
                 Logger::D(TAG, "Content insets changing to: "
@@ -2940,12 +2940,12 @@ void ViewRootImpl::PerformTraversals()
             mAttachInfo->mSystemUiVisibility || mFitSystemWindowsRequested) {
             mLastSystemUiVisibility = mAttachInfo->mSystemUiVisibility;
             mFitSystemWindowsRequested = FALSE;
-            mFitSystemWindowsInsets->SetEx(mAttachInfo->mContentInsets);
+            mFitSystemWindowsInsets->Set(mAttachInfo->mContentInsets);
             host->FitSystemWindows(mFitSystemWindowsInsets);
         }
 
         if (visibleInsetsChanged) {
-            mAttachInfo->mVisibleInsets->SetEx(mPendingVisibleInsets);
+            mAttachInfo->mVisibleInsets->Set(mPendingVisibleInsets);
 
             if (DEBUG_LAYOUT) {
                 Logger::D(TAG, "Visible insets changing to: "
@@ -3201,7 +3201,7 @@ void ViewRootImpl::PerformTraversals()
             //
             host->GetLocationInWindow(mTmpLocation, mTmpLocation + 1);
             Boolean result;
-            mTransparentRegion->SetEx2(mTmpLocation[0], mTmpLocation[1],
+            mTransparentRegion->Set(mTmpLocation[0], mTmpLocation[1],
                 mTmpLocation[0] + host->mRight - host->mLeft,
                 mTmpLocation[1] + host->mBottom - host->mTop, &result);
 
@@ -3211,7 +3211,7 @@ void ViewRootImpl::PerformTraversals()
             }
 
             Boolean isEqual;
-            mTransparentRegion->EqualsEx(mPreviousTransparentRegion, &isEqual);
+            mTransparentRegion->Equals(mPreviousTransparentRegion, &isEqual);
             if (!isEqual) {
                 mPreviousTransparentRegion->Set(mTransparentRegion, &result);
                 // reconfigure window manager
@@ -3290,7 +3290,7 @@ void ViewRootImpl::PerformTraversals()
             mView->HasFocus(&hasFocus);
             if (!hasFocus) {
                 Boolean result;
-                mView->RequestFocusEx(IView::FOCUS_FORWARD, &result);
+                mView->RequestFocus(IView::FOCUS_FORWARD, &result);
                 AutoPtr<IView> temp;
                 mView->FindFocus((IView**)&temp);
                 mRealFocusedView = temp;
@@ -3706,9 +3706,9 @@ void ViewRootImpl::Draw(
             mHardwareYOffset = yoff;
             mResizeAlpha = resizeAlpha;
 
-            mCurrentDirty->SetEx(dirty);
+            mCurrentDirty->Set(dirty);
             mCurrentDirty->Union(mPreviousDirty);
-            mPreviousDirty->SetEx(dirty);
+            mPreviousDirty->Set(dirty);
             dirty->SetEmpty();
 
             if (mAttachInfo->mHardwareRenderer->Draw(mView, mAttachInfo, this,
@@ -3814,7 +3814,7 @@ Boolean ViewRootImpl::DrawSoftware(
     Boolean isOpaque = FALSE;
     canvas->IsOpaque(&isOpaque);
     if (!isOpaque || yoff != 0) {
-        if (FAILED(canvas->DrawColorEx(0, PorterDuffMode_CLEAR))) {
+        if (FAILED(canvas->DrawColor(0, PorterDuffMode_CLEAR))) {
             goto _DrawSoftware_;
         }
     }
@@ -3905,7 +3905,7 @@ void ViewRootImpl::DrawAccessibilityFocusedDrawableIfNeeded(
     Boolean res;
     bounds->Intersect(0, 0, mAttachInfo->mViewRootImpl->mWidth,
         mAttachInfo->mViewRootImpl->mHeight, &res);
-    drawable->SetBoundsEx(bounds);
+    drawable->SetBounds(bounds);
     drawable->Draw(canvas);
 }
 
@@ -4044,7 +4044,7 @@ Boolean ViewRootImpl::ScrollToRectOrFocus(
                     //    + " visRect=" + mVisRect.toShortString());
                 }
                 else {
-                    mTempRect->SetEx(rectangle);
+                    mTempRect->Set(rectangle);
                     //if (DEBUG_INPUT_RESIZE) Logger::V(TAG,
                     //    "Request scroll to rect: "
                     //    + mTempRect.toShortString()
@@ -4052,7 +4052,7 @@ Boolean ViewRootImpl::ScrollToRectOrFocus(
                 }
 
                 Boolean isIntersect;
-                mTempRect->IntersectEx(mVisRect, &isIntersect);
+                mTempRect->Intersect(mVisRect, &isIntersect);
                 if (isIntersect) {
                     //if (DEBUG_INPUT_RESIZE) Logger::V(TAG,
                     //    "Focus window visible rect: "
@@ -4208,7 +4208,7 @@ ECode ViewRootImpl::ClearChildFocus(
 }
 
 //@Override
-ECode ViewRootImpl::GetParentForAccessibilityEx(
+ECode ViewRootImpl::GetParentForAccessibility(
     /* [out] */ IViewParent** parent)
 {
     VALIDATE_NOT_NULL(parent);
@@ -4595,7 +4595,7 @@ Boolean ViewRootImpl::LeaveTouchMode()
         FocusSearch(NULL, IView::FOCUS_DOWN, (IView**)&focused);
         if (focused != NULL) {
             Boolean result;
-            focused->RequestFocusEx(IView::FOCUS_DOWN, &result);
+            focused->RequestFocus(IView::FOCUS_DOWN, &result);
             return result;
         }
     }
@@ -5433,7 +5433,7 @@ void ViewRootImpl::DeliverKeyEventPostIme(
                             v, mTempRect);
                     }
                     Boolean res;
-                    v->RequestFocusEx2(direction, mTempRect, &res);
+                    v->RequestFocus(direction, mTempRect, &res);
                     if (res) {
                         PlaySoundEffect(SoundEffectConstants::GetContantForFocusDirection(direction));
                         FinishInputEvent(q, TRUE);
@@ -5697,11 +5697,11 @@ Int32 ViewRootImpl::RelayoutWindow(
         (IRect**)&pendingVisibleInsets, (IConfiguration**)&pendingConfiguration,
         &relayoutResult, (ISurface**)&surface);
     if (winFrame != NULL)
-        mWinFrame->SetEx(winFrame);
+        mWinFrame->Set(winFrame);
     if (pendingContentInsets != NULL)
-        mPendingContentInsets->SetEx(pendingContentInsets);
+        mPendingContentInsets->Set(pendingContentInsets);
     if (pendingVisibleInsets != NULL)
-        mPendingVisibleInsets->SetEx(pendingVisibleInsets);
+        mPendingVisibleInsets->Set(pendingVisibleInsets);
     if (pendingConfiguration != NULL)
         mPendingConfiguration->SetTo(pendingConfiguration);
     if (surface != NULL) {
@@ -5802,7 +5802,7 @@ ECode ViewRootImpl::FocusSearch(
     return NOERROR;
 }
 
-ECode ViewRootImpl::FocusSearchEx(
+ECode ViewRootImpl::FocusSearch(
     /* [in] */ IView* focused,
     /* [in] */ Int32 direction,
     /* [out */ IView** result)
@@ -5925,7 +5925,7 @@ void ViewRootImpl::RequestUpdateConfiguration(
     /* [in] */ IConfiguration* config)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_UPDATE_CONFIGURATION, config, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_UPDATE_CONFIGURATION, config, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 }
@@ -5964,7 +5964,7 @@ void ViewRootImpl::DispatchImeFinishedEvent(
     /* [in] */ Boolean handled)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_IME_FINISHED_EVENT,
+    mHandler->ObtainMessage(MSG_IME_FINISHED_EVENT,
         seq, handled ? 1 : 0, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
@@ -5975,7 +5975,7 @@ void ViewRootImpl::DispatchFinishInputConnection(
     /* [in] */ IInputConnection* connection)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_FINISH_INPUT_CONNECTION, connection, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_FINISH_INPUT_CONNECTION, connection, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 }
@@ -6023,7 +6023,7 @@ void ViewRootImpl::DispatchResized(
     args->mArg4 = argConfig;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(reportDraw ? MSG_RESIZED_REPORT : MSG_RESIZED,
+    mHandler->ObtainMessage(reportDraw ? MSG_RESIZED_REPORT : MSG_RESIZED,
         args, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6048,7 +6048,7 @@ void ViewRootImpl::DispatchMoved(
     }
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_WINDOW_MOVED, newX, newY, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_WINDOW_MOVED, newX, newY, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 }
@@ -6217,7 +6217,7 @@ void ViewRootImpl::DispatchInvalidateDelayed(
     /* [in] */ Int64 delayMilliseconds)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_INVALIDATE, view, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_INVALIDATE, view, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessageDelayed(msg, delayMilliseconds, &result);
 }
@@ -6227,7 +6227,7 @@ void ViewRootImpl::DispatchInvalidateRectDelayed(
     /* [in] */ Int64 delayMilliseconds)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_INVALIDATE_RECT, info, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_INVALIDATE_RECT, info, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessageDelayed(msg, delayMilliseconds, &result);
 }
@@ -6272,10 +6272,10 @@ void ViewRootImpl::DequeueDisplayList(
 void ViewRootImpl::CancelInvalidate(
     /* [in] */ IView* view)
 {
-    mHandler->RemoveMessagesEx(MSG_INVALIDATE, view);
+    mHandler->RemoveMessages(MSG_INVALIDATE, view);
     // fixme: might leak the AttachInfo.InvalidateInfo objects instead of returning
     // them to the pool
-    mHandler->RemoveMessagesEx(MSG_INVALIDATE_RECT, view);
+    mHandler->RemoveMessages(MSG_INVALIDATE_RECT, view);
     mInvalidateOnAnimationRunnable->RemoveView(view);
 }
 
@@ -6283,7 +6283,7 @@ void ViewRootImpl::DispatchKey(
     /* [in] */ IKeyEvent* event)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_DISPATCH_KEY, event, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DISPATCH_KEY, event, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6293,7 +6293,7 @@ void ViewRootImpl::DispatchKeyFromIme(
     /* [in] */ IKeyEvent* event)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_DISPATCH_KEY_FROM_IME, event, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DISPATCH_KEY_FROM_IME, event, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6343,7 +6343,7 @@ void ViewRootImpl::DispatchAppVisibility(
     /* [in] */ Boolean visible)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_DISPATCH_APP_VISIBILITY,
+    mHandler->ObtainMessage(MSG_DISPATCH_APP_VISIBILITY,
         visible ? 1 : 0, 0, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6353,7 +6353,7 @@ void ViewRootImpl::DispatchScreenStateChange(
     /* [ijn] */ Boolean on)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_DISPATCH_SCREEN_STATE,
+    mHandler->ObtainMessage(MSG_DISPATCH_SCREEN_STATE,
         on ? 1 : 0, 0, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6370,7 +6370,7 @@ void ViewRootImpl::WindowFocusChanged(
     /* [in] */ Boolean inTouchMode)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(MSG_WINDOW_FOCUS_CHANGED,
+    mHandler->ObtainMessage(MSG_WINDOW_FOCUS_CHANGED,
         hasFocus ? 1 : 0, inTouchMode ? 1 : 0, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6383,7 +6383,7 @@ void ViewRootImpl::DispatchCloseSystemDialogs(
     CStringWrapper::New(reason, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_CLOSE_SYSTEM_DIALOGS,
+    mHandler->ObtainMessage(MSG_CLOSE_SYSTEM_DIALOGS,
         seq, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -6401,7 +6401,7 @@ void ViewRootImpl::DispatchDragEvent(
     }
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(what, event, (IMessage**)&msg);
+    mHandler->ObtainMessage(what, event, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 }
@@ -6419,7 +6419,7 @@ void ViewRootImpl::DispatchSystemUiVisibilityChanged(
     args->mLocalChanges = localChanges;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(MSG_DISPATCH_SYSTEM_UI_VISIBILITY, args, (IMessage**)&msg);
+    mHandler->ObtainMessage(MSG_DISPATCH_SYSTEM_UI_VISIBILITY, args, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 }
@@ -6488,7 +6488,7 @@ ECode ViewRootImpl::ShowContextMenuForChild(
     return NOERROR;
 }
 
-ECode ViewRootImpl::StartActionModeForChildEx(
+ECode ViewRootImpl::StartActionModeForChild(
     /* [in] */ IView* originalView,
     /* [in] */ IActionModeCallback* callback,
     /* [out] */ IActionMode** actionMode)
@@ -6498,7 +6498,7 @@ ECode ViewRootImpl::StartActionModeForChildEx(
     return NOERROR;
 }
 
-ECode ViewRootImpl::CreateContextMenuEx(
+ECode ViewRootImpl::CreateContextMenu(
     /* [in] */ IContextMenu* menu)
 {
     return NOERROR;
@@ -6642,7 +6642,7 @@ ECode ViewRootImpl::RequestChildRectangleOnScreen(
     assert(result);
     *result = ScrollToRectOrFocus(rectangle, immediate);
     if (rectangle != NULL) {
-        mTempRect->SetEx(rectangle);
+        mTempRect->Set(rectangle);
         mTempRect->Offset(0, -mCurScrollY);
         mTempRect->Offset(mAttachInfo->mWindowLeft, mAttachInfo->mWindowTop);
         mWindowSession->OnRectangleOnScreenRequested(
@@ -6652,7 +6652,7 @@ ECode ViewRootImpl::RequestChildRectangleOnScreen(
     return NOERROR;
 }
 
-ECode ViewRootImpl::ChildHasTransientStateChangedEx(
+ECode ViewRootImpl::ChildHasTransientStateChanged(
     /* [in] */ IView* child,
     /* [in] */ Boolean hasTransientState)
 {
@@ -6663,7 +6663,7 @@ ECode ViewRootImpl::ChildHasTransientStateChangedEx(
 // void ViewRootImpl::HandleInvalidateRect(
 //     /* [in] */ View::AttachInfo::InvalidateInfo* info)
 // {
-//     info->mTarget->InvalidateEx(info->mLeft, info->mTop, info->mRight, info->mBottom);
+//     info->mTarget->Invalidate(info->mLeft, info->mTop, info->mRight, info->mBottom);
 //     info->ReleaseInfo();
 // }
 
@@ -6684,8 +6684,8 @@ ECode ViewRootImpl::ChildHasTransientStateChangedEx(
 //         Boolean isEqual1, isEqual2, isEqual3;
 //         mWinFrame->Equals(frame, &isEqual1);
 //         if (isEqual1
-//             && (mPendingContentInsets->EqualsEx(contentInsets, &isEqual2), isEqual2)
-//             && (mPendingVisibleInsets->EqualsEx(visibleInsets, &isEqual3), isEqual3)
+//             && (mPendingContentInsets->Equals(contentInsets, &isEqual2), isEqual2)
+//             && (mPendingVisibleInsets->Equals(visibleInsets, &isEqual3), isEqual3)
 //             && newConfig == NULL) {
 //             return;
 //         }
@@ -6697,9 +6697,9 @@ ECode ViewRootImpl::ChildHasTransientStateChangedEx(
 //             UpdateConfiguration(newConfig, FALSE);
 //         }
 
-//         mWinFrame->SetEx(frame);
-//         mPendingContentInsets->SetEx(contentInsets);
-//         mPendingVisibleInsets->SetEx(visibleInsets);
+//         mWinFrame->Set(frame);
+//         mPendingContentInsets->Set(contentInsets);
+//         mPendingVisibleInsets->Set(visibleInsets);
 
 //         if (reportDraw) {
 //             mReportNextDraw = TRUE;
@@ -6868,7 +6868,7 @@ ECode ViewRootImpl::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 

@@ -14,7 +14,7 @@ ECode CSingleLineTransformationMethodHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ISingleLineTransformationMethod> stm = CSingleLineTransformationMethod::GetInstance();
     *ret = stm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

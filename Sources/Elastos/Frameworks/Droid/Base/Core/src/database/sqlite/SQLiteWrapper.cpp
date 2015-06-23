@@ -2,7 +2,7 @@
 #include "database/sqlite/SQLiteWrapper.h"
 #include "widget/Toast.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Widget::IToast;
@@ -28,7 +28,7 @@ ECode SQLiteWrapper::CheckSQLiteException(
 {
     if (IsLowMemory(e)) {
         AutoPtr<IToast> toast;
-        Toast::MakeTextEx(context, R::string::low_memory, IToast::LENGTH_SHORT, (IToast**)&toast);
+        Toast::MakeText(context, R::string::low_memory, IToast::LENGTH_SHORT, (IToast**)&toast);
         return toast->Show();
     }
     else {
@@ -56,7 +56,7 @@ ECode SQLiteWrapper::Query(
         return CheckSQLiteException(context, ec);
     }
     *result = cursor;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
     // } catch (SQLiteException e) {
     //     Log.e(TAG, "Catch a SQLiteException when query: ", e);
@@ -153,7 +153,7 @@ ECode SQLiteWrapper::Insert(
         return CheckSQLiteException(context, ec);
     }
     *result = outUri;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
     // } catch (SQLiteException e) {
     //     Log.e(TAG, "Catch a SQLiteException when insert: ", e);

@@ -3,7 +3,7 @@
 #define  __KEYFRAME_H__
 
 #include "ext/frameworkext.h"
-#include "animation/KeyframeMacro.h"
+
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

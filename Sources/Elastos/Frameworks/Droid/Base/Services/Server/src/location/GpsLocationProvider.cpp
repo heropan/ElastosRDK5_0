@@ -1,8 +1,8 @@
 
 #include "location/GpsLocationProvider.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;

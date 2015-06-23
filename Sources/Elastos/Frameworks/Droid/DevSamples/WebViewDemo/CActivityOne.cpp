@@ -4,8 +4,7 @@
 #include "webkit/WebChromeClient.h"
 #include "webkit/WebSettingsClassic.h"
 
-#include <elastos/Mutex.h>
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 #include <Elastos.Droid.Core.h>
 
 #include <cutils/log.h>
@@ -13,8 +12,8 @@
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Mutex;
+using Elastos::Core::Thread;
 using Elastos::Droid::App::CProgressDialog;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Webkit::IConsoleMessage;
@@ -434,7 +433,7 @@ ECode CActivityOne::Init()
             return WebChromeClient::OnShowCustomView(view, callBack);
         }
 
-        CARAPI OnShowCustomViewEx(
+        CARAPI OnShowCustomView(
             /* [in] */ IView* view,
             /* [in] */ Int32 requestedOrientation,
             /* [in] */ IWebChromeClientCustomViewCallback* callBack)
@@ -557,7 +556,7 @@ ECode CActivityOne::Init()
             return WebChromeClient::OnConsoleMessage(message, lineNumber, sourceID);
         }
 
-        CARAPI OnConsoleMessageEx(
+        CARAPI OnConsoleMessage(
             /* [in] */ IConsoleMessage* consoleMessage,
             /* [out] */ Boolean* result)
         {
@@ -668,11 +667,11 @@ ECode CActivityOne::ConfirmExit()
     }
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(String("Exit!"), (ICharSequence**)&cs);
-    adb->SetTitleEx(cs);
+    adb->SetTitle(cs);
 
     cs = NULL;
     CStringWrapper::New(String("is Exit?"), (ICharSequence**)&cs);
-    adb->SetMessageEx(cs);
+    adb->SetMessage(cs);
 
     AutoPtr<DialogOnClickListener> listener = new CActivityOne::DialogOnClickListener(this);
 
@@ -680,7 +679,7 @@ ECode CActivityOne::ConfirmExit()
 
     cs = NULL;
     CStringWrapper::New(String("确定"), (ICharSequence**)&cs);
-    adb->SetPositiveButtonEx(cs, clickListener);
+    adb->SetPositiveButton(cs, clickListener);
 
     //ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
     //    @Override
@@ -699,7 +698,7 @@ ECode CActivityOne::ConfirmExit()
     //});
     cs = NULL;
     CStringWrapper::New(String("cancel"), (ICharSequence**)&cs);
-    adb->SetNegativeButtonEx(cs, clickListener);
+    adb->SetNegativeButton(cs, clickListener);
 
     AutoPtr<IAlertDialog> dlg;
     adb->Create((IAlertDialog**)&dlg);
@@ -776,15 +775,15 @@ ECode CActivityOne::OnCreateContextMenu(
     AutoPtr<IMenuItem> item = NULL;
     AutoPtr<ICharSequence> csq;
     CStringWrapper::New(String("ctxItem1"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 1, 1, csq, (IMenuItem**)&item);
+    menu->Add(0, 1, 1, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem2"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 2, 2, csq, (IMenuItem**)&item);
+    menu->Add(0, 2, 2, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem3"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 3, 3, csq, (IMenuItem**)&item);
+    menu->Add(0, 3, 3, csq, (IMenuItem**)&item);
 
     return NOERROR;
 }

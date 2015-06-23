@@ -5,7 +5,7 @@
 #include "text/CSpannableString.h"
 #include "text/style/CTextAppearanceSpan.h"
 #include "net/Uri.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "R.h"
 #include "graphics/drawable/Drawable.h"
 
@@ -158,7 +158,7 @@ AutoPtr<ICursor> _SuggestionsAdapter::RunQueryOnBackgroundThread(
      }
      //mSearchView.getWindow().getDecorView().post(mStartSpinnerRunnable); // TODO:
     // try {
-    mSearchManager->GetSuggestionsEx(mSearchable, query, QUERY_LIMIT, (ICursor**)&cursor);
+    mSearchManager->GetSuggestions(mSearchable, query, QUERY_LIMIT, (ICursor**)&cursor);
     // trigger fill window so the spinner stays up until the results are copied over and
     // closer to being ready
     if (cursor != NULL) {
@@ -275,12 +275,12 @@ ECode _SuggestionsAdapter::BindView(
         // to be up to two lines if it wants to be.
         if (TextUtils::IsEmpty(text2)) {
             if (views->mText1 != NULL) {
-                views->mText1->SetSingleLineEx(FALSE);
+                views->mText1->SetSingleLine(FALSE);
                 views->mText1->SetMaxLines(2);
             }
         } else {
             if (views->mText1 != NULL) {
-                views->mText1->SetSingleLineEx(TRUE);
+                views->mText1->SetSingleLine(TRUE);
                 views->mText1->SetMaxLines(1);
             }
         }

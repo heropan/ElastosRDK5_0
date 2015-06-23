@@ -4,7 +4,7 @@
 //***#include "content/CSyncResult.h"
 #include "os/CBundle.h"
 #include <elaatomics.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::CBundle;
@@ -51,7 +51,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::StartSync(
         if (it == mAdapterContext->mSyncThreads.End()) {
             Boolean ret = FALSE;
             if (mAdapterContext->mAutoInitialize && NULL != extras
-                    && (extras->GetBooleanEx(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &ret), ret)) {
+                    && (extras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &ret), ret)) {
                 AutoPtr<IContentResolverHelper> resolverHelper;
                 Int32 result = 0;
 //***                FAIL_RETURN(ContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&resolverHelper))
@@ -110,7 +110,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::CancelSync(
 
     if (NULL != info) {
         if (mAdapterContext->mAllowParallelSyncs) {
-            FAIL_RETURN(mAdapterContext->OnSyncCanceledEx(info))
+            FAIL_RETURN(mAdapterContext->OnSyncCanceled(info))
         }
         else {
             FAIL_RETURN(mAdapterContext->OnSyncCanceled())
@@ -188,7 +188,7 @@ ECode AbstractThreadedSyncAdapter::SyncThread::Run()
 
         e = mAdapterContext->mContext->GetContentResolver((IContentResolver**)&resolver);
         FAIL_WithGoto(e)
-        e = resolver->AcquireContentProviderClientEx(mAuthority, (IContentProviderClient**)&provider);
+        e = resolver->AcquireContentProviderClient(mAuthority, (IContentProviderClient**)&provider);
         FAIL_WithGoto(e)
         if (NULL != provider) {
             e = mAdapterContext->OnPerformSync(mAccount, mExtras,
@@ -266,7 +266,7 @@ ECode AbstractThreadedSyncAdapter::GetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = mContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -275,7 +275,7 @@ ECode AbstractThreadedSyncAdapter::GetSyncAdapterBinder(
 {
     VALIDATE_NOT_NULL(binder)
     *binder = IISyncAdapter::Probe((IISyncAdapter*) mISyncAdapterImpl);
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -293,7 +293,7 @@ ECode AbstractThreadedSyncAdapter::OnSyncCanceled()
     return NOERROR;
 }
 
-ECode AbstractThreadedSyncAdapter::OnSyncCanceledEx(
+ECode AbstractThreadedSyncAdapter::OnSyncCanceled(
     /* [in] */ IThread* thread)
 {
     if (NULL != thread) {

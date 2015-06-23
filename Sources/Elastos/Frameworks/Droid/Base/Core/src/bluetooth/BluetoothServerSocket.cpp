@@ -35,10 +35,10 @@ CAR_INTERFACE_IMPL_2(BluetoothServerSocket, IBluetoothServerSocket, ICloseable)
 ECode BluetoothServerSocket::Accept(
     /* [out] */ IBluetoothSocket** socket)
 {
-    return AcceptEx(-1, socket);
+    return Accept(-1, socket);
 }
 
-ECode BluetoothServerSocket::AcceptEx(
+ECode BluetoothServerSocket::Accept(
     /* [in] */ Int32 timeout,
     /* [out] */ IBluetoothSocket** socket)
 {

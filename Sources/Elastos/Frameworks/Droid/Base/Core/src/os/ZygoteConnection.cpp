@@ -6,8 +6,8 @@
 #include "os/Process.h"
 #include "os/RuntimeInit.h"
 #include <Elastos.Droid.System.h>
-#include <Elastos.Core.h>
-#include <elastos/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
@@ -365,21 +365,21 @@ Boolean ZygoteConnection::RunOnce(
 //    try {
     if (pid == 0) {
         // in child
-        ioUtils->CloseQuietlyEx(serverPipeFd);
+        ioUtils->CloseQuietly(serverPipeFd);
         serverPipeFd = NULL;
         HandleChildProc(parsedArgs, descriptors, childPipeFd, newStderr, task);
         return TRUE;
         // should never get here, the child is expected to either
         // throw ZygoteInit.MethodAndArgsCaller or exec().
-        ioUtils->CloseQuietlyEx(childPipeFd);
+        ioUtils->CloseQuietly(childPipeFd);
         return TRUE;
     }
     else {
         // in parent...pid of < 0 means failure
-        ioUtils->CloseQuietlyEx(childPipeFd);
+        ioUtils->CloseQuietly(childPipeFd);
         childPipeFd = NULL;
         Boolean ret = HandleParentProc(pid, descriptors, serverPipeFd, parsedArgs);
-        ioUtils->CloseQuietlyEx(serverPipeFd);
+        ioUtils->CloseQuietly(serverPipeFd);
         return ret;
     }
 //    } finally {
@@ -449,7 +449,7 @@ ECode ZygoteConnection::ReadArgumentList(
     }
 
     *args = result;
-    INTERFACE_ADDREF(*args);
+    REFCOUNT_ADD(*args);
     return NOERROR;
 }
 
@@ -714,7 +714,7 @@ ECode ZygoteConnection::HandleChildProc(
         CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
         for (Int32 i = 0; i < descriptors->GetLength(); ++i) {
             AutoPtr<IFileDescriptor> fd = (*descriptors)[i];
-            ioUtils->CloseQuietlyEx(fd);
+            ioUtils->CloseQuietly(fd);
         }
 //        newStderr = System.err;
         // } catch (IOException ex) {
@@ -792,7 +792,7 @@ Boolean ZygoteConnection::HandleParentProc(
         CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
         for (Int32 i = 0; i < descriptors->GetLength(); ++i) {
             AutoPtr<IFileDescriptor> fd = (*descriptors)[i];
-            ioUtils->CloseQuietlyEx(fd);
+            ioUtils->CloseQuietly(fd);
         }
     }
 

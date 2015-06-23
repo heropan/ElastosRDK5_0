@@ -37,7 +37,7 @@ ECode CWaveformData::constructor(
     AutoPtr<ArrayOf<Byte> > tempFrameDuration = ArrayOf<Byte>::Alloc(4);
 
     Int32 num;
-    audioGraphFileReadHandle->ReadBytesEx(tempFrameDuration.Get(), 0, 4, &num);
+    audioGraphFileReadHandle->ReadBytes(tempFrameDuration.Get(), 0, 4, &num);
 
     Int32 tempFrameDurationMs = 0;
     Int32 tempFramesCounter = 0;
@@ -52,7 +52,7 @@ ECode CWaveformData::constructor(
      */
     AutoPtr<ArrayOf<Byte> > tempFramesCount = ArrayOf<Byte>::Alloc(4);
 
-    audioGraphFileReadHandle->ReadBytesEx(tempFramesCount.Get(), 0, 4, &num);
+    audioGraphFileReadHandle->ReadBytes(tempFramesCount.Get(), 0, 4, &num);
     for (Int32 i = 0; i < 4; i++) {
         tempFramesCounter = (tempFramesCounter << 8);
         tempFramesCounter = (tempFramesCounter | ((*tempFramesCount)[i] & 0xff));

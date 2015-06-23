@@ -1,7 +1,7 @@
 
 #include "provider/CMediaStoreAudioPlaylistsMembers.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "net/CUriHelper.h"
 #include "content/CContentValues.h"
 

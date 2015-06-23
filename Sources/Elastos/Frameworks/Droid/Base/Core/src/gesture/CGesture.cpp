@@ -9,7 +9,7 @@
 #include "graphics/CPaint.h"
 #include "graphics/CPath.h"
 #include "graphics/CRectF.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -100,7 +100,7 @@ ECode CGesture::AddStroke(
     mStrokes->PushBack(stroke);
     AutoPtr<IRectF> r;
     stroke->GetBoundingBox((IRectF**)&r);
-    mBoundingBox->UnionEx(r);
+    mBoundingBox->Union(r);
     return NOERROR;
 }
 
@@ -126,17 +126,17 @@ ECode CGesture::GetBoundingBox(
 {
     VALIDATE_NOT_NULL(box);
     *box = mBoundingBox;
-    INTERFACE_ADDREF(*box);
+    REFCOUNT_ADD(*box);
     return NOERROR;
 }
 
 ECode CGesture::ToPath(
     /* [out] */ IPath **outPath)
 {
-    return ToPathEx(NULL, outPath);
+    return ToPath(NULL, outPath);
 }
 
-ECode CGesture::ToPathEx(
+ECode CGesture::ToPath(
     /* [in] */ IPath *path,
     /* [out] */ IPath **outPath)
 {
@@ -148,25 +148,25 @@ ECode CGesture::ToPathEx(
     for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
         AutoPtr<IPath> tempPath;
         (*it)->GetPath((IPath**)&tempPath);
-        path->AddPathEx(tempPath);
+        path->AddPath(tempPath);
     }
 
     *outPath = path;
-    INTERFACE_ADDREF(*outPath);
+    REFCOUNT_ADD(*outPath);
     return NOERROR;
 }
 
-ECode CGesture::ToPathEx2(
+ECode CGesture::ToPath(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 edge,
     /* [in] */ Int32 numSample,
     /* [out] */ IPath **outPath)
 {
-    return ToPathEx3(NULL, width, height, edge, numSample, outPath);
+    return ToPath(NULL, width, height, edge, numSample, outPath);
 }
 
-ECode CGesture::ToPathEx3(
+ECode CGesture::ToPath(
     /* [in] */ IPath *path,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
@@ -182,10 +182,10 @@ ECode CGesture::ToPathEx3(
     for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
         AutoPtr<IPath> tempPath;
         (*it)->ToPath(width - 2 * edge, height - 2 * edge, numSample, (IPath**)&tempPath);
-        path->AddPathEx(tempPath);
+        path->AddPath(tempPath);
     }
     *outPath = path;
-    INTERFACE_ADDREF(*outPath);
+    REFCOUNT_ADD(*outPath);
     return NOERROR;
 }
 
@@ -217,7 +217,7 @@ ECode CGesture::ToBitmap(
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> bitmap;
-    bitmapFactory->CreateBitmapEx3(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
     CCanvas::New(bitmap, (ICanvas**)&canvas);
@@ -241,11 +241,11 @@ ECode CGesture::ToBitmap(
     }
 
     *bm = bitmap;
-    INTERFACE_ADDREF(*bm);
+    REFCOUNT_ADD(*bm);
     return NOERROR;
 }
 
-ECode CGesture::ToBitmapEx(
+ECode CGesture::ToBitmap(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 inset,
@@ -257,7 +257,7 @@ ECode CGesture::ToBitmapEx(
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> bitmap;
-    bitmapFactory->CreateBitmapEx3(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    bitmapFactory->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
 
     AutoPtr<ICanvas> canvas;
     CCanvas::New(bitmap, (ICanvas**)&canvas);
@@ -290,7 +290,7 @@ ECode CGesture::ToBitmapEx(
     Float l, t;
     bounds->GetLeft(&l);
     bounds->GetTop(&t);
-    path->OffsetEx(-l + (width - w * scale) / 2.0f,
+    path->Offset(-l + (width - w * scale) / 2.0f,
             -t + (height - h * scale) / 2.0f);
 
     canvas->Translate(inset, inset);
@@ -298,7 +298,7 @@ ECode CGesture::ToBitmapEx(
     canvas->DrawPath(path, paint);
 
     *bm = bitmap;
-    INTERFACE_ADDREF(*bm);
+    REFCOUNT_ADD(*bm);
     return NOERROR;
 }
 

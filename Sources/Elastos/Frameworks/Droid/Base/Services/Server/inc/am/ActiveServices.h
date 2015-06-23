@@ -3,13 +3,13 @@
 #define __ACTIVESERVICES_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "am/TaskRecord.h"
 #include "am/CServiceRecord.h"
 #include "am/TransferPipe.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Os::IBinder;
@@ -49,14 +49,14 @@ public:
             /* [in] */ IComponentName* name,
             /* [in] */ Int32 callingUser);
 
-        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByNameEx(
+        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByName(
             /* [in] */ IComponentName* name);
 
         CARAPI_(AutoPtr<CServiceRecord>) GetServiceByIntent(
             /* [in] */ IIntentFilterComparison* filter,
             /* [in] */ Int32 callingUser);
 
-        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByIntentEx(
+        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByIntent(
             /* [in] */ IIntentFilterComparison* filter);
 
         CARAPI_(void) PutServiceByName(

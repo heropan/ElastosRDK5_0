@@ -31,10 +31,10 @@
 #include "view/CWindowManagerGlobal.h"
 #include "util/CParcelableObjectContainer.h"
 #include "database/sqlite/CSQLiteDatabaseHelper.h"
-#include <elastos/Thread.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include "R.h"
 #include <unistd.h>
 
@@ -42,7 +42,7 @@ using Elastos::Core::ISystem;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::Logging::Slogger;
@@ -1235,7 +1235,7 @@ ECode CActivityThread::GetDisplayMetricsLocked(
     }
     if (dm != NULL) {
         *dms = dm;
-        INTERFACE_ADDREF(*dms);
+        REFCOUNT_ADD(*dms);
         return NOERROR;
     }
     CDisplayMetrics::New((IDisplayMetrics**)&dm);
@@ -1245,7 +1245,7 @@ ECode CActivityThread::GetDisplayMetricsLocked(
         // may be null early in system startup
         dm->SetToDefaults();
         *dms = dm;
-        INTERFACE_ADDREF(*dms);
+        REFCOUNT_ADD(*dms);
         return NOERROR;
     }
 
@@ -1272,7 +1272,7 @@ ECode CActivityThread::GetDisplayMetricsLocked(
     //        + metrics.heightPixels + " den=" + metrics.density
     //        + " xdpi=" + metrics.xdpi + " ydpi=" + metrics.ydpi);
     *dms = dm;
-    INTERFACE_ADDREF(*dms);
+    REFCOUNT_ADD(*dms);
     return NOERROR;
 }
 
@@ -1337,7 +1337,7 @@ ECode CActivityThread::GetTopLevelResources(
                        r.Get(), resDir.string(), ccInfo->mApplicationScale);
                 }
                 *res = (IResources*)(r.Get());
-                INTERFACE_ADDREF(*res);
+                REFCOUNT_ADD(*res);
                 return NOERROR;
             }
         }
@@ -1411,7 +1411,7 @@ ECode CActivityThread::GetTopLevelResources(
                 r->GetAssets((IAssetManager**)&assets1);
                 assets1->Close();
                 *res = existing.Get();
-                INTERFACE_ADDREF(*res);
+                REFCOUNT_ADD(*res);
                 return NOERROR;
             }
         }
@@ -1423,7 +1423,7 @@ ECode CActivityThread::GetTopLevelResources(
         wrs->GetWeakReference((IWeakReference**)&wr);
         mActiveResources[key] = wr;
         *res = r.Get();
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
         return NOERROR;
     }
 }
@@ -1446,7 +1446,7 @@ ECode CActivityThread::GetHandler(
 {
     VALIDATE_NOT_NULL(h)
     *h = GetHandler();
-    INTERFACE_ADDREF(*h)
+    REFCOUNT_ADD(*h)
     return NOERROR;
 }
 
@@ -1664,7 +1664,7 @@ ECode CActivityThread::GetApplicationThread(
 {
     VALIDATE_NOT_NULL(thread);
     *thread = (IApplicationThread*)mAppThread;
-    INTERFACE_ADDREF(*thread);
+    REFCOUNT_ADD(*thread);
     return NOERROR;
 }
 
@@ -1673,7 +1673,7 @@ ECode CActivityThread::GetInstrumentation(
 {
     VALIDATE_NOT_NULL(instrumentation);
     *instrumentation = mInstrumentation;
-    INTERFACE_ADDREF(*instrumentation);
+    REFCOUNT_ADD(*instrumentation);
     return NOERROR;
 }
 
@@ -1682,7 +1682,7 @@ ECode CActivityThread::GetConfiguration(
 {
     VALIDATE_NOT_NULL(configuration);
     *configuration = mResConfiguration;
-    INTERFACE_ADDREF(*configuration);
+    REFCOUNT_ADD(*configuration);
     return NOERROR;
 }
 
@@ -1708,7 +1708,7 @@ ECode CActivityThread::GetLooper(
 {
     VALIDATE_NOT_NULL(looper);
     *looper = mLooper;
-    INTERFACE_ADDREF(*looper);
+    REFCOUNT_ADD(*looper);
     return NOERROR;
 }
 
@@ -1717,7 +1717,7 @@ ECode CActivityThread::GetApplication(
 {
     VALIDATE_NOT_NULL(application);
     *application = mInitialApplication;
-    INTERFACE_ADDREF(*application);
+    REFCOUNT_ADD(*application);
     return NOERROR;
 }
 
@@ -1758,7 +1758,7 @@ ECode CActivityThread::GetSystemContext(
         }
     }
     *ctx = sSystemContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 
@@ -1879,7 +1879,7 @@ ECode CActivityThread::ResolveActivityInfo(
                 IActivityManager::START_CLASS_NOT_FOUND, intent);
     }
     *info = aInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -1935,7 +1935,7 @@ ECode CActivityThread::GetActivity(
     AutoPtr<ActivityClientRecord> clientRecord = GetActivityClientRecord(token);
     if (clientRecord != NULL) {
         *activity = clientRecord->mActivity;
-        INTERFACE_ADDREF(*activity);
+        REFCOUNT_ADD(*activity);
     }
     return NOERROR;
 }
@@ -2140,7 +2140,7 @@ ECode CActivityThread::PerformLaunchActivity(
 //                r.embeddedID, r.lastNonConfigurationInstance,
 //                r.lastNonConfigurationChildInstances, config);
 
-        a->AttachEx(appContext,
+        a->Attach(appContext,
             this, mInstrumentation, r->mToken, r->mIdent, app, r->mIntent,
             r->mActivityInfo, title, r->mParent, r->mEmbeddedID,
             r->mLastNonConfigurationInstances, config);
@@ -2162,15 +2162,15 @@ ECode CActivityThread::PerformLaunchActivity(
         String debugOnValue;
         AutoPtr<ISystemProperties> properties;
         CSystemProperties::AcquireSingleton((ISystemProperties**)&properties);
-        properties->GetEx(debugOnKey, String("0"), &debugOnValue);
+        properties->Get(debugOnKey, String("0"), &debugOnValue);
         if (debugOnValue.Equals("1")) {
             Slogger::D(TAG, "Waiting for attaching...");
             String debugAttachedKey("debug.attached");
             String debugAttachedValue;
-            properties->GetEx(debugAttachedKey, defaultValue, &debugAttachedValue);
+            properties->Get(debugAttachedKey, defaultValue, &debugAttachedValue);
             while (debugAttachedValue.Equals("0")) {
                 Thread::Sleep(500);
-                properties->GetEx(debugAttachedKey, defaultValue, &debugAttachedValue);
+                properties->Get(debugAttachedKey, defaultValue, &debugAttachedValue);
             }
         }
 
@@ -2237,7 +2237,7 @@ ECode CActivityThread::PerformLaunchActivity(
 //    }
 
     *activity = a;
-    INTERFACE_ADDREF(*activity);
+    REFCOUNT_ADD(*activity);
     return NOERROR;
 }
 
@@ -2532,7 +2532,7 @@ ECode CActivityThread::HandleReceiver(
     app->GetBaseContext((IContext**)&context);
 
     pthread_setspecific(sCurrentBroadcastIntentKey, data->mIntent.Get());
-    INTERFACE_ADDREF(data->mIntent);
+    REFCOUNT_ADD(data->mIntent);
 
     receiver->SetPendingResult((IBroadcastReceiverPendingResult*)data);
     AutoPtr<IContext> ic;
@@ -2562,7 +2562,7 @@ ECode CActivityThread::HandleReceiver(
     }
 
     IIntent* curIntent = (IIntent*)pthread_getspecific(sCurrentBroadcastIntentKey);
-    INTERFACE_RELEASE(curIntent);
+    REFCOUNT_RELEASE(curIntent);
     pthread_setspecific(sCurrentBroadcastIntentKey, NULL);
 
     if (SUCCEEDED(ec)) {
@@ -3165,12 +3165,12 @@ ECode CActivityThread::HandleResumeActivity(
         Boolean finished = FALSE;
         a->IsFinishing(&finished);
         if (r->mWindow == NULL && !finished && willBeVisible) {
-            r->mActivity->GetWindowEx((IWindow**)&r->mWindow);
+            r->mActivity->GetWindow((IWindow**)&r->mWindow);
             AutoPtr<IView> decor;
             r->mWindow->GetDecorView((IView**)&decor);
             decor->SetVisibility(IView::INVISIBLE);
             AutoPtr<IViewManager> wm;
-            a->GetWindowManagerEx((IWindowManager**)&wm);
+            a->GetWindowManager((IWindowManager**)&wm);
             AutoPtr<IWindowManagerLayoutParams> l;
             r->mWindow->GetAttributes((IWindowManagerLayoutParams**)&l);
             a->SetDecorView(decor);
@@ -3183,7 +3183,7 @@ ECode CActivityThread::HandleResumeActivity(
             a->IsVisibleFromClient(&visibleFromClient);
             if (visibleFromClient) {
                 a->SetWindowAdded(TRUE);
-                wm->AddViewEx5(decor, l);
+                wm->AddView(decor, l);
             }
 
         // If the window has already been added, but during resume
@@ -3230,7 +3230,7 @@ ECode CActivityThread::HandleResumeActivity(
                 r->mActivity->IsVisibleFromClient(&isVisibleFromClient);
                 if (isVisibleFromClient) {
                     AutoPtr<IViewManager> wm;
-                    a->GetWindowManagerEx((IWindowManager**)&wm);
+                    a->GetWindowManager((IWindowManager**)&wm);
                     AutoPtr<IView> decor;
                     r->mWindow->GetDecorView((IView**)&decor);
                     wm->UpdateViewLayout(decor, l);
@@ -3477,7 +3477,7 @@ ECode CActivityThread::PerformPauseActivity(
     }
 
     *state = st;
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -3998,7 +3998,7 @@ ECode CActivityThread::HandleDestroyActivity(
     if (r != NULL) {
         CleanUpPendingRemoveWindows(r);
         AutoPtr<IWindowManager> wm;
-        r->mActivity->GetWindowManagerEx((IWindowManager**)&wm);
+        r->mActivity->GetWindowManager((IWindowManager**)&wm);
         AutoPtr<IView> v;
         r->mActivity->GetDecorView((IView**)&v);
         String activityName;
@@ -4538,10 +4538,10 @@ Boolean CActivityThread::ApplyConfigurationToResourcesLocked(
                     Int32 ch;
                     tmpConfig->UpdateFrom(overrideConfig, &ch);
                 }
-                r->UpdateConfigurationEx(tmpConfig, dm, compat);
+                r->UpdateConfiguration(tmpConfig, dm, compat);
             }
             else {
-                r->UpdateConfigurationEx(config, dm, compat);
+                r->UpdateConfiguration(config, dm, compat);
             }
 
             ++it;
@@ -5306,7 +5306,7 @@ ECode CActivityThread::AcquireProvider(
     AcquireExistingProvider(c, auth, userId, stable, (IIContentProvider**)&provider);
     if (provider != NULL) {
         *pr = provider;
-        INTERFACE_ADDREF(*pr);
+        REFCOUNT_ADD(*pr);
         return NOERROR;
     }
 
@@ -5366,7 +5366,7 @@ void CActivityThread::IncProviderRefLocked(
                     Slogger::V(TAG, "incProviderRef: stable snatched provider from the jaws of death");
                 }
                 prc->mRemovePending = FALSE;
-                mH->RemoveMessagesEx(H::REMOVE_PROVIDER, prc);
+                mH->RemoveMessages(H::REMOVE_PROVIDER, prc);
             } else {
                 unstableDelta = 0;
             }
@@ -5402,7 +5402,7 @@ void CActivityThread::IncProviderRefLocked(
                     Slogger::V(TAG, "incProviderRef: unstable snatched provider from the jaws of death");
                 }
                 prc->mRemovePending = FALSE;
-                mH->RemoveMessagesEx(H::REMOVE_PROVIDER, prc);
+                mH->RemoveMessages(H::REMOVE_PROVIDER, prc);
             }
             else {
                 // First unstable ref, increment our count in the
@@ -5475,7 +5475,7 @@ ECode CActivityThread::AcquireExistingProvider(
         IncProviderRefLocked(prc, stable);
     }
     *cpr = provider;
-    INTERFACE_ADDREF(*cpr);
+    REFCOUNT_ADD(*cpr);
     return NOERROR;
 }
 
@@ -5591,7 +5591,7 @@ ECode CActivityThread::ReleaseProvider(
                 }
                 prc->mRemovePending = TRUE;
                 AutoPtr<IMessage> msg;
-                mH->ObtainMessageEx(H::REMOVE_PROVIDER, prc, (IMessage**)&msg);
+                mH->ObtainMessage(H::REMOVE_PROVIDER, prc, (IMessage**)&msg);
                 Boolean bval;
                 mH->SendMessage(msg, &bval);
             }
@@ -6099,7 +6099,7 @@ ECode CActivityThread::GetIntCoreSetting(
 
     Mutex::Autolock lock(mPackagesLock);
     if (mCoreSettings != NULL) {
-        mCoreSettings->GetInt32Ex(key, defaultValue, setting);
+        mCoreSettings->GetInt32(key, defaultValue, setting);
         return NOERROR;
     } else {
         *setting = defaultValue;

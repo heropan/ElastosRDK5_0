@@ -32,30 +32,30 @@ public:
         /* [in] */ Int32 mask,
         /* [out] */ Boolean* ret);
 
-    CARAPI AddLinksEx(
+    CARAPI AddLinks(
         /* [in] */ ITextView* text,
         /* [in] */ Int32 mask,
         /* [out] */ Boolean* ret);
 
-    CARAPI AddLinksEx2(
+    CARAPI AddLinks(
         /* [in] */ ITextView* text,
         /* [in] */ IPattern* pattern,
         /* [in] */ const String& scheme);
 
-    CARAPI AddLinksEx3(
+    CARAPI AddLinks(
         /* [in] */ ITextView* text,
         /* [in] */ IPattern* p,
         /* [in] */ const String& scheme,
         /* [in] */ ILinkifyMatchFilter* matchFilter,
         /* [in] */ ILinkifyTransformFilter* transformFilter);
 
-    CARAPI AddLinksEx4(
+    CARAPI AddLinks(
         /* [in] */ ISpannable* text,
         /* [in] */ IPattern* pattern,
         /* [in] */ const String& scheme,
         /* [out] */ Boolean* ret);
 
-    CARAPI AddLinksEx5(
+    CARAPI AddLinks(
         /* [in] */ ISpannable* s,
         /* [in] */ IPattern* p,
         /* [in] */ const String& scheme,

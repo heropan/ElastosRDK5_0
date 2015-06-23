@@ -4,7 +4,7 @@
 
 #include "_CProxy.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetSocketAddress;
@@ -15,7 +15,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IPattern;
 using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::Conn::Routing::IHttpRoutePlanner;
 using Org::Apache::Http::Protocol::IHttpContext;
@@ -134,7 +134,7 @@ public:
         /* [in] */ IProxyProperties* p);
 
     /** @hide */
-    CARAPI SetHttpProxySystemPropertyEx(
+    CARAPI SetHttpProxySystemProperty(
         /* [in] */ const String& host,
         /* [in] */ const String& port,
         /* [in] */ const String& exclList);

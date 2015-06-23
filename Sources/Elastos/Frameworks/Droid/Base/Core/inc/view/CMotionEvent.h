@@ -4,12 +4,12 @@
 
 #include "_CMotionEvent.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "view/InputEvent.h"
 #include <androidfw/Input.h>
 
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Graphics::IMatrix;
 
 namespace Elastos {
@@ -584,7 +584,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetXEx(
+    CARAPI GetX(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* x);
 
@@ -597,7 +597,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetYEx(
+    CARAPI GetY(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* y);
 
@@ -612,7 +612,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetPressureEx(
+    CARAPI GetPressure(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* pressure);
 
@@ -628,7 +628,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetSizeEx(
+    CARAPI GetSize(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* size);
 
@@ -640,7 +640,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetTouchMajorEx(
+    CARAPI GetTouchMajor(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* touchMajor);
 
@@ -652,7 +652,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetTouchMinorEx(
+    CARAPI GetTouchMinor(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* touchMinor);
 
@@ -666,7 +666,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetToolMajorEx(
+    CARAPI GetToolMajor(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* toolMajor);
 
@@ -680,7 +680,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetToolMinorEx(
+    CARAPI GetToolMinor(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* toolMinor);
 
@@ -697,7 +697,7 @@ public:
      * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
      * (the first pointer that is down) to {@link #getPointerCount()}-1.
      */
-    CARAPI GetOrientationEx(
+    CARAPI GetOrientation(
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* orientation);
 
@@ -713,7 +713,7 @@ public:
      * @see #AXIS_X
      * @see #AXIS_Y
      */
-    CARAPI GetAxisValueEx(
+    CARAPI GetAxisValue(
         /* [in] */ Int32 axis,
         /* [in] */ Int32 pointerIndex,
         /* [out] */ Float* value);
@@ -960,7 +960,7 @@ public:
      * @see #getHistorySize
      * @see #getX
      */
-    CARAPI GetHistoricalXEx(
+    CARAPI GetHistoricalX(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hX);
@@ -978,7 +978,7 @@ public:
      * @see #getHistorySize
      * @see #getY
      */
-    CARAPI GetHistoricalYEx(
+    CARAPI GetHistoricalY(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hY);
@@ -996,7 +996,7 @@ public:
      * @see #getHistorySize
      * @see #getPressure
      */
-    CARAPI GetHistoricalPressureEx(
+    CARAPI GetHistoricalPressure(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hPressure);
@@ -1014,7 +1014,7 @@ public:
      * @see #getHistorySize
      * @see #getSize
      */
-    CARAPI GetHistoricalSizeEx(
+    CARAPI GetHistoricalSize(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hSize);
@@ -1032,7 +1032,7 @@ public:
      * @see #getHistorySize
      * @see #getTouchMajor
      */
-    CARAPI GetHistoricalTouchMajorEx(
+    CARAPI GetHistoricalTouchMajor(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hTouchMajor);
@@ -1050,7 +1050,7 @@ public:
      * @see #getHistorySize
      * @see #getTouchMinor
      */
-    CARAPI GetHistoricalTouchMinorEx(
+    CARAPI GetHistoricalTouchMinor(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hTouchMinor);
@@ -1068,7 +1068,7 @@ public:
      * @see #getHistorySize
      * @see #getToolMajor
      */
-    CARAPI GetHistoricalToolMajorEx(
+    CARAPI GetHistoricalToolMajor(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hToolMajor);
@@ -1086,7 +1086,7 @@ public:
      * @see #getHistorySize
      * @see #getToolMinor
      */
-    CARAPI GetHistoricalToolMinorEx(
+    CARAPI GetHistoricalToolMinor(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hToolMinorEx);
@@ -1104,7 +1104,7 @@ public:
      * @see #getHistorySize
      * @see #getOrientation
      */
-    CARAPI GetHistoricalOrientationEx(
+    CARAPI GetHistoricalOrientation(
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
         /* [out] */ Float* hOrientation);
@@ -1124,7 +1124,7 @@ public:
      * @see #AXIS_X
      * @see #AXIS_Y
      */
-    CARAPI GetHistoricalAxisValueEx(
+    CARAPI GetHistoricalAxisValue(
         /* [in] */ Int32 axis,
         /* [in] */ Int32 pointerIndex,
         /* [in] */ Int32 pos,
@@ -1239,7 +1239,7 @@ public:
      * @param pointerCoords The new pointer coordinates.
      * @param metaState Meta key state.
      */
-    CARAPI AddBatchEx(
+    CARAPI AddBatch(
         /* [in] */ Int64 eventTime,
         /* [in] */ ArrayOf<IPointerCoords*>* pointerCoords,
         /* [in] */ Int32 metaState);
@@ -1256,7 +1256,7 @@ public:
      * @return True if batching was performed or FALSE if batching was not possible.
      * @hide
      */
-    CARAPI AddBatchEx2(
+    CARAPI AddBatch(
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* res);
 

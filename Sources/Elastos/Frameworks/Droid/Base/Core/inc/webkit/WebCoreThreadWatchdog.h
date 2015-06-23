@@ -4,8 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 
 #include "webkit/CWebViewClassic.h"
 
@@ -16,7 +15,7 @@ using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::HandlerBase;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Webkit::CWebViewClassic;
 

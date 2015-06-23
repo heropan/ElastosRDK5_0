@@ -29,7 +29,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnServiceStateChanged(
     /* [in] */ IServiceState* serviceState)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_SERVICE_STATE, 0, 0, (IInterface*)serviceState, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_SERVICE_STATE, 0, 0, (IInterface*)serviceState, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -38,7 +38,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnSignalStrengthChanged(
     /* [in] */ Int32 asu)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_SIGNAL_STRENGTH, asu, 0, (IInterface*)NULL, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_SIGNAL_STRENGTH, asu, 0, (IInterface*)NULL, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -47,7 +47,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnMessageWaitingIndicato
     /* [in] */ Boolean mwi)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_MESSAGE_WAITING_INDICATOR, mwi ? 1 : 0, 0, (IInterface*)NULL, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_MESSAGE_WAITING_INDICATOR, mwi ? 1 : 0, 0, (IInterface*)NULL, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -56,7 +56,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCallForwardingIndicato
     /* [in] */ Boolean cfi)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_CALL_FORWARDING_INDICATOR, cfi ? 1 : 0, 0, (IInterface*)NULL, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_FORWARDING_INDICATOR, cfi ? 1 : 0, 0, (IInterface*)NULL, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -87,7 +87,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCellLocationChanged(
         } else {
     //                    output = location.toString();
             AutoPtr<IMessage> msg;
-            mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_CELL_LOCATION, 0, 0, reinterpret_cast<IInterface*>(cellLocation.Get()), (IMessage**)&msg);
+            mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CELL_LOCATION, 0, 0, reinterpret_cast<IInterface*>(cellLocation.Get()), (IMessage**)&msg);
             msg->SendToTarget();
             pSetMan->Notification(mHost->mPackageName, IPrivacySettings::REAL, IPrivacySettings::DATA_LOCATION_NETWORK, String(NULL));
         }
@@ -121,14 +121,14 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCallStateChanged(
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(output, (ICharSequence**)&cs);
             AutoPtr<IMessage> msg;
-            mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);            msg->SendToTarget();
+            mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);            msg->SendToTarget();
     //                    Log.d(TAG, "onCallStateChanged BLOCK - package:" + mHost->mPackageName + " uid:" + uid + " state:" + state + " output: " + output);
             pSetMan->Notification(mHost->mPackageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_INCOMING_CALL, output);
         } else {
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(incomingNumber, (ICharSequence**)&cs);
             AutoPtr<IMessage> msg;
-            mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);
+            mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);
             msg->SendToTarget();
     //                    Log.d(TAG, "onCallStateChanged REAL 1 - package:" + mHost->mPackageName + " uid:" + uid + " state:" + state + " output: " + incomingNumber);
             pSetMan->Notification(mHost->mPackageName, IPrivacySettings::REAL, IPrivacySettings::DATA_INCOMING_CALL, incomingNumber);
@@ -138,7 +138,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCallStateChanged(
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(incomingNumber, (ICharSequence**)&cs);
         AutoPtr<IMessage> msg;
-        mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);
+        mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);
         msg->SendToTarget();
     }
     // END privacy-modified
@@ -151,7 +151,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnDataConnectionStateCha
     /* [in] */ Int32 networkType)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx2(IPhoneStateListener::LISTEN_DATA_CONNECTION_STATE, state, networkType, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_DATA_CONNECTION_STATE, state, networkType, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -160,7 +160,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnDataActivity(
     /* [in] */ Int32 direction)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_DATA_ACTIVITY, direction, 0, NULL, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_DATA_ACTIVITY, direction, 0, NULL, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -169,7 +169,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnSignalStrengthsChanged
     /* [in] */ ISignalStrength* signalStrength)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_SIGNAL_STRENGTHS, 0, 0, reinterpret_cast<IInterface*>(signalStrength), (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_SIGNAL_STRENGTHS, 0, 0, reinterpret_cast<IInterface*>(signalStrength), (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -178,7 +178,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnOtaspChanged(
     /* [in] */ Int32 otaspMode)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx2(IPhoneStateListener::LISTEN_OTASP_CHANGED, otaspMode, 0, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_OTASP_CHANGED, otaspMode, 0, (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -187,7 +187,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCellInfoChanged(
     /* [in] */ ArrayOf<ICellInfo*>* cellInfo)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(IPhoneStateListener::LISTEN_CELL_INFO, 0, 0, reinterpret_cast<IInterface*>(cellInfo), (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CELL_INFO, 0, 0, reinterpret_cast<IInterface*>(cellInfo), (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -240,7 +240,7 @@ ECode CPhoneStateListener::MyHandler::HandleMessage(
             }
             break;
         case IPhoneStateListener::LISTEN_DATA_CONNECTION_STATE:
-            mHost->OnDataConnectionStateChangedEx(arg1, arg2);
+            mHost->OnDataConnectionStateChanged(arg1, arg2);
             mHost->OnDataConnectionStateChanged(arg1);
             break;
         case IPhoneStateListener::LISTEN_DATA_ACTIVITY:
@@ -331,7 +331,7 @@ ECode CPhoneStateListener::OnDataConnectionStateChanged(
     return NOERROR;
 }
 
-ECode CPhoneStateListener::OnDataConnectionStateChangedEx(
+ECode CPhoneStateListener::OnDataConnectionStateChanged(
     /* [in] */ Int32 state,
     /* [in] */ Int32 networkType)
 {   // default implementation empty

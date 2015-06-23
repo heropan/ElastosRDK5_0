@@ -183,7 +183,7 @@ void SlidingTab::Slider::SetBarBackgroundResource(
 void SlidingTab::Slider::SetHintText(
     /* [in] */ Int32 resId)
 {
-    mText->SetTextEx3(resId);
+    mText->SetText(resId);
 }
 
 void SlidingTab::Slider::Hide()
@@ -494,7 +494,7 @@ ECode SlidingTab::InitFromResource(
     layout->Copy(R::styleable::SlidingTab, size);
 
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, layout, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, layout, (ITypedArray**)&a);
 
     a->GetInt32(R::styleable::SlidingTab_orientation, HORIZONTAL, &mOrientation);
     a->Recycle();
@@ -788,14 +788,14 @@ void SlidingTab::StartAnimating(
     trans1->SetDuration(ANIM_DURATION);
     AutoPtr<ILinearInterpolator> interpolator1;
     CLinearInterpolator::New((ILinearInterpolator**)&interpolator1);
-    trans1->SetInterpolatorEx(interpolator1);
+    trans1->SetInterpolator(interpolator1);
     trans1->SetFillAfter(TRUE);
 
     CTranslateAnimation::New(0, dx, 0, dy, (ITranslateAnimation**)&trans2);
     trans2->SetDuration(ANIM_DURATION);
     AutoPtr<ILinearInterpolator> interpolator2;
     CLinearInterpolator::New((ILinearInterpolator**)&interpolator2);
-    trans2->SetInterpolatorEx(interpolator2);
+    trans2->SetInterpolator(interpolator2);
     trans2->SetFillAfter(TRUE);
 
     trans1->SetAnimationListener(

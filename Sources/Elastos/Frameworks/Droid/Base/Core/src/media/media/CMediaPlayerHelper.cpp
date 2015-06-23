@@ -16,7 +16,7 @@ ECode CMediaPlayerHelper::Create(
     return CMediaPlayer::Create(ctx, uri, player);
 }
 
-ECode CMediaPlayerHelper::CreateEx(
+ECode CMediaPlayerHelper::Create(
     /* [in] */ IContext* ctx,
     /* [in] */ IUri* uri,
     /* [in] */ ISurfaceHolder* holder,
@@ -25,7 +25,7 @@ ECode CMediaPlayerHelper::CreateEx(
     return CMediaPlayer::Create(ctx, uri, holder, player);
 }
 
-ECode CMediaPlayerHelper::CreateEx2(
+ECode CMediaPlayerHelper::Create(
     /* [in] */ IContext* ctx,
     /* [in] */ Int32 resid,
     /* [out] */ IMediaPlayer** player)

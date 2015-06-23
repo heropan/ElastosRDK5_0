@@ -54,7 +54,7 @@ ECode CEditText::SetSelection(
     return EditText::SetSelection(start, stop);
 }
 
-ECode CEditText::SetSelectionEx(
+ECode CEditText::SetSelection(
         /* [in] */ Int32 index)
 {
     return EditText::SetSelection(index);

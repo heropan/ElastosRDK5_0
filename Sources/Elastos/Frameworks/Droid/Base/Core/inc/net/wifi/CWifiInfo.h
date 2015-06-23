@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "_CWifiInfo.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Net::IInetAddress;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
 

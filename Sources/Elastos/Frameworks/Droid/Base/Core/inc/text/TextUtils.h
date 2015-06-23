@@ -6,11 +6,10 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elastos/Mutex.h>
 
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Libcore::ICU::ILocale;
 
 namespace Elastos {

@@ -1,12 +1,12 @@
 #include "speech/tts/BlockingAudioTrack.h"
 #include "media/media/CAudioTrack.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 #include <unistd.h> //for Method: unsigned sleep(unsigned)
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Media::CAudioTrack;
 using Elastos::Droid::Media::IAudioFormat;

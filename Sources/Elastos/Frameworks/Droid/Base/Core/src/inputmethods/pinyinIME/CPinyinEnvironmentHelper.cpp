@@ -18,7 +18,7 @@ ECode CPinyinEnvironmentHelper::GetInstance(
         CPinyinEnvironment::New((IPinyinEnvironment**)&mInstance);
     }
     *env = mInstance;
-    INTERFACE_ADDREF(*env);
+    REFCOUNT_ADD(*env);
     return NOERROR;
 }
 

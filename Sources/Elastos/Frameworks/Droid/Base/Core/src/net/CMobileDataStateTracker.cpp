@@ -112,7 +112,7 @@ ECode CMobileDataStateTracker::GetNetworkInfo(
 {
     VALIDATE_NOT_NULL(result);
     *result = mNetworkInfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -659,7 +659,7 @@ ECode CMobileDataStateTracker::GetLinkProperties(
     AutoPtr<ILinkProperties> linkProp;
     CLinkProperties::New(mLinkProperties, (ILinkProperties**)&linkProp);
     *result = linkProp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -674,7 +674,7 @@ ECode CMobileDataStateTracker::GetLinkCapabilities(
     AutoPtr<ILinkCapabilities> linkCap;
     CLinkCapabilities::New(mLinkCapabilities, (ILinkCapabilities**)&linkCap);
     *result = linkCap;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

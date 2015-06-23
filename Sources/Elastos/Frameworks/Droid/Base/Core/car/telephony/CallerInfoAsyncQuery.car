@@ -38,7 +38,7 @@ module
             [in] IInterface* cookie,
             [out] ICallerInfoAsyncQuery** cia);
 
-        StartQueryEx(
+        StartQuery(
             [in] Int32 token,
             [in] IContext* ctx,
             [in] String number,

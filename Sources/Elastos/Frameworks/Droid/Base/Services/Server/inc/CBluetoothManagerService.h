@@ -3,11 +3,11 @@
 #define __CBLUETOOTHMANAGERSERVICE_H__
 
 #include "_CBluetoothManagerService.h"
-#include <elastos/Thread.h>
+#include <elastos/core/Thread.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
 using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {
@@ -79,7 +79,7 @@ private:
     class MyRunnableEx : public Runnable
     {
     public:
-        MyRunnableEx(
+        MyRunnable(
             /* [in] */ CBluetoothManagerService* owner);
 
         CARAPI Run();

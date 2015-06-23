@@ -51,7 +51,7 @@ ECode CCheckedTextView::SetCheckMarkDrawable(
     return CheckedTextView::SetCheckMarkDrawable(resid);
 }
 
-ECode CCheckedTextView::SetCheckMarkDrawableEx(
+ECode CCheckedTextView::SetCheckMarkDrawable(
     /* [in] */ IDrawable * pD)
 {
     // TODO: Add your code here

@@ -3,10 +3,9 @@
 #define __HTML5VIDEOVIEW_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
 using Elastos::Droid::Net::IUri;

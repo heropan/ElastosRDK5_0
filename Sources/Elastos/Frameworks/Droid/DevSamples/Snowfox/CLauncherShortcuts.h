@@ -4,7 +4,7 @@
 
 #include "app/Activity.h"
 #include "_CLauncherShortcuts.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::IO::IFile;
 using Elastos::Droid::App::Activity;

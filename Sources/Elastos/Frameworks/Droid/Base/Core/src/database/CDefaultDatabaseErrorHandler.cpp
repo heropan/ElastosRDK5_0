@@ -1,7 +1,7 @@
 
 #include "database/CDefaultDatabaseErrorHandler.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;

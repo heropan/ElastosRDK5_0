@@ -3,8 +3,8 @@
 #define __REQUESTQUEUE_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "Request.h"
 #include "Connection.h"
 #include "IdleCache.h"

@@ -17,12 +17,11 @@
 // #include "text/CURLSpan.h"
 // #include "text/CAnnotation.h"
 // #include "utils/XmlUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Mutex.h>
+#include <elastos/core/Math.h>
 // #include <string.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <androidfw/ResourceTypes.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -103,10 +102,10 @@ ECode StringBlock::Height::ChooseHeight(
     /* [in] */ IPaintFontMetricsInt* fm)
 {
     // Should not get called, at least not by StaticLayout.
-    return ChooseHeightEx(text, start, end, spanstartv, v, fm, NULL);
+    return ChooseHeight(text, start, end, spanstartv, v, fm, NULL);
 }
 
-ECode StringBlock::Height::ChooseHeightEx(
+ECode StringBlock::Height::ChooseHeight(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,

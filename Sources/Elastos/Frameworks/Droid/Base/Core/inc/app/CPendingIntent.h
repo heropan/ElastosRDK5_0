@@ -44,27 +44,27 @@ public:
 
     CARAPI Send();
 
-    CARAPI SendEx(
+    CARAPI Send(
         /* [in] */ Int32 code);
 
-    CARAPI SendEx2(
+    CARAPI Send(
         /* [in] */ IContext* context,
         /* [in] */ Int32 code,
         /* [in] */ IIntent* intent);
 
-    CARAPI SendEx3(
+    CARAPI Send(
         /* [in] */ Int32 code,
         /* [in] */ IPendingIntentOnFinished* onFinished,
         /* [in] */ IHandler* handler);
 
-    CARAPI SendEx4(
+    CARAPI Send(
         /* [in] */ IContext* context,
         /* [in] */ Int32 code,
         /* [in] */ IIntent* intent,
         /* [in] */ IPendingIntentOnFinished* onFinished,
         /* [in] */ IHandler* handler);
 
-    CARAPI SendEx5(
+    CARAPI Send(
         /* [in] */ IContext* context,
         /* [in] */ Int32 code,
         /* [in] */ IIntent* intent,

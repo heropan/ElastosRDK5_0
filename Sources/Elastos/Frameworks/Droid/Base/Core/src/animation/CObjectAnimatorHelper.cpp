@@ -13,19 +13,19 @@ ECode CObjectAnimatorHelper::OfInt32(
 {
     AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfInt32(target, propertyName, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 
-ECode CObjectAnimatorHelper::OfInt32Ex(
+ECode CObjectAnimatorHelper::OfInt32(
     /* [in] */ IInterface* target,
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Int32>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfInt32Ex(target, property, values);
+    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfInt32(target, property, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 
@@ -37,19 +37,19 @@ ECode CObjectAnimatorHelper::OfFloat(
 {
     AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfFloat(target, propertyName, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 
-ECode CObjectAnimatorHelper::OfFloatEx(
+ECode CObjectAnimatorHelper::OfFloat(
     /* [in] */ IInterface* target,
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Float>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfFloatEx(target, property, values);
+    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfFloat(target, property, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 
@@ -62,20 +62,20 @@ ECode CObjectAnimatorHelper::OfObject(
 {
     AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfObject(target, propertyName, evaluator, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 
-ECode CObjectAnimatorHelper::OfObjectEx(
+ECode CObjectAnimatorHelper::OfObject(
     /* [in] */ IInterface* target,
     /* [in] */ IProperty* property,
     /* [in] */ ITypeEvaluator* evaluator,
     /* [in] */ ArrayOf<IInterface*>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfObjectEx(target, property, evaluator, values);
+    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfObject(target, property, evaluator, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode CObjectAnimatorHelper::OfPropertyValuesHolder(
 {
     AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfPropertyValuesHolder(target, values);
     *anim = animTemp;
-    INTERFACE_ADDREF(*anim)
+    REFCOUNT_ADD(*anim)
     return NOERROR;
 }
 

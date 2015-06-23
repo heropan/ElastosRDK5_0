@@ -121,7 +121,7 @@ module
 
 
         /** @hide */
-        SetHttpProxySystemPropertyEx(
+        SetHttpProxySystemProperty(
             [in] String host,
             [in] String port,
             [in] String exclList);

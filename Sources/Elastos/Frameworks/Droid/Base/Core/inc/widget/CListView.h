@@ -2,10 +2,10 @@
 #define __CLISTVIEW_H_
 
 #include "_CListView.h"
-#include "view/ViewMacro.h"
+
 #include "widget/ListView.h"
-#include "widget/AdapterViewMacro.h"
-#include "widget/AbsListViewMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -153,7 +153,7 @@ public:
      *
      * @param v The view to add.
      */
-    CARAPI AddHeaderViewEx(
+    CARAPI AddHeaderView(
         /* [in] */ IView* v);
 
     /**
@@ -195,7 +195,7 @@ public:
      *
      * @param v The view to add.
      */
-    CARAPI AddFooterViewEx(
+    CARAPI AddFooterView(
         /* [in] */ IView* v);
 
     /**

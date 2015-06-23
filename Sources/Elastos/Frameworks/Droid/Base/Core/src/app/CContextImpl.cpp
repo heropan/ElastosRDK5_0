@@ -49,7 +49,7 @@
 #include "database/sqlite/SQLiteDatabase.h"
 #include "accounts/CAccountManager.h"
 #include "privacy/CPrivacySettingsManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "R.h"
 
 using Elastos::IO::CFile;
@@ -260,7 +260,7 @@ ECode CContextImpl::GetResources(
 {
     VALIDATE_NOT_NULL(resources);
     *resources = mResources;
-    INTERFACE_ADDREF(*resources);
+    REFCOUNT_ADD(*resources);
     return NOERROR;
 }
 
@@ -272,7 +272,7 @@ ECode CContextImpl::GetPackageManager(
 
     if (mPackageManager != NULL) {
         *packageManager = mPackageManager;
-        INTERFACE_ADDREF(*packageManager);
+        REFCOUNT_ADD(*packageManager);
         return NOERROR;
     }
 
@@ -281,7 +281,7 @@ ECode CContextImpl::GetPackageManager(
         // Doesn't matter if we make more than one instance.
         mPackageManager = new ApplicationPackageManager(this, pm);
         *packageManager = mPackageManager;
-        INTERFACE_ADDREF(*packageManager);
+        REFCOUNT_ADD(*packageManager);
         return NOERROR;
     }
 
@@ -293,7 +293,7 @@ ECode CContextImpl::GetContentResolver(
 {
     VALIDATE_NOT_NULL(resolver)
     *resolver = (IContentResolver*)mContentResolver.Get();
-    INTERFACE_ADDREF(*resolver);
+    REFCOUNT_ADD(*resolver);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode CContextImpl::GetApplicationContext(
     }
 
     *ctx = IContext::Probe(app);
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 
@@ -364,14 +364,14 @@ ECode CContextImpl::GetString(
     return NOERROR;
 }
 
-ECode CContextImpl::GetStringEx(
+ECode CContextImpl::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
     AutoPtr<IResources> resources;
     GetResources((IResources**)&resources);
-    resources->GetStringEx(resId, formatArgs, str);
+    resources->GetString(resId, formatArgs, str);
     return NOERROR;
 }
 
@@ -407,7 +407,7 @@ ECode CContextImpl::GetTheme(
     }
 
     *theme = mTheme;
-    INTERFACE_ADDREF(*theme);
+    REFCOUNT_ADD(*theme);
     return NOERROR;
 }
 
@@ -421,29 +421,29 @@ ECode CContextImpl::ObtainStyledAttributes(
     return NOERROR;
 }
 
-ECode CContextImpl::ObtainStyledAttributesEx(
+ECode CContextImpl::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    theme->ObtainStyledAttributesEx(resid, attrs, styles);
+    theme->ObtainStyledAttributes(resid, attrs, styles);
     return NOERROR;
 }
 
-ECode CContextImpl::ObtainStyledAttributesEx2(
+ECode CContextImpl::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    theme->ObtainStyledAttributesEx2(set, attrs, 0, 0, styles);
+    theme->ObtainStyledAttributes(set, attrs, 0, 0, styles);
     return NOERROR;
 }
 
-ECode CContextImpl::ObtainStyledAttributesEx3(
+ECode CContextImpl::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -452,7 +452,7 @@ ECode CContextImpl::ObtainStyledAttributesEx3(
 {
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    theme->ObtainStyledAttributesEx2(
+    theme->ObtainStyledAttributes(
             set, attrs, defStyleAttr, defStyleRes, styles);
     return NOERROR;
 }
@@ -542,7 +542,7 @@ ECode CContextImpl::GetSharedPreferences(
             sp = new SharedPreferencesImpl(prefsFile, mode);
             sSharedPrefs[name] = sp;
             *prefs = (ISharedPreferences*)sp->Probe(EIID_ISharedPreferences);
-            INTERFACE_ADDREF(*prefs);
+            REFCOUNT_ADD(*prefs);
             return NOERROR;
         }
         sp = ator->mSecond;
@@ -560,7 +560,7 @@ ECode CContextImpl::GetSharedPreferences(
     }
 
     *prefs = sp;
-    INTERFACE_ADDREF(*prefs);
+    REFCOUNT_ADD(*prefs);
     return NOERROR;
 }
 
@@ -667,7 +667,7 @@ ECode CContextImpl::GetFilesDir(
                 -1, -1);
     }
     *filesDir = mFilesDir;
-    INTERFACE_ADDREF(*filesDir);
+    REFCOUNT_ADD(*filesDir);
     return NOERROR;
 }
 
@@ -700,7 +700,7 @@ ECode CContextImpl::GetExternalFilesDir(
     }
     if (type.IsNull()) {
         *filesDir = mExternalFilesDir;
-        INTERFACE_ADDREF(*filesDir);
+        REFCOUNT_ADD(*filesDir);
         return NOERROR;
     }
     AutoPtr<IFile> dir;
@@ -715,7 +715,7 @@ ECode CContextImpl::GetExternalFilesDir(
         }
     }
     *filesDir = dir;
-    INTERFACE_ADDREF(*filesDir);
+    REFCOUNT_ADD(*filesDir);
     return NOERROR;
 }
 
@@ -729,7 +729,7 @@ ECode CContextImpl::GetObbDir(
         mObbDir = Environment::GetExternalStorageAppObbDirectory(pkgName);
     }
     *obbDir = mObbDir;
-    INTERFACE_ADDREF(*obbDir);
+    REFCOUNT_ADD(*obbDir);
     return NOERROR;
 }
 
@@ -762,7 +762,7 @@ ECode CContextImpl::GetCacheDir(
         }
     }
     *cacheDir = mCacheDir;
-    INTERFACE_ADDREF(*cacheDir);
+    REFCOUNT_ADD(*cacheDir);
     return NOERROR;
 }
 
@@ -794,7 +794,7 @@ ECode CContextImpl::GetExternalCacheDir(
         }
     }
     *externalDir = mExternalCacheDir;
-    INTERFACE_ADDREF(*externalDir);
+    REFCOUNT_ADD(*externalDir);
     return NOERROR;
 }
 
@@ -808,7 +808,7 @@ ECode CContextImpl::GetFileList(
     AutoPtr< ArrayOf<String> > list;
     filesDir->List((ArrayOf<String>**)&list);
     *fileList = (list != NULL) ? list: EMPTY_FILE_LIST;
-    INTERFACE_ADDREF(*fileList);
+    REFCOUNT_ADD(*fileList);
     return NOERROR;
 }
 
@@ -847,7 +847,7 @@ ECode CContextImpl::GetDir(
                 FileUtils::sS_IRWXU|FileUtils::sS_IRWXG|FileUtils::sS_IXOTH);
     }
     *dir = file;
-    INTERFACE_ADDREF(*dir);
+    REFCOUNT_ADD(*dir);
     return NOERROR;
 }
 
@@ -870,10 +870,10 @@ ECode CContextImpl::OpenOrCreateDatabase(
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return OpenOrCreateDatabaseEx(name, mode, factory, NULL, sqliteDB);
+    return OpenOrCreateDatabase(name, mode, factory, NULL, sqliteDB);
 }
 
-ECode CContextImpl::OpenOrCreateDatabaseEx(
+ECode CContextImpl::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -891,10 +891,10 @@ ECode CContextImpl::OpenOrCreateDatabaseEx(
     String path;
     f->GetPath(&path);
     AutoPtr<ISQLiteDatabase> db;
-    SQLiteDatabase::OpenDatabaseEx(path, factory, flags, errorHandler, (ISQLiteDatabase**)&db);
+    SQLiteDatabase::OpenDatabase(path, factory, flags, errorHandler, (ISQLiteDatabase**)&db);
     SetFilePermissionsFromMode(path, mode, 0);
     *sqliteDB = db;
-    INTERFACE_ADDREF(*sqliteDB);
+    REFCOUNT_ADD(*sqliteDB);
     return NOERROR;
 }
 
@@ -918,7 +918,7 @@ ECode CContextImpl::GetDatabasePath(
     VALIDATE_NOT_NULL(path);
     AutoPtr<IFile> f = ValidateFilePath(name, FALSE);
     *path = f;
-    INTERFACE_ADDREF(*path);
+    REFCOUNT_ADD(*path);
     return NOERROR;
 }
 
@@ -930,7 +930,7 @@ ECode CContextImpl::GetDatabaseList(
     AutoPtr< ArrayOf<String> > list;
     GetDatabasesDir()->List((ArrayOf<String>**)&list);
     *databaseList = (list != NULL) ? list: EMPTY_FILE_LIST;
-    INTERFACE_ADDREF(*databaseList);
+    REFCOUNT_ADD(*databaseList);
     return NOERROR;
 }
 
@@ -982,7 +982,7 @@ ECode CContextImpl::SetWallpaper(
     return GetWallpaperManager()->SetBitmap(bitmap);
 }
 
-ECode CContextImpl::SetWallpaperEx(
+ECode CContextImpl::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
     return GetWallpaperManager()->SetStream(data);
@@ -999,11 +999,11 @@ ECode CContextImpl::StartActivity(
     VALIDATE_NOT_NULL(intent);
 
     WarnIfCallingFromSystemProcess();
-    StartActivityEx(intent, NULL);
+    StartActivity(intent, NULL);
     return NOERROR;
 }
 
-ECode CContextImpl::StartActivityEx(
+ECode CContextImpl::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
@@ -1035,10 +1035,10 @@ ECode CContextImpl::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user)
 {
-    return StartActivityAsUserEx(intent, NULL, user);
+    return StartActivityAsUser(intent, NULL, user);
 }
 
-ECode CContextImpl::StartActivityAsUserEx(
+ECode CContextImpl::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
@@ -1070,11 +1070,11 @@ ECode CContextImpl::StartActivities(
     VALIDATE_NOT_NULL(intents);
 
     WarnIfCallingFromSystemProcess();
-    StartActivitiesEx(intents, NULL);
+    StartActivities(intents, NULL);
     return NOERROR;
 }
 
-ECode CContextImpl::StartActivitiesEx(
+ECode CContextImpl::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
@@ -1135,10 +1135,10 @@ ECode CContextImpl::StartIntentSender(
     /* [in] */ Int32 flagsValues,
     /* [in] */ Int32 extraFlags)
 {
-    return StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues, extraFlags, NULL);
+    return StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags, NULL);
 }
 
-ECode CContextImpl::StartIntentSenderEx(
+ECode CContextImpl::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -1194,7 +1194,7 @@ ECode CContextImpl::SendBroadcast(
     return NOERROR;
 }
 
-ECode CContextImpl::SendBroadcastEx(
+ECode CContextImpl::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
@@ -1244,7 +1244,7 @@ ECode CContextImpl::SendOrderedBroadcast(
     return NOERROR;
 }
 
-ECode CContextImpl::SendOrderedBroadcastEx(
+ECode CContextImpl::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -1319,7 +1319,7 @@ ECode CContextImpl::SendBroadcastAsUser(
     return NOERROR;
 }
 
-ECode CContextImpl::SendBroadcastAsUserEx(
+ECode CContextImpl::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
@@ -1607,10 +1607,10 @@ ECode CContextImpl::RegisterReceiver(
     /* [in] */ IIntentFilter* filter,
     /* [out] */ IIntent** intent)
 {
-    return RegisterReceiverEx(receiver, filter, String(NULL), NULL, intent);
+    return RegisterReceiver(receiver, filter, String(NULL), NULL, intent);
 }
 
-ECode CContextImpl::RegisterReceiverEx(
+ECode CContextImpl::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
@@ -1751,7 +1751,7 @@ ECode CContextImpl::StartServiceAsUser(
             }
         }
         *name = cn;
-        INTERFACE_ADDREF(*name);
+        REFCOUNT_ADD(*name);
         return NOERROR;
 //     } catch (RemoteException e) {
 //         return null;
@@ -1801,10 +1801,10 @@ ECode CContextImpl::BindService(
     /* [out] */ Boolean* succeeded)
 {
     WarnIfCallingFromSystemProcess();
-    return BindServiceEx(service, conn, flags, UserHandle::GetUserId(Process::MyUid()), succeeded);
+    return BindService(service, conn, flags, UserHandle::GetUserId(Process::MyUid()), succeeded);
 }
 
-ECode CContextImpl::BindServiceEx(
+ECode CContextImpl::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ IServiceConnection* conn,
     /* [in] */ Int32 flags,
@@ -1925,7 +1925,7 @@ ECode CContextImpl::GetSystemService(
     HashMap< String, AutoPtr<IInterface> >::Iterator it = mServiceCache.Find(name);
     if (it != mServiceCache.End()) {
         *object = it->mSecond;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
 
@@ -1941,7 +1941,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IPrivacySettingsManager> privacySettingsManager;
         CPrivacySettingsManager::New(ctx, service, (IPrivacySettingsManager**)&privacySettingsManager);
         *object = privacySettingsManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         // END privacy-added
         return NOERROR;
     }
@@ -1957,7 +1957,7 @@ ECode CContextImpl::GetSystemService(
         }
         *object = new WindowManagerImpl(display);
         mServiceCache[name] = *object;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::LAYOUT_INFLATER_SERVICE.Equals(name)) {
@@ -1968,7 +1968,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<ILayoutInflater> inflater;
         FAIL_RETURN(pm->MakeNewLayoutInflater(ctx, (ILayoutInflater**)&inflater));
         *object = inflater.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::ACCOUNT_SERVICE.Equals(name)) {
@@ -1980,7 +1980,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IContext> ctx = GetOuterContext();
         CAccountManager::New(ctx, accountService, (IAccountManager**)&accountManager);
         *object = accountManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::ACTIVITY_SERVICE.Equals(name)) {
@@ -1991,7 +1991,7 @@ ECode CContextImpl::GetSystemService(
         FAIL_RETURN(CActivityManager::New(ctx, mMainThread->GetHandler(),
                 (IActivityManager**)&activityManager));
         *object = activityManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::INPUT_METHOD_SERVICE.Equals(name)) {
@@ -2001,7 +2001,7 @@ ECode CContextImpl::GetSystemService(
         CInputMethodManager::GetInstance(this);
         mServiceCache[name] = iManager;
         *object = iManager;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::ALARM_SERVICE.Equals(name)) {
@@ -2014,7 +2014,7 @@ ECode CContextImpl::GetSystemService(
         CAlarmManager::New(alarmService , (IAlarmManager**)&alarmManager);
         *object = alarmManager.Get();
         mServiceCache[name] = *object;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::BACKUP_SERVICE.Equals(name)) {
@@ -2024,7 +2024,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IBackupManager> backupManager;
         CBackupManager::New(ctx, (IBackupManager**)&backupManager);
         *object = backupManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::ACCOUNT_SERVICE.Equals(name)) {
@@ -2040,7 +2040,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IContext> ctx = GetOuterContext();
         CPowerManager::New(ctx, powerService, mMainThread->GetHandler(), (IPowerManager**)&powerManager);
         *object = powerManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::CONNECTIVITY_SERVICE.Equals(name)) {
@@ -2050,7 +2050,7 @@ ECode CContextImpl::GetSystemService(
         CConnectivityManager::New(service , (IConnectivityManager**)&connManager);
         *object = connManager.Get();
         mServiceCache[name] = *object;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::DISPLAY_SERVICE.Equals(name)) {
@@ -2070,7 +2070,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IWifiManager> wifiManager;
         CWifiManager::New(ctx, service, (IWifiManager**)&wifiManager);
         *object = wifiManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::WIFI_P2P_SERVICE.Equals(name)) {
@@ -2085,7 +2085,7 @@ ECode CContextImpl::GetSystemService(
         CWifiP2pManager::New((IWifiP2pManager**)&wifiP2pManager);
         wifiP2pManager->SetService(service);
         *object = wifiP2pManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::NOTIFICATION_SERVICE.Equals(name)) {
@@ -2104,7 +2104,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IContextThemeWrapper> wrapper;
         CContextThemeWrapper::New(ctx, value, (IContextThemeWrapper**)&wrapper);
         *object = new NotificationManager(wrapper, mMainThread->GetHandler());
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::KEYGUARD_SERVICE.Equals(name)) {
@@ -2114,7 +2114,7 @@ ECode CContextImpl::GetSystemService(
         CKeyguardManager::New((IKeyguardManager**)&kgManager);
         mServiceCache[name] = kgManager.Get();
         *object = kgManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::ACCESSIBILITY_SERVICE.Equals(name)) {
@@ -2123,7 +2123,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IAccessibilityManager> aManager;
         CAccessibilityManager::GetInstance(this, (IAccessibilityManager**)&aManager);
         *object = aManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::LOCATION_SERVICE.Equals(name)) {
@@ -2139,7 +2139,7 @@ ECode CContextImpl::GetSystemService(
         CPrivacyLocationManager::New(locationManager, ctx/*GetStaticOuterContext()*/, (IPrivacyLocationManager**)&privacyLocationManager);
 
         *object = privacyLocationManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::SEARCH_SERVICE.Equals(name)) {
@@ -2156,7 +2156,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<ISystemSensorManager> managersensor;
         CSystemSensorManager::New(ctx, looper, (ISystemSensorManager**)&managersensor);
         *object = managersensor.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::STORAGE_SERVICE.Equals(name)) {
@@ -2169,7 +2169,7 @@ ECode CContextImpl::GetSystemService(
         assert(sManager != NULL);
         *object = sManager.Get();
         mServiceCache[name] = *object;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         // } catch (RemoteException rex) {
         //     Log.e(TAG, "Failed to create StorageManager", rex);
         //     return null;
@@ -2183,7 +2183,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IUsbManager> usbManager;
         CUsbManager::New(ctx, service, (IUsbManager**)&usbManager);
         *object = usbManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
 
     }
@@ -2197,7 +2197,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<ISerialManager> serialManager;
         CSerialManager::New(ctx, serialService , (ISerialManager**)&serialManager);
         *object = serialManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::VIBRATOR_SERVICE.Equals(name)) {
@@ -2205,7 +2205,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IVibratorService> service = IVibratorService::Probe(ServiceManager::GetService(IContext::VIBRATOR_SERVICE).Get());
         mServiceCache[name] = service.Get();
         *object = service.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::STATUS_BAR_SERVICE.Equals(name)) {
@@ -2214,7 +2214,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IStatusBarManager> statusBarManager;
         ASSERT_SUCCEEDED(CStatusBarManager::New(ctx, (IStatusBarManager**)&statusBarManager));
         *object = statusBarManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::AUDIO_SERVICE.Equals(name)) {
@@ -2223,7 +2223,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IAudioManager> aManager;
         CAudioManager::New(this, (IAudioManager**)&aManager);
         *object = aManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::TELEPHONY_SERVICE.Equals(name)) {
@@ -2237,7 +2237,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IContext> ctx = GetOuterContext();
         FAIL_RETURN(CClipboardManager::New(ctx, (IClipboardManager**)&cbm))
         *object = cbm.Get();
-        INTERFACE_ADDREF(*object)
+        REFCOUNT_ADD(*object)
         return NOERROR;
     }
     else if (IContext::WALLPAPER_SERVICE.Equals(name)) {
@@ -2245,7 +2245,7 @@ ECode CContextImpl::GetSystemService(
 
         *object = GetWallpaperManager().Get();
         mServiceCache[name] = GetWallpaperManager().Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::DROPBOX_SERVICE.Equals(name)) {
@@ -2265,7 +2265,7 @@ ECode CContextImpl::GetSystemService(
         CDropBoxManager::New(service, (IDropBoxManager**)&dbm);
         mServiceCache[name] = dbm.Get();
         *object = dbm.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::DEVICE_POLICY_SERVICE.Equals(name)) {
@@ -2275,7 +2275,7 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IHandler> handler = mMainThread->GetHandler();
         CDevicePolicyManager::New(ctx, handler, (IDevicePolicyManager**)&devicePolicy);
         *object = devicePolicy.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::UI_MODE_SERVICE.Equals(name)) {
@@ -2285,7 +2285,7 @@ ECode CContextImpl::GetSystemService(
         CUiModeManager::New((IUiModeManager**)&uManager);
         *object = uManager.Get();
         mServiceCache[name] = uManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::DOWNLOAD_SERVICE.Equals(name)) {
@@ -2298,7 +2298,7 @@ ECode CContextImpl::GetSystemService(
         CDownloadManager::New(resolver, pkgName, (IDownloadManager**)&downloadManager);
         *object = downloadManager.Get();
         mServiceCache[name] = downloadManager.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::NFC_SERVICE.Equals(name)) {
@@ -2311,14 +2311,14 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IUserManager> userMgr;
         CUserManager::New(this, service, (IUserManager**)&userMgr);
         *object = userMgr.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::DISPLAY_SERVICE_AW.Equals(name)) {
         AutoPtr<IDisplayManagerAw> dmAw;
         CDisplayManagerAw::New((IDisplayManagerAw**)&dmAw);
         *object = dmAw.Get();
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     return NOERROR;
@@ -2549,7 +2549,7 @@ ECode CContextImpl::CheckCallingOrSelfUriPermission(
             Binder::GetCallingUid(), modeFlags, result);
 }
 
-ECode CContextImpl::CheckUriPermissionEx(
+ECode CContextImpl::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -2690,7 +2690,7 @@ ECode CContextImpl::EnforceCallingOrSelfUriPermission(
             Binder::GetCallingUid(), uri, message);
 }
 
-ECode CContextImpl::EnforceUriPermissionEx(
+ECode CContextImpl::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -2700,7 +2700,7 @@ ECode CContextImpl::EnforceUriPermissionEx(
     /* [in] */ const String& message)
 {
     Int32 checked;
-    CheckUriPermissionEx(
+    CheckUriPermission(
             uri, readPermission, writePermission, pid, uid,
             modeFlags, &checked);
     return EnforceForUri(modeFlags, checked, FALSE, uid, uri, message);
@@ -2742,7 +2742,7 @@ ECode CContextImpl::CreatePackageContextAsUser(
         context->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
         context->Init(mPackageInfo, NULL, mMainThread, mResources, mBasePackageName, user);
         *ctx = context;
-        INTERFACE_ADDREF(*ctx);
+        REFCOUNT_ADD(*ctx);
         return NOERROR;
     }
 
@@ -2760,7 +2760,7 @@ ECode CContextImpl::CreatePackageContextAsUser(
         c->Init(pi, NULL, mMainThread, mResources, mBasePackageName, user);
         if (c->mResources != NULL) {
             *ctx = c;
-            INTERFACE_ADDREF(*ctx);
+            REFCOUNT_ADD(*ctx);
             return NOERROR;
         }
     }
@@ -2796,7 +2796,7 @@ ECode CContextImpl::CreateConfigurationContext(
             resDir, GetDisplayId(), overrideConfiguration,
             (CCompatibilityInfo*)comInfo.Get(), (IResources**)&c->mResources);
     *ctx = c;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 
 }
@@ -2834,7 +2834,7 @@ ECode CContextImpl::CreateDisplayContext(
             resDir, displayId, NULL, (CCompatibilityInfo*)ci.Get()
             , (IResources**)&context->mResources);
     *ctx = context;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 
 }
@@ -2864,7 +2864,7 @@ ECode CContextImpl::GetCompatibilityInfo(
 
     if (displayId == IDisplay::DEFAULT_DISPLAY) {
         *infoHolder = mPackageInfo->mCompatibilityInfo;
-        INTERFACE_ADDREF(*infoHolder);
+        REFCOUNT_ADD(*infoHolder);
     }
 
     return NOERROR;
@@ -2972,13 +2972,13 @@ ECode CContextImpl::GetReceiverRestrictedContext(
 
     if (mReceiverRestrictedContext != NULL) {
         *ctx = mReceiverRestrictedContext;
-        INTERFACE_ADDREF(*ctx);
+        REFCOUNT_ADD(*ctx);
         return NOERROR;
     }
     AutoPtr<IContext> outCtx = GetOuterContext();
     CReceiverRestrictedContext::New(outCtx, (IReceiverRestrictedContext**)&mReceiverRestrictedContext);
     *ctx = mReceiverRestrictedContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
  }
 

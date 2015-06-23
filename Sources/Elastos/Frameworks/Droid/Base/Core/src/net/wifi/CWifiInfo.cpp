@@ -4,10 +4,10 @@
 #include "net/wifi/CWifiSsid.h"
 #include "net/NetworkUtils.h"
 #include "text/TextUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuffer;
@@ -128,7 +128,7 @@ ECode CWifiInfo::GetWifiSsid(
 {
     VALIDATE_NOT_NULL(ssid);
     *ssid = mWifiSsid;
-    INTERFACE_ADDREF(*ssid);
+    REFCOUNT_ADD(*ssid);
     return NOERROR;
 }
 

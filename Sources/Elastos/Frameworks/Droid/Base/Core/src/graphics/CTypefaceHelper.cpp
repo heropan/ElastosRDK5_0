@@ -16,7 +16,7 @@ ECode CTypefaceHelper::Create(
     return Typeface::Create(familyName, style, typeface);
 }
 
-ECode CTypefaceHelper::CreateEx(
+ECode CTypefaceHelper::Create(
     /* [in] */ ITypeface* family,
     /* [in] */ Int32 style,
     /* [out] */ ITypeface** typeface)
@@ -50,7 +50,7 @@ ECode CTypefaceHelper::CreateFromFile(
     return Typeface::CreateFromFile(path, typeface);
 }
 
-ECode CTypefaceHelper::CreateFromFileEx(
+ECode CTypefaceHelper::CreateFromFile(
     /* [in]*/ const String& path,
     /* [out] */ ITypeface** typeface)
 {

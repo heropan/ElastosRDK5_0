@@ -3,7 +3,7 @@
 #define __CPANELBACKGROUNDVIEW_H__
 
 #include "_CPanelBackgroundView.h"
-#include "view/ViewMacro.h"
+
 #include "systemui/statusbar/tablet/PanelBackgroundView.h"
 
 namespace Elastos {

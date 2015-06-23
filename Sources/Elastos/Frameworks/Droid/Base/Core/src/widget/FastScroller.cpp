@@ -1,6 +1,6 @@
 
 #include "widget/FastScroller.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/SystemClock.h"
 #include "os/Build.h"
 #include "os/CHandler.h"
@@ -486,7 +486,7 @@ void FastScroller::Draw(
 
         Int32 hOff = (r - l) / 2;
         Int32 vOff = (b - t) / 2;
-        canvas->DrawTextEx(mSectionText, (Int32) (lf + rf) / 2 - hOff,
+        canvas->DrawText(mSectionText, (Int32) (lf + rf) / 2 - hOff,
             (Int32) (bf + tf) / 2 + mOverlaySize / 4 - descent - vOff, paint);
     } else if (mState == STATE_EXIT) {
         if (alpha == 0) { // Done with exit

@@ -67,7 +67,7 @@ public:
      * @param canvas    A container for the current matrix and clip used to draw the bitmap.
      * @param location  Where to draw the bitmap.
      */
-    CARAPI DrawEx(
+    CARAPI Draw(
         /* [in] */ ICanvas* canvas,
         /* [in] */ IRect* location);
 
@@ -78,7 +78,7 @@ public:
      * @param location  Where to draw the bitmap.
      * @param paint     The Paint to draw through.
      */
-    CARAPI DrawEx2(
+    CARAPI Draw(
         /* [in] */ ICanvas* canvas,
         /* [in] */ IRect* location,
         /* [in] */ IPaint* paint);

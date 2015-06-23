@@ -7,11 +7,11 @@
 //#include "content/BroadcastReceiver.h"
 #include "Manifest.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <linux/ioctl.h>
 #include <linux/android_alarm.h>
 #include <fcntl.h>
@@ -296,7 +296,7 @@ ECode CAlarmManagerService::AlarmThread::Run()
                 //if (localLOGV) Slog.v(TAG, "sending alarm " + alarm);
                 mHost->mBackgroundIntent->PutInt32Extra(IIntent::EXTRA_ALARM_COUNT, alarm->mCount);
 
-                ECode ec = alarm->mOperation->SendEx4(mHost->mContext, 0, mHost->mBackgroundIntent, mHost->mResultReceiver, mHost->mHandler);
+                ECode ec = alarm->mOperation->Send(mHost->mContext, 0, mHost->mBackgroundIntent, mHost->mResultReceiver, mHost->mHandler);
 
                 if (FAILED(ec)) {
                     if (alarm->mRepeatInterval > 0) {

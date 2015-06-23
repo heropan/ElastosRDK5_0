@@ -60,7 +60,7 @@ ECode CSpannableStringBuilder::GetSpans(
     VALIDATE_NOT_NULL(objs);
     AutoPtr<ArrayOf<IInterface *> > list = SpannableStringBuilder::GetSpans(start, end, type);
     *objs = list.Get();
-    INTERFACE_ADDREF(*objs);
+    REFCOUNT_ADD(*objs);
 
     return NOERROR;
 }
@@ -132,7 +132,7 @@ ECode CSpannableStringBuilder::Replace(
     return SpannableStringBuilder::Replace(st, en, source, start, end);
 }
 
-ECode CSpannableStringBuilder::ReplaceEx(
+ECode CSpannableStringBuilder::Replace(
     /* [in] */ Int32 st,
     /* [in] */ Int32 en,
     /* [in] */ ICharSequence* text)
@@ -149,7 +149,7 @@ ECode CSpannableStringBuilder::Insert(
     return SpannableStringBuilder::Insert(where, text, start, end);
 }
 
-ECode CSpannableStringBuilder::InsertEx(
+ECode CSpannableStringBuilder::Insert(
     /* [in] */ Int32 where,
     /* [in] */ ICharSequence* text)
 {
@@ -169,7 +169,7 @@ ECode CSpannableStringBuilder::Append(
     return SpannableStringBuilder::Append(text);
 }
 
-ECode CSpannableStringBuilder::AppendEx(
+ECode CSpannableStringBuilder::Append(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -177,7 +177,7 @@ ECode CSpannableStringBuilder::AppendEx(
     return SpannableStringBuilder::Append(text, start, end);
 }
 
-ECode CSpannableStringBuilder::AppendEx2(
+ECode CSpannableStringBuilder::Append(
     /* [in] */ Char32 text)
 {
     return SpannableStringBuilder::Append(text);
@@ -205,7 +205,7 @@ ECode CSpannableStringBuilder::GetFilters(
     VALIDATE_NOT_NULL(filters);
     AutoPtr< ArrayOf<IInputFilter*> > objs = SpannableStringBuilder::GetFilters();
     *filters = objs;
-    INTERFACE_ADDREF(*filters);
+    REFCOUNT_ADD(*filters);
     return NOERROR;
 }
 
@@ -285,7 +285,7 @@ ECode CSpannableStringBuilder::GetTextRunAdvances(
     return NOERROR;
 }
 
-ECode CSpannableStringBuilder::GetTextRunAdvancesEx(
+ECode CSpannableStringBuilder::GetTextRunAdvances(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,

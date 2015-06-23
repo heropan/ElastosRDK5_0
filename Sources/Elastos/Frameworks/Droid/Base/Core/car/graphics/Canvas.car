@@ -105,7 +105,7 @@ module
          * @param path The path to intersect with the current clip
          * @return     true if the resulting is non-empty
          */
-        ClipPathEx(
+        ClipPath(
             [in] IPath* path,
             [out] Boolean* IsNonEmpty);
 
@@ -129,7 +129,7 @@ module
          * @param op How the clip is modified
          * @return true if the resulting clip is non-empty
          */
-        ClipRectEx(
+        ClipRect(
             [in] IRect* rect,
             [in] RegionOp op,
             [out] Boolean* isNonEmpty);
@@ -141,7 +141,7 @@ module
          * @param rect The rectangle to intersect with the current clip.
          * @return true if the resulting clip is non-empty
          */
-        ClipRectEx2(
+        ClipRect(
             [in] IRectF* rect,
             [out] Boolean* isNonEmpty);
 
@@ -152,7 +152,7 @@ module
          * @param rect The rectangle to intersect with the current clip.
          * @return true if the resulting clip is non-empty
          */
-        ClipRectEx3(
+        ClipRect(
             [in] IRect* rect,
             [out] Boolean* isNonEmpty);
 
@@ -171,7 +171,7 @@ module
          * @param op     How the clip is modified
          * @return       true if the resulting clip is non-empty
          */
-        ClipRectEx4(
+        ClipRect(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -192,7 +192,7 @@ module
          *               clip
          * @return       true if the resulting clip is non-empty
          */
-        ClipRectEx5(
+        ClipRect(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -212,7 +212,7 @@ module
          *               clip
          * @return       true if the resulting clip is non-empty
          */
-        ClipRectEx6(
+        ClipRect(
             [in] Int32 left,
             [in] Int32 top,
             [in] Int32 right,
@@ -245,7 +245,7 @@ module
          * @param region The region to operate on the current clip, based on op
          * @return true if the resulting is non-empty
          */
-        ClipRegionEx(
+        ClipRegion(
             [in] IRegion* region,
             [out] Boolean* IsNonEmpty);
 
@@ -340,7 +340,7 @@ module
          *               to fit into
          * @param paint  May be null. The paint used to draw the bitmap
          */
-        DrawBitmapEx(
+        DrawBitmap(
             [in] IBitmap* bitmap,
             [in] IRect* src,
             [in] IRectF* dst,
@@ -368,7 +368,7 @@ module
          *               to fit into
          * @param paint  May be null. The paint used to draw the bitmap
          */
-        DrawBitmapEx2(
+        DrawBitmap(
             [in] IBitmap* bitmap,
             [in] IRect* src,
             [in] IRect* dst,
@@ -393,7 +393,7 @@ module
          *                 be 0xFF for every pixel).
          * @param paint    May be null. The paint used to draw the bitmap
          */
-        DrawBitmapEx3(
+        DrawBitmap(
             [in] ArrayOf<Int32> colors,
             [in] Int32 offset,
             [in] Int32 stride,
@@ -407,7 +407,7 @@ module
         /**
          * Legacy version of drawBitmap(int[] colors, ...) that took ints for x,y
          */
-        DrawBitmapEx4(
+        DrawBitmap(
             [in] ArrayOf<Int32> colors,
             [in] Int32 offset,
             [in] Int32 stride,
@@ -425,7 +425,7 @@ module
          * @param matrix The matrix used to transform the bitmap when it is drawn
          * @param paint  May be null. The paint used to draw the bitmap
          */
-        DrawBitmapEx5(
+        DrawBitmap(
             [in] IBitmap* bitmap,
             [in] IMatrix* matrix,
             [in] IPaint* paint);
@@ -498,7 +498,7 @@ module
          * @param color the color to draw with
          * @param mode  the porter-duff mode to apply to the color
          */
-        DrawColorEx(
+        DrawColor(
             [in] Int32 color,
             [in] PorterDuffMode mode);
 
@@ -539,7 +539,7 @@ module
             [in] Int32 count,
             [in] IPaint* paint);
 
-        DrawLinesEx(
+        DrawLines(
             [in] ArrayOf<Float> pts,
             [in] IPaint* paint);
 
@@ -605,14 +605,14 @@ module
         /**
          * Draw the picture, stretched to fit into the dst rectangle.
          */
-        DrawPictureEx(
+        DrawPicture(
             [in] IPicture* picture,
             [in] IRectF* dst);
 
         /**
          * Draw the picture, stretched to fit into the dst rectangle.
          */
-        DrawPictureEx2(
+        DrawPicture(
             [in] IPicture* picture,
             [in] IRect* dst);
 
@@ -649,7 +649,7 @@ module
         /**
          * Helper for drawPoints() that assumes you want to draw the entire array
          */
-        DrawPointsEx(
+        DrawPoints(
             [in] ArrayOf<Float> pts,
             [in] IPaint* paint);
 
@@ -679,7 +679,7 @@ module
          * @param pos   Array of [x,y] positions, used to position each character
          * @param paint The paint used for the text (e.g. color, size, style)
          */
-        DrawPosTextEx(
+        DrawPosText(
             [in] String text,
             [in] ArrayOf<Float> pos,
             [in] IPaint* paint);
@@ -715,7 +715,7 @@ module
          * @param r        The rectangle to be drawn.
          * @param paint    The paint used to draw the rectangle
          */
-        DrawRectEx(
+        DrawRect(
             [in] IRect* rect,
             [in] IPaint* paint);
 
@@ -729,7 +729,7 @@ module
          * @param bottom The bottom side of the rectangle to be drawn
          * @param paint  The paint used to draw the rect
          */
-        DrawRectEx2(
+        DrawRect(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -777,7 +777,7 @@ module
          * @param y     The y-coordinate of the origin of the text being drawn
          * @param paint The paint used for the text (e.g. color, size, style)
          */
-        DrawTextEx(
+        DrawText(
             [in] String text,
             [in] Float x,
             [in] Float y,
@@ -794,7 +794,7 @@ module
          * @param y     The y-coordinate of the origin of the text being drawn
          * @param paint The paint used for the text (e.g. color, size, style)
          */
-        DrawTextEx2(
+        DrawText(
             [in] String text,
             [in] Int32 start,
             [in] Int32 end,
@@ -815,7 +815,7 @@ module
          * @param y        The y-coordinate of origin for where to draw the text
          * @param paint The paint used for the text (e.g. color, size, style)
          */
-        DrawTextEx3(
+        DrawText(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,
@@ -858,7 +858,7 @@ module
          *                 the text
          * @param paint    The paint used for the text (e.g. color, size, style)
          */
-        DrawTextOnPathEx(
+        DrawTextOnPath(
             [in] String text,
             [in] IPath* path,
             [in] Float hOffset,
@@ -916,7 +916,7 @@ module
          * @param paint the paint
          * @hide
          */
-        DrawTextRunEx(
+        DrawTextRun(
             [in] ICharSequence* text,
             [in] Int32 start,
             [in] Int32 end,
@@ -987,7 +987,7 @@ module
          *
          * @return the clip bounds, or [0, 0, 0, 0] if the clip is empty.
          */
-        GetClipBoundsEx(
+        GetClipBounds(
             [out] IRect** bounds);
 
         /**
@@ -1028,7 +1028,7 @@ module
          * Return a new matrix with a copy of the canvas' current transformation
          * matrix.
          */
-        GetMatrixEx(
+        GetMatrix(
             [out] IMatrix** metrix);
 
         /**
@@ -1119,7 +1119,7 @@ module
          * @return            true if the path (transformed by the canvas' matrix)
          *                    does not intersect with the canvas' clip
          */
-        QuickRejectEx(
+        QuickReject(
             [in] IPath* path,
             [in] CanvasEdgeType type,
             [out] Boolean* result);
@@ -1144,7 +1144,7 @@ module
          * @return            true if the rect (transformed by the canvas' matrix)
          *                    does not intersect with the canvas' clip
          */
-        QuickRejectEx2(
+        QuickReject(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -1190,7 +1190,7 @@ module
          * @param px The x-coord for the pivot point (unchanged by the rotation)
          * @param py The y-coord for the pivot point (unchanged by the rotation)
          */
-        RotateEx(
+        Rotate(
             [in] Float degrees,
             [in] Float px,
             [in] Float py);
@@ -1218,7 +1218,7 @@ module
          *                  to save/restore
          * @return The value to pass to restoreToCount() to balance this save()
          */
-        SaveEx(
+        Save(
             [in] Int32 saveFlags,
             [out] Int32* result);
 
@@ -1247,7 +1247,7 @@ module
         /**
          * Helper version of saveLayer() that takes 4 values rather than a RectF.
          */
-        SaveLayerEx(
+        SaveLayer(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -1281,7 +1281,7 @@ module
         /**
          * Helper for saveLayerAlpha() that takes 4 values instead of a RectF.
          */
-        SaveLayerAlphaEx(
+        SaveLayerAlpha(
             [in] Float left,
             [in] Float top,
             [in] Float right,
@@ -1308,7 +1308,7 @@ module
          * @param px The x-coord for the pivot point (unchanged by the rotation)
          * @param py The y-coord for the pivot point (unchanged by the rotation)
          */
-        ScaleEx(
+        Scale(
             [in] Float sx,
             [in] Float sy,
             [in] Float px,

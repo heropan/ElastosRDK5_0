@@ -90,7 +90,7 @@ module
          * Since this method is only used within {@link LocationManager#getGpsStatus},
          * it does not need to be synchronized.
          */
-        SetStatusEx(
+        SetStatus(
             [in] IGpsStatus* status);
 
         SetTimeToFirstFix(

@@ -26,7 +26,7 @@ ECode CTaskDescriptionAdapter::CreateView(
     VALIDATE_NOT_NULL(v);
     AutoPtr<IView> temp = TaskDescriptionAdapter::CreateView(parent);
     *v = temp;
-    INTERFACE_ADDREF(*v);
+    REFCOUNT_ADD(*v);
     return NOERROR;
 }
 

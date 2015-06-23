@@ -7,9 +7,9 @@
 #include "os/Binder.h"
 #include "util/Xml.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <binder/Parcel.h>
 
 using Elastos::Core::CBoolean;
@@ -283,7 +283,7 @@ ECode CUsageStatsService::constructor(
     tzHelper->GetTimeZone(String("GMT+0"), (ITimeZone**)&tz);
     AutoPtr<ICalendarHelper> cHelper;
     CCalendarHelper::AcquireSingleton((ICalendarHelper**)&cHelper);
-    cHelper->GetInstanceEx2(tz, (ICalendar**)&mCal);
+    cHelper->GetInstance(tz, (ICalendar**)&mCal);
 
     Boolean maked;
     mDir->Mkdir(&maked);
@@ -459,7 +459,7 @@ ECode CUsageStatsService::ReadHistoryStatsFLOCK(
     // try {
     FAIL_RETURN(mHistoryFile->OpenRead((IFileInputStream**)&fis));
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(IInputStream::Probe(fis), String(NULL));
+    parser->SetInput(IInputStream::Probe(fis), String(NULL));
     Int32 eventType;
     parser->GetEventType(&eventType);
     Int32 cycleCount = 10000;
@@ -477,12 +477,12 @@ ECode CUsageStatsService::ReadHistoryStatsFLOCK(
                 Int32 depth;
                 parser->GetDepth(&depth);
                 if (String("pkg").Equals(tagName) && depth == 2) {
-                    parser->GetAttributeValueEx(String(NULL), String("name"), &pkg);
+                    parser->GetAttributeValue(String(NULL), String("name"), &pkg);
                 } else if (String("comp").Equals(tagName) && depth == 3 && pkg != NULL) {
                     String comp;
-                    parser->GetAttributeValueEx(String(NULL), String("name"), &comp);
+                    parser->GetAttributeValue(String(NULL), String("name"), &comp);
                     String lastResumeTimeStr;
-                    parser->GetAttributeValueEx(String(NULL), String("lrt"), &lastResumeTimeStr);
+                    parser->GetAttributeValue(String(NULL), String("lrt"), &lastResumeTimeStr);
                     if (!comp.IsNull() && !lastResumeTimeStr.IsNull()) {
                         // try {
                         Int64 lastResumeTime = StringUtils::ParseInt64(lastResumeTimeStr);
@@ -1065,7 +1065,7 @@ AutoPtr<ArrayOf<Byte> > CUsageStatsService::ReadFully(
     AutoPtr<ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(avail);
     while (TRUE) {
         Int32 amt;
-        stream->ReadBytesEx(data, pos, data->GetLength()-pos, &amt);
+        stream->ReadBytes(data, pos, data->GetLength()-pos, &amt);
         if (amt <= 0) {
             return data;
         }

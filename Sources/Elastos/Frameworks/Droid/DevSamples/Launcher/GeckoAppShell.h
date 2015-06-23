@@ -7,20 +7,19 @@
 #endif
 
 #include "GeckoEvent.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Thread.h>
 #include "CAlertNotification.h"
 #include "CGeckoSurfaceView.h"
-#include <elastos/Mutex.h>
 //#include <elastos/TimerTask.h>
 #include "SurfaceInfo.h"
 //#include <Elastos.Utility.Locks.h>
 
 #define GeckoAppShell_LOG_FILE_NAME "GeckoAppShell"
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFile;
 using Elastos::IO::IByteBuffer;
 using Elastos::Droid::Os::IVibrator;
@@ -95,10 +94,10 @@ private:
 
         CARAPI Join();
 
-        CARAPI JoinEx(
+        CARAPI Join(
             /* [in] */ Int64 millis);
 
-        CARAPI JoinEx2(
+        CARAPI Join(
             /* [in] */ Int64 millis,
             /* [in] */ Int32 nanos);
 

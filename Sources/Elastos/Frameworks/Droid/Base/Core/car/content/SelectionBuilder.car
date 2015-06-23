@@ -55,7 +55,7 @@ module
         /**
          * Execute query using the current internal state as {@code WHERE} clause.
          */
-        QueryEx(
+        Query(
             [in] ISQLiteDatabase* db,
             [in] String table,
             [in] ArrayOf<String>* columns,

@@ -6,7 +6,7 @@
 #include "BluetoothOutputStream.h"
 #include "net/CLocalSocket.h"
 #include "os/CParcelFileDescriptor.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFileDescriptor;
@@ -128,7 +128,7 @@ ECode BluetoothSocket::AcceptSocket(
     }
 
     *socket = as;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     return NOERROR;
 }
 
@@ -167,7 +167,7 @@ ECode BluetoothSocket::GetRemoteDevice(
 {
     VALIDATE_NOT_NULL(device)
     *device = mDevice;
-    INTERFACE_ADDREF(*device)
+    REFCOUNT_ADD(*device)
     return NOERROR;
 }
 
@@ -176,7 +176,7 @@ ECode BluetoothSocket::GetInputStream(
 {
     VALIDATE_NOT_NULL(inputstream)
     *inputstream = (IInputStream*)mInputStream;
-    INTERFACE_ADDREF(*inputstream)
+    REFCOUNT_ADD(*inputstream)
     return NOERROR;
 }
 
@@ -185,7 +185,7 @@ ECode BluetoothSocket::GetOutputStream(
 {
     VALIDATE_NOT_NULL(outputstream)
     *outputstream = (IOutputStream*)mOutputStream;
-    INTERFACE_ADDREF(*outputstream)
+    REFCOUNT_ADD(*outputstream)
     return NOERROR;
 }
 
@@ -361,7 +361,7 @@ ECode BluetoothSocket::Accept(
     }
     FAIL_RETURN(AcceptSocket(remoteAddr, (BluetoothSocket**)&acceptedSocket))
     *socket = (IBluetoothSocket*)acceptedSocket;
-    INTERFACE_ADDREF(*socket)
+    REFCOUNT_ADD(*socket)
     //quick drop the reference of the file handle
     return NOERROR;
 }
@@ -385,7 +385,7 @@ ECode BluetoothSocket::Read(
 
     if (VDBG) Slogger::D(TAG, "read in:  %p len: %d", mSocketIS.Get(), length);
     Int32 ret;
-    mSocketIS->ReadBytesEx(b, offset, length, &ret);
+    mSocketIS->ReadBytes(b, offset, length, &ret);
     if(ret < 0) {
         // throw new IOException("bt socket closed, read return: " + ret);
         Slogger::E(TAG, "bt socket closed, read return: %d", ret);
@@ -405,7 +405,7 @@ ECode BluetoothSocket::Write(
     VALIDATE_NOT_NULL(count)
     *count = 0;
     if (VDBG) Slogger::D(TAG, "write: %p length: %d", mSocketOS.Get(), length);
-    mSocketOS->WriteBytesEx(*b, offset, length);
+    mSocketOS->WriteBytes(*b, offset, length);
     // There is no good way to confirm since the entire process is asynchronous anyway
     if (VDBG) Slogger::D(TAG, "write out: %p length: %d", mSocketOS.Get(), length);
     *count = length;
@@ -514,7 +514,7 @@ ECode BluetoothSocket::ReadAll(
     Int32 left = b->GetLength();
     while(left > 0) {
         Int32 ret;
-        is->ReadBytesEx(b, b->GetLength() - left, left, &ret);
+        is->ReadBytes(b, b->GetLength() - left, left, &ret);
         if(ret <= 0) {
             // throw new IOException("read failed, socket might closed or timeout, read ret: " + ret);
             Slogger::E(TAG, "read failed, socket might closed or timeout, read ret: %d", ret);

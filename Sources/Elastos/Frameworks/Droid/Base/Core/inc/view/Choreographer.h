@@ -4,11 +4,10 @@
 
 #include <ext/frameworkext.h>
 #include "view/DisplayEventReceiver.h"
-#include <elastos/Mutex.h>
 #include <pthread.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IMessage;

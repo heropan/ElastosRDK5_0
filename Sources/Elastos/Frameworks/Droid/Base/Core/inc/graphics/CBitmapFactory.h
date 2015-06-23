@@ -3,7 +3,7 @@
 #define __CBITMAPFACTORY_H__
 
 #include "_CBitmapFactory.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 
 using Elastos::IO::IInputStream;
@@ -52,7 +52,7 @@ public:
      * @param height   The number of rows
      * @return A copy of a subset of the source bitmap or the source bitmap itself.
      */
-    CARAPI CreateBitmapEx(
+    CARAPI CreateBitmap(
         /* [in] */ IBitmap* source,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
@@ -83,7 +83,7 @@ public:
      * @throws IllegalArgumentException if the x, y, width, height values are
      *         outside of the dimensions of the source bitmap.
      */
-    CARAPI CreateBitmapEx2(
+    CARAPI CreateBitmap(
         /* [in] */ IBitmap* source,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
@@ -102,7 +102,7 @@ public:
      * @param config   The bitmap config to create.
      * @throws IllegalArgumentException if the width or height are <= 0
      */
-    CARAPI CreateBitmapEx3(
+    CARAPI CreateBitmap(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ BitmapConfig config,
@@ -126,7 +126,7 @@ public:
      * @throws IllegalArgumentException if the width or height are <= 0, or if
      *         the color array's length is less than the number of pixels.
      */
-    CARAPI CreateBitmapEx4(
+    CARAPI CreateBitmap(
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 stride,
@@ -150,7 +150,7 @@ public:
      * @throws IllegalArgumentException if the width or height are <= 0, or if
      *         the color array's length is less than the number of pixels.
      */
-    CARAPI CreateBitmapEx5(
+    CARAPI CreateBitmap(
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
@@ -168,7 +168,7 @@ public:
      * @param config   The bitmap config to create.
      * @throws IllegalArgumentException if the width or height are <= 0
      */
-    CARAPI CreateBitmapEx6(
+    CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
@@ -195,7 +195,7 @@ public:
      * @throws IllegalArgumentException if the width or height are <= 0, or if
      *         the color array's length is less than the number of pixels.
      */
-    CARAPI CreateBitmapEx7(
+    CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ Int32 offset,
@@ -222,7 +222,7 @@ public:
      * @throws IllegalArgumentException if the width or height are <= 0, or if
      *         the color array's length is less than the number of pixels.
      */
-    CARAPI CreateBitmapEx8(
+    CARAPI CreateBitmap(
         /* [in] */ IDisplayMetrics* display,
         /* [in] */ const ArrayOf<Int32>& colors,
         /* [in] */ Int32 width,
@@ -241,7 +241,7 @@ public:
         /* [in] */ IBitmapFactoryOptions* opts,
         /* [out] */ IBitmap** bitmap);
 
-    CARAPI DecodeFileEx(
+    CARAPI DecodeFile(
         /* [in] */ const String& pathName,
         /* [out] */ IBitmap** bitmap);
 
@@ -259,7 +259,7 @@ public:
         /* [in] */ IBitmapFactoryOptions* opts,
         /* [out] */ IBitmap** bitmap);
 
-    CARAPI DecodeResourceEx(
+    CARAPI DecodeResource(
         /* [in] */ IResources* res,
         /* [in] */ Int32 id,
         /* [out] */ IBitmap** bitmap);
@@ -271,7 +271,7 @@ public:
         /* [in] */ IBitmapFactoryOptions* opts,
         /* [out] */ IBitmap** bitmap);
 
-    CARAPI DecodeByteArrayEx(
+    CARAPI DecodeByteArray(
         /* [in] */ const ArrayOf<Byte>& data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -293,7 +293,7 @@ public:
      *           bitmap.
      * @return The decoded bitmap, or null if the image data could not be decoded.
      */
-    CARAPI DecodeStreamEx(
+    CARAPI DecodeStream(
         /* [in] */ IInputStream* is,
         /* [out] */ IBitmap** bitmap);
 
@@ -303,7 +303,7 @@ public:
         /* [in] */ IBitmapFactoryOptions* opts,
         /* [out] */ IBitmap** bitmap);
 
-    CARAPI DecodeFileDescriptorEx(
+    CARAPI DecodeFileDescriptor(
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ IBitmap** bitmap);
 

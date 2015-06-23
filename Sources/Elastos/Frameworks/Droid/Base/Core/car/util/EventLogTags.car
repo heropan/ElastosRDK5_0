@@ -56,7 +56,7 @@ module {
             //  [in] String name,
             //  [out] IEventLogTagsDescription** desc);
 
-            // GetEx(
+            // Get(
             //  [in] Int32 tag,
             //  [out] IEventLogTagsDescription** desc);
         }

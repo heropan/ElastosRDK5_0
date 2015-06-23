@@ -9,7 +9,7 @@
 #include "net/wifi/CStateChangeResult.h"
 #include "net/wifi/CSupplicantState.h"
 #endif
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;

@@ -4,9 +4,9 @@
 
 #include "_CMtpDatabase.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIContentProvider;

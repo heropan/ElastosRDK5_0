@@ -7,8 +7,8 @@
 #include <binder/MemoryBase.h>
 #include "os/Looper.h"
 #include <system/audio.h>
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::Looper;
 using Elastos::Utility::Logging::Logger;
@@ -574,10 +574,10 @@ ECode CAudioTrack::GetAudioSessionId(
 ECode CAudioTrack::SetPlaybackPositionUpdateListener(
     /* [in] */ IOnPlaybackPositionUpdateListener *listener)
 {
-    return SetPlaybackPositionUpdateListenerEx(listener, NULL);
+    return SetPlaybackPositionUpdateListener(listener, NULL);
 }
 
-ECode CAudioTrack::SetPlaybackPositionUpdateListenerEx(
+ECode CAudioTrack::SetPlaybackPositionUpdateListener(
     /* [in] */ IOnPlaybackPositionUpdateListener *listener,
     /* [in] */ IHandler *handler)
 {
@@ -798,7 +798,7 @@ ECode CAudioTrack::Write(
     return NOERROR;
 }
 
-ECode CAudioTrack::WriteEx(
+ECode CAudioTrack::Write(
     /* [in] */ ArrayOf<Int16>* audioData,
     /* [in] */ Int32 offsetInShorts,
     /* [in] */ Int32 sizeInShorts,
@@ -895,7 +895,7 @@ ECode CAudioTrack::PostEventFromNative(
     if (track->mEventHandlerDelegate != NULL) {
         AutoPtr<IHandler> handler = track->mEventHandlerDelegate->GetHandler();
         AutoPtr<IMessage> message;
-        handler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&message);
+        handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&message);
 
         Boolean bval;
         return handler->SendMessage(message, &bval);

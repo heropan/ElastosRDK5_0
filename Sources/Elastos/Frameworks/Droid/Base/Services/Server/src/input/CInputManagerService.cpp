@@ -8,12 +8,12 @@
 #include "view/NativeInputChannel.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringUtils;
@@ -188,7 +188,7 @@ ECode CInputManagerService::MyBroadcastReceiver::OnReceive(
     return NOERROR;
 }
 
-CInputManagerService::MyBroadcastReceiverEx::MyBroadcastReceiverEx(
+CInputManagerService::MyBroadcastReceiverEx::MyBroadcastReceiver(
     /* [in] */ CInputManagerService* owner)
     : mOwner(owner)
 {}
@@ -203,7 +203,7 @@ ECode CInputManagerService::MyBroadcastReceiverEx::OnReceive(
     return NOERROR;
 }
 
-CInputManagerService::MyBroadcastReceiverEx2::MyBroadcastReceiverEx2(
+CInputManagerService::MyBroadcastReceiverEx2::MyBroadcastReceiver(
     /* [in] */ CInputManagerService* owner)
     : mOwner(owner)
 {}
@@ -233,7 +233,7 @@ void CInputManagerService::MyKeyboardLayoutVisitor::VisitKeyboardLayout(
     mAvailableKeyboardLayouts.Insert(descriptor);
 }
 
-CInputManagerService::MyKeyboardLayoutVisitorEx::MyKeyboardLayoutVisitorEx(
+CInputManagerService::MyKeyboardLayoutVisitorEx::MyKeyboardLayoutVisitor(
     /* [in] */ List<AutoPtr<IKeyboardLayout> >& list)
     : mList(list)
 {}
@@ -250,7 +250,7 @@ void CInputManagerService::MyKeyboardLayoutVisitorEx::VisitKeyboardLayout(
     mList.PushBack(layout);
 }
 
-CInputManagerService::MyKeyboardLayoutVisitorEx2::MyKeyboardLayoutVisitorEx2(
+CInputManagerService::MyKeyboardLayoutVisitorEx2::MyKeyboardLayoutVisitor(
     /* [in] */ IKeyboardLayout** layout)
     : mLayout(layout)
 {}
@@ -281,7 +281,7 @@ ECode CInputManagerService::MyContentObserver::OnChange(
     return NOERROR;
 }
 
-CInputManagerService::MyContentObserverEx::MyContentObserverEx(
+CInputManagerService::MyContentObserverEx::MyContentObserver(
     /* [in] */ CInputManagerService* owner,
     /* [in] */ IHandler* handler)
     : ContentObserver(handler)
@@ -296,7 +296,7 @@ ECode CInputManagerService::MyContentObserverEx::OnChange(
     return NOERROR;
 }
 
-CInputManagerService::MyKeyboardLayoutVisitorEx3::MyKeyboardLayoutVisitorEx3(
+CInputManagerService::MyKeyboardLayoutVisitorEx3::MyKeyboardLayoutVisitor(
     /* [in] */ ArrayOf<String>* layouts)
 {
     mLayouts = layouts;
@@ -506,7 +506,7 @@ ECode CInputManagerService::Start()
     CIntentFilter::New(IIntent::ACTION_USER_SWITCHED, (IIntentFilter**)&intentFilter);
     AutoPtr<MyBroadcastReceiver> receiver = new MyBroadcastReceiver(this);
     AutoPtr<IIntent> result;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         receiver, intentFilter, String(NULL),
         mHandler, (IIntent**)&result);
 
@@ -531,16 +531,16 @@ void CInputManagerService::SystemReady()
     filter->AddAction(IIntent::ACTION_PACKAGE_REMOVED);
     filter->AddAction(IIntent::ACTION_PACKAGE_CHANGED);
     filter->AddDataScheme(String("package"));
-    AutoPtr<MyBroadcastReceiverEx> myBREx = new MyBroadcastReceiverEx(this);
+    AutoPtr<MyBroadcastReceiverEx> myBREx = new MyBroadcastReceiver(this);
     AutoPtr<IIntent> result;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
         myBREx.Get(), filter, String(NULL), mHandler, (IIntent**)&result);
 
     filter = NULL;
     result = NULL;
     CIntentFilter::New(IBluetoothDevice::ACTION_ALIAS_CHANGED, (IIntentFilter**)&filter);
-    AutoPtr<MyBroadcastReceiverEx2> myBREx2 = new MyBroadcastReceiverEx2(this);
-    mContext->RegisterReceiverEx(
+    AutoPtr<MyBroadcastReceiverEx2> myBREx2 = new MyBroadcastReceiver(this);
+    mContext->RegisterReceiver(
         myBREx2, filter,String(NULL), mHandler, (IIntent**)&result);
 
     Boolean bval;
@@ -1065,7 +1065,7 @@ ECode CInputManagerService::GetKeyboardLayouts(
     VALIDATE_NOT_NULL(layouts);
 
     List<AutoPtr<IKeyboardLayout> > list;
-    AutoPtr<MyKeyboardLayoutVisitorEx> myKVEx = new MyKeyboardLayoutVisitorEx(list);
+    AutoPtr<MyKeyboardLayoutVisitorEx> myKVEx = new MyKeyboardLayoutVisitor(list);
     VisitAllKeyboardLayouts(myKVEx);
 
     *layouts = ArrayOf<IKeyboardLayout*>::Alloc(list.GetSize());
@@ -1094,7 +1094,7 @@ ECode CInputManagerService::GetKeyboardLayout(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<MyKeyboardLayoutVisitorEx2> myKVEx2 = new MyKeyboardLayoutVisitorEx2(layout);
+    AutoPtr<MyKeyboardLayoutVisitorEx2> myKVEx2 = new MyKeyboardLayoutVisitor(layout);
     VisitKeyboardLayout(keyboardLayoutDescriptor, myKVEx2);
     if (*layout == NULL) {
         Logger::W(TAG, "Could not get keyboard layout with descriptor '%d'.",
@@ -1558,8 +1558,8 @@ void CInputManagerService::RegisterPointerSpeedSettingObserver()
     AutoPtr<ISettingsSystem> ss;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     AutoPtr<IUri> uri;
-    ss->GetUriForEx(ISettingsSystem::POINTER_SPEED, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, TRUE, settingsObserver, IUserHandle::USER_ALL);
+    ss->GetUriFor(ISettingsSystem::POINTER_SPEED, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, TRUE, settingsObserver, IUserHandle::USER_ALL);
 }
 
 Int32 CInputManagerService::GetPointerSpeedSetting()
@@ -1570,7 +1570,7 @@ Int32 CInputManagerService::GetPointerSpeedSetting()
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    ss->GetInt32ForUserEx(
+    ss->GetInt32ForUser(
         resolver, ISettingsSystem::POINTER_SPEED,
         IUserHandle::USER_CURRENT, &speed);
 
@@ -1587,15 +1587,15 @@ void CInputManagerService::UpdateShowTouchesFromSettings()
 void CInputManagerService::RegisterShowTouchesSettingObserver()
 {
     AutoPtr<IContentObserver> settingsObserver =
-        new MyContentObserverEx(this, mHandler);
+        new MyContentObserver(this, mHandler);
 
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsSystem> ss;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     AutoPtr<IUri> uri;
-    ss->GetUriForEx(ISettingsSystem::SHOW_TOUCHES, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, TRUE, settingsObserver, IUserHandle::USER_ALL);
+    ss->GetUriFor(ISettingsSystem::SHOW_TOUCHES, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, TRUE, settingsObserver, IUserHandle::USER_ALL);
 }
 
 Int32 CInputManagerService::GetShowTouchesSetting(
@@ -1607,7 +1607,7 @@ Int32 CInputManagerService::GetShowTouchesSetting(
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&ss);
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
-    ss->GetInt32ForUserEx(
+    ss->GetInt32ForUser(
         resolver, ISettingsSystem::SHOW_TOUCHES,
         IUserHandle::USER_CURRENT, &result);
 
@@ -1933,7 +1933,7 @@ AutoPtr<ArrayOf<String> > CInputManagerService::GetExcludedDeviceNames()
             break;
         }
 
-        ec = parser->GetAttributeValueEx(String(NULL), String("name"), &name);
+        ec = parser->GetAttributeValue(String(NULL), String("name"), &name);
         if (FAILED(ec))
             goto _Exit_;
 
@@ -2046,7 +2046,7 @@ AutoPtr<ArrayOf<String> > CInputManagerService::GetKeyboardLayoutOverlay(
     }
 
     AutoPtr<ArrayOf<String> > result = ArrayOf<String>::Alloc(2);
-    AutoPtr<MyKeyboardLayoutVisitorEx3> myKVEx3 = new MyKeyboardLayoutVisitorEx3(result);
+    AutoPtr<MyKeyboardLayoutVisitorEx3> myKVEx3 = new MyKeyboardLayoutVisitor(result);
     VisitKeyboardLayout(keyboardLayoutDescriptor, myKVEx3);
     if ((*result)[0].IsNull()) {
         Logger::W(TAG, "Could not get keyboard layout with descriptor '%s'.",

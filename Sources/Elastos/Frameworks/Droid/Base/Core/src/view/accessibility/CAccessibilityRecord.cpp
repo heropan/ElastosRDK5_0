@@ -21,11 +21,11 @@ ECode CAccessibilityRecord::SetSource(
     return AccessibilityRecord::SetSource(source);
 }
 
-ECode CAccessibilityRecord::SetSourceEx(
+ECode CAccessibilityRecord::SetSource(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
-    return AccessibilityRecord::SetSourceEx(root, virtualDescendantId);
+    return AccessibilityRecord::SetSource(root, virtualDescendantId);
 }
 
 ECode CAccessibilityRecord::GetSource(
@@ -334,14 +334,14 @@ ECode CAccessibilityRecord::Obtain(
 {
     VALIDATE_NOT_NULL(newInstance);
     AutoPtr<IAccessibilityRecord> clone;
-    ObtainEx((IAccessibilityRecord**)&clone);
+    Obtain((IAccessibilityRecord**)&clone);
     ((CAccessibilityRecord*)clone.Get())->Init((AccessibilityRecord*)record);
     *newInstance = clone;
-    INTERFACE_ADDREF(*newInstance);
+    REFCOUNT_ADD(*newInstance);
     return NOERROR;
 }
 
-ECode CAccessibilityRecord::ObtainEx(
+ECode CAccessibilityRecord::Obtain(
     /* [out] */ IAccessibilityRecord** newInstance)
 {
     VALIDATE_NOT_NULL(newInstance);
@@ -353,13 +353,13 @@ ECode CAccessibilityRecord::ObtainEx(
         record->mNext = NULL;
         record->mIsInPool = FALSE;
         *newInstance = (IAccessibilityRecord*)record->Probe(EIID_IAccessibilityRecord);
-        INTERFACE_ADDREF(*newInstance);
+        REFCOUNT_ADD(*newInstance);
         return NOERROR;
     }
     AutoPtr<CAccessibilityRecord> crecord;
     CAccessibilityRecord::NewByFriend((CAccessibilityRecord**)&crecord);
     *newInstance = crecord;
-    INTERFACE_ADDREF(*newInstance);
+    REFCOUNT_ADD(*newInstance);
     return NOERROR;
 }
 

@@ -37,10 +37,10 @@ ECode CEnvironmentalReverb::BaseParameterListener::OnParameterChange(
         Int32 v = -1;
 
         if (param->GetLength() == 4) {
-            mHost->ByteArrayToInt32Ex(param, 0, &p);
+            mHost->ByteArrayToInt32(param, 0, &p);
         }
         if (value->GetLength() == 2) {
-            mHost->ByteArrayToInt32Ex(value, 0, &v);
+            mHost->ByteArrayToInt32(value, 0, &v);
         }
         if (p != -1 && v != -1) {
             l->OnParameterChange((IEnvironmentalReverb*)mHost, status, p, v);
@@ -78,7 +78,7 @@ ECode CEnvironmentalReverb::SetRoomLevel(
     AutoPtr< ArrayOf<Byte> > param;
     Int16ToByteArray(room, (ArrayOf<Byte>**)&param);
     Int32 status = 0;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_ROOM_LEVEL, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_ROOM_LEVEL, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -89,7 +89,7 @@ ECode CEnvironmentalReverb::GetRoomLevel(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_ROOM_LEVEL, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_ROOM_LEVEL, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, room);
     return NOERROR;
@@ -101,7 +101,7 @@ ECode CEnvironmentalReverb::SetRoomHFLevel(
     AutoPtr< ArrayOf<Byte> > param;
     Int32 status = 0;
     Int16ToByteArray(roomHF, (ArrayOf<Byte>**)&param);
-    SetParameterEx3(IEnvironmentalReverb::PARAM_ROOM_HF_LEVEL, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_ROOM_HF_LEVEL, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -112,7 +112,7 @@ ECode CEnvironmentalReverb::GetRoomHFLevel(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_ROOM_HF_LEVEL, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_ROOM_HF_LEVEL, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, roomHF);
     return NOERROR;
@@ -124,7 +124,7 @@ ECode CEnvironmentalReverb::SetDecayTime(
     AutoPtr< ArrayOf<Byte> > param;
     Int32 status = 0;
     Int32ToByteArray(decayTime, (ArrayOf<Byte>**)&param);
-    SetParameterEx3(IEnvironmentalReverb::PARAM_DECAY_TIME, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_DECAY_TIME, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -135,7 +135,7 @@ ECode CEnvironmentalReverb::GetDecayTime(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(4);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_DECAY_TIME, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_DECAY_TIME, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt32(param, decayTime);
     return NOERROR;
@@ -147,7 +147,7 @@ ECode CEnvironmentalReverb::SetDecayHFRatio(
     AutoPtr< ArrayOf<Byte> > param;
     Int16ToByteArray(decayHFRatio, (ArrayOf<Byte>**)&param);
     Int32 status = 0;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_DECAY_HF_RATIO, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_DECAY_HF_RATIO, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -158,7 +158,7 @@ ECode CEnvironmentalReverb::GetDecayHFRatio(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_DECAY_HF_RATIO, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_DECAY_HF_RATIO, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, decayHFRatio);
     return NOERROR;
@@ -170,7 +170,7 @@ ECode CEnvironmentalReverb::SetReflectionsLevel(
     AutoPtr< ArrayOf<Byte> > param;
     Int16ToByteArray(reflectionsLevel, (ArrayOf<Byte>**)&param);
     Int32 status = 0;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_REFLECTIONS_LEVEL, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_REFLECTIONS_LEVEL, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -181,7 +181,7 @@ ECode CEnvironmentalReverb::GetReflectionsLevel(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_REFLECTIONS_LEVEL, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_REFLECTIONS_LEVEL, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, reflectionsLevel);
     return NOERROR;
@@ -193,7 +193,7 @@ ECode CEnvironmentalReverb::SetReflectionsDelay(
     AutoPtr< ArrayOf<Byte> > param;
     Int32ToByteArray(reflectionsDelay, (ArrayOf<Byte>**)&param);
     Int32 status;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_REFLECTIONS_DELAY, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_REFLECTIONS_DELAY, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -204,7 +204,7 @@ ECode CEnvironmentalReverb::GetReflectionsDelay(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(4);
     Int32 status;
-    GetParameterEx(IEnvironmentalReverb::PARAM_REFLECTIONS_DELAY, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_REFLECTIONS_DELAY, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt32(param, reflectionsDelay);
     return NOERROR;
@@ -216,7 +216,7 @@ ECode CEnvironmentalReverb::SetReverbLevel(
     AutoPtr< ArrayOf<Byte> > param;
     Int16ToByteArray(reverbLevel, (ArrayOf<Byte>**)&param);
     Int32 status;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_REVERB_LEVEL, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_REVERB_LEVEL, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -227,7 +227,7 @@ ECode CEnvironmentalReverb::GetReverbLevel(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status;
-    GetParameterEx(IEnvironmentalReverb::PARAM_REVERB_LEVEL, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_REVERB_LEVEL, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, reverbLevel);
     return NOERROR;
@@ -239,7 +239,7 @@ ECode CEnvironmentalReverb::SetReverbDelay(
     AutoPtr< ArrayOf<Byte> > param;
     Int32ToByteArray(reverbDelay, (ArrayOf<Byte>**)&param);
     Int32 status;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_REVERB_DELAY, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_REVERB_DELAY, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -250,7 +250,7 @@ ECode CEnvironmentalReverb::GetReverbDelay(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(4);
     Int32 status;
-    GetParameterEx(IEnvironmentalReverb::PARAM_REVERB_DELAY, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_REVERB_DELAY, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt32(param, reverbDelay);
     return NOERROR;
@@ -262,7 +262,7 @@ ECode CEnvironmentalReverb::SetDiffusion(
     AutoPtr< ArrayOf<Byte> > param;
     Int16ToByteArray(diffusion, (ArrayOf<Byte>**)&param);
     Int32 status = 0;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_DIFFUSION, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_DIFFUSION, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -273,7 +273,7 @@ ECode CEnvironmentalReverb::GetDiffusion(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_DIFFUSION, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_DIFFUSION, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, diffusion);
     return NOERROR;
@@ -285,7 +285,7 @@ ECode CEnvironmentalReverb::SetDensity(
     AutoPtr< ArrayOf<Byte> > param;
     Int16ToByteArray(density, (ArrayOf<Byte>**)&param);
     Int32 status;
-    SetParameterEx3(IEnvironmentalReverb::PARAM_DENSITY, param.Get(), &status);
+    SetParameter(IEnvironmentalReverb::PARAM_DENSITY, param.Get(), &status);
     return CheckStatus(status);
 }
 
@@ -296,13 +296,13 @@ ECode CEnvironmentalReverb::GetDensity(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(2);
     Int32 status = 0;
-    GetParameterEx(IEnvironmentalReverb::PARAM_DENSITY, param, &status);
+    GetParameter(IEnvironmentalReverb::PARAM_DENSITY, param, &status);
     FAIL_RETURN(CheckStatus(status));
     ByteArrayToInt16(param, density);
     return NOERROR;
 }
 
-ECode CEnvironmentalReverb::SetParameterListenerEx(
+ECode CEnvironmentalReverb::SetParameterListener(
     /* [in] */ IEnvironmentalReverbOnParameterChangeListener* listener)
 {
     Mutex::Autolock lock(mParamListenerLock);
@@ -321,34 +321,34 @@ ECode CEnvironmentalReverb::GetProperties(
 
     AutoPtr<ArrayOf<Byte> > param = ArrayOf<Byte>::Alloc(PROPERTY_SIZE);
     Int32 status;
-    GetParameterEx(PARAM_PROPERTIES, param, &status);
+    GetParameter(PARAM_PROPERTIES, param, &status);
     FAIL_RETURN(CheckStatus(status));
 
     AutoPtr<IEnvironmentalReverbSettings> settings;
     Int16 statusInt16;
-    ByteArrayToInt16Ex(param, 0, &statusInt16);
+    ByteArrayToInt16(param, 0, &statusInt16);
     settings->SetRoomLevel(statusInt16);
-    ByteArrayToInt16Ex(param, 2, &statusInt16);
+    ByteArrayToInt16(param, 2, &statusInt16);
     settings->SetRoomHFLevel(statusInt16);
-    ByteArrayToInt32Ex(param, 4, &status);
+    ByteArrayToInt32(param, 4, &status);
     settings->SetDecayTime(status);
-    ByteArrayToInt16Ex(param, 8, &statusInt16);
+    ByteArrayToInt16(param, 8, &statusInt16);
     settings->SetDecayHFRatio(statusInt16);
-    ByteArrayToInt16Ex(param, 10, &statusInt16);
+    ByteArrayToInt16(param, 10, &statusInt16);
     settings->SetReflectionsLevel(statusInt16);
-    ByteArrayToInt32Ex(param, 12, &status);
+    ByteArrayToInt32(param, 12, &status);
     settings->SetReflectionsDelay(status);
-    ByteArrayToInt16Ex(param, 16, &statusInt16);
+    ByteArrayToInt16(param, 16, &statusInt16);
     settings->SetReverbLevel(statusInt16);
-    ByteArrayToInt32Ex(param, 18, &status);
+    ByteArrayToInt32(param, 18, &status);
     settings->SetReverbDelay(status);
-    ByteArrayToInt16Ex(param, 22, &statusInt16);
+    ByteArrayToInt16(param, 22, &statusInt16);
     settings->SetDiffusion(statusInt16);
-    ByteArrayToInt16Ex(param, 24, &statusInt16);
+    ByteArrayToInt16(param, 24, &statusInt16);
     settings->SetDensity(statusInt16);
 
     *properties = settings;
-    INTERFACE_ADDREF(*properties);
+    REFCOUNT_ADD(*properties);
     return NOERROR;
 }
 
@@ -403,7 +403,7 @@ ECode CEnvironmentalReverb::SetProperties(
     ConcatArrays(tempResult1, tempByteArray1, (ArrayOf<Byte>**)&tempResult2);
 
     Int32 status;
-    SetParameterEx3(PARAM_PROPERTIES, tempResult2, &status);
+    SetParameter(PARAM_PROPERTIES, tempResult2, &status);
     return CheckStatus(status);
 }
 

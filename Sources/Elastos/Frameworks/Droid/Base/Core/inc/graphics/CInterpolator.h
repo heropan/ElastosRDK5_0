@@ -37,7 +37,7 @@ public:
      * keyFrames. After this call the values for each keyFrame must be assigned
      * using setKeyFrame().
      */
-    CARAPI ResetEx(
+    CARAPI Reset(
         /* [in] */ Int32 valueCount,
         /* [in] */ Int32 frameCount);
 
@@ -66,7 +66,7 @@ public:
      * @param values Array of values associated with theis key frame
      * @param blend (may be null) Optional array of 4 blend values
      */
-    CARAPI SetKeyFrameEx(
+    CARAPI SetKeyFrame(
         /* [in] */ Int32 index,
         /* [in] */ Int32 msec,
         /* [in] */ const ArrayOf<Float>& values,
@@ -100,7 +100,7 @@ public:
      * @param values Where to write the computed values (may be NULL).
      * @return how the values were computed (even if values == null)
      */
-    CARAPI TimeToValuesEx(
+    CARAPI TimeToValues(
         /* [in] */ Int32 msec,
         /* [out] */ ArrayOf<Float>* values,
         /* [out] */ InterpolatorResult* result);

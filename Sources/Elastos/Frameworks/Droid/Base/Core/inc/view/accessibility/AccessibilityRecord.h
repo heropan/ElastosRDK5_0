@@ -2,12 +2,11 @@
 #define __ACCESSIBILITYRECORD_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IView;
 
 namespace Elastos {
@@ -51,7 +50,7 @@ public:
      * @param root The root of the virtual subtree.
      * @param virtualDescendantId The id of the virtual descendant.
      */
-    CARAPI SetSourceEx(
+    CARAPI SetSource(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -519,7 +518,7 @@ public:
      *
      * @return An instance.
      */
-    // static CARAPI ObtainEx(
+    // static CARAPI Obtain(
     //     /* [out] */ IAccessibilityRecord** newInstance);
 
     /**

@@ -3,7 +3,7 @@
 #include "inputmethodservice/CIInputMethodSessionWrapper.h"
 #include "os/HandlerCaller.h"
 #include "os/SomeArgs.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::CObjectContainer;

@@ -345,7 +345,7 @@ module
             [in] ArrayOf<Int32>* textures,
             [in] Int32 offset);
 
-        GlDeleteTexturesEx(
+        GlDeleteTextures(
             [in] Int32 n,
             [in] IInt32Buffer* textures);
 
@@ -393,7 +393,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlFogfvEx(
+        GlFogfv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
@@ -406,7 +406,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlFogxvEx(
+        GlFogxv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -434,7 +434,7 @@ module
             [in] ArrayOf<Int32>* textures,
             [in] Int32 offset);
 
-        GlGenTexturesEx(
+        GlGenTextures(
             [in] Int32 n,
             [in] IInt32Buffer* textures);
 
@@ -458,7 +458,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlLightModelfvEx(
+        GlLightModelfv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
@@ -471,7 +471,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlLightModelxvEx(
+        GlLightModelxv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
@@ -486,7 +486,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlLightfvEx(
+        GlLightfv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -502,7 +502,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlLightxvEx(
+        GlLightxv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -519,14 +519,14 @@ module
             [in] ArrayOf<Float>* m,
             [in] Int32 offset);
 
-        GlLoadMatrixfEx(
+        GlLoadMatrixf(
             [in] IFloatBuffer* m);
 
         GlLoadMatrixx(
             [in] ArrayOf<Int32>* m,
             [in] Int32 offset);
 
-        GlLoadMatrixxEx(
+        GlLoadMatrixx(
             [in] IInt32Buffer* m);
 
         GlLogicOp(
@@ -543,7 +543,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlMaterialfvEx(
+        GlMaterialfv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -559,7 +559,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlMaterialxvEx(
+        GlMaterialxv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -571,14 +571,14 @@ module
             [in] ArrayOf<Float>* m,
             [in] Int32 offset);
 
-        GlMultMatrixfEx(
+        GlMultMatrixf(
             [in] IFloatBuffer* m);
 
         GlMultMatrixx(
             [in] ArrayOf<Int32>* m,
             [in] Int32 offset);
 
-        GlMultMatrixxEx(
+        GlMultMatrixx(
             [in] IInt32Buffer* m);
 
         GlMultiTexCoord4f(

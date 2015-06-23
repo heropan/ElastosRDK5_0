@@ -4,7 +4,7 @@
 #include "net/Uri.h"
 #include "content/CContentUris.h"
 #include "content/CContentValues.h"
-#include "cmdef.h"
+#include <elastos/coredef.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -141,7 +141,7 @@ ECode ContactsContractContacts::GetLookupUri(
         FAIL_GOTO(c->GetString(0, &lookupKey), EXIT)
         Int64 contactId;
         FAIL_GOTO(c->GetInt64(1, &contactId), EXIT)
-        FAIL_GOTO(GetLookupUriEx(contactId, lookupKey, uri), EXIT)
+        FAIL_GOTO(GetLookupUri(contactId, lookupKey, uri), EXIT)
         return c->Close();
     }
     //} finally {
@@ -152,7 +152,7 @@ EXIT:
     return NOERROR;
 }
 
-ECode ContactsContractContacts::GetLookupUriEx(
+ECode ContactsContractContacts::GetLookupUri(
     /* [in] */ Int64 contactId,
     /* [in] */ const String& lookupKey,
     /* [out] */ IUri** uri)
@@ -251,7 +251,7 @@ ECode ContactsContractContacts::OpenContactPhotoInputStream(
             AutoPtr<IFileInputStream> fstream;
             FAIL_RETURN(fd->CreateInputStream((IFileInputStream**)&fstream))
             *stream = (IInputStream*)fstream;
-            INTERFACE_ADDREF(*stream);
+            REFCOUNT_ADD(*stream);
             return NOERROR;
         //} catch (IOException e) {
             // fallback to the thumbnail code
@@ -284,7 +284,7 @@ ECode ContactsContractContacts::OpenContactPhotoInputStream(
     }
     FAIL_GOTO(CByteArrayInputStream::New(data, (IByteArrayInputStream**)&_stream), FINALLY)
     *stream = (IInputStream*)_stream;
-    INTERFACE_ADDREF(*stream);
+    REFCOUNT_ADD(*stream);
     goto FINALLY;
     //} finally {
 FINALLY:
@@ -295,7 +295,7 @@ FINALLY:
     return NOERROR;
 }
 
-ECode ContactsContractContacts::OpenContactPhotoInputStreamEx(
+ECode ContactsContractContacts::OpenContactPhotoInputStream(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* contactUri,
     /* [out] */ IInputStream** stream)

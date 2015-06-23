@@ -59,7 +59,7 @@ ECode CTabHost::Setup()
     return TabHost::Setup();
 }
 
-ECode CTabHost::SetupEx(
+ECode CTabHost::Setup(
     /* [in] */ ILocalActivityManager* activityGroup)
 {
     return TabHost::Setup(activityGroup);

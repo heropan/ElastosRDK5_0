@@ -3,10 +3,10 @@
 #define __INTENT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashSet.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuilder;
@@ -186,7 +186,7 @@ public:
         /* [in] */ IContext* context,
         /* [out] */ String* type);
 
-    CARAPI ResolveTypeEx(
+    CARAPI ResolveType(
         /* [in] */ IContentResolver* resolver,
         /* [out] */ String* type);
 
@@ -344,7 +344,7 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IBundle** value);
 
-    CARAPI GetExtraEx(
+    CARAPI GetExtra(
         /* [in] */ const String& name,
         /* [in] */ IInterface* defaultValue,
         /* [out] */ IInterface** obj);
@@ -526,13 +526,13 @@ public:
     CARAPI PutExtras(
         /* [in] */ IIntent* src);
 
-    CARAPI PutExtrasEx(
+    CARAPI PutExtras(
         /* [in] */ IBundle* extras);
 
     CARAPI ReplaceExtras(
         /* [in] */ IIntent* src);
 
-    CARAPI ReplaceExtrasEx(
+    CARAPI ReplaceExtras(
         /* [in] */ IBundle* extras);
 
     CARAPI RemoveExtra(
@@ -554,7 +554,7 @@ public:
         /* [in] */ IContext* packageContext,
         /* [in] */ const String& className);
 
-    CARAPI SetClassNameEx(
+    CARAPI SetClassName(
         /* [in] */ const String& packageName,
         /* [in] */ const String& className);
 
@@ -593,7 +593,7 @@ public:
         /* [in] */ Boolean clip,
         /* [out] */ String* str);
 
-    CARAPI ToShortStringEx(
+    CARAPI ToShortString(
         /* [in] */ IStringBuilder* sb,
         /* [in] */ Boolean secure,
         /* [in] */ Boolean comp,

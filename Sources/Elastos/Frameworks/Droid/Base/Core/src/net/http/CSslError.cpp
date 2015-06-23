@@ -80,7 +80,7 @@ ECode CSslError::GetCertificate(
 {
     VALIDATE_NOT_NULL(certificate);
     *certificate = mCertificate;
-    INTERFACE_ADDREF(*certificate);
+    REFCOUNT_ADD(*certificate);
     return NOERROR;
 }
 

@@ -23,7 +23,7 @@ ECode CDeviceAdminReceiver::GetManager(
 
     if (mManager != null) {
         *manager = mManager;
-        INTERFACE_ADDREF(*manager);
+        REFCOUNT_ADD(*manager);
         return NOERROR;
     }
 
@@ -40,7 +40,7 @@ ECode CDeviceAdminReceiver::GetWho(
 
     if (mWho != null) {
         *component = mWho;
-        INTERFACE_ADDREF(*component);
+        REFCOUNT_ADD(*component);
         return NOERROR;
     }
 
@@ -48,7 +48,7 @@ ECode CDeviceAdminReceiver::GetWho(
     String className("CDeviceAdminReceiver");
     CComponentName::New(context, className, (IComponentName**)&mWho);
     *component = mWho;
-    INTERFACE_ADDREF(*component);
+    REFCOUNT_ADD(*component);
     return NOERROR;
 }
 

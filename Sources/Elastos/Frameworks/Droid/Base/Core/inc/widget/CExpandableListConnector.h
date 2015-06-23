@@ -37,7 +37,7 @@ public:
         /* [in] */ Int32 groupPos,
         /* [out] */ Boolean* res);
 
-    CARAPI ExpandGroupEx(
+    CARAPI ExpandGroup(
         /* [in] */ IPositionMetadata* posMetadata,
         /* [out] */ Boolean* res);
 
@@ -45,7 +45,7 @@ public:
         /* [in] */ Int32 groupPos,
         /* [out] */ Boolean* res);
 
-    CARAPI CollapseGroupEx(
+    CARAPI CollapseGroup(
         /* [in] */ IPositionMetadata* posMetadata,
         /* [out] */ Boolean* res);
 

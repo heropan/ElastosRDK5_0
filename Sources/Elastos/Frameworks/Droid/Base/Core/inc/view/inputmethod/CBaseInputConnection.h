@@ -4,7 +4,7 @@
 
 #include "_CBaseInputConnection.h"
 #include "view/inputmethod/BaseInputConnection.h"
-#include "view/inputmethod/BaseInputConnectionMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

@@ -5,8 +5,8 @@
 #include "os/NativeMessageQueue.h"
 #include "os/Binder.h"
 #include "os/SystemClock.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -141,7 +141,7 @@ ECode CMessageQueue::GetNext(
                     msg->SetNext(NULL);
                     msg->MarkInUse();
                     *result = msg;
-                    INTERFACE_ADDREF(*result);
+                    REFCOUNT_ADD(*result);
                     return NOERROR;
                 }
             }
@@ -353,7 +353,7 @@ ECode CMessageQueue::HasMessages(
     return NOERROR;
 }
 
-ECode CMessageQueue::HasMessagesEx(
+ECode CMessageQueue::HasMessages(
     /* [in] */ IHandler* h,
     /* [in] */ IRunnable* r,
     /* [in] */ IInterface* obj,
@@ -482,7 +482,7 @@ ECode CMessageQueue::RemoveMessages(
     return NOERROR;
 }
 
-ECode CMessageQueue::RemoveMessagesEx(
+ECode CMessageQueue::RemoveMessages(
     /* [in] */ IHandler* h,
     /* [in] */ IRunnable* r,
     /* [in] */ IInterface* obj)

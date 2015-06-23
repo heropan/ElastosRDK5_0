@@ -40,13 +40,13 @@ ECode CSensorManager::RegisterListener(
     return SensorManager::RegisterListener(listener, sensors, supported);
 }
 
-ECode CSensorManager::RegisterListenerEx(
+ECode CSensorManager::RegisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors,
     /* [in] */ Int32 rate,
     /* [out] */ Boolean* supported)
 {
-    return SensorManager::RegisterListenerEx(listener, sensors, rate, supported);
+    return SensorManager::RegisterListener(listener, sensors, rate, supported);
 }
 
 ECode CSensorManager::UnregisterListener(
@@ -55,43 +55,43 @@ ECode CSensorManager::UnregisterListener(
     return SensorManager::UnregisterListener(listener);
 }
 
-ECode CSensorManager::UnregisterListenerEx(
+ECode CSensorManager::UnregisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors)
 {
-    return SensorManager::UnregisterListenerEx(listener, sensors);
+    return SensorManager::UnregisterListener(listener, sensors);
 }
 
-ECode CSensorManager::UnregisterListenerEx2(
+ECode CSensorManager::UnregisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor)
 {
-    return SensorManager::UnregisterListenerEx2(listener, sensor);
+    return SensorManager::UnregisterListener(listener, sensor);
 }
 
-ECode CSensorManager::UnregisterListenerEx3(
+ECode CSensorManager::UnregisterListener(
     /* [in] */ ISensorEventListener* listener)
 {
-    return SensorManager::UnregisterListenerEx3(listener);
+    return SensorManager::UnregisterListener(listener);
 }
 
-ECode CSensorManager::RegisterListenerEx2(
+ECode CSensorManager::RegisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor,
     /* [in] */ Int32 rate,
     /* [out] */ Boolean* supported)
 {
-    return SensorManager::RegisterListenerEx2(listener, sensor, rate, supported);
+    return SensorManager::RegisterListener(listener, sensor, rate, supported);
 }
 
-ECode CSensorManager::RegisterListenerEx3(
+ECode CSensorManager::RegisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor,
     /* [in] */ Int32 rate,
     /* [in] */ IHandler* handler,
     /* [out] */ Boolean* supported)
 {
-    return SensorManager::RegisterListenerEx3(listener, sensor, rate, handler, supported);
+    return SensorManager::RegisterListener(listener, sensor, rate, handler, supported);
 }
 
 ECode CSensorManager::GetFullSensorList(

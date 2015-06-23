@@ -502,7 +502,7 @@ module
          * @hide Internal use only. Applications should use
          *       {@link #showAtLocation(View, int, int, int)} instead.
          */
-        ShowAtLocationEx(
+        ShowAtLocation(
             [in] IBinder* token,
             [in] Int32 gravity,
             [in] Int32 x,
@@ -536,7 +536,7 @@ module
          *
          * @see #dismiss()
          */
-        ShowAsDropDownEx(
+        ShowAsDropDown(
             [in] IView* anchor,
             [in] Int32 xoff,
             [in] Int32 yoff);
@@ -580,7 +580,7 @@ module
          * @return The maximum available height for the popup to be completely
          *         shown.
          */
-        GetMaxAvailableHeightEx(
+        GetMaxAvailableHeight(
             [in] IView* anchor,
             [in] Int32 yOffset,
             [out] Int32* maxAvailableHeight);
@@ -602,7 +602,7 @@ module
          *
          * @hide Pending API council approval.
          */
-        GetMaxAvailableHeightEx2(
+        GetMaxAvailableHeight(
             [in] IView* anchor,
             [in] Int32 yOffset,
             [in] Boolean ignoreBottomDecorations,
@@ -641,7 +641,7 @@ module
          * @param width the new width
          * @param height the new height
          */
-        UpdateEx(
+        Update(
             [in] Int32 width,
             [in] Int32 height);
 
@@ -656,7 +656,7 @@ module
          * @param width the new width, can be -1 to ignore
          * @param height the new height, can be -1 to ignore
          */
-        UpdateEx2(
+        Update(
             [in] Int32 x,
             [in] Int32 y,
             [in] Int32 width,
@@ -675,7 +675,7 @@ module
          * @param force reposition the window even if the specified position
          *              already seems to correspond to the LayoutParams
          */
-        UpdateEx3(
+        Update(
             [in] Int32 x,
             [in] Int32 y,
             [in] Int32 width,
@@ -691,7 +691,7 @@ module
          * @param width the new width, can be -1 to ignore
          * @param height the new height, can be -1 to ignore
          */
-        UpdateEx4(
+        Update(
             [in] IView* anchor,
             [in] Int32 width,
             [in] Int32 height);
@@ -710,7 +710,7 @@ module
          * @param width the new width, can be -1 to ignore
          * @param height the new height, can be -1 to ignore
          */
-        UpdateEx5(
+        Update(
             [in] IView* anchor,
             [in] Int32 xoff,
             [in] Int32 yoff,

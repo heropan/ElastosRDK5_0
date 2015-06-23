@@ -44,7 +44,7 @@ public:
      * @param holder the SurfaceHolder to use for displaying the video
      * @return a MediaPlayer object, or NULL if creation failed
      */
-    CARAPI CreateEx(
+    CARAPI Create(
         /* [in] */ IContext* ctx,
         /* [in] */ IUri* uri,
         /* [in] */ ISurfaceHolder* holder,
@@ -62,7 +62,7 @@ public:
      *              the resource to use as the datasource
      * @return a MediaPlayer object, or NULL if creation failed
      */
-    CARAPI CreateEx2(
+    CARAPI Create(
         /* [in] */ IContext* ctx,
         /* [in] */ Int32 resid,
         /* [out] */ IMediaPlayer** player);

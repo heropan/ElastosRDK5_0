@@ -2,7 +2,7 @@
 #include "stdio.h"
 #include "BackupManagerActor.h"
 #include <elastos/System.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <unistd.h>
 
 using Elastos::Core::System;

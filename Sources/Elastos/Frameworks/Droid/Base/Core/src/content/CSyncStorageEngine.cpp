@@ -12,10 +12,10 @@
 #include "util/CPair.h"
 #include "os/CBundle.h"
 //***#include "os/CParcel.h"
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
-#include "elastos/StringUtils.h"
-#include <Elastos.Core.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFile;
@@ -150,7 +150,7 @@ ECode CSyncStorageEngine::AddStatusChangeListener(
     Boolean ret = FALSE;
     AutoPtr<IInteger32> maskObj;
     FAIL_RETURN(CInteger32::New(mask, (IInteger32**)&maskObj))
-    FAIL_RETURN(mChangeListeners->RegisterEx((IInterface*) syncStatusObserver, (IInterface*) maskObj, &ret))
+    FAIL_RETURN(mChangeListeners->Register((IInterface*) syncStatusObserver, (IInterface*) maskObj, &ret))
     return NOERROR;
 }
 
@@ -767,7 +767,7 @@ ECode CSyncStorageEngine::GetAuthority(
     Mutex::Autolock lock(mAuthoritiesLock);
     AutoPtr<ISyncStorageEngineAuthorityInfo> temp = (ISyncStorageEngineAuthorityInfo*) mAuthorities->Get(authorityId);
     *authorityInfo = temp;
-    INTERFACE_ADDREF(*authorityInfo);
+    REFCOUNT_ADD(*authorityInfo);
     return NOERROR;
 }
 
@@ -1593,7 +1593,7 @@ ECode CSyncStorageEngine::GetStatusByAccountAndAuthority(
             FAIL_RETURN(ainfo->GetAccount((IAccount**)&tmpAccount))
             if (tmpAuthority.Equals(authority) && uId == userId && _CObject_Compare(account, tmpAccount)) {
                 *result = cur;
-                INTERFACE_ADDREF(*result);
+                REFCOUNT_ADD(*result);
                 return NOERROR;
             }
         }
@@ -1672,7 +1672,7 @@ ECode CSyncStorageEngine::GetDayStatistics(
     AutoPtr<ArrayOf<ISyncStorageEngineDayStats*> > tmpArray = ArrayOf<ISyncStorageEngineDayStats*>::Alloc(N);
     tmpArray->Copy(mDayStats);
     *dayStats = tmpArray;
-    INTERFACE_ADDREF(*dayStats);
+    REFCOUNT_ADD(*dayStats);
     return NOERROR;
 }
 
@@ -2091,7 +2091,7 @@ ECode CSyncStorageEngine::GetAuthorityLocked(
     AutoPtr<HashMap<String, AutoPtr<ISyncStorageEngineAuthorityInfo> > > authorities = accountInfo->mAuthorities;
     HashMap<String, AutoPtr<ISyncStorageEngineAuthorityInfo> >::Iterator iter = authorities->Find(authorityName);
     *authorityInfo = iter->mSecond;
-    INTERFACE_ADDREF(*authorityInfo);
+    REFCOUNT_ADD(*authorityInfo);
 
     if (NULL == *authorityInfo) {
         if (!tag.IsNull()) {
@@ -2132,7 +2132,7 @@ ECode CSyncStorageEngine::GetOrCreateAuthorityLocked(
     AutoPtr<HashMap<String, AutoPtr<ISyncStorageEngineAuthorityInfo> > > authorities = accountInfo->mAuthorities;
     HashMap<String, AutoPtr<ISyncStorageEngineAuthorityInfo> >::Iterator iter = authorities->Find(authorityName);
     *authorityInfo = iter->mSecond;
-    INTERFACE_ADDREF(*authorityInfo);
+    REFCOUNT_ADD(*authorityInfo);
 
     if (NULL == *authorityInfo) {
         if (ident < 0) {
@@ -2204,7 +2204,7 @@ ECode CSyncStorageEngine::GetOrCreateSyncStatusLocked(
 {
     VALIDATE_NOT_NULL(syncStatusInfo)
     *syncStatusInfo = (ISyncStatusInfo*) mSyncStatus->Get(authorityId);
-    INTERFACE_ADDREF(*syncStatusInfo);
+    REFCOUNT_ADD(*syncStatusInfo);
 
     if (NULL == *syncStatusInfo) {
         FAIL_RETURN(CSyncStatusInfo::New(authorityId, syncStatusInfo))
@@ -2230,7 +2230,7 @@ ECode CSyncStorageEngine::ReadAccountInfoLocked()
 //***        ecode = parserFactory->NewPullParser((IXmlPullParser**)&parser);
         FAIL_GOTO(ecode, EXIT)
         String inputEncoding;
-        ecode = parser->SetInputEx(fis, inputEncoding);
+        ecode = parser->SetInput(fis, inputEncoding);
         FAIL_GOTO(ecode, EXIT)
         Int32 eventType = 0;
         ecode = parser->GetEventType(&eventType);
@@ -2256,20 +2256,20 @@ ECode CSyncStorageEngine::ReadAccountInfoLocked()
 
         if (String("accounts").Equals(tagName)) {
             String listen;
-            ecode = parser->GetAttributeValueEx(String(NULL), XML_ATTR_LISTEN_FOR_TICKLES, &listen);
+            ecode = parser->GetAttributeValue(String(NULL), XML_ATTR_LISTEN_FOR_TICKLES, &listen);
             FAIL_GOTO(ecode, EXIT)
             String versionString;
-            ecode = parser->GetAttributeValueEx(String(NULL), String("version"), &versionString);
+            ecode = parser->GetAttributeValue(String(NULL), String("version"), &versionString);
             FAIL_GOTO(ecode, EXIT)
             Int32 version = 0;
             version = versionString.IsNull() ? 0 : StringUtils::ParseInt32(versionString);
             String nextIdString;
-            ecode = parser->GetAttributeValueEx(String(NULL), XML_ATTR_NEXT_AUTHORITY_ID, &nextIdString);
+            ecode = parser->GetAttributeValue(String(NULL), XML_ATTR_NEXT_AUTHORITY_ID, &nextIdString);
             FAIL_GOTO(ecode, EXIT)
             Int32 id = nextIdString.IsNull() ? 0 : StringUtils::ParseInt32(nextIdString);
             mNextAuthorityId = Elastos::Core::Math::Max(mNextAuthorityId, id);
             String offsetString;
-            ecode = parser->GetAttributeValueEx(String(NULL), XML_ATTR_SYNC_RANDOM_OFFSET, &offsetString);
+            ecode = parser->GetAttributeValue(String(NULL), XML_ATTR_SYNC_RANDOM_OFFSET, &offsetString);
             FAIL_GOTO(ecode, EXIT)
             mSyncRandomOffset = offsetString.IsNull() ? 0 : StringUtils::ParseInt32(offsetString);
             if (mSyncRandomOffset == 0) {
@@ -2440,7 +2440,7 @@ ECode CSyncStorageEngine::ParseListenForTickles(
     /* [in] */ IXmlPullParser* parser)
 {
     String user;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), XML_ATTR_USER, &user))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), XML_ATTR_USER, &user))
     Int32 userId = 0;
     // try {
     userId = StringUtils::ParseInt32(user);
@@ -2450,7 +2450,7 @@ ECode CSyncStorageEngine::ParseListenForTickles(
     //     Log.e(TAG, "the user in listen-for-tickles is null", e);
     // }
     String enabled;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), XML_ATTR_ENABLED, &enabled))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), XML_ATTR_ENABLED, &enabled))
     Boolean listen = enabled.IsNull() || enabled.Equals("TRUE");
     AutoPtr<IBoolean> boolObj;
     FAIL_RETURN(CBoolean::New(listen, (IBoolean**)&boolObj))
@@ -2472,7 +2472,7 @@ ECode CSyncStorageEngine::ParseAuthority(
     }
     Int32 id = -1;
     String strValue;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("id"), &strValue));
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("id"), &strValue));
 
     if (strValue.IsNull()) {
         String str("error parsing the id of the authority, the id of the authority is null");
@@ -2484,17 +2484,17 @@ ECode CSyncStorageEngine::ParseAuthority(
 
     if (id >= 0) {
         String authorityName;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("authority"), &authorityName))
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("authority"), &authorityName))
         String enabled;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), XML_ATTR_ENABLED, &enabled))
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), XML_ATTR_ENABLED, &enabled))
         String syncable;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("syncable"), &syncable))
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("syncable"), &syncable))
         String accountName;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("account"), &accountName))
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("account"), &accountName))
         String accountType;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("type"), &accountType))
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("type"), &accountType))
         String user;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), XML_ATTR_USER, &user))
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), XML_ATTR_USER, &user))
         Int32 userId = user.IsNull() ? 0 : StringUtils::ParseInt32(user);
 
         if (accountType.IsNull()) {
@@ -2503,7 +2503,7 @@ ECode CSyncStorageEngine::ParseAuthority(
         }
 
         *authority = (ISyncStorageEngineAuthorityInfo*) mAuthorities->Get(id);
-        INTERFACE_ADDREF(*authority);
+        REFCOUNT_ADD(*authority);
 
         if (CSyncStorageEngine::DEBUG_FILE) {
             String str("Adding authority: account=");
@@ -2578,7 +2578,7 @@ ECode CSyncStorageEngine::ParsePeriodicSync(
     AutoPtr<IBundle> extras;
     FAIL_RETURN(CBundle::New((IBundle**)&extras))
     String periodValue;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("period"), &periodValue))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("period"), &periodValue))
     Int64 period = 0;
 
     if (periodValue.IsNull()) {
@@ -2601,7 +2601,7 @@ ECode CSyncStorageEngine::ParsePeriodicSync(
     }
 
     *pair = periodicSync;
-    INTERFACE_ADDREF(*pair);
+    REFCOUNT_ADD(*pair);
     return NOERROR;
 }
 
@@ -2612,13 +2612,13 @@ ECode CSyncStorageEngine::ParseExtra(
     AutoPtr<IBundle> extras;
     FAIL_RETURN(periodicSync->GetFirst((IInterface**)&extras))
     String name;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("name"), &name))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("name"), &name))
     String type;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("type"), &type))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("type"), &type))
     String strValue1;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value1"), &strValue1))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value1"), &strValue1))
     String strValue2;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value2"), &strValue2))
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value2"), &strValue2))
 
     if (String("long").Equals(type)) {
         if (strValue1.IsNull()) {

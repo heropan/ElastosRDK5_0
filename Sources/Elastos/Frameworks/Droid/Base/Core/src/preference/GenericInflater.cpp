@@ -1,7 +1,7 @@
 
 #include "GenericInflater.h"
 #include "util/Xml.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Utility::Logging::Slogger;
@@ -91,7 +91,7 @@ ECode GenericInflater::FactoryMerger::OnCreateItem(
     mF1->OnCreateItem(name, context, attrs, (IInterface**)&temp);
     if (temp != NULL) {
         *item = temp;
-        INTERFACE_ADDREF(*item)
+        REFCOUNT_ADD(*item)
         return NOERROR;
     }
     return mF2->OnCreateItem(name, context, attrs, item);
@@ -260,7 +260,7 @@ fail:
     }
 
     *t = result;
-    INTERFACE_ADDREF(*t)
+    REFCOUNT_ADD(*t)
     return NOERROR;
 }
 
@@ -395,7 +395,7 @@ fail:
     }
     // if (DEBUG) System.out.println("Created item is: " + item);
     *t = item;
-    INTERFACE_ADDREF(*t)
+    REFCOUNT_ADD(*t)
     return NOERROR;
 }
 
@@ -466,7 +466,7 @@ ECode GenericInflater::OnMergeRoots(
 {
     VALIDATE_NOT_NULL(p)
     *p = xmlRoot;
-    INTERFACE_ADDREF(*p)
+    REFCOUNT_ADD(*p)
     return NOERROR;
 }
 

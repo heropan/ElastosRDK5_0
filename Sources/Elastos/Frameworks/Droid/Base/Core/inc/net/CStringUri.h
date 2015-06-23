@@ -93,7 +93,7 @@ public:
         /* [in]*/ IInterface* other,
         /* [out] */ Boolean* isEqual);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in]*/ IUri* other,
         /* [out] */ Boolean* isEqual);
 

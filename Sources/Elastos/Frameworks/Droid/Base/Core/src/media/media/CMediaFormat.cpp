@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "media/CMediaFormat.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IByteBuffer;
 using Elastos::Utility::CObjectStringMap;
@@ -125,7 +125,7 @@ ECode CMediaFormat::GetByteBuffer(
     AutoPtr<IInterface> tmpObj;
     mMap->Get(name, (IInterface**)&tmpObj);
     *result = IByteBuffer::Probe(tmpObj.Get());
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CMediaFormat::CreateAudioFormat(
     FAIL_RETURN(format->SetInt32(KEY_CHANNEL_COUNT, channelCount));
 
     *result = (IMediaFormat*)format.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode CMediaFormat::CreateVideoFormat(
     FAIL_RETURN(format->SetInt32(KEY_HEIGHT, height));
 
     *result = (IMediaFormat*)format.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -228,7 +228,7 @@ ECode CMediaFormat::GetMap(
 {
     VALIDATE_NOT_NULL(result);
      *result = mMap;
-     INTERFACE_ADDREF(*result);
+     REFCOUNT_ADD(*result);
      return NOERROR;
 }
 

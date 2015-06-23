@@ -24,7 +24,7 @@ public:
         /* [in] */ IInterface* cookie,
         /* [out] */ ICallerInfoAsyncQuery** cia);
 
-    CARAPI StartQueryEx(
+    CARAPI StartQuery(
         /* [in] */ Int32 token,
         /* [in] */ IContext* context,
         /* [in] */ const String& number,

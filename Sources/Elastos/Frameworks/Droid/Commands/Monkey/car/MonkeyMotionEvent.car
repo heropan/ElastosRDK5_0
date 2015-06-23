@@ -17,7 +17,7 @@ module
         	[in] Float x,
         	[in] Float y);
 
-        AddPointerEx(
+        AddPointer(
         	[in] Int32 id,
         	[in] Float x,
         	[in] Float y,

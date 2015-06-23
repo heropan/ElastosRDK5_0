@@ -15,7 +15,7 @@ ECode CCodecCapabilities::GetProfileLevels(
 {
     VALIDATE_NOT_NULL(value);
     *value = mProfileLevels;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -31,7 +31,7 @@ ECode CCodecCapabilities::GetColorFormats(
 {
     VALIDATE_NOT_NULL(value);
     *value = mColorFormats;
-    INTERFACE_ADDREF(*value);
+    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 

@@ -91,7 +91,7 @@ module
          * @param timeout The timeout in milliseconds. Use 0 to show
          * the controller until hide() is called.
          */
-        ShowEx(
+        Show(
             [in] Int32 timeout);
 
         IsShowing(

@@ -1,7 +1,7 @@
 
 #include "hardware/CSensorManagerHelper.h"
 #include "ext/frameworkext.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -218,7 +218,7 @@ ECode CSensorManagerHelper::GetOrientation(
     }
 
     *orientation = values;
-    INTERFACE_ADDREF(*orientation);
+    REFCOUNT_ADD(*orientation);
     return NOERROR;
 }
 

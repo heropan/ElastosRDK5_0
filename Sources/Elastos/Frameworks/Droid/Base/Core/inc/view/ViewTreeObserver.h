@@ -3,9 +3,9 @@
 #define __VIEWTREEOBSERVER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IRegion;
 
@@ -36,7 +36,7 @@ public:
         CARAPI GetTouchableInsets(
             /* [out] */ Int32* val);
 
-        CARAPI EqualsEx(
+        CARAPI Equals(
             /* [in] */ IInternalInsetsInfo* o,
             /* [out] */ Boolean* equal);
 

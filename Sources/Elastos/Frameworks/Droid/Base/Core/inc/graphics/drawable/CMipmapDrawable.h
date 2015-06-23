@@ -4,8 +4,8 @@
 
 #include "_CMipmapDrawable.h"
 #include "graphics/drawable/MipmapDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
-#include "view/ViewMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

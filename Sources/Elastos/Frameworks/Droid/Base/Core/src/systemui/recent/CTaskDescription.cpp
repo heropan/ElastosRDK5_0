@@ -70,7 +70,7 @@ ECode CTaskDescription::GetLabel(
 {
     VALIDATE_NOT_NULL(label);
     *label = mLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode CTaskDescription::GetIcon(
 {
     VALIDATE_NOT_NULL(drawable);
     *drawable = mIcon;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -109,7 +109,7 @@ ECode CTaskDescription::GetThumbnail(
 {
     VALIDATE_NOT_NULL(bitmap);
     *bitmap = mThumbnail;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -125,7 +125,7 @@ ECode CTaskDescription::GetResolveInfo(
 {
     VALIDATE_NOT_NULL(resolveInfo);
     *resolveInfo = mResolveInfo;
-    INTERFACE_ADDREF(*resolveInfo);
+    REFCOUNT_ADD(*resolveInfo);
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode CTaskDescription::GetIntent(
 {
     VALIDATE_NOT_NULL(intent);
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -202,7 +202,7 @@ ECode CTaskDescription::GetDescription(
 {
     VALIDATE_NOT_NULL(description);
     *description = mDescription;
-    INTERFACE_ADDREF(*description);
+    REFCOUNT_ADD(*description);
     return NOERROR;
 }
 

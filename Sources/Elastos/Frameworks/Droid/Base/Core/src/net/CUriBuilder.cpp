@@ -14,7 +14,7 @@ ECode CUriBuilder::Scheme(
     return NOERROR;
 }
 
-ECode CUriBuilder::OpaquePartEx(
+ECode CUriBuilder::OpaquePart(
     /* [in] */ Handle32 opaquePart)
 {
     mOpaquePart = (Uri::Part*)opaquePart;
@@ -37,7 +37,7 @@ ECode CUriBuilder::EncodedOpaquePart(
     return NOERROR;
 }
 
-ECode CUriBuilder::AuthorityEx(
+ECode CUriBuilder::Authority(
     /* [in] */ Handle32 authority)
 {
     // This URI will be hierarchical.
@@ -66,7 +66,7 @@ ECode CUriBuilder::EncodedAuthority(
     return NOERROR;
 }
 
-ECode CUriBuilder::PathEx(
+ECode CUriBuilder::Path(
     /* [in] */ Handle32 path)
 {
     // This URI will be hierarchical.
@@ -115,7 +115,7 @@ ECode CUriBuilder::AppendEncodedPath(
     return NOERROR;
 }
 
-ECode CUriBuilder::QueryEx(
+ECode CUriBuilder::Query(
     /* [in] */ Handle32 query)
 {
     // This URI will be hierarchical.
@@ -144,7 +144,7 @@ ECode CUriBuilder::EncodedQuery(
     return NOERROR;
 }
 
-ECode CUriBuilder::FragmentEx(
+ECode CUriBuilder::Fragment(
     /* [in] */ Handle32 fragment)
 {
     mFragment = (Uri::Part*)fragment;
@@ -205,7 +205,7 @@ ECode CUriBuilder::AppendQueryParameter(
 
 ECode CUriBuilder::ClearQuery()
 {
-    return QueryEx((Handle32)NULL);
+    return Query((Handle32)NULL);
 }
 
 ECode CUriBuilder::Build(
@@ -245,7 +245,7 @@ ECode CUriBuilder::Build(
     }
 
     *result = uri;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -39,7 +39,7 @@ module
              * @param title The character sequence used for the title.
              * @return This SubMenu so additional setters can be called.
              */
-            SetHeaderTitleEx(
+            SetHeaderTitle(
                 [in] ICharSequence* title);
 
             /**
@@ -59,7 +59,7 @@ module
              * @param icon The {@link Drawable} used for the icon.
              * @return This SubMenu so additional setters can be called.
              */
-            SetHeaderIconEx(
+            SetHeaderIcon(
                 [in] IDrawable* icon);
 
             /**
@@ -95,7 +95,7 @@ module
              * @param icon The new icon (as a Drawable) to be displayed.
              * @return This SubMenu so additional setters can be called.
              */
-            SetIconEx(
+            SetIcon(
                 [in] IDrawable* icon);
 
             /**
@@ -104,7 +104,7 @@ module
              *
              * @return The {@link MenuItem} that launches the submenu when invoked.
              */
-            GetItemEx(
+            GetItem(
                 [out] IMenuItem** item);
         }
 

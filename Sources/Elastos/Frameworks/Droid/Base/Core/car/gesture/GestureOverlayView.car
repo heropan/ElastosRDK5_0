@@ -133,7 +133,7 @@ module
         GetGesturePath(
             [out] IPath **gesturePath);
 
-        GetGesturePathEx(
+        GetGesturePath(
             [in] IPath *path,
             [out] IPath **gesturePath);
 

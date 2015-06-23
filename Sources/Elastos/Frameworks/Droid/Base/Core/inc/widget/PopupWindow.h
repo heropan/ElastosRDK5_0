@@ -4,7 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "graphics/CRect.h"
-#include "view/ViewMacro.h"
+
 #include "widget/FrameLayout.h"
 #include "R.h"
 

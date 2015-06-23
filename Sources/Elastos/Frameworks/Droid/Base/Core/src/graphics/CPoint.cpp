@@ -1,7 +1,7 @@
 
 #include "graphics/CPoint.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -67,7 +67,7 @@ ECode CPoint::Offset(
     return NOERROR;
 }
 
-ECode CPoint::EqualsEx2(
+ECode CPoint::Equals(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [out] */ Boolean* result)
@@ -78,7 +78,7 @@ ECode CPoint::EqualsEx2(
     return NOERROR;
 }
 
-ECode CPoint::EqualsEx(
+ECode CPoint::Equals(
     /* [in] */ IPoint* p,
     /* [out] */ Boolean* result)
 {
@@ -87,14 +87,14 @@ ECode CPoint::EqualsEx(
 
     Int32 x, y;
     p->Get(&x, &y);
-    return EqualsEx2(x, y, result);
+    return Equals(x, y, result);
 }
 
 ECode CPoint::Equals(
     /* [in] */ IInterface* p,
     /* [out] */ Boolean* result)
 {
-    return EqualsEx(IPoint::Probe(p), result);
+    return Equals(IPoint::Probe(p), result);
 }
 
 ECode CPoint::GetHashCode(

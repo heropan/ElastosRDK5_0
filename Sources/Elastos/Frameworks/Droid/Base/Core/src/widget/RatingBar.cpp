@@ -1,5 +1,5 @@
 #include "widget/RatingBar.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "Elastos.Core.h"
 #include "graphics/drawable/shapes/CRectShape.h"
 
@@ -42,7 +42,7 @@ ECode RatingBar::Init(
         ARRAY_SIZE(R::styleable::RatingBar));
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
     Int32 numStars = 0;
     a->GetInt32(R::styleable::RatingBar_numStars, mNumStars, &numStars);
     Boolean res = FALSE;

@@ -2,8 +2,8 @@
 #include "content/CSyncResult.h"
 #include "content/CSyncStats.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringBuffer.h>
 
 namespace Elastos {
 namespace Droid {
@@ -142,7 +142,7 @@ ECode CSyncResult::GetStats(
 {
     VALIDATE_NOT_NULL(stats)
     *stats = mStats;
-    INTERFACE_ADDREF(*stats);
+    REFCOUNT_ADD(*stats);
     return NOERROR;
 }
 

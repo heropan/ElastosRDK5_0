@@ -20,7 +20,7 @@ ECode CSingleLineTransformationMethod::GetTransformation(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cs = ReplacementTransformationMethod::GetTransformation(source, view);
     *ret = cs;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

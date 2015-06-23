@@ -10,13 +10,12 @@
 #include "ext/frameworkext.h"
 #include "location/CountryDetectorBase.h"
 #include <elastos/TimerTask.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
-using Elastos::Utility::List;
+using Elastos::Core::Mutex;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::TimerTask;
 using Elastos::Utility::ITimerTask;

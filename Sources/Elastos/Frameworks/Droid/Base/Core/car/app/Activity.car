@@ -1046,7 +1046,7 @@ module
          * @deprecated Use {@sa CursorLoader} instead.
          */
         //@Deprecated
-        ManagedQueryEx(
+        ManagedQuery(
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
             [in] String selection,
@@ -1160,7 +1160,7 @@ module
          * @see #setContentView(int)
          * @see #setContentView(android.view.View, android.view.ViewGroup.LayoutParams)
          */
-        SetContentViewEx(
+        SetContentView(
             [in] IView* view);
 
         /**
@@ -1174,7 +1174,7 @@ module
          * @see #setContentView(android.view.View)
          * @see #setContentView(int)
          */
-        SetContentViewEx2(
+        SetContentView(
             [in] IView* view,
             [in] IViewGroupLayoutParams* params);
 
@@ -1919,7 +1919,7 @@ module
          * available on older platforms through the Android compatibility package.
          */
         //@Deprecated
-        ShowDialogEx(
+        ShowDialog(
             [in] Int32 id,
             [in] IBundle* args,
             [out] Boolean* res);
@@ -2167,7 +2167,7 @@ module
          *
          * @see #startActivity
          */
-        StartActivityForResultEx(
+        StartActivityForResult(
             [in] IIntent* intent,
             [in] Int32 requestCode,
             [in] IBundle* options);
@@ -2220,7 +2220,7 @@ module
          * have also been supplied by the IntentSender, options given here will
          * override any that conflict with those given by the IntentSender.
          */
-        StartIntentSenderForResultEx(
+        StartIntentSenderForResult(
             [in] IIntentSender* intent,
             [in] Int32 requestCode,
             [in] IIntent* fillInIntent,
@@ -2279,7 +2279,7 @@ module
          * @see #startActivity
          * @see #startActivityForResult
          */
-        StartActivityIfNeededEx(
+        StartActivityIfNeeded(
             [in] IIntent* intent,
             [in] Int32 requestCode,
             [in] IBundle* options,
@@ -2322,7 +2322,7 @@ module
          * wasn't.  In general, if true is returned you will then want to call
          * finish() on yourself.
          */
-        StartNextMatchingActivityEx(
+        StartNextMatchingActivity(
             [in] IIntent* intent,
             [in] IBundle* options,
             [out] Boolean* started);
@@ -2368,7 +2368,7 @@ module
          * @see #startActivity
          * @see #startActivityForResult
          */
-        StartActivityFromChildEx(
+        StartActivityFromChild(
                 [in] IActivity* child,
                 [in] IIntent* intent,
                 [in] Int32 requestCode,
@@ -2416,7 +2416,7 @@ module
          * @see Fragment#startActivity
          * @see Fragment#startActivityForResult
          */
-        StartActivityFromFragmentEx(
+        StartActivityFromFragment(
             [in] IFragment* fragment,
             [in] IIntent* intent,
             [in] Int32 requestCode,
@@ -2441,7 +2441,7 @@ module
          * {@sa #startIntentSenderForResult(IntentSender, int, Intent, int, int, int)}
          * for more information.
          */
-        StartIntentSenderFromChildEx(
+        StartIntentSenderFromChild(
             [in] IActivity* child,
             [in] IIntentSender* intent,
             [in] Int32 requestCode,
@@ -2509,7 +2509,7 @@ module
          * @see #RESULT_FIRST_USER
          * @see #setResult(int)
          */
-        SetResultEx(
+        SetResult(
             [in] Int32 resultCode,
             [in] IIntent* data);
 
@@ -2809,7 +2809,7 @@ module
          * is an embedded activity, the parent can do whatever it wants
          * with it.
          */
-        SetTitleEx(
+        SetTitle(
             [in] Int32 titleId);
 
         SetTitleColor(
@@ -2959,7 +2959,7 @@ module
          * @see android.view.LayoutInflater#createView
          * @see android.view.Window#getLayoutInflater
          */
-        OnCreateViewEx(
+        OnCreateView(
             [in] IView* parent,
             [in] String name,
             [in] IContext* ctx,
@@ -3147,7 +3147,7 @@ module
             [in] IInterface* lastNonConfigurationInstance,
             [in] IConfiguration* config);
 
-        AttachEx(
+        Attach(
             [in] IContext* ctx,
             [in] IActivityThread* aThread,
             [in] IInstrumentation* instr,
@@ -3184,7 +3184,7 @@ module
         IsStartedActivity(
             [out] Boolean* isStartedActivity);
 
-        GetWindowEx(
+        GetWindow(
             [out] IWindow** window);
 
         SetDecorView(
@@ -3207,7 +3207,7 @@ module
         IsWindowAdded(
             [out] Boolean* isAdded);
 
-        GetWindowManagerEx(
+        GetWindowManager(
             [out] IWindowManager** mgr);
 
         SetConfigChangeFlags(

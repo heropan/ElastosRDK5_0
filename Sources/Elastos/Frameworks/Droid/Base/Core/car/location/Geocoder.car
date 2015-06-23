@@ -100,7 +100,7 @@ module
          * @throws IOException if the network is unavailable or any other
          * I/O problem occurs
          */
-        GetFromLocationNameEx(
+        GetFromLocationName(
             [in] String locationName,
             [in] Int32 maxResults,
             [in] Double lowerLeftLatitude,

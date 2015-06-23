@@ -39,7 +39,7 @@ ECode CDrmStore::AddDrmFile(
 //     return result;
 }
 
-ECode CDrmStore::AddDrmFileEx(
+ECode CDrmStore::AddDrmFile(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IFileInputStream* fis,
     /* [in] */ const String& title,

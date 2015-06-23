@@ -3,13 +3,13 @@
 #define __INPUT_PERSISTENTDATASTORE_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
 using Elastos::Droid::Utility::IAtomicFile;

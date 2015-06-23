@@ -13,7 +13,7 @@ ECode CPreferenceManagerHelper::GetDefaultSharedPreferences(
     VALIDATE_NOT_NULL(sp)
     AutoPtr<ISharedPreferences> temp = CPreferenceManager::GetDefaultSharedPreferences(context);
     *sp = temp;
-    INTERFACE_ADDREF(*sp)
+    REFCOUNT_ADD(*sp)
     return NOERROR;
 }
 
@@ -26,7 +26,7 @@ ECode CPreferenceManagerHelper::SetDefaultValues(
     return NOERROR;
 }
 
-ECode CPreferenceManagerHelper::SetDefaultValuesEx(
+ECode CPreferenceManagerHelper::SetDefaultValues(
     /* [in] */ IContext* context,
     /* [in] */ const String& sharedPreferencesName,
     /* [in] */ Int32 sharedPreferencesMode,

@@ -1,7 +1,7 @@
 #include "speech/tts/SynthesisPlaybackQueueItem.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

@@ -3,10 +3,9 @@
 #define __CTIME_H__
 
 #include "_CTime.h"
-#include <elastos/Mutex.h>
 
 using Libcore::ICU::ILocale;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Text::Format::ITime;
 
 namespace Elastos {
@@ -263,14 +262,14 @@ public:
     /**
      * Copy the value of that to this Time object. No normalization happens.
      */
-    CARAPI SetEx(
+    CARAPI Set(
         /* [in] */ ITime* that);
 
     /**
      * Sets the fields. Sets weekDay, yearDay and gmtoff to 0, and isDst to -1.
      * Call {@link #normalize(Boolean)} if you need those.
      */
-    CARAPI SetEx2(
+    CARAPI Set(
         /* [in] */ Int32 second,
         /* [in] */ Int32 minute,
         /* [in] */ Int32 hour,
@@ -287,7 +286,7 @@ public:
      * @param month the zero-based month number (in the range [0,11])
      * @param year the year
      */
-    CARAPI SetEx3(
+    CARAPI Set(
         /* [in] */ Int32 monthDay,
         /* [in] */ Int32 month,
         /* [in] */ Int32 year);

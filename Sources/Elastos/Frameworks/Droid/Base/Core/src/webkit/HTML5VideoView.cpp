@@ -164,7 +164,7 @@ ECode HTML5VideoView::Start()
         {
             CTimer::New((ITimer**)&mTimer);
             AutoPtr<ITimerTask> task = new TimeupdateTask(mProxy);
-            mTimer->ScheduleEx2(task, TIMEUPDATE_PERIOD,
+            mTimer->Schedule(task, TIMEUPDATE_PERIOD,
                     TIMEUPDATE_PERIOD);
         }
 
@@ -340,7 +340,7 @@ void HTML5VideoView::PrepareDataCommon(
     if (!mSkipPrepare) {
         //try {
             mPlayer->Reset();
-            mPlayer->SetDataSourceEx(proxy->GetContext(), mUri, mHeaders);
+            mPlayer->SetDataSource(proxy->GetContext(), mUri, mHeaders);
             mPlayer->PrepareAsync();
         //} catch (IllegalArgumentException e) {
         //    e.printStackTrace();
@@ -499,7 +499,7 @@ AutoPtr<IObjectStringMap> HTML5VideoView::GenerateHeaders(
     proxy->GetWebView()->IsPrivateBrowsingEnabled(&isPrivate);
     AutoPtr<ICookieManager> cm = CookieManager::GetInstance();
     String cookieValue;
-    cm->GetCookieEx(url, isPrivate, &cookieValue);
+    cm->GetCookie(url, isPrivate, &cookieValue);
     AutoPtr<IObjectStringMap> headers;
     CObjectStringMap::New((IObjectStringMap**)&headers);
     if (cookieValue != NULL) {

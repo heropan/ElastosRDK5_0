@@ -1,18 +1,18 @@
 
 #include "CCrashReporter.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "GeckoRunnable.h"
 #include "GeckoApp.h"
 #include <stdio.h>
 #include "Elastos.Core.h"
 #include <os/Build.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <cmdef.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Math;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::CThread;
 using Elastos::Net::IURL;
 using Elastos::Net::CURL;
 using Elastos::Net::IURLConnection;
@@ -656,7 +656,7 @@ ECode CCrashReporter::DoRestart()
     AutoPtr<IIntent> pIIntent;
     ECode ec = CIntent::New(action, (IIntent**)&pIIntent);
     if (FAILED(ec)) return ec;
-    pIIntent->SetClassNameEx(String("org.mozilla.fennec_unofficial"),
+    pIIntent->SetClassName(String("org.mozilla.fennec_unofficial"),
                       String("org.mozilla.fennec_unofficial.App"));
     //printf("GeckoCrashReporter %s\n", pIIntent->ToString());
     ec = StartActivity(pIIntent);

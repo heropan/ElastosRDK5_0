@@ -62,7 +62,7 @@ ECode LevelListDrawable::LevelListState::NewDrawable(
 }
 
 //@Override
-ECode LevelListDrawable::LevelListState::NewDrawableEx(
+ECode LevelListDrawable::LevelListState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {

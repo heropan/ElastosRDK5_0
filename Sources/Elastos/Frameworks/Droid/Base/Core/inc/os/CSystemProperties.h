@@ -27,7 +27,7 @@ public:
      * @return if the key isn't found, return def if it isn't null, or an empty string otherwise
      * @throws IllegalArgumentException if the key exceeds 32 characters
      */
-    CARAPI GetEx(
+    CARAPI Get(
         /* [in] */ const String& key,
         /* [in] */ const String& def,
         /* [out] */ String* value);

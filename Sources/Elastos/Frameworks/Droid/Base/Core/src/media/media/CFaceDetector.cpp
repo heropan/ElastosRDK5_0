@@ -1,7 +1,7 @@
 
 #include "media/CFaceDetector.h"
 #include "media/CFace.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 #include <utils/misc.h>
 #include <utils/String8.h>

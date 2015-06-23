@@ -1,8 +1,8 @@
 
 #include "ext/frameworkdef.h"
 #include "net/wifi/CWifiSsid.h"
-#include <elastos/Character.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
@@ -44,7 +44,7 @@ ECode CWifiSsid::CreateFromAsciiEncoded(
     FAIL_RETURN(CWifiSsid::NewByFriend((CWifiSsid**)&a));
     a->ConvertToBytes(asciiEncoded);
     *wifiSsid = (IWifiSsid*)a.Get();
-    INTERFACE_ADDREF(*wifiSsid);
+    REFCOUNT_ADD(*wifiSsid);
     return NOERROR;
 }
 
@@ -59,7 +59,7 @@ ECode CWifiSsid::CreateFromHex(
     FAIL_RETURN(CWifiSsid::NewByFriend((CWifiSsid**)&a));
     if (hexStr.IsNull()) {
         *wifiSsid = (IWifiSsid*)a.Get();
-        INTERFACE_ADDREF(*wifiSsid)
+        REFCOUNT_ADD(*wifiSsid)
         return NOERROR;
     }
 
@@ -77,7 +77,7 @@ ECode CWifiSsid::CreateFromHex(
         a->mOctets->Write(val);
     }
     *wifiSsid = (IWifiSsid*)a.Get();
-    INTERFACE_ADDREF(*wifiSsid)
+    REFCOUNT_ADD(*wifiSsid)
     return NOERROR;
 }
 
@@ -212,7 +212,7 @@ ECode CWifiSsid::ToString(
     AutoPtr<IByteBuffer> buffer;
     byteHelper->WrapArray(ssidBytes, (IByteBuffer**)&buffer);
     AutoPtr<ICoderResult> result;
-    decoder->DecodeEx(buffer, out, TRUE, (ICoderResult**)&result);
+    decoder->Decode(buffer, out, TRUE, (ICoderResult**)&result);
     out->Flip();
     Boolean error;
     if (result->IsError(&error), error) {

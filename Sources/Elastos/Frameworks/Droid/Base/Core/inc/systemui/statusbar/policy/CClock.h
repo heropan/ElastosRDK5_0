@@ -3,8 +3,8 @@
 #define __POLICY_CCLOCK_H__
 
 #include "_CClock.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 #include "systemui/statusbar/policy/Clock.h"
 
 namespace Elastos {

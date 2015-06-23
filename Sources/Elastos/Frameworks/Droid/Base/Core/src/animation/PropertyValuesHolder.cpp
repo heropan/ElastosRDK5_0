@@ -5,7 +5,7 @@
 #include "animation/Int32PropertyValuesHolder.h"
 #include "animation/FloatPropertyValuesHolder.h"
 #include "animation/PropertyValuesHolderImpl.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::IDouble;
 using Elastos::Core::EIID_IDouble;

@@ -1,6 +1,6 @@
 
 #include "droid/test/TestPrinter.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Eunit::Framework::EIID_ITestListener;
 using Elastos::Utility::Logging::Logger;

@@ -12,9 +12,8 @@
 #include "os/CStrictModeVmPolicyBuilder.h"
 #include "os/CStrictModeThreadPolicyBuilder.h"
 #include "app/ActivityManagerNative.h"
-#include <elastos/ThreadBase.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include <pthread.h>
 
 using Elastos::Core::StringUtils;
@@ -151,7 +150,7 @@ AutoPtr<IAtomicInteger32> CStrictMode::InitsDropboxCallsInFlight()
 {
     AutoPtr<IAtomicInteger32> ids;
     CAtomicInteger32::New(0, (IAtomicInteger32**)&ids);
-    INTERFACE_ADDREF(ids);
+    REFCOUNT_ADD(ids);
     return ids;
 }
 
@@ -273,7 +272,7 @@ ECode CStrictMode::GetThreadPolicy(
     GetThreadPolicyMask(&mask);
     AutoPtr<ThreadPolicy> tp = new ThreadPolicy(mask);
     *policy = (Handle32)tp.Get();
-    INTERFACE_ADDREF(tp);
+    REFCOUNT_ADD(tp);
 
     return NOERROR;
 }
@@ -291,7 +290,7 @@ ECode CStrictMode::AllowThreadDiskWrites(
     }
     AutoPtr<ThreadPolicy> tp = new ThreadPolicy(oldPolicyMask);
     *policy = (Handle32)tp.Get();
-    INTERFACE_ADDREF(tp);
+    REFCOUNT_ADD(tp);
 
     return NOERROR;
 }
@@ -307,7 +306,7 @@ ECode CStrictMode::AllowThreadDiskReads(
     }
     AutoPtr<ThreadPolicy> tp = new ThreadPolicy(oldPolicyMask);
     *policy = (Handle32)tp.Get();
-    INTERFACE_ADDREF(tp);
+    REFCOUNT_ADD(tp);
     return NOERROR;
 }
 
@@ -1217,7 +1216,7 @@ ECode CStrictMode::EnterCriticalSpan(
 
     if (IS_USER_BUILD) {
         *span = (IStrictModeSpan*)NO_OP_SPAN.Get();
-        INTERFACE_ADDREF(*span);
+        REFCOUNT_ADD(*span);
         return NOERROR;
     }
     if (name.IsNull() || name.IsEmpty()) {
@@ -1251,7 +1250,7 @@ ECode CStrictMode::EnterCriticalSpan(
         if (LOG_V) Logger::D(TAG, String("Span enter=") + name + String("; size=") + StringUtils::Int32ToString(state->mActiveSize));
     }
     *span = _span;
-    INTERFACE_ADDREF(*span);
+    REFCOUNT_ADD(*span);
     return NOERROR;
 }
 
@@ -1315,7 +1314,7 @@ ECode CStrictMode::TrackActivity(
     VALIDATE_NOT_NULL(act);
     AutoPtr<InstanceTracker> ins = new InstanceTracker(instance);
     *act = (IInterface*)ins;
-    INTERFACE_ADDREF(*act);
+    REFCOUNT_ADD(*act);
     return NOERROR;
 }
 

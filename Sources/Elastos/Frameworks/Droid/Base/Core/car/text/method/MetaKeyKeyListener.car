@@ -111,7 +111,7 @@ module
          * @param which meta keys to clear, may be a combination of {@link #META_SHIFT_ON},
          * {@link #META_ALT_ON} or {@link #META_SYM_ON}.
          */
-        ClearMetaKeyStateEx(
+        ClearMetaKeyState(
             [in] Int64 state,
             [in] Int32 which,
             [out] Int64* ret);
@@ -159,7 +159,7 @@ module
          * or primed to be reset to unshifted (once it is released).  Takes
          * the current state, returns the new state.
          */
-        AdjustMetaAfterKeypressEx(
+        AdjustMetaAfterKeypress(
             [in] Int64 state,
             [out] Int64* ret);
 
@@ -187,7 +187,7 @@ module
          *
          * @return 0 if inactive, 1 if active, 2 if locked.
          */
-        GetMetaStateEx(
+        GetMetaState(
             [in] ICharSequence* text,
             [in] Int32 meta,
             [out] Int32* ret);
@@ -200,7 +200,7 @@ module
          * @return an integer in which each bit set to one represents a pressed
          *         or locked meta key.
          */
-        GetMetaStateEx2(
+        GetMetaState(
             [in] Int64 state,
             [out] Int32* ret);
 
@@ -212,7 +212,7 @@ module
          *
          * @return 0 if inactive, 1 if active, 2 if locked.
          */
-        GetMetaStateEx3(
+        GetMetaState(
             [in] Int64 state,
             [in] Int32 meta,
             [out] Int32* ret);

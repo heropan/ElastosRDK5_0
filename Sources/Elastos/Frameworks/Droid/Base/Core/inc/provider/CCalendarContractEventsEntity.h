@@ -109,7 +109,7 @@ public:
      * @return an EntityIterator containing one entity per event in the
      *         cursor
      */
-    CARAPI NewEntityIteratorEx(
+    CARAPI NewEntityIterator(
         /* [in] */ ICursor* cursor,
         /* [in] */ IContentProviderClient* provider,
         /* [out] */ IEntityIterator** iterator);

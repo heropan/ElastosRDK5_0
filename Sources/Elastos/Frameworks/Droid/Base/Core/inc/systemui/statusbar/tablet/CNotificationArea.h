@@ -2,9 +2,9 @@
 #define __CNOTIFICATIONAREA_H_
 
 #include "_CNotificationArea.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/NotificationArea.h"
 
 namespace Elastos {

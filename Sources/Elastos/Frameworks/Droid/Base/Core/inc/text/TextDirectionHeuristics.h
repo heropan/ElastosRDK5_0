@@ -3,7 +3,7 @@
 #define __TEXTDIRECTIONHEURISTICS_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 //#include "view/View.h"
 
 using Elastos::Core::Character;

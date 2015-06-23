@@ -100,7 +100,7 @@ module
          * @see #getInAnimation()
          * @see #setInAnimation(android.animation.ObjectAnimator)
          */
-        SetInAnimationEx(
+        SetInAnimation(
             [in] IContext* ctx,
             [in] Int32 resourceID);
 
@@ -113,7 +113,7 @@ module
          * @see #getOutAnimation()
          * @see #setOutAnimation(android.animation.ObjectAnimator)
          */
-        SetOutAnimationEx(
+        SetOutAnimation(
             [in] IContext* ctx,
             [in] Int32 resourceID);
 

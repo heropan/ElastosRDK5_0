@@ -114,7 +114,7 @@ public:
      *        determined by the desired width and balloon's measuring
      *        specification.
      */
-    CARAPI SetBalloonConfigEx(
+    CARAPI SetBalloonConfig(
         /* [in] */ IDrawable* icon,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
@@ -263,7 +263,7 @@ public:
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
 
-    CARAPI ShowAtLocationEx(
+    CARAPI ShowAtLocation(
         /* [in] */ IBinder* token,
         /* [in] */ Int32 gravity,
         /* [in] */ Int32 x,
@@ -272,7 +272,7 @@ public:
     CARAPI ShowAsDropDown(
         /* [in] */ IView* anchor);
 
-    CARAPI ShowAsDropDownEx(
+    CARAPI ShowAsDropDown(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 xoff,
         /* [in] */ Int32 yoff);
@@ -284,12 +284,12 @@ public:
         /* [in] */ IView* anchor,
         /* [out] */ Int32* maxAvailableHeight);
 
-    CARAPI GetMaxAvailableHeightEx(
+    CARAPI GetMaxAvailableHeight(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 yOffset,
         /* [out] */ Int32* maxAvailableHeight);
 
-    CARAPI GetMaxAvailableHeightEx2(
+    CARAPI GetMaxAvailableHeight(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 yOffset,
         /* [in] */ Boolean ignoreBottomDecorations,
@@ -302,29 +302,29 @@ public:
 
     CARAPI Update();
 
-    CARAPI UpdateEx(
+    CARAPI Update(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI UpdateEx2(
+    CARAPI Update(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI UpdateEx3(
+    CARAPI Update(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Boolean force);
 
-    CARAPI UpdateEx4(
+    CARAPI Update(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI UpdateEx5(
+    CARAPI Update(
         /* [in] */ IView* anchor,
         /* [in] */ Int32 xoff,
         /* [in] */ Int32 yoff,

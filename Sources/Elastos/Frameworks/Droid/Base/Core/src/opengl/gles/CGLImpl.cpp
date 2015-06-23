@@ -1,7 +1,7 @@
 #include "CGLImpl.h"
 #include "app/AppGlobals.h"
 #include "os/UserHandle.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "os/Build.h"
 #include <GLES/gl.h>
 #include <GLES/glext.h>
@@ -468,7 +468,7 @@ ECode CGLImpl::GlDeleteTextures(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteTexturesEx(
+ECode CGLImpl::GlDeleteTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures_buf)
 {
@@ -671,7 +671,7 @@ ECode CGLImpl::GlFogfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogfvEx(
+ECode CGLImpl::GlFogfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -788,7 +788,7 @@ ECode CGLImpl::GlFogxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlFogxvEx(
+ECode CGLImpl::GlFogxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -915,7 +915,7 @@ ECode CGLImpl::GlGenTextures(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenTexturesEx(
+ECode CGLImpl::GlGenTextures(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* textures_buf)
 {
@@ -1026,7 +1026,7 @@ ECode CGLImpl::GlLightModelfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelfvEx(
+ECode CGLImpl::GlLightModelfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -1126,7 +1126,7 @@ ECode CGLImpl::GlLightModelxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightModelxvEx(
+ECode CGLImpl::GlLightModelxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -1255,7 +1255,7 @@ ECode CGLImpl::GlLightfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightfvEx(
+ECode CGLImpl::GlLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -1412,7 +1412,7 @@ ECode CGLImpl::GlLightxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLightxvEx(
+ECode CGLImpl::GlLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -1528,7 +1528,7 @@ ECode CGLImpl::GlLoadMatrixf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadMatrixfEx(
+ECode CGLImpl::GlLoadMatrixf(
     /* [in] */ IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1571,7 +1571,7 @@ ECode CGLImpl::GlLoadMatrixx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlLoadMatrixxEx(
+ECode CGLImpl::GlLoadMatrixx(
     /* [in] */ IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1674,7 +1674,7 @@ ECode CGLImpl::GlMaterialfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialfvEx(
+ECode CGLImpl::GlMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -1802,7 +1802,7 @@ ECode CGLImpl::GlMaterialxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMaterialxvEx(
+ECode CGLImpl::GlMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -1889,7 +1889,7 @@ ECode CGLImpl::GlMultMatrixf(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultMatrixfEx(
+ECode CGLImpl::GlMultMatrixf(
     /* [in] */ IFloatBuffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -1933,7 +1933,7 @@ ECode CGLImpl::GlMultMatrixx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMultMatrixxEx(
+ECode CGLImpl::GlMultMatrixx(
     /* [in] */ IInt32Buffer* m_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2625,7 +2625,7 @@ ECode CGLImpl::GlQueryMatrixxOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlQueryMatrixxOESEx(
+ECode CGLImpl::GlQueryMatrixxOES(
     /* [in] */ IInt32Buffer* mantissa_buf,
     /* [in] */ IInt32Buffer* exponent_buf,
     /* [out] */ Int32* matrixxOES)
@@ -2701,7 +2701,7 @@ ECode CGLImpl::GlTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterfvEx(
+ECode CGLImpl::GlTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -2783,7 +2783,7 @@ ECode CGLImpl::GlDrawTexfvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexfvOESEx(
+ECode CGLImpl::GlDrawTexfvOES(
     /* [in] */ IFloatBuffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2852,7 +2852,7 @@ ECode CGLImpl::GlDrawTexivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexivOESEx(
+ECode CGLImpl::GlDrawTexivOES(
     /* [in] */ IInt32Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2920,7 +2920,7 @@ ECode CGLImpl::GlDrawTexsvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexsvOESEx(
+ECode CGLImpl::GlDrawTexsvOES(
     /* [in] */ IInt16Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -2989,7 +2989,7 @@ ECode CGLImpl::GlDrawTexxvOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawTexxvOESEx(
+ECode CGLImpl::GlDrawTexxvOES(
     /* [in] */ IInt32Buffer* coords_buf)
 {
     Handle32 _array = (Handle32) 0;
@@ -3092,7 +3092,7 @@ ECode CGLImpl::GlMatrixIndexPointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlMatrixIndexPointerOESEx(
+ECode CGLImpl::GlMatrixIndexPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3151,7 +3151,7 @@ ECode CGLImpl::GlWeightPointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlWeightPointerOESEx(
+ECode CGLImpl::GlWeightPointerOES(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -3344,7 +3344,7 @@ ECode CGLImpl::GlDeleteFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteFramebuffersOESEx(
+ECode CGLImpl::GlDeleteFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers_buf)
 {
@@ -3407,7 +3407,7 @@ ECode CGLImpl::GlDeleteRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteRenderbuffersOESEx(
+ECode CGLImpl::GlDeleteRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers_buf)
 {
@@ -3519,7 +3519,7 @@ ECode CGLImpl::GlGenFramebuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenFramebuffersOESEx(
+ECode CGLImpl::GlGenFramebuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* framebuffers_buf)
 {
@@ -3583,7 +3583,7 @@ ECode CGLImpl::GlGenRenderbuffersOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenRenderbuffersOESEx(
+ECode CGLImpl::GlGenRenderbuffersOES(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* renderbuffers_buf)
 {
@@ -3646,7 +3646,7 @@ ECode CGLImpl::GlGetFramebufferAttachmentParameterivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFramebufferAttachmentParameterivOESEx(
+ECode CGLImpl::GlGetFramebufferAttachmentParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 attachment,
     /* [in] */ Int32 pname,
@@ -4037,7 +4037,7 @@ ECode CGLImpl::GlGetIntegerv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetIntegervEx(
+ECode CGLImpl::GlGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -4425,7 +4425,7 @@ ECode CGLImpl::GlGetRenderbufferParameterivOES(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetRenderbufferParameterivOESEx(
+ECode CGLImpl::GlGetRenderbufferParameterivOES(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4482,7 +4482,7 @@ ECode CGLImpl::GlGetTexGenfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenfvEx(
+ECode CGLImpl::GlGetTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -4540,7 +4540,7 @@ ECode CGLImpl::GlGetTexGeniv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenivEx(
+ECode CGLImpl::GlGetTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4598,7 +4598,7 @@ ECode CGLImpl::GlGetTexGenxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexGenxvEx(
+ECode CGLImpl::GlGetTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4756,7 +4756,7 @@ ECode CGLImpl::GlTexEnvfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvfvEx(
+ECode CGLImpl::GlTexEnvfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -4873,7 +4873,7 @@ ECode CGLImpl::GlTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvxvEx(
+ECode CGLImpl::GlTexEnvxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -4969,7 +4969,7 @@ ECode CGLImpl::GlTexGenfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenfvEx(
+ECode CGLImpl::GlTexGenfv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -5042,7 +5042,7 @@ ECode CGLImpl::GlTexGeniv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenivEx(
+ECode CGLImpl::GlTexGeniv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -5115,7 +5115,7 @@ ECode CGLImpl::GlTexGenxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexGenxvEx(
+ECode CGLImpl::GlTexGenxv(
     /* [in] */ Int32 coord,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -5253,7 +5253,7 @@ ECode CGLImpl::GlClipPlanef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClipPlanefEx(
+ECode CGLImpl::GlClipPlanef(
     /* [in] */ Int32 plane,
     /* [in] */ IFloatBuffer* equation_buf)
 {
@@ -5308,7 +5308,7 @@ ECode CGLImpl::GlClipPlanex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlClipPlanexEx(
+ECode CGLImpl::GlClipPlanex(
     /* [in] */ Int32 plane,
     /* [in] */ IInt32Buffer* equation_buf)
 {
@@ -5349,7 +5349,7 @@ ECode CGLImpl::GlColor4ub(
     return NOERROR;
 }
 
-ECode CGLImpl::GlColorPointerEx(
+ECode CGLImpl::GlColorPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -5393,7 +5393,7 @@ ECode CGLImpl::GlDeleteBuffers(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDeleteBuffersEx(
+ECode CGLImpl::GlDeleteBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers_buf)
 {
@@ -5419,7 +5419,7 @@ ECode CGLImpl::GlDeleteBuffersEx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlDrawElementsEx(
+ECode CGLImpl::GlDrawElements(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
@@ -5463,7 +5463,7 @@ ECode CGLImpl::GlGenBuffers(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGenBuffersEx(
+ECode CGLImpl::GlGenBuffers(
     /* [in] */ Int32 n,
     /* [in] */ IInt32Buffer* buffers_buf)
 {
@@ -5514,7 +5514,7 @@ ECode CGLImpl::GlGetBooleanv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetBooleanvEx(
+ECode CGLImpl::GlGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -5546,7 +5546,7 @@ ECode CGLImpl::GlGetBufferParameteriv(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode CGLImpl::GlGetBufferParameterivEx(
+ECode CGLImpl::GlGetBufferParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params)
@@ -5578,7 +5578,7 @@ ECode CGLImpl::GlGetClipPlanef(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetClipPlanefEx(
+ECode CGLImpl::GlGetClipPlanef(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* eqn_buf)
 {
@@ -5625,7 +5625,7 @@ ECode CGLImpl::GlGetClipPlanex(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetClipPlanexEx(
+ECode CGLImpl::GlGetClipPlanex(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* eqn_buf)
 {
@@ -5672,7 +5672,7 @@ ECode CGLImpl::GlGetFixedv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFixedvEx(
+ECode CGLImpl::GlGetFixedv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -5719,7 +5719,7 @@ ECode CGLImpl::GlGetFloatv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetFloatvEx(
+ECode CGLImpl::GlGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -5815,7 +5815,7 @@ ECode CGLImpl::GlGetLightfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetLightfvEx(
+ECode CGLImpl::GlGetLightfv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -5959,7 +5959,7 @@ ECode CGLImpl::GlGetLightxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetLightxvEx(
+ECode CGLImpl::GlGetLightxv(
     /* [in] */ Int32 light,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6089,7 +6089,7 @@ ECode CGLImpl::GlGetMaterialfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetMaterialfvEx(
+ECode CGLImpl::GlGetMaterialfv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -6205,7 +6205,7 @@ ECode CGLImpl::GlGetMaterialxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetMaterialxvEx(
+ECode CGLImpl::GlGetMaterialxv(
     /* [in] */ Int32 face,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6315,7 +6315,7 @@ ECode CGLImpl::GlGetTexEnviv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexEnvivEx(
+ECode CGLImpl::GlGetTexEnviv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6419,7 +6419,7 @@ ECode CGLImpl::GlGetTexEnvxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexEnvxvEx(
+ECode CGLImpl::GlGetTexEnvxv(
     /* [in] */ Int32 env,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6501,7 +6501,7 @@ ECode CGLImpl::GlGetTexParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterfvEx(
+ECode CGLImpl::GlGetTexParameterfv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
@@ -6560,7 +6560,7 @@ ECode CGLImpl::GlGetTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterivEx(
+ECode CGLImpl::GlGetTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6619,7 +6619,7 @@ ECode CGLImpl::GlGetTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlGetTexParameterxvEx(
+ECode CGLImpl::GlGetTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -6683,7 +6683,7 @@ ECode CGLImpl::GlIsTexture(
     return NOERROR;
 }
 
-ECode CGLImpl::GlNormalPointerEx(
+ECode CGLImpl::GlNormalPointer(
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
     /* [in] */ Int32 offset)
@@ -6736,7 +6736,7 @@ ECode CGLImpl::GlPointParameterfv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterfvEx(
+ECode CGLImpl::GlPointParameterfv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
@@ -6802,7 +6802,7 @@ ECode CGLImpl::GlPointParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlPointParameterxvEx(
+ECode CGLImpl::GlPointParameterxv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
@@ -6874,7 +6874,7 @@ ECode CGLImpl::GlPointSizePointerOESBounds(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexCoordPointerEx(
+ECode CGLImpl::GlTexCoordPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,
@@ -6955,7 +6955,7 @@ ECode CGLImpl::GlTexEnviv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexEnvivEx(
+ECode CGLImpl::GlTexEnviv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -7050,7 +7050,7 @@ ECode CGLImpl::GlTexParameteriv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterivEx(
+ECode CGLImpl::GlTexParameteriv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -7109,7 +7109,7 @@ ECode CGLImpl::GlTexParameterxv(
     return NOERROR;
 }
 
-ECode CGLImpl::GlTexParameterxvEx(
+ECode CGLImpl::GlTexParameterxv(
     /* [in] */ Int32 target,
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
@@ -7137,7 +7137,7 @@ ECode CGLImpl::GlTexParameterxvEx(
     return NOERROR;
 }
 
-ECode CGLImpl::GlVertexPointerEx(
+ECode CGLImpl::GlVertexPointer(
     /* [in] */ Int32 size,
     /* [in] */ Int32 type,
     /* [in] */ Int32 stride,

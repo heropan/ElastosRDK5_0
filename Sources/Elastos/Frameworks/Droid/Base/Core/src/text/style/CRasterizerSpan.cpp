@@ -21,7 +21,7 @@ ECode CRasterizerSpan::GetRasterizer(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IRasterizer> r = RasterizerSpan::GetRasterizer();
     *ret = r;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

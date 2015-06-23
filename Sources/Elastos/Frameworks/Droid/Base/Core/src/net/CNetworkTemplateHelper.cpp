@@ -57,12 +57,12 @@ ECode CNetworkTemplateHelper::BuildTemplateWifi(
     return CNetworkTemplate::BuildTemplateWifi(result);
 }
 
-ECode CNetworkTemplateHelper::BuildTemplateWifiEx(
+ECode CNetworkTemplateHelper::BuildTemplateWifi(
     /* [in] */ const String& networkId,
     /* [out] */ INetworkTemplate** result)
 {
     VALIDATE_NOT_NULL(result);
-    return CNetworkTemplate::BuildTemplateWifiEx(networkId, result);
+    return CNetworkTemplate::BuildTemplateWifi(networkId, result);
 }
 
 ECode CNetworkTemplateHelper::BuildTemplateEthernet(

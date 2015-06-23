@@ -23,11 +23,11 @@ ECode CSpeechRecognizerHelper::CreateSpeechRecognizer(
     VALIDATE_NOT_NULL(ppRet);
     AutoPtr<ISpeechRecognizer> temp = CSpeechRecognizer::CreateSpeechRecognizer(pContext);
     *ppRet = temp;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 
-ECode CSpeechRecognizerHelper::CreateSpeechRecognizerEx(
+ECode CSpeechRecognizerHelper::CreateSpeechRecognizer(
     /* [in] */ IContext * pContext,
     /* [in] */ IComponentName * pServiceComponent,
     /* [out] */ ISpeechRecognizer ** ppRet)
@@ -35,7 +35,7 @@ ECode CSpeechRecognizerHelper::CreateSpeechRecognizerEx(
     VALIDATE_NOT_NULL(ppRet);
     AutoPtr<ISpeechRecognizer> temp = CSpeechRecognizer::CreateSpeechRecognizer(pContext, pServiceComponent);
     *ppRet = temp;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 

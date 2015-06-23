@@ -56,7 +56,7 @@ ECode CContactsOrganizations::GetDisplayLabel(
         }
     }
     *lb = display;
-    INTERFACE_ADDREF(*lb);
+    REFCOUNT_ADD(*lb);
     return NOERROR;
 }
 

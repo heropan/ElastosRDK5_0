@@ -3,10 +3,9 @@
 
 #include "_CRemoteViewsAdapterServiceConnection.h"
 #include "os/Runnable.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Os::Runnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Widget::Internal::IIRemoteViewsFactory;
@@ -61,7 +60,7 @@ private:
     class MyRunnableEx : public Runnable
     {
     public:
-        MyRunnableEx(
+        MyRunnable(
             /* [in] */ IRemoteViewsAdapter* adapter);
 
         CARAPI Run();
@@ -72,7 +71,7 @@ private:
     class MyRunnableEx2 : public Runnable
     {
     public:
-        MyRunnableEx2(
+        MyRunnable(
             /* [in] */ IRemoteViewsAdapter* adapter);
 
         CARAPI Run();

@@ -4,7 +4,6 @@
 
 #include "_CAnnotation.h"
 #include "text/Annotation.h"
-#include "ParcelableSpanMacro.h"
 
 namespace Elastos {
 namespace Droid {

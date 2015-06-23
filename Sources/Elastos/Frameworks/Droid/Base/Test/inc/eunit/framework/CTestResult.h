@@ -4,7 +4,7 @@
 
 #include <cmdef.h>
 #include "_CTestResult.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::IList;

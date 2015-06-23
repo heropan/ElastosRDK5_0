@@ -1,7 +1,7 @@
 
 #include "content/CPackageHelper.h"
 #include <ext/frameworkext.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/CServiceManager.h"
 
 using Elastos::Droid::Os::CServiceManager;
@@ -112,7 +112,7 @@ ECode CPackageHelper::GetSecureContainerList(
     VALIDATE_NOT_NULL(ids)
     AutoPtr< ArrayOf<String> > list = PackageHelper::GetSecureContainerList();
     *ids = list;
-    INTERFACE_ADDREF(*ids);
+    REFCOUNT_ADD(*ids);
     return NOERROR;
 }
 

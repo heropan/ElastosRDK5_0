@@ -1,8 +1,8 @@
 
 #include "ext/frameworkext.h"
 #include "text/TextUtils.h"
-#include <elastos/Character.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Character.h>
+#include <elastos/core/StringBuilder.h>
 #include "R.h"
 #include "text/MeasuredText.h"
 #include "text/TextDirectionHeuristics.h"
@@ -403,13 +403,13 @@ String TextUtils::Substring(
     if (IStringBuilder::Probe(source) != NULL) {
         IStringBuilder* builder = IStringBuilder::Probe(source);
         String str;
-        builder->SubstringEx(start, end, &str);
+        builder->Substring(start, end, &str);
         return str;
     }
     else if (IStringBuffer::Probe(source) != NULL) {
         IStringBuffer* builder = IStringBuffer::Probe(source);
         String str;
-        builder->SubstringEx(start, end, &str);
+        builder->Substring(start, end, &str);
         return str;
     }
 
@@ -695,7 +695,7 @@ ECode TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(
     CStringWrapper::New(string, (ICharSequence**)&cs);
     if (kind == 1) {
         *csq = cs;
-        INTERFACE_ADDREF(*csq);
+        REFCOUNT_ADD(*csq);
         return NOERROR;
     }
 
@@ -832,7 +832,7 @@ ECode TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(
     }
 
     *csq = ICharSequence::Probe(sp);
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 
@@ -1125,7 +1125,7 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
         // XXX assumes ellipsis string does not require shaping and
         // is unaffected by style
         Float ellipsiswid;
-        paint->MeasureTextEx2(ellipsis, &ellipsiswid);
+        paint->MeasureText(ellipsis, &ellipsiswid);
         avail -= ellipsiswid;
 
         Int32 left = 0;
@@ -1160,7 +1160,7 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
             }
 
             StringBuilder sb;
-            sb.AppendCharsEx(*buf, 0, len);
+            sb.AppendChars(*buf, 0, len);
             AutoPtr<ICharSequence> s = sb.ToCharSequence();
             if (sp == NULL) {
                 MeasuredText::Recycle(mt);
@@ -1184,20 +1184,20 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
         if (sp == NULL) {
             Int32 length = remaining + ellipsis.GetByteLength();
             StringBuilder sb(length);
-            sb.AppendCharsEx(*buf, 0, left);
+            sb.AppendChars(*buf, 0, left);
             sb.AppendString(ellipsis);
-            sb.AppendCharsEx(*buf, right, len - right);
+            sb.AppendChars(*buf, right, len - right);
             MeasuredText::Recycle(mt);
             return sb.ToCharSequence();
         }
 
         AutoPtr<ISpannableStringBuilder> ssb;
         CSpannableStringBuilder::New((ISpannableStringBuilder**)&ssb);
-        ssb->AppendEx(text, 0, left);
+        ssb->Append(text, 0, left);
         AutoPtr<ICharSequence> elpSeq;
         CStringWrapper::New(ellipsis, (ICharSequence**)&elpSeq);
         ssb->Append(elpSeq);
-        ssb->AppendEx(text, right, len);
+        ssb->Append(text, right, len);
         MeasuredText::Recycle(mt);
         return ssb;
    //} finally {
@@ -1739,7 +1739,7 @@ Int32 TextUtils::GetLayoutDirectionFromFirstChar(
     /* [in] */ ILocale* locale)
 {
     String displayName;
-    locale->GetDisplayNameEx(locale, &displayName);
+    locale->GetDisplayName(locale, &displayName);
     const Byte directionality = Character::GetDirectionality(displayName.GetChar(0));
     if (directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT ||
         directionality == Character::DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC) {

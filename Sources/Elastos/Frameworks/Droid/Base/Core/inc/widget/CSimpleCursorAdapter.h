@@ -2,7 +2,7 @@
 #define __CSIMPLECURSORADAPTER_H__
 
 #include "_CSimpleCursorAdapter.h"
-#include "widget/AdapterMacro.h"
+
 #include "widget/SimpleCursorAdapter.h"
 
 namespace Elastos {

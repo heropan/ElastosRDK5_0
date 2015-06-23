@@ -4,7 +4,7 @@
 
 #include "database/ContentObserver.h"
 #include "util/SparseArray.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -13,7 +13,7 @@ using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Utility::SparseArray;
 using Elastos::Droid::View::IKeyCharacterMap;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

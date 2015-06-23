@@ -3,7 +3,7 @@
 #include "os/ServiceManager.h"
 #include <elastos/System.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elautoptr.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -44,7 +44,7 @@ ECode CActivityOne::OnCreate(
 
     /*************************************************
     *
-    *VibrateEx(ArrayOf<Int64> &pattern, int mode); mode=-1 : once
+    *Vibrate(ArrayOf<Int64> &pattern, int mode); mode=-1 : once
     *
     **************************************************/
     // PFL_EX("===Begin Vibrate mode: once,short");
@@ -54,7 +54,7 @@ ECode CActivityOne::OnCreate(
     // (*pattern1)[2]=100;
     // (*pattern1)[3]=1000;  //short
     // PFL_EX("CActivityOne::OnCreate 1");
-    // mVb->VibrateEx(*pattern1, -1);
+    // mVb->Vibrate(*pattern1, -1);
     // PFL_EX("CActivityOne::OnCreate 2");
     // sleep(5);
     // mVb->Cancel();
@@ -64,7 +64,7 @@ ECode CActivityOne::OnCreate(
 
     /*************************************************
     *
-    *VibrateEx(ArrayOf<Int64> &pattern, int mode); mode!=-1 : repeat
+    *Vibrate(ArrayOf<Int64> &pattern, int mode); mode!=-1 : repeat
     *
     **************************************************/
     // PFL_EX("===Begin Vibrate mode: repeat,long");
@@ -74,7 +74,7 @@ ECode CActivityOne::OnCreate(
     // (*pattern2)[2]=100;
     // (*pattern2)[3]=1000; //long
     // PFL_EX("CActivityOne::OnCreate 4");
-    // mVb->VibrateEx(*pattern2, 0);
+    // mVb->Vibrate(*pattern2, 0);
     // PFL_EX("CActivityOne::OnCreate 5");
     // sleep(15);
     // PFL_EX("CActivityOne::OnCreate 6");
@@ -85,7 +85,7 @@ ECode CActivityOne::OnCreate(
 
     /*************************************************
     *
-    *VibrateEx(ArrayOf<Int64> &pattern, int mode); mode!=-1 : repeat
+    *Vibrate(ArrayOf<Int64> &pattern, int mode); mode!=-1 : repeat
     *
     **************************************************/
     // PFL_EX("===Begin Vibrate mode: repeat,rhythm");
@@ -96,7 +96,7 @@ ECode CActivityOne::OnCreate(
     // (*pattern3)[3]=50;
     // (*pattern3)[4]=1000;
     // PFL_EX("CActivityOne::OnCreate 8");
-    // mVb->VibrateEx(*pattern3, 0);
+    // mVb->Vibrate(*pattern3, 0);
     // PFL_EX("CActivityOne::OnCreate 9");
     // sleep(15);
     // PFL_EX("CActivityOne::OnCreate 10");

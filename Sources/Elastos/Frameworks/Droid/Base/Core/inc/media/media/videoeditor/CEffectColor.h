@@ -5,7 +5,7 @@
 #include "_CEffectColor.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Effect.h"
-#include "media/media/videoeditor/EffectMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

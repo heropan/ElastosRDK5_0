@@ -2,9 +2,9 @@
 #define __CSIGNALCLUSTERVIEW_H_
 
 #include "_CSignalClusterView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/SignalClusterView.h"
 
 namespace Elastos {

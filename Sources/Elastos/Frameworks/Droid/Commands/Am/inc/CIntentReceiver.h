@@ -3,11 +3,11 @@
 #define __CINTENTRECEIVER_H__
 
 #include "_CIntentReceiver.h"
-#include "elastos/Object.h"
+#include <elastos/Core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

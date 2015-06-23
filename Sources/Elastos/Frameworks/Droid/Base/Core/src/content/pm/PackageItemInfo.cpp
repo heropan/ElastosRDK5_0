@@ -54,7 +54,7 @@ ECode PackageItemInfo::LoadLabel(
 
     if (mNonLocalizedLabel != NULL) {
         *label = mNonLocalizedLabel;
-        INTERFACE_ADDREF(*label);
+        REFCOUNT_ADD(*label);
         return NOERROR;
     }
     if (mLabelRes != 0) {
@@ -248,7 +248,7 @@ ECode PackageItemInfo::GetNonLocalizedLabel(
 {
     assert(label != NULL);
     *label = mNonLocalizedLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -294,7 +294,7 @@ ECode PackageItemInfo::GetMetaData(
 {
     assert(metaData != NULL);
     *metaData = mMetaData;
-    INTERFACE_ADDREF(*metaData);
+    REFCOUNT_ADD(*metaData);
     return NOERROR;
 }
 

@@ -8,7 +8,7 @@
 #include "systemui/statusbar/tablet/TabletStatusBar.h"
 #include "systemui/SystemUIR.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CStringWrapper;
@@ -190,7 +190,7 @@ void TabletTicker::Advance()
                 mWindow = MakeWindow();
                 AutoPtr<IViewGroupLayoutParams> lp;
                 mWindow->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-                mWindowManager->AddViewEx5(mWindow, lp);
+                mWindowManager->AddView(mWindow, lp);
             }
 
             mWindow->AddView(mCurrentView);
@@ -324,7 +324,7 @@ AutoPtr<IView> TabletTicker::MakeTickerView(
 
     if (tickerView != NULL) {
         tmpView = NULL;
-        inflater->InflateEx2(SystemUIR::layout::system_bar_ticker_panel,
+        inflater->Inflate(SystemUIR::layout::system_bar_ticker_panel,
             NULL, FALSE, (IView**)&tmpView);
         group = IViewGroup::Probe(tmpView.Get());
 
@@ -345,11 +345,11 @@ AutoPtr<IView> TabletTicker::MakeTickerView(
                 IViewGroupLayoutParams::MATCH_PARENT,
                 IViewGroupLayoutParams::MATCH_PARENT,
                 (IFrameLayoutLayoutParams**)&lp);
-        content->AddViewEx3(expanded, lp);
+        content->AddView(expanded, lp);
     }
     else if (tickerText != NULL) {
         tmpView = NULL;
-        inflater->InflateEx2(SystemUIR::layout::system_bar_ticker_compat,
+        inflater->Inflate(SystemUIR::layout::system_bar_ticker_compat,
             mWindow, FALSE, (IView**)&tmpView);
         group = IViewGroup::Probe(tmpView.Get());
 

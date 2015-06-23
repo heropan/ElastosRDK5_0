@@ -164,7 +164,7 @@ module
              * @return This Item so additional setters can be called.
              * @see #setTitleCondensed(CharSequence)
              */
-            SetTitleEx(
+            SetTitle(
                 [in] Int32 title);
 
             /**
@@ -218,7 +218,7 @@ module
              * @param iconRes The new icon (as a resource ID) to be displayed.
              * @return This Item so additional setters can be called.
              */
-            SetIconEx(
+            SetIcon(
                 [in] Int32 iconRes);
 
             /**
@@ -540,7 +540,7 @@ module
              *
              * @see #setShowAsAction(int)
              */
-            SetActionViewEx(
+            SetActionView(
                 [in] Int32 resId);
 
             /**

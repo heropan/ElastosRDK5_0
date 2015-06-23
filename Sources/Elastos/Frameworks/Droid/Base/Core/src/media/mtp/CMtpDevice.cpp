@@ -128,7 +128,7 @@ ECode CMtpDevice::GetDeviceInfo(
 
     AutoPtr<IMtpDeviceInfo> temp = NativeGetDeviceInfo();
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -145,7 +145,7 @@ ECode CMtpDevice::GetStorageIds(
 
     AutoPtr<ArrayOf<Int32> > temp = NativeGetStorageIds();
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -169,7 +169,7 @@ ECode CMtpDevice::GetObjectHandles(
 
     AutoPtr<ArrayOf<Int32> > temp = NativeGetObjectHandles(storageId, format, objectHandle);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -192,7 +192,7 @@ ECode CMtpDevice::GetObject(
 
     AutoPtr<ArrayOf<Byte> > temp = NativeGetObject(objectHandle, objectSize);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -214,7 +214,7 @@ ECode CMtpDevice::GetThumbnail(
 
     AutoPtr<ArrayOf<Byte> > temp = NativeGetThumbnail(objectHandle);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -232,7 +232,7 @@ ECode CMtpDevice::GetStorageInfo(
 
     AutoPtr<IMtpStorageInfo> temp = NativeGetStorageInfo(storageId);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -250,7 +250,7 @@ ECode CMtpDevice::GetObjectInfo(
 
     AutoPtr<IMtpObjectInfo> temp = NativeGetObjectInfo(objectHandle);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

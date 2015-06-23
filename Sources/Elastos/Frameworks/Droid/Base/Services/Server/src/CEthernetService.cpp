@@ -1,7 +1,7 @@
 
 #include "CEthernetService.h"
 #include "os/ServiceManager.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;
@@ -95,7 +95,7 @@ ECode CEthernetService::GetSavedConfig(
 
         AutoPtr<ISettingsSecure> settingsSecure;
         CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-        settingsSecure->GetInt32Ex(cr, ISettingsSecure::ETHERNET_MODE, &ival);
+        settingsSecure->GetInt32(cr, ISettingsSecure::ETHERNET_MODE, &ival);
         infoTemp->SetConnectMode(ival);
 
         settingsSecure->GetString(cr, ISettingsSecure::ETHERNET_IFNAME, &str);
@@ -460,7 +460,7 @@ ECode CEthernetService::IsOn(
     Int32 ival;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    ECode ec = settingsSecure->GetInt32Ex(cr, ISettingsSecure::ETHERNET_ON, &ival);
+    ECode ec = settingsSecure->GetInt32(cr, ISettingsSecure::ETHERNET_ON, &ival);
     if (FAILED(ec)) {
         *isOn = FALSE;
         return NOERROR;
@@ -484,7 +484,7 @@ ECode CEthernetService::IsDhcp(
     Int32 ival;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    ECode ec = settingsSecure->GetInt32Ex(cr, ISettingsSecure::ETHERNET_MODE, &ival);
+    ECode ec = settingsSecure->GetInt32(cr, ISettingsSecure::ETHERNET_MODE, &ival);
     if (FAILED(ec)) {
         *isDhcp = FALSE;
         return NOERROR;

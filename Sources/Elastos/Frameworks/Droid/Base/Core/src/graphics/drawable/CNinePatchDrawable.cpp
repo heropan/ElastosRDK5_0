@@ -77,13 +77,13 @@ ECode CNinePatchDrawable::SetTargetDensity(
     return NinePatchDrawable::SetTargetDensity(canvas);
 }
 
-ECode CNinePatchDrawable::SetTargetDensityEx(
+ECode CNinePatchDrawable::SetTargetDensity(
     /* [in] */ IDisplayMetrics* metrics)
 {
     return NinePatchDrawable::SetTargetDensity(metrics);
 }
 
-ECode CNinePatchDrawable::SetTargetDensityEx2(
+ECode CNinePatchDrawable::SetTargetDensity(
     /* [in] */ Int32 density)
 {
     return NinePatchDrawable::SetTargetDensity(density);
@@ -96,7 +96,7 @@ ECode CNinePatchDrawable::GetPaint(
 
     AutoPtr<IPaint> temp = NinePatchDrawable::GetPaint();
     *paint = temp;
-    INTERFACE_ADDREF(*paint);
+    REFCOUNT_ADD(*paint);
     return NOERROR;
 }
 

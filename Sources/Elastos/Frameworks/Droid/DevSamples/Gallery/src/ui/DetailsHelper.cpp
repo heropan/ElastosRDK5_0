@@ -1,7 +1,7 @@
 #include "DetailsHelper.h"
 #include "../../R.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include "DialogDetailsView.h"
 
 using Elastos::Core::StringUtils;

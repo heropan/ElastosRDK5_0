@@ -67,7 +67,7 @@ public:
         /* [in] */ Int32 evdoSnr,
         /* [in] */ Boolean gsm);
 
-    CARAPI InitializeEx(
+    CARAPI Initialize(
         /* [in] */ Int32 gsmSignalStrength,
         /* [in] */ Int32 gsmBitErrorRate,
         /* [in] */ Int32 cdmaDbm,

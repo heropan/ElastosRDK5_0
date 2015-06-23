@@ -49,14 +49,14 @@ module
         SetNavigationIconHints(
             [in] Int32 hints);
 
-        SetNavigationIconHintsEx(
+        SetNavigationIconHints(
             [in] Int32 hints,
             [in] Boolean force);
 
         SetDisabledFlags(
             [in] Int32 disabledFlags);
 
-        SetDisabledFlagsEx(
+        SetDisabledFlags(
             [in] Int32 disabledFlags,
             [in] Boolean force);
 
@@ -66,14 +66,14 @@ module
         SetMenuVisibility(
             [in] Boolean show);
 
-        SetMenuVisibilityEx(
+        SetMenuVisibility(
             [in] Boolean show,
             [in] Boolean force);
 
         SetLowProfile(
             [in] Boolean lightsOut);
 
-        SetLowProfileEx(
+        SetLowProfile(
             [in] Boolean lightsOut,
             [in] Boolean animate,
             [in] Boolean force);

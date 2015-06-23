@@ -18,7 +18,7 @@ module
         /**
          * Handle a confirmation response from the user.
          */
-        ConfirmEx(
+        Confirm(
             [in] String result);
 
         /**

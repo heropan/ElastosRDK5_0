@@ -2,9 +2,9 @@
 #define __CLATESTITEMVIEW_H_
 
 #include "_CLatestItemView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/LatestItemView.h"
 
 namespace Elastos {

@@ -5,12 +5,12 @@
 #include "ext/frameworkext.h"
 #include "_CRestoreObserver.h"
 #include <elastos.h>
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
 using namespace Elastos;
 using Elastos::Droid::App::Backup::IRestoreSet;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

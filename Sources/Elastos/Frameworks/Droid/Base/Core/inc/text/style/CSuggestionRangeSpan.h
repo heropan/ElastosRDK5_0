@@ -4,8 +4,8 @@
 
 #include "_CSuggestionRangeSpan.h"
 #include "text/style/SuggestionRangeSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

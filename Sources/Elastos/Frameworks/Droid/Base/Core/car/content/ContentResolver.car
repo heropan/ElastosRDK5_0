@@ -301,7 +301,7 @@ module
          * @return A Cursor object, which is positioned before the first entry, or null
          * @see Cursor
          */
-        QueryEx(
+        Query(
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
             [in] String selection,
@@ -367,7 +367,7 @@ module
          * FileNotFoundException | if the provided URI could not be opened.
          * @see #openAssetFileDescriptor(Uri, String)
          */
-        OpenOutputStreamEx(
+        OpenOutputStream(
             [in] IUri* uri,
             [in] String mode,
             [out] IOutputStream** outStream);
@@ -656,7 +656,7 @@ module
         /**
          * @hide
          */
-        AcquireProviderEx(
+        AcquireProvider(
             [in] String name,
             [out] IIContentProvider** contentProvider);
 
@@ -674,7 +674,7 @@ module
         /**
          * @hide
          */
-        AcquireUnstableProviderEx(
+        AcquireUnstableProvider(
             [in] String name,
             [out] IIContentProvider** contentProvider);
 
@@ -704,7 +704,7 @@ module
          * @return a {@sa ContentProviderClient} that is associated with the {@sa ContentProvider}
          * with the authority of name or null if there isn't one.
          */
-        AcquireContentProviderClientEx(
+        AcquireContentProviderClient(
             [in] String name,
             [out] IContentProviderClient** client);
 
@@ -744,7 +744,7 @@ module
          * can acquire a new one if you would like to try to restart the provider
          * and perform new operations on it.
          */
-        AcquireUnstableContentProviderClientEx(
+        AcquireUnstableContentProviderClient(
             [in] String name,
             [out] IContentProviderClient** client);
 
@@ -767,7 +767,7 @@ module
             [in] IContentObserver* observer);
 
         /** @hide - designated user version */
-        RegisterContentObserverEx(
+        RegisterContentObserver(
             [in] IUri* uri,
             [in] Boolean notifyForDescendents,
             [in] IContentObserver* observer,
@@ -814,7 +814,7 @@ module
          * @param syncToNetwork If true, attempt to sync the change to the network.
          * @see #requestSync(android.accounts.Account, String, android.os.Bundle)
          */
-        NotifyChangeEx(
+        NotifyChange(
             [in] IUri* uri,
             [in] IContentObserver* observer,
             [in] Boolean syncToNetwork);
@@ -824,7 +824,7 @@ module
          *
          * @hide
          */
-        NotifyChangeEx2(
+        NotifyChange(
             [in] IUri* uri,
             [in] IContentObserver* observer,
             [in] Boolean syncToNetwork,

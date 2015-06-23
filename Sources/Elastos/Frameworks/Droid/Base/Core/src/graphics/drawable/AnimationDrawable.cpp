@@ -42,7 +42,7 @@ ECode AnimationDrawable::AnimationState::NewDrawable(
     return CAnimationDrawable::New((Handle32)this, NULL, (IAnimationDrawable**)drawable);
 }
 
-ECode AnimationDrawable::AnimationState::NewDrawableEx(
+ECode AnimationDrawable::AnimationState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {

@@ -4,12 +4,9 @@
 
 #include "_CCameraProfileHelper.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
-
+using Elastos::Utility::Etl::HashMap;
 namespace Elastos {
 namespace Droid {
 namespace Media {
@@ -42,7 +39,7 @@ public:
      * @param cameraId The id of the camera
      * @param quality The target quality level
      */
-    CARAPI GetJpegEncodingQualityParameterEx(
+    CARAPI GetJpegEncodingQualityParameter(
         /* [in] */ Int32 cameraId,
         /* [in] */ Int32 quality,
         /* [out] */ Int32* result);

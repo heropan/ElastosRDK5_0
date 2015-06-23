@@ -194,7 +194,7 @@ AutoPtr<IView> NotificationRowLayout::GetChildAtPosition(
     Float x,y;
     ev->GetX(&x);
     ev->GetY(&y);
-    return GetChildAtPositionEx(x, y);
+    return GetChildAtPosition(x, y);
 }
 
 AutoPtr<IView> NotificationRowLayout::GetChildAtRawPosition(
@@ -203,10 +203,10 @@ AutoPtr<IView> NotificationRowLayout::GetChildAtRawPosition(
 {
     Int32 x, y;
     GetLocationOnScreen(&x, &y);
-    return GetChildAtPositionEx((Float) (touchX - x), (Float) (touchY - y));
+    return GetChildAtPosition((Float) (touchX - x), (Float) (touchY - y));
 }
 
-AutoPtr<IView> NotificationRowLayout::GetChildAtPositionEx(
+AutoPtr<IView> NotificationRowLayout::GetChildAtPosition(
     /* [in] */ Float touchX,
     /* [in] */ Float touchY)
 {
@@ -265,10 +265,10 @@ ECode NotificationRowLayout::SetLayoutTransitionsEnabled(
 ECode NotificationRowLayout::DismissRowAnimated(
     /* [in] */ IView* child)
 {
-    return DismissRowAnimatedEx(child, 0);
+    return DismissRowAnimated(child, 0);
 }
 
-ECode NotificationRowLayout::DismissRowAnimatedEx(
+ECode NotificationRowLayout::DismissRowAnimated(
     /* [in] */ IView* child,
     /* [in] */ Int32 vel)
 {

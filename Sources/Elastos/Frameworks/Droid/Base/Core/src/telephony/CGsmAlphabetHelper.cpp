@@ -17,13 +17,13 @@ ECode CGsmAlphabetHelper::CharToGsm(
     return CGsmAlphabet::CharToGsm(c, val);
 }
 
-ECode CGsmAlphabetHelper::CharToGsmEx(
+ECode CGsmAlphabetHelper::CharToGsm(
     /* [in] */ Char32 c,
     /* [in] */ Boolean throwException,
     /* [out] */ Int32* val)
 {
     VALIDATE_NOT_NULL(val);
-    return CGsmAlphabet::CharToGsmEx(c, throwException, val);
+    return CGsmAlphabet::CharToGsm(c, throwException, val);
 }
 
 ECode CGsmAlphabetHelper::CharToGsmExtended(
@@ -59,7 +59,7 @@ ECode CGsmAlphabetHelper::StringToGsm7BitPackedWithHeader(
     return CGsmAlphabet::StringToGsm7BitPackedWithHeader(data, header, res);
 }
 
-ECode CGsmAlphabetHelper::StringToGsm7BitPackedWithHeaderEx(
+ECode CGsmAlphabetHelper::StringToGsm7BitPackedWithHeader(
     /* [in] */ const String& data,
     /* [in] */ ArrayOf<Byte>* header,
     /* [in] */ Int32 languageTable,
@@ -67,7 +67,7 @@ ECode CGsmAlphabetHelper::StringToGsm7BitPackedWithHeaderEx(
     /* [out, callee] */ ArrayOf<Byte>** res)
 {
 
-    return CGsmAlphabet::StringToGsm7BitPackedWithHeaderEx(data, header, languageTable, languageShiftTable, res);
+    return CGsmAlphabet::StringToGsm7BitPackedWithHeader(data, header, languageTable, languageShiftTable, res);
 }
 
 ECode CGsmAlphabetHelper::StringToGsm7BitPacked(
@@ -78,17 +78,17 @@ ECode CGsmAlphabetHelper::StringToGsm7BitPacked(
     return CGsmAlphabet::StringToGsm7BitPacked(data, res);
 }
 
-ECode CGsmAlphabetHelper::StringToGsm7BitPackedEx(
+ECode CGsmAlphabetHelper::StringToGsm7BitPacked(
     /* [in] */ const String& data,
     /* [in] */ Int32 languageTable,
     /* [in] */ Int32 languageShiftTable,
     /* [out, callee] */ ArrayOf<Byte>** res)
 {
 
-    return CGsmAlphabet::StringToGsm7BitPackedEx(data, languageTable, languageShiftTable, res);
+    return CGsmAlphabet::StringToGsm7BitPacked(data, languageTable, languageShiftTable, res);
 }
 
-ECode CGsmAlphabetHelper::StringToGsm7BitPackedEx2(
+ECode CGsmAlphabetHelper::StringToGsm7BitPacked(
     /* [in] */ const String& data,
     /* [in] */ Int32 startingSeptetOffset,
     /* [in] */ Boolean throwException,
@@ -97,7 +97,7 @@ ECode CGsmAlphabetHelper::StringToGsm7BitPackedEx2(
     /* [out, callee] */ ArrayOf<Byte>** res)
 {
 
-    return CGsmAlphabet::StringToGsm7BitPackedEx2(data, startingSeptetOffset, throwException, languageTable, languageShiftTable, res);
+    return CGsmAlphabet::StringToGsm7BitPacked(data, startingSeptetOffset, throwException, languageTable, languageShiftTable, res);
 }
 
 ECode CGsmAlphabetHelper::Gsm7BitPackedToString(
@@ -110,7 +110,7 @@ ECode CGsmAlphabetHelper::Gsm7BitPackedToString(
     return CGsmAlphabet::Gsm7BitPackedToString(pdu, offset, lengthSeptets, res);
 }
 
-ECode CGsmAlphabetHelper::Gsm7BitPackedToStringEx(
+ECode CGsmAlphabetHelper::Gsm7BitPackedToString(
     /* [in] */ ArrayOf<Byte>* pdu,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 lengthSeptets,
@@ -120,7 +120,7 @@ ECode CGsmAlphabetHelper::Gsm7BitPackedToStringEx(
     /* [out] */ String* res)
 {
     VALIDATE_NOT_NULL(res);
-    return CGsmAlphabet::Gsm7BitPackedToStringEx(pdu, offset, lengthSeptets, numPaddingBits, languageTable, shiftTable, res);
+    return CGsmAlphabet::Gsm7BitPackedToString(pdu, offset, lengthSeptets, numPaddingBits, languageTable, shiftTable, res);
 }
 
 ECode CGsmAlphabetHelper::Gsm8BitUnpackedToString(
@@ -133,7 +133,7 @@ ECode CGsmAlphabetHelper::Gsm8BitUnpackedToString(
     return CGsmAlphabet::Gsm8BitUnpackedToString(data, offset, length, res);
 }
 
-ECode CGsmAlphabetHelper::Gsm8BitUnpackedToStringEx(
+ECode CGsmAlphabetHelper::Gsm8BitUnpackedToString(
     /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -141,7 +141,7 @@ ECode CGsmAlphabetHelper::Gsm8BitUnpackedToStringEx(
     /* [out] */ String* res)
 {
     VALIDATE_NOT_NULL(res);
-    return CGsmAlphabet::Gsm8BitUnpackedToStringEx(data, offset, length, characterset, res);
+    return CGsmAlphabet::Gsm8BitUnpackedToString(data, offset, length, characterset, res);
 }
 
 ECode CGsmAlphabetHelper::StringToGsm8BitPacked(
@@ -170,13 +170,13 @@ ECode CGsmAlphabetHelper::CountGsmSeptets(
     return CGsmAlphabet::CountGsmSeptets(c, val);
 }
 
-ECode CGsmAlphabetHelper::CountGsmSeptetsEx(
+ECode CGsmAlphabetHelper::CountGsmSeptets(
     /* [in] */ Char32 c,
     /* [in] */ Boolean throwsException,
     /* [out] */ Int32* val)
 {
     VALIDATE_NOT_NULL(val);
-    return CGsmAlphabet::CountGsmSeptetsEx(c, throwsException, val);
+    return CGsmAlphabet::CountGsmSeptets(c, throwsException, val);
 }
 
 ECode CGsmAlphabetHelper::CountGsmSeptetsUsingTables(
@@ -190,13 +190,13 @@ ECode CGsmAlphabetHelper::CountGsmSeptetsUsingTables(
     return CGsmAlphabet::CountGsmSeptetsUsingTables(s, use7bitOnly, languageTable, languageShiftTable, val);
 }
 
-ECode CGsmAlphabetHelper::CountGsmSeptetsEx2(
+ECode CGsmAlphabetHelper::CountGsmSeptets(
     /* [in] */ ICharSequence* s,
     /* [in] */ Boolean use7bitOnly,
     /* [out] */ IGsmAlphabetTextEncodingDetails** res)
 {
     VALIDATE_NOT_NULL(res);
-    return CGsmAlphabet::CountGsmSeptetsEx2(s, use7bitOnly, res);
+    return CGsmAlphabet::CountGsmSeptets(s, use7bitOnly, res);
 }
 
 ECode CGsmAlphabetHelper::FindGsmSeptetLimitIndex(

@@ -8,9 +8,9 @@
 #include "os/FileUtils.h"
 #include "os/Handler.h"
 #include "R.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 #include <fcntl.h>
 #include <stdio.h>

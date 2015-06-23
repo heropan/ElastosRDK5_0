@@ -4,9 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "_CAppWidgetManager.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
@@ -106,7 +106,7 @@ public:
      * @param appWidgetIds     The AppWidget instances for which to set the RemoteViews.
      * @param views         The RemoteViews object to show.
      */
-    CARAPI UpdateAppWidgetEx(
+    CARAPI UpdateAppWidget(
         /* [in] */ Int32 appWidgetId,
         /* [in] */ IRemoteViews* views);
 
@@ -162,7 +162,7 @@ public:
      * @param appWidgetId      The AppWidget instance for which to set the RemoteViews.
      * @param views            The RemoteViews object containing the incremental update / command.
      */
-    CARAPI PartiallyUpdateAppWidgetEx(
+    CARAPI PartiallyUpdateAppWidget(
         /* [in] */ Int32 appWidgetId,
         /* [in] */ IRemoteViews* views);
 
@@ -185,7 +185,7 @@ public:
      * @param appWidgetId      The AppWidget instance for which to set the RemoteViews.
      * @param views         The RemoteViews object to show.
      */
-    CARAPI UpdateAppWidgetEx2(
+    CARAPI UpdateAppWidget(
         /* [in] */ IComponentName* provider,
         /* [in] */ IRemoteViews* views);
 
@@ -207,7 +207,7 @@ public:
      * @param appWidgetId  The AppWidget instance for which to notify of view data changes.
      * @param viewId        The collection view id.
      */
-    CARAPI NotifyAppWidgetViewDataChangedEx(
+    CARAPI NotifyAppWidgetViewDataChanged(
         /* [in] */ Int32 appWidgetId,
         /* [in] */ Int32 viewId);
 
@@ -269,7 +269,7 @@ public:
      *
      * @hide
      */
-    CARAPI BindAppWidgetIdEx(
+    CARAPI BindAppWidgetId(
         /* [in] */ Int32 appWidgetId,
         /* [in] */ IComponentName* provider,
         /* [in] */ IBundle* options);
@@ -308,7 +308,7 @@ public:
      *
      * @return true if this component has permission to bind the AppWidget
      */
-    CARAPI BindAppWidgetIdIfAllowedEx(
+    CARAPI BindAppWidgetIdIfAllowed(
         /* [in] */ Int32 appWidgetId,
         /* [in] */ IComponentName* provider,
         /* [in] */ IBundle* options,

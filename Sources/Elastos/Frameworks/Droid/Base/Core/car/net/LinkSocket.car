@@ -28,7 +28,7 @@ module
         GetCapabilities(
             [out] ILinkCapabilities** result);
 
-        GetCapabilitiesEx(
+        GetCapabilities(
             [in] IObjectContainer* capabilities,
             [out] ILinkCapabilities** result);
 
@@ -38,19 +38,19 @@ module
         GetTrackedCapabilities(
             [out] IObjectContainer** result);
 
-        ConnectEx2(
+        Connect(
             [in] String dstName,
             [in] Int32 dstPort,
             [in] Int32 timeout);
 
-        ConnectEx3(
+        Connect(
             [in] String dstName,
             [in] Int32 dstPort);
 
-        ConnectEx4(
+        Connect(
             [in] Int32 timeout);
 
-        ConnectEx5();
+        Connect();
 
 
         RequestNewLink(

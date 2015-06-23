@@ -4,8 +4,8 @@
 
 #include "_CDrawableMarginSpan.h"
 #include "text/style/DrawableMarginSpan.h"
-#include "text/style/LeadingMarginSpanMacro.h"
-#include "text/style/LineHeightSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

@@ -3,17 +3,16 @@
 #define __APPLICATION_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IFileOutputStream;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -265,7 +264,7 @@ public:
      * @param resId Resource id for the format string
      * @param formatArgs The format arguments that will be used for substitution.
      */
-    virtual CARAPI GetStringEx(
+    virtual CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* str);
@@ -313,7 +312,7 @@ public:
      *
      * @see Resources.Theme#obtainStyledAttributes(int, int[])
      */
-    virtual CARAPI ObtainStyledAttributesEx(
+    virtual CARAPI ObtainStyledAttributes(
         /* [in] */ Int32 resid,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
@@ -325,7 +324,7 @@ public:
      *
      * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
      */
-    virtual CARAPI ObtainStyledAttributesEx2(
+    virtual CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [out] */ ITypedArray** styles);
@@ -337,7 +336,7 @@ public:
      *
      * @see Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
      */
-    virtual CARAPI ObtainStyledAttributesEx3(
+    virtual CARAPI ObtainStyledAttributes(
         /* [in] */ IAttributeSet* set,
         /* [in] */ ArrayOf<Int32>* attrs,
         /* [in] */ Int32 defStyleAttr,
@@ -769,7 +768,7 @@ public:
      * @see #MODE_ENABLE_WRITE_AHEAD_LOGGING
      * @see #deleteDatabase
      */
-    virtual CARAPI OpenOrCreateDatabaseEx(
+    virtual CARAPI OpenOrCreateDatabase(
         /* [in] */ const String& name,
         /* [in] */ Int32 mode,
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -861,7 +860,7 @@ public:
      * <p>This method requires the caller to hold the permission
      * {@sa android.Manifest.permission#SET_WALLPAPER}.
      */
-    virtual CARAPI SetWallpaperEx(
+    virtual CARAPI SetWallpaper(
         /* [in] */ IInputStream* data);
 
     /**
@@ -934,7 +933,7 @@ public:
      * @see #startActivity(Intent)
      * @see PackageManager#resolveActivity
      */
-    virtual CARAPI StartActivityEx(
+    virtual CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
@@ -955,7 +954,7 @@ public:
      * ActivityNotFoundException
      * @hide
      */
-    virtual CARAPI StartActivityAsUserEx(
+    virtual CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [in] */ IUserHandle* userId);
@@ -1004,7 +1003,7 @@ public:
      * @see {@sa #startActivities(Intent[])}
      * @see PackageManager#resolveActivity
      */
-    virtual CARAPI StartActivitiesEx(
+    virtual CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents,
         /* [in] */ IBundle* options);
 
@@ -1090,7 +1089,7 @@ public:
      * @see #startActivity(Intent, Bundle)
      * @see #startIntentSender(IntentSender, Intent, int, int, int)
      */
-    virtual CARAPI StartIntentSenderEx(
+    virtual CARAPI StartIntentSender(
         /* [in] */ IIntentSender* intent,
         /* [in] */ IIntent* fillInIntent,
         /* [in] */ Int32 flagsMask,
@@ -1145,7 +1144,7 @@ public:
      * @see #sendOrderedBroadcast(Intent, String)
      * @see #sendOrderedBroadcast(Intent, String, BroadcastReceiver, Handler, int, String, Bundle)
      */
-    virtual CARAPI SendBroadcastEx(
+    virtual CARAPI SendBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission);
 
@@ -1215,7 +1214,7 @@ public:
      * @see #registerReceiver
      * @see android.app.Activity#RESULT_OK
      */
-    virtual CARAPI SendOrderedBroadcastEx(
+    virtual CARAPI SendOrderedBroadcast(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& receiverPermission,
         /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -1252,7 +1251,7 @@ public:
      *
      * @see #sendBroadcast(Intent, String)
      */
-    virtual CARAPI SendBroadcastAsUserEx(
+    virtual CARAPI SendBroadcastAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission);
@@ -1538,7 +1537,7 @@ public:
      * @see #sendBroadcast
      * @see #unregisterReceiver
      */
-    virtual CARAPI RegisterReceiverEx(
+    virtual CARAPI RegisterReceiver(
         /* [in] */ IBroadcastReceiver* receiver,
         /* [in] */ IIntentFilter* filter,
         /* [in] */ const String& broadcastPermission,
@@ -1753,7 +1752,7 @@ public:
      * argument for use by system server and other multi-user aware code.
      * @hide
      */
-    virtual CARAPI BindServiceEx(
+    virtual CARAPI BindService(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
@@ -2186,7 +2185,7 @@ public:
      * is allowed to access that uri or holds one of the given permissions, or
      * {@sa PackageManager#PERMISSION_DENIED} if it is not.
      */
-    virtual CARAPI CheckUriPermissionEx(
+    virtual CARAPI CheckUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,
@@ -2287,7 +2286,7 @@ public:
      *
      * @see #checkUriPermission(Uri, String, String, int, int, int)
      */
-    virtual CARAPI EnforceUriPermissionEx(
+    virtual CARAPI EnforceUriPermission(
         /* [in] */ IUri* uri,
         /* [in] */ const String& readPermission,
         /* [in] */ const String& writePermission,

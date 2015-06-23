@@ -4,10 +4,10 @@
 #include "src/data/AsyncImageLoader.h"
 #include "src/util/Utils.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 #include "os/SomeArgs.h"
 
 using Elastos::Droid::Os::SomeArgs;
@@ -225,7 +225,7 @@ ECode CPhotoActivity::MyListener::OnClick(
             AutoPtr<PhotoEntry> entry = mHost->mPhotoEntryList[mHost->mCurrentIndex];
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("Gallery"), String("Gallery.CEditActivity"));
+            intent->SetClassName(String("Gallery"), String("Gallery.CEditActivity"));
             intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "OnClick()---StartActivity CEditActivity failed!");
@@ -243,7 +243,7 @@ ECode CPhotoActivity::MyListener::OnClick(
             AutoPtr<PhotoEntry> entry = mHost->mPhotoEntryList[mHost->mCurrentIndex];
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("Gallery"), String("Gallery.CWallpaperActivity"));
+            intent->SetClassName(String("Gallery"), String("Gallery.CWallpaperActivity"));
             intent->PutStringExtra(DataSourceHelper::SOURCE_PATH, entry->sourcePath);
             if (FAILED(mHost->StartActivity(intent))) {
                 Logger::E(TAG, "OnClick()---StartActivity CWallpaperActivity failed!");
@@ -385,7 +385,7 @@ ECode CPhotoActivity::MyLoadImageCallback::ImageLoaded(
     args->mArgi1 = mIsHigh ? 1 : 0;
 
     AutoPtr<IMessage> msg;
-    mHost->mMyHandler->ObtainMessageEx(CPhotoActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
+    mHost->mMyHandler->ObtainMessage(CPhotoActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
     Boolean result;
     return mHost->mMyHandler->SendMessage(msg, &result);
 }
@@ -1020,7 +1020,7 @@ void CPhotoActivity::TriggerLoadingCallback(
     else {
         Boolean needReload = FALSE;
         AutoPtr<IMessage> msg;
-        mMyHandler->ObtainMessageEx2(MSG_UPDATE_LOADING_STATUS,
+        mMyHandler->ObtainMessage(MSG_UPDATE_LOADING_STATUS,
             needReload ? 1 : 0, 0, (IMessage**)&msg);
         Boolean result;
         mMyHandler->SendMessageDelayed(msg, 1000, &result);

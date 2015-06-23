@@ -50,7 +50,7 @@ public:
      * @see View#LAYOUT_DIRECTION_LTR
      * @see View#LAYOUT_DIRECTION_RTL
      */
-    CARAPI ApplyEx(
+    CARAPI Apply(
         /* [in] */ Int32 gravity,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
@@ -79,7 +79,7 @@ public:
      * @param outRect Receives the computed frame of the object in its
      *                container.
      */
-    CARAPI ApplyEx2(
+    CARAPI Apply(
         /* [in] */ Int32 gravity,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
@@ -113,7 +113,7 @@ public:
      * @see View#LAYOUT_DIRECTION_LTR
      * @see View#LAYOUT_DIRECTION_RTL
      */
-    CARAPI ApplyEx3(
+    CARAPI Apply(
         /* [in] */ Int32 gravity,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
@@ -164,7 +164,7 @@ public:
      * @see View#LAYOUT_DIRECTION_LTR
      * @see View#LAYOUT_DIRECTION_RTL
      */
-    CARAPI ApplyDisplayEx(
+    CARAPI ApplyDisplay(
         /* [in] */ Int32 gravity,
         /* [in] */ IRect* display,
         /* [in] */ IRect* inoutObj,

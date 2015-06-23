@@ -1,6 +1,6 @@
 
 #include "widget/StackView.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "animation/CPropertyValuesHolderHelper.h"
 #include "animation/CObjectAnimatorHelper.h"
 #include "view/animation/CLinearInterpolator.h"
@@ -158,7 +158,7 @@ ECode StackView::Init(
             const_cast<Int32 *>(R::styleable::StackView),
             ARRAY_SIZE(R::styleable::StackView));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetColor(R::styleable::StackView_resOutColor, 0, &mResOutColor);
     a->GetColor(R::styleable::StackView_clickColor, 0, &mClickColor);
@@ -248,7 +248,7 @@ Boolean StackView::OnInterceptTouchEvent(
                 return FALSE;
             }
             Float newY = 0;
-            ev->GetYEx(pointerIndex, &newY);
+            ev->GetY(pointerIndex, &newY);
             Float deltaY = newY - mInitialY;
 
             BeginGestureIfNeeded(deltaY);
@@ -284,8 +284,8 @@ Boolean StackView::OnTouchEvent(
     }
 
     Float newY = 0, newX = 0;
-    ev->GetYEx(pointerIndex, &newY);
-    ev->GetXEx(pointerIndex, &newX);
+    ev->GetY(pointerIndex, &newY);
+    ev->GetX(pointerIndex, &newX);
     Float deltaY = newY - mInitialY;
     Float deltaX = newX - mInitialX;
     if (!mVelocityTracker) {
@@ -861,14 +861,14 @@ void StackView::DispatchDraw(
         childInvalidateRect->IsEmpty(&res);
         if (!res) {
             expandClipRegion = TRUE;
-            sStackInvalidateRect->UnionEx(childInvalidateRect);
+            sStackInvalidateRect->Union(childInvalidateRect);
         }
     }
 
     if (expandClipRegion) {
         Int32 result = 0;
-        canvas->SaveEx(ICanvas::CLIP_SAVE_FLAG, &result);
-        canvas->ClipRectEx(sStackInvalidateRect, RegionOp_UNION, &res);
+        canvas->Save(ICanvas::CLIP_SAVE_FLAG, &result);
+        canvas->ClipRect(sStackInvalidateRect, RegionOp_UNION, &res);
         AdapterViewAnimator::DispatchDraw(canvas);
         canvas->Restore();
     } else {
@@ -985,8 +985,8 @@ void StackView::OnSecondaryPointerUp(
             if (index != activePointerIndex) {
 
                 Float x = 0, y = 0;
-                ev->GetXEx(index, &x);
-                ev->GetYEx(index, &y);
+                ev->GetX(index, &x);
+                ev->GetY(index, &y);
                 Int32 left = 0, top = 0, right = 0, bottom = 0;
                 v->GetLeft(&left);
                 v->GetTop(&top);
@@ -997,8 +997,8 @@ void StackView::OnSecondaryPointerUp(
                 mTouchRect->Contains(Elastos::Core::Math::Round(x), Elastos::Core::Math::Round(y), &res);
                 if (res) {
                     Float oldX = 0, oldY =0;
-                    ev->GetXEx(activePointerIndex, &oldX);
-                    ev->GetYEx(activePointerIndex, &oldY);
+                    ev->GetX(activePointerIndex, &oldX);
+                    ev->GetY(activePointerIndex, &oldY);
 
                     mInitialY += (y - oldY);
                     mInitialX += (x - oldX);
@@ -1023,16 +1023,16 @@ void StackView::HandlePointerUp(
     Int32 pointerIndex = 0;
     ev->FindPointerIndex(mActivePointerId, &pointerIndex);
     Float newY = 0;
-    ev->GetYEx(pointerIndex, &newY);
+    ev->GetY(pointerIndex, &newY);
     Int32 deltaY = (Int32) (newY - mInitialY);
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     system->GetCurrentTimeMillis(&mLastInteractionTime);
 
     if (mVelocityTracker) {
-        mVelocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+        mVelocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
         Float y;
-        mVelocityTracker->GetYVelocityEx(mActivePointerId, &y);
+        mVelocityTracker->GetYVelocity(mActivePointerId, &y);
         mYVelocity = (Int32)y;
     }
 
@@ -1410,7 +1410,7 @@ AutoPtr<IBitmap> StackView::HolographicHelper::CreateOutline(
     AutoPtr<IDisplayMetrics> dm;
     res->GetDisplayMetrics((IDisplayMetrics**)&dm);
     AutoPtr<IBitmap> bitmap;
-    factory->CreateBitmapEx6(dm, width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+    factory->CreateBitmap(dm, width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
     mCanvas->SetBitmap(bitmap);
 
     Float rotationX = 0, rotation = 0, translationY = 0, translationX = 0;
@@ -1438,10 +1438,10 @@ void StackView::HolographicHelper::DrawOutline(
     /* [in] */ IBitmap* src)
 {
     AutoPtr<IBitmap> mask;
-    src->ExtractAlphaEx(mBlurPaint, mTmpXY, (IBitmap**)&mask);
+    src->ExtractAlpha(mBlurPaint, mTmpXY, (IBitmap**)&mask);
     mMaskCanvas->SetBitmap(mask);
     mMaskCanvas->DrawBitmap(src, -(*mTmpXY)[0], -(*mTmpXY)[1], mErasePaint);
-    dest->DrawColorEx(0, PorterDuffMode_CLEAR);
+    dest->DrawColor(0, PorterDuffMode_CLEAR);
     dest->SetMatrix(mIdentityMatrix);
     dest->DrawBitmap(mask, (*mTmpXY)[0], (*mTmpXY)[1], mHolographicPaint);
     mMaskCanvas->SetBitmap(NULL);

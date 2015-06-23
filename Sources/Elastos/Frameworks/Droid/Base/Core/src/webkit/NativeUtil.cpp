@@ -7,7 +7,7 @@
 #include "net/CUriHelper.h"
 #include "webkit/NativeUtil.h"
 #include "webkit/MimeTypeMap.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "webkit/DebugFlags.h"
 #include "webkit/L10nUtils.h"
 #include "webkit/HTML5Audio.h"

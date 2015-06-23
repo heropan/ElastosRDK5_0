@@ -1,7 +1,6 @@
 #include "_CCalendarView.h"
 #include "CalendarView.h"
-#include "view/ViewMacro.h"
-#include "FrameLayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -87,7 +86,7 @@ public:
     CARAPI SetSelectedDateVerticalBar(
         /* [in] */ Int32 resourceId);
 
-    CARAPI SetSelectedDateVerticalBarEx(
+    CARAPI SetSelectedDateVerticalBar(
         /* [in] */ IDrawable* drawable);
 
     CARAPI GetSelectedDateVerticalBar(
@@ -138,7 +137,7 @@ public:
     CARAPI SetDate(
         /* [in] */ Int64 date);
 
-    CARAPI SetDateEx(
+    CARAPI SetDate(
         /* [in] */ Int64 date,
         /* [in] */ Boolean animate,
         /* [in] */ Boolean center);

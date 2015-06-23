@@ -4,7 +4,7 @@
 
 using Elastos::Core::CStringWrapper;
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -61,7 +61,7 @@ ECode CResolveInfo::LoadLabel(
 
     if (mNonLocalizedLabel != NULL) {
         *label = mNonLocalizedLabel;
-        INTERFACE_ADDREF(*label);
+        REFCOUNT_ADD(*label);
         return NOERROR;
     }
 
@@ -245,7 +245,7 @@ ECode CResolveInfo::GetActivityInfo(
 {
     VALIDATE_NOT_NULL(activityInfo);
     *activityInfo = mActivityInfo;
-    INTERFACE_ADDREF(*activityInfo);
+    REFCOUNT_ADD(*activityInfo);
     return NOERROR;
 }
 
@@ -261,7 +261,7 @@ ECode CResolveInfo::GetServiceInfo(
 {
     VALIDATE_NOT_NULL(serviceInfo);
     *serviceInfo = mServiceInfo;
-    INTERFACE_ADDREF(*serviceInfo);
+    REFCOUNT_ADD(*serviceInfo);
     return NOERROR;
 }
 
@@ -277,7 +277,7 @@ ECode CResolveInfo::GetFilter(
 {
     VALIDATE_NOT_NULL(filter);
     *filter = mFilter;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -383,7 +383,7 @@ ECode CResolveInfo::GetNonLocalizedLabel(
 {
     VALIDATE_NOT_NULL(label);
     *label = mNonLocalizedLabel;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 

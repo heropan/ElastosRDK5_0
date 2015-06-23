@@ -1881,7 +1881,7 @@ AutoPtr<IViewPropertyAnimator> SetVisibilityWhenDone()
     return a;
 }
 
-AutoPtr<IAnimator> SetVisibilityWhenDoneEx()
+AutoPtr<IAnimator> SetVisibilityWhenDone()
 {
     a.addListener(new AnimatorListenerAdapter() {
         @Override

@@ -4,7 +4,7 @@
 
 #include "_CIntent.h"
 #include "content/Intent.h"
-#include "content/IntentMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

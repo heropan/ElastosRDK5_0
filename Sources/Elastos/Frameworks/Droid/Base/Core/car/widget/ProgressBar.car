@@ -203,7 +203,7 @@ module
          *
          * @param interpolator The interpolator which defines the acceleration curve
          */
-        SetInterpolatorEx(
+        SetInterpolator(
             [in] IInterpolator* interpolator);
 
         /**

@@ -118,7 +118,7 @@ module
         GetHashCode(
             [out] Int32* code);
 
-        EqualsEx(
+        Equals(
             [in] IInputMethodInfo* o,
             [out] Boolean* e);
 

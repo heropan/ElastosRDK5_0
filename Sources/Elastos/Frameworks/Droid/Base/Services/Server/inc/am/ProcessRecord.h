@@ -3,10 +3,10 @@
 #define __PROCESSRECORD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/StringBuilder.h>
 #include "os/BatteryStatsImpl.h"
 #include "am/ReceiverList.h"
 #include "am/ConnectionRecord.h"
@@ -15,9 +15,9 @@
 #include "am/ActivityRecord.h"
 #include "am/BroadcastRecord.h"
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;

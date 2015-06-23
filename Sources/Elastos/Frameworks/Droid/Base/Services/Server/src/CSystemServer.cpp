@@ -41,7 +41,7 @@
 #include "CKortideRemoteService.h"
 #include "CZigbeeService.h"
 
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>
 #include <SurfaceFlinger.h>
 #include <SensorService.h>
@@ -196,7 +196,7 @@ ECode ServerThread::Run()
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
-    sysProp->GetEx(String("ro.config.headless"), String("0"), &value);
+    sysProp->Get(String("ro.config.headless"), String("0"), &value);
     Boolean headless = String("1").Equals(value);
 
     AutoPtr<Installer> installer;

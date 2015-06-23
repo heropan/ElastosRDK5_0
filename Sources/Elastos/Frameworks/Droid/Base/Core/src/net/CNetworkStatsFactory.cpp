@@ -175,7 +175,7 @@ ECode CNetworkStatsFactory::ReadNetworkStatsDetail(
 {
     VALIDATE_NOT_NULL(stats);
     *stats = NULL;
-    return ReadNetworkStatsDetailEx(INetworkStats::UID_ALL, stats);
+    return ReadNetworkStatsDetail(INetworkStats::UID_ALL, stats);
 }
 
 /**
@@ -184,7 +184,7 @@ ECode CNetworkStatsFactory::ReadNetworkStatsDetail(
  *
  * @throws IllegalStateException when problem parsing stats.
  */
-ECode CNetworkStatsFactory::ReadNetworkStatsDetailEx(
+ECode CNetworkStatsFactory::ReadNetworkStatsDetail(
     /* [in] */ Int32 limitUid,
     /* [out] */ INetworkStats** stats)
 {

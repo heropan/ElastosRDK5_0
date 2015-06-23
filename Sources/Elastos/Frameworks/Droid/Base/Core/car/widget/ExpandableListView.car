@@ -102,7 +102,7 @@ module
          * Sets the adapter that provides data to this view.
          * @param adapter The adapter that provides data to this view.
          */
-        SetAdapterEx(
+        SetAdapter(
             [in] IExpandableListAdapter* adapter);
 
         /**
@@ -123,7 +123,7 @@ module
             [in] Int32 groupPos,
             [out] Boolean* expanded);
 
-        ExpandGroupEx(
+        ExpandGroup(
             [in] Int32 groupPos,
             [in] Boolean animate,
             [out] Boolean* expanded);

@@ -1,8 +1,7 @@
 #include "view/CWindowInfo.h"
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -42,11 +41,11 @@ ECode CWindowInfo::ReadFromParcel(
     Handle32 hldTmp;
     source->ReadInterfacePtr(&hldTmp);
     interfaceTmp = reinterpret_cast<IInterface*>(hldTmp);
-    mFrame->SetEx((IRect*)(IRect::Probe(interfaceTmp)));
+    mFrame->Set((IRect*)(IRect::Probe(interfaceTmp)));
 
     source->ReadInterfacePtr(&hldTmp);
     interfaceTmp = reinterpret_cast<IInterface*>(hldTmp);
-    mTouchableRegion->SetEx((IRect*)(IRect::Probe(interfaceTmp)));
+    mTouchableRegion->Set((IRect*)(IRect::Probe(interfaceTmp)));
     source->ReadInt32(&mType);
     source->ReadFloat(&mCompatibilityScale);
     Int32 intTmp;
@@ -82,14 +81,14 @@ ECode CWindowInfo::Obtain(
         tmp->mNext = NULL;
         tmp->mInPool = FALSE;
         sPoolSize--;
-        INTERFACE_ADDREF(*info)
+        REFCOUNT_ADD(*info)
         return NOERROR;
     } else {
         return CWindowInfo::New(info);
     }
 }
 
-ECode CWindowInfo::ObtainEx(
+ECode CWindowInfo::Obtain(
     /* [in] */ IWindowInfo *other,
     /* [out] */ IWindowInfo** info)
 {
@@ -97,8 +96,8 @@ ECode CWindowInfo::ObtainEx(
     CWindowInfo* tmp = (CWindowInfo*)(*info);
     CWindowInfo* otherTmp = (CWindowInfo*)(other);
     tmp->mToken = otherTmp->mToken;
-    tmp->mFrame->SetEx(otherTmp->mFrame);
-    tmp->mTouchableRegion->SetEx(otherTmp->mTouchableRegion);
+    tmp->mFrame->Set(otherTmp->mFrame);
+    tmp->mTouchableRegion->Set(otherTmp->mTouchableRegion);
     tmp->mType = otherTmp->mType;
     tmp->mCompatibilityScale = otherTmp->mCompatibilityScale;
     tmp->mVisible = otherTmp->mVisible;
@@ -173,7 +172,7 @@ ECode CWindowInfo::GetFrame(
     /* [out] */  IRect** frame)
 {
     *frame = mFrame;
-    INTERFACE_ADDREF(mFrame)
+    REFCOUNT_ADD(mFrame)
     return NOERROR;
 }
 
@@ -181,7 +180,7 @@ ECode CWindowInfo::GetTouchableRegion(
     /* [out] */  IRect** region)
 {
     *region = mTouchableRegion;
-    INTERFACE_ADDREF(mTouchableRegion)
+    REFCOUNT_ADD(mTouchableRegion)
     return NOERROR;
 }
 
@@ -189,7 +188,7 @@ ECode CWindowInfo::GetToken(
     /* [out] */ IInterface** token)
 {
     *token = mToken;
-    INTERFACE_ADDREF(mToken);
+    REFCOUNT_ADD(mToken);
     return NOERROR;
 }
 

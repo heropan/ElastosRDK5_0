@@ -175,7 +175,7 @@ module
          * @param listener
          * @param handler the Handler that will receive the event notification messages.
          */
-        SetPlaybackPositionUpdateListenerEx(
+        SetPlaybackPositionUpdateListener(
             [in] IOnPlaybackPositionUpdateListener* listener,
             [in] IHandler* handler);
 
@@ -301,7 +301,7 @@ module
          *    if the object wasn't properly initialized, or {@link #ERROR_BAD_VALUE} if
          *    the parameters don't resolve to valid data and indexes.
          */
-        WriteEx(
+        Write(
             [in] ArrayOf<Int16>* audioData,
             [in] Int32 offsetInShorts,
             [in] Int32 sizeInShorts,

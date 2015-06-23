@@ -99,7 +99,7 @@ void RoundRectShape::OnResize(
     mPath->Reset();
 
     if (mOuterRadii != NULL) {
-        mPath->AddRoundRectEx((IRectF*)r, *mOuterRadii, PathDirection_CW);
+        mPath->AddRoundRect((IRectF*)r, *mOuterRadii, PathDirection_CW);
     }
     else {
         mPath->AddRect((IRectF*)r, PathDirection_CW);
@@ -112,7 +112,7 @@ void RoundRectShape::OnResize(
         mInnerRect->GetHeight(&hh);
         if (ww < w && hh < h) {
             if (mInnerRadii != NULL) {
-                mPath->AddRoundRectEx((IRectF*)mInnerRect, *mInnerRadii,
+                mPath->AddRoundRect((IRectF*)mInnerRect, *mInnerRadii,
                                     PathDirection_CCW);
             }
             else {

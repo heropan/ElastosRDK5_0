@@ -201,7 +201,7 @@ module
          *
          * @param view The desired content to display.
          */
-        SetContentViewEx(
+        SetContentView(
             [in] IView* view);
 
         /**
@@ -212,7 +212,7 @@ module
          * @param view The desired content to display.
          * @param params Layout parameters for the view.
          */
-        SetContentViewEx2(
+        SetContentView(
             [in] IView* view,
             [in] IViewGroupLayoutParams* params);
 
@@ -241,7 +241,7 @@ module
          *
          * @param titleId the title's text resource identifier
          */
-        SetTitleEx(
+        SetTitle(
             [in] Int32 titleId);
 
         /**

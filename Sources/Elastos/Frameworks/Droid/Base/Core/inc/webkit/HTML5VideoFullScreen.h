@@ -4,12 +4,12 @@
 
 #include "ext/frameworkext.h"
 #include "webkit/HTML5VideoView.h"
-#include "widget/FrameLayoutMacro.h"
+
 #include "widget/MediaController.h"
 #include "view/SurfaceView.h"
-#include "view/SurfaceViewMacro.h"
+
 #include "view/View.h"
-#include "view/ViewMacro.h"
+
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Widget::IFrameLayout;
@@ -70,7 +70,7 @@ public:
 
         CARAPI Show();
 
-        CARAPI ShowEx(
+        CARAPI Show(
             /* [in] */ Int32 timeout);
 
         CARAPI IsShowing(

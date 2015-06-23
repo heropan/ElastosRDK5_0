@@ -140,7 +140,7 @@ module
         * @throws EncodeException encode error when throwException is true
         * @return the GSM 7 bit table index for the specified character
         */
-        CharToGsmEx(
+        CharToGsm(
             [in] Char32 c,
             [in] Boolean throwException,
             [out] Int32* val);
@@ -229,7 +229,7 @@ module
         * @return Byte array containing header and encoded data.
         * @throws EncodeException if String is too large to encode
         */
-        StringToGsm7BitPackedWithHeaderEx(
+        StringToGsm7BitPackedWithHeader(
             [in] String data,
             [in] ArrayOf<Byte>* header,
             [in] Int32 languageTable,
@@ -273,7 +273,7 @@ module
         * @return the encoded string
         * @throws EncodeException if String is too large to encode
         */
-        StringToGsm7BitPackedEx(
+        StringToGsm7BitPacked(
             [in] String data,
             [in] Int32 languageTable,
             [in] Int32 languageShiftTable,
@@ -300,7 +300,7 @@ module
         *
         * @throws EncodeException if String is too large to encode
         */
-        StringToGsm7BitPackedEx2(
+        StringToGsm7BitPacked(
             [in] String data,
             [in] Int32 startingSeptetOffset,
             [in] Boolean throwException,
@@ -341,7 +341,7 @@ module
         *     GSM extension table
         * @return String representation or null on decoding exception
         */
-        Gsm7BitPackedToStringEx(
+        Gsm7BitPackedToString(
             [in] ArrayOf<Byte>* pdu,
             [in] Int32 offset,
             [in] Int32 lengthSeptets,
@@ -378,7 +378,7 @@ module
         * Additionally, in some country(ex. Korea), there are non-ASCII or MBCS characters.
         * If a character set is given, characters in data are treat as MBCS.
         */
-        Gsm8BitUnpackedToStringEx(
+        Gsm8BitUnpackedToString(
             [in] ArrayOf<Byte>* data,
             [in] Int32 offset,
             [in] Int32 length,
@@ -429,7 +429,7 @@ module
         * @return the number of septets for this character
         * @throws EncodeException the character can't be encoded and throwsException is true
         */
-        CountGsmSeptetsEx(
+        CountGsmSeptets(
             [in] Char32 c,
             [in] Boolean throwsException,
             [out] Int32* val);
@@ -472,7 +472,7 @@ module
         *     character counts for the most efficient 7-bit encoding,
         *     or null if there are no suitable language tables to encode the string.
         */
-        CountGsmSeptetsEx2(
+        CountGsmSeptets(
             [in] ICharSequence* s,
             [in] Boolean use7bitOnly,
             [out] IGsmAlphabetTextEncodingDetails** res);

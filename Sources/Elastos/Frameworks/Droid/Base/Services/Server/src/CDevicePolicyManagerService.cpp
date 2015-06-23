@@ -9,9 +9,9 @@
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
 #include <os/SystemClock.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFileInputStream;
@@ -383,79 +383,79 @@ void CDevicePolicyManagerService::ActiveAdmin::ReadFromXml(
             mInfo->ReadPoliciesFromXml(parser);
         } else if (String("password-quality").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mPasswordQuality = StringUtils::ParseInt32(value);
         } else if (String("min-password-length").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordLength = StringUtils::ParseInt32(value);
         } else if (String("password-history-length").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mPasswordHistoryLength = StringUtils::ParseInt32(value);
         } else if (String("min-password-uppercase").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordUpperCase = StringUtils::ParseInt32(value);
         } else if (String("min-password-lowercase").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordLowerCase = StringUtils::ParseInt32(value);
         } else if (String("min-password-letters").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordLetters = StringUtils::ParseInt32(value);
         } else if (String("min-password-numeric").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordNumeric = StringUtils::ParseInt32(value);
         } else if (String("min-password-symbols").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordSymbols = StringUtils::ParseInt32(value);
         } else if (String("min-password-nonletter").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMinimumPasswordNonLetter = StringUtils::ParseInt32(value);
         } else if (String("max-time-to-unlock").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMaximumTimeToUnlock = StringUtils::ParseInt64(value);
         } else if (String("max-failed-password-wipe").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mMaximumFailedPasswordsForWipe = StringUtils::ParseInt32(value);
         } else if (String("specifies-global-proxy").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mSpecifiesGlobalProxy = StringUtils::ParseInt32(value);
         } else if (String("global-proxy-spec").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mGlobalProxySpec = value;
         } else if (String("global-proxy-exclusion-list").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mGlobalProxyExclusionList = value;
         } else if (String("password-expiration-timeout").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mPasswordExpirationTimeout = StringUtils::ParseInt64(value);
         } else if (String("password-expiration-date").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mPasswordExpirationDate = StringUtils::ParseInt64(value);
         } else if (String("encryption-requested").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mEncryptionRequested = StringUtils::ParseInt32(value);
         } else if (String("disable-camera").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mDisableCamera = StringUtils::ParseInt32(value);
         } else if (String("disable-keyguard-features").Equals(tag)) {
             String value;
-            parser->GetAttributeValueEx(String(NULL), String("value"), &value);
+            parser->GetAttributeValue(String(NULL), String("value"), &value);
             mDisabledKeyguardFeatures = StringUtils::ParseInt32(value);
         } else {
             Slogger::W(TAG, "Unknown admin tag: %s", tag.string());
@@ -1461,7 +1461,7 @@ ECode CDevicePolicyManagerService::ResetPassword(
     // TODO:
     AutoPtr<ILockPatternUtils> utils;
     CLockPatternUtils::New(mContext, (ILockPatternUtils**)&utils);
-    utils->SaveLockPasswordEx2(password, quality, FALSE, userHandle);
+    utils->SaveLockPassword(password, quality, FALSE, userHandle);
     {
         Mutex::Autolock lock(mLock);
 
@@ -2208,7 +2208,7 @@ ECode CDevicePolicyManagerService::FindAdmin(
     mContext->GetPackageManager((IPackageManager**)&pkgMgr);
 
     AutoPtr<IObjectContainer> infos;
-    pkgMgr->QueryBroadcastReceiversEx(resolveIntent, IPackageManager::GET_META_DATA, userHandle, (IObjectContainer**)&infos);
+    pkgMgr->QueryBroadcastReceivers(resolveIntent, IPackageManager::GET_META_DATA, userHandle, (IObjectContainer**)&infos);
 
     if (infos == NULL) {
         //throw new IllegalArgumentException("Unknown admin: " + adminName);
@@ -2403,7 +2403,7 @@ ECode CDevicePolicyManagerService::LoadSettingsLocked(
     AutoPtr<IFileInputStream> stream;
     CFileInputStream::New(file, (IFileInputStream**)&stream);
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    FAIL_RETURN(parser->SetInputEx(stream, String(NULL)));
+    FAIL_RETURN(parser->SetInput(stream, String(NULL)));
 
     Int32 type;
     FAIL_RETURN(parser->Next(&type));
@@ -2432,7 +2432,7 @@ ECode CDevicePolicyManagerService::LoadSettingsLocked(
         FAIL_RETURN(parser->GetName(&tag));
         if (tag.Equals("admin")) {
             String name;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("name"), &name));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("name"), &name));
 
             AutoPtr<IComponentNameHelper> cnHelper;
             CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&cnHelper);
@@ -2466,38 +2466,38 @@ ECode CDevicePolicyManagerService::LoadSettingsLocked(
             }
         } else if (tag.Equals("failed-password-attempts")) {
             String str;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &str));
             policy->mFailedPasswordAttempts = StringUtils::ParseInt32(str);
             XmlUtils::SkipCurrentTag(parser);
         } else if (tag.Equals("password-owner")) {
             String str;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &str));
             policy->mPasswordOwner = StringUtils::ParseInt32(str);
             XmlUtils::SkipCurrentTag(parser);
         } else if (tag.Equals("active-password")) {
             String str;
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("quality"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("quality"), &str));
             policy->mActivePasswordQuality = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(), String("length"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(), String("length"), &str));
             policy->mActivePasswordLength = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("uppercase"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("uppercase"), &str));
             policy->mActivePasswordUpperCase = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("lowercase"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("lowercase"), &str));
             policy->mActivePasswordLowerCase = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("letters"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("letters"), &str));
             policy->mActivePasswordLetters = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("numeric"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("numeric"), &str));
             policy->mActivePasswordNumeric = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("symbols"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("symbols"), &str));
             policy->mActivePasswordSymbols = StringUtils::ParseInt32(str);
 
-            FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("nonletter"), &str));
+            FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("nonletter"), &str));
             policy->mActivePasswordNonLetter = StringUtils::ParseInt32(str);
 
             XmlUtils::SkipCurrentTag(parser);
@@ -2778,7 +2778,7 @@ Int32 CDevicePolicyManagerService::GetEncryptionStatus()
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String status;
-    sysProp->GetEx(String("ro.crypto.state"), String("unsupported"), &status);
+    sysProp->Get(String("ro.crypto.state"), String("unsupported"), &status);
 
     if (status.EqualsIgnoreCase("encrypted")) {
         return IDevicePolicyManager::ENCRYPTION_STATUS_ACTIVE;
@@ -3158,7 +3158,7 @@ void CDevicePolicyManagerService::WipeDataLocked(
         // CIntent::New(IExternalStorageFormatter::FORMAT_AND_FACTORY_RESET, (IIntent**)&intent);
         // intent->PutBooleanExtra(IExternalStorageFormatter::EXTRA_ALWAYS_RESET, TRUE);
         // intent.setComponent(CExternalStorageFormatter::COMPONENT_NAME);
-        mWakeLock->AcquireLockEx(10000);
+        mWakeLock->AcquireLock(10000);
 
         AutoPtr<IComponentName> tmpComp;
         mContext->StartService(intent, (IComponentName**)&tmpComp);

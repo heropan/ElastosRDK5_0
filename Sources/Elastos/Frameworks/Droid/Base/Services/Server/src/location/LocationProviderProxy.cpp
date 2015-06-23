@@ -1,6 +1,6 @@
 
 #include "location/LocationProviderProxy.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Location::EIID_IILocationProvider;

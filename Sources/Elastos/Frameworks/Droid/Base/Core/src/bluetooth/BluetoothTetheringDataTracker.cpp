@@ -8,12 +8,12 @@
 #include "net/CRouteInfo.h"
 #include "net/NetworkUtils.h"
 #include "os/CSystemProperties.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Thread.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
@@ -108,11 +108,11 @@ ECode BluetoothTetheringDataTracker::DhcpRunnable::Run()
                 if (VDBG) Logger::D(TAG, "startReverseTether mCsHandler: %p", mHost->mCsHandler.Get());
                 if(mHost->mCsHandler != NULL) {
                     AutoPtr<IMessage> msg;
-                    mHost->mCsHandler->ObtainMessageEx(EVENT_CONFIGURATION_CHANGED, mHost->mNetworkInfo, (IMessage**)&msg);
+                    mHost->mCsHandler->ObtainMessage(EVENT_CONFIGURATION_CHANGED, mHost->mNetworkInfo, (IMessage**)&msg);
                     msg->SendToTarget();
 
                     AutoPtr<IMessage> msg1;
-                    mHost->mCsHandler->ObtainMessageEx(EVENT_STATE_CHANGED, mHost->mNetworkInfo, (IMessage**)&msg1);
+                    mHost->mCsHandler->ObtainMessage(EVENT_STATE_CHANGED, mHost->mNetworkInfo, (IMessage**)&msg1);
                     msg1->SendToTarget();
                 }
             }
@@ -311,7 +311,7 @@ ECode BluetoothTetheringDataTracker::GetNetworkInfo(
     VALIDATE_NOT_NULL(info)
     Mutex::Autolock lock(mLock);
     *info = mNetworkInfo;
-    INTERFACE_ADDREF(*info)
+    REFCOUNT_ADD(*info)
     return NOERROR;
 }
 
@@ -460,11 +460,11 @@ void BluetoothTetheringDataTracker::StopReverseTether()
     mNetworkInfo->SetDetailedState(NetworkInfoDetailedState_DISCONNECTED, String(NULL), String(NULL));
 
     AutoPtr<IMessage> msg;
-    mCsHandler->ObtainMessageEx(EVENT_CONFIGURATION_CHANGED, mNetworkInfo, (IMessage**)&msg);
+    mCsHandler->ObtainMessage(EVENT_CONFIGURATION_CHANGED, mNetworkInfo, (IMessage**)&msg);
     msg->SendToTarget();
 
     AutoPtr<IMessage> msg1;
-    mCsHandler->ObtainMessageEx(EVENT_STATE_CHANGED, mNetworkInfo, (IMessage**)&msg1);
+    mCsHandler->ObtainMessage(EVENT_STATE_CHANGED, mNetworkInfo, (IMessage**)&msg1);
     msg1->SendToTarget();
 }
 

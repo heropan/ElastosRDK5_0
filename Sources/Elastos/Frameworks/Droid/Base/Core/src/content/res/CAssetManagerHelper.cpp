@@ -15,7 +15,7 @@ ECode CAssetManagerHelper::GetSystem(
 
     AutoPtr<CAssetManager> amObj = CAssetManager::GetSystem();
     *am = (IAssetManager*)amObj.Get();
-    INTERFACE_ADDREF(*am);
+    REFCOUNT_ADD(*am);
     return NOERROR;
 }
 

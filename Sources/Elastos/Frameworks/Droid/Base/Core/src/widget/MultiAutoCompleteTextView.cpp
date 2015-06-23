@@ -90,13 +90,13 @@ ECode MultiAutoCompleteTextView::PerformValidation()
         if(TextUtils::IsEmpty(sub)) {
             AutoPtr<ICharSequence> csqnull;
             CStringWrapper::New(String(""), (ICharSequence**)&csqnull);
-            text->ReplaceEx(start, i, csqnull);
+            text->Replace(start, i, csqnull);
         } else if (!isValid) {
             AutoPtr<ICharSequence> csq;
             v->FixText(sub, (ICharSequence**)&csq);
             AutoPtr<ICharSequence> terCsq;
             mTokenizer->TerminateToken(csq, (ICharSequence**)&terCsq);
-            text->ReplaceEx(start, i, terCsq);
+            text->Replace(start, i, terCsq);
         }
         i = start;
     }
@@ -151,7 +151,7 @@ void MultiAutoCompleteTextView::PerformFiltering(
 {
     AutoPtr<ICharSequence> sub;
     text->SubSequence(start, end, (ICharSequence**)&sub);
-    GetFilter()->DoFilterEx(sub, (IFilterListener*)this->Probe(EIID_IFilterListener));
+    GetFilter()->DoFilter(sub, (IFilterListener*)this->Probe(EIID_IFilterListener));
 }
 
 void MultiAutoCompleteTextView::ReplaceText(
@@ -168,7 +168,7 @@ void MultiAutoCompleteTextView::ReplaceText(
     QwertyKeyListener::MarkAsReplaced(editable, start, end, original);
     AutoPtr<ICharSequence> seq;
     mTokenizer->TerminateToken(text, (ICharSequence**)&seq);
-    editable->ReplaceEx(start, end, seq);
+    editable->Replace(start, end, seq);
 }
 
 void MultiAutoCompleteTextView::FinishInit()

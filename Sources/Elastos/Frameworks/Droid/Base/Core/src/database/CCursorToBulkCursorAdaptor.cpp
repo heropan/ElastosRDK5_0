@@ -2,7 +2,7 @@
 #include "database/CCursorToBulkCursorAdaptor.h"
 #include "database/CCrossProcessCursorWrapper.h"
 #include "database/CCursorWindow.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -45,7 +45,7 @@ ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::DeliverSelfNotifications
     return NOERROR;
 }
 
-ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::OnChangeEx(
+ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::OnChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
@@ -115,7 +115,7 @@ ECode CCursorToBulkCursorAdaptor::GetBulkCursorDescriptor(
         d->mWindow->AcquireReference();
     }
     *result = d;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -163,7 +163,7 @@ ECode CCursorToBulkCursorAdaptor::GetWindow(
         window->AcquireReference();
     }
     *result = window;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

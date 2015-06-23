@@ -2,7 +2,7 @@
 #include "view/CMenuInflater.h"
 #include "util/Xml.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Utility::Logging::Logger;
@@ -118,7 +118,7 @@ void CMenuInflater::MenuState::ReadGroup(
         const_cast<Int32 *>(R::styleable::MenuGroup),
         ARRAY_SIZE(R::styleable::MenuGroup));
     AutoPtr<ITypedArray> a;
-    mOwner->mContext->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    mOwner->mContext->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::MenuGroup_id, sDefaultGroupId, &mGroupId);
     a->GetInt32(R::styleable::MenuGroup_menuCategory, sDefaultItemCategory, &mGroupCategory);
@@ -137,7 +137,7 @@ void CMenuInflater::MenuState::ReadItem(
         const_cast<Int32 *>(R::styleable::MenuItem),
         ARRAY_SIZE(R::styleable::MenuItem));
     AutoPtr<ITypedArray> a;
-    mOwner->mContext->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    mOwner->mContext->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     // Inherit attributes from the group as default value
     a->GetResourceId(R::styleable::MenuItem_id, sDefaultItemId, &mItemId);
@@ -219,7 +219,7 @@ ECode CMenuInflater::MenuState::SetItem(
     item->SetEnabled(mItemEnabled);
     item->SetCheckable(mItemCheckable >= 1);
     item->SetTitleCondensed(mItemTitleCondensed);
-    item->SetIconEx(mItemIconResId);
+    item->SetIcon(mItemIconResId);
     item->SetAlphabeticShortcut(mItemAlphabeticShortcut);
     item->SetNumericShortcut(mItemNumericShortcut);
 
@@ -256,7 +256,7 @@ ECode CMenuInflater::MenuState::SetItem(
     }
     if (mItemActionViewLayout > 0) {
         if (!actionViewSpecified) {
-            item->SetActionViewEx(mItemActionViewLayout);
+            item->SetActionView(mItemActionViewLayout);
             actionViewSpecified = TRUE;
         }
         else {
@@ -273,7 +273,7 @@ ECode CMenuInflater::MenuState::AddItem()
 {
     mItemAdded = TRUE;
     AutoPtr<IMenuItem> item;
-    mMenu->AddEx2(mGroupId, mItemId, mItemCategoryOrder, mItemTitle, (IMenuItem**)&item);
+    mMenu->Add(mGroupId, mItemId, mItemCategoryOrder, mItemTitle, (IMenuItem**)&item);
     return SetItem(item);
 }
 
@@ -281,9 +281,9 @@ ECode CMenuInflater::MenuState::AddSubMenuItem(
     /* [out] */ ISubMenu** subMenu)
 {
     mItemAdded = TRUE;
-    FAIL_RETURN(mMenu->AddSubMenuEx2(mGroupId, mItemId, mItemCategoryOrder, mItemTitle, subMenu));
+    FAIL_RETURN(mMenu->AddSubMenu(mGroupId, mItemId, mItemCategoryOrder, mItemTitle, subMenu));
     AutoPtr<IMenuItem> item;
-    (*subMenu)->GetItemEx((IMenuItem**)&item);
+    (*subMenu)->GetItem((IMenuItem**)&item);
     return SetItem(item);
 }
 

@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Core.Threading.IThread;
+    using interface Elastos.Core.IThread;
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.IContentProviderClient;
     interface Elastos.Droid.Content.ISyncResult;
@@ -68,7 +68,7 @@ module
          * parallel syncs.
          * @param thread the Thread of the sync that is to be canceled.
          */
-        OnSyncCanceledEx(
+        OnSyncCanceled(
             [in] IThread* thread);
     }
 

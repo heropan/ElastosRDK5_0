@@ -4,8 +4,8 @@
 #include "HttpsConnection.h"
 #include "R.h"
 #include "HttpLog.h"
-#include "elastos/StringBuilder.h"
-#include "elastos/Math.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Webkit::ICookieManager;
 using Elastos::Webkit::ICookieManagerHelper;
@@ -502,7 +502,7 @@ ECode CRequestHandle::CreateAndQueueNewRequest()
     }
 
     AutoPtr<IRequestHandle> reqHandle;
-    mRequestQueue->QueueRequestEx(mUrl, mUri, mMethod, headersMap, mRequest->mEventHandler,
+    mRequestQueue->QueueRequest(mUrl, mUri, mMethod, headersMap, mRequest->mEventHandler,
         mBodyProvider, mBodyLength, (IRequestHandle**)&reqHandle);
     mRequest = ((CRequestHandle*)(IRequestHandle*)reqHandle)->mRequest;
 

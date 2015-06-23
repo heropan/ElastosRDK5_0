@@ -52,7 +52,7 @@ void SeekBarPreference::Init(
             const_cast<Int32 *>(R::styleable::ProgressBar),
             ARRAY_SIZE(R::styleable::ProgressBar));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     Int32 max;
     a->GetInt32(R::styleable::ProgressBar_max, mMax, &max);
     SetMax(max);
@@ -144,7 +144,7 @@ ECode SeekBarPreference::OnGetDefaultValue(
     AutoPtr<IInteger32> integer;
     CInteger32::New(lvalue, (IInteger32**)&integer);
     *value = integer;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -277,7 +277,7 @@ ECode SeekBarPreference::OnSaveInstanceState(
     if (IsPersistent(&isPersistent), isPersistent) {
         // No need to save instance state since it's persistent
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -287,7 +287,7 @@ ECode SeekBarPreference::OnSaveInstanceState(
     myState->SetProgress(mProgress);
     myState->SetMax(mMax);
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 

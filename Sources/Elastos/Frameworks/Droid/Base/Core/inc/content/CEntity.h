@@ -4,8 +4,8 @@
 
 #include "_CEntity.h"
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;

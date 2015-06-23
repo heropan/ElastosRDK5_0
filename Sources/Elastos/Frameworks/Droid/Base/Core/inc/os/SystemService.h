@@ -3,11 +3,11 @@
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/HashMap.h>
-#include <elastos/Object.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Object;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

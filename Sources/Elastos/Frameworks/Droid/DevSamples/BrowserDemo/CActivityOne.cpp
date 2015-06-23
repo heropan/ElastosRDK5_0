@@ -1,7 +1,7 @@
 
 #include "CActivityOne.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 // #include "net/WebAddress.h"
 
 using Elastos::Utility::Logging::Slogger;
@@ -159,7 +159,7 @@ ECode CActivityOne::InnerWebChromeClient::OnShowCustomView(
     return WebChromeClient::OnShowCustomView(view, callBack);
 }
 
-ECode CActivityOne::InnerWebChromeClient::OnShowCustomViewEx(
+ECode CActivityOne::InnerWebChromeClient::OnShowCustomView(
     /* [in] */ IView* view,
     /* [in] */ Int32 requestedOrientation,
     /* [in] */ IWebChromeClientCustomViewCallback* callBack)
@@ -291,7 +291,7 @@ ECode CActivityOne::InnerWebChromeClient::OnConsoleMessage(
     return WebChromeClient::OnConsoleMessage(message, lineNumber, sourceID);
 }
 
-ECode CActivityOne::InnerWebChromeClient::OnConsoleMessageEx(
+ECode CActivityOne::InnerWebChromeClient::OnConsoleMessage(
     /* [in] */ IConsoleMessage* consoleMessage,
     /* [out] */ Boolean* result)
 {

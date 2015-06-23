@@ -105,7 +105,6 @@ SOURCES += Elastos.Core.cpp
 SOURCES += Elastos.Droid.System.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Core.lib
 LIBRARIES += graphics/graphics.lib
 LIBRARIES += content/content.lib
 LIBRARIES += os/os.lib

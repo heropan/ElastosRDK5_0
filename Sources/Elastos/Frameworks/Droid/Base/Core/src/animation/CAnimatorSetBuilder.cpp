@@ -76,7 +76,7 @@ ECode CAnimatorSetBuilder::After(
     return NOERROR;
 }
 
-ECode CAnimatorSetBuilder::AfterEx(
+ECode CAnimatorSetBuilder::After(
        /* [in] */ Int64 delay)
 {
     assert(mHost != NULL);

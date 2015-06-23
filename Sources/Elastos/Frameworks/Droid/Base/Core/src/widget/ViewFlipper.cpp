@@ -85,7 +85,7 @@ ECode ViewFlipper::Init(
             const_cast<Int32 *>(R::styleable::ViewFlipper),
             ARRAY_SIZE(R::styleable::ViewFlipper));
     AutoPtr<ITypedArray> a;
-    ctx->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    ctx->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     a->GetInt32(R::styleable::ViewFlipper_flipInterval, DEFAULT_INTERVAL, &mFlipInterval);
     a->GetBoolean(R::styleable::ViewFlipper_autoStart, FALSE, &mAutoStart);
     a->Recycle();

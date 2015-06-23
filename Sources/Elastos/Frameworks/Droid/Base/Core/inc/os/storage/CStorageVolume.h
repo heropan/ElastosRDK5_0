@@ -80,7 +80,7 @@ public:
     CARAPI GetOwner(
         /* [out] */ IUserHandle** pOwner);
 
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IStorageVolume * pObj,
         /* [out] */ Boolean * pEqu);
 

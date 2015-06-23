@@ -9,15 +9,12 @@
 #include "os/FileObserver.h"
 #include "DatabaseHelper.h"
 #include "util/LruCache.h"
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/ThreadBase.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Core::Threading::ThreadBase;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::App::Backup::IBackupManager;

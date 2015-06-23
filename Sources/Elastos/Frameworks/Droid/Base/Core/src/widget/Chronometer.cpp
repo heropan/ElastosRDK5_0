@@ -70,7 +70,7 @@ ECode Chronometer::InitInternal(
             const_cast<Int32 *>(R::styleable::Chronometer),
             ARRAY_SIZE(R::styleable::Chronometer));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(
+    context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     String str;

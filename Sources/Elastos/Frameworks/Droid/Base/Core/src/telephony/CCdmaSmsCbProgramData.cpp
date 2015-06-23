@@ -1,6 +1,6 @@
 
 #include "CCdmaSmsCbProgramData.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 

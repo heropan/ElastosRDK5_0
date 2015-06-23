@@ -4,9 +4,9 @@
 
 #include "_CBackupHelperDispatcher.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::App::Backup::IBackupDataInput;

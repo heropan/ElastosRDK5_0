@@ -57,7 +57,7 @@ module
              * @see #setTitle(CharSequence)
              * @see #setCustomView(View)
              */
-            SetTitleEx(
+            SetTitle(
                 [in] Int32 resId);
 
             /**
@@ -81,7 +81,7 @@ module
              * @see #setSubtitle(CharSequence)
              * @see #setCustomView(View)
              */
-            SetSubtitleEx(
+            SetSubtitle(
                 [in] Int32 resId);
 
             /**

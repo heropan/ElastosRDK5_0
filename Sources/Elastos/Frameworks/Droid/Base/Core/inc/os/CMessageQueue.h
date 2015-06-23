@@ -3,12 +3,11 @@
 
 #include "_CMessageQueue.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -63,7 +62,7 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
-    CARAPI HasMessagesEx(
+    CARAPI HasMessages(
         /* [in] */ IHandler* h,
         /* [in] */ IRunnable* r,
         /* [in] */ IInterface* object,
@@ -74,7 +73,7 @@ public:
         /* [in] */ Int32 what,
         /* [in] */ IInterface* object);
 
-    CARAPI RemoveMessagesEx(
+    CARAPI RemoveMessages(
         /* [in] */ IHandler* h,
         /* [in] */ IRunnable* r,
         /* [in] */ IInterface* object);

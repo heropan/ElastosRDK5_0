@@ -18,7 +18,7 @@ public:
     CARAPI constructor(
         /* [in] */ IPhysicalDisplayInfo* other);
 
-    ECode EqualsEx(
+    ECode Equals(
         /* [in] */ IPhysicalDisplayInfo* other,
         /* [out] */ Boolean* equals);
 

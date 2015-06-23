@@ -14,7 +14,7 @@ module
 
         AnimateCollapse();
 
-        AnimateCollapseEx(
+        AnimateCollapse(
             [in] Float velocityMultiplier);
 
         ConsumeEvent(

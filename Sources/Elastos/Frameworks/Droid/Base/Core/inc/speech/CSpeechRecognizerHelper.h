@@ -23,7 +23,7 @@ public:
         /* [in] */ IContext * pContext,
         /* [out] */ ISpeechRecognizer ** ppRet);
 
-    CARAPI CreateSpeechRecognizerEx(
+    CARAPI CreateSpeechRecognizer(
         /* [in] */ IContext * pContext,
         /* [in] */ IComponentName * pServiceComponent,
         /* [out] */ ISpeechRecognizer ** ppRet);

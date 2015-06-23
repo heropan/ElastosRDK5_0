@@ -4,11 +4,10 @@
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 #include "database/sqlite/SQLiteClosable.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Database::Sqlite::SQLiteClosable;
 
 namespace Elastos {

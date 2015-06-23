@@ -14,10 +14,10 @@
 #include "util/StateMachine.h"
 #include "database/ContentObserver.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Regex::IPattern;

@@ -66,7 +66,7 @@ module
         GetName(
             [out] ICharSequence** result);
 
-        SetNameEx(
+        SetName(
             [in] Int32 nameResId);
 
         /**
@@ -76,7 +76,7 @@ module
          * @return The user-friendly name of the media route. This is the string presented
          * to users who may select this as the active route.
          */
-        GetNameEx(
+        GetName(
             [in] IContext* ctx,
             [out] ICharSequence** result);
 
@@ -287,7 +287,7 @@ module
          * @param context Context to resolve name resources
          * @return the name of this route category
          */
-        GetNameEx(
+        GetName(
              [in] IContext* ctx,
              [out] ICharSequence** result);
 
@@ -567,7 +567,7 @@ module
          * @param route route to add
          * @param insertAt insert the new route before this index
          */
-        AddRouteEx(
+        AddRoute(
             [in] IRouteInfo* route,
             [in] Int32 insertAt);
 
@@ -584,7 +584,7 @@ module
          *
          * @param index index of the route to remove
          */
-        RemoveRouteEx(
+        RemoveRoute(
             [in] Int32 index);
 
         /**
@@ -863,7 +863,7 @@ module
          * @param isGroupable true if routes in this category may be grouped with one another
          * @return the new RouteCategory
          */
-        CreateRouteCategoryEx(
+        CreateRouteCategory(
             [in] Int32 nameResId,
             [in] Boolean isGroupable,
             [out] IRouteCategory** result);

@@ -7,8 +7,8 @@
 #include "net/COpaqueUri.h"
 #include "net/CHierarchicalUri.h"
 #include "text/TextUtils.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;
@@ -51,7 +51,7 @@ ECode CContentProviderOperation::GetUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mUri;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -206,7 +206,7 @@ ECode CContentProviderOperation::ResolveValueBackReferences(
 
     if (NULL == mValuesBackReferences) {
         *contentValues = mValues;
-        INTERFACE_ADDREF(*contentValues);
+        REFCOUNT_ADD(*contentValues);
         return NOERROR;
     }
 
@@ -256,7 +256,7 @@ ECode CContentProviderOperation::ResolveSelectionArgsBackReferences(
 
     if (NULL == mSelectionArgsBackReferences) {
         *stringArray = mSelectionArgs;
-        INTERFACE_ADDREF(*stringArray);
+        REFCOUNT_ADD(*stringArray);
         return NOERROR;
     }
 
@@ -273,7 +273,7 @@ ECode CContentProviderOperation::ResolveSelectionArgsBackReferences(
     }
 
     *stringArray = newArgs;
-    INTERFACE_ADDREF(*stringArray);
+    REFCOUNT_ADD(*stringArray);
     return NOERROR;
 }
 

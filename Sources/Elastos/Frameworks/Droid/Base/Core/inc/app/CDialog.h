@@ -4,9 +4,9 @@
 
 #include "_CDialog.h"
 #include "app/Dialog.h"
-#include "app/DialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 
 namespace Elastos {

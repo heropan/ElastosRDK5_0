@@ -49,12 +49,12 @@ ECode CAssetFileDescriptorAutoCloseInputStream::Read(
 
     Int32 res = 0;
     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte> ::Alloc(1);
-    FAIL_RETURN(ReadBytesEx(buffer, 0, 1, &res));
+    FAIL_RETURN(ReadBytes(buffer, 0, 1, &res));
     *result = res == -1 ? -1 : (*buffer)[0] & 0xff;
     return NOERROR;
 }
 
-ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytesEx(
+ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytes(
     /* [in] */ ArrayOf<Byte> * buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
@@ -70,14 +70,14 @@ ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytesEx(
         if (count > mRemaining) {
             count = (Int32)mRemaining;
         }
-        FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::ReadBytesEx(buffer, offset, count, result));
+        FAIL_RETURN(ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(buffer, offset, count, result));
         if (*result >= 0) {
             mRemaining -= *result;
         }
         return NOERROR;
     }
 
-    return ParcelFileDescriptor::AutoCloseInputStream::ReadBytesEx(buffer, offset, count, result);
+    return ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(buffer, offset, count, result);
 }
 
 ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytes(
@@ -86,7 +86,7 @@ ECode CAssetFileDescriptorAutoCloseInputStream::ReadBytes(
 {
     VALIDATE_NOT_NULL(result);
 
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), result);
+    return ReadBytes(buffer, 0, buffer->GetLength(), result);
 }
 
 ECode CAssetFileDescriptorAutoCloseInputStream::Skip(
@@ -172,7 +172,7 @@ ECode CAssetFileDescriptorAutoCloseInputStream::GetLock(
 
     AutoPtr<IInterface> obj = ParcelFileDescriptor::AutoCloseInputStream::GetLock();
     *lockobj = obj;
-    INTERFACE_ADDREF(*lockobj);
+    REFCOUNT_ADD(*lockobj);
     return NOERROR;
 }
 

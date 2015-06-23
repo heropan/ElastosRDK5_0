@@ -1,7 +1,7 @@
 
 #include "CNotificationManagerService.h"
 #include "am/CServiceRecord.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "os/SystemClock.h"
 #include "os/UserHandle.h"
 #include "am/AppBindRecord.h"

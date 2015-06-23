@@ -68,13 +68,13 @@ ECode CRecentsPanelView::Show(
     return RecentsPanelView::Show(show);
 }
 
-ECode CRecentsPanelView::ShowEx(
+ECode CRecentsPanelView::Show(
     /* [in] */ Boolean show,
     /* [in] */ IObjectContainer* recentTaskDescriptions,
     /* [in] */ Boolean firstScreenful,
     /* [in] */ Boolean waitingForWindowAnimation)
 {
-    return RecentsPanelView::ShowEx(show, recentTaskDescriptions, firstScreenful, waitingForWindowAnimation);
+    return RecentsPanelView::Show(show, recentTaskDescriptions, firstScreenful, waitingForWindowAnimation);
 }
 
 ECode CRecentsPanelView::OnUiHidden()

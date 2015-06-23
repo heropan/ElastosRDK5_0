@@ -9,7 +9,7 @@
 #include "text/TextUtils.h"
 #include "widget/CArrayAdapter.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CObjectContainer;
@@ -124,7 +124,7 @@ ECode ChooseTypeAndAccountActivity::OnCreate(
         savedInstanceState->GetString(KEY_INSTANCE_STATE_SELECTED_ACCOUNT_NAME,
                 &mSelectedAccountName);
 
-        savedInstanceState->GetBooleanEx(KEY_INSTANCE_STATE_SELECTED_ADD_ACCOUNT,
+        savedInstanceState->GetBoolean(KEY_INSTANCE_STATE_SELECTED_ADD_ACCOUNT,
                 FALSE, &mSelectedAddNewAccount);
     }
     else {
@@ -399,8 +399,8 @@ ECode ChooseTypeAndAccountActivity::Run(
     bundle->PutString(IAccountManager::KEY_ERROR_MESSAGE,
             String("error communicating with server"));
     FAIL_RETURN(CIntent::New((IIntent**)&intent));
-    intent->PutExtrasEx(bundle);
-    SetResultEx(IActivity::RESULT_OK, intent);
+    intent->PutExtras(bundle);
+    SetResult(IActivity::RESULT_OK, intent);
     return Finish();
 }
 
@@ -422,8 +422,8 @@ void ChooseTypeAndAccountActivity::SetResultAndFinish(
     bundle->PutString(IAccountManager::KEY_ACCOUNT_TYPE, accountType);
     AutoPtr<IIntent> intent;
     ASSERT_SUCCEEDED(CIntent::New((IIntent**)&intent));
-    intent->PutExtrasEx(bundle);
-    SetResultEx(IActivity::RESULT_OK, intent);
+    intent->PutExtras(bundle);
+    SetResult(IActivity::RESULT_OK, intent);
     // if (Log.isLoggable(TAG, Log.VERBOSE)) {
     //     Log.v(TAG, "ChooseTypeAndAccountActivity.setResultAndFinish: "
     //             + "selected account " + accountName + ", " + accountType);

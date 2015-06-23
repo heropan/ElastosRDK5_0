@@ -2,7 +2,7 @@
 #define __CDEADZONE_H_
 
 #include "_CDeadZone.h"
-#include "view/ViewMacro.h"
+
 #include "systemui/statusbar/policy/DeadZone.h"
 
 namespace Elastos {

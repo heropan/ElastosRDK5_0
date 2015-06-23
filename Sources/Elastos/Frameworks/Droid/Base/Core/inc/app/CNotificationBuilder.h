@@ -3,9 +3,9 @@
 
 #include "_CNotificationBuilder.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::ICharSequence;
@@ -93,7 +93,7 @@ public:
      * @see Notification#icon
      * @see Notification#iconLevel
      */
-    CARAPI SetSmallIconEx(
+    CARAPI SetSmallIcon(
         /* [in] */ Int32 icon,
         /* [in] */ Int32 level);
 
@@ -209,7 +209,7 @@ public:
      * @see Notification#tickerText
      * @see Notification#tickerView
      */
-    CARAPI SetTickerEx(
+    CARAPI SetTicker(
         /* [in] */ ICharSequence * tickerText,
         /* [in] */ IRemoteViews * views);
 
@@ -241,7 +241,7 @@ public:
      *
      * @see Notification#sound
      */
-    CARAPI SetSoundEx(
+    CARAPI SetSound(
         /* [in] */ IUri * sound,
         /* [in] */ Int32 streamType);
 

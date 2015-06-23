@@ -1,8 +1,8 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/CApplicationInfo.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -623,7 +623,7 @@ ECode CApplicationInfo::GetResourceDirs(
 {
     VALIDATE_NOT_NULL(resourceDirs);
     *resourceDirs = mResourceDirs;
-    INTERFACE_ADDREF(*resourceDirs);
+    REFCOUNT_ADD(*resourceDirs);
     return NOERROR;
 }
 
@@ -639,7 +639,7 @@ ECode CApplicationInfo::GetSharedLibraryFiles(
 {
     VALIDATE_NOT_NULL(sharedLibraryFiles);
     *sharedLibraryFiles = mSharedLibraryFiles;
-    INTERFACE_ADDREF(*sharedLibraryFiles);
+    REFCOUNT_ADD(*sharedLibraryFiles);
     return NOERROR;
 }
 

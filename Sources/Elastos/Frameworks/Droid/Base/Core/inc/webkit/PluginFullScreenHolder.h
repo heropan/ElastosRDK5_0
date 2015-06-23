@@ -4,8 +4,8 @@
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
-#include "widget/FrameLayoutMacro.h"
-#include "view/ViewMacro.h"
+
+
 #include "webkit/WebChromeClient.h"
 
 using Elastos::Droid::Content::IContext;

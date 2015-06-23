@@ -486,7 +486,7 @@ public:
      * @see Intent#getData
      * @see Intent#getCategories
      */
-    CARAPI MatchEx(
+    CARAPI Match(
         /* [in] */ const String& action,
         /* [in] */ const String& type,
         /* [in] */ const String& scheme,

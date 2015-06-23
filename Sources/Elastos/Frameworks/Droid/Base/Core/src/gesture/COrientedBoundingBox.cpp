@@ -44,31 +44,31 @@ ECode COrientedBoundingBox::ToPath(
     (*point)[1] = mHeight / 2;
     AutoPtr<IMatrix> matrix;
     CMatrix::New((IMatrix**)&matrix);
-    matrix->SetRotateEx(mOrientation);
+    matrix->SetRotate(mOrientation);
     Boolean isPostTranslated;
     matrix->PostTranslate(mCenterX, mCenterY, &isPostTranslated);
-    matrix->MapPointsEx2(point);
+    matrix->MapPoints(point);
     path->MoveTo((*point)[0], (*point)[1]);
 
     (*point)[0] = -mWidth / 2;
     (*point)[1] = -mHeight / 2;
-    matrix->MapPointsEx2(point);
+    matrix->MapPoints(point);
     path->LineTo((*point)[0], (*point)[1]);
 
     (*point)[0] = mWidth / 2;
     (*point)[1] = -mHeight / 2;
-    matrix->MapPointsEx2(point);
+    matrix->MapPoints(point);
     path->LineTo((*point)[0], (*point)[1]);
 
     (*point)[0] = mWidth / 2;
     (*point)[1] = mHeight / 2;
-    matrix->MapPointsEx2(point);
+    matrix->MapPoints(point);
     path->LineTo((*point)[0], (*point)[1]);
 
     path->Close();
 
     *outPath = path;
-    INTERFACE_ADDREF(*outPath);
+    REFCOUNT_ADD(*outPath);
     return NOERROR;
 }
 

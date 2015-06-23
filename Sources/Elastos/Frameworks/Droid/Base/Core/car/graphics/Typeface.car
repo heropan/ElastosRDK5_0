@@ -62,7 +62,7 @@ module
          *               e.g. NORMAL, BOLD, ITALIC, BOLD_ITALIC
          * @return The best matching typeface.
          */
-        CreateEx(
+        Create(
             [in] ITypeface* family,
             [in] Int32 style,
             [out] ITypeface** typeface);
@@ -94,7 +94,7 @@ module
          * @param path The full path to the font data.
          * @return The new typeface.
          */
-        CreateFromFileEx(
+        CreateFromFile(
             [in] String path,
             [out] ITypeface** typeface);
 

@@ -3,15 +3,12 @@
 #define __LIGHTSSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHardwareService;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Server {

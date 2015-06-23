@@ -5,7 +5,7 @@
 #include "CISerializableNative.h"
 #include "CIIntentSenderNative.h"
 #include <unistd.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <text/TextUtils.h>
 #include <androidfw/Input.h>
 #include <Elastos.Droid.JavaProxy.h>

@@ -78,7 +78,7 @@ public:
      * @see #QUALITY_TIME_LAPSE_720P
      * @see #QUALITY_TIME_LAPSE_1080P
      */
-    static CARAPI GetEx(
+    static CARAPI Get(
         /* [in] */ Int32 cameraId,
         /* [in] */ Int32 quality,
         /* [out] */ ICamcorderProfile** result);
@@ -98,7 +98,7 @@ public:
      * @param cameraId the id for the camera
      * @param quality the target quality level for the camcorder profile
      */
-    static CARAPI HasProfileEx(
+    static CARAPI HasProfile(
         /* [in] */ Int32 cameraId,
         /* [in] */ Int32 quality,
         /* [out] */ Boolean* result);

@@ -3,7 +3,7 @@
 #include "src/data/DataSourceHelper.h"
 #include "src/data/AsyncImageLoader.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/SomeArgs.h"
 
 using Elastos::Droid::Os::SomeArgs;
@@ -141,7 +141,7 @@ ECode CEditActivity::MyLoadImageCallback::ImageLoaded(
     args->mArg2 = imageView;
 
     AutoPtr<IMessage> msg;
-    mHost->mMyHandler->ObtainMessageEx(CEditActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
+    mHost->mMyHandler->ObtainMessage(CEditActivity::MSG_IMAGE_LOADED, args, (IMessage**)&msg);
     Boolean result;
     return mHost->mMyHandler->SendMessage(msg, &result);
 }

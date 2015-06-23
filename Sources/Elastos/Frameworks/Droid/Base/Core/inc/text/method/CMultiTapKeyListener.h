@@ -4,8 +4,8 @@
 
 #include "_CMultiTapKeyListener.h"
 #include "text/method/MultiTapKeyListener.h"
-#include "text/method/BaseKeyListenerMacro.h"
-#include "text/method/KeyListenerMacro.h"
+
+
 
 using Elastos::Droid::Text::Method::Capitalize;
 using Elastos::Droid::Text::IEditable;

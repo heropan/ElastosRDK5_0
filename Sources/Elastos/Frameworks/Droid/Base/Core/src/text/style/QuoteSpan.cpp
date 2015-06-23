@@ -100,7 +100,7 @@ void QuoteSpan::DrawLeadingMargin(
     p->SetStyle(PaintStyle_FILL);
     p->SetColor(mColor);
 
-    c->DrawRectEx2(x, top, x + dir * STRIPE_WIDTH, bottom, p);
+    c->DrawRect(x, top, x + dir * STRIPE_WIDTH, bottom, p);
 
     p->SetStyle(style);
     p->SetColor(color);

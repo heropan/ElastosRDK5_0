@@ -4,7 +4,7 @@
 
 #include "_CBoringLayout.h"
 #include "text/BoringLayout.h"
-#include "text/LayoutMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -39,7 +39,7 @@ public:
      * this one if it is already suitable.  The caller must make sure that
      * no one is still using this Layout.
      */
-    CARAPI ReplaceOrMakeEx(
+    CARAPI ReplaceOrMake(
         /* [in] */ ICharSequence* source,
         /* [in] */ ITextPaint* paint,
         /* [in] */ Int32 outerwidth,

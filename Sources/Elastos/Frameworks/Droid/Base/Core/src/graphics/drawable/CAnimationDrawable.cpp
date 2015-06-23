@@ -75,7 +75,7 @@ ECode CAnimationDrawable::GetFrame(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> dr = AnimationDrawable::GetFrame(index);
     *drawable = dr.Get();
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

@@ -38,7 +38,7 @@ module
          *
          * @throws IllegalStateException when problem parsing stats.
          */
-        ReadNetworkStatsDetailEx(
+        ReadNetworkStatsDetail(
             [in] Int32 limitUid,
             [out] INetworkStats** stats);
     }

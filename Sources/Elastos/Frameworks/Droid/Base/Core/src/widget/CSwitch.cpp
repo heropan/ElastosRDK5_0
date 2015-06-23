@@ -53,7 +53,7 @@ ECode CSwitch::SetSwitchTextAppearance(
     return Switch::SetSwitchTextAppearance(context, resid);
 }
 
-ECode CSwitch::SetSwitchTypefaceEx(
+ECode CSwitch::SetSwitchTypeface(
     /* [in] */ ITypeface* tf,
     /* [in] */ Int32 style)
 {

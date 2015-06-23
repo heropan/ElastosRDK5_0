@@ -264,7 +264,7 @@ module
          * @throws UnsupportOperationException if multiple simultaneous export() are
          *        not allowed
          */
-        ExportEx(
+        Export(
             [in] String filename,
             [in] Int32 height,
             [in] Int32 bitrate,

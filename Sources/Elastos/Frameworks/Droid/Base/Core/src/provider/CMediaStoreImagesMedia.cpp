@@ -53,7 +53,7 @@ ECode CMediaStoreImagesMedia::Query(
    return cr->Query(uri, projection, String(NULL), NULL, IMediaStoreImagesMedia::DEFAULT_SORT_ORDER, cursor);
 }
 
-ECode CMediaStoreImagesMedia::QueryEx(
+ECode CMediaStoreImagesMedia::Query(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
@@ -65,7 +65,7 @@ ECode CMediaStoreImagesMedia::QueryEx(
          NULL, orderBy == String(NULL) ? IMediaStoreImagesMedia::DEFAULT_SORT_ORDER : orderBy, cursor);
 }
 
-ECode CMediaStoreImagesMedia::QueryEx2(
+ECode CMediaStoreImagesMedia::Query(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
@@ -90,7 +90,7 @@ ECode CMediaStoreImagesMedia::GetBitmap(
     ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
         (IBitmapFactory**)&factory));
 
-    factory->DecodeStreamEx(input, (IBitmap**)&bitmap);
+    factory->DecodeStream(input, (IBitmap**)&bitmap);
 
     input->Close();
     return NOERROR;
@@ -112,9 +112,9 @@ ECode CMediaStoreImagesMedia::InsertImage(
         ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
             (IBitmapFactory**)&factory));
         AutoPtr<IBitmap> bm;
-        factory->DecodeFileEx(imagePath, (IBitmap**)&bm);
+        factory->DecodeFile(imagePath, (IBitmap**)&bm);
 
-        InsertImageEx(cr, bm, name, description, url);
+        InsertImage(cr, bm, name, description, url);
         bm->Recycle();
 
     //} finally {
@@ -146,13 +146,13 @@ AutoPtr<IBitmap> CMediaStoreImagesMedia::StoreThumbnail(
     Float scaleX = width / w;
     Float scaleY = height / h;
 
-    matrix->SetScaleEx(scaleX, scaleY);
+    matrix->SetScale(scaleX, scaleY);
 
     AutoPtr<IBitmapFactory> factory;
     ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
 
     AutoPtr<IBitmap> thumb;
-    factory->CreateBitmapEx2(source, 0, 0, w, h, matrix, TRUE, (IBitmap**)&thumb);
+    factory->CreateBitmap(source, 0, 0, w, h, matrix, TRUE, (IBitmap**)&thumb);
 
     AutoPtr<IContentValues> values;
     CContentValues::New(4, (IContentValues**)&values);
@@ -190,7 +190,7 @@ AutoPtr<IBitmap> CMediaStoreImagesMedia::StoreThumbnail(
     }*/
 }
 
-ECode CMediaStoreImagesMedia::InsertImageEx(
+ECode CMediaStoreImagesMedia::InsertImage(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IBitmap* source,
     /* [in] */ const String& title,

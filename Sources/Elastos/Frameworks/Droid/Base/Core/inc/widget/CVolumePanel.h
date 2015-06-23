@@ -4,12 +4,11 @@
 
 #include "_CVolumePanel.h"
 #include "ext/frameworkext.h"
-#include "os/HandlerMacro.h"
+
 #include "os/Handler.h"
 #include "database/ContentObserver.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Handler;
@@ -29,8 +28,8 @@ using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::Media::IAudioService;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Media::IToneGenerator;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::HashMap;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

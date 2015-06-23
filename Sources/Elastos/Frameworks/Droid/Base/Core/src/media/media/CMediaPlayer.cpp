@@ -6,8 +6,8 @@
 #include "media/CTrackInfoVendor.h"
 #include "media/Media_Utils.h"
 #include "os/Looper.h"
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <binder/Parcel.h>
 #include <gui/Surface.h>
 #include <utils/String8.h>
@@ -515,7 +515,7 @@ ECode CMediaPlayer::Create(
     FAIL_GOTO(ec, _EXIT_);
 
     *player = mp;
-    INTERFACE_ADDREF(*player);
+    REFCOUNT_ADD(*player);
     return NOERROR;
 
 _EXIT_:
@@ -551,7 +551,7 @@ ECode CMediaPlayer::Create(
     afd->GetStartOffset(&offset);
     afd->GetLength(&length);
 
-    ec = mp->SetDataSourceEx5(fd, offset, length);
+    ec = mp->SetDataSource(fd, offset, length);
     FAIL_GOTO(ec, _EXIT_);
 
     if (afd != NULL) {
@@ -563,7 +563,7 @@ ECode CMediaPlayer::Create(
     FAIL_GOTO(ec, _EXIT_);
 
     *player = mp ;
-    INTERFACE_ADDREF(*player);
+    REFCOUNT_ADD(*player);
     return NOERROR;
 
 _EXIT_:
@@ -581,10 +581,10 @@ ECode CMediaPlayer::SetDataSource(
     /* [in] */ IUri* uri)
 {
     if (LOGV) Logger::V(TAG, "SetDataSource uri");
-    return SetDataSourceEx(context, uri, NULL);
+    return SetDataSource(context, uri, NULL);
 }
 
-ECode CMediaPlayer::SetDataSourceEx(
+ECode CMediaPlayer::SetDataSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
     /* [in] */ IObjectStringMap* headers)
@@ -599,7 +599,7 @@ ECode CMediaPlayer::SetDataSourceEx(
     if(scheme.IsNull() || scheme.Equals("file")) {
         String path;
         uri->GetPath(&path);
-        return SetDataSourceEx3(path, headers);
+        return SetDataSource(path, headers);
     }
 
     AutoPtr<IAssetFileDescriptor> afd;
@@ -628,10 +628,10 @@ ECode CMediaPlayer::SetDataSourceEx(
     FAIL_GOTO(ec, _EXIT_)
 
     if (length < 0) {
-       ec = SetDataSourceEx4(fd);
+       ec = SetDataSource(fd);
     }
     else {
-       ec = SetDataSourceEx5(fd, offset, length);
+       ec = SetDataSource(fd, offset, length);
     }
 
 _EXIT_:
@@ -646,10 +646,10 @@ _EXIT_:
 
     Logger::D(TAG, "Couldn't open file on client side, trying server side");
     uri->ToString(&uriStr);
-    return SetDataSourceEx3(uriStr, headers);
+    return SetDataSource(uriStr, headers);
 }
 
-ECode CMediaPlayer::SetDataSourceEx2(
+ECode CMediaPlayer::SetDataSource(
     /* [in] */ const String& path)
 {
     ECode ec = SetDataSource(path, NULL, NULL);
@@ -657,7 +657,7 @@ ECode CMediaPlayer::SetDataSourceEx2(
     return ec;
 }
 
-ECode CMediaPlayer::SetDataSourceEx3(
+ECode CMediaPlayer::SetDataSource(
     /* [in] */ const String& path,
     /* [in] */ IObjectStringMap* headers)
 {
@@ -706,7 +706,7 @@ ECode CMediaPlayer::SetDataSource(
 
         AutoPtr<IFileDescriptor> fd;
         is->GetFD((IFileDescriptor**)&fd);
-        ECode ec = SetDataSourceEx4(fd);
+        ECode ec = SetDataSource(fd);
         is->Close();
         return ec;
     }
@@ -744,14 +744,14 @@ ECode CMediaPlayer::NativeSetDataSource(
     return process_media_player_call(this, opStatus, E_IO_EXCEPTION, "NativeSetDataSource failed.");
 }
 
-ECode CMediaPlayer::SetDataSourceEx4(
+ECode CMediaPlayer::SetDataSource(
     /* [in] */ IFileDescriptor* fd)
 {
     // intentionally less than LONG_MAX
-    return SetDataSourceEx5(fd, 0, 0x7ffffffffffffffll);
+    return SetDataSource(fd, 0, 0x7ffffffffffffffll);
 }
 
-ECode CMediaPlayer::SetDataSourceEx5(
+ECode CMediaPlayer::SetDataSource(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
@@ -1064,7 +1064,7 @@ ECode CMediaPlayer::GetMetadata(
         return NOERROR;
     }
     *metadata = data;
-    INTERFACE_ADDREF(*metadata);
+    REFCOUNT_ADD(*metadata);
     return NOERROR;
 }
 
@@ -1306,7 +1306,7 @@ ECode CMediaPlayer::SetParameter(
     return NOERROR;
 }
 
-ECode CMediaPlayer::SetParameterEx(
+ECode CMediaPlayer::SetParameter(
     /* [in] */ Int32 key,
     /* [in] */ const String& value,
     /* [out] */ Boolean* result)
@@ -1321,7 +1321,7 @@ ECode CMediaPlayer::SetParameterEx(
     return ec;
 }
 
-ECode CMediaPlayer::SetParameterEx2(
+ECode CMediaPlayer::SetParameter(
     /* [in] */ Int32 key,
     /* [in] */ Int32 value,
     /* [out] */ Boolean* result)
@@ -1362,7 +1362,7 @@ ECode CMediaPlayer::GetParcelParameter(
     CCallbackParcel::New((IParcel**)&p);
     FAIL_RETURN(GetParameter(key, p));
     *result = p;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1600,7 +1600,7 @@ ECode CMediaPlayer::GetTrackInfo(
         Invoke(request, reply);
         AutoPtr<ArrayOf<IMediaPlayerTrackInfo> > trackInfo = reply->CreateTypedArray(TrackInfo_CREATOR);
         *result = trackInfo;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     //} finally {
     //    request->Recycle();
     //    reply->Recycle();
@@ -1633,7 +1633,7 @@ ECode CMediaPlayer::AddTimedTextSource(
 
         AutoPtr<IFileDescriptor> fd;
         is->GetFD((IFileDescriptor**)&fd);
-        ECode ec = AddTimedTextSourceEx2(fd, mimeType);
+        ECode ec = AddTimedTextSource(fd, mimeType);
         is->Close();
         return ec;
     }
@@ -1643,7 +1643,7 @@ ECode CMediaPlayer::AddTimedTextSource(
     }
 }
 
-ECode CMediaPlayer::AddTimedTextSourceEx(
+ECode CMediaPlayer::AddTimedTextSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
     /* [in] */ const String& mimeType)
@@ -1668,7 +1668,7 @@ ECode CMediaPlayer::AddTimedTextSourceEx(
 
     AutoPtr<IFileDescriptor> des;
     fd->GetFileDescriptor((IFileDescriptor**)&des);
-    ECode ec = AddTimedTextSourceEx2(des, mimeType);
+    ECode ec = AddTimedTextSource(des, mimeType);
     fd->Close();
     return ec;
     //} catch (SecurityException ex) {
@@ -1680,15 +1680,15 @@ ECode CMediaPlayer::AddTimedTextSourceEx(
     //}
 }
 
-ECode CMediaPlayer::AddTimedTextSourceEx2(
+ECode CMediaPlayer::AddTimedTextSource(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ const String& mimeType)
 {
     // intentionally less than LONG_MAX
-    return AddTimedTextSourceEx3(fd, 0, 0x7ffffffffffffffL, mimeType);
+    return AddTimedTextSource(fd, 0, 0x7ffffffffffffffL, mimeType);
 }
 
-ECode CMediaPlayer::AddTimedTextSourceEx3(
+ECode CMediaPlayer::AddTimedTextSource(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length,
@@ -1852,7 +1852,7 @@ ECode CMediaPlayer::PostEventFromNative(
 
     if (mp->mEventHandler != NULL) {
         AutoPtr<IMessage> message;
-        mp->mEventHandler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&message);
+        mp->mEventHandler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&message);
         Boolean bval;
         return mp->mEventHandler->SendMessage(message, &bval);
     }
@@ -2012,7 +2012,7 @@ ECode CMediaPlayer::GetSubList(
     }
 
     *infoArray = infos;
-    INTERFACE_ADDREF(*infoArray);
+    REFCOUNT_ADD(*infoArray);
 
 error:
     if (csubList != NULL) delete[] csubList;
@@ -2313,7 +2313,7 @@ ECode CMediaPlayer::GetTrackList(
     }
 
     *trackArray = tracks;
-    INTERFACE_ADDREF(*trackArray);
+    REFCOUNT_ADD(*trackArray);
 
 error:
     if (ctrackList) delete[] ctrackList;
@@ -2769,7 +2769,7 @@ ECode CMediaPlayer::SetDlnaSourceDetector(
 {
     mDlnaSourceDetector = detector;
 
-    ECode ec = SetDataSourceEx2(SOFTWINNER_DLNA_SOURCE_DETECTOR);
+    ECode ec = SetDataSource(SOFTWINNER_DLNA_SOURCE_DETECTOR);
     if (FAILED(ec)) {
         Logger::E(TAG, "Fail to set DlnaSourceDetector..");
     }

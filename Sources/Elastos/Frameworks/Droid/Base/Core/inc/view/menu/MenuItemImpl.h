@@ -4,8 +4,8 @@
 
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/StringBuffer.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::ICharSequence;
@@ -171,7 +171,7 @@ public:
     CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    CARAPI SetTitleEx(
+    CARAPI SetTitle(
         /* [in] */ Int32 title);
 
     CARAPI GetTitleCondensed(
@@ -186,7 +186,7 @@ public:
     CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ Int32 iconResId);
 
     CARAPI IsCheckable(
@@ -271,7 +271,7 @@ public:
     CARAPI SetActionView(
         /* [in] */ IView* view);
 
-    CARAPI SetActionViewEx(
+    CARAPI SetActionView(
         /* [in] */ Int32 resId);
 
     CARAPI GetActionView(

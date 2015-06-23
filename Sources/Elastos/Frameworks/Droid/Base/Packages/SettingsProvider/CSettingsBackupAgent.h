@@ -6,18 +6,18 @@
 #include "app/backup/BackupAgentHelper.h"
 #include "os/Runnable.h"
 #include "SettingsHelper.h"
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::IO::IWriter;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::CBufferedReader;
 using Elastos::IO::IBufferedWriter;
 using Elastos::IO::CBufferedWriter;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::Backup::BackupAgentHelper;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::Wifi::IWifiManager;

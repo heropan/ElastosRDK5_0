@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "media/CMediaSyncEvent.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using namespace Elastos::Core;
 using Elastos::Utility::Logging::Slogger;

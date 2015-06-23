@@ -3,8 +3,8 @@
 
 #include "_CDigitalClock.h"
 #include "widget/DigitalClock.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{

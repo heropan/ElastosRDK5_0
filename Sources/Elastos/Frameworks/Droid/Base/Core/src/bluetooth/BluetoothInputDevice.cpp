@@ -3,8 +3,8 @@
 #include "CBluetoothAdapter.h"
 #include "CBluetoothInputDeviceStateChangeCallback.h"
 #include "content/CIntent.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;

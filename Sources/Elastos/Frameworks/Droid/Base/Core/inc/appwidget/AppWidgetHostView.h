@@ -104,7 +104,7 @@ public:
     /**
      * @hide
      */
-    CARAPI UpdateAppWidgetSizeEx(
+    CARAPI UpdateAppWidgetSize(
         /* [in] */ IBundle* newOptions,
         /* [in] */ Int32 minWidth,
         /* [in] */ Int32 minHeight,

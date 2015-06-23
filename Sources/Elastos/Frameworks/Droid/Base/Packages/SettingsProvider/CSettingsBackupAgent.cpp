@@ -1,9 +1,9 @@
 
 #include "CSettingsBackupAgent.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/FileUtils.h"
 #include "os/Process.h"
-#include <elastos/StringBuffer.h>
+#include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::CStringWrapper;
@@ -560,7 +560,7 @@ ECode CSettingsBackupAgent::OnRestoreFile(
         IDataInput::Probe(in)->ReadInt32(&nBytes);
         if (DEBUG_BACKUP) Logger::D(TAG, "%d bytes of settings data", nBytes);
         AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(nBytes);
-        IDataInput::Probe(in)->ReadFullyEx(buffer, 0, nBytes);
+        IDataInput::Probe(in)->ReadFully(buffer, 0, nBytes);
         AutoPtr<IUri> uri;
         system->GetContentUri((IUri**)&uri);
         RestoreSettings(buffer, nBytes, uri, movedToGlobal);
@@ -572,7 +572,7 @@ ECode CSettingsBackupAgent::OnRestoreFile(
             buffer = NULL;
             buffer = ArrayOf<Byte>::Alloc(nBytes);
         }
-        IDataInput::Probe(in)->ReadFullyEx(buffer, 0, nBytes);
+        IDataInput::Probe(in)->ReadFully(buffer, 0, nBytes);
         uri = NULL;
         secure->GetContentUri((IUri**)&uri);
         RestoreSettings(buffer, nBytes, uri, movedToGlobal);
@@ -585,7 +585,7 @@ ECode CSettingsBackupAgent::OnRestoreFile(
                 buffer = NULL;
                 buffer = ArrayOf<Byte>::Alloc(nBytes);
             }
-            IDataInput::Probe(in)->ReadFullyEx(buffer, 0, nBytes);
+            IDataInput::Probe(in)->ReadFully(buffer, 0, nBytes);
             movedToGlobal->Clear();
             uri = NULL;
             global->GetContentUri((IUri**)&uri);
@@ -599,7 +599,7 @@ ECode CSettingsBackupAgent::OnRestoreFile(
             buffer = NULL;
             buffer = ArrayOf<Byte>::Alloc(nBytes);
         }
-        IDataInput::Probe(in)->ReadFullyEx(buffer, 0, nBytes);
+        IDataInput::Probe(in)->ReadFully(buffer, 0, nBytes);
         mSettingsHelper->SetLocaleData(buffer, nBytes);
 
         // wifi supplicant
@@ -609,7 +609,7 @@ ECode CSettingsBackupAgent::OnRestoreFile(
             buffer = NULL;
             buffer = ArrayOf<Byte>::Alloc(nBytes);
         }
-        IDataInput::Probe(in)->ReadFullyEx(buffer, 0, nBytes);
+        IDataInput::Probe(in)->ReadFully(buffer, 0, nBytes);
         Int32 retainedWifiState = EnableWifi(FALSE);
         RestoreWifiSupplicant(FILE_WIFI_SUPPLICANT, buffer, nBytes);
         FileUtils::SetPermissions(FILE_WIFI_SUPPLICANT,
@@ -627,7 +627,7 @@ ECode CSettingsBackupAgent::OnRestoreFile(
             buffer = NULL;
             buffer = ArrayOf<Byte>::Alloc(nBytes);
         }
-        IDataInput::Probe(in)->ReadFullyEx(buffer, 0, nBytes);
+        IDataInput::Probe(in)->ReadFully(buffer, 0, nBytes);
         RestoreFileData(mWifiConfigFile, buffer, nBytes);
         if (DEBUG_BACKUP) Logger::D(TAG, "Full restore complete.");
     } else {
@@ -698,7 +698,7 @@ Int64 CSettingsBackupAgent::WriteIfChanged(
 {
     AutoPtr<ICRC32> checkSummer;
     CCRC32::New((ICRC32**)&checkSummer);
-    checkSummer->UpdateEx(*data);
+    checkSummer->Update(*data);
     Int64 newChecksum;
     checkSummer->GetValue(&newChecksum);
     if (oldChecksums == newChecksum) {
@@ -1006,7 +1006,7 @@ AutoPtr<ArrayOf<Byte> > CSettingsBackupAgent::GetFileData(
     Int32 offset = 0;
     Int32 numRead = 0;
     while (offset < bytes->GetLength() &&
-           (ec = is->ReadBytesEx(bytes, offset, bytes->GetLength() - offset, &numRead), numRead >= 0)) {
+           (ec = is->ReadBytes(bytes, offset, bytes->GetLength() - offset, &numRead), numRead >= 0)) {
         if (FAILED(ec)) {
             Logger::W(TAG, "Couldn't backup %s", filename.string());
             if (is != NULL) {
@@ -1052,7 +1052,7 @@ void CSettingsBackupAgent::RestoreFileData(
     AutoPtr<IBufferedOutputStream> bufferoutput;
     CBufferedOutputStream::New(fileoutput, (IBufferedOutputStream**)&bufferoutput);
     AutoPtr<IOutputStream> os = IOutputStream::Probe(bufferoutput);
-    os->WriteBytesEx(*bytes, 0, size);
+    os->WriteBytes(*bytes, 0, size);
     os->Close();
     //}
 }
@@ -1189,7 +1189,7 @@ void CSettingsBackupAgent::CopyWifiSupplicantTemplate(
     AutoPtr<ArrayOf<Char32> > temp = ArrayOf<Char32>::Alloc(1024);
     Int32 size;
     while((ec = br->ReadChars(temp, &size)), (ec == NOERROR) && size > 0){
-        FAIL_GOTO((ec = bw->WriteCharsEx(*temp, 0, size)), _Exit_);
+        FAIL_GOTO((ec = bw->WriteChars(*temp, 0, size)), _Exit_);
     }
 
     //}  catch (IOException ioe) {

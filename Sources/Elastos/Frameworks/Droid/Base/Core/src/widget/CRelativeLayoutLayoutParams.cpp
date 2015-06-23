@@ -40,7 +40,7 @@ ECode CRelativeLayoutLayoutParams::AddRule(
     return RelativeLayoutLayoutParams::AddRule(verb);
 }
 
-ECode CRelativeLayoutLayoutParams::AddRuleEx(
+ECode CRelativeLayoutLayoutParams::AddRule(
     /* [in] */ Int32 verb,
     /* [in] */ Int32 anchor)
 {
@@ -67,7 +67,7 @@ ECode CRelativeLayoutLayoutParams::AddRuleEx(
      return NOERROR;
  }
 
-ECode CRelativeLayoutLayoutParams::GetRulesEx(
+ECode CRelativeLayoutLayoutParams::GetRules(
     /* [in] */ Int32 layoutDirection,
     /* [out, callee] */ ArrayOf<Int32>** rules)
 {

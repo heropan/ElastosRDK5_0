@@ -4,8 +4,8 @@
 
 #include "_CMediaRouter.h"
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "content/BroadcastReceiver.h"
 
 using Elastos::Droid::Hardware::Display::IDisplayListener;
@@ -14,12 +14,12 @@ using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Hardware::Display::IWifiDisplayStatus;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Hardware::Display::IWifiDisplay;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::BroadcastReceiver;
 
@@ -420,7 +420,7 @@ public:
      * @param isGroupable true if routes in this category may be grouped with one another
      * @return the new RouteCategory
      */
-    CARAPI CreateRouteCategoryEx(
+    CARAPI CreateRouteCategory(
         /* [in] */ Int32 nameResId,
         /* [in] */ Boolean isGroupable,
         /* [out] */ IRouteCategory** result);

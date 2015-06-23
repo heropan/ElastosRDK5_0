@@ -33,14 +33,14 @@
 #include "text/TextUtils.h"
 #include "os/Build.h"
 #include "R.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Thread.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
-#include <Elastos.Core.h>
-#include <Elastos.Core.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.CoreLibrary.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IRunnable;
@@ -48,7 +48,7 @@ using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Utility::CObjectStringMap;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
@@ -420,7 +420,7 @@ ECode Activity::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -430,7 +430,7 @@ ECode Activity::GetIntent(
     VALIDATE_NOT_NULL(intent);
 
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -447,7 +447,7 @@ ECode Activity::GetApplication(
     VALIDATE_NOT_NULL(application);
 
     *application = mApplication;
-    INTERFACE_ADDREF(*application)
+    REFCOUNT_ADD(*application)
 
     return NOERROR;
 }
@@ -470,7 +470,7 @@ ECode Activity::GetParent(
 {
     VALIDATE_NOT_NULL(parent);
     *parent = mParent.Get();
-    INTERFACE_ADDREF(*parent);
+    REFCOUNT_ADD(*parent);
     return NOERROR;
 }
 
@@ -479,7 +479,7 @@ ECode Activity::GetWindowManager(
 {
     VALIDATE_NOT_NULL(mgr);
     *mgr = mWindowManager.Get();
-    INTERFACE_ADDREF(*mgr);
+    REFCOUNT_ADD(*mgr);
     return NOERROR;
 }
 
@@ -493,7 +493,7 @@ ECode Activity::GetWindow(
 {
     VALIDATE_NOT_NULL(window);
     *window = mWindow.Get();
-    INTERFACE_ADDREF(*window);
+    REFCOUNT_ADD(*window);
     return NOERROR;
 }
 
@@ -514,7 +514,7 @@ ECode Activity::GetLoaderManager(
     }
 
     *manager = mLoaderManager.Get();
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
@@ -1086,7 +1086,7 @@ ECode Activity::GetFragmentManager(
 {
     VALIDATE_NOT_NULL(fmanager);
     *fmanager = mFragments;
-    INTERFACE_ADDREF(*fmanager)
+    REFCOUNT_ADD(*fmanager)
     return NOERROR;
 }
 
@@ -1133,11 +1133,11 @@ ECode Activity::ManagedQuery(
         StartManagingCursor(c);
     }
     *cursor = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
-ECode Activity::ManagedQueryEx(
+ECode Activity::ManagedQuery(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String&selection,
@@ -1155,7 +1155,7 @@ ECode Activity::ManagedQueryEx(
         StartManagingCursor(c);
     }
     *cursor = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -1218,7 +1218,7 @@ ECode Activity::GetActionBar(
 
     FAIL_RETURN(InitActionBar());
     *actionbar = mActionBar;
-    INTERFACE_ADDREF(*actionbar)
+    REFCOUNT_ADD(*actionbar)
     return NOERROR;
 }
 
@@ -1263,18 +1263,18 @@ ECode Activity::SetContentView(
     return InitActionBar();
 }
 
-ECode Activity::SetContentViewEx(
+ECode Activity::SetContentView(
     /* [in] */ IView* view)
 {
-    FAIL_RETURN(GetWindow()->SetContentViewEx(view));
+    FAIL_RETURN(GetWindow()->SetContentView(view));
     return InitActionBar();
 }
 
-ECode Activity::SetContentViewEx2(
+ECode Activity::SetContentView(
     /* [in] */ IView* view,
     /* [in] */ IViewGroupLayoutParams* params)
 {
-    FAIL_RETURN(GetWindow()->SetContentViewEx2(view, params));
+    FAIL_RETURN(GetWindow()->SetContentView(view, params));
     return InitActionBar();
 }
 
@@ -1311,7 +1311,7 @@ ECode Activity::SetDefaultKeyMode(
         CSpannableStringBuilder::New((ISpannableStringBuilder**)&mDefaultKeySsb);
         AutoPtr<ISelectionHelper> helper;
         //CSelectionHelper::AcquireSingleton((ISelectionHelper**)&helper);
-        FAIL_RETURN(helper->SetSelectionEx(mDefaultKeySsb, 0));
+        FAIL_RETURN(helper->SetSelection(mDefaultKeySsb, 0));
         break;
     }
     default:
@@ -1423,7 +1423,7 @@ ECode Activity::OnKeyDown(
 
             AutoPtr<ISelectionHelper> helper;
             //CSelectionHelper::AcquireSingleton((ISelectionHelper**)&helper);
-            FAIL_RETURN(helper->SetSelectionEx(mDefaultKeySsb, 0));
+            FAIL_RETURN(helper->SetSelection(mDefaultKeySsb, 0));
         }
 
         *result = handled;
@@ -1626,7 +1626,7 @@ ECode Activity::DispatchKeyEvent(
         FAIL_RETURN(decor->GetKeyDispatcherState((IDispatcherState**)&dispatcher));
     }
 
-    event->DispatchEx(THIS_PROBE(IKeyEventCallback), dispatcher,
+    event->Dispatch(THIS_PROBE(IKeyEventCallback), dispatcher,
             THIS_PROBE(IInterface), isConsumed);
     return NOERROR;
 }
@@ -2142,10 +2142,10 @@ ECode Activity::ShowDialog(
     /* [in] */ Int32 id)
 {
     Boolean res;
-    return ShowDialogEx(id, NULL, &res);
+    return ShowDialog(id, NULL, &res);
 }
 
-ECode Activity::ShowDialogEx(
+ECode Activity::ShowDialog(
     /* [in] */ Int32 id,
     /* [in] */ IBundle* args,
     /* [out] */ Boolean* result)
@@ -2325,7 +2325,7 @@ ECode Activity::GetMenuInflater (
     //     }
     // }
     // *menuInflater = mMenuInflater;
-    // INTERFACE_ADDREF(*menuInflater);
+    // REFCOUNT_ADD(*menuInflater);
     return NOERROR;
 }
 
@@ -2352,10 +2352,10 @@ ECode Activity::StartActivityForResult(
     /* [in] */ IIntent *intent,
     /* [in] */ Int32 requestCode)
 {
-    return StartActivityForResultEx(intent, requestCode, NULL);
+    return StartActivityForResult(intent, requestCode, NULL);
 }
 
-ECode Activity::StartActivityForResultEx(
+ECode Activity::StartActivityForResult(
     /* [in] */ IIntent *intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options)
@@ -2388,7 +2388,7 @@ ECode Activity::StartActivityForResultEx(
     }
     else {
         if (options != NULL) {
-            return mParent->StartActivityFromChildEx(THIS_PROBE(IActivity), intent, requestCode, options);
+            return mParent->StartActivityFromChild(THIS_PROBE(IActivity), intent, requestCode, options);
         }
         else {
             // Note we want to go through this method for compatibility with
@@ -2408,11 +2408,11 @@ ECode Activity::StartIntentSenderForResult(
     /* [in] */ Int32 flagsValues,
     /* [in] */ Int32 extraFlags)
 {
-    return StartIntentSenderForResultEx(intent, requestCode, fillInIntent, flagsMask,
+    return StartIntentSenderForResult(intent, requestCode, fillInIntent, flagsMask,
             flagsValues, extraFlags, NULL);
 }
 
-ECode Activity::StartIntentSenderForResultEx(
+ECode Activity::StartIntentSenderForResult(
     /* [in] */ IIntentSender* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IIntent* fillInIntent,
@@ -2426,7 +2426,7 @@ ECode Activity::StartIntentSenderForResultEx(
                 flagsMask, flagsValues, THIS_PROBE(IActivity), options);
     }
     else if (options != NULL) {
-        return mParent->StartIntentSenderFromChildEx(THIS_PROBE(IActivity),
+        return mParent->StartIntentSenderFromChild(THIS_PROBE(IActivity),
                 intent, requestCode, fillInIntent, flagsMask, flagsValues, extraFlags, options);
     }
     else {
@@ -2493,10 +2493,10 @@ ECode Activity::StartActivityIfNeeded(
     /* [in] */ Int32 requestCode,
     /* [out] */ Boolean* started)
 {
-    return StartActivityIfNeededEx(intent, requestCode, NULL, started);
+    return StartActivityIfNeeded(intent, requestCode, NULL, started);
 }
 
-ECode Activity::StartActivityIfNeededEx(
+ECode Activity::StartActivityIfNeeded(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options,
@@ -2559,10 +2559,10 @@ ECode Activity::StartNextMatchingActivity(
     /* [in] */ IIntent* intent,
     /* [out] */ Boolean* started)
 {
-    return StartNextMatchingActivityEx(intent, NULL, started);
+    return StartNextMatchingActivity(intent, NULL, started);
 }
 
-ECode Activity::StartNextMatchingActivityEx(
+ECode Activity::StartNextMatchingActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [out] */ Boolean* started)
@@ -2597,10 +2597,10 @@ ECode Activity::StartActivityFromChild(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode)
 {
-    return StartActivityFromChildEx(child, intent, requestCode, NULL);
+    return StartActivityFromChild(child, intent, requestCode, NULL);
 }
 
-ECode Activity::StartActivityFromChildEx(
+ECode Activity::StartActivityFromChild(
     /* [in] */ IActivity* child,
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
@@ -2631,10 +2631,10 @@ ECode Activity::StartActivityFromFragment(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode)
 {
-    return StartActivityFromFragmentEx(fragment, intent, requestCode, NULL);
+    return StartActivityFromFragment(fragment, intent, requestCode, NULL);
 }
 
-ECode Activity::StartActivityFromFragmentEx(
+ECode Activity::StartActivityFromFragment(
     /* [in] */ IFragment* fragment,
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
@@ -2644,7 +2644,7 @@ ECode Activity::StartActivityFromFragmentEx(
     AutoPtr<IApplicationThread> at;
     FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
 
-    FAIL_RETURN(mInstrumentation->ExecStartActivityEx(
+    FAIL_RETURN(mInstrumentation->ExecStartActivity(
             mBase, IBinder::Probe(at.Get()), mToken, fragment, intent, requestCode, options,
             (IInstrumentationActivityResult**)&result));
     if (result != NULL) {
@@ -2670,11 +2670,11 @@ ECode Activity::StartIntentSenderFromChild(
     /* [in] */ Int32 flagsValues,
     /* [in] */ Int32 extraFlags)
 {
-    return StartIntentSenderFromChildEx(child, intent, requestCode, fillInIntent,
+    return StartIntentSenderFromChild(child, intent, requestCode, fillInIntent,
             flagsMask, flagsValues, extraFlags, NULL);
 }
 
-ECode Activity::StartIntentSenderFromChildEx(
+ECode Activity::StartIntentSenderFromChild(
     /* [in] */ IActivity* child,
     /* [in] */ IIntentSender* intent,
     /* [in] */ Int32 requestCode,
@@ -2715,7 +2715,7 @@ ECode Activity::SetResult(
     return NOERROR;
 }
 
-ECode Activity::SetResultEx(
+ECode Activity::SetResult(
     /* [in] */ Int32 resultCode,
     /* [in] */ IIntent* data)
 {
@@ -2777,7 +2777,7 @@ ECode Activity::MakeVisible()
         AutoPtr<IWindowManagerLayoutParams> wmlp;
         FAIL_RETURN(GetWindow()->GetAttributes((IWindowManagerLayoutParams**)&wmlp));
         AutoPtr<IViewManager> wm = GetWindowManager();
-        FAIL_RETURN(wm->AddViewEx5(mDecor, wmlp));
+        FAIL_RETURN(wm->AddView(mDecor, wmlp));
         mWindowAdded = TRUE;
     }
     return mDecor->SetVisibility(IView::VISIBLE);
@@ -3121,7 +3121,7 @@ ECode Activity::GetComponentName(
 {
     VALIDATE_NOT_NULL(name);
     *name = mComponent;
-    INTERFACE_ADDREF(*name)
+    REFCOUNT_ADD(*name)
     return NOERROR;
 }
 
@@ -3159,7 +3159,7 @@ ECode Activity::SetTitle(
     return NOERROR;
 }
 
-ECode Activity::SetTitleEx(
+ECode Activity::SetTitle(
     /* [in] */ Int32 titleId)
 {
     AutoPtr<ICharSequence> title;
@@ -3180,7 +3180,7 @@ ECode Activity::GetTitle(
 {
     VALIDATE_NOT_NULL(title);
     *title = mTitle;
-    INTERFACE_ADDREF(*title)
+    REFCOUNT_ADD(*title)
     return NOERROR;
 }
 
@@ -3295,7 +3295,7 @@ ECode Activity::OnCreateView(
     return NOERROR;
 }
 
-ECode Activity::OnCreateViewEx(
+ECode Activity::OnCreateView(
     /* [in] */ IView* parent,
     /* [in] */ const String& name,
     /* [in] */ IContext* context,
@@ -3311,13 +3311,13 @@ ECode Activity::OnCreateViewEx(
     }
 
     String fname;
-    attrs->GetAttributeValueEx(String(NULL), String("class"), &fname);
+    attrs->GetAttributeValue(String(NULL), String("class"), &fname);
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Fragment),
             ARRAY_SIZE(R::styleable::Fragment));
 
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     if (fname.IsNull()) {
         a->GetString(R::styleable::Fragment_name, &fname);
     }
@@ -3379,7 +3379,7 @@ ECode Activity::OnCreateViewEx(
         fragment->SetFragmentManager(mFragments);
         AutoPtr<IBundle> savedFragmentState;
         fragment->GetSavedFragmentState((IBundle**)&savedFragmentState);
-        fragment->OnInflateEx(THIS_PROBE(IActivity), attrs, savedFragmentState);
+        fragment->OnInflate(THIS_PROBE(IActivity), attrs, savedFragmentState);
         mFragments->AddFragment(fragment, TRUE);
     }
     else if (inLayout) {
@@ -3403,9 +3403,9 @@ ECode Activity::OnCreateViewEx(
         AutoPtr<IBundle> savedFragmentState;
         fragment->GetSavedFragmentState((IBundle**)&savedFragmentState);
         if (!retaining) {
-            fragment->OnInflateEx(THIS_PROBE(IActivity), attrs, savedFragmentState);
+            fragment->OnInflate(THIS_PROBE(IActivity), attrs, savedFragmentState);
         }
-        FAIL_RETURN(mFragments->MoveToStateEx(fragment));
+        FAIL_RETURN(mFragments->MoveToState(fragment));
     }
 
     AutoPtr<IView> fview;
@@ -3431,7 +3431,7 @@ ECode Activity::OnCreateViewEx(
     }
 
     *view = fview;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -3721,7 +3721,7 @@ ECode Activity::GetParentActivityIntent(
     }
 
     *intent = parentIntent;
-    INTERFACE_ADDREF(*intent)
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 //    } catch (NameNotFoundException e) {
 //        Log.e(TAG, "getParentActivityIntent: bad parentActivityName '" + parentName +
@@ -3751,11 +3751,11 @@ ECode Activity::Attach(
     /* [in] */ IInterface* lastNonConfigurationInstances,
     /* [in] */ IConfiguration* config)
 {
-    return AttachEx(context, aThread, instr, token, 0, application,
+    return Attach(context, aThread, instr, token, 0, application,
             intent, info, title, parent, id, lastNonConfigurationInstances, config);
 }
 
-ECode Activity::AttachEx(
+ECode Activity::Attach(
     /* [in] */ IContext* context,
     /* [in] */ IActivityThread* aThread,
     /* [in] */ IInstrumentation* instr,
@@ -3819,7 +3819,7 @@ ECode Activity::AttachEx(
     mComponent->FlattenToString(&str);
     Int32 flags;
     info->GetFlags(&flags);
-    FAIL_RETURN(mWindow->SetWindowManagerEx(wm, mToken, str,
+    FAIL_RETURN(mWindow->SetWindowManager(wm, mToken, str,
             (flags & IActivityInfo::FLAG_HARDWARE_ACCELERATED) != 0));
 
     if (mParent != NULL) {
@@ -3845,7 +3845,7 @@ ECode Activity::GetActivityToken(
     }
 
     *binder = mToken.Get();
-    INTERFACE_ADDREF(*binder)
+    REFCOUNT_ADD(*binder)
     return NOERROR;
 }
 
@@ -4224,7 +4224,7 @@ ECode Activity::GetToken(
 {
     VALIDATE_NOT_NULL(token);
     *token = mToken;
-    INTERFACE_ADDREF(*token)
+    REFCOUNT_ADD(*token)
     return NOERROR;
 }
 
@@ -4237,12 +4237,12 @@ ECode Activity::IsStartedActivity(
     return NOERROR;
 }
 
-ECode Activity::GetWindowEx(
+ECode Activity::GetWindow(
     /* [out] */ IWindow** window)
 {
     VALIDATE_NOT_NULL(window);
     *window = mWindow.Get();
-    INTERFACE_ADDREF(*window)
+    REFCOUNT_ADD(*window)
     return NOERROR;
 }
 
@@ -4258,7 +4258,7 @@ ECode Activity::GetDecorView(
 {
     VALIDATE_NOT_NULL(decor);
     *decor = mDecor.Get();
-    INTERFACE_ADDREF(*decor)
+    REFCOUNT_ADD(*decor)
     return NOERROR;
 }
 
@@ -4300,12 +4300,12 @@ ECode Activity::IsWindowAdded(
     return NOERROR;
 }
 
-ECode Activity::GetWindowManagerEx(
+ECode Activity::GetWindowManager(
     /* [out] */ IWindowManager** mgr)
 {
     VALIDATE_NOT_NULL(mgr);
     *mgr = mWindowManager.Get();
-    INTERFACE_ADDREF(*mgr)
+    REFCOUNT_ADD(*mgr)
     return NOERROR;
 }
 
@@ -4373,7 +4373,7 @@ ECode Activity::GetBaseContext(
     VALIDATE_NOT_NULL(ctx);
 
     *ctx = mBase;
-    INTERFACE_ADDREF(*ctx)
+    REFCOUNT_ADD(*ctx)
     return NOERROR;
 }
 
@@ -4389,7 +4389,7 @@ ECode Activity::GetResources(
     VALIDATE_NOT_NULL(resources);
     if (mResources != NULL) {
         *resources = mResources;
-        INTERFACE_ADDREF(*resources)
+        REFCOUNT_ADD(*resources)
         return NOERROR;
     }
 
@@ -4463,14 +4463,14 @@ ECode Activity::GetString(
     return res->GetString(resId, str);
 }
 
-ECode Activity::GetStringEx(
+ECode Activity::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
     AutoPtr<IResources> res;
     GetResources((IResources**)&res);
-    //return res->GetStringEx(resId, formatArgs, str);
+    //return res->GetString(resId, formatArgs, str);
     return NOERROR;
 }
 
@@ -4507,7 +4507,7 @@ ECode Activity::GetTheme(
     }
 
     *theme = mTheme;
-    INTERFACE_ADDREF(*theme)
+    REFCOUNT_ADD(*theme)
 
     return NOERROR;
 }
@@ -4522,7 +4522,7 @@ ECode Activity::ObtainStyledAttributes(
     return theme->ObtainStyledAttributes(attrs, styles);
 }
 
-ECode Activity::ObtainStyledAttributesEx(
+ECode Activity::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
@@ -4530,10 +4530,10 @@ ECode Activity::ObtainStyledAttributesEx(
     VALIDATE_NOT_NULL(styles);
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    return theme->ObtainStyledAttributesEx(resid, attrs, styles);
+    return theme->ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode Activity::ObtainStyledAttributesEx2(
+ECode Activity::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
@@ -4541,10 +4541,10 @@ ECode Activity::ObtainStyledAttributesEx2(
     VALIDATE_NOT_NULL(styles);
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    return mTheme->ObtainStyledAttributesEx2(set, attrs, 0, 0, styles);
+    return mTheme->ObtainStyledAttributes(set, attrs, 0, 0, styles);
 }
 
-ECode Activity::ObtainStyledAttributesEx3(
+ECode Activity::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -4554,7 +4554,7 @@ ECode Activity::ObtainStyledAttributesEx3(
     VALIDATE_NOT_NULL(styles);
     AutoPtr<IResourcesTheme> theme;
     GetTheme((IResourcesTheme**)&theme);
-    return mTheme->ObtainStyledAttributesEx2(set, attrs,
+    return mTheme->ObtainStyledAttributes(set, attrs,
             defStyleAttr, defStyleRes, styles);
 }
 
@@ -4686,14 +4686,14 @@ ECode Activity::OpenOrCreateDatabase(
     return mBase->OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode Activity::OpenOrCreateDatabaseEx(
+ECode Activity::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return mBase->OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return mBase->OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode Activity::DeleteDatabase(
@@ -4746,10 +4746,10 @@ ECode Activity::SetWallpaper(
     return mBase->SetWallpaper(bitmap);
 }
 
-ECode Activity::SetWallpaperEx(
+ECode Activity::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return mBase->SetWallpaperEx(data);
+    return mBase->SetWallpaper(data);
 }
 
 ECode Activity::ClearWallpaper()
@@ -4761,16 +4761,16 @@ ECode Activity::ClearWallpaper()
 ECode Activity::StartActivity(
     /* [in] */ IIntent *intent)
 {
-    return StartActivityEx(intent, NULL);
+    return StartActivity(intent, NULL);
 }
 
 //    @Override
-ECode Activity::StartActivityEx(
+ECode Activity::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
      if (options != NULL) {
-         return StartActivityForResultEx(intent, -1, options);
+         return StartActivityForResult(intent, -1, options);
      }
      else {
          // Note we want to go through this call for compatibility with
@@ -4784,11 +4784,11 @@ ECode Activity::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user)
 {
-    return StartActivityAsUserEx(intent, NULL, user);
+    return StartActivityAsUser(intent, NULL, user);
 }
 
 //    @Override
-ECode Activity::StartActivityAsUserEx(
+ECode Activity::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
@@ -4799,7 +4799,7 @@ ECode Activity::StartActivityAsUserEx(
     AutoPtr<IInstrumentationActivityResult> result;
     AutoPtr<IApplicationThread> at;
     mMainThread->GetApplicationThread((IApplicationThread**)&at);
-    FAIL_RETURN(mInstrumentation->ExecStartActivityEx2(
+    FAIL_RETURN(mInstrumentation->ExecStartActivity(
             mBase, IBinder::Probe(at.Get()), mToken, THIS_PROBE(IActivity),
             intent, -1, options, user,
             (IInstrumentationActivityResult**)&result));
@@ -4818,11 +4818,11 @@ ECode Activity::StartActivityAsUserEx(
 ECode Activity::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents)
 {
-    return StartActivitiesEx(intents, NULL);
+    return StartActivities(intents, NULL);
 }
 
 //    @Override
-ECode Activity::StartActivitiesEx(
+ECode Activity::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
@@ -4868,12 +4868,12 @@ ECode Activity::StartIntentSender(
     /* [in] */ Int32 flagsValues,
     /* [in] */ Int32 extraFlags)
 {
-    return StartIntentSenderEx(intent, fillInIntent,
+    return StartIntentSender(intent, fillInIntent,
             flagsMask, flagsValues, extraFlags, NULL);
 }
 
 //    @Override
-ECode Activity::StartIntentSenderEx(
+ECode Activity::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -4882,7 +4882,7 @@ ECode Activity::StartIntentSenderEx(
     /* [in] */ IBundle* options)
 {
     if (options != NULL) {
-        return StartIntentSenderForResultEx(intent, -1, fillInIntent, flagsMask,
+        return StartIntentSenderForResult(intent, -1, fillInIntent, flagsMask,
                 flagsValues, extraFlags, options);
     }
     else {
@@ -4899,11 +4899,11 @@ ECode Activity::SendBroadcast(
     return mBase->SendBroadcast(intent);
 }
 
-ECode Activity::SendBroadcastEx(
+ECode Activity::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return mBase->SendBroadcastEx(intent, receiverPermission);
+    return mBase->SendBroadcast(intent, receiverPermission);
 }
 
 ECode Activity::SendOrderedBroadcast(
@@ -4913,7 +4913,7 @@ ECode Activity::SendOrderedBroadcast(
     return mBase->SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode Activity::SendOrderedBroadcastEx(
+ECode Activity::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -4922,7 +4922,7 @@ ECode Activity::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return mBase->SendOrderedBroadcastEx(intent, receiverPermission, resultReceiver, scheduler,
+    return mBase->SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler,
         initialCode, initialData, initialExtras);
 }
 
@@ -4933,12 +4933,12 @@ ECode Activity::SendBroadcastAsUser(
     return mBase->SendBroadcastAsUser(intent, user);
 }
 
-ECode Activity::SendBroadcastAsUserEx(
+ECode Activity::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return mBase->SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return mBase->SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode Activity::SendOrderedBroadcastAsUser(
@@ -5014,14 +5014,14 @@ ECode Activity::RegisterReceiver(
     return mBase->RegisterReceiver(receiver, filter, stickyIntent);
 }
 
-ECode Activity::RegisterReceiverEx(
+ECode Activity::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** stickyIntent)
 {
-    return mBase->RegisterReceiverEx(receiver, filter, broadcastPermission, scheduler, stickyIntent);
+    return mBase->RegisterReceiver(receiver, filter, broadcastPermission, scheduler, stickyIntent);
 }
 
 ECode Activity::RegisterReceiverAsUser(
@@ -5081,14 +5081,14 @@ ECode Activity::BindService(
     return mBase->BindService(service, conn, flags, succeeded);
 }
 
-ECode Activity::BindServiceEx(
+ECode Activity::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return mBase->BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return mBase->BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode Activity::UnbindService(
@@ -5123,13 +5123,13 @@ ECode Activity::GetSystemService(
 
     if (IContext::WINDOW_SERVICE.Equals(name)) {
         *object = mWindowManager;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::SEARCH_SERVICE.Equals(name)) {
         EnsureSearchManager();
         *object = mSearchManager;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
     else if (IContext::LAYOUT_INFLATER_SERVICE.Equals(name)) {
@@ -5140,7 +5140,7 @@ ECode Activity::GetSystemService(
             temp->CloneInContext(this, (ILayoutInflater**)&mInflater);
         }
         *object = mInflater;
-        INTERFACE_ADDREF(*object);
+        REFCOUNT_ADD(*object);
         return NOERROR;
     }
 
@@ -5234,7 +5234,7 @@ ECode Activity::CheckCallingOrSelfUriPermission(
     return mBase->CheckCallingOrSelfUriPermission(uri, modeFlags, permissionId);
 }
 
-ECode Activity::CheckUriPermissionEx(
+ECode Activity::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -5243,7 +5243,7 @@ ECode Activity::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32 * result)
 {
-    return mBase->CheckUriPermissionEx(uri, readPermission, writePermission,
+    return mBase->CheckUriPermission(uri, readPermission, writePermission,
                     pid, uid, modeFlags, result);
 }
 
@@ -5273,7 +5273,7 @@ ECode Activity::EnforceCallingOrSelfUriPermission(
     return mBase->EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode Activity::EnforceUriPermissionEx(
+ECode Activity::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -5282,7 +5282,7 @@ ECode Activity::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return mBase->EnforceUriPermissionEx(uri, readPermission, writePermission,
+    return mBase->EnforceUriPermission(uri, readPermission, writePermission,
             pid, uid, modeFlags, message);
 }
 

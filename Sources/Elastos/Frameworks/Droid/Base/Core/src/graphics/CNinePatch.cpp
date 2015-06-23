@@ -33,14 +33,14 @@ ECode CNinePatch::Draw(
     return NinePatch::Draw(canvas, location);
 }
 
-ECode CNinePatch::DrawEx(
+ECode CNinePatch::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IRect* location)
 {
     return NinePatch::Draw(canvas, location);
 }
 
-ECode CNinePatch::DrawEx2(
+ECode CNinePatch::Draw(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IRect* location,
     /* [in] */ IPaint* paint)

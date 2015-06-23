@@ -19,7 +19,7 @@ ECode CPropertyValuesHolderHelper::OfInt32(
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfInt32(propertyName, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -30,14 +30,14 @@ ECode CPropertyValuesHolderHelper::OfInt32(
  * @param values The values that the property will animate between.
  * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
  */
-ECode CPropertyValuesHolderHelper::OfInt32Ex(
+ECode CPropertyValuesHolderHelper::OfInt32(
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Int32>* values,
     /* [out] */ IPropertyValuesHolder** holder)
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfInt32(property, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -55,7 +55,7 @@ ECode CPropertyValuesHolderHelper::OfFloat(
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfFloat(propertyName, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -66,14 +66,14 @@ ECode CPropertyValuesHolderHelper::OfFloat(
  * @param values The values that the property will animate between.
  * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
  */
-ECode CPropertyValuesHolderHelper::OfFloatEx(
+ECode CPropertyValuesHolderHelper::OfFloat(
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Float>* values,
     /* [out] */ IPropertyValuesHolder** holder)
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfFloat(property, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -97,7 +97,7 @@ ECode CPropertyValuesHolderHelper::OfObject(
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfObject(propertyName, evaluator, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -113,7 +113,7 @@ ECode CPropertyValuesHolderHelper::OfObject(
  * @param values The values that the property will animate between.
  * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
  */
-ECode CPropertyValuesHolderHelper::OfObjectEx(
+ECode CPropertyValuesHolderHelper::OfObject(
     /* [in] */ IProperty* property,
     /* [in] */ ITypeEvaluator* evaluator,
     /* [in] */ ArrayOf<IInterface*>* values,
@@ -121,7 +121,7 @@ ECode CPropertyValuesHolderHelper::OfObjectEx(
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfObject(property, evaluator, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -151,7 +151,7 @@ ECode CPropertyValuesHolderHelper::OfKeyframe(
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfKeyframe(propertyName, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 
@@ -171,14 +171,14 @@ ECode CPropertyValuesHolderHelper::OfKeyframe(
  * @param property The property associated with this set of values. Should not be NULL.
  * @param values The set of values to animate between.
  */
-ECode CPropertyValuesHolderHelper::OfKeyframeEx(
+ECode CPropertyValuesHolderHelper::OfKeyframe(
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<IKeyframe*>* values,
     /* [out] */ IPropertyValuesHolder** holder)
 {
     AutoPtr<IPropertyValuesHolder> temp = PropertyValuesHolder::OfKeyframe(property, values);
     *holder = temp;
-    INTERFACE_ADDREF(*holder)
+    REFCOUNT_ADD(*holder)
     return NOERROR;
 }
 

@@ -6,8 +6,8 @@
 #include "os/CUserHandle.h"
 #include "os/CUserHandleHelper.h"
 #include "content/CIntentSender.h"
-#include "elastos/StringBuilder.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -47,42 +47,42 @@ ECode CPendingIntent::Cancel()
 
 ECode CPendingIntent::Send()
 {
-    return SendEx5(NULL, 0, NULL, NULL, NULL, String(NULL));
+    return Send(NULL, 0, NULL, NULL, NULL, String(NULL));
 }
 
-ECode CPendingIntent::SendEx(
+ECode CPendingIntent::Send(
     /* [in] */ Int32 code)
 {
-    return SendEx5(NULL, code, NULL, NULL, NULL, String(NULL));
+    return Send(NULL, code, NULL, NULL, NULL, String(NULL));
 }
 
-ECode CPendingIntent::SendEx2(
+ECode CPendingIntent::Send(
     /* [in] */ IContext *context,
     /* [in] */ Int32 code,
     /* [in] */ IIntent *intent)
 {
-    return SendEx5(context, code, intent, NULL, NULL, String(NULL));
+    return Send(context, code, intent, NULL, NULL, String(NULL));
 }
 
-ECode CPendingIntent::SendEx3(
+ECode CPendingIntent::Send(
     /* [in] */ Int32 code,
     /* [in] */ IPendingIntentOnFinished *onFinished,
     /* [in] */ IHandler *handler)
 {
-    return SendEx5(NULL, code, NULL, onFinished, handler, String(NULL));
+    return Send(NULL, code, NULL, onFinished, handler, String(NULL));
 }
 
-ECode CPendingIntent::SendEx4(
+ECode CPendingIntent::Send(
     /* [in] */ IContext *context,
     /* [in] */ Int32 code,
     /* [in] */ IIntent *intent,
     /* [in] */ IPendingIntentOnFinished *onFinished,
     /* [in] */ IHandler *handler)
 {
-    return SendEx5(context, code, intent, onFinished, handler, String(NULL));
+    return Send(context, code, intent, onFinished, handler, String(NULL));
 }
 
-ECode CPendingIntent::SendEx5(
+ECode CPendingIntent::Send(
     /* [in] */ IContext *context,
     /* [in] */ Int32 code,
     /* [in] */ IIntent *intent,
@@ -168,7 +168,7 @@ ECode CPendingIntent::GetCreatorUserHandle(
     }
 
     *userHandle = handle;
-    INTERFACE_ADDREF(*userHandle);
+    REFCOUNT_ADD(*userHandle);
     return NOERROR;
 }
 
@@ -212,7 +212,7 @@ ECode CPendingIntent::GetTarget(
     VALIDATE_NOT_NULL(target);
 
     *target = mTarget;
-    INTERFACE_ADDREF(*target);
+    REFCOUNT_ADD(*target);
     return NOERROR;
 }
 

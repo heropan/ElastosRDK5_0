@@ -35,7 +35,7 @@ module
          * @param root The root of the virtual subtree.
          * @param virtualDescendantId The id of the virtual descendant.
          */
-        SetSourceEx(
+        SetSource(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
@@ -493,7 +493,7 @@ module
          *
          * @return An instance.
          */
-        ObtainEx(
+        Obtain(
             [out] IAccessibilityRecord** newInstance);
     }
 

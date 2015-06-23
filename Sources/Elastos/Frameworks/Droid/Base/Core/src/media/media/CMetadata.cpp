@@ -1,7 +1,7 @@
 
 #include "media/CMetadata.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -121,7 +121,7 @@ ECode CMetadata::KeySet(
         oc->Add(it->mFirst);
     }
     *result = oc;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -216,7 +216,7 @@ ECode CMetadata::GetByteArray(
     AutoPtr<ArrayOf<Byte> > array;
     mParcel->ReadArrayOf((Handle32*)(&array));
     *result = array;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -251,7 +251,7 @@ ECode CMetadata::GetDate(
         cal->SetTimeInMillis(timeSinceEpoch);
         cal->GetTime(result);
     }
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -5,14 +5,14 @@
 #include "_CGestureStore.h"
 #include "gesture/CGesture.h"
 #include "gesture/Learner.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IDataInputStream;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -115,7 +115,7 @@ public:
     CARAPI Save(
         /* [in] */ IOutputStream *stream);
 
-    CARAPI SaveEx(
+    CARAPI Save(
         /* [in] */ IOutputStream *stream,
         /* [in] */ Boolean closeStream);
 
@@ -125,7 +125,7 @@ public:
     CARAPI Load(
         /* [in] */ IInputStream *stream);
 
-    CARAPI LoadEx(
+    CARAPI Load(
         /* [in] */ IInputStream *stream,
         /* [in] */ Boolean closeStream);
 

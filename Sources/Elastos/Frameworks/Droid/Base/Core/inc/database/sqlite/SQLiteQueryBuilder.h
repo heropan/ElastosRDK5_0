@@ -4,7 +4,7 @@
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 #include "database/sqlite/SQLiteDatabase.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
@@ -224,7 +224,7 @@ public:
      * @see android.content.ContentResolver#query(android.net.Uri, String[],
      *      String, String[], String)
      */
-    virtual CARAPI QueryEx(
+    virtual CARAPI Query(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
@@ -270,7 +270,7 @@ public:
      * @see android.content.ContentResolver#query(android.net.Uri, String[],
      *      String, String[], String)
      */
-    virtual CARAPI QueryEx2(
+    virtual CARAPI Query(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
@@ -326,7 +326,7 @@ public:
      * {@link #buildQuery(String[], String, String, String, String, String)} instead.
      */
     //@Deprecated
-    virtual CARAPI BuildQueryEx(
+    virtual CARAPI BuildQuery(
         /* [in] */ ArrayOf<String>* projectionIn,
         /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
@@ -394,7 +394,7 @@ public:
      * instead.
      */
     //@Deprecated
-    virtual CARAPI BuildUnionSubQueryEx(
+    virtual CARAPI BuildUnionSubQuery(
         /* [in] */ const String& typeDiscriminatorColumn,
         /* [in] */ const ArrayOf<String>& unionColumns,
         /* [in] */ IObjectStringMap* columnsPresentInTable,

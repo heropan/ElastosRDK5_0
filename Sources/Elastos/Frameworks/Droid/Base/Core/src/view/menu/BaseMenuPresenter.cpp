@@ -3,9 +3,9 @@
 #include "view/LayoutInflater.h"
 #include "view/menu/MenuBuilderBase.h"
 #include "view/menu/MenuItemImpl.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::LayoutInflater;
 
 namespace Elastos {
@@ -49,7 +49,7 @@ ECode BaseMenuPresenter::GetMenuView(
     assert(view != NULL);
     if (mMenuView == NULL) {
         AutoPtr<IView> vTemp;
-        mSystemInflater->InflateEx2(mMenuLayoutRes, root, FALSE, (IView**)&vTemp);
+        mSystemInflater->Inflate(mMenuLayoutRes, root, FALSE, (IView**)&vTemp);
         mMenuView = IMenuView::Probe(vTemp);
         mMenuView->Initialize(mMenu);
         UpdateMenuView(TRUE);
@@ -126,7 +126,7 @@ void BaseMenuPresenter::AddItemView(
     }
 
     assert(IViewGroup::Probe(mMenuView) != NULL);
-    IViewGroup::Probe(mMenuView)->AddViewEx(itemView, childIndex);
+    IViewGroup::Probe(mMenuView)->AddView(itemView, childIndex);
 }
 
 Boolean BaseMenuPresenter::FilterLeftoverView(
@@ -149,7 +149,7 @@ AutoPtr<IMenuItemView> BaseMenuPresenter::CreateItemView(
     /* [in] */ IViewGroup* parent)
 {
     AutoPtr<IView> view;
-    mSystemInflater->InflateEx2(mItemLayoutRes, parent, FALSE, (IView**)&view);
+    mSystemInflater->Inflate(mItemLayoutRes, parent, FALSE, (IView**)&view);
     return IMenuItemView::Probe(view);
 }
 

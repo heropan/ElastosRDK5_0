@@ -309,7 +309,7 @@ void CSystemSensorManager::ListenerDelegate::OnSensorChangedLocked(
     t->mSensor = sensor;
 
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx(0, event, (IMessage**)&msg);
+    mHandler->ObtainMessage(0, event, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -394,13 +394,13 @@ CSystemSensorManager::RegisterListener(
     return SensorManager::RegisterListener(listener, sensors, state);
 }
 
-CSystemSensorManager::RegisterListenerEx(
+CSystemSensorManager::RegisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors,
     /* [in] */ Int32 rate,
     /* [out] */ Boolean* state)
 {
-    return SensorManager::RegisterListenerEx(listener, sensors, rate, state);
+    return SensorManager::RegisterListener(listener, sensors, rate, state);
 }
 
 CSystemSensorManager::UnregisterListener(
@@ -409,43 +409,43 @@ CSystemSensorManager::UnregisterListener(
     return SensorManager::UnregisterListener(listener);
 }
 
-CSystemSensorManager::UnregisterListenerEx(
+CSystemSensorManager::UnregisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors)
 {
-    return SensorManager::UnregisterListenerEx(listener, sensors);
+    return SensorManager::UnregisterListener(listener, sensors);
 }
 
-CSystemSensorManager::UnregisterListenerEx2(
+CSystemSensorManager::UnregisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor)
 {
-    return SensorManager::UnregisterListenerEx2(listener, sensor);
+    return SensorManager::UnregisterListener(listener, sensor);
 }
 
-CSystemSensorManager::UnregisterListenerEx3(
+CSystemSensorManager::UnregisterListener(
     /* [in] */ ISensorEventListener* listener)
 {
-    return SensorManager::UnregisterListenerEx3(listener);
+    return SensorManager::UnregisterListener(listener);
 }
 
-CSystemSensorManager::RegisterListenerEx2(
+CSystemSensorManager::RegisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor,
     /* [in] */ Int32 rate,
     /* [out] */ Boolean* state)
 {
-    return SensorManager::RegisterListenerEx2(listener, sensor, rate, state);
+    return SensorManager::RegisterListener(listener, sensor, rate, state);
 }
 
-CSystemSensorManager::RegisterListenerEx3(
+CSystemSensorManager::RegisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor,
     /* [in] */ Int32 rate,
     /* [in] */ IHandler* handler,
     /* [out] */ Boolean* state)
 {
-    return SensorManager::RegisterListenerEx3(listener, sensor, rate, handler, state);
+    return SensorManager::RegisterListener(listener, sensor, rate, handler, state);
 }
 
 ECode CSystemSensorManager::GetFullSensorList(

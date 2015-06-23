@@ -1,7 +1,7 @@
 
 #include "CSignalStrength.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 #include <ext/frameworkdef.h>
 
 using Elastos::Core::StringBuilder;
@@ -77,7 +77,7 @@ ECode CSignalStrength::constructor(
     /* [in] */ Int32 lteCqi,
     /* [in] */ Boolean gsmFlag)
 {
-    InitializeEx(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio,
+    Initialize(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio,
             evdoDbm, evdoEcio, evdoSnr, lteSignalStrength, lteRsrp,
             lteRsrq, lteRssnr, lteCqi, gsmFlag);
     return NOERROR;
@@ -93,7 +93,7 @@ ECode CSignalStrength::constructor(
     /* [in] */ Int32 evdoSnr,
     /* [in] */ Boolean gsmFlag)
 {
-    InitializeEx(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio,
+    Initialize(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio,
             evdoDbm, evdoEcio, evdoSnr, 99, ISignalStrength::INVALID,
             ISignalStrength::INVALID, ISignalStrength::INVALID, ISignalStrength::INVALID, gsmFlag);
     return NOERROR;
@@ -155,13 +155,13 @@ ECode CSignalStrength::Initialize(
     /* [in] */ Int32 evdoSnr,
     /* [in] */ Boolean gsm)
 {
-    InitializeEx(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio,
+    Initialize(gsmSignalStrength, gsmBitErrorRate, cdmaDbm, cdmaEcio,
             evdoDbm, evdoEcio, evdoSnr, 99, ISignalStrength::INVALID,
             ISignalStrength::INVALID, ISignalStrength::INVALID, ISignalStrength::INVALID, gsm);
     return NOERROR;
 }
 
-ECode CSignalStrength::InitializeEx(
+ECode CSignalStrength::Initialize(
     /* [in] */ Int32 gsmSignalStrength,
     /* [in] */ Int32 gsmBitErrorRate,
     /* [in] */ Int32 cdmaDbm,
@@ -831,7 +831,7 @@ ECode CSignalStrength::NewFromBundle(
     CSignalStrength::NewByFriend((CSignalStrength**)&ret);
     ret->SetFromNotifierBundle(m);
     *ss = ISignalStrength::Probe(ret);
-    INTERFACE_ADDREF(*ss);
+    REFCOUNT_ADD(*ss);
     return NOERROR;
 }
 

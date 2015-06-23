@@ -237,7 +237,7 @@ module
         AwakenScrollBars(
             [in] Int32 duration);
 
-        AwakenScrollBarsEx(
+        AwakenScrollBars(
             [in] Int32 duration,
             [in] Boolean invalidate);
 
@@ -706,7 +706,7 @@ module
          *            controlling caching, accept types or the User-Agent, their
          *            values may be overriden by this WebView's defaults.
          */
-        LoadUrlEx(
+        LoadUrl(
             [in] String url,
             [in] IMap* additionalHttpHeaders);
 
@@ -814,7 +814,7 @@ module
          *                 under which the file was saved, or null if saving the
          *                 file failed.
          */
-        SaveWebArchiveEx(
+        SaveWebArchive(
             [in] String basename,
             [in] Boolean autoname,
             [in] IValueCallback* callBack);

@@ -5,7 +5,7 @@
 #include "graphics/CPoint.h"
 #include "R.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Utility::CDisplayMetrics;

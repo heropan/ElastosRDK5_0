@@ -5,7 +5,7 @@
 #include "_CCursorNative.h"
 #include <jni.h>
 #include "ext/frameworkdef.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Database::ICharArrayBuffer;
@@ -13,7 +13,7 @@ using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::IDataSetObserver;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 _ETL_NAMESPACE_BEGIN
 

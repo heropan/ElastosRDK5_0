@@ -1,11 +1,11 @@
 
 #include "CActivityOne.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 // #include "../../Recorder/Recorder.h"
 // #include <elastos/System.h>
-// #include <elastos/StringUtils.h>
+// #include <elastos/core/StringUtils.h>
 // using Elastos::Core::System;
 // using Elastos::Core::StringUtils;
 

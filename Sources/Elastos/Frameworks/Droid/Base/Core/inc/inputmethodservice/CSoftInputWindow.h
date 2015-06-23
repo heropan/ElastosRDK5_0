@@ -4,9 +4,9 @@
 
 #include "_CSoftInputWindow.h"
 #include "app/Dialog.h"
-#include "app/DialogMacro.h"
-#include "view/ViewMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
+
 
 using Elastos::Droid::App::Dialog;
 using Elastos::Droid::View::IMotionEvent;

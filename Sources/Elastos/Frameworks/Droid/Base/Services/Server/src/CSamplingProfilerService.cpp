@@ -1,10 +1,10 @@
 
 #include "CSamplingProfilerService.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "database/ContentObserver.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::CFile;
@@ -99,7 +99,7 @@ ECode CSamplingProfilerService::RegisterSettingObserver(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    settingsGlobal->GetUriForEx(ISettingsGlobal::SAMPLING_PROFILER_MS, (IUri**)&uri);
+    settingsGlobal->GetUriFor(ISettingsGlobal::SAMPLING_PROFILER_MS, (IUri**)&uri);
     AutoPtr<IContentObserver> observer = new SamplingProfilerSettingsObserver(contentResolver);
     contentResolver->RegisterContentObserver(uri, FALSE, observer);
     return NOERROR;

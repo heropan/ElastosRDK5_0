@@ -3,12 +3,12 @@
 #define __ADAPTERVIEWANIMATOR_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <widget/AdapterView.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IMotionEvent;

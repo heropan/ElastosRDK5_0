@@ -28,15 +28,15 @@ public:
         /* [in] */ IView* source,
         /* [out] */ IAccessibilityNodeInfo** info);
 
-    CARAPI ObtainEx(
+    CARAPI Obtain(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId,
         /* [out] */ IAccessibilityNodeInfo** info);
 
-    CARAPI ObtainEx2(
+    CARAPI Obtain(
         /* [out] */ IAccessibilityNodeInfo** info);
 
-    CARAPI ObtainEx3(
+    CARAPI Obtain(
         /* [in] */ IAccessibilityNodeInfo* info,
         /* [out] */ IAccessibilityNodeInfo** infoClone);
 };

@@ -61,7 +61,7 @@ ECode CAppWidgetHostCallbacks::SendToTarget(
     /* [in] */ IInterface* obj)
 {
     AutoPtr<IMessage> msg;
-    mHost->mHandler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&msg);
+    mHost->mHandler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
     return msg->SendToTarget();
 }
 

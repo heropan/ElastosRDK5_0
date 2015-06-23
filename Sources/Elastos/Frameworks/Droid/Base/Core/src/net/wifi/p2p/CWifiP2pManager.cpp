@@ -3,7 +3,7 @@
 #include "CWifiP2pDevice.h"
 #include "os/CBundle.h"
 #include "os/CMessageHelper.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBundle;
@@ -31,7 +31,7 @@ ECode CWifiP2pManager::GetService(
 {
     VALIDATE_NOT_NULL(service);
     *service = mService;
-    INTERFACE_ADDREF(*service);
+    REFCOUNT_ADD(*service);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CWifiP2pManager::Initialize(
     Int32 status = asyncChannel->ConnectSync(srcContext, handler, messenger);
     if (status == AsyncChannel::STATUS_SUCCESSFUL) {
         *channel = c;
-        INTERFACE_ADDREF(*channel);
+        REFCOUNT_ADD(*channel);
     }
     else {
         Slogger::E(TAG, "Initialize failed, ConnectSync status %d", status);

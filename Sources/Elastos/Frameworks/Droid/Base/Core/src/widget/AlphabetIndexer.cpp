@@ -1,6 +1,6 @@
 
 #include "widget/AlphabetIndexer.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 //#include "text/Collator.h"
 
 using Elastos::Core::CStringWrapper;

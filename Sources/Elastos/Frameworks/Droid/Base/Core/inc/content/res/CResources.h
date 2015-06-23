@@ -10,9 +10,8 @@
 #include "content/res/CTypedArray.h"
 #include "util/CDisplayMetrics.h"
 #include "util/CTypedValue.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Graphics::IMovie;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
@@ -87,12 +86,12 @@ public:
             /* [in] */ ArrayOf<Int32>* attrs,
             /* [out] */ ITypedArray** styles);
 
-        CARAPI ObtainStyledAttributesEx(
+        CARAPI ObtainStyledAttributes(
             /* [in] */ Int32 resid,
             /* [in] */ ArrayOf<Int32>* attrs,
             /* [out] */ ITypedArray** styles);
 
-        CARAPI ObtainStyledAttributesEx2(
+        CARAPI ObtainStyledAttributes(
             /* [in] */ IAttributeSet* set,
             /* [in] */ ArrayOf<Int32>* attrs,
             /* [in] */ Int32 defStyleAttr,
@@ -218,7 +217,7 @@ public:
      * @return String The string data associated with the resource,
      * stripped of styled text information.
      */
-    CARAPI GetStringEx(
+    CARAPI GetString(
         /* [in] */ Int32 id,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* str);
@@ -245,7 +244,7 @@ public:
      * @return String The string data associated with the resource,
      * stripped of styled text information.
      */
-    CARAPI GetQuantityStringEx(
+    CARAPI GetQuantityString(
         /* [in] */ Int32 id,
         /* [in] */ Int32 quantity,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
@@ -288,7 +287,7 @@ public:
      * @return CharSequence The string data associated with the resource, plus
      *         possibly styled text information, or def if id is 0 or not found.
      */
-    CARAPI GetTextEx(
+    CARAPI GetText(
         /* [in] */ Int32 id,
         /* [in] */ ICharSequence* def,
         /* [out] */ ICharSequence** seq);
@@ -685,7 +684,7 @@ public:
      *
      * @throws NotFoundException Throws NotFoundException if the given ID does not exist.
      */
-    CARAPI OpenRawResourceEx(
+    CARAPI OpenRawResource(
         /* [in] */ Int32 id,
         /* [in] */ ITypedValue* value,
         /* [out] */ IInputStream** res);
@@ -774,7 +773,7 @@ public:
      * @throws NotFoundException Throws NotFoundException if the given ID does not exist.
      *
      */
-    CARAPI GetValueEx(
+    CARAPI GetValue(
         /* [in] */ const String& name,
         /* [in, out] */ ITypedValue* outValue,
         /* [in] */ Boolean resolveRefs);
@@ -815,7 +814,7 @@ public:
     /**
      * @hide
      */
-    CARAPI UpdateConfigurationEx(
+    CARAPI UpdateConfiguration(
         /* [in] */ IConfiguration* config,
         /* [in] */ IDisplayMetrics* metrics,
         /* [in] */ ICompatibilityInfo* compat);

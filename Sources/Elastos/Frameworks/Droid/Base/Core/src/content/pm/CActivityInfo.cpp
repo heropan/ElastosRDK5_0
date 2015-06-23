@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "content/pm/CActivityInfo.h"
 #include "os/Build.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::Build;

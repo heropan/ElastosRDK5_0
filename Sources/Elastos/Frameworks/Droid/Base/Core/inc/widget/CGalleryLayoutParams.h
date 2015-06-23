@@ -3,7 +3,7 @@
 
 #include "_CGalleryLayoutParams.h"
 #include "widget/GalleryLayoutParams.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Graphics::ICanvas;

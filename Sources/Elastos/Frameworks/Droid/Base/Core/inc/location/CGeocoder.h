@@ -121,7 +121,7 @@ public:
      * @throws IOException if the network is unavailable or any other
      * I/O problem occurs
      */
-    CARAPI GetFromLocationNameEx(
+    CARAPI GetFromLocationName(
         /* [in] */ const String& locationName,
         /* [in] */ Int32 maxResults,
         /* [in] */ Double lowerLeftLatitude,

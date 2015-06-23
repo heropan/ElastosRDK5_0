@@ -14,14 +14,14 @@
 #include "os/FileObserver.h"
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::IInteger32;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::ISet;
 using Elastos::IO::IFile;
 using Elastos::IO::IFilenameFilter;

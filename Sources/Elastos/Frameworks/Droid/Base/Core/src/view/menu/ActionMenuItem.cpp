@@ -83,7 +83,7 @@ ECode ActionMenuItem::GetIcon(
 {
     assert(icon != NULL);
     *icon = mIconDrawable;
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
 
     return NOERROR;
 }
@@ -93,7 +93,7 @@ ECode ActionMenuItem::GetIntent(
 {
     assert(intent != NULL);
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
 
     return NOERROR;
 }
@@ -143,7 +143,7 @@ ECode ActionMenuItem::GetTitle(
 {
     assert(title != NULL);
     *title = mTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
 
     return NOERROR;
 }
@@ -153,7 +153,7 @@ ECode ActionMenuItem::GetTitleCondensed(
 {
     assert(title != NULL);
     *title = mTitleCondensed;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
     return NOERROR;
 }
 
@@ -241,7 +241,7 @@ ECode ActionMenuItem::SetIcon(
     return NOERROR;
 }
 
-ECode ActionMenuItem::SetIconEx(
+ECode ActionMenuItem::SetIcon(
     /* [in] */ Int32 iconRes)
 {
     mIconResId = iconRes;
@@ -292,7 +292,7 @@ ECode ActionMenuItem::SetTitle(
     return NOERROR;
 }
 
-ECode ActionMenuItem::SetTitleEx(
+ECode ActionMenuItem::SetTitle(
     /* [in] */ Int32 title)
 {
     AutoPtr<IResources> res;
@@ -363,7 +363,7 @@ ECode ActionMenuItem::GetActionView(
     return NOERROR;;
 }
 
-ECode ActionMenuItem::SetActionViewEx(
+ECode ActionMenuItem::SetActionView(
     /* [in] */ Int32 resId)
 {
     assert(0);

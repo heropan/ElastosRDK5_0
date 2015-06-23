@@ -28,7 +28,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ String* ret);
 
-    CARAPI FormatDateRangeEx(
+    CARAPI FormatDateRange(
         /* [in] */ IContext* context,
         /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
         /* [in] */ Int64 startMillis,
@@ -36,7 +36,7 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ /*Elastos::Utility::IFormatter*/IInterface** ret);
 
-    CARAPI FormatDateRangeEx2(
+    CARAPI FormatDateRange(
         /* [in] */ IContext* context,
         /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
         /* [in] */ Int64 startMillis,
@@ -59,7 +59,7 @@ public:
         /* [in] */ Int64 elapsedSeconds,
         /* [out] */ String* ret);
 
-    CARAPI FormatElapsedTimeEx(
+    CARAPI FormatElapsedTime(
         /* [in] */ const String& recycle,
         /* [in] */ Int64 elapsedSeconds,
         /* [out] */ String* ret);
@@ -97,26 +97,26 @@ public:
         /* [in] */ Int64 startTime,
         /* [out] */ ICharSequence** ret);
 
-    CARAPI GetRelativeTimeSpanStringEx(
+    CARAPI GetRelativeTimeSpanString(
         /* [in] */ Int64 time,
         /* [in] */ Int64 now,
         /* [in] */ Int64 minResolution,
         /* [out] */ ICharSequence** ret);
 
-    CARAPI GetRelativeTimeSpanStringEx2(
+    CARAPI GetRelativeTimeSpanString(
         /* [in] */ Int64 time,
         /* [in] */ Int64 now,
         /* [in] */ Int64 minResolution,
         /* [in] */ Int32 flags,
         /* [out] */ ICharSequence** ret);
 
-    CARAPI GetRelativeTimeSpanStringEx3(
+    CARAPI GetRelativeTimeSpanString(
         /* [in] */ IContext* c,
         /* [in] */ Int64 millis,
         /* [in] */ Boolean withPreposition,
         /* [out] */ ICharSequence** ret);
 
-    CARAPI GetRelativeTimeSpanStringEx4(
+    CARAPI GetRelativeTimeSpanString(
         /* [in] */ IContext* c,
         /* [in] */ Int64 millis,
         /* [out] */ ICharSequence** ret);
@@ -152,12 +152,12 @@ public:
         /* [in] */ ICalendar* cal,
         /* [out] */ String* ret);
 
-    CARAPI WriteDateTimeEx(
+    CARAPI WriteDateTime(
         /* [in] */ ICalendar* cal,
         /* [in] */ Boolean zulu,
         /* [out] */ String* ret);
 
-    CARAPI WriteDateTimeEx2(
+    CARAPI WriteDateTime(
         /* [in] */ ICalendar* cal,
         /* [in,out] */ String* sb,
         /* [out] */ String* ret);

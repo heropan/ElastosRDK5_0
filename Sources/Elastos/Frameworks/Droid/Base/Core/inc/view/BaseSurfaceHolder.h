@@ -3,13 +3,12 @@
 #define __BASESURFACEHOLDER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Vector.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Vector;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 
@@ -65,7 +64,7 @@ public:
     virtual CARAPI LockCanvas(
         /* [out] */ ICanvas** canvas);
 
-    virtual CARAPI LockCanvasEx(
+    virtual CARAPI LockCanvas(
         /* [in] */ IRect* dirty,
         /* [out] */ ICanvas** canvas);
 

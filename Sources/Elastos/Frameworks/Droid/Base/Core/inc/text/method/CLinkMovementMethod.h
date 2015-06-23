@@ -4,7 +4,7 @@
 
 #include "_CLinkMovementMethod.h"
 #include "text/method/LinkMovementMethod.h"
-#include "text/method/BaseMovementMethodMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

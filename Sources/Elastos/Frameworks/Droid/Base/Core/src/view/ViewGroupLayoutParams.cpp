@@ -2,7 +2,7 @@
 #include "view/ViewGroupLayoutParams.h"
 #include "ext/frameworkdef.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 namespace Elastos {
@@ -75,7 +75,7 @@ ECode ViewGroupLayoutParams::Init(
         const_cast<Int32 *>(R::styleable::ViewGroup_Layout),
         ARRAY_SIZE(R::styleable::ViewGroup_Layout));
     AutoPtr<ITypedArray> a;
-    ASSERT_SUCCEEDED(c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a));
+    ASSERT_SUCCEEDED(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
 
     ECode ec = SetBaseAttributes(a,
             R::styleable::ViewGroup_Layout_layout_width,
@@ -142,7 +142,7 @@ ECode ViewGroupLayoutParams::GetLayoutAnimationParameters(
 {
     VALIDATE_NOT_NULL(ap);
     *ap = mLayoutAnimationParameters;
-    INTERFACE_ADDREF(*ap);
+    REFCOUNT_ADD(*ap);
 
     return NOERROR;
 }

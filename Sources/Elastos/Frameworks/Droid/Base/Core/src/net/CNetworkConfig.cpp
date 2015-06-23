@@ -1,8 +1,8 @@
 
 #include "ext/frameworkext.h"
 #include "net/CNetworkConfig.h"
-#include <Elastos.Core.h>
-#include <elastos/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 

@@ -1,9 +1,9 @@
 #include "updates/CConfigUpdateInstallReceiver.h"
-#include <elastos/Thread.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/CInteger32.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/io/CIoUtils.h>
 #include <elastos/io/CFileDescriptor.h>
 #include <elastos/security/CMessageDigest.h>

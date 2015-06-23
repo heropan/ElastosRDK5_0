@@ -6,15 +6,15 @@
 #include "os/CMessageHelper.h"
 #include "content/CIntent.h"
 #endif
-#include <elastos/Thread.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::Mutex;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
@@ -230,7 +230,7 @@ ECode AsyncChannel::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -265,7 +265,7 @@ Int32 AsyncChannel::ConnectSrcHandlerToPackageSync(
     /* Send intent to create the connection */
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_MAIN, (IIntent**)&intent);
-    intent->SetClassNameEx(dstPackageName, dstClassName);
+    intent->SetClassName(dstPackageName, dstClassName);
     Boolean result;
     srcContext->BindService(intent, mConnection, IContext::BIND_AUTO_CREATE, &result);
     if (DBG) {

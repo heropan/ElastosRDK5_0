@@ -2,8 +2,8 @@
 #include "ext/frameworkext.h"
 #include "content/res/CConfiguration.h"
 #include "text/TextUtils.h"
-#include <elastos/StringBuilder.h>
-// #include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+// #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
 // using Elastos::Core::StringUtils;
@@ -745,10 +745,10 @@ ECode CConfiguration::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return EqualsEx(IConfiguration::Probe(that), result);
+    return Equals(IConfiguration::Probe(that), result);
 }
 
-ECode CConfiguration::EqualsEx(
+ECode CConfiguration::Equals(
     /* [in] */ IConfiguration * that,
     /* [out] */ Boolean* result)
 {
@@ -1008,7 +1008,7 @@ ECode CConfiguration::GetLocale(
 {
     VALIDATE_NOT_NULL(locale);
     *locale = mLocale;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 

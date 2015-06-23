@@ -8,10 +8,10 @@
 #include "os/HandlerBase.h"
 #include "inputmethodservice/Keyboard.h"
 #include "R.h"
-#include <elastos/HashMap.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::HandlerBase;

@@ -69,7 +69,7 @@ ECode CGradientDrawable::SetStroke(
     return GradientDrawable::SetStroke(width, color);
 }
 
-ECode CGradientDrawable::SetStrokeEx(
+ECode CGradientDrawable::SetStroke(
     /* [in] */ Int32 width,
     /* [in] */ Int32 color,
     /* [in] */ Float dashWidth,

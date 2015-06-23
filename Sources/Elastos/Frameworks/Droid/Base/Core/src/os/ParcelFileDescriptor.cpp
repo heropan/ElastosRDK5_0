@@ -5,7 +5,7 @@
 #include "os/ParcelFileDescriptor.h"
 #include "os/CParcelFileDescriptor.h"
 #include "os/CParcel.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::CFileDescriptor;
 using Elastos::IO::IIoUtils;
@@ -92,7 +92,7 @@ ECode ParcelFileDescriptor::AutoCloseInputStream::GetFD(
 {
     VALIDATE_NOT_NULL(fd);
     *fd = mFd;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -126,7 +126,7 @@ ECode ParcelFileDescriptor::AutoCloseInputStream::Read(
 {
     ArrayOf_<Byte, 1> readed;
     Int32 result;
-    FAIL_RETURN(ReadBytesEx(&readed, 0, 1, &result));
+    FAIL_RETURN(ReadBytes(&readed, 0, 1, &result));
     *value = result != -1 ? readed[0] & 0xff : -1;
     return NOERROR;;
 }
@@ -135,10 +135,10 @@ ECode ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    return ReadBytesEx(buffer, 0, buffer->GetLength(), number);
+    return ReadBytes(buffer, 0, buffer->GetLength(), number);
 }
 
-ECode ParcelFileDescriptor::AutoCloseInputStream::ReadBytesEx(
+ECode ParcelFileDescriptor::AutoCloseInputStream::ReadBytes(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -265,7 +265,7 @@ ECode ParcelFileDescriptor::AutoCloseOutputStream::GetFD(
 {
     VALIDATE_NOT_NULL(fd);
     *fd = mFd;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -274,16 +274,16 @@ ECode ParcelFileDescriptor::AutoCloseOutputStream::Write(
 {
     ArrayOf_<Byte, 1> bytes;
     (bytes)[0] = (Byte)oneByte;
-    return WriteBytesEx(bytes, 0, 1);
+    return WriteBytes(bytes, 0, 1);
 }
 
 ECode ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer)
 {
-    return WriteBytesEx(buffer, 0, buffer.GetLength());
+    return WriteBytes(buffer, 0, buffer.GetLength());
 }
 
-ECode ParcelFileDescriptor::AutoCloseOutputStream::WriteBytesEx(
+ECode ParcelFileDescriptor::AutoCloseOutputStream::WriteBytes(
     /* [in] */ const ArrayOf<Byte>& buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -478,7 +478,7 @@ ECode ParcelFileDescriptor::GetFileDescriptor(
 {
     VALIDATE_NOT_NULL(des);
     *des = mFileDescriptor.Get();
-    INTERFACE_ADDREF(*des);
+    REFCOUNT_ADD(*des);
     return NOERROR;
 }
 

@@ -5,8 +5,8 @@
 #include "ext/frameworkext.h"
 #include "am/ActivityRecord.h"
 #include "app/Dialog.h"
-#include "app/DialogMacro.h"
-#include "view/WindowCallbackMacro.h"
+
+
 
 using Elastos::Droid::App::Dialog;
 using Elastos::Droid::App::IDialog;

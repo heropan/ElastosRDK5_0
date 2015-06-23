@@ -1,5 +1,5 @@
 
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "am/UriPermissionOwner.h"
 #include "am/CActivityManagerService.h"
 #include "am/CUriPermissionOwnerExternalToken.h"

@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "graphics/CMatrix.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -79,7 +79,7 @@ ECode CMatrix::IdentityMatrix::Set(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::EqualsEx(
+ECode CMatrix::IdentityMatrix::Equals(
     /* [in] */ IMatrix* obj,
     /* [out] */ Boolean* isEqual)
 {
@@ -123,7 +123,7 @@ ECode CMatrix::IdentityMatrix::SetScale(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::SetScaleEx(
+ECode CMatrix::IdentityMatrix::SetScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
@@ -138,7 +138,7 @@ ECode CMatrix::IdentityMatrix::SetRotate(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::SetRotateEx(
+ECode CMatrix::IdentityMatrix::SetRotate(
     /* [in] */ Float degrees)
 {
     return Oops();
@@ -153,7 +153,7 @@ ECode CMatrix::IdentityMatrix::SetSinCos(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::SetSinCosEx(
+ECode CMatrix::IdentityMatrix::SetSinCos(
     /* [in] */ Float sinValue,
     /* [in] */ Float cosValue)
 {
@@ -169,7 +169,7 @@ ECode CMatrix::IdentityMatrix::SetSkew(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::SetSkewEx(
+ECode CMatrix::IdentityMatrix::SetSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky)
 {
@@ -208,7 +208,7 @@ ECode CMatrix::IdentityMatrix::PreScale(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::PreScaleEx(
+ECode CMatrix::IdentityMatrix::PreScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
@@ -229,7 +229,7 @@ ECode CMatrix::IdentityMatrix::PreRotate(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::PreRotateEx(
+ECode CMatrix::IdentityMatrix::PreRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
@@ -250,7 +250,7 @@ ECode CMatrix::IdentityMatrix::PreSkew(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::PreSkewEx(
+ECode CMatrix::IdentityMatrix::PreSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
@@ -291,7 +291,7 @@ ECode CMatrix::IdentityMatrix::PostScale(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::PostScaleEx(
+ECode CMatrix::IdentityMatrix::PostScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
@@ -312,7 +312,7 @@ ECode CMatrix::IdentityMatrix::PostRotate(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::PostRotateEx(
+ECode CMatrix::IdentityMatrix::PostRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
@@ -333,7 +333,7 @@ ECode CMatrix::IdentityMatrix::PostSkew(
     return Oops();
 }
 
-ECode CMatrix::IdentityMatrix::PostSkewEx(
+ECode CMatrix::IdentityMatrix::PostSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
@@ -404,30 +404,30 @@ ECode CMatrix::IdentityMatrix::MapVectors(
     return Matrix::MapVectors(dst, dstIndex, src, srcIndex, vectorCount);
 }
 
-ECode CMatrix::IdentityMatrix::MapPointsEx(
+ECode CMatrix::IdentityMatrix::MapPoints(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ const ArrayOf<Float>& src)
 {
-    return Matrix::MapPointsEx(dst, src);
+    return Matrix::MapPoints(dst, src);
 }
 
-ECode CMatrix::IdentityMatrix::MapVectorsEx(
+ECode CMatrix::IdentityMatrix::MapVectors(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ const ArrayOf<Float>& src)
 {
-    return Matrix::MapVectorsEx(dst, src);
+    return Matrix::MapVectors(dst, src);
 }
 
-ECode CMatrix::IdentityMatrix::MapPointsEx2(
+ECode CMatrix::IdentityMatrix::MapPoints(
     /* [in, out] */ ArrayOf<Float>* pts)
 {
-    return Matrix::MapPointsEx2(pts);
+    return Matrix::MapPoints(pts);
 }
 
-ECode CMatrix::IdentityMatrix::MapVectorsEx2(
+ECode CMatrix::IdentityMatrix::MapVectors(
     /* [in, out] */ ArrayOf<Float>* vecs)
 {
-    return Matrix::MapVectorsEx2(vecs);
+    return Matrix::MapVectors(vecs);
 }
 
 ECode CMatrix::IdentityMatrix::MapRect(
@@ -439,12 +439,12 @@ ECode CMatrix::IdentityMatrix::MapRect(
     return Matrix::MapRect(dst, src, result);
 }
 
-ECode CMatrix::IdentityMatrix::MapRectEx(
+ECode CMatrix::IdentityMatrix::MapRect(
     /* [in] */ IRectF* rect,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::MapRectEx(rect, result);
+    return Matrix::MapRect(rect, result);
 }
 
 ECode CMatrix::IdentityMatrix::MapRadius(
@@ -487,10 +487,10 @@ ECode CMatrix::IdentityMatrix::ToShortString(
     return Matrix::ToShortString(str);
 }
 
-ECode CMatrix::IdentityMatrix::ToShortStringEx(
+ECode CMatrix::IdentityMatrix::ToShortString(
     /* [in] */ IStringBuilder* sb)
 {
-    return Matrix::ToShortStringEx(sb);
+    return Matrix::ToShortString(sb);
 }
 
 
@@ -577,11 +577,11 @@ ECode CMatrix::SetScale(
 }
 
 /** Set the matrix to scale by sx and sy. */
-ECode CMatrix::SetScaleEx(
+ECode CMatrix::SetScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
-    return Matrix::SetScaleEx(sx,sy);
+    return Matrix::SetScale(sx,sy);
 }
 
 /**
@@ -600,10 +600,10 @@ ECode CMatrix::SetRotate(
 /**
  * Set the matrix to rotate about (0,0) by the specified number of degrees.
  */
-ECode CMatrix::SetRotateEx(
+ECode CMatrix::SetRotate(
     /* [in] */ Float degrees)
 {
-    return Matrix::SetRotateEx(degrees);
+    return Matrix::SetRotate(degrees);
 }
 
 /**
@@ -621,11 +621,11 @@ ECode CMatrix::SetSinCos(
 }
 
 /** Set the matrix to rotate by the specified sine and cosine values. */
-ECode CMatrix::SetSinCosEx(
+ECode CMatrix::SetSinCos(
     /* [in] */ Float sinValue,
     /* [in] */ Float cosValue)
 {
-    return Matrix::SetSinCosEx(sinValue,cosValue);
+    return Matrix::SetSinCos(sinValue,cosValue);
 }
 
 /**
@@ -643,11 +643,11 @@ ECode CMatrix::SetSkew(
 }
 
 /** Set the matrix to skew by sx and sy. */
-ECode CMatrix::SetSkewEx(
+ECode CMatrix::SetSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky)
 {
-    return Matrix::SetSkewEx(kx,ky);
+    return Matrix::SetSkew(kx,ky);
 }
 
 /**
@@ -696,13 +696,13 @@ ECode CMatrix::PreScale(
  * Preconcats the matrix with the specified scale.
  * M' = M * S(sx, sy)
  */
-ECode CMatrix::PreScaleEx(
+ECode CMatrix::PreScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::PreScaleEx(sx,sy,result);
+    return Matrix::PreScale(sx,sy,result);
 }
 
 /**
@@ -723,12 +723,12 @@ ECode CMatrix::PreRotate(
  * Preconcats the matrix with the specified rotation.
  * M' = M * R(degrees)
  */
-ECode CMatrix::PreRotateEx(
+ECode CMatrix::PreRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::PreRotateEx(degrees,result);
+    return Matrix::PreRotate(degrees,result);
 }
 
 /**
@@ -750,13 +750,13 @@ ECode CMatrix::PreSkew(
  * Preconcats the matrix with the specified skew.
  * M' = M * K(kx, ky)
  */
-ECode CMatrix::PreSkewEx(
+ECode CMatrix::PreSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::PreSkewEx(kx,ky,result);
+    return Matrix::PreSkew(kx,ky,result);
 }
 
 /**
@@ -803,13 +803,13 @@ ECode CMatrix::PostScale(
  * Postconcats the matrix with the specified scale.
  * M' = S(sx, sy) * M
  */
-ECode CMatrix::PostScaleEx(
+ECode CMatrix::PostScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::PostScaleEx(sx,sy,result);
+    return Matrix::PostScale(sx,sy,result);
 }
 
 /**
@@ -830,12 +830,12 @@ ECode CMatrix::PostRotate(
  * Postconcats the matrix with the specified rotation.
  * M' = R(degrees) * M
  */
-ECode CMatrix::PostRotateEx(
+ECode CMatrix::PostRotate(
     /* [in] */ Float degrees,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::PostRotateEx(degrees,result);
+    return Matrix::PostRotate(degrees,result);
 }
 
 /**
@@ -857,13 +857,13 @@ ECode CMatrix::PostSkew(
  * Postconcats the matrix with the specified skew.
  * M' = K(kx, ky) * M
  */
-ECode CMatrix::PostSkewEx(
+ECode CMatrix::PostSkew(
     /* [in] */ Float kx,
     /* [in] */ Float ky,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::PostSkewEx(kx,ky,result);
+    return Matrix::PostSkew(kx,ky,result);
 }
 
 /**
@@ -989,11 +989,11 @@ ECode CMatrix::MapVectors(
  * @param dst   The array of dst points (x,y pairs)
  * @param src   The array of src points (x,y pairs)
  */
-ECode CMatrix::MapPointsEx(
+ECode CMatrix::MapPoints(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ const ArrayOf<Float>& src)
 {
-    return Matrix::MapPointsEx(dst, src);
+    return Matrix::MapPoints(dst, src);
 }
 
 /**
@@ -1007,11 +1007,11 @@ ECode CMatrix::MapPointsEx(
  * @param dst   The array of dst vectors (x,y pairs)
  * @param src   The array of src vectors (x,y pairs)
  */
-ECode CMatrix::MapVectorsEx(
+ECode CMatrix::MapVectors(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ const ArrayOf<Float>& src)
 {
-    return Matrix::MapVectorsEx(dst, src);
+    return Matrix::MapVectors(dst, src);
 }
 
 /**
@@ -1020,10 +1020,10 @@ ECode CMatrix::MapVectorsEx(
  *
  * @param pts The array [x0, y0, x1, y1, ...] of points to transform.
  */
-ECode CMatrix::MapPointsEx2(
+ECode CMatrix::MapPoints(
     /* [in, out] */ ArrayOf<Float>* pts)
 {
-    return Matrix::MapPointsEx2(pts);
+    return Matrix::MapPoints(pts);
 }
 
 /**
@@ -1035,10 +1035,10 @@ ECode CMatrix::MapPointsEx2(
  *
  * @param vecs The array [x0, y0, x1, y1, ...] of vectors to transform.
  */
-ECode CMatrix::MapVectorsEx2(
+ECode CMatrix::MapVectors(
     /* [in, out] */ ArrayOf<Float>* vecs)
 {
-    return Matrix::MapVectorsEx2(vecs);
+    return Matrix::MapVectors(vecs);
 }
 
 /**
@@ -1067,12 +1067,12 @@ ECode CMatrix::MapRect(
  * @param rect The rectangle to transform.
  * @return the result of calling rectStaysRect()
  */
-ECode CMatrix::MapRectEx(
+ECode CMatrix::MapRect(
     /* [in] */ IRectF* rect,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return Matrix::MapRectEx(rect, result);
+    return Matrix::MapRect(rect, result);
 }
 
 /**
@@ -1110,7 +1110,7 @@ ECode CMatrix::SetValues(
 
 /** Returns true iff obj is a Matrix and its values equal our values.
  */
-ECode CMatrix::EqualsEx(
+ECode CMatrix::Equals(
     /* [in] */ IMatrix* obj,
     /* [out] */ Boolean* isEqual)
 {
@@ -1150,10 +1150,10 @@ ECode CMatrix::ToShortString(
 /**
  * @hide
  */
-ECode CMatrix::ToShortStringEx(
+ECode CMatrix::ToShortString(
     /* [in] */ IStringBuilder* sb)
 {
-    return Matrix::ToShortStringEx(sb);
+    return Matrix::ToShortString(sb);
 }
 
 /**

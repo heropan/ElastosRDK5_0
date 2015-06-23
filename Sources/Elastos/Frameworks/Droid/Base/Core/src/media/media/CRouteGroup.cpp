@@ -1,8 +1,8 @@
 
 #include "media/CRouteGroup.h"
 
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;
@@ -69,7 +69,7 @@ ECode CRouteGroup::AddRoute(
     return NOERROR;
 }
 
-ECode CRouteGroup::AddRouteEx(
+ECode CRouteGroup::AddRoute(
     /* [in] */ IRouteInfo* route,
     /* [in] */ Int32 insertAt)
 {
@@ -128,7 +128,7 @@ ECode CRouteGroup::RemoveRoute(
     return NOERROR;
 }
 
-ECode CRouteGroup::RemoveRouteEx(
+ECode CRouteGroup::RemoveRoute(
     /* [in] */ Int32 index)
 {
     if (index < 0 || index >= mRoutes.GetSize())
@@ -172,7 +172,7 @@ ECode CRouteGroup::GetRouteAt(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     *result = mRoutes[index];
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -400,11 +400,11 @@ ECode CRouteGroup::GetName(
     return MediaRouteInfo::GetName(result);
 }
 
-ECode CRouteGroup::GetNameEx(
+ECode CRouteGroup::GetName(
     /* [in] */ IContext* context,
     /* [out] */ ICharSequence** result)
 {
-    return MediaRouteInfo::GetNameEx(context, result);
+    return MediaRouteInfo::GetName(context, result);
 }
 
 ECode CRouteGroup::GetStatus(
@@ -509,10 +509,10 @@ ECode CRouteGroup::IsEnabled(
     return MediaRouteInfo::IsEnabled(result);
 }
 
-ECode CRouteGroup::SetNameEx(
+ECode CRouteGroup::SetName(
     /* [in] */ Int32 nameResId)
 {
-    return MediaRouteInfo::SetNameEx(nameResId);
+    return MediaRouteInfo::SetName(nameResId);
 }
 
 ECode CRouteGroup::SetSupportedTypes(

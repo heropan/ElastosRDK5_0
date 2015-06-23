@@ -41,7 +41,7 @@ public:
             }
 
             Int32 n;
-            ECode ec = mInputStream->ReadBytesEx(mByteArray, 0, requested, &n);
+            ECode ec = mInputStream->ReadBytes(mByteArray, 0, requested, &n);
             if (FAILED(ec)) {
                 return 0;
             }
@@ -157,7 +157,7 @@ public:
 
             memcpy(storage->GetPayload(), buffer, requested);
 
-            ECode ec = mOutputStream->WriteBytesEx(*storage, 0, requested);
+            ECode ec = mOutputStream->WriteBytes(*storage, 0, requested);
             if (FAILED(ec)) {
                 return FALSE;
             }

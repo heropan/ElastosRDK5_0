@@ -1,6 +1,6 @@
 #include "DialogDetailsView.h"
 #include "../../R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <elastos/StringBuilder.h>
 
 using Elastos::Core::CStringWrapper;

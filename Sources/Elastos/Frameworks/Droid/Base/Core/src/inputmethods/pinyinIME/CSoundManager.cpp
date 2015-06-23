@@ -40,7 +40,7 @@ ECode CSoundManager::PlayKeyDown()
     }
     if (!mSilentMode) {
         Int32 sound = IAudioManager::FX_KEYPRESS_STANDARD;
-        mAudioManager->PlaySoundEffectEx(sound, FX_VOLUME);
+        mAudioManager->PlaySoundEffect(sound, FX_VOLUME);
     }
     return NOERROR;
 }

@@ -31,7 +31,7 @@ ECode CAudioEffectDescriptor::GetType(
 {
     VALIDATE_NOT_NULL(type);
     *type = mType;
-    INTERFACE_ADDREF(*type);
+    REFCOUNT_ADD(*type);
     return NOERROR;
 }
 
@@ -48,7 +48,7 @@ ECode CAudioEffectDescriptor::GetUuid(
 {
     VALIDATE_NOT_NULL(uuid);
     *uuid = mUuid;
-    INTERFACE_ADDREF(*uuid);
+    REFCOUNT_ADD(*uuid);
     return NOERROR;
 }
 

@@ -231,7 +231,7 @@ module
         SetSource(
             [in] IView* source);
 
-        SetSourceEx(
+        SetSource(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
@@ -259,7 +259,7 @@ module
         AddChild(
             [in] IView* child);
 
-        AddChildEx(
+        AddChild(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
@@ -299,7 +299,7 @@ module
             [in] Int32 action,
             [out] Boolean* result);
 
-        PerformActionEx(
+        PerformAction(
             [in] Int32 action,
             [in] IBundle* arguments,
             [out] Boolean* result);
@@ -317,7 +317,7 @@ module
         SetParent(
             [in] IView* parent);
 
-        SetParentEx(
+        SetParent(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
@@ -432,7 +432,7 @@ module
         SetLabelFor(
             [in] IView* labeled);
 
-        SetLabelForEx(
+        SetLabelFor(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
@@ -442,7 +442,7 @@ module
         SetLabeledBy(
             [in] IView* label);
 
-        SetLabeledByEx(
+        SetLabeledBy(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
@@ -542,7 +542,7 @@ module
          *
          * @see #setSource(View, int)
          */
-        ObtainEx(
+        Obtain(
             [in] IView* root,
             [in] Int32 virtualDescendantId,
             [out] IAccessibilityNodeInfo** nodeInfo);
@@ -552,7 +552,7 @@ module
          *
          * @return An instance.
          */
-        ObtainEx2(
+        Obtain(
             [out] IAccessibilityNodeInfo** nodeInfo);
 
         /**
@@ -563,7 +563,7 @@ module
          * @param info The other info.
          * @return An instance.
          */
-        ObtainEx3(
+        Obtain(
             [in] IAccessibilityNodeInfo* info,
             [out] IAccessibilityNodeInfo** nodeInfo);
     }

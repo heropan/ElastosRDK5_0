@@ -85,7 +85,7 @@ ECode CVolumePreference::constructor(
             const_cast<Int32 *>(R::styleable::VolumePreference),
             ARRAY_SIZE(R::styleable::VolumePreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetInt32(R::styleable::VolumePreference_streamType, 0, &mStreamType);
     a->Recycle();
 
@@ -419,10 +419,10 @@ ECode CVolumePreference::SetTitle(
     return SeekBarDialogPreference::SetTitle(title);
 }
 
-ECode CVolumePreference::SetTitleEx(
+ECode CVolumePreference::SetTitle(
     /* [in] */ Int32 titleResId)
 {
-    return SeekBarDialogPreference::SetTitleEx(titleResId);
+    return SeekBarDialogPreference::SetTitle(titleResId);
 }
 
 ECode CVolumePreference::GetTitleRes(
@@ -443,10 +443,10 @@ ECode CVolumePreference::SetIcon(
     return SeekBarDialogPreference::SetIcon(icon);
 }
 
-ECode CVolumePreference::SetIconEx(
+ECode CVolumePreference::SetIcon(
     /* [in] */ Int32 iconResId)
 {
-    return SeekBarDialogPreference::SetIconEx(iconResId);
+    return SeekBarDialogPreference::SetIcon(iconResId);
 }
 
 ECode CVolumePreference::GetIcon(
@@ -467,10 +467,10 @@ ECode CVolumePreference::SetSummary(
     return SeekBarDialogPreference::SetSummary(summary);
 }
 
-ECode CVolumePreference::SetSummaryEx(
+ECode CVolumePreference::SetSummary(
     /* [in] */ Int32 summaryResId)
 {
-    return SeekBarDialogPreference::SetSummaryEx(summaryResId);
+    return SeekBarDialogPreference::SetSummary(summaryResId);
 }
 
 ECode CVolumePreference::SetEnabled(
@@ -818,10 +818,10 @@ ECode CVolumePreference::SetDialogTitle(
     return SeekBarDialogPreference::SetDialogTitle(dialogTitle);
 }
 
-ECode CVolumePreference::SetDialogTitleEx(
+ECode CVolumePreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
-    return SeekBarDialogPreference::SetDialogTitleEx(dialogTitleResId);
+    return SeekBarDialogPreference::SetDialogTitle(dialogTitleResId);
 }
 
 ECode CVolumePreference::GetDialogTitle(
@@ -836,10 +836,10 @@ ECode CVolumePreference::SetDialogMessage(
     return SeekBarDialogPreference::SetDialogMessage(dialogMessage);
 }
 
-ECode CVolumePreference::SetDialogMessageEx(
+ECode CVolumePreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
-    return SeekBarDialogPreference::SetDialogMessageEx(dialogMessageResId);
+    return SeekBarDialogPreference::SetDialogMessage(dialogMessageResId);
 }
 
 ECode CVolumePreference::GetDialogMessage(
@@ -854,10 +854,10 @@ ECode CVolumePreference::SetDialogIcon(
     return SeekBarDialogPreference::SetDialogIcon(dialogIcon);
 }
 
-ECode CVolumePreference::SetDialogIconEx(
+ECode CVolumePreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
-    return SeekBarDialogPreference::SetDialogIconEx(dialogIconRes);
+    return SeekBarDialogPreference::SetDialogIcon(dialogIconRes);
 }
 
 ECode CVolumePreference::GetDialogIcon(
@@ -872,10 +872,10 @@ ECode CVolumePreference::SetPositiveButtonText(
     return SeekBarDialogPreference::SetPositiveButtonText(positiveButtonText);
 }
 
-ECode CVolumePreference::SetPositiveButtonTextEx(
+ECode CVolumePreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
-    return SeekBarDialogPreference::SetPositiveButtonTextEx(positiveButtonTextResId);
+    return SeekBarDialogPreference::SetPositiveButtonText(positiveButtonTextResId);
 }
 
 ECode CVolumePreference::GetPositiveButtonText(
@@ -890,10 +890,10 @@ ECode CVolumePreference::SetNegativeButtonText(
     return SeekBarDialogPreference::SetNegativeButtonText(negativeButtonText);
 }
 
-ECode CVolumePreference::SetNegativeButtonTextEx(
+ECode CVolumePreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
-    return SeekBarDialogPreference::SetNegativeButtonTextEx(negativeButtonTextResId);
+    return SeekBarDialogPreference::SetNegativeButtonText(negativeButtonTextResId);
 }
 
 ECode CVolumePreference::GetNegativeButtonText(
@@ -938,11 +938,11 @@ ECode CVolumePreference::OnCreateDialogView(
     return SeekBarDialogPreference::OnCreateDialogView(view);
 }
 
-ECode CVolumePreference::OnClickEx(
+ECode CVolumePreference::OnClick(
     /* [in] */ IDialogInterface* dialog,
     /* [in] */ Int32 which)
 {
-    return SeekBarDialogPreference::OnClickEx(dialog, which);
+    return SeekBarDialogPreference::OnClick(dialog, which);
 }
 
 ECode CVolumePreference::OnDismiss(

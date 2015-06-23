@@ -41,7 +41,7 @@ module
          *
          * @param timeout The timeout after which to release the wake lock, in milliseconds.
          */
-        AcquireLockEx(
+        AcquireLock(
             [in] Int64 timeout);
 
         /**

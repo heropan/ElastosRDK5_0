@@ -3,7 +3,7 @@
 #include "text/CAllCaps.h"
 #include "text/TextUtils.h"
 #include "text/CSpannableString.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -41,12 +41,12 @@ ECode CAllCaps::Filter(
                 TextUtils::CopySpansFrom(ISpanned::Probe(source),
                         start, end, EIID_IInterface, sp, 0);
                 *cs = ICharSequence::Probe(sp);
-                INTERFACE_ADDREF(*cs);
+                REFCOUNT_ADD(*cs);
                 return NOERROR;
             }
             else {
                 *cs = charS;
-                INTERFACE_ADDREF(*cs);
+                REFCOUNT_ADD(*cs);
                 return NOERROR;
             }
         }

@@ -115,14 +115,14 @@ ECode CAdapterViewAnimator::SetOutAnimation(
     return AdapterViewAnimator::SetOutAnimation(outAnimation);
 }
 
-ECode CAdapterViewAnimator::SetInAnimationEx(
+ECode CAdapterViewAnimator::SetInAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {
      return AdapterViewAnimator::SetInAnimation(context, resourceID);
 }
 
-ECode CAdapterViewAnimator::SetOutAnimationEx(
+ECode CAdapterViewAnimator::SetOutAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceID)
 {

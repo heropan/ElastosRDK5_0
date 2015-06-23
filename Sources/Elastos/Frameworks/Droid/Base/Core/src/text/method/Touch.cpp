@@ -1,7 +1,7 @@
 #include "text/method/Touch.h"
 #include "text/method/MetaKeyKeyListener.h"
 #include "view/CViewConfiguration.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::View::CViewConfiguration;
 using Elastos::Droid::View::IKeyEvent;

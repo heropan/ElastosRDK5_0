@@ -6,7 +6,7 @@
 #include "R.h"
 #include "Elastos.Core.h"
 #include "graphics/CPaint.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include "widget/CCalendarView.h"
 
 using Elastos::Core::ISystem;
@@ -693,7 +693,7 @@ void CalendarView::_WeekView::DrawBackground(
         ((CRect*)mTempRect.Get())->mLeft = mHost->mShowWeekNumber ? mWidth / mNumCells : 0;
         ((CRect*)mTempRect.Get())->mRight = mSelectedLeft - 2;
     }
-    canvas->DrawRectEx(mTempRect, mDrawPaint);
+    canvas->DrawRect(mTempRect, mDrawPaint);
 
     if (isLayoutRtl) {
         ((CRect*)mTempRect.Get())->mLeft = mSelectedRight + 3;
@@ -702,7 +702,7 @@ void CalendarView::_WeekView::DrawBackground(
         ((CRect*)mTempRect.Get())->mLeft = mSelectedRight + 3;
         ((CRect*)mTempRect.Get())->mRight = mWidth;
     }
-    canvas->DrawRectEx(mTempRect, mDrawPaint);
+    canvas->DrawRect(mTempRect, mDrawPaint);
 }
 
 void CalendarView::_WeekView::DrawWeekNumbersAndDates(
@@ -724,25 +724,25 @@ void CalendarView::_WeekView::DrawWeekNumbersAndDates(
             mMonthNumDrawPaint->SetColor((*mFocusDay)[i] ? mHost->mFocusedMonthDateColor
                     : mHost->mUnfocusedMonthDateColor);
             Int32 x = (2 * i + 1) * mWidth / divisor;
-            canvas->DrawTextEx((*mDayNumbers)[nDays - 1 - i], x, y, mMonthNumDrawPaint);
+            canvas->DrawText((*mDayNumbers)[nDays - 1 - i], x, y, mMonthNumDrawPaint);
         }
         if (mHost->mShowWeekNumber) {
             mDrawPaint->SetColor(mHost->mWeekNumberColor);
             Int32 x = mWidth - mWidth / divisor;
-            canvas->DrawTextEx((*mDayNumbers)[0], x, y, mDrawPaint);
+            canvas->DrawText((*mDayNumbers)[0], x, y, mDrawPaint);
         }
     } else {
         if (mHost->mShowWeekNumber) {
             mDrawPaint->SetColor(mHost->mWeekNumberColor);
             Int32 x = mWidth / divisor;
-            canvas->DrawTextEx((*mDayNumbers)[0], x, y, mDrawPaint);
+            canvas->DrawText((*mDayNumbers)[0], x, y, mDrawPaint);
             i++;
         }
         for (; i < nDays; i++) {
             mMonthNumDrawPaint->SetColor((*mFocusDay)[i] ? mHost->mFocusedMonthDateColor
                     : mHost->mUnfocusedMonthDateColor);
             Int32 x = (2 * i + 1) * mWidth / divisor;
-            canvas->DrawTextEx((*mDayNumbers)[i], x, y, mMonthNumDrawPaint);
+            canvas->DrawText((*mDayNumbers)[i], x, y, mMonthNumDrawPaint);
         }
     }
 }
@@ -1070,7 +1070,7 @@ ECode CalendarView::InitFromSource(
                     const_cast<Int32*>(R::styleable::CalendarView),
                     ARRAY_SIZE(R::styleable::CalendarView));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(
+    FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrId, R::attr::calendarViewStyle, 0, (ITypedArray**)&a));
     a->GetBoolean(R::styleable::CalendarView_showWeekNumber, DEFAULT_SHOW_WEEK_NUMBER, &mShowWeekNumber);
     AutoPtr<ILocaleDataHelper> dataHelper;
@@ -1145,7 +1145,7 @@ ECode CalendarView::InitFromSource(
     mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE,(IInterface**)&inter);
     AutoPtr<ILayoutInflater> layoutInflater = ILayoutInflater::Probe(inter);
     AutoPtr<IView> content;
-    layoutInflater->InflateEx2(R::layout::calendar_view, NULL, FALSE, (IView**)&content);
+    layoutInflater->Inflate(R::layout::calendar_view, NULL, FALSE, (IView**)&content);
     AddView(content);
     AutoPtr<IView> vList = FindViewById(R::id::list);
     mListView = IListView::Probe(vList);
@@ -1820,7 +1820,7 @@ ECode CalendarView::InvalidateAllWeekViews()
     for (Int32 i = 0; i < childCount; i++) {
         AutoPtr<IView> view;
         mListView->GetChildAt(i, (IView**)&view);
-        view->InvalidateEx2();
+        view->Invalidate();
     }
     return NOERROR;
 }
@@ -1832,7 +1832,7 @@ ECode CalendarView::UpdateDateTextSize()
                     ARRAY_SIZE(R::styleable::TextAppearance));
 
     AutoPtr<ITypedArray> dateTextAppearance;
-    GetContext()->ObtainStyledAttributesEx(mDateTextAppearanceResId, attrId, (ITypedArray**)&dateTextAppearance);
+    GetContext()->ObtainStyledAttributes(mDateTextAppearanceResId, attrId, (ITypedArray**)&dateTextAppearance);
     dateTextAppearance->GetDimensionPixelSize(
             R::styleable::TextAppearance_textSize, DEFAULT_DATE_TEXT_SIZE, &mDateTextSize);
     dateTextAppearance->Recycle();
@@ -1877,13 +1877,13 @@ AutoPtr<ICalendar> CalendarView::GetCalendarForLocale(
 
     if (oldCalendar == NULL) {
         AutoPtr<ICalendar> instance;
-        helper->GetInstanceEx(locale, (ICalendar**)&instance);
+        helper->GetInstance(locale, (ICalendar**)&instance);
         return instance;
     } else {
         Int64 currentTimeMillis;
         oldCalendar->GetTimeInMillis(&currentTimeMillis);
         AutoPtr<ICalendar> newCalendar;
-        helper->GetInstanceEx(locale, (ICalendar**)&newCalendar);
+        helper->GetInstance(locale, (ICalendar**)&newCalendar);
         newCalendar->SetTimeInMillis(currentTimeMillis);
         return newCalendar;
     }
@@ -1960,7 +1960,7 @@ ECode CalendarView::SetUpHeader()
             label->SetVisibility(IView::GONE);
         }
     }
-    mDayNamesHeader->InvalidateEx2();
+    mDayNamesHeader->Invalidate();
     return NOERROR;
 }
 
@@ -2208,7 +2208,7 @@ ECode CalendarView::SetMonthDisplayed(
         CStringWrapper::New(String("Month::Year"), (ICharSequence**)&text);
 
         mMonthName->SetText(text);
-        mMonthName->InvalidateEx2();
+        mMonthName->Invalidate();
     }
     return NOERROR;
 }

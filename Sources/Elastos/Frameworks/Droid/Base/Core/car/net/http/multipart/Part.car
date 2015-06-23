@@ -37,7 +37,7 @@ module
 
         /**
          * Return the character encoding of this part.
-         * @return the character encoding, or <code>null</code> to exclude the character 
+         * @return the character encoding, or <code>null</code> to exclude the character
          * encoding header
          */
         GetCharSet(
@@ -52,7 +52,7 @@ module
 
         /**
          * Tests if this part can be sent more than once.
-         * @return <code>true</code> if {@link #sendData(OutputStream)} can be successfully called 
+         * @return <code>true</code> if {@link #sendData(OutputStream)} can be successfully called
          * more than once.
          * @since 3.0
          */
@@ -61,9 +61,9 @@ module
 
         /**
          * Write all the data to the output stream.
-         * If you override this method make sure to override 
+         * If you override this method make sure to override
          * #length() as well
-         * 
+         *
          * @param out The output stream
          * @throws IOException If an IO problem occurs.
          */
@@ -72,9 +72,9 @@ module
 
         /**
          * Return the full length of all the data.
-         * If you override this method make sure to override 
+         * If you override this method make sure to override
          * #send(OutputStream) as well
-         * 
+         *
          * @return long The length.
          * @throws IOException If an IO problem occurs
          */
@@ -102,13 +102,13 @@ module
 
         /**
          * Write all parts and the last boundary to the specified output stream.
-         * 
+         *
          * @param out The stream to write to.
          * @param parts The parts to write.
          * @param partBoundary The ASCII bytes to use as the part boundary.
-         * 
+         *
          * @throws IOException If an I/O error occurs while writing the parts.
-         * 
+         *
          * @since 3.0
          */
         SendParts(
@@ -118,10 +118,10 @@ module
 
         /**
          * Return the total sum of all parts and that of the last boundary
-         * 
+         *
          * @param parts The parts.
          * @return The total length
-         * 
+         *
          * @throws IOException If an I/O error occurs while writing the parts.
          */
         GetLengthOfParts(
@@ -130,16 +130,16 @@ module
 
         /**
          * Gets the length of the multipart message including the given parts.
-         * 
+         *
          * @param parts The parts.
          * @param partBoundary The ASCII bytes to use as the part boundary.
          * @return The total length
-         * 
+         *
          * @throws IOException If an I/O error occurs while writing the parts.
-         * 
+         *
          * @since 3.0
          */
-        GetLengthOfPartsEx(
+        GetLengthOfParts(
             [in] ArrayOf<IPart*>* iparts,
             [in] ArrayOf<Byte>* partBoundary,
             [out] Int64* length);

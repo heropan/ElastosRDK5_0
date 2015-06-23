@@ -57,7 +57,7 @@ private:
             /* [in] */ Float px,
             /* [in] */ Float py);
 
-        CARAPI SetScaleEx(
+        CARAPI SetScale(
             /* [in] */ Float sx,
             /* [in] */ Float sy);
 
@@ -66,7 +66,7 @@ private:
             /* [in] */ Float px,
             /* [in] */ Float py);
 
-        CARAPI SetRotateEx(
+        CARAPI SetRotate(
             /* [in] */ Float degrees);
 
         CARAPI SetSinCos(
@@ -75,7 +75,7 @@ private:
             /* [in] */ Float px,
             /* [in] */ Float py);
 
-        CARAPI SetSinCosEx(
+        CARAPI SetSinCos(
             /* [in] */ Float sinValue,
             /* [in] */ Float cosValue);
 
@@ -85,7 +85,7 @@ private:
             /* [in] */ Float px,
             /* [in] */ Float py);
 
-        CARAPI SetSkewEx(
+        CARAPI SetSkew(
             /* [in] */ Float kx,
             /* [in] */ Float ky);
 
@@ -106,7 +106,7 @@ private:
             /* [in] */ Float py,
             /* [out] */ Boolean* result);
 
-        CARAPI PreScaleEx(
+        CARAPI PreScale(
             /* [in] */ Float sx,
             /* [in] */ Float sy,
             /* [out] */ Boolean* result);
@@ -117,7 +117,7 @@ private:
             /* [in] */ Float py,
             /* [out] */ Boolean* result);
 
-        CARAPI PreRotateEx(
+        CARAPI PreRotate(
             /* [in] */ Float degrees,
             /* [out] */ Boolean* result);
 
@@ -128,7 +128,7 @@ private:
             /* [in] */ Float py,
             /* [out] */ Boolean* result);
 
-        CARAPI PreSkewEx(
+        CARAPI PreSkew(
             /* [in] */ Float kx,
             /* [in] */ Float ky,
             /* [out] */ Boolean* result);
@@ -149,7 +149,7 @@ private:
             /* [in] */ Float py,
             /* [out] */ Boolean* result);
 
-        CARAPI PostScaleEx(
+        CARAPI PostScale(
             /* [in] */ Float sx,
             /* [in] */ Float sy,
             /* [out] */ Boolean* result);
@@ -160,7 +160,7 @@ private:
             /* [in] */ Float py,
             /* [out] */ Boolean* result);
 
-        CARAPI PostRotateEx(
+        CARAPI PostRotate(
             /* [in] */ Float degrees,
             /* [out] */ Boolean* result);
 
@@ -171,7 +171,7 @@ private:
             /* [in] */ Float py,
             /* [out] */ Boolean* result);
 
-        CARAPI PostSkewEx(
+        CARAPI PostSkew(
             /* [in] */ Float kx,
             /* [in] */ Float ky,
             /* [out] */ Boolean* result);
@@ -212,18 +212,18 @@ private:
             /* [in] */ Int32 srcIndex,
             /* [in] */ Int32 vectorCount);
 
-        CARAPI MapPointsEx(
+        CARAPI MapPoints(
             /* [out] */ ArrayOf<Float>* dst,
             /* [in] */ const ArrayOf<Float>& src);
 
-        CARAPI MapVectorsEx(
+        CARAPI MapVectors(
             /* [out] */ ArrayOf<Float>* dst,
             /* [in] */ const ArrayOf<Float>& src);
 
-        CARAPI MapPointsEx2(
+        CARAPI MapPoints(
             /* [in, out] */ ArrayOf<Float>* pts);
 
-        CARAPI MapVectorsEx2(
+        CARAPI MapVectors(
             /* [in, out] */ ArrayOf<Float>* vecs);
 
         CARAPI MapRect(
@@ -231,7 +231,7 @@ private:
             /* [in] */ IRectF* src,
             /* [out] */ Boolean* result);
 
-        CARAPI MapRectEx(
+        CARAPI MapRect(
             /* [in] */ IRectF* rect,
             /* [out] */ Boolean* result);
 
@@ -245,7 +245,7 @@ private:
         CARAPI SetValues(
             /* [in] */ const ArrayOf<Float>& values);
 
-        CARAPI EqualsEx(
+        CARAPI Equals(
             /* [in] */ IMatrix* obj,
             /* [out] */ Boolean* isEqual);
 
@@ -265,7 +265,7 @@ private:
         CARAPI ToShortString(
             /* [out] */ String* str);
 
-        CARAPI ToShortStringEx(
+        CARAPI ToShortString(
             /* [in] */ IStringBuilder* sb);
     };
 
@@ -319,7 +319,7 @@ public:
         /* [in] */ Float py);
 
     /** Set the matrix to scale by sx and sy. */
-    CARAPI SetScaleEx(
+    CARAPI SetScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
@@ -336,7 +336,7 @@ public:
     /**
      * Set the matrix to rotate about (0,0) by the specified number of degrees.
      */
-    CARAPI SetRotateEx(
+    CARAPI SetRotate(
         /* [in] */ Float degrees);
 
     /**
@@ -351,7 +351,7 @@ public:
         /* [in] */ Float py);
 
     /** Set the matrix to rotate by the specified sine and cosine values. */
-    CARAPI SetSinCosEx(
+    CARAPI SetSinCos(
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue);
 
@@ -367,7 +367,7 @@ public:
         /* [in] */ Float py);
 
     /** Set the matrix to skew by sx and sy. */
-    CARAPI SetSkewEx(
+    CARAPI SetSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky);
 
@@ -405,7 +405,7 @@ public:
      * Preconcats the matrix with the specified scale.
      * M' = M * S(sx, sy)
      */
-    CARAPI PreScaleEx(
+    CARAPI PreScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result);
@@ -424,7 +424,7 @@ public:
      * Preconcats the matrix with the specified rotation.
      * M' = M * R(degrees)
      */
-    CARAPI PreRotateEx(
+    CARAPI PreRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result);
 
@@ -443,7 +443,7 @@ public:
      * Preconcats the matrix with the specified skew.
      * M' = M * K(kx, ky)
      */
-    CARAPI PreSkewEx(
+    CARAPI PreSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result);
@@ -480,7 +480,7 @@ public:
      * Postconcats the matrix with the specified scale.
      * M' = S(sx, sy) * M
      */
-    CARAPI PostScaleEx(
+    CARAPI PostScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result);
@@ -499,7 +499,7 @@ public:
      * Postconcats the matrix with the specified rotation.
      * M' = R(degrees) * M
      */
-    CARAPI PostRotateEx(
+    CARAPI PostRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result);
 
@@ -518,7 +518,7 @@ public:
      * Postconcats the matrix with the specified skew.
      * M' = K(kx, ky) * M
      */
-    CARAPI PostSkewEx(
+    CARAPI PostSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result);
@@ -620,7 +620,7 @@ public:
      * @param dst   The array of dst points (x,y pairs)
      * @param src   The array of src points (x,y pairs)
      */
-    CARAPI MapPointsEx(
+    CARAPI MapPoints(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ const ArrayOf<Float>& src);
 
@@ -632,7 +632,7 @@ public:
      * @param dst   The array of dst vectors (x,y pairs)
      * @param src   The array of src vectors (x,y pairs)
      */
-    CARAPI MapVectorsEx(
+    CARAPI MapVectors(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ const ArrayOf<Float>& src);
 
@@ -642,7 +642,7 @@ public:
      *
      * @param pts The array [x0, y0, x1, y1, ...] of points to transform.
      */
-    CARAPI MapPointsEx2(
+    CARAPI MapPoints(
         /* [in, out] */ ArrayOf<Float>* pts);
 
     /**
@@ -650,7 +650,7 @@ public:
      * vectors back into the array.
      * @param vecs The array [x0, y0, x1, y1, ...] of vectors to transform.
      */
-    CARAPI MapVectorsEx2(
+    CARAPI MapVectors(
         /* [in, out] */ ArrayOf<Float>* vecs);
 
     /**
@@ -675,7 +675,7 @@ public:
      * @param rect The rectangle to transform.
      * @return the result of calling rectStaysRect()
      */
-    CARAPI MapRectEx(
+    CARAPI MapRect(
         /* [in] */ IRectF* rect,
         /* [out] */ Boolean* result);
 
@@ -704,7 +704,7 @@ public:
 
     /** Returns true iff obj is a Matrix and its values equal our values.
      */
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IMatrix* obj,
         /* [out] */ Boolean* isEqual);
 
@@ -731,7 +731,7 @@ public:
     /**
      * @hide
      */
-    CARAPI ToShortStringEx(
+    CARAPI ToShortString(
         /* [in] */ IStringBuilder* sb);
 
 public:

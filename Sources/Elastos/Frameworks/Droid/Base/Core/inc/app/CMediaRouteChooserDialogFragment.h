@@ -3,15 +3,15 @@
 #define __CMEDIAROUTECHOOSERDIALOGFRAGMENT_H__
 
 #include "_CMediaRouteChooserDialogFragment.h"
-#include "widget/AdapterMacro.h"
-#include "widget/BaseAdapter.h"
-#include "app/DialogMacro.h"
-#include "app/DialogFragment.h"
-#include "app/FragmentMacro.h"
-#include "app/Dialog.h"
-#include <elastos/List.h>
 
-using Elastos::Utility::List;
+#include "widget/BaseAdapter.h"
+
+#include "app/DialogFragment.h"
+
+#include "app/Dialog.h"
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IComparator;
 using Elastos::Core::EIID_IComparator;
 using Elastos::Droid::App::Dialog;

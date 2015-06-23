@@ -4,7 +4,7 @@
 
 #include "_CSeekBar.h"
 #include "widget/SeekBar.h"
-#include "view/ViewMacro.h"
+
 
 
 namespace Elastos {
@@ -92,7 +92,7 @@ public:
         /* [in] */ IContext* ctx,
         /* [in] */ Int32 resID);
 
-    CARAPI SetInterpolatorEx(
+    CARAPI SetInterpolator(
         /* [in] */ IInterpolator* interpolator);
 
     CARAPI GetInterpolator(

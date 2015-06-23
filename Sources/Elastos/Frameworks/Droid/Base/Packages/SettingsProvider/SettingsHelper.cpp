@@ -2,7 +2,7 @@
 #include "text/TextUtils.h"
 #include "app/ActivityManagerNative.h"
 #include "os/ServiceManager.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Libcore::ICU::ILocale;
 using Libcore::ICU::CLocale;

@@ -5,7 +5,6 @@
 #include "_CReceiverRestrictedContext.h"
 #include <ext/frameworkext.h>
 #include "ReceiverRestrictedContext.h"
-#include "ContextMacro.h"
 
 using Elastos::Droid::App::ReceiverRestrictedContext;
 using Elastos::Droid::Content::IBroadcastReceiver;

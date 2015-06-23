@@ -5,11 +5,11 @@
 #include <cmdef.h>
 #include "_CTestSuite.h"
 #include "eunit/framework/TestCase.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::IVector;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 
 namespace Eunit {
 namespace Framework {

@@ -5,7 +5,7 @@
 #include "content/res/CResources.h"
 #include "os/SystemClock.h"
 #include "R.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Libcore::ICU::ILocale;
 using Libcore::ICU::ILocaleHelper;
@@ -571,7 +571,7 @@ ECode DateUtils::InitFormatStringsLocked()
        AutoPtr<Elastos::Text::IDateFormatHelper> dfh;
        Elastos::Text::CDateFormatHelper::AcquireSingleton((Elastos::Text::IDateFormatHelper**)&dfh);
        sStatusTimeFormat = NULL;
-       dfh->GetTimeInstanceEx(Elastos::Text::IDateFormat::SHORT, (Elastos::Text::IDateFormat**)&sStatusTimeFormat);
+       dfh->GetTimeInstance(Elastos::Text::IDateFormat::SHORT, (Elastos::Text::IDateFormat**)&sStatusTimeFormat);
 
        r->GetString(R::string::elapsed_time_short_format_mm_ss, &sElapsedFormatMMSS);
        r->GetString(R::string::elapsed_time_short_format_h_mm_ss, &sElapsedFormatHMMSS);
@@ -775,10 +775,10 @@ AutoPtr<ICharSequence> DateUtils::FormatSameDayTime(
     AutoPtr<IDateFormatHelper> helper;
     CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
     if (thenYear == nowYear && thenMonth == nowMonth && thenDay == nowDay) {
-        helper->GetTimeInstanceEx(timeStyle, (Elastos::Text::IDateFormat**)&f);
+        helper->GetTimeInstance(timeStyle, (Elastos::Text::IDateFormat**)&f);
     }
     else {
-        helper->GetDateInstanceEx(dateStyle, (Elastos::Text::IDateFormat**)&f);
+        helper->GetDateInstance(dateStyle, (Elastos::Text::IDateFormat**)&f);
     }
 
     String ret;
@@ -799,7 +799,7 @@ AutoPtr<ICalendar> DateUtils::NewCalendar(
         CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
         AutoPtr<ITimeZone> timeZone;
         tzh->GetGMT((ITimeZone**)&timeZone);//GetTimeZone(String("GMT"), (ITimeZone**)&timeZone);
-        ch->GetInstanceEx2(timeZone, (ICalendar**)&calendar);
+        ch->GetInstance(timeZone, (ICalendar**)&calendar);
         return calendar;
     }
     ch->GetInstance((ICalendar**)&calendar);

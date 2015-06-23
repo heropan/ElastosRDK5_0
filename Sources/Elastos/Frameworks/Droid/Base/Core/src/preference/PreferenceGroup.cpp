@@ -2,8 +2,8 @@
 #include "preference/PreferenceGroup.h"
 #include "text/TextUtils.h"
 #include "R.h"
-#include <elastos/Algorithm.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
@@ -72,7 +72,7 @@ void PreferenceGroup::Init(
             const_cast<Int32 *>(R::styleable::PreferenceGroup),
             ARRAY_SIZE(R::styleable::PreferenceGroup));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
     a->GetBoolean(R::styleable::PreferenceGroup_orderingFromXml,
             mOrderingAsAdded, &mOrderingAsAdded);
     a->Recycle();
@@ -115,7 +115,7 @@ ECode PreferenceGroup::GetPreference(
 {
     VALIDATE_NOT_NULL(preference)
     *preference = mPreferenceList[index];
-    INTERFACE_ADDREF(*preference)
+    REFCOUNT_ADD(*preference)
     return NOERROR;
 }
 
@@ -246,7 +246,7 @@ ECode PreferenceGroup::FindPreference(
     key->ToString(&keyStr2);
     if (TextUtils::Equals(keyStr1, keyStr2)) {
         *preferencevalue = THIS_PROBE(IPreference);
-        INTERFACE_ADDREF(*preferencevalue)
+        REFCOUNT_ADD(*preferencevalue)
         return NOERROR;
     }
     Int32 preferenceCount;
@@ -259,7 +259,7 @@ ECode PreferenceGroup::FindPreference(
 
         if (!curKey.IsNull() && curKey.Equals(keyStr2)) {
             *preferencevalue = preference;
-            INTERFACE_ADDREF(*preferencevalue)
+            REFCOUNT_ADD(*preferencevalue)
             return NOERROR;
         }
 
@@ -269,7 +269,7 @@ ECode PreferenceGroup::FindPreference(
             group->FindPreference(key, (IPreference**)&returnedPreference);
             if (returnedPreference != NULL) {
                 *preferencevalue = returnedPreference;
-                INTERFACE_ADDREF(*preferencevalue)
+                REFCOUNT_ADD(*preferencevalue)
                 return NOERROR;
             }
         }

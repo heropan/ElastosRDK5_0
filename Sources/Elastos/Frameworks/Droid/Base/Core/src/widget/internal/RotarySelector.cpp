@@ -4,9 +4,9 @@
 #include "view/CViewConfiguration.h"
 #include "graphics/CBitmapFactory.h"
 #include "provider/Settings.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::IUserHandle;
@@ -142,7 +142,7 @@ ECode RotarySelector::InternalInit(
         const_cast<Int32 *>(R::styleable::RotarySelector),
         ARRAY_SIZE(R::styleable::RotarySelector));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     a->GetInt32(R::styleable::RotarySelector_orientation, IRotarySelector::HORIZONTAL, &mOrientation);
     a->Recycle();
 
@@ -189,7 +189,7 @@ AutoPtr<IBitmap> RotarySelector::GetBitmapFor(
     AutoPtr<IBitmapFactory> factory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
     AutoPtr<IBitmap> bm;
-    factory->DecodeResourceEx(rs, resId, (IBitmap**)&bm);
+    factory->DecodeResource(rs, resId, (IBitmap**)&bm);
     return bm;
 }
 
@@ -301,7 +301,7 @@ void RotarySelector::OnDraw(
         // draw bounding box around widget
         mPaint->SetColor(0xffff0000);
         mPaint->SetStyle(PaintStyle_STROKE);
-        canvas->DrawRectEx2(0, 0, width, GetHeight(), mPaint);
+        canvas->DrawRect(0, 0, width, GetHeight(), mPaint);
     }
 
     Int32 height = GetHeight();
@@ -312,7 +312,7 @@ void RotarySelector::OnDraw(
     }
 
     // Background:
-    canvas->DrawBitmapEx5(mBackground, mBgMatrix, mPaint);
+    canvas->DrawBitmap(mBackground, mBgMatrix, mPaint);
 
     // Draw the correct arrow(s) depending on the current state:
     mArrowMatrix->Reset();
@@ -327,7 +327,7 @@ void RotarySelector::OnDraw(
                 mArrowMatrix->PreRotate(-90.f, 0.f, 0.f, &r);
                 mArrowMatrix->PostTranslate(0.f, height, &r);
             }
-            canvas->DrawBitmapEx5(mArrowLongLeft, mArrowMatrix, mPaint);
+            canvas->DrawBitmap(mArrowLongLeft, mArrowMatrix, mPaint);
             break;
         case IRotarySelector::RIGHT_HANDLE_GRABBED:
             mArrowMatrix->SetTranslate(0, 0);
@@ -337,7 +337,7 @@ void RotarySelector::OnDraw(
                 // since bg width is > height of screen in landscape mode...
                 mArrowMatrix->PostTranslate(0.f, height + (mBackgroundWidth - height), &r);
             }
-            canvas->DrawBitmapEx5(mArrowLongRight, mArrowMatrix, mPaint);
+            canvas->DrawBitmap(mArrowLongRight, mArrowMatrix, mPaint);
             break;
         default:
             break;
@@ -556,7 +556,7 @@ Boolean RotarySelector::OnTouchEvent(
                     DispatchTriggerEvent(IOnDialTriggerListener::LEFT_HANDLE);
                     AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
 
-                    velocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+                    velocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
                     Float x, y;
                     velocityTracker->GetXVelocity(&x);
                     velocityTracker->GetYVelocity(&y);
@@ -579,7 +579,7 @@ Boolean RotarySelector::OnTouchEvent(
 
                     DispatchTriggerEvent(IOnDialTriggerListener::RIGHT_HANDLE);
                     AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
-                    velocityTracker->ComputeCurrentVelocityEx(1000, mMaximumVelocity);
+                    velocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
                     Float x, y;
                     velocityTracker->GetXVelocity(&x);
                     velocityTracker->GetYVelocity(&y);

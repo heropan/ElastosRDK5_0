@@ -7,7 +7,7 @@
 #include "graphics/CRegion.h"
 #include "os/CSystemProperties.h"
 #include "os/NativeBinder.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <gui/SurfaceComposerClient.h>
 #include <ui/PixelFormat.h>
 #include <skia/core/SkCanvas.h>
@@ -108,12 +108,12 @@ ECode CSurface::_CompatibleCanvas::SetMatrix(
     }
 }
 
-ECode CSurface::_CompatibleCanvas::GetMatrixEx(
+ECode CSurface::_CompatibleCanvas::GetMatrix(
     /* [out] */ IMatrix** m)
 {
     VALIDATE_NOT_NULL(m);
 
-    Canvas::GetMatrixEx(m);
+    Canvas::GetMatrix(m);
     if (mOrigMatrix == NULL) {
         CMatrix::New((IMatrix**)&mOrigMatrix);
     }
@@ -239,12 +239,12 @@ ECode CSurface::Screenshot(
     assert(bitmap != NULL);
     AutoPtr<IBitmap> temp = NativeScreenshot(displayToken, width, height, 0, 0, TRUE);
     *bitmap = temp;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
 
     return NOERROR;
 }
 
-ECode CSurface::ScreenshotEx(
+ECode CSurface::Screenshot(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 minLayer,
@@ -258,7 +258,7 @@ ECode CSurface::ScreenshotEx(
     assert(bitmap != NULL);
     AutoPtr<IBitmap> temp = NativeScreenshot(displayToken, width, height, minLayer, maxLayer, FALSE);
     *bitmap = temp;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
 
     return NOERROR;
 }
@@ -289,7 +289,7 @@ ECode CSurface::GetBuiltInDisplay(
 
     AutoPtr<IBinder> temp = NativeGetBuiltInDisplay(builtInDisplayId);
     *binder = temp;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -307,7 +307,7 @@ ECode CSurface::CreateDisplay(
 
     AutoPtr<IBinder> temp = NativeCreateDisplay(name, secure);
     *binder = temp;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -745,7 +745,7 @@ ECode CSurface::SetCompatibilityTranslator(
         CMatrix::New((IMatrix**)&mCompatibleMatrix);
         assert(mCompatibleMatrix != NULL);
 
-        mCompatibleMatrix->SetScaleEx(appScale, appScale);
+        mCompatibleMatrix->SetScale(appScale, appScale);
     }
     return NOERROR;
 }
@@ -932,7 +932,7 @@ ECode CSurface::GetCanvas(
 {
     VALIDATE_NOT_NULL(canvas);
     *canvas = mCanvas;
-    INTERFACE_ADDREF(*canvas);
+    REFCOUNT_ADD(*canvas);
     return NOERROR;
 }
 
@@ -1170,7 +1170,7 @@ ECode CSurface::NativeLockCanvas(
     }
 
     *canvas = mCanvas;
-    INTERFACE_ADDREF(*canvas);
+    REFCOUNT_ADD(*canvas);
 
     return NOERROR;
 }
@@ -1456,7 +1456,7 @@ Boolean CSurface::GetResult()
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
     String result;
-    sp->GetEx(String("ro.config.headless"), String("0"), &result);
+    sp->Get(String("ro.config.headless"), String("0"), &result);
     return CString("1").Equals(result);
 }
 

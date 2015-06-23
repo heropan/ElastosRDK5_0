@@ -21,7 +21,7 @@ ECode CSettingsGlobal::GetContentUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = Settings::Global::CONTENT_URI;
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -101,12 +101,12 @@ ECode CSettingsGlobal::PutStringForUser(
     return Settings::Global::PutStringForUser(resolver, name, value, userHandle, result);
 }
 
-ECode CSettingsGlobal::GetUriForEx(
+ECode CSettingsGlobal::GetUriFor(
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-    return Settings::Global::GetUriForEx(name, uri);
+    return Settings::Global::GetUriFor(name, uri);
 }
 
 ECode CSettingsGlobal::GetInt32(
@@ -119,7 +119,7 @@ ECode CSettingsGlobal::GetInt32(
     return Settings::Global::GetInt32(cr, name, def, value);
 }
 
-ECode CSettingsGlobal::GetInt32Ex(
+ECode CSettingsGlobal::GetInt32(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Int32* value)
@@ -148,7 +148,7 @@ ECode CSettingsGlobal::GetInt64(
     return Settings::Global::GetInt64(cr, name, def, value);
 }
 
-ECode CSettingsGlobal::GetInt64Ex(
+ECode CSettingsGlobal::GetInt64(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Int64* value)
@@ -177,7 +177,7 @@ ECode CSettingsGlobal::GetFloat(
     return Settings::Global::GetFloat(cr, name, def, value);
 }
 
-ECode CSettingsGlobal::GetFloatEx(
+ECode CSettingsGlobal::GetFloat(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& name,
     /* [out] */ Float* value)

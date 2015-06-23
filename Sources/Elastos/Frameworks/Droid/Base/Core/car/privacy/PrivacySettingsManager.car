@@ -15,7 +15,7 @@ module
             [in]  String packageName,
             [out] IPrivacySettings** privactySettings);
 
-        GetSettingsEx(
+        GetSettings(
             [in]  String packageName,
             [in]  Int32 uid,
             [out] IPrivacySettings** privactySettings);
@@ -28,7 +28,7 @@ module
             [in]  String packageName,
             [out] Boolean* result);
 
-        DeleteSettingsEx(
+        DeleteSettings(
             [in]  String packageName,
             [in]  Int32 uid,
             [out] Boolean* result);
@@ -42,14 +42,14 @@ module
             [in] String dataType,
             [in] String output);
 
-        NotificationEx(
+        Notification(
             [in] String packageName,
             [in] Byte accessMode,
             [in] String dataType,
             [in] String output,
             [in] IPrivacySettings* pSet);
 
-        NotificationEx2(
+        Notification(
             [in] String packageName,
             [in] Int32 uid,
             [in] Byte accessMode,

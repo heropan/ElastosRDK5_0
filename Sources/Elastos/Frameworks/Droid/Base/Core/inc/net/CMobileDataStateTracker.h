@@ -5,7 +5,6 @@
 #include "_CMobileDataStateTracker"
 #include "os/HandlerBase.h"
 #include "util/AsyncChannel.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Internal::Utility::AsyncChannel;
 

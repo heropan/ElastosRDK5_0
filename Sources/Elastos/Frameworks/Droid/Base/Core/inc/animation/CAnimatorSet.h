@@ -6,7 +6,7 @@
 #include "ext/frameworkext.h"
 #include "animation/Animator.h"
 #include "animation/AnimatorSet.h"
-#include "animation/AnimatorMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -33,7 +33,7 @@ public:
      *
      * @param items The animations that will be started simultaneously.
      */
-    CARAPI PlayTogetherEx(
+    CARAPI PlayTogether(
         /* [in] */ IObjectContainer* items);
 
     /**
@@ -51,7 +51,7 @@ public:
      *
      * @param items The animations that will be started one after another.
      */
-    CARAPI PlaySequentiallyEx(
+    CARAPI PlaySequentially(
         /* [in] */ IObjectContainer* items);
 
     /**
@@ -65,7 +65,7 @@ public:
     CARAPI GetChildAnimations(
         /* [out, callee] */ ArrayOf<IAnimator*>** childAnimations);
 
-    CARAPI GetChildAnimationsEx(
+    CARAPI GetChildAnimations(
         /* [out] */ IObjectContainer** childAnimations);
 
     /**

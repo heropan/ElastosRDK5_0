@@ -1,6 +1,6 @@
 
 #include "media/CSandman.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using namespace Elastos::Core;
 using namespace Elastos::Utility::Logging::Slogger;

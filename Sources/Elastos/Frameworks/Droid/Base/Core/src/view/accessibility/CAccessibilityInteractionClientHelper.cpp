@@ -16,7 +16,7 @@ ECode CAccessibilityInteractionClientHelper::GetInstance(
     VALIDATE_NOT_NULL(client);
     AutoPtr<IAccessibilityInteractionClient> c = CAccessibilityInteractionClient::GetInstance();
     *client = c;
-    INTERFACE_ADDREF(*client);
+    REFCOUNT_ADD(*client);
     return NOERROR;
 }
 
@@ -35,7 +35,7 @@ ECode CAccessibilityInteractionClientHelper::GetInstanceForThread(
     VALIDATE_NOT_NULL(client);
     AutoPtr<IAccessibilityInteractionClient> c = CAccessibilityInteractionClient::GetInstanceForThread(threadId);
     *client = c;
-    INTERFACE_ADDREF(*client);
+    REFCOUNT_ADD(*client);
     return NOERROR;
 }
 

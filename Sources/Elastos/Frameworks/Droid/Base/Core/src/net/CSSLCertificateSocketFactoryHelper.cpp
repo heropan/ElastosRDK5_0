@@ -42,7 +42,7 @@ ECode CSSLCertificateSocketFactoryHelper::GetDefault(
  * @param cache The {@link SSLSessionCache} to use, or null for no cache.
  * @return a new SSLSocketFactory with the specified parameters
  */
-ECode CSSLCertificateSocketFactoryHelper::GetDefaultEx(
+ECode CSSLCertificateSocketFactoryHelper::GetDefault(
     /* [in] */ Int32 handshakeTimeoutMillis,
     /* [in] */ ISSLSessionCache* cache,
     /* [out] */ Elastos::Net::Ssl::ISSLSocketFactory** sslSocketFactory)

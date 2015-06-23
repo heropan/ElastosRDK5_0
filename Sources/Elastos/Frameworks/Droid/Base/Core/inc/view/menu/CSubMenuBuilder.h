@@ -4,8 +4,8 @@
 
 #include "view/menu/SubMenuBuilderBase.h"
 #include "_CSubMenuBuilder.h"
-#include "view/menu/MenuBuilderMacro.h"
-#include "view/MenuMacro.h"
+
+
 
 
 namespace Elastos {
@@ -31,22 +31,22 @@ public:
     IMENU_METHODS_DECL();
     IMENUBUILDER_METHODS_DECL();
 
-    CARAPI GetItemEx(
+    CARAPI GetItem(
         /* [out] */ IMenuItem** menuItem);
 
-    CARAPI SetIconEx(
+    CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
     CARAPI SetIcon(
         /* [in] */ Int32 iconRes);
 
-    CARAPI SetHeaderIconEx(
+    CARAPI SetHeaderIcon(
         /* [in] */ IDrawable* icon);
 
     CARAPI SetHeaderIcon(
         /* [in] */ Int32 iconRes);
 
-    CARAPI SetHeaderTitleEx(
+    CARAPI SetHeaderTitle(
         /* [in] */ ICharSequence* title);
 
     CARAPI SetHeaderTitle(

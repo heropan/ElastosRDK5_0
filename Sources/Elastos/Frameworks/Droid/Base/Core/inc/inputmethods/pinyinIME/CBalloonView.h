@@ -3,7 +3,7 @@
 #define  __CBALLOONVIEW_H__
 
 #include "_CBalloonView.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

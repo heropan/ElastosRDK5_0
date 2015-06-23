@@ -1,17 +1,17 @@
 
 #include "media/CRemoteControlClient.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "os/CBundle.h"
 #include "os/CLooperHelper.h"
 #include "os/SystemClock.h"
 #include "media/CAudioSystemHelper.h"
 #include "os/CServiceManager.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "graphics/CBitmap.h"
 #include "graphics/CCanvas.h"
 #include "graphics/CPaint.h"
 #include "graphics/CRectF.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -119,7 +119,7 @@ ECode CRemoteControlClient::MetadataEditor::PutString( // throws IllegalArgument
     if (mApplied) {
         Logger::E(TAG, "Can't edit a previously applied MetadataEditor");
         *result = this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -131,7 +131,7 @@ ECode CRemoteControlClient::MetadataEditor::PutString( // throws IllegalArgument
     mEditorMetadata->PutString(StringUtils::Int32ToString(key), value);
     mMetadataChanged = TRUE;
     *result = this;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -148,7 +148,7 @@ ECode CRemoteControlClient::MetadataEditor::PutInt64( // throws IllegalArgumentE
     if (mApplied) {
         Logger::E(TAG, "Can't edit a previously applied MetadataEditor");
         *result = this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -159,7 +159,7 @@ ECode CRemoteControlClient::MetadataEditor::PutInt64( // throws IllegalArgumentE
     mEditorMetadata->PutInt64(StringUtils::Int32ToString(key), value);
     mMetadataChanged = TRUE;
     *result = this;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -176,7 +176,7 @@ ECode CRemoteControlClient::MetadataEditor::PutBitmap( // throws IllegalArgument
     if (mApplied) {
         Logger::E(TAG, "Can't edit a previously applied MetadataEditor");
         *result = this;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     if (key != BITMAP_KEY_ARTWORK) {
@@ -192,7 +192,7 @@ ECode CRemoteControlClient::MetadataEditor::PutBitmap( // throws IllegalArgument
     }
     mArtworkChanged = TRUE;
     *result = this;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode CRemoteControlClient::EditMetadata(
     }
 
     *result = editor;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -481,7 +481,7 @@ ECode CRemoteControlClient::GetRcMediaIntent(
     VALIDATE_NOT_NULL(result);
 
     *result = mRcMediaIntent;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -491,7 +491,7 @@ ECode CRemoteControlClient::GetIRemoteControlClient(
     VALIDATE_NOT_NULL(result);
 
     *result = mIRCC;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -536,7 +536,7 @@ ECode CRemoteControlClient::MyRemoteControlClient::OnInformationRequested(
         AutoPtr<IMessage> msg;
         AutoPtr<IInteger32> iObj;
         CInteger32::New(clientGeneration, (IInteger32**)&iObj);
-        mOwner->mEventHandler->ObtainMessageEx3(
+        mOwner->mEventHandler->ObtainMessage(
             CRemoteControlClient::MSG_NEW_INTERNAL_CLIENT_GEN,
             artWidth, artHeight, iObj, (IMessage**)&msg);
         mOwner->mEventHandler->DispatchMessage(msg);
@@ -580,7 +580,7 @@ ECode CRemoteControlClient::MyRemoteControlClient::SetCurrentClientGenerationId(
         AutoPtr<IMessage> msg;
         AutoPtr<IInteger32> iObj;
         CInteger32::New(clientGeneration, (IInteger32**)&iObj);
-        mOwner->mEventHandler->ObtainMessageEx2(
+        mOwner->mEventHandler->ObtainMessage(
             CRemoteControlClient::MSG_NEW_CURRENT_CLIENT_GEN,
             clientGeneration, 0/*ignored*/, (IMessage**)&msg);
         mOwner->mEventHandler->DispatchMessage(msg);
@@ -594,7 +594,7 @@ ECode CRemoteControlClient::MyRemoteControlClient::PlugRemoteControlDisplay(
     // only post messages, we can't block here
     if (mOwner->mEventHandler != NULL) {
         AutoPtr<IMessage> msg;
-        mOwner->mEventHandler->ObtainMessageEx(
+        mOwner->mEventHandler->ObtainMessage(
             CRemoteControlClient::MSG_PLUG_DISPLAY, rcd, (IMessage**)&msg);
         mOwner->mEventHandler->DispatchMessage(msg);
     }
@@ -607,7 +607,7 @@ ECode CRemoteControlClient::MyRemoteControlClient::UnplugRemoteControlDisplay(
     // only post messages, we can't block here
     if (mOwner->mEventHandler != NULL) {
         AutoPtr<IMessage> msg;
-        mOwner->mEventHandler->ObtainMessageEx(
+        mOwner->mEventHandler->ObtainMessage(
             CRemoteControlClient::MSG_UNPLUG_DISPLAY, rcd, (IMessage**)&msg);
         mOwner->mEventHandler->DispatchMessage(msg);
     }
@@ -919,7 +919,7 @@ AutoPtr<IBitmap> CRemoteControlClient::ScaleBitmapIfTooBig(
             outBitmap->GetWidth(&tempValue1);
             outBitmap->GetHeight(&tempValue2);
             CRectF::New(0, 0, tempValue1, tempValue2, (IRectF**)&rectF);
-            canvas->DrawBitmapEx(bitmap, NULL, rectF, paint);
+            canvas->DrawBitmap(bitmap, NULL, rectF, paint);
             bitmap = outBitmap;
         }
     }

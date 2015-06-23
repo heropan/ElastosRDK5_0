@@ -22,7 +22,7 @@ public:
         /* [in] */ Int32 cameraId,
         /* [out] */ IHardwareCamera** camera);
 
-    CARAPI OpenEx(
+    CARAPI Open(
         /* [out] */ IHardwareCamera** camera);
 
     CARAPI GetEmptyParameters(

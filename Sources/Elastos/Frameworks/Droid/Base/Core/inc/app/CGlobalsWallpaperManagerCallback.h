@@ -2,10 +2,9 @@
 #define __CGLOBALSWALLPAPERMANAGERCALLBACK_H__
 
 #include "_CGlobalsWallpaperManagerCallback.h"
-#include <elastos/Mutex.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::HandlerBase;

@@ -36,7 +36,7 @@ ECode CRotateDrawable::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> d = RotateDrawable::GetDrawable();
     *drawable = d;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

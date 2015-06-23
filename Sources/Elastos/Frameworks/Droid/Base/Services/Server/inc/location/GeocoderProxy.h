@@ -8,10 +8,10 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "ServiceWatcher.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Location::IGeocoderParams;
 using Elastos::Droid::Location::IIGeocodeProvider;

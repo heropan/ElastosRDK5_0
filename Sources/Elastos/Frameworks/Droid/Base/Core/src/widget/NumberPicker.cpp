@@ -1,4 +1,4 @@
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "content/res/CCompatibilityInfo.h"
 #include "graphics/CPaint.h"
 #include "util/CTypedValue.h"
@@ -11,7 +11,7 @@
 #include "widget/NumberPicker.h"
 #include "widget/CScroller.h"
 #include "widget/CNumberPicker.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Libcore::ICU::ILocaleHelper;
@@ -126,7 +126,7 @@ ECode NumberPicker::Init(
             const_cast<Int32 *>(R::styleable::NumberPicker),
             ARRAY_SIZE(R::styleable::NumberPicker));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyleAttr, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, 0, (ITypedArray**)&a));
 
     Int32 layoutResID = 0;
     a->GetResourceId(R::styleable::NumberPicker_internalLayout, DEFAULT_LAYOUT_RESOURCE_ID, &layoutResID);
@@ -172,7 +172,7 @@ ECode NumberPicker::Init(
     GetContext()->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&i);
     AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(i);
     AutoPtr<IView> v;
-    inflater->InflateEx2(layoutResID, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&v);
+    inflater->Inflate(layoutResID, (IViewGroup*)this->Probe(EIID_IViewGroup), TRUE, (IView**)&v);
 
     if(!mHasSelectorWheel) {
         mInCrementButton = (IImageButton*)IImageButton::Probe(FindViewById(R::id::increment));
@@ -340,7 +340,7 @@ Boolean NumberPicker::OnTouchEvent(
             RemoveChangeCurrentByOneFromLongPress();
             mPressedStateHelper->Cancel();
             AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
-            velocityTracker->ComputeCurrentVelocityEx(1000, (Float)mMaximumFlingVelocity);
+            velocityTracker->ComputeCurrentVelocity(1000, (Float)mMaximumFlingVelocity);
             Float y;
             velocityTracker->GetYVelocity(&y);
             Int32 initialVelocity = (Int32)y;
@@ -828,7 +828,7 @@ void NumberPicker::OnDraw(
         Int32 visible = 0;
         mInputText->GetVisibility(&visible);
         if(i != SELECTOR_MIDDLE_ITEM_INDEX || visible != IView::VISIBLE) {
-            canvas->DrawTextEx(scrollSelectorValue, x, y, mSelectorWheelPaint);
+            canvas->DrawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
         }
         y += mSelectorElementHeight;
     }
@@ -913,7 +913,7 @@ void NumberPicker::TryComputeMaxWidth()
         Float maxDigitWidth = 0;
         for (Int32 i = 0; i <= 9; i++) {
             Float digitWidth = 0;
-            mSelectorWheelPaint->MeasureTextEx2(mAccessibilityNodeProvider->FormatNumberWithLocale(i), &digitWidth);
+            mSelectorWheelPaint->MeasureText(mAccessibilityNodeProvider->FormatNumberWithLocale(i), &digitWidth);
             if(digitWidth > maxDigitWidth) {
                 maxDigitWidth = digitWidth;
             }
@@ -929,7 +929,7 @@ void NumberPicker::TryComputeMaxWidth()
         Int32 valueCount = mDisplayedValues->GetLength();
         for(Int32 i = 0; i < valueCount; i++) {
             Float textWidth = 0;
-            mSelectorWheelPaint->MeasureTextEx2((*mDisplayedValues)[i], &textWidth);
+            mSelectorWheelPaint->MeasureText((*mDisplayedValues)[i], &textWidth);
             if(textWidth > maxTextWidth) {
                 maxTextWidth = (Int32)textWidth;
             }
@@ -1032,9 +1032,9 @@ void NumberPicker::ChangeValueByOne(
         }
         mPreviousScrollerY = 0;
         if(increment) {
-            mFlingScroller->StartScrollEx(0, 0, 0, -mSelectorElementHeight, SNAP_SCROLL_DURATION);
+            mFlingScroller->StartScroll(0, 0, 0, -mSelectorElementHeight, SNAP_SCROLL_DURATION);
         } else {
-            mFlingScroller->StartScrollEx(0, 0, 0, mSelectorElementHeight, SNAP_SCROLL_DURATION);
+            mFlingScroller->StartScroll(0, 0, 0, mSelectorElementHeight, SNAP_SCROLL_DURATION);
         }
         Invalidate();
     } else {
@@ -1326,7 +1326,7 @@ Boolean NumberPicker::EnsureScrollWheelAdjusted()
         if(Elastos::Core::Math::Abs(deltaY) > mSelectorElementHeight / 2) {
             deltaY += (deltaY > 0) ? -mSelectorElementHeight : mSelectorElementHeight;
         }
-        mAdjustScroller->StartScrollEx(0, 0, 0, deltaY, SELECTOR_ADJUSTMENT_DURATION_MILLIS);
+        mAdjustScroller->StartScroll(0, 0, 0, deltaY, SELECTOR_ADJUSTMENT_DURATION_MILLIS);
         Invalidate();
         return TRUE;
     }
@@ -1444,7 +1444,7 @@ ECode NumberPicker::InputTextFilter::Filter(
     }
 }
 
-ECode NumberPicker::InputTextFilter::ClearMetaKeyStateEx(
+ECode NumberPicker::InputTextFilter::ClearMetaKeyState(
     /* [in] */ Int64 state,
     /* [in] */ Int32 which,
     /* [out] */ Int64* ret)
@@ -1876,7 +1876,7 @@ ECode NumberPicker::AccessibilityNodeProviderImpl::PerformAction(
                     if(mAccessibilityFocusedView != virtualViewId) {
                         mAccessibilityFocusedView = virtualViewId;
                         SendAccessibilityEventForVirtualView(virtualViewId, IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUSED);
-                        mHost->mInputText->InvalidateEx2();
+                        mHost->mInputText->Invalidate();
                         *res = TRUE;
                         return NOERROR;
                     }
@@ -1888,7 +1888,7 @@ ECode NumberPicker::AccessibilityNodeProviderImpl::PerformAction(
                     if(mAccessibilityFocusedView == virtualViewId) {
                         mAccessibilityFocusedView = UNDEFINED;
                         SendAccessibilityEventForVirtualView(virtualViewId, IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
-                        mHost->mInputText->InvalidateEx2();
+                        mHost->mInputText->Invalidate();
                         *res = TRUE;
                         return NOERROR;
                     }
@@ -2030,7 +2030,7 @@ void NumberPicker::AccessibilityNodeProviderImpl::SendAccessibilityEventForVirtu
         CAccessibilityEvent::Obtain(eventType, (IAccessibilityEvent**)&event);
         mHost->mInputText->OnInitializeAccessibilityEvent(event);
         mHost->mInputText->OnPopulateAccessibilityEvent(event);
-        event->SetSourceEx((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_INPUT);
+        event->SetSource((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_INPUT);
         mHost->RequestSendAccessibilityEvent((IView*)mHost->Probe(EIID_IView), event);
     }
 }
@@ -2057,7 +2057,7 @@ void NumberPicker::AccessibilityNodeProviderImpl::SendAccessibilityEventForVirtu
         CStringWrapper::New(str, (ICharSequence**)&textCsq);
         object->Add(textCsq);
         event->SetEnabled(mHost->IsEnabled());
-        event->SetSourceEx((IView*)mHost->Probe(EIID_IView), virtualViewId);
+        event->SetSource((IView*)mHost->Probe(EIID_IView), virtualViewId);
         mHost->RequestSendAccessibilityEvent((IView*)mHost->Probe(EIID_IView), event);
     }
 }
@@ -2120,7 +2120,7 @@ AutoPtr<IAccessibilityNodeInfo> NumberPicker::AccessibilityNodeProviderImpl::Cre
 {
     AutoPtr<IAccessibilityNodeInfo> info;
     mHost->mInputText->CreateAccessibilityNodeInfo((IAccessibilityNodeInfo**)&info);
-    info->SetSourceEx((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_INPUT);
+    info->SetSource((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_INPUT);
     if(mAccessibilityFocusedView != VIRTUAL_VIEW_ID_INPUT) {
         info->AddAction(IAccessibilityNodeInfo::ACTION_ACCESSIBILITY_FOCUS);
     }
@@ -2139,7 +2139,7 @@ AutoPtr<IAccessibilityNodeInfo> NumberPicker::AccessibilityNodeProviderImpl::Cre
     /* [in] */ Int32 bottom)
 {
     AutoPtr<IAccessibilityNodeInfo> info;
-    CAccessibilityNodeInfo::ObtainEx2((IAccessibilityNodeInfo**)&info);
+    CAccessibilityNodeInfo::Obtain((IAccessibilityNodeInfo**)&info);
     String str = String("Button");
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(str, (ICharSequence**)&seq);
@@ -2149,7 +2149,7 @@ AutoPtr<IAccessibilityNodeInfo> NumberPicker::AccessibilityNodeProviderImpl::Cre
     seq = NULL;
     CStringWrapper::New(packageName, (ICharSequence**)&seq);
     info->SetPackageName(seq);
-    info->SetSourceEx((IView*)mHost->Probe(EIID_IView), virtualViewId);
+    info->SetSource((IView*)mHost->Probe(EIID_IView), virtualViewId);
     info->SetParent((IView*)mHost->Probe(EIID_IView));
     seq = NULL;
     CStringWrapper::New(text, (ICharSequence**)&seq);
@@ -2192,7 +2192,7 @@ AutoPtr<IAccessibilityNodeInfo> NumberPicker::AccessibilityNodeProviderImpl::Cre
     /* [in] */ Int32 bottom)
 {
     AutoPtr<IAccessibilityNodeInfo> info;
-    CAccessibilityNodeInfo::ObtainEx2((IAccessibilityNodeInfo**)&info);
+    CAccessibilityNodeInfo::Obtain((IAccessibilityNodeInfo**)&info);
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(NUMBERPICkER_NAME, (ICharSequence**)&seq);
     info->SetClassName(seq);
@@ -2204,11 +2204,11 @@ AutoPtr<IAccessibilityNodeInfo> NumberPicker::AccessibilityNodeProviderImpl::Cre
     info->SetSource((IView*)mHost->Probe(EIID_IView));
 
     if(HasVirtualDecrementButton()) {
-        info->AddChildEx((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_DECREMENT);
+        info->AddChild((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_DECREMENT);
     }
-    info->AddChildEx((IView*)this->Probe(EIID_IView), VIRTUAL_VIEW_ID_INPUT);
+    info->AddChild((IView*)this->Probe(EIID_IView), VIRTUAL_VIEW_ID_INPUT);
     if(HasVirtualIncrementButton()) {
-        info->AddChildEx((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_INCREMENT);
+        info->AddChild((IView*)mHost->Probe(EIID_IView), VIRTUAL_VIEW_ID_INCREMENT);
     }
 
     info->SetParent(IView::Probe(mHost->GetParentForAccessibility()));

@@ -8,10 +8,9 @@
 #include "database/sqlite/SQLiteDebug.h"
 #include "database/sqlite/SQLiteStatementInfo.h"
 #include "util/LruCache.h"
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Regex::IPattern;

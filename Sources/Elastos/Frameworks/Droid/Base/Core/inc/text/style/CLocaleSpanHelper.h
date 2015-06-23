@@ -3,7 +3,7 @@
 #define __CLOCALESPANHELPER_H__
 
 #include "_CLocaleSpanHelper.h"
-#include "text/style/CharacterStyleMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

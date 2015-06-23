@@ -6,8 +6,8 @@
 #include "location/CGeofence.h"
 #include "location/CGpsStatus.h"
 #include "os/Build.h"
-#include <elastos/Math.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::Build;
@@ -90,7 +90,7 @@ ECode LocationManager::GetProvider(
 
     AutoPtr<ILocationProvider> temp = CreateProvider(name, properties);
     *provider = temp;
-    INTERFACE_ADDREF(*provider);
+    REFCOUNT_ADD(*provider);
 
     return NOERROR;
 }
@@ -1278,10 +1278,10 @@ ECode LocationManager::GetGpsStatus(
     if (status == NULL) {
         FAIL_RETURN(CGpsStatus::New((IGpsStatus**)&status))
     }
-    status->SetStatusEx(mGpsStatus);
+    status->SetStatus(mGpsStatus);
 
     *outStatus = status;
-    INTERFACE_ADDREF(*outStatus);
+    REFCOUNT_ADD(*outStatus);
 
     return NOERROR;
 }

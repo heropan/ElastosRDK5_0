@@ -17,7 +17,7 @@ module
             [in] Int32 exponentOffset,
             [out] Int32* matrixxOES);
 
-        GlQueryMatrixxOESEx(
+        GlQueryMatrixxOES(
             [in] IInt32Buffer* mantissa,
             [in] IInt32Buffer* exponent,
             [out] Int32* matrixxOES);

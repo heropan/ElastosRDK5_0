@@ -107,7 +107,7 @@ public:
      * @param other The display metrics with which to compare.
      * @return True if the display metrics are equal.
      */
-    CARAPI EqualsEx(
+    CARAPI Equals(
         /* [in] */ IDisplayMetrics* other,
         /* [out] */ Boolean* result);
 

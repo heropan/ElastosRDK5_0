@@ -1,5 +1,5 @@
 #include "MonkeyFlipEvent.h"
-#include "elastos/StringUtils.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::IFileOutputStream;

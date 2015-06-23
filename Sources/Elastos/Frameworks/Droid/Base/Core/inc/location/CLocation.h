@@ -4,11 +4,8 @@
 
 #include "ext/frameworkext.h"
 #include "_CLocation.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Droid::Os::IBundle;
-using Elastos::Core::Threading::Mutex;
-
 struct ElaLocationCallback
 {
     Double (*getLatitude)(IInterface* obj);

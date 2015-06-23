@@ -5,9 +5,8 @@
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;

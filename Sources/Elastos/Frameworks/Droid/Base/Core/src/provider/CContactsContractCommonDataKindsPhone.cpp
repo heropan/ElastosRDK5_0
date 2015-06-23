@@ -51,7 +51,7 @@ ECode CContactsContractCommonDataKindsPhone::GetDisplayLabel(
     return GetTypeLabel(res, type, label, lb);
 }
 
-ECode CContactsContractCommonDataKindsPhone::GetDisplayLabelEx(
+ECode CContactsContractCommonDataKindsPhone::GetDisplayLabel(
     /* [in] */ IContext* context,
     /* [in] */ Int32 type,
     /* [in] */ ICharSequence* label,
@@ -111,7 +111,7 @@ ECode CContactsContractCommonDataKindsPhone::GetTypeLabel(
 
     if ((type == TYPE_CUSTOM || type == TYPE_ASSISTANT) && !TextUtils::IsEmpty(label)) {
         *lb = label;
-        INTERFACE_ADDREF(*lb);
+        REFCOUNT_ADD(*lb);
         return NOERROR;
     } else {
         Int32 labelRes;

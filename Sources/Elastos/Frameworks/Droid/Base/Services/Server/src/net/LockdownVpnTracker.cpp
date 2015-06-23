@@ -5,7 +5,7 @@
 #include "app/NotificationManager.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -190,7 +190,7 @@ ECode LockdownVpnTracker::InitLocked()
     AutoPtr<IIntentFilter> resetFilter;
     CIntentFilter::New(ACTION_LOCKDOWN_RESET, (IIntentFilter**)&resetFilter);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiverEx(mResetReceiver, resetFilter,
+    mContext->RegisterReceiver(mResetReceiver, resetFilter,
             Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, NULL, (IIntent**)&intent);
 
     // try {
@@ -344,12 +344,12 @@ void LockdownVpnTracker::ShowNotification(
     AutoPtr<INotification> notification;
     builder->Build((INotification**)&notification);
 
-    NotificationManager::From(mContext)->NotifyEx(TAG, 0, notification);
+    NotificationManager::From(mContext)->Notify(TAG, 0, notification);
 }
 
 void LockdownVpnTracker::HideNotification()
 {
-    NotificationManager::From(mContext)->CancelEx(TAG, 0);
+    NotificationManager::From(mContext)->Cancel(TAG, 0);
 }
 
 } // namespace Net

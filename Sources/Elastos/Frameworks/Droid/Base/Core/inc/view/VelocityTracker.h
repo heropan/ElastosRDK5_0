@@ -231,7 +231,7 @@ public:
     CARAPI ComputeCurrentVelocity(
         /* [in] */ Int32 units);
 
-    CARAPI ComputeCurrentVelocityEx(
+    CARAPI ComputeCurrentVelocity(
         /* [in] */ Int32 units,
         /* [in] */ Float maxVelocity);
 
@@ -241,11 +241,11 @@ public:
     CARAPI GetYVelocity(
         /* [out] */ Float* y);
 
-    CARAPI GetXVelocityEx(
+    CARAPI GetXVelocity(
         /* [in] */ Int32 id,
         /* [out] */ Float* x);
 
-    CARAPI GetYVelocityEx(
+    CARAPI GetYVelocity(
         /* [in] */ Int32 id,
         /* [out] */ Float* y);
 

@@ -43,7 +43,7 @@ void ComposingView::OnMeasure(
             mDecInfo->GetComposingStrForDisplay(&str);
         }
         Float value = 0.f;
-        mPaint->MeasureTextEx(str, 0, str.GetLength(), &value);
+        mPaint->MeasureText(str, 0, str.GetLength(), &value);
         width += value;
     }
     SetMeasuredDimension((Int32) (width + 0.5f), height);
@@ -72,7 +72,7 @@ void ComposingView::OnDraw(
     AutoPtr<IStringBuffer> strBuf;
     mDecInfo->GetOrigianlSplStr((IStringBuffer**)&strBuf);
     strBuf->ToString(&splStr);
-    canvas->DrawTextEx2(splStr, 0, splStr.GetLength(), x, y, mPaint);
+    canvas->DrawText(splStr, 0, splStr.GetLength(), x, y, mPaint);
 }
 
 void ComposingView::DrawCursor(
@@ -103,24 +103,24 @@ void ComposingView::DrawForPinyin(
     Int32 activeCmpsLen = 0;
     mDecInfo->GetActiveCmpsDisplayLen(&activeCmpsLen);
     if (cursorPos > activeCmpsLen) cmpsPos = activeCmpsLen;
-    canvas->DrawTextEx2(cmpsStr, 0, cmpsPos, x, y, mPaint);
-    x += (mPaint->MeasureTextEx(cmpsStr, 0, cmpsPos, &value), value);
+    canvas->DrawText(cmpsStr, 0, cmpsPos, x, y, mPaint);
+    x += (mPaint->MeasureText(cmpsStr, 0, cmpsPos, &value), value);
     if (cursorPos <= activeCmpsLen) {
         if (ComposingStatus_EDIT_PINYIN == mComposingStatus) {
             DrawCursor(canvas, x);
         }
-        canvas->DrawTextEx2(cmpsStr, cmpsPos, activeCmpsLen, x, y, mPaint);
+        canvas->DrawText(cmpsStr, cmpsPos, activeCmpsLen, x, y, mPaint);
     }
 
-    x += (mPaint->MeasureTextEx(cmpsStr, cmpsPos, activeCmpsLen, &value), value);
+    x += (mPaint->MeasureText(cmpsStr, cmpsPos, activeCmpsLen, &value), value);
 
     if ((Int32)cmpsStr.GetLength() > activeCmpsLen) {
         mPaint->SetColor(mStrColorIdle);
         Int32 oriPos = activeCmpsLen;
         if (cursorPos > activeCmpsLen) {
             if (cursorPos > (Int32)cmpsStr.GetLength()) cursorPos = cmpsStr.GetLength();
-            canvas->DrawTextEx2(cmpsStr, oriPos, cursorPos, x, y, mPaint);
-            x += (mPaint->MeasureTextEx(cmpsStr, oriPos, cursorPos, &value), value);
+            canvas->DrawText(cmpsStr, oriPos, cursorPos, x, y, mPaint);
+            x += (mPaint->MeasureText(cmpsStr, oriPos, cursorPos, &value), value);
 
             if (ComposingStatus_EDIT_PINYIN == mComposingStatus) {
                 DrawCursor(canvas, x);
@@ -128,7 +128,7 @@ void ComposingView::DrawForPinyin(
 
             oriPos = cursorPos;
         }
-        canvas->DrawTextEx2(cmpsStr, oriPos, cmpsStr.GetLength(), x, y, mPaint);
+        canvas->DrawText(cmpsStr, oriPos, cmpsStr.GetLength(), x, y, mPaint);
     }
 }
 
@@ -169,7 +169,7 @@ ECode CComposingView::constructor(
     mPaint->SetAntiAlias(TRUE);
     mPaint->SetTextSize(mFontSize);
 
-    return mPaint->GetFontMetricsIntEx((IPaintFontMetricsInt**)&mFmi);
+    return mPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
 }
 
 ECode CComposingView::Reset()
@@ -200,7 +200,7 @@ ECode CComposingView::SetDecodingInfo(
 
     Measure(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT);
     RequestLayout();
-    return InvalidateEx2();
+    return Invalidate();
 }
 
 ECode CComposingView::MoveCursor(
@@ -231,7 +231,7 @@ ECode CComposingView::MoveCursor(
 
     }
 
-    InvalidateEx2();
+    Invalidate();
     *result = TRUE;
     return NOERROR;
 }

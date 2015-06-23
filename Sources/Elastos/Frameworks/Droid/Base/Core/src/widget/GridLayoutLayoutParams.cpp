@@ -56,7 +56,7 @@ void GridLayoutLayoutParams::ReInitSuper(
             const_cast<Int32 *>(R::styleable::ViewGroup_MarginLayout),
             ARRAY_SIZE(R::styleable::ViewGroup_MarginLayout));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     //try {
         Int32 margin = 0;
         a->GetDimensionPixelSize(MARGIN, DEFAULT_MARGIN, &margin);
@@ -70,7 +70,7 @@ void GridLayoutLayoutParams::ReInitSuper(
     //}
 }
 
-void GridLayoutLayoutParams::InitEx(
+void GridLayoutLayoutParams::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
@@ -78,7 +78,7 @@ void GridLayoutLayoutParams::InitEx(
             const_cast<Int32 *>(R::styleable::GridLayout_Layout),
             ARRAY_SIZE(R::styleable::GridLayout_Layout));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
 //    try {
         Int32 gravity = 0;
@@ -135,7 +135,7 @@ GridLayoutLayoutParams::GridLayoutLayoutParams(
     : ViewGroupMarginLayoutParams(context, attrs)
 {
     ReInitSuper(context, attrs);
-    InitEx(context, attrs);
+    Init(context, attrs);
 }
 
 ECode GridLayoutLayoutParams::SetGravity(
@@ -204,8 +204,8 @@ ECode GridLayoutLayoutParams::SetBaseAttributes(
     /* [in] */ Int32 widthAttr,
     /* [in] */ Int32 heightAttr)
 {
-    FAIL_RETURN(attributes->GetLayoutDimensionEx(widthAttr, DEFAULT_WIDTH, &mWidth));
-    return attributes->GetLayoutDimensionEx(heightAttr, DEFAULT_HEIGHT, &mHeight);
+    FAIL_RETURN(attributes->GetLayoutDimension(widthAttr, DEFAULT_WIDTH, &mWidth));
+    return attributes->GetLayoutDimension(heightAttr, DEFAULT_HEIGHT, &mHeight);
 }
 
 ECode GridLayoutLayoutParams::Init(
@@ -272,7 +272,7 @@ ECode GridLayoutLayoutParams::Init(
 {
     ViewGroupMarginLayoutParams::Init(context, attrs);
     ReInitSuper(context, attrs);
-    InitEx(context, attrs);
+    Init(context, attrs);
     return NOERROR;
 }
 

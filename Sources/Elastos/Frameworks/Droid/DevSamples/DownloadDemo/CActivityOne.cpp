@@ -1,7 +1,7 @@
 
 #include "CActivityOne.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;

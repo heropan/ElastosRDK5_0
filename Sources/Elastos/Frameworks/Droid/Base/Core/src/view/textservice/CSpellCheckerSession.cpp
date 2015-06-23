@@ -93,7 +93,7 @@ ECode CSpellCheckerSession::GetSuggestions(
  * @deprecated use {@link SpellCheckerSession#getSentenceSuggestions(TextInfo[], int)} instead
  */
 //@Deprecated
-ECode CSpellCheckerSession::GetSuggestionsEx(
+ECode CSpellCheckerSession::GetSuggestions(
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit,
     /* [in] */ Boolean sequentialWords)

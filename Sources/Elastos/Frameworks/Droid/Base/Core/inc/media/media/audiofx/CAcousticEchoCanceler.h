@@ -5,7 +5,7 @@
 #include "_CAcousticEchoCanceler.h"
 #include <ext/frameworkext.h>
 #include "media/media/audiofx/AudioEffect.h"
-#include "media/media/audiofx/AudioEffectMacro.h"
+
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 

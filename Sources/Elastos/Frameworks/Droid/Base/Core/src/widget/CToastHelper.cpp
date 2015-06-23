@@ -17,14 +17,14 @@ ECode CToastHelper::MakeText(
     return Toast::MakeText(context, text, duration, toast);
 }
 
-ECode CToastHelper::MakeTextEx(
+ECode CToastHelper::MakeText(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resId,
     /* [in] */ Int32 duration,
     /* [out] */ IToast** toast)
 {
     VALIDATE_NOT_NULL(toast);
-    return Toast::MakeTextEx(context, resId, duration, toast);
+    return Toast::MakeText(context, resId, duration, toast);
 }
 
 }// namespace Widget

@@ -13,33 +13,33 @@ ECode CMessageHelper::Obtain(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain();
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx(
+ECode CMessageHelper::Obtain(
     /* [in] */ IMessage* orig,
     /* [out] */ IMessage** msg)
 {
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(orig);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx2(
+ECode CMessageHelper::Obtain(
     /* [in] */ IHandler* target,
     /* [out] */ IMessage** msg)
 {
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(target);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx3(
+ECode CMessageHelper::Obtain(
     /* [in] */ IHandler* target,
     /* [in] */ Int32 what,
     /* [out] */ IMessage** msg)
@@ -47,11 +47,11 @@ ECode CMessageHelper::ObtainEx3(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(target, what);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx4(
+ECode CMessageHelper::Obtain(
     /* [in] */ IHandler* target,
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj,
@@ -60,11 +60,11 @@ ECode CMessageHelper::ObtainEx4(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(target, what, obj);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx5(
+ECode CMessageHelper::Obtain(
     /* [in] */ IHandler* target,
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
@@ -74,11 +74,11 @@ ECode CMessageHelper::ObtainEx5(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(target, what, arg1, arg2);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx6(
+ECode CMessageHelper::Obtain(
     /* [in] */ IHandler* target,
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
@@ -89,11 +89,11 @@ ECode CMessageHelper::ObtainEx6(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(target, what, arg1, arg2, obj);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 
-ECode CMessageHelper::ObtainEx7(
+ECode CMessageHelper::Obtain(
     /* [in] */ IHandler* target,
     /* [in] */ IRunnable* callback,
     /* [out] */ IMessage** msg)
@@ -101,7 +101,7 @@ ECode CMessageHelper::ObtainEx7(
     VALIDATE_NOT_NULL(msg);
     AutoPtr<IMessage> m = CMessage::Obtain(target, callback);
     *msg = m;
-    INTERFACE_ADDREF(*msg);
+    REFCOUNT_ADD(*msg);
     return NOERROR;
 }
 

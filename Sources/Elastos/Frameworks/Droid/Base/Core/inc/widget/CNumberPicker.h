@@ -3,9 +3,9 @@
 
 #include "_CNumberPicker.h"
 #include "widget/NumberPicker.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/LinearLayoutMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{

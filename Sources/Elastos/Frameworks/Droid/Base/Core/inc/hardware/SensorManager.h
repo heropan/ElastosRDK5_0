@@ -4,9 +4,8 @@
 
 #include "_CSensorManager.h"
 #include "hardware/LegacySensorManager.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Utility::IObjectMap;
 
@@ -147,7 +146,7 @@ public:
      *         enabled
      */
     //@Deprecated
-    virtual CARAPI RegisterListenerEx(
+    virtual CARAPI RegisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors,
         /* [in] */ Int32 rate,
@@ -181,7 +180,7 @@ public:
      *        a bit masks of the sensors to unregister from
      */
     // /@Deprecated
-    virtual CARAPI UnregisterListenerEx(
+    virtual CARAPI UnregisterListener(
         /* [in] */ ISensorListener* listener,
         /* [in] */ Int32 sensors);
 
@@ -198,7 +197,7 @@ public:
      * @see #registerListener(SensorEventListener, Sensor, Int32)
      *
      */
-    virtual CARAPI UnregisterListenerEx2(
+    virtual CARAPI UnregisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor);
 
@@ -212,7 +211,7 @@ public:
      * @see #registerListener(SensorEventListener, Sensor, Int32)
      *
      */
-    virtual CARAPI UnregisterListenerEx3(
+    virtual CARAPI UnregisterListener(
         /* [in] */ ISensorEventListener* listener);
 
     /**
@@ -243,7 +242,7 @@ public:
      * @see #unregisterListener(SensorEventListener, Sensor)
      *
      */
-    virtual CARAPI RegisterListenerEx2(
+    virtual CARAPI RegisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor,
         /* [in] */ Int32 rate,
@@ -281,7 +280,7 @@ public:
      * @see #unregisterListener(SensorEventListener, Sensor)
      *
      */
-    virtual CARAPI RegisterListenerEx3(
+    virtual CARAPI RegisterListener(
         /* [in] */ ISensorEventListener* listener,
         /* [in] */ ISensor* sensor,
         /* [in] */ Int32 rate,

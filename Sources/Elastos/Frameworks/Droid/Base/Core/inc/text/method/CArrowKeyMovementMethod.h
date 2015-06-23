@@ -4,7 +4,7 @@
 
 #include "_CArrowKeyMovementMethod.h"
 #include "text/method/ArrowKeyMovementMethod.h"
-#include "text/method/BaseMovementMethodMacro.h"
+
 
 
 namespace Elastos {

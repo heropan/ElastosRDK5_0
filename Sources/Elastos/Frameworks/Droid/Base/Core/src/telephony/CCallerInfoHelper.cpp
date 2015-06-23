@@ -3,7 +3,7 @@
 #include "CPhoneNumberUtils.h"
 #include "CCallerInfo.h"
 #include "net/CUriHelper.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Location::ICountry;
@@ -21,7 +21,7 @@ namespace Telephony {
 
 const String CCallerInfoHelper::TAG("CCallerInfoHelper");
 
-ECode CCallerInfoHelper::GetCallerInfoEx(
+ECode CCallerInfoHelper::GetCallerInfo(
     /* [in] */ IContext* context,
     /* [in] */ const String& number,
     /* [out] */ ICallerInfo** callerInfo)
@@ -58,7 +58,7 @@ ECode CCallerInfoHelper::GetCallerInfoEx(
     helper->WithAppendedPath(plContentFilterUri, encodedStr, (IUri**)&contactUri);
 
     AutoPtr<ICallerInfo> info;
-    GetCallerInfoEx2(context, contactUri, (ICallerInfo**)&info);
+    GetCallerInfo(context, contactUri, (ICallerInfo**)&info);
     DoSecondaryLookupIfNecessary(context, number, info, (ICallerInfo**)&tmpCallerInfo);
     info = tmpCallerInfo;
     // if no query results were returned with a viable number,
@@ -70,12 +70,12 @@ ECode CCallerInfoHelper::GetCallerInfoEx(
     }
 
     *callerInfo = info;
-    INTERFACE_ADDREF(*callerInfo);
+    REFCOUNT_ADD(*callerInfo);
 
     return NOERROR;
 }
 
-ECode CCallerInfoHelper::GetCallerInfoEx2(
+ECode CCallerInfoHelper::GetCallerInfo(
     /* [in] */ IContext* context,
     /* [in] */ IUri* contactRef,
     /* [out] */ ICallerInfo** callerInfo)
@@ -85,10 +85,10 @@ ECode CCallerInfoHelper::GetCallerInfoEx2(
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ICursor> cursor;
     resolver->Query(contactRef, (ArrayOf<String>*)NULL, String(NULL), (ArrayOf<String>*)NULL, String(NULL), (ICursor**)&cursor);
-    return GetCallerInfoEx3(context, contactRef, cursor, callerInfo);
+    return GetCallerInfo(context, contactRef, cursor, callerInfo);
 }
 
-ECode CCallerInfoHelper::GetCallerInfoEx3(
+ECode CCallerInfoHelper::GetCallerInfo(
     /* [in] */ IContext* context,
     /* [in] */ IUri* contactRef,
     /* [in] */ ICursor* cursor,
@@ -204,7 +204,7 @@ ECode CCallerInfoHelper::GetCallerInfoEx3(
     info->SetContactRefUri(contactRef);
 
     *callerInfo = info;
-    INTERFACE_ADDREF(*callerInfo);
+    REFCOUNT_ADD(*callerInfo);
     return NOERROR;
 }
 
@@ -216,7 +216,7 @@ ECode CCallerInfoHelper::GetCallerId(
     VALIDATE_NOT_NULL(res);
 
     AutoPtr<ICallerInfo> info;
-    GetCallerInfoEx(context, number, (ICallerInfo**)&info);
+    GetCallerInfo(context, number, (ICallerInfo**)&info);
     String callerID;
 
     if (info != NULL) {
@@ -256,7 +256,7 @@ ECode CCallerInfoHelper::DoSecondaryLookupIfNecessary(
             helper->Parse(String("content://com.android.contacts"), (IUri**)&baseUri);
             helper->WithAppendedPath(baseUri, encodedStr, (IUri**)&contactUri);
             previousResult = NULL;
-            GetCallerInfoEx2(context, contactUri, (ICallerInfo**)&previousResult);
+            GetCallerInfo(context, contactUri, (ICallerInfo**)&previousResult);
         }
     }
     *res = previousResult;

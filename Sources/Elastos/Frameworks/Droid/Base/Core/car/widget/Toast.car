@@ -133,7 +133,7 @@ module
          * Update the text in a Toast that was previously created using one of the makeText() methods.
          * @param s The new text for the Toast.
          */
-        SetTextEx(
+        SetText(
             [in] ICharSequence* s);
 
         OnHide();
@@ -175,7 +175,7 @@ module
          *
          * @throws Resources.NotFoundException if the resource can't be found.
          */
-        MakeTextEx(
+        MakeText(
             [in] IContext* ctx,
             [in] Int32 resId,
             [in] Int32 duration,

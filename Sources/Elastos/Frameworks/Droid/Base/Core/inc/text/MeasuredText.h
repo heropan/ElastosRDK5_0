@@ -3,10 +3,9 @@
 #define __MEASUREDTEXT_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;
 

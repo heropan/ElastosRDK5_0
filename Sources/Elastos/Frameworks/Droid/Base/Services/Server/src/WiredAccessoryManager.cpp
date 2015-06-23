@@ -3,10 +3,10 @@
 #include "R.h"
 #include "os/Looper.h"
 #include "os/Handler.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
@@ -156,7 +156,7 @@ void WiredAccessoryManager::WiredAccessoryObserver::Init()
                 AutoPtr<IFileReader> file;
                 CFileReader::New(uei->GetSwitchStatePath(), (IFileReader**)&file);
                 Int32 len;
-                file->ReadCharsEx(buffer, 0, 1024, &len);
+                file->ReadChars(buffer, 0, 1024, &len);
                 ICloseable::Probe(file)->Close();
                 StringBuilder sb;
                 for (Int32 ci = 0; ci < len; ++ci) {
@@ -304,7 +304,7 @@ WiredAccessoryManager::WiredAccessoryManager(
     CIntentFilter::New(IIntent::ACTION_BOOT_COMPLETED, (IIntentFilter**)&filter);
 
     AutoPtr<IIntent> intent;
-    context->RegisterReceiverEx(receiver, filter, String(NULL), NULL, (IIntent**)&intent);
+    context->RegisterReceiver(receiver, filter, String(NULL), NULL, (IIntent**)&intent);
 }
 
 void WiredAccessoryManager::BootCompleted()

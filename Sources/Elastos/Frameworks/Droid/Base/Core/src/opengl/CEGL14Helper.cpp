@@ -10,7 +10,7 @@ ECode CEGL14Helper::GetNoContext(
     /* [out] */ IEGLContext** cxt)
 {
     *cxt = CEGL14::eglNoContextObject;
-    INTERFACE_ADDREF(*cxt)
+    REFCOUNT_ADD(*cxt)
     return NOERROR;
 }
 
@@ -25,7 +25,7 @@ ECode CEGL14Helper::GetNoDisplay(
     /* [out] */ IEGLDisplay** dsp)
 {
     *dsp = CEGL14::eglNoDisplayObject;
-    INTERFACE_ADDREF(*dsp)
+    REFCOUNT_ADD(*dsp)
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CEGL14Helper::GetNoSurface(
     /* [out] */ IEGLSurface** sfc)
 {
     *sfc = CEGL14::eglNoSurfaceObject;
-    INTERFACE_ADDREF(*sfc)
+    REFCOUNT_ADD(*sfc)
     return NOERROR;
 }
 

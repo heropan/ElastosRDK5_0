@@ -1,7 +1,7 @@
 
 #include "database/Observable.h"
-#include <elastos/Slogger.h>
-#include <elastos/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Utility::Logging::Slogger;
 

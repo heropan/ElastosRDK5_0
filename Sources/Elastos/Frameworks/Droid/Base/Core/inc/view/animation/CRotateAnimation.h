@@ -4,7 +4,7 @@
 
 #include "_CRotateAnimation.h"
 #include "view/animation/RotateAnimation.h"
-#include "view/animation/AnimationMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #include "view/ViewStub.h"
 #include "view/LayoutInflater.h"
 #include "R.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -41,7 +41,7 @@ ECode ViewStub::InitViewStub(
         const_cast<Int32 *>(R::styleable::ViewStub),
         ARRAY_SIZE(R::styleable::ViewStub));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::ViewStub_inflatedId, IView::NO_ID, &mInflatedId);
     a->GetResourceId(R::styleable::ViewStub_layout, 0, &mLayoutResource);
@@ -52,7 +52,7 @@ ECode ViewStub::InitViewStub(
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::View),
             ARRAY_SIZE(R::styleable::View));
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::View_id, IView::NO_ID, &mID);
     a->Recycle();
@@ -111,7 +111,7 @@ ECode ViewStub::GetLayoutInflater(
 {
     assert(inflater != NULL);
     *inflater = mInflater;
-    INTERFACE_ADDREF(*inflater);
+    REFCOUNT_ADD(*inflater);
     return NOERROR;
 }
 
@@ -174,7 +174,7 @@ ECode ViewStub::Inflate(
             }
 
             AutoPtr<IView> view;
-            factory->InflateEx2(mLayoutResource, parent,
+            factory->Inflate(mLayoutResource, parent,
                     FALSE, (IView**)&view);
 
             if (mInflatedId != IView::NO_ID) {
@@ -187,9 +187,9 @@ ECode ViewStub::Inflate(
 
             AutoPtr<IViewGroupLayoutParams> layoutParams = GetLayoutParams();
             if (layoutParams != NULL) {
-                parent->AddViewEx4(view, index, layoutParams);
+                parent->AddView(view, index, layoutParams);
             } else {
-                parent->AddViewEx(view, index);
+                parent->AddView(view, index);
             }
 
             IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(view);
@@ -202,7 +202,7 @@ ECode ViewStub::Inflate(
             }
 
             *retView = view;
-            INTERFACE_ADDREF(*retView);
+            REFCOUNT_ADD(*retView);
             return NOERROR;
         }
         else {

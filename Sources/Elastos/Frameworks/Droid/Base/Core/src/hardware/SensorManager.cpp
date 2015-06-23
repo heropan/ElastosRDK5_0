@@ -1,9 +1,9 @@
 
 #include "hardware/SensorManager.h"
 #include "hardware/CSensorEvent.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::CObjectMap;
@@ -136,7 +136,7 @@ ECode SensorManager::GetSensorList(
     list->GetObjectCount(&count);
     if (count > 0) {
         *sensors = ArrayOf<ISensor*>::Alloc(count);
-        INTERFACE_ADDREF(*sensors);
+        REFCOUNT_ADD(*sensors);
 
         AutoPtr<IObjectEnumerator> enumObj;
         list->GetObjectEnumerator((IObjectEnumerator**)&enumObj);
@@ -164,7 +164,7 @@ ECode SensorManager::GetDefaultSensor(
 
     if (l != NULL && l->GetLength() > 0) {
         *sensor = (*l)[0];
-        INTERFACE_ADDREF(*sensor);
+        REFCOUNT_ADD(*sensor);
     }
 
     return NOERROR;
@@ -175,10 +175,10 @@ ECode SensorManager::RegisterListener(
     /* [in] */ Int32 sensors,
     /* [out] */ Boolean* state)
 {
-    return RegisterListenerEx(listener, sensors, ISensorManager::SENSOR_DELAY_NORMAL, state);
+    return RegisterListener(listener, sensors, ISensorManager::SENSOR_DELAY_NORMAL, state);
 }
 
-ECode SensorManager::RegisterListenerEx(
+ECode SensorManager::RegisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors,
     /* [in] */ Int32 rate,
@@ -192,10 +192,10 @@ ECode SensorManager::RegisterListenerEx(
 ECode SensorManager::UnregisterListener(
     /* [in] */ ISensorListener* listener)
 {
-    return UnregisterListenerEx(listener, ISensorManager::SENSOR_ALL | ISensorManager::SENSOR_ORIENTATION_RAW);
+    return UnregisterListener(listener, ISensorManager::SENSOR_ALL | ISensorManager::SENSOR_ORIENTATION_RAW);
 }
 
-ECode SensorManager::UnregisterListenerEx(
+ECode SensorManager::UnregisterListener(
     /* [in] */ ISensorListener* listener,
     /* [in] */ Int32 sensors)
 {
@@ -203,7 +203,7 @@ ECode SensorManager::UnregisterListenerEx(
     return NOERROR;
 }
 
-ECode SensorManager::UnregisterListenerEx2(
+ECode SensorManager::UnregisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor)
 {
@@ -215,7 +215,7 @@ ECode SensorManager::UnregisterListenerEx2(
     return NOERROR;
 }
 
-ECode SensorManager::UnregisterListenerEx3(
+ECode SensorManager::UnregisterListener(
     /* [in] */ ISensorEventListener* listener)
 {
     if (listener == NULL) {
@@ -226,16 +226,16 @@ ECode SensorManager::UnregisterListenerEx3(
     return NOERROR;
 }
 
-ECode SensorManager::RegisterListenerEx2(
+ECode SensorManager::RegisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor,
     /* [in] */ Int32 rate,
     /* [out] */ Boolean* state)
 {
-    return RegisterListenerEx3(listener, sensor, rate, NULL, state);
+    return RegisterListener(listener, sensor, rate, NULL, state);
 }
 
-ECode SensorManager::RegisterListenerEx3(
+ECode SensorManager::RegisterListener(
     /* [in] */ ISensorEventListener* listener,
     /* [in] */ ISensor* sensor,
     /* [in] */ Int32 rate,

@@ -6,8 +6,8 @@
 #include "os/Looper.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 #include <hardware/power.h>
 #include <hardware_legacy/power.h>
 #include <utils/Log.h>
@@ -16,7 +16,7 @@
 #include <cutils/android_reboot.h>
 #include <suspend/autosuspend.h>
 #include <fcntl.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <androidfw/PowerManager.h>
 
 using Elastos::Core::StringUtils;
@@ -432,7 +432,7 @@ ECode CPowerManagerService::SuspendBlockerImpl::Acquire()
     return NOERROR;
 }
 
-ECode CPowerManagerService::SuspendBlockerImpl::ReleaseEx()
+ECode CPowerManagerService::SuspendBlockerImpl::Release()
 {
     Mutex::Autolock lock(mLock);
     mReferenceCount -= 1;
@@ -495,7 +495,7 @@ ECode CPowerManagerService::ScreenOnBlockerImpl::Acquire()
     return NOERROR;
 }
 
-ECode CPowerManagerService::ScreenOnBlockerImpl::ReleaseEx()
+ECode CPowerManagerService::ScreenOnBlockerImpl::Release()
 {
     Mutex::Autolock lock(mLock);
     mNestCount -= 1;
@@ -867,14 +867,14 @@ ECode CPowerManagerService::SystemReady(
     filter->AddAction(IIntent::ACTION_BATTERY_CHANGED);
     AutoPtr<IBroadcastReceiver> batteryR = (IBroadcastReceiver*)new BatteryReceiver(this);
     intent = NULL;
-    mContext->RegisterReceiverEx(batteryR, filter, String(NULL), mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(batteryR, filter, String(NULL), mHandler, (IIntent**)&intent);
 
     filter = NULL;
     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter));
     filter->AddAction(IIntent::ACTION_BOOT_COMPLETED);
     AutoPtr<IBroadcastReceiver> bootR = (IBroadcastReceiver*)new BootCompletedReceiver(this);
     intent = NULL;
-    mContext->RegisterReceiverEx(bootR, filter, String(NULL), mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(bootR, filter, String(NULL), mHandler, (IIntent**)&intent);
 
     filter = NULL;
     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter));
@@ -882,21 +882,21 @@ ECode CPowerManagerService::SystemReady(
     filter->AddAction(IIntent::ACTION_DREAMING_STOPPED);
     AutoPtr<IBroadcastReceiver> dreamR = (IBroadcastReceiver*)new DreamReceiver(this);
     intent = NULL;
-    mContext->RegisterReceiverEx(dreamR, filter, String(NULL), mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(dreamR, filter, String(NULL), mHandler, (IIntent**)&intent);
 
     filter = NULL;
     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter));
     filter->AddAction(IIntent::ACTION_USER_SWITCHED);
     AutoPtr<IBroadcastReceiver> userR = (IBroadcastReceiver*)new UserSwitchedReceiver(this);
     intent = NULL;
-    mContext->RegisterReceiverEx(userR, filter, String(NULL), mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(userR, filter, String(NULL), mHandler, (IIntent**)&intent);
 
     filter = NULL;
     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter));
     filter->AddAction(IIntent::ACTION_DOCK_EVENT);
     AutoPtr<IBroadcastReceiver> dockR = (IBroadcastReceiver*)new DockReceiver(this);
     intent = NULL;
-    mContext->RegisterReceiverEx(dockR, filter, String(NULL), mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(dockR, filter, String(NULL), mHandler, (IIntent**)&intent);
 
     // Register for settings changes.
     AutoPtr<IContentResolver> resolver;
@@ -905,42 +905,42 @@ ECode CPowerManagerService::SystemReady(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    settingsSecure->GetUriForEx(ISettingsSecure::SCREENSAVER_ENABLED, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsSecure->GetUriFor(ISettingsSecure::SCREENSAVER_ENABLED, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
         (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     uri = NULL;
-    settingsSecure->GetUriForEx(ISettingsSecure::SCREENSAVER_ACTIVATE_ON_SLEEP, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsSecure->GetUriFor(ISettingsSecure::SCREENSAVER_ACTIVATE_ON_SLEEP, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
         (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     uri = NULL;
-    settingsSecure->GetUriForEx(ISettingsSecure::SCREENSAVER_ACTIVATE_ON_DOCK, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsSecure->GetUriFor(ISettingsSecure::SCREENSAVER_ACTIVATE_ON_DOCK, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
         (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     AutoPtr<ISettingsSystem> settingsSystem;
     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
     uri = NULL;
-    settingsSystem->GetUriForEx(ISettingsSystem::SCREEN_OFF_TIMEOUT, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsSystem->GetUriFor(ISettingsSystem::SCREEN_OFF_TIMEOUT, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
         (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
     uri = NULL;
-    settingsGlobal->GetUriForEx(ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsGlobal->GetUriFor(ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
          (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     uri = NULL;
-    settingsSystem->GetUriForEx(ISettingsSystem::SCREEN_BRIGHTNESS, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsSystem->GetUriFor(ISettingsSystem::SCREEN_BRIGHTNESS, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
         (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     uri = NULL;
-    settingsSystem->GetUriForEx(ISettingsSystem::SCREEN_BRIGHTNESS_MODE, (IUri**)&uri);
-    resolver->RegisterContentObserverEx(uri, FALSE,
+    settingsSystem->GetUriFor(ISettingsSystem::SCREEN_BRIGHTNESS_MODE, (IUri**)&uri);
+    resolver->RegisterContentObserver(uri, FALSE,
         (IContentObserver*)mSettingsObserver, IUserHandle::USER_ALL);
 
     // Go.
@@ -2291,7 +2291,7 @@ void CPowerManagerService::UpdateSuspendBlockerLocked()
             if (DEBUG) {
                 Slogger::D(TAG, "updateSuspendBlockerLocked: Releasing suspend blocker.");
             }
-            mWakeLockSuspendBlocker->ReleaseEx();
+            mWakeLockSuspendBlocker->Release();
         }
     }
 }

@@ -88,7 +88,7 @@ ECode CTransformation::GetMatrix(
 {
     VALIDATE_NOT_NULL(matrix)
     *matrix = mMatrix;
-    INTERFACE_ADDREF(*matrix);
+    REFCOUNT_ADD(*matrix);
 
 
     return NOERROR;

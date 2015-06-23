@@ -130,7 +130,7 @@ ECode CKeyButtonView::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> cf = KeyButtonView::GetDrawable();
     *drawable = cf;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -191,7 +191,7 @@ ECode CKeyButtonView::GetImageMatrix(
     VALIDATE_NOT_NULL(martix);
     AutoPtr<IMatrix> cf = KeyButtonView::GetImageMatrix();
     *martix = cf;
-    INTERFACE_ADDREF(*martix);
+    REFCOUNT_ADD(*martix);
     return NOERROR;
 }
 
@@ -241,7 +241,7 @@ ECode CKeyButtonView::SetColorFilter(
     return KeyButtonView::SetColorFilter(color);
 }
 
-ECode CKeyButtonView::SetColorFilterEx(
+ECode CKeyButtonView::SetColorFilter(
     /* [in] */ Int32 color,
     /* [in] */ PorterDuffMode mode)
 {
@@ -259,11 +259,11 @@ ECode CKeyButtonView::GetColorFilter(
     VALIDATE_NOT_NULL(filter);
     AutoPtr<IColorFilter> cf = KeyButtonView::GetColorFilter();
     *filter = cf;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
-ECode CKeyButtonView::SetColorFilterEx2(
+ECode CKeyButtonView::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
     return KeyButtonView::SetColorFilter(cf);
@@ -283,10 +283,10 @@ ECode CKeyButtonView::SetImageAlpha(
     return KeyButtonView::SetImageAlpha(alpha);
 }
 
-ECode CKeyButtonView::SetAlphaEx(
+ECode CKeyButtonView::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    return KeyButtonView::SetAlphaEx(alpha);
+    return KeyButtonView::SetAlpha(alpha);
 }
 
 }// namespace Policy

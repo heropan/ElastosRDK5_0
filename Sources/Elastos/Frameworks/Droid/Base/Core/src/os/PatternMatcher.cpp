@@ -1,6 +1,6 @@
 
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "os/PatternMatcher.h"
 #include <Elastos.Droid.Core_server.h>
 

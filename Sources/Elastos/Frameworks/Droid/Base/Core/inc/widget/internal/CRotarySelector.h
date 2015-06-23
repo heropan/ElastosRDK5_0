@@ -3,7 +3,7 @@
 
 #include "_CRotarySelector.h"
 #include "widget/internal/RotarySelector.h"
-#include "view/ViewMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

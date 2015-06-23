@@ -4,9 +4,9 @@
 #include "wm/InputMonitor.h"
 #include "os/Binder.h"
 #include "os/ServiceManager.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
@@ -401,7 +401,7 @@ ECode CSession::PerformDrag(
     // !!! TODO: if input is not still focused on the initiating window, fail
     // the drag initiation (e.g. an alarm window popped up just as the application
     // called performDrag()
-    mService->mH->RemoveMessagesEx(
+    mService->mH->RemoveMessages(
         CWindowManagerService::H::DRAG_START_TIMEOUT, window);
 
     // !!! TODO: extract the current touch (x, y) in screen coordinates.  That
@@ -495,7 +495,7 @@ ECode CSession::ReportDropResult(
     // The right window has responded, even if it's no longer around,
     // so be sure to halt the timeout even if the later WindowState
     // lookup fails.
-    mService->mH->RemoveMessagesEx(
+    mService->mH->RemoveMessages(
         CWindowManagerService::H::DRAG_END_TIMEOUT, window);
 
     AutoPtr<WindowState> callingWin;

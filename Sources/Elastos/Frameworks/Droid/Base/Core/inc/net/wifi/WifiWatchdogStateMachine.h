@@ -6,11 +6,11 @@
 #include "util/AsyncChannel.h"
 #include "util/State.h"
 #include "util/StateMachine.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;

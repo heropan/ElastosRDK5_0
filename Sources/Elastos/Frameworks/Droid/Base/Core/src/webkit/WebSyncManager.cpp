@@ -43,7 +43,7 @@ ECode WebSyncManager::SyncHandler::HandleMessage(
         AutoPtr<IMessageHelper> mh;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
         AutoPtr<IMessage> newmsg;
-        mh->ObtainEx3(this, SYNC_MESSAGE, (IMessage**)&newmsg);
+        mh->Obtain(this, SYNC_MESSAGE, (IMessage**)&newmsg);
         Boolean result = FALSE;
         SendMessageDelayed(newmsg, SYNC_LATER_INTERVAL, &result);
     }
@@ -100,7 +100,7 @@ ECode WebSyncManager::Run()
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
+    mh->Obtain(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
     Boolean result = FALSE;
     mHandler->SendMessageDelayed(msg, SYNC_LATER_INTERVAL, &result);
 
@@ -126,7 +126,7 @@ void WebSyncManager::Sync()
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
+    mh->Obtain(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
     Boolean result = FALSE;
     mHandler->SendMessageDelayed(msg, SYNC_NOW_INTERVAL, &result);
 }
@@ -148,7 +148,7 @@ void WebSyncManager::ResetSync()
     AutoPtr<IMessageHelper> mh;
     CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
     AutoPtr<IMessage> msg;
-    mh->ObtainEx3(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
+    mh->Obtain(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
     Boolean result = FALSE;
     mHandler->SendMessageDelayed(msg, SYNC_LATER_INTERVAL, &result);
 }
@@ -171,7 +171,7 @@ void WebSyncManager::StartSync()
         AutoPtr<IMessageHelper> mh;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
         AutoPtr<IMessage> msg;
-        mh->ObtainEx3(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
+        mh->Obtain(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
         Boolean result = FALSE;
         mHandler->SendMessageDelayed(msg, SYNC_LATER_INTERVAL, &result);
     }

@@ -8,8 +8,8 @@
 #include "text/format/CTime.h"
 #include "app/CPendingIntentHelper.h"
 #include "net/Uri.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;

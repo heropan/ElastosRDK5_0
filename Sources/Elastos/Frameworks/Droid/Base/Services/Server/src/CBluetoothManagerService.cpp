@@ -2,10 +2,10 @@
 #include "CBluetoothManagerService.h"
 #include "os/Looper.h"
 #include "os/SystemClock.h"
-#include <elastos/Slogger.h>
-#include "elastos/Thread.h"
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Looper;
@@ -449,7 +449,7 @@ ECode CBluetoothManagerService::MyIBluetoothCallback::OnBluetoothStateChange(
     return NOERROR;
 }
 
-CBluetoothManagerService::MyRunnableEx::MyRunnableEx(
+CBluetoothManagerService::MyRunnableEx::MyRunnable(
     /* [in] */ CBluetoothManagerService* owner)
     : mOwner(owner)
 { }

@@ -2,7 +2,7 @@
 #include "graphics/CPointF.h"
 #include "webkit/QuadF.h"
 
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Graphics::CPointF;

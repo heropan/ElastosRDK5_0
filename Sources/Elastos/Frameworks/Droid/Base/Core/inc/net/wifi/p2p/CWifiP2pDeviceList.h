@@ -5,9 +5,9 @@
 #include "_CWifiP2pDeviceList.h"
 #include "CWifiP2pDevice.h"
 #include <ext/frameworkext.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -54,7 +54,7 @@ public:
         /* [in] */ IWifiP2pDevice* device,
         /* [out] */ Boolean* ret);
 
-    CARAPI RemoveEx(
+    CARAPI Remove(
         /* [in] */ IWifiP2pDeviceList* list,
         /* [out] */ Boolean* ret);
 

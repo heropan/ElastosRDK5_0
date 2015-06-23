@@ -2,9 +2,8 @@
 #define __BlockingAudioTrack_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Media::IAudioTrack;
 
 namespace Elastos {

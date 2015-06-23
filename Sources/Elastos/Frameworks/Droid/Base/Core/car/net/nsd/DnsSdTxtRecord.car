@@ -52,7 +52,7 @@ module
                 [in] IInterface* record,
                 [out] Boolean* result);
 
-            EqualsEx(
+            Equals(
                 [in] IDnsSdTxtRecord* record,
                 [out] Boolean* result);
 

@@ -1,5 +1,5 @@
 #include "statusbar/CStatusBarNotification.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 
@@ -186,7 +186,7 @@ ECode CStatusBarNotification::GetNotification(
 {
     VALIDATE_NOT_NULL(n)
     *n = mNotification;
-    INTERFACE_ADDREF(*n);
+    REFCOUNT_ADD(*n);
     return NOERROR;
 }
 
@@ -219,7 +219,7 @@ ECode CStatusBarNotification::GetUser(
 {
     VALIDATE_NOT_NULL(user)
     *user = mUser;
-    INTERFACE_ADDREF(*user);
+    REFCOUNT_ADD(*user);
     return NOERROR;
 }
 

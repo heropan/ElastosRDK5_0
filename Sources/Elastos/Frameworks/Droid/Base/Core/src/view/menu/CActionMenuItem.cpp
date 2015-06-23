@@ -178,10 +178,10 @@ ECode CActionMenuItem::SetIcon(
     return ActionMenuItem::SetIcon(icon);
 }
 
-ECode CActionMenuItem::SetIconEx(
+ECode CActionMenuItem::SetIcon(
     /* [in] */ Int32 iconRes)
 {
-    return ActionMenuItem::SetIconEx(iconRes);
+    return ActionMenuItem::SetIcon(iconRes);
 }
 
 ECode CActionMenuItem::SetIntent(
@@ -215,10 +215,10 @@ ECode CActionMenuItem::SetTitle(
     return ActionMenuItem::SetTitle(title);
 }
 
-ECode CActionMenuItem::SetTitleEx(
+ECode CActionMenuItem::SetTitle(
     /* [in] */ Int32 title)
 {
-    return ActionMenuItem::SetTitleEx(title);
+    return ActionMenuItem::SetTitle(title);
 }
 
 ECode CActionMenuItem::SetTitleCondensed(
@@ -259,10 +259,10 @@ ECode CActionMenuItem::GetActionView(
     return ActionMenuItem::GetActionView(view);
 }
 
-ECode CActionMenuItem::SetActionViewEx(
+ECode CActionMenuItem::SetActionView(
     /* [in] */ Int32 resId)
 {
-    return ActionMenuItem::SetActionViewEx(resId);
+    return ActionMenuItem::SetActionView(resId);
 }
 
 ECode CActionMenuItem::GetActionProvider(

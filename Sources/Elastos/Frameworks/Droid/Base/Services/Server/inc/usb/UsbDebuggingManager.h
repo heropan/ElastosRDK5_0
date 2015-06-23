@@ -7,7 +7,7 @@
 
 using Elastos::IO::IOutputStream;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::ILooper;

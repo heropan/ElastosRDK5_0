@@ -5,12 +5,12 @@
 #include "ext/frameworkext.h"
 #include "util/AsyncChannel.h"
 #include "NativeDaemonConnector.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "util/StateMachine.h"
 #include "util/State.h"
 #include "database/ContentObserver.h"
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Os::IMessenger;

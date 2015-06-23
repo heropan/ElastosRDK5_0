@@ -4,9 +4,9 @@
 
 #include "_CStyleSpan.h"
 #include "text/style/StyleSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/style/MetricAffectingSpanMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
+
 
 namespace Elastos {
 namespace Droid {

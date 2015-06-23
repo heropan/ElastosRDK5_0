@@ -1,9 +1,7 @@
 
 #include "WifiFun.h"
 #include <cutils/properties.h>
-#include <elastos/Mutex.h>
 
-using namespace Elastos::Core::Threading;
 
 static Mutex gLock;
 

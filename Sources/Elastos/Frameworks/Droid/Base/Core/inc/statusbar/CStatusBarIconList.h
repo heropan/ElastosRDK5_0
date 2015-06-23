@@ -3,7 +3,7 @@
 
 #include "_CStatusBarIconList.h"
 #include "ext/frameworkdef.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "statusbar/CStatusBarIcon.h"
 
 using Elastos::Core::StringBuilder;

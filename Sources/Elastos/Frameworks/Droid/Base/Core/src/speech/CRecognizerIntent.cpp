@@ -14,7 +14,7 @@ ECode CRecognizerIntent::GetVoiceDetailsIntent(
     VALIDATE_NOT_NULL(ppRet);
     AutoPtr<IIntent> temp = RecognizerIntent::GetVoiceDetailsIntent(pContext);
     *ppRet = temp;;
-    INTERFACE_ADDREF(*ppRet);
+    REFCOUNT_ADD(*ppRet);
     return NOERROR;
 }
 

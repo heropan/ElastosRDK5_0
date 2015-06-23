@@ -4,8 +4,8 @@
 
 #include "_CStrikethroughSpan.h"
 #include "text/style/StrikethroughSpan.h"
-#include "text/style/CharacterStyleMacro.h"
-#include "text/ParcelableSpanMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

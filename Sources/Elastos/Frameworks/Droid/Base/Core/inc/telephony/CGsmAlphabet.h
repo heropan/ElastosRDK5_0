@@ -104,7 +104,7 @@ public:
         /* [in] */ Char32 c,
         /* [out] */ Int32* val);
 
-    static CARAPI CharToGsmEx(
+    static CARAPI CharToGsm(
         /* [in] */ Char32 c,
         /* [in] */ Boolean throwException,
         /* [out] */ Int32* val);
@@ -126,7 +126,7 @@ public:
         /* [in] */ ArrayOf<Byte>* header,
         /* [out, callee] */ ArrayOf<Byte>** res);
 
-    static CARAPI StringToGsm7BitPackedWithHeaderEx(
+    static CARAPI StringToGsm7BitPackedWithHeader(
         /* [in] */ const String& data,
         /* [in] */ ArrayOf<Byte>* header,
         /* [in] */ Int32 languageTable,
@@ -137,13 +137,13 @@ public:
         /* [in] */ const String& data,
         /* [out, callee] */ ArrayOf<Byte>** res);
 
-    static CARAPI StringToGsm7BitPackedEx(
+    static CARAPI StringToGsm7BitPacked(
         /* [in] */ const String& data,
         /* [in] */ Int32 languageTable,
         /* [in] */ Int32 languageShiftTable,
         /* [out, callee] */ ArrayOf<Byte>** res);
 
-    static CARAPI StringToGsm7BitPackedEx2(
+    static CARAPI StringToGsm7BitPacked(
         /* [in] */ const String& data,
         /* [in] */ Int32 startingSeptetOffset,
         /* [in] */ Boolean throwException,
@@ -157,7 +157,7 @@ public:
         /* [in] */ Int32 lengthSeptets,
         /* [out] */ String* res);
 
-    static CARAPI Gsm7BitPackedToStringEx(
+    static CARAPI Gsm7BitPackedToString(
         /* [in] */ ArrayOf<Byte>* pdu,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 lengthSeptets,
@@ -172,7 +172,7 @@ public:
         /* [in] */ Int32 length,
         /* [out] */ String* res);
 
-    static CARAPI Gsm8BitUnpackedToStringEx(
+    static CARAPI Gsm8BitUnpackedToString(
         /* [in] */ ArrayOf<Byte>* data,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
@@ -193,7 +193,7 @@ public:
         /* [in] */ Char32 c,
         /* [out] */ Int32* val);
 
-    static CARAPI CountGsmSeptetsEx(
+    static CARAPI CountGsmSeptets(
         /* [in] */ Char32 c,
         /* [in] */ Boolean throwsException,
         /* [out] */ Int32* val);
@@ -205,7 +205,7 @@ public:
         /* [in] */ Int32 languageShiftTable,
         /* [out] */ Int32* val);
 
-    static CARAPI CountGsmSeptetsEx2(
+    static CARAPI CountGsmSeptets(
         /* [in] */ ICharSequence* s,
         /* [in] */ Boolean use7bitOnly,
         /* [out] */ IGsmAlphabetTextEncodingDetails** res);

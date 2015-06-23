@@ -3,7 +3,7 @@
 #include "content/CContentValues.h"
 #include "net/CUriHelper.h"
 #include "os/CEnvironment.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;

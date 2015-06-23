@@ -74,7 +74,7 @@ module
          *
          * @sa Notification
          */
-        NotifyEx(
+        Notify(
             [in] String tag,
             [in] Int32 id,
             [in] INotification* notification);
@@ -101,7 +101,7 @@ module
          * will be hidden.  If it's persistent, it will be removed from the status
          * bar.
          */
-        CancelEx(
+        Cancel(
             [in] String tag,
             [in] Int32 id);
 

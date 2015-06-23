@@ -52,7 +52,7 @@ ECode ZoomControls::InitInternal(
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&svTemp);
     inflater = ILayoutInflater::Probe(svTemp);
     AutoPtr<IView> v;
-    inflater->InflateEx2(R::layout::zoom_controls, THIS_PROBE(IViewGroup), // we are the parent
+    inflater->Inflate(R::layout::zoom_controls, THIS_PROBE(IViewGroup), // we are the parent
             TRUE, (IView**)&v);
 
     mZoomIn = IZoomButton::Probe(FindViewById(R::id::zoomIn));

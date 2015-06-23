@@ -3,8 +3,8 @@
 #include "widget/TableLayoutLayoutParams.h"
 #include "widget/CTableLayoutLayoutParams.h"
 #include "widget/TableRow.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 #include <R.h>
 
 using Elastos::Utility::Regex::IPattern;
@@ -159,7 +159,7 @@ ECode TableLayout::InitFromAttributes(
         const_cast<Int32 *>(R::styleable::TableLayout),
         ARRAY_SIZE(R::styleable::TableLayout));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     String stretchedColumns;
     a->GetString(R::styleable::TableLayout_stretchColumns, &stretchedColumns);

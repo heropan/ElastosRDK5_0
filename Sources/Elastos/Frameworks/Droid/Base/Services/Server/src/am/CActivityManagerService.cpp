@@ -1,12 +1,12 @@
 
 #include "am/CActivityManagerService.h"
-#include <elastos/Algorithm.h>
+#include <elastos/utility/etl/Algorithm.h>
 #include <unistd.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Algorithm.h>
-#include <Elastos.Core.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <Elastos.CoreLibrary.h>
 #include <cutils/properties.h>
 #include "os/SystemClock.h"
 #include "os/Process.h"
@@ -2248,7 +2248,7 @@ ECode CActivityManagerService::StartProcessLocked(
         {
             Mutex::Autolock lock(mPidsSelfLock);
             mPidsSelfLocked.Erase(app->mPid);
-            mHandler->RemoveMessagesEx(PROC_START_TIMEOUT_MSG,
+            mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG,
                 app ? app->Probe(EIID_IInterface) : NULL);
         }
         app->SetPid(0);
@@ -2458,9 +2458,9 @@ ECode CActivityManagerService::SetDefaultLauncher(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String  packageName;
-    sysProp->GetEx(String("ro.sw.defaultlauncherpackage"), String("no"), &packageName);
+    sysProp->Get(String("ro.sw.defaultlauncherpackage"), String("no"), &packageName);
     String  className;
-    sysProp->GetEx(String("ro.sw.defaultlauncherclass"), String("no"), &className);
+    sysProp->Get(String("ro.sw.defaultlauncherclass"), String("no"), &className);
     Slogger::I(TAG, "default packageName = %s, default className = %s", packageName.string(), className.string());
     if(!packageName.Equals("no") && !className.Equals("no")){
         Boolean firstLaunch;
@@ -3486,7 +3486,7 @@ ECode CActivityManagerService::FinishHeavyWeightApp()
         }
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx2(UPDATE_CONFIGURATION_MSG,
+        mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG,
             mHeavyWeightProcess->mUserId, 0, (IMessage**)&msg);
         Boolean result;
         mHandler->SendMessage(msg, &result);
@@ -3827,7 +3827,7 @@ AutoPtr<IFile> CActivityManagerService::DumpStackTraces(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String tracesPath;
-    sysProp->GetEx(String("dalvik.vm.stack-trace-file"), String(NULL), &tracesPath);
+    sysProp->Get(String("dalvik.vm.stack-trace-file"), String(NULL), &tracesPath);
     if (tracesPath.IsNullOrEmpty()) {
         return NULL;
     }
@@ -3972,7 +3972,7 @@ ECode CActivityManagerService::LogAppTooSlow(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String tracesPath;
-    sysProp->GetEx(String("dalvik.vm.stack-trace-file"), String(NULL), &tracesPath);
+    sysProp->Get(String("dalvik.vm.stack-trace-file"), String(NULL), &tracesPath);
     if (tracesPath.IsNullOrEmpty()) {
         return NOERROR;
     }
@@ -4535,7 +4535,7 @@ ECode CActivityManagerService::KillApplicationWithAppId(
     if (callerUid == IProcess::SYSTEM_UID) {
         // Post an aysnc message to kill the application
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx2(KILL_APPLICATION_MSG, appid, 0, (IMessage**)&msg);
+        mHandler->ObtainMessage(KILL_APPLICATION_MSG, appid, 0, (IMessage**)&msg);
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(pkg, (ICharSequence**)&seq);
         msg->SetObj(seq->Probe(EIID_IInterface));
@@ -4628,7 +4628,7 @@ ECode CActivityManagerService::GetProcessMemoryInfo(
     CDebug::AcquireSingleton((IDebug**)&dbg);
     for (Int32 i = length - 1; i >= 0; i--) {
         CDebugMemoryInfo::New((IDebugMemoryInfo**)&((*infos)[i]));
-        dbg->GetMemoryInfoEx((*pids)[i], (*infos)[i]);
+        dbg->GetMemoryInfo((*pids)[i], (*infos)[i]);
     }
     *info = infos;
     INTERFACE_ADDREF(*info);
@@ -4647,7 +4647,7 @@ ECode CActivityManagerService::GetProcessPss(
     AutoPtr<IDebug> dbg;
     CDebug::AcquireSingleton((IDebug**)&dbg);
     for (Int32 i = length - 1; i >= 0; i--) {
-        dbg->GetPssEx((*pids)[i], &(*pss)[i]);
+        dbg->GetPss((*pids)[i], &(*pss)[i]);
     }
     *processPss = pss;
     INTERFACE_ADDREF(*processPss);
@@ -5061,7 +5061,7 @@ Boolean CActivityManagerService::RemoveProcessLocked(
     mIsolatedProcesses.Erase(uid);
     if (mHeavyWeightProcess.Get() == app) {
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx2(UPDATE_CONFIGURATION_MSG,
+        mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG,
             mHeavyWeightProcess->mUserId, 0, (IMessage**)&msg);
         Boolean result;
         mHandler->SendMessage(msg, &result);
@@ -5074,7 +5074,7 @@ Boolean CActivityManagerService::RemoveProcessLocked(
         {
             Mutex::Autolock lock(mPidsSelfLock);
             mPidsSelfLocked.Erase(pid);
-            mHandler->RemoveMessagesEx(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
+            mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
         }
         Slogger::I(TAG, "Killing proc %s: %s", app->ToShortString().string(), reason.string());
         HandleAppDiedLocked(app, TRUE, allowRestart);
@@ -5121,7 +5121,7 @@ ECode CActivityManagerService::ProcessStartTimedOutLocked(
         mIsolatedProcesses.Erase(app->mUid);
         if (mHeavyWeightProcess.Get() == app) {
             AutoPtr<IMessage> msg;
-            mHandler->ObtainMessageEx2(UPDATE_CONFIGURATION_MSG,
+            mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG,
                 mHeavyWeightProcess->mUserId, 0, (IMessage**)&msg);
             Boolean result;
             mHandler->SendMessage(msg, &result);
@@ -5224,7 +5224,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     app->mHasShownUi = FALSE;
     app->mDebugging = FALSE;
 
-    mHandler->RemoveMessagesEx(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
+    mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
 
     AutoPtr<IObjectContainer> providers;
     Boolean normalMode = mProcessesReady || IsAllowedWhileBooting(app->mInfo);
@@ -7418,7 +7418,7 @@ ECode CActivityManagerService::GetRecentTasks(
             if (!detailed) {
                 AutoPtr<IIntent> baseIntent;
                 rti->GetBaseIntent((IIntent**)&baseIntent);
-                baseIntent->ReplaceExtrasEx(NULL);
+                baseIntent->ReplaceExtras(NULL);
             }
             rti->SetOrigActivity(tr->mOrigActivity);
             rti->SetDescription(tr->mLastDescription);
@@ -9409,7 +9409,7 @@ ECode CActivityManagerService::SetOpenGlTraceApp(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
-    sysProp->GetEx(SYSTEM_DEBUGGABLE, String("0"), &value);
+    sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
     Boolean isDebuggable = CString("1").Equals(value);
     if (!isDebuggable) {
         Int32 flags;
@@ -9435,7 +9435,7 @@ ECode CActivityManagerService::SetProfileApp(
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
-    sysProp->GetEx(SYSTEM_DEBUGGABLE, String("0"), &value);
+    sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
     Boolean isDebuggable = CString("1").Equals(value);
     if (!isDebuggable) {
         Int32 flags;
@@ -9686,7 +9686,7 @@ ECode CActivityManagerService::ShowSafeModeOverlay()
     mContext->GetSystemService(
             IContext::WINDOW_SERVICE, (IInterface**)&service);
     AutoPtr<IWindowManager> wm = IWindowManager::Probe(service);
-    wm->AddViewEx5(v, lp);
+    wm->AddView(v, lp);
     return NOERROR;
 }
 
@@ -10650,7 +10650,7 @@ ECode CActivityManagerService::HandleApplicationStrictModeViolation(
             (*data)[String("info")] = info ? info->Probe(EIID_IInterface) : NULL;
 
             AutoPtr<IMessage> msg;
-            mHandler->ObtainMessageEx(
+            mHandler->ObtainMessage(
                 SHOW_STRICT_MODE_VIOLATION_MSG,
                 data->Probe(EIID_IInterface), (IMessage**)&msg);
             Boolean bval;
@@ -11084,7 +11084,7 @@ ECode  CActivityManagerService::CrashApplication(
         (*data)[String("app")] = r ? r->Probe(EIID_IInterface) : NULL;
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx(SHOW_ERROR_MSG, data->Probe(EIID_IInterface), (IMessage**)&msg);
+        mHandler->ObtainMessage(SHOW_ERROR_MSG, data->Probe(EIID_IInterface), (IMessage**)&msg);
         Boolean bval;
         mHandler->SendMessage(msg, &bval);
 
@@ -12521,7 +12521,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
 //                         sb.setLength(0);
                         sb->AppendCStr("    Intent: ");
                         String str;
-                        (*intentsIt)->ToShortStringEx((IStringBuilder*)sb->Probe(EIID_IStringBuilder), FALSE, TRUE, FALSE, FALSE);
+                        (*intentsIt)->ToShortString((IStringBuilder*)sb->Probe(EIID_IStringBuilder), FALSE, TRUE, FALSE, FALSE);
                         pw->PrintStringln(sb->ToString());
                         AutoPtr<IBundle> bundle;
                         (*intentsIt)->GetExtras((IBundle**)&bundle);
@@ -13027,7 +13027,7 @@ ECode CActivityManagerService::AppendMemBucket(
             out.AppendCStr(stackLike ? "MB." : "MB ");
             AutoPtr<ICharSequence> cs;
             CStringWrapper::New(label, (ICharSequence**)&cs);
-            out.AppendCharSequenceEx(cs, start, end);
+            out.AppendCharSequence(cs, start, end);
             return NOERROR;
         }
     }
@@ -13035,7 +13035,7 @@ ECode CActivityManagerService::AppendMemBucket(
     out.AppendCStr(stackLike ? "MB." : "MB ");
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(label, (ICharSequence**)&cs);
-    out.AppendCharSequenceEx(cs, start, end);
+    out.AppendCharSequence(cs, start, end);
     return NOERROR;
 }
 
@@ -13156,7 +13156,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                 // }
             } else {
                 CDebugMemoryInfo::New((IDebugMemoryInfo**)&mi);
-                dbg->GetMemoryInfoEx(r->mPid, (IDebugMemoryInfo*)mi);
+                dbg->GetMemoryInfo(r->mPid, (IDebugMemoryInfo*)mi);
             }
 
             if (!isCheckinRequest && mi != NULL) {
@@ -13183,7 +13183,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                 mi->GetOtherPss(&_otherPss);
                 otherPss += _otherPss;
                 for (Int32 j = 0; j < IDebugMemoryInfo::NUM_OTHER_STATS; j++) {
-                    mi->GetOtherPssEx(j, &mem);
+                    mi->GetOtherPss(j, &mem);
                     (*miscPss)[j] += mem;
                     otherPss -= mem;
                 }
@@ -13598,7 +13598,7 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
     Int32 uid;
     app->mInfo->GetUid(&uid);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx2(DISPATCH_PROCESS_DIED, app->mPid, uid, (IMessage**)&msg);
+    mHandler->ObtainMessage(DISPATCH_PROCESS_DIED, app->mPid, uid, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
 
@@ -13617,7 +13617,7 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
         mIsolatedProcesses.Erase(app->mUid);
         if (mHeavyWeightProcess == app) {
             AutoPtr<IMessage> msg;
-            mHandler->ObtainMessageEx2(UPDATE_CONFIGURATION_MSG,
+            mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG,
                 mHeavyWeightProcess->mUserId, 0, (IMessage**)&msg);
             Boolean result;
             mHandler->SendMessage(msg, &result);
@@ -13661,7 +13661,7 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
             Mutex::Autolock lock(mPidsSelfLock);
 
             mPidsSelfLocked.Erase(app->mPid);
-            mHandler->RemoveMessagesEx(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
+            mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
         }
         app->SetPid(0);
     }
@@ -14923,7 +14923,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
         intent->GetParcelableExtra(String("proxy"),(IParcelable**)&proxy);
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx(UPDATE_HTTP_PROXY, proxy->Probe(EIID_IInterface), (IMessage**)&msg);
+        mHandler->ObtainMessage(UPDATE_HTTP_PROXY, proxy->Probe(EIID_IInterface), (IMessage**)&msg);
         mHandler->SendMessage(msg, &bval);
     }
 
@@ -15782,7 +15782,7 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
                 CConfiguration::New(configCopy, (IConfiguration**)&config);
 
                 AutoPtr<IMessage> msg;
-                mHandler->ObtainMessageEx(UPDATE_CONFIGURATION_MSG,
+                mHandler->ObtainMessage(UPDATE_CONFIGURATION_MSG,
                     config->Probe(EIID_IInterface), (IMessage**)&msg);
                 Boolean result;
                 mHandler->SendMessage(msg, &result);
@@ -17788,7 +17788,7 @@ ECode CActivityManagerService::DumpHeap(
             AutoPtr<ISystemProperties> sysProp;
             CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
             String value;
-            sysProp->GetEx(SYSTEM_DEBUGGABLE, String("0"), &value);
+            sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
             Boolean isDebuggable = CString("1").Equals(value);
             if (!isDebuggable) {
                 Int32 flags;
@@ -17933,13 +17933,13 @@ ECode CActivityManagerService::SwitchUser(
             mHandler->RemoveMessages(USER_SWITCH_TIMEOUT_MSG);
 
             AutoPtr<IMessage> msg;
-            mHandler->ObtainMessageEx3(REPORT_USER_SWITCH_MSG, oldUserId, userId,
+            mHandler->ObtainMessage(REPORT_USER_SWITCH_MSG, oldUserId, userId,
                 uss->Probe(EIID_IInterface), (IMessage**)&msg);
             Boolean result;
             mHandler->SendMessage(msg, &result);
 
             AutoPtr<IMessage> msg2;
-            mHandler->ObtainMessageEx3(USER_SWITCH_TIMEOUT_MSG, oldUserId, userId,
+            mHandler->ObtainMessage(USER_SWITCH_TIMEOUT_MSG, oldUserId, userId,
                 uss->Probe(EIID_IInterface), (IMessage**)&msg2);
             mHandler->SendMessageDelayed(msg2, USER_SWITCH_TIMEOUT, &result);
 
@@ -18100,7 +18100,7 @@ ECode CActivityManagerService::SendContinueUserSwitchLocked(
 
     mHandler->RemoveMessages(USER_SWITCH_TIMEOUT_MSG);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessageEx3(CONTINUE_USER_SWITCH_MSG, oldUserId, newUserId,
+    mHandler->ObtainMessage(CONTINUE_USER_SWITCH_MSG, oldUserId, newUserId,
         uss ? uss->Probe(EIID_IInterface) : NULL, (IMessage**)&msg);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -18829,7 +18829,7 @@ void CActivityManagerService::HandleServiceTimeoutMsg(
         mDidDexOpt = FALSE;
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx(SERVICE_TIMEOUT_MSG,
+        mHandler->ObtainMessage(SERVICE_TIMEOUT_MSG,
             processRecord->Probe(EIID_IInterface), (IMessage**)&msg);
         Boolean result;
         mHandler->SendMessageDelayed(msg, ActiveServices::SERVICE_TIMEOUT, &result);
@@ -18922,7 +18922,7 @@ void CActivityManagerService::HandleShowUidErrorMsg()
         AutoPtr<IDialogInterfaceOnClickListener> listener = new ErrorMsgButtonOnClickListener(this);
         cs = NULL;
         CStringWrapper::New(String("I'm Feeling Lucky"), (ICharSequence**)&cs);
-        d->SetButtonEx(IDialogInterface::BUTTON_POSITIVE, cs, listener);
+        d->SetButton(IDialogInterface::BUTTON_POSITIVE, cs, listener);
         mUidAlert = d;
         d->Show();
     }
@@ -18943,7 +18943,7 @@ void CActivityManagerService::HandleProcStartTimeoutMsg(
         mDidDexOpt = FALSE;
 
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessageEx(PROC_START_TIMEOUT_MSG,
+        mHandler->ObtainMessage(PROC_START_TIMEOUT_MSG,
             pr->Probe(EIID_IInterface), (IMessage**)&msg);
         Boolean result;
         mHandler->SendMessageDelayed(msg, PROC_START_TIMEOUT, &result);
@@ -18999,7 +18999,7 @@ void CActivityManagerService::HandlePostHeavyNotificationMsg(
         AutoPtr<ArrayOf<IInterface*> > labelArray = ArrayOf<IInterface*>::Alloc(1);
         labelArray->Set(0, label);
         String text;
-        mContext->GetStringEx(R::string::heavy_weight_notification, labelArray, &text);
+        mContext->GetString(R::string::heavy_weight_notification, labelArray, &text);
         AutoPtr<ICharSequence> textCs;
         CStringWrapper::New(text, (ICharSequence**)&textCs);
         AutoPtr<INotification> notification;
@@ -19108,7 +19108,7 @@ void CActivityManagerService::HandleReportMemUsage()
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
-    sysProp->GetEx(SYSTEM_DEBUGGABLE, String("0"), &value);
+    sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value);
     Boolean isDebuggable = String("1").Equals(value);
     if (!isDebuggable) {
         return;

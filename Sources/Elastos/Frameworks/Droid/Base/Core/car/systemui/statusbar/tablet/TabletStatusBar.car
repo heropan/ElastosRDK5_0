@@ -42,7 +42,7 @@ module
 
         ResetNotificationPeekFadeTimer();
 
-        AnimateCollapsePanelsEx();
+        AnimateCollapsePanels();
 
         ClearAll();
     }

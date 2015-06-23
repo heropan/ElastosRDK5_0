@@ -2,7 +2,7 @@
 #include "CManageAccountsSettings.h"
 #include "R.h"
 //#include "CAccountManagerCallback.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>
 
 using Elastos::Droid::View::EIID_IViewOnClickListener;

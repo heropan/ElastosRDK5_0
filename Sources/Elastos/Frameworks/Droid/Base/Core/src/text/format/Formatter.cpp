@@ -91,7 +91,7 @@ String Formatter::FormatFileSize(
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     String ret;
-    res->GetStringEx(R::string::fileSizeSuffix, args, &ret);
+    res->GetString(R::string::fileSizeSuffix, args, &ret);
     return ret;
 }
 

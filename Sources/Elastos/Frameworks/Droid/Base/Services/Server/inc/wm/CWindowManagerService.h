@@ -23,16 +23,15 @@
 #include "AttributeCache.h"
 #include "wm/MagnificationSpec.h"
 #include "wm/WindowBinder.h"
-#include <elastos/List.h>
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Utility::Pair;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Pair;
+using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::Net::ISocket;

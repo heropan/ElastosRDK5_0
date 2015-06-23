@@ -61,7 +61,7 @@ public:
      * @see #setDialogTitle(CharSequence)
      * @param dialogTitleResId The dialog title as a resource.
      */
-    virtual CARAPI SetDialogTitleEx(
+    virtual CARAPI SetDialogTitle(
         /* [in] */ Int32 dialogTitleResId);
 
     /**
@@ -88,7 +88,7 @@ public:
      * @see #setDialogMessage(CharSequence)
      * @param dialogMessageResId The dialog message as a resource.
      */
-    virtual CARAPI SetDialogMessageEx(
+    virtual CARAPI SetDialogMessage(
         /* [in] */ Int32 dialogMessageResId);
 
     /**
@@ -112,7 +112,7 @@ public:
      *
      * @param dialogIconRes The icon, as a resource ID.
      */
-    virtual CARAPI SetDialogIconEx(
+    virtual CARAPI SetDialogIcon(
         /* [in] */ Int32 dialogIconRes);
 
     /**
@@ -135,7 +135,7 @@ public:
      * @see #setPositiveButtonText(CharSequence)
      * @param positiveButtonTextResId The positive button text as a resource.
      */
-    virtual CARAPI SetPositiveButtonTextEx(
+    virtual CARAPI SetPositiveButtonText(
         /* [in] */ Int32 positiveButtonTextResId);
 
     /**
@@ -160,7 +160,7 @@ public:
      * @see #setNegativeButtonText(CharSequence)
      * @param negativeButtonTextResId The negative button text as a resource.
      */
-    virtual CARAPI SetNegativeButtonTextEx(
+    virtual CARAPI SetNegativeButtonText(
         /* [in] */ Int32 negativeButtonTextResId);
 
     /**

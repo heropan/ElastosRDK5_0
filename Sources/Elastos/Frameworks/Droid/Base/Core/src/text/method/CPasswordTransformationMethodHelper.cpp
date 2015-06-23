@@ -14,7 +14,7 @@ ECode CPasswordTransformationMethodHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IPasswordTransformationMethod> ptm = CPasswordTransformationMethod::GetInstance();
     *ret = ptm;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

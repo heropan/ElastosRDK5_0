@@ -46,19 +46,19 @@ ECode CKeyEventHelper::Obtain(
         downTime, eventTime, action, code, repeat, metaState,
         deviceId, scancode, flags, source, characters);
     *keyEvent = temp.Get();
-    INTERFACE_ADDREF(*keyEvent)
+    REFCOUNT_ADD(*keyEvent)
 
     return NOERROR;
 }
 
-ECode CKeyEventHelper::ObtainEx(
+ECode CKeyEventHelper::Obtain(
     /* [in] */ IKeyEvent* otherEvent,
     /* [out] */ IKeyEvent** keyEvent)
 {
     VALIDATE_NOT_NULL(keyEvent);
     AutoPtr<CKeyEvent> temp = CKeyEvent::Obtain(otherEvent);
     *keyEvent = temp.Get();
-    INTERFACE_ADDREF(*keyEvent)
+    REFCOUNT_ADD(*keyEvent)
 
     return NOERROR;
 }
@@ -73,7 +73,7 @@ ECode CKeyEventHelper::ChangeTimeRepeat(
     return CKeyEvent::ChangeTimeRepeat(event, eventTime, newRepeat, newEvent);
 }
 
-ECode CKeyEventHelper::ChangeTimeRepeatEx(
+ECode CKeyEventHelper::ChangeTimeRepeat(
     /* [in] */ IKeyEvent* event,
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 newRepeat,

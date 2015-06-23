@@ -2,9 +2,9 @@
 #define __CTOGGLESLIDER_H_
 
 #include "_CToggleSlider.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/RelativeLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/policy/ToggleSlider.h"
 
 namespace Elastos {

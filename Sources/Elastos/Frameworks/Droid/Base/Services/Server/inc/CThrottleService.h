@@ -3,12 +3,11 @@
 
 #include "_CThrottleService.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "database/ContentObserver.h"
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::INotificationManager;

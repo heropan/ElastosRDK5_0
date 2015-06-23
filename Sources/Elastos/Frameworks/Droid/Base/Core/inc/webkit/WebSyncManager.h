@@ -6,7 +6,7 @@
 #include "os/HandlerBase.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::IThread;
+using Elastos::Core::IThread;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;
 

@@ -119,7 +119,7 @@ module
         Save(
             [in] IOutputStream *stream);
 
-        SaveEx(
+        Save(
             [in] IOutputStream *stream,
             [in] Boolean closeStream);
 
@@ -129,7 +129,7 @@ module
         Load(
             [in] IInputStream *stream);
 
-        LoadEx(
+        Load(
             [in] IInputStream *stream,
             [in] Boolean closeStream);
     }

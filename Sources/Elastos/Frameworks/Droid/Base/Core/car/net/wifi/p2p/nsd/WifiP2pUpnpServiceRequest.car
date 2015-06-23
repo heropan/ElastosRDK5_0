@@ -42,7 +42,7 @@ module
          * </ul>
          * @return service request for UPnP.
          */
-        NewInstanceEx(
+        NewInstance(
             [in] String st,
             [out] IWifiP2pUpnpServiceRequest** instance);
     }

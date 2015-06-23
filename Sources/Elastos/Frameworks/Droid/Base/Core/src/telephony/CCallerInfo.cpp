@@ -2,9 +2,9 @@
 #include "CCallerInfo.h"
 #include "CTelephonyManager.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
@@ -138,7 +138,7 @@ ECode CCallerInfo::MarkAsEmergency(
     mPhotoResource = R::drawable::picture_emergency;
     mIsEmergency = TRUE;
     *callerInfo = this;
-    INTERFACE_ADDREF(*callerInfo);
+    REFCOUNT_ADD(*callerInfo);
     return NOERROR;
 }
 
@@ -169,7 +169,7 @@ ECode CCallerInfo::MarkAsVoiceMail(
     // FIXME: FIND ANOTHER ICON
     // photoResource = android.R.drawable.badge_voicemail;
     *callerInfo = this;
-    INTERFACE_ADDREF(*callerInfo);
+    REFCOUNT_ADD(*callerInfo);
     return NOERROR;
 }
 
@@ -426,7 +426,7 @@ ECode CCallerInfo::GetContactRefUri(
 {
     VALIDATE_NOT_NULL(contactRefUri);
     *contactRefUri = mContactRefUri;
-    INTERFACE_ADDREF(*contactRefUri);
+    REFCOUNT_ADD(*contactRefUri);
     return NOERROR;
 }
 
@@ -442,7 +442,7 @@ ECode CCallerInfo::GetContactRingtoneUri(
 {
     VALIDATE_NOT_NULL(contactRingtoneUri);
     *contactRingtoneUri = mContactRingtoneUri;
-    INTERFACE_ADDREF(*contactRingtoneUri);
+    REFCOUNT_ADD(*contactRingtoneUri);
     return NOERROR;
 }
 
@@ -473,7 +473,7 @@ ECode CCallerInfo::GetCachedPhoto(
 {
     VALIDATE_NOT_NULL(cachedPhoto);
     *cachedPhoto = mCachedPhoto;
-    INTERFACE_ADDREF(*cachedPhoto);
+    REFCOUNT_ADD(*cachedPhoto);
     return NOERROR;
 }
 
@@ -489,7 +489,7 @@ ECode CCallerInfo::GetCachedPhotoIcon(
 {
     VALIDATE_NOT_NULL(cachedPhotoIcon);
     *cachedPhotoIcon = mCachedPhotoIcon;
-    INTERFACE_ADDREF(*cachedPhotoIcon);
+    REFCOUNT_ADD(*cachedPhotoIcon);
     return NOERROR;
 }
 

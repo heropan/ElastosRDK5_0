@@ -4,7 +4,7 @@
 #include "os/CBinder.h"
 #include "os/CWorkSource.h"
 #include "os/CHandlerThread.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Concurrent::CCountDownLatch;
@@ -603,7 +603,7 @@ ECode CWifiManager::GetConnectionInfo(
     AutoPtr<IWifiInfo> temp;
     FAIL_RETURN(mService->GetConnectionInfo((IWifiInfo**)&temp));
     *info = temp;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
     // } catch (RemoteException e) {
     //     return NULL;
@@ -619,7 +619,7 @@ ECode CWifiManager::GetScanResults(
     AutoPtr<IObjectContainer> temp;
     FAIL_RETURN(mService->GetScanResults((IObjectContainer**)&temp));
     *results = temp;
-    INTERFACE_ADDREF(*results);
+    REFCOUNT_ADD(*results);
     return NOERROR;
     // } catch (RemoteException e) {
     //     return NULL;
@@ -1009,7 +1009,7 @@ ECode CWifiManager::Connect(
     return NOERROR;
 }
 
-ECode CWifiManager::ConnectEx(
+ECode CWifiManager::Connect(
     /* [in] */ Int32 networkId,
     /* [in] */ IWifiManagerActionListener* listener)
 {
@@ -1132,17 +1132,17 @@ ECode CWifiManager::CreateWifiLock(
 {
     VALIDATE_NOT_NULL(lock);
     *lock = new WifiLock(lockType, tag, this);
-    INTERFACE_ADDREF(*lock);
+    REFCOUNT_ADD(*lock);
     return NOERROR;
 }
 
-ECode CWifiManager::CreateWifiLockEx(
+ECode CWifiManager::CreateWifiLock(
     /* [in] */ const String& tag,
     /* [out] */ IWifiLock** lock)
 {
     VALIDATE_NOT_NULL(lock);
     *lock = new WifiLock(WIFI_MODE_FULL, tag, this);
-    INTERFACE_ADDREF(*lock);
+    REFCOUNT_ADD(*lock);
     return NOERROR;
 }
 
@@ -1152,7 +1152,7 @@ ECode CWifiManager::CreateMulticastLock(
 {
     VALIDATE_NOT_NULL(lock);
     *lock = new MulticastLock(tag, this);
-    INTERFACE_ADDREF(*lock);
+    REFCOUNT_ADD(*lock);
     return NOERROR;
 }
 

@@ -52,7 +52,7 @@ ECode CBitmapRegionDecoderHelper::NewInstance(
 *                    allowing sharing may degrade the decoding speed.
 * @param ppIBrd, or null if the image data could not be decoded.
 */
-ECode CBitmapRegionDecoderHelper::NewInstanceEx(
+ECode CBitmapRegionDecoderHelper::NewInstance(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Boolean isShareable,
     /* [out] */ IBitmapRegionDecoder** decoder)
@@ -79,7 +79,7 @@ ECode CBitmapRegionDecoderHelper::NewInstanceEx(
 *                    allowing sharing may degrade the decoding speed.
 * @param ppIBrd, or null if the image data could not be decoded.
 */
-ECode CBitmapRegionDecoderHelper::NewInstanceEx2(
+ECode CBitmapRegionDecoderHelper::NewInstance(
     /* [in] */ IInputStream* is,
     /* [in] */ Boolean isShareable,
     /* [out] */ IBitmapRegionDecoder** decoder)
@@ -104,7 +104,7 @@ ECode CBitmapRegionDecoderHelper::NewInstanceEx2(
 *                    allowing sharing may degrade the decoding speed.
 * @param ppIBrd, or null if the image data could not be decoded.
 */
-ECode CBitmapRegionDecoderHelper::NewInstanceEx3(
+ECode CBitmapRegionDecoderHelper::NewInstance(
     /* [in] */ const String& pathName,
     /* [in] */ Boolean isShareable,
     /* [out] */ IBitmapRegionDecoder** decoder)

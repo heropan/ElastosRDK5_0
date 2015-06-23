@@ -69,7 +69,7 @@ ECode CActivityOne::CMySurfaceHolderCallback::SurfaceCreated(
 {
     PRINT_ENTER_LEAVE("CMySurfaceHolderCallback::SurfaceCreated");
     AutoPtr<ICanvas> canvas;
-    holder->LockCanvasEx(NULL, (ICanvas**)&canvas);
+    holder->LockCanvas(NULL, (ICanvas**)&canvas);
     assert(canvas != NULL);
 
     Int32 canvasWidth, canvasHeight;
@@ -89,7 +89,7 @@ ECode CActivityOne::CMySurfaceHolderCallback::SurfaceChanged(
     PRINT_FILE_LINE_EX("CMySurfaceHolderCallback::SurfaceChanged %d:%d, format: %d", width, height, format);
 
     AutoPtr<ICanvas> canvas;
-    holder->LockCanvasEx(NULL, (ICanvas**)&canvas);
+    holder->LockCanvas(NULL, (ICanvas**)&canvas);
     assert(canvas != NULL);
 
     Int32 canvasWidth, canvasHeight;
@@ -164,7 +164,7 @@ ECode CActivityOne::OnCreate(
     assert(mSurfaceHolderCallback != NULL);
     mSurfaceHolder->AddCallback(mSurfaceHolderCallback);
 
-    return SetContentViewEx(mSurfaceView.Get());
+    return SetContentView(mSurfaceView.Get());
 }
 
 ECode CActivityOne::OnStart()

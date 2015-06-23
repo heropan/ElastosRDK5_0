@@ -130,7 +130,7 @@ ECode CActivityOne::MyListener::OnClick(
             String funcName("backgroundColor");
             AutoPtr<IProperty> property;
             propertyHelper->Of(clsId, CarDataType_Int32, funcName, (IProperty**)&property);
-            animatorHelper->OfInt32Ex(mHost->mButtonColor, property, array, (IObjectAnimator**)&objectAnimator);
+            animatorHelper->OfInt32(mHost->mButtonColor, property, array, (IObjectAnimator**)&objectAnimator);
             AutoPtr<IAccelerateInterpolator> ipt;
             CAccelerateInterpolator::New((IAccelerateInterpolator**)&ipt);
             objectAnimator->SetInterpolator(ipt);
@@ -154,7 +154,7 @@ ECode CActivityOne::MyListener::OnClick(
             String funcName("alpha");
             AutoPtr<IProperty> property;
             propertyHelper->Of(clsId, CarDataType_Float, funcName, (IProperty**)&property);
-            animatorHelper->OfFloatEx(mHost->mButtonAlpha, property, array, (IObjectAnimator**)&objectAnimator);
+            animatorHelper->OfFloat(mHost->mButtonAlpha, property, array, (IObjectAnimator**)&objectAnimator);
             // objectAnimator->SetEvaluator(argb);
             break;
         }
@@ -178,7 +178,7 @@ ECode CActivityOne::MyListener::OnClick(
             CPropertyHelper::AcquireSingleton((IPropertyHelper**)&propertyHelper);
             ASSERT_SUCCEEDED(propertyHelper->Of(clsId, CarDataType_Interface, String("text"), (IProperty**)&property));
             AutoPtr<ITypeEvaluator> evaluator= new MyEvaluator();
-            animatorHelper->OfObjectEx(mHost->mButtonProperty, property, evaluator, array, (IObjectAnimator**)&objectAnimator);
+            animatorHelper->OfObject(mHost->mButtonProperty, property, evaluator, array, (IObjectAnimator**)&objectAnimator);
             break;
         }
         case R::id::bt_valueHolder:
@@ -204,7 +204,7 @@ ECode CActivityOne::MyListener::OnClick(
             AutoPtr<IPropertyValuesHolderHelper> holderHelper;
             CPropertyValuesHolderHelper::AcquireSingleton((IPropertyValuesHolderHelper**)&holderHelper);
             AutoPtr<IPropertyValuesHolder> holder;
-            holderHelper->OfObjectEx(property, evaluator, array, (IPropertyValuesHolder**)&holder);
+            holderHelper->OfObject(property, evaluator, array, (IPropertyValuesHolder**)&holder);
             AutoPtr<ArrayOf<IPropertyValuesHolder*> > holderArray = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
             holderArray->Set(0, holder);
             animatorHelper->OfPropertyValuesHolder(mHost->mButtonValueHolder, holderArray, (IObjectAnimator**)&objectAnimator);

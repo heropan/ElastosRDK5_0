@@ -6,11 +6,11 @@
 #include <ext/frameworkdef.h>
 #include "Elastos.Droid.Test_server.h"
 #include "droid/test/ClassPathPackageInfo.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::IO::IFile;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::ISet;
 
 namespace Elastos {

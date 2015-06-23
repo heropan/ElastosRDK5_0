@@ -1,8 +1,8 @@
 
 #include "media/MediaRouteInfo.h"
 
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 #include "R.h"
 
 using Elastos::Utility::Logging::Logger;
@@ -86,11 +86,11 @@ ECode MediaRouteInfo::GetName(
 
     AutoPtr<ICharSequence> temp = GetName(CMediaRouter::sStatic->mResources);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode MediaRouteInfo::GetNameEx(
+ECode MediaRouteInfo::GetName(
     /* [in] */ IContext* context,
     /* [out] */ ICharSequence** result)
 {
@@ -100,7 +100,7 @@ ECode MediaRouteInfo::GetNameEx(
     context->GetResources((IResources**)&resources);
     AutoPtr<ICharSequence> temp = GetName(resources);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -110,7 +110,7 @@ ECode MediaRouteInfo::GetStatus(
     VALIDATE_NOT_NULL(result);
 
     *result = mStatus;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -138,7 +138,7 @@ ECode MediaRouteInfo::GetGroup(
     VALIDATE_NOT_NULL(result);
 
     *result = mGroup;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -162,7 +162,7 @@ ECode MediaRouteInfo::GetCategory(
     VALIDATE_NOT_NULL(result);
 
     *result = mCategory;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -172,7 +172,7 @@ ECode MediaRouteInfo::GetIconDrawable(
     VALIDATE_NOT_NULL(result);
 
     *result = mIcon;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -190,7 +190,7 @@ ECode MediaRouteInfo::GetTag(
     VALIDATE_NOT_NULL(result);
 
     *result = mTag;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -315,7 +315,7 @@ ECode MediaRouteInfo::GetPresentationDisplay(
     VALIDATE_NOT_NULL(result);
 
     *result = mPresentationDisplay;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -351,7 +351,7 @@ ECode MediaRouteInfo::ToString(
     return NOERROR;
 }
 
-ECode MediaRouteInfo::SetNameEx(
+ECode MediaRouteInfo::SetName(
     /* [in] */ Int32 nameResId)
 {
     mNameResId = nameResId;

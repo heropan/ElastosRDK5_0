@@ -4,8 +4,8 @@
 
 #include "_CObjectAnimator.h"
 #include "animation/ObjectAnimator.h"
-#include "animation/AnimatorMacro.h"
-#include "animation/ValueAnimatorMacro.h"
+
+
 
 using Elastos::Droid::Utility::IProperty;
 
@@ -69,7 +69,7 @@ public:
      * @param values A set of values that the animation will animate between over time.
      * @return An ObjectAnimator object that is set up to animate between the given values.
      */
-    static AutoPtr<IObjectAnimator> OfInt32Ex(
+    static AutoPtr<IObjectAnimator> OfInt32(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Int32>* values);
@@ -105,7 +105,7 @@ public:
      * @param values A set of values that the animation will animate between over time.
      * @return An ObjectAnimator object that is set up to animate between the given values.
      */
-    static AutoPtr<IObjectAnimator> OfFloatEx(
+    static AutoPtr<IObjectAnimator> OfFloat(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* propertyName,
         /* [in] */ ArrayOf<Float>* values);
@@ -148,7 +148,7 @@ public:
      * @param values A set of values that the animation will animate between over time.
      * @return An ObjectAnimator object that is set up to animate between the given values.
      */
-    static AutoPtr<IObjectAnimator> OfObjectEx(
+    static AutoPtr<IObjectAnimator> OfObject(
         /* [in] */ IInterface* target,
         /* [in] */ IProperty* property,
         /* [in] */ ITypeEvaluator* evaluator,

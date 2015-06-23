@@ -2,10 +2,10 @@
 #include "CWifiP2pDevice.h"
 #include "CWifiP2pWfdInfo.h"
 #include <ext/frameworkext.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuffer.h>
-#include <elastos/Slogger.h>
-#include <Elastos.Core.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <Elastos.CoreLibrary.h>
 #include <unistd.h>
 
 using Elastos::Core::StringUtils;
@@ -230,7 +230,7 @@ ECode CWifiP2pDevice::GetWfdInfo(
     VALIDATE_NOT_NULL(wfdInfo);
 
     *wfdInfo = mWfdInfo;
-    INTERFACE_ADDREF(*wfdInfo);
+    REFCOUNT_ADD(*wfdInfo);
 
     return NOERROR;
 }
@@ -501,7 +501,7 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->GroupEx(2, &mDeviceAddress));
+            FAIL_RETURN(match->Group(2, &mDeviceAddress));
             return NOERROR;
         case 3:
             FAIL_RETURN(mThreeTokenPattern->Matcher(dataString, (IMatcher**)&match));
@@ -511,7 +511,7 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->GroupEx(1, &mDeviceAddress));
+            FAIL_RETURN(match->Group(1, &mDeviceAddress));
             return NOERROR;
         case 4:
             FAIL_RETURN(mFourTokenPattern->Matcher(
@@ -522,10 +522,10 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->GroupEx(1, &mDeviceAddress));
+            FAIL_RETURN(match->Group(1, &mDeviceAddress));
             {
                 String str;
-                FAIL_RETURN(match->GroupEx(2, &str));
+                FAIL_RETURN(match->Group(2, &str));
                 if (!str.IsNull()) {
                     String str1 = str.Substring(0, 4);
                     String str2 = str.Substring(4, 8);
@@ -545,22 +545,22 @@ ECode CWifiP2pDevice::constructor(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            FAIL_RETURN(match->GroupEx(3, &mDeviceAddress));
-            FAIL_RETURN(match->GroupEx(4, &mPrimaryDeviceType));
-            FAIL_RETURN(match->GroupEx(5, &mDeviceName));
+            FAIL_RETURN(match->Group(3, &mDeviceAddress));
+            FAIL_RETURN(match->Group(4, &mPrimaryDeviceType));
+            FAIL_RETURN(match->Group(5, &mDeviceName));
 
             String temp;
-            FAIL_RETURN(match->GroupEx(6, &temp));
+            FAIL_RETURN(match->Group(6, &temp));
             mWpsConfigMethodsSupported = ParseHex(temp);
-            FAIL_RETURN(match->GroupEx(7, &temp));
+            FAIL_RETURN(match->Group(7, &temp));
             mDeviceCapability = ParseHex(temp);
-            FAIL_RETURN(match->GroupEx(8, &temp));
+            FAIL_RETURN(match->Group(8, &temp));
             mGroupCapability = ParseHex(temp);
 
-            FAIL_RETURN(match->GroupEx(9, &temp));
+            FAIL_RETURN(match->Group(9, &temp));
             if (!temp.IsNull()) {
                 String str;
-                FAIL_RETURN(match->GroupEx(10, &str));
+                FAIL_RETURN(match->Group(10, &str));
 
                 String str1 = str.Substring(0, 4);
                 String str2 = str.Substring(4, 8);

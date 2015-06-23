@@ -4,7 +4,7 @@
 
 #include "app/Activity.h"
 #include "_CMainActivity.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;

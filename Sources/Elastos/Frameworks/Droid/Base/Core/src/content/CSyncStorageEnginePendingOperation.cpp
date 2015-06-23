@@ -27,7 +27,7 @@ ECode CSyncStorageEnginePendingOperation::GetAccount(
 {
     VALIDATE_NOT_NULL(account)
     *account = mAccount;
-    INTERFACE_ADDREF(*account);
+    REFCOUNT_ADD(*account);
     return NOERROR;
 }
 
@@ -60,7 +60,7 @@ ECode CSyncStorageEnginePendingOperation::GetExtras(
 {
     VALIDATE_NOT_NULL(extras)
     *extras = mExtras;
-    INTERFACE_ADDREF(*extras);
+    REFCOUNT_ADD(*extras);
     return NOERROR;
 }
 
@@ -92,7 +92,7 @@ ECode CSyncStorageEnginePendingOperation::GetFlatExtras(
 {
     VALIDATE_NOT_NULL(flatExtras)
     *flatExtras = mFlatExtras;
-    INTERFACE_ADDREF(*flatExtras);
+    REFCOUNT_ADD(*flatExtras);
     return NOERROR;
 }
 

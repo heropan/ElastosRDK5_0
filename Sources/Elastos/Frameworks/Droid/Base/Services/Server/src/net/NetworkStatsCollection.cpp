@@ -1,13 +1,13 @@
 
 #include "net/NetworkStatsCollection.h"
 #include "util/ArrayUtils.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/List.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::CBufferedInputStream;
@@ -240,7 +240,7 @@ AutoPtr<INetworkStats> NetworkStatsCollection::GetSummary(
         if (TemplateMatches(templ, key->mIdent)) {
             AutoPtr<INetworkStatsHistory> history = it->mSecond;
             AutoPtr<INetworkStatsHistoryEntry> newEntry;
-            history->GetValuesEx2(start, end, now, historyEntry, (INetworkStatsHistoryEntry**)&newEntry);
+            history->GetValues(start, end, now, historyEntry, (INetworkStatsHistoryEntry**)&newEntry);
             historyEntry = newEntry;
 
             entry->SetIface(INetworkStats::IFACE_ALL);
@@ -261,7 +261,7 @@ AutoPtr<INetworkStats> NetworkStatsCollection::GetSummary(
 
             Boolean isEmpty;
             if (entry->IsEmpty(&isEmpty), !isEmpty) {
-                stats->CombineValuesEx2(entry);
+                stats->CombineValues(entry);
             }
         }
     }
@@ -279,7 +279,7 @@ void NetworkStatsCollection::RecordData(
     /* [in] */ INetworkStatsEntry* entry)
 {
     AutoPtr<INetworkStatsHistory> history = FindOrCreateHistory(ident, uid, set, tag);
-    history->RecordDataEx(start, end, entry);
+    history->RecordData(start, end, entry);
     Int64 s, e, rxBytes, txBytes;
     history->GetStart(&s);
     history->GetEnd(&e);

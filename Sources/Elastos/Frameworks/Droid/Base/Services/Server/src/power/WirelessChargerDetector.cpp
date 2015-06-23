@@ -1,7 +1,7 @@
 
 #include "power/WirelessChargerDetector.h"
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Hardware::EIID_ISensorEventListener;
@@ -122,7 +122,7 @@ void WirelessChargerDetector::StartDetectionLocked()
 {
     if (!mDetectionInProgress && mGravitySensor != NULL) {
         Boolean result;
-        mSensorManager->RegisterListenerEx2(mListener, mGravitySensor,
+        mSensorManager->RegisterListener(mListener, mGravitySensor,
                 ISensorManager::SENSOR_DELAY_UI, &result);
         if (result) {
             mSuspendBlocker->Acquire();
@@ -171,7 +171,7 @@ void WirelessChargerDetector::ProcessSample(
     // Save the result when done.
     if (timeNanos - mFirstSampleTime >= SETTLE_TIME_NANOS
             && mTotalSamples >= MIN_SAMPLES) {
-        mSensorManager->UnregisterListenerEx3(mListener);
+        mSensorManager->UnregisterListener(mListener);
         if (mMustUpdateRestPosition) {
             if (mMovingSamples == 0) {
                 mAtRest = TRUE;

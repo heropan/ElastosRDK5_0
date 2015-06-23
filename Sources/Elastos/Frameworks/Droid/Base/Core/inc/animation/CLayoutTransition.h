@@ -4,12 +4,12 @@
 
 #include "_CLayoutTransition.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include "animation/AnimatorListenerAdapter.h"
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IOnPreDrawListener;
@@ -105,7 +105,7 @@ private:
     class _AnimatorListenerAdapterEx : public AnimatorListenerAdapter
     {
     public:
-        _AnimatorListenerAdapterEx(
+        _AnimatorListenerAdapter(
             /* [in] */ CLayoutTransition* host,
             /* [in] */ IView* child,
             /* [in] */ IViewGroup* parent,
@@ -132,7 +132,7 @@ private:
     class _AnimatorListenerAdapterEx2 : public AnimatorListenerAdapter
     {
     public:
-        _AnimatorListenerAdapterEx2(
+        _AnimatorListenerAdapter(
             /* [in] */ CLayoutTransition* host,
             /* [in] */ IView* child,
             /* [in] */ IViewGroup* parent);
@@ -149,7 +149,7 @@ private:
     class _AnimatorListenerAdapterEx3 : public AnimatorListenerAdapter
     {
     public:
-        _AnimatorListenerAdapterEx3(
+        _AnimatorListenerAdapter(
             /* [in] */ CLayoutTransition* host,
             /* [in] */ IView* child,
             /* [in] */ IViewGroup* parent,
@@ -326,7 +326,7 @@ public:
      * @param duration The length of time, in milliseconds, that the specified animation should run.
      * @see Animator#setDuration(Int64)
      */
-    CARAPI SetDurationEx(
+    CARAPI SetDuration(
         /* [in] */ Int32 transitionType,
         /* [in] */ Int64 duration);
 
@@ -527,7 +527,7 @@ public:
      *
      * @hide
      */
-    CARAPI CancelEx(
+    CARAPI Cancel(
         /* [in] */ Int32 transitionType);
 
     /**
@@ -577,7 +577,7 @@ public:
      * @param oldVisibility The previous visibility value of the child View, either
      * {@link View#GONE} or {@link View#INVISIBLE}.
      */
-    CARAPI ShowChildEx(
+    CARAPI ShowChild(
         /* [in] */ IViewGroup* parent,
         /* [in] */ IView* child,
         /* [in] */ Int32 oldVisibility);
@@ -614,7 +614,7 @@ public:
      * @param newVisibility The new visibility value of the child View, either
      * {@link View#GONE} or {@link View#INVISIBLE}.
      */
-    CARAPI HideChildEx(
+    CARAPI HideChild(
         /* [in] */ IViewGroup* parent,
         /* [in] */ IView* child,
         /* [in] */ Int32 newVisibility);

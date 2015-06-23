@@ -5,9 +5,9 @@
 #include "view/CKeyEvent.h"
 #include "view/CMotionEvent.h"
 #endif
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessageQueue;
@@ -446,7 +446,7 @@ ECode InputEventReceiver::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 

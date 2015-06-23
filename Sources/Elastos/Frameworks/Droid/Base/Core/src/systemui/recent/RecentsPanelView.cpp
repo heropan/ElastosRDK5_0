@@ -16,10 +16,10 @@
 #include "view/animation/AnimationUtils.h"
 #include "view/animation/CDecelerateInterpolator.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::IInteger32;
@@ -190,7 +190,7 @@ ECode RecentsPanelView::TaskDescriptionAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> i = GetItem(position);
     *item = i;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -215,7 +215,7 @@ ECode RecentsPanelView::TaskDescriptionAdapter::CreateView(
 {
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> convertView;
-    mInflater->InflateEx2(mHost->mRecentItemLayoutId, parent, FALSE, (IView**)&convertView);
+    mInflater->Inflate(mHost->mRecentItemLayoutId, parent, FALSE, (IView**)&convertView);
     AutoPtr<ViewHolder> holder = new ViewHolder();
     AutoPtr<IView> v;
     convertView->FindViewById(SystemUIR::id::app_thumbnail, (IView**)&v);
@@ -246,7 +246,7 @@ ECode RecentsPanelView::TaskDescriptionAdapter::CreateView(
 
     convertView->SetTag(holder);
     *view = convertView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -339,7 +339,7 @@ ECode RecentsPanelView::TaskDescriptionAdapter::GetView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = GetView(position, convertView, parent);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -558,7 +558,7 @@ ECode RecentsPanelView::Init(
         const_cast<Int32 *>(SystemUIR::styleable::RecentsPanelView),
         ARRAY_SIZE(SystemUIR::styleable::RecentsPanelView));
     AutoPtr<ITypedArray> a;
-    ctx->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    ctx->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     a->GetResourceId(SystemUIR::styleable::RecentsPanelView_recentItemLayout, 0, &mRecentItemLayoutId);
     mRecentTasksLoader = CRecentTasksLoader::GetInstance(ctx);
@@ -611,10 +611,10 @@ Boolean RecentsPanelView::IsInContentArea(
 ECode RecentsPanelView::Show(
     /* [in] */ Boolean show)
 {
-    return ShowEx(show, NULL, FALSE, FALSE);
+    return Show(show, NULL, FALSE, FALSE);
 }
 
-ECode RecentsPanelView::ShowEx(
+ECode RecentsPanelView::Show(
     /* [in] */ Boolean show,
     /* [in] */ IObjectContainer* recentTaskDescriptions,
     /* [in] */ Boolean firstScreenful,
@@ -893,7 +893,7 @@ void RecentsPanelView::UpdateThumbnail(
                 AutoPtr<IMatrix> scaleMatrix;
                 CMatrix::New((IMatrix**)&scaleMatrix);
                 Float scale = mThumbnailWidth / (Float)w2;
-                scaleMatrix->SetScaleEx(scale, scale);
+                scaleMatrix->SetScale(scale, scale);
                 h->mThumbnailViewImage->SetScaleType(ImageViewScaleType_MATRIX);
                 h->mThumbnailViewImage->SetImageMatrix(scaleMatrix);
             }
@@ -1096,7 +1096,7 @@ void RecentsPanelView::UpdateUiElements()
         GetResources()->GetString(SystemUIR::string::status_bar_no_recent_apps, &recentAppsAccessibilityDescription);
     }
     else {
-//TODO: Need GetQuantityStringEx(int id, int quantity, Object... formatArgs)
+//TODO: Need GetQuantityString(int id, int quantity, Object... formatArgs)
         // res->GetQuantityString(SystemUIR::plurals::status_bar_accessibility_recent_apps, numRecentApps, numRecentApps, &recentAppsAccessibilityDescription);
 //TODO: GetQuantityString has bug in finding plurals string
         // <plurals name="status_bar_accessibility_recent_apps">
@@ -1164,7 +1164,7 @@ ECode RecentsPanelView::HandleOnClick(
         AutoPtr<IActivityOptionsHelper> helper;
         CActivityOptionsHelper::AcquireSingleton((IActivityOptionsHelper**)&helper);
         AutoPtr<IActivityOptions> activtiyOptions;
-        helper->MakeThumbnailScaleUpAnimationEx(
+        helper->MakeThumbnailScaleUpAnimation(
                     holder->mThumbnailViewImage, bm, 0, 0, NULL, (IActivityOptions**)&activtiyOptions);
         activtiyOptions->ToBundle((IBundle**)&opts);
     }
@@ -1175,7 +1175,7 @@ ECode RecentsPanelView::HandleOnClick(
     ad->GetTaskId(&taskId);
     if (taskId >= 0) {
         // This is an active task; it should just go to the foreground.
-        am->MoveTaskToFrontEx(taskId, IActivityManager::MOVE_TASK_WITH_HOME, opts);
+        am->MoveTaskToFront(taskId, IActivityManager::MOVE_TASK_WITH_HOME, opts);
     }
     else {
         AutoPtr<IIntent> intent;
@@ -1190,7 +1190,7 @@ ECode RecentsPanelView::HandleOnClick(
         }
         AutoPtr<IUserHandle> userHandle;
         CUserHandle::New(IUserHandle::USER_CURRENT, (IUserHandle**)&userHandle);
-        context->StartActivityAsUserEx(intent, opts, userHandle);
+        context->StartActivityAsUser(intent, opts, userHandle);
     }
     if (usingDrawingCache) {
         holder->mThumbnailViewImage->SetDrawingCacheEnabled(FALSE);
@@ -1246,7 +1246,7 @@ ECode RecentsPanelView::HandleSwipe(
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
         args->Set(0, cs.Get());
         String str;
-        mContext->GetStringEx(SystemUIR::string::accessibility_recents_item_dismissed, args, &str);
+        mContext->GetString(SystemUIR::string::accessibility_recents_item_dismissed, args, &str);
         cs = NULL;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         SetContentDescription(cs);

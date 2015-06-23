@@ -3,10 +3,9 @@
 #define __SSLCLIENTCERTLOOKUPTABLE_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include <elastos/Set.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Set;
 using Elastos::Utility::IObjectStringMap;
 

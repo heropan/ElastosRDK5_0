@@ -3,7 +3,7 @@
 
 #include "_CDispList.h"
 #include "os/Handler.h"
-#include "os/HandlerMacro.h"
+
 #include "widget/Toast.h"
 #include "view/CDispListDispFormat.h"
 #include "view/CDispListHelper.h"
@@ -78,7 +78,7 @@ protected:
         CARAPI SetText(
             /* [in] */ Int32 resId);
 
-        CARAPI SetTextEx(
+        CARAPI SetText(
             /* [in] */ ICharSequence* s);
 
         CARAPI IsShowing(

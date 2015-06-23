@@ -12,7 +12,7 @@ module
             [in] Int32 type,
             [in] Int64 value);
 
-        AppendEx(
+        Append(
             [in] Int32 handle,
             [in] Int32 property,
             [in] String value);

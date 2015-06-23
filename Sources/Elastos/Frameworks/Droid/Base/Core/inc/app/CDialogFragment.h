@@ -4,7 +4,7 @@
 
 #include "_CDialogFragment.h"
 #include "app/DialogFragment.h"
-#include "app/FragmentMacro.h"
+
 
 namespace Elastos {
 namespace Droid {
@@ -71,7 +71,7 @@ public:
         /* [in] */ IFragmentManager* manager,
         /* [in] */ const String& tag);
 
-    CARAPI ShowEx(
+    CARAPI Show(
         /* [in] */ IFragmentTransaction* transaction,
         /* [in] */ const String& tag,
         /* [out] */ Int32* id);

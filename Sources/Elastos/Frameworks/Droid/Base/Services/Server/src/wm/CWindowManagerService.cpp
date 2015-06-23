@@ -18,12 +18,12 @@
 #include "power/ShutdownThread.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Thread.h>
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <binder/Parcel.h>
 #include <binder/IServiceManager.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringUtils;
@@ -2624,7 +2624,7 @@ void CWindowManagerService::RemoveWindowInnerLocked(
             }
 
             AutoPtr<IMessage> msg;
-            mH->ObtainMessageEx(H::REMOVE_STARTING, atoken, (IMessage**)&msg);
+            mH->ObtainMessage(H::REMOVE_STARTING, atoken, (IMessage**)&msg);
             Boolean result;
             mH->SendMessage(msg, &result);
         }
@@ -2685,7 +2685,7 @@ void CWindowManagerService::SetTransparentRegionHint(
     args->mArg2 = region;
 
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx(H::SET_TRANSPARENT_REGION, args.Get(), (IMessage**)&msg);
+    mH->ObtainMessage(H::SET_TRANSPARENT_REGION, args.Get(), (IMessage**)&msg);
     Boolean result;
     mH->SendMessage(msg, &result);
 }
@@ -2725,8 +2725,8 @@ void CWindowManagerService::SetInsetsWindow(
     WindowForClientLocked(session, client, FALSE, (WindowState**)&w);
     if (w != NULL) {
         w->mGivenInsetsPending = FALSE;
-        w->mGivenContentInsets->SetEx(contentInsets);
-        w->mGivenVisibleInsets->SetEx(visibleInsets);
+        w->mGivenContentInsets->Set(contentInsets);
+        w->mGivenVisibleInsets->Set(visibleInsets);
         Boolean result;
         w->mGivenTouchableRegion->Set(touchableRegion, &result);
         w->mTouchableInsets = touchableInsets;
@@ -2756,7 +2756,7 @@ void CWindowManagerService::GetWindowDisplayFrame(
         outDisplayFrame->SetEmpty();
         return;
     }
-    outDisplayFrame->SetEx(win->mDisplayFrame);
+    outDisplayFrame->Set(win->mDisplayFrame);
 }
 
 void CWindowManagerService::SetWindowWallpaperPositionLocked(
@@ -2853,14 +2853,14 @@ void CWindowManagerService::SetUniverseTransformLocked(
     displayInfo->GetLogicalHeight(&logicalH);
     ASSERT_SUCCEEDED(CRectF::New(0, 0, logicalW, logicalH, (IRectF**)&dispRect));
     Boolean res;
-    matrix->MapRectEx(dispRect, &res);
-    window->mGivenTouchableRegion->SetEx2(0, 0, logicalW, logicalH, &res);
+    matrix->MapRect(dispRect, &res);
+    window->mGivenTouchableRegion->Set(0, 0, logicalW, logicalH, &res);
     Float left = 0, top = 0, right = 0, bottom = 0;
     dispRect->GetLeft(&left);
     dispRect->GetTop(&top);
     dispRect->GetRight(&right);
     dispRect->GetBottom(&bottom);
-    window->mGivenTouchableRegion->OpEx((Int32)left, (Int32)top, (Int32)right,
+    window->mGivenTouchableRegion->Op((Int32)left, (Int32)top, (Int32)right,
             (Int32)bottom, Elastos::Droid::Graphics::RegionOp_DIFFERENCE, &res);
     window->mTouchableInsets = IInternalInsetsInfo::TOUCHABLE_INSETS_REGION;
     window->mDisplayContent->mLayoutNeeded = TRUE;
@@ -2899,7 +2899,7 @@ void CWindowManagerService::ScheduleNotifyRectangleOnScreenRequestedIfNeededLock
             AutoPtr<IMessage> msg;
             AutoPtr<IRect> rect;
             CRect::New(rectangle, (IRect**)&rect);
-            mH->ObtainMessageEx3(H::NOTIFY_RECTANGLE_ON_SCREEN_REQUESTED,
+            mH->ObtainMessage(H::NOTIFY_RECTANGLE_ON_SCREEN_REQUESTED,
                 immediate ? 1:0, 0, rect, (IMessage**)&msg);
             msg->SendToTarget();
         }
@@ -3285,9 +3285,9 @@ Int32 CWindowManagerService::RelayoutWindow(
         if (win->mAppToken != NULL) {
             win->mAppToken->UpdateReportedVisibilityLocked();
         }
-        inFrame->SetEx(win->mCompatFrame);
-        inContentInsets->SetEx(win->mContentInsets);
-        inVisibleInsets->SetEx(win->mVisibleInsets);
+        inFrame->Set(win->mCompatFrame);
+        inContentInsets->Set(win->mContentInsets);
+        inVisibleInsets->Set(win->mVisibleInsets);
         // if (localLOGV) Slog.v(
         //     TAG, "Relayout given client " + client.asBinder()
         //     + ", requestedWidth=" + requestedWidth
@@ -3549,7 +3549,7 @@ AutoPtr<IWindowInfo> CWindowManagerService::GetWindowInfoForWindowStateLocked(
     info->SetToken(window->mToken->mToken);
     AutoPtr<IRect> rect;
     info->GetFrame((IRect**)&rect);
-    rect->SetEx(window->mFrame);
+    rect->Set(window->mFrame);
     Int32 attrsType;
     window->mAttrs->GetType(&attrsType);
     info->SetType(attrsType);
@@ -3564,7 +3564,7 @@ AutoPtr<IWindowInfo> CWindowManagerService::GetWindowInfoForWindowStateLocked(
     AutoPtr<IRect> region;
     info->GetTouchableRegion((IRect**)&region);
     Boolean result;
-    mTempRegion->GetBoundsEx(region, &result);
+    mTempRegion->GetBounds(region, &result);
     return info;
 }
 
@@ -3762,7 +3762,7 @@ AutoPtr<IAnimation> CWindowManagerService::CreateScaleUpAnimationLocked(
     AutoPtr<IInterpolator> interpolator;
     animationUtils->LoadInterpolator(mContext, R::interpolator::decelerate_cubic,
             (IInterpolator**)&interpolator);
-    a->SetInterpolatorEx(interpolator);
+    a->SetInterpolator(interpolator);
     Int32 w, h;
     displayInfo->GetAppWidth(&w);
     displayInfo->GetAppHeight(&h);
@@ -3827,11 +3827,11 @@ AutoPtr<IAnimation> CWindowManagerService::CreateThumbnailAnimationLocked(
             scale->SetDuration(duration);
             AutoPtr<IInterpolator> interpolator;
             animationUtils->LoadInterpolator(mContext, R::interpolator::decelerate_quad, (IInterpolator**)&interpolator);
-            scale->SetInterpolatorEx(interpolator);
+            scale->SetInterpolator(interpolator);
             set->AddAnimation(scale);
             alpha->SetDuration(duration);
             AutoPtr<IInterpolator> ipolator = new LocalInterpolator();
-            alpha->SetInterpolatorEx(ipolator);
+            alpha->SetInterpolator(ipolator);
             set->AddAnimation(alpha);
             set->SetFillBefore(TRUE);
             a = IAnimation::Probe(set);
@@ -3853,7 +3853,7 @@ AutoPtr<IAnimation> CWindowManagerService::CreateThumbnailAnimationLocked(
             AutoPtr<IInterpolator> interpolator;
             CDecelerateInterpolator::New(THUMBNAIL_ANIMATION_DECELERATE_FACTOR,
                     (IDecelerateInterpolator**)&interpolator);
-            scale->SetInterpolatorEx(interpolator);
+            scale->SetInterpolator(interpolator);
             set->AddAnimation(scale);
             alpha->SetDuration(duration);
             set->AddAnimation(alpha);
@@ -3876,7 +3876,7 @@ AutoPtr<IAnimation> CWindowManagerService::CreateThumbnailAnimationLocked(
             AutoPtr<IInterpolator> interpolator;
             CDecelerateInterpolator::New(THUMBNAIL_ANIMATION_DECELERATE_FACTOR,
                     (IDecelerateInterpolator**)&interpolator);
-            scale->SetInterpolatorEx(interpolator);
+            scale->SetInterpolator(interpolator);
             scale->SetFillBefore(TRUE);
             a = scale;
         }
@@ -3914,7 +3914,7 @@ AutoPtr<IAnimation> CWindowManagerService::CreateThumbnailAnimationLocked(
             AutoPtr<IInterpolator> scaleInterpolator;
             CDecelerateInterpolator::New(THUMBNAIL_ANIMATION_DECELERATE_FACTOR,
                     (IDecelerateInterpolator**)&scaleInterpolator);
-            scale->SetInterpolatorEx(scaleInterpolator);
+            scale->SetInterpolator(scaleInterpolator);
             scale->SetFillBefore(TRUE);
 
             AutoPtr<IAnimation> alpha;
@@ -3923,7 +3923,7 @@ AutoPtr<IAnimation> CWindowManagerService::CreateThumbnailAnimationLocked(
             AutoPtr<IInterpolator> alphaInterpolator;
             CDecelerateInterpolator::New(THUMBNAIL_ANIMATION_DECELERATE_FACTOR,
                     (IDecelerateInterpolator**)&alphaInterpolator);
-            alpha->SetInterpolatorEx(alphaInterpolator);
+            alpha->SetInterpolator(alphaInterpolator);
 
             AutoPtr<IAnimationSet> set;
             ASSERT_SUCCEEDED(CAnimationSet::New(TRUE, (IAnimationSet**)&set));
@@ -3938,7 +3938,7 @@ AutoPtr<IAnimation> CWindowManagerService::CreateThumbnailAnimationLocked(
     AutoPtr<IInterpolator> interpolator;
     animationUtils->LoadInterpolator(mContext, R::interpolator::decelerate_quad,
             (IInterpolator**)&interpolator);
-    a->SetInterpolatorEx(interpolator);
+    a->SetInterpolator(interpolator);
     a->Initialize(w, h, w, h);
     return a;
 }
@@ -4746,7 +4746,7 @@ void CWindowManagerService::ScheduleAnimationCallback(
 {
     if (cb != NULL) {
         AutoPtr<IMessage> msg;
-        mH->ObtainMessageEx(H::DO_ANIMATION_CALLBACK, cb, (IMessage**)&msg);
+        mH->ObtainMessage(H::DO_ANIMATION_CALLBACK, cb, (IMessage**)&msg);
         Boolean result;
         mH->SendMessage(msg, &result);
     }
@@ -4992,7 +4992,7 @@ ECode CWindowManagerService::SetAppStartingWindow(
                 ttoken->mStartingMoved = TRUE;
 
                 AutoPtr<IMessage> msg;
-                mH->ObtainMessageEx(H::ADD_STARTING, wtoken.Get(), (IMessage**)&msg);
+                mH->ObtainMessage(H::ADD_STARTING, wtoken.Get(), (IMessage**)&msg);
 
                 // Note: we really want to do sendMessageAtFrontOfQueue() because we
                 // want to process the message ASAP, before any other queued
@@ -5089,7 +5089,7 @@ ECode CWindowManagerService::SetAppStartingWindow(
             pkg, theme, compatInfo, nonLocalizedLabel, labelRes, icon, windowFlags);
 
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx(H::ADD_STARTING, wtoken.Get(), (IMessage**)&msg);
+    mH->ObtainMessage(H::ADD_STARTING, wtoken.Get(), (IMessage**)&msg);
 
     // Note: we really want to do sendMessageAtFrontOfQueue() because we
     // want to process the message ASAP, before any other queued
@@ -5559,7 +5559,7 @@ ECode CWindowManagerService::RemoveAppToken(
         }
 
         AutoPtr<IMessage> msg;
-        mH->ObtainMessageEx(H::REMOVE_STARTING, startingToken.Get(), (IMessage**)&msg);
+        mH->ObtainMessage(H::REMOVE_STARTING, startingToken.Get(), (IMessage**)&msg);
         Boolean result;
         return mH->SendMessageDelayed(msg, 2000, &result);
     }
@@ -6148,7 +6148,7 @@ ECode CWindowManagerService::DisableKeyguard(
     args->mArg2 = seq;
 
     AutoPtr<IMessage> msg;
-    mKeyguardDisableHandler->ObtainMessageEx(KeyguardDisableHandler::KEYGUARD_DISABLE,
+    mKeyguardDisableHandler->ObtainMessage(KeyguardDisableHandler::KEYGUARD_DISABLE,
         args, (IMessage**)&msg);
     Boolean result;
     return mKeyguardDisableHandler->SendMessage(msg, &result);
@@ -6168,7 +6168,7 @@ ECode CWindowManagerService::ReenableKeyguard(
     }
 
     AutoPtr<IMessage> msg;
-    mKeyguardDisableHandler->ObtainMessageEx(KeyguardDisableHandler::KEYGUARD_REENABLE,
+    mKeyguardDisableHandler->ObtainMessage(KeyguardDisableHandler::KEYGUARD_REENABLE,
         token, (IMessage**)&msg);
     Boolean result;
     return mKeyguardDisableHandler->SendMessage(msg, &result);
@@ -6713,7 +6713,7 @@ ECode CWindowManagerService::ShowStrictModeViolation(
     if (mHeadless) return NOERROR;
     Int32 pid = Binder::GetCallingPid();
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx2(H::SHOW_STRICT_MODE_VIOLATION, on ? 1 : 0, pid, (IMessage**)&msg);
+    mH->ObtainMessage(H::SHOW_STRICT_MODE_VIOLATION, on ? 1 : 0, pid, (IMessage**)&msg);
 
     Boolean result;
     return mH->SendMessage(msg, &result);
@@ -6974,7 +6974,7 @@ ECode CWindowManagerService::ScreenshotApplications(
         //                 + " surfaceLayer=" + win.mWinAnimator.mSurfaceLayer);
         //     }
         // }
-        helper->ScreenshotEx(dw, dh, 0, maxLayer, (IBitmap**)&rawss);
+        helper->Screenshot(dw, dh, 0, maxLayer, (IBitmap**)&rawss);
     }
 
     if (rawss == NULL) {
@@ -6988,7 +6988,7 @@ ECode CWindowManagerService::ScreenshotApplications(
     AutoPtr<IBitmap> bm;
     AutoPtr<IBitmapFactory> factory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
-    ASSERT_SUCCEEDED(factory->CreateBitmapEx3(maxWidth, maxHeight, config, (IBitmap**)&bm));
+    ASSERT_SUCCEEDED(factory->CreateBitmap(maxWidth, maxHeight, config, (IBitmap**)&bm));
 
     AutoPtr<IMatrix> matrix;
     ASSERT_SUCCEEDED(CMatrix::New((IMatrix**)&matrix));
@@ -7001,7 +7001,7 @@ ECode CWindowManagerService::ScreenshotApplications(
             -(Float)Elastos::Core::Math::Ceil(top * scale), &result);
     AutoPtr<ICanvas> canvas;
     ASSERT_SUCCEEDED(CCanvas::New(bm, (ICanvas**)&canvas));
-    canvas->DrawBitmapEx5(rawss, matrix, NULL);
+    canvas->DrawBitmap(rawss, matrix, NULL);
     canvas->SetBitmap(NULL);
 
     rawss->Recycle();
@@ -7393,8 +7393,8 @@ Boolean CWindowManagerService::IsSystemSecure()
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value1, value2;
-    return (sysProp->GetEx(SYSTEM_SECURE, String("1"), &value1), String("1").Equals(value1)) &&
-            (sysProp->GetEx(SYSTEM_DEBUGGABLE, String("0"), &value2), String("0").Equals(value2));
+    return (sysProp->Get(SYSTEM_SECURE, String("1"), &value1), String("1").Equals(value1)) &&
+            (sysProp->Get(SYSTEM_DEBUGGABLE, String("0"), &value2), String("0").Equals(value2));
 }
 
 ECode CWindowManagerService::StopViewServer(
@@ -7758,7 +7758,7 @@ void CWindowManagerService::ScheduleNotifyWindowTranstionIfNeededLocked(
         AutoPtr<IWindowInfo> info = GetWindowInfoForWindowStateLocked(window);
 
         AutoPtr<IMessage> msg;
-        mH->ObtainMessageEx3(H::NOTIFY_WINDOW_TRANSITION, transition, 0,
+        mH->ObtainMessage(H::NOTIFY_WINDOW_TRANSITION, transition, 0,
             info, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -7805,7 +7805,7 @@ void CWindowManagerService::ScheduleNotifyRotationChangedIfNeededLocked(
     if (displayContent->mDisplayContentChangeListeners != NULL
             && (displayContent->mDisplayContentChangeListeners->GetRegisteredCallbackCount(&cbCount), cbCount > 0)) {
         AutoPtr<IMessage> msg;
-        mH->ObtainMessageEx2(H::NOTIFY_ROTATION_CHANGED,
+        mH->ObtainMessage(H::NOTIFY_ROTATION_CHANGED,
             displayContent->GetDisplayId(), rotation, (IMessage**)&msg);
         Boolean result;
         mH->SendMessage(msg, &result);
@@ -7850,7 +7850,7 @@ void CWindowManagerService::ScheduleNotifyWindowLayersChangedIfNeededLocked(
     if (displayContent->mDisplayContentChangeListeners != NULL
             && (displayContent->mDisplayContentChangeListeners->GetRegisteredCallbackCount(&cbCount), cbCount > 0)) {
         AutoPtr<IMessage> msg;
-        mH->ObtainMessageEx(H::NOTIFY_WINDOW_LAYERS_CHANGED,
+        mH->ObtainMessage(H::NOTIFY_WINDOW_LAYERS_CHANGED,
             (IInterface*)displayContent, (IMessage**)&msg);
         msg->SendToTarget();
     }
@@ -8452,9 +8452,9 @@ AutoPtr<IBinder> CWindowManagerService::PrepareDragSurface(
 
         // 5 second timeout for this window to actually begin the drag
         AutoPtr<IInterface> obj = winBinder ? winBinder->Probe(EIID_IInterface) : NULL;
-        mH->RemoveMessagesEx(H::DRAG_START_TIMEOUT, obj);
+        mH->RemoveMessages(H::DRAG_START_TIMEOUT, obj);
         AutoPtr<IMessage> msg;
-        mH->ObtainMessageEx(H::DRAG_START_TIMEOUT, obj, (IMessage**)&msg);
+        mH->ObtainMessage(H::DRAG_START_TIMEOUT, obj, (IMessage**)&msg);
         Boolean result;
         mH->SendMessageDelayed(msg, 5000, &result);
     }
@@ -10645,7 +10645,7 @@ void CWindowManagerService::UpdateResizingWindows(
         // if (localLOGV) Slog.v(TAG, "Resizing " + w
         //         + ": configChanged=" + configChanged
         //         + " last=" + w.mLastFrame + " frame=" + w.mFrame);
-        w->mLastFrame->SetEx(w->mFrame);
+        w->mLastFrame->Set(w->mFrame);
         if (w->mContentInsetsChanged
                 || w->mVisibleInsetsChanged
                 || winAnimator->mSurfaceResized
@@ -10658,8 +10658,8 @@ void CWindowManagerService::UpdateResizingWindows(
             //             + " configChanged=" + configChanged);
             // }
 
-            w->mLastContentInsets->SetEx(w->mContentInsets);
-            w->mLastVisibleInsets->SetEx(w->mVisibleInsets);
+            w->mLastContentInsets->Set(w->mContentInsets);
+            w->mLastVisibleInsets->Set(w->mVisibleInsets);
             MakeWindowFreezingScreenIfNeededLocked(w);
             // If the orientation is changing, then we need to
             // hold off on unfreezing the display until this
@@ -11525,7 +11525,7 @@ ECode CWindowManagerService::WaitForWindowDrawn(
             args->mArg2 = callback;
 
             AutoPtr<IMessage> msg;
-            mH->ObtainMessageEx(H::WAITING_FOR_DRAWN_TIMEOUT, args, (IMessage**)&msg);
+            mH->ObtainMessage(H::WAITING_FOR_DRAWN_TIMEOUT, args, (IMessage**)&msg);
             Boolean result;
             mH->SendMessageDelayed(msg, 2000, &result);
 
@@ -12539,7 +12539,7 @@ ECode CWindowManagerService::OnDisplayAdded(
     /* [in] */ Int32 displayId)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx2(H::DO_DISPLAY_ADDED, displayId, 0, (IMessage**)&msg);
+    mH->ObtainMessage(H::DO_DISPLAY_ADDED, displayId, 0, (IMessage**)&msg);
     Boolean result;
     return mH->SendMessage(msg, &result);
 }
@@ -12563,7 +12563,7 @@ ECode CWindowManagerService::OnDisplayRemoved(
     /* [in] */ Int32 displayId)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx2(H::DO_DISPLAY_REMOVED, displayId, 0, (IMessage**)&msg);
+    mH->ObtainMessage(H::DO_DISPLAY_REMOVED, displayId, 0, (IMessage**)&msg);
     Boolean result;
     return mH->SendMessage(msg, &result);
 }
@@ -12572,7 +12572,7 @@ ECode CWindowManagerService::OnDisplayChanged(
     /* [in] */ Int32 displayId)
 {
     AutoPtr<IMessage> msg;
-    mH->ObtainMessageEx2(H::DO_DISPLAY_CHANGED, displayId, 0, (IMessage**)&msg);
+    mH->ObtainMessage(H::DO_DISPLAY_CHANGED, displayId, 0, (IMessage**)&msg);
     Boolean result;
     return mH->SendMessage(msg, &result);
 }

@@ -2,13 +2,13 @@
 #include "ext/frameworkext.h"
 #include "view/accessibility/AccessibilityNodeInfoCache.h"
 #include "view/accessibility/CAccessibilityNodeInfo.h"
-#include <elastos/Slogger.h>
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IInteger64;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IObjectInt32Map;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
@@ -114,7 +114,7 @@ AutoPtr<IAccessibilityNodeInfo> AccessibilityNodeInfoCache::Get(
         if (info != NULL) {
             // Return a copy since the client calls to AccessibilityNodeInfo#recycle()
             // will wipe the data of the cached info.
-            CAccessibilityNodeInfo::ObtainEx3(info, (IAccessibilityNodeInfo**)&info);
+            CAccessibilityNodeInfo::Obtain(info, (IAccessibilityNodeInfo**)&info);
         }
         // if (DEBUG) {
         //     Log.i(TAG, "get(" + accessibilityNodeId + ") = " + info);
@@ -180,7 +180,7 @@ void AccessibilityNodeInfoCache::Add(
         // Cache a copy since the client calls to AccessibilityNodeInfo#recycle()
         // will wipe the data of the cached info.
         AutoPtr<IAccessibilityNodeInfo> clone;
-        CAccessibilityNodeInfo::ObtainEx3(info, (IAccessibilityNodeInfo**)&clone);
+        CAccessibilityNodeInfo::Obtain(info, (IAccessibilityNodeInfo**)&clone);
         (*mCacheImpl)[sourceId] = clone;
     }
 }

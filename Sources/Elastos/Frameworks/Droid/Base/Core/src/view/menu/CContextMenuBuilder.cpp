@@ -26,7 +26,7 @@ PInterface CContextMenuBuilder::Probe(
 IMENU_METHODS_IMPL(CContextMenuBuilder, ContextMenuBuilderBase, ContextMenuBuilderBase);
 IMENUBUILDER_METHODS_IMPL(CContextMenuBuilder, ContextMenuBuilderBase, ContextMenuBuilderBase);
 
-ECode CContextMenuBuilder::SetHeaderIconEx(
+ECode CContextMenuBuilder::SetHeaderIcon(
     /* [in] */ IDrawable* icon)
 {
     return ContextMenuBuilderBase::SetHeaderIcon(icon);
@@ -38,7 +38,7 @@ ECode CContextMenuBuilder::SetHeaderIcon(
     return ContextMenuBuilderBase::SetHeaderIcon(iconRes);
 }
 
-ECode CContextMenuBuilder::SetHeaderTitleEx(
+ECode CContextMenuBuilder::SetHeaderTitle(
     /* [in] */ ICharSequence* title)
 {
     return ContextMenuBuilderBase::SetHeaderTitle(title);

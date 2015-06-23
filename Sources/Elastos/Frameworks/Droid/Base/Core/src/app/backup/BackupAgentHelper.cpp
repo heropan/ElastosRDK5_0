@@ -3,7 +3,7 @@
 #ifdef DROID_CORE
 #include "app/backup/CBackupHelperDispatcher.h"
 #endif
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::App::Backup::CBackupHelperDispatcher;
 using Elastos::Utility::Logging::Logger;
@@ -95,7 +95,7 @@ ECode BackupAgentHelper::GetDispatcher(
 {
     VALIDATE_NOT_NULL(dispatcher);
     *dispatcher = mDispatcher;
-    INTERFACE_ADDREF(*dispatcher);
+    REFCOUNT_ADD(*dispatcher);
     return NOERROR;
 }
 

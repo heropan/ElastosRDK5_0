@@ -17,9 +17,8 @@
 #include "os/CBundle.h"
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Map.h>
 
 using Elastos::Utility::Regex::IPattern;

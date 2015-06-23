@@ -1,7 +1,7 @@
 
 #include "hardware/usb/CUsbManager.h"
 #include "hardware/usb/CUsbDeviceConnection.h"
-#include <elastos/Character.h>
+#include <elastos/core/Character.h>
 #include "os/CSystemProperties.h"
 
 using Elastos::Droid::Os::ISystemProperties;
@@ -89,7 +89,7 @@ ECode CUsbManager::OpenDevice(
     }
 
     *connection = tempConn;
-    INTERFACE_ADDREF(*connection);
+    REFCOUNT_ADD(*connection);
     return NOERROR;
 }
 
@@ -111,7 +111,7 @@ ECode CUsbManager::GetAccessoryList(
     tempList->Set(0, accessory);
     *list = tempList;
 
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -180,7 +180,7 @@ ECode CUsbManager::GetDefaultFunction(
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
     String str;
-    sp->GetEx(String("persist.sys.usb.config"), String(""), &str);
+    sp->Get(String("persist.sys.usb.config"), String(""), &str);
 
     int commaIndex = str.IndexOf(',');
 
@@ -215,7 +215,7 @@ Boolean CUsbManager::PropertyContainsFunction(
     AutoPtr<ISystemProperties> sp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sp);
     String functions;
-    sp->GetEx(property, String(""), &functions);
+    sp->Get(property, String(""), &functions);
     Int32 index = functions.IndexOf(function);
 
     if (index < 0) {

@@ -2,9 +2,9 @@
 #define __CTABLETSTATUSBARVIEW_H_
 
 #include "_CTabletStatusBarView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 #include "systemui/statusbar/tablet/TabletStatusBarView.h"
 
 namespace Elastos {

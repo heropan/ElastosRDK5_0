@@ -1,6 +1,6 @@
 
 #include "media/CRouteCategory.h"
-#include <elastos/StringBuilder.h>;
+#include <elastos/core/StringBuilder.h>;
 
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::StringBuilder;
@@ -48,11 +48,11 @@ ECode CRouteCategory::GetName(
 
     AutoPtr<ICharSequence> temp = GetName(CMediaRouter::sStatic->mResources);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-ECode CRouteCategory::GetNameEx(
+ECode CRouteCategory::GetName(
     /* [in] */ IContext* context,
     /* [out] */ ICharSequence** result)
 {
@@ -62,7 +62,7 @@ ECode CRouteCategory::GetNameEx(
     context->GetResources((IResources**)&resources);
     AutoPtr<ICharSequence> temp = GetName(resources);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -95,7 +95,7 @@ ECode CRouteCategory::GetRoutes(
     }
 
     *result = list;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

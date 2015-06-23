@@ -12,7 +12,7 @@ ECode CDownloadManagerHelper::GetUNDERLYINGCOLUMNS(
     VALIDATE_NOT_NULL(columns);
 
     *columns = CDownloadManager::UNDERLYING_COLUMNS;
-    INTERFACE_ADDREF(*columns);
+    REFCOUNT_ADD(*columns);
     return NOERROR;
 }
 

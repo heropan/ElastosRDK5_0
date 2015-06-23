@@ -3,7 +3,6 @@
 #define __ABSSEEKBAR_H__
 
 #include "widget/ProgressBar.h"
-#include <elastos/Mutex.h>
 #include "R.h"
 
 namespace Elastos {
@@ -11,8 +10,7 @@ namespace Droid {
 namespace Widget {
 
 using Elastos::Droid::R;
-//using namespace Elastos::Core::Threading;
-using Elastos::Droid::View::IMotionEvent;
+//using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 

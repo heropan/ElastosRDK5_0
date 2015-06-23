@@ -20,10 +20,10 @@ public:
     CARAPI AddRow(
         /* [in] */ const ArrayOf<IInterface*>& columnValues);
 
-    CARAPI AddRowEx(
+    CARAPI AddRow(
         /* [in] */ IObjectContainer* columnValues);
 
-    CARAPI SetNotificationUriEx(
+    CARAPI SetNotificationUri(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* notifyUri,
         /* [in] */ Int32 userHandle);

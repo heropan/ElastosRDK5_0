@@ -4,20 +4,19 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/HashSet.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 #include <elastos/Pair.h>
 #include "os/Runnable.h"
 
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocale;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Pair;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IFileOutputStream;

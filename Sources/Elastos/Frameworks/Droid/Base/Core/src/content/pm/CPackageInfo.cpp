@@ -1,7 +1,7 @@
 
 #include "ext/frameworkext.h"
 #include "content/pm/CPackageInfo.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -175,7 +175,7 @@ ECode CPackageInfo::GetApplicationInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mApplicationInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -221,7 +221,7 @@ ECode CPackageInfo::GetGids(
 {
     VALIDATE_NOT_NULL(gids);
     *gids = mGids;
-    INTERFACE_ADDREF(*gids);
+    REFCOUNT_ADD(*gids);
     return NOERROR;
 }
 
@@ -237,7 +237,7 @@ ECode CPackageInfo::GetActivities(
 {
     VALIDATE_NOT_NULL(activities);
     *activities = mActivities;
-    INTERFACE_ADDREF(*activities);
+    REFCOUNT_ADD(*activities);
     return NOERROR;
 }
 
@@ -253,7 +253,7 @@ ECode CPackageInfo::GetReceivers(
 {
     VALIDATE_NOT_NULL(receivers);
     *receivers = mReceivers;
-    INTERFACE_ADDREF(*receivers);
+    REFCOUNT_ADD(*receivers);
     return NOERROR;
 }
 
@@ -269,7 +269,7 @@ ECode CPackageInfo::GetServices(
 {
     VALIDATE_NOT_NULL(services);
     *services = mServices;
-    INTERFACE_ADDREF(*services);
+    REFCOUNT_ADD(*services);
     return NOERROR;
 }
 
@@ -285,7 +285,7 @@ ECode CPackageInfo::GetProviders(
 {
     VALIDATE_NOT_NULL(providers);
     *providers = mProviders;
-    INTERFACE_ADDREF(*providers);
+    REFCOUNT_ADD(*providers);
     return NOERROR;
 }
 
@@ -301,7 +301,7 @@ ECode CPackageInfo::GetInstrumentation(
 {
     VALIDATE_NOT_NULL(instrumentation);
     *instrumentation = mInstrumentation;
-    INTERFACE_ADDREF(*instrumentation);
+    REFCOUNT_ADD(*instrumentation);
     return NOERROR;
 }
 
@@ -317,7 +317,7 @@ ECode CPackageInfo::GetPermissions(
 {
     VALIDATE_NOT_NULL(permissions);
     *permissions = mPermissions;
-    INTERFACE_ADDREF(*permissions);
+    REFCOUNT_ADD(*permissions);
     return NOERROR;
 }
 
@@ -333,7 +333,7 @@ ECode CPackageInfo::GetRequestedPermissions(
 {
     VALIDATE_NOT_NULL(requestedPermissions);
     *requestedPermissions = mRequestedPermissions;
-    INTERFACE_ADDREF(*requestedPermissions);
+    REFCOUNT_ADD(*requestedPermissions);
     return NOERROR;
 }
 
@@ -349,7 +349,7 @@ ECode CPackageInfo::GetRequestedPermissionsFlags(
 {
     VALIDATE_NOT_NULL(requestedPermissionsFlags);
     *requestedPermissionsFlags = mRequestedPermissionsFlags;
-    INTERFACE_ADDREF(*requestedPermissionsFlags);
+    REFCOUNT_ADD(*requestedPermissionsFlags);
     return NOERROR;
 }
 
@@ -365,7 +365,7 @@ ECode CPackageInfo::GetSignatures(
 {
     VALIDATE_NOT_NULL(signatures);
     *signatures = mSignatures;
-    INTERFACE_ADDREF(*signatures);
+    REFCOUNT_ADD(*signatures);
     return NOERROR;
 }
 
@@ -381,7 +381,7 @@ ECode CPackageInfo::GetConfigPreferences(
 {
     VALIDATE_NOT_NULL(configPreferences);
     *configPreferences = mConfigPreferences;
-    INTERFACE_ADDREF(*configPreferences);
+    REFCOUNT_ADD(*configPreferences);
     return NOERROR;
 }
 
@@ -397,7 +397,7 @@ ECode CPackageInfo::GetReqFeatures(
 {
     VALIDATE_NOT_NULL(reqFeatures);
     *reqFeatures = mReqFeatures;
-    INTERFACE_ADDREF(*reqFeatures);
+    REFCOUNT_ADD(*reqFeatures);
     return NOERROR;
 }
 

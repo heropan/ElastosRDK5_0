@@ -2,14 +2,14 @@
 #include "view/CKeyEvent.h"
 #include "view/CInputDevice.h"
 #include <androidfw/Input.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
 //using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 
@@ -628,7 +628,7 @@ ECode CKeyEvent::Copy(
     VALIDATE_NOT_NULL(event);
     AutoPtr<IInputEvent> temp = (IInputEvent*)Obtain(this);
     *event = temp;
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
@@ -1220,10 +1220,10 @@ ECode CKeyEvent::GetDisplayLabel(
 ECode CKeyEvent::GetUnicodeChar(
     /* [out] */ Int32* unicodeChar)
 {
-    return GetUnicodeCharEx(mMetaState, unicodeChar);
+    return GetUnicodeChar(mMetaState, unicodeChar);
 }
 
-ECode CKeyEvent::GetUnicodeCharEx(
+ECode CKeyEvent::GetUnicodeChar(
     /* [in] */ Int32 metaState,
     /* [out] */ Int32* unicodeChar)
 {
@@ -1249,10 +1249,10 @@ ECode CKeyEvent::GetMatch(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [out] */ Char32* match)
 {
-    return GetMatchEx(chars, 0, match);
+    return GetMatch(chars, 0, match);
 }
 
-ECode CKeyEvent::GetMatchEx(
+ECode CKeyEvent::GetMatch(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 modifiers,
     /* [out] */ Char32* match)
@@ -1261,7 +1261,7 @@ ECode CKeyEvent::GetMatchEx(
     AutoPtr<IKeyCharacterMap> kcm;
     FAIL_RETURN(GetKeyCharacterMap((IKeyCharacterMap**)&kcm));
 
-    return kcm->GetMatchEx(mKeyCode, chars, modifiers, match);
+    return kcm->GetMatch(mKeyCode, chars, modifiers, match);
 }
 
 ECode CKeyEvent::GetNumber(
@@ -1288,10 +1288,10 @@ ECode CKeyEvent::Dispatch(
     /* [in] */ IKeyEventCallback* receiver,
     /* [out] */ Boolean* res)
 {
-    return DispatchEx(receiver, NULL, NULL, res);
+    return Dispatch(receiver, NULL, NULL, res);
 }
 
-ECode CKeyEvent::DispatchEx(
+ECode CKeyEvent::Dispatch(
     /* [in] */ IKeyEventCallback* receiver,
     /* [in] */ IDispatcherState* state,
     /* [in] */ IInterface* target,

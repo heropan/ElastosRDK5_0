@@ -6,8 +6,8 @@
 #include <media/ICrypto.h>
 #include <gui/ISurface.h>
 #include <gui/ISurfaceTexture.h>
-#include <elastos/Slogger.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
@@ -37,7 +37,7 @@ ECode CMediaCodec::CreateDecoderByType(
     AutoPtr<CMediaCodec> obj;
     CMediaCodec::NewByFriend(type, TRUE /* nameIsType */, FALSE /* encoder */, (CMediaCodec**)&obj);
     *result = (IMediaCodec*)obj.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CMediaCodec::CreateEncoderByType(
     AutoPtr<CMediaCodec> obj;
     CMediaCodec::NewByFriend(type, TRUE /* nameIsType */, TRUE /* encoder */, (CMediaCodec**)&obj);
     *result = (IMediaCodec*)obj.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -61,7 +61,7 @@ ECode CMediaCodec::CreateByCodecName(
     AutoPtr<CMediaCodec> obj;
     CMediaCodec::NewByFriend(name, FALSE /* nameIsType */, FALSE /* encoder */, (CMediaCodec**)&obj);
     *result = (IMediaCodec*)obj.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -419,7 +419,7 @@ ECode CMediaCodec::GetInputBuffers(
     AutoPtr<ArrayOf<IByteBuffer*> > temp;
     GetBuffers(TRUE /* input */, (ArrayOf<IByteBuffer*>**)&temp);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -436,7 +436,7 @@ ECode CMediaCodec::GetOutputBuffers(
     AutoPtr<ArrayOf<IByteBuffer*> > temp;
     GetBuffers(FALSE /* input */, (ArrayOf<IByteBuffer*>**)&temp);
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -510,7 +510,7 @@ ECode CMediaCodec::GetBuffers(
     }
 
     *result = bufArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

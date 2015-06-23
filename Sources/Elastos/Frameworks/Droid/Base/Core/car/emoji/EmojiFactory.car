@@ -78,7 +78,7 @@ module
             /* [out] */ Int32* RetValue);
 
 
-        GetAndroidPuaFromVendorSpecificPuaEx(
+        GetAndroidPuaFromVendorSpecificPua(
             /* [in] */ const String& vspString,
             /* [out] */ String* RetValue);
 
@@ -92,7 +92,7 @@ module
             /* [in] */ Int32 pua
             /* [out] */ Int32* RetValue);
 
-        GetVendorSpecificPuaFromAndroidPuaEx(
+        GetVendorSpecificPuaFromAndroidPua(
             /* [in] */ const String& puaString,
             /* [out] */ String* RetValue);
 

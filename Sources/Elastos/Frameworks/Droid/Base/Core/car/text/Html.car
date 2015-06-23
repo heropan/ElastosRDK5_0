@@ -78,7 +78,7 @@ module
          * <p>This uses TagSoup to handle real HTML, including all of the brokenness found in the wild.
          */
         // static
-        FromHtmlEx(
+        FromHtml(
             [in] String source,
             [in] IHtmlImageGetter* imageGetter,
             [in] IHtmlTagHandler* tagHandler,

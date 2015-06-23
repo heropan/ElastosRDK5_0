@@ -88,7 +88,7 @@ ECode CTextPaint::BreakText(
  * @return The number of chars that were measured. Will always be <=
  *         abs(end - start).
  */
-ECode CTextPaint::BreakTextEx(
+ECode CTextPaint::BreakText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -97,7 +97,7 @@ ECode CTextPaint::BreakTextEx(
     /* [in] */ ArrayOf<Float>* measuredWidth,
     /* [out] */ Int32* number)
 {
-    return TextPaint::BreakTextEx(text, start, end, measureForwards,
+    return TextPaint::BreakText(text, start, end, measureForwards,
         maxWidth, measuredWidth, number);
 }
 
@@ -117,14 +117,14 @@ ECode CTextPaint::BreakTextEx(
  * @return The number of chars that were measured. Will always be <=
  *         abs(count).
  */
-ECode CTextPaint::BreakTextEx2(
+ECode CTextPaint::BreakText(
     /* [in] */ const String& text,
     /* [in] */ Boolean measureForwards,
     /* [in] */ Float maxWidth,
     /* [in] */ ArrayOf<Float>* measuredWidth,
     /* [out] */ Int32* number)
 {
-    return TextPaint::BreakTextEx2(text, measureForwards, maxWidth,
+    return TextPaint::BreakText(text, measureForwards, maxWidth,
         measuredWidth, number);
 }
 
@@ -240,10 +240,10 @@ ECode CTextPaint::GetFontMetrics(
  * Allocates a new FontMetrics object, and then calls getFontMetrics(fm)
  * with it, returning the object.
  */
-ECode CTextPaint::GetFontMetricsEx(
+ECode CTextPaint::GetFontMetrics(
     /* [out] */ IPaintFontMetrics** metrics)
 {
-    return GetFontMetricsEx(metrics);
+    return GetFontMetrics(metrics);
 }
 
 /**
@@ -263,10 +263,10 @@ ECode CTextPaint::GetFontMetricsInt(
     return TextPaint::GetFontMetricsInt(fmi, spacing);
 }
 
-ECode CTextPaint::GetFontMetricsIntEx(
+ECode CTextPaint::GetFontMetricsInt(
     /* [out] */ IPaintFontMetricsInt** fmi)
 {
-    return TextPaint::GetFontMetricsIntEx(fmi);
+    return TextPaint::GetFontMetricsInt(fmi);
 }
 
 /**
@@ -465,7 +465,7 @@ ECode CTextPaint::GetTextPath(
  * @param path     The path to receive the data describing the text. Must
  *                 be allocated by the caller.
  */
-ECode CTextPaint::GetTextPathEx(
+ECode CTextPaint::GetTextPath(
     /* [in] */ const String& text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
@@ -473,7 +473,7 @@ ECode CTextPaint::GetTextPathEx(
     /* [in] */ Float y,
     /* [in] */ IPath* path)
 {
-    return TextPaint::GetTextPathEx(text, index, count, x, y, path);
+    return TextPaint::GetTextPath(text, index, count, x, y, path);
 }
 
 /**
@@ -1285,14 +1285,14 @@ ECode CTextPaint::GetTextWidths(
  *                 Must be at least a large as (end - start).
  * @return         the actual number of widths returned.
  */
-ECode CTextPaint::GetTextWidthsEx(
+ECode CTextPaint::GetTextWidths(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ ArrayOf<Float>* widths,
     /* [out] */ Int32* number)
 {
-    return TextPaint::GetTextWidthsEx(text, start, end, widths, number);
+    return TextPaint::GetTextWidths(text, start, end, widths, number);
 }
 
 /**
@@ -1305,14 +1305,14 @@ ECode CTextPaint::GetTextWidthsEx(
  *               Must be at least a large as the text.
  * @return       the number of unichars in the specified text.
  */
-ECode CTextPaint::GetTextWidthsEx2(
+ECode CTextPaint::GetTextWidths(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ArrayOf<Float>* widths,
     /* [out] */ Int32* number)
 {
-    return TextPaint::GetTextWidthsEx2(text, start, end, widths, number);
+    return TextPaint::GetTextWidths(text, start, end, widths, number);
 }
 
 /**
@@ -1323,12 +1323,12 @@ ECode CTextPaint::GetTextWidthsEx2(
  *               Must be at least a large as the text.
  * @return       the number of unichars in the specified text.
  */
-ECode CTextPaint::GetTextWidthsEx3(
+ECode CTextPaint::GetTextWidths(
     /* [in] */ const String& text,
     /* [in] */ ArrayOf<Float>* widths,
     /* [out] */ Int32* number)
 {
-    return TextPaint::GetTextWidthsEx3(text, widths, number);
+    return TextPaint::GetTextWidths(text, widths, number);
 }
 
 /**
@@ -1341,13 +1341,13 @@ ECode CTextPaint::GetTextWidthsEx3(
  * @param bounds Returns the unioned bounds of all the text. Must be
  *               allocated by the caller.
  */
-ECode CTextPaint::GetTextBoundsEx(
+ECode CTextPaint::GetTextBounds(
     /* [in] */ const ArrayOf<Char32>& text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ IRect* bounds)
 {
-    return TextPaint::GetTextBoundsEx(text, index, count, bounds);
+    return TextPaint::GetTextBounds(text, index, count, bounds);
 }
 
 /* Return the glyph Ids for the characters in the string.
@@ -1412,7 +1412,7 @@ ECode CTextPaint::GetTextRunAdvances(
  * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int, int)
  * @hide
  */
-ECode CTextPaint::GetTextRunAdvancesEx(
+ECode CTextPaint::GetTextRunAdvances(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
@@ -1424,7 +1424,7 @@ ECode CTextPaint::GetTextRunAdvancesEx(
     /* [in] */ Int32 reserved,
     /* [out] */ Float* advance)
 {
-    return TextPaint::GetTextRunAdvancesEx(chars, index, count, contextIndex,
+    return TextPaint::GetTextRunAdvances(chars, index, count, contextIndex,
         contextCount, flags, advances, advancesIndex, reserved, advance);
 }
 
@@ -1435,7 +1435,7 @@ ECode CTextPaint::GetTextRunAdvancesEx(
  * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
  * @hide
  */
-ECode CTextPaint::GetTextRunAdvancesEx2(
+ECode CTextPaint::GetTextRunAdvances(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1446,7 +1446,7 @@ ECode CTextPaint::GetTextRunAdvancesEx2(
     /* [in] */ Int32 advancesIndex,
     /* [out] */ Float* advance)
 {
-    return TextPaint::GetTextRunAdvancesEx2(text, start, end, contextStart,
+    return TextPaint::GetTextRunAdvances(text, start, end, contextStart,
         contextEnd, flags, advances, advancesIndex, advance);
 }
 
@@ -1457,7 +1457,7 @@ ECode CTextPaint::GetTextRunAdvancesEx2(
  * @see #getTextRunAdvances(String, int, int, int, int, int, float[], int)
  * @hide
  */
-ECode CTextPaint::GetTextRunAdvancesEx3(
+ECode CTextPaint::GetTextRunAdvances(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1469,7 +1469,7 @@ ECode CTextPaint::GetTextRunAdvancesEx3(
     /* [in] */ Int32 reserved,
     /* [out] */ Float* advance)
 {
-    return TextPaint::GetTextRunAdvancesEx3(text, start, end, contextStart, contextEnd,
+    return TextPaint::GetTextRunAdvances(text, start, end, contextStart, contextEnd,
         flags, advances, advancesIndex, reserved, advance);
 }
 
@@ -1515,7 +1515,7 @@ ECode CTextPaint::GetTextRunAdvancesEx3(
  *
  * @hide
  */
-ECode CTextPaint::GetTextRunAdvancesEx4(
+ECode CTextPaint::GetTextRunAdvances(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1526,7 +1526,7 @@ ECode CTextPaint::GetTextRunAdvancesEx4(
     /* [in] */ Int32 advancesIndex,
     /* [out] */ Float* advance)
 {
-    return TextPaint::GetTextRunAdvancesEx4(text, start, end, contextStart,
+    return TextPaint::GetTextRunAdvances(text, start, end, contextStart,
         contextEnd, flags, advances, advancesIndex, advance);
 }
 
@@ -1573,7 +1573,7 @@ ECode CTextPaint::GetTextRunAdvancesEx4(
  *
  * @hide
  */
-ECode CTextPaint::GetTextRunAdvancesEx5(
+ECode CTextPaint::GetTextRunAdvances(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -1585,7 +1585,7 @@ ECode CTextPaint::GetTextRunAdvancesEx5(
     /* [in] */ Int32 reserved,
     /* [out] */ Float* advance)
 {
-    return TextPaint::GetTextRunAdvancesEx5(text, start, end, contextStart,
+    return TextPaint::GetTextRunAdvances(text, start, end, contextStart,
         contextEnd, flags, advances, advancesIndex, reserved, advance);
 }
 
@@ -1654,7 +1654,7 @@ ECode CTextPaint::GetTextRunCursor(
  * @return the offset of the next position, or -1
  * @hide
  */
-ECode CTextPaint::GetTextRunCursorEx(
+ECode CTextPaint::GetTextRunCursor(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -1663,7 +1663,7 @@ ECode CTextPaint::GetTextRunCursorEx(
     /* [in] */ Int32 cursorOpt,
     /* [out] */ Int32* position)
 {
-    return TextPaint::GetTextRunCursorEx(text, contextStart, contextEnd,
+    return TextPaint::GetTextRunCursor(text, contextStart, contextEnd,
         flags, offset, cursorOpt, position);
 }
 
@@ -1693,7 +1693,7 @@ ECode CTextPaint::GetTextRunCursorEx(
  * @return the offset of the next position, or -1
  * @hide
  */
-ECode CTextPaint::GetTextRunCursorEx2(
+ECode CTextPaint::GetTextRunCursor(
     /* [in] */ const String& text,
     /* [in] */ Int32 contextStart,
     /* [in] */ Int32 contextEnd,
@@ -1702,7 +1702,7 @@ ECode CTextPaint::GetTextRunCursorEx2(
     /* [in] */ Int32 cursorOpt,
     /* [out] */ Int32* position)
 {
-    return TextPaint::GetTextRunCursorEx2(text, contextStart, contextEnd,
+    return TextPaint::GetTextRunCursor(text, contextStart, contextEnd,
         flags, offset, cursorOpt, position);
 }
 
@@ -1731,13 +1731,13 @@ ECode CTextPaint::MeasureText(
  * @param end   1 beyond the index of the last character to measure
  * @return      The width of the text
  */
-ECode CTextPaint::MeasureTextEx(
+ECode CTextPaint::MeasureText(
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ Float* width)
 {
-    return TextPaint::MeasureTextEx(text, start, end, width);
+    return TextPaint::MeasureText(text, start, end, width);
 }
 
 /**
@@ -1746,11 +1746,11 @@ ECode CTextPaint::MeasureTextEx(
  * @param text  The text to measure. Cannot be null.
  * @return      The width of the text
  */
-ECode CTextPaint::MeasureTextEx2(
+ECode CTextPaint::MeasureText(
     /* [in] */ const String& text,
     /* [out] */ Float* width)
 {
-    return TextPaint::MeasureTextEx2(text, width);
+    return TextPaint::MeasureText(text, width);
 }
 
 /**
@@ -1761,13 +1761,13 @@ ECode CTextPaint::MeasureTextEx2(
  * @param end   1 beyond the index of the last character to measure
  * @return      The width of the text
  */
-ECode CTextPaint::MeasureTextEx3(
+ECode CTextPaint::MeasureText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ Float* width)
 {
-    return TextPaint::MeasureTextEx3(text, start, end, width);
+    return TextPaint::MeasureText(text, start, end, width);
 }
 
 } // namespace Text

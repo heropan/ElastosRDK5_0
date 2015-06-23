@@ -3,8 +3,8 @@
 
 #include "_CAdapterViewAnimator.h"
 #include "widget/AdapterViewAnimator.h"
-#include "view/ViewMacro.h"
-#include "widget/AdapterViewMacro.h"
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -63,11 +63,11 @@ public:
     CARAPI SetOutAnimation(
         /* [in] */ IObjectAnimator* outAnimation);
 
-    CARAPI SetInAnimationEx(
+    CARAPI SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
-    CARAPI SetOutAnimationEx(
+    CARAPI SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 

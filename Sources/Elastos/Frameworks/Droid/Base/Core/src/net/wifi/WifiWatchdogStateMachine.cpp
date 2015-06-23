@@ -7,9 +7,9 @@
 #include "net/wifi/CWifiManagerHelper.h"
 #include "net/wifi/CSupplicantState.h"
 #endif
-#include <elastos/Math.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
@@ -1018,7 +1018,7 @@ void WifiWatchdogStateMachine::RegisterForWatchdogToggle()
     AutoPtr<ISettingsGlobal> global;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     AutoPtr<IUri> uri;
-    global->GetUriForEx(ISettingsGlobal::WIFI_WATCHDOG_ON, (IUri**)&uri);
+    global->GetUriFor(ISettingsGlobal::WIFI_WATCHDOG_ON, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, contentObserver);
 }
 
@@ -1031,7 +1031,7 @@ void WifiWatchdogStateMachine::RegisterForSettingsChanges()
     AutoPtr<ISettingsGlobal> global;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&global);
     AutoPtr<IUri> uri;
-    global->GetUriForEx(ISettingsGlobal::WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED, (IUri**)&uri);
+    global->GetUriFor(ISettingsGlobal::WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED, (IUri**)&uri);
     resolver->RegisterContentObserver(uri,
             FALSE, contentObserver);
 }

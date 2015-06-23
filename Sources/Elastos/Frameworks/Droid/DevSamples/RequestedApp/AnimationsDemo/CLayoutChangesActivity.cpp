@@ -2,7 +2,7 @@
 #include "CLayoutChangesActivity.h"
 #include <R.h>
 #include "R.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
@@ -127,7 +127,7 @@ ECode CLayoutChangesActivity::OnOptionsItemSelected(
 //                NavUtils.navigateUpTo(this, new Intent(this, MainActivity.class));
             AutoPtr<IIntent> intent;
             CIntent::New((IIntent**)&intent);
-            intent->SetClassNameEx(String("AnimationsDemo"), String("AnimationsDemo.CMainActivity"));
+            intent->SetClassName(String("AnimationsDemo"), String("AnimationsDemo.CMainActivity"));
             StartActivity(intent);
             Finish();
             *res = TRUE;
@@ -152,7 +152,7 @@ void CLayoutChangesActivity::AddItem()
     GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
 
     AutoPtr<IViewGroup> newView;
-    inflater->InflateEx2(R::layout::list_item_example, mContainerView, FALSE, (IView**)&newView);
+    inflater->Inflate(R::layout::list_item_example, mContainerView, FALSE, (IView**)&newView);
 
     // Set the text in the new row to a random country.
     AutoPtr<ITextView> txtView;
@@ -171,7 +171,7 @@ void CLayoutChangesActivity::AddItem()
 
     // Because mContainerView has android:animateLayoutChanges set to true,
     // adding this view is automatically animated.
-    mContainerView->AddViewEx(newView, 0);
+    mContainerView->AddView(newView, 0);
 }
 
 

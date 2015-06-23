@@ -3,9 +3,9 @@
 
 #include "ext/frameworkext.h"
 #include "widget/ListView.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Database::IDataSetObserver;

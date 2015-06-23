@@ -4,9 +4,9 @@
 
 #include "ext/frameworkext.h"
 #include "R.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::ISet;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IComparable;
@@ -127,7 +127,7 @@ public:
     virtual CARAPI SetTitle(
         /* [in] */ ICharSequence* title);
 
-    virtual CARAPI SetTitleEx(
+    virtual CARAPI SetTitle(
         /* [in] */ Int32 titleResId);
 
     virtual CARAPI GetTitleRes(
@@ -139,7 +139,7 @@ public:
     virtual CARAPI SetIcon(
         /* [in] */ IDrawable* icon);
 
-    virtual CARAPI SetIconEx(
+    virtual CARAPI SetIcon(
         /* [in] */ Int32 iconResId);
 
     virtual CARAPI GetIcon(
@@ -151,7 +151,7 @@ public:
     virtual CARAPI SetSummary(
         /* [in] */ ICharSequence* summary);
 
-    virtual CARAPI SetSummaryEx(
+    virtual CARAPI SetSummary(
         /* [in] */ Int32 summaryResId);
 
     virtual CARAPI SetEnabled(

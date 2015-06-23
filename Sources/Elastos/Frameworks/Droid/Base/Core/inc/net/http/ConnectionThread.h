@@ -3,12 +3,10 @@
 #define __CONNECTIONTHREAD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/ThreadBase.h>
 #include "RequestFeeder.h"
 #include "RequestQueue.h"
 
 using namespace Elastos::Core;
-using Elastos::Core::Threading::ThreadBase;
 
 using Elastos::Droid::Content::IContext;
 

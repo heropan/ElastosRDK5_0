@@ -6,16 +6,16 @@
 #include "view/ViewGroup.h"
 #include "widget/CRelativeLayoutLayoutParams.h"
 #include <elastos/Set.h>
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/StringBuilder.h>
 #include "util/Pools.h"
 
 using Elastos::String;
 using Elastos::Core::IComparator;
 using Elastos::Utility::Set;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Utility::IPool;
 using Elastos::Droid::Utility::IPoolable;

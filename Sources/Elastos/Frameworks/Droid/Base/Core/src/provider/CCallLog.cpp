@@ -1,5 +1,5 @@
 
-#include "cmdef.h"
+#include <elastos/coredef.h>
 #include "provider/CCallLog.h"
 #include "net/CUriHelper.h"
 
@@ -27,7 +27,7 @@ ECode CCallLog::GetCONTENTURI(
     VALIDATE_NOT_NULL(uri);
 
     *uri = CONTENT_URI;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 

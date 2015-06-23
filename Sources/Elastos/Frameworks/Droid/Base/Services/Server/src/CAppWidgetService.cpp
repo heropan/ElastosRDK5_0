@@ -5,12 +5,12 @@
 #include "os/Binder.h"
 #include "os/Process.h"
 #include "Manifest.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::AppWidget::CAppWidgetProviderInfo;
 using Elastos::Droid::Content::CIntentFilter;

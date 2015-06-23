@@ -1,16 +1,16 @@
 
 #include "CWifiP2pDnsSdServiceInfo.h"
-#include <elastos/StringBuffer.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
 #include "WifiP2pServiceInfo.h"
 #include "CWifiP2pServiceInfo.h"
 #include "net/nsd/CDnsSdTxtRecord.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Net::Nsd::CDnsSdTxtRecord;
 
@@ -86,7 +86,7 @@ ECode CWifiP2pDnsSdServiceInfo::NewInstance(
     AutoPtr<CWifiP2pDnsSdServiceInfo> info;
     CWifiP2pDnsSdServiceInfo::NewByFriend(queries, (CWifiP2pDnsSdServiceInfo**)&info);
     *instance = (IWifiP2pDnsSdServiceInfo*)info.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

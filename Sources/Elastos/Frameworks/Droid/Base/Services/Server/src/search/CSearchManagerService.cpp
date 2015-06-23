@@ -273,7 +273,7 @@ ECode CSearchManagerService::Init(
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     AutoPtr<IUserHandle> ALL;
     helper->GetALL((IUserHandle**)&ALL);
-    monitor->RegisterEx(context, NULL, ALL, TRUE);
+    monitor->Register(context, NULL, ALL, TRUE);
     return NOERROR;
 }
 
@@ -377,7 +377,7 @@ CSearchManagerService::GlobalSearchProviderObserver::GlobalSearchProviderObserve
     AutoPtr<ISettingsSecure> secure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&secure);
     AutoPtr<IUri> uri;
-    secure->GetUriForEx(ISettingsSecure::SEARCH_GLOBAL_SEARCH_ACTIVITY, (IUri**)&uri);
+    secure->GetUriFor(ISettingsSecure::SEARCH_GLOBAL_SEARCH_ACTIVITY, (IUri**)&uri);
     mResolver->RegisterContentObserver(uri, FALSE, this);
 }
 

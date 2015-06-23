@@ -1,6 +1,6 @@
 
 #include "provider/CMediaStoreAudio.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "database/DatabaseUtils.h"
 
 using Elastos::Core::StringBuilder;

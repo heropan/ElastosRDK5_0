@@ -1,12 +1,12 @@
 
 
 #include "net/Uri.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/Set.h>
-#include <elastos/List.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <Elastos.Core.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
 #ifdef DROID_CORE
 #include "os/CEnvironment.h"
 #include "net/CStringUri.h"
@@ -20,7 +20,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Set;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::IO::CFile;
@@ -231,7 +231,7 @@ ECode Uri::Part::ReadFrom(
     }
 
     *part = result;
-    INTERFACE_ADDREF(*part);
+    REFCOUNT_ADD(*part);
     return NOERROR;
 }
 
@@ -425,7 +425,7 @@ ECode Uri::PathPart::ReadFrom(
     }
 
     *result = part;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -663,7 +663,7 @@ ECode Uri::Parse(
 #endif
 
     *uri = (IUri*)curi.Get();
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -702,7 +702,7 @@ ECode Uri::FromFile(
 #endif
 
     *uri = (IUri*)curi.Get();
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -739,7 +739,7 @@ ECode Uri::FromParts(
 #endif
 
     *uri = (IUri*)curi.Get();
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -795,7 +795,7 @@ ECode Uri::GetQueryParameterNames(
     }
 
     *names = array;
-    INTERFACE_ADDREF(*names);
+    REFCOUNT_ADD(*names);
     return NOERROR;
 }
 
@@ -834,7 +834,7 @@ ECode Uri::GetQueryParameters(
     charsetHelper->ForName(DEFAULT_ENCODING, (ICharset**)&charset);
 
     String encodedKey;
-    urlEncoderhelper->EncodeEx(key, DEFAULT_ENCODING, &encodedKey);
+    urlEncoderhelper->Encode(key, DEFAULT_ENCODING, &encodedKey);
     Int32 encodedKeyLength = encodedKey.GetLength();
 
     List<String> values;
@@ -879,7 +879,7 @@ ECode Uri::GetQueryParameters(
     }
 
     *params = array;
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -936,7 +936,7 @@ ECode Uri::GetQueryParameter(
             }
             else {
                 encodedValue = query.Substring(separator + 1, end);
-                return urlCodechelper->DecodeEx(encodedValue, TRUE, charset, FALSE, result);
+                return urlCodechelper->Decode(encodedValue, TRUE, charset, FALSE, result);
             }
         }
 
@@ -981,7 +981,7 @@ ECode Uri::NormalizeScheme(
     GetScheme(&scheme);
     if (scheme.IsNull()) {
         *result = THIS_PROBE(IUri);
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -989,7 +989,7 @@ ECode Uri::NormalizeScheme(
 
     if (scheme.Equals(lowerScheme)) {
         *result = THIS_PROBE(IUri);
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -1170,7 +1170,7 @@ ECode Uri::Decode(
 
     AutoPtr<IUriCodecHelper> uriCodecHelper;
     CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&uriCodecHelper);
-    return uriCodecHelper->DecodeEx(s, FALSE, charset, FALSE, result);
+    return uriCodecHelper->Decode(s, FALSE, charset, FALSE, result);
 }
 
 ECode Uri::WithAppendedPath(
@@ -1236,7 +1236,7 @@ ECode Uri::GetCanonicalUri(
 
 _Exit_:
     *uri = THIS_PROBE(IUri);
-    INTERFACE_ADDREF(*uri)
+    REFCOUNT_ADD(*uri)
     return NOERROR;
 }
 
@@ -1451,7 +1451,7 @@ ECode HierarchicalUri::ReadFrom(
 #endif
 
     *result = (IUri*)curi.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1642,7 +1642,7 @@ ECode HierarchicalUri::GetPathSegments(
     AutoPtr<Uri::PathSegments> pathSegments = mPath->GetPathSegments();
     if (pathSegments != NULL) {
         *segments = pathSegments->mSegments;
-        INTERFACE_ADDREF(*segments);
+        REFCOUNT_ADD(*segments);
     }
     return NOERROR;
 }
@@ -1691,12 +1691,12 @@ ECode HierarchicalUri::BuildUpon(
 #endif
 
     FAIL_RETURN(builder->Scheme(mScheme));
-    FAIL_RETURN(builder->AuthorityEx((Handle32)mAuthority.Get()));
-    FAIL_RETURN(builder->PathEx((Handle32)mPath.Get()));
-    FAIL_RETURN(builder->QueryEx((Handle32)mQuery.Get()));
-    FAIL_RETURN(builder->FragmentEx((Handle32)mFragment.Get()));
+    FAIL_RETURN(builder->Authority((Handle32)mAuthority.Get()));
+    FAIL_RETURN(builder->Path((Handle32)mPath.Get()));
+    FAIL_RETURN(builder->Query((Handle32)mQuery.Get()));
+    FAIL_RETURN(builder->Fragment((Handle32)mFragment.Get()));
     *result = (IUriBuilder*)builder.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1741,7 +1741,7 @@ ECode StringUri::ReadFrom(
 #endif
 
     *uri = (IUri*)curi.Get();
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -1950,7 +1950,7 @@ ECode StringUri::GetPathSegments(
             array->Set(i, str);
         }
         *pathSegments = array;
-        INTERFACE_ADDREF(*pathSegments);
+        REFCOUNT_ADD(*pathSegments);
     }
 
     return NOERROR;
@@ -2187,23 +2187,23 @@ ECode StringUri::BuildUpon(
 
     if (isHierarchical) {
         AutoPtr<Uri::Part> p = GetAuthorityPart();
-        builder->AuthorityEx((Handle32)p.Get());
+        builder->Authority((Handle32)p.Get());
         AutoPtr<Uri::PathPart> pp = GetPathPart();
-        builder->PathEx((Handle32)pp.Get());
+        builder->Path((Handle32)pp.Get());
         p = GetQueryPart();
-        builder->QueryEx((Handle32)p.Get());
+        builder->Query((Handle32)p.Get());
         p = GetFragmentPart();
-        builder->FragmentEx((Handle32)p.Get());
+        builder->Fragment((Handle32)p.Get());
     }
     else {
         AutoPtr<Uri::Part> p = GetSsp();
-        builder->OpaquePartEx((Handle32)p.Get());
+        builder->OpaquePart((Handle32)p.Get());
         p = GetFragmentPart();
-        builder->FragmentEx((Handle32)p.Get());
+        builder->Fragment((Handle32)p.Get());
     }
 
     *result = (IUriBuilder*)builder.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -2257,7 +2257,7 @@ ECode OpaqueUri::ReadFrom(
 #endif
 
     *result = (IUri*)curi.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -2487,10 +2487,10 @@ ECode OpaqueUri::BuildUpon(
 #endif
 
     FAIL_RETURN((*result)->Scheme(mScheme));
-    FAIL_RETURN((*result)->OpaquePartEx((Handle32)&mSsp));
-    FAIL_RETURN((*result)->FragmentEx((Handle32)&mFragment));
+    FAIL_RETURN((*result)->OpaquePart((Handle32)&mSsp));
+    FAIL_RETURN((*result)->Fragment((Handle32)&mFragment));
     *result = (IUriBuilder*)builder.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

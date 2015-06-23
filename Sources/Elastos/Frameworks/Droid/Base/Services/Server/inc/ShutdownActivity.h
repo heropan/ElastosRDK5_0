@@ -3,11 +3,9 @@
 #define __SHUTDOWNACTIVITY_H__
 
 #include "app/Activity.h"
-#include <elastos/Thread.h>
-#include <elastos/ThreadBase.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Core::Threading::Thread;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Core::Thread;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::App::Activity;
 

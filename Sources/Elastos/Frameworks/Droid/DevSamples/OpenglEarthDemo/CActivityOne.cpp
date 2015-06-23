@@ -1,7 +1,7 @@
 #include "ext/frameworkdef.h"
 #include "CActivityOne.h"
 #include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <stdio.h>
 #include "R.h"
 
@@ -200,7 +200,7 @@ ECode CActivityOne::OnCreate(
     mView->SetFocusableInTouchMode(TRUE);
     AutoPtr<MyListener> l = new MyListener(mRenderer);
     mView->SetOnClickListener(l);
-    SetContentViewEx(mView);
+    SetContentView(mView);
     return NOERROR;
 }
 
@@ -270,7 +270,7 @@ Int32 CActivityOne::InitTexture(
     // {
         AutoPtr<IBitmapFactory> bFactory;
         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bFactory);
-        bFactory->DecodeStreamEx(is, (IBitmap**)&bitmapTmp);
+        bFactory->DecodeStream(is, (IBitmap**)&bitmapTmp);
     // }
     // finally
     // {

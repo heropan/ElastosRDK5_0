@@ -2,8 +2,8 @@
 #include "impl/ShortcutManager.h"
 #include "content/CIntentHelper.h"
 #include "provider/CSettingsBookmarks.h"
-#include <elastos/Character.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/Character.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Character;
 using Elastos::Droid::Content::CIntentHelper;

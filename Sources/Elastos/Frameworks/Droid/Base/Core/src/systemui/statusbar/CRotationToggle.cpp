@@ -67,7 +67,7 @@ ECode CRotationToggle::GetButtonDrawable(
     VALIDATE_NOT_NULL(d);
     AutoPtr<IDrawable> dTemp = RotationToggle::GetButtonDrawable();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 

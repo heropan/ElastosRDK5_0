@@ -90,7 +90,7 @@ ECode CGeocoder::GetFromLocationName(
     return NOERROR;
 }
 
-ECode CGeocoder::GetFromLocationNameEx(
+ECode CGeocoder::GetFromLocationName(
     /* [in] */ const String& locationName,
     /* [in] */ Int32 maxResults,
     /* [in] */ Double lowerLeftLatitude,

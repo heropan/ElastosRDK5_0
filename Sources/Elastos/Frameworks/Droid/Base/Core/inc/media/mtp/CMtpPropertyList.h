@@ -23,7 +23,7 @@ public:
         /* [in] */ Int32 type,
         /* [in] */ Int64 value);
 
-    CARAPI AppendEx(
+    CARAPI Append(
         /* [in] */ Int32 handle,
         /* [in] */ Int32 property,
         /* [in] */ const String& value);

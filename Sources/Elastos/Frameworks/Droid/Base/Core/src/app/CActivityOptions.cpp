@@ -66,7 +66,7 @@ ECode CActivityOptions::MakeCustomAnimation(
     opts->SetCustomExitResId(exitResId);
     ((CActivityOptions*)opts.Get())->SetListener(handler, listener);
     *options = opts;
-    INTERFACE_ADDREF(*options);
+    REFCOUNT_ADD(*options);
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode CActivityOptions::MakeScaleUpAnimation(
     opts->SetStartWidth(startWidth);
     opts->SetStartHeight(startHeight);
     *options = opts;
-    INTERFACE_ADDREF(*options);
+    REFCOUNT_ADD(*options);
     return NOERROR;
 }
 
@@ -173,7 +173,7 @@ ECode CActivityOptions::MakeThumbnailAnimation(
     opts->SetStartY(y + startY);
     ((CActivityOptions*)opts.Get())->SetListener(handler, listener);
     *options = opts;
-    INTERFACE_ADDREF(*options);
+    REFCOUNT_ADD(*options);
     return NOERROR;
 }
 
@@ -201,26 +201,26 @@ ECode CActivityOptions::constructor(
     opts->GetInt32(IActivityOptions::KEY_ANIM_TYPE, &mAnimationType);
 
     if (mAnimationType == IActivityOptions::ANIM_CUSTOM) {
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_ENTER_RES_ID, 0, &mCustomEnterResId);
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_EXIT_RES_ID, 0, &mCustomExitResId);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_ENTER_RES_ID, 0, &mCustomEnterResId);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_EXIT_RES_ID, 0, &mCustomExitResId);
 
         AutoPtr<IBinder> binder;
         opts->GetIBinder(IActivityOptions::KEY_ANIM_START_LISTENER, (IBinder**)&binder);
         mAnimationStartedListener = IRemoteCallback::Probe(binder);
     }
     else if (mAnimationType == IActivityOptions::ANIM_SCALE_UP) {
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_START_X, 0, &mStartX);
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_START_Y, 0, &mStartY);
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_START_WIDTH, 0, &mStartWidth);
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_START_HEIGHT, 0, &mStartHeight);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_X, 0, &mStartX);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_Y, 0, &mStartY);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_WIDTH, 0, &mStartWidth);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_HEIGHT, 0, &mStartHeight);
     }
     else if (mAnimationType == IActivityOptions::ANIM_THUMBNAIL_SCALE_UP ||
             mAnimationType == IActivityOptions::ANIM_THUMBNAIL_SCALE_DOWN) {
         AutoPtr<IParcelable> parcelable;
         opts->GetParcelable(IActivityOptions::KEY_ANIM_THUMBNAIL, (IParcelable**)&parcelable);
         mThumbnail = IBitmap::Probe(parcelable);
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_START_X, 0, &mStartX);
-        opts->GetInt32Ex(IActivityOptions::KEY_ANIM_START_Y, 0, &mStartY);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_X, 0, &mStartX);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_Y, 0, &mStartY);
 
         AutoPtr<IBinder> binder;
         opts->GetIBinder(IActivityOptions::KEY_ANIM_START_LISTENER, (IBinder**)&binder);
@@ -298,7 +298,7 @@ ECode CActivityOptions::GetThumbnail(
 {
     VALIDATE_NOT_NULL(thumbnail);
     *thumbnail = mThumbnail;
-    INTERFACE_ADDREF(*thumbnail);
+    REFCOUNT_ADD(*thumbnail);
     return NOERROR;
 }
 
@@ -379,7 +379,7 @@ ECode CActivityOptions::GetOnAnimationStartListener(
 {
     VALIDATE_NOT_NULL(cb);
     *cb = mAnimationStartedListener;
-    INTERFACE_ADDREF(*cb);
+    REFCOUNT_ADD(*cb);
     return NOERROR;
 }
 
@@ -511,7 +511,7 @@ ECode CActivityOptions::ToBundle(
     }
 
     *bundle = b;
-    INTERFACE_ADDREF(*bundle);
+    REFCOUNT_ADD(*bundle);
     return NOERROR;
 }
 

@@ -131,7 +131,7 @@ AutoPtr<IInterface> BackgroundPlugin::getSurface() {
     AutoPtr<ITextView> textView;
     CTextView::New((IContext*)(m_context->Probe(EIID_IContext)), (ITextView**)&textView);
     textView->SetBackgroundColor(IColor::BLACK);//0xFF000000
-    textView->SetTextColorEx(IColor::WHITE);//0xFFFFFFFF
+    textView->SetTextColor(IColor::WHITE);//0xFFFFFFFF
     String t("Backgound plugin test");
     AutoPtr<ICharSequence> text;
     CStringWrapper::New(t, (ICharSequence**)&text);

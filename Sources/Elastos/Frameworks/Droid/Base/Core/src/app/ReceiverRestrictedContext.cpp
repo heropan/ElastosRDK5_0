@@ -22,10 +22,10 @@ ECode ReceiverRestrictedContext::RegisterReceiver(
     /* [in] */ IIntentFilter* filter,
     /* [out] */ IIntent** intent)
 {
-   return RegisterReceiverEx(receiver, filter, String(NULL), NULL, intent);
+   return RegisterReceiver(receiver, filter, String(NULL), NULL, intent);
 }
 
-ECode ReceiverRestrictedContext::RegisterReceiverEx(
+ECode ReceiverRestrictedContext::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
@@ -35,7 +35,7 @@ ECode ReceiverRestrictedContext::RegisterReceiverEx(
     if (receiver == NULL) {
         // Allow retrieving current sticky broadcast; this is safe since we
         // aren't actually registering a receiver.
-        return ContextWrapper::RegisterReceiverEx(NULL, filter, broadcastPermission
+        return ContextWrapper::RegisterReceiver(NULL, filter, broadcastPermission
                 , scheduler, intent);
     } else {
 //         throw new ReceiverCallNotAllowedException(

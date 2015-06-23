@@ -16,7 +16,7 @@ ECode CDialerKeyListenerHelper::GetCHARACTERS(
     VALIDATE_NOT_NULL(ret);
     AutoPtr< ArrayOf<Char32> > o = CDialerKeyListener::GetCHARACTERS();
     *ret = o;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -26,7 +26,7 @@ ECode CDialerKeyListenerHelper::GetInstance(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IDialerKeyListener> dkl = CDialerKeyListener::GetInstance();
     *ret = dkl;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

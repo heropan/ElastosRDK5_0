@@ -116,7 +116,7 @@ module
         SetPhysicalYDpi(
             [in] Float physicalYDpi);
 
-        EqualsEx(
+        Equals(
             [in] IDisplayInfo* otherObj,
             [out] Boolean* isEquals);
 

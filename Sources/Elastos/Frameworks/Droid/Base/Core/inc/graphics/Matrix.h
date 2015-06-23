@@ -3,7 +3,7 @@
 #define __MATRIX_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::IStringBuilder;
 using Elastos::IO::IPrintWriter;
@@ -69,7 +69,7 @@ public:
         /* [in] */ Float py);
 
     /** Set the matrix to scale by sx and sy. */
-    virtual CARAPI SetScaleEx(
+    virtual CARAPI SetScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
@@ -86,7 +86,7 @@ public:
     /**
      * Set the matrix to rotate about (0,0) by the specified number of degrees.
      */
-    virtual CARAPI SetRotateEx(
+    virtual CARAPI SetRotate(
         /* [in] */ Float degrees);
 
     /**
@@ -101,7 +101,7 @@ public:
         /* [in] */ Float py);
 
     /** Set the matrix to rotate by the specified sine and cosine values. */
-    virtual CARAPI SetSinCosEx(
+    virtual CARAPI SetSinCos(
         /* [in] */ Float sinValue,
         /* [in] */ Float cosValue);
 
@@ -117,7 +117,7 @@ public:
         /* [in] */ Float py);
 
     /** Set the matrix to skew by sx and sy. */
-    virtual CARAPI SetSkewEx(
+    virtual CARAPI SetSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky);
 
@@ -155,7 +155,7 @@ public:
      * Preconcats the matrix with the specified scale.
      * M' = M * S(sx, sy)
      */
-    virtual CARAPI PreScaleEx(
+    virtual CARAPI PreScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result);
@@ -174,7 +174,7 @@ public:
      * Preconcats the matrix with the specified rotation.
      * M' = M * R(degrees)
      */
-    virtual CARAPI PreRotateEx(
+    virtual CARAPI PreRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result);
 
@@ -193,7 +193,7 @@ public:
      * Preconcats the matrix with the specified skew.
      * M' = M * K(kx, ky)
      */
-    virtual CARAPI PreSkewEx(
+    virtual CARAPI PreSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result);
@@ -230,7 +230,7 @@ public:
      * Postconcats the matrix with the specified scale.
      * M' = S(sx, sy) * M
      */
-    virtual CARAPI PostScaleEx(
+    virtual CARAPI PostScale(
         /* [in] */ Float sx,
         /* [in] */ Float sy,
         /* [out] */ Boolean* result);
@@ -249,7 +249,7 @@ public:
      * Postconcats the matrix with the specified rotation.
      * M' = R(degrees) * M
      */
-    virtual CARAPI PostRotateEx(
+    virtual CARAPI PostRotate(
         /* [in] */ Float degrees,
         /* [out] */ Boolean* result);
 
@@ -268,7 +268,7 @@ public:
      * Postconcats the matrix with the specified skew.
      * M' = K(kx, ky) * M
      */
-    virtual CARAPI PostSkewEx(
+    virtual CARAPI PostSkew(
         /* [in] */ Float kx,
         /* [in] */ Float ky,
         /* [out] */ Boolean* result);
@@ -370,7 +370,7 @@ public:
      * @param dst   The array of dst points (x,y pairs)
      * @param src   The array of src points (x,y pairs)
      */
-    virtual CARAPI MapPointsEx(
+    virtual CARAPI MapPoints(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ const ArrayOf<Float>& src);
 
@@ -382,7 +382,7 @@ public:
      * @param dst   The array of dst vectors (x,y pairs)
      * @param src   The array of src vectors (x,y pairs)
      */
-    virtual CARAPI MapVectorsEx(
+    virtual CARAPI MapVectors(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ const ArrayOf<Float>& src);
 
@@ -392,7 +392,7 @@ public:
      *
      * @param pts The array [x0, y0, x1, y1, ...] of points to transform.
      */
-    virtual CARAPI MapPointsEx2(
+    virtual CARAPI MapPoints(
         /* [in, out] */ ArrayOf<Float>* pts);
 
     /**
@@ -400,7 +400,7 @@ public:
      * vectors back into the array.
      * @param vecs The array [x0, y0, x1, y1, ...] of vectors to transform.
      */
-    virtual CARAPI MapVectorsEx2(
+    virtual CARAPI MapVectors(
         /* [in, out] */ ArrayOf<Float>* vecs);
 
     /**
@@ -425,7 +425,7 @@ public:
      * @param rect The rectangle to transform.
      * @return the result of calling rectStaysRect()
      */
-    virtual CARAPI MapRectEx(
+    virtual CARAPI MapRect(
         /* [in] */ IRectF* rect,
         /* [out] */ Boolean* result);
 
@@ -468,7 +468,7 @@ public:
     /**
      * @hide
      */
-    virtual CARAPI ToShortStringEx(
+    virtual CARAPI ToShortString(
         /* [in] */ IStringBuilder* sb);
 
     /*package*/ CARAPI_(Int32) Ni();

@@ -4,7 +4,7 @@
 #include "view/animation/Animation.h"
 #include "view/animation/CLinearInterpolator.h"
 #include "view/CViewGroupLayoutParams.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <stdlib.h>
 
 using namespace Elastos::Core;
@@ -444,7 +444,7 @@ ECode LayoutAnimationController::Init(
             const_cast<Int32*>(R::styleable::LayoutAnimation),
             ARRAY_SIZE(R::styleable::LayoutAnimation));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
     AutoPtr<ITypedValue> value;
     a->PeekValue(R::styleable::LayoutAnimation_delay, (ITypedValue**)&value);

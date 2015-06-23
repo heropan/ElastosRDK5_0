@@ -23,7 +23,7 @@ ContentObserver::NotificationRunnable::NotificationRunnable(
 
 ECode ContentObserver::NotificationRunnable::Run()
 {
-    return mOwner->OnChangeEx(mSelfChange, mUri);
+    return mOwner->OnChange(mSelfChange, mUri);
 }
 
 ContentObserver::ContentObserver(
@@ -50,7 +50,7 @@ ECode ContentObserver::GetContentObserver(
         CContentObserverTransport::New((IContentObserver*)this->Probe(EIID_IContentObserver), (IContentObserverTransport**)&mTransport);
     }
     *contentObserver = mTransport;
-    INTERFACE_ADDREF(*contentObserver)
+    REFCOUNT_ADD(*contentObserver)
     return NOERROR;
 }
 
@@ -67,7 +67,7 @@ ECode ContentObserver::ReleaseContentObserver(
         mTransport = NULL;
     }
     *contentObserver = oldTransport;
-    INTERFACE_ADDREF(*contentObserver)
+    REFCOUNT_ADD(*contentObserver)
     return NOERROR;
 }
 
@@ -85,7 +85,7 @@ ECode ContentObserver::OnChange(
     return NOERROR;
 }
 
-ECode ContentObserver::OnChangeEx(
+ECode ContentObserver::OnChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
@@ -95,15 +95,15 @@ ECode ContentObserver::OnChangeEx(
 ECode ContentObserver::DispatchChange(
     /* [in] */ Boolean selfChange)
 {
-    return DispatchChangeEx(selfChange, NULL);
+    return DispatchChange(selfChange, NULL);
 }
 
-ECode ContentObserver::DispatchChangeEx(
+ECode ContentObserver::DispatchChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
     if (mHandler == NULL) {
-        OnChangeEx(selfChange, uri);
+        OnChange(selfChange, uri);
     }
     else {
         Boolean res;

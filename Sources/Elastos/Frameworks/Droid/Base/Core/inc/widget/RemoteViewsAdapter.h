@@ -6,17 +6,16 @@
 #include "widget/FrameLayout.h"
 #include "os/CHandlerThread.h"
 #include "os/Runnable.h"
-#include "view/ViewMacro.h"
-#include "widget/FrameLayoutMacro.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
-using Elastos::Core::Threading::Mutex;
+
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
@@ -299,7 +298,7 @@ private:
     class InnerRunnableEx : public Runnable
     {
     public:
-        InnerRunnableEx(
+        InnerRunnable(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
@@ -310,7 +309,7 @@ private:
     class InnerRunnableEx2 : public Runnable
     {
     public:
-        InnerRunnableEx2(
+        InnerRunnable(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
@@ -321,7 +320,7 @@ private:
     class InnerRunnableEx3 : public Runnable
     {
     public:
-        InnerRunnableEx3(
+        InnerRunnable(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
@@ -332,7 +331,7 @@ private:
     class InnerRunnableEx4 : public Runnable
     {
     public:
-        InnerRunnableEx4(
+        InnerRunnable(
             /* [in] */ RemoteViewsFrameLayoutRefSet* refSet,
             /* [in] */ Int32 position,
             /* [in] */ IRemoteViews* rv);
@@ -347,7 +346,7 @@ private:
     class InnerRunnableEx5 : public Runnable
     {
     public:
-        InnerRunnableEx5(
+        InnerRunnable(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();

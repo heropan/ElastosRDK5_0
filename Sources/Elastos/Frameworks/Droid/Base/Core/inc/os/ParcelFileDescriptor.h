@@ -3,10 +3,10 @@
 #define __PARCELFILEDESCRIPTOR_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Object;
-using Elastos::Core::Threading::LockObject;
+using Elastos::Core::Object;
+using Elastos::Core::LockObject;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 
@@ -48,7 +48,7 @@ public:
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [out] */ Int32* number);
 
-        CARAPI ReadBytesEx(
+        CARAPI ReadBytes(
             /* [out] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
@@ -97,7 +97,7 @@ public:
         CARAPI WriteBytes(
             /* [in] */ const ArrayOf<Byte>& buffer);
 
-        CARAPI WriteBytesEx(
+        CARAPI WriteBytes(
             /* [in] */ const ArrayOf<Byte>& buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 count);

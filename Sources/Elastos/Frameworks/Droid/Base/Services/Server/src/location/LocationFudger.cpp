@@ -1,8 +1,8 @@
 
 #include "location/LocationFudger.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include "os/SystemClock.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::IContentResolver;
@@ -85,7 +85,7 @@ LocationFudger::LocationFudger(
     AutoPtr<IUri> uri;
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    settingsSecure->GetUriForEx(COARSE_ACCURACY_CONFIG_NAME, (IUri**)&uri);
+    settingsSecure->GetUriFor(COARSE_ACCURACY_CONFIG_NAME, (IUri**)&uri);
     cr->RegisterContentObserver(uri, FALSE, mSettingsObserver);
 
     Float accuracy = LoadCoarseAccuracy();

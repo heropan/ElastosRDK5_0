@@ -6,8 +6,8 @@
 #include "_CNetworkPolicyManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
@@ -15,8 +15,8 @@ using Elastos::Core::IArrayOf;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::App::IINotificationManager;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::Content::IContext;

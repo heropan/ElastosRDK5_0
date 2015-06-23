@@ -3,8 +3,8 @@
 #include "os/UserHandle.h"
 #include "os/Binder.h"
 #include "Manifest.h"
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;

@@ -12,8 +12,8 @@
 #include "text/TextUtils.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 #include <unistd.h>
 
 using Elastos::Core::CStringWrapper;
@@ -22,7 +22,7 @@ using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Threading::EIID_IThread;
+using Elastos::Core::EIID_IThread;
 using Elastos::IO::CFile;
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Concurrent::CCountDownLatch;
@@ -1124,7 +1124,7 @@ void CMountService::WaitForLatch(
     for (;;) {
         // try {
         Boolean res = FALSE;
-        latch->AwaitEx(5000, NULL/*TimeUnit::MILLISECONDS*/, &res);
+        latch->Await(5000, NULL/*TimeUnit::MILLISECONDS*/, &res);
         if (res) {
             return;
         }
@@ -3870,7 +3870,7 @@ ECode CMountService::constructor(
     userFilter->AddAction(IIntent::ACTION_USER_ADDED);
     userFilter->AddAction(IIntent::ACTION_USER_REMOVED);
     AutoPtr<IIntent> resIntent;
-    mContext->RegisterReceiverEx(
+    mContext->RegisterReceiver(
             mUserReceiver, userFilter, String(NULL), mHandler, (IIntent**)&resIntent);
 
     // Watch for USB changes on primary volume
@@ -3880,7 +3880,7 @@ ECode CMountService::constructor(
     //     AutoPtr<IIntentFilter> filter;
     //     CIntentFilter::New(IUsbManager::ACTION_USB_STATE, (IIntentFilter**)&filter);
     //     resIntent = NULL;
-    //     mContext->RegisterReceiverEx(
+    //     mContext->RegisterReceiver(
     //             mUsbReceiver, filter, String(NULL), mHandler, (IIntent**)&resIntent);
     // }
 
@@ -3895,7 +3895,7 @@ ECode CMountService::constructor(
             AutoPtr<IIntentFilter> filter;
             CIntentFilter::New(IUsbManager::ACTION_USB_STATE, (IIntentFilter**)&filter);
             AutoPtr<IIntent> resultIntent;
-            mContext->RegisterReceiverEx(
+            mContext->RegisterReceiver(
                     mUsbReceiver, filter, String(NULL), mHandler, (IIntent**)&resultIntent);
             break;
         }

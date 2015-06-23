@@ -2,7 +2,7 @@
 #include "CApplicationThreadNative.h"
 #include "Util.h"
 #include "ext/frameworkhash.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::JavaProxy::Util;

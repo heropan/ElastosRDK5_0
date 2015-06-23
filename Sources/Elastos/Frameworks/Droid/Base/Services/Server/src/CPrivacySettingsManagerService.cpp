@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "CPrivacySettingsManagerService.h"
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 // #include <stdio.h>
 // #include "utils/log.h"
 //#include "privacy/CPrivacyPersistenceAdapter.h"

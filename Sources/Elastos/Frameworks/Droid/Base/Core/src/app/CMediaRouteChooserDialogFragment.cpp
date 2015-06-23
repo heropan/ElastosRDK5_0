@@ -1,7 +1,7 @@
 #include "ext/frameworkext.h"
 #include "app/CMediaRouteChooserDialogFragment.h"
 #include "text/TextUtils.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::App::EIID_IDialog;
@@ -218,7 +218,7 @@ ECode MediaRouteChooserDialogFragment::OnCreateView(
 {
     mInflater = inflater;
     AutoPtr<IView> layout;
-    inflater->InflateEx2(0/*R.layout.media_route_chooser_layout*/,
+    inflater->Inflate(0/*R.layout.media_route_chooser_layout*/,
             container, FALSE, (IView**)&layout);
 
     layout->FindViewById(0/*R.id.volume_icon*/, (IView**)(IImageView**)&mVolumeIcon);
@@ -412,7 +412,7 @@ void MediaRouteChooserDialogFragment::RouteAdapter::ScrollToEditingGroup()
         ++i;
     }
 
-    mHost->mListView->SmoothScrollToPositionEx(pos, bound);
+    mHost->mListView->SmoothScrollToPosition(pos, bound);
 }
 
 void MediaRouteChooserDialogFragment::RouteAdapter::ScrollToSelectedItem()
@@ -547,7 +547,7 @@ ECode MediaRouteChooserDialogFragment::RouteAdapter::GetItem(
 {
     AutoPtr<IInterface> temp = GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -582,7 +582,7 @@ ECode MediaRouteChooserDialogFragment::RouteAdapter::GetView(
 
     AutoPtr<ViewHolder> holder;
     if (convertView == NULL) {
-        mHost->mInflater->InflateEx2((*ITEM_LAYOUTS)[viewType], parent, FALSE, &convertView);
+        mHost->mInflater->Inflate((*ITEM_LAYOUTS)[viewType], parent, FALSE, &convertView);
         holder = new ViewHolder();
         holder->mPosition = position;
         AutoPtr<IView> tempView;
@@ -652,7 +652,7 @@ AutoPtr<IView> MediaRouteChooserDialogFragment::RouteAdapter::GetView(
 
     AutoPtr<ViewHolder> holder;
     if (convertView == NULL) {
-        mHost->mInflater->InflateEx2((*ITEM_LAYOUTS)[viewType], parent, FALSE, (IView**)&convertView);
+        mHost->mInflater->Inflate((*ITEM_LAYOUTS)[viewType], parent, FALSE, (IView**)&convertView);
         holder = new ViewHolder();
         holder->mPosition = position;
         AutoPtr<IView> tempView;
@@ -719,7 +719,7 @@ void MediaRouteChooserDialogFragment::RouteAdapter::BindItemView(
     AutoPtr<IActivity> activity;
     mHost->GetActivity((IActivity**)&activity);
     AutoPtr<ICharSequence> name;
-    info->GetNameEx(activity, (ICharSequence**)&name);
+    info->GetName(activity, (ICharSequence**)&name);
     holder->mText1->SetText(name);
     AutoPtr<ICharSequence> status;
     info->GetStatus((ICharSequence**)&status);
@@ -739,7 +739,7 @@ void MediaRouteChooserDialogFragment::RouteAdapter::BindItemView(
         AutoPtr<IDrawable> oldIcon = icon;
         oldIcon->GetConstantState((IDrawableConstantState**)&state);
         icon = NULL;
-        state->NewDrawableEx(resources, (IDrawable**)&icon);
+        state->NewDrawable(resources, (IDrawable**)&icon);
     }
     holder->mIcon->SetImageDrawable(icon);
     holder->mIcon->SetVisibility(icon != NULL ? IView::VISIBLE : IView::GONE);
@@ -786,7 +786,7 @@ void MediaRouteChooserDialogFragment::RouteAdapter::BindHeaderView(
     AutoPtr<IActivity> activity;
     mHost->GetActivity((IActivity**)&activity);
     AutoPtr<ICharSequence> name;
-    cat->GetNameEx(activity, (ICharSequence**)&name);
+    cat->GetName(activity, (ICharSequence**)&name);
     holder->mText1->SetText(name);
 }
 
@@ -1011,9 +1011,9 @@ ECode MediaRouteChooserDialogFragment::RouteComparator::Compare(
     AutoPtr<IActivity> activity;
     mHost->GetActivity((IActivity**)&activity);
     AutoPtr<ICharSequence> lname;
-    ((IRouteInfo*)lhs)->GetNameEx(activity, (ICharSequence**)&lname);
+    ((IRouteInfo*)lhs)->GetName(activity, (ICharSequence**)&lname);
     AutoPtr<ICharSequence> rname;
-    ((IRouteInfo*)rhs)->GetNameEx(activity, (ICharSequence**)&rname);
+    ((IRouteInfo*)rhs)->GetName(activity, (ICharSequence**)&rname);
     String lnamestring, rnamestring;
     lname->ToString(&lnamestring);
     rname->ToString(&rnamestring);

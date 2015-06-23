@@ -31,7 +31,7 @@ public:
      * @param userAgent to report in your HTTP requests.
      * @return AndroidHttpClient for you to use for all your requests.
      */
-    CARAPI NewInstanceEx(
+    CARAPI NewInstance(
         /* [in] */ const String& userAgent,
         /* [out] */ Elastos::Droid::Net::Http::IAndroidHttpClient** client);
 

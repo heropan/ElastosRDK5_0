@@ -2,7 +2,7 @@
 #include "CCellInfoLte.h"
 #include "CCellIdentityLte.h"
 #include "CCellSignalStrengthLte.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <ext/frameworkdef.h>
 
 using Elastos::Core::StringBuilder;
@@ -29,7 +29,7 @@ ECode CCellInfoLte::constructor(
     ci->GetCellIdentity((ICellIdentityLte**)&cLte);
     ci->GetCellSignalStrength((ICellSignalStrengthLte**)&sLte);
     cLte->Copy((ICellIdentityLte**)&mCellIdentityLte);
-    sLte->CopyEx((ICellSignalStrengthLte**)&mCellSignalStrengthLte);
+    sLte->Copy((ICellSignalStrengthLte**)&mCellSignalStrengthLte);
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode CCellInfoLte::GetCellIdentity(
 {
     VALIDATE_NOT_NULL(res);
     *res = mCellIdentityLte;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -157,7 +157,7 @@ ECode CCellInfoLte::GetCellSignalStrength(
 {
     VALIDATE_NOT_NULL(res);
     *res = mCellSignalStrengthLte;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

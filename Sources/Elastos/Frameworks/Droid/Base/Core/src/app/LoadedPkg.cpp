@@ -1,7 +1,7 @@
 
 #include "app/LoadedPkg.h"
-#include "elastos/Slogger.h"
-#include "elastos/StringBuffer.h"
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuffer.h>
 #include "os/CUserHandle.h"
 #include "os/Process.h"
 #include "os/Handler.h"
@@ -14,13 +14,13 @@
 #include "app/CContextImpl.h"
 #include "app/CInnerConnection.h"
 #include "view/CCompatibilityInfoHolder.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CPathClassLoader;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::Pair;
+using Elastos::Utility::Etl::Pair;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CUserHandle;
@@ -333,7 +333,7 @@ ECode LoadedPkg::ReceiverDispatcher::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -471,7 +471,7 @@ ECode LoadedPkg::ServiceDispatcher::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -826,7 +826,7 @@ ECode LoadedPkg::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -843,7 +843,7 @@ ECode LoadedPkg::GetApplicationInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = mApplicationInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -912,7 +912,7 @@ ECode LoadedPkg::GetClassLoader(
 
     if (mClassLoader != NULL) {
         *loader = mClassLoader;
-        INTERFACE_ADDREF(*loader);
+        REFCOUNT_ADD(*loader);
         return NOERROR;
     }
 
@@ -986,7 +986,7 @@ ECode LoadedPkg::GetClassLoader(
 //TODO:
     ASSERT_SUCCEEDED(CPathClassLoader::New(String("Elastos.Droid.Core.eco"), (IClassLoader**)&mClassLoader));
     *loader = mClassLoader;
-    INTERFACE_ADDREF(*loader);
+    REFCOUNT_ADD(*loader);
     return NOERROR;
 }
 
@@ -1027,7 +1027,7 @@ ECode LoadedPkg::GetDataDirFile(
 {
     VALIDATE_NOT_NULL(dirFile);
     *dirFile = mDataDirFile;
-    INTERFACE_ADDREF(*dirFile);
+    REFCOUNT_ADD(*dirFile);
     return NOERROR;
 }
 
@@ -1052,7 +1052,7 @@ ECode LoadedPkg::GetResources(
                 IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
     }
     *res = mResources.Get();
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 
@@ -1065,7 +1065,7 @@ ECode LoadedPkg::MakeApplication(
 
     if (mApplication != NULL) {
         *result = mApplication;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -1172,7 +1172,7 @@ ECode LoadedPkg::MakeApplication(
     }
 
     *result = app;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1311,7 +1311,7 @@ ECode LoadedPkg::GetReceiverDispatcher(
     rd->mForgotten = FALSE;
     AutoPtr<IIntentReceiver> _ir = rd->GetIIntentReceiver();
     *ir = _ir;
-    INTERFACE_ADDREF(*ir);
+    REFCOUNT_ADD(*ir);
     return NOERROR;
 }
 
@@ -1356,7 +1356,7 @@ ECode LoadedPkg::ForgetReceiverDispatcher(
             rd->mForgotten = TRUE;
             AutoPtr<IIntentReceiver> _ir = rd->GetIIntentReceiver();
             *ir = _ir;
-            INTERFACE_ADDREF(*ir);
+            REFCOUNT_ADD(*ir);
             return NOERROR;
         }
     }
@@ -1414,7 +1414,7 @@ ECode LoadedPkg::GetServiceDispatcher(
     }
     AutoPtr<IIServiceConnection> con = sd->GetIServiceConnection();
     *result = con.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1460,7 +1460,7 @@ ECode LoadedPkg::ForgetServiceDispatcher(
             }
             AutoPtr<IIServiceConnection> con = sd->GetIServiceConnection();
             *result = con.Get();
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
         }
     }

@@ -35,7 +35,7 @@ module
          * @param selfChange True if this is a self-change notification.
          * @param uri The Uri of the changed content, or null if unknown.
          */
-        DispatchChangeEx(
+        DispatchChange(
             [in] Boolean selfChange,
             [in] IUri* uri);
 

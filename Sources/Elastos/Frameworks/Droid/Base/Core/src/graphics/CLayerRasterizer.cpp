@@ -31,7 +31,7 @@ ECode CLayerRasterizer::AddLayer(
     return NOERROR;
 }
 
-ECode CLayerRasterizer::AddLayerEx(
+ECode CLayerRasterizer::AddLayer(
     /* [in] */ IPaint* paint)
 {
     NativeAddLayer(mNativeInstance, ((Paint*)paint->Probe(EIID_Paint))->mNativePaint, 0, 0);

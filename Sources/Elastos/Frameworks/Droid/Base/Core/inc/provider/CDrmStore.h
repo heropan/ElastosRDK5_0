@@ -33,7 +33,7 @@ public:
      * @param title The title for the content (or null)
      * @return uri to the DRM record or null
      */
-    CARAPI AddDrmFileEx(
+    CARAPI AddDrmFile(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IFileInputStream* fis,
         /* [in] */ const String& title,

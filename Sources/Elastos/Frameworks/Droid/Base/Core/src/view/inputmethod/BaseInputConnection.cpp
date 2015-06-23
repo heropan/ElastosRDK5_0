@@ -784,7 +784,7 @@ void BaseInputConnection::ReplaceText(
     }
     Selection::SetSelection(content, newCursorPosition);
 
-    content->ReplaceEx(a, b, text);
+    content->Replace(a, b, text);
 
     // if (DEBUG) {
     //     LogPrinter lp = new LogPrinter(Log.VERBOSE, TAG);

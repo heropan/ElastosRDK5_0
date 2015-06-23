@@ -9,9 +9,9 @@
 #include "os/CBundle.h"
 #include "os/Looper.h"
 #include "animation/AnimatorInflater.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Logger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -89,7 +89,7 @@ ECode AnimatorListener::OnAnimationEnd(
     return NOERROR;
 }
 
-AnimatorListenerEx::AnimatorListenerEx(
+AnimatorListenerEx::AnimatorListener(
     /* [in] */ IFragment* fragment)
 {
     mFragment = fragment;
@@ -140,7 +140,7 @@ ECode CFragmentManagerImpl::BeginTransaction(
     VALIDATE_NOT_NULL(transaction);
 
     *transaction = new BackStackRecord(this);
-    INTERFACE_ADDREF(*transaction);
+    REFCOUNT_ADD(*transaction);
     return NOERROR;
 }
 
@@ -175,7 +175,7 @@ ECode CFragmentManagerImpl::PopBackStackImmediate(
    return PopBackStackState(activity->mHandler, String(NULL), -1, 0, hasPopped);
 }
 
-ECode CFragmentManagerImpl::PopBackStackEx(
+ECode CFragmentManagerImpl::PopBackStack(
     /* [in] */ const String& name,
     /* [in] */ Int32 flags)
 {
@@ -183,7 +183,7 @@ ECode CFragmentManagerImpl::PopBackStackEx(
    return EnqueueAction(runnable, FALSE);
 }
 
-ECode CFragmentManagerImpl::PopBackStackImmediateEx(
+ECode CFragmentManagerImpl::PopBackStackImmediate(
     /* [in] */ const String& name,
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* hasPopped)
@@ -196,7 +196,7 @@ ECode CFragmentManagerImpl::PopBackStackImmediateEx(
     return PopBackStackState(activity->mHandler, name, -1, flags, hasPopped);
 }
 
-ECode CFragmentManagerImpl::PopBackStackEx2(
+ECode CFragmentManagerImpl::PopBackStack(
     /* [in] */ Int32 id,
     /* [in] */ Int32 flags)
 {
@@ -209,7 +209,7 @@ ECode CFragmentManagerImpl::PopBackStackEx2(
     return NOERROR;
 }
 
-ECode CFragmentManagerImpl::PopBackStackImmediateEx2(
+ECode CFragmentManagerImpl::PopBackStackImmediate(
     /* [in] */ Int32 id,
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* hasPopped)
@@ -281,7 +281,7 @@ ECode CFragmentManagerImpl::GetFragment(
 {
     VALIDATE_NOT_NULL(fragment);
     Int32 index;
-    bundle->GetInt32Ex(key, -1, &index);
+    bundle->GetInt32(key, -1, &index);
     if (index == -1) {
         *fragment = NULL;
     }
@@ -297,7 +297,7 @@ ECode CFragmentManagerImpl::GetFragment(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     *fragment = f;
-    INTERFACE_ADDREF(*fragment);
+    REFCOUNT_ADD(*fragment);
     return NOERROR;
 }
 
@@ -532,7 +532,7 @@ ECode CFragmentManagerImpl::LoadAnimator(
             fanim, (IAnimator**)&animObj);
     if (animObj != NULL) {
         *animator = animObj;
-        INTERFACE_ADDREF(*animator);
+        REFCOUNT_ADD(*animator);
         return NOERROR;
     }
 
@@ -540,7 +540,7 @@ ECode CFragmentManagerImpl::LoadAnimator(
         AutoPtr<IAnimator> anim = AnimatorInflater::LoadAnimator(mActivity, fanim);
         if (anim != NULL) {
             *animator = anim;
-            INTERFACE_ADDREF(*animator);
+            REFCOUNT_ADD(*animator);
             return NOERROR;
         }
     }
@@ -574,7 +574,7 @@ ECode CFragmentManagerImpl::LoadAnimator(
             const_cast<Int32 *>(R::styleable::FragmentAnimation),
             ARRAY_SIZE(R::styleable::FragmentAnimation));
     AutoPtr<ITypedArray> attrs;
-    mActivity->ObtainStyledAttributesEx(transitionStyle, attrIds, (ITypedArray**)&attrs);
+    mActivity->ObtainStyledAttributes(transitionStyle, attrIds, (ITypedArray**)&attrs);
     Int32 anim;
     attrs->GetResourceId(styleIndex, 0, &anim);
     attrs->Recycle();
@@ -585,7 +585,7 @@ ECode CFragmentManagerImpl::LoadAnimator(
     }
     AutoPtr<IAnimator> a = AnimatorInflater::LoadAnimator(mActivity, anim);
     *animator = a;
-    INTERFACE_ADDREF(*animator)
+    REFCOUNT_ADD(*animator)
     return NOERROR;
 }
 
@@ -679,12 +679,12 @@ ECode CFragmentManagerImpl::MoveToState(
                     f->SetTarget(fragment);
                     if (fragment != NULL) {
                         Int32 value;
-                        savedFragmentState->GetInt32Ex(
+                        savedFragmentState->GetInt32(
                                 IFragmentManagerImpl::TARGET_REQUEST_CODE_STATE_TAG, 0, &value);
                         f->SetTargetRequestCode(value);
                     }
                     Boolean value;
-                    savedFragmentState->GetBooleanEx(
+                    savedFragmentState->GetBoolean(
                             IFragmentManagerImpl::USER_VISIBLE_HINT_TAG, TRUE, &value);
                     f->SetUserVisibleHint(value);
                     if (!value) {
@@ -931,20 +931,20 @@ ECode CFragmentManagerImpl::MoveToState(
     return NOERROR;
 }
 
-ECode CFragmentManagerImpl::MoveToStateEx(
+ECode CFragmentManagerImpl::MoveToState(
     /* [in] */ IFragment* f)
 {
     return MoveToState(f, mCurState, 0, 0, FALSE);
 }
 
-ECode CFragmentManagerImpl::MoveToStateEx2(
+ECode CFragmentManagerImpl::MoveToState(
     /* [in] */ Int32 newState,
     /* [in] */ Boolean always)
 {
-    return MoveToStateEx3(newState, 0, 0, always);
+    return MoveToState(newState, 0, 0, always);
 }
 
-ECode CFragmentManagerImpl::MoveToStateEx3(
+ECode CFragmentManagerImpl::MoveToState(
     /* [in] */ Int32 newState,
     /* [in] */ Int32 transit,
     /* [in] */ Int32 transitStyle,
@@ -1075,7 +1075,7 @@ ECode CFragmentManagerImpl::AddFragment(
             mNeedMenuInvalidate = TRUE;
         }
         if (moveToStateNow) {
-            MoveToStateEx(fragment);
+            MoveToState(fragment);
         }
     }
     return NOERROR;
@@ -1147,7 +1147,7 @@ ECode CFragmentManagerImpl::HideFragment(
                 // Delay the actual hide operation until the animation finishes, otherwise
                 // the fragment will just immediately disappear
                 AutoPtr<IFragment> finalFragment = fragment;
-                AutoPtr<AnimatorListenerAdapter> l = new AnimatorListenerEx(finalFragment);
+                AutoPtr<AnimatorListenerAdapter> l = new AnimatorListener(finalFragment);
                 anim->AddListener(l);
                 anim->Start();
             } else {
@@ -1287,7 +1287,7 @@ ECode CFragmentManagerImpl::FindFragmentById(
             f->GetFragmentId(&fId);
             if (f != NULL && fId == id) {
                 *fragment = f;
-                INTERFACE_ADDREF(*fragment);
+                REFCOUNT_ADD(*fragment);
                 return NOERROR;
             }
         }
@@ -1301,7 +1301,7 @@ ECode CFragmentManagerImpl::FindFragmentById(
             f->GetFragmentId(&fId);
             if (f != NULL && fId == id) {
                 *fragment = f;
-                INTERFACE_ADDREF(*fragment);
+                REFCOUNT_ADD(*fragment);
                 return NOERROR;
             }
         }
@@ -1324,7 +1324,7 @@ ECode CFragmentManagerImpl::FindFragmentByTag(
             f->GetTag(&ftag);
             if (f != NULL && tag.Equals(ftag)) {
                 *fragment = f;
-                INTERFACE_ADDREF(*fragment);
+                REFCOUNT_ADD(*fragment);
                 return NOERROR;
             }
         }
@@ -1338,7 +1338,7 @@ ECode CFragmentManagerImpl::FindFragmentByTag(
             f->GetTag(&ftag);
             if (f != NULL && tag.Equals(ftag)) {
                 *fragment = f;
-                INTERFACE_ADDREF(*fragment);
+                REFCOUNT_ADD(*fragment);
                 return NOERROR;
             }
         }
@@ -1360,7 +1360,7 @@ ECode CFragmentManagerImpl::FindFragmentByWho(
             f->FindFragmentByWho(who, (IFragment**)&fwho);
             if (f != NULL && (f=fwho) != NULL) {
                 *fragment = f;
-                INTERFACE_ADDREF(*fragment);
+                REFCOUNT_ADD(*fragment);
                 return NOERROR;
             }
         }
@@ -1674,7 +1674,7 @@ ECode CFragmentManagerImpl::RetainNonConfig(
         tempRetains->Add((*fit)->Probe(EIID_IInterface));
     }
     *retains = tempRetains;
-    INTERFACE_ADDREF(*retains);
+    REFCOUNT_ADD(*retains);
     return NOERROR;
 }
 
@@ -1746,7 +1746,7 @@ ECode CFragmentManagerImpl::SaveFragmentBasicState(
     }
 
     *rst = result;
-    INTERFACE_ADDREF(*rst);
+    REFCOUNT_ADD(*rst);
     return NOERROR;
 }
 
@@ -1871,7 +1871,7 @@ ECode CFragmentManagerImpl::SaveAllState(
     fms->mAdded = added;
     fms->mBackStack = backStack;
     *state = (IParcelable*)fms->Probe(EIID_IParcelable);
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -2038,40 +2038,40 @@ ECode CFragmentManagerImpl::NoteStateNotSaved()
 ECode CFragmentManagerImpl::DispatchCreate()
 {
     mStateSaved = FALSE;
-    return MoveToStateEx2(IFragment::CREATED, FALSE);
+    return MoveToState(IFragment::CREATED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchActivityCreated()
 {
     mStateSaved = FALSE;
-    return MoveToStateEx2(IFragment::ACTIVITY_CREATED, FALSE);
+    return MoveToState(IFragment::ACTIVITY_CREATED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchStart()
 {
     mStateSaved = FALSE;
-    return MoveToStateEx2(IFragment::STARTED, FALSE);
+    return MoveToState(IFragment::STARTED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchResume()
 {
     mStateSaved = FALSE;
-    return MoveToStateEx2(IFragment::RESUMED, FALSE);
+    return MoveToState(IFragment::RESUMED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchPause()
 {
-    return MoveToStateEx2(IFragment::STARTED, FALSE);
+    return MoveToState(IFragment::STARTED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchStop()
 {
-    return MoveToStateEx2(IFragment::STOPPED, FALSE);
+    return MoveToState(IFragment::STOPPED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchDestroyView()
 {
-    return MoveToStateEx2(IFragment::CREATED, FALSE);
+    return MoveToState(IFragment::CREATED, FALSE);
 }
 
 ECode CFragmentManagerImpl::DispatchDestroy()
@@ -2079,7 +2079,7 @@ ECode CFragmentManagerImpl::DispatchDestroy()
     mDestroyed = TRUE;
     Boolean executed;
     ExecPendingActions(&executed);
-    MoveToStateEx2(IFragment::INITIALIZING, FALSE);
+    MoveToState(IFragment::INITIALIZING, FALSE);
     mActivity = NULL;
     mContainer = NULL;
     mParent = NULL;

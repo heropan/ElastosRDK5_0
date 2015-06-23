@@ -357,7 +357,7 @@ ECode CAppWidgetHost::CreateView(
     view->UpdateAppWidget(IRemoteViews::Probe(views));
 
     *hostView = view;
-    INTERFACE_ADDREF(*hostView);
+    REFCOUNT_ADD(*hostView);
     return NOERROR;
 }
 

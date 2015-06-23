@@ -42,7 +42,7 @@ public:
         /* [out] */ Int32* number);
 
     //@Override
-    CARAPI ReadBytesEx(
+    CARAPI ReadBytes(
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

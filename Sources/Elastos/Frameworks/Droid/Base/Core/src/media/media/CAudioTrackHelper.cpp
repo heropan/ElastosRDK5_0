@@ -3,8 +3,8 @@
 #include "media/CAudioTrack.h"
 //#include "media/ElAudioSystem.h"
 #include <media/AudioTrack.h>
-#include <elastos/Logger.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Utility::Logging::Logger;
 

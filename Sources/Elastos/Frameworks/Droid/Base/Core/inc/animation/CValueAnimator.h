@@ -4,8 +4,8 @@
 
 #include "_CValueAnimator.h"
 #include "animation/ValueAnimator.h"
-#include "animation/AnimatorMacro.h"
-#include "animation/ValueAnimatorMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <stdio.h>
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IFile;
 using Elastos::Utility::Logging::Logger;

@@ -113,21 +113,21 @@ AutoPtr<IView> PlatLogoActivity::MakeView()
     CTextView::New(this, (ITextView**)&tv);
     if (light != NULL) tv->SetTypeface(light);
     tv->SetTextSize(1.25f*size);
-    tv->SetTextColorEx(0xFFFFFFFF);
+    tv->SetTextColor(0xFFFFFFFF);
     tv->SetShadowLayer(4*density, 0, 2*density, 0x66000000);
 //    tv->SetText(String("Android ") + Build::VERSION::RELEASE);
-    view->AddViewEx3(tv, lp);
+    view->AddView(tv, lp);
 
     tv = NULL;
     CTextView::New(this, (ITextView**)&tv);
     if (normal != NULL) tv->SetTypeface(normal);
     tv->SetTextSize(size);
-    tv->SetTextColorEx(0xFFFFFFFF);
+    tv->SetTextColor(0xFFFFFFFF);
     tv->SetShadowLayer(4*density, 0, 2*density, 0x66000000);
     AutoPtr<ICharSequence> txt;
     CStringWrapper::New(String("JELLY BEAN"), (ICharSequence**)&txt);
     tv->SetText(txt);
-    view->AddViewEx3(tv, lp);
+    view->AddView(tv, lp);
 
     return view;
 }
@@ -159,7 +159,7 @@ ECode PlatLogoActivity::OnCreate(
 
     mContent->SetOnLongClickListener((IViewOnLongClickListener*)new LocalViewOnLongClickListener(this));
 
-    SetContentViewEx(mContent);
+    SetContentView(mContent);
     return NOERROR;
 }
 

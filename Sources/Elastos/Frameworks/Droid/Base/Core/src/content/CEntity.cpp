@@ -19,7 +19,7 @@ ECode CEntity::GetEntityValues(
 {
     VALIDATE_NOT_NULL(entityValues)
     *entityValues = mValues;
-    INTERFACE_ADDREF(*entityValues);
+    REFCOUNT_ADD(*entityValues);
     return NOERROR;
 }
 

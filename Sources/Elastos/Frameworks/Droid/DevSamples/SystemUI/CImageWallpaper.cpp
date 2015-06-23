@@ -1,7 +1,7 @@
 
 #include "CImageWallpaper.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;
@@ -463,12 +463,12 @@ void CImageWallpaper::DrawableEngine::DrawWallpaperWithCanvas(
                 break;
             if (w < 0 || h < 0) {
                 Int32 count;
-                if (FAILED(c->SaveEx(ICanvas::CLIP_SAVE_FLAG, &count)))
+                if (FAILED(c->Save(ICanvas::CLIP_SAVE_FLAG, &count)))
                     break;
                 mBackground->GetWidth(&w);
                 mBackground->GetHeight(&h);
                 Boolean res;
-                if (FAILED(c->ClipRectEx4(0, 0, w, h, RegionOp_DIFFERENCE, &res)))
+                if (FAILED(c->ClipRect(0, 0, w, h, RegionOp_DIFFERENCE, &res)))
                     break;
                 if (FAILED(c->DrawColor(0xff000000)))
                     break;
@@ -803,25 +803,25 @@ ECode CImageWallpaper::ObtainStyledAttributes(
     return WallpaperService::ObtainStyledAttributes(attrs, styles);
 }
 
-ECode CImageWallpaper::ObtainStyledAttributesEx(
+ECode CImageWallpaper::ObtainStyledAttributes(
     /* [in] */ Int32 resid,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
-    return WallpaperService::ObtainStyledAttributesEx(resid, attrs, styles);
+    return WallpaperService::ObtainStyledAttributes(resid, attrs, styles);
 }
 
-ECode CImageWallpaper::ObtainStyledAttributesEx2(
+ECode CImageWallpaper::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
-    return WallpaperService::ObtainStyledAttributesEx2(set, attrs, styles);
+    return WallpaperService::ObtainStyledAttributes(set, attrs, styles);
 }
 
-ECode CImageWallpaper::ObtainStyledAttributesEx3(
+ECode CImageWallpaper::ObtainStyledAttributes(
     /* [in] */ IAttributeSet* set,
     /* [in] */ ArrayOf<Int32>* attrs,
     /* [in] */ Int32 defStyleAttr,
@@ -829,7 +829,7 @@ ECode CImageWallpaper::ObtainStyledAttributesEx3(
     /* [out] */ ITypedArray** styles)
 {
     VALIDATE_NOT_NULL(styles);
-    return WallpaperService::ObtainStyledAttributesEx3(set, attrs, defStyleAttr, defStyleRes, styles);
+    return WallpaperService::ObtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes, styles);
 }
 
 ECode CImageWallpaper::GetClassLoader(
@@ -995,7 +995,7 @@ ECode CImageWallpaper::CheckPermission(
     return WallpaperService::CheckPermission(permission, pid, uid, result);
 }
 
-ECode CImageWallpaper::CheckUriPermissionEx(
+ECode CImageWallpaper::CheckUriPermission(
     /* [in] */ IUri * uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1004,7 +1004,7 @@ ECode CImageWallpaper::CheckUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [out] */ Int32 * result)
 {
-    return WallpaperService::CheckUriPermissionEx(
+    return WallpaperService::CheckUriPermission(
             uri,
             readPermission,
             writePermission,
@@ -1117,12 +1117,12 @@ ECode CImageWallpaper::UnregisterComponentCallbacks(
     return WallpaperService::UnregisterComponentCallbacks(componentCallback);
 }
 
-ECode CImageWallpaper::GetStringEx(
+ECode CImageWallpaper::GetString(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<IInterface*>* formatArgs,
     /* [out] */ String* str)
 {
-    return WallpaperService::GetStringEx(resId, formatArgs, str);
+    return WallpaperService::GetString(resId, formatArgs, str);
 }
 
 ECode CImageWallpaper::GetThemeResId(
@@ -1202,14 +1202,14 @@ ECode CImageWallpaper::OpenOrCreateDatabase(
     return WallpaperService::OpenOrCreateDatabase(name, mode, factory, sqliteDB);
 }
 
-ECode CImageWallpaper::OpenOrCreateDatabaseEx(
+ECode CImageWallpaper::OpenOrCreateDatabase(
     /* [in] */ const String& name,
     /* [in] */ Int32 mode,
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
     /* [in] */ IDatabaseErrorHandler* errorHandler,
     /* [out] */ ISQLiteDatabase** sqliteDB)
 {
-    return WallpaperService::OpenOrCreateDatabaseEx(name, mode, factory, errorHandler, sqliteDB);
+    return WallpaperService::OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
 }
 
 ECode CImageWallpaper::DeleteDatabase(
@@ -1262,10 +1262,10 @@ ECode CImageWallpaper::SetWallpaper(
     return WallpaperService::SetWallpaper(bitmap);
 }
 
-ECode CImageWallpaper::SetWallpaperEx(
+ECode CImageWallpaper::SetWallpaper(
     /* [in] */ IInputStream* data)
 {
-    return WallpaperService::SetWallpaperEx(data);
+    return WallpaperService::SetWallpaper(data);
 }
 
 ECode CImageWallpaper::ClearWallpaper()
@@ -1280,22 +1280,22 @@ ECode CImageWallpaper::StartActivityAsUser(
     return WallpaperService::StartActivityAsUser(intent, user);
 }
 
-ECode CImageWallpaper::StartActivityAsUserEx(
+ECode CImageWallpaper::StartActivityAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options,
     /* [in] */ IUserHandle* user)
 {
-    return WallpaperService::StartActivityAsUserEx(intent, options, user);
+    return WallpaperService::StartActivityAsUser(intent, options, user);
 }
 
-ECode CImageWallpaper::StartActivitiesEx(
+ECode CImageWallpaper::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents,
     /* [in] */ IBundle* options)
 {
-    return WallpaperService::StartActivitiesEx(intents, options);
+    return WallpaperService::StartActivities(intents, options);
 }
 
-ECode CImageWallpaper::StartIntentSenderEx(
+ECode CImageWallpaper::StartIntentSender(
     /* [in] */ IIntentSender* intent,
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ Int32 flagsMask,
@@ -1303,14 +1303,14 @@ ECode CImageWallpaper::StartIntentSenderEx(
     /* [in] */ Int32 extraFlags,
     /* [in] */ IBundle* options)
 {
-    return WallpaperService::StartIntentSenderEx(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
+    return WallpaperService::StartIntentSender(intent, fillInIntent, flagsMask, flagsValues, extraFlags, options);
 }
 
-ECode CImageWallpaper::SendBroadcastEx(
+ECode CImageWallpaper::SendBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission)
 {
-    return WallpaperService::SendBroadcastEx(intent, receiverPermission);
+    return WallpaperService::SendBroadcast(intent, receiverPermission);
 }
 
 ECode CImageWallpaper::SendOrderedBroadcast(
@@ -1320,7 +1320,7 @@ ECode CImageWallpaper::SendOrderedBroadcast(
     return WallpaperService::SendOrderedBroadcast(intent, receiverPermission);
 }
 
-ECode CImageWallpaper::SendOrderedBroadcastEx(
+ECode CImageWallpaper::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
     /* [in] */ IBroadcastReceiver* resultReceiver,
@@ -1329,7 +1329,7 @@ ECode CImageWallpaper::SendOrderedBroadcastEx(
     /* [in] */ const String& initialData,
     /* [in] */ IBundle* initialExtras)
 {
-    return WallpaperService::SendOrderedBroadcastEx(intent, receiverPermission,
+    return WallpaperService::SendOrderedBroadcast(intent, receiverPermission,
             resultReceiver, scheduler, initialCode, initialData, initialExtras);
 }
 
@@ -1340,12 +1340,12 @@ ECode CImageWallpaper::SendBroadcastAsUser(
     return WallpaperService::SendBroadcastAsUser(intent, user);
 }
 
-ECode CImageWallpaper::SendBroadcastAsUserEx(
+ECode CImageWallpaper::SendBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission)
 {
-    return WallpaperService::SendBroadcastAsUserEx(intent, user, receiverPermission);
+    return WallpaperService::SendBroadcastAsUser(intent, user, receiverPermission);
 }
 
 ECode CImageWallpaper::SendOrderedBroadcastAsUser(
@@ -1458,11 +1458,11 @@ ECode CImageWallpaper::GetExternalCacheDir(
     return WallpaperService::GetExternalCacheDir(externalDir);
 }
 
-ECode CImageWallpaper::StartActivityEx(
+ECode CImageWallpaper::StartActivity(
     /* [in] */ IIntent* intent,
     /* [in] */ IBundle* options)
 {
-    return WallpaperService::StartActivityEx(intent, options);
+    return WallpaperService::StartActivity(intent, options);
 }
 
 ECode CImageWallpaper::StartActivities(
@@ -1507,14 +1507,14 @@ ECode CImageWallpaper::StopServiceAsUser(
     return WallpaperService::StopServiceAsUser(service, user, succeeded);
 }
 
-ECode CImageWallpaper::BindServiceEx(
+ECode CImageWallpaper::BindService(
     /* [in] */ IIntent* service,
     /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* succeeded)
 {
-    return WallpaperService::BindServiceEx(service, conn, flags, userHandle, succeeded);
+    return WallpaperService::BindService(service, conn, flags, userHandle, succeeded);
 }
 
 ECode CImageWallpaper::CheckCallingUriPermission(
@@ -1559,7 +1559,7 @@ ECode CImageWallpaper::EnforceCallingOrSelfUriPermission(
     return WallpaperService::EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
 }
 
-ECode CImageWallpaper::EnforceUriPermissionEx(
+ECode CImageWallpaper::EnforceUriPermission(
     /* [in] */ IUri* uri,
     /* [in] */ const String& readPermission,
     /* [in] */ const String& writePermission,
@@ -1568,7 +1568,7 @@ ECode CImageWallpaper::EnforceUriPermissionEx(
     /* [in] */ Int32 modeFlags,
     /* [in] */ const String& message)
 {
-    return WallpaperService::EnforceUriPermissionEx(uri, readPermission, writePermission,
+    return WallpaperService::EnforceUriPermission(uri, readPermission, writePermission,
             pid, uid, modeFlags, message);
 }
 
@@ -1616,14 +1616,14 @@ ECode CImageWallpaper::RegisterReceiver(
     return WallpaperService::RegisterReceiver(receiver,filter,intent);
 }
 
-ECode CImageWallpaper::RegisterReceiverEx(
+ECode CImageWallpaper::RegisterReceiver(
     /* [in] */ IBroadcastReceiver* receiver,
     /* [in] */ IIntentFilter* filter,
     /* [in] */ const String& broadcastPermission,
     /* [in] */ IHandler* scheduler,
     /* [out] */ IIntent** intent)
 {
-    return WallpaperService::RegisterReceiverEx(receiver,filter,
+    return WallpaperService::RegisterReceiver(receiver,filter,
         broadcastPermission,scheduler,intent);
 }
 
@@ -1644,10 +1644,10 @@ ECode CImageWallpaper::StopSelf()
     return WallpaperService::StopSelf();
 }
 
-ECode CImageWallpaper::StopSelfEx(
+ECode CImageWallpaper::StopSelf(
     /* [in] */ Int32 startId)
 {
-    return WallpaperService::StopSelfEx(startId);
+    return WallpaperService::StopSelf(startId);
 }
 
 ECode CImageWallpaper::StopSelfResult(

@@ -22,9 +22,9 @@
 #include "os/CPatternMatcher.h"
 #include "util/CDisplayMetrics.h"
 #endif
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "content/pm/PackageManager.h"
 #include "os/Build.h"
 #include "os/UserHandle.h"
@@ -818,7 +818,7 @@ ECode PackageParser::IntentInfo::GetActions(
 
     AutoPtr< ArrayOf<String> > acts = IntentFilter::GetActions();
     *actions = acts;
-    INTERFACE_ADDREF(*actions);
+    REFCOUNT_ADD(*actions);
     return NOERROR;
 }
 
@@ -864,7 +864,7 @@ ECode PackageParser::IntentInfo::GetTypes(
 
     AutoPtr< ArrayOf<String> > typs = IntentFilter::GetTypes();
     *types = typs ;
-    INTERFACE_ADDREF(*types);
+    REFCOUNT_ADD(*types);
     return NOERROR;
 }
 
@@ -910,7 +910,7 @@ ECode PackageParser::IntentInfo::GetSchemes(
 
     AutoPtr< ArrayOf<String> > schs = IntentFilter::GetSchemes();
     *schemes = schs;
-    INTERFACE_ADDREF(*schemes);
+    REFCOUNT_ADD(*schemes);
     return NOERROR;
 }
 
@@ -938,7 +938,7 @@ ECode PackageParser::IntentInfo::GetDataAuthority(
 
     AutoPtr<IIntentFilterAuthorityEntry> tmp = IntentFilter::GetDataAuthority(index);
     *authority = tmp.Get();
-    INTERFACE_ADDREF(*authority);
+    REFCOUNT_ADD(*authority);
     return NOERROR;
 }
 
@@ -959,7 +959,7 @@ ECode PackageParser::IntentInfo::GetAuthorities(
 
     AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > auths = IntentFilter::GetAuthorities();
     *authorities = auths;
-    INTERFACE_ADDREF(*authorities);
+    REFCOUNT_ADD(*authorities);
     return NOERROR;
 }
 
@@ -987,7 +987,7 @@ ECode PackageParser::IntentInfo::GetDataPath(
 
     AutoPtr<IPatternMatcher> tmp = IntentFilter::GetDataPath(index);
     *path = tmp;
-    INTERFACE_ADDREF(*path);
+    REFCOUNT_ADD(*path);
     return NOERROR;
 }
 
@@ -1008,7 +1008,7 @@ ECode PackageParser::IntentInfo::GetPaths(
 
     AutoPtr< ArrayOf<IPatternMatcher*> > pas = IntentFilter::GetPaths();
     *paths = pas;
-    INTERFACE_ADDREF(*paths);
+    REFCOUNT_ADD(*paths);
     return NOERROR;
 }
 
@@ -1076,7 +1076,7 @@ ECode PackageParser::IntentInfo::GetCategories(
 
     AutoPtr< ArrayOf<String> > cats = IntentFilter::GetCategories();
     *categories = cats;
-    INTERFACE_ADDREF(*categories);
+    REFCOUNT_ADD(*categories);
     return NOERROR;
 }
 
@@ -1103,7 +1103,7 @@ ECode PackageParser::IntentInfo::Match(
     return NOERROR;
 }
 
-ECode PackageParser::IntentInfo::MatchEx(
+ECode PackageParser::IntentInfo::Match(
     /* [in] */ const String& action,
     /* [in] */ const String& type,
     /* [in] */ const String& scheme,
@@ -1465,7 +1465,7 @@ AutoPtr< ArrayOf<ICertificate*> > PackageParser::LoadCertificates(
     Int32 rst;
 
     do {
-        if (FAILED(is->ReadBytesEx(readBuffer, 0, readBuffer->GetLength(), &rst))) {
+        if (FAILED(is->ReadBytes(readBuffer, 0, readBuffer->GetLength(), &rst))) {
             is->Close();
             return NULL;
         }
@@ -1530,7 +1530,7 @@ AutoPtr<PackageParser::Package> PackageParser::ParsePackage(
         CResources::New(assmgr, metrics, NULL, (IResources**)&res);
         if(FAILED(assmgr->SetConfiguration(0, 0, String(NULL), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 Build::VERSION::RESOURCES_SDK_INT))) goto out;
-        if(FAILED(assmgr->OpenXmlResourceParserEx(cookie, ANDROID_MANIFEST_FILENAME,
+        if(FAILED(assmgr->OpenXmlResourceParser(cookie, ANDROID_MANIFEST_FILENAME,
                 (IXmlResourceParser**)&parser))) goto out;
         assetError = FALSE;
     }
@@ -1826,7 +1826,7 @@ AutoPtr<PackageParser::PackageLite> PackageParser::ParsePackageLite(
     FAIL_RETURN_NULL(CDisplayMetrics::New((IDisplayMetrics**)&metrics));
     metrics->SetToDefaults();
     FAIL_RETURN_NULL(CResources::New(assmgr, metrics, NULL, (IResources**)&res));
-    FAIL_RETURN_NULL(assmgr->OpenXmlResourceParserEx(cookie, ANDROID_MANIFEST_FILENAME, (IXmlResourceParser**)&parser));
+    FAIL_RETURN_NULL(assmgr->OpenXmlResourceParser(cookie, ANDROID_MANIFEST_FILENAME, (IXmlResourceParser**)&parser));
     // } catch (Exception e) {
     //     if (assmgr != null) assmgr.close();
     //     Slog.w(TAG, "Unable to read AndroidManifest.xml of "
@@ -1925,7 +1925,7 @@ String PackageParser::ParsePackageName(
         return String(NULL);
     }
     String pkgName;
-    ECode ec = attrs->GetAttributeValueEx(String(NULL), String("package"), &pkgName);
+    ECode ec = attrs->GetAttributeValue(String(NULL), String("package"), &pkgName);
     if (FAILED(ec) || pkgName.IsNullOrEmpty()) {
         (*outError)[0] = "<manifest> does not specify package";
         return String(NULL);
@@ -1967,7 +1967,7 @@ AutoPtr<PackageParser::PackageLite> PackageParser::ParsePackageLite(
         return NULL;
     }
     String pkgName;
-    ECode ec = attrs->GetAttributeValueEx(String(NULL), String("package"), &pkgName);
+    ECode ec = attrs->GetAttributeValue(String(NULL), String("package"), &pkgName);
     if (FAILED(ec) || pkgName.IsNullOrEmpty()) {
         (*outError)[0] = "<manifest> does not specify package";
         return NULL;
@@ -1987,12 +1987,12 @@ AutoPtr<PackageParser::PackageLite> PackageParser::ParsePackageLite(
         String attr;
         attrs->GetAttributeName(i, &attr);
         if (attr.Equals("installLocation")) {
-            attrs->GetAttributeIntValueEx(i,
+            attrs->GetAttributeIntValue(i,
                     PARSE_DEFAULT_INSTALL_LOCATION, &installLocation);
             numFound++;
         }
         else if (attr.Equals("versionCode")) {
-            attrs->GetAttributeIntValueEx(i, 0, &versionCode);
+            attrs->GetAttributeIntValue(i, 0, &versionCode);
             numFound++;
         }
         if (numFound >= 2) {
@@ -4942,7 +4942,7 @@ Boolean PackageParser::ParseIntent(
         parser->GetName(&nodeName);
         if (nodeName.Equals("action")) {
             String value;
-            ECode ec = attrs->GetAttributeValueEx(ANDROID_RESOURCES, String("name"), &value);
+            ECode ec = attrs->GetAttributeValue(ANDROID_RESOURCES, String("name"), &value);
             if (FAILED(ec) || value.IsNullOrEmpty()) {
                 (*outError)[0] = "No value supplied for <android:name>";
                 return FALSE;
@@ -4953,7 +4953,7 @@ Boolean PackageParser::ParseIntent(
         }
         else if (nodeName.Equals("category")) {
             String value;
-            ECode ec = attrs->GetAttributeValueEx(ANDROID_RESOURCES, String("name"), &value);
+            ECode ec = attrs->GetAttributeValue(ANDROID_RESOURCES, String("name"), &value);
             if (FAILED(ec) || value.IsNullOrEmpty()) {
                 (*outError)[0] = "No value supplied for <android:name>";
                 return FALSE;

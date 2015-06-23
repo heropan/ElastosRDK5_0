@@ -3,10 +3,10 @@
 #define __APPBINDRECORD_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashSet.h>
+#include <elastos/utility/etl/HashSet.h>
 #include "am/ConnectionRecord.h"
 
-using Elastos::Utility::HashSet;
+using Elastos::Utility::Etl::HashSet;
 
 namespace Elastos {
 namespace Droid {

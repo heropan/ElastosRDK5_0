@@ -2,7 +2,7 @@
 #include "pm/PackageSignatures.h"
 #include "pm/CPackageManagerService.h"
 #include "util/XmlUtils.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Server::Pm::CPackageManagerService;
@@ -84,7 +84,7 @@ void PackageSignatures::ReadXml(
     /* [in] */ List< AutoPtr<ISignature> >& pastSignatures)
 {
     String countStr;
-    parser->GetAttributeValueEx(String(NULL), String("count"), &countStr);
+    parser->GetAttributeValue(String(NULL), String("count"), &countStr);
     if (countStr.IsNull()) {
         String des;
         parser->GetPositionDescription(&des);
@@ -112,12 +112,12 @@ void PackageSignatures::ReadXml(
         if (tagName.Equals("cert")) {
             if (pos < count) {
                 String index;
-                parser->GetAttributeValueEx(String(NULL), String("index"), &index);
+                parser->GetAttributeValue(String(NULL), String("index"), &index);
                 if (!index.IsNull()) {
                     // try {
                     Int32 idx = StringUtils::ParseInt32(index);
                     String key;
-                    parser->GetAttributeValueEx(String(NULL), String("key"), &key);
+                    parser->GetAttributeValue(String(NULL), String("key"), &key);
                     if (key.IsNull()) {
                         if (idx >= 0 && idx < pastSignatures.GetSize()) {
                             AutoPtr<ISignature> sig = pastSignatures[idx];

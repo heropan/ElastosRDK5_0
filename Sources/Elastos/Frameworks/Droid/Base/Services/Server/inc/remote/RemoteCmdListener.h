@@ -3,9 +3,7 @@
 #define __REMOTECMDLISTENER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::ThreadBase;
 using Elastos::Net::IServerSocket;
 using Elastos::Droid::Content::IContext;
 

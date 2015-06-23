@@ -3,7 +3,7 @@
 #define __CTYPEFACEHELPER_H__
 
 #include "_CTypefaceHelper.h"
-#include <Elastos.Core.h>
+#include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFile;
 using Elastos::Droid::Content::Res::IAssetManager;
@@ -42,7 +42,7 @@ public:
      *               e.g. NORMAL, BOLD, ITALIC, BOLD_ITALIC
      * @return The best matching typeface.
      */
-    CARAPI CreateEx(
+    CARAPI Create(
         /* [in] */ ITypeface* family,
         /* [in] */ Int32 style,
         /* [out] */ ITypeface** typeface);
@@ -83,7 +83,7 @@ public:
      * @param path The full path to the font data.
      * @return The new typeface.
      */
-    CARAPI CreateFromFileEx(
+    CARAPI CreateFromFile(
         /* [in]*/ const String& path,
         /* [out] */ ITypeface** typeface);
 

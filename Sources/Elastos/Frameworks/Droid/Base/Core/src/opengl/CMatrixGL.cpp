@@ -1,6 +1,6 @@
 
 #include "CMatrixGL.h"
-#include "elastos/Math.h"
+#include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
@@ -440,7 +440,7 @@ ECode CMatrixGL::ScaleM(
     return NOERROR;
 }
 
-ECode CMatrixGL::ScaleMEx(
+ECode CMatrixGL::ScaleM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float x,
@@ -477,7 +477,7 @@ ECode CMatrixGL::TranslateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::TranslateMEx(
+ECode CMatrixGL::TranslateM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float x,
@@ -509,7 +509,7 @@ ECode CMatrixGL::RotateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::RotateMEx(
+ECode CMatrixGL::RotateM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float a,
@@ -694,7 +694,7 @@ ECode CMatrixGL::SetLookAtM(
     (*rm)[rmOffset + 14] = 0.0f;
     (*rm)[rmOffset + 15] = 1.0f;
 
-    TranslateMEx(rm, rmOffset, -eyeX, -eyeY, -eyeZ);
+    TranslateM(rm, rmOffset, -eyeX, -eyeY, -eyeZ);
     return NOERROR;
 }
 

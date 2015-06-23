@@ -2,9 +2,9 @@
 #define __CTICKERVIEW_H_
 
 #include "_CTickerView.h"
-#include "view/ViewMacro.h"
-#include "view/ViewGroupLayoutParamsMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
+
 
 #include "systemui/statusbar/phone/TickerView.h"
 

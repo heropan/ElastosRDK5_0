@@ -1,9 +1,9 @@
 #include "Celestial.h"
 #include "MatrixState.h"
-#include "elastos/List.h"
-#include "elastos/Math.h"
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/Math.h>
 #include "ShaderUtil.h"
-#include "elastos/Slogger.h"
+#include <elastos/utility/logging/Slogger.h>
 using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::IByteBufferHelper;
 using Elastos::IO::ByteOrder;
@@ -88,7 +88,7 @@ ECode Celestial::DrawSelf()
     //将最终变换矩阵传入着色器程序
     gl->GlUniformMatrix4fv(muMVPMatrixHandle, 1, FALSE, MatrixState::GetFinalMatrix(), 0);
     gl->GlUniform1f(uPointSizeHandle, mScale);  //将顶点尺寸传入着色器程序
-    gl->GlVertexAttribPointerEx( //为画笔指定顶点位置数据
+    gl->GlVertexAttribPointer( //为画笔指定顶点位置数据
             maPositionHandle,
             3,
             IGLES20::_GL_FLOAT,

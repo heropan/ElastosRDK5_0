@@ -115,7 +115,7 @@ ECode CTransitionAlpha::constructor(
          * Write to rgb file
          */
         AutoPtr<IBitmap> imageBitmap;
-        bitmapFactory->DecodeFileEx(maskFilename, (IBitmap**)&imageBitmap);
+        bitmapFactory->DecodeFile(maskFilename, (IBitmap**)&imageBitmap);
         AutoPtr<ArrayOf<Int32> > framingBuffer = ArrayOf<Int32>::Alloc(mWidth);
 
         AutoPtr<IByteBufferHelper> helper;
@@ -130,7 +130,7 @@ ECode CTransitionAlpha::constructor(
         while (tmp < mHeight) {
             imageBitmap->GetPixels(*framingBuffer, 0, mWidth, 0, tmp,mWidth, 1);
             byteBuffer->AsInt32Buffer((IInt32Buffer**)&intBuffer);
-            intBuffer->PutInt32sEx(*framingBuffer, 0, mWidth);
+            intBuffer->PutInt32s(*framingBuffer, 0, mWidth);
             //try {
                 dos->WriteBytes(*array);
             //} catch (IOException e) {

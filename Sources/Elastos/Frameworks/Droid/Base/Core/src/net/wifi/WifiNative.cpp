@@ -1,17 +1,17 @@
 
 #include "net/wifi/WifiNative.h"
-#include <Elastos.Core.h>
-#include <elastos/List.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <Elastos.CoreLibrary.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 #include <wifi.h>
 #include <stdlib.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDevice;
 
 #define WIFI_PKG_NAME "android/net/wifi/WifiNative"

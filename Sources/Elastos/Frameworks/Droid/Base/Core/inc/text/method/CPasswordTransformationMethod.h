@@ -3,7 +3,7 @@
 #define __CPASSWORDTRANSFORMATIONMETHOD_H__
 
 #include "_CPasswordTransformationMethod.h"
-#include "os/HandlerMacro.h"
+
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Text::IGetChars;

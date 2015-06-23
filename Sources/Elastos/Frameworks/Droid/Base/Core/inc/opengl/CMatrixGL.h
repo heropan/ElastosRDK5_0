@@ -5,8 +5,6 @@
 #include "_CMatrixGL.h"
 #include "elastos/Mutex.h"
 
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace Opengl {
@@ -149,7 +147,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ Float z);
 
-    CARAPI ScaleMEx(
+    CARAPI ScaleM(
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 mOffset,
         /* [in] */ Float x,
@@ -165,7 +163,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ Float z);
 
-    CARAPI TranslateMEx(
+    CARAPI TranslateM(
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 mOffset,
         /* [in] */ Float x,
@@ -182,7 +180,7 @@ public:
         /* [in] */ Float y,
         /* [in] */ Float z);
 
-    CARAPI RotateMEx(
+    CARAPI RotateM(
         /* [in] */ ArrayOf<Float>* m,
         /* [in] */ Int32 mOffset,
         /* [in] */ Float a,

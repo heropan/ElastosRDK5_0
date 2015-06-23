@@ -4,8 +4,8 @@
 #include "os/CBinder.h"
 #include "os/Handler.h"
 #include "os/CWorkSource.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
@@ -64,7 +64,7 @@ ECode CPowerManagerWakeLock::AcquireLock()
     return NOERROR;
 }
 
-ECode CPowerManagerWakeLock::AcquireLockEx(
+ECode CPowerManagerWakeLock::AcquireLock(
     /* [in] */ Int64 timeout)
 {
     Mutex::Autolock lock(mTokenLock);
@@ -93,10 +93,10 @@ void CPowerManagerWakeLock::AcquireLocked()
 
 ECode CPowerManagerWakeLock::ReleaseLock()
 {
-    return ReleaseLockEx(0);
+    return ReleaseLock(0);
 }
 
-ECode CPowerManagerWakeLock::ReleaseLockEx(
+ECode CPowerManagerWakeLock::ReleaseLock(
     /* [in] */ Int32 flags)
 {
     Mutex::Autolock lock(mTokenLock);

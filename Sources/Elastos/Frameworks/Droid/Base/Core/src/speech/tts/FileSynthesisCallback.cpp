@@ -1,15 +1,15 @@
 #include "speech/tts/FileSynthesisCallback.h"
 #include "os/FileUtils.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::CRandomAccessFile;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IByteBufferHelper;
 using Elastos::IO::CByteBufferHelper;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::FileUtils;
 
@@ -193,7 +193,7 @@ Int32 FileSynthesisCallback::AudioAvailable(
         return ITextToSpeech::TTS_ERROR;
     }
     //try {
-        mFile->WriteBytesEx(*buffer, offset, length);
+        mFile->WriteBytes(*buffer, offset, length);
         return ITextToSpeech::TTS_SUCCESS;
     //} catch (IOException ex) {
         //Java:    Log.e(TAG, "Failed to write to " + mFileName + ": " + ex);

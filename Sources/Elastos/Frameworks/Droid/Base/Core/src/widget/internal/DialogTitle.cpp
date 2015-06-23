@@ -15,7 +15,7 @@ DialogTitle::DialogTitle()
 }
 
 DialogTitle::DialogTitle(
-    /* [in] */ IContext* context, 
+    /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
     : TextView(context, attrs, defStyle)
@@ -23,7 +23,7 @@ DialogTitle::DialogTitle(
 }
 
 DialogTitle::DialogTitle(
-    /* [in] */ IContext* context, 
+    /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
     : TextView(context, attrs)
 {
@@ -57,8 +57,8 @@ ECode DialogTitle::Init(
 }
 
 void DialogTitle::OnMeasure(
-    /* [in] */ Int32 widthMeasureSpec, 
-    /* [in] */ Int32 heightMeasureSpec) 
+    /* [in] */ Int32 widthMeasureSpec,
+    /* [in] */ Int32 heightMeasureSpec)
 {
     TextView::OnMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -79,21 +79,21 @@ void DialogTitle::OnMeasure(
                     const_cast<Int32 *>(R::styleable::TextAppearance),
                     ARRAY_SIZE(R::styleable::TextAppearance));
                 AutoPtr<ITypedArray> a;
-                ASSERT_SUCCEEDED(mContext->ObtainStyledAttributesEx3(
+                ASSERT_SUCCEEDED(mContext->ObtainStyledAttributes(
                         NULL, attrIds, R::attr::textAppearanceMedium,
                         R::style::TextAppearance_Medium, (ITypedArray**)&a));
 
                 Int32 textSize;
                 a->GetDimensionPixelSize(
                     R::styleable::TextAppearance_textSize, 0, &textSize);
-                
+
                 if (textSize != 0) {
                     // textSize is already expressed in pixels
                     SetTextSize(ITypedValue::COMPLEX_UNIT_PX, textSize);
                 }
                 a->Recycle();
 
-                TextView::OnMeasure(widthMeasureSpec, heightMeasureSpec);      
+                TextView::OnMeasure(widthMeasureSpec, heightMeasureSpec);
             }
         }
     }

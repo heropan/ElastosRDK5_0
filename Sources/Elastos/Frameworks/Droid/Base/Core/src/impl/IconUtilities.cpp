@@ -169,7 +169,7 @@ AutoPtr<IBitmap> IconUtilities::CreateIconBitmap(
         Int32 density;
         bitmap->GetDensity(&density);
         if (density == IBitmap::DENSITY_NONE) {
-            bitmapDrawable->SetTargetDensityEx(mDisplayMetrics);
+            bitmapDrawable->SetTargetDensity(mDisplayMetrics);
         }
     }
 
@@ -218,15 +218,15 @@ AutoPtr<IBitmap> IconUtilities::CreateIconBitmap(
         AutoPtr<IPaint> debugPaint;
         CPaint::New((IPaint**)&debugPaint);
         debugPaint->SetColor(0xffcccc00);
-        canvas->DrawRectEx2(left, top, left + width, top + height, debugPaint);
+        canvas->DrawRect(left, top, left + width, top + height, debugPaint);
     }
 
     AutoPtr<IRect> bounds;
     icon->GetBounds((IRect**)&bounds);
-    mOldBounds->SetEx(bounds);
+    mOldBounds->Set(bounds);
     icon->SetBounds(left, top, left + width, top+height);
     icon->Draw(canvas);
-    icon->SetBoundsEx(mOldBounds);
+    icon->SetBounds(mOldBounds);
 
     return bitmap;
 }
@@ -243,14 +243,14 @@ AutoPtr<IBitmap> IconUtilities::CreateSelectedBitmap(
     AutoPtr<ICanvas> dest;
     CCanvas::New(result, (ICanvas**)&dest);
 
-    dest->DrawColorEx(0, PorterDuffMode_CLEAR);
+    dest->DrawColor(0, PorterDuffMode_CLEAR);
 
     AutoPtr<ArrayOf<Int32> > xy = ArrayOf<Int32>::Alloc(2);
     xy->Set(0, 0);
     xy->Set(1, 0);
 
     AutoPtr<IBitmap> mask;
-    src->ExtractAlphaEx(mBlurPaint, xy, (IBitmap**)&mask);
+    src->ExtractAlpha(mBlurPaint, xy, (IBitmap**)&mask);
 
     dest->DrawBitmap(mask, (*xy)[0], (*xy)[1],
         pressed ? mGlowColorPressedPaint : mGlowColorFocusedPaint);

@@ -8,8 +8,8 @@
 #include "os/CParcelFileDescriptorHelper.h"
 #endif
 #include "os/Process.h"
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
@@ -207,7 +207,7 @@ ECode ContentProvider::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -228,7 +228,7 @@ ECode ContentProvider::GetContext(
 {
     VALIDATE_NOT_NULL(context)
     *context = mContext;
-    INTERFACE_ADDREF(*context)
+    REFCOUNT_ADD(*context)
     return NOERROR;
 }
 
@@ -295,7 +295,7 @@ ECode ContentProvider::OnTrimMemory(
     return NOERROR;
 }
 
-ECode ContentProvider::QueryEx(
+ECode ContentProvider::Query(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
     /* [in] */ const String& selection,
@@ -480,7 +480,7 @@ ECode ContentProvider::OpenPipeHelper(
         return E_FILE_NOT_FOUND_EXCEPTION;
     }
     *fileDescriptor = (*fds)[0];
-    INTERFACE_ADDREF(*fileDescriptor)
+    REFCOUNT_ADD(*fileDescriptor)
     return NOERROR;
     // } catch (IOException e) {
     //     throw new FileNotFoundException("failure making pipe");
@@ -497,7 +497,7 @@ ECode ContentProvider::GetIContentProvider(
 {
     VALIDATE_NOT_NULL(provider)
     *provider = IIContentProvider::Probe(mTransport);
-    INTERFACE_ADDREF(*provider)
+    REFCOUNT_ADD(*provider)
     return NOERROR;
 }
 
@@ -558,7 +558,7 @@ ECode ContentProvider::ApplyBatch(
         i++;
     }
     *providerResults = results;
-    INTERFACE_ADDREF(*providerResults);
+    REFCOUNT_ADD(*providerResults);
     return NOERROR;
 }
 

@@ -6,10 +6,10 @@
 #include "os/SystemClock.h"
 #include "R.h"
 #include "Manifest.h"
-#include <elastos/Algorithm.h>
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CObjectContainer;
@@ -564,34 +564,34 @@ CAccessibilityManagerService::AccessibilityContentObserver::AccessibilityContent
 {
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    settingsSecure->GetUriForEx(ISettingsSecure::ACCESSIBILITY_ENABLED,
+    settingsSecure->GetUriFor(ISettingsSecure::ACCESSIBILITY_ENABLED,
         (IUri**)&mAccessibilityEnabledUri);
 
-    settingsSecure->GetUriForEx(ISettingsSecure::TOUCH_EXPLORATION_ENABLED,
+    settingsSecure->GetUriFor(ISettingsSecure::TOUCH_EXPLORATION_ENABLED,
         (IUri**)&mTouchExplorationEnabledUri);
 
-    settingsSecure->GetUriForEx(ISettingsSecure::ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED,
+    settingsSecure->GetUriFor(ISettingsSecure::ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED,
         (IUri**)&mDisplayMagnificationEnabledUri);
 
-    settingsSecure->GetUriForEx(ISettingsSecure::ENABLED_ACCESSIBILITY_SERVICES,
+    settingsSecure->GetUriFor(ISettingsSecure::ENABLED_ACCESSIBILITY_SERVICES,
         (IUri**)&mEnabledAccessibilityServicesUri);
 
-    settingsSecure->GetUriForEx(ISettingsSecure::TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES,
+    settingsSecure->GetUriFor(ISettingsSecure::TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES,
         (IUri**)&mTouchExplorationGrantedAccessibilityServicesUri);
 }
 
 void CAccessibilityManagerService::AccessibilityContentObserver::Register(
     /* [in] */ IContentResolver* contentResolver)
 {
-    contentResolver->RegisterContentObserverEx(mAccessibilityEnabledUri,
+    contentResolver->RegisterContentObserver(mAccessibilityEnabledUri,
         FALSE, (IContentObserver*)this, IUserHandle::USER_ALL);
-    contentResolver->RegisterContentObserverEx(mTouchExplorationEnabledUri,
+    contentResolver->RegisterContentObserver(mTouchExplorationEnabledUri,
         FALSE, (IContentObserver*)this, IUserHandle::USER_ALL);
-    contentResolver->RegisterContentObserverEx(mDisplayMagnificationEnabledUri,
+    contentResolver->RegisterContentObserver(mDisplayMagnificationEnabledUri,
         FALSE, (IContentObserver*)this, IUserHandle::USER_ALL);
-    contentResolver->RegisterContentObserverEx(mEnabledAccessibilityServicesUri,
+    contentResolver->RegisterContentObserver(mEnabledAccessibilityServicesUri,
         FALSE, (IContentObserver*)this, IUserHandle::USER_ALL);
-    contentResolver->RegisterContentObserverEx(
+    contentResolver->RegisterContentObserver(
         mTouchExplorationGrantedAccessibilityServicesUri,
         FALSE, (IContentObserver*)this, IUserHandle::USER_ALL);
 }
@@ -866,7 +866,7 @@ void CAccessibilityManagerService::RegisterBroadcastReceivers()
 
     AutoPtr<IPackageMonitor> monitor =  new MyPackageMonitor(this);
     // package changes
-    monitor->RegisterEx(mContext, NULL, all, TRUE);
+    monitor->Register(mContext, NULL, all, TRUE);
 
     // user change and unlock
     AutoPtr<IIntentFilter> intentFilter;
@@ -942,7 +942,7 @@ ECode CAccessibilityManagerService::SendAccessibilityEvent(
         event->GetEventType(&eventType);
 
         AutoPtr<IMessage> msg;
-        mMainHandler->ObtainMessageEx2(MainHandler::MSG_UPDATE_ACTIVE_WINDOW,
+        mMainHandler->ObtainMessage(MainHandler::MSG_UPDATE_ACTIVE_WINDOW,
             windowId, eventType, (IMessage**)&msg);
         Boolean result;
         mMainHandler->SendMessage(msg, &result);
@@ -955,10 +955,10 @@ ECode CAccessibilityManagerService::SendAccessibilityEvent(
         AutoPtr<IAccessibilityEventHelper> helper;
         CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
         AutoPtr<IAccessibilityEvent> outEvent;
-        helper->ObtainEx(event, (IAccessibilityEvent**)&outEvent);
+        helper->Obtain(event, (IAccessibilityEvent**)&outEvent);
 
         AutoPtr<IMessage> msg;
-        mMainHandler->ObtainMessageEx(MainHandler::MSG_SEND_ACCESSIBILITY_EVENT_TO_INPUT_FILTER,
+        mMainHandler->ObtainMessage(MainHandler::MSG_SEND_ACCESSIBILITY_EVENT_TO_INPUT_FILTER,
             outEvent, (IMessage**)&msg);
         Boolean result;
         mMainHandler->SendMessage(msg, &result);
@@ -1314,7 +1314,7 @@ Boolean CAccessibilityManagerService::GetAccessibilityFocusBoundsInActiveWindow(
     AutoPtr<IRect> windowBounds = mTempRect;
     GetActiveWindowBounds(windowBounds);
     Boolean result;
-    outBounds->IntersectEx(windowBounds, &result);
+    outBounds->Intersect(windowBounds, &result);
     // Clip to the screen rectangle.
     mDefaultDisplay->GetRealSize(mTempPoint);
     Int32 x, y;
@@ -1359,7 +1359,7 @@ Boolean CAccessibilityManagerService::GetActiveWindowBounds(
     if (info != NULL) {
         AutoPtr<IRect> frame;
         info->GetFrame((IRect**)&frame);
-        outBounds->SetEx(frame);
+        outBounds->Set(frame);
         info->Recycle();
         return TRUE;
     }
@@ -1399,7 +1399,7 @@ void CAccessibilityManagerService::SwitchUser(
     Int32 count;
     if (oldUserState->mClients->GetRegisteredCallbackCount(&count), count > 0) {
         AutoPtr<IMessage> msg;
-        mMainHandler->ObtainMessageEx2(MainHandler::MSG_SEND_CLEARED_STATE_TO_CLIENTS_FOR_USER,
+        mMainHandler->ObtainMessage(MainHandler::MSG_SEND_CLEARED_STATE_TO_CLIENTS_FOR_USER,
             oldUserState->mUserId, 0, (IMessage**)&msg);
         Boolean result;
         mMainHandler->SendMessage(msg, &result);
@@ -1423,7 +1423,7 @@ void CAccessibilityManagerService::SwitchUser(
 
     // Recreate the internal state for the new user.
     AutoPtr<IMessage> msg;
-    mMainHandler->ObtainMessageEx2(MainHandler::MSG_SEND_RECREATE_INTERNAL_STATE,
+    mMainHandler->ObtainMessage(MainHandler::MSG_SEND_RECREATE_INTERNAL_STATE,
         mCurrentUserId, 0, (IMessage**)&msg);
     Boolean result;
     mMainHandler->SendMessage(msg, &result);
@@ -1852,7 +1852,7 @@ void CAccessibilityManagerService::ScheduleSendStateToClientsLocked(
             || (userState->mClients->GetRegisteredCallbackCount(&count2), count2 > 0)) {
         Int32 clientState = GetClientState(userState);
         AutoPtr<IMessage> msg;
-        mMainHandler->ObtainMessageEx2(MainHandler::MSG_SEND_STATE_TO_CLIENTS,
+        mMainHandler->ObtainMessage(MainHandler::MSG_SEND_STATE_TO_CLIENTS,
             clientState, userState->mUserId, (IMessage**)&msg);
         Boolean result;
         mMainHandler->SendMessage(msg, &result);
@@ -1984,10 +1984,10 @@ void CAccessibilityManagerService::ShowEnableTouchExplorationDialog(
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
     args->Set(0, (IInterface*)csq.Get());
     String str;
-    mContext->GetStringEx(R::string::enable_explore_by_touch_warning_message, args, &str);
+    mContext->GetString(R::string::enable_explore_by_touch_warning_message, args, &str);
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(str, (ICharSequence**)&seq);
-    dialogBuilder->SetMessageEx(seq);
+    dialogBuilder->SetMessage(seq);
     mEnableTouchExplorationDialog = NULL;
     dialogBuilder->Create((IAlertDialog**)&mEnableTouchExplorationDialog);
 
@@ -2225,7 +2225,7 @@ void CAccessibilityManagerService::AnnounceNewUserIfNeeded()
         AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
         args->Set(0, csq.Get());
         String message;
-        mContext->GetStringEx(R::string::user_switched, args, &message);
+        mContext->GetString(R::string::user_switched, args, &message);
         AutoPtr<IAccessibilityEventHelper> helper;
         CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
         AutoPtr<IAccessibilityEvent> event;

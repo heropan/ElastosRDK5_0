@@ -4,13 +4,11 @@
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core.h"
 #include "Elastos.Droid.Server_server.h"
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using namespace Elastos::Core::Threading;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::CObjectContainer;
 using Elastos::Droid::App::ISearchableInfo;
 using Elastos::Droid::Content::IContext;

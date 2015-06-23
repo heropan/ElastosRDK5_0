@@ -2,7 +2,7 @@
 #ifndef  __ACTIONMENUVIEW_H__
 #define  __ACTIONMENUVIEW_H__
 
-#include "view/ViewGroupLayoutParamsMacro.h"
+
 #include "widget/LinearLayoutLayoutParams.h"
 #include "widget/LinearLayout.h"
 #include "view/menu/ActionMenuPresenter.h"

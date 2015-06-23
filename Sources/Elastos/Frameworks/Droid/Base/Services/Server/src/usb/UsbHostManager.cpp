@@ -1,11 +1,11 @@
 
 #include "R.h"
-#include "elastos/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 #include "usb/UsbHostManager.h"
 #include <unistd.h>
 #include <asm/byteorder.h>
 #include <elastos/Vector.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <usbhost/usbhost.h>
 
 using Elastos::Core::EIID_IRunnable;
@@ -14,8 +14,8 @@ using Elastos::IO::IFileDescriptor;
 using Elastos::IO::CFileDescriptor;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::CThread;
+using Elastos::Core::IThread;
+using Elastos::Core::CThread;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::CParcelFileDescriptor;

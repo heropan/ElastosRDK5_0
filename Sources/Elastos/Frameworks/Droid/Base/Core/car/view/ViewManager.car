@@ -24,7 +24,7 @@ module
              * @param view The view to be added to this window.
              * @param params The LayoutParams to assign to view.
              */
-            AddViewEx5(
+            AddView(
                 [in] IView* view,
                 [in] IViewGroupLayoutParams* params);
 

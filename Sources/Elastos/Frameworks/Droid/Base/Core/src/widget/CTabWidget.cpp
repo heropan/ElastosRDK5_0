@@ -88,7 +88,7 @@ ECode CTabWidget::GetTabCount(
  * @param resId the resource identifier of the drawable to use as a
  * divider.
  */
-ECode CTabWidget::SetDividerDrawableEx(
+ECode CTabWidget::SetDividerDrawable(
     /* [in] */ Int32 resId)
 {
     return TabWidget::SetDividerDrawable(resId);
@@ -111,7 +111,7 @@ ECode CTabWidget::SetLeftStripDrawable(
  * @param resId the resource identifier of the drawable to use as the
  * left strip drawable
  */
-ECode CTabWidget::SetLeftStripDrawableEx(
+ECode CTabWidget::SetLeftStripDrawable(
     /* [in] */ Int32 resId)
 {
     return TabWidget::SetLeftStripDrawable(resId);
@@ -134,7 +134,7 @@ ECode CTabWidget::SetRightStripDrawable(
  * @param resId the resource identifier of the drawable to use as the
  * right strip drawable
  */
-ECode CTabWidget::SetRightStripDrawableEx(
+ECode CTabWidget::SetRightStripDrawable(
     /* [in] */ Int32 resId)
 {
     return TabWidget::SetRightStripDrawable(resId);

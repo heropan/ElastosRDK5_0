@@ -56,7 +56,7 @@ ECode CVpnServiceBuilder::AddAddress(
     return NOERROR;
 }
 
-ECode CVpnServiceBuilder::AddAddressEx(
+ECode CVpnServiceBuilder::AddAddress(
     /* [in] */ const String& address,
     /* [in] */ Int32 prefixLength)
 {
@@ -102,7 +102,7 @@ ECode CVpnServiceBuilder::AddRoute(
     return NOERROR;
 }
 
-ECode CVpnServiceBuilder::AddRouteEx(
+ECode CVpnServiceBuilder::AddRoute(
     /* [in] */ const String& address,
     /* [in] */ Int32 prefixLength)
 {
@@ -145,7 +145,7 @@ ECode CVpnServiceBuilder::AddDnsServer(
     return dnsServers->Add(elmt->Get());
 }
 
-ECode CVpnServiceBuilder::AddDnsServerEx(
+ECode CVpnServiceBuilder::AddDnsServer(
     /* [in] */ const String& address)
 {
     AutoPtr<IInetAddressHelper> addressHelper;

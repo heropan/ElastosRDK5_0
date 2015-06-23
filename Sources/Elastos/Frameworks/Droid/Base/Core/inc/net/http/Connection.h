@@ -3,7 +3,7 @@
 #define __CONNECTION_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "RequestFeeder.h"
 
 using namespace Elastos::Core;

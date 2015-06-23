@@ -6,7 +6,7 @@
 #include "GeckoErrors.h"
 #include "GeckoEvent.h"
 //#include "ByteBuffer.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <stdio.h>
 #include <pthread.h>
 #include "os/Build.h"
@@ -458,7 +458,7 @@ ECode CGeckoSurfaceView::DrawSplashScreen(
         resources->GetString(0x7f050002, &firstRun); //R.string.splash_firstrun
         // Logger::D(DBG_TAG, "\n\n\n\n\n\n\t firstRun: %s\n\n\n\n\n", firstRun.string());
         firstRun = "Starting Snowfox…";
-        ASSERT_SUCCEEDED(canvas->DrawTextEx(firstRun, width/2, y + h + 16, paint));
+        ASSERT_SUCCEEDED(canvas->DrawText(firstRun, width/2, y + h + 16, paint));
     }
     else {
         // Show the static UI for normal startup
@@ -466,7 +466,7 @@ ECode CGeckoSurfaceView::DrawSplashScreen(
         ec = CDisplayMetrics::New((IDisplayMetrics**)&metrics);
         if (FAILED(ec)) return ec;
         AutoPtr<IWindowManager> wm;
-        ec = GeckoApp::sAppContext->GetWindowManagerEx((IWindowManager**)&wm);
+        ec = GeckoApp::sAppContext->GetWindowManager((IWindowManager**)&wm);
         if (FAILED(ec)) return ec;
         AutoPtr<IDisplay> display;
         ec = wm->GetDefaultDisplay((IDisplay**)&display);
@@ -526,7 +526,7 @@ ECode CGeckoSurfaceView::DrawSplashScreen(
             //assert(charS);
             String url;
             //charS->ToString(&url);
-            ec = canvas->DrawTextEx(url, urlOffsetX, urlOffsetY, textPaint);
+            ec = canvas->DrawText(url, urlOffsetX, urlOffsetY, textPaint);
             if (FAILED(ec)) return ec;
         }
     }
@@ -616,7 +616,7 @@ ECode CGeckoSurfaceView::GetSoftwareDrawBitmap(
         AutoPtr<IBitmapFactory> factory;
         // printf("\t Original width: %d, height: %d\n", width, height);
         ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-        ASSERT_SUCCEEDED(factory->CreateBitmapEx3(
+        ASSERT_SUCCEEDED(factory->CreateBitmap(
                 mWidth, mHeight, BitmapConfig_RGB_565, (IBitmap**)&mSoftwareBitmap));
         // printf("\t Create a new bitmap, width: %d, height: %d\n", mWidth, mHeight);
     }
@@ -662,7 +662,7 @@ ECode CGeckoSurfaceView::GetSoftwareDrawBuffer(
         ec = CBitmapFactory::AcquireSingleton((IBitmapFactory**)&pIBitmapFactory);
         if (FAILED(ec)) return ec;
 
-        ec = pIBitmapFactory->CreateBitmapEx3(mWidth, mHeight,
+        ec = pIBitmapFactory->CreateBitmap(mWidth, mHeight,
                          Elastos::Droid::Graphics::BitmapConfig_RGB_565, (IBitmap**)&mSoftwareBufferCopy);
         if (FAILED(ec)) return ec;
     }
@@ -865,7 +865,7 @@ ECode CGeckoSurfaceView::SetEditable(
     Int32 length = 0;
     ASSERT_SUCCEEDED(mEditable->GetLength(&length));
 
-    ASSERT_SUCCEEDED(mEditable->ReplaceEx(0, length, contents));
+    ASSERT_SUCCEEDED(mEditable->Replace(0, length, contents));
 
     ASSERT_SUCCEEDED(contents->GetLength(&length));
     ASSERT_SUCCEEDED(mEditable->SetSpan(mInputConnection,
@@ -1030,19 +1030,19 @@ ECode CGeckoSurfaceView::ShowContextMenu(
     return result;
 }
 
-ECode CGeckoSurfaceView::ShowContextMenuEx(
+ECode CGeckoSurfaceView::ShowContextMenu(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Int32 metaState,
     /* [out] */ Boolean* result)
 {
-    // return mSurfaceView->ShowContextMenuEx(x, y, metaState, result);
-    DBG_LOG("\t + CGeckoSurfaceView::ShowContextMenuEx()");
-    ECode myResult = mSurfaceView->ShowContextMenuEx(x, y, metaState, result);
+    // return mSurfaceView->ShowContextMenu(x, y, metaState, result);
+    DBG_LOG("\t + CGeckoSurfaceView::ShowContextMenu()");
+    ECode myResult = mSurfaceView->ShowContextMenu(x, y, metaState, result);
     #if (DBG)
     Logger::D(DBG_TAG, "\t \t Result: %d", myResult);
     #endif
-    DBG_LOG("\t - CGeckoSurfaceView::ShowContextMenuEx()");
+    DBG_LOG("\t - CGeckoSurfaceView::ShowContextMenu()");
     return myResult;
 }
 
@@ -1090,12 +1090,12 @@ ECode CGeckoSurfaceView::RequestRectangleOnScreen(
     return mSurfaceView->RequestRectangleOnScreen(pRectangle, pResult);
 }
 
-ECode CGeckoSurfaceView::RequestRectangleOnScreenEx(
+ECode CGeckoSurfaceView::RequestRectangleOnScreen(
     /* [in] */ IRect * pRectangle,
     /* [in] */ Boolean immediate,
     /* [out] */ Boolean * pResult)
 {
-    return mSurfaceView->RequestRectangleOnScreenEx(
+    return mSurfaceView->RequestRectangleOnScreen(
                             pRectangle, immediate, pResult);
 }
 
@@ -1583,12 +1583,12 @@ ECode CGeckoSurfaceView::AddFocusables(
     return mSurfaceView->AddFocusables(pViews, direction);
 }
 
-ECode CGeckoSurfaceView::AddFocusablesEx(
+ECode CGeckoSurfaceView::AddFocusables(
     /* [in] */ IObjectContainer * pViews,
     /* [in] */ Int32 direction,
     /* [in] */ Int32 focusableMode)
 {
-    return mSurfaceView->AddFocusablesEx(pViews, direction, focusableMode);
+    return mSurfaceView->AddFocusables(pViews, direction, focusableMode);
 }
 
 ECode CGeckoSurfaceView::FindViewsWithText(
@@ -1628,19 +1628,19 @@ ECode CGeckoSurfaceView::RequestFocus(
     return mSurfaceView->RequestFocus(pResult);
 }
 
-ECode CGeckoSurfaceView::RequestFocusEx(
+ECode CGeckoSurfaceView::RequestFocus(
     /* [in] */ Int32 direction,
     /* [out] */ Boolean * pResult)
 {
-    return mSurfaceView->RequestFocusEx(direction, pResult);
+    return mSurfaceView->RequestFocus(direction, pResult);
 }
 
-ECode CGeckoSurfaceView::RequestFocusEx2(
+ECode CGeckoSurfaceView::RequestFocus(
     /* [in] */ Int32 direction,
     /* [in] */ IRect * pPreviouslyFocusedRect,
     /* [out] */ Boolean * pResult)
 {
-    return mSurfaceView->RequestFocusEx2(
+    return mSurfaceView->RequestFocus(
                     direction, pPreviouslyFocusedRect, pResult);
 }
 
@@ -2643,11 +2643,11 @@ ECode CGeckoSurfaceView::GetGlobalVisibleRect(
                     pOutRect, pOutGlobalOffset, pResult);
 }
 
-ECode CGeckoSurfaceView::GetGlobalVisibleRectEx(
+ECode CGeckoSurfaceView::GetGlobalVisibleRect(
     /* [in] */ IRect * pOutRect,
     /* [out] */ Boolean * pResult)
 {
-    return mSurfaceView->GetGlobalVisibleRectEx(pOutRect, pResult);
+    return mSurfaceView->GetGlobalVisibleRect(pOutRect, pResult);
 }
 
 ECode CGeckoSurfaceView::GetLocalVisibleRect(
@@ -2706,18 +2706,18 @@ ECode CGeckoSurfaceView::Invalidate(
     return mSurfaceView->Invalidate(pDirty);
 }
 
-ECode CGeckoSurfaceView::InvalidateEx(
+ECode CGeckoSurfaceView::Invalidate(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    return mSurfaceView->InvalidateEx(left, top, right, bottom);
+    return mSurfaceView->Invalidate(left, top, right, bottom);
 }
 
-ECode CGeckoSurfaceView::InvalidateEx2()
+ECode CGeckoSurfaceView::Invalidate()
 {
-    return mSurfaceView->InvalidateEx2();
+    return mSurfaceView->Invalidate();
 }
 
 ECode CGeckoSurfaceView::IsOpaque(
@@ -2737,13 +2737,13 @@ ECode CGeckoSurfaceView::PostInvalidate()
     return mSurfaceView->PostInvalidate();
 }
 
-ECode CGeckoSurfaceView::PostInvalidateEx(
+ECode CGeckoSurfaceView::PostInvalidate(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    return mSurfaceView->PostInvalidateEx(left, top, right, bottom);
+    return mSurfaceView->PostInvalidate(left, top, right, bottom);
 }
 
 ECode CGeckoSurfaceView::PostInvalidateDelayed(
@@ -2752,14 +2752,14 @@ ECode CGeckoSurfaceView::PostInvalidateDelayed(
     return mSurfaceView->PostInvalidateDelayed(delayMilliseconds);
 }
 
-ECode CGeckoSurfaceView::PostInvalidateDelayedEx(
+ECode CGeckoSurfaceView::PostInvalidateDelayed(
     /* [in] */ Int64 delayMilliseconds,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    return mSurfaceView->PostInvalidateDelayedEx(
+    return mSurfaceView->PostInvalidateDelayed(
                 delayMilliseconds, left, top, right, bottom);
 }
 
@@ -2768,13 +2768,13 @@ ECode CGeckoSurfaceView::PostInvalidateOnAnimation()
     return mSurfaceView->PostInvalidateOnAnimation();
 }
 
-ECode CGeckoSurfaceView::PostInvalidateOnAnimationEx(
+ECode CGeckoSurfaceView::PostInvalidateOnAnimation(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    return mSurfaceView->PostInvalidateOnAnimationEx(left, top, right, bottom);
+    return mSurfaceView->PostInvalidateOnAnimation(left, top, right, bottom);
 }
 
 ECode CGeckoSurfaceView::ComputeScroll()
@@ -3075,11 +3075,11 @@ ECode CGeckoSurfaceView::GetDrawingCache(
     return mSurfaceView->GetDrawingCache(ppBitmap);
 }
 
-ECode CGeckoSurfaceView::GetDrawingCacheEx(
+ECode CGeckoSurfaceView::GetDrawingCache(
     /* [in] */ Boolean autoScale,
     /* [out] */ IBitmap ** ppBitmap)
 {
-    return mSurfaceView->GetDrawingCacheEx(autoScale, ppBitmap);
+    return mSurfaceView->GetDrawingCache(autoScale, ppBitmap);
 }
 
 ECode CGeckoSurfaceView::DestroyDrawingCache()
@@ -3104,10 +3104,10 @@ ECode CGeckoSurfaceView::BuildDrawingCache()
     return mSurfaceView->BuildDrawingCache();
 }
 
-ECode CGeckoSurfaceView::BuildDrawingCacheEx(
+ECode CGeckoSurfaceView::BuildDrawingCache(
     /* [in] */ Boolean autoScale)
 {
-    return mSurfaceView->BuildDrawingCacheEx(autoScale);
+    return mSurfaceView->BuildDrawingCache(autoScale);
 }
 
 ECode CGeckoSurfaceView::CreateSnapshot(
@@ -3170,10 +3170,10 @@ ECode CGeckoSurfaceView::GetResources(
     return mSurfaceView->GetResources(ppResources);
 }
 
-ECode CGeckoSurfaceView::UnscheduleDrawableEx(
+ECode CGeckoSurfaceView::UnscheduleDrawable(
     /* [in] */ IDrawable * pWho)
 {
-    return mSurfaceView->UnscheduleDrawableEx(pWho);
+    return mSurfaceView->UnscheduleDrawable(pWho);
 }
 
 ECode CGeckoSurfaceView::OnResolveDrawables(
@@ -3401,18 +3401,18 @@ ECode CGeckoSurfaceView::SetTag(
     return mSurfaceView->SetTag(tag);
 }
 
-ECode CGeckoSurfaceView::GetTagEx(
+ECode CGeckoSurfaceView::GetTag(
     /* [in] */ Int32 key,
     /* [out] */ IInterface** tag)
 {
-    return mSurfaceView->GetTagEx(key, tag);
+    return mSurfaceView->GetTag(key, tag);
 }
 
-ECode CGeckoSurfaceView::SetTagEx(
+ECode CGeckoSurfaceView::SetTag(
     /* [in] */ Int32 key,
     /* [in] */ IInterface* tag)
 {
-    return mSurfaceView->SetTagEx(key, tag);
+    return mSurfaceView->SetTag(key, tag);
 }
 
 ECode CGeckoSurfaceView::SetTagInternal(
@@ -3554,12 +3554,12 @@ ECode CGeckoSurfaceView::PerformHapticFeedback(
     return mSurfaceView->PerformHapticFeedback(feedbackConstant, pResult);
 }
 
-ECode CGeckoSurfaceView::PerformHapticFeedbackEx(
+ECode CGeckoSurfaceView::PerformHapticFeedback(
     /* [in] */ Int32 feedbackConstant,
     /* [in] */ Int32 flags,
     /* [out] */ Boolean * pResult)
 {
-    return mSurfaceView->PerformHapticFeedbackEx(
+    return mSurfaceView->PerformHapticFeedback(
                         feedbackConstant, flags, pResult);
 }
 

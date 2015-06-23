@@ -3,12 +3,9 @@
 #define __INPUTEVENTCONSISTENCYVERIFIER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Threading::Mutex;
-
 namespace Elastos {
 namespace Droid {
 namespace View {

@@ -3,8 +3,8 @@
 
 #include "_CViewSwitcher.h"
 #include "ViewSwitcher.h"
-#include "view/ViewMacro.h"
-#include "widget/FrameLayoutMacro.h"
+
+
 
 namespace Elastos {
 namespace Droid {
@@ -119,7 +119,7 @@ public:
      * @see #getInAnimation()
      * @see #setInAnimation(android.view.animation.Animation)
      */
-    CARAPI SetInAnimationEx(
+    CARAPI SetInAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 
@@ -132,7 +132,7 @@ public:
      * @see #getOutAnimation()
      * @see #setOutAnimation(android.view.animation.Animation)
      */
-    CARAPI SetOutAnimationEx(
+    CARAPI SetOutAnimation(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceID);
 

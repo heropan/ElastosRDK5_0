@@ -3,9 +3,9 @@
 
 #include "_CMultiAutoCompleteTextView.h"
 #include "widget/MultiAutoCompleteTextView.h"
-#include "widget/AutoCompleteTextViewMacro.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -49,7 +49,7 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 stop);
 
-    CARAPI SetSelectionEx(
+    CARAPI SetSelection(
         /* [in] */ Int32 index);
 
     CARAPI SelectAll();

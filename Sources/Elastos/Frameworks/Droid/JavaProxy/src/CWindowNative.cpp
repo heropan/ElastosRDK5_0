@@ -2,7 +2,7 @@
 #include "CWindowNative.h"
 #include "Util.h"
 
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::JavaProxy::Util;
 using Elastos::Utility::Logging::Logger;

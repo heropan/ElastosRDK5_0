@@ -79,7 +79,7 @@ ECode CRegion::Set(
     return NOERROR;
 }
 
-ECode CRegion::SetEx(
+ECode CRegion::Set(
     /* [in] */ IRect* r,
     /* [out] */ Boolean* result)
 {
@@ -90,7 +90,7 @@ ECode CRegion::SetEx(
     return NOERROR;
 }
 
-ECode CRegion::SetEx2(
+ECode CRegion::Set(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -149,7 +149,7 @@ ECode CRegion::GetBounds(
     return NOERROR;
 }
 
-ECode CRegion::GetBoundsEx(
+ECode CRegion::GetBounds(
     /* [in, out] */ IRect* r,
     /* [out] */ Boolean* result)
 {
@@ -179,7 +179,7 @@ ECode CRegion::GetBoundaryPath(
  * Set the path to the boundary of the region. If the region is empty, the
  * path will also be empty.
  */
-ECode CRegion::GetBoundaryPathEx(
+ECode CRegion::GetBoundaryPath(
     /* [in, out] */ IPath* path,
     /* [out] */ Boolean* result)
 {
@@ -207,10 +207,10 @@ ECode CRegion::QuickContains(
     VALIDATE_NOT_NULL(result);
 
     CRect* rect = (CRect*)r;
-    return QuickContainsEx(rect->mLeft, rect->mTop, rect->mRight, rect->mBottom, result);
+    return QuickContains(rect->mLeft, rect->mTop, rect->mRight, rect->mBottom, result);
 }
 
-ECode CRegion::QuickContainsEx(
+ECode CRegion::QuickContains(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -230,10 +230,10 @@ ECode CRegion::QuickReject(
     VALIDATE_NOT_NULL(result);
 
     CRect* rect = (CRect*)r;
-    return QuickRejectEx(rect->mLeft, rect->mTop, rect->mRight, rect->mBottom, result);
+    return QuickReject(rect->mLeft, rect->mTop, rect->mRight, rect->mBottom, result);
 }
 
-ECode CRegion::QuickRejectEx(
+ECode CRegion::QuickReject(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -248,7 +248,7 @@ ECode CRegion::QuickRejectEx(
     return NOERROR;
 }
 
-ECode CRegion::QuickRejectEx2(
+ECode CRegion::QuickReject(
     /* [in] */ IRegion* rgn,
     /* [out] */ Boolean* result)
 {
@@ -262,10 +262,10 @@ ECode CRegion::Translate(
     /* [in] */ Int32 dx,
     /* [in] */ Int32 dy)
 {
-    return TranslateEx(dx, dy, NULL);
+    return Translate(dx, dy, NULL);
 }
 
-ECode CRegion::TranslateEx(
+ECode CRegion::Translate(
     /* [in] */ Int32 dx,
     /* [in] */ Int32 dy,
     /* [in] */ IRegion* dst)
@@ -283,7 +283,7 @@ ECode CRegion::TranslateEx(
 ECode CRegion::Scale(
     /* [in] */ Float scale)
 {
-    return ScaleEx(scale, NULL);
+    return Scale(scale, NULL);
 }
 
 // Scale the rectangle by given scale and set the reuslt to the dst.
@@ -316,7 +316,7 @@ static void ScaleRgn(
    dst->swap(tmp);
 }
 
-ECode CRegion::ScaleEx(
+ECode CRegion::Scale(
     /* [in] */ Float scale,
     /* [in] */ IRegion* dst)
 {
@@ -351,7 +351,7 @@ ECode CRegion::Op(
     return NOERROR;
 }
 
-ECode CRegion::OpEx(
+ECode CRegion::Op(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -365,17 +365,17 @@ ECode CRegion::OpEx(
     return NOERROR;
 }
 
-ECode CRegion::OpEx2(
+ECode CRegion::Op(
     /* [in] */ IRegion* region,
     /* [in] */ RegionOp op,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    return OpEx4((IRegion*)this, region, op, result);
+    return Op((IRegion*)this, region, op, result);
 }
 
-ECode CRegion::OpEx3(
+ECode CRegion::Op(
     /* [in] */ IRect* rect,
     /* [in] */ IRegion* region,
     /* [in] */ RegionOp op,
@@ -387,7 +387,7 @@ ECode CRegion::OpEx3(
     return NOERROR;
 }
 
-ECode CRegion::OpEx4(
+ECode CRegion::Op(
     /* [in] */ IRegion* region1,
     /* [in] */ IRegion* region2,
     /* [in] */ RegionOp op,
@@ -403,7 +403,7 @@ ECode CRegion::OpEx4(
     return NOERROR;
 }
 
-ECode CRegion::EqualsEx(
+ECode CRegion::Equals(
     /* [in] */ IRegion* r,
     /* [out] */ Boolean* result)
 {
@@ -420,7 +420,7 @@ ECode CRegion::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return EqualsEx(IRegion::Probe(region), result);
+    return Equals(IRegion::Probe(region), result);
 }
 
 ECode CRegion::GetHashCode(

@@ -6,11 +6,11 @@
 #include "view/LayoutInflater.h"
 #include "widget/CFrameLayout.h"
 #include "widget/CListPopupWindow.h"
-#include <elastos/Math.h>
-#include <elastos/List.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/etl/List.h>
 #include "R.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Content::Res::IResources;
@@ -100,7 +100,7 @@ AutoPtr<IView> MenuPopupHelper::_MenuAdapter::GetView(
 {
     AutoPtr<IView> convertView = _convertView;
     if (convertView == NULL) {
-        mHost->mInflater->InflateEx2(ITEM_LAYOUT, parent, FALSE, (IView**)&convertView);
+        mHost->mInflater->Inflate(ITEM_LAYOUT, parent, FALSE, (IView**)&convertView);
     }
 
     AutoPtr<IMenuItemView> itemView = IMenuItemView::Probe(convertView);

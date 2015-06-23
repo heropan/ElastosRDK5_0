@@ -431,7 +431,7 @@ private:
         /* [in] */ Int32 end,
         /* [in] */ Int32 flags);
 
-    CARAPI CheckRangeEx(
+    CARAPI CheckRange(
         /* [in] */ ICharSequence* tb,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

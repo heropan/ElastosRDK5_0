@@ -1,7 +1,7 @@
 
 
 #include "widget/internal/SizeAdaptiveLayoutLayoutParams.h"
-#include "elastos/StringBuilder.h"
+#include <elastos/core/StringBuilder.h>
 #include "view/View.h"
 #include "R.h"
 #include "widget/internal/SizeAdaptiveLayout.h"
@@ -117,10 +117,10 @@ ECode SizeAdaptiveLayoutLayoutParams::InitImpl(
     attrIds->Copy(R::styleable::SizeAdaptiveLayout_Layout, size);
 
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(c->ObtainStyledAttributesEx2(attrs, attrIds, (ITypedArray**)&a));
+    FAIL_RETURN(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
     FAIL_RETURN(a->GetDimensionPixelSize(
             SizeAdaptiveLayout::MIN_VALID_HEIGHT, 0, &mMinHeight));
-    FAIL_RETURN(a->GetLayoutDimensionEx(
+    FAIL_RETURN(a->GetLayoutDimension(
             SizeAdaptiveLayout::MAX_VALID_HEIGHT,
             ISizeAdaptiveLayoutLayoutParams::UNBOUNDED, &mMaxHeight));
 

@@ -86,7 +86,7 @@ ECode CGallery::SetGravity(
     return Gallery::SetGravity(gravity);
 }
 
-CARAPI CGallery::SetSelectionEx(
+CARAPI CGallery::SetSelection(
     /* [in] */ Int32 position,
     /* [in] */ Boolean animate)
 {

@@ -1,6 +1,6 @@
 
 #include "text/Selection.h"
-#include <elastos/Math.h>
+#include <elastos/core/Math.h>
 #include <stdio.h>
 
 namespace Elastos {

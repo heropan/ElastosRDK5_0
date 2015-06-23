@@ -6,9 +6,9 @@
 #include "graphics/CPaint.h"
 #include "graphics/CPaintFontMetricsInt.h"
 #include "os/CSystemProperties.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Os::ISystemProperties;
@@ -400,13 +400,13 @@ ECode PointerLocationView::AddPointerEvent(
             coords->GetX(&x);
             coords->GetY(&y);
             ps->AddTrace(x, y);
-            mVelocity->GetXVelocityEx(id, &ps->mXVelocity);
-            mVelocity->GetYVelocityEx(id, &ps->mYVelocity);
+            mVelocity->GetXVelocity(id, &ps->mXVelocity);
+            mVelocity->GetYVelocity(id, &ps->mYVelocity);
             Boolean rst;
             mVelocity->GetEstimator(id, ps->mEstimator, &rst);
             if (mAltVelocity != NULL) {
-                mAltVelocity->GetXVelocityEx(id, &ps->mAltXVelocity);
-                mAltVelocity->GetYVelocityEx(id, &ps->mAltYVelocity);
+                mAltVelocity->GetXVelocity(id, &ps->mAltXVelocity);
+                mAltVelocity->GetYVelocity(id, &ps->mAltYVelocity);
                 mAltVelocity->GetEstimator(id, ps->mAltEstimator, &rst);
             }
             event->GetToolType(i, &(ps->mToolType));
@@ -582,29 +582,29 @@ void PointerLocationView::OnDraw(
     if (mActivePointerId >= 0) {
         AutoPtr<PointerState> ps = mPointers[mActivePointerId];
 
-        canvas->DrawRectEx2(0, 0, itemW-1, bottom,mTextBackgroundPaint);
+        canvas->DrawRect(0, 0, itemW-1, bottom,mTextBackgroundPaint);
         mText->Clear();
         mText->Append(String("P: "));
         mText->Append(mCurNumPointers);
         mText->Append(String(" / "));
         mText->Append(mMaxNumPointers);
-        canvas->DrawTextEx(mText->ToString(), 1, base, mTextPaint);
+        canvas->DrawText(mText->ToString(), 1, base, mTextPaint);
 
         Int32 N = ps->mTraceCount;
         if ((mCurDown && ps->mCurDown) || N == 0) {
             Float x, y;
             ps->mCoords->GetX(&x);
             ps->mCoords->GetY(&y);
-            canvas->DrawRectEx2(itemW, 0, (itemW * 2) - 1, bottom, mTextBackgroundPaint);
+            canvas->DrawRect(itemW, 0, (itemW * 2) - 1, bottom, mTextBackgroundPaint);
             mText->Clear();
             mText->Append(String("X: "));
             mText->Append(x, 1);
-            canvas->DrawTextEx(mText->ToString(), 1 + itemW, base, mTextPaint);
-            canvas->DrawRectEx2(itemW * 2, 0, (itemW * 3) - 1, bottom, mTextBackgroundPaint);
+            canvas->DrawText(mText->ToString(), 1 + itemW, base, mTextPaint);
+            canvas->DrawRect(itemW * 2, 0, (itemW * 3) - 1, bottom, mTextBackgroundPaint);
             mText->Clear();
             mText->Append(String("Y: "));
             mText->Append(y, 1);
-            canvas->DrawTextEx(mText->ToString(), 1 + itemW * 2, base, mTextPaint);
+            canvas->DrawText(mText->ToString(), 1 + itemW * 2, base, mTextPaint);
         }
         else {
             using Elastos::Core::Math;
@@ -612,49 +612,49 @@ void PointerLocationView::OnDraw(
             Float dy = (*(ps->mTraceY))[N - 1] - (*(ps->mTraceY))[0];
             Int32 touchTop;
             mVC->GetScaledTouchSlop(&touchTop);
-            canvas->DrawRectEx2(itemW, 0, (itemW * 2) - 1, bottom,
+            canvas->DrawRect(itemW, 0, (itemW * 2) - 1, bottom,
                 Math::Abs(dx) < touchTop ? mTextBackgroundPaint : mTextLevelPaint);
             mText->Clear();
             mText->Append(String("dX: "));
             mText->Append(dx, 1);
-            canvas->DrawTextEx(mText->ToString(), 1 + itemW, base, mTextPaint);
-            canvas->DrawRectEx2(itemW * 2, 0, (itemW * 3) - 1, bottom,
+            canvas->DrawText(mText->ToString(), 1 + itemW, base, mTextPaint);
+            canvas->DrawRect(itemW * 2, 0, (itemW * 3) - 1, bottom,
                 Math::Abs(dy) < touchTop ? mTextBackgroundPaint : mTextLevelPaint);
             mText->Clear();
             mText->Append(String("dY: "));
             mText->Append(dy, 1);
-            canvas->DrawTextEx(mText->ToString(), 1 + itemW * 2, base, mTextPaint);
+            canvas->DrawText(mText->ToString(), 1 + itemW * 2, base, mTextPaint);
         }
-        canvas->DrawRectEx2(itemW * 3, 0, (itemW * 4) - 1, bottom, mTextBackgroundPaint);
+        canvas->DrawRect(itemW * 3, 0, (itemW * 4) - 1, bottom, mTextBackgroundPaint);
         mText->Clear();
         mText->Append(String("Xv: "));
         mText->Append(ps->mXVelocity, 3);
-        canvas->DrawTextEx(mText->ToString(), 1 + itemW * 3, base, mTextPaint);
+        canvas->DrawText(mText->ToString(), 1 + itemW * 3, base, mTextPaint);
 
-        canvas->DrawRectEx2(itemW * 4, 0, (itemW * 5) - 1, bottom, mTextBackgroundPaint);
+        canvas->DrawRect(itemW * 4, 0, (itemW * 5) - 1, bottom, mTextBackgroundPaint);
         mText->Clear();
         mText->Append(String("Yv: "));
         mText->Append(ps->mYVelocity, 3);
-        canvas->DrawTextEx(mText->ToString(), 1 + itemW * 4, base, mTextPaint);
+        canvas->DrawText(mText->ToString(), 1 + itemW * 4, base, mTextPaint);
 
-        canvas->DrawRectEx2(itemW * 5, 0, (itemW * 6) - 1, bottom, mTextBackgroundPaint);
+        canvas->DrawRect(itemW * 5, 0, (itemW * 6) - 1, bottom, mTextBackgroundPaint);
         Float pressure, size;
         ps->mCoords->GetPressure(&pressure);
         ps->mCoords->GetSize(&size);
-        canvas->DrawRectEx2(itemW * 5, 0, (itemW * 5) + (pressure * itemW) - 1,
+        canvas->DrawRect(itemW * 5, 0, (itemW * 5) + (pressure * itemW) - 1,
             bottom, mTextLevelPaint);
         mText->Clear();
         mText->Append(String("Prs: "));
         mText->Append(pressure, 2);
-        canvas->DrawTextEx(mText->ToString(), 1 + itemW * 5, base, mTextPaint);
+        canvas->DrawText(mText->ToString(), 1 + itemW * 5, base, mTextPaint);
 
-        canvas->DrawRectEx2(itemW * 6, 0, w, bottom, mTextBackgroundPaint);
-        canvas->DrawRectEx2(itemW * 6, 0, (itemW * 6) + (size * itemW) - 1,
+        canvas->DrawRect(itemW * 6, 0, w, bottom, mTextBackgroundPaint);
+        canvas->DrawRect(itemW * 6, 0, (itemW * 6) + (size * itemW) - 1,
             bottom, mTextLevelPaint);
         mText->Clear();
         mText->Append(String("Size: "));
         mText->Append(size, 2);
-        canvas->DrawTextEx(mText->ToString(), 1 + itemW * 6, base, mTextPaint);
+        canvas->DrawText(mText->ToString(), 1 + itemW * 6, base, mTextPaint);
     }
 
     // Pointer trace.
@@ -816,8 +816,8 @@ void PointerLocationView::DrawOval(
     /* [in] */ IPaint* paint)
 {
     Int32 rst;
-    canvas->SaveEx(ICanvas::MATRIX_SAVE_FLAG, &rst);
-    canvas->RotateEx((Float) (angle * 180 / Elastos::Core::Math::DOUBLE_PI), x, y);
+    canvas->Save(ICanvas::MATRIX_SAVE_FLAG, &rst);
+    canvas->Rotate((Float) (angle * 180 / Elastos::Core::Math::DOUBLE_PI), x, y);
     mReusableOvalRect->Set(x - minor / 2, y - major / 2, x + minor / 2, y + major / 2);
     canvas->DrawOval(mReusableOvalRect, paint);
     canvas->Restore();

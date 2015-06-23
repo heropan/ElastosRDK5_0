@@ -1,10 +1,10 @@
 
 #include "widget/TextView.h"
 #include <elastos.h>
-#include <elastos/Math.h>
-#include <elastos/Character.h>
-#include <elastos/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/Character.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 #include <R.h>
 #include "util/CTypedValueHelper.h"
 #include "os/SystemClock.h"
@@ -597,7 +597,7 @@ ECode CharWrapper::ToString(
 
     if (mChars != NULL) {
         StringBuilder sb;
-        sb.AppendCharsEx(*mChars, mStart, mLength);
+        sb.AppendChars(*mChars, mStart, mLength);
         *str = sb.ToString();
     }
 
@@ -617,7 +617,7 @@ ECode CharWrapper::SubSequence(
 
     if (mChars != NULL) {
         StringBuilder sb;
-        sb.AppendCharsEx(*mChars, mStart + start, end - start);
+        sb.AppendChars(*mChars, mStart + start, end - start);
         AutoPtr<ICharSequence> seq = sb.ToCharSequence();
         *csq = seq;
         INTERFACE_ADDREF(*csq);
@@ -727,7 +727,7 @@ ECode CharWrapper::GetTextRunAdvances(
             advancesIndex, advance);
 }
 
-ECode CharWrapper::GetTextRunAdvancesEx(
+ECode CharWrapper::GetTextRunAdvances(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Int32 contextStart,
@@ -745,7 +745,7 @@ ECode CharWrapper::GetTextRunAdvancesEx(
 
     Int32 count = end - start;
     Int32 contextCount = contextEnd - contextStart;
-    return p->GetTextRunAdvancesEx(*mChars, start + mStart, count,
+    return p->GetTextRunAdvances(*mChars, start + mStart, count,
             contextStart + mStart, contextCount, flags, advances,
             advancesIndex, reserved, advance);
 }
@@ -1076,7 +1076,7 @@ ECode ChangeWatcher::AfterTextChanged(
     AutoPtr<IMetaKeyKeyListenerHelper> helper;
     CMetaKeyKeyListenerHelper::AcquireSingleton((IMetaKeyKeyListenerHelper**)&helper);
     Int32 state;
-    helper->GetMetaStateEx(buffer, IMetaKeyKeyListener::META_SELECTING, &state);
+    helper->GetMetaState(buffer, IMetaKeyKeyListener::META_SELECTING, &state);
     if (state != 0) {
         helper->StopSelecting((IView*)mHost->Probe(EIID_IView), buffer);
     }
@@ -1397,7 +1397,7 @@ ECode TextView::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::TextViewAppearance),
             ARRAY_SIZE(R::styleable::TextViewAppearance));
     AutoPtr<ITypedArray> a;
-    theme->ObtainStyledAttributesEx2(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    theme->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     AutoPtr<ITypedArray> appearance;
     Int32 ap;
@@ -1407,7 +1407,7 @@ ECode TextView::InitFromAttributes(
         attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextAppearance),
             ARRAY_SIZE(R::styleable::TextAppearance));
-        theme->ObtainStyledAttributesEx(ap, attrIds, (ITypedArray**)&appearance);
+        theme->ObtainStyledAttributes(ap, attrIds, (ITypedArray**)&appearance);
     }
 
     if (appearance != NULL) {
@@ -1485,7 +1485,7 @@ ECode TextView::InitFromAttributes(
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextView),
             ARRAY_SIZE(R::styleable::TextView));
-    theme->ObtainStyledAttributesEx2(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    theme->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     //TODO  typedarray should has TextView_minHeight value, but no it has not
     SetMinHeight(35);
@@ -1946,7 +1946,7 @@ ECode TextView::InitFromAttributes(
         CTextKeyListenerHelper::AcquireSingleton((ITextKeyListenerHelper**)&helper);
         mEditor->mKeyListener = NULL;
         AutoPtr<ITextKeyListener> listener;
-        helper->GetInstanceEx(autotext, cap, (ITextKeyListener**)&listener);
+        helper->GetInstance(autotext, cap, (ITextKeyListener**)&listener);
         mEditor->mKeyListener = (IKeyListener*)listener->Probe(EIID_IKeyListener);
         mEditor->mInputType = inputType;
     }
@@ -2113,7 +2113,7 @@ ECode TextView::InitFromAttributes(
     attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::View),
         ARRAY_SIZE(R::styleable::View));
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx3(
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     keyListener = GetKeyListener();
@@ -2971,11 +2971,11 @@ ECode TextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     if (bottom != 0) {
         resources->GetDrawable(bottom, (IDrawable**)&drBottom);
     }
-    return SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(
+    return SetCompoundDrawablesRelativeWithIntrinsicBounds(
             drStart, drTop, drEnd, drBottom);
 }
 
-ECode TextView::SetCompoundDrawablesRelativeWithIntrinsicBoundsEx(
+ECode TextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     /* [in] */ IDrawable* start,
     /* [in] */ IDrawable* top,
     /* [in] */ IDrawable* end,
@@ -3112,7 +3112,7 @@ ECode TextView::SetTextAppearance(
         const_cast<Int32 *>(R::styleable::TextAppearance),
         ARRAY_SIZE(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> appearance;
-    ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx(resid, attrIds, (ITypedArray**)&appearance));
+    ASSERT_SUCCEEDED(context->ObtainStyledAttributes(resid, attrIds, (ITypedArray**)&appearance));
 
     Int32 color;
     AutoPtr<IColorStateList> colors;
@@ -3800,7 +3800,7 @@ ECode TextView::Append(
         SetText(mText, BufferType_EDITABLE);
     }
     AutoPtr<IEditable> result = IEditable::Probe(mText);
-    return result->AppendEx(text, start, end);
+    return result->Append(text, start, end);
 }
 
 void TextView::UpdateTextColors()
@@ -4327,7 +4327,7 @@ ECode TextView::SetText(
             mBufferType, FALSE, oldlen);
     */
     StringBuilder sb;
-    sb.AppendCharsEx(*text, start, len);
+    sb.AppendChars(*text, start, len);
     AutoPtr<ICharSequence> convertedText = sb.ToCharSequence();
     return SetText(convertedText, mBufferType, FALSE, oldlen);
 }
@@ -4578,12 +4578,12 @@ void TextView::SetInputType(
 
         AutoPtr<ITextKeyListenerHelper> helper;
         CTextKeyListenerHelper::AcquireSingleton((ITextKeyListenerHelper**)&helper);
-        helper->GetInstanceEx(autotext, cap, (ITextKeyListener**)&input);
+        helper->GetInstance(autotext, cap, (ITextKeyListener**)&input);
     }
     else if (cls == IInputType::TYPE_CLASS_NUMBER) {
         AutoPtr<IDigitsKeyListenerHelper> helper;
         CDigitsKeyListenerHelper::AcquireSingleton((IDigitsKeyListenerHelper**)&helper);
-        helper->GetInstanceEx(
+        helper->GetInstance(
                 (type & IInputType::TYPE_NUMBER_FLAG_SIGNED) != 0,
                 (type & IInputType::TYPE_NUMBER_FLAG_DECIMAL) != 0,
                 (IDigitsKeyListener**)&input);
@@ -4702,7 +4702,7 @@ ECode TextView::OnEditorAction(
             AutoPtr<IView> v = FocusSearch(IView::FOCUS_FORWARD);
             if (v != NULL) {
                 Boolean focus = FALSE;
-                if (v->RequestFocusEx(IView::FOCUS_FORWARD, &focus), !focus) {
+                if (v->RequestFocus(IView::FOCUS_FORWARD, &focus), !focus) {
                     // throw new IllegalStateException("focus search returned a view " +
                     //         "that wasn't able to take focus!");
                     return E_ILLEGAL_STATE_EXCEPTION;
@@ -4714,7 +4714,7 @@ ECode TextView::OnEditorAction(
             AutoPtr<IView> v = FocusSearch(IView::FOCUS_BACKWARD);
             if (v != NULL) {
                 Boolean focus = FALSE;
-                if (v->RequestFocusEx(IView::FOCUS_BACKWARD, &focus), !focus) {
+                if (v->RequestFocus(IView::FOCUS_BACKWARD, &focus), !focus) {
                     /*throw new IllegalStateException("focus search returned a view " +
                         "that wasn't able to take focus!");*/
                 }
@@ -5610,7 +5610,7 @@ void TextView::OnDraw(
     }
 
     Boolean isNonEmpty;
-    canvas->ClipRectEx5(clipLeft, clipTop, clipRight, clipBottom, &isNonEmpty);
+    canvas->ClipRect(clipLeft, clipTop, clipRight, clipBottom, &isNonEmpty);
 
     Int32 voffsetText = 0;
     Int32 voffsetCursor = 0;
@@ -5649,13 +5649,13 @@ void TextView::OnDraw(
     if (mEditor != NULL) {
         mEditor->OnDraw(canvas, layout, highlight, mHighlightPaint, cursorOffsetVertical);
     } else {
-        layout->DrawEx(canvas, highlight, mHighlightPaint, cursorOffsetVertical);
+        layout->Draw(canvas, highlight, mHighlightPaint, cursorOffsetVertical);
     }
 
     if (mMarquee != NULL && mMarquee->ShouldDrawGhost()) {
         Int32 dx = (Int32) mMarquee->GetGhostOffset();
         canvas->Translate(isLayoutRtl ? -dx : dx, 0.0f);
-        layout->DrawEx(canvas, highlight, mHighlightPaint, cursorOffsetVertical);
+        layout->Draw(canvas, highlight, mHighlightPaint, cursorOffsetVertical);
     }
     canvas->Restore();
 }
@@ -6184,7 +6184,7 @@ Boolean TextView::OnKeyUp(
 
                             if (v != NULL) {
                                 Boolean focus = FALSE;
-                                v->RequestFocusEx(IView::FOCUS_DOWN, &focus);
+                                v->RequestFocus(IView::FOCUS_DOWN, &focus);
                                 if (!focus) {
                                     assert(0 && "TODO");
                                     // throw new IllegalStateException("focus search returned a view " +
@@ -6360,7 +6360,7 @@ ECode TextView::SetExtractedText(
             content->GetLength(&length);
             RemoveParcelableSpans(ISpannable::Probe(content), 0, length);
             content->GetLength(&length);
-            content->ReplaceEx(0, length, tt);
+            content->Replace(0, length, tt);
         }
         else {
             Int32 N;
@@ -6370,7 +6370,7 @@ ECode TextView::SetExtractedText(
             text->GetPartialEndOffset(&end);
             if (end > N) end = N;
             RemoveParcelableSpans(ISpannable::Probe(content), start, end);
-            content->ReplaceEx(start, end, tt);
+            content->Replace(start, end, tt);
         }
     }
 
@@ -6652,7 +6652,7 @@ void TextView::MakeNewLayout(
             else if (shouldEllipsize && hbwidth <= hintWidth) {
                 if (mSavedHintLayout != NULL) {
                     mHintLayout = NULL;
-                    mSavedHintLayout->ReplaceOrMakeEx(mHint, mTextPaint,
+                    mSavedHintLayout->ReplaceOrMake(mHint, mTextPaint,
                             hintWidth, alignment, mSpacingMult, mSpacingAdd,
                             hintBoring, mIncludePad, mEllipsize,
                             ellipsisWidth, (IBoringLayout**)&mHintLayout);
@@ -6764,7 +6764,7 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
                     }
             } else if (shouldEllipsize && bwidth <= wantWidth) {
                 if (useSaved && mSavedLayout != NULL) {
-                    mSavedLayout->ReplaceOrMakeEx(mTransformed, mTextPaint,
+                    mSavedLayout->ReplaceOrMake(mTransformed, mTextPaint,
                         wantWidth, alignment, mSpacingMult, mSpacingAdd,
                         boring, mIncludePad, effectiveEllipsize,
                         ellipsisWidth, (IBoringLayout**)&result);
@@ -8574,7 +8574,7 @@ AutoPtr<IColorStateList> TextView::GetTextColors(
                 const_cast<Int32 *>(R::styleable::TextAppearance),
                 ARRAY_SIZE(R::styleable::TextAppearance));
             AutoPtr<ITypedArray> appearance;
-            ASSERT_SUCCEEDED(context->ObtainStyledAttributesEx(
+            ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
                     ap, attrIds, (ITypedArray**)&appearance));
 
             appearance->GetColorStateList(R::styleable::TextAppearance_textColor,
@@ -9137,11 +9137,11 @@ void TextView::Paste(
                     min = TextUtils::UnpackRangeStartFromInt64(minMax);
                     max = TextUtils::UnpackRangeEndFromInt64(minMax);
                     Selection::SetSelection(ISpannable::Probe(mText), max);
-                    editable->ReplaceEx(min, max, paste);
+                    editable->Replace(min, max, paste);
                     didFirst = TRUE;
                 } else {
-                    editable->InsertEx(GetSelectionEnd(), newlineCS);
-                    editable->InsertEx(GetSelectionEnd(), paste);
+                    editable->Insert(GetSelectionEnd(), newlineCS);
+                    editable->Insert(GetSelectionEnd(), paste);
                 }
             }
         }
@@ -9333,7 +9333,7 @@ void TextView::ReplaceText_internal(
 {
     AutoPtr<IEditable> editable = IEditable::Probe(mText);
     if (editable) {
-        editable->ReplaceEx(start, end, text);
+        editable->Replace(start, end, text);
     }
 }
 

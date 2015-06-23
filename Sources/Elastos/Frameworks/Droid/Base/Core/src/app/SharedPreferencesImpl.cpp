@@ -7,7 +7,7 @@
 #include "app/SharedPreferencesImpl.h"
 #include <os/FileUtils.h>
 #include <os/Looper.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CBoolean;
 using Elastos::Core::CFloat;
@@ -673,7 +673,7 @@ ECode SharedPreferencesImpl::GetStringSet(
         v = ISet::Probe(it->mSecond);
     }
     *values = v;
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
     return NOERROR;
 }
 
@@ -810,7 +810,7 @@ ECode SharedPreferencesImpl::Edit(
     }
     AutoPtr<EditorImpl> editorImpl = new EditorImpl(this);
     *result = (ISharedPreferencesEditor*)editorImpl->Probe(EIID_ISharedPreferencesEditor);
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

@@ -4,9 +4,8 @@
 
 #include "_CLocalSocket.h"
 #include "net/LocalSocketImpl.h"
-#include <elastos/Mutex.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
@@ -86,7 +85,7 @@ public:
     CARAPI IsInputShutdown(
       /* [out] */ Boolean* result);
 
-    CARAPI ConnectEx(
+    CARAPI Connect(
       /* [in] */ ILocalSocketAddress* endpoint,
       /* [in] */ Int32 timeout);
 

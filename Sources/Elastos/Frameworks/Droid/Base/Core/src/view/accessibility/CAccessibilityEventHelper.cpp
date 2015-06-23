@@ -16,19 +16,19 @@ ECode CAccessibilityEventHelper::Obtain(
     return CAccessibilityEvent::Obtain(eventType, event);
 }
 
-ECode CAccessibilityEventHelper::ObtainEx(
+ECode CAccessibilityEventHelper::Obtain(
     /* [in] */ IAccessibilityEvent* otherEvent,
     /* [out] */ IAccessibilityEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    return CAccessibilityEvent::ObtainEx(otherEvent, event);
+    return CAccessibilityEvent::Obtain(otherEvent, event);
 }
 
-ECode CAccessibilityEventHelper::ObtainEx2(
+ECode CAccessibilityEventHelper::Obtain(
     /* [out] */ IAccessibilityEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    return CAccessibilityEvent::ObtainEx2(event);
+    return CAccessibilityEvent::Obtain(event);
 }
 
 ECode CAccessibilityEventHelper::EventTypeToString(

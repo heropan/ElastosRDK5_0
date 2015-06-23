@@ -118,7 +118,7 @@ ECode CCompoundButton::SetButtonDrawable(
  *
  * @param d The Drawable to use as the background
  */
-ECode CCompoundButton::SetButtonDrawableEx(
+ECode CCompoundButton::SetButtonDrawable(
     /* [in] */ IDrawable* d)
 {
     return CompoundButton::SetButtonDrawable(d);

@@ -41,7 +41,7 @@ ECode CHardwareCameraHelper::Open(
     return CHardwareCamera::New(cameraId, camera);
 }
 
-ECode CHardwareCameraHelper::OpenEx(
+ECode CHardwareCameraHelper::Open(
     /* [out] */ IHardwareCamera** camera)
 {
     assert(camera != NULL);
@@ -68,7 +68,7 @@ ECode CHardwareCameraHelper::GetEmptyParameters(
     CHardwareCamera::New((IHardwareCamera**)&camera);
 
     *para = new CHardwareCamera::Parameters();
-    INTERFACE_ADDREF(*para);
+    REFCOUNT_ADD(*para);
     return NOERROR;
 }
 

@@ -6,11 +6,10 @@
 #include "os/HandlerBase.h"
 #include "os/AsyncTask.h"
 #include "accessibility/CMagnificationSpec.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Utility::List;
+using Elastos::Core::Mutex;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Os::HandlerBase;

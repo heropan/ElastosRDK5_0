@@ -92,7 +92,7 @@ ECode ToggleSlider::InitImpl(
             const_cast<Int32 *>(SystemUIR::styleable::ToggleSlider),
             ARRAY_SIZE(SystemUIR::styleable::ToggleSlider));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 
     tmpView = FindViewById(SystemUIR::id::toggle);
     mToggle = ICompoundButton::Probe(tmpView.Get());

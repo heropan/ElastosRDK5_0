@@ -4,10 +4,10 @@
 #include "accessibility/GestureUtils.h"
 #include "os/SystemClock.h"
 #include "R.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::IArrayList;
@@ -96,7 +96,7 @@ void TouchExplorer::SendHoverDelayed::Post(
     AutoPtr<IMotionEventHelper> helper;
     CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
     mPrototype = NULL;
-    helper->ObtainEx5(prototype, (IMotionEvent**)&mPrototype);
+    helper->Obtain(prototype, (IMotionEvent**)&mPrototype);
     mPointerIdBits = pointerIdBits;
     mPolicyFlags = policyFlags;
 
@@ -228,12 +228,12 @@ void TouchExplorer::InjectedPointerTracker::OnMotionEvent(
             }
             AutoPtr<IMotionEventHelper> helper;
             CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
-            helper->ObtainEx5(event, (IMotionEvent**)&mLastInjectedHoverEvent);
+            helper->Obtain(event, (IMotionEvent**)&mLastInjectedHoverEvent);
             if (mLastInjectedHoverEventForClick != NULL) {
                 mLastInjectedHoverEventForClick->Recycle();
                 mLastInjectedHoverEventForClick = NULL;
             }
-            helper->ObtainEx5(event, (IMotionEvent**)&mLastInjectedHoverEventForClick);
+            helper->Obtain(event, (IMotionEvent**)&mLastInjectedHoverEventForClick);
         } break;
     }
     // if (DEBUG) {
@@ -365,7 +365,7 @@ void TouchExplorer::ReceivedPointerTracker::OnMotionEvent(
     }
     AutoPtr<IMotionEventHelper> helper;
     CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper);
-    helper->ObtainEx5(event, (IMotionEvent**)&mLastReceivedEvent);
+    helper->Obtain(event, (IMotionEvent**)&mLastReceivedEvent);
 
     Int32 action;
     event->GetActionMasked(&action);
@@ -525,8 +525,8 @@ void TouchExplorer::ReceivedPointerTracker::HandleReceivedPointerDown(
     event->GetEdgeFlags(&mLastReceivedDownEdgeFlags);
 
     mReceivedPointersDown |= pointerFlag;
-    event->GetXEx(pointerIndex, &(*mReceivedPointerDownX)[pointerId]);
-    event->GetYEx(pointerIndex, &(*mReceivedPointerDownY)[pointerId]);
+    event->GetX(pointerIndex, &(*mReceivedPointerDownX)[pointerId]);
+    event->GetY(pointerIndex, &(*mReceivedPointerDownY)[pointerId]);
     event->GetEventTime(&(*mReceivedPointerDownTime)[pointerId]);
 
     if (!mHasMovingActivePointer) {
@@ -624,8 +624,8 @@ Float TouchExplorer::ReceivedPointerTracker::ComputePointerDeltaMove(
     Int32 pointerId;
     event->GetPointerId(pointerIndex, &pointerId);
     Float x, y;
-    event->GetXEx(pointerIndex, &x);
-    event->GetYEx(pointerIndex, &y);
+    event->GetX(pointerIndex, &x);
+    event->GetY(pointerIndex, &y);
     Double deltaX = (Double)(x - (*mReceivedPointerDownX)[pointerId]);
     Double deltaY = (Double)(y - (*mReceivedPointerDownY)[pointerId]);
     return (Float)Elastos::Core::Math::Hypot(deltaX, deltaY);
@@ -688,7 +688,7 @@ void TouchExplorer::DoubleTapDetector::OnMotionEvent(
             }
             ASSERT_SUCCEEDED(CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper));
             mDownEvent = NULL;
-            helper->ObtainEx5(event, (IMotionEvent**)&mDownEvent);
+            helper->Obtain(event, (IMotionEvent**)&mDownEvent);
             break;
         case IMotionEvent::ACTION_UP:
         case IMotionEvent::ACTION_POINTER_UP:
@@ -705,7 +705,7 @@ void TouchExplorer::DoubleTapDetector::OnMotionEvent(
                     ASSERT_SUCCEEDED(CMotionEventHelper::AcquireSingleton(
                             (IMotionEventHelper**)&helper));
                     mFirstTapEvent = NULL;
-                    helper->ObtainEx5(event, (IMotionEvent**)&mFirstTapEvent);
+                    helper->Obtain(event, (IMotionEvent**)&mFirstTapEvent);
                     mDownEvent->Recycle();
                     mDownEvent = NULL;
                     return;
@@ -785,8 +785,8 @@ void TouchExplorer::DoubleTapDetector::OnDoubleTap(
         // accessibility focus bounds we click in the focus center.
         Int32 lastExplorePointerIndex;
         lastExploreEvent->GetActionIndex(&lastExplorePointerIndex);
-        lastExploreEvent->GetXEx(lastExplorePointerIndex, (Float*)&clickLocationX);
-        lastExploreEvent->GetYEx(lastExplorePointerIndex, (Float*)&clickLocationY);
+        lastExploreEvent->GetX(lastExplorePointerIndex, (Float*)&clickLocationX);
+        lastExploreEvent->GetY(lastExplorePointerIndex, (Float*)&clickLocationY);
         AutoPtr<IRect> activeWindowBounds = mHost->mTempRect;
         if (mHost->mLastTouchedWindowId == mHost->mAms->GetActiveWindowId()) {
             mHost->mAms->GetActiveWindowBounds(activeWindowBounds);
@@ -897,7 +897,7 @@ void TouchExplorer::PerformLongPressDelayed::Post(
     AutoPtr<IMotionEventHelper> helper;
     ASSERT_SUCCEEDED(CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper));
     mEvent = NULL;
-    helper->ObtainEx5(prototype, (IMotionEvent**)&mEvent);
+    helper->Obtain(prototype, (IMotionEvent**)&mEvent);
     mPolicyFlags = policyFlags;
     AutoPtr<IViewConfigurationHelper> configHelper;
     ASSERT_SUCCEEDED(CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper));
@@ -958,8 +958,8 @@ ECode TouchExplorer::PerformLongPressDelayed::Run()
         // accessibility focus bounds we click in the focus center.
         Int32 lastExplorePointerIndex;
         lastExploreEvent->GetActionIndex(&lastExplorePointerIndex);
-        lastExploreEvent->GetXEx(lastExplorePointerIndex, (Float*)&clickLocationX);
-        lastExploreEvent->GetYEx(lastExplorePointerIndex, (Float*)&clickLocationY);
+        lastExploreEvent->GetX(lastExplorePointerIndex, (Float*)&clickLocationX);
+        lastExploreEvent->GetY(lastExplorePointerIndex, (Float*)&clickLocationY);
         AutoPtr<IRect> activeWindowBounds = mHost->mTempRect;
         if (mHost->mLastTouchedWindowId == mHost->mAms->GetActiveWindowId()) {
             mHost->mAms->GetActiveWindowBounds(activeWindowBounds);
@@ -978,8 +978,8 @@ ECode TouchExplorer::PerformLongPressDelayed::Run()
 
     mHost->mLongPressingPointerId = pointerId;
     Float x, y;
-    mEvent->GetXEx(pointerIndex, &x);
-    mEvent->GetYEx(pointerIndex, &y);
+    mEvent->GetX(pointerIndex, &x);
+    mEvent->GetY(pointerIndex, &y);
     mHost->mLongPressingPointerDeltaX = (Int32)(x - clickLocationX);
     mHost->mLongPressingPointerDeltaY = (Int32)(y - clickLocationY);
 
@@ -1390,8 +1390,8 @@ ECode TouchExplorer::HandleMotionEventStateTouchExploring(
                         // It is *important* to use the distance traveled by the pointers
                         // on the screen which may or may not be magnified.
                         Float x, y;
-                        rawEvent->GetXEx(pointerIndex, &x);
-                        rawEvent->GetYEx(pointerIndex, &y);
+                        rawEvent->GetX(pointerIndex, &x);
+                        rawEvent->GetY(pointerIndex, &y);
                         Float deltaX = receivedTracker->GetReceivedPointerDownX(pointerId) - x;
                         Float deltaY = receivedTracker->GetReceivedPointerDownY(pointerId) - y;
                         Double moveDelta = Elastos::Core::Math::Hypot((Double)deltaX, (Double)deltaY);
@@ -1402,9 +1402,9 @@ ECode TouchExplorer::HandleMotionEventStateTouchExploring(
                             // given velocity.
                             mVelocityTracker->ComputeCurrentVelocity(1000);
                             Float xVelocity;
-                            mVelocityTracker->GetXVelocityEx(pointerId, &xVelocity);
+                            mVelocityTracker->GetXVelocity(pointerId, &xVelocity);
                             Float yVelocity;
-                            mVelocityTracker->GetYVelocityEx(pointerId, &yVelocity);
+                            mVelocityTracker->GetYVelocity(pointerId, &yVelocity);
                             Float maxAbsVelocity = Elastos::Core::Math::Max(
                                     Elastos::Core::Math::Abs(xVelocity), Elastos::Core::Math::Abs(yVelocity));
                             if (maxAbsVelocity > mScaledGestureDetectionVelocity) {
@@ -1438,8 +1438,8 @@ ECode TouchExplorer::HandleMotionEventStateTouchExploring(
                         // moved more than the slop.
                         if (mPerformLongPressDelayed->IsPending()) {
                             Float x, y;
-                            rawEvent->GetXEx(pointerIndex, &x);
-                            rawEvent->GetYEx(pointerIndex, &y);
+                            rawEvent->GetX(pointerIndex, &x);
+                            rawEvent->GetY(pointerIndex, &y);
                             Float deltaX =
                                     receivedTracker->GetReceivedPointerDownX(pointerId) - x;
                             Float deltaY =
@@ -1479,8 +1479,8 @@ ECode TouchExplorer::HandleMotionEventStateTouchExploring(
                         // It is *important* to use the distance traveled by the pointers
                         // on the screen which may or may not be magnified.
                         Float x, y;
-                        rawEvent->GetXEx(pointerIndex, &x);
-                        rawEvent->GetYEx(pointerIndex, &y);
+                        rawEvent->GetX(pointerIndex, &x);
+                        rawEvent->GetY(pointerIndex, &y);
                         Float deltaX = receivedTracker->GetReceivedPointerDownX(pointerId) - x;
                         Float deltaY = receivedTracker->GetReceivedPointerDownY(pointerId) - y;
                         Double moveDelta = Elastos::Core::Math::Hypot(deltaX, deltaY);
@@ -1633,10 +1633,10 @@ ECode TouchExplorer::HandleMotionEventStateDragging(
                         event->FindPointerIndex((*pointerIds)[1], &secondPtrIndex);
 
                         Float firstPtrX, firstPtrY, secondPtrX, secondPtrY;
-                        event->GetXEx(firstPtrIndex, &firstPtrX);
-                        event->GetYEx(firstPtrIndex, &firstPtrY);
-                        event->GetXEx(secondPtrIndex, &secondPtrX);
-                        event->GetYEx(secondPtrIndex, &secondPtrY);
+                        event->GetX(firstPtrIndex, &firstPtrX);
+                        event->GetY(firstPtrIndex, &firstPtrY);
+                        event->GetX(secondPtrIndex, &secondPtrX);
+                        event->GetY(secondPtrIndex, &secondPtrY);
 
                         Float deltaX = firstPtrX - secondPtrX;
                         Float deltaY = firstPtrY - secondPtrY;
@@ -1737,7 +1737,7 @@ ECode TouchExplorer::HandleMotionEventStateDelegating(
                 AutoPtr<IMotionEventHelper> helper;
                 ASSERT_SUCCEEDED(CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&helper));
                 AutoPtr<IMotionEvent> prototype;
-                helper->ObtainEx5(event, (IMotionEvent**)&prototype);
+                helper->Obtain(event, (IMotionEvent**)&prototype);
                 SendDownForAllActiveNotInjectedPointers(prototype, policyFlags);
             }
             break;
@@ -2196,10 +2196,10 @@ Boolean TouchExplorer::IsDraggingGesture(
     event->FindPointerIndex((*pointerIds)[1], &secondPtrIndex);
 
     Float firstPtrX, firstPtrY, secondPtrX, secondPtrY;
-    event->GetXEx(firstPtrIndex, &firstPtrX);
-    event->GetYEx(firstPtrIndex, &firstPtrY);
-    event->GetXEx(secondPtrIndex, &secondPtrX);
-    event->GetYEx(secondPtrIndex, &secondPtrY);
+    event->GetX(firstPtrIndex, &firstPtrX);
+    event->GetY(firstPtrIndex, &firstPtrY);
+    event->GetX(secondPtrIndex, &secondPtrX);
+    event->GetY(secondPtrIndex, &secondPtrY);
 
     Float firstPtrDownX = receivedTracker->GetReceivedPointerDownX(firstPtrIndex);
     Float firstPtrDownY = receivedTracker->GetReceivedPointerDownY(firstPtrIndex);

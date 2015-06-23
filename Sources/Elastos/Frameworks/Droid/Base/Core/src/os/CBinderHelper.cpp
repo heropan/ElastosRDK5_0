@@ -28,7 +28,7 @@ ECode CBinderHelper::GetCallingUserHandle(
     VALIDATE_NOT_NULL(h);
     AutoPtr<IUserHandle> userHandle = CBinder::GetCallingUserHandle();
     *h = userHandle;
-    INTERFACE_ADDREF(*h);
+    REFCOUNT_ADD(*h);
     return NOERROR;
 }
 

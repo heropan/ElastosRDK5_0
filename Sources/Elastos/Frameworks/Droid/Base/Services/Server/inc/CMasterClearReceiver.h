@@ -5,10 +5,8 @@
 #include "_CMasterClearReceiver.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
-#include <elastos/ThreadBase.h>
 
-using Elastos::Core::Threading::IThread;
-using Elastos::Core::Threading::ThreadBase;
+using Elastos::Core::IThread;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

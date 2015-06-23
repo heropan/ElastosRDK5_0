@@ -40,20 +40,20 @@ module
         SetIndicator(
             [in] ICharSequence* label);
 
-        SetIndicatorEx(
+        SetIndicator(
             [in] ICharSequence* label,
             [in] IDrawable* icon);
 
-        SetIndicatorEx2(
+        SetIndicator(
             [in] IView* view);
 
         SetContent(
             [in] Int32 viewId);
 
-        SetContentEx(
+        SetContent(
             [in] ITabHostTabContentFactory* contentFactory);
 
-        SetContentEx2(
+        SetContent(
             [in] IIntent* intent);
 
         GetTag(
@@ -69,7 +69,7 @@ module
 
         Setup();
 
-        SetupEx(
+        Setup(
             [in] ILocalActivityManager* activityGroup);
 
         AddTab(

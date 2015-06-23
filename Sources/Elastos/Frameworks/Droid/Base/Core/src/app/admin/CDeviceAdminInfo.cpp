@@ -4,9 +4,9 @@
 #include "util/Xml.h"
 #include "content/CComponentName.h"
 #include "content/pm/CResolveInfo.h"
-#include <elastos/Logger.h>
-#include <elastos/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include "R.h"
 
 using Elastos::Core::CInteger32;
@@ -403,7 +403,7 @@ ECode CDeviceAdminInfo::ReadPoliciesFromXml(
     VALIDATE_NOT_NULL(parser);
 
     String strValue;
-    parser->GetAttributeValueEx(String(NULL), String("flags"), &strValue);
+    parser->GetAttributeValue(String(NULL), String("flags"), &strValue);
     mUsesPolicies = StringUtils::ParseInt32(strValue);
     return NOERROR;
 }

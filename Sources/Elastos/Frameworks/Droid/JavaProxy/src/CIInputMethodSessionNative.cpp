@@ -1,7 +1,7 @@
 
 #include "CIInputMethodSessionNative.h"
 #include "CInputMethodSessionNative.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 #include "Util.h"
 
 using Elastos::Utility::Logging::Logger;

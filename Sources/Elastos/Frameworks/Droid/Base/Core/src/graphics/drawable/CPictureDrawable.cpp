@@ -40,7 +40,7 @@ ECode CPictureDrawable::GetPicture(
     VALIDATE_NOT_NULL(picture);
     AutoPtr<IPicture> p = PictureDrawable::GetPicture();
     *picture = p;
-    INTERFACE_ADDREF(*picture);
+    REFCOUNT_ADD(*picture);
     return NOERROR;
 }
 

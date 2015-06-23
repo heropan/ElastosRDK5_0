@@ -3,7 +3,7 @@
 #include "graphics/drawable/CRotateDrawable.h"
 #include "graphics/CRect.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 
 using Elastos::Utility::Logging::Logger;
@@ -34,7 +34,7 @@ RotateDrawable::RotateState::RotateState(
         if (res != NULL) {
             AutoPtr<IDrawableConstantState> state;
             source->mDrawable->GetConstantState((IDrawableConstantState**)&state);
-            state->NewDrawableEx(res, (IDrawable**)&mDrawable);
+            state->NewDrawable(res, (IDrawable**)&mDrawable);
         }
         else {
             AutoPtr<IDrawableConstantState> state;
@@ -59,7 +59,7 @@ ECode RotateDrawable::RotateState::NewDrawable(
     return CRotateDrawable::New((Handle32)this, NULL, (IRotateDrawable**)drawable);
 }
 
-ECode RotateDrawable::RotateState::NewDrawableEx(
+ECode RotateDrawable::RotateState::NewDrawable(
     /* [in] */ IResources* res,
     /* [out] */ IDrawable** drawable)
 {
@@ -120,7 +120,7 @@ ECode RotateDrawable::Draw(
     Float px = st->mPivotXRel ? (w * st->mPivotX) : st->mPivotX;
     Float py = st->mPivotYRel ? (h * st->mPivotY) : st->mPivotY;
 
-    canvas->RotateEx(st->mCurrentDegrees, px + _bounds->mLeft, py + _bounds->mTop);
+    canvas->Rotate(st->mCurrentDegrees, px + _bounds->mLeft, py + _bounds->mTop);
 
     st->mDrawable->Draw(canvas);
 

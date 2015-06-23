@@ -4,12 +4,11 @@
 #include "ext/frameworkdef.h"
 #include "_CAccessibilityEvent.h"
 #include "view/accessibility/AccessibilityRecord.h"
-#include <elastos/Mutex.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IView;
 
 namespace Elastos {
@@ -49,7 +48,7 @@ public:
      * @param root The root of the virtual subtree.
      * @param virtualDescendantId The id of the virtual descendant.
      */
-    CARAPI SetSourceEx(
+    CARAPI SetSource(
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId);
 
@@ -633,7 +632,7 @@ public:
      * @param event The other event.
      * @return An instance.
      */
-    static CARAPI ObtainEx(
+    static CARAPI Obtain(
         /* [in] */ IAccessibilityEvent* otherEvent,
         /* [out] */ IAccessibilityEvent** event);
 
@@ -643,7 +642,7 @@ public:
      *
      * @return An instance.
      */
-    static CARAPI ObtainEx2(
+    static CARAPI Obtain(
         /* [out] */ IAccessibilityEvent** event);
 
     /**

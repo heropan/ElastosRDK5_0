@@ -2,7 +2,7 @@
 #include "CMultiSelectListPreference.h"
 #include "CMultiSelectListPreferenceSavedState.h"
 #include "R.h"
-#include <elastos/Logger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::CHashSet;
@@ -106,7 +106,7 @@ ECode CMultiSelectListPreference::SetEntries(
     return NOERROR;
 }
 
-ECode CMultiSelectListPreference::SetEntriesEx(
+ECode CMultiSelectListPreference::SetEntries(
     /* [in] */ Int32 entriesResId)
 {
     AutoPtr<IContext> context;
@@ -123,7 +123,7 @@ ECode CMultiSelectListPreference::GetEntries(
 {
     VALIDATE_NOT_NULL(entries)
     *entries = mEntries;
-    INTERFACE_ADDREF(*entries)
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode CMultiSelectListPreference::SetEntryValues(
     return NOERROR;
 }
 
-ECode CMultiSelectListPreference::SetEntryValuesEx(
+ECode CMultiSelectListPreference::SetEntryValues(
     /* [in] */ Int32 entryValuesResId)
 {
     AutoPtr<IContext> context;
@@ -151,7 +151,7 @@ ECode CMultiSelectListPreference::GetEntryValues(
 {
     VALIDATE_NOT_NULL(entryValues)
     *entryValues = mEntryValues;
-    INTERFACE_ADDREF(*entryValues)
+    REFCOUNT_ADD(*entryValues)
     return NOERROR;
 }
 
@@ -187,7 +187,7 @@ ECode CMultiSelectListPreference::GetValues(
         v->Add(cs, &isSuccess);
     }
     *result = v;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -224,7 +224,7 @@ ECode CMultiSelectListPreference::OnPrepareDialogBuilder(
     AutoPtr< ArrayOf<Boolean> > checkedItems = GetSelectedItems();
 
     AutoPtr<IDialogInterfaceOnMultiChoiceClickListener> listener = new MultiChoiceClickListener(this);
-    builder->SetMultiChoiceItemsEx(mEntries, checkedItems, listener);
+    builder->SetMultiChoiceItems(mEntries, checkedItems, listener);
 
     mNewValues.Clear();
     mNewValues.Insert(mValues.Begin(), mValues.End());
@@ -289,7 +289,7 @@ ECode CMultiSelectListPreference::OnGetDefaultValue(
         result->Add((*defaultValues)[i], &isSuccess);
     }
     *value = result;
-    INTERFACE_ADDREF(*value)
+    REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
@@ -327,7 +327,7 @@ ECode CMultiSelectListPreference::OnSaveInstanceState(
     if (IsPersistent(&isPersistent), isPersistent) {
         // No need to save instance state
         *state = superState;
-        INTERFACE_ADDREF(*state)
+        REFCOUNT_ADD(*state)
         return NOERROR;
     }
 
@@ -337,7 +337,7 @@ ECode CMultiSelectListPreference::OnSaveInstanceState(
     GetValues((ISet**)&values);
     myState->SetValues(values);
     *state = IParcelable::Probe(myState);
-    INTERFACE_ADDREF(*state)
+    REFCOUNT_ADD(*state)
     return NOERROR;
 }
 
@@ -351,7 +351,7 @@ ECode CMultiSelectListPreference::constructor(
             const_cast<Int32 *>(R::styleable::MultiSelectListPreference),
             ARRAY_SIZE(R::styleable::MultiSelectListPreference));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx3(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
     a->GetTextArray(R::styleable::MultiSelectListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
     a->GetTextArray(R::styleable::MultiSelectListPreference_entryValues, (ArrayOf<ICharSequence*>**)&mEntryValues);
     a->Recycle();
@@ -371,10 +371,10 @@ ECode CMultiSelectListPreference::SetDialogTitle(
     return DialogPreference::SetDialogTitle(dialogTitle);
 }
 
-ECode CMultiSelectListPreference::SetDialogTitleEx(
+ECode CMultiSelectListPreference::SetDialogTitle(
     /* [in] */ Int32 dialogTitleResId)
 {
-    return DialogPreference::SetDialogTitleEx(dialogTitleResId);
+    return DialogPreference::SetDialogTitle(dialogTitleResId);
 }
 
 ECode CMultiSelectListPreference::GetDialogTitle(
@@ -389,10 +389,10 @@ ECode CMultiSelectListPreference::SetDialogMessage(
     return DialogPreference::SetDialogMessage(dialogMessage);
 }
 
-ECode CMultiSelectListPreference::SetDialogMessageEx(
+ECode CMultiSelectListPreference::SetDialogMessage(
     /* [in] */ Int32 dialogMessageResId)
 {
-    return DialogPreference::SetDialogMessageEx(dialogMessageResId);
+    return DialogPreference::SetDialogMessage(dialogMessageResId);
 }
 
 ECode CMultiSelectListPreference::GetDialogMessage(
@@ -407,10 +407,10 @@ ECode CMultiSelectListPreference::SetDialogIcon(
     return DialogPreference::SetDialogIcon(dialogIcon);
 }
 
-ECode CMultiSelectListPreference::SetDialogIconEx(
+ECode CMultiSelectListPreference::SetDialogIcon(
     /* [in] */ Int32 dialogIconRes)
 {
-    return DialogPreference::SetDialogIconEx(dialogIconRes);
+    return DialogPreference::SetDialogIcon(dialogIconRes);
 }
 
 ECode CMultiSelectListPreference::GetDialogIcon(
@@ -425,10 +425,10 @@ ECode CMultiSelectListPreference::SetPositiveButtonText(
     return DialogPreference::SetPositiveButtonText(positiveButtonText);
 }
 
-ECode CMultiSelectListPreference::SetPositiveButtonTextEx(
+ECode CMultiSelectListPreference::SetPositiveButtonText(
     /* [in] */ Int32 positiveButtonTextResId)
 {
-    return DialogPreference::SetPositiveButtonTextEx(positiveButtonTextResId);
+    return DialogPreference::SetPositiveButtonText(positiveButtonTextResId);
 }
 
 ECode CMultiSelectListPreference::GetPositiveButtonText(
@@ -443,10 +443,10 @@ ECode CMultiSelectListPreference::SetNegativeButtonText(
     return DialogPreference::SetNegativeButtonText(negativeButtonText);
 }
 
-ECode CMultiSelectListPreference::SetNegativeButtonTextEx(
+ECode CMultiSelectListPreference::SetNegativeButtonText(
     /* [in] */ Int32 negativeButtonTextResId)
 {
-    return DialogPreference::SetNegativeButtonTextEx(negativeButtonTextResId);
+    return DialogPreference::SetNegativeButtonText(negativeButtonTextResId);
 }
 
 ECode CMultiSelectListPreference::GetNegativeButtonText(

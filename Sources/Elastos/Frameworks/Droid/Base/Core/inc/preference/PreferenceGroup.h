@@ -3,9 +3,6 @@
 #define __PREFERENCEGROUP_H__
 
 #include "Preference.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

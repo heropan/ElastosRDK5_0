@@ -17,7 +17,7 @@ ECode CHideReturnsTransformationMethod::GetTransformation(
     VALIDATE_NOT_NULL(ret);
     AutoPtr<ICharSequence> cs = HideReturnsTransformationMethod::GetTransformation(source,view);
     *ret = cs;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -3,7 +3,7 @@
 #include "net/NetworkUtils.h"
 #include "net/CConnectivityManager.h"
 #include "text/TextUtils.h"
-#include <elastos/StringUtils.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -319,7 +319,7 @@ ECode CProxy::GetAndroidProxySelectorRoutePlanner(
 //    AutoPtr<IProxySelector> sel;
 //    ProxySelector::GetDefault((IProxySelector**)&sel);
 //    (AndroidProxySelectorRoutePlanner*)*planner = new AndroidProxySelectorRoutePlanner(reg, sel, context, this);
-//    INTERFACE_ADDREF(*planner);
+//    REFCOUNT_ADD(*planner);
 //    return NOERROR;
     assert(0);
     return E_NOT_IMPLEMENTED;
@@ -339,12 +339,12 @@ ECode CProxy::SetHttpProxySystemProperty(
         port = StringUtils::Int32ToString(portNum);
         proxyp->GetExclusionList(&exclList);
     }
-    SetHttpProxySystemPropertyEx(host, port, exclList);
+    SetHttpProxySystemProperty(host, port, exclList);
     return NOERROR;
 }
 
 /** @hide */
-ECode CProxy::SetHttpProxySystemPropertyEx(
+ECode CProxy::SetHttpProxySystemProperty(
     /* [in] */ const String& host,
     /* [in] */ const String& port,
     /* [in] */ const String& exclList)

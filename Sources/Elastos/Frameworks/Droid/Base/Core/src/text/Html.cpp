@@ -18,8 +18,8 @@
 #include "util/ArrayUtils.h"
 #include "util/XmlUtils.h"
 #include "R.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Character.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Character.h>
 
 using Org::Xml::Sax::EIID_IContentHandler;
 using Org::Xml::Sax::IInputSource;
@@ -855,7 +855,7 @@ void HtmlToSpannedConverter::StartImg(
     /* [in] */ IHtmlImageGetter* img)
 {
     String src;
-    attributes->GetValueEx(String(""), String("src"), &src);
+    attributes->GetValue(String(""), String("src"), &src);
     AutoPtr<IDrawable> d = NULL;
 
     if (img != NULL) {
@@ -891,9 +891,9 @@ void HtmlToSpannedConverter::StartFont(
     /* [in] */ IAttributes* attributes)
 {
     String color;
-    attributes->GetValueEx(String(""), String("color"), &color);
+    attributes->GetValue(String(""), String("color"), &color);
     String face;
-    attributes->GetValueEx(String(""), String("face"), &face);
+    attributes->GetValue(String(""), String("face"), &face);
 
     Int32 len;
     text->GetLength(&len);
@@ -962,7 +962,7 @@ void HtmlToSpannedConverter::StartA(
     /* [in] */ IAttributes* attributes)
 {
     String href;
-    attributes->GetValueEx(String(""), String("href"), &href);
+    attributes->GetValue(String(""), String("href"), &href);
 
     Int32 len;
     text->GetLength(&len);

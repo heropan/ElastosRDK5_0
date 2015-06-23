@@ -45,7 +45,7 @@ module
          * this one if it is already suitable.  The caller must make sure that
          * no one is still using this Layout.
          */
-        ReplaceOrMakeEx(
+        ReplaceOrMake(
             [in] ICharSequence* source,
             [in] ITextPaint* paint,
             [in] Int32 outerwidth,
@@ -71,7 +71,7 @@ module
             [in] Boolean includepad,
             [out] IBoringLayout** ret);
 
-        MakeEx(
+        Make(
             [in] ICharSequence* source,
             [in] ITextPaint* paint,
             [in] Int32 outerwidth,
@@ -89,19 +89,19 @@ module
             [in] ITextPaint* paint,
             [out] IBoringLayoutMetrics** ret);
 
-        IsBoringEx(
+        IsBoring(
             [in] ICharSequence* text,
             [in] ITextPaint* paint,
             [in] ITextDirectionHeuristic* textDir,
             [out] IBoringLayoutMetrics** ret);
 
-        IsBoringEx2(
+        IsBoring(
             [in] ICharSequence* text,
             [in] ITextPaint* paint,
             [in] IBoringLayoutMetrics* metrics,
             [out] IBoringLayoutMetrics** ret);
 
-        IsBoringEx3(
+        IsBoring(
             [in] ICharSequence* text,
             [in] ITextPaint* paint,
             [in] ITextDirectionHeuristic* textDir,

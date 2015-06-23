@@ -3,14 +3,14 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/Set.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Slogger.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Slogger.h>
 //#include "net/Uri.h"
 
 using Elastos::Utility::Set;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IIntent;

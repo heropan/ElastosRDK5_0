@@ -129,7 +129,7 @@ module
             [in] ArrayOf<Int32>* framebuffers,
             [in] Int32 offset);
 
-        GlDeleteFramebuffersOESEx(
+        GlDeleteFramebuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* framebuffers);
 
@@ -138,7 +138,7 @@ module
             [in] ArrayOf<Int32>* renderbuffers,
             [in] Int32 offset);
 
-        GlDeleteRenderbuffersOESEx(
+        GlDeleteRenderbuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* renderbuffers);
 
@@ -163,7 +163,7 @@ module
             [in] ArrayOf<Int32>* framebuffers,
             [in] Int32 offset);
 
-        GlGenFramebuffersOESEx(
+        GlGenFramebuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* framebuffers);
 
@@ -172,7 +172,7 @@ module
             [in] ArrayOf<Int32>* renderbuffers,
             [in] Int32 offset);
 
-        GlGenRenderbuffersOESEx(
+        GlGenRenderbuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* renderbuffers);
 
@@ -183,7 +183,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetFramebufferAttachmentParameterivOESEx(
+        GlGetFramebufferAttachmentParameterivOES(
             [in] Int32 target,
             [in] Int32 attachment,
             [in] Int32 pname,
@@ -195,7 +195,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetRenderbufferParameterivOESEx(
+        GlGetRenderbufferParameterivOES(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -206,7 +206,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetTexGenfvEx(
+        GlGetTexGenfv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -217,7 +217,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexGenivEx(
+        GlGetTexGeniv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -228,7 +228,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexGenxvEx(
+        GlGetTexGenxv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -258,7 +258,7 @@ module
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlTexGenfvEx(
+        GlTexGenfv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
@@ -274,7 +274,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexGenivEx(
+        GlTexGeniv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
@@ -290,7 +290,7 @@ module
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexGenxvEx(
+        GlTexGenxv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);

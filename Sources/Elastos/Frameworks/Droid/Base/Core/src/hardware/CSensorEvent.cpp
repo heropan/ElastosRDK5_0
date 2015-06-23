@@ -24,7 +24,7 @@ ECode CSensorEvent::GetValues(
 {
     VALIDATE_NOT_NULL(values);
     *values = mValues;
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
     return NOERROR;
 }
 
@@ -40,7 +40,7 @@ ECode CSensorEvent::GetOriginalValue(
 {
     VALIDATE_NOT_NULL(values);
     *values = mOriginalValues;
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
     return NOERROR;
 }
 
@@ -49,7 +49,7 @@ ECode CSensorEvent::GetSensor(
 {
     VALIDATE_NOT_NULL(sensor);
     *sensor = mSensor;
-    INTERFACE_ADDREF(*sensor);
+    REFCOUNT_ADD(*sensor);
     return NOERROR;
 }
 

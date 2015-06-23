@@ -86,7 +86,7 @@ ECode TextClock::InitFromAttributes(
             ARRAY_SIZE(R::styleable::TextClock));
 
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributesEx2(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 //    try {
     AutoPtr<ICharSequence> format;
 
@@ -148,7 +148,7 @@ void TextClock::CreateTime(
 
         AutoPtr<ITimeZone> tz;
         timeZoneHelper->GetTimeZone(timeZone, (ITimeZone**)&tz);
-        helper->GetInstanceEx2(tz, (ICalendar**)&mTime);
+        helper->GetInstance(tz, (ICalendar**)&mTime);
     } else {
         helper->GetInstance((ICalendar**)&mTime);
     }

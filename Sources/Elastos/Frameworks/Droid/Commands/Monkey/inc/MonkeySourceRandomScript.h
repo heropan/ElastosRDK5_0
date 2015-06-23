@@ -2,10 +2,10 @@
 #define __MONKEYSOURCERANDOMSCRIPT_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 #include "Elastos.Droid.Commands.Monkey_server.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Core::IRandom;
 
 namespace Elastos {

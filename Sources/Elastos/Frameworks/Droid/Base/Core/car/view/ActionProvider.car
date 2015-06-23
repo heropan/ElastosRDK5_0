@@ -30,7 +30,7 @@ module
         OnCreateActionView(
             [out] IView** view);
 
-        OnCreateActionViewEx(
+        OnCreateActionView(
             [in] IMenuItem* forItem,
             [out] IView** view);
 

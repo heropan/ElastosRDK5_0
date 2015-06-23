@@ -4,7 +4,7 @@
 
 #include "_CTransitionDrawable.h"
 #include "graphics/drawable/TransitionDrawable.h"
-#include "graphics/drawable/DrawableMacro.h"
+
 
 namespace Elastos {
 namespace Droid {

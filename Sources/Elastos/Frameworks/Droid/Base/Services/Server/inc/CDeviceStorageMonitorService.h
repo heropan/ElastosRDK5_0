@@ -3,7 +3,6 @@
 
 #include "_CDeviceStorageMonitorService.h"
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
 #include "os/FileObserver.h"
 #include "os/HandlerBase.h"
 #include "Elastos.Core.h"
@@ -16,8 +15,6 @@ using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::FileObserver;
 using Libcore::IO::IStructStatFs;
-using Elastos::Core::Threading::Mutex;
-
 
 namespace Elastos {
 namespace Droid {

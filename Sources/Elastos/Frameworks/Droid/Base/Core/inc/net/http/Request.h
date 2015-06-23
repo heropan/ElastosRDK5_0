@@ -3,12 +3,10 @@
 #define __REQUEST_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 #include "Connection.h"
 
 using namespace Elastos::Core;
-using namespace Elastos::Core::Threading;
 using namespace Org::Apache::Http;
 using namespace Org::Apache::Http::Protocol;
 

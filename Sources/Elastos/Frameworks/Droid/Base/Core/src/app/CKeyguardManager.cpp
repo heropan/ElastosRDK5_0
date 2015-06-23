@@ -44,7 +44,7 @@ ECode CKeyguardManager::NewKeyguardLock(
 {
     VALIDATE_NOT_NULL(keyguardLock);
     *keyguardLock = new KeyguardLock(tag, this);
-    INTERFACE_ADDREF(*keyguardLock);
+    REFCOUNT_ADD(*keyguardLock);
     return NOERROR;
 }
 

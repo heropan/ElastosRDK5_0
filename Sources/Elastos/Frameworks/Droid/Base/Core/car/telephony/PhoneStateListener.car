@@ -55,7 +55,7 @@ module
         OnDataConnectionStateChanged(
             [in] Int32 state);
 
-        OnDataConnectionStateChangedEx(
+        OnDataConnectionStateChanged(
             [in] Int32 state,
             [in] Int32 networkType);
 

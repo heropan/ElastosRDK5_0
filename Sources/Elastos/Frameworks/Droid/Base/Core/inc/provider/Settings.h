@@ -2,15 +2,14 @@
 #define __ELASTOS_DROID_PROVIDER_SETTINGS_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
 #include <elrefbase.h>
 
-using Elastos::Utility::HashSet;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntent;
@@ -169,7 +168,7 @@ public:
          * @param name to look up in the table
          * @return the corresponding content URI, or null if not present
          */
-        static CARAPI GetUriForEx(
+        static CARAPI GetUriFor(
             /* [in] */ const String& name,
             /* [out] */ IUri** uri);
 
@@ -598,7 +597,7 @@ public:
          * @param name to look up in the table
          * @return the corresponding content URI, or null if not present
          */
-        static CARAPI GetUriForEx(
+        static CARAPI GetUriFor(
             /* [in] */ const String& name,
             /* [out] */ IUri** uri);
 
@@ -1017,7 +1016,7 @@ public:
          * @param name to look up in the table
          * @return the corresponding content URI, or null if not present
          */
-        static CARAPI GetUriForEx(
+        static CARAPI GetUriFor(
             /* [in] */ const String& name,
             /* [out] */ IUri** uri);
 

@@ -1,6 +1,6 @@
 
 #include "CCdmaCellLocation.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <ext/frameworkdef.h>
 
 using Elastos::Core::StringBuilder;
@@ -121,7 +121,7 @@ ECode CCdmaCellLocation::SetCellLocationData(
     return NOERROR;
 }
 
-ECode CCdmaCellLocation::SetCellLocationDataEx(
+ECode CCdmaCellLocation::SetCellLocationData(
     /* [in] */ Int32 baseStationId,
     /* [in] */ Int32 baseStationLatitude,
     /* [in] */ Int32 baseStationLongitude,

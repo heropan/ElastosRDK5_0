@@ -4,11 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
-#include <elastos/Mutex.h>
 #include <elastos/TimerTask.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;

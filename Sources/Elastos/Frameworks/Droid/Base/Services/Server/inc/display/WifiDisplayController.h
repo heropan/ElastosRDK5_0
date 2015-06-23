@@ -7,9 +7,9 @@
 #include "os/HandlerBase.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
-#include <elastos/List.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Net::IInet4Address;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::HandlerBase;
@@ -152,7 +152,7 @@ private:
     public:
         CAR_INTERFACE_DECL();
 
-        MyActionListenerEx2(
+        MyActionListener(
             /* [in] */ WifiDisplayController* host,
             /* [in] */ IWifiP2pDevice* oldDevice,
             /* [in] */ Boolean isDisconnecting);

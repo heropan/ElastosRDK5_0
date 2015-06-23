@@ -2,7 +2,7 @@
 #define __CKEYBUTTONVIEW_H_
 
 #include "_CKeyButtonView.h"
-#include "view/ViewMacro.h"
+
 #include "systemui/statusbar/policy/KeyButtonView.h"
 
 using Elastos::Droid::Widget::ImageViewScaleType;
@@ -317,7 +317,7 @@ public:
      *
      * @attr ref android.R.styleable#ImageView_tint
      */
-    CARAPI SetColorFilterEx(
+    CARAPI SetColorFilter(
         /* [in] */ Int32 color,
         /* [in] */ PorterDuffMode mode);
 
@@ -340,7 +340,7 @@ public:
      *
      * @see #getColorFilter()
      */
-    CARAPI SetColorFilterEx2(
+    CARAPI SetColorFilter(
         /* [in] */ IColorFilter* cf);
 
     /**
@@ -363,7 +363,7 @@ public:
     CARAPI SetImageAlpha(
         /* [in] */ Int32 alpha);
 
-    CARAPI SetAlphaEx(
+    CARAPI SetAlpha(
         /* [in] */ Int32 alpha);
 };
 

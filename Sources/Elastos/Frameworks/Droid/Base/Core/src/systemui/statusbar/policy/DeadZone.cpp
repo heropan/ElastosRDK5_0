@@ -99,7 +99,7 @@ ECode DeadZone::Init(
             const_cast<Int32 *>(SystemUIR::styleable::DeadZone),
             ARRAY_SIZE(SystemUIR::styleable::DeadZone));
     AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributesEx3(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 
     a->GetInt32(SystemUIR::styleable::DeadZone_holdTime, 0, &mHold);
     a->GetInt32(SystemUIR::styleable::DeadZone_decayTime, 0, &mDecay);
@@ -228,7 +228,7 @@ void DeadZone::OnDraw(
     Int64 now = SystemClock::GetUptimeMillis();
     Int32 size = (Int32) GetSize(now);
     Boolean isNotEmpty;
-    canvas->ClipRectEx6(0, 0, mVertical ? size : w, mVertical ? h : size, &isNotEmpty);
+    canvas->ClipRect(0, 0, mVertical ? size : w, mVertical ? h : size, &isNotEmpty);
     Float frac = /* DEBUG ? (mFlashFrac - 0.5f) + 0.5f :  */ mFlashFrac;
     canvas->DrawARGB((Int32) (frac * 0xFF), 0xDD, 0xEE, 0xAA);
 

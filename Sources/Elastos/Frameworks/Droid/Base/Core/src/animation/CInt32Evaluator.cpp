@@ -29,7 +29,7 @@ ECode CInt32Evaluator::Evaluate(
 }
 
 
-ECode CInt32Evaluator::EvaluateEx(
+ECode CInt32Evaluator::Evaluate(
     /* [in] */ Float fraction,
     /* [in] */ Int32 startValue,
     /* [in] */ Int32 endValue,

@@ -60,18 +60,18 @@ public:
         /* [in] */ IViewGroup* root,
         /* [out] */ IView** view);
 
-    CARAPI InflateEx(
+    CARAPI Inflate(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IViewGroup* root,
         /* [out] */ IView** view);
 
-    CARAPI InflateEx2(
+    CARAPI Inflate(
         /* [in] */ Int32 resource,
         /* [in] */ IViewGroup* root,
         /* [in] */ Boolean attachToRoot,
         /* [out] */ IView** view);
 
-    CARAPI InflateEx3(
+    CARAPI Inflate(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IViewGroup* root,
         /* [in] */ Boolean attachToRoot,

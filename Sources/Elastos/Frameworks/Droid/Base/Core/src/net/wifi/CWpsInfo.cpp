@@ -1,7 +1,7 @@
 
 #include "net/wifi/CWpsInfo.h"
 #include "ext/frameworkext.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 

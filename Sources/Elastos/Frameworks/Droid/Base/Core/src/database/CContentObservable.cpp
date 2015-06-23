@@ -28,11 +28,11 @@ ECode CContentObservable::DispatchChange(
     return ContentObservable::DispatchChange(selfChange);
 }
 
-ECode CContentObservable::DispatchChangeEx(
+ECode CContentObservable::DispatchChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
-    return ContentObservable::DispatchChangeEx(selfChange, uri);
+    return ContentObservable::DispatchChange(selfChange, uri);
 }
 
 ECode CContentObservable::NotifyChange(

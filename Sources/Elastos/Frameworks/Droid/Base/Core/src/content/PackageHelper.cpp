@@ -3,8 +3,8 @@
 #include "content/PackageHelper.h"
 #include "os/ServiceManager.h"
 #include "os/storage/StorageResultCode.h"
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::IFileOutputStream;
@@ -37,7 +37,7 @@ ECode PackageHelper::GetMountService(
     AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
     if (obj != NULL) {
         *mountService = IMountService::Probe(obj);
-        INTERFACE_ADDREF(*mountService);
+        REFCOUNT_ADD(*mountService);
         return NOERROR;
     }
     else {
@@ -403,7 +403,7 @@ ECode PackageHelper::CopyZipEntry(
     FAIL_RETURN(inZipFile->GetInputStream(zipEntry, (IInputStream**)&data))
     // try {
     while ((data->ReadBytes(buffer, &num), num) > 0) {
-        if (FAILED(outZipStream->WriteBytesEx(*buffer, 0, num))) goto Exit1;
+        if (FAILED(outZipStream->WriteBytes(*buffer, 0, num))) goto Exit1;
     }
     if (FAILED(IFlushable::Probe(outZipStream)->Flush())) goto Exit1;
     // } finally {

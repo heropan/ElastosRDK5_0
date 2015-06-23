@@ -3,16 +3,15 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include "webkit/WebSettingsClassic.h"
-#include <elastos/Mutex.h>
-#include <elastos/Thread.h>
-#include <elastos/Logger.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Logger.h>
 
 #include <cutils/log.h>
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Thread;
+using Elastos::Core::Mutex;
+using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::CAlertDialogBuilder;
@@ -204,11 +203,11 @@ ECode CActivityOne::ConfirmExit()
     }
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(String("Exit!"), (ICharSequence**)&cs);
-    adb->SetTitleEx(cs);
+    adb->SetTitle(cs);
 
     cs = NULL;
     CStringWrapper::New(String("is Exit?"), (ICharSequence**)&cs);
-    adb->SetMessageEx(cs);
+    adb->SetMessage(cs);
 
     AutoPtr<DialogOnClickListener> listener = new CActivityOne::DialogOnClickListener(this);
 
@@ -216,11 +215,11 @@ ECode CActivityOne::ConfirmExit()
 
     cs = NULL;
     CStringWrapper::New(String("确定"), (ICharSequence**)&cs);
-    adb->SetPositiveButtonEx(cs, clickListener);
+    adb->SetPositiveButton(cs, clickListener);
 
     cs = NULL;
     CStringWrapper::New(String("cancel"), (ICharSequence**)&cs);
-    adb->SetNegativeButtonEx(cs, clickListener);
+    adb->SetNegativeButton(cs, clickListener);
 
     AutoPtr<IAlertDialog> dlg;
     adb->Create((IAlertDialog**)&dlg);
@@ -239,15 +238,15 @@ ECode CActivityOne::OnCreateContextMenu(
     AutoPtr<ICharSequence> csq;
     CStringWrapper::New(String("ctxItem1"), (ICharSequence**)&csq);
     AutoPtr<IMenuItem> item;
-    menu->AddEx2(0, 1, 1, csq, (IMenuItem**)&item);
+    menu->Add(0, 1, 1, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem2"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 2, 2, csq, (IMenuItem**)&item);
+    menu->Add(0, 2, 2, csq, (IMenuItem**)&item);
 
     csq = NULL; item = NULL;
     CStringWrapper::New(String("ctxItem3"), (ICharSequence**)&csq);
-    menu->AddEx2(0, 3, 3, csq, (IMenuItem**)&item);
+    menu->Add(0, 3, 3, csq, (IMenuItem**)&item);
 
     return NOERROR;
 }

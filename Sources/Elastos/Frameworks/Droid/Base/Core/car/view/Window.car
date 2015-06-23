@@ -436,7 +436,7 @@ module
          *
          * @param wm The ViewManager for adding new windows.
          */
-        SetWindowManagerEx(
+        SetWindowManager(
             [in] IWindowManager* wm,
             [in] IBinder* appToken,
             [in] String appName,
@@ -708,7 +708,7 @@ module
          * @param view The desired content to display.
          * @see #setContentView(View, android.view.ViewGroup.LayoutParams)
          */
-        SetContentViewEx(
+        SetContentView(
             [in] IView* view);
 
         /**
@@ -724,7 +724,7 @@ module
          * @param view The desired content to display.
          * @param params Layout parameters for the view.
          */
-        SetContentViewEx2(
+        SetContentView(
             [in] IView* view,
             [in] IViewGroupLayoutParams* params);
 
@@ -1044,7 +1044,7 @@ module
          * @param uiOptions Flags specifying extra options for this window.
          * @param mask Flags specifying which options should be modified. Others will remain unchanged.
          */
-        SetUiOptionsEx(
+        SetUiOptions(
             [in] Int32 uiOptions,
             [in] Int32 mask);
     }

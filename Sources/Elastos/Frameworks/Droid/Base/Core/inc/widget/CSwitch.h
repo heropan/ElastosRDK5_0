@@ -3,9 +3,9 @@
 
 #include "_CSwitch.h"
 #include "widget/Switch.h"
-#include "view/ViewMacro.h"
-#include "widget/TextViewMacro.h"
-#include "widget/CompoundButtonMacro.h"
+
+
+
 
 namespace Elastos{
 namespace Droid{
@@ -42,7 +42,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Int32 resid);
 
-    CARAPI SetSwitchTypefaceEx(
+    CARAPI SetSwitchTypeface(
         /* [in] */ ITypeface* tf,
         /* [in] */ Int32 style);
 

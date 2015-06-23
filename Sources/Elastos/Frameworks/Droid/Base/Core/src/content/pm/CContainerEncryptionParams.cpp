@@ -135,7 +135,7 @@ ECode CContainerEncryptionParams::GetMacTag(
 {
     VALIDATE_NOT_NULL(tag);
     *tag = mMacTag;
-    INTERFACE_ADDREF(*tag);
+    REFCOUNT_ADD(*tag);
     return NOERROR;
 }
 

@@ -9,15 +9,14 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
-#include <elastos/List.h>
-#include <elastos/HashMap.h>
-#include <elastos/Mutex.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
@@ -117,7 +116,7 @@ public:
 
     virtual CARAPI Dump();
 
-    virtual CARAPI DumpEx(
+    virtual CARAPI Dump(
         /* [in] */ IPrintWriter* pw);
 
 private:

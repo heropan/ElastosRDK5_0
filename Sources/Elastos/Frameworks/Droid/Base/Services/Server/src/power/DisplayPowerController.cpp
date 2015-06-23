@@ -3,9 +3,9 @@
 #include "os/SystemClock.h"
 #include "os/Handler.h"
 #include "R.h"
-#include <elastos/Math.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
@@ -493,13 +493,13 @@ void DisplayPowerController::Initialize()
     (*pfArray2)[0] = 1.0f;
     (*pfArray2)[1] = 0.0f;
 
-    ASSERT_SUCCEEDED(animatorHelper->OfFloatEx(mPowerState,
+    ASSERT_SUCCEEDED(animatorHelper->OfFloat(mPowerState,
             DisplayPowerState::ELECTRON_BEAM_LEVEL, pfArray1,
             (IObjectAnimator**)&mElectronBeamOnAnimator));
     mElectronBeamOnAnimator->SetDuration(ELECTRON_BEAM_ON_ANIMATION_DURATION_MILLIS);
     mElectronBeamOnAnimator->AddListener(mAnimatorListener);
 
-    ASSERT_SUCCEEDED(animatorHelper->OfFloatEx(mPowerState,
+    ASSERT_SUCCEEDED(animatorHelper->OfFloat(mPowerState,
             DisplayPowerState::ELECTRON_BEAM_LEVEL, pfArray2,
             (IObjectAnimator**)&mElectronBeamOffAnimator));
     mElectronBeamOffAnimator->SetDuration(ELECTRON_BEAM_OFF_ANIMATION_DURATION_MILLIS);
@@ -804,7 +804,7 @@ void DisplayPowerController::SetProximitySensorEnabled(
             mProximitySensorEnabled = TRUE;
             mPendingProximity = PROXIMITY_UNKNOWN;
             Boolean result;
-            mSensorManager->RegisterListenerEx3(mProximitySensorListener, mProximitySensor,
+            mSensorManager->RegisterListener(mProximitySensorListener, mProximitySensor,
                 ISensorManager::SENSOR_DELAY_NORMAL, mHandler, &result);
         }
     }
@@ -813,7 +813,7 @@ void DisplayPowerController::SetProximitySensorEnabled(
             mProximitySensorEnabled = FALSE;
             mProximity = PROXIMITY_UNKNOWN;
             mHandler->RemoveMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
-            mSensorManager->UnregisterListenerEx3(mProximitySensorListener);
+            mSensorManager->UnregisterListener(mProximitySensorListener);
         }
     }
 }
@@ -871,7 +871,7 @@ void DisplayPowerController::SetLightSensorEnabled(
             mLightSensorEnabled = TRUE;
             mLightSensorEnableTime = SystemClock::GetUptimeMillis();
             Boolean result;
-            mSensorManager->RegisterListenerEx3(mLightSensorListener, mLightSensor,
+            mSensorManager->RegisterListener(mLightSensorListener, mLightSensor,
                     LIGHT_SENSOR_RATE_MILLIS * 1000, mHandler, &result);
         }
     }

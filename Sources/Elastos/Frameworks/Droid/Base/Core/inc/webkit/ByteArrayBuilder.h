@@ -3,11 +3,10 @@
 #define __BYTEARRAYBUILDER_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Mutex.h>
-#include <elastos/Object.h>
+#include <elastos/Core/Object.h>
 
-using Elastos::Core::Threading::Mutex;
-using Elastos::Core::Threading::Object;
+using Elastos::Core::Mutex;
+using Elastos::Core::Object;
 using Elastos::Utility::ILinkedList;
 
 namespace Elastos {

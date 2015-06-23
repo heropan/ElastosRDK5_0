@@ -18,7 +18,7 @@ ECode CEntityNamedContentValues::GetUri(
 {
     VALIDATE_NOT_NULL(uri)
     *uri = mUri;
-    INTERFACE_ADDREF(*uri);
+    REFCOUNT_ADD(*uri);
     return NOERROR;
 }
 
@@ -27,7 +27,7 @@ ECode CEntityNamedContentValues::GetValues(
 {
     VALIDATE_NOT_NULL(values)
     *values = mContentValues;
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
     return NOERROR;
 }
 

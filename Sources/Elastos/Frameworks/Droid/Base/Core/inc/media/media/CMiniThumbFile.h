@@ -4,13 +4,13 @@
 
 #include "_CMiniThumbFile.h"
 #include "ext/frameworkext.h"
-#include <elastos/HashMap.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::Channels::IFileChannel;
 using Elastos::IO::IByteBuffer;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

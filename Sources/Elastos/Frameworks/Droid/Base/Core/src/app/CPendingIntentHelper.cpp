@@ -46,7 +46,7 @@ ECode CPendingIntentHelper::GetActivity(
     /* [in] */ Int32 flags,
     /* [out] */ IPendingIntent **pendingIntent)
 {
-    return GetActivityEx(context, requestCode, intent, flags, NULL, pendingIntent);
+    return GetActivity(context, requestCode, intent, flags, NULL, pendingIntent);
 }
 
 /**
@@ -73,7 +73,7 @@ ECode CPendingIntentHelper::GetActivity(
  * parameters.  May return null only if {@link #FLAG_NO_CREATE} has been
  * supplied.
  */
-ECode CPendingIntentHelper::GetActivityEx(
+ECode CPendingIntentHelper::GetActivity(
     /* [in] */ IContext *context,
     /* [in] */ Int32 requestCode,
     /* [in] */ IIntent *intent,
@@ -228,7 +228,7 @@ ECode CPendingIntentHelper::GetActivities(
     /* [in] */ Int32 flags,
     /* [out] */ IPendingIntent **pendingIntent)
 {
-    return GetActivitiesEx(context, requestCode, intents, flags, NULL, pendingIntent);
+    return GetActivities(context, requestCode, intents, flags, NULL, pendingIntent);
 }
 
 /**
@@ -272,7 +272,7 @@ ECode CPendingIntentHelper::GetActivities(
  * parameters.  May return null only if {@link #FLAG_NO_CREATE} has been
  * supplied.
  */
-ECode CPendingIntentHelper::GetActivitiesEx(
+ECode CPendingIntentHelper::GetActivities(
     /* [in] */ IContext *context,
     /* [in] */ Int32 requestCode,
     /* [in] */ ArrayOf<IIntent *> *intents,

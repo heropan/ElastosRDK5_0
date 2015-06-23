@@ -2,9 +2,6 @@
 #define __SQLITECLOSABLE_H__
 
 #include "ext/frameworkdef.h"
-#include <elastos/Mutex.h>
-
-using Elastos::Core::Threading::Mutex;
 
 namespace Elastos {
 namespace Droid {

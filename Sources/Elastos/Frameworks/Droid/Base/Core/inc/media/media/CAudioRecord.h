@@ -177,7 +177,7 @@ public:
      * @param syncEvent event that triggers the capture.
      * @see MediaSyncEvent
      */
-    CARAPI StartRecordingEx(
+    CARAPI StartRecording(
         /* [in] */ IMediaSyncEvent* syncEvent);
 
     /**
@@ -215,7 +215,7 @@ public:
      *    the parameters don't resolve to valid data and indexes.
      *    The number of shorts will not exceed sizeInShorts.
      */
-    CARAPI ReadEx(
+    CARAPI Read(
         /* [in] */ ArrayOf<Int16>* audioData,
         /* [in] */ Int32 offsetInShorts,
         /* [in] */ Int32 sizeInShorts,
@@ -231,7 +231,7 @@ public:
      *    the parameters don't resolve to valid data and indexes.
      *    The number of bytes will not exceed sizeInBytes.
      */
-    CARAPI ReadEx2(
+    CARAPI Read(
         /* [in] */ IByteBuffer* audioBuffer,
         /* [in] */ Int32 sizeInBytes,
         /* [out] */ Int32* result);
@@ -255,7 +255,7 @@ public:
      * @param listener
      * @param handler the Handler that will receive the event notification messages.
      */
-    CARAPI SetRecordPositionUpdateListenerEx(
+    CARAPI SetRecordPositionUpdateListener(
         /* [in] */ IAudioRecordOnRecordPositionUpdateListener* listener,
         /* [in] */ IHandler* handler);
 

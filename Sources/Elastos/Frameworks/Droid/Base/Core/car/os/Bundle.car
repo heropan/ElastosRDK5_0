@@ -49,7 +49,7 @@ module
         SetAllowFds(
             [in] Boolean allowFds);
 
-        SetAllowFdsEx(
+        SetAllowFds(
             [in] Boolean allowFds,
             [out] Boolean* prev);
 
@@ -439,7 +439,7 @@ module
          * @param key a String
          * @return a boolean value
          */
-        GetBooleanEx(
+        GetBoolean(
             [in] String key,
             [in] Boolean defaultValue,
             [out] Boolean* value);
@@ -455,7 +455,7 @@ module
          * @param key a String
          * @return a byte value
          */
-        GetByteEx(
+        GetByte(
             [in] String key,
             [in] Byte defaultValue,
             [out] Byte* value);
@@ -471,7 +471,7 @@ module
          * @param key a String
          * @return a char value
          */
-        GetCharEx(
+        GetChar(
             [in] String key,
             [in] Char32 defaultValue,
             [out] Char32* value);
@@ -487,7 +487,7 @@ module
          * @param key a String
          * @return a short value
          */
-        GetInt16Ex(
+        GetInt16(
             [in] String key,
             [in] Int16 defaultValue,
             [out] Int16* value);
@@ -503,7 +503,7 @@ module
          * @param key a String
          * @return an int value
          */
-        GetInt32Ex(
+        GetInt32(
             [in] String key,
             [in] Int32 defaultValue,
             [out] Int32* value);
@@ -519,7 +519,7 @@ module
          * @param key a String
          * @return a long value
          */
-        GetInt64Ex(
+        GetInt64(
             [in] String key,
             [in] Int64 defaultValue,
             [out] Int64* value);
@@ -535,7 +535,7 @@ module
          * @param key a String
          * @return a float value
          */
-        GetFloatEx(
+        GetFloat(
             [in] String key,
             [in] Float defaultValue,
             [out] Float* value);
@@ -551,7 +551,7 @@ module
          * @param key a String
          * @return a double value
          */
-        GetDoubleEx(
+        GetDouble(
             [in] String key,
             [in] Double defaultValue,
             [out] Double* value);
@@ -576,7 +576,7 @@ module
          * @param defaultValue Value to return if key does not exist
          * @return a String value, or null
          */
-        GetStringEx(
+        GetString(
             [in] String key,
             [in] String defaultValue,
             [out] String* value);
