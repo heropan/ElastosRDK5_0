@@ -4,6 +4,8 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+CAR_INTERFACE_IMPL_3(FileChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)
+
 FileChannel::FileChannel()
     : AbstractInterruptibleChannel()
 {}
@@ -11,15 +13,14 @@ FileChannel::FileChannel()
 ECode FileChannel::Lock(
     /*[out]*/ IFileLock** lock)
 {
-    //return this->Lock(0L, 2E(sizeof(Int64) - 1), FALSE, lock);
     return this->Lock(0L, LONG_MAX, FALSE, lock);
 }
 
-ECode FileChannel::ReadByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+ECode FileChannel::Read(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [out] */ Int64* number)
 {
-    return ReadByteBuffers(buffers, 0, 0, number);
+    return Read(buffers, 0, 0, number);
 }
 
 ECode FileChannel::TryLock(
@@ -28,11 +29,11 @@ ECode FileChannel::TryLock(
     return this->TryLock(0L, LONG_MAX, FALSE, lock);
 }
 
-ECode FileChannel::WriteByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+ECode FileChannel::Write(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [out] */ Int64* number)
 {
-    return this->WriteByteBuffers(buffers, 0, buffers.GetLength(), number);
+    return this->Write(buffers, 0, buffers->GetLength(), number);
 }
 
 } // namespace Channels

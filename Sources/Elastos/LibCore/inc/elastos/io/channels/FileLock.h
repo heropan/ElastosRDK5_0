@@ -1,9 +1,11 @@
-#ifndef __ELASTOS_IO_FILELOCK_H__
-#define __ELASTOS_IO_FILELOCK_H__
+#ifndef __ELASTOS_IO_CHANNELS_FILELOCK_H__
+#define __ELASTOS_IO_CHANNELS_FILELOCK_H__
 
-#include "FileChannel.h"
+#include "Elastos.CoreLibrary_server.h"
+#include "Object.h"
 
-using Elastos::IO::Channels::FileChannel;
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace IO {
@@ -59,13 +61,11 @@ namespace Channels {
  * file systems, since they often have further limitations.
  */
 class FileLock
+    : public Object
+    , public ICloseable
 {
 public:
-    FileLock(
-        /* [in] */ IFileChannel* channel,
-        /* [in] */ Int64 position,
-        /* [in] */ Int64 size,
-        /* [in] */ Boolean shared);
+    CAR_INTERFACE_DECL()
 
     CARAPI Channel(
         /* [out] */ IFileChannel** channel);
@@ -92,8 +92,15 @@ public:
     CARAPI ToString(
         /* [out] */ String* string);
 
+protected:
+    FileLock(
+        /* [in] */ IFileChannel* channel,
+        /* [in] */ Int64 position,
+        /* [in] */ Int64 size,
+        /* [in] */ Boolean shared);
+
 private:
-    IFileChannel* mChannel;
+    AutoPtr<IFileChannel> mChannel;
     Int64 mPosition;
     Int64 mSize;
     Boolean mShared;
@@ -103,4 +110,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //end of #ifndef __ELASTOS_IO_CFILECHANNEL_H__
+#endif // #ifndef __ELASTOS_IO_CHANNELS_FILELOCK_H__

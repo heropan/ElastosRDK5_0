@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_IO_IOVEC_H__
 #define __ELASTOS_IO_IOVEC_H__
 
+#include <elastos/core/Object.h>
 #include "ByteBuffer.h"
 
 namespace Elastos {
@@ -11,14 +12,14 @@ namespace IO {
  * and writev(2) calls.
  */
 class IoVec
-    : public ElRefBase
+    : public Object
 {
 public:
     enum Direction { Direction_READV, Direction_WRITEV };
 
 public:
     IoVec(
-        /* [in] */ ArrayOf<ByteBuffer*>* byteBuffers,
+        /* [in] */ ArrayOf<IByteBuffer*>* byteBuffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 bufferCount,
         /* [in] */ Direction direction);
@@ -34,10 +35,10 @@ public:
         /* [in] */ Int32 byteCount);
 
 private:
-    AutoPtr< ArrayOf<ByteBuffer*> > mByteBuffers;
+    AutoPtr< ArrayOf<IByteBuffer*> > mByteBuffers;
     Int32 mOffset;
     Int32 mBufferCount;
-    // TODO
+
     AutoPtr< ArrayOf<IInterface*> > mIoBuffers;
     AutoPtr< ArrayOf<Int32> > mOffsets;
     AutoPtr< ArrayOf<Int32> > mByteCounts;

@@ -1,8 +1,7 @@
 #ifndef __ELASTOS_IO_NIOAccess_H__
 #define __ELASTOS_IO_NIOAccess_H__
 
-#include <elastos.h>
-#include <Elastos.CoreLibrary_server.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace IO {
@@ -10,7 +9,7 @@ namespace IO {
 /**
  * This class is used via JNI by code in frameworks/base/.
  */
-class NIOAccess
+class NIOAccess : public Object
 {
 public:
     /**

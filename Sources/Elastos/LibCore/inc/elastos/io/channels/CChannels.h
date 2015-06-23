@@ -3,27 +3,26 @@
 #define __ELASTOS_IO_CCHANNELS_H__
 
 #include "_Elastos_IO_Channels_CChannels.h"
-#include "Object.h"
+#include "Singleton.h"
+#include "AbstractInterruptibleChannel.h"
 
+using Elastos::Core::Singleton;
 using Elastos::IO::Charset::ICharsetEncoder;
 using Elastos::IO::Charset::ICharsetDecoder;
+using Elastos::IO::Channels::Spi::AbstractInterruptibleChannel;
 
 namespace Elastos {
 namespace IO {
 namespace Channels{
 
 CarClass(CChannels)
-    , public Object
+    , public Singleton
     , public IChannels
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
-
-    CChannels();
-
-    ~CChannels();
+    CAR_SINGLETON_DECL()
 
     CARAPI NewInputStream(
         /* [in] */ IReadableByteChannel * pChannel,
@@ -62,11 +61,6 @@ public:
         /* [in] */ IWritableByteChannel * pChannel,
         /* [in] */ const String& charsetName,
         /* [out] */ IWriter ** ppWriter);
-
-    CARAPI constructor();
-
-private:
-    // TODO: Add your private member variables here.
 };
 
 } // namespace Channels

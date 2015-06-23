@@ -57,10 +57,7 @@ public:
     CARAPI Close();
 
     void SetInterrupted(
-        /* [in] */ Boolean value)
-    {
-        mInterrupted = value;
-    }
+        /* [in] */ Boolean value);
 
 protected:
     AbstractInterruptibleChannel();

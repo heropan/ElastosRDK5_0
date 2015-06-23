@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_MEMORYBLOCK_H__
 #define __ELASTOS_IO_MEMORYBLOCK_H__
 
-#include <Elastos.CoreLibrary_server.h>
+#include <elastos/core/Object.h>
 
 using Elastos::IO::Channels::FileChannelMapMode;
 
@@ -9,7 +9,7 @@ namespace Elastos {
 namespace IO {
 
 class MemoryBlock
-    : public ElRefBase
+    : public Object
 {
 public:
     virtual ~MemoryBlock() {}

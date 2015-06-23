@@ -49,14 +49,21 @@ public:
         /* [in] */ IObject* obj,
         /* [out] */ ISelectionKey** returnKey) = 0;
 
-    CARAPI Deregister(
-        /* [in] */ ISelectionKey* key);
-
 protected:
     virtual CARAPI ImplCloseSelector() = 0;
 
     CARAPI CancelledKeys(
         /* [out] */ ISet** keySet);
+
+    CARAPI Deregister(
+        /* [in] */ ISelectionKey* key);
+
+    CARAPI Begin();
+
+    CARAPI End();
+
+    CARAPI Cancel(
+        /* [in] */ ISelectionKey* key);
 
 private:
     Boolean mIsOpen;

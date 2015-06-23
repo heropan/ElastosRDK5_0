@@ -12,7 +12,7 @@ namespace Elastos {
 namespace IO {
 
 IoVec::IoVec(
-    /* [in] */ ArrayOf<ByteBuffer*>* byteBuffers,
+    /* [in] */ ArrayOf<IByteBuffer*>* byteBuffers,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 bufferCount,
     /* [in] */ Direction direction)
@@ -32,26 +32,26 @@ ECode IoVec::Init(
     VALIDATE_NOT_NULL(totalRemaining)
     *totalRemaining = 0;
     for (Int32 i = 0; i < mBufferCount; ++i) {
-        AutoPtr<ByteBuffer> b = (*mByteBuffers)[i + mOffset];
+        AutoPtr<IByteBuffer> b = (*mByteBuffers)[i + mOffset];
         if (mDirection == Direction_READV) {
-            FAIL_RETURN(b->CheckWritable())
+            FAIL_RETURN(((Buffer*)IBuffer::Probe(b))->CheckWritable())
         }
         Int32 remaining = 0;
-        b->GetRemaining(&remaining);
+        IBuffer::Probe(b)->GetRemaining(&remaining);
         Boolean isDirect = FALSE;
-        if ((b->IsDirect(&isDirect), isDirect)) {
+        if ((IBuffer::Probe(b)->IsDirect(&isDirect), isDirect)) {
             mIoBuffers->Set(i, b->Probe(EIID_IInterface));
             Int32 pos = 0;
-            b->GetPosition(&pos);
+            IBuffer::Probe(b)->GetPosition(&pos);
             (*mOffsets)[i] = pos;
         }
         else {
-            Int32 safevalue = NioUtils::GetUnsafeArrayOffset(reinterpret_cast<HeapByteBuffer*>(b->Probe(EIID_HeapByteBuffer)));
+            Int32 safevalue = NioUtils::GetUnsafeArrayOffset((ByteBuffer*)b.Get());
             AutoPtr<IInteger32> int32;
             CInteger32::New(safevalue, (IInteger32**)&int32);
             mIoBuffers->Set(i, int32);
             Int32 pos = 0;
-            b->GetPosition(&pos);
+            IBuffer::Probe(b)->GetPosition(&pos);
             (*mOffsets)[i] = safevalue + pos;
         }
         (*mByteCounts)[i] = remaining;
@@ -67,17 +67,15 @@ ECode IoVec::DoTransfer(
     VALIDATE_NOT_NULL(result)
     // try {
     *result = 0;
-    Int32 fdvalue = 0;
-    fd->GetDescriptor(&fdvalue);
     if (mDirection == Direction_READV) {
-        FAIL_RETURN(CLibcore::sOs->Readv(fdvalue, *mIoBuffers, *mOffsets, *mByteCounts, result));
+        FAIL_RETURN(CLibcore::sOs->Readv(fd, mIoBuffers, mOffsets, mByteCounts, result));
         if (*result == 0) {
             *result = -1;
         }
         return NOERROR;
     }
     else {
-        FAIL_RETURN(CLibcore::sOs->Writev(fdvalue, *mIoBuffers, *mOffsets, *mByteCounts, result));
+        FAIL_RETURN(CLibcore::sOs->Writev(fd, mIoBuffers, mOffsets, mByteCounts, result));
         return NOERROR;
     }
     // } catch (ErrnoException errnoException) {
@@ -89,16 +87,16 @@ ECode IoVec::DidTransfer(
     /* [in] */ Int32 byteCount)
 {
     for (Int32 i = 0; byteCount > 0 && i < mBufferCount; ++i) {
-        AutoPtr<ByteBuffer> b = (*mByteBuffers)[i + mOffset];
+        AutoPtr<IByteBuffer> b = (*mByteBuffers)[i + mOffset];
         if ((*mByteCounts)[i] < byteCount) {
             Int32 limit = 0;
-            b->GetLimit(&limit);
-            b->SetPosition(limit);
+            IBuffer::Probe(b)->GetLimit(&limit);
+            IBuffer::Probe(b)->SetPosition(limit);
             byteCount -= (*mByteCounts)[i];
         }
         else {
             Int32 pos = 0;
-            b->SetPosition((mDirection == Direction_WRITEV ? (b->GetPosition(&pos), pos) : 0) + byteCount);
+            IBuffer::Probe(b)->SetPosition((mDirection == Direction_WRITEV ? (IBuffer::Probe(b)->GetPosition(&pos), pos) : 0) + byteCount);
             byteCount = 0;
         }
     }

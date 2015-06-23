@@ -30,31 +30,6 @@ class SelectionKey
 public:
     CAR_INTERFACE_DECL()
 
-    /**
-     * Interest set mask bit for socket-accept operations.
-     */
-    static int sOP_ACCEPT; // = 16;
-
-    /**
-     * Interest set mask bit for socket-connect operations.
-     */
-    static int sOP_CONNECT; //= 8;
-
-    /**
-     * Interesting operation mask bit for read operations.
-     */
-    static int sOP_READ; //= 1;
-
-    /**
-     * Interest set mask bit for write operations.
-     */
-    static int sOP_WRITE; //= 4;
-
-    /**
-     * Constructs a new {@code SelectionKey}.
-     */
-    SelectionKey();
-
     virtual ~SelectionKey();
 
     /**
@@ -206,6 +181,33 @@ public:
 
     virtual CARAPI Selector(
         /* [out] */ ISelector** sel) = 0;
+
+public:
+    /**
+     * Interest set mask bit for socket-accept operations.
+     */
+    static int sOP_ACCEPT;
+
+    /**
+     * Interest set mask bit for socket-connect operations.
+     */
+    static int sOP_CONNECT;
+
+    /**
+     * Interesting operation mask bit for read operations.
+     */
+    static int sOP_READ;
+
+    /**
+     * Interest set mask bit for write operations.
+     */
+    static int sOP_WRITE;
+
+protected:
+    /**
+     * Constructs a new {@code SelectionKey}.
+     */
+    SelectionKey();
 
 private:
     /*volatile*/

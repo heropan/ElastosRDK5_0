@@ -35,14 +35,18 @@ ECode SelectorProvider::Provider(
 ECode SelectorProvider::LoadProviderByJar(
     /* [out] */ ISelectorProvider** provider)
 {
-    printf("ERROR: Need ServiceLoader\n");
+    // for (SelectorProvider provider : ServiceLoader.load(SelectorProvider.class)) {
+    //     return provider;
+    // }
+    // return null;
     return E_NOT_IMPLEMENTED;
 }
 
 ECode SelectorProvider::InheriteChannel(
     /* [out] */ IChannel** cannel)
 {
-    // Android never has stdin/stdout connected to a socket.
+    // // Android never has stdin/stdout connected to a socket.
+    // return null;
     return E_NOT_IMPLEMENTED;
 }
 

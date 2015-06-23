@@ -12,7 +12,7 @@ namespace IO {
 extern "C" const InterfaceID EIID_ByteBuffer =
     { 0xaad41a09, 0x77d1, 0x491c, { 0xa2, 0xa0, 0xc, 0x7d, 0xb0, 0xb3, 0x79, 0xe6 } };
 
-CAR_INTERFACE_IMPL_2(ByteBuffer, Object, IBuffer, IByteBuffer)
+CAR_INTERFACE_IMPL(ByteBuffer, Object, IByteBuffer)
 
 ECode ByteBuffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -29,7 +29,7 @@ ECode ByteBuffer::Allocate(
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(capacity);
     AutoPtr<CByteArrayBuffer> bb;
     CByteArrayBuffer::NewByFriend(bytes, (CByteArrayBuffer**)&bb);
-    *buf = bb->Probe(EIID_IByteBuffer);
+    *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -56,7 +56,7 @@ ECode ByteBuffer::Wrap(
     VALIDATE_NOT_NULL(buf);
     AutoPtr<CByteArrayBuffer> bb;
     CByteArrayBuffer::NewByFriend(array, (CByteArrayBuffer**)&bb);
-    *buf = bb->Probe(EIID_IByteBuffer);
+    *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -80,7 +80,7 @@ ECode ByteBuffer::Wrap(
     CByteArrayBuffer::NewByFriend(array, (CByteArrayBuffer**)&bb);
     bb->mPosition = start;
     bb->mLimit = start + byteCount;
-    *buf = bb->Probe(EIID_IByteBuffer);;
+    *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);;
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }

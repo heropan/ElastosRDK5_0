@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_SOCKET_CHANNEL_H__
-#define __ELASTOS_IO_SOCKET_CHANNEL_H__
+#ifndef __ELASTOS_IO_CHANNELS_SOCKET_CHANNEL_H__
+#define __ELASTOS_IO_CHANNELS_SOCKET_CHANNEL_H__
 
 #include "AbstractSelectableChannel.h"
 
@@ -16,6 +16,7 @@ namespace Channels {
 
 class SocketChannel
     : public AbstractSelectableChannel
+    , public IByteChannel
     , public IScatteringByteChannel
     , public IGatheringByteChannel
 {
@@ -194,7 +195,7 @@ public:
      * IOException | if another I/O error occurs.
      * @see java.nio.channels.ReadableByteChannel#read(java.nio.ByteBuffer)
      */
-    virtual CARAPI ReadByteBuffer(
+    virtual CARAPI Read(
         /* [in] */ IByteBuffer* target,
         /* [out] */ Int32* number) = 0;
 
@@ -226,8 +227,8 @@ public:
      * @see java.nio.channels.ScatteringByteChannel#read(java.nio.ByteBuffer[],
      *      int, int)
      */
-    virtual CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+    virtual CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* targets,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* number) = 0;
@@ -256,8 +257,8 @@ public:
      * IOException | if another I/O error occurs.
      * NotYetConnectedException | if this channel is not yet connected.
      */
-    CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+    CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* targets,
         /* [out] */ Int64* number);
 
     /**
@@ -319,8 +320,8 @@ public:
      * @see java.nio.channels.GatheringByteChannel#write(java.nio.ByteBuffer[],
      *      int, int)
      */
-    virtual CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& sources,
+    virtual CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* sources,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* number) = 0;
@@ -341,8 +342,8 @@ public:
      * NotYetConnectedException | if this channel is not yet connected.
      * @see java.nio.channels.GatheringByteChannel#write(java.nio.ByteBuffer[])
      */
-    CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+    CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [out] */ Int64* number);
 
 protected:
@@ -350,13 +351,10 @@ protected:
 
     SocketChannel(
         /* [in] */ ISelectorProvider* provider);
-
-private:
-
 };
 
 } // namespace Channels
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_SOCKET_CHANNEL_H__
+#endif // __ELASTOS_IO_CHANNELS_SOCKET_CHANNEL_H__

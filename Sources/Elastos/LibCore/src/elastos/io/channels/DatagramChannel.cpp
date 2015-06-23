@@ -9,18 +9,20 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+CAR_INTERFACE_IMPL_3(DatagramChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)
+
 DatagramChannel::DatagramChannel(
     /* [in] */ ISelectorProvider* provider)
     : AbstractSelectableChannel(provider)
 {
-    assert(NULL != provider);
 }
 
 DatagramChannel::~DatagramChannel()
 {
 }
 
-ECode DatagramChannel::Open(IDatagramChannel** channel)
+ECode DatagramChannel::Open(
+    /* [out] */ IDatagramChannel** channel)
 {
     VALIDATE_NOT_NULL(channel)
 
@@ -29,7 +31,8 @@ ECode DatagramChannel::Open(IDatagramChannel** channel)
     return sp->OpenDatagramChannel(channel);
 }
 
-Int32 DatagramChannel::ValidOps()
+ECode DatagramChannel::ValidOps(
+    /* [out] */ Int32* value)
 {
     return (SelectionKey::sOP_READ | SelectionKey::sOP_WRITE);
 }

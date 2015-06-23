@@ -1,10 +1,12 @@
 #ifndef __ELASTOS_IO_DATAGRAMCHANNEL_H__
 #define __ELASTOS_IO_DATAGRAMCHANNEL_H__
 
+#include <Elastos.CoreLibrary_server.h>
 #include "ByteBuffer.h"
 #include "SelectorProvider.h"
 #include "AbstractSelectableChannel.h"
 
+using Elastos::IO::Channels::IByteChannel;
 using Elastos::IO::Channels::Spi::SelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
 
@@ -14,10 +16,12 @@ namespace Channels {
 
 class DatagramChannel
     : public AbstractSelectableChannel
+    , public IByteChannel
     , public IScatteringByteChannel
     , public IGatheringByteChannel
 {
 public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates an opened and not-connected datagram channel.
@@ -29,7 +33,8 @@ public:
      * @throws IOException
      *             if some I/O error occurs.
      */
-    static CARAPI Open(IDatagramChannel** channel);
+    static CARAPI Open(
+        /* [out] */ IDatagramChannel** channel);
 
     /**
      * Gets the valid operations of this channel. Datagram channels support read
@@ -39,7 +44,8 @@ public:
      * @see java.nio.channels.SelectableChannel#validOps()
      * @return valid operations in bit-set.
      */
-    Int32 ValidOps();
+    CARAPI ValidOps(
+        /* [out] */ Int32* value);
 
     /**
      * Returns the related datagram socket of this channel, which does not

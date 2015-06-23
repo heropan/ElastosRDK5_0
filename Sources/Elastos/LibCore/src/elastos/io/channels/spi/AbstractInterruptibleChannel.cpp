@@ -103,6 +103,12 @@ ECode AbstractInterruptibleChannel::Close()
     return retCode;
 }
 
+void AbstractInterruptibleChannel::SetInterrupted(
+    /* [in] */ Boolean value)
+{
+    mInterrupted = value;
+}
+
 void AbstractInterruptibleChannel::Begin()
 {
     Thread::GetCurrentThread()->PushInterruptAction(mInterruptAndCloseRunnable);

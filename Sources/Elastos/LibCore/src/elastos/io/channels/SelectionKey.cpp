@@ -6,25 +6,13 @@ namespace Channels {
 
 CAR_INTERFACE_IMPL(SelectionKey, Object, ISelectionKey)
 
-/**
- * Interest set mask bit for socket-accept operations.
- */
-int SelectionKey::sOP_ACCEPT = 16;
+Int32 SelectionKey::sOP_ACCEPT = 16;
 
-/**
- * Interest set mask bit for socket-connect operations.
- */
-int SelectionKey::sOP_CONNECT = 8;
+Int32 SelectionKey::sOP_CONNECT = 8;
 
-/**
- * Interesting operation mask bit for read operations.
- */
-int SelectionKey::sOP_READ = 1;
+Int32 SelectionKey::sOP_READ = 1;
 
-/**
- * Interest set mask bit for write operations.
- */
-int SelectionKey::sOP_WRITE = 4;
+Int32 SelectionKey::sOP_WRITE = 4;
 
 SelectionKey::SelectionKey()
     : mAttachment(NULL)

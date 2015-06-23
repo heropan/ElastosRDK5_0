@@ -6,6 +6,7 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace IO {
@@ -115,10 +116,12 @@ public:
 protected:
     SelectorProvider();
 
+private:
+    CARAPI LoadProviderByJar(
+        /* [out] */ ISelectorProvider** provider);
 
 private:
     static AutoPtr<ISelectorProvider> sProvider;
-    ECode LoadProviderByJar(ISelectorProvider** provider);
 };
 
 } // namespace Spi

@@ -52,7 +52,7 @@ module
      *             writing.
      */
     Write(
-        [in] ArrayOf<IByteBuffer>* buffers,
+        [in] ArrayOf<IByteBuffer*>* buffers,
         [out] Int64* ret);
 
       /**
@@ -91,7 +91,7 @@ module
      *             if the channel was not opened for writing.
      */
     Write(
-        [in] ArrayOf<IByteBuffer>* buffers,
+        [in] ArrayOf<IByteBuffer*>* buffers,
         [in] Int32 offset,
         [in] Int32 length,
         [out] Int64* ret);

@@ -90,6 +90,7 @@ module
     merge("io/channels/ISourceChannel.car");
     merge("io/channels/IPipe.car");
     merge("io/channels/IFileLock.car");
+    merge("io/channels/IByteChannel.car");
 
     merge("io/channels/spi/ISelectorProvider.car");
     merge("io/channels/spi/IAbstractSelector.car");
@@ -670,9 +671,7 @@ module
 
     namespace Channels {
 
-        class CChannels {
-            constructor();
-
+        singleton class CChannels {
             interface IChannels;
         }
 

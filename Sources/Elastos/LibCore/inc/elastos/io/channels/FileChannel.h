@@ -64,9 +64,15 @@ namespace Channels {
  * content, size, etc.
  * @implement Elastos.IO.IInterruptibleChannel
  */
-class FileChannel : public AbstractInterruptibleChannel
+class FileChannel
+    : public AbstractInterruptibleChannel
+    , public IByteChannel
+    , public IScatteringByteChannel
+    , public IGatheringByteChannel
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Requests that all updates to this channel are committed to the storage
      * device.
@@ -120,7 +126,6 @@ public:
      */
     CARAPI Lock(
         /* [out] */ IFileLock** lock);
-
 
     /**
      * Obtains a lock on a specified region of the file.
@@ -268,7 +273,7 @@ public:
      * IOException | if another I/O error occurs, details are in the message.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI ReadByteBuffer(
+    virtual CARAPI Read(
         /* [in] */ IByteBuffer* buffer,
         /* [out] */ Int32* number) = 0;
 
@@ -300,7 +305,7 @@ public:
      * IOException | if another I/O error occurs.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI ReadByteBuffer(
+    virtual CARAPI Read(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number) = 0;
@@ -330,8 +335,8 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+    CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [out] */ Int64* number);
 
     /**
@@ -361,8 +366,8 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+    virtual CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* number) = 0;
@@ -528,7 +533,7 @@ public:
         /* [out] */ IFileLock** lock) = 0;
 
     /**
-     * Writes bytes from the given byte buffer to this file channel.
+     * Write bytes from the given byte buffer to this file channel.
      * <p>
      * The bytes are written starting at the current file position, and after
      * some number of bytes are written (up to the remaining number of bytes in
@@ -548,12 +553,12 @@ public:
      * IOException | if another I/O error occurs, details are in the message.
      * @see java.nio.channels.WritableByteChannel#write(java.nio.ByteBuffer)
      */
-    virtual CARAPI WriteByteBuffer(
+    virtual CARAPI Write(
         /* [in] */ IByteBuffer* buffer,
         /* [out] */ Int32* number) = 0;
 
     /**
-     * Writes bytes from the given buffer to this file channel starting at the
+     * Write bytes from the given buffer to this file channel starting at the
      * given file position.
      * <p>
      * The bytes are written starting at the given file position (up to the
@@ -581,13 +586,13 @@ public:
      * ClosedByInterruptException | if another thread interrupts the calling thread while this operation is in progress. The interrupt state of the calling thread is set and the channel is closed.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI WriteByteBuffer(
+    virtual CARAPI Write(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number) = 0;
 
     /**
-     * Writes bytes from all the given byte buffers to this file channel.
+     * Write bytes from all the given byte buffers to this file channel.
      * <p>
      * The bytes are written starting at the current file position, and after
      * the bytes are written (up to the remaining number of bytes in all the
@@ -609,8 +614,8 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonWritableChannelException | if this channel was not opened for writing.
      */
-    CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+    CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [out] */ Int64* number);
 
     /**
@@ -641,12 +646,13 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonWritableChannelException | if this channel was not opened for writing.
      */
-    virtual CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+    virtual CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* number) = 0;
 
+protected:
     FileChannel();
 };
 

@@ -123,7 +123,7 @@ ECode CRandomAccessFile::Close()
 
     Boolean isflag(FALSE);
     if (mChannel != NULL && (IChannel::Probe(mChannel)->IsOpen(&isflag) , isflag)) {
-        IChannel::Probe(mChannel)->Close();
+        ICloseable::Probe(mChannel)->Close();
         mChannel = NULL;
     }
 

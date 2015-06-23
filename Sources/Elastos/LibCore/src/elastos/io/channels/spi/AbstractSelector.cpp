@@ -146,6 +146,27 @@ ECode AbstractSelector::CancelledKeys(
     return NOERROR;
 }
 
+ECode AbstractSelector::Begin()
+{
+    // Thread.currentThread().pushInterruptAction$(wakeupRunnable);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode AbstractSelector::End()
+{
+    // Thread.currentThread().popInterruptAction$(wakeupRunnable);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode AbstractSelector::Cancel(
+    /* [in] */ ISelectionKey* key)
+{
+    // synchronized (cancelledKeysSet) {
+    //     cancelledKeysSet.add(key);
+    // }
+    return E_NOT_IMPLEMENTED;
+}
+
 } // namespace Spi
 } // namespace Channels
 } // namespace IO

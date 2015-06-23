@@ -14,12 +14,16 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
-class SelectableChannel : public AbstractInterruptibleChannel
+class SelectableChannel
+    : public AbstractInterruptibleChannel
+    , public ISelectableChannel
 {
 public:
     SelectableChannel();
 
     virtual ~SelectableChannel();
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Gets the blocking lock which synchronizes the {@code configureBlocking}
@@ -175,14 +179,10 @@ public:
      * @throws IllegalArgumentException
      *             if the operation given is not supported by this channel.
      */
-    ECode Register(
+    CARAPI Register(
         /* [in] */ ISelector* selector,
         /* [in] */ Int32 operations,
-        /* [out] */ ISelectionKey** key)
-    {
-        return Register(selector, operations, NULL, key);
-    }
-
+        /* [out] */ ISelectionKey** key);
 };
 
 } // namespace Channels

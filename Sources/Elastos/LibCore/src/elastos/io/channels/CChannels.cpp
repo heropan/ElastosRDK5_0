@@ -17,24 +17,15 @@ namespace Channels{
 class IChannelInputStream;
 class IChannelOutputStream;
 
-CAR_INTERFACE_IMPL(CChannels, Object, IChannels)
+CAR_INTERFACE_IMPL(CChannels, Singleton, IChannels)
 
-CAR_OBJECT_IMPL(CChannels)
-
-CChannels::CChannels() {}
-
-CChannels::~CChannels() {}
-
-ECode CChannels::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CChannels)
 
 ECode CChannels::NewChannel(
     /* [in] */ IInputStream* inputStream,
     /* [out] */ IReadableByteChannel** inputChannel)
 {
-    //*inputChannel = Channels::NewChannel(inputStream);
+    // return new InputStreamChannel(inputStream);
     return NOERROR;
 }
 
@@ -42,7 +33,7 @@ ECode CChannels::NewChannel(
     /* [in] */ IOutputStream* outputStream,
     /* [out] */ IWritableByteChannel** outputChannel)
 {
-    //*outputChannel = Channels::NewChannel(outputStream);
+    // return new OutputStreamChannel(outputStream);
     return NOERROR;
 }
 
@@ -50,6 +41,7 @@ ECode CChannels::NewInputStream(
     /* [in] */ IReadableByteChannel * pChannel,
     /* [out] */ IInputStream ** ppInputStream)
 {
+    // return new ChannelInputStream(channel);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -57,6 +49,7 @@ ECode CChannels::NewOutputStream(
     /* [in] */ IWritableByteChannel * pChannel,
     /* [out] */ IOutputStream ** ppOutputStream)
 {
+    // return new ChannelOutputStream(channel);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -66,6 +59,11 @@ ECode CChannels::NewReader(
     /* [in] */ Int32 minBufferCapacity,
     /* [out] */ IReader ** ppReader)
 {
+    /*
+     * This method doesn't honor minBufferCapacity. Ignoring that parameter
+     * saves us from having to add a hidden constructor to InputStreamReader.
+     */
+    // return new InputStreamReader(new ChannelInputStream(channel), decoder);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -74,6 +72,10 @@ ECode CChannels::NewReader(
     /* [in] */ const String& charsetName,
     /* [out] */ IReader ** ppReader)
 {
+    // if (charsetName == null) {
+    //     throw new NullPointerException("charsetName == null");
+    // }
+    // return newReader(channel, Charset.forName(charsetName).newDecoder(), -1);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -83,7 +85,7 @@ ECode CChannels::NewWriter(
     /* [in] */ Int32 minBufferCapacity,
     /* [out] */ IWriter ** ppWriter)
 {
-//    IChannelOutputStream *channelOutputStream = new IChannelOutputStream(pChannel);
+    // return new OutputStreamWriter(new ChannelOutputStream(channel), encoder);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -92,6 +94,10 @@ ECode CChannels::NewWriter(
     /* [in] */ const String& charsetName,
     /* [out] */ IWriter ** ppWriter)
 {
+    // if (charsetName == null) {
+    //     throw new NullPointerException("charsetName == null");
+    // }
+    // return newWriter(channel, Charset.forName(charsetName).newEncoder(), -1);
     return E_NOT_IMPLEMENTED;
 }
 

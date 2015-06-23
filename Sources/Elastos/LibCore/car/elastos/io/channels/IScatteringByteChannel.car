@@ -44,7 +44,7 @@ module
          *             reading.
          */
         Read(
-            [in] ArrayOf<IByteBuffer>* buffers,
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [out] Int64* ret);
 
         /**
@@ -82,7 +82,7 @@ module
          *             reading.
          */
         Read(
-            [in] ArrayOf<IByteBuffer>* buffers,
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int64* ret);

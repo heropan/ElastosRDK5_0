@@ -11,18 +11,18 @@ SocketChannel::SocketChannel(
     /* [in] */ ISelectorProvider* provider)
     : AbstractSelectableChannel(provider)
 {
-    assert(NULL != provider);
 }
 
-CAR_INTERFACE_IMPL_2(SocketChannel, Object, IScatteringByteChannel, IGatheringByteChannel)
+CAR_INTERFACE_IMPL_3(SocketChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)
 
 ECode SocketChannel::Open(
     /* [out] */ ISocketChannel** channel)
 {
-   return E_NOT_IMPLEMENTED;
+    // return SelectorProvider.provider().openSocketChannel();
+    return E_NOT_IMPLEMENTED;
 }
 
-ECode Open(
+ECode SocketChannel::Open(
     /* [in] */ ISocketAddress* addr,
     /* [out] */ ISocketChannel** channel)
 {
@@ -46,18 +46,18 @@ ECode SocketChannel::ValidOps(
     return NOERROR;
 }
 
-ECode SocketChannel::ReadByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+ECode SocketChannel::Read(
+    /* [in] */ ArrayOf<IByteBuffer*>* targets,
     /* [out] */ Int64* number)
 {
-    return ReadByteBuffers(targets, 0, targets.GetLength(), number);
+    return Read(targets, 0, targets->GetLength(), number);
 }
 
-ECode SocketChannel::WriteByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+ECode SocketChannel::Write(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [out] */ Int64* number)
 {
-    return WriteByteBuffers(buffers, 0 , buffers.GetLength(), number);
+    return Write(buffers, 0 , buffers->GetLength(), number);
 }
 
 } // namespace Channels

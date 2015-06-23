@@ -1,13 +1,16 @@
 #ifndef __ELASTOS_IO_FILECHANNELIMPL_H__
 #define __ELASTOS_IO_FILECHANNELIMPL_H__
 
+#include "FileLock.h"
 #include "FileChannel.h"
+#include "IoVec.h"
 
 using Elastos::Core::IComparator;
 // using Elastos::Droid::System::IOsConstants;
-using Elastos::IO::Channels::IFileLock;
 using Elastos::IO::Channels::FileChannel;
 using Elastos::IO::Channels::IFileChannel;
+using Elastos::IO::Channels::IFileLock;
+using Elastos::IO::Channels::FileLock;
 using Elastos::IO::Channels::IReadableByteChannel;
 using Elastos::IO::Channels::IWritableByteChannel;
 using Elastos::IO::Channels::FileChannelMapMode;
@@ -19,8 +22,50 @@ class FileChannelImpl
     : public FileChannel
     , public IFileChannelImpl
 {
-public:
+private:
+    class FileLockImpl
+        : public FileLock
+        , public IFileLock
+    {
+    public:
+        FileLockImpl(
+            /* [in] */ IFileChannel* channel,
+            /* [in] */ Int64 position,
+            /* [in] */ Int64 size,
+            /* [in] */ Boolean shared);
 
+        CAR_INTERFACE_DECL()
+
+        CARAPI Channel(
+            /* [out] */ IFileChannel** channel);
+
+        CARAPI GetPosition(
+            /* [out] */ Int64* position);
+
+        CARAPI GetSize(
+            /* [out] */ Int64* size);
+
+        CARAPI IsShared(
+            /* [out] */ Boolean* shared);
+
+        CARAPI Overlaps(
+            /* [in] */ Int64 start,
+            /* [in] */ Int64 length,
+            /* [out] */ Boolean* result);
+
+        CARAPI ToString(
+            /* [out] */ String* string);
+
+        CARAPI IsValid(
+            /* [out] */ Boolean* ret);
+
+        CARAPI ReleaseLock();
+
+    private:
+        Boolean mIsReleased;
+    };
+
+public:
     CAR_INTERFACE_DECL()
 
     CARAPI IsOpen(
@@ -31,8 +76,8 @@ public:
     CARAPI Lock(
         /* [out] */ IFileLock** lock);
 
-    CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+    CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [out] */ Int64* number);
 
     CARAPI TryLock(
@@ -65,17 +110,17 @@ public:
     CARAPI SetPosition(
         /* [in] */ Int64 offset);
 
-    CARAPI ReadByteBuffer(
+    CARAPI Read(
         /* [in] */ IByteBuffer* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI ReadByteBuffer(
+    CARAPI Read(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number);
 
-    CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+    CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* number);
@@ -99,21 +144,21 @@ public:
     CARAPI GetSize(
         /* [out] */ Int64* size);
 
-    CARAPI WriteByteBuffer(
+    CARAPI Write(
         /* [in] */ IByteBuffer* buffer,
         /* [out] */ Int32* number);
 
-    CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+    CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [out] */ Int64* number);
 
-    CARAPI WriteByteBuffer(
+    CARAPI Write(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,
         /* [out] */ Int32* number);
 
-    CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*> &buffers,
+    CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* number);
@@ -159,7 +204,9 @@ private:
         /* [in] */ Int64 position,
         /* [out] */ Int32* ret);
 
-    //  CARAPI TransferIoVec(IoVec* ioVec, Int32* ret);
+    CARAPI TransferIoVec(
+        /* [in] */ IoVec* ioVec,
+        /* [out] */ Int32* ret);
 
     CARAPI WriteImpl(
         /* [in] */ IByteBuffer* buffer,
