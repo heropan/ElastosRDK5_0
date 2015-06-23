@@ -83,11 +83,11 @@ ECode CASN1Choice::constructor(
         AutoPtr<IBigInteger> identifier = entry.getKey();
         Int32 val;
         identifier->Int32Value(&val);
-        (*mIdentifiers)[0]->Put(i, val);
+        (*mIdentifiers)[0]->Set(i, val);
         tmp = NULL;
         entry->GetValue((IInterface**)&tmp);
         IBigInteger::Probe(tmp)->Int32Value(&val);
-        (*mIdentifiers)[1]->Put(i, val);
+        (*mIdentifiers)[1]->Set(i, val);
     }
     mType = asn1Type;
     return NOERROR;

@@ -12,7 +12,7 @@ module
             [in] Int32 index,
             [out] IInterface** element);
 
-        Put(
+        Set(
             [in] Int32 index,
             [in] IInterface* element);
 

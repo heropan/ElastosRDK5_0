@@ -260,7 +260,7 @@ ECode TimeZoneNames::GetZoneStrings(
         for (Int32 j = 0; j < midlen; ++j) {
             AutoPtr<ICharSequence> sq;
             CStringWrapper::New((*subArr)[j], (ICharSequence**)&sq);
-            arrof->Put(j, sq);
+            arrof->Set(j, sq);
         }
         resarr->Set(i, arrof);
     }

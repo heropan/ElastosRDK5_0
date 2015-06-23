@@ -53,7 +53,7 @@ ECode CArrayOf::Get(
     return NOERROR;
 }
 
-ECode CArrayOf::Put(
+ECode CArrayOf::Set(
     /* [in] */ Int32 index,
     /* [in] */ IInterface* element)
 {

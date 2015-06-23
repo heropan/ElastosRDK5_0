@@ -571,7 +571,7 @@ ECode BerInputStream::ReadSequence(
         AutoPtr<IArrayOf> arr;
         CArrayOf::New(EIID_IInterface, values->GetLength(), (IArrayOf**)&arr);
         for(Int32 i = 0; i < values->GetLength(); i++) {
-            arr->Put(i, (*values)[i]);
+            arr->Set(i, (*values)[i]);
         }
         content = arr.Get();
 
@@ -812,7 +812,7 @@ ECode BerInputStream::Put(
     AutoPtr<IInterface> tmp;
     for (; i < length0 && ((*mPool)[0]->Get(i, (IInterface**)&tmp), tmp) != NULL; i++) {
         if (tmp == key) {
-            (*mPool)[1]->Put(i, entry);
+            (*mPool)[1]->Set(i, entry);
             return NOERROR;
         }
 

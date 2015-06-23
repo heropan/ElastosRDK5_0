@@ -3,9 +3,7 @@
 #define __ELASTOS_UTILITY_JARVERIFIER_H__
 
 #include "HashMap.h"
-#include <elastos.h>
 #include "OutputStream.h"
-#include <Object.h>
 
 using Elastos::Utility::IVector;
 using Elastos::Utility::Etl::HashMap;
@@ -18,10 +16,27 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
+/**
+ * Non-public class used by {@link JarFile} and {@link JarInputStream} to manage
+ * the verification of signed JARs. {@code JarFile} and {@code JarInputStream}
+ * objects are expected to have a {@code JarVerifier} instance member which
+ * can be used to carry out the tasks associated with verifying a signed JAR.
+ * These tasks would typically include:
+ * <ul>
+ * <li>verification of all signed signature files
+ * <li>confirmation that all signed data was signed only by the party or parties
+ * specified in the signature block data
+ * <li>verification that the contents of all signature files (i.e. {@code .SF}
+ * files) agree with the JAR entries information found in the JAR manifest.
+ * </ul>
+ */
 class JarVerifier
     : public Object
 {
 public:
+    typedef HashMap<String, AutoPtr<ArrayOf<ICertificate*> > > StringCertificateMap;
+    typedef typename StringCertificateMap::Iterator StringCertificateMapIterator;
+
     /**
     * Stores and a hash and a message digest and verifies that massage digest
     * matches the hash.
@@ -34,23 +49,24 @@ public:
             /* [in] */ const String& name,
             /* [in] */ IMessageDigest* digest,
             /* [in] */ ArrayOf<Byte>* hash,
-            /* [in] */ ArrayOf<ICertificate*>* certificates,
+            /* [in] */ ArrayOf<IArrayOf*>* certificates,
+            /* [in] */ StringCertificateMap* map,
             /* [in] */ JarVerifier* host);
 
         /**
          * Updates a digest with one byte.
          */
         CARAPI Write(
-            /* in */ Int32 value);
+            /* [in] */ Int32 value);
 
         CARAPI Write(
-            /* [in] */ const ArrayOf<Byte>& buffer);
+            /* [in] */ ArrayOf<Byte>* buffer);
 
         /**
          * Updates a digest with byte array.
          */
         CARAPI Write(
-            /* [in] */ const ArrayOf<Byte>& buffer,
+            /* [in] */ ArrayOf<Byte>* buffer,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 count);
 
@@ -67,11 +83,6 @@ public:
          */
         CARAPI Verify();
 
-        CARAPI CheckError(
-            /* [out] */ Boolean* hasError);
-
-        CARAPI Close();
-
     private:
         String mName;
 
@@ -79,79 +90,91 @@ public:
 
         AutoPtr<ArrayOf<Byte> > mHash;
 
-        AutoPtr<ArrayOf<ICertificate*> > mCertificates;
+        AutoPtr<ArrayOf<IArrayOf*> > mCertificates;
+
+        AutoPtr<StringCertificateMap> mVerifiedEntries;
 
         JarVerifier* mHost;
     };
 
 public:
-    static CARAPI GetSignerCertificates(
-        /* [in] */ const String& signatureFileName,
-        /* [in] */ HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >* certificates,
-        /* [out] */ IVector** certs);
-
-    JarVerifier();
+    /**
+     * Constructs and returns a new instance of {@code JarVerifier}.
+     *
+     * @param name
+     *            the name of the JAR file being verified.
+     */
     JarVerifier(
-        /* int */ const String& name);
-    ~JarVerifier();
+        /* [in] */ const String& name,
+        /* [in] */ IManifest* manifest,
+        /* [in] */ HashMap<String, AutoPtr<ArrayOf<Byte> >* metaEntries);
+
     CARAPI InitEntry(
-        /* in */ const String& name,
-        /* out */ VerifierEntry** entry);
+        /* [in] */ const String& name,
+        /* [out] */ VerifierEntry** entry);
+
     CARAPI AddMetaEntry(
-        /* in */ const String& name,
-        /* in */ ArrayOf<Byte>* buf);
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<Byte>* buf);
 
     CARAPI ReadCertificates(
-        /* out */ Boolean* result);
-
-    CARAPI RemoveMetaEntries();
+        /* [out] */ Boolean* result);
 
     /**
-     * Associate this verifier with the specified {@link Manifest} object.
+     * Returns a <code>boolean</code> indication of whether or not the
+     * associated jar file is signed.
      *
-     * @param mf
-     *            a {@code java.util.jar.Manifest} object.
+     * @return {@code true} if the JAR is signed, {@code false}
+     *         otherwise.
      */
-    CARAPI SetManifest(
-        /* in */ IManifest* mf);
-
     CARAPI IsSignedJar(
     /* [out] */ Boolean* isSigned);
 
-    CARAPI GetCertificates(
-    /* [in] */ const String& name,
-    /* [out, callee] */ ArrayOf<ICertificate*>** certificates);
+    /**
+     * Returns all of the {@link java.security.cert.Certificate} chains that
+     * were used to verify the signature on the JAR entry called
+     * {@code name}. Callers must not modify the returned arrays.
+     *
+     * @param name
+     *            the name of a JAR entry.
+     * @return an array of {@link java.security.cert.Certificate} chains.
+     */
+    AutoPtr<ArrayOf<IArrayOf*> > GetCertificateChains(
+        /* [in] */ const String& name);
 
-    HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >* GetVerifiedEntry();
+    CARAPI RemoveMetaEntries();
 
 private:
     CARAPI VerifyCertificate(
-        /* in */ const String& certFile);
+        /* [in] */ const String& certFile);
 
     CARAPI Verify(
-        /* in */ IAttributes* attributes,
-        /* in */ const String& entry,
-        /* in */ ArrayOf<Byte>* data,
-        /* in */ Int32 start,
-        /* in */ Int32 end,
-        /* in */ Boolean ignoreSecondEndline,
-        /* in */ Boolean ignorable,
-        /* out */ Boolean* result);
+        /* [in] */ IAttributes* attributes,
+        /* [in] */ const String& entry,
+        /* [in] */ ArrayOf<Byte>* data,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ Boolean ignoreSecondEndline,
+        /* [in] */ Boolean ignorable,
+        /* [out] */ Boolean* result);
 
 public:
     Int32 mMainAttributesEnd;
-private:
-    const String mJarName;
-    AutoPtr<IManifest> mMan;
 
+private:
+    static const AutoPtr<ArrayOf<String> > DIGEST_ALGORITHMS;
+
+    String mJarName;
+    AutoPtr<IManifest> mManifest;
     AutoPtr<HashMap<String, AutoPtr<ArrayOf<Byte> > > > mMetaEntries;
 
     typedef HashMap<String, AutoPtr<IAttributes> > StringAttributesMap;
     typedef typename StringAttributesMap::Iterator StringAttributesMapIterator;
 
     AutoPtr<HashMap<String, AutoPtr<StringAttributesMap> > > mSignatures;
-    AutoPtr<HashMap<String, AutoPtr<ArrayOf<ICertificate*> > > > mCertificates;
-    AutoPtr<HashMap<String, AutoPtr<ArrayOf<ICertificate*> > > > mVerifiedEntries;
+
+    AutoPtr<StringCertificateMap > mCertificates;
+    AutoPtr<StringCertificateMap > mVerifiedEntries;
 };
 
 } // namespace Jar

@@ -26,16 +26,33 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
+AutoPtr<ArrayOf<String> > InitDIGEST_ALGORITHMS()
+{
+    AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(4);
+    array->Set(0, String("SHA-512"));
+    array->Set(1, String("SHA-384"));
+    array->Set(2, String("SHA-256"));
+    array->Set(3, String("SHA1"));
+    return array;
+}
+
+const AutoPtr<ArrayOf<String> > JarVerifier::DIGEST_ALGORITHMS = InitDIGEST_ALGORITHMS();
+
+//===========================================================
+// JarVerifier::VerifierEntry
+//===========================================================
 JarVerifier::VerifierEntry::VerifierEntry(
     /* [in] */ const String& name,
     /* [in] */ IMessageDigest* digest,
     /* [in] */ ArrayOf<Byte>* hash,
-    /* [in] */ ArrayOf<ICertificate*>* certificates,
+    /* [in] */ ArrayOf<IArrayOf*>* certificates,
+    /* [in] */ StringCertificateMap* verifedEntries,
     /* [in] */ JarVerifier* host)
     : mName(name)
     , mDigest(digest)
     , mHash(hash)
     , mCertificates(certificates)
+    , mVerifedEntries(verifedEntries)
     , mHost(host)
 {
 }
@@ -47,13 +64,14 @@ ECode JarVerifier::VerifierEntry::Write(
 }
 
 ECode JarVerifier::VerifierEntry::Write(
-            /* [in] */ const ArrayOf<Byte>& buffer)
+    /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return OutputStream::Write(buffer);
+    VALIDATE_NOT_NULL(buffer)
+    return digest->Update(buffer, 0, buffer->GetLength());
 }
 
 ECode JarVerifier::VerifierEntry::Write(
-    /* in */ const ArrayOf<Byte>& buf,
+    /* in */ ArrayOf<Byte>* buf,
     /* in */ Int32 off,
     /* in */ Int32 nbytes)
 {
@@ -70,50 +88,30 @@ ECode JarVerifier::VerifierEntry::Verify()
     AutoPtr<IBase64> bs64;
     CBase64::AcquireSingleton((IBase64**)&bs64);
     AutoPtr<ArrayOf<Byte> > rst;
-    bs64->Decode(mHash, 0, (ArrayOf<Byte>**)&rst);
+    bs64->Decode(mHash, (ArrayOf<Byte>**)&rst);
     helper->IsEqual(d, rst, &isEqual);
     if (!isEqual) {
         return E_SECURITY_EXCEPTION;
     }
-    (*(mHost->GetVerifiedEntry()))[mName] = mCertificates;
+    (*mVerifiedEntries)[mName] = mCertificates;
     return NOERROR;
 }
 
-ECode JarVerifier::VerifierEntry::CheckError(
-            /* [out] */ Boolean* hasError)
-{
-    return OutputStream::CheckError(hasError);
-}
-
-ECode JarVerifier::VerifierEntry::Close()
-{
-    return OutputStream::Close();
-}
-
-JarVerifier::JarVerifier()
-    : mMainAttributesEnd(0)
-    , mMetaEntries(new HashMap<String, AutoPtr<ArrayOf<Byte> > >(5))
-    , mSignatures(new HashMap<String, AutoPtr<HashMap<String, AutoPtr<IAttributes> > > >(5))
-    , mCertificates(new HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >(5))
-    , mVerifiedEntries(new HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >())
-{
-}
-
-/**
- * Constructs and returns a new instance of {@code JarVerifier}.
- *
- * @param name
- *            the name of the JAR file being verified.
- */
+//===========================================================
+// JarVerifier
+//===========================================================
 JarVerifier::JarVerifier(
-    /* int */ const String& name)
+    /* [in] */ const String& name,
+    /* [in] */ IManifest* manifest,
+    /* [in] */ HashMap<String, AutoPtr<ArrayOf<Byte> >* metaEntries)
     : mMainAttributesEnd(0)
-    , mMetaEntries(new HashMap<String, AutoPtr<ArrayOf<Byte> > >(5))
-    , mSignatures(new HashMap<String, AutoPtr<HashMap<String, AutoPtr<IAttributes> > > >(5))
-    , mCertificates(new HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >(5))
-    , mVerifiedEntries(new HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >())
     , mJarName(name)
+    , mManifest(manifest)
+    , mMetaEntries(metaEntries)
 {
+    mSignatures = new HashMap<String, AutoPtr<StringAttributesMap> >(5);
+    mCertificates = new StringCertificateMap(5);
+    mVerifiedEntries = new StringCertificateMap();
 }
 
 JarVerifier::~JarVerifier()
@@ -124,18 +122,6 @@ JarVerifier::~JarVerifier()
     mSignatures = NULL;
 }
 
-/**
- * Invoked for each new JAR entry read operation from the input
- * stream. This method constructs and returns a new {@link VerifierEntry}
- * which contains the certificates used to sign the entry and its hash value
- * as specified in the JAR MANIFEST format.
- *
- * @param name
- *            the name of an entry in a JAR file which is <b>not</b> in the
- *            {@code META-INF} directory.
- * @return a new instance of {@link VerifierEntry} which can be used by
- *         callers as an {@link OutputStream}.
- */
 ECode JarVerifier::InitEntry(
     /* in */ const String& name,
     /* out */ VerifierEntry** entry)
@@ -143,13 +129,13 @@ ECode JarVerifier::InitEntry(
     // If no manifest is present by the time an entry is found,
     // verification cannot occur. If no signature files have
     // been found, do not verify.
-    if (mMan == NULL || mSignatures->IsEmpty()) {
+    if (mManifest == NULL || mSignatures->IsEmpty()) {
         *entry = NULL;
         return NOERROR;
     }
 
     AutoPtr<IAttributes> attributes;
-    mMan->GetAttributes(name, (IAttributes**)&attributes);
+    mManifest->GetAttributes(name, (IAttributes**)&attributes);
     // entry has no digest
     if (attributes == NULL) {
         *entry = NULL;
@@ -411,7 +397,7 @@ ECode JarVerifier::VerifyCertificate(
         while (it != entries->End()) {
 
             AutoPtr<CManifest::Chunk> chunk;
-            ((CManifest*)mMan.Get())->GetChunk(it->mFirst, (CManifest::Chunk**)&chunk);
+            ((CManifest*)mManifest.Get())->GetChunk(it->mFirst, (CManifest::Chunk**)&chunk);
             if (chunk == NULL) {
                 return NOERROR;
             }
@@ -561,7 +547,7 @@ ECode JarVerifier::GetSignerCertificates(
 ECode JarVerifier::SetManifest(
         /* in */ IManifest* mf)
 {
-    mMan = mf;
+    mManifest = mf;
     return NOERROR;
 }
 
