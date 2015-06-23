@@ -20,60 +20,60 @@ enum Type {
 
 CCallbackParcel::CCallbackParcel()
 {
-    m_elemCount = 0;
+    mElemCount = 0;
 
-    m_typeBufCapacity = 10;
-    m_elemTypes = (Byte*)malloc(m_typeBufCapacity);
-    memset(m_elemTypes, 0, m_typeBufCapacity);
+    mTypeBufCapacity = 10;
+    mElemTypes = (Byte*)malloc(mTypeBufCapacity);
+    memset(mElemTypes, 0, mTypeBufCapacity);
 
-    m_elemBufCapacity = 128;
-    m_elemBuf = (Byte*)malloc(m_elemBufCapacity);
-    memset(m_elemBuf, 0, m_elemBufCapacity);
-    m_elemPtr = m_elemBuf;
+    mElemBufCapacity = 128;
+    mElemBuf = (Byte*)malloc(mElemBufCapacity);
+    memset(mElemBuf, 0, mElemBufCapacity);
+    mElemPtr = mElemBuf;
 
-    m_dataBufCapacity = 128;
-    m_dataBuf = (Byte*)malloc(m_dataBufCapacity);
-    memset(m_dataBuf, 0, m_dataBufCapacity);
-    m_dataPtr = m_dataBuf;
+    mDataBufCapacity = 128;
+    mDataBuf = (Byte*)malloc(mDataBufCapacity);
+    memset(mDataBuf, 0, mDataBufCapacity);
+    mDataPtr = mDataBuf;
 }
 
 CCallbackParcel::~CCallbackParcel()
 {
-    m_elemPtr = m_elemBuf;
+    mElemPtr = mElemBuf;
 
-    for (Int32 i = 0; i < m_elemCount; i++) {
-        switch(m_elemTypes[i]) {
+    for (Int32 i = 0; i < mElemCount; i++) {
+        switch(mElemTypes[i]) {
             case Type_InterfacePtr:
-				if (*(IInterface**)m_elemPtr != NULL) {
-					(*(IInterface**)m_elemPtr)->Release();
+				if (*(IInterface**)mElemPtr != NULL) {
+					(*(IInterface**)mElemPtr)->Release();
 				}
-                m_elemPtr += 4;
+                mElemPtr += 4;
                 break;
 
             case Type_Int64:
             case Type_Double:
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                m_elemPtr = (Byte*)ROUND8((Int32)m_elemPtr);
+                mElemPtr = (Byte*)ROUND8((Int32)mElemPtr);
 #endif
-				m_elemPtr += 8;
+				mElemPtr += 8;
 				break;
 
             case Type_String: {
-                String* p = *(String**)m_elemPtr;
+                String* p = *(String**)mElemPtr;
                 delete p;
-                *(String**)m_elemPtr = NULL;
+                *(String**)mElemPtr = NULL;
                 break;
             }
 
             default:
-                m_elemPtr += 4;
+                mElemPtr += 4;
                 break;
         }
     }
 
-    free(m_elemTypes);
-    free(m_elemBuf);
-    free(m_dataBuf);
+    free(mElemTypes);
+    free(mElemBuf);
+    free(mDataBuf);
 }
 
 PInterface CCallbackParcel::Probe(
@@ -100,13 +100,13 @@ UInt32 CCallbackParcel::Release()
 }
 
 ECode CCallbackParcel::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
+    if (NULL == iid) return E_INVALID_ARGUMENT;
 
-    if (pObject == (IInterface *)(IParcel *)this) {
-        *pIID = EIID_IParcel;
+    if (object == (IInterface *)(IParcel *)this) {
+        *iid = EIID_IParcel;
     }
     else {
         return E_INVALID_ARGUMENT;
@@ -130,44 +130,47 @@ ECode CCallbackParcel::Unmarshall(
 
 ECode CCallbackParcel::GrowTypeBuffer()
 {
-    m_typeBufCapacity +=  10;
-    m_elemTypes = (Byte*)realloc(m_elemTypes, m_typeBufCapacity);
-    if (NULL == m_elemTypes) return E_OUT_OF_MEMORY;
+    mTypeBufCapacity +=  10;
+    mElemTypes = (Byte*)realloc(mElemTypes, mTypeBufCapacity);
+    if (NULL == mElemTypes) return E_OUT_OF_MEMORY;
 
     return NOERROR;
 }
 
 ECode CCallbackParcel::GrowElemBuffer()
 {
-    int offset = m_elemPtr - m_elemBuf;
-    m_elemBufCapacity += 128;
-    m_elemBuf = (Byte*)realloc(m_elemBuf, m_elemBufCapacity);
-    if (NULL == m_elemBuf) return E_OUT_OF_MEMORY;
-    m_elemPtr = m_elemBuf + offset;
+    int offset = mElemPtr - mElemBuf;
+    mElemBufCapacity += 128;
+    mElemBuf = (Byte*)realloc(mElemBuf, mElemBufCapacity);
+    if (NULL == mElemBuf) return E_OUT_OF_MEMORY;
+    mElemPtr = mElemBuf + offset;
 
     return NOERROR;
 }
 
-ECode CCallbackParcel::GrowDataBuffer(int minSize)
+ECode CCallbackParcel::GrowDataBuffer(
+    /* [in] */ Int32 minSize)
 {
     Byte type, *tmpPtr, *orgDataBuf, *elemPtr;
     int offset1, offset2, offset3, used;
 
-    orgDataBuf = m_dataBuf;
-    elemPtr = m_elemBuf;
-    offset1 = m_dataPtr - m_dataBuf;
-	if(minSize < 128)
+    orgDataBuf = mDataBuf;
+    elemPtr = mElemBuf;
+    offset1 = mDataPtr - mDataBuf;
+	if(minSize < 128) {
 		minSize = 128;
-	else
+    }
+	else {
 		minSize += 128;
-    m_dataBufCapacity += minSize;
-    m_dataBuf = (Byte*)malloc(m_dataBufCapacity);
-    if (NULL == m_dataBuf) return E_OUT_OF_MEMORY;
-    memcpy(m_dataBuf, orgDataBuf, offset1);
-    m_dataPtr = m_dataBuf + offset1;
+    }
+    mDataBufCapacity += minSize;
+    mDataBuf = (Byte*)malloc(mDataBufCapacity);
+    if (NULL == mDataBuf) return E_OUT_OF_MEMORY;
+    memcpy(mDataBuf, orgDataBuf, offset1);
+    mDataPtr = mDataBuf + offset1;
 
-    for(Int32 i = 0; i < m_elemCount; i++) {
-        type = m_elemTypes[i];
+    for(Int32 i = 0; i < mElemCount; i++) {
+        type = mElemTypes[i];
         switch(type) {
             case Type_Byte:
             case Type_Boolean:
@@ -191,37 +194,37 @@ ECode CCallbackParcel::GrowDataBuffer(int minSize)
             case Type_Struct:
             case Type_EMuid:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
-                *(Byte**)elemPtr = m_dataBuf + offset1;
+                *(Byte**)elemPtr = mDataBuf + offset1;
                 elemPtr += 4;
                 break;
 
             case Type_EGuid:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
                 offset2 = (Byte*)(*(EGuid**)elemPtr)->pUunm - orgDataBuf;
-                *(Byte**)elemPtr = m_dataBuf + offset1;
-                (*(EGuid**)elemPtr)->pUunm = (char*)(m_dataBuf + offset2);
+                *(Byte**)elemPtr = mDataBuf + offset1;
+                (*(EGuid**)elemPtr)->pUunm = (char*)(mDataBuf + offset2);
                 elemPtr += 4;
                 break;
 
             case Type_ArrayOf:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
                 offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->m_pBuf - orgDataBuf;
-                *(Byte**)elemPtr = m_dataBuf + offset1;
-                (*(CarQuintet**)(elemPtr))->m_pBuf = (void*)(m_dataBuf + offset2);
+                *(Byte**)elemPtr = mDataBuf + offset1;
+                (*(CarQuintet**)(elemPtr))->m_pBuf = (void*)(mDataBuf + offset2);
                 elemPtr += 4;
                 break;
 
             case Type_ArrayOfString:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
                 offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->m_pBuf - orgDataBuf;
-                tmpPtr = m_dataBuf + offset1;
-                ((CarQuintet*)tmpPtr)->m_pBuf = m_dataBuf + offset2;
+                tmpPtr = mDataBuf + offset1;
+                ((CarQuintet*)tmpPtr)->m_pBuf = mDataBuf + offset2;
                 used = (*(ArrayOf<String>**)elemPtr)->GetLength();
 
-                for(Int32 i = 0; i < used; i++) {
+                for (Int32 i = 0; i < used; i++) {
                     if ((**(ArrayOf<String>**)elemPtr)[i]) {
                         offset3 = (Byte*)(const char*)((**(ArrayOf<String>**)elemPtr)[i]) - orgDataBuf;
-                        (*(ArrayOf<String>*)tmpPtr)[i] = (char*)(m_dataBuf + offset3);
+                        (*(ArrayOf<String>*)tmpPtr)[i] = (char*)(mDataBuf + offset3);
                     }
                     else (*(ArrayOf<String>*)tmpPtr)[i] = NULL;
                 }
@@ -253,155 +256,158 @@ ECode CCallbackParcel::HasFileDescriptors(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
+ECode CCallbackParcel::WriteValue(
+    /* [in] */ PVoid value,
+    /* [in] */ Int32 type,
+    /* [in] */ Int32 size)
 {
     ECode ec;
     Int32 used, len;
 
-    if (m_elemCount >= m_typeBufCapacity) {
+    if (mElemCount >= mTypeBufCapacity) {
         ec = GrowTypeBuffer();
         if (FAILED(ec)) return ec;
     }
-    if (m_elemPtr - m_elemBuf + 4 > m_elemBufCapacity) {
+    if (mElemPtr - mElemBuf + 4 > mElemBufCapacity) {
         ec = GrowElemBuffer();
         if (FAILED(ec)) return ec;
     }
 
-    m_elemTypes[m_elemCount] = (Byte)type;
+    mElemTypes[mElemCount] = (Byte)type;
     switch(type) {
         case Type_Byte:
         case Type_Boolean:
-            *(Int32*)(m_elemPtr) = *((Byte*)pValue);
-            m_elemPtr += 4;
+            *(Int32*)(mElemPtr) = *((Byte*)value);
+            mElemPtr += 4;
 
             break;
 
         case Type_Int16:
-            *(Int32*)(m_elemPtr) = *((Int16*)pValue);
-            m_elemPtr += 4;
+            *(Int32*)(mElemPtr) = *((Int16*)value);
+            mElemPtr += 4;
             break;
 
         case Type_Char32:
         case Type_Int32:
         case Type_Float:
-            *(Int32*)(m_elemPtr) = *(Int32*)pValue;
-            m_elemPtr += 4;
+            *(Int32*)(mElemPtr) = *(Int32*)value;
+            mElemPtr += 4;
             break;
 
         case Type_Int64:
         case Type_Double:
-            if (m_elemPtr - m_elemBuf + 4 + 4 > m_elemBufCapacity) {
+            if (mElemPtr - mElemBuf + 4 + 4 > mElemBufCapacity) {
                 ec = GrowElemBuffer();
                 if (FAILED(ec)) return ec;
             }
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-            m_elemPtr = (Byte*)ROUND8((Int32)m_elemPtr);
+            mElemPtr = (Byte*)ROUND8((Int32)mElemPtr);
 #endif
-            *(Int32*)(m_elemPtr) = (Int32)(*((Int64*)pValue) & 0xffffffff);
-            *(Int32*)(m_elemPtr + 4) = (Int32)((*((Int64*)pValue) >> 32) & 0xffffffff);
-            m_elemPtr += 8;
+            *(Int32*)(mElemPtr) = (Int32)(*((Int64*)value) & 0xffffffff);
+            *(Int32*)(mElemPtr + 4) = (Int32)((*((Int64*)value) >> 32) & 0xffffffff);
+            mElemPtr += 8;
             break;
 
         case Type_String: {
             String* p = new String();
-            *p = *(String*)pValue;
-            *(String**)m_elemPtr = p;
-            m_elemPtr += 4;
+            *p = *(String*)value;
+            *(String**)mElemPtr = p;
+            mElemPtr += 4;
             break;
         }
         case Type_InterfacePtr:
-            *(IInterface**)m_elemPtr = *(IInterface**)pValue;
-            if ((*(IInterface**)m_elemPtr) != NULL) {
-                (*(IInterface**)m_elemPtr)->AddRef();
+            *(IInterface**)mElemPtr = *(IInterface**)value;
+            if ((*(IInterface**)mElemPtr) != NULL) {
+                (*(IInterface**)mElemPtr)->AddRef();
             }
-            m_elemPtr += 4;
+            mElemPtr += 4;
             break;
 
         case Type_Struct:
-            if (m_dataPtr - m_dataBuf + ROUND4(size) + 4 > m_dataBufCapacity) {
+            if (mDataPtr - mDataBuf + ROUND4(size) + 4 > mDataBufCapacity) {
                 ec = GrowDataBuffer(ROUND4(size) + 4);
                 if (FAILED(ec)) return ec;
             }
-            *(Int32*)m_dataPtr = size;
-            m_dataPtr += 4;
-            *(Byte**)(m_elemPtr) = m_dataPtr;
-            m_elemPtr += 4;
-            memcpy(m_dataPtr, pValue, size);
-            m_dataPtr += ROUND4(size);
+            *(Int32*)mDataPtr = size;
+            mDataPtr += 4;
+            *(Byte**)(mElemPtr) = mDataPtr;
+            mElemPtr += 4;
+            memcpy(mDataPtr, value, size);
+            mDataPtr += ROUND4(size);
             break;
 
         case Type_EMuid:
-            if (m_dataPtr - m_dataBuf + ROUND4(size) > m_dataBufCapacity) {
+            if (mDataPtr - mDataBuf + ROUND4(size) > mDataBufCapacity) {
                 ec = GrowDataBuffer(ROUND4(size));
                 if (FAILED(ec)) return ec;
             }
-            *(EMuid**)(m_elemPtr) = (EMuid*)m_dataPtr;
-            m_elemPtr += 4;
-            memcpy(m_dataPtr, pValue, size);
-            m_dataPtr += size;
+            *(EMuid**)(mElemPtr) = (EMuid*)mDataPtr;
+            mElemPtr += 4;
+            memcpy(mDataPtr, value, size);
+            mDataPtr += size;
             break;
 
         case Type_EGuid:
-            if (m_dataPtr - m_dataBuf + ROUND4(size) > m_dataBufCapacity) {
+            if (mDataPtr - mDataBuf + ROUND4(size) > mDataBufCapacity) {
                 ec = GrowDataBuffer(ROUND4(size));
                 if (FAILED(ec)) return ec;
             }
-            *(EGuid**)(m_elemPtr) = (EGuid*)m_dataPtr;
-            m_elemPtr += 4;
-            memcpy(m_dataPtr, pValue, sizeof(EGuid));
-			((EGuid*)m_dataPtr)->pUunm = (char*)(m_dataPtr + sizeof(EGuid));
-            strcpy(((EGuid*)m_dataPtr)->pUunm, ((EGuid*)pValue)->pUunm);
-            m_dataPtr += ROUND4(size);
+            *(EGuid**)(mElemPtr) = (EGuid*)mDataPtr;
+            mElemPtr += 4;
+            memcpy(mDataPtr, value, sizeof(EGuid));
+			((EGuid*)mDataPtr)->pUunm = (char*)(mDataPtr + sizeof(EGuid));
+            strcpy(((EGuid*)mDataPtr)->pUunm, ((EGuid*)value)->pUunm);
+            mDataPtr += ROUND4(size);
             break;
 
         case Type_ArrayOf:
-            if (pValue == NULL) {
-                *(Byte**)(m_elemPtr) = NULL;
-                m_elemPtr += 4;
+            if (value == NULL) {
+                *(Byte**)(mElemPtr) = NULL;
+                mElemPtr += 4;
             }
             else {
-                if (m_dataPtr - m_dataBuf + ROUND4(size + 4) + 4 > m_dataBufCapacity) {
+                if (mDataPtr - mDataBuf + ROUND4(size + 4) + 4 > mDataBufCapacity) {
                     ec = GrowDataBuffer(ROUND4(size + 4) + 4);
                     if (FAILED(ec)) return ec;
                 }
-                *(Int32*)m_dataPtr = size;
-                m_dataPtr += 4;
-                *(Byte**)(m_elemPtr) = m_dataPtr;
-                m_elemPtr += 4;
-                memcpy(m_dataPtr, pValue, sizeof(CarQuintet));
-                m_dataPtr += ROUND4(sizeof(CarQuintet));
-                (*(CarQuintet**)(m_elemPtr - 4))->m_pBuf = (PVoid)(m_dataPtr);
-                memcpy(m_dataPtr, ((CarQuintet*)pValue)->m_pBuf, size - sizeof(CarQuintet));
-                m_dataPtr += ROUND4(size - sizeof(CarQuintet));
+                *(Int32*)mDataPtr = size;
+                mDataPtr += 4;
+                *(Byte**)(mElemPtr) = mDataPtr;
+                mElemPtr += 4;
+                memcpy(mDataPtr, value, sizeof(CarQuintet));
+                mDataPtr += ROUND4(sizeof(CarQuintet));
+                (*(CarQuintet**)(mElemPtr - 4))->m_pBuf = (PVoid)(mDataPtr);
+                memcpy(mDataPtr, ((CarQuintet*)value)->m_pBuf, size - sizeof(CarQuintet));
+                mDataPtr += ROUND4(size - sizeof(CarQuintet));
             }
             break;
 
         case Type_ArrayOfString:
-            used = ((ArrayOf<String>*)pValue)->GetLength();
-            if (m_dataPtr - m_dataBuf + ROUND4(size) + 4 > m_dataBufCapacity) {
+            used = ((ArrayOf<String>*)value)->GetLength();
+            if (mDataPtr - mDataBuf + ROUND4(size) + 4 > mDataBufCapacity) {
                 ec = GrowDataBuffer(ROUND4(size) + 4);
                 if (FAILED(ec)) return ec;
             }
 
-            *(Int32*)m_dataPtr = size;
-            m_dataPtr += 4;
-            *(Byte**)(m_elemPtr) = m_dataPtr;
-            m_elemPtr += 4;
+            *(Int32*)mDataPtr = size;
+            mDataPtr += 4;
+            *(Byte**)(mElemPtr) = mDataPtr;
+            mElemPtr += 4;
 
-            memcpy(m_dataPtr, pValue, sizeof(CarQuintet));
-            m_dataPtr += ROUND4(sizeof(CarQuintet));
-            (*(CarQuintet**)(m_elemPtr - 4))->m_pBuf = (PVoid)(m_dataPtr);
-            m_dataPtr += ROUND4(((CarQuintet*)pValue)->m_size);
+            memcpy(mDataPtr, value, sizeof(CarQuintet));
+            mDataPtr += ROUND4(sizeof(CarQuintet));
+            (*(CarQuintet**)(mElemPtr - 4))->m_pBuf = (PVoid)(mDataPtr);
+            mDataPtr += ROUND4(((CarQuintet*)value)->m_size);
 
             for(Int32 i = 0; i < used; i++) {
-                (**(ArrayOf<String>**)(m_elemPtr - 4))[i] = (const char*)m_dataPtr;
-                if ((*(ArrayOf<String>*)pValue)[i]) {
-                    len = (strlen((*(ArrayOf<String>*)pValue)[i]) + 1);
-                    memcpy((void*)(const char*)(**(ArrayOf<String>**)(m_elemPtr - 4))[i],
-                            (*(ArrayOf<String>*)pValue)[i], len);
-                    m_dataPtr += ROUND4(len);
+                (**(ArrayOf<String>**)(mElemPtr - 4))[i] = (const char*)mDataPtr;
+                if ((*(ArrayOf<String>*)value)[i]) {
+                    len = (strlen((*(ArrayOf<String>*)value)[i]) + 1);
+                    memcpy((void*)(const char*)(**(ArrayOf<String>**)(mElemPtr - 4))[i],
+                            (*(ArrayOf<String>*)value)[i], len);
+                    mDataPtr += ROUND4(len);
                 }
-                else (**(ArrayOf<String>**)(m_elemPtr - 4))[i] = NULL;
+                else (**(ArrayOf<String>**)(mElemPtr - 4))[i] = NULL;
             }
             break;
 
@@ -409,61 +415,61 @@ ECode CCallbackParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             assert(0);
             break;
     }
-	m_elemCount += 1;
+	mElemCount += 1;
 
     return NOERROR;
 }
 
 ECode CCallbackParcel::Clone(
-    /* [in] */ IParcel *pSrcParcel)
+    /* [in] */ IParcel* srcParcel)
 {
-    Byte type, bv, *pSrcElemPtr;
+    Byte type, bv, *srcElemPtr;
     Int16 i16v;
     Int32 i32v, size;
     Int64 i64v;
     char *str;
-    CCallbackParcel *pSrc;
+    CCallbackParcel *src;
 
-    pSrc = (CCallbackParcel*)pSrcParcel;
-    pSrcElemPtr = pSrc->m_elemBuf;
-    for(Int32 i = 0; i < pSrc->m_elemCount; i++) {
-        type = pSrc->m_elemTypes[i];
+    src = (CCallbackParcel*)srcParcel;
+    srcElemPtr = src->mElemBuf;
+    for(Int32 i = 0; i < src->mElemCount; i++) {
+        type = src->mElemTypes[i];
         switch(type) {
             case Type_Byte:
             case Type_Boolean:
-                bv = *pSrcElemPtr;
+                bv = *srcElemPtr;
                 WriteValue((PVoid)&bv, type, sizeof(Byte));
-                pSrcElemPtr += 4;
+                srcElemPtr += 4;
                 break;
 
             case Type_Int16:
-                i16v = *(Int16*)pSrcElemPtr;
+                i16v = *(Int16*)srcElemPtr;
                 WriteValue((PVoid)&i16v, type, sizeof(Int16));
-                pSrcElemPtr += 4;
+                srcElemPtr += 4;
                 break;
 
             case Type_Char32:
             case Type_Int32:
             case Type_Float:
             case Type_InterfacePtr:
-                i32v = *(Int32*)pSrcElemPtr;
+                i32v = *(Int32*)srcElemPtr;
                 WriteValue((PVoid)&i32v, type, sizeof(Int32));
-                pSrcElemPtr += 4;
+                srcElemPtr += 4;
                 break;
 
             case Type_Int64:
             case Type_Double:
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                pSrcElemPtr = (Byte*)ROUND8((Int32)pSrcElemPtr);
+                srcElemPtr = (Byte*)ROUND8((Int32)srcElemPtr);
 #endif
-                i64v = *(UInt32*)(pSrcElemPtr + 4);
-                i64v = (i64v << 32) | *(UInt32*)pSrcElemPtr;
+                i64v = *(UInt32*)(srcElemPtr + 4);
+                i64v = (i64v << 32) | *(UInt32*)srcElemPtr;
                 WriteValue((PVoid)&i64v, type, sizeof(Int64));
-                pSrcElemPtr += 8;
+                srcElemPtr += 8;
                 break;
 
             case Type_String:
-                str = *(char**)pSrcElemPtr;
+                str = *(char**)srcElemPtr;
                 if (str == NULL) {
                     size = 0;
                 }
@@ -471,30 +477,30 @@ ECode CCallbackParcel::Clone(
                     size = strlen(str) + 1;
                 }
                 WriteValue((PVoid)str, type, size);
-                pSrcElemPtr += 4;
+                srcElemPtr += 4;
                 break;
 
             case Type_Struct:
-                size = *((*(Int32**)pSrcElemPtr) - 1);
-                WriteValue((PVoid)(*(Byte**)pSrcElemPtr), type, size);
-                pSrcElemPtr += 4;
+                size = *((*(Int32**)srcElemPtr) - 1);
+                WriteValue((PVoid)(*(Byte**)srcElemPtr), type, size);
+                srcElemPtr += 4;
                 break;
 
             case Type_EMuid:
-                WriteValue((PVoid)(*(EMuid**)pSrcElemPtr), type, sizeof(EMuid));
-                pSrcElemPtr += 4;
+                WriteValue((PVoid)(*(EMuid**)srcElemPtr), type, sizeof(EMuid));
+                srcElemPtr += 4;
                 break;
 
             case Type_EGuid:
-                WriteValue((PVoid)(*(EGuid**)pSrcElemPtr), type, sizeof(EGuid));
-                pSrcElemPtr += 4;
+                WriteValue((PVoid)(*(EGuid**)srcElemPtr), type, sizeof(EGuid));
+                srcElemPtr += 4;
                 break;
 
             case Type_ArrayOf:
             case Type_ArrayOfString:
-                size = *(Int32*)(*(Byte**)pSrcElemPtr - 4);
-                WriteValue((PVoid)(*(CarQuintet**)pSrcElemPtr), type, size);
-                pSrcElemPtr += 4;
+                size = *(Int32*)(*(Byte**)srcElemPtr - 4);
+                WriteValue((PVoid)(*(CarQuintet**)srcElemPtr), type, size);
+                srcElemPtr += 4;
                 break;
 
         default:
@@ -508,89 +514,91 @@ ECode CCallbackParcel::Clone(
 }
 
 ECode CCallbackParcel::ReadByte(
-    /* [out] */ Byte *pValue)
+    /* [out] */ Byte* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadBoolean(
-    /* [out] */ Boolean *pValue)
+    /* [out] */ Boolean* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadChar(
-    /* [out] */ Char32 *pValue)
+    /* [out] */ Char32* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadInt16(
-    /* [out] */ Int16 *pValue)
+    /* [out] */ Int16* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadInt32(
-    /* [out] */ Int32 *pValue)
+    /* [out] */ Int32* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadInt64(
-    /* [out] */ Int64 *pValue)
+    /* [out] */ Int64* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadFloat(
-    /* [out] */ Float *pValue)
+    /* [out] */ Float* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadDouble(
-    /* [out] */ Double *pValue)
+    /* [out] */ Double* value)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadString(
-    /* [out] */ String *pStr)
+    /* [out] */ String* str)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadStruct(
-    /* [out] */ Handle32 *paddr)
+    /* [out] */ Handle32* addr)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CCallbackParcel::ReadEMuid(EMuid *pId)
+ECode CCallbackParcel::ReadEMuid(
+    /* [in] */ EMuid* id)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CCallbackParcel::ReadEGuid(EGuid *pId)
+ECode CCallbackParcel::ReadEGuid(
+    /* [in] */ EGuid* id)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadInterfacePtr(
-    /* [out] */ Handle32 *pItfPtr)
+    /* [out] */ Handle32* itfPtr)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadArrayOf(
-    /* [out] */ Handle32 *ppArray)
+    /* [out] */ Handle32* array)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackParcel::ReadArrayOfString(
-    /* [out, callee] */ ArrayOf<String>** ppArray)
+    /* [out, callee] */ ArrayOf<String>** array)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -601,7 +609,8 @@ ECode CCallbackParcel::ReadFileDescriptor(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CCallbackParcel::WriteByte(Byte value)
+ECode CCallbackParcel::WriteByte(
+    /* [in] */ Byte value)
 {
     return WriteValue((PVoid)&value, Type_Byte, sizeof(Byte));
 }
@@ -618,12 +627,14 @@ ECode CCallbackParcel::WriteChar(
     return WriteValue((PVoid)&value, Type_Char32, sizeof(Char32));
 }
 
-ECode CCallbackParcel::WriteInt16(Int16 value)
+ECode CCallbackParcel::WriteInt16(
+    /* [in] */ Int16 value)
 {
     return WriteValue((PVoid)&value, Type_Int16, sizeof(Int16));
 }
 
-ECode CCallbackParcel::WriteInt32(Int32 value)
+ECode CCallbackParcel::WriteInt32(
+    /* [in] */ Int32 value)
 {
     return WriteValue((PVoid)&value, Type_Int32, sizeof(Int32));
 }
@@ -646,29 +657,35 @@ ECode CCallbackParcel::WriteDouble(
     return WriteValue((PVoid)&value, Type_Double, sizeof(Double));
 }
 
-ECode CCallbackParcel::WriteString(const String& str)
+ECode CCallbackParcel::WriteString(
+    /* [in] */ const String& str)
 {
     return WriteValue((PVoid)&str, Type_String, sizeof(String));
 }
 
-ECode CCallbackParcel::WriteStruct(Handle32 pValue, Int32 size)
+ECode CCallbackParcel::WriteStruct(
+    /* [in] */ Handle32 value,
+    /* [in] */ Int32 size)
 {
-    return WriteValue((PVoid)pValue, Type_Struct, size);
+    return WriteValue((PVoid)value, Type_Struct, size);
 }
 
-ECode CCallbackParcel::WriteEMuid(const EMuid& id)
+ECode CCallbackParcel::WriteEMuid(
+    /* [in] */ const EMuid& id)
 {
     return WriteValue((PVoid)&id, Type_EMuid, sizeof(EMuid));
 }
 
-ECode CCallbackParcel::WriteEGuid(const EGuid& id)
+ECode CCallbackParcel::WriteEGuid(
+    /* [in] */ const EGuid& id)
 {
     return WriteValue((PVoid)&id, Type_EGuid, sizeof(EGuid) + strlen(id.pUunm) + 1);
 }
 
-ECode CCallbackParcel::WriteInterfacePtr(IInterface* pValue)
+ECode CCallbackParcel::WriteInterfacePtr(
+    /* [in] */ IInterface* value)
 {
-    return WriteValue((PVoid)&pValue, Type_InterfacePtr, sizeof(IInterface*));
+    return WriteValue((PVoid)&value, Type_InterfacePtr, sizeof(IInterface*));
 }
 
 ECode CCallbackParcel::WriteArrayOf(
@@ -717,37 +734,37 @@ ECode CCallbackParcel::SetDataPosition(
 }
 
 ECode CCallbackParcel::GetElementPayload(
-    /* [out] */ Handle32* pBuffer)
+    /* [out] */ Handle32* buffer)
 {
-    if (NULL == pBuffer) return E_INVALID_ARGUMENT;
+    if (NULL == buffer) return E_INVALID_ARGUMENT;
 
-    *pBuffer = (Handle32)m_elemBuf;
+    *buffer = (Handle32)mElemBuf;
 
     return NOERROR;
 }
 
 ECode CCallbackParcel::GetElementSize(
-    /* [in] */ Int32* pSize)
+    /* [in] */ Int32* size)
 {
-    if (NULL == pSize) return E_INVALID_ARGUMENT;
+    if (NULL == size) return E_INVALID_ARGUMENT;
 
-    *pSize = (Int32)(m_elemPtr - m_elemBuf);
+    *size = (Int32)(mElemPtr - mElemBuf);
 
     return NOERROR;
 }
 
 ELAPI _CCallbackParcel_New(
-    /* [out] */ IParcel **ppObj)
+    /* [out] */ IParcel** parcel)
 {
-    if (ppObj == NULL) return E_INVALID_ARGUMENT;
-    CCallbackParcel *pObj = NULL;
-    void* pLocation = calloc(sizeof(CCallbackParcel), 1);
-    if (!pLocation) return E_OUT_OF_MEMORY;
+    if (parcel == NULL) return E_INVALID_ARGUMENT;
+    CCallbackParcel* obj = NULL;
+    void* location = calloc(sizeof(CCallbackParcel), 1);
+    if (!location) return E_OUT_OF_MEMORY;
 
-    pObj = (CCallbackParcel *)new(pLocation) CCallbackParcel;
-    pObj->AddRef();
+    obj = (CCallbackParcel *)new(location) CCallbackParcel;
+    obj->AddRef();
 
-    *ppObj = (IParcel*)pObj;
+    *parcel = (IParcel*)obj;
 
     return NOERROR;
 }
