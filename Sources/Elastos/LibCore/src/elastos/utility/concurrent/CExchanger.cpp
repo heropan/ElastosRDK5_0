@@ -2,9 +2,11 @@
 #include "CExchanger.h"
 #include "LockSupport.h"
 #include "Thread.h"
-#include <Math.h>
+#include "Math.h"
 #include "CAtomicInteger32.h"
+#include "Autolock.h"
 
+using Elastos::Core::Thread;
 using Elastos::Core::Math;
 using Elastos::Utility::Concurrent::Locks::LockSupport;
 using Elastos::Utility::Concurrent::Atomic::EIID_IAtomicReference;
@@ -46,8 +48,8 @@ Int32 CExchanger::sFULL = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(s
 Int32 CExchanger::sSPINS = (sNCPU == 1) ? 0 : 2000;
 Int32 CExchanger::sTIMED_SPINS = sSPINS / 20;
 
-AutoPtr<IInterface> CExchanger::sCANCEL = new CDummyObject();
-AutoPtr<IInterface> CExchanger::sNULL_ITEM = new CDummyObject();
+AutoPtr<IInterface> CExchanger::sCANCEL = (IInterface*)(IObject*)new CDummyObject();
+AutoPtr<IInterface> CExchanger::sNULL_ITEM = (IInterface*)(IObject*)new CDummyObject();
 
 AutoPtr<IInterface> CExchanger::DoExchange(
     /* [in] */ IInterface* item,
@@ -66,7 +68,7 @@ AutoPtr<IInterface> CExchanger::DoExchange(
             CreateSlot(index);                // Continue loop to reread
         else if ((slot->Get((IInterface**)&y), y) != NULL &&  // Try to fulfill
                 (slot->CompareAndSet(y, NULL, &b), b)) {
-            AutoPtr<Node> you = (Node*)y->Probe(EIID_IAtomicReference);               // Transfer item
+            AutoPtr<Node> you = (Node*)(IAtomicReference*)y->Probe(EIID_IAtomicReference);               // Transfer item
             Boolean a = FALSE;
             if ((you->CompareAndSet(NULL, item, &a), a)) {
                 LockSupport::Unpark(you->mWaiter);
@@ -74,7 +76,7 @@ AutoPtr<IInterface> CExchanger::DoExchange(
             }                                 // Else cancelled; continue
         }
         else if (y == NULL &&                 // Try to occupy
-                (slot->CompareAndSet(NULL, me, &b), b)) {
+                (slot->CompareAndSet(NULL, me->Probe(EIID_IInterface), &b), b)) {
             if (index == 0)                   // Blocking wait for slot 0
                 return timed ?
                     AwaitNanos(me, slot, nanos) :
@@ -143,7 +145,7 @@ Boolean CExchanger::TryCancel(
     slot->Get((IInterface**)&s);
     if (Object::Equals(s, node->Probe(EIID_IInterface))) { // pre-check to minimize contention
         Boolean a = FALSE;
-        slot->CompareAndSet(node, NULL, &a);
+        slot->CompareAndSet(node->Probe(EIID_IInterface), NULL, &a);
     }
     return TRUE;
 }
@@ -184,7 +186,7 @@ AutoPtr<IInterface> CExchanger::Await(
         else if ((w->IsInterrupted(&b), b))         // Abort on interrupt
             TryCancel(node, slot);
         else                                // Block
-            LockSupport::Park(node);
+            LockSupport::Park(node->Probe(EIID_IInterface));
     }
 }
 
@@ -216,7 +218,7 @@ AutoPtr<IInterface> CExchanger::AwaitNanos(
             else if ((w->IsInterrupted(&b), b))
                 TryCancel(node, slot);
             else
-                LockSupport::ParkNanos(node, nanos);
+                LockSupport::ParkNanos(node->Probe(EIID_IInterface), nanos);
         }
         else if (TryCancel(node, slot) && !(w->IsInterrupted(&b), b))
             return ScanOnTimeout(node);
@@ -233,7 +235,7 @@ AutoPtr<IInterface> CExchanger::ScanOnTimeout(
             while ((slot->Get((IInterface**)&y), y) != NULL) {
                 Boolean a = FALSE;
                 if ((slot->CompareAndSet(y, NULL, &a), a)) {
-                    AutoPtr<Node> you = (Node*)y->Probe(EIID_IAtomicReference);
+                    AutoPtr<Node> you = (Node*)(IAtomicReference*)y->Probe(EIID_IAtomicReference);
                     Boolean b = FALSE;
                     if ((you->CompareAndSet(NULL, node->mItem, &b), b)) {
                         LockSupport::Unpark(you->mWaiter);

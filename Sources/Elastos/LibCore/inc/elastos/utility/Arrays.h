@@ -827,7 +827,7 @@ ECode Arrays::CopyOfRange(
     Int32 copyLength = Elastos::Core::Math::Min(resultLength, originalLength - start);
     AutoPtr<ArrayOf<T> > array = ArrayOf<T>::Alloc(resultLength);
     array->Copy(original, start, copyLength);
-    *result = result;
+    *result = array;
     REFCOUNT_ADD(*result)
     return NOERROR;
 }

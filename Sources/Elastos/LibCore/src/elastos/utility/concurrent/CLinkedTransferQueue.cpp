@@ -5,6 +5,7 @@
 #include "CSystem.h"
 #include "Thread.h"
 
+using Elastos::Core::Thread;
 using Elastos::Core::ISystem;
 using Elastos::Core::Math;
 using Elastos::Utility::Concurrent::Locks::LockSupport;
@@ -255,7 +256,7 @@ AutoPtr<IInterface> CLinkedTransferQueue::AwaitMatch(
         }
         Boolean b = FALSE;
         if (((w->IsInterrupted(&b), b) || (timed && nanos <= 0)) &&
-                s->CasItem(e, s)) {        // cancel
+                s->CasItem(e, s->Probe(EIID_IInterface))) {        // cancel
             Unsplice(pred, s);
             return e;
         }
@@ -268,7 +269,7 @@ AutoPtr<IInterface> CLinkedTransferQueue::AwaitMatch(
         else if (spins > 0) {             // spin
             --spins;
             Int32 num = 0;
-            if ((randomYields->NextInt32(CHAINED_SPINS, &num), num == 0))
+            if (((IRandom::Probe(randomYields))->NextInt32(CHAINED_SPINS, &num), num == 0))
                 Thread::Yield();           // occasionally yield
         }
         else if (s->mWaiter == NULL) {
@@ -546,7 +547,7 @@ Boolean CLinkedTransferQueue::FindAndRemove(
             AutoPtr<IInterface> item = p->mItem;
             if (p->mIsData) {
                 if (item != NULL &&
-                    !Object::Equals(item, p) &&
+                    !Object::Equals(item, p->Probe(EIID_IInterface)) &&
                     Object::Equals(e, item) &&
                     p->TryMatchData()) {
                     Unsplice(pred, p);
@@ -556,7 +557,7 @@ Boolean CLinkedTransferQueue::FindAndRemove(
             else if (item == NULL)
                 break;
             pred = p;
-            if (((p = p->mNext), Object::Equals(p, pred))) { // stale
+            if (((p = p->mNext), Object::Equals(p->Probe(EIID_IInterface), pred->Probe(EIID_IInterface)))) { // stale
                 pred = NULL;
                 p = mHead;
             }
@@ -577,12 +578,6 @@ ECode CLinkedTransferQueue::constructor(
     Boolean b = FALSE;
     AbstractQueue::AddAll(c, &b);
     return NOERROR;
-}
-
-PInterface CLinkedTransferQueue::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CLinkedTransferQueue::Probe(riid);
 }
 
 ECode CLinkedTransferQueue::Put(
@@ -711,7 +706,7 @@ ECode CLinkedTransferQueue::DrainTo(
     VALIDATE_NOT_NULL(number);
     if (c == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    if (Object::Equals(c, this))
+    if (Object::Equals(c, THIS_PROBE(IInterface)))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     Int32 n = 0;
     for (AutoPtr<IInterface> e; (Poll((IInterface**)&e), e != NULL);) {
@@ -731,7 +726,7 @@ ECode CLinkedTransferQueue::DrainTo(
     VALIDATE_NOT_NULL(number);
     if (c == NULL)
         return E_NULL_POINTER_EXCEPTION;
-    if (Object::Equals(c, this))
+    if (Object::Equals(c, THIS_PROBE(IInterface)))
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     Int32 n = 0;
     for (AutoPtr<IInterface> e; n < maxElements && (Poll((IInterface**)&e), e != NULL);) {
@@ -823,7 +818,7 @@ ECode CLinkedTransferQueue::Contains(
         AutoPtr<IInterface> item = p->mItem;
         if (p->mIsData) {
             if (item != NULL &&
-                !Object::Equals(item, p) &&
+                !Object::Equals(item, p->Probe(EIID_IInterface)) &&
                 Object::Equals(object, item)) {
                 *result = TRUE;
                 return NOERROR;

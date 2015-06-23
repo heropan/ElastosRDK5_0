@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CForkJoinPool.h"
 #include "AbstractExecutorService.h"
 
+using Elastos::Core::IThreadUncaughtExceptionHandler;
 using Elastos::Core::IThrowable;
 using Elastos::Utility::IRandom;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

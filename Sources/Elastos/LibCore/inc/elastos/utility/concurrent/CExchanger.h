@@ -6,6 +6,7 @@
 #include "AtomicReference.h"
 #include "Object.h"
 
+using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 using Elastos::Utility::Concurrent::Atomic::AtomicReference;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
@@ -42,32 +43,6 @@ private:
         Node(
             /* [in] */ IInterface* item);
 
-        CARAPI Get(
-            /* [out] */ IInterface** outface);
-
-        CARAPI Set(
-            /* [in] */ IInterface* newValue);
-
-        CARAPI LazySet(
-            /* [in] */ IInterface* newValue);
-
-        CARAPI CompareAndSet(
-            /* [in] */ IInterface* expect,
-            /* [in] */ IInterface* update,
-            /* [out] */ Boolean* value);
-
-        CARAPI WeakCompareAndSet(
-            /* [in] */ IInterface* expect,
-            /* [in] */ IInterface* update,
-            /* [out] */ Boolean* value);
-
-        CARAPI GetAndSet(
-            /* [in] */ IInterface* newValue,
-            /* [out] */ IInterface** outface);
-
-        CARAPI ToString(
-            /* [out] */ String* str);
-
     public:
         /** The element offered by the Thread creating this node. */
         AutoPtr<IInterface> mItem;
@@ -89,32 +64,6 @@ private:
     {
     public:
         Slot();
-
-        CARAPI Get(
-            /* [out] */ IInterface** outface);
-
-        CARAPI Set(
-            /* [in] */ IInterface* newValue);
-
-        CARAPI LazySet(
-            /* [in] */ IInterface* newValue);
-
-        CARAPI CompareAndSet(
-            /* [in] */ IInterface* expect,
-            /* [in] */ IInterface* update,
-            /* [out] */ Boolean* value);
-
-        CARAPI WeakCompareAndSet(
-            /* [in] */ IInterface* expect,
-            /* [in] */ IInterface* update,
-            /* [out] */ Boolean* value);
-
-        CARAPI GetAndSet(
-            /* [in] */ IInterface* newValue,
-            /* [out] */ IInterface** outface);
-
-        CARAPI ToString(
-            /* [out] */ String* str);
 
     private:
         // Improve likelihood of isolation on <= 128 byte cache lines.
@@ -357,5 +306,11 @@ private:
 } // namespace Concurrent
 } // namespace Utility
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Utility::Concurrent::CExchanger::Slot*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif //__ELASTOS_UTILITY_CEXCHANGER_H__

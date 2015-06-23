@@ -64,13 +64,14 @@ ECode CCountDownLatch::Await(
     /* [out] */ Boolean* result)
 {
     // return mSync->TryAcquireSharedNanos(1, unit.toNanos(timeout));
-    PRINT_FILE_LINE("TODO");
+//    PRINT_FILE_LINE("TODO");
+    assert(0 && "TODO");
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCountDownLatch::CountDown()
 {
-    mSync->ReleaseShared(1);
+    mSync->TryReleaseShared(1);
     return NOERROR;
 }
 

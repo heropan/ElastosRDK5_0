@@ -1,8 +1,8 @@
 
 #include "CPhaser.h"
 #include "LockSupport.h"
-#include <elastos/StringBuilder.h>
-#include <elastos/Math.h>
+#include <StringBuilder.h>
+#include <Math.h>
 #include "CSystem.h"
 #include "Thread.h"
 #include "CAtomicReference.h"

@@ -3,8 +3,9 @@
 #include "CAtomicInteger32.h"
 #include "Executors.h"
 #include "TimeUnit.h"
-#include <elastos/Thread.h>
+#include <Thread.h>
 #include "CArrayList.h"
+#include "Autolock.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::Thread;
@@ -74,7 +75,7 @@ ECode CThreadPoolExecutor::CallerRunsPolicy::RejectedExecution(
     /* [in] */ IThreadPoolExecutor* e)
 {
     Boolean isShutdown;
-    if (e->IsShutdown(&isShutdown), !isShutdown) {
+    if ((IExecutorService::Probe(e))->IsShutdown(&isShutdown), !isShutdown) {
         r->Run();
     }
     return NOERROR;
@@ -103,12 +104,12 @@ ECode CThreadPoolExecutor::DiscardOldestPolicy::RejectedExecution(
     /* [in] */ IThreadPoolExecutor* e)
 {
     Boolean isShutdown;
-    if (e->IsShutdown(&isShutdown), !isShutdown) {
+    if ((IExecutorService::Probe(e))->IsShutdown(&isShutdown), !isShutdown) {
         AutoPtr<IBlockingQueue> q;
         e->GetQueue((IBlockingQueue**)&q);
         AutoPtr<IInterface> obj;
-        q->Poll((IInterface**)&obj);
-        e->Execute(r);
+        (IQueue::Probe(q))->Poll((IInterface**)&obj);
+        (IExecutor::Probe(e))->Execute(r);
     }
     return NOERROR;
 }
@@ -244,7 +245,7 @@ void CThreadPoolExecutor::TryTerminate()
         Boolean isEmpty;
         if (IsRunning(c) ||
             RunStateAtLeast(c, TIDYING) ||
-            (RunStateOf(c) == SHUTDOWN && (mWorkQueue->IsEmpty(&isEmpty), !isEmpty))) {
+            (RunStateOf(c) == SHUTDOWN && ((ICollection::Probe(mWorkQueue))->IsEmpty(&isEmpty), !isEmpty))) {
             return;
         }
         if (WorkerCountOf(c) != 0) { // Eligible to terminate
@@ -258,7 +259,7 @@ void CThreadPoolExecutor::TryTerminate()
         if (mCtl->CompareAndSet(c, CtlOf(TIDYING, 0), &result), result) {
             Terminated();
             mCtl->Set(CtlOf(TERMINATED, 0));
-            mTermination.Broadcast();
+//            mTermination.Broadcast();
             return;
         }
         // else retry on failed CAS
@@ -287,11 +288,11 @@ void CThreadPoolExecutor::InterruptWorkers()
 {
     Autolock lock(mMainLock);
 
-    HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
-    for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
-        AutoPtr<Worker> w = *it;
-        w->mThread->Interrupt();
-    }
+    // HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
+    // for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
+    //     AutoPtr<Worker> w = *it;
+    //     w->mThread->Interrupt();
+    // }
 }
 
 void CThreadPoolExecutor::InterruptIdleWorkers(
@@ -299,17 +300,17 @@ void CThreadPoolExecutor::InterruptIdleWorkers(
 {
     Autolock lock(mMainLock);
 
-    HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
-    for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
-        AutoPtr<Worker> w = *it;
-        AutoPtr<IThread> t = w->mThread;
-        Boolean result;
-        if ((t->IsInterrupted(&result), !result) && w->TryLock()) {
-            t->Interrupt();
-            w->Unlock();
-        }
-        if (onlyOne) break;
-    }
+    // HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
+    // for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
+    //     AutoPtr<Worker> w = *it;
+    //     AutoPtr<IThread> t = w->mThread;
+    //     Boolean result;
+    //     if ((t->IsInterrupted(&result), !result) && w->TryLock()) {
+    //         t->Interrupt();
+    //         w->Unlock();
+    //     }
+    //     if (onlyOne) break;
+    // }
 }
 
 void CThreadPoolExecutor::InterruptIdleWorkers()
@@ -352,15 +353,14 @@ AutoPtr<IList> CThreadPoolExecutor::DrainQueue()
     assert(0);
     // q->DrainTo(taskList, &number);
     Boolean isEmpty;
-    if (q->IsEmpty(&isEmpty), !isEmpty) {
+    if ((ICollection::Probe(q))->IsEmpty(&isEmpty), !isEmpty) {
         AutoPtr< ArrayOf<IInterface*> > runnables;
-        q->ToArray((ArrayOf<IInterface*>**)&runnables);
+        (ICollection::Probe(q))->ToArray((ArrayOf<IInterface*>**)&runnables);
         for (Int32 i = 0; i < runnables->GetLength(); i++) {
             AutoPtr<IRunnable> r = IRunnable::Probe((*runnables)[i]);
             Boolean result;
-            if (q->Remove(r, &result), result) {
-                Boolean b = FALSE;
-                taskList->Add(r, &b);
+            if ((ICollection::Probe(q))->Remove(r, &result), result) {
+                (IList::Probe(taskList))->Add(r);
             }
         }
     }
@@ -383,7 +383,7 @@ RETRY:
         if (rs >= SHUTDOWN &&
             ! (rs == SHUTDOWN &&
                firstTask == NULL &&
-               (mWorkQueue->IsEmpty(&isEmpty), !isEmpty))) {
+               ((ICollection::Probe(mWorkQueue))->IsEmpty(&isEmpty), !isEmpty))) {
             return FALSE;
         }
 
@@ -426,9 +426,9 @@ NEXT:
             return FALSE;
         }
 
-        mWorkers.Insert(w);
+//        mWorkers.Insert(w);
 
-        Int32 s = mWorkers.GetSize();
+        Int32 s;// = mWorkers.GetSize();
         if (s > mLargestPoolSize) {
             mLargestPoolSize = s;
         }
@@ -461,7 +461,7 @@ void CThreadPoolExecutor::ProcessWorkerExit(
         Autolock lock(mMainLock);
 
         mCompletedTaskCount += w->mCompletedTasks;
-        mWorkers.Erase(w);
+//        mWorkers.Erase(w);
     }
 
     TryTerminate();
@@ -472,7 +472,7 @@ void CThreadPoolExecutor::ProcessWorkerExit(
         if (!completedAbruptly) {
             Int32 min = mAllowCoreThreadTimeOut ? 0 : mCorePoolSize;
             Boolean isEmpty;
-            if (min == 0 && (mWorkQueue->IsEmpty(&isEmpty), !isEmpty)) {
+            if (min == 0 && ((ICollection::Probe(mWorkQueue))->IsEmpty(&isEmpty), !isEmpty)) {
                 min = 1;
             }
             if (WorkerCountOf(c) >= min) {
@@ -495,7 +495,7 @@ RETRY:
 
         // Check if queue empty only if necessary.
         Boolean isEmpty;
-        if (rs >= SHUTDOWN && (rs >= STOP || (mWorkQueue->IsEmpty(&isEmpty), isEmpty))) {
+        if (rs >= SHUTDOWN && (rs >= STOP || ((ICollection::Probe(mWorkQueue))->IsEmpty(&isEmpty), isEmpty))) {
             DecrementWorkerCount();
             return NULL;
         }
@@ -612,7 +612,7 @@ ECode CThreadPoolExecutor::Execute(
         mCtl->Get(&c);
     }
     Boolean result;
-    if (IsRunning(c) && (mWorkQueue->Offer(command, &result), &result)) {
+    if (IsRunning(c) && (IQueue::Probe(mWorkQueue)->Offer(command, &result), &result)) {
         Int32 recheck;
         mCtl->Get(&recheck);
         if (!IsRunning(recheck) && (Remove(command, &result), result)) {
@@ -716,7 +716,7 @@ ECode CThreadPoolExecutor::AwaitTermination(
             *result = FALSE;
             return NOERROR;
         }
-        mTermination.WaitNanos(mMainLock, nanos, &nanos);
+//        mTermination.WaitNanos(mMainLock, nanos, &nanos);
     }
 }
 
@@ -777,11 +777,11 @@ ECode CThreadPoolExecutor::SetCorePoolSize(
         // core size) to handle the current number of tasks in
         // queue, but stop if queue becomes empty while doing so.
         Int32 size;
-        mWorkQueue->GetSize(&size);
+        ICollection::Probe(mWorkQueue)->GetSize(&size);
         Int32 k = Elastos::Core::Math::Min(delta, size);
         while (k-- > 0 && AddWorker(NULL, TRUE)) {
             Boolean isEmpty;
-            if (mWorkQueue->IsEmpty(&isEmpty), isEmpty) {
+            if (ICollection::Probe(mWorkQueue)->IsEmpty(&isEmpty), isEmpty) {
                 break;
             }
         }
@@ -925,7 +925,7 @@ ECode CThreadPoolExecutor::Remove(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    ECode ec = mWorkQueue->Remove(task, result);
+    ECode ec = ICollection::Probe(mWorkQueue)->Remove(task, result);
     TryTerminate(); // In case SHUTDOWN and now empty
     return ec;
 }
@@ -935,7 +935,7 @@ ECode CThreadPoolExecutor::Purge()
     AutoPtr<IBlockingQueue> q = mWorkQueue;
     // try {
     AutoPtr<IIterator> it;
-    q->GetIterator((IIterator**)&it);
+    IIterable::Probe(q)->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
@@ -969,7 +969,7 @@ ECode CThreadPoolExecutor::GetPoolSize(
     // isTerminated() && getPoolSize() > 0
     Int32 c;
     mCtl->Get(&c);
-    *number = RunStateAtLeast(c, TIDYING) ? 0 : mWorkers.GetSize();
+//    *number = RunStateAtLeast(c, TIDYING) ? 0 : mWorkers.GetSize();
     return NOERROR;
 }
 
@@ -979,13 +979,13 @@ ECode CThreadPoolExecutor::GetActiveCount(
     VALIDATE_NOT_NULL(number);
     Autolock lock(mMainLock);
     Int32 n = 0;
-    HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
-    for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
-        AutoPtr<Worker> w = *it;
-        if (w->IsLocked()) {
-            ++n;
-        }
-    }
+    // HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
+    // for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
+    //     AutoPtr<Worker> w = *it;
+    //     if (w->IsLocked()) {
+    //         ++n;
+    //     }
+    // }
     *number = n;
     return NOERROR;
 }
@@ -1005,16 +1005,16 @@ ECode CThreadPoolExecutor::GetTaskCount(
     VALIDATE_NOT_NULL(number);
     Autolock lock(mMainLock);
     Int64 n = mCompletedTaskCount;
-    HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
-    for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
-        AutoPtr<Worker> w = *it;
-        n += w->mCompletedTasks;
-        if (w->IsLocked()) {
-            ++n;
-        }
-    }
+    // HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
+    // for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
+    //     AutoPtr<Worker> w = *it;
+    //     n += w->mCompletedTasks;
+    //     if (w->IsLocked()) {
+    //         ++n;
+    //     }
+    // }
     Int32 size;
-    mWorkQueue->GetSize(&size);
+    ICollection::Probe(mWorkQueue)->GetSize(&size);
     *number = n + size;
     return NOERROR;
 }
@@ -1025,11 +1025,11 @@ ECode CThreadPoolExecutor::GetCompletedTaskCount(
     VALIDATE_NOT_NULL(number);
     Autolock lock(mMainLock);
     Int64 n = mCompletedTaskCount;
-    HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
-    for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
-        AutoPtr<Worker> w = *it;
-        n += w->mCompletedTasks;
-    }
+    // HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
+    // for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
+    //     AutoPtr<Worker> w = *it;
+    //     n += w->mCompletedTasks;
+    // }
     *number = n;
     return NOERROR;
 }

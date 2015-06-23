@@ -5,7 +5,9 @@
 #include "_Elastos_Utility_Concurrent_CConcurrentSkipListSet.h"
 #include "AbstractSet.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Core::IComparator;
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -99,7 +101,7 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
-    CARAPI DescendingIterator(
+    CARAPI GetDescendingIterator(
         /* [out] */ IIterator** outiter);
 
     /* ---------------- AbstractSet Overrides -------------- */
@@ -114,19 +116,19 @@ public:
 
     /* ---------------- Relational operations -------------- */
 
-    CARAPI Lower(
+    CARAPI GetLower(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
-    CARAPI Floor(
+    CARAPI GetFloor(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
-    CARAPI Ceiling(
+    CARAPI GetCeiling(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
-    CARAPI Higher(
+    CARAPI GetHigher(
         /* [in] */ IInterface* e,
         /* [out] */ IInterface** outface);
 
@@ -138,46 +140,46 @@ public:
 
     /* ---------------- SortedSet operations -------------- */
 
-    CARAPI Comparator(
+    CARAPI GetComparator(
         /* [out] */ IComparator** outcom);
 
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ IInterface** outface);
 
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ IInterface** outface);
 
-    CARAPI SubSet(
+    CARAPI GetSubSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean fromInclusive,
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean toInclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI HeadSet(
+    CARAPI GetHeadSet(
         /* [in] */ IInterface* toElement,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI TailSet(
+    CARAPI GetTailSet(
         /* [in] */ IInterface* fromElement,
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI SubSet(
+    CARAPI GetSubSet(
         /* [in] */ IInterface* start,
         /* [in] */ IInterface* end,
         /* [out] */ ISortedSet** outsort);
 
-    CARAPI HeadSet(
+    CARAPI GetHeadSet(
         /* [in] */ IInterface* end,
         /* [out] */ ISortedSet** outsort);
 
-    CARAPI TailSet(
+    CARAPI GetTailSet(
         /* [in] */ IInterface* start,
         /* [out] */ ISortedSet** outsort);
 
-    CARAPI DescendingSet(
+    CARAPI GetDescendingSet(
         /* [out] */ INavigableSet** outnav);
 
 private:

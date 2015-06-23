@@ -6,6 +6,7 @@
 #include "AbstractQueuedSynchronizer.h"
 #include "Object.h"
 
+using Elastos::IO::ISerializable;
 using Elastos::Utility::Concurrent::Locks::ICondition;
 
 namespace Elastos {
@@ -15,6 +16,7 @@ namespace Concurrent {
 CarClass(CSemaphore)
     , public Object
     , public ISemaphore
+    , public ISerializable
 {
 public:
     enum CLSID {

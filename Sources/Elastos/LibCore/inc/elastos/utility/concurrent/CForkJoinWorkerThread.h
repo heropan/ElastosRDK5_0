@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CForkJoinWorkerThread.h"
 #include "Thread.h"
 
+using Elastos::Core::Thread;
 using Elastos::Core::IThrowable;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;

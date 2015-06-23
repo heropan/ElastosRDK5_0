@@ -5,12 +5,12 @@
 #include "_Elastos_Utility_Concurrent_CThreadPoolExecutor.h"
 #include "AbstractExecutorService.h"
 #include "AbstractQueuedSynchronizer.h"
-#include <elastos/utility/etl/HashSet.h>
-#include <Condition.h>
+#include <HashSet.h>
+//#include <Condition.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Condition;
-using Elastos::Utility::Etl::HashSet;
+//using Elastos::Core::Condition;
+//using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::AbstractQueuedSynchronizer;
 
@@ -160,14 +160,19 @@ private:
             return mOwner->RunWorker(this);
         }
 
-        CARAPI_(void) Lock() { AcquireIt(1); }
+        CARAPI Lock()
+        {
+            AcquireIt(1);
+            return NOERROR;
+        }
 
         CARAPI_(Boolean) TryLock() { return TryAcquire(1); }
 
-        CARAPI_(void) Unlock()
+        CARAPI Unlock()
         {
             Boolean result;
             ReleaseIt(1, &result);
+            return NOERROR;
         }
 
         CARAPI_(Boolean) IsLocked() { return IsHeldExclusively(); }
@@ -1165,12 +1170,12 @@ private:
      * Set containing all worker threads in pool. Accessed only when
      * holding mainLock.
      */
-    HashSet< AutoPtr<Worker>, HashWorker > mWorkers;
+//    HashSet< AutoPtr<Worker>, HashWorker > mWorkers;
 
     /**
      * Wait condition to support awaitTermination
      */
-    Condition mTermination;
+//    Condition mTermination;
 
     /**
      * Tracks largest attained pool size. Accessed only under

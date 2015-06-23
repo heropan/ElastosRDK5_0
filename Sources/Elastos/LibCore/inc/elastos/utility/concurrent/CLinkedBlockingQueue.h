@@ -3,9 +3,8 @@
 #define __ELASTOS_UTILITY_CLINKEDBLOCKINGQUEUE_H__
 
 #include "_Elastos_Utility_Concurrent_CLinkedBlockingQueue.h"
-#include <Queue.h>
 #include <Condition.h>
-#include "Object.h"
+#include "AbstractQueue.h"
 
 using Elastos::Core::Condition;
 using Elastos::Utility::IIterator;
@@ -16,11 +15,9 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CLinkedBlockingQueue)
-    , public Object
+    , public AbstractQueue
     , public IBlockingQueue
-    , public IIterable
-    , public ICollection
-    , public IQueue
+    , public ISerializable
 {
 public:
     /**

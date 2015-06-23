@@ -1,6 +1,7 @@
 
 #include "CSemaphore.h"
 
+using Elastos::IO::EIID_ISerializable;
 using namespace Elastos::Utility::Concurrent::Locks;
 
 namespace Elastos {
@@ -98,18 +99,6 @@ CSemaphore::NonfairSync::NonfairSync(
 {
 }
 
-CSemaphore::Sync* CSemaphore::NonfairSync::Probe(
-    /* [in] */ Int32 clsID)
-{
-    if (clsID == CLSID_Sync) {
-        return this;
-    }
-    else if (clsID == CLSID_NonfairSync) {
-        return this;
-    }
-    return NULL;
-}
-
 ECode CSemaphore::NonfairSync::TryAcquireShared(
     /* [in] */ Int32 acquires,
     /* [out] */ Int32* out)
@@ -127,25 +116,14 @@ CSemaphore::FairSync::FairSync(
 {
 }
 
-CSemaphore::Sync* CSemaphore::FairSync::Probe(
-    /* [in] */ Int32 clsID)
-{
-    if (clsID == CLSID_Sync) {
-        return this;
-    }
-    else if (clsID == CLSID_FairSync) {
-        return this;
-    }
-    return NULL;
-}
-
 ECode CSemaphore::FairSync::TryAcquireShared(
     /* [in] */ Int32 acquires,
     /* [out] */ Int32* out)
 {
     VALIDATE_NOT_NULL(out)
     for (;;) {
-        if (HasQueuedPredecessors()) {
+        Boolean b = FALSE;
+        if ((HasQueuedPredecessors(&b), b)) {
             *out = -1;
             return NOERROR;
         }
@@ -163,7 +141,7 @@ ECode CSemaphore::FairSync::TryAcquireShared(
 //====================================================================
 // CSemaphore::
 //====================================================================
-CAR_INTERFACE_IMPL(CSemaphore, Object, ISemaphore)
+CAR_INTERFACE_IMPL_2(CSemaphore, Object, ISemaphore, ISerializable)
 
 CAR_OBJECT_IMPL(CSemaphore);
 
@@ -215,7 +193,8 @@ ECode CSemaphore::TryAcquire(
 
 ECode CSemaphore::ToRelease()
 {
-    return mSync->ReleaseShared(1);
+    Boolean b = FALSE;
+    return mSync->ReleaseShared(1, &b);
 }
 
 ECode CSemaphore::Acquire(
@@ -271,7 +250,8 @@ ECode CSemaphore::ToRelease(
     if (permits < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return mSync->ReleaseShared(permits);
+    Boolean b = FALSE;
+    return mSync->ReleaseShared(permits, &b);
 }
 
 ECode CSemaphore::AvailablePermits(
@@ -301,7 +281,7 @@ ECode CSemaphore::IsFair(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = mSync->Probe(CLSID_FairSync) != NULL;
+//    *value = mSync->Probe(EIID_FairSync) != NULL;
     return NOERROR;
 }
 
@@ -309,26 +289,21 @@ ECode CSemaphore::HasQueuedThreads(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = mSync->HasQueuedThreads();
-    return NOERROR;
+    return mSync->HasQueuedThreads(value);
 }
 
 ECode CSemaphore::GetQueueLength(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = mSync->GetQueueLength();
-    return NOERROR;
+    return mSync->GetQueueLength(value);
 }
 
 ECode CSemaphore::GetQueuedThreads(
     /* [out] */ ICollection** out)
 {
     VALIDATE_NOT_NULL(out)
-    AutoPtr<ICollection> c = mSync->GetQueuedThreads();
-    *out = c;
-    REFCOUNT_ADD(*out);
-    return NOERROR;
+    return mSync->GetQueuedThreads(out);
 }
 
 ECode CSemaphore::ToString(

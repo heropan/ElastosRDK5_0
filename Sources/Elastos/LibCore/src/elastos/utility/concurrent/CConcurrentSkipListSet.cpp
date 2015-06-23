@@ -3,6 +3,8 @@
 #include "CBoolean.h"
 #include "CConcurrentSkipListMap.h"
 
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Utility::Concurrent::CConcurrentSkipListMap;
@@ -41,10 +43,10 @@ ECode CConcurrentSkipListSet::constructor(
     /* [in] */ ISortedSet* s)
 {
     AutoPtr<IComparator> comp;
-    s->Comparator((IComparator**)&comp);
+    s->GetComparator((IComparator**)&comp);
     CConcurrentSkipListMap::New(comp, (INavigableMap**)&mM);
     Boolean b;
-    return AddAll(s, &b);
+    return AddAll(ICollection::Probe(s), &b);
 }
 
 ECode CConcurrentSkipListSet::constructor(
@@ -62,7 +64,7 @@ ECode CConcurrentSkipListSet::Clone(
     CConcurrentSkipListSet::New((INavigableSet**)&clone);
     AutoPtr<CConcurrentSkipListSet> p = (CConcurrentSkipListSet*)clone.Get();
     AutoPtr<INavigableMap> map;
-    CConcurrentSkipListMap::New(mM, (INavigableMap**)&map);
+    CConcurrentSkipListMap::New(ISortedMap::Probe(mM), (INavigableMap**)&map);
     p->SetMap(map);
     *res = p->Probe(EIID_IInterface);
     REFCOUNT_ADD(*res);
@@ -75,14 +77,14 @@ ECode CConcurrentSkipListSet::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size);
-    return mM->GetSize(size);
+    return (IMap::Probe(mM))->GetSize(size);
 }
 
 ECode CConcurrentSkipListSet::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return mM->IsEmpty(result);
+    return (IMap::Probe(mM))->IsEmpty(result);
 }
 
 ECode CConcurrentSkipListSet::Contains(
@@ -90,7 +92,7 @@ ECode CConcurrentSkipListSet::Contains(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    return mM->ContainsKey(object, result);
+    return (IMap::Probe(mM))->ContainsKey(object, result);
 }
 
 ECode CConcurrentSkipListSet::Add(
@@ -120,7 +122,7 @@ ECode CConcurrentSkipListSet::Remove(
 
 ECode CConcurrentSkipListSet::Clear()
 {
-    return mM->Clear();
+    return (IMap::Probe(mM))->Clear();
 }
 
 ECode CConcurrentSkipListSet::GetIterator(
@@ -128,17 +130,17 @@ ECode CConcurrentSkipListSet::GetIterator(
 {
     VALIDATE_NOT_NULL(it);
     AutoPtr<INavigableSet> s;
-    mM->NavigableKeySet((INavigableSet**)&s);
-    return s->GetIterator(it);
+    mM->GetNavigableKeySet((INavigableSet**)&s);
+    return (IIterable::Probe(s))->GetIterator(it);
 }
 
-ECode CConcurrentSkipListSet::DescendingIterator(
+ECode CConcurrentSkipListSet::GetDescendingIterator(
     /* [out] */ IIterator** outiter)
 {
     VALIDATE_NOT_NULL(outiter);
     AutoPtr<INavigableSet> s;
-    mM->DescendingKeySet((INavigableSet**)&s);
-    return s->GetIterator(outiter);
+    mM->GetDescendingKeySet((INavigableSet**)&s);
+    return (IIterable::Probe(s))->GetIterator(outiter);
 }
 
 /* ---------------- AbstractSet Overrides -------------- */
@@ -186,36 +188,36 @@ ECode CConcurrentSkipListSet::RemoveAll(
 
 /* ---------------- Relational operations -------------- */
 
-ECode CConcurrentSkipListSet::Lower(
+ECode CConcurrentSkipListSet::GetLower(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    return mM->LowerKey(e, outface);
+    return mM->GetLowerKey(e, outface);
 }
 
-ECode CConcurrentSkipListSet::Floor(
+ECode CConcurrentSkipListSet::GetFloor(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    return mM->FloorKey(e, outface);
+    return mM->GetFloorKey(e, outface);
 }
 
-ECode CConcurrentSkipListSet::Ceiling(
+ECode CConcurrentSkipListSet::GetCeiling(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    return mM->CeilingKey(e, outface);
+    return mM->GetCeilingKey(e, outface);
 }
 
-ECode CConcurrentSkipListSet::Higher(
+ECode CConcurrentSkipListSet::GetHigher(
     /* [in] */ IInterface* e,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    return mM->HigherKey(e, outface);
+    return mM->GetHigherKey(e, outface);
 }
 
 ECode CConcurrentSkipListSet::PollFirst(
@@ -250,28 +252,28 @@ ECode CConcurrentSkipListSet::PollLast(
 
 /* ---------------- SortedSet operations -------------- */
 
-ECode CConcurrentSkipListSet::Comparator(
+ECode CConcurrentSkipListSet::GetComparator(
     /* [out] */ IComparator** outcom)
 {
     VALIDATE_NOT_NULL(outcom);
-    return mM->Comparator(outcom);
+    return (ISortedMap::Probe(mM))->GetComparator(outcom);
 }
 
-ECode CConcurrentSkipListSet::First(
+ECode CConcurrentSkipListSet::GetFirst(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    return mM->FirstKey(outface);
+    return (ISortedMap::Probe(mM))->GetFirstKey(outface);
 }
 
-ECode CConcurrentSkipListSet::Last(
+ECode CConcurrentSkipListSet::GetLast(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    return mM->LastKey(outface);
+    return (ISortedMap::Probe(mM))->GetLastKey(outface);
 }
 
-ECode CConcurrentSkipListSet::SubSet(
+ECode CConcurrentSkipListSet::GetSubSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean fromInclusive,
     /* [in] */ IInterface* toElement,
@@ -280,7 +282,7 @@ ECode CConcurrentSkipListSet::SubSet(
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->SubMap(fromElement, fromInclusive,
+    mM->GetSubMap(fromElement, fromInclusive,
                 toElement, toInclusive, (INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
@@ -289,14 +291,14 @@ ECode CConcurrentSkipListSet::SubSet(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::HeadSet(
+ECode CConcurrentSkipListSet::GetHeadSet(
     /* [in] */ IInterface* toElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->HeadMap(toElement, inclusive, (INavigableMap**)&map);
+    mM->GetHeadMap(toElement, inclusive, (INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
@@ -304,14 +306,14 @@ ECode CConcurrentSkipListSet::HeadSet(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::TailSet(
+ECode CConcurrentSkipListSet::GetTailSet(
     /* [in] */ IInterface* fromElement,
     /* [in] */ Boolean inclusive,
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->TailMap(fromElement, inclusive, (INavigableMap**)&map);
+    mM->GetTailMap(fromElement, inclusive, (INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();
@@ -319,52 +321,52 @@ ECode CConcurrentSkipListSet::TailSet(
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::SubSet(
+ECode CConcurrentSkipListSet::GetSubSet(
     /* [in] */ IInterface* start,
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
     VALIDATE_NOT_NULL(outsort);
     AutoPtr<INavigableSet> s;
-    SubSet(start, TRUE, end, FALSE, (INavigableSet**)&s);
+    GetSubSet(start, TRUE, end, FALSE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
     REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::HeadSet(
+ECode CConcurrentSkipListSet::GetHeadSet(
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
     VALIDATE_NOT_NULL(outsort);
     AutoPtr<INavigableSet> s;
-    HeadSet(end, FALSE, (INavigableSet**)&s);
+    GetHeadSet(end, FALSE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
     REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::TailSet(
+ECode CConcurrentSkipListSet::GetTailSet(
     /* [in] */ IInterface* start,
     /* [out] */ ISortedSet** outsort)
 {
     VALIDATE_NOT_NULL(outsort);
     AutoPtr<INavigableSet> s;
-    TailSet(start, TRUE, (INavigableSet**)&s);
+    GetTailSet(start, TRUE, (INavigableSet**)&s);
     AutoPtr<ISortedSet> p = (ISortedSet*)s->Probe(EIID_ISortedSet);
     *outsort = p;
     REFCOUNT_ADD(*outsort);
     return NOERROR;
 }
 
-ECode CConcurrentSkipListSet::DescendingSet(
+ECode CConcurrentSkipListSet::GetDescendingSet(
     /* [out] */ INavigableSet** outnav)
 {
     VALIDATE_NOT_NULL(outnav);
     AutoPtr<INavigableMap> map;
-    mM->DescendingMap((INavigableMap**)&map);
+    mM->GetDescendingMap((INavigableMap**)&map);
     AutoPtr<INavigableSet> p;
     CConcurrentSkipListSet::New(map, (INavigableSet**)&p);
     *outnav = p.Get();

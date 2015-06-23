@@ -83,7 +83,7 @@ ECode CLinkedBlockingQueue::Itr::Remove()
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL_4(CLinkedBlockingQueue, Object, IBlockingQueue, IIterable, ICollection, IQueue)
+CAR_INTERFACE_IMPL_2(CLinkedBlockingQueue, AbstractQueue, IBlockingQueue, ISerializable)
 
 CAR_OBJECT_IMPL(CLinkedBlockingQueue);
 

@@ -7,16 +7,17 @@
 #include "Arrays.h"
 #include "CReentrantLock.h"
 #include "CArrayList.h"
-#include "CCollections.h"
+//#include "CCollections.h"
 
 using Elastos::Utility::Arrays;
 using Elastos::Utility::CArrayList;
-using Elastos::Utility::CCollections;
+//using Elastos::Utility::CCollections;
 using Elastos::Utility::Concurrent::CForkJoinWorkerThread;
 using Elastos::Utility::Concurrent::ForkJoinTask;
 using Elastos::Utility::Concurrent::TimeUnit;
 using Elastos::Utility::Concurrent::Locks::LockSupport;
 using Elastos::Utility::Concurrent::Locks::CReentrantLock;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -25,7 +26,7 @@ namespace Concurrent {
 //====================================================================
 // CForkJoinPool::DefaultForkJoinWorkerThreadFactory::
 //====================================================================
-CAR_INTERFACE_IMPL(DefaultForkJoinWorkerThreadFactory, Object, IForkJoinPoolForkJoinWorkerThreadFactory)
+CAR_INTERFACE_IMPL(CForkJoinPool::DefaultForkJoinWorkerThreadFactory, Object, IForkJoinPoolForkJoinWorkerThreadFactory)
 
 AutoPtr<IForkJoinWorkerThread> CForkJoinPool::DefaultForkJoinWorkerThreadFactory::NewThread(
     /* [in] */ IForkJoinPool* pool)
@@ -347,7 +348,7 @@ void CForkJoinPool::AddSubmission(
 {
     assert(0 && "TODO");
     AutoPtr<IReentrantLock> lock = mSubmissionLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     AutoPtr<ArrayOf<IForkJoinTask*> > q;
     Int32 s, m;
     if ((q = mSubmissionQueue) != NULL) {    // ignore if queue removed
@@ -357,7 +358,7 @@ void CForkJoinPool::AddSubmission(
         if (s - mQueueBase == m)
             GrowSubmissionQueue();
     }
-    lock->UnLock();
+    (ILock::Probe(lock))->UnLock();
     SignalWork();
 }
 
@@ -532,7 +533,7 @@ void CForkJoinPool::AddWorker()
         //     SneakyThrow.sneakyThrow(ex); // android-changed
     }
     else
-        t->Start();
+        (IThread::Probe(t))->Start();
 }
 
 String CForkJoinPool::NextWorkerName()
@@ -663,9 +664,9 @@ Boolean CForkJoinPool::TryTerminate(
     }
     if ((Int16)(c >> TC_SHIFT) == -mParallelism) { // signal when 0 workers
         AutoPtr<IReentrantLock> lock = mSubmissionLock;
-        lock->Lock();
+        (ILock::Probe(lock))->Lock();
         mTermination->SignalAll();
-        lock->UnLock();
+        (ILock::Probe(lock))->UnLock();
     }
     return TRUE;
 }
@@ -684,8 +685,8 @@ void CForkJoinPool::StartTerminating()
                     if (pass > 0) {
                         w->CancelTasks();
                         Boolean b = FALSE;
-                        if (pass > 1 && !(w->IsInterrupted(&b), b)) {
-                            w->Interrupt();
+                        if (pass > 1 && !((IThread::Probe(w))->IsInterrupted(&b), b)) {
+                            (IThread::Probe(w))->Interrupt();
                         }
                     }
                 }
@@ -701,7 +702,7 @@ void CForkJoinPool::CancelSubmissions()
         AutoPtr<IForkJoinTask> task = PollSubmission();
         if (task != NULL) {
             Boolean b = FALSE;
-            task->Cancel(FALSE, &b);
+            (IFuture::Probe(task))->Cancel(FALSE, &b);
         }
     }
 }
@@ -801,7 +802,7 @@ ECode CForkJoinPool::constructor(
     }
     mWorkers = ArrayOf<IForkJoinWorkerThread*>::Alloc(n + 1);
     CReentrantLock::New((IReentrantLock**)&mSubmissionLock);
-    mSubmissionLock->NewCondition((ICondition**)&mTermination);
+    (ILock::Probe(mSubmissionLock))->NewCondition((ICondition**)&mTermination);
     StringBuilder sb("ForkJoinPool-");
     Int32 val;
     mPoolNumberGenerator->IncrementAndGet(&val);
@@ -809,12 +810,6 @@ ECode CForkJoinPool::constructor(
     sb += "-worker-";
     sb.ToString(&mWorkerNamePrefix);
     return NOERROR;
-}
-
-PInterface CForkJoinPool::Probe(
-        /* [in] */ REIID riid)
-{
-    return _CForkJoinPool::Probe(riid);
 }
 
 ECode CForkJoinPool::Invoke(
@@ -953,8 +948,7 @@ ECode CForkJoinPool::InvokeAll(
     for (Int32 i = 0;i < size; i++) {
         AutoPtr<IInterface> p = (*arr)[i];
         AutoPtr<ICallable> task = (ICallable*)p->Probe(EIID_ICallable);
-        Boolean b = FALSE;
-        forkJoinTasks->Add(ForkJoinTask::Adapt(task), &b);
+        (IList::Probe(forkJoinTasks))->Add(ForkJoinTask::Adapt(task));
     }
     assert(0 && "TODO");
 //    AutoPtr<_InvokeAll> p = new _InvokeAll(this, forkJoinTasks);
@@ -980,7 +974,7 @@ CForkJoinPool::_InvokeAll::_InvokeAll(
 void CForkJoinPool::_InvokeAll::Compute()
 {
     AutoPtr<IList> l;
-    mOwner->InvokeAll(mTasks, (IList**)&l);
+    mOwner->InvokeAll(ICollection::Probe(mTasks), (IList**)&l);
 }
 
 //====================================================================
@@ -1197,7 +1191,8 @@ ECode CForkJoinPool::ShutdownNow(
     CheckPermission();
     mShutdown = TRUE;
     TryTerminate(TRUE);
-    return CCollections::_GetEmptyList(tasks);
+//    return CCollections::_GetEmptyList(tasks);
+    return NOERROR;
 }
 
 ECode CForkJoinPool::IsTerminated(
@@ -1245,17 +1240,17 @@ ECode CForkJoinPool::AwaitTermination(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IReentrantLock> lock = mSubmissionLock;
-    lock->Lock();
+    (ILock::Probe(lock))->Lock();
     for (;;) {
         Boolean b = FALSE;
         if ((IsTerminated(&b), b)) {
             *result = TRUE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
         if (nanos <= 0) {
             *result = FALSE;
-            lock->UnLock();
+            (ILock::Probe(lock))->UnLock();
             return NOERROR;
         }
         Int64 num = 0;

@@ -7,6 +7,7 @@
 
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Utility {
