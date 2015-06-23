@@ -13,9 +13,9 @@ extern "C" {
 
 struct EzMultiQI
 {
-    const _ELASTOS InterfaceID * pIID;
-    PInterface     pObject;
-    _ELASTOS ECode     ec;
+    const _ELASTOS InterfaceID* mIID;
+    PInterface mObject;
+    _ELASTOS ECode mEC;
 };
 typedef struct EzMultiQI EzMultiQI, *PMULTIQI;
 

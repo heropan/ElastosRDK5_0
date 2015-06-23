@@ -32,25 +32,25 @@
 
 ELAPI _CObject_CreateInstance(
     /* [in] */ RClassID rclsid,
-    /* [in] */ PRegime pRegime,
+    /* [in] */ PRegime regime,
     /* [in] */ REIID riid,
-    /* [out] */ PInterface *ppObj)
+    /* [out] */ PInterface* obj)
 {
     DUMP_CLSID(rclsid, "_CObject_CreateInstance")
-    if (NULL == ppObj || IS_INVALID_REGIME(pRegime)) return E_INVALID_ARGUMENT;
+    if (NULL == obj || IS_INVALID_REGIME(regime)) return E_INVALID_ARGUMENT;
 
     EzMultiQI mq = { &riid, NULL, 0 };
     ECode ec;
 
-    if (!IS_RGM_NUMBER(pRegime)) {
-        return pRegime->CreateObject(rclsid, riid, ppObj);
+    if (!IS_RGM_NUMBER(regime)) {
+        return regime->CreateObject(rclsid, riid, obj);
     }
     else {
-        ec = _CObject_CreateInstanceEx(rclsid, pRegime, 1, &mq);
+        ec = _CObject_CreateInstanceEx(rclsid, regime, 1, &mq);
     }
 
     if (SUCCEEDED(ec)) {
-        *ppObj = mq.pObject;
+        *obj = mq.mObject;
     }
 
     return ec;
@@ -58,33 +58,30 @@ ELAPI _CObject_CreateInstance(
 
 ELAPI _CObject_CreateInstanceEx(
     /* [in] */ RClassID rclsid,
-    /* [in] */ PRegime pRegime,
+    /* [in] */ PRegime regime,
     /* [in] */ UInt32 cmq,
-    /* [out] */ PMULTIQI pResults)
+    /* [out] */ PMULTIQI results)
 {
     DUMP_CLSID(rclsid, "_CObject_CreateInstanceEx")
-    assert(cmq > 0 && pResults != NULL);
-    if (IS_INVALID_REGIME(pRegime)) return E_INVALID_ARGUMENT;
+    assert(cmq > 0 && results != NULL);
+    if (IS_INVALID_REGIME(regime)) return E_INVALID_ARGUMENT;
 
-    ECode ec;
-    PInterface pObject;
-    PClassObject pClsObject = NULL;
-
-    ec = _CObject_AcquireClassFactory(rclsid, pRegime, EIID_IClassObject, (PInterface*)&pClsObject);
+    PClassObject clsObject = NULL;
+    ECode ec = _CObject_AcquireClassFactory(rclsid, regime, EIID_IClassObject, (PInterface*)&clsObject);
     if (FAILED(ec)) return ec;
 
-    pResults->ec = pClsObject->CreateObject(
-            NULL, *(pResults->pIID), &pResults->pObject);
-    pClsObject->Release();
-    if (FAILED(pResults->ec)) return pResults->ec;
+    results->mEC = clsObject->CreateObject(
+            NULL, *(results->mIID), &results->mObject);
+    clsObject->Release();
+    if (FAILED(results->mEC)) return results->mEC;
 
-    pObject = pResults->pObject;
+    PInterface object = results->mObject;
     for (UInt32 n = 1; n < cmq; n++) {
-        pResults++;
-        pResults->pObject = pObject->Probe(*(pResults->pIID));
-        if (!pResults->pObject) ec = E_NO_INTERFACE;
-        else pResults->pObject->AddRef();
-        pResults->ec = ec;
+        results++;
+        results->mObject = object->Probe(*(results->mIID));
+        if (!results->mObject) ec = E_NO_INTERFACE;
+        else results->mObject->AddRef();
+        results->mEC = ec;
     }
 
     return ec;
@@ -92,154 +89,136 @@ ELAPI _CObject_CreateInstanceEx(
 
 ELAPI _CObject_AcquireClassFactory(
     /* [in] */ RClassID rclsid,
-    /* [in] */ PRegime pRegime,
+    /* [in] */ PRegime regime,
     /* [in] */ REIID riid,
-    /* [out] */ PInterface *ppObject)
+    /* [out] */ PInterface* object)
 {
     DUMP_CLSID(rclsid, "_CObject_AcquireClassFactory")
-    if (NULL == ppObject || IS_INVALID_REGIME(pRegime)) return E_INVALID_ARGUMENT;
+    if (NULL == object || IS_INVALID_REGIME(regime)) return E_INVALID_ARGUMENT;
 
-    if (pRegime == RGM_SAME_DOMAIN) {
-        return AcquireClassObjectFromLocalModule(rclsid, riid, ppObject);
+    if (regime == RGM_SAME_DOMAIN) {
+        return AcquireClassObjectFromLocalModule(rclsid, riid, object);
     }
 
     return E_NOT_IMPLEMENTED;
 }
 
 ELAPI_(Boolean) _CObject_Compare(
-    /* [in] */ PInterface pObjectA,
-    /* [in] */ PInterface pObjectB)
+    /* [in] */ PInterface objectA,
+    /* [in] */ PInterface objectB)
 {
-    Boolean bResult;
-
-    pObjectA = pObjectA->Probe(EIID_IInterface);
-    if (!pObjectA) {
+    objectA = objectA->Probe(EIID_IInterface);
+    if (!objectA) {
         assert(0 && "pObjectA query IInterface failed!");
         return FALSE;
     }
-    pObjectB = pObjectB->Probe(EIID_IInterface);
-    if (!pObjectB) {
+    objectB = objectB->Probe(EIID_IInterface);
+    if (!objectB) {
         assert(0 && "pObjectB query IInterface failed!");
         return FALSE;
     }
 
-    bResult = (pObjectA == pObjectB);
-
-    return bResult;
+    return (objectA == objectB);
 }
 
 ELAPI _CObject_AttachAspect(
-    /* [in] */ PInterface pAggregator,
-    /* [in] */ RClassID rAspectClsid)
+    /* [in] */ PInterface aggregator,
+    /* [in] */ RClassID aspectClsid)
 {
-    ECode ec;
-    IAspect* pAspect = NULL;
-    IObject* pObject = NULL;
+    IObject* object = (IObject*)aggregator->Probe(EIID_IObject);
+    assert(object);
 
-    pObject = (IObject*)pAggregator->Probe(EIID_IObject);
-    assert(pObject);
-
-    ec = _CObject_CreateInstance(rAspectClsid,
+    IAspect* aspect = NULL;
+    ECode ec = _CObject_CreateInstance(aspectClsid,
                   RGM_SAME_DOMAIN,
                   EIID_IAspect,
-                  (PInterface*)&pAspect);
-    if(FAILED(ec)) return ec;
-    ec = pAspect->AspectAggregate(AggrType_Aggregate, pObject);
+                  (PInterface*)&aspect);
+    if (FAILED(ec)) return ec;
+    ec = aspect->AspectAggregate(AggrType_Aggregate, object);
     return ec;
 }
 
 ELAPI _CObject_DetachAspect(
-    /* [in] */ PInterface pAggregator,
-    /* [in] */ RClassID rAspectClsid)
+    /* [in] */ PInterface aggregator,
+    /* [in] */ RClassID aspectClsid)
 {
-    IObject* pObject = NULL;
+    IObject* object = (IObject*)aggregator->Probe(EIID_IObject);
+    if (object == NULL) return E_NO_INTERFACE;
 
-    pObject = (IObject*)pAggregator->Probe(EIID_IObject);
-    if (pObject == NULL) return E_NO_INTERFACE;
-
-    return pObject->Aggregate(AggrType_Unaggregate,
-                    (PInterface)&rAspectClsid);
+    return object->Aggregate(AggrType_Unaggregate,
+                    (PInterface)&aspectClsid);
 }
 
 ELAPI _CObject_AddCallback(
-    PInterface pServerObj,
-    Int32 dwEvent,
-    EventHandler delegate)
+    /* [in] */ PInterface serverObj,
+    /* [in] */ Int32 dwEvent,
+    /* [in] */ EventHandler delegate)
 {
-    ICallbackSink *pSink;
-    ECode ec;
-
-    ec = _CObject_AcquireCallbackSink(pServerObj, &pSink);
+    ICallbackSink* sink = NULL;
+    ECode ec = _CObject_AcquireCallbackSink(serverObj, &sink);
     if (FAILED(ec)) return ec;
 
-    ec = pSink->AddCallback(dwEvent, delegate);
-    pSink->Release();
+    ec = sink->AddCallback(dwEvent, delegate);
+    sink->Release();
     return ec;
 }
 
 ELAPI _CObject_RemoveCallback(
-    PInterface pServerObj,
-    Int32 dwEvent,
-    EventHandler delegate)
+    /* [in] */ PInterface serverObj,
+    /* [in] */ Int32 dwEvent,
+    /* [in] */ EventHandler delegate)
 {
-    ICallbackSink *pSink;
-    ECode ec;
-
-    ec = _CObject_AcquireCallbackSink(pServerObj, &pSink);
+    ICallbackSink* sink = NULL;
+    ECode ec = _CObject_AcquireCallbackSink(serverObj, &sink);
     if (FAILED(ec)) return ec;
 
-    ec = pSink->RemoveCallback(dwEvent, delegate);
-    pSink->Release();
+    ec = sink->RemoveCallback(dwEvent, delegate);
+    sink->Release();
     return ec;
 }
 
-ELAPI _CObject_RemoveAllCallbacks(PInterface pServerObj)
+ELAPI _CObject_RemoveAllCallbacks(
+    /* [in] */ PInterface serverObj)
 {
-    ICallbackSink *pSink;
+    ICallbackSink* sink = NULL;
     ECode ec;
-
     do {
-        ec = _CObject_AcquireCallbackSink(pServerObj, &pSink);
+        ec = _CObject_AcquireCallbackSink(serverObj, &sink);
         if (FAILED(ec)) return ec;
-        ec = pSink->RemoveAllCallbacks();
-        pSink->Release();
+        ec = sink->RemoveAllCallbacks();
+        sink->Release();
 
-        pServerObj = pServerObj->Probe(EIID_SUPER_OBJECT);
-    } while (pServerObj);
+        serverObj = serverObj->Probe(EIID_SUPER_OBJECT);
+    } while (serverObj);
 
     return ec;
 }
 
 ELAPI _CObject_AcquireCallbackRendezvous(
-    PInterface pServerObj,
-    Int32 dwEvent,
-    PCallbackRendezvous* ppCallbackRendezvous)
+    /* [in] */ PInterface serverObj,
+    /* [in] */ Int32 dwEvent,
+    /* [in] */ PCallbackRendezvous* callbackRendezvous)
 {
-    ICallbackSink *pSink;
-    ICallbackRendezvous* pICallbackRendezvous = NULL;
-    ECode ec;
-
-    ec = _CObject_AcquireCallbackSink(pServerObj, &pSink);
+    ICallbackSink* sink = NULL;
+    ECode ec = _CObject_AcquireCallbackSink(serverObj, &sink);
     if (FAILED(ec)) return ec;
 
-    ec = pSink->AcquireCallbackRendezvous(dwEvent, &pICallbackRendezvous);
-    pSink->Release();
+    ICallbackRendezvous* pICallbackRendezvous = NULL;
+    ec = sink->AcquireCallbackRendezvous(dwEvent, &pICallbackRendezvous);
+    sink->Release();
 
-    *ppCallbackRendezvous = pICallbackRendezvous;
+    *callbackRendezvous = pICallbackRendezvous;
 
     return ec;
 }
 
 ELAPI _CObject_AcquireCallbackSink(
-    /* [in] */ PInterface pObj,
-    /* [out] */ PCALLBACKSINK *ppSink)
+    /* [in] */ PInterface obj,
+    /* [out] */ PCALLBACKSINK* sink)
 {
-    ICallbackConnector *pConnector;
-
     // Query LOCAL ICallbackConnector interface
-    pConnector = (ICallbackConnector *)pObj->Probe(EIID_CALLBACK_CONNECTOR);
-    if (!pConnector) return E_NO_INTERFACE;
+    ICallbackConnector* connector = (ICallbackConnector *)obj->Probe(EIID_CALLBACK_CONNECTOR);
+    if (!connector) return E_NO_INTERFACE;
 
-    return pConnector->AcquireCallbackSink(ppSink);
+    return connector->AcquireCallbackSink(sink);
 }
-
