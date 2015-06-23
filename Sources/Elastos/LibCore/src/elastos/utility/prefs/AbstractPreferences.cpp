@@ -48,7 +48,7 @@ Boolean AbstractPreferences::staticInit()
      * -----------------------------------------------------------
      */
     // static {
-    //     sDispatcher.setDaemon(true);
+    //     sDispatcher.setDaemon(TRUE);
     //     sDispatcher.start();
     //     Runtime.getRuntime().addShutdownHook(new Thread() {
     //         @Override
@@ -223,7 +223,7 @@ ECode AbstractPreferences::ExportNode(
         return E_NULL_POINTER_EXCEPTION;
     }
     FAIL_RETURN(CheckState());
-    XMLParser.exportPrefs(this, ostream, false);
+    return XMLParser::ExportPrefs(this, ostream, FALSE);
 }
 
 ECode AbstractPreferences::ExportSubtree(
@@ -233,14 +233,14 @@ ECode AbstractPreferences::ExportSubtree(
         // throw new NullPointerException("ostream == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    checkState();
-    XMLParser.exportPrefs(this, ostream, true);
+    FAIL_RETURN(CheckState());
+    return XMLParser::ExportPrefs(this, ostream, TRUE);
 }
 
 ECode AbstractPreferences::Flush() /*throws BackingStoreException */
 {
-    synchronized (lock) {
-        flushSpi();
+    synchronized (mLock) {
+        FAIL_RETURN(FlushSpi());
     }
     AbstractPreferences[] cc = cachedChildren();
     Int32 i;
@@ -260,7 +260,7 @@ ECode AbstractPreferences::Get(
         return E_NULL_POINTER_EXCEPTION;
     }
     String result = NULL;
-    synchronized (lock) {
+    synchronized (mLock) {
         checkState();
         try {
             result = getSpi(key);
@@ -281,10 +281,10 @@ ECode AbstractPreferences::GetBoolean(
     if (result == NULL) {
         return deflt;
     }
-    if ("true".equalsIgnoreCase(result)) {
-        return true;
-    } else if ("false".equalsIgnoreCase(result)) {
-        return false;
+    if ("TRUE".equalsIgnoreCase(result)) {
+        return TRUE;
+    } else if ("FALSE".equalsIgnoreCase(result)) {
+        return FALSE;
     } else {
         return deflt;
     }
@@ -393,7 +393,7 @@ ECode AbstractPreferences::Keys(
     /* [out, callee] */ ArrayOf<String>** keys) /*throws BackingStoreException*/
 {
     VALIDATE_NOT_NULL(keys);
-    synchronized (lock) {
+    synchronized (mLock) {
         checkState();
         return keysSpi();
     }
@@ -413,7 +413,7 @@ ECode AbstractPreferences::Node(
 {
     VALIDATE_NOT_NULL(pfs);
     AbstractPreferences startNode = NULL;
-    synchronized (lock) {
+    synchronized (mLock) {
         checkState();
         validateName(name);
         if (name.isEmpty()) {
@@ -429,7 +429,7 @@ ECode AbstractPreferences::Node(
         }
     }
     try {
-        return startNode.nodeImpl(name, true);
+        return startNode.nodeImpl(name, TRUE);
     } catch (BackingStoreException e) {
         // should not happen
         return NULL;
@@ -456,7 +456,7 @@ ECode AbstractPreferences::NodeImpl(
     AbstractPreferences currentNode = this;
     AbstractPreferences temp;
     for (String name : names) {
-        synchronized (currentNode.lock) {
+        synchronized (currentNode->mLock) {
             temp = currentNode.mCachedNode.get(name);
             if (temp == NULL) {
                 temp = getNodeFromBackend(createNew, currentNode, name);
@@ -502,16 +502,16 @@ ECode AbstractPreferences::NodeExists(
         return E_NULL_POINTER_EXCEPTION;
     }
     AbstractPreferences startNode = NULL;
-    synchronized (lock) {
+    synchronized (mLock) {
         if (isRemoved()) {
             if (name.isEmpty()) {
-                return false;
+                return FALSE;
             }
             throw new IllegalStateException("This node has been removed");
         }
         validateName(name);
         if (name.isEmpty() || "/".equals(name)) {
-            return true;
+            return TRUE;
         }
         if (name.startsWith("/")) {
             startNode = root;
@@ -521,10 +521,10 @@ ECode AbstractPreferences::NodeExists(
         }
     }
     try {
-        Preferences result = startNode.nodeImpl(name, false);
+        Preferences result = startNode.nodeImpl(name, FALSE);
         return (result != NULL);
     } catch(IllegalArgumentException e) {
-        return false;
+        return FALSE;
     }
 }
 
@@ -556,7 +556,7 @@ ECode AbstractPreferences::Put(
     if (key.length() > MAX_KEY_LENGTH || value.length() > MAX_VALUE_LENGTH) {
         throw new IllegalArgumentException();
     }
-    synchronized (lock) {
+    synchronized (mLock) {
         checkState();
         putSpi(key, value);
     }
@@ -622,14 +622,14 @@ ECode AbstractPreferences::RemoveNode() /*throws BackingStoreException */
     if (root == this) {
         throw new UnsupportedOperationException("Cannot remove root node");
     }
-    synchronized (parentPref.lock) {
+    synchronized (parentPref.mLock) {
         removeNodeImpl();
     }
 }
 
 ECode AbstractPreferences::RemoveNodeImpl()/* throws BackingStoreException */
 {
-    synchronized (lock) {
+    synchronized (mLock) {
         FAIL_RETURN(CheckState());
         AutoPtr<ArrayOf<String> > childrenNames;
         FAIL_RETURN(ChildrenNamesSpi((ArrayOf<String>**)&childrenNames));
@@ -646,7 +646,7 @@ ECode AbstractPreferences::RemoveNodeImpl()/* throws BackingStoreException */
             child.removeNodeImpl();
         }
         FAIL_RETURN(RemoveNodeSpi());
-        isRemoved = true;
+        isRemoved = TRUE;
         parentPref.mCachedNode.remove(nodeName);
     }
     if (parentPref.nodeChangeListeners.size() > 0) {
@@ -709,7 +709,7 @@ ECode AbstractPreferences::RemovePreferenceChangeListener(
 
 ECode AbstractPreferences::Sync() /*throws BackingStoreException*/
 {
-    synchronized (lock) {
+    synchronized (mLock) {
         checkState();
         syncSpi();
     }

@@ -9,6 +9,6 @@ DIRS += text
 DIRS += utility
 DIRS += droid
 
-DIRS += ../elastosx
 DIRS += ../libcore
 DIRS += ../org/w3c
+DIRS += ../elastosx

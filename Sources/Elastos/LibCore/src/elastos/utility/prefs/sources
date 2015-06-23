@@ -10,11 +10,12 @@ INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/prefs;
 
 SOURCES += Preferences.cpp
 SOURCES += NodeChangeEvent.cpp
-#SOURCES += XMLParser.cpp
+SOURCES += XMLParser.cpp
 #SOURCES += AbstractPreferences.cpp
 #SOURCES += NodeSet.cpp

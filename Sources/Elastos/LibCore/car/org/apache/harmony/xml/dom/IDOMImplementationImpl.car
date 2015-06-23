@@ -1,7 +1,7 @@
 
 module
 {
-    interface Org.W3c.Dom.IDOMImplementation;
+    using interface Org.W3c.Dom.IDOMImplementation;
 
     namespace Org {
     namespace Apache {
