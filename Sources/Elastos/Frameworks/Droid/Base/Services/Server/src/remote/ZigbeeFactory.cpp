@@ -241,7 +241,7 @@ ZigbeeFactory::ZigbeeFactory(
 }
 
 ECode ZigbeeFactory::RunForResult(
-    /* [in] */ String cmd,
+    /* [in] */ const String& cmd,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)

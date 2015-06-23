@@ -567,7 +567,7 @@ void CDisplayManagerServiceAw::SendHdmiIntent()
 {
     //  Pack up the values and broadcast them to everyone
     AutoPtr<IIntent> intent;
-    CIntent::New(String("android.intent.action.HDMISTATUS_CHANGED")/* IIntent::ACTION_HDMISTATUS_CHANGED */, (IIntent**)&intent);
+    CIntent::New(IIntent::ACTION_HDMISTATUS_CHANGED, (IIntent**)&intent);
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY
             | IIntent::FLAG_RECEIVER_REPLACE_PENDING);
 

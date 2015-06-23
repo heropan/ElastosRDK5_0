@@ -64,11 +64,11 @@ ECode CActivityOne::HandleMessage(
         switch (what)
         {
         case 0:
-            pd->Show();//show progress dialog
+            mProgressDialog->Show();//show progress dialog
             break;
 
         case 1:
-            pd->Hide();
+            mProgressDialog->Hide();
             break;
         }
     }
@@ -105,44 +105,44 @@ ECode CActivityOne::OnCreate(
     ALOGD("====== File: %s, Line: %d ======", __FILE__, __LINE__);
     //IWebView::Probe(view)->LoadUrl(String("http://www.baidu.com/"));
     //IWebView::Probe(view)->LoadUrl(String("file:///data/temp/1.html"));
-    wv = IWebView::Probe(view);
+    mWebView = IWebView::Probe(view);
     AutoPtr<IWebSettingsClassic> tSettings;
-    wv->GetSettings((IWebSettings**)&tSettings);
+    mWebView->GetSettings((IWebSettings**)&tSettings);
     tSettings->SetJavaScriptEnabled(true);
     tSettings->SetPluginsEnabled(true);
     tSettings->SetGeolocationEnabled(true);
     tSettings->SetDomStorageEnabled(true);
-    //wv->LoadUrl(String("file:///data/temp/1.html"));
+    //mWebView->LoadUrl(String("file:///data/temp/1.html"));
     ALOGD("====== File: %s, Line: %d ======", __FILE__, __LINE__);
 
-    clickListener = new CActivityOne::ButtonOnClickListener(this);
+    mClickListener = new CActivityOne::ButtonOnClickListener(this);
     //AutoPtr<IButton> gotoButton;
     AutoPtr<IView> gotoButton;
     FindViewById(R::id::goto_button1, (IView**)&gotoButton);
-    gotoButton->SetOnClickListener(clickListener);
+    gotoButton->SetOnClickListener(mClickListener);
     FindViewById(R::id::goto_button2, (IView**)&gotoButton);
-    gotoButton->SetOnClickListener(clickListener);
+    gotoButton->SetOnClickListener(mClickListener);
     FindViewById(R::id::goto_button3, (IView**)&gotoButton);
-    gotoButton->SetOnClickListener(clickListener);
+    gotoButton->SetOnClickListener(mClickListener);
 
     //AutoPtr<IButton> loadButton;
     AutoPtr<IView> loadButton;
     FindViewById(R::id::load_button, (IView**)&loadButton);
-    loadButton->SetOnClickListener(clickListener);
+    loadButton->SetOnClickListener(mClickListener);
 
     //AutoPtr<IButton> exitButton;
     AutoPtr<IView> exitButton;
     FindViewById(R::id::exit_button, (IView**)&exitButton);
-    exitButton->SetOnClickListener(clickListener);
+    exitButton->SetOnClickListener(mClickListener);
 
-    keyListener = new CActivityOne::ViewOnKeyListener(this);
+    mKeyListener = new CActivityOne::ViewOnKeyListener(this);
     AutoPtr<IView> dataEdit;
     FindViewById(R::id::data, (IView**)&dataEdit);
-    dataEdit->SetOnKeyListener(keyListener);
+    dataEdit->SetOnKeyListener(mKeyListener);
 
     // return NOERROR;
     Init();
-    // Loadurl(wv, String("http://weibo.cn/"));
+    // Loadurl(mWebView, String("http://weibo.cn/"));
 
     return NOERROR;
 }
@@ -187,15 +187,15 @@ ECode CActivityOne::Init()
 
     // ALOGD("====== File: %s, Line: %d ======", __FILE__, __LINE__);
     // // WebView
-    // FindViewById(R::id::myWv, (IView**)&wv);
+    // FindViewById(R::id::myWv, (IView**)&mWebView);
     // AutoPtr<IWebSettings> webSetting;
-    // wv->GetSettings((IWebSettings**)&webSetting);
+    // mWebView->GetSettings((IWebSettings**)&webSetting);
     // webSetting->SetJavaScriptEnabled(TRUE);
-    // wv->SetScrollBarStyle(0);
+    // mWebView->SetScrollBarStyle(0);
 
     // ALOGD("====== File: %s, Line: %d ======", __FILE__, __LINE__);
 #if 0
-    wv->SetWebViewClient(new WebViewClient(){
+    mWebView->SetWebViewClient(new WebViewClient(){
         public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
             loadurl(view,url);
             return true;
@@ -346,10 +346,10 @@ ECode CActivityOne::Init()
 
     // AutoPtr<IWebViewClient> wc = new InnerWebViewClient(this);
 
-    // wv->SetWebViewClient(wc);
+    // mWebView->SetWebViewClient(wc);
 
 #if 0
-    wv.setWebChromeClient(new WebChromeClient(){
+    mWebView.setWebChromeClient(new WebChromeClient(){
         public void onProgressChanged(WebView view,int progress){
             if(progress==100){
                 handler.sendEmptyMessage(1);
@@ -480,6 +480,7 @@ ECode CActivityOne::Init()
          {
              Boolean b = WebChromeClient::OnJsConfirm(view, url, message, result);
              if (flag) *flag = b;
+             return NOERROR;
          }
 
          CARAPI OnJsPrompt(
@@ -622,7 +623,7 @@ ECode CActivityOne::Init()
     };
 
     AutoPtr<IWebChromeClient> wcc = new InnerWebChromeClient(this);
-    wv->SetWebChromeClient(wcc);
+    mWebView->SetWebChromeClient(wcc);
 
     return NOERROR;
 }
@@ -634,9 +635,9 @@ ECode CActivityOne::OnKeyDown(
 {
     Boolean b = FALSE;
     if ((keyCode == IKeyEvent::KEYCODE_BACK)
-        && (wv->CanGoBack(&b), b)) {
+        && (mWebView->CanGoBack(&b), b)) {
         ALOGD("====== File: %s, Line: %d ======", __FILE__, __LINE__);
-        wv->GoBack();
+        mWebView->GoBack();
 
         if (result) *result = TRUE;
 
@@ -801,14 +802,14 @@ ECode CActivityOne::ButtonOnClickListener::OnClick(
             {
                 ALOGD("====== File: %s, Line: %d ======, view: %s ", __FILE__, __LINE__, "goto_button1");
                 AutoPtr<IView> myUri;
-                owner->FindViewById(R::id::uri1, (IView**)&myUri);
+                mOwner->FindViewById(R::id::uri1, (IView**)&myUri);
                 AutoPtr<IEditText> text = IEditText::Probe(myUri);
                 String uri;
                 AutoPtr<ICharSequence> ttt;
                 text->GetText((ICharSequence**)&ttt);
                 ttt->ToString(&uri);
                 ALOGD("====== File: %s, Line: %d ======, uri: %s ", __FILE__, __LINE__, uri.string());
-                owner->wv->LoadUrl(uri);
+                mOwner->mWebView->LoadUrl(uri);
                 ALOGD("====== File: %s, Line: %d ======, ", __FILE__, __LINE__);
                 break;
             }
@@ -816,14 +817,14 @@ ECode CActivityOne::ButtonOnClickListener::OnClick(
             {
                 ALOGD("====== File: %s, Line: %d ======, view: %s ", __FILE__, __LINE__, "goto_button2");
                 AutoPtr<IView> myUri;
-                owner->FindViewById(R::id::uri2, (IView**)&myUri);
+                mOwner->FindViewById(R::id::uri2, (IView**)&myUri);
                 AutoPtr<IEditText> text = IEditText::Probe(myUri);
                 String uri;
                 AutoPtr<ICharSequence> ttt;
                 text->GetText((ICharSequence**)&ttt);
                 ttt->ToString(&uri);
                 ALOGD("====== File: %s, Line: %d ======, uri: %s ", __FILE__, __LINE__, uri.string());
-                owner->wv->LoadUrl(uri);
+                mOwner->mWebView->LoadUrl(uri);
                 ALOGD("====== File: %s, Line: %d ======, ", __FILE__, __LINE__);
                 break;
             }
@@ -831,21 +832,21 @@ ECode CActivityOne::ButtonOnClickListener::OnClick(
             {
                 ALOGD("====== File: %s, Line: %d ======, view: %s ", __FILE__, __LINE__, "goto_button3");
                 AutoPtr<IView> myUri;
-                owner->FindViewById(R::id::uri3, (IView**)&myUri);
+                mOwner->FindViewById(R::id::uri3, (IView**)&myUri);
                 AutoPtr<IEditText> text = IEditText::Probe(myUri);
                 String uri;
                 AutoPtr<ICharSequence> ttt;
                 text->GetText((ICharSequence**)&ttt);
                 ttt->ToString(&uri);
                 ALOGD("====== File: %s, Line: %d ======, uri: %s ", __FILE__, __LINE__, uri.string());
-                owner->wv->LoadUrl(uri);
+                mOwner->mWebView->LoadUrl(uri);
                 ALOGD("====== File: %s, Line: %d ======, ", __FILE__, __LINE__);
                 break;
             }
         case R::id::load_button:
             {
                 AutoPtr<IView> myData;
-                owner->FindViewById(R::id::data, (IView**)&myData);
+                mOwner->FindViewById(R::id::data, (IView**)&myData);
                 AutoPtr<IEditText> text = IEditText::Probe(myData);
                 String data;
                 AutoPtr<ICharSequence> ttt;
@@ -857,12 +858,12 @@ ECode CActivityOne::ButtonOnClickListener::OnClick(
                 String mimeType("text/html");
                 String encoding("utf-8");
                 ALOGD("====== File: %s, Line: %d ======, view: %s data: %s ", __FILE__, __LINE__, "load_button", data.string());
-                owner->wv->LoadData(data, mimeType, encoding);
+                mOwner->mWebView->LoadData(data, mimeType, encoding);
                 break;
             }
         case R::id::exit_button:
             ALOGD("====== File: %s, Line: %d ======, view: %s ", __FILE__, __LINE__, "exit_button");
-            owner->Finish();
+            mOwner->Finish();
             break;
         default:
             ALOGD("====== File: %s, Line: %d ======, viewID: %x ", __FILE__, __LINE__, viewId);
@@ -878,7 +879,7 @@ ECode CActivityOne::DialogOnClickListener::OnClick(
     switch (which) {
         case IDialogInterface::BUTTON_POSITIVE:
             ALOGD("CActivityOne  点击了确定按钮");
-            this->owner->Finish();
+            mOwner->Finish();
             break;
         case IDialogInterface::BUTTON_NEGATIVE:
             ALOGD("CActivityOne  点击了取消按钮");

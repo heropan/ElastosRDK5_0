@@ -73,6 +73,12 @@ EXPORT_HEADERS += elastos/utility/Arrays.h
 EXPORT_HEADERS += elastos/utility/Objects.h
 EXPORT_HEADERS += elastos/utility/DualPivotQuicksort.h
 EXPORT_HEADERS += elastos/utility/TimerTask.h
-
 EXPORT_HEADERS += libcore/utility/EmptyArray.h
+
+EXPORT_HEADERS += elastos/io/InputStream.h
+EXPORT_HEADERS += elastos/io/OutputStream.h
+//EXPORT_HEADERS += elastos/io/FilterInputStream.h
+//EXPORT_HEADERS += elastos/io/PrintWriter.h
+//EXPORT_HEADERS += elastos/io/Writer.h
+
 

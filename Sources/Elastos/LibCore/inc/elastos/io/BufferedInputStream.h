@@ -14,14 +14,9 @@ class BufferedInputStream
 public:
     CAR_INTERFACE_DECL()
 
-    BufferedInputStream()
-        : mCount(0)
-        , mMarklimit(0)
-        , mMarkpos(-1)
-        , mPos(0)
-    {}
+    BufferedInputStream();
 
-    virtual ~BufferedInputStream() {}
+    virtual ~BufferedInputStream();
 
     CARAPI constructor(
         /* [in] */ IInputStream* in,

@@ -242,10 +242,11 @@ module
             interface ICallback;
         }
 
+        [deprecated]
         class CDBDump {
             constructor(
                 [in] IShell* s,
-                [in] ArrayOf<String> tables);
+                [in] ArrayOf<String> * tables);
 
             interface IDBDump;
             interface ICallback;

@@ -80,9 +80,9 @@ public:
         /* [out] */ Boolean* hasError);
 
 protected:
-    OutputStream() {}
+    OutputStream();
 
-    virtual ~OutputStream() {}
+    virtual ~OutputStream();
 };
 
 } // namespace IO

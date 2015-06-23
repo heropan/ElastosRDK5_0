@@ -44,9 +44,23 @@ function testCarDataType() {
         lo_ret = '--' + carObject.Test_ArrayOf_Enum([0x1, 0x10, 0x100]);
         r += '--' + JSON.stringify(lo_ret) + '--';
 
-        var obj = {};
-        obj.OnEvent = function(i){}
-        carObject.Test_AddEventListener(obj);
+        window.CarLogger.Log('Begin test Callback');
+
+        var jsObj = (function(){
+            return {
+                OnEvent1:function(i) {
+                    var s = 'call jsObj.OnEvent1, i: ' + JSON.stringify(i);
+                    window.CarLogger.Log(i);
+                },
+                OnEvent2:function(s) {
+                    var s = 'call jsObj.OnEvent2, s: ' + s;
+                    window.CarLogger.Log(s);
+                }
+            }
+        })();
+
+        window.CarLogger.Log('call carObject.Test_AddEventListener');
+        carObject.Test_AddEventListener(jsObj);
 	}
     catch(e) {
 		r +=' error';

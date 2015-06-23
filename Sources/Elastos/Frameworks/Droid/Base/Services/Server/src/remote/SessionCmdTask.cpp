@@ -3,6 +3,7 @@
 #include "remote/RemoteUtils.h"
 #include "remote/ResultMsg.h"
 #include "remote/ZigbeeFactory.h"
+#include "remote/RouterSettingFactory.h"
 #include <elastos/Slogger.h>
 #include <elastos/StringUtils.h>
 
@@ -87,8 +88,10 @@ ECode SessionCmdTask::FactoryRunForResult(
     if (factoryName.Equals("ZigbeeFactory")) {
         AutoPtr<ZigbeeFactory> factory = new ZigbeeFactory(mContext);
         ec = factory->RunForResult(cmd, result);
-        if (SUCCEEDED(ec))
-            mResultNum = ResultMsg::RESULTMSG_NOERROR->ToInt32();
+    }
+    else if (factoryName.Equals("RouterSettingFactory")) {
+        AutoPtr<RouterSettingFactory> factory = new RouterSettingFactory(mContext);
+        ec = factory->RunForResult(cmd, result);
     }
     else {
         Slogger::E(TAG, "ClassNotFoundException: %s", factoryName.string());
@@ -96,7 +99,9 @@ ECode SessionCmdTask::FactoryRunForResult(
         mResultNum = ResultMsg::ES_FACTORY_NOT_FOUND_EXCEPTION->ToInt32();
     }
 
-    if (ec == E_NO_SUCH_METHOD_EXCEPTION) {
+    if (SUCCEEDED(ec))
+        mResultNum = ResultMsg::RESULTMSG_NOERROR->ToInt32();
+    else if (ec == E_NO_SUCH_METHOD_EXCEPTION) {
         Slogger::E(TAG, "NoSuchMethodException!!");
         *result = ResultMsg::ES_METHOD_NOT_FOUND_EXCEPTION->ToString();
         mResultNum = ResultMsg::ES_METHOD_NOT_FOUND_EXCEPTION->ToInt32();

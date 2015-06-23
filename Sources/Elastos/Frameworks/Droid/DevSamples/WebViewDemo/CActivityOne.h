@@ -4,9 +4,7 @@
 
 #include "app/Activity.h"
 #include "_CActivityOne.h"
-#include <elrefbase.h>
 
-using Elastos::ElRefBase;
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::IProgressDialog;
@@ -34,52 +32,63 @@ public:
         : public ElLightRefBase
         , public IViewOnClickListener
     {
-        public:
-            //ButtonOnClickListener():owner(NULL){}
-            ButtonOnClickListener(CActivityOne* owner) { this->owner = owner;}
+    public:
+        ButtonOnClickListener(
+            /* [in] */ CActivityOne* owner)
+            : mOwner(owner)
+        {}
 
-            CAR_INTERFACE_DECL();
-            CARAPI OnClick(
-                /* [in] */ IView* v);
-        private:
-            CActivityOne* owner;
+        CAR_INTERFACE_DECL();
 
+        CARAPI OnClick(
+            /* [in] */ IView* v);
+    private:
+        CActivityOne* mOwner;
     };
 
     class DialogOnClickListener
         : public ElLightRefBase
         , public IDialogInterfaceOnClickListener
     {
-        public:
-            DialogOnClickListener(CActivityOne* owner) { this->owner = owner; }
-            CAR_INTERFACE_DECL();
-            CARAPI OnClick(
-                /* [in] */ IDialogInterface* dialog,
-                /* [in] */ Int32 which);
+    public:
+        DialogOnClickListener(
+            /* [in] */ CActivityOne* owner)
+            : mOwner(owner)
+        {}
 
+        CAR_INTERFACE_DECL();
 
-        private:
-            AutoPtr<CActivityOne> owner;
+        CARAPI OnClick(
+            /* [in] */ IDialogInterface* dialog,
+            /* [in] */ Int32 which);
+
+    private:
+        CActivityOne* mOwner;
     };
 
     class ViewOnKeyListener
         : public ElLightRefBase
         , public IViewOnKeyListener
     {
-        public:
-            ViewOnKeyListener(CActivityOne* owner) { this->owner = owner; }
-            CAR_INTERFACE_DECL();
+    public:
+        ViewOnKeyListener(
+            /* [in] */ CActivityOne* owner)
+            : mOwner(owner)
+        {}
 
-            CARAPI OnKey(
-                /* [in] */ IView * v,
-                /* [in] */ Int32 keyCode,
-                /* [in] */ IKeyEvent* event,
-                /* [out] */ Boolean* result);
+        CAR_INTERFACE_DECL();
 
-        private:
-            AutoPtr<CActivityOne> owner;
+        CARAPI OnKey(
+            /* [in] */ IView * v,
+            /* [in] */ Int32 keyCode,
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
+
+    private:
+        CActivityOne* mOwner;
     };
 
+public:
     //@Override
     CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
@@ -97,7 +106,6 @@ public:
         /* [in] */ IWebView* view,
         /* [in] */ const String& url);
 
-public:
     virtual CARAPI OnCreateContextMenu(
         /* [in] */ IContextMenu* menu,
         /* [in] */ IView* v,
@@ -112,11 +120,11 @@ private:
 
 public:
     /** Called when the activity is first created. */
-    AutoPtr<IWebView> wv;
-    AutoPtr<IProgressDialog> pd;
-    AutoPtr<IHandler> handler;
-    AutoPtr<IViewOnClickListener> clickListener;
-    AutoPtr<IViewOnKeyListener> keyListener;
+    AutoPtr<IWebView> mWebView;
+    AutoPtr<IProgressDialog> mProgressDialog;
+    AutoPtr<IHandler> mHandler;
+    AutoPtr<IViewOnClickListener> mClickListener;
+    AutoPtr<IViewOnKeyListener> mKeyListener;
 };
 
 } // namespace WebViewDemo

@@ -2,13 +2,24 @@
 #include "InputStream.h"
 #include "Math.h"
 #include <elastos/utility/logging/Logger.h>
+#include "CStreams.h"
 
 using Elastos::Utility::Logging::Logger;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace IO {
 
 CAR_INTERFACE_IMPL_2(InputStream, Object, IInputStream, ICloseable)
+
+InputStream::InputStream()
+{
+}
+
+InputStream::~InputStream()
+{
+}
 
 ECode InputStream::Available(
     /* [out] */ Int32* number)
@@ -104,9 +115,11 @@ ECode InputStream::Skip(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
-    //TODO:
-    //
-//  return Streams.skipByReading(this, byteCount);
+
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    Int64 result;
+    streams->SkipByReading(THIS_PROBE(IInputStream), byteCount, &result);
 
     AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(4096);
 

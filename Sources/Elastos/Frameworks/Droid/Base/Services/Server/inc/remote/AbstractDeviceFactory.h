@@ -20,7 +20,7 @@ public:
 
 protected:
     virtual CARAPI RunForResult(
-        /* [in] */ String cmd,
+        /* [in] */ const String& cmd,
         /* [out] */ String* result) = 0;
 
 private:

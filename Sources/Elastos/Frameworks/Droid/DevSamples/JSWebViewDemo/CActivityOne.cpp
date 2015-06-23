@@ -53,8 +53,11 @@ static const String WVD_TAG("WebViewDemo");
 PInterface CActivityOne::Probe(
     /* [in] */ REIID riid)
 {
-    if ( riid == EIID_IObjectFactory) {
+    if (riid == EIID_IObjectFactory) {
         return (IObjectFactory *)this;
+    }
+    else if (riid == EIID_ILogger) {
+        return (ILogger *)this;
     }
     else return Activity::Probe(riid);
 }
@@ -76,6 +79,10 @@ ECode CActivityOne::GetInterfaceID(
     VALIDATE_NOT_NULL(iid);
     if (object == (IInterface*)(IObjectFactory *)this) {
         *iid = EIID_IObjectFactory;
+        return NOERROR;
+    }
+    if (object == (IInterface*)(ILogger*)this) {
+        *iid = EIID_ILogger;
         return NOERROR;
     }
     else return Activity::GetInterfaceID(object, iid);
@@ -161,6 +168,7 @@ ECode CActivityOne::OnCreate(
     testButton->SetOnClickListener(mClickListener);
 
     mWebView->AddJavascriptInterface(THIS_PROBE(IObjectFactory), String("CarObjectFactory"));
+    mWebView->AddJavascriptInterface(THIS_PROBE(ILogger), String("CarLogger"));
 
     return NOERROR;
 }
@@ -276,6 +284,13 @@ ECode CActivityOne::CreateInstance(
 
     *object = testObject;
     INTERFACE_ADDREF(*object);
+    return NOERROR;
+}
+
+ECode CActivityOne::Log(
+    /* [in] */ const String& message)
+{
+    ALOGD("==== Log ==== message: %s ====", message.string());
     return NOERROR;
 }
 

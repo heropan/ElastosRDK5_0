@@ -79,7 +79,7 @@ public:
         /* [in] */ IContext* ctx);
 
     CARAPI RunForResult(
-        /* [in] */ String cmd,
+        /* [in] */ const String& cmd,
         /* [out] */ String* result);
 
 private:

@@ -17,9 +17,15 @@ module
             [out] IInterface** object);
     }
 
+    interface ILogger {
+        Log(
+            [in] String message);
+    }
+
     class CActivityOne {
         interface IActivity;
         interface IObjectFactory;
+        interface ILogger;
     }
 
     } // namespace WebViewDemo

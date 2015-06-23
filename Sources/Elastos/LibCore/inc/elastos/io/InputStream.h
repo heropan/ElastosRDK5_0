@@ -181,9 +181,9 @@ public:
         /* [out] */ Int64* number);
 
 protected:
-    InputStream() {}
+    InputStream();
 
-    virtual ~InputStream() {}
+    virtual ~InputStream();
 };
 
 } // namespace IO

@@ -27,6 +27,7 @@ namespace WebViewDemo {
 class CActivityOne
     : public Activity
     , public IObjectFactory
+    , public ILogger
 {
 public:
     class ButtonOnClickListener
@@ -115,6 +116,9 @@ public:
         /* [in] */ const String& moduleName,
         /* [in] */ const String& className,
         /* [out] */ IInterface** object);
+
+    CARAPI Log(
+        /* [in] */ const String& message);
 
 private:
     CARAPI HandleMessage(

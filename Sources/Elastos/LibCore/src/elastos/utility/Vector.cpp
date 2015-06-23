@@ -50,7 +50,13 @@ const Int32 Vector::DEFAULT_SIZE = 10;
 
 ECode Vector::constructor()
 {
-    return NOERROR;
+    return constructor(DEFAULT_SIZE, 0);
+}
+
+ECode Vector::constructor(
+    /* [in] */ Int32 capacity)
+{
+    return constructor(capacity, 0);;
 }
 
 ECode Vector::constructor(

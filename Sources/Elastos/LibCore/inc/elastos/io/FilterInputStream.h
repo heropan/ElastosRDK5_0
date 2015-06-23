@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_IO_FILTERINPUTSTREAM_H__
 #define __ELASTOS_IO_FILTERINPUTSTREAM_H__
 
-#include "InputStream.h"
+#include <elastos/io/InputStream.h>
 
 namespace Elastos {
 namespace IO {
@@ -22,6 +22,10 @@ class FilterInputStream
 {
 public:
     CAR_INTERFACE_DECL()
+
+    FilterInputStream();
+
+    virtual ~FilterInputStream();
 
     /**
      * Constructs a new {@code FilterInputStream} with the specified input
@@ -145,11 +149,6 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 byteCount,
         /* [out] */ Int64* number);
-
-protected:
-    FilterInputStream() {}
-
-    virtual ~FilterInputStream() {}
 
 protected:
     /**

@@ -8,7 +8,13 @@ using Elastos::Utility::Logging::Logger;
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_3(OutputStream, Object, ICloseable, IFlushable, IOutputStream)
+CAR_INTERFACE_IMPL_3(OutputStream, Object, IOutputStream, ICloseable, IFlushable)
+
+OutputStream::OutputStream()
+{}
+
+OutputStream::~OutputStream()
+{}
 
 ECode OutputStream::Close()
 {

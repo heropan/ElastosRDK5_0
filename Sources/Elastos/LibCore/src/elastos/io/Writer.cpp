@@ -67,6 +67,7 @@ ECode Writer::Write(
 ECode Writer::Write(
     /* [in] */ ArrayOf<Char32>* buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony
     // END android-note
@@ -87,7 +88,7 @@ ECode Writer::Write(
 {
     if ((offset | count) < 0 || offset > str.GetLength() - count) {
 //      throw new StringIndexOutOfBoundsException();
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
     Autolock lock(mLock);

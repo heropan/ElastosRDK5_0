@@ -193,6 +193,9 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
+        /* [in] */ Int32 capacity);
+
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Int32 capacityIncremen);
 
