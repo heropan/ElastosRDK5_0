@@ -3,7 +3,7 @@
 #define __ELASTOS_IO_CCODINGERRORACTION_H__
 
 #include "_Elastos_IO_Charset_CCodingErrorAction.h"
-#include "elastos/core/Object.h"
+#include "Object.h"
 
 
 namespace Elastos {

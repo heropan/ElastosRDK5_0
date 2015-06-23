@@ -55,7 +55,7 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-const String NetworkUtils::TAG = String("NetworkUtils");
+const String NetworkUtils::TAG("NetworkUtils");
 
 /** Bring the named network interface up. */
 Int32 NetworkUtils::EnableInterface(

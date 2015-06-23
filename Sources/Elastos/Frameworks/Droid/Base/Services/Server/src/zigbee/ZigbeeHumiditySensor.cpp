@@ -12,7 +12,7 @@ namespace Droid {
 namespace Server {
 namespace Zigbee {
 
-const String ZigbeeHumiditySensor::TAG = String("ZigbeeHumiditySensor");
+const String ZigbeeHumiditySensor::TAG("ZigbeeHumiditySensor");
 //debug
 const Boolean ZigbeeHumiditySensor::DBG = TRUE;
 

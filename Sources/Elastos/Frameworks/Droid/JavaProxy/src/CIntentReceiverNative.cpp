@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIntentReceiverNative::TAG = String("CIntentReceiverNative");
+const String CIntentReceiverNative::TAG("CIntentReceiverNative");
 
 CIntentReceiverNative::~CIntentReceiverNative(){
     JNIEnv* env;

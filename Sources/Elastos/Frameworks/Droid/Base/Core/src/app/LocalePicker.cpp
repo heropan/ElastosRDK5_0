@@ -139,7 +139,7 @@ ECode LocalArrayAdapter::GetInterfaceID(
     return E_INVALID_ARGUMENT;
 }
 
-const String LocalePicker::TAG = String("LocalePicker");
+const String LocalePicker::TAG("LocalePicker");
 
 CAR_INTERFACE_IMPL(LocalePicker::LocaleInfo, IComparable);
 

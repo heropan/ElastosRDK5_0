@@ -28,7 +28,7 @@ namespace Droid {
 namespace Widget {
 namespace Internal{
 
-const String WaveView::TAG = String("WaveView");
+const String WaveView::TAG("WaveView");
 const Boolean WaveView::DBG;
 const Int32 WaveView::WAVE_COUNT; // default wave count
 const Int64 WaveView::VIBRATE_SHORT;  // msec

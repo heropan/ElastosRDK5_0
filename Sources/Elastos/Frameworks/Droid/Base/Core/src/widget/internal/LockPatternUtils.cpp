@@ -62,7 +62,7 @@ const Int32 LockPatternUtils::MIN_LOCK_PATTERN_SIZE;
 const Int32 LockPatternUtils::MIN_PATTERN_REGISTER_FAIL;
 const Int32 LockPatternUtils::FLAG_BIOMETRIC_WEAK_LIVELINESS;
 const Int32 LockPatternUtils::ID_DEFAULT_STATUS_WIDGET;
-const String LockPatternUtils::TAG = String("LockPatternUtils");
+const String LockPatternUtils::TAG("LockPatternUtils");
 const String LockPatternUtils::KEYGUARD_SHOW_USER_SWITCHER = String("showuserswitcher");
 const String LockPatternUtils::KEYGUARD_SHOW_SECURITY_CHALLENGE = String("showsecuritychallenge");
 const String LockPatternUtils::KEYGUARD_SHOW_APPWIDGET = String("showappwidget");

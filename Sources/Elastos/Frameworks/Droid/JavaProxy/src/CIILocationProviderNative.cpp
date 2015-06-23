@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIILocationProviderNative::TAG = String("CIILocationProviderNative");
+const String CIILocationProviderNative::TAG("CIILocationProviderNative");
 
 
 CIILocationProviderNative::~CIILocationProviderNative(){

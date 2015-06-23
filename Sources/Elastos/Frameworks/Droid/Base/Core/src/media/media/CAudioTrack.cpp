@@ -17,7 +17,7 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
-const String CAudioTrack::TAG = String("CAudioTrack");
+const String CAudioTrack::TAG("CAudioTrack");
 
 const Float CAudioTrack::VOLUME_MIN = 0.0f;
 const Float CAudioTrack::VOLUME_MAX = 1.0f;

@@ -12,7 +12,7 @@ namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-const String CUsbDeviceConnection::TAG = String("UsbDeviceConnection");
+const String CUsbDeviceConnection::TAG("UsbDeviceConnection");
 
 ECode CUsbDeviceConnection::constructor(
     /* [in] */ IUsbDevice* device)

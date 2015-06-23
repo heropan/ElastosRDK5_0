@@ -887,7 +887,7 @@ ECode CZigbeeService::CallbackThread::Run()
  *  CZigbeeService
  ***********************************************************************************/
 
-const String CZigbeeService::TAG = String("CZigbeeService");
+const String CZigbeeService::TAG("CZigbeeService");
 //debug
 const Boolean CZigbeeService::DBG = FALSE;
 

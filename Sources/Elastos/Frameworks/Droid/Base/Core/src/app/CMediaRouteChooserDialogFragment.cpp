@@ -81,7 +81,7 @@ private:
 };
 
 
-const String MediaRouteChooserDialogFragment::TAG = String("MediaRouteChooserDialogFragment");
+const String MediaRouteChooserDialogFragment::TAG("MediaRouteChooserDialogFragment");
 
 AutoPtr<ArrayOf<Int32> > MediaRouteChooserDialogFragment::ITEM_LAYOUTS =
         ArrayOf<Int32>::Alloc(5);

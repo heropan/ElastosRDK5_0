@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CICancellationSignalNative::TAG = String("CICancellationSignalNative");
+const String CICancellationSignalNative::TAG("CICancellationSignalNative");
 
 CICancellationSignalNative::~CICancellationSignalNative()
 {

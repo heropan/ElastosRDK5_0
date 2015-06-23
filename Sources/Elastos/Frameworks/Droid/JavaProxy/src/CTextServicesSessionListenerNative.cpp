@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CTextServicesSessionListenerNative::TAG = String("CTextServicesSessionListenerNative");
+const String CTextServicesSessionListenerNative::TAG("CTextServicesSessionListenerNative");
 
 CTextServicesSessionListenerNative::~CTextServicesSessionListenerNative(){
     JNIEnv* env;

@@ -45,7 +45,7 @@ namespace Droid {
 namespace Provider {
 
 const String Settings::JID_RESOURCE_PREFIX = String("android");
-const String Settings::TAG = String("Settings");
+const String Settings::TAG("Settings");
 const Boolean Settings::LOCAL_LOGV = FALSE;
 
 

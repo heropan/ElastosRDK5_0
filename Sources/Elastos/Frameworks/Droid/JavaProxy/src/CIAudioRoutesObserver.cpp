@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIAudioRoutesObserver::TAG = String("CIAudioRoutesObserver");
+const String CIAudioRoutesObserver::TAG("CIAudioRoutesObserver");
 
 CIAudioRoutesObserver::~CIAudioRoutesObserver()
 {

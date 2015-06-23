@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIOnKeyguardExitResultNative::TAG = String("CIOnKeyguardExitResultNative");
+const String CIOnKeyguardExitResultNative::TAG("CIOnKeyguardExitResultNative");
 
 CIOnKeyguardExitResultNative::~CIOnKeyguardExitResultNative(){
     JNIEnv* env;

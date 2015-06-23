@@ -5,7 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const String SpellChecker::TAG = String("SpellChecker");
+const String SpellChecker::TAG("SpellChecker");
 const Boolean SpellChecker::DBG = FALSE;
 const Int32 SpellChecker::MAX_NUMBER_OF_WORDS;
 const Int32 SpellChecker::AVERAGE_WORD_LENGTH;

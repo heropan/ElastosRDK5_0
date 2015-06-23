@@ -23,7 +23,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-String ActionMenuPresenter::TAG = String("ActionMenuPresenter");
+String ActionMenuPresenter::TAG("ActionMenuPresenter");
 
 ActionMenuPresenter::_OverflowMenuButton::_OverflowMenuButton(
     /* [in] */ ActionMenuPresenter* host)

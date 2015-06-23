@@ -16,7 +16,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-const String ProviderMap::TAG = String("ProviderMap");
+const String ProviderMap::TAG("ProviderMap");
 const Boolean ProviderMap::DBG = FALSE;
 
 ProviderMap::ProviderMap(

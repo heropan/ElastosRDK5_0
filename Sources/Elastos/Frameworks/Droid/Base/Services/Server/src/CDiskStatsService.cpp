@@ -25,7 +25,7 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-const String CDiskStatsService::TAG = String("DiskStatsService");
+const String CDiskStatsService::TAG("DiskStatsService");
 
 ECode CDiskStatsService::constructor(
     /* [in] */ IContext* context)

@@ -26,7 +26,7 @@ namespace Droid {
 namespace Net {
 namespace Wifi {
 
-String CWifiInfo::TAG = String("WifiInfo");
+String CWifiInfo::TAG("WifiInfo");
 HashMap<SupplicantState, NetworkInfoDetailedState> CWifiInfo::mStateMap;
 String CWifiInfo::LINK_SPEED_UNITS = String("Mbps");
 

@@ -15,7 +15,7 @@ namespace Drawable {
 
 const Boolean StateListDrawable::DEFAULT_DITHER;
 Boolean StateListDrawable::DEBUG = FALSE;
-String StateListDrawable::TAG = String("StateListDrawable");
+String StateListDrawable::TAG("StateListDrawable");
 
 StateListDrawable::StateListDrawable()
     : mMutated(FALSE)

@@ -27,7 +27,7 @@ namespace Droid {
 namespace Widget {
 namespace Internal {
 
-const String LockPatternView::TAG = String("LockPatternView");
+const String LockPatternView::TAG("LockPatternView");
 const Int32 LockPatternView::ASPECT_SQUARE;
 const Int32 LockPatternView::ASPECT_LOCK_WIDTH;
 const Int32 LockPatternView::ASPECT_LOCK_HEIGHT;

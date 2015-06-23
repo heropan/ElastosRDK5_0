@@ -91,7 +91,7 @@ ECode NetworkController::WifiHandler::HandleMessage(
 //========================================================================================
 //                      NetworkController
 //========================================================================================
-const String NetworkController::TAG = String("StatusBar.NetworkController");
+const String NetworkController::TAG("StatusBar.NetworkController");
 const Boolean NetworkController::DEBUG = FALSE;
 const Boolean NetworkController::CHATTY = FALSE;
 const Int32 NetworkController::INET_CONDITION_THRESHOLD = 50;

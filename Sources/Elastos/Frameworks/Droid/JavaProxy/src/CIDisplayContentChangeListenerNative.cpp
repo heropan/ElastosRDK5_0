@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIDisplayContentChangeListenerNative::TAG = String("CIDisplayContentChangeListenerNative");
+const String CIDisplayContentChangeListenerNative::TAG("CIDisplayContentChangeListenerNative");
 
 CIDisplayContentChangeListenerNative::~CIDisplayContentChangeListenerNative()
 {

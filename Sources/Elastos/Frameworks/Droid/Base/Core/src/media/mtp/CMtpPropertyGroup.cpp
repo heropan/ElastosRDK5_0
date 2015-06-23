@@ -31,7 +31,7 @@ namespace Elastos {
 namespace Droid {
 namespace Mtp {
 
-const String CMtpPropertyGroup::TAG = String("MtpPropertyGroup");
+const String CMtpPropertyGroup::TAG("MtpPropertyGroup");
 const String CMtpPropertyGroup::ID_WHERE = IMediaStoreFilesFileColumns::ID + "=?";
 const String CMtpPropertyGroup::FORMAT_WHERE = IMediaStoreFilesFileColumns::FORMAT + "=?";
 const String CMtpPropertyGroup::ID_FORMAT_WHERE = CMtpPropertyGroup::ID_WHERE + " AND " + CMtpPropertyGroup::FORMAT_WHERE;

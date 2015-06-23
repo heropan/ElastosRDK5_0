@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIInputFilterNative::TAG = String("CIInputFilterNative");
+const String CIInputFilterNative::TAG("CIInputFilterNative");
 
 CIInputFilterNative::~CIInputFilterNative(){
     JNIEnv* env;

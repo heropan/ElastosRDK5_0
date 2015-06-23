@@ -45,7 +45,7 @@ const Int64 SlidingTab::VIBRATE_LONG;
 const Int32 SlidingTab::TRACKING_MARGIN;
 const Int32 SlidingTab::ANIM_DURATION;
 const Int32 SlidingTab::ANIM_TARGET_TIME;
-const String SlidingTab::TAG = String("SlidingTab");
+const String SlidingTab::TAG("SlidingTab");
 const Int32 SlidingTab::Slider::ALIGN_LEFT;
 const Int32 SlidingTab::Slider::ALIGN_RIGHT;
 const Int32 SlidingTab::Slider::ALIGN_TOP;

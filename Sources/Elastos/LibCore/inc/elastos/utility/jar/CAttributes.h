@@ -8,8 +8,8 @@
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::IMap;
 using Elastos::Utility::ICollection;
-using Elastos::Utility::IObjectMap;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Utility {
@@ -18,27 +18,21 @@ namespace Jar {
 CarClass(CAttributes)
     , public Object
     , public IAttributes
+    , public IMap
+    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
 
-    CARAPI GetValue(
-        /* [in] */ IName* name,
-        /* [out] */ String* value);
+    CARAPI constructor();
 
-    CARAPI GetValue(
-        /* [in] */ const String& name,
-        /* [out] */ String* value);
+    CARAPI constructor(
+        /* [in] */ IAttributes* attributes);
 
-    CARAPI PutValue(
-        /* [in] */ const String& name,
-        /* [in] */ const String& val,
-        /* [out] */ String* oldVal);
-
-    CARAPI Clone(
-        /* [out] */ IInterface** object);
+    CARAPI constructor(
+        /* [in] */ Int32 size);
 
     CARAPI Clear();
 
@@ -53,16 +47,9 @@ public:
     CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
-    CARAPI Equals(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
     CARAPI Get(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hashCode);
 
     CARAPI IsEmpty(
         /* [out] */ Boolean* result);
@@ -75,6 +62,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     CARAPI PutAll(
         /* [in] */ IMap* attrib);
 
@@ -82,19 +73,41 @@ public:
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
 
+    CARAPI Remove(
+        /* [in] */ PInterface key);
+
     CARAPI GetSize(
         /* [out] */ Int32* size);
 
     CARAPI GetValues(
         /* [out] */ ICollection** value);
 
-    CARAPI constructor();
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
 
-    CARAPI constructor(
-        /* [in] */ IAttributes* attributes);
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
-    CARAPI constructor(
-        /* [in] */ Int32 size);
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetValue(
+        /* [in] */ IName* name,
+        /* [out] */ String* value);
+
+    CARAPI GetValue(
+        /* [in] */ const String& name,
+        /* [out] */ String* value);
+
+    CARAPI PutValue(
+        /* [in] */ const String& name,
+        /* [in] */ const String& val,
+        /* [out] */ String* oldVal);
+
+    CARAPI PutValue(
+        /* [in] */ const String& name,
+        /* [in] */ const String& val);
 
 public:
     /**

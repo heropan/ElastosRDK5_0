@@ -1,198 +1,20 @@
 
 #include "CAttributes.h"
+#include "CName.h"
 #include "CHashMap.h"
 #include "CStringWrapper.h"
-#include "CName.h"
 
 using Elastos::Utility::CHashMap;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::CStringWrapper;
 
 namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-CAR_INTERFACE_IMPL(CAttributes, Object, IAttributes)
+CAR_INTERFACE_IMPL_3(CAttributes, Object, IAttributes, IMap, ICloneable)
 
 CAR_OBJECT_IMPL(CAttributes)
-
-ECode CAttributes::GetValue(
-    /* [in] */ IName* name,
-    /* [out] */ String* value)
-{
-    VALIDATE_NOT_NULL(value)
-    AutoPtr<IInterface> valueInInterface;
-    mMap->Get(name, (IInterface**)&valueInInterface);
-    AutoPtr<ICharSequence> cs = ICharSequence::Probe(valueInInterface);
-    if (cs) {
-        return cs->ToString(value);
-    }
-    *value = String();
-    return NOERROR;
-}
-
-ECode CAttributes::GetValue(
-    /* [in] */ const String& name,
-    /* [out] */ String* value)
-{
-    VALIDATE_NOT_NULL(value)
-    AutoPtr<IName> iname;
-    FAIL_RETURN(CName::New(name, (IName**)&iname))
-    return GetValue(iname, value);
-}
-
-ECode CAttributes::PutValue(
-    /* [in] */ const String& name,
-    /* [in] */ const String& val,
-    /* [out] */ String* oldVal)
-{
-    AutoPtr<IName> iname;
-    FAIL_RETURN(CName::New(name, (IName**)&iname))
-    AutoPtr<ICharSequence> cs;
-    FAIL_RETURN(CStringWrapper::New(val, (ICharSequence**)&cs))
-
-    if (oldVal) {
-        AutoPtr<IInterface> outface;
-        mMap->Put(iname, cs, (IInterface**)&outface);
-        ICharSequence* csRet = ICharSequence::Probe(outface);
-        if (csRet) {
-            csRet->ToString(oldVal);
-        }
-        else {
-            *oldVal = NULL;
-        }
-    }
-    else {
-        mMap->Put(iname, cs, NULL);
-    }
-    return NOERROR;
-}
-
-ECode CAttributes::Clone(
-    /* [out] */ IInterface** object)
-{
-    VALIDATE_NOT_NULL(object)
-    AutoPtr<IAttributes> clone;
-    FAIL_RETURN(CAttributes::New((IAttributes*)IAttributes::Probe(this),
-        (IAttributes**)&clone))
-    *object = clone;
-    REFCOUNT_ADD(*object)
-    return NOERROR;
-}
-
-ECode CAttributes::Clear()
-{
-    mMap = NULL;
-    return NOERROR;
-}
-
-ECode CAttributes::ContainsKey(
-    /* [in] */ IInterface* key,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    return mMap->ContainsKey(key, result);
-}
-
-ECode CAttributes::ContainsValue(
-    /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
-{
-    return mMap->ContainsValue(value, result);
-}
-
-ECode CAttributes::GetEntrySet(
-    /* [out] */ ISet** entries)
-{
-    return mMap->GetEntrySet(entries);
-}
-
-ECode CAttributes::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    *result = FALSE;
-
-    if(object == this->Probe(EIID_IInterface)) {
-        *result = TRUE;
-        return NOERROR;
-    }
-
-    IAttributes* othterObj = IAttributes::Probe(object);
-    if (othterObj) {
-        return mMap->Equals(((CAttributes*)othterObj)->mMap, result);
-    }
-    return NOERROR;
-}
-
-ECode CAttributes::Get(
-    /* [in] */ PInterface key,
-    /* [out] */ PInterface* value)
-{
-    VALIDATE_NOT_NULL(value)
-    return mMap->Get(key, value);
-}
-
-ECode CAttributes::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    VALIDATE_NOT_NULL(hashCode)
-    return mMap->GetHashCode(hashCode);
-}
-
-ECode CAttributes::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    Int32 size = 0;
-    return (mMap->GetSize(&size), size) == 0;
-}
-
-ECode CAttributes::GetKeySet(
-    /* [out] */ ISet** keySet)
-{
-    return mMap->GetKeySet(keySet);
-}
-
-ECode CAttributes::Put(
-    /* [in] */ PInterface key,
-    /* [in] */ PInterface value,
-    /* [out] */ PInterface* oldValue)
-{
-    return mMap->Put(key, value, oldValue);
-}
-
-ECode CAttributes::PutAll(
-    /* [in] */ IMap* attrib)
-{
-    if (attrib == NULL || !IAttributes::Probe(attrib)) {
-        return E_CLASS_NOT_FOUND_EXCEPTION;
-    }
-
-    return mMap->PutAll(attrib);
-}
-
-ECode CAttributes::Remove(
-    /* [in] */ PInterface key,
-    /* [out] */ PInterface* value)
-{
-    VALIDATE_NOT_NULL(value)
-    return mMap->Remove(key, value);
-}
-
-ECode CAttributes::GetSize(
-    /* [out] */ Int32* size)
-{
-    VALIDATE_NOT_NULL(size)
-    return mMap->GetSize(size);
-}
-
-ECode CAttributes::GetValues(
-    /* [out] */ ICollection** value)
-{
-    VALIDATE_NOT_NULL(value)
-    return mMap->Values(value);
-}
 
 ECode CAttributes::constructor()
 {
@@ -213,6 +35,203 @@ ECode CAttributes::constructor(
     /* [in] */ Int32 size)
 {
     return CHashMap::New(size, (IMap**)&mMap);
+}
+
+ECode CAttributes::Clear()
+{
+    return mMap->Clear();
+}
+
+ECode CAttributes::ContainsKey(
+    /* [in] */ IInterface* key,
+    /* [out] */ Boolean* result)
+{
+    return mMap->ContainsKey(key, result);
+}
+
+ECode CAttributes::ContainsValue(
+    /* [in] */ IInterface* value,
+    /* [out] */ Boolean* result)
+{
+    return mMap->ContainsValue(value, result);
+}
+
+ECode CAttributes::GetEntrySet(
+    /* [out] */ ISet** entries)
+{
+    return mMap->GetEntrySet(entries);
+}
+
+ECode CAttributes::Get(
+    /* [in] */ PInterface key,
+    /* [out] */ PInterface* value)
+{
+    return mMap->Get(key, value);
+}
+
+ECode CAttributes::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    return mMap->IsEmpty(result);
+}
+
+ECode CAttributes::GetKeySet(
+    /* [out] */ ISet** keySet)
+{
+    return mMap->GetKeySet(keySet);
+}
+
+ECode CAttributes::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value,
+    /* [out] */ PInterface* oldValue)
+{
+    return mMap->Put(key, value, oldValue);
+}
+
+ECode CAttributes::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    if (IName::Probe(key) == NULL || ICharSequence::Probe(value) == NULL)
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    return mMap->Put(key, value);
+}
+
+ECode CAttributes::PutAll(
+    /* [in] */ IMap* attrib)
+{
+    VALIDATE_NOT_NULL(attrib)
+
+    if (!IAttributes::Probe(attrib)) {
+        return E_CLASS_CAST_EXCEPTION;
+    }
+
+    return mMap->PutAll(attrib);
+}
+
+ECode CAttributes::Remove(
+    /* [in] */ PInterface key,
+    /* [out] */ PInterface* value)
+{
+    return mMap->Remove(key, value);
+}
+
+ECode CAttributes::Remove(
+    /* [in] */ PInterface key)
+{
+    AutoPtr<IInterface> obj;
+    return mMap->Remove(key, (IInterface**)&obj);
+}
+
+ECode CAttributes::GetSize(
+    /* [out] */ Int32* size)
+{
+    return mMap->GetSize(size);
+}
+
+ECode CAttributes::GetValues(
+    /* [out] */ ICollection** value)
+{
+    return mMap->GetValues(value);
+}
+
+ECode CAttributes::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object)
+    AutoPtr<IAttributes> clone;
+    FAIL_RETURN(CAttributes::New(THIS_PROBE(IAttributes), (IAttributes**)&clone))
+    *object = clone;
+    REFCOUNT_ADD(*object)
+    return NOERROR;
+}
+
+ECode CAttributes::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    return mMap->GetHashCode(hash);
+}
+
+ECode CAttributes::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (object == this->Probe(EIID_IInterface)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    IAttributes* othterObj = IAttributes::Probe(object);
+    if (othterObj) {
+        return mMap->Equals(((CAttributes*)othterObj)->mMap, result);
+    }
+    return NOERROR;
+}
+
+ECode CAttributes::GetValue(
+    /* [in] */ IName* name,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = String(NULL);
+
+    AutoPtr<IInterface> obj;
+    mMap->Get(name, (IInterface**)&obj);
+    AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
+    if (cs) {
+        return cs->ToString(value);
+    }
+    return NOERROR;
+}
+
+ECode CAttributes::GetValue(
+    /* [in] */ const String& name,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+    AutoPtr<IName> iname;
+    FAIL_RETURN(CName::New(name, (IName**)&iname))
+    return GetValue(iname, value);
+}
+
+ECode CAttributes::PutValue(
+    /* [in] */ const String& name,
+    /* [in] */ const String& val)
+{
+    String oldVal;
+    return PutValue(name, val, &oldVal);
+}
+
+ECode CAttributes::PutValue(
+    /* [in] */ const String& name,
+    /* [in] */ const String& val,
+    /* [out] */ String* oldVal)
+{
+    AutoPtr<IName> iname;
+    FAIL_RETURN(CName::New(name, (IName**)&iname))
+    AutoPtr<ICharSequence> cs;
+    FAIL_RETURN(CStringWrapper::New(val, (ICharSequence**)&cs))
+
+    if (oldVal) {
+        AutoPtr<IInterface> outface;
+        mMap->Put(iname, cs, (IInterface**)&outface);
+        ICharSequence* csRet = ICharSequence::Probe(outface);
+        if (csRet) {
+            csRet->ToString(oldVal);
+        }
+        else {
+            *oldVal = String(NULL);
+        }
+    }
+    else {
+        mMap->Put(iname, cs, NULL);
+    }
+    return NOERROR;
 }
 
 } // namespace Jar

@@ -7,7 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-String CSerialManager::TAG = String("SerialManager");
+String CSerialManager::TAG("SerialManager");
 
 ECode CSerialManager::constructor(
     /* [in] */ IContext* context,

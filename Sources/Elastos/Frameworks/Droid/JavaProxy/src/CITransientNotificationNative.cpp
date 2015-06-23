@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CITransientNotificationNative::TAG = String("CITransientNotificationNative");
+const String CITransientNotificationNative::TAG("CITransientNotificationNative");
 
 CITransientNotificationNative::~CITransientNotificationNative()
 {

@@ -60,7 +60,7 @@ static install_status_t
         iterateOverNativeFiles(const String& filePath, const String& cpuAbi, const String& cpuAbi2,
         iterFunc callFunc, void* callArg);
 
-const String CNativeLibraryHelper::TAG = String("NativeHelper");
+const String CNativeLibraryHelper::TAG("NativeHelper");
 const Boolean CNativeLibraryHelper::DEBUG_NATIVE = FALSE;
 
 ECode CNativeLibraryHelper::SumNativeBinariesLI(

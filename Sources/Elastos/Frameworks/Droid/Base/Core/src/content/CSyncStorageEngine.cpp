@@ -59,7 +59,7 @@ namespace Content {
         }                                          \
     } while(0);
 
-const String CSyncStorageEngine::TAG = String("SyncManager");
+const String CSyncStorageEngine::TAG("SyncManager");
 const Boolean CSyncStorageEngine::DEBUG_FILE = FALSE;
 const String CSyncStorageEngine::XML_ATTR_NEXT_AUTHORITY_ID = String("nextAuthorityId");
 const String CSyncStorageEngine::XML_ATTR_LISTEN_FOR_TICKLES = String("listen-for-tickles");

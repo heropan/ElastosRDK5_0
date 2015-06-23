@@ -111,7 +111,7 @@ extern "C" const InterfaceID EIID_CPhoneWindow =
 
 AutoPtr<IIWindowManager> CPhoneWindow::WindowManagerHolder::sWindowManager;
 
-String CPhoneWindow::TAG = String("PhoneWindow");
+String CPhoneWindow::TAG("PhoneWindow");
 const Boolean CPhoneWindow::SWEEP_OPEN_MENU = FALSE;
 
 const String CPhoneWindow::FOCUSED_ID_TAG = String("android:focusedViewId");

@@ -13,7 +13,7 @@ namespace SystemUI {
 namespace StatusBar {
 namespace Tablet {
 
-const String ShirtPocket::TAG = String("StatusBar/ShirtPocket");
+const String ShirtPocket::TAG("StatusBar/ShirtPocket");
 
 ShirtPocket::ShirtPocket()
 {}

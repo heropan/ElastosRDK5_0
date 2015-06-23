@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CRemoteViewsAdapterConnectionNative::TAG = String("CRemoteViewsAdapterConnectionNative");
+const String CRemoteViewsAdapterConnectionNative::TAG("CRemoteViewsAdapterConnectionNative");
 
 CRemoteViewsAdapterConnectionNative::CRemoteViewsAdapterConnectionNative(){
 }

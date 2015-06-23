@@ -41,7 +41,7 @@ namespace Droid {
 namespace Widget {
 namespace Internal {
 
-String ActionBarContextView::TAG = String("ActionBarContextView");
+String ActionBarContextView::TAG("ActionBarContextView");
 
 CAR_INTERFACE_IMPL(ActionBarContextView::CloseButtonListener, IViewOnClickListener)
 

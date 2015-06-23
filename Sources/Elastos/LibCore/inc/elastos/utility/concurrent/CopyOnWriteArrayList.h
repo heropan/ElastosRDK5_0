@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_COPYONWRITEARRAYLIST_H__
 
 #include "AbstractList.h"
-#include "elastos/core/Object.h"
+#include "Object.h"
 
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;

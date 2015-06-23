@@ -18,7 +18,7 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-String CIInputMethodSessionWrapper::TAG = String("CIInputMethodSessionWrapper");
+String CIInputMethodSessionWrapper::TAG("CIInputMethodSessionWrapper");
 const Boolean CIInputMethodSessionWrapper::DEBUG = FALSE;
 const Int32 CIInputMethodSessionWrapper::DO_FINISH_INPUT = 60;
 const Int32 CIInputMethodSessionWrapper::DO_DISPLAY_COMPLETIONS = 65;

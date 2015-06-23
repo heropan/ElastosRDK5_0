@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CInputMethodCallbackNative::TAG = String("CInputMethodCallbackNative");
+const String CInputMethodCallbackNative::TAG("CInputMethodCallbackNative");
 
 CInputMethodCallbackNative::~CInputMethodCallbackNative()
 {

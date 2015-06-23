@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CLocationListener::TAG = String("CLocationListener");
+const String CLocationListener::TAG("CLocationListener");
 
 CLocationListener::~CLocationListener(){
     JNIEnv* env;

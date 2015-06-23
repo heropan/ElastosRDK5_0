@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CBinderNative::TAG = String("CBinderNative");
+const String CBinderNative::TAG("CBinderNative");
 
 CBinderNative::~CBinderNative(){
 	JNIEnv* env;

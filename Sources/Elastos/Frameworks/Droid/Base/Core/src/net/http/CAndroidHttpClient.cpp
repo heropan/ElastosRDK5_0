@@ -24,7 +24,7 @@ AutoPtr<ArrayOf<String> > CAndroidHttpClient::InitTextContentTypes()
 }
 
 const Int32 CAndroidHttpClient::SOCKET_OPERATION_TIMEOUT = 60 * 1000;
-const String CAndroidHttpClient::TAG = String("AndroidHttpClient");
+const String CAndroidHttpClient::TAG("AndroidHttpClient");
 
 AutoPtr<ArrayOf<String> > CAndroidHttpClient::mTextContentTypes = InitTextContentTypes();
 

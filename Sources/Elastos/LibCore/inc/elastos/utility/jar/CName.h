@@ -3,6 +3,7 @@
 #define __ELASTOS_UTILITY_CNAME_H__
 
 #include "_Elastos_Utility_Jar_CName.h"
+#include "Object.h"
 
 namespace Elastos {
 namespace Utility {
@@ -17,6 +18,15 @@ public:
 
     CAR_OBJECT_DECL()
 
+    CName();
+
+    CARAPI constructor(
+        /* [in] */ const String& name);
+
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ Boolean validateName);
+
     CARAPI GetName(
         /* [out] */ String * pName);
 
@@ -29,13 +39,6 @@ public:
 
     CARAPI ToString(
         /* [out] */ String * pName);
-
-    CARAPI constructor(
-        /* [in] */ const String& name);
-
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ Boolean validateName);
 
 public:
     /** The class path (a main attribute). */
@@ -129,7 +132,7 @@ public:
     static const AutoPtr<IName> NAME;// = new Name("Name");
 
 private:
-    const String mName;
+    String mName;
     Int32 mHashCode;
 };
 

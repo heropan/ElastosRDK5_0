@@ -13,7 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-const String CScaleGestureDetector::TAG = String("CScaleGestureDetector");
+const String CScaleGestureDetector::TAG("CScaleGestureDetector");
 const Int64 CScaleGestureDetector::TOUCH_STABILIZE_TIME = 128; // ms
 const Int32 CScaleGestureDetector::TOUCH_MIN_MAJOR = 48; // dp
 

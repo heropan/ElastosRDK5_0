@@ -52,7 +52,7 @@ namespace Server{
 namespace Location{
 
 const Boolean CLocationManagerService::D = FALSE;
-const String CLocationManagerService::TAG = String("LocationManagerService");
+const String CLocationManagerService::TAG("LocationManagerService");
 const String CLocationManagerService::WAKELOCK_KEY = TAG;
 const String CLocationManagerService::THREAD_NAME = TAG;
 const Int32 CLocationManagerService::RESOLUTION_LEVEL_NONE = 0;

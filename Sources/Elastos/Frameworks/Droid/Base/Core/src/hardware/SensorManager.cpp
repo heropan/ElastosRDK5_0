@@ -14,7 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-String SensorManager::TAG = String("SensorManager");
+String SensorManager::TAG("SensorManager");
 Mutex SensorManager::mLock;
 
 

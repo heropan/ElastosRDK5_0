@@ -71,7 +71,7 @@ namespace Impl {
 extern "C" const InterfaceID EIID_SilentModeTriStateAction =
         { 0x7e1e9c2f, 0x50e0, 0x4a07, { 0xb8, 0x2a, 0x5c, 0x73, 0x40, 0x7e, 0xea, 0xe2 } };
 
-const String GlobalActions::TAG = String("GlobalActions");
+const String GlobalActions::TAG("GlobalActions");
 
 const Boolean GlobalActions::SHOW_SILENT_TOGGLE = TRUE;
 

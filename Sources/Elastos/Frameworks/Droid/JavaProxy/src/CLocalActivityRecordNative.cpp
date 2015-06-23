@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CLocalActivityRecordNative::TAG = String("CIntentReceiverNative");
+const String CLocalActivityRecordNative::TAG("CIntentReceiverNative");
 
 CLocalActivityRecordNative::~CLocalActivityRecordNative(){
 	JNIEnv* env;

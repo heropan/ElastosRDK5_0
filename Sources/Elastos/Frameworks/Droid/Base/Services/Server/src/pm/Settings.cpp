@@ -66,7 +66,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-const String Settings::TAG = String("PackageSettings");
+const String Settings::TAG("PackageSettings");
 const Boolean Settings::DEBUG_STOPPED;
 const Boolean Settings::DEBUG_MU;
 const String Settings::TAG_READ_EXTERNAL_STORAGE = String("read-external-storage");

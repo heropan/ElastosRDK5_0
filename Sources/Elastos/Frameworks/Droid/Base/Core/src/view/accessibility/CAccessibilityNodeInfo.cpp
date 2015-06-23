@@ -16,7 +16,7 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const String CAccessibilityNodeInfo::TAG = String("AccessibilityNodeInfo");
+const String CAccessibilityNodeInfo::TAG("AccessibilityNodeInfo");
 const Boolean CAccessibilityNodeInfo::DEBUG = FALSE;
 const Int32 CAccessibilityNodeInfo::PROPERTY_CHECKABLE = 0x00000001;
 const Int32 CAccessibilityNodeInfo::PROPERTY_CHECKED = 0x00000002;

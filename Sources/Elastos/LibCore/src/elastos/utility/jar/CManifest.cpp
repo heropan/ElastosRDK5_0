@@ -1,58 +1,70 @@
 
 #include "CManifest.h"
-#include "CByteBufferHelper.h"
+#include "ManifestReader.h"
+#include "CStreams.h"
+#include "CHashMap.h"
 #include "CStringWrapper.h"
 #include "CAttributes.h"
 #include "CName.h"
-#include "CCharsets.h"
-#include "CStreams.h"
-#include "InitManifest.h"
-#include "CCharBufferHelper.h"
-#include "CCoderResultHelper.h"
-#include "CHashMap.h"
-#include "HashMap.h"
+//#include "CCharsets.h"
+//#include "CCharBufferHelper.h"
+//#include "CCoderResultHelper.h"
+//#include "CByteBufferHelper.h"
 
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
-using Elastos::IO::Charset::CCharsets;
-using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
 using Elastos::IO::ICharBuffer;
 using Elastos::IO::ICharBufferHelper;
+//using Elastos::IO::CCharBufferHelper;
+//using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IByteBufferHelper;
+//using Elastos::IO::Charset::CCharsets;
+using Elastos::IO::Charset::ICharsets;
+using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICoderResult;
 using Elastos::IO::Charset::ICoderResultHelper;
-using Elastos::IO::CCharBufferHelper;
-using Elastos::IO::Charset::CCoderResultHelper;
+//using Elastos::IO::Charset::CCoderResultHelper;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 using Elastos::Core::CStringWrapper;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::CHashMap;
 
 namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-const AutoPtr<IName> CManifest::NAME_ATTRIBUTE;
-const AutoPtr<ArrayOf<Byte> > CManifest::LINE_SEPARATOR = CManifest::InitStatics();
-const AutoPtr<ArrayOf<Byte> > CManifest::VALUE_SEPARATOR;
-
-CAR_INTERFACE_IMPL(CManifest, Object, IManifest);
-
-CAR_OBJECT_IMPL(CManifest);
-
-const AutoPtr<ArrayOf<Byte> > CManifest::InitStatics()
+static AutoPtr<IName> InitNAME_ATTRIBUTE()
 {
-    Byte sep[] = {'\r', '\n'};
-    const AutoPtr<ArrayOf<Byte> > tmp = ArrayOf<Byte>::Alloc(sizeof(sep));
-    tmp->Copy(sep, sizeof(sep));
-    VALUE_SEPARATOR = ArrayOf<Byte>::Alloc(2);
-    (*VALUE_SEPARATOR)[0] = ':';
-    (*VALUE_SEPARATOR)[1] = ' ';
     AutoPtr<CName> attrib;
     CName::NewByFriend(String("Name"), (CName**)&attrib);
-    NAME_ATTRIBUTE = (IName*)attrib.Get();
-    return tmp;
+    return (IName*)attrib.Get();
 }
 
+static AutoPtr<ArrayOf<Byte> > InitLINE_SEPARATOR()
+{
+   AutoPtr<ArrayOf<Byte> > arr = ArrayOf<Byte>::Alloc(2);
+   arr->Set(0, '\r');
+   arr->Set(1, '\n');
+   return arr;
+}
+
+static AutoPtr<ArrayOf<Byte> > InitVALUE_SEPARATOR()
+{
+   AutoPtr<ArrayOf<Byte> > arr = ArrayOf<Byte>::Alloc(2);
+   arr->Set(0, ':');
+   arr->Set(1, ' ');
+   return arr;
+}
+
+const AutoPtr<IName> CManifest::NAME_ATTRIBUTE = InitNAME_ATTRIBUTE();
+const AutoPtr<ArrayOf<Byte> > CManifest::LINE_SEPARATOR = InitLINE_SEPARATOR();
+const AutoPtr<ArrayOf<Byte> > CManifest::VALUE_SEPARATOR = InitVALUE_SEPARATOR();
+
+CAR_INTERFACE_IMPL_2(CManifest, Object, IManifest, ICloneable)
+
+CAR_OBJECT_IMPL(CManifest)
+
 CManifest::CManifest()
-    //: mEntries(new HashMap<String, AutoPtr<IAttributes> >())
     : mMainEnd(0)
 {
     CHashMap::New((IMap**)&mEntries);
@@ -63,10 +75,54 @@ CManifest::~CManifest()
 {
 }
 
+ECode CManifest::constructor()
+{
+    return NOERROR;
+}
+
+ECode CManifest::constructor(
+    /* [in] */ IInputStream* is)
+{
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    AutoPtr<ArrayOf<Byte> > bytes;
+    streams->ReadFully(is, (ArrayOf<Byte>**)&bytes);
+    return Read(bytes);
+}
+
+ECode CManifest::constructor(
+    /* [in] */ IManifest* mani)
+{
+    // TODO: Add your code here
+    AutoPtr<ICloneable> clone = ICloneable::Probe(((CManifest*)mani)->mMainAttributes);
+    AutoPtr<IInterface> obj;
+    FAIL_RETURN(clone->Clone((IInterface**)&obj));
+    mMainAttributes = IAttributes::Probe(obj);
+
+    AutoPtr<IMap> map;
+    mani->GetEntries((IMap**)&map);
+    clone = ICloneable::Probe(map);
+    obj = NULL;
+    clone->Clone((IInterface**)&obj);
+    mEntries = IMap::Probe(obj);
+    return NOERROR;
+}
+
+ECode CManifest::constructor(
+        /* [in] */ ArrayOf<Byte> * manifestBytes,
+        /* [in] */ Boolean readChunks)
+{
+    if (readChunks) {
+        mChunks = new Elastos::Utility::Etl::HashMap<String, AutoPtr<Chunk> >();
+    }
+
+    return Read(manifestBytes);
+}
+
 ECode CManifest::Clear()
 {
     mEntries->Clear();
-    ((IMap*)IMap::Probe(mMainAttributes.Get()))->Clear();
+    IMap::Probe(mMainAttributes)->Clear();
     return NOERROR;
 }
 
@@ -79,7 +135,9 @@ ECode CManifest::GetAttributes(
     GetEntries((IMap**)&map);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(name, (ICharSequence**)&cs);
-    map->Get(cs, attrib);
+    AutoPtr<IInterface> obj;
+    map->Get(cs, (IInterface**)&obj);
+    *attrib = IAttributes::Probe(obj);
     return NOERROR;
 }
 
@@ -101,159 +159,57 @@ ECode CManifest::GetMainAttributes(
     return NOERROR;
 }
 
+ECode CManifest::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object)
+    AutoPtr<IManifest> manifest;
+    CManifest::New(THIS_PROBE(IManifest), (IManifest**)&manifest);
+    *object = TO_IINTERFACE(manifest);
+    REFCOUNT_ADD(*object)
+    return NOERROR;
+}
+
 ECode CManifest::Write(
     /* [in] */ IOutputStream* os)
 {
-    return Write(this, os);
+    return Write(THIS_PROBE(IManifest), os);
 }
 
 ECode CManifest::Read(
     /* [in] */ IInputStream* is)
 {
-    // TODO: Add your code here
     AutoPtr<ArrayOf<Byte> > buf;
-    if (IByteArrayInputStream::Probe(is)) {
-        ExposeByteArrayInputStreamBytes((IByteArrayInputStream*)is, (ArrayOf<Byte>**)&buf);
-    }
-    else {
-        AutoPtr<IStreams> stream;
-        FAIL_RETURN(CStreams::AcquireSingleton((IStreams**)&stream))
-        FAIL_RETURN(stream->ReadFullyNoClose(is, (ArrayOf<Byte>**)&buf))
-    }
+    AutoPtr<IStreams> stream;
+    FAIL_RETURN(CStreams::AcquireSingleton((IStreams**)&stream))
+    FAIL_RETURN(stream->ReadFullyNoClose(is, (ArrayOf<Byte>**)&buf))
 
-    if (buf->GetLength() == 0) {
+    return Read(buf);
+}
+
+ECode CManifest::Read(
+        /* [in] */ ArrayOf<Byte> * buf)
+{
+    if (buf == NULL || buf->GetLength() == 0) {
         return NOERROR;
     }
 
-    // a workaround for HARMONY-5662
-    // replace EOF and NUL with another new line
-    // which does not trigger an error
-    Byte b = (*buf)[buf->GetLength() - 1];
-    if (b == 0 || b == 26) {
-        (*buf)[buf->GetLength() - 1] = '\n';
-    }
-
-    // Attributes.Name.MANIFEST_VERSION is not used for
-    // the second parameter for RI compatibility
-    AutoPtr<InitManifest> im = new InitManifest(buf, mMainAttributes, NULL);
-    mMainEnd = im->GetPos();
-
-    return im->InitEntries(mEntries, mChunks);
+    AutoPtr<ManifestReader> im = new ManifestReader(buf, mMainAttributes);
+    mMainEnd = im->GetEndOfMainSection();
+    return im->ReadEntries(mEntries, mChunks);
 }
 
-ECode CManifest::Clone(
-    /* [out] */ IInterface** object)
-{
-    VALIDATE_NOT_NULL(object)
-    CManifest::New(this, (IManifest**)&object);
-    REFCOUNT_ADD(*object)
-    return NOERROR;
-}
-
-ECode CManifest::constructor()
-{
-    return NOERROR;
-}
-
-ECode CManifest::constructor(
-    /* [in] */ IInputStream* is)
-{
-    return Read(is);
-}
-
-ECode CManifest::constructor(
-    /* [in] */ IManifest* mani)
-{
-    // TODO: Add your code here
-    AutoPtr<ICloneable> clone = ICloneable::Probe(((CManifest*)mani)->mMainAttributes);
-    mMainAttributes = NULL;
-    FAIL_RETURN(clone->Clone((PInterface*)&mMainAttributes));
-    //here we need to do after porting hashmap.java
-    //entries = (HashMap<String, Attributes>) ((HashMap<String, Attributes>) man
-    //            .getEntries()).clone();
-    return E_NOT_IMPLEMENTED;
-}
-
-CManifest::CManifest(
-    /* [in] */ IInputStream* is,
-    /* [in] */ Boolean readChunks)
-    //: mEntries(new HashMap<String, AutoPtr<IAttributes> >())
-    : mMainEnd(0)
-{
-    CHashMap::New((IMap**)&mEntries);
-    CAttributes::New((IAttributes**)&mMainAttributes);
-    if (readChunks) {
-        //mChunks = new HashMap<String, AutoPtr<Chunk> >();
-        CHashMap::New((IMap**)&mChunks);
-    }
-    Read(is);
-}
-
-AutoPtr<IManifest> CManifest::Create(
-    /* [in] */ IInputStream* is,
-    /* [in] */ Boolean readChunks)
-{
-    AutoPtr<CManifest> cobj = new CManifest(is, readChunks);
-    return (IManifest*)cobj.Get();
-}
-
-ECode CManifest::ExposeByteArrayInputStreamBytes(
-    /* [in] */ IByteArrayInputStream* bais,
-    /* [out, callee] */ ArrayOf<Byte>** ret)
-{
-    AutoPtr<ArrayOf<Byte> > buffer;
-    {
-        Autolock lock(this);
-        AutoPtr<ArrayOf<Byte> > buf;
-        Int32 pos;
-        //later I will add two public function to wrapper the protected members
-        // to emulate to get the reflection field
-        /*
-        try {
-            buf = (byte[]) BAIS_BUF.get(bais);
-            buf = bais->
-            pos = BAIS_POS.getInt(bais);
-        } catch (IllegalAccessException iae) {
-            throw new AssertionError(iae);
-        }
-        */
-        Int32 available;
-        bais->Available(&available);
-        if (pos == 0 && buf->GetLength() == available) {
-            buffer = buf;
-        } else {
-            buffer = ArrayOf<Byte>::Alloc(available);
-            buffer->Copy(buf, pos, available);
-        }
-        Int64 actual;
-        FAIL_RETURN(bais->Skip(available, &actual))
-    }
-    *ret = buffer;
-    REFCOUNT_ADD(*ret)
-    return NOERROR;
-}
-
-/**
- * Returns the hash code for this instance.
- *
- * @return this {@code Manifest}'s hashCode.
-*/
 ECode CManifest::GetHashCode(
     /* [out] */ Int32* hashcode)
 {
-    //return mainAttributes.hashCode() ^ getEntries().hashCode();
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IMap> map;
+    GetEntries((IMap**)&map);
+    Int32 h1 = Object::GetHashCode(mMainAttributes);
+    Int32 h2 = Object::GetHashCode(map);
+    *hashcode = h1 ^ h2;
+    return NOERROR;
 }
 
-/**
- * Determines if the receiver is equal to the parameter object. Two {@code
- * Manifest}s are equal if they have identical main attributes as well as
- * identical entry attributes.
- *
- * @param o
- *            the object to compare against.
- * @return {@code true} if the manifests are equal, {@code false} otherwise
-*/
 ECode CManifest::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEqual)
@@ -273,23 +229,25 @@ ECode CManifest::Equals(
         *isEqual = equal;
         return NOERROR;
     }
-    //just compare all items in the objectmap, or later implement hashmap in android?
-    //return getEntries().equals(((Manifest) o).getEntries());
+
+    AutoPtr<IMap> m1, m2;
+    GetEntries((IMap**)&m1);
+    om->GetEntries((IMap**)&m2);
+    *isEqual = Object::Equals(m1, m2);
     return NOERROR;
 }
 
-ECode CManifest::GetChunk(
-    /* [in] */ const String& name,
-    /* [out] */ Chunk** chunk)
+AutoPtr<CManifest::Chunk> CManifest::GetChunk(
+    /* [in] */ const String& name)
 {
-    VALIDATE_NOT_NULL(chunk)
-    AutoPtr<ICharSequence> cs;
-    AutoPtr<IInterface> value;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
-    mChunks->Get(cs.Get(), (IInterface**)&value);
-    *chunk = value.Get();
-    REFCOUNT_ADD(*chunk)
-    return NOERROR;
+    if (mChunks) {
+        Elastos::Utility::Etl::HashMap<String, AutoPtr<Chunk> >::Iterator it;
+        it = mChunks->Find(name);
+        if (it != mChunks->End()) {
+            return it->mSecond;
+        }
+    }
+    return NULL;
 }
 
 ECode CManifest::RemoveChunks()
@@ -306,64 +264,62 @@ ECode CManifest::GetMainAttributesEnd(
     return NOERROR;
 }
 
-/**
- * Writes out the attribute information of the specified manifest to the
- * specified {@code OutputStream}
- *
- * @param manifest
- *            the manifest to write out.
- * @param out
- *            The {@code OutputStream} to write to.
- * @throws IOException
- *             If an error occurs writing the {@code Manifest}.
- */
 ECode CManifest::Write(
-        /* [in] */ IManifest* manifest,
-        /* [in] */ IOutputStream* out)
+    /* [in] */ IManifest* manifest,
+    /* [in] */ IOutputStream* out)
 {
+    //CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
     AutoPtr<ICharsets> charsets;
     AutoPtr<ICharset> charset;
-    CCharsets::AcquireSingleton((ICharsets**)&charsets);
+    // CCharsets::AcquireSingleton((ICharsets**)&charsets);
     charsets->GetUTF_8((ICharset**)&charset);
     AutoPtr<ICharsetEncoder> encoder;
     charset->NewEncoder((ICharsetEncoder**)&encoder);
 
     AutoPtr<IByteBuffer> buffer;
     AutoPtr<IByteBufferHelper> helper;
-    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
+    // CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
     helper->Allocate(LINE_LENGTH_LIMIT, (IByteBuffer**)&buffer);
 
+    CManifest* cm = (CManifest*)manifest;
+
     String version;
-    ((CManifest*)manifest)->mMainAttributes->GetValue(CName::MANIFEST_VERSION, &version);
+    AutoPtr<IName> versionName = CName::MANIFEST_VERSION;
+    cm->mMainAttributes->GetValue(versionName, &version);
+
+    if (version == NULL) {
+        versionName = CName::SIGNATURE_VERSION;
+        cm->mMainAttributes->GetValue(versionName, &version);
+    }
 
     if (version != NULL) {
-        FAIL_RETURN(WriteEntry(out, CName::MANIFEST_VERSION, version, encoder, buffer))
+        FAIL_RETURN(WriteEntry(out, versionName, version, encoder, buffer))
         AutoPtr<ISet> keyset;
-        ((CAttributes*)(((CManifest*)manifest)->mMainAttributes.Get()))->GetKeySet((ISet**)&keyset);
+        IMap::Probe(cm->mMainAttributes)->GetKeySet((ISet**)&keyset);
         AutoPtr<IIterator> entries;
-        keyset->GetIterator((IIterator**)&entries);
-        Boolean isflag = FALSE;
+        IIterable::Probe(keyset)->GetIterator((IIterator**)&entries);
+        Boolean hasNext = FALSE;
         String val;
         Boolean equal;
-        while (entries->HasNext(&isflag), isflag) {
+        while (entries->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> outface;
             entries->GetNext((IInterface**)&outface);
             AutoPtr<IName> name = IName::Probe(outface);
-            if((name->Equals(CName::MANIFEST_VERSION, &equal), !equal)) {
-                ((CManifest*)manifest)->mMainAttributes->GetValue(name, &val);
+            if((name->Equals(versionName, &equal), !equal)) {
+                cm->mMainAttributes->GetValue(name, &val);
                 WriteEntry(out, name, val, encoder, buffer);
             }
         }
     }
 
-    FAIL_RETURN(out->Write(*LINE_SEPARATOR))
+    FAIL_RETURN(out->Write(LINE_SEPARATOR))
 
     AutoPtr<IMap> entries;
     manifest->GetEntries((IMap**)&entries);
     AutoPtr<ISet> keySet;
     entries->GetKeySet((ISet**)&keySet);
     AutoPtr<IIterator> it;
-    keySet->GetIterator((IIterator**)&it);
+    IIterable::Probe(keySet)->GetIterator((IIterator**)&it);
     Boolean hasNext;
     String key;
     String val;
@@ -372,13 +328,13 @@ ECode CManifest::Write(
         AutoPtr<IInterface> elm;
         it->GetNext((IInterface**)&elm);
         ICharSequence::Probe(elm)->ToString(&key);
-        WriteEntry(out, NAME_ATTRIBUTE, key, encoder, buffer);
+        WriteEntry(out, CName::NAME, key, encoder, buffer);
         AutoPtr<IInterface> attrib;
         entries->Get(elm, (IInterface**)&attrib);
         AutoPtr<ISet> keySet;
         IMap::Probe(attrib)->GetKeySet((ISet**)&keySet);
         AutoPtr<IIterator> it;
-        keySet->GetIterator((IIterator**)&it);
+        IIterable::Probe(keySet)->GetIterator((IIterator**)&it);
         while(it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> elm, value;
             it->GetNext((IInterface**)&elm);
@@ -387,7 +343,7 @@ ECode CManifest::Write(
             ICharSequence::Probe(value)->ToString(&val);
             FAIL_RETURN(WriteEntry(out, name, val, encoder, buffer))
         }
-        FAIL_RETURN(out->Write(*LINE_SEPARATOR))
+        FAIL_RETURN(out->Write(LINE_SEPARATOR))
     }
     return NOERROR;
 }
@@ -401,27 +357,29 @@ ECode CManifest::WriteEntry(
 {
     String nameString;
     name->GetName(&nameString);
-    const AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc((Byte*)const_cast<char*>(nameString.string()),
-        nameString.GetLength());
-    FAIL_RETURN(os->Write(*bytes))
-    FAIL_RETURN(os->Write(*VALUE_SEPARATOR))
-    AutoPtr<ICharsetEncoder> charsetEncoder;
-    FAIL_RETURN(encoder->Reset((ICharsetEncoder**)&charsetEncoder))
-    bBuf->Clear();
-    bBuf->SetLimit(LINE_LENGTH_LIMIT - nameString.GetLength() - 2);
+    AutoPtr<ArrayOf<Byte> > bytes = nameString.GetBytes();
+    FAIL_RETURN(os->Write(bytes))
+    FAIL_RETURN(os->Write(VALUE_SEPARATOR))
+
+    AutoPtr<ICharsetEncoder> ec;
+    FAIL_RETURN(encoder->Reset((ICharsetEncoder**)&ec))
+    IBuffer::Probe(bBuf)->Clear();
+    IBuffer::Probe(bBuf)->SetLimit(LINE_LENGTH_LIMIT - nameString.GetLength() - 2);
 
     AutoPtr<ICharBuffer> cBuf;
     AutoPtr<ICharBufferHelper> helper;
-    CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&helper);
+    // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&helper);
     AutoPtr<ArrayOf<Char32> > chars = value.GetChars();
-    helper->WrapArray(chars, (ICharBuffer**)&cBuf);
+    helper->Wrap(chars, (ICharBuffer**)&cBuf);
+
+    AutoPtr<ICoderResultHelper> crHelper;
+    // CCoderResultHelper::AcquireSingleton((ICoderResultHelper**)&crHelper);
+    AutoPtr<ICoderResult> underflow;
+    crHelper->GetUNDERFLOW((ICoderResult**)&underflow);
 
     while (TRUE) {
-        AutoPtr<ICoderResult> r, underflow;
-        AutoPtr<ICoderResultHelper> helper;
+        AutoPtr<ICoderResult> r;
         encoder->Encode(cBuf, bBuf, TRUE, (ICoderResult**)&r);
-        CCoderResultHelper::AcquireSingleton((ICoderResultHelper**)&helper);
-        helper->GetUNDERFLOW((ICoderResult**)&underflow);
         if (underflow == r) {
             r = NULL;
             encoder->Flush(bBuf, (ICoderResult**)&r);
@@ -429,16 +387,16 @@ ECode CManifest::WriteEntry(
         AutoPtr<ArrayOf<Byte> > bBufArray;
         Int32 arrayOffset, position;
         bBuf->GetArray((ArrayOf<Byte>**)&bBufArray);
-        bBuf->GetArrayOffset(&arrayOffset);
-        bBuf->GetPosition(&position);
-        os->Write(*bBufArray, arrayOffset, position);
-        os->Write(*LINE_SEPARATOR);
+        IBuffer::Probe(bBuf)->GetArrayOffset(&arrayOffset);
+        IBuffer::Probe(bBuf)->GetPosition(&position);
+        os->Write(bBufArray, arrayOffset, position);
+        os->Write(LINE_SEPARATOR);
         if (underflow == r) {
             break;
         }
         os->Write(' ');
-        bBuf->Clear();
-        bBuf->SetLimit(LINE_LENGTH_LIMIT - 1);
+        IBuffer::Probe(bBuf)->Clear();
+        IBuffer::Probe(bBuf)->SetLimit(LINE_LENGTH_LIMIT - 1);
     }
     return NOERROR;
 }

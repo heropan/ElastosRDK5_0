@@ -28,7 +28,7 @@ namespace Droid {
 namespace SystemUI {
 namespace StatusBar {
 
-const String StatusBarIconView::TAG = String("StatusBarIconView");
+const String StatusBarIconView::TAG("StatusBarIconView");
 const Boolean StatusBarIconView::DBG = FALSE;
 
 StatusBarIconView::StatusBarIconView()

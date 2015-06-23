@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIPackageMoveObserverNative::TAG = String("CIPackageMoveObserverNative");
+const String CIPackageMoveObserverNative::TAG("CIPackageMoveObserverNative");
 
 CIPackageMoveObserverNative::~CIPackageMoveObserverNative(){
     JNIEnv* env;

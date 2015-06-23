@@ -27,7 +27,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String SyncQueue::TAG = String("SyncManager");
+const String SyncQueue::TAG("SyncManager");
 
 SyncQueue::SyncQueue(
     /* [in] */ ISyncStorageEngine* engine,

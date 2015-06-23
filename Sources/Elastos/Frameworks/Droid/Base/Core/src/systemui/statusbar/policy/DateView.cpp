@@ -43,7 +43,7 @@ ECode DateView::DateViewBroadcastReceiver::OnReceive(
     return NOERROR;
 }
 
-const String DateView::TAG = String("DateView");
+const String DateView::TAG("DateView");
 const Int32 DateView::DATE_TEXTVIEW_SCALER = 18;
 
 DateView::DateView()

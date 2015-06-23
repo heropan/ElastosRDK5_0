@@ -39,7 +39,7 @@ const Int32 ScrollView::ANIMATED_SCROLL_GAP;
 const Float ScrollView::MAX_SCROLL_FACTOR;
 const Int32 ScrollView::INVALID_POINTER;
 
-const String ScrollView::TAG = String("ScrollView");
+const String ScrollView::TAG("ScrollView");
 
 ScrollView::ScrollView()
     : mLastScroll(0)

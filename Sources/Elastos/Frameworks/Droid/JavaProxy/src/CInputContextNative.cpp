@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CInputContextNative::TAG = String("CInputContextNative");
+const String CInputContextNative::TAG("CInputContextNative");
 
 CInputContextNative::~CInputContextNative(){
     JNIEnv* env;

@@ -50,7 +50,7 @@ namespace Droid {
 namespace Server {
 namespace Usb {
 
-const String UsbDebuggingManager::TAG = String("UsbDebuggingManager");
+const String UsbDebuggingManager::TAG("UsbDebuggingManager");
 const Boolean UsbDebuggingManager::DEBUG = FALSE;
 const String UsbDebuggingManager::ADBD_SOCKET = String("adbd");
 const String UsbDebuggingManager::ADB_DIRECTORY = String("misc/adb");

@@ -18,7 +18,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-String ActionMenuItemView::TAG = String("ActionMenuItemView");
+String ActionMenuItemView::TAG("ActionMenuItemView");
 const Int32 ActionMenuItemView::MAX_ICON_SIZE = 32; // dp
 
 ActionMenuItemView::ActionMenuItemView()

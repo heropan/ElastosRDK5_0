@@ -52,7 +52,7 @@ namespace Droid {
 namespace Net {
 
 const Boolean CaptivePortalTracker::DBG = FALSE;
-const String CaptivePortalTracker::TAG = String("CaptivePortalTracker");
+const String CaptivePortalTracker::TAG("CaptivePortalTracker");
 const String CaptivePortalTracker::DEFAULT_SERVER("clients3.google.com");
 const String CaptivePortalTracker::NOTIFICATION_ID("CaptivePortal.Notification");
 const Int32 CaptivePortalTracker::SOCKET_TIMEOUT_MS= 10000;

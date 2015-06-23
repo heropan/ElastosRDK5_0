@@ -19,7 +19,7 @@ namespace Droid {
 namespace Server {
 namespace Remote {
 
-const String LanDispatcher::TAG = String("Kortide_LanDispatcher");
+const String LanDispatcher::TAG("Kortide_LanDispatcher");
 const Boolean LanDispatcher::DBG = RemoteUtils::IsDebug();
 const String LanDispatcher::LISTENADDR = String("0.0.0.0");
 const Int32 LanDispatcher::LISTENPORT = 49528;

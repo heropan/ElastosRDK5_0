@@ -20,7 +20,7 @@ namespace SystemUI {
 namespace StatusBar {
 namespace Policy {
 
-const String NotificationRowLayout::TAG = String("NotificationRowLayout");
+const String NotificationRowLayout::TAG("NotificationRowLayout");
 const Boolean NotificationRowLayout::DEBUG = FALSE;
 const Boolean NotificationRowLayout::SLOW_ANIMATIONS = FALSE; //DEBUG
 const Int32 NotificationRowLayout::APPEAR_ANIM_LEN = 250;//SLOW_ANIMATIONS ? 5000 : 250;

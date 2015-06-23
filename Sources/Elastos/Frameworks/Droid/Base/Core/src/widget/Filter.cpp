@@ -14,7 +14,7 @@ namespace Droid {
 namespace Widget {
 
 
-const String Filter::TAG = String("Filter");
+const String Filter::TAG("Filter");
 const String Filter::THREAD_NAME = String("Filter");
 const Int32 Filter::FILTER_TOKEN;
 const Int32 Filter::FINISH_TOKEN;

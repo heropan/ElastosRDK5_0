@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIMountShutdownObserverNative::TAG = String("CIMountShutdownObserverNative");
+const String CIMountShutdownObserverNative::TAG("CIMountShutdownObserverNative");
 
 CIMountShutdownObserverNative::~CIMountShutdownObserverNative(){
     JNIEnv* env;

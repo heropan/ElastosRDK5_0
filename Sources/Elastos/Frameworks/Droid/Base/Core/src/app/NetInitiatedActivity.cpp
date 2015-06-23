@@ -35,7 +35,7 @@ ECode NetInitiatedReceiver::OnReceive(
 }
 
 
-const String NetInitiatedActivity::TAG = String("NetInitiatedActivity");
+const String NetInitiatedActivity::TAG("NetInitiatedActivity");
 const Boolean NetInitiatedActivity::DEBUG;
 const Boolean NetInitiatedActivity::VERBOSE;
 const Int32 NetInitiatedActivity::POSITIVE_BUTTON;

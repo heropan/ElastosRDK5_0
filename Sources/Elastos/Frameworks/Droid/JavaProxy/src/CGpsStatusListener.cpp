@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CGpsStatusListener::TAG = String("CGpsStatusListener");
+const String CGpsStatusListener::TAG("CGpsStatusListener");
 
 CGpsStatusListener::CGpsStatusListener(){
 

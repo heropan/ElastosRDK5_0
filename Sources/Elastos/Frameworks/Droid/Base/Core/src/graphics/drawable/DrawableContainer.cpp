@@ -13,7 +13,7 @@ namespace Graphics {
 namespace Drawable {
 
 const Boolean DrawableContainer::DEFAULT_DITHER;
-const String DrawableContainer::TAG = String("DrawableContainer");
+const String DrawableContainer::TAG("DrawableContainer");
 
 DrawableContainer::DrawableContainer()
     : mAlpha(0xFF)

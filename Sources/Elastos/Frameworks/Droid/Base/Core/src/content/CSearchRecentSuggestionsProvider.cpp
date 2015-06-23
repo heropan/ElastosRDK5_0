@@ -17,7 +17,7 @@ namespace Content {
 
 const Int32 CSearchRecentSuggestionsProvider::DATABASE_MODE_QUERIES;
 const Int32 CSearchRecentSuggestionsProvider::DATABASE_MODE_2LINES;
-const String CSearchRecentSuggestionsProvider::TAG = String("SuggestionsProvider");
+const String CSearchRecentSuggestionsProvider::TAG("SuggestionsProvider");
 const String CSearchRecentSuggestionsProvider::sDatabaseName = String("suggestions.db");
 const String CSearchRecentSuggestionsProvider::sSuggestions = String("suggestions");
 const String CSearchRecentSuggestionsProvider::ORDER_BY = String("date DESC");

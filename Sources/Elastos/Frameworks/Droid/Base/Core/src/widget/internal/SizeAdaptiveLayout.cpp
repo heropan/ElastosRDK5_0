@@ -77,7 +77,7 @@ ECode SizeAdaptiveLayout::BringToFrontOnEnd::OnAnimationStart(
 //===================================================================================
 //              SizeAdaptiveLayout
 //===================================================================================
-const String SizeAdaptiveLayout::TAG = String("SizeAdaptiveLayout");
+const String SizeAdaptiveLayout::TAG("SizeAdaptiveLayout");
 const Boolean SizeAdaptiveLayout::SizeAdaptiveLayout::DEBUG = FALSE;
 const Boolean SizeAdaptiveLayout::REPORT_BAD_BOUNDS = TRUE;
 const Int64 SizeAdaptiveLayout::CROSSFADE_TIME = 250;

@@ -132,7 +132,7 @@ Int32 InputMethodsPanel::CompareInputMethodInfo(
 }
 
 
-const String InputMethodsPanel::TAG = String("InputMethodsPanel");
+const String InputMethodsPanel::TAG("InputMethodsPanel");
 
 InputMethodsPanel::InputMethodsPanel()
     : mAttached(FALSE)

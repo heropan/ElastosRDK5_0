@@ -37,4 +37,5 @@ module
     const E_NAGATIVE_ARRAY_SIZE_EXCEPTION               = 0xA0170000;
     const E_ILLEGAL_ACCESS_EXCEPTION                    = 0xA0180000;
     const E_NO_SUCH_FIELD_EXCEPTION                     = 0xA0190000;
+    const E_CLASS_CAST_EXCEPTION                        = 0xA0200000;
 }

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CContentResolverNative::TAG = String("CContentResolverNative");
+const String CContentResolverNative::TAG("CContentResolverNative");
 
 CContentResolverNative::~CContentResolverNative()
 {

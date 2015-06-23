@@ -18,7 +18,7 @@ namespace Backup{
 
 #define VERSION_1_HEADER 0x01706c48  // 'Hlp'1 little endian
 
-const String CBackupHelperDispatcher::TAG = String("BackupHelperDispatcher");
+const String CBackupHelperDispatcher::TAG("BackupHelperDispatcher");
 
 ECode CBackupHelperDispatcher::constructor()
 {

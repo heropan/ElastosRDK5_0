@@ -59,7 +59,7 @@ const Int32 CAudioManager::DEFAULT_STREAM_VOLUME[] = {
     11  // STREAM_TTS
 };
 
-const String CAudioManager::TAG = String("CAudioManager");
+const String CAudioManager::TAG("CAudioManager");
 const Boolean CAudioManager::DEBUG = FALSE;
 
 const Int32 CAudioManager::RINGER_MODE_MAX = RINGER_MODE_NORMAL;

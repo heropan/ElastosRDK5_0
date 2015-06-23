@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIRemoteVolumeObserver::TAG = String("CIRemoteVolumeObserver");
+const String CIRemoteVolumeObserver::TAG("CIRemoteVolumeObserver");
 
 CIRemoteVolumeObserver::~CIRemoteVolumeObserver()
 {

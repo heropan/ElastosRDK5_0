@@ -14,7 +14,7 @@ namespace Server {
 namespace Pm {
 
 const String PreferredActivity::ATTR_USER_ID = String("userId");
-const String PreferredActivity::TAG = String("PreferredActivity");
+const String PreferredActivity::TAG("PreferredActivity");
 
 const Boolean PreferredActivity::DEBUG_FILTERS;
 

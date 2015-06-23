@@ -60,6 +60,10 @@ module
             [in] String name,
             [in] String val,
             [out] String* oldVal);
+
+        PutValue(
+            [in] String name,
+            [in] String val);
     }
 
     }//Jar

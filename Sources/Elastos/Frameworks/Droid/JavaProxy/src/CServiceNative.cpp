@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CServiceNative::TAG = String("CServiceNative");
+const String CServiceNative::TAG("CServiceNative");
 
 CServiceNative::~CServiceNative()
 {

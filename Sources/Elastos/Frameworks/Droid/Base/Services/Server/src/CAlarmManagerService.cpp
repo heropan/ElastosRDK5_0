@@ -694,7 +694,7 @@ const Int32 CAlarmManagerService::RTC_SHUTDOWN_WAKEUP_MASK = 1 << IAlarmManager:
 // Alignment quantum for inexact repeating alarms
 const Int64 CAlarmManagerService::QUANTUM = IAlarmManager::INTERVAL_FIFTEEN_MINUTES;
 
-const String CAlarmManagerService::TAG = String("AlarmManager");
+const String CAlarmManagerService::TAG("AlarmManager");
 const String CAlarmManagerService::ClockReceiver_TAG = String("ClockReceiver");
 const Boolean CAlarmManagerService::localLOGV = FALSE;
 const Int32 CAlarmManagerService::ALARM_EVENT = 1;

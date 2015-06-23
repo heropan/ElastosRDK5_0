@@ -5,9 +5,10 @@ module
     interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IInputStream;
 
-    namespace Elastos{
-    namespace Utility{
-    namespace Jar{
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
+
         interface IManifest {
             /**
              * Resets the both the main attributes as well as the entry attributes

@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CCursorNative::TAG = String("CCursorNative");
+const String CCursorNative::TAG("CCursorNative");
 
 HashMap<IContentObserver*, jobject> CCursorNative::mContentObserverMap;
 HashMap<IDataSetObserver*, jobject> CCursorNative::mDataSetObserverMap;

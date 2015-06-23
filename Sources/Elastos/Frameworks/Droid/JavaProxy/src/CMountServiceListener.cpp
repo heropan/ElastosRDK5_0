@@ -8,7 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CMountServiceListener::TAG = String("CMountServiceListener");
+const String CMountServiceListener::TAG("CMountServiceListener");
 
 CMountServiceListener::~CMountServiceListener(){
     JNIEnv* env;

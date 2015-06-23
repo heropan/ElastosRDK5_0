@@ -72,7 +72,7 @@ const Boolean PackageParser::DEBUG_JAR = FALSE;
 const Boolean PackageParser::DEBUG_PARSER = FALSE;
 const Boolean PackageParser::DEBUG_BACKUP = FALSE;
 
-const String PackageParser::TAG = String("PackageParser");
+const String PackageParser::TAG("PackageParser");
 
 /** File name in an APK for the Android manifest. */
 const String PackageParser::ANDROID_MANIFEST_FILENAME = String("AndroidManifest.xml");

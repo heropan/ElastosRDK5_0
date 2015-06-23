@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIFullBackupRestoreObserverNative::TAG = String("CIFullBackupRestoreObserverNative");
+const String CIFullBackupRestoreObserverNative::TAG("CIFullBackupRestoreObserverNative");
 
 CIFullBackupRestoreObserverNative::~CIFullBackupRestoreObserverNative()
 {

@@ -12,7 +12,7 @@ namespace SystemUI {
 namespace StatusBar {
 namespace Tablet {
 
-const String CompatModePanel::TAG = String("CompatModePanel");
+const String CompatModePanel::TAG("CompatModePanel");
 
 CompatModePanel::CompatModePanel()
     : mAttached(FALSE)

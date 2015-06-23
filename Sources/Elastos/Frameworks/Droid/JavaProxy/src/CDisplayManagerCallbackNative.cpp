@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CDisplayManagerCallbackNative::TAG = String("CDisplayManagerCallbackNative");
+const String CDisplayManagerCallbackNative::TAG("CDisplayManagerCallbackNative");
 
 CDisplayManagerCallbackNative::~CDisplayManagerCallbackNative(){
     JNIEnv* env;

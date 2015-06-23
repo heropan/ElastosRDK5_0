@@ -200,7 +200,7 @@ ECode PanelView::ViewOnTouchListener::OnTouch(
 //======================================================================
 //            PanelView
 //======================================================================
-const String PanelView::TAG = String("PanelView");
+const String PanelView::TAG("PanelView");
 
 PanelView::PanelView()
     : mInitialTouchY(0)

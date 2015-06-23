@@ -16,7 +16,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String AsyncQueryHandler::TAG = String("AsyncQuery");
+const String AsyncQueryHandler::TAG("AsyncQuery");
 const Boolean AsyncQueryHandler::localLOGV = FALSE;
 const Int32 AsyncQueryHandler::EVENT_ARG_QUERY;
 const Int32 AsyncQueryHandler::EVENT_ARG_INSERT;

@@ -47,7 +47,7 @@ const AutoPtr< ArrayOf<String> > CClipData::MIMETYPES_TEXT_HTML = InitMimeTypes(
 const AutoPtr< ArrayOf<String> > CClipData::MIMETYPES_TEXT_URILIST = InitMimeTypes(2);
 const AutoPtr< ArrayOf<String> > CClipData::MIMETYPES_TEXT_INTENT = InitMimeTypes(3);
 
-const String CClipData::TAG = String("CClipData");
+const String CClipData::TAG("CClipData");
 
 CClipData::~CClipData()
 {

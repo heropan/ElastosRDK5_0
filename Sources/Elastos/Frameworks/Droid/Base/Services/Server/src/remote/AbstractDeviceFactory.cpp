@@ -7,7 +7,7 @@ namespace Droid {
 namespace Server {
 namespace Remote {
 
-const String AbstractDeviceFactory::TAG = String("AbstractDeviceFactory");
+const String AbstractDeviceFactory::TAG("AbstractDeviceFactory");
 const Boolean AbstractDeviceFactory::DBG = RemoteUtils::IsDebug();
 
 AbstractDeviceFactory::AbstractDeviceFactory(

@@ -33,7 +33,7 @@ namespace Content {
             }                      \
         } while (0);
 
-const String CContentProviderOperation::TAG = String("CContentProviderOperation");
+const String CContentProviderOperation::TAG("CContentProviderOperation");
 
 CContentProviderOperation::CContentProviderOperation()
     : mType(0)

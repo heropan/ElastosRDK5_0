@@ -227,7 +227,7 @@ Boolean ZigbeeFactory::SocketCmd_Task::IsFuncReturnVoid()
     return mIsVoid;
 }
 
-const String ZigbeeFactory::TAG = String("ZigbeeFactory");
+const String ZigbeeFactory::TAG("ZigbeeFactory");
 const Boolean ZigbeeFactory::DBG = TRUE;
 const Int32 ZigbeeFactory::CMDRESERVEDLENGTH;
 const Int32 ZigbeeFactory::CMDPAIR;

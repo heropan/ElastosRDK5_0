@@ -249,7 +249,7 @@ static AutoPtr< ArrayOf<Int32> > InitLaunchTimeBins()
 const String CUsageStatsService::SERVICE_NAME = String("usagestats");
 const Boolean CUsageStatsService::mLocalLOGV;
 const Boolean CUsageStatsService::REPORT_UNEXPECTED;
-const String CUsageStatsService::TAG = String("UsageStats");
+const String CUsageStatsService::TAG("UsageStats");
 
 const Int32 CUsageStatsService::VERSION;
 const Int32 CUsageStatsService::CHECKIN_VERSION;

@@ -35,7 +35,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const String CalendarView::TAG = String("CalendarView");
+const String CalendarView::TAG("CalendarView");
 const String CalendarView::DATE_FORMAT = String("MM/dd/yyyy");
 const String CalendarView::DEFAULT_MIN_DATE = String("01/01/1900");
 const String CalendarView::DEFAULT_MAX_DATE = String("01/01/2100");

@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CDataSetObserverNative::TAG = String("CDataSetObserverNative");
+const String CDataSetObserverNative::TAG("CDataSetObserverNative");
 
 
 CDataSetObserverNative::~CDataSetObserverNative(){

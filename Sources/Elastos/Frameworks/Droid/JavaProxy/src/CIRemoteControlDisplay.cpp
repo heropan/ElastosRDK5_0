@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIRemoteControlDisplay::TAG = String("CIRemoteControlDisplay");
+const String CIRemoteControlDisplay::TAG("CIRemoteControlDisplay");
 
 CIRemoteControlDisplay::~CIRemoteControlDisplay()
 {

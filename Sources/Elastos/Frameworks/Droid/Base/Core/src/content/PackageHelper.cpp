@@ -27,7 +27,7 @@ namespace Internal {
 namespace Content {
 
 const Boolean PackageHelper::localLOGV = FALSE;
-const String PackageHelper::TAG = String("PackageHelper");
+const String PackageHelper::TAG("PackageHelper");
 
 ECode PackageHelper::GetMountService(
     /* [out] */ IMountService** mountService)

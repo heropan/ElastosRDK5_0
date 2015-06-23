@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-const String ServiceManager::TAG = String("ServiceManager");
+const String ServiceManager::TAG("ServiceManager");
 AutoPtr<IServiceManager> ServiceManager::sServiceManager;
 
 AutoPtr<IServiceManager> ServiceManager::GetIServiceManager()

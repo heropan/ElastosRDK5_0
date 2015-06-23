@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIBackupAgentNative::TAG = String("CIBackupAgentNative");
+const String CIBackupAgentNative::TAG("CIBackupAgentNative");
 
 CIBackupAgentNative::~CIBackupAgentNative()
 {

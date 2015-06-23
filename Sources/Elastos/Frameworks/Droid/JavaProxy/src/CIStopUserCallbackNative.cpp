@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIStopUserCallbackNative::TAG = String("CIStopUserCallbackNative");
+const String CIStopUserCallbackNative::TAG("CIStopUserCallbackNative");
 
 CIStopUserCallbackNative::~CIStopUserCallbackNative(){
     JNIEnv* env;

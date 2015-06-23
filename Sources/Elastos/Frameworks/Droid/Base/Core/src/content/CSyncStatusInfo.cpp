@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String CSyncStatusInfo::TAG = String("Sync");
+const String CSyncStatusInfo::TAG("Sync");
 const Int32 CSyncStatusInfo::VERSION;
 
 CSyncStatusInfo::CSyncStatusInfo()

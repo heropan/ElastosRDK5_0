@@ -10,7 +10,7 @@ namespace Droid {
 namespace Server {
 namespace Zigbee {
 
-const String ZigbeeDevice::TAG = String("ZigbeeDevice");
+const String ZigbeeDevice::TAG("ZigbeeDevice");
 const Boolean ZigbeeDevice::DBG = TRUE;
 const String ZigbeeDevice::NOT_AVAILABLE = String("NA");
 const String ZigbeeDevice::sFileNameSpliter = String("_");

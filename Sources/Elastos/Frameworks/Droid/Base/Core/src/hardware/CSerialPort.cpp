@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-String CSerialPort::TAG = String("SerialPort");
+String CSerialPort::TAG("SerialPort");
 
 CSerialPort::CSerialPort()
     : mNativeContext(0)

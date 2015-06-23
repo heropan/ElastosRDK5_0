@@ -14,7 +14,7 @@ namespace Droid {
 namespace Server {
 namespace Remote {
 
-const String RemoteUtils::TAG = String("RemoteUtils");
+const String RemoteUtils::TAG("RemoteUtils");
 const Boolean RemoteUtils::DBG = TRUE;
 const String RemoteUtils::SPLITER = String("94:GM");
 

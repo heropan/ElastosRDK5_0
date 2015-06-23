@@ -319,7 +319,7 @@ ECode VideoView::VVSurfaceHodlerCallback::SurfaceDestroyed(
 //          VideoView
 //==============================================================================
 
-const String VideoView::TAG = String("VideoView");
+const String VideoView::TAG("VideoView");
 const Int32 VideoView::STATE_ERROR;
 const Int32 VideoView::STATE_IDLE;
 const Int32 VideoView::STATE_PREPARING;

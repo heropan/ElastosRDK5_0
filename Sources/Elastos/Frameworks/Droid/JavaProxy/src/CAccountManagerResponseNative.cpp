@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CAccountManagerResponseNative::TAG = String("CAccountManagerResponseNative");
+const String CAccountManagerResponseNative::TAG("CAccountManagerResponseNative");
 
 CAccountManagerResponseNative::~CAccountManagerResponseNative(){
     JNIEnv* env;

@@ -13,7 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-const String CKortideRemoteService::TAG = String("KortideRemoteService");
+const String CKortideRemoteService::TAG("KortideRemoteService");
 const Boolean CKortideRemoteService::DBG = FALSE;
 const Int32 CKortideRemoteService::SLEEPTIME_MS = 5000;
 const Int32 CKortideRemoteService::RETRYMAX = 5;

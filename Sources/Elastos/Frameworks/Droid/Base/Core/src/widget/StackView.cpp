@@ -59,7 +59,7 @@ extern "C" const InterfaceID EIID_StackFrame =
         { 0x76b9f5c3, 0x333f, 0x4d2b, { 0xa8, 0xb6, 0x2b, 0x6a, 0xe1, 0xad, 0xfc, 0xac } };
 
 
-const String StackView::TAG = String("StackView");
+const String StackView::TAG("StackView");
 const Int32 StackView::DEFAULT_ANIMATION_DURATION;
 const Int32 StackView::MINIMUM_ANIMATION_DURATION;
 const Int32 StackView::STACK_RELAYOUT_DURATION;

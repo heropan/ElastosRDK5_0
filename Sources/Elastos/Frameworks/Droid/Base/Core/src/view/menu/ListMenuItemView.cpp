@@ -13,7 +13,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-const String ListMenuItemView::TAG = String("ListMenuItemView");
+const String ListMenuItemView::TAG("ListMenuItemView");
 
 ListMenuItemView::ListMenuItemView()
     : mTextAppearance(0)

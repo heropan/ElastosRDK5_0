@@ -80,7 +80,7 @@ AutoPtr<IWifiDisplayThread> CWifiDisplayManagerService::WifiDisplayClient::GetWi
 //===================================================================================
 //          CWifiDisplayManagerService
 //===================================================================================
-const String CWifiDisplayManagerService::TAG = String("WifiDisplayManagerService");
+const String CWifiDisplayManagerService::TAG("WifiDisplayManagerService");
 const Boolean CWifiDisplayManagerService::LOCAL_LOGV = TRUE;
 const Boolean CWifiDisplayManagerService::DEBUG_CLIENT = TRUE;
 

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIRingtonePlayer::TAG = String("CIRingtonePlayer");
+const String CIRingtonePlayer::TAG("CIRingtonePlayer");
 
 CIRingtonePlayer::~CIRingtonePlayer()
 {

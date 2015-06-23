@@ -9,7 +9,7 @@ namespace SystemUI {
 namespace StatusBar {
 namespace Phone {
 
-const String PanelBar::TAG = String("PanelBar");
+const String PanelBar::TAG("PanelBar");
 
 PanelBar::PanelBar()
     : mPanelExpandedFractionSum(0)

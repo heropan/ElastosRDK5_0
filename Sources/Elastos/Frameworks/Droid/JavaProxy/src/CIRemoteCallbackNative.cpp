@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIRemoteCallbackNative::TAG = String("CIRemoteCallbackNative");
+const String CIRemoteCallbackNative::TAG("CIRemoteCallbackNative");
 
 CIRemoteCallbackNative::~CIRemoteCallbackNative(){
     JNIEnv* env;

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CISyncStatusObserver::TAG = String("CISyncStatusObserver");
+const String CISyncStatusObserver::TAG("CISyncStatusObserver");
 
 CISyncStatusObserver::~CISyncStatusObserver()
 {

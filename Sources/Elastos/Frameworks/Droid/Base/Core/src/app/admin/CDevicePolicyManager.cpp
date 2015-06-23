@@ -32,7 +32,7 @@ namespace Droid {
 namespace App {
 namespace Admin {
 
-const String CDevicePolicyManager::TAG = String("CDevicePolicyManager");
+const String CDevicePolicyManager::TAG("CDevicePolicyManager");
 
 ECode CDevicePolicyManager::constructor(
     /* [in] */ IContext* context,

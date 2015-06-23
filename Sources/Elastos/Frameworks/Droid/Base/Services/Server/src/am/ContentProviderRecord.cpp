@@ -24,7 +24,7 @@ namespace Am {
 // ContentProviderRecord::ExternalProcessHandle
 //=============================================================================
 
-const String ContentProviderRecord::ExternalProcessHandle::TAG = String("ExternalProcessHanldle");
+const String ContentProviderRecord::ExternalProcessHandle::TAG("ExternalProcessHanldle");
 
 CAR_INTERFACE_IMPL(ContentProviderRecord::ExternalProcessHandle, IProxyDeathRecipient)
 

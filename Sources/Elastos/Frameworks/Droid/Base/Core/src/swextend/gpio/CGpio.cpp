@@ -16,7 +16,7 @@ namespace Elastos {
 namespace Droid {
 namespace Swextend {
 
-const String CGpio::TAG = String("CGpio");
+const String CGpio::TAG("CGpio");
 
 const String CGpio::mPathstr = String("/sys/class/gpio_sw/P");
 const String CGpio::mDataName = String("/data");

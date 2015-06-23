@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CICountryListenerNative::TAG = String("CICountryListenerNative");
+const String CICountryListenerNative::TAG("CICountryListenerNative");
 
 CICountryListenerNative::~CICountryListenerNative()
 {

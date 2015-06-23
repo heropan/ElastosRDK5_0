@@ -32,7 +32,7 @@ const Int32 CContentValues::VAL_DOUBLE;
 const Int32 CContentValues::VAL_BOOLEAN;
 const Int32 CContentValues::VAL_ARRAYOF;
 
-const String CContentValues::TAG = String("CContentValues");
+const String CContentValues::TAG("CContentValues");
 
 CContentValues::CContentValues()
 {}

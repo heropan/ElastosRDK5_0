@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String SyncAdaptersCache::TAG = String("Account");
+const String SyncAdaptersCache::TAG("Account");
 const String SyncAdaptersCache::SERVICE_INTERFACE = String("android.content.SyncAdapter");
 const String SyncAdaptersCache::SERVICE_META_DATA = String("android.content.SyncAdapter");
 const String SyncAdaptersCache::ATTRIBUTES_NAME = String("sync-adapter");

@@ -31,7 +31,7 @@ namespace Policy {
 namespace Impl {
 
 const Boolean BootAnimationView::DEBUG = FALSE;
-const String BootAnimationView::TAG = String("BootAnimationView");
+const String BootAnimationView::TAG("BootAnimationView");
 const String BootAnimationView::BOOT_LOGO_PATH = String("/system/media/bootlogo.bmp");
 const String BootAnimationView::INIT_LOGO_PATH = String("/system/media/initlogo.bmp");
 

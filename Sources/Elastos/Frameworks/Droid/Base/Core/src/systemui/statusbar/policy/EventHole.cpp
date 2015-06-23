@@ -15,7 +15,7 @@ namespace SystemUI {
 namespace StatusBar {
 namespace Policy {
 
-const String EventHole::TAG = String("StatusBar.EventHole");
+const String EventHole::TAG("StatusBar.EventHole");
 
 EventHole::EventHole()
     : mWindowVis(FALSE)

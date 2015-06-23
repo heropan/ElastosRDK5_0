@@ -96,7 +96,7 @@ static AutoPtr<GridLayout::Alignment> InitBottom()
     return NULL;
 }
 
-const String GridLayout::TAG = String("GridLayout");
+const String GridLayout::TAG("GridLayout");
 const Int32 GridLayout::HORIZONTAL;
 const Int32 GridLayout::VERTICAL;
 const Int32 GridLayout::UNDEFINED = Elastos::Core::Math::INT32_MIN_VALUE;

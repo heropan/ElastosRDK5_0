@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CApplicationThreadNative::TAG = String("CApplicationThreadNative");
+const String CApplicationThreadNative::TAG("CApplicationThreadNative");
 
 HashMap<AutoPtr<IBinder>, jobject> CApplicationThreadNative::sTokenMap;
 HashMap<AutoPtr<IBinder>, jobject> CApplicationThreadNative::sServiceTokenMap;

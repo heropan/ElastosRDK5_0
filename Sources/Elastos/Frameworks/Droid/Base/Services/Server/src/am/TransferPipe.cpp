@@ -19,7 +19,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-const String TransferPipe::TAG = String("TransferPipe");
+const String TransferPipe::TAG("TransferPipe");
 const Boolean TransferPipe::DEBUG;
 const Int64 TransferPipe::DEFAULT_TIMEOUT;
 

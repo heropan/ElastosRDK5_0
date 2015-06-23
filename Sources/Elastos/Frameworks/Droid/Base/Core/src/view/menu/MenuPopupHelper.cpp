@@ -33,7 +33,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-String MenuPopupHelper::TAG = String("MenuPopupHelper");
+String MenuPopupHelper::TAG("MenuPopupHelper");
 const Int32 MenuPopupHelper::ITEM_LAYOUT = R::layout::popup_menu_item_layout;
 
 MenuPopupHelper::_MenuAdapter::_MenuAdapter(

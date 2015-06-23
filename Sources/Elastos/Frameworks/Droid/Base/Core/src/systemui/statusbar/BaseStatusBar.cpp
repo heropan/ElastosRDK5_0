@@ -103,7 +103,7 @@ namespace Droid {
 namespace SystemUI {
 namespace StatusBar {
 
-const String BaseStatusBar::TAG = String("StatusBar");
+const String BaseStatusBar::TAG("StatusBar");
 const Boolean BaseStatusBar::DEBUG = FALSE;
 const Boolean BaseStatusBar::MULTIUSER_DEBUG = FALSE;
 

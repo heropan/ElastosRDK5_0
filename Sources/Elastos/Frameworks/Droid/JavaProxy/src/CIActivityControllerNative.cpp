@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIActivityControllerNative::TAG = String("CIActivityControllerNative");
+const String CIActivityControllerNative::TAG("CIActivityControllerNative");
 
 CIActivityControllerNative::~CIActivityControllerNative(){
     JNIEnv* env;

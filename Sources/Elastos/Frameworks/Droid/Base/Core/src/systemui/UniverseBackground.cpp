@@ -20,7 +20,7 @@ namespace Elastos {
 namespace Droid {
 namespace SystemUI {
 
-const String UniverseBackground::TAG = String("UniverseBackground");
+const String UniverseBackground::TAG("UniverseBackground");
 const Boolean UniverseBackground::SPEW;
 const Boolean UniverseBackground::CHATTY;
 const Int32 UniverseBackground::STATE_CLOSED;

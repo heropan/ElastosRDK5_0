@@ -36,6 +36,11 @@ CAR_INTERFACE_IMPL(CName, Object, IName)
 
 CAR_OBJECT_IMPL(CName)
 
+CName::CName()
+    : mHashCode(0)
+{
+}
+
 ECode CName::GetName(
     /* [out] */ String * pName)
 {
@@ -109,7 +114,6 @@ ECode CName::constructor(
     }
 
     mName = name;
-    mHashCode = 0;
     return NOERROR;
 }
 

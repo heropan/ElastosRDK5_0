@@ -22,7 +22,7 @@ const Int32 SessionCmdTask::TargetID::NoTarget;
 const Int32 SessionCmdTask::TargetID::RouterSetting;
 const Int32 SessionCmdTask::TargetID::Zigbee;
 const Int32 SessionCmdTask::TargetID::TVDisp;
-const String SessionCmdTask::TAG = String("SessionCmdTask");
+const String SessionCmdTask::TAG("SessionCmdTask");
 const Boolean SessionCmdTask::DBG = RemoteUtils::IsDebug();
 
 CAR_INTERFACE_IMPL(SessionCmdTask, ICallable);

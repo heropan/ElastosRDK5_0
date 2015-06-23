@@ -56,7 +56,7 @@ namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-String CHardwareCamera::TAG = String("Camera");
+String CHardwareCamera::TAG("Camera");
 const Int32 CHardwareCamera::CAMERA_MSG_ERROR            = 0x001;
 const Int32 CHardwareCamera::CAMERA_MSG_SHUTTER          = 0x002;
 const Int32 CHardwareCamera::CAMERA_MSG_FOCUS            = 0x004;

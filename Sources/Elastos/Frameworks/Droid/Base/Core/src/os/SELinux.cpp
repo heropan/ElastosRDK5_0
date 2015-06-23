@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-const String SELinux::TAG = String("SELinux");
+const String SELinux::TAG("SELinux");
 
 static Boolean sIsSELinuxDisabled = TRUE;
 

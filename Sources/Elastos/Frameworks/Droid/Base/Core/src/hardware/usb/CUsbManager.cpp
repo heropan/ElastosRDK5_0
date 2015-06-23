@@ -12,7 +12,7 @@ namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-const String CUsbManager::TAG = String("UsbManager");
+const String CUsbManager::TAG("UsbManager");
 
 ECode CUsbManager::constructor(
     /* [in] */ IContext* context,

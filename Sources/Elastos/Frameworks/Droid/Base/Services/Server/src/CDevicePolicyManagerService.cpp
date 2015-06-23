@@ -73,7 +73,7 @@ const String CDevicePolicyManagerService::SYSTEM_PROP_DISABLE_CAMERA = String("s
 
 const String CDevicePolicyManagerService::DEVICE_POLICIES_XML = String("device_policies.xml");
 
-const String CDevicePolicyManagerService::TAG = String("DevicePolicyManagerService");
+const String CDevicePolicyManagerService::TAG("DevicePolicyManagerService");
 
 const Int32 CDevicePolicyManagerService::REQUEST_EXPIRE_PASSWORD = 5571;
 

@@ -1,12 +1,7 @@
 #ifndef __ELASTOS_IO_CHAARSET_CHAARSET_H__
 #define __ELASTOS_IO_CHAARSET_CHAARSET_H__
 
-#ifndef __USE_MALLOC
-#define __USE_MALLOC
-#endif
-
-#include <Elastos.CoreLibrary_server.h>
-#include "elastos/core/Object.h"
+#include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/Set.h>

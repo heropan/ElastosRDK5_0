@@ -188,7 +188,7 @@ const Int32 CPhoneWindowManager::SYSTEM_UI_CHANGING_LAYOUT =
 AutoPtr<HashMap<Int32, AutoPtr<IInterface> > > CPhoneWindowManager::sApplicationLaunchKeyCategories =
         InitApplicationLaunchKeyCategories();
 
-String CPhoneWindowManager::TAG = String("PhoneWindowManager");
+String CPhoneWindowManager::TAG("PhoneWindowManager");
 const Boolean CPhoneWindowManager::DEBUG = FALSE;
 const Boolean CPhoneWindowManager::localLOGV = FALSE;
 const Boolean CPhoneWindowManager::DEBUG_LAYOUT = FALSE;

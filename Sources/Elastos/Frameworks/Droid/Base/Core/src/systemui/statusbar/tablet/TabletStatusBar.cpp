@@ -84,7 +84,7 @@ namespace Tablet {
 extern "C" const InterfaceID EIID_TabletStatusBar =
     { 0x5accca39, 0xc6fd, 0x4930, { 0xba, 0x8a, 0x55, 0x30, 0xff, 0xf5, 0x7e, 0xdb } };
 
-const String TabletStatusBar::TAG = String("TabletStatusBar");
+const String TabletStatusBar::TAG("TabletStatusBar");
 const Boolean TabletStatusBar::DEBUG = FALSE;
 const Boolean TabletStatusBar::DEBUG_COMPAT_HELP = FALSE;
 

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIParcelableNative::TAG = String("CIParcelableNative");
+const String CIParcelableNative::TAG("CIParcelableNative");
 
 ECode CIParcelableNative::constructor()
 {

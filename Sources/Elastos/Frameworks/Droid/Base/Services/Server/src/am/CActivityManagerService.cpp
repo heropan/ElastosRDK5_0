@@ -331,7 +331,7 @@ static pthread_key_t InitSCallerIdentity()
     return key;
 }
 
-const String CActivityManagerService::TAG = String("CActivityManagerService");
+const String CActivityManagerService::TAG("CActivityManagerService");
 const String CActivityManagerService::TAG_MU = String("CActivityManagerServiceMU");
 
 const Boolean CActivityManagerService::DEBUG = FALSE;

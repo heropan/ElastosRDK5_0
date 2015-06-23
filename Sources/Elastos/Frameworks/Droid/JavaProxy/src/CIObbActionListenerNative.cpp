@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIObbActionListenerNative::TAG = String("CIObbActionListenerNative");
+const String CIObbActionListenerNative::TAG("CIObbActionListenerNative");
 
 CIObbActionListenerNative::~CIObbActionListenerNative(){
     JNIEnv* env;

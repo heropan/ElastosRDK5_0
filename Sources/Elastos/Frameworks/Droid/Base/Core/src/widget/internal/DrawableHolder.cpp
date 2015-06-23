@@ -17,7 +17,7 @@ static AutoPtr<IDecelerateInterpolator> CreateInterpolator()
     return ipt;
 }
 
-const String DrawableHolder::TAG = String("DrawableHolder");
+const String DrawableHolder::TAG("DrawableHolder");
 AutoPtr<IDecelerateInterpolator> DrawableHolder::EASE_OUT_INTERPOLATOR = CreateInterpolator();
 
 DrawableHolder::DrawableHolder()

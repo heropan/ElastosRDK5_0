@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CMessengerNative::TAG = String("CMessengerNative");
+const String CMessengerNative::TAG("CMessengerNative");
 
 CMessengerNative::~CMessengerNative(){
     JNIEnv* env;

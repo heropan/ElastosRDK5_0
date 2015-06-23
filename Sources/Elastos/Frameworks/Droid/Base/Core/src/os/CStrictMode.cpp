@@ -74,7 +74,7 @@ static pthread_key_t InitSViolationsBeingTimed()
     return key;
 }
 
-const String CStrictMode::TAG = String("StrictMode");
+const String CStrictMode::TAG("StrictMode");
 const Boolean CStrictMode::LOG_V = Logger::IsLoggable(TAG, Logger::VERBOSE);
 const Boolean CStrictMode::IS_USER_BUILD = String("user").Equals(Build::TYPE);
 const Boolean CStrictMode::IS_ENG_BUILD = String("eng").Equals(Build::TYPE);

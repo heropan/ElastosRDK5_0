@@ -13,7 +13,7 @@ namespace Droid {
 namespace Internal {
 namespace App {
 
-const String CDisableCarModeActivity::TAG = String("CDisableCarModeActivity");
+const String CDisableCarModeActivity::TAG("CDisableCarModeActivity");
 
 ECode CDisableCarModeActivity::constructor()
 {

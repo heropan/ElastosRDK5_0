@@ -42,7 +42,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-const String Intent::TAG = String("Intent");
+const String Intent::TAG("Intent");
 
 Intent::Intent()
     : mFlags(0)

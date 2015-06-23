@@ -38,7 +38,7 @@ namespace Droid {
 namespace Widget {
 namespace Internal {
 
-String CLockSettingsService::DatabaseHelper::TAG = String("LockSettingsDB");
+String CLockSettingsService::DatabaseHelper::TAG("LockSettingsDB");
 String CLockSettingsService::DatabaseHelper::DATABASE_NAME = String("locksettings.db");
 const Int32 CLockSettingsService::DatabaseHelper::DATABASE_VERSION = 1;
 
@@ -151,7 +151,7 @@ ECode CLockSettingsService::DatabaseHelper::OnOpen(
 
 
 //class CLockSettingsService's implement.
-String CLockSettingsService::TAG = String("LockSettingsService");
+String CLockSettingsService::TAG("LockSettingsService");
 String CLockSettingsService::TABLE = String("locksettings");
 String CLockSettingsService::COLUMN_KEY = String("name");
 String CLockSettingsService::COLUMN_USERID = String("user");

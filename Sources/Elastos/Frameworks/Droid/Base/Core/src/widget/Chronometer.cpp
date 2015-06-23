@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const String Chronometer::TAG = String("Chronometer");
+const String Chronometer::TAG("Chronometer");
 const Int32 Chronometer::TICK_WHAT;
 
 ECode Chronometer::MyHandler::HandleMessage(

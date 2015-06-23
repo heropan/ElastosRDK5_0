@@ -29,7 +29,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const String AdapterViewAnimator::TAG = String("AdapterViewAnimator");
+const String AdapterViewAnimator::TAG("AdapterViewAnimator");
 const Int32 AdapterViewAnimator::DEFAULT_ANIMATION_DURATION;
 const Int32 AdapterViewAnimator::TOUCH_MODE_NONE;
 const Int32 AdapterViewAnimator::TOUCH_MODE_DOWN_IN_CURRENT_VIEW;

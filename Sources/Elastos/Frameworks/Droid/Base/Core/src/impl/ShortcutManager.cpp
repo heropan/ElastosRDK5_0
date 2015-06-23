@@ -19,7 +19,7 @@ namespace Internal {
 namespace Policy {
 namespace Impl {
 
-const String ShortcutManager::TAG = String("ShortcutManager");
+const String ShortcutManager::TAG("ShortcutManager");
 
 const Int32 ShortcutManager::COLUMN_SHORTCUT = 0;
 const Int32 ShortcutManager::COLUMN_INTENT = 1;

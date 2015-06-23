@@ -9,7 +9,7 @@ namespace Droid {
 namespace Hardware {
 namespace Usb {
 
-const String CUsbRequest::TAG = String("UsbRequest");
+const String CUsbRequest::TAG("UsbRequest");
 
 CUsbRequest::~CUsbRequest()
 {

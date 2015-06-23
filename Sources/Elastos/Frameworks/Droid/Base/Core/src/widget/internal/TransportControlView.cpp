@@ -32,7 +32,7 @@ namespace Widget {
 namespace Internal {
 
 const Boolean TransportControlView::DEBUG;
-const String TransportControlView::TAG = String("TransportControlView");
+const String TransportControlView::TAG("TransportControlView");
 const Int32 TransportControlView::MSG_UPDATE_STATE;
 const Int32 TransportControlView::MSG_SET_METADATA;
 const Int32 TransportControlView::MSG_SET_TRANSPORT_CONTROLS;

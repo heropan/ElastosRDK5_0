@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIWallpaperConnectionNative::TAG = String("CIWallpaperConnectionNative");
+const String CIWallpaperConnectionNative::TAG("CIWallpaperConnectionNative");
 
 CIWallpaperConnectionNative::~CIWallpaperConnectionNative()
 {

@@ -19,7 +19,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-String MenuItemImpl::TAG = String("MenuItemImpl");
+String MenuItemImpl::TAG("MenuItemImpl");
 const Int32 MenuItemImpl::SHOW_AS_ACTION_MASK = IMenuItem::SHOW_AS_ACTION_NEVER |
             IMenuItem::SHOW_AS_ACTION_IF_ROOM | IMenuItem::SHOW_AS_ACTION_ALWAYS;
 

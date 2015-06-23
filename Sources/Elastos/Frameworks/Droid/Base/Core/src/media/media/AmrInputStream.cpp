@@ -28,7 +28,7 @@ struct GsmAmrEncoderState
     int32_t mLastModeUsed;
 };
 
-String AmrInputStream::TAG = String("AmrInputStream");
+String AmrInputStream::TAG("AmrInputStream");
 
 AmrInputStream::AmrInputStream()
     : mGae(0)

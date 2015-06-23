@@ -16,7 +16,7 @@ namespace Droid {
 namespace Net {
 namespace Pppoe {
 
-const String CPppoeMonitor::TAG = String("CPppoeMonitor");
+const String CPppoeMonitor::TAG("CPppoeMonitor");
 const Int32 CPppoeMonitor::CONNECTED = 1;
 const Int32 CPppoeMonitor::DISCONNECTED = 2;
 const Int32 CPppoeMonitor::PHYUP = 3;

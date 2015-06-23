@@ -8,7 +8,7 @@ namespace Droid {
 namespace Widget {
 namespace Internal {
 
-const String EditableInputConnection::TAG = String("EditableInputConnection");
+const String EditableInputConnection::TAG("EditableInputConnection");
 
 EditableInputConnection::EditableInputConnection()
    : mBatchEditNesting(0)

@@ -26,7 +26,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-const String MenuBuilderBase::TAG = String("MenuBuilder");
+const String MenuBuilderBase::TAG("MenuBuilder");
 const String MenuBuilderBase::PRESENTER_KEY = String("android:menu:presenters");
 const String MenuBuilderBase::ACTION_VIEW_STATES_KEY = String("android:menu:actionviewstates");
 const String MenuBuilderBase::EXPANDED_ACTION_VIEW_ID = String("android:menu:expandedactionview");

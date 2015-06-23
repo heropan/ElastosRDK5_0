@@ -16,11 +16,11 @@ using namespace Elastos;
 extern "C" const Elastos::ClassID ECLSID_CDummyObject;
 
 #ifndef __ETL_HASH_FUN_H__
-#include <elastos/etl_hash_fun.h>
+#include <elastos/utility/etl/etl_hash_fun.h>
 #endif
 
 #ifndef __ETL_FUNCTION_H__
-#include <elastos/etl_function.h>
+#include <elastos/utility/etl/etl_function.h>
 #endif
 
 #ifndef __DROIDFRAMEWORKDEF_H__

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CContentObserverNative::TAG = String("CContentObserverNative");
+const String CContentObserverNative::TAG("CContentObserverNative");
 
 CContentObserverNative::~CContentObserverNative(){
     JNIEnv* env;

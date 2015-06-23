@@ -162,7 +162,7 @@ static String InitMNT_SDCARD()
     return path;
 }
 
-const String ServerSocketTimer::TAG = String("KortideServerSocketTimer");
+const String ServerSocketTimer::TAG("KortideServerSocketTimer");
 const Boolean ServerSocketTimer::DBG = RemoteUtils::IsDebug();
 const Int32 ServerSocketTimer::CMD_TIMEOUT_SEC = 2;
 const Int32 ServerSocketTimer::BUFFER_SIZE = 1024 * 8;

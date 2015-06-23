@@ -83,7 +83,7 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
-const String CAudioService::TAG = String("AudioService");
+const String CAudioService::TAG("AudioService");
 const Boolean CAudioService::DEBUG_RC = FALSE;
 const Boolean CAudioService::DEBUG_VOL = FALSE;
 

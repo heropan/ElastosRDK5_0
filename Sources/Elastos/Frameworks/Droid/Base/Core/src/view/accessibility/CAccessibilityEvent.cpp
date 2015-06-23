@@ -10,7 +10,7 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const String CAccessibilityEvent::TAG = String("AccessibilityEvent");
+const String CAccessibilityEvent::TAG("AccessibilityEvent");
 const Int32 CAccessibilityEvent::MAX_POOL_SIZE = 10;
 
 AutoPtr<CAccessibilityEvent> CAccessibilityEvent::sPool = NULL;

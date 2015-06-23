@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIRotationWatcherNative::TAG = String("CIRotationWatcherNative");
+const String CIRotationWatcherNative::TAG("CIRotationWatcherNative");
 
 CIRotationWatcherNative::~CIRotationWatcherNative(){
     JNIEnv* env;

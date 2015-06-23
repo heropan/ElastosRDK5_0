@@ -21,7 +21,7 @@ namespace Elastos{
 namespace Droid{
 namespace App{
 
-const String CTaskStackBuilder::TAG = String("TaskStackBuilder");
+const String CTaskStackBuilder::TAG("TaskStackBuilder");
 
 CTaskStackBuilder::CTaskStackBuilder()
 {

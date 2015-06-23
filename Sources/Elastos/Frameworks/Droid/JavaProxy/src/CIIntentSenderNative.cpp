@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIIntentSenderNative::TAG = String("CIIntentSenderNative");
+const String CIIntentSenderNative::TAG("CIIntentSenderNative");
 
 CIIntentSenderNative::~CIIntentSenderNative()
 {

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIApplicationTokenNative::TAG = String("CIApplicationTokenNative");
+const String CIApplicationTokenNative::TAG("CIApplicationTokenNative");
 
 CIApplicationTokenNative::~CIApplicationTokenNative()
 {

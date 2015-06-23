@@ -35,7 +35,7 @@ static Int32 BitCount(Int64 v) {
     return i  & 0x0000007F;
 }
 
-String ActionMenuView::TAG = String("ActionMenuView");
+String ActionMenuView::TAG("ActionMenuView");
 const Int32 ActionMenuView::MIN_CELL_SIZE = 56; // dips
 const Int32 ActionMenuView::GENERATED_ITEM_PADDING = 4; // dips
 

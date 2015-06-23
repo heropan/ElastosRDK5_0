@@ -2278,42 +2278,35 @@ module
     } // namespace Elastos
 
 
-    // interface Elastos.Core.ICloneable;
-    // interface Elastos.Utility.IMap;
-    // interface Elastos.Utility.Zip.IZipEntry;
-    // interface Elastos.IO.IFile;
-    // interface Elastos.IO.IFlushable;
-    // interface Elastos.IO.IOutputStream;
-    // interface Elastos.IO.IInputStream;
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
 
-    // namespace Elastos {
-    // namespace Utility {
-    // namespace Jar {
+        class CName {
+            constructor(
+                [in] String name);
 
-    //     class CName {
-    //         constructor(
-    //             [in] String name);
+            constructor(
+                [in] String name,
+                [in] Boolean validateName);
 
-    //         constructor(
-    //             [in] String name,
-    //             [in] Boolean validateName);
+            interface IName;
+        }
 
-    //         interface IName;
-    //     }
-    //     [deprecated]
-    //     class CAttributes {
-    //         constructor();
+        [deprecated]
+        class CAttributes {
+            constructor();
 
-    //         constructor(
-    //             [in] IAttributes* attributes);
+            constructor(
+                [in] IAttributes* attributes);
 
-    //         constructor(
-    //             [in] Int32 size);
+            constructor(
+                [in] Int32 size);
 
-    //         interface IAttributes;
-    //         interface ICloneable;
-    //         interface IMap;
-    //     }
+            interface IAttributes;
+            interface ICloneable;
+            interface IMap;
+        }
 
     //     class CJarEntry {
     //         constructor(
@@ -2389,26 +2382,26 @@ module
     //         interface IFlushable;
     //     }
 
-    //     class CManifest {
-    //         constructor();
+        class CManifest {
+            constructor();
 
-    //         constructor(
-    //             [in] IInputStream* is);
+            constructor(
+                [in] IInputStream* is);
 
-    //         constructor(
-    //             [in] IManifest* mani);
+            constructor(
+                [in] IManifest* mani);
 
-    //         interface IManifest;
-    //         interface ICloneable;
-    //     }
+            interface IManifest;
+            interface ICloneable;
+        }
 
     //     singleton class CPack200Helper {
     //         interface IPack200Helper;
     //     }
 
-    // } // namespace Jar
-    // } // namespace Utility
-    // } // namespace Elastos
+    } // namespace Jar
+    } // namespace Utility
+    } // namespace Elastos
 
 
     namespace Elastos {

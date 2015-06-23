@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIAudioFocusDispatcher::TAG = String("CIAudioFocusDispatcher");
+const String CIAudioFocusDispatcher::TAG("CIAudioFocusDispatcher");
 
 CIAudioFocusDispatcher::~CIAudioFocusDispatcher()
 {

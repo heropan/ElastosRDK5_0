@@ -13,7 +13,7 @@ namespace Droid {
 namespace Server {
 namespace Zigbee {
 
-const String ZigbeeDoorSensor::TAG = String("ZigbeeDoorSensor");
+const String ZigbeeDoorSensor::TAG("ZigbeeDoorSensor");
 //debug
 const Boolean ZigbeeDoorSensor::DBG = TRUE;
 

@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CAppWidgetHostCallbacksNative::TAG = String("CAppWidgetHostCallbacksNative");
+const String CAppWidgetHostCallbacksNative::TAG("CAppWidgetHostCallbacksNative");
 
 CAppWidgetHostCallbacksNative::CAppWidgetHostCallbacksNative(){
 

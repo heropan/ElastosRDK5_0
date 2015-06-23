@@ -8,7 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-const String CalendarContract::TAG = String("Calendar");
+const String CalendarContract::TAG("Calendar");
 
 ECode CalendarContract::GetCONTENTURI(
     /* [out] */ IUri** uri)

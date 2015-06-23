@@ -48,7 +48,7 @@ namespace Droid {
 namespace DevSamples {
 namespace AudioFxDemo {
 
-const String CActivityOne::TAG = String("AudioFxDemo");
+const String CActivityOne::TAG("AudioFxDemo");
 const Float CActivityOne::VISUALIZER_HEIGHT_DIP = 50.0f;
 
 CAR_INTERFACE_IMPL(CActivityOne::MyMediaPlayerOnCompletionListener, IMediaPlayerOnCompletionListener)

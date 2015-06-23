@@ -96,7 +96,7 @@ ECode CUserManagerService::RemoveRunnable::Run()
 
 CAR_INTERFACE_IMPL(CUserManagerService::RemoveRunnable, IRunnable)
 
-const String CUserManagerService::TAG = String("CUserManagerService");
+const String CUserManagerService::TAG("CUserManagerService");
 
 const Boolean CUserManagerService::DBG;
 

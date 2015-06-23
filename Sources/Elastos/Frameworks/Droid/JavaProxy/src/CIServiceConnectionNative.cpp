@@ -13,7 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIServiceConnectionNative::TAG = String("CIServiceConnectionNative");
+const String CIServiceConnectionNative::TAG("CIServiceConnectionNative");
 
 CIServiceConnectionNative::~CIServiceConnectionNative(){
     JNIEnv* env;

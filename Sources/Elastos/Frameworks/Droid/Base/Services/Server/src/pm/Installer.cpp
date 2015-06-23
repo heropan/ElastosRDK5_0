@@ -16,7 +16,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-const String Installer::TAG = String("Installer");
+const String Installer::TAG("Installer");
 const Boolean Installer::LOCAL_DEBUG;
 
 Installer::Installer()

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CRemoteViewsFactoryNative::TAG = String("CRemoteViewsFactoryNative");
+const String CRemoteViewsFactoryNative::TAG("CRemoteViewsFactoryNative");
 
 CRemoteViewsFactoryNative::~CRemoteViewsFactoryNative(){
     JNIEnv* env;

@@ -19,7 +19,7 @@ namespace Elastos {
 namespace Droid {
 namespace Mtp {
 
-const String CMtpDevice::TAG = String("MtpDevice");
+const String CMtpDevice::TAG("MtpDevice");
 
 CMtpDevice::CMtpDevice()
     : mNativeContext(0)

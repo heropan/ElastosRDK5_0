@@ -959,7 +959,7 @@ void MyMtpDatabase::sessionEnded() {
 
 
 
-const String CMtpDatabase::TAG = String("MtpDatabase");
+const String CMtpDatabase::TAG("MtpDatabase");
 const Int32 CMtpDatabase::DEVICE_PROPERTIES_DATABASE_VERSION = 1;
 
 ArrayOf<String>* CMtpDatabase::ID_PROJECTION;

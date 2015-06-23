@@ -14,7 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-const String NotificationManager::TAG = String("NotificationManager");
+const String NotificationManager::TAG("NotificationManager");
 const Boolean NotificationManager::DEBUG = TRUE;
 const Boolean NotificationManager::localLOGV = TRUE;
 

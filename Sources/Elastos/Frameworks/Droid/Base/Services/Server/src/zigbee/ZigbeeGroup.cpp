@@ -12,7 +12,7 @@ namespace Droid {
 namespace Server {
 namespace Zigbee {
 
-const String ZigbeeGroup::TAG = String("ZigbeeGroup");
+const String ZigbeeGroup::TAG("ZigbeeGroup");
 const Boolean ZigbeeGroup::DBG = TRUE;
 
 ZigbeeGroup::ZigbeeGroup(

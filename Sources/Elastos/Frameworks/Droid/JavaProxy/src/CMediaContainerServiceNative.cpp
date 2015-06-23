@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CMediaContainerServiceNative::TAG = String("CMediaContainerServiceNative");
+const String CMediaContainerServiceNative::TAG("CMediaContainerServiceNative");
 
 CMediaContainerServiceNative::~CMediaContainerServiceNative(){
     JNIEnv* env;

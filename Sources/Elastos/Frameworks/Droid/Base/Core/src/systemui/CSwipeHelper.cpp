@@ -97,7 +97,7 @@ AutoPtr<ILinearInterpolator> InitLinearInterpolator()
     return li;
 }
 
-const String CSwipeHelper::TAG = String("com.android.systemui.SwipeHelper");
+const String CSwipeHelper::TAG("com.android.systemui.SwipeHelper");
 const Boolean CSwipeHelper::DEBUG = FALSE;
 const Boolean CSwipeHelper::DEBUG_INVALIDATE = FALSE;
 const Boolean CSwipeHelper::SLOW_ANIMATIONS = FALSE; // DEBUG;

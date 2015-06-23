@@ -35,7 +35,7 @@ const Int32 CSyncManager::MAX_SIMULTANEOUS_REGULAR_SYNCS = 0;
 //***const Int32 CSyncManager::MAX_SIMULTANEOUS_REGULAR_SYNCS = SystemProperties::GetInt32("sync.max_regular_syncs", sIsLargeRAM ? 2 : 1);
 const Int32 CSyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS = 0;
 //***const Int32 CSyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS = SystemProperties::GetInt32("sync.max_init_syncs", sIsLargeRAM ? 5 : 2);
-const String CSyncManager::TAG = String("SyncManager");
+const String CSyncManager::TAG("SyncManager");
 const String CSyncManager::SYNC_WAKE_LOCK_PREFIX = String("*sync*");
 const String CSyncManager::HANDLE_SYNC_ALARM_WAKE_LOCK = String("SyncManagerHandleSyncAlarm");
 const String CSyncManager::SYNC_LOOP_WAKE_LOCK = String("SyncLoopWakeLock");

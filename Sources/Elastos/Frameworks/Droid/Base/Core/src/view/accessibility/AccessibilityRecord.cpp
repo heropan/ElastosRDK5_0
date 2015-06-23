@@ -21,7 +21,7 @@ namespace Accessibility {
 extern const InterfaceID EIID_AccessibilityRecord =
         { 0x657ea1a2, 0x91e4, 0x4414, { 0x95, 0x14, 0xce, 0x42, 0x59, 0x4d, 0x9b, 0xc5 } };
 
-const String AccessibilityRecord::TAG = String("AccessibilityRecord");
+const String AccessibilityRecord::TAG("AccessibilityRecord");
 const Int32 AccessibilityRecord::UNDEFINED = -1;
 const Int32 AccessibilityRecord::PROPERTY_CHECKED = 0x00000001;
 const Int32 AccessibilityRecord::PROPERTY_ENABLED = 0x00000002;

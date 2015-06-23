@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CIUserSwitchObserverNative::TAG = String("CIUserSwitchObserverNative");
+const String CIUserSwitchObserverNative::TAG("CIUserSwitchObserverNative");
 
 CIUserSwitchObserverNative::~CIUserSwitchObserverNative()
 {

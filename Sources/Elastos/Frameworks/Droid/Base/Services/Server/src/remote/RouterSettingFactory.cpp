@@ -55,7 +55,7 @@ ECode RouterSettingFactory::SendIntentThread::Run()
     return NOERROR;
 }
 
-const String RouterSettingFactory::TAG = String("RouterSettingFactory");
+const String RouterSettingFactory::TAG("RouterSettingFactory");
 const Boolean RouterSettingFactory::DBG = TRUE;
 
 RouterSettingFactory::RouterSettingFactory(

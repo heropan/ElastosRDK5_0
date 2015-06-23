@@ -30,7 +30,7 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-const String AudioDeviceManagerObserver::TAG = String("AudioDeviceManagerObserver");
+const String AudioDeviceManagerObserver::TAG("AudioDeviceManagerObserver");
 const Boolean AudioDeviceManagerObserver::LOG = TRUE;
 const Int32 AudioDeviceManagerObserver::MAX_AUDIO_DEVICES;
 const String AudioDeviceManagerObserver::AUDIO_TYPE = String("audioType");

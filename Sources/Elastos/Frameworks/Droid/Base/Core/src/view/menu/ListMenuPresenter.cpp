@@ -23,7 +23,7 @@ namespace Droid {
 namespace View {
 namespace Menu {
 
-String ListMenuPresenter::TAG = String("ListMenuPresenter");
+String ListMenuPresenter::TAG("ListMenuPresenter");
 String ListMenuPresenter::VIEWS_TAG = String("android:menu:list");
 
 ListMenuPresenter::_MenuAdapter::_MenuAdapter(

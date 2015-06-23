@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CWindowNative::TAG = String("CWindowNative");
+const String CWindowNative::TAG("CWindowNative");
 
 CWindowNative::~CWindowNative(){
     JNIEnv* env;

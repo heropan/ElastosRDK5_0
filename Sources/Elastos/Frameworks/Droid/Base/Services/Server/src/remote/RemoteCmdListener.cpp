@@ -34,7 +34,7 @@ namespace Droid {
 namespace Server {
 namespace Remote {
 
-const String RemoteCmdListener::TAG = String("Kortide_RemoteCmdListener");
+const String RemoteCmdListener::TAG("Kortide_RemoteCmdListener");
 const Boolean RemoteCmdListener::DBG = RemoteUtils::IsDebug();
 const Int32 RemoteCmdListener::CMDTIMEOUT_SEC = 3;
 

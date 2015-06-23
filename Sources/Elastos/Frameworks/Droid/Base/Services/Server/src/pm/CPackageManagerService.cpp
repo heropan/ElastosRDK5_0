@@ -2943,7 +2943,7 @@ CAR_INTERFACE_IMPL(CPackageManagerService::ProcessRunnable, IRunnable)
 ///////////////////////////////////////////////////////////////////////////////
 // CPackageManagerService
 
-const String CPackageManagerService::TAG = String("PackageManager");
+const String CPackageManagerService::TAG("PackageManager");
 const Boolean CPackageManagerService::DEBUG_SETTINGS = FALSE;
 const Boolean CPackageManagerService::DEBUG_PREFERRED = FALSE;
 const Boolean CPackageManagerService::DEBUG_UPGRADE = FALSE;

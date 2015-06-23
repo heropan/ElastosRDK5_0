@@ -22,7 +22,7 @@ namespace Droid {
 namespace Commands {
 namespace Monkey {
 const Int64 MonkeyPowerEvent::USB_DELAY_TIME = 10000;
-const String MonkeyPowerEvent::TAG = String("PowerTester");
+const String MonkeyPowerEvent::TAG("PowerTester");
 const String MonkeyPowerEvent::LOG_FILE = String("/sdcard/autotester.log");
 AutoPtr<List<AutoPtr<IContentValues> > > MonkeyPowerEvent::mLogEvents = \
     new List<AutoPtr<IContentValues> >();

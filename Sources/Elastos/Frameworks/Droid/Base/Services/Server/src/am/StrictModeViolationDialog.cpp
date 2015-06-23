@@ -39,7 +39,7 @@ ECode StrictModeViolationDialog::MyHandler::HandleMessage(
 }
 
 
-String const StrictModeViolationDialog::TAG = String("StrictModeViolationDialog");
+String const StrictModeViolationDialog::TAG("StrictModeViolationDialog");
 Int32 const StrictModeViolationDialog::ACTION_OK = 0;
 Int32 const StrictModeViolationDialog::ACTION_OK_AND_REPORT = 1;
 Int64 const StrictModeViolationDialog::DISMISS_TIMEOUT = 1000 * 60 * 1;

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
-const String CSpellCheckerSessionListenerNative::TAG = String("CSpellCheckerSessionListenerNative");
+const String CSpellCheckerSessionListenerNative::TAG("CSpellCheckerSessionListenerNative");
 
 CSpellCheckerSessionListenerNative::~CSpellCheckerSessionListenerNative(){
     JNIEnv* env;

@@ -37,7 +37,7 @@ namespace SystemUI {
 namespace StatusBar {
 namespace Tablet {
 
-const String TabletTicker::TAG = String("StatusBar.TabletTicker");
+const String TabletTicker::TAG("StatusBar.TabletTicker");
 const Boolean TabletTicker::DBG = FALSE;
 const Boolean TabletTicker::CLICKABLE_TICKER = TRUE;
 
