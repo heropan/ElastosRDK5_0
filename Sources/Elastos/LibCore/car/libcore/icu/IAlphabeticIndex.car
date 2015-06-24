@@ -6,12 +6,17 @@ module
     namespace Libcore {
     namespace ICU {
 
+    /**
+     * Exposes icu4c's ImmutableIndex (new to icu 51). This exposes a read-only,
+     * thread safe snapshot view of an AlphabeticIndex at the moment it was
+     * created, and allows for random access to buckets by index.
+     */
     interface IImmutableIndex {
         /**
          * Returns the number of the label buckets in this index.
          */
         GetBucketCount(
-            [in] Int32 count);
+            [out] Int32* count);
 
         /**
          * Returns the index of the bucket in which 's' should appear.
@@ -30,6 +35,9 @@ module
             [out] String* label);
     }
 
+    /**
+     * Exposes icu4c's AlphabeticIndex.
+     */
     interface IAlphabeticIndex {
         /**
         * Returns the max number of the label buckets allowed in this index.

@@ -88,6 +88,13 @@ module
         interface INativeBreakIteratorHelper;
     }
 
+    class CAlphabeticIndex {
+        constructor(
+            [in] ILocale* locale);
+
+        interface IAlphabeticIndex;
+    }
+
     } // namespace ICU
     } // namespace LibCore
 }
