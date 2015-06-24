@@ -27,9 +27,10 @@ private:
             /* [in] */ IRunnableFuture* task,
             /* [in] */ CExecutorCompletionService* owner)
             : FutureTask(IRunnable::Probe(task), NULL)
-            , mTask(task)
             , mOwner(owner)
-        {}
+        {
+            mTask = IFuture::Probe(task);
+        }
 
     protected:
         CARAPI_(void) Done();

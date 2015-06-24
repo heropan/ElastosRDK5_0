@@ -177,6 +177,7 @@ module
     merge("utility/concurrent/IConcurrentMap.car");
     merge("utility/concurrent/IConcurrentHashMap.car");
     merge("utility/concurrent/IConcurrentNavigableMap.car");
+    merge("utility/concurrent/IExecutorCompletionService.car");
 
     //======================================================
     // Elastos.Utility.Zip
@@ -1569,16 +1570,16 @@ module
         interface ICountDownLatch;
     }
 
-    // class CExecutorCompletionService {
-    //     constructor(
-    //         [in] IExecutor* executor);
+    class CExecutorCompletionService {
+        constructor(
+            [in] IExecutor* executor);
 
-    //     constructor(
-    //         [in] IExecutor* executor,
-    //         [in] IBlockingQueue* completionQueue);
+        constructor(
+            [in] IExecutor* executor,
+            [in] IBlockingQueue* completionQueue);
 
-    //     interface ICompletionService;
-    // }
+        interface ICompletionService;
+    }
 
     singleton class CExecutors {
         interface IExecutors;
@@ -1597,21 +1598,21 @@ module
         interface IRunnable;
     }
 
-    // class CLinkedBlockingQueue {
-    //     constructor();
+    class CLinkedBlockingQueue {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 capacity);
+        constructor(
+            [in] Int32 capacity);
 
-    //     constructor(
-    //         [in] ICollection* c);
+        constructor(
+            [in] ICollection* c);
 
-    //     interface IBlockingQueue;
-    //     interface IQueue;
-    //     interface ICollection;
-    //     interface IIterable;
-    //     interface ISerializable;
-    // }
+        interface IBlockingQueue;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+        interface ISerializable;
+    }
 
     class CThreadPoolExecutor {
         /**
@@ -1959,21 +1960,21 @@ module
         interface ISerializable;
     }
 
-    // class CPhaser {
-    //     constructor();
+    class CPhaser {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 parties);
+        constructor(
+            [in] Int32 parties);
 
-    //     constructor(
-    //         [in] IPhaser* parent);
+        constructor(
+            [in] IPhaser* parent);
 
-    //     constructor(
-    //         [in] IPhaser* parent,
-    //         [in] Int32 parties);
+        constructor(
+            [in] IPhaser* parent,
+            [in] Int32 parties);
 
-    //     interface IPhaser;
-    // }
+        interface IPhaser;
+    }
 
     [deprecated]
     class CCopyOnWriteArrayList {

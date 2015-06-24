@@ -3,7 +3,9 @@
 #include "CAtomicInteger32.h"
 #include <Math.h>
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -111,31 +113,43 @@ ECode CLinkedBlockingQueue::constructor(
     /* [in] */ ICollection* c)
 {
     FAIL_RETURN(constructor(Elastos::Core::Math::INT32_MAX_VALUE));
-    Mutex::Autolock lock(mPutLock); // Never contended, but necessary for visibility
+    AutoPtr<IReentrantLock> putLock = mPutLock;
+    ILock::Probe(putLock)->Lock(); // Never contended, but necessary for visibility
     Int32 n = 0;
     AutoPtr< ArrayOf<IInterface*> > elems;
     c->ToArray((ArrayOf<IInterface*>**)&elems);
     for (Int32 i = 0; i < elems->GetLength(); ++i) {
         AutoPtr<IInterface> e = (*elems)[i];
-        if (e == NULL) return E_NULL_POINTER_EXCEPTION;
-        if (n == mCapacity) return E_ILLEGAL_STATE_EXCEPTION;
+        if (e == NULL) {
+            ILock::Probe(putLock)->UnLock();
+            return E_NULL_POINTER_EXCEPTION;
+        }
+        if (n == mCapacity) {
+            ILock::Probe(putLock)->UnLock();
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
         Enqueue(new Node(e));
         ++n;
     }
     mCount->Set(n);
+    ILock::Probe(putLock)->UnLock();
     return NOERROR;
 }
 
 void CLinkedBlockingQueue::SignalNotEmpty()
 {
-    Mutex::Autolock lock(mTakeLock);
-    mNotEmpty.Signal();
+    AutoPtr<IReentrantLock> takeLock = mTakeLock;
+    ILock::Probe(takeLock)->Lock();
+//    mNotEmpty.Signal();
+    ILock::Probe(takeLock)->UnLock();
 }
 
 void CLinkedBlockingQueue::SignalNotFull()
 {
-    Mutex::Autolock lock(mPutLock);
-    mNotFull.Signal();
+    AutoPtr<IReentrantLock> putLock = mPutLock;
+    ILock::Probe(putLock)->Lock();
+//    mNotFull.Signal();
+    ILock::Probe(putLock)->UnLock();
 }
 
 void CLinkedBlockingQueue::Enqueue(
@@ -161,14 +175,14 @@ AutoPtr<IInterface> CLinkedBlockingQueue::Dequeue()
 
 void CLinkedBlockingQueue::FullyLock()
 {
-    mPutLock.Lock();
-    mTakeLock.Lock();
+    ILock::Probe(mPutLock)->Lock();
+    ILock::Probe(mTakeLock)->Lock();
 }
 
 void CLinkedBlockingQueue::FullyUnlock()
 {
-    mTakeLock.Unlock();
-    mPutLock.Unlock();
+    ILock::Probe(mTakeLock)->UnLock();
+    ILock::Probe(mPutLock)->UnLock();
 }
 
 ECode CLinkedBlockingQueue::GetSize(
@@ -197,10 +211,8 @@ ECode CLinkedBlockingQueue::Put(
     Int32 c = -1;
     AutoPtr<Node> node = new Node(e);
     {
-        // TODO:
-        // putLock.lockInterruptibly();
-        Mutex::Autolock lock(mPutLock);
-
+        AutoPtr<IReentrantLock> putLock = mPutLock;
+        ILock::Probe(putLock)->LockInterruptibly();
         /*
          * Note that count is used in wait guard even though it is
          * not protected by lock. This works because count can
@@ -210,13 +222,14 @@ ECode CLinkedBlockingQueue::Put(
          * for all other uses of count in other wait guards.
          */
         while (mCount->Get(&c), c == mCapacity) {
-            mNotFull.Wait(mPutLock);
+//            mNotFull.Wait(mPutLock);
         }
         Enqueue(node);
         mCount->GetAndIncrement(&c);
         if (c + 1 < mCapacity) {
-            mNotFull.Signal();
+//            mNotFull.Signal();
         }
+        ILock::Probe(putLock)->UnLock();
     }
     if (c == 0) {
         SignalNotEmpty();
@@ -236,22 +249,21 @@ ECode CLinkedBlockingQueue::Offer(
     unit->ToNanos(timeout, &nanos);
     Int32 c = -1;
     {
-        // TODO:
-        // putLock.lockInterruptibly();
-        Mutex::Autolock lock(mPutLock);
-
+        AutoPtr<IReentrantLock> putLock = mPutLock;
+        ILock::Probe(putLock)->LockInterruptibly();
         while (mCount->Get(&c), c == mCapacity) {
             if (nanos <= 0) {
                 *result = FALSE;
                 return NOERROR;
             }
-            mNotFull.WaitNanos(mPutLock, nanos, &nanos);
+//            mNotFull.WaitNanos(mPutLock, nanos, &nanos);
         }
         Enqueue(new Node(e));
         mCount->GetAndIncrement(&c);
         if (c + 1 < mCapacity) {
-            mNotFull.Signal();
+//            mNotFull.Signal();
         }
+        ILock::Probe(putLock)->UnLock();
     }
     if (c == 0) {
         SignalNotEmpty();
@@ -273,15 +285,16 @@ ECode CLinkedBlockingQueue::Offer(
     }
     AutoPtr<Node> node = new Node(e);
     {
-        Mutex::Autolock lock(mPutLock);
-
+        AutoPtr<IReentrantLock> putLock = mPutLock;
+        ILock::Probe(putLock)->LockInterruptibly();
         if (mCount->Get(&c), c < mCapacity) {
             Enqueue(node);
             mCount->GetAndIncrement(&c);
             if (c + 1 < mCapacity) {
-                mNotFull.Signal();
+//                mNotFull.Signal();
             }
         }
+        ILock::Probe(putLock)->UnLock();
     }
     if (c == 0) {
         SignalNotEmpty();
@@ -296,18 +309,17 @@ ECode CLinkedBlockingQueue::Take(
     AutoPtr<IInterface> x;
     Int32 c = -1;
     {
-        // TODO:
-        // takeLock.lockInterruptibly();
-        Mutex::Autolock lock(mTakeLock);
-
+        AutoPtr<IReentrantLock> takeLock = mTakeLock;
+        ILock::Probe(takeLock)->LockInterruptibly();
         while (mCount->Get(&c), c == 0) {
-            mNotEmpty.Wait(mTakeLock);
+//            mNotEmpty.Wait(mTakeLock);
         }
         x = Dequeue();
         mCount->GetAndDecrement(&c);
         if (c > 1) {
-            mNotEmpty.Signal();
+//            mNotEmpty.Signal();
         }
+        ILock::Probe(takeLock)->UnLock();
     }
     if (c == mCapacity) {
         SignalNotFull();
@@ -328,22 +340,21 @@ ECode CLinkedBlockingQueue::Poll(
     unit->ToNanos(timeout, &nanos);
     Int32 c = -1;
     {
-        // TODO:
-        // takeLock.lockInterruptibly();
-        Mutex::Autolock lock(mTakeLock);
-
+        AutoPtr<IReentrantLock> takeLock = mTakeLock;
+        ILock::Probe(takeLock)->LockInterruptibly();
         while (mCount->Get(&c), c == 0) {
             if (nanos <= 0) {
                 *e = NULL;
                 return NOERROR;
             }
-            mNotEmpty.WaitNanos(mTakeLock, nanos, &nanos);
+//            mNotEmpty.WaitNanos(mTakeLock, nanos, &nanos);
         }
         x = Dequeue();
         mCount->GetAndDecrement(&c);
         if (c > 1) {
-            mNotEmpty.Signal();
+//            mNotEmpty.Signal();
         }
+        ILock::Probe(takeLock)->UnLock();
     }
     if (c == mCapacity) {
         SignalNotFull();
@@ -364,15 +375,16 @@ ECode CLinkedBlockingQueue::Poll(
     }
     AutoPtr<IInterface> x;
     {
-        Mutex::Autolock lock(mTakeLock);
-
+        AutoPtr<IReentrantLock> takeLock = mTakeLock;
+        ILock::Probe(takeLock)->Lock();
         if (mCount->Get(&c), c > 0) {
             x = Dequeue();
             mCount->GetAndDecrement(&c);
             if (c > 1) {
-                mNotEmpty.Signal();
+//                mNotEmpty.Signal();
             }
         }
+        ILock::Probe(takeLock)->UnLock();
     }
     if (c == mCapacity) {
         SignalNotFull();
@@ -392,16 +404,18 @@ ECode CLinkedBlockingQueue::Peek(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mTakeLock);
-
+        AutoPtr<IReentrantLock> takeLock = mTakeLock;
+        ILock::Probe(takeLock)->Lock();
         AutoPtr<Node> first = mHead->mNext;
         if (first == NULL) {
             *e = NULL;
+            ILock::Probe(takeLock)->UnLock();
             return NOERROR;
         }
         else {
             *e = first->mItem;
             REFCOUNT_ADD(*e);
+            ILock::Probe(takeLock)->UnLock();
             return NOERROR;
         }
     }
@@ -421,7 +435,7 @@ void CLinkedBlockingQueue::Unlink(
     }
     Int32 c = -1;
     if (mCount->GetAndDecrement(&c), c == mCapacity) {
-        mNotFull.Signal();
+//        mNotFull.Signal();
     }
 }
 
@@ -527,7 +541,7 @@ ECode CLinkedBlockingQueue::Clear()
     // assert head.item == null && head.next == null;
     Int32 c = -1;
     if (mCount->GetAndSet(0, &c), c == mCapacity) {
-        mNotFull.Signal();
+//        mNotFull.Signal();
     }
     FullyUnlock();
     return NOERROR;
@@ -553,7 +567,7 @@ ECode CLinkedBlockingQueue::DrainTo(
         return NOERROR;
     }
     Boolean signalNotFull = FALSE;
-    mTakeLock.Lock();
+    ILock::Probe(mTakeLock)->Lock();
     Int32 size;
     mCount->Get(&size);
     Int32 n = Elastos::Core::Math::Min(maxElements, size);
@@ -575,7 +589,7 @@ ECode CLinkedBlockingQueue::DrainTo(
         mHead = h;
         signalNotFull = (mCount->GetAndAdd(-i, &size), size == mCapacity);
     }
-    mTakeLock.Unlock();
+    ILock::Probe(mTakeLock)->UnLock();
     if (signalNotFull) {
         SignalNotFull();
     }
@@ -641,7 +655,7 @@ ECode CLinkedBlockingQueue::ContainsAll(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<IIterator> it;
-    collection->GetIterator((IIterator**)&it);
+    IIterable::Probe(collection)->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;

@@ -3,12 +3,14 @@
 #define __ELASTOS_UTILITY_CLINKEDBLOCKINGQUEUE_H__
 
 #include "_Elastos_Utility_Concurrent_CLinkedBlockingQueue.h"
-#include <Condition.h>
+//#include <Condition.h>
 #include "AbstractQueue.h"
 
-using Elastos::Core::Condition;
+using Elastos::IO::ISerializable;
+//using Elastos::Core::Condition;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 
 namespace Elastos {
 namespace Utility {
@@ -263,16 +265,15 @@ private:
     AutoPtr<Node> mLast;
 
     /** Lock held by take, poll, etc */
-    Mutex mTakeLock;
-
+    AutoPtr<IReentrantLock> mTakeLock;
     /** Wait queue for waiting takes */
-    Condition mNotEmpty;
+//    Condition mNotEmpty;
 
     /** Lock held by put, offer, etc */
-    Mutex mPutLock;
+    AutoPtr<IReentrantLock> mPutLock;
 
     /** Wait queue for waiting puts */
-    Condition mNotFull;
+//    Condition mNotFull;
 };
 
 } // namespace Concurrent

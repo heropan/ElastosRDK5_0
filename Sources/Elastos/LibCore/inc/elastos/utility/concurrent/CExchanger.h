@@ -16,8 +16,8 @@ namespace Utility {
 namespace Concurrent {
 
 CarClass(CExchanger)
-    , public IExchanger
     , public Object
+    , public IExchanger
 {
 private:
     class CDummyObject
