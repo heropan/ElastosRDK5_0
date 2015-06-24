@@ -3,10 +3,24 @@
 #include "CLinkedList.h"
 #include "CTreeSet.h"
 #include "CStringWrapper.h"
-#include <elastos/core/Autolock.h>
+#include "CBase64.h"
+#include "Autolock.h"
+#include "XMLParser.h"
+#include "EmptyArray.h"
+#include "StringUtils.h"
 
+using Libcore::IO::CBase64;
+using Libcore::IO::IBase64;
+using Libcore::Utility::EmptyArray;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
+using Elastos::Core::StringUtils;
+
+template <>
+struct Conversion<Elastos::Utility::Prefs::AbstractPreferences*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 namespace Elastos {
 namespace Utility {
@@ -93,10 +107,10 @@ AbstractPreferences::AbstractPreferences(
     mUserNode = mRoot->mUserNode;
 }
 
-AutoPtr<ArrayOf<AutoPtr<AbstractPreferences> > > AbstractPreferences::CachedChildren()
+AutoPtr<ArrayOf<AbstractPreferences* > > AbstractPreferences::CachedChildren()
 {
-    AutoPtr<ArrayOf<AutoPtr<AbstractPreferences> > > absps
-        = ArrayOf<AutoPtr<AbstractPreferences> >::Alloc(mCachedNode.GetSize());
+    AutoPtr<ArrayOf<AbstractPreferences* > > absps
+        = ArrayOf<AbstractPreferences* >::Alloc(mCachedNode.GetSize());
 
     HashMap<String, AutoPtr<AbstractPreferences> >::Iterator iter = mCachedNode.Begin();
     for (Int32 i = 0; iter != mCachedNode.End(); ++iter, i++) {
@@ -185,13 +199,13 @@ ECode AbstractPreferences::ChildrenNames(
         ICollection::Probe(result)->GetSize(&size);
         *values = ArrayOf<String>::Alloc(size);
         String str;
-        AutoPtr<IIterator> iter;
-        IIterable::Probe(result)->GetIterator((IIterator**)&iter);
+        AutoPtr<IIterator> iter2;
+        IIterable::Probe(result)->GetIterator((IIterator**)&iter2);
         Boolean has = FALSE;
         Int32 pos = 0;
-        while (iter->HasNext(&has), has) {
+        while (iter2->HasNext(&has), has) {
             AutoPtr<IInterface> value;
-            iter->GetNext((IInterface**)&value);
+            iter2->GetNext((IInterface**)&value);
             ICharSequence::Probe(value)->ToString(&str);
             (*values)->Set(pos, str);
             pos++;
@@ -242,11 +256,14 @@ ECode AbstractPreferences::Flush() /*throws BackingStoreException */
     synchronized (mLock) {
         FAIL_RETURN(FlushSpi());
     }
-    AbstractPreferences[] cc = cachedChildren();
+
+    AutoPtr<ArrayOf<AbstractPreferences* > > cc = CachedChildren();
     Int32 i;
-    for (i = 0; i < cc.length; i++) {
-        cc[i].flush();
+    for (i = 0; i < cc->GetLength(); i++) {
+        FAIL_RETURN((*cc)[i]->Flush());
     }
+
+    return NOERROR;
 }
 
 ECode AbstractPreferences::Get(
@@ -259,16 +276,22 @@ ECode AbstractPreferences::Get(
         // throw new NullPointerException("key == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    String result = NULL;
+
+    String result;
     synchronized (mLock) {
-        checkState();
-        try {
-            result = getSpi(key);
-        } catch (Exception e) {
-            // ignored
-        }
+        FAIL_RETURN(CheckState());
+        // try {
+        result = GetSpi(key);
+        // } catch (Exception e) {
+        //     // ignored
+        // }
     }
-    return (result == NULL ? deflt : result);
+    if (result == NULL) {
+        *value = deflt;
+    } else {
+        *value = result;
+    }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::GetBoolean(
@@ -277,17 +300,22 @@ ECode AbstractPreferences::GetBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, NULL);
+    *value = deflt;
+    String result;
+    FAIL_RETURN(Get(key, String(NULL), &result));
     if (result == NULL) {
-        return deflt;
+        return NOERROR;
     }
-    if ("TRUE".equalsIgnoreCase(result)) {
-        return TRUE;
-    } else if ("FALSE".equalsIgnoreCase(result)) {
-        return FALSE;
-    } else {
-        return deflt;
+
+    if (String("TRUE").EqualsIgnoreCase(result)) {
+        *value = TRUE;
+        return NOERROR;
+    } else if (String("FALSE").EqualsIgnoreCase(result)) {
+        *value = FALSE;
+        return NOERROR;
     }
+
+    return NOERROR;
 }
 
 ECode AbstractPreferences::GetByteArray(
@@ -296,22 +324,39 @@ ECode AbstractPreferences::GetByteArray(
     /* [out] */ ArrayOf<Byte>** values)
 {
     VALIDATE_NOT_NULL(values);
-    String svalue = get(key, NULL);
+    *values = deflt;
+    String svalue;
+    ECode ec = Get(key, String(NULL), &svalue);
+    if (FAILED(ec)) {
+        REFCOUNT_ADD(*values);
+        return ec;
+    }
+
     if (svalue == NULL) {
-        return deflt;
+        REFCOUNT_ADD(*values);
+        return NOERROR;
     }
-    if (svalue.length() == 0) {
-        return EmptyArray.BYTE;
+    if (svalue.GetLength() == 0) {
+        *values = EmptyArray::BYTE;
+        REFCOUNT_ADD(*values);
+        return NOERROR;
     }
-    try {
-        byte[] bavalue = svalue.getBytes(StandardCharsets.US_ASCII);
-        if (bavalue.length % 4 != 0) {
-            return deflt;
-        }
-        return Base64.decode(bavalue);
-    } catch (Exception e) {
-        return deflt;
+    // try {
+    AutoPtr<ArrayOf<Byte> > bavalue;
+    //TODO
+    assert(0);
+    // byte[] bavalue = svalue.getBytes(StandardCharsets.US_ASCII);
+    if (bavalue->GetLength() % 4 != 0) {
+        REFCOUNT_ADD(*values);
+        return NOERROR;
     }
+
+    AutoPtr<Libcore::IO::IBase64> base;
+    CBase64::AcquireSingleton((Libcore::IO::IBase64**)&base);
+    return base->Decode(bavalue, values);
+    // } catch (Exception e) {
+    //     return deflt;
+    // }
 }
 
 ECode AbstractPreferences::GetDouble(
@@ -320,15 +365,18 @@ ECode AbstractPreferences::GetDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, NULL);
+    String result;
+    Get(key, String(NULL), &result);
     if (result == NULL) {
-        return deflt;
+        *value = deflt;
+        return NOERROR;
     }
-    try {
-        return Double.parseDouble(result);
-    } catch (NumberFormatException e) {
-        return deflt;
-    }
+    // try {
+    *value = StringUtils::ParseDouble(result);
+    return NOERROR;
+    // } catch (NumberFormatException e) {
+    //     return deflt;
+    // }
 }
 
 ECode AbstractPreferences::GetFloat(
@@ -337,15 +385,18 @@ ECode AbstractPreferences::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, NULL);
+    String result;
+    Get(key, String(NULL), &result);
     if (result == NULL) {
-        return deflt;
+        *value = deflt;
+        return NOERROR;
     }
-    try {
-        return Float.parseFloat(result);
-    } catch (NumberFormatException e) {
-        return deflt;
-    }
+    // try {
+    *value = StringUtils::ParseFloat(result);
+    return NOERROR;
+    // } catch (NumberFormatException e) {
+    //     return deflt;
+    // }
 }
 
 ECode AbstractPreferences::GetInt32(
@@ -354,15 +405,19 @@ ECode AbstractPreferences::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, NULL);
+    String result;
+    Get(key, String(NULL), &result);
     if (result == NULL) {
+        *value = deflt;
         return deflt;
     }
-    try {
-        return Integer.parseInt(result);
-    } catch (NumberFormatException e) {
-        return deflt;
-    }
+
+    // try {
+    *value = StringUtils::ParseInt32(result);
+    return NOERROR;
+    // } catch (NumberFormatException e) {
+    //     return deflt;
+    // }
 }
 
 ECode AbstractPreferences::GetInt64(
@@ -371,32 +426,40 @@ ECode AbstractPreferences::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    String result = get(key, NULL);
+    String result;
+    Get(key, String(NULL), &result);
     if (result == NULL) {
-        return deflt;
+        *value = deflt;
+        return NOERROR;
     }
-    try {
-        return Long.parseLong(result);
-    } catch (NumberFormatException e) {
-        return deflt;
-    }
+    // try {
+    *value = StringUtils::ParseInt64(result);
+    return NOERROR;
+    // } catch (NumberFormatException e) {
+    //     return deflt;
+    // }
 }
 
 ECode AbstractPreferences::IsUserNode(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    return root == Preferences.userRoot();
+    AutoPtr<IPreferences> pfs;
+    Preferences::UserRoot((IPreferences**)&pfs);
+    *value = ((IPreferences*)mRoot->Probe(EIID_IPreferences) == pfs.Get());
+    return NOERROR;
 }
 
 ECode AbstractPreferences::Keys(
     /* [out, callee] */ ArrayOf<String>** keys) /*throws BackingStoreException*/
 {
     VALIDATE_NOT_NULL(keys);
+    ECode ec = NOERROR;
     synchronized (mLock) {
-        checkState();
-        return keysSpi();
+        FAIL_RETURN(CheckState());
+        ec = KeysSpi(keys);
     }
+    return ec;
 }
 
 ECode AbstractPreferences::Name(
@@ -408,43 +471,60 @@ ECode AbstractPreferences::Name(
 }
 
 ECode AbstractPreferences::Node(
-    /* [in] */ const String& name,
+    /* [in] */ const String& _name,
     /* [out] */ IPreferences** pfs)
 {
     VALIDATE_NOT_NULL(pfs);
-    AbstractPreferences startNode = NULL;
+    AutoPtr<AbstractPreferences> startNode;
+    String name(_name);
     synchronized (mLock) {
-        checkState();
-        validateName(name);
-        if (name.isEmpty()) {
-            return this;
-        } else if ("/".equals(name)) {
-            return root;
+        CheckState();
+        ValidateName(name);
+        if (name.IsEmpty()) {
+            *pfs = THIS_PROBE(IPreferences);
+            REFCOUNT_ADD(*pfs);
+            return NOERROR;
+        } else if (String("/").Equals(name)) {
+            *pfs = (IPreferences*)mRoot->Probe(EIID_IPreferences);
+            REFCOUNT_ADD(*pfs);
+            return NOERROR;
         }
-        if (name.startsWith("/")) {
-            startNode = root;
-            name = name.substring(1);
+        if (name.StartWith("/")) {
+            startNode = mRoot;
+            name = name.Substring(1);
         } else {
             startNode = this;
         }
     }
-    try {
-        return startNode.nodeImpl(name, TRUE);
-    } catch (BackingStoreException e) {
-        // should not happen
-        return NULL;
+    // try {
+    AutoPtr<AbstractPreferences> tmp;
+    ECode ec = startNode->NodeImpl(name, TRUE, (AbstractPreferences**)&tmp);
+
+    if (ec == (Int32)E_BACKING_STORE_EXCEPTION) {
+        *pfs = NULL;
+        return NOERROR;
     }
+    *pfs = (IPreferences*)tmp->Probe(EIID_IPreferences);
+    REFCOUNT_ADD(*pfs);
+    return NOERROR;
+    // } catch (BackingStoreException e) {
+    //     // should not happen
+    //     return NULL;
+    // }
 }
 
 ECode AbstractPreferences::ValidateName(
     /* [in] */ const String& name)
 {
-    if (name.endsWith("/") && name.length() > 1) {
-        throw new IllegalArgumentException("Name cannot end with '/'");
+    if (name.EndWith("/") && name.GetLength() > 1) {
+        // throw new IllegalArgumentException("Name cannot end with '/'");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (name.indexOf("//") >= 0) {
-        throw new IllegalArgumentException("Name cannot contain consecutive '/' characters");
+    if (name.IndexOf("//") >= 0) {
+        // throw new IllegalArgumentException("Name cannot contain consecutive '/' characters");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::NodeImpl(
@@ -452,14 +532,19 @@ ECode AbstractPreferences::NodeImpl(
     /* [in] */ Boolean createNew,
     /* [out] */ AbstractPreferences** apfs)
 {
-    String[] names = path.split("/");
-    AbstractPreferences currentNode = this;
-    AbstractPreferences temp;
-    for (String name : names) {
-        synchronized (currentNode->mLock) {
-            temp = currentNode.mCachedNode.get(name);
+    VALIDATE_NOT_NULL(apfs);
+    *apfs = NULL;
+    AutoPtr<ArrayOf<String> > names;
+    StringUtils::Split(path, "/", (ArrayOf<String>**)&names);
+    AutoPtr<AbstractPreferences> currentNode = this;
+    AutoPtr<AbstractPreferences> temp;
+    for (Int32 i = 0; i < names->GetLength(); i++) {
+        String name = (*names)[i];
+        AutoPtr<Object> lock = &currentNode->mLock;
+        synchronized (lock) {
+            temp = currentNode->mCachedNode[name];
             if (temp == NULL) {
-                temp = getNodeFromBackend(createNew, currentNode, name);
+                FAIL_RETURN(GetNodeFromBackend(createNew, currentNode, name, (AbstractPreferences**)&temp));
             }
         }
         currentNode = temp;
@@ -467,7 +552,9 @@ ECode AbstractPreferences::NodeImpl(
             break;
         }
     }
-    return currentNode;
+    *apfs = currentNode;
+    REFCOUNT_ADD(*apfs);
+    return NOERROR;
 }
 
 ECode AbstractPreferences::GetNodeFromBackend(
@@ -476,70 +563,92 @@ ECode AbstractPreferences::GetNodeFromBackend(
     /* [in] */ const String& name,
     /* [out] */ AbstractPreferences** apfs)
 {
-    if (name.length() > MAX_NAME_LENGTH) {
-        throw new IllegalArgumentException("Name '" + name + "' too long");
+    VALIDATE_NOT_NULL(apfs);
+    *apfs = NULL;
+    if (name.GetLength() > (UInt32)MAX_NAME_LENGTH) {
+        // throw new IllegalArgumentException("Name '" + name + "' too long");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AbstractPreferences temp;
+    AutoPtr<AbstractPreferences> temp;
     if (createNew) {
-        temp = currentNode.childSpi(name);
-        currentNode.mCachedNode.put(name, temp);
-        if (temp.newNode && currentNode.nodeChangeListeners.size() > 0) {
-            currentNode.notifyChildAdded(temp);
+        temp = currentNode->ChildSpi(name);
+        currentNode->mCachedNode[name] = temp;
+        Int32 size = 0;
+        if (temp->mNewNode && (ICollection::Probe(currentNode->mNodeChangeListeners)->GetSize(&size),size) > 0) {
+            currentNode->NotifyChildAdded(temp);
         }
     } else {
-        temp = currentNode.getChild(name);
+        FAIL_RETURN(currentNode->GetChild(name, (AbstractPreferences**)&temp));
     }
-    return temp;
+    *apfs = temp;
+    REFCOUNT_ADD(*apfs);
+    return NOERROR;
 }
 
 ECode AbstractPreferences::NodeExists(
-    /* [in] */ const String& name,
+    /* [in] */ const String& _name,
     /* [out] */ Boolean* exist)
 {
     VALIDATE_NOT_NULL(exist);
+    *exist = FALSE;
+    String name(_name);
     if (name == NULL) {
         // throw new NullPointerException("name == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    AbstractPreferences startNode = NULL;
+    AutoPtr<AbstractPreferences> startNode;
     synchronized (mLock) {
-        if (isRemoved()) {
-            if (name.isEmpty()) {
-                return FALSE;
+        if (IsRemoved()) {
+            if (name.IsEmpty()) {
+                return NOERROR;
             }
-            throw new IllegalStateException("This node has been removed");
+            // throw new IllegalStateException("This node has been removed");
+            return E_ILLEGAL_STATE_EXCEPTION;
         }
-        validateName(name);
-        if (name.isEmpty() || "/".equals(name)) {
-            return TRUE;
+        FAIL_RETURN(ValidateName(name));
+        if (name.IsEmpty() || String("/").Equals(name)) {
+            *exist = TRUE;
+            return NOERROR;
         }
-        if (name.startsWith("/")) {
-            startNode = root;
-            name = name.substring(1);
+        if (name.StartWith("/")) {
+            startNode = mRoot;
+            name = name.Substring(1);
         } else {
             startNode = this;
         }
     }
-    try {
-        Preferences result = startNode.nodeImpl(name, FALSE);
-        return (result != NULL);
-    } catch(IllegalArgumentException e) {
-        return FALSE;
+    // try {
+    AutoPtr<AbstractPreferences> tmp;
+    ECode ec = startNode->NodeImpl(name, FALSE, (AbstractPreferences**)&tmp);
+    if (ec == (Int32)E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        return NOERROR;
     }
+    AutoPtr<IPreferences> result = (IPreferences*)tmp->Probe(EIID_IPreferences);
+    *exist = (result != NULL);
+    return NOERROR;
+    // } catch(IllegalArgumentException e) {
+    //     return FALSE;
+    // }
 }
 
 ECode AbstractPreferences::Parent(
     /* [out] */IPreferences** pf)
 {
-    checkState();
-    return parentPref;
+    VALIDATE_NOT_NULL(pf);
+    *pf = NULL;
+    FAIL_RETURN(CheckState());
+    *pf = (IPreferences*)mParentPref->Probe(EIID_IPreferences);
+    REFCOUNT_ADD(*pf);
+    return NOERROR;
 }
 
 ECode AbstractPreferences::CheckState()
 {
     if (IsRemoved()) {
-        throw new IllegalStateException("This node has been removed");
+        // throw new IllegalStateException("This node has been removed");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::Put(
@@ -553,78 +662,86 @@ ECode AbstractPreferences::Put(
         // throw new NullPointerException("value == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (key.length() > MAX_KEY_LENGTH || value.length() > MAX_VALUE_LENGTH) {
-        throw new IllegalArgumentException();
+    if (key.GetLength() > (UInt32)MAX_KEY_LENGTH || value.GetLength() > (UInt32)MAX_VALUE_LENGTH) {
+        // throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     synchronized (mLock) {
-        checkState();
-        putSpi(key, value);
+        FAIL_RETURN(CheckState());
+        PutSpi(key, value);
     }
-    notifyPreferenceChange(key, value);
+    NotifyPreferenceChange(key, value);
+    return NOERROR;
 }
 
 ECode AbstractPreferences::PutBoolean(
     /* [in] */ const String& key,
     /* [in] */ Boolean value)
 {
-    put(key, String.valueOf(value));
+    return Put(key, StringUtils::BooleanToString(value));
 }
 
 ECode AbstractPreferences::PutByteArray(
     /* [in] */ const String& key,
     /* [in] */ ArrayOf<Byte>* value)
 {
-    put(key, Base64.encode(value));
+    AutoPtr<Libcore::IO::IBase64> base;
+    CBase64::AcquireSingleton((Libcore::IO::IBase64**)&base);
+    String str;
+    base->Encode(value, &str);
+    return Put(key, str);
 }
 
 ECode AbstractPreferences::PutDouble(
     /* [in] */ const String& key,
     /* [in] */ Double value)
 {
-    put(key, Double.toString(value));
+    return Put(key, StringUtils::ToString(value));
 }
 
 ECode AbstractPreferences::PutFloat(
     /* [in] */ const String& key,
     /* [in] */ Float value)
 {
-    put(key, Float.toString(value));
+    return Put(key, StringUtils::ToString(value));
 }
 
 ECode AbstractPreferences::PutInt32(
     /* [in] */ const String& key,
     /* [in] */ Int32 value)
 {
-    put(key, Integer.toString(value));
+    return Put(key, StringUtils::ToString(value));
 }
 
 ECode AbstractPreferences::PutInt64(
     /* [in] */ const String& key,
     /* [in] */ Int64 value)
 {
-    put(key, Long.toString(value));
+    return Put(key, StringUtils::ToString(value));
 }
 
 ECode AbstractPreferences::Remove(
     /* [in] */ const String& key)
 {
-    ECode ec = NOERROR;
     synchronized (mLock) {
         FAIL_RETURN(CheckState());
-        FAIL_RETURN(RemoveSpi(key));
+        RemoveSpi(key);
     }
-    NotifyPreferenceChange(key, NULL);
+    NotifyPreferenceChange(key, String(NULL));
     return NOERROR;
 }
 
 ECode AbstractPreferences::RemoveNode() /*throws BackingStoreException */
 {
-    if (root == this) {
-        throw new UnsupportedOperationException("Cannot remove root node");
+    if (mRoot.Get() == this) {
+        // throw new UnsupportedOperationException("Cannot remove root node");
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
-    synchronized (parentPref.mLock) {
-        removeNodeImpl();
+    AutoPtr<Object> lock = &mParentPref->mLock;
+    synchronized (lock) {
+        FAIL_RETURN(RemoveNodeImpl());
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::RemoveNodeImpl()/* throws BackingStoreException */
@@ -633,24 +750,28 @@ ECode AbstractPreferences::RemoveNodeImpl()/* throws BackingStoreException */
         FAIL_RETURN(CheckState());
         AutoPtr<ArrayOf<String> > childrenNames;
         FAIL_RETURN(ChildrenNamesSpi((ArrayOf<String>**)&childrenNames));
-        for (String childrenName : childrenNames) {
-            if (mCachedNode.get(childrenName) == NULL) {
-                AbstractPreferences child = ChildSpi(childrenName);
-                mCachedNode.put(childrenName, child);
+        for (Int32 i = 0; i < childrenNames->GetLength(); i++) {
+            String childrenName = (*childrenNames)[i];
+            AutoPtr<AbstractPreferences> apf = mCachedNode[childrenName];
+            if (apf == NULL) {
+                AutoPtr<AbstractPreferences> child = ChildSpi(childrenName);
+                mCachedNode[childrenName] = child;
             }
         }
 
-        final Collection<AbstractPreferences> values = mCachedNode.values();
-        final AbstractPreferences[] children = values.toArray(new AbstractPreferences[values.size()]);
-        for (AbstractPreferences child : children) {
-            child.removeNodeImpl();
+        HashMap<String, AutoPtr<AbstractPreferences> >::Iterator ator = mCachedNode.Begin();
+        for (; ator != mCachedNode.End(); ++ator) {
+            FAIL_RETURN(ator->mSecond->RemoveNodeImpl());
         }
+
         FAIL_RETURN(RemoveNodeSpi());
-        isRemoved = TRUE;
-        parentPref.mCachedNode.remove(nodeName);
+        mIsRemoved = TRUE;
+        mParentPref->mCachedNode.Erase(mNodeName);
     }
-    if (parentPref.nodeChangeListeners.size() > 0) {
-        FAIL_RETURN(parentPref.notifyChildRemoved(this));
+    Int32 size = 0;
+    ICollection::Probe(mParentPref->mNodeChangeListeners)->GetSize(&size);
+    if (size > 0) {
+        mParentPref->NotifyChildRemoved(this);
     }
     return NOERROR;
 }
@@ -662,10 +783,11 @@ ECode AbstractPreferences::AddNodeChangeListener(
         // throw new NullPointerException("ncl == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    checkState();
-    synchronized (nodeChangeListeners) {
-        nodeChangeListeners.add(ncl);
+    FAIL_RETURN(CheckState());
+    synchronized (mNodeChangeListeners) {
+        IList::Probe(mNodeChangeListeners)->Add(ncl);
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::AddPreferenceChangeListener(
@@ -675,47 +797,59 @@ ECode AbstractPreferences::AddPreferenceChangeListener(
         // throw new NullPointerException("pcl == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    checkState();
-    synchronized (preferenceChangeListeners) {
-        preferenceChangeListeners.add(pcl);
+    FAIL_RETURN(CheckState());
+    synchronized (mPreferenceChangeListeners) {
+        IList::Probe(mPreferenceChangeListeners)->Add(pcl);
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::RemoveNodeChangeListener(
     /* [in] */ INodeChangeListener* ncl)
 {
-    checkState();
-    synchronized (nodeChangeListeners) {
+    FAIL_RETURN(CheckState());
+    synchronized (mNodeChangeListeners) {
         Int32 pos;
-        if ((pos = nodeChangeListeners.indexOf(ncl)) == -1) {
-            throw new IllegalArgumentException();
+        IList::Probe(mNodeChangeListeners)->IndexOf(ncl, &pos);
+        if (pos == -1) {
+            // throw new IllegalArgumentException();
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        nodeChangeListeners.remove(pos);
+        AutoPtr<IInterface> tmp;
+        IList::Probe(mNodeChangeListeners)->Remove(pos, (IInterface**)&tmp);
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::RemovePreferenceChangeListener(
     /* [in] */ IPreferenceChangeListener* pcl)
 {
-    checkState();
-    synchronized (preferenceChangeListeners) {
+    FAIL_RETURN(CheckState());
+    synchronized (mPreferenceChangeListeners) {
         Int32 pos;
-        if ((pos = preferenceChangeListeners.indexOf(pcl)) == -1) {
-            throw new IllegalArgumentException();
+        IList::Probe(mPreferenceChangeListeners)->IndexOf(pcl, &pos);
+        if (pos == -1) {
+            // throw new IllegalArgumentException();
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        preferenceChangeListeners.remove(pos);
+        AutoPtr<IInterface> tmp;
+        IList::Probe(mPreferenceChangeListeners)->Remove(pos, (IInterface**)&tmp);
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::Sync() /*throws BackingStoreException*/
 {
     synchronized (mLock) {
-        checkState();
-        syncSpi();
+        FAIL_RETURN(CheckState());
+        FAIL_RETURN(SyncSpi());
     }
-    for (AbstractPreferences child : cachedChildren()) {
-        child.sync();
+    AutoPtr<ArrayOf<AbstractPreferences* > > children = CachedChildren();
+    for (Int32 i = 0; i < children->GetLength(); i++) {
+        AutoPtr<AbstractPreferences> child = (*children)[i];
+        FAIL_RETURN(child->Sync());
     }
+    return NOERROR;
 }
 
 ECode AbstractPreferences::ToString(
@@ -737,20 +871,20 @@ ECode AbstractPreferences::ToString(
 void AbstractPreferences::NotifyChildAdded(
     /* [in] */ Preferences* child)
 {
-    NodeChangeEvent nce = new NodeAddEvent(this, child);
-    synchronized (events) {
-        events.add(nce);
-        events.notifyAll();
+    AutoPtr<NodeChangeEvent> nce = new NodeAddEvent(this, child);
+    synchronized (sEvents) {
+        sEvents->Add(nce->Probe(EIID_IInterface));
+        ISynchronize::Probe(sEvents)->NotifyAll();
     }
 }
 
 void AbstractPreferences::NotifyChildRemoved(
     /* [in] */ Preferences* child)
 {
-    NodeChangeEvent nce = new NodeRemoveEvent(this, child);
-    synchronized (events) {
-        events.add(nce);
-        events.notifyAll();
+    AutoPtr<NodeChangeEvent> nce = new NodeRemoveEvent(this, child);
+    synchronized (sEvents) {
+        sEvents->Add(nce->Probe(EIID_IInterface));
+        ISynchronize::Probe(sEvents)->NotifyAll();
     }
 }
 
@@ -758,11 +892,13 @@ void AbstractPreferences::NotifyPreferenceChange(
     /* [in] */ const String& key,
     /* [in] */ const String& newValue)
 {
-    PreferenceChangeEvent pce = new PreferenceChangeEvent(this, key, newValue);
-    synchronized (events) {
-        events.add(pce);
-        events.notifyAll();
-    }
+    //TODO
+    assert(0);
+    // AutoPtr<PreferenceChangeEvent> pce = new PreferenceChangeEvent(this, key, newValue);
+    // synchronized (sEvents) {
+    //     sEvents->Add(nce->Probe(EIID_IInterface));
+    //     ISynchronize::Probe(sEvents)->NotifyAll();
+    // }
 }
 
 } // namespace Prefs
