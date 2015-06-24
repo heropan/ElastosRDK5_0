@@ -26,183 +26,143 @@
 #define DUMP_CLSID(CLSID, info);
 #endif
 
-EXTERN_C CARAPI DllGetClassObject(REMuid, REIID, PInterface *);
+EXTERN_C CARAPI DllGetClassObject(REMuid, REIID, PInterface*);
 
 _ELASTOS DLinkNode g_LocModList(&g_LocModList, &g_LocModList);
 pthread_mutex_t g_LocModListLock;
 
-CAR_INLINE _ELASTOS Boolean IsElastosUunm(const char *pUunm)
+CAR_INLINE _ELASTOS Boolean IsRuntimeUunm(const char* uunm)
 {
-    return !strcmp("Elastos.Runtime.CarRuntime.eco", pUunm);
+    return !strcmp("Elastos.Runtime.eco", uunm);
 }
 
 ECode AcquireClassObjectFromLocalModule(
     /* [in] */ RClassID rclsid,
     /* [in] */ REIID riid,
-    /* [out] */ PInterface *ppObject)
+    /* [out] */ PInterface* object)
 {
-    const char *pszUunm = rclsid.pUunm;
-    PDLLGETCLASSOBJECT pDllGetClassObject;
+    const char* uunm = rclsid.pUunm;
+    PDLLGETCLASSOBJECT dllGetClassObjectFunc;
 
-    assert(pszUunm);
+    assert(uunm);
 
     ECode ec = NOERROR;
-    Void *pIModule = NULL;
-    LocalModule *pLocalModule;
 
     pthread_mutex_lock(&g_LocModListLock);
-    pLocalModule = (LocalModule *)(g_LocModList.mNext);
-    while ((DLinkNode *)pLocalModule != &g_LocModList) {
-        if (IsEqualUunm(pLocalModule->m_pszUunm, pszUunm)) {
-            ec = (*pLocalModule->m_pDllGetClassObject)(rclsid.clsid,
-                            EIID_IClassObject, ppObject);
-            pLocalModule->m_nAskCount = 0;
+    LocalModule* localModule = (LocalModule *)(g_LocModList.mNext);
+    while ((DLinkNode *)localModule != &g_LocModList) {
+        if (IsEqualUunm(localModule->mUunm.string(), uunm)) {
+            ec = (*localModule->mDllGetClassObjectFunc)(rclsid.clsid,
+                    EIID_IClassObject, object);
+            localModule->mAskCount = 0;
             pthread_mutex_unlock(&g_LocModListLock);
             return ec;
         }
-        pLocalModule = (LocalModule *)pLocalModule->mNext;
+        localModule = (LocalModule *)localModule->mNext;
     }
     pthread_mutex_unlock(&g_LocModListLock);
 
-    if (IsElastosUunm(pszUunm)) {
-        return DllGetClassObject(rclsid.clsid, EIID_IClassObject,
-                        ppObject);
+    if (IsRuntimeUunm(uunm)) {
+        return DllGetClassObject(rclsid.clsid, EIID_IClassObject, object);
     }
 
-    pLocalModule  = NULL;
-    char path[260];
-    strcpy(path, pszUunm);
-    DUMP_CLSID(rclsid, path)
-    pIModule = dlopen(path, RTLD_NOW);
-    if(NULL == pIModule){
+    localModule = NULL;
+    DUMP_CLSID(rclsid, uunm)
+    Void* module = dlopen(uunm, RTLD_NOW);
+    if (NULL == module){
         ec = E_FILE_NOT_FOUND;
-        ALOGE("<%s, %d> dlopen '%s' failed.\n", __FILE__, __LINE__, path);
+        ALOGE("<%s, %d> dlopen '%s' failed.\n", __FILE__, __LINE__, uunm);
         ALOGE("error: %s\n", dlerror());
         goto ErrorExit;
     }
 
-    // TODO(mips): wchar_t
-#ifndef _GNUC_MIPS_KERNEL_
-    strcpy(path, "DllGetClassObject");
-    pDllGetClassObject = (PDLLGETCLASSOBJECT)dlsym(pIModule, path);
-#else
-    pDllGetClassObject = (PDLLGETCLASSOBJECT)dlsym(
-            pIModule, "D\0l\0l\0G\0e\0t\0C\0l\0a\0s\0s\0O\0b\0j\0e\0c\0t\0");
-#endif
-    if (NULL == pDllGetClassObject) {
+    dllGetClassObjectFunc = (PDLLGETCLASSOBJECT)dlsym(module, "DllGetClassObject");
+    if (NULL == dllGetClassObjectFunc) {
         ec = E_DOES_NOT_EXIST;
         goto ErrorExit;
     }
 
-    pLocalModule = new LocalModule;
-    if (!pLocalModule) {
+    localModule = new LocalModule;
+    if (!localModule) {
         ec = E_OUT_OF_MEMORY;
         goto ErrorExit;
     }
 
-    pLocalModule->m_pszUunm = new char[strlen(pszUunm) + 1];
-    if (!pLocalModule->m_pszUunm) {
-        ec = E_OUT_OF_MEMORY;
-        goto ErrorExit;
-    }
-    strcpy(pLocalModule->m_pszUunm, pszUunm);
+    localModule->mUunm = uunm;
+    localModule->mIModule = module;
+    localModule->mDllGetClassObjectFunc = dllGetClassObjectFunc;
+    localModule->mAskCount = 0;
+    localModule->mDllCanUnloadNowFunc = (PDLLCANUNLOADNOW)dlsym(module, "DllCanUnloadNow");
 
-    pLocalModule->m_pIModule = pIModule;
-    pLocalModule->m_pDllGetClassObject = pDllGetClassObject;
-    pLocalModule->m_nAskCount = 0;
-
-    //TODO(mips): wchar_t
-#ifndef _GNUC_MIPS_KERNEL_
-    pLocalModule->m_pDllCanUnloadNow = (PDLLCANUNLOADNOW)dlsym(pIModule, path);
-#else
-    pLocalModule->m_pDllCanUnloadNow = (PDLLCANUNLOADNOW)dlsym(
-            pIModule, "D\0l\0l\0C\0a\0n\0U\0n\0l\0o\0a\0d\0N\0o\0w\0");
-#endif
-
-    ec = (*pDllGetClassObject)(rclsid.clsid, riid, ppObject);
+    ec = (*dllGetClassObjectFunc)(rclsid.clsid, riid, object);
 
     if (FAILED(ec)) goto ErrorExit;
 
     pthread_mutex_lock(&g_LocModListLock);
-    g_LocModList.InsertFirst(pLocalModule);
+    g_LocModList.InsertFirst(localModule);
     pthread_mutex_unlock(&g_LocModListLock);
     return ec;
 
 ErrorExit:
-    if (pIModule) {
-        dlclose(pIModule);
+    if (module) {
+        dlclose(module);
     }
-    if (pLocalModule) {
-        if (pLocalModule->m_pszUunm) {
-            delete pLocalModule->m_pszUunm;
-        }
-        delete pLocalModule;
+    if (localModule) {
+        delete localModule;
     }
     return ec;
 }
 
 ELAPI_(_ELASTOS Boolean) _CModule_CanUnloadAllModules()
 {
-    LocalModule *pLocalModule;
+    LocalModule* localModule;
 
     pthread_mutex_lock(&g_LocModListLock);
-    pLocalModule = (LocalModule *)(g_LocModList.mNext);
+    localModule = (LocalModule *)(g_LocModList.mNext);
 
-    while ((DLinkNode *)pLocalModule != &g_LocModList) {
-        if (NULL != pLocalModule->m_pDllCanUnloadNow) {
-            if (NOERROR != (*pLocalModule->m_pDllCanUnloadNow)()) {
+    while ((DLinkNode *)localModule != &g_LocModList) {
+        if (NULL != localModule->mDllCanUnloadNowFunc) {
+            if (NOERROR != (*localModule->mDllCanUnloadNowFunc)()) {
                 pthread_mutex_unlock(&g_LocModListLock);
                 return FALSE;
             }
         }
-        pLocalModule = (LocalModule *)pLocalModule->mNext;
+        localModule = (LocalModule *)localModule->mNext;
     }
 
     pthread_mutex_unlock(&g_LocModListLock);
     return TRUE;
 }
 
-ELAPI _CProcess_FreeUnusedModule(String szDllName)
+ELAPI _CProcess_FreeUnusedModule(
+    /* [in] */ const String& moduleName)
 {
     ECode ec = NOERROR;
-    LocalModule *pLocalModule;
-    Int16 nLen1 = 0;
-    Int16 nLen2 = 0;
 
-    if (szDllName.IsEmpty()) return E_INVALID_ARGUMENT;
-
-    nLen2 = szDllName.GetByteLength();
+    if (moduleName.IsNullOrEmpty()) return E_INVALID_ARGUMENT;
 
     pthread_mutex_lock(&g_LocModListLock);
-    pLocalModule = (LocalModule *)(g_LocModList.mNext);
+    LocalModule* localModule = (LocalModule *)(g_LocModList.mNext);
 
-    while (pLocalModule != (LocalModule *)&g_LocModList) {
-        LocalModule *pnext = (LocalModule *)(pLocalModule->Next());
-        assert(pLocalModule->m_pszUunm);
-        nLen1 = strlen(pLocalModule->m_pszUunm);
+    while (localModule != (LocalModule *)&g_LocModList) {
+        LocalModule* next = (LocalModule *)(localModule->Next());
+        assert(!localModule->mUunm.IsNullOrEmpty());
 
-        if (nLen1 < nLen2) {
-            pLocalModule = pnext;
+        Int32 index = localModule->mUunm.LastIndexOf(moduleName);
+        if (index < 0 ||
+                (index > 0 && localModule->mUunm.GetChar(index - 1) != '/')) {
+            localModule = next;
             continue;
         }
-        else if (szDllName.CompareIgnoreCase(pLocalModule->m_pszUunm+nLen1-nLen2)) {
-            pLocalModule = pnext;
-            continue;
-        }
-        else if (nLen1 != nLen2 &&
-                            pLocalModule->m_pszUunm[nLen1-nLen2] != '/') {
-            pLocalModule = pnext;
-            continue;
-        }
-        else if (NULL == pLocalModule->m_pDllCanUnloadNow) {
+
+        if (NULL == localModule->mDllCanUnloadNowFunc) {
             ec = E_NOT_CAR_COMPONENT;
         }
-        else if (NOERROR == (*pLocalModule->m_pDllCanUnloadNow)()) {
-            pLocalModule->Detach();
-            dlclose(pLocalModule->m_pIModule);
-            delete pLocalModule->m_pszUunm;
-            delete pLocalModule;
-            pLocalModule = NULL;
+        else if (NOERROR == (*localModule->mDllCanUnloadNowFunc)()) {
+            localModule->Detach();
+            dlclose(localModule->mIModule);
+            delete localModule;
+            localModule = NULL;
             ec = NOERROR;
         }
         else {
@@ -217,36 +177,34 @@ ELAPI _CProcess_FreeUnusedModule(String szDllName)
     return E_COMPONENT_NOT_LOADED;
 }
 
-ELAPI_(void) _CProcess_FreeUnusedModules(Boolean bImmediate)
+ELAPI_(void) _CProcess_FreeUnusedModules(
+    /* [in] */ Boolean immediate)
 {
-    LocalModule *pLocalModule;
-
     pthread_mutex_lock(&g_LocModListLock);
-    pLocalModule = (LocalModule *)(g_LocModList.mNext);
+    LocalModule* localModule = (LocalModule *)(g_LocModList.mNext);
 
-    while (pLocalModule != (LocalModule *)&g_LocModList) {
-        LocalModule *pnext = (LocalModule *)(pLocalModule->Next());
-        if (NULL != pLocalModule->m_pDllCanUnloadNow) {
-            if (NOERROR == (*pLocalModule->m_pDllCanUnloadNow)()) {
-                ++pLocalModule->m_nAskCount;
+    while (localModule != (LocalModule *)&g_LocModList) {
+        LocalModule* next = (LocalModule *)(localModule->Next());
+        if (NULL != localModule->mDllCanUnloadNowFunc) {
+            if (NOERROR == (*localModule->mDllCanUnloadNowFunc)()) {
+                ++localModule->mAskCount;
                 /*
                 * If DllCanUnloadNow() return TRUE more than or
                 * equal to 3 successive times, then release the DLL.
-                * If caller specify 'bImmediate' is TRUE, then release
+                * If caller specify 'immediate' is TRUE, then release
                 * the DLL immediately.
                 */
-                if (bImmediate || pLocalModule->m_nAskCount > 2) {
-                    pLocalModule->Detach();
-                    dlclose(pLocalModule->m_pIModule);
-                    delete pLocalModule->m_pszUunm;
-                    delete pLocalModule;
-                    pLocalModule = NULL;
+                if (immediate || localModule->mAskCount > 2) {
+                    localModule->Detach();
+                    dlclose(localModule->mIModule);
+                    delete localModule;
+                    localModule = NULL;
                 }
             }
             else
-                pLocalModule->m_nAskCount = 0;
+                localModule->mAskCount = 0;
         }
-        pLocalModule = pnext;
+        localModule = next;
     }
 
     pthread_mutex_unlock(&g_LocModListLock);
@@ -254,30 +212,27 @@ ELAPI_(void) _CProcess_FreeUnusedModules(Boolean bImmediate)
 
 void FreeCurProcComponents()
 {
-    LocalModule *pCurModule = NULL;
-
     pthread_mutex_lock(&g_LocModListLock);
-    pCurModule = (LocalModule *)(g_LocModList.mNext);
+    LocalModule* curModule = (LocalModule *)(g_LocModList.mNext);
 
-    while (pCurModule != (LocalModule *)&g_LocModList) {
-        LocalModule *pnext = (LocalModule *)(pCurModule->Next());
+    while (curModule != (LocalModule *)&g_LocModList) {
+        LocalModule* next = (LocalModule *)(curModule->Next());
         ECode ecCur = S_FALSE;
-        if (NULL != pCurModule->m_pDllCanUnloadNow) {
-            ecCur = (*pCurModule->m_pDllCanUnloadNow)();
+        if (NULL != curModule->mDllCanUnloadNowFunc) {
+            ecCur = (*curModule->mDllCanUnloadNowFunc)();
             if (NOERROR == ecCur) {
-                pCurModule->Detach();
-                dlclose(pCurModule->m_pIModule);
-                delete pCurModule->m_pszUunm;
-                delete pCurModule;
-                pCurModule = NULL;
+                curModule->Detach();
+                dlclose(curModule->mIModule);
+                delete curModule;
+                curModule = NULL;
             }
         }
 
         if (S_FALSE != ecCur) {
-            pCurModule = (LocalModule *)(g_LocModList.mNext);
+            curModule = (LocalModule *)(g_LocModList.mNext);
         }
         else {
-            pCurModule = pnext;
+            curModule = next;
         }
     }
 

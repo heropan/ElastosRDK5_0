@@ -234,7 +234,7 @@ ELAPI _Impl_CallbackSink_RequestToFinish(
 ELAPI_(_ELASTOS Int32) _Impl_CallbackSink_GetStatus(
     PInterface pCallbackContext);
 
-ELAPI_(_ELASTOS Int32) _Impl_CallbackSink_TryToHandleEvents(IInterface* pCallbackContext);
+ELAPI _Impl_CallbackSink_TryToHandleEvents(IInterface* pCallbackContext);
 
 ELAPI _Impl_CCallbackRendezvous_New(
         PInterface pCallbackContext,

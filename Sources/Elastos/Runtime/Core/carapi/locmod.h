@@ -9,22 +9,21 @@
 
 using namespace Elastos;
 
-typedef ECode (__stdcall *PDLLGETCLASSOBJECT)(
-                REMuid, REIID, PInterface *);
+typedef ECode (__stdcall *PDLLGETCLASSOBJECT)(REMuid, REIID, PInterface*);
 typedef ECode (__stdcall *PDLLCANUNLOADNOW)();
 
 typedef struct LocalModule : DLinkNode {
-    char                *m_pszUunm;
-    Void                *m_pIModule;
-    PDLLGETCLASSOBJECT  m_pDllGetClassObject;
-    PDLLCANUNLOADNOW    m_pDllCanUnloadNow;
-    CIClassInfo         *m_pClassInfo;
-    Int32               m_nAskCount;
-}   LocalModule;
+    String              mUunm;
+    Void*               mIModule;
+    PDLLGETCLASSOBJECT  mDllGetClassObjectFunc;
+    PDLLCANUNLOADNOW    mDllCanUnloadNowFunc;
+    CIClassInfo*        mClassInfo;
+    Int32               mAskCount;
+} LocalModule;
 
 ECode  AcquireClassObjectFromLocalModule(
     /* [in] */ RClassID rclsid,
     /* [in] */ REIID riid,
-    /* [out] */ PInterface *ppObject);
+    /* [out] */ PInterface* object);
 
 #endif // __LOCMOD_H__

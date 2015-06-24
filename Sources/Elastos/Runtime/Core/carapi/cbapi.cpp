@@ -7,274 +7,267 @@
 using namespace Elastos;
 
 ELAPI _Impl_CallbackSink_TryToHandleEvents(
-    IInterface* pCallbackContext)
+    /* [in] */ PInterface callbackContext)
 {
-    ECode ec;
-    CCallbackContext* pCBCtx;
+    if (NULL == callbackContext) return NOERROR;
 
-    if (NULL == pCallbackContext) return 0;
-
-    pCBCtx = (CCallbackContext*)pCallbackContext;
-    ec = pCBCtx->HandleCallbackEvents(INFINITE, NULL, NULL, 0);
-    pCBCtx->mStatus = CallbackContextStatus_Finishing;
+    CCallbackContext* cbCtxObj = (CCallbackContext*)callbackContext;
+    ECode ec = cbCtxObj->HandleCallbackEvents(INFINITE, NULL, NULL, 0);
+    cbCtxObj->mStatus = CallbackContextStatus_Finishing;
 
     return ec;
 }
 
 ELAPI _Impl_CallbackSink_GetCallbackContext(
-    PInterface *ppCallbackContext)
+    /* [out] */ PInterface* callbackContext)
 {
+    if (NULL == callbackContext) return E_INVALID_ARGUMENT;
 
-    if (NULL == ppCallbackContext) return E_INVALID_ARGUMENT;
-
-    *ppCallbackContext = (PInterface)pthread_getspecific(TL_CALLBACK_SLOT);
-    if (NULL == *ppCallbackContext) {
+    *callbackContext = (PInterface)pthread_getspecific(TL_CALLBACK_SLOT);
+    if (NULL == *callbackContext) {
         return E_NOT_CALLBACK_THREAD;
     }
     else {
-        (*ppCallbackContext)->AddRef();
+        (*callbackContext)->AddRef();
     }
 
     return NOERROR;
 }
 
 ELAPI _Impl_CallbackSink_InitCallbackContext(
-    PInterface *ppCallbackContext)
+    /* [out] */ PInterface* callbackContext)
 {
-    CCallbackContext *pCallbackContext;
+    CCallbackContext* cbCtxObj = new CCallbackContext();
+    if (NULL == cbCtxObj) return E_OUT_OF_MEMORY;
 
-    pCallbackContext = new CCallbackContext();
-    if (NULL == pCallbackContext) return E_OUT_OF_MEMORY;
+    cbCtxObj->AddRef();
 
-    pCallbackContext->AddRef();
-
-    ECode ec = pCallbackContext->Initialize();
+    ECode ec = cbCtxObj->Initialize();
     if (FAILED(ec)) {
-        pCallbackContext->Release();
+        cbCtxObj->Release();
         return ec;
     }
 
-    if (NULL != ppCallbackContext) {
-        *ppCallbackContext = pCallbackContext;
+    if (NULL != callbackContext) {
+        *callbackContext = cbCtxObj;
     }
 
     return NOERROR;
 }
 
-ELAPI _Impl_CallbackSink_AcquireCallbackContext(PInterface *ppCallbackContext)
+ELAPI _Impl_CallbackSink_AcquireCallbackContext(
+    /* [out] */ PInterface* callbackContext)
 {
-    CCallbackContext *pCallbackContext;
-    ECode ec;
 
-    if (NULL == ppCallbackContext) return E_INVALID_ARGUMENT;
+    if (NULL == callbackContext) return E_INVALID_ARGUMENT;
 
-    *ppCallbackContext = (PInterface)pthread_getspecific(TL_ORG_CALLBACK_SLOT);
-    if (*ppCallbackContext) {
-        (*ppCallbackContext)->AddRef();
+    *callbackContext = (PInterface)pthread_getspecific(TL_ORG_CALLBACK_SLOT);
+    if (*callbackContext) {
+        (*callbackContext)->AddRef();
         return NOERROR;
     }
 
-    pCallbackContext = new CCallbackContext();
-    if (NULL == pCallbackContext) return E_OUT_OF_MEMORY;
+    CCallbackContext* cbCtxObj = new CCallbackContext();
+    if (NULL == cbCtxObj) return E_OUT_OF_MEMORY;
 
-    ec = pCallbackContext->Initialize();
+    ECode ec = cbCtxObj->Initialize();
     if (FAILED(ec)) return ec;
 
-    pCallbackContext->AddRef();
-    *ppCallbackContext = pCallbackContext;
+    cbCtxObj->AddRef();
+    *callbackContext = cbCtxObj;
 
     return NOERROR;
 }
 
 ELAPI _Impl_CallbackSink_PostCallbackEventAtTime(
-    PInterface pCallbackContext,
-    PCallbackEvent pCallbackEvent,
-    _ELASTOS Millisecond64 uptimeMillis)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PCallbackEvent callbackEvent,
+    /* [in] */ Millisecond64 uptimeMillis)
 {
-    if (NULL == pCallbackContext || NULL == pCallbackEvent) {
+    if (NULL == callbackContext || NULL == callbackEvent) {
         return E_INVALID_ARGUMENT;
     }
 
-    pCallbackEvent->m_when = uptimeMillis;
+    callbackEvent->m_when = uptimeMillis;
 
-    return ((CCallbackContext *)pCallbackContext)->
-                PostCallbackEvent(pCallbackEvent);
+    return ((CCallbackContext *)callbackContext)->
+                PostCallbackEvent(callbackEvent);
 }
 
 ELAPI _Impl_CallbackSink_PostCallbackEvent(
-    IInterface *pCallbackContext,
-    PCallbackEvent pCallbackEvent)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PCallbackEvent callbackEvent)
 {
     struct timeval now;
-    _ELASTOS Millisecond64 when;
+    Millisecond64 when;
 
     gettimeofday(&now, NULL);
     when = (now.tv_sec * 1000 + now.tv_usec/1000.0) + 0.5;
 
     return _Impl_CallbackSink_PostCallbackEventAtTime(
-            pCallbackContext, pCallbackEvent, when);
+            callbackContext, callbackEvent, when);
 }
 
 ELAPI _Impl_CallbackSink_SendCallbackEvent(
-    IInterface *pCallbackContext,
-    PCallbackEvent pCallbackEvent,
-    Millisecond32 msTimeOut)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PCallbackEvent callbackEvent,
+    /* [in] */ Millisecond32 msTimeOut)
 {
-    if (NULL == pCallbackContext || NULL == pCallbackEvent) {
+    if (NULL == callbackContext || NULL == callbackEvent) {
         return E_INVALID_ARGUMENT;
     }
 
-    return ((CCallbackContext *)pCallbackContext)->
-                SendCallbackEvent(pCallbackEvent, msTimeOut);
+    return ((CCallbackContext *)callbackContext)->
+                SendCallbackEvent(callbackEvent, msTimeOut);
 }
 
 ELAPI _Impl_CallbackSink_WaitForCallbackEvent(
-    IInterface *pCallbackContext,
-    Millisecond32 msTimeOut,
-    WaitResult* pResult,
-    Boolean * pbEventOccured,
-    UInt32 fPriority)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ Millisecond32 msTimeOut,
+    /* [out] */ WaitResult* result,
+    /* [out] */ Boolean* eventOccured,
+    /* [in] */ UInt32 priority)
 {
-    if (NULL == pCallbackContext) {
+    if (NULL == callbackContext) {
         return E_INVALID_ARGUMENT;
     }
 
-    return ((CCallbackContext *)pCallbackContext)->
-        HandleCallbackEvents(msTimeOut, pResult, pbEventOccured, fPriority);
+    return ((CCallbackContext *)callbackContext)->
+        HandleCallbackEvents(msTimeOut, result, eventOccured, priority);
 }
 
 ELAPI _Impl_CallbackSink_CleanupAllCallbacks(
-    IInterface *pCallbackContext)
+    /* [in] */ PInterface callbackContext)
 {
-    if (NULL == pCallbackContext) return E_INVALID_ARGUMENT;
+    if (NULL == callbackContext) return E_INVALID_ARGUMENT;
 
-    ((CCallbackContext *)pCallbackContext)->CancelAllCallbackEvents();
+    ((CCallbackContext *)callbackContext)->CancelAllCallbackEvents();
     return NOERROR;
 }
 
 ELAPI _Impl_CallbackSink_CancelAllPendingCallbacks(
-    IInterface *pCallbackContext,
-    PInterface pSender)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender)
 {
-    if (NULL == pCallbackContext) return E_INVALID_ARGUMENT;
+    if (NULL == callbackContext) return E_INVALID_ARGUMENT;
 
-    return ((CCallbackContext *)pCallbackContext)->
-                CancelAllPendingCallbacks(pSender);
+    return ((CCallbackContext *)callbackContext)->
+                CancelAllPendingCallbacks(sender);
 }
 
 ELAPI _Impl_CallbackSink_CancelPendingCallback(
-    IInterface *pCallbackContext,
-    PInterface pSender,
-    CallbackEventId id)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    if (NULL == pCallbackContext) return E_INVALID_ARGUMENT;
+    if (NULL == callbackContext) return E_INVALID_ARGUMENT;
 
-    return ((CCallbackContext *)pCallbackContext)->
-                CancelPendingCallback(pSender, id);
+    return ((CCallbackContext *)callbackContext)->
+                CancelPendingCallback(sender, id);
 }
 
 ELAPI _Impl_CallbackSink_CancelCallbackEvents(
-    IInterface *pCallbackContext,
-    PInterface pSender,
-    CallbackEventId id,
-    PVoid pHandlerThis,
-    PVoid pHandlerFunc)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id,
+    /* [in] */ PVoid handlerThis,
+    /* [in] */ PVoid handlerFunc)
 {
-    if (NULL == pCallbackContext) return E_INVALID_ARGUMENT;
+    if (NULL == callbackContext) return E_INVALID_ARGUMENT;
 
-    return ((CCallbackContext *)pCallbackContext)->
-                CancelCallbackEvents(pSender, id, pHandlerThis, pHandlerFunc);
+    return ((CCallbackContext *)callbackContext)->
+                CancelCallbackEvents(sender, id, handlerThis, handlerFunc);
 }
 
 ELAPI _Impl_CallbackSink_RequestToFinish(
-    PInterface pCallbackContext, Int32 Flag)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ Int32 Flag)
 {
-    CCallbackContext* pContext;
+    CCallbackContext* cbCtxObj;
     ECode ec;
-    if (pCallbackContext == NULL) {
-        ec = _Impl_CallbackSink_GetCallbackContext((PInterface*)&pContext);
+    if (callbackContext == NULL) {
+        ec = _Impl_CallbackSink_GetCallbackContext((PInterface*)&cbCtxObj);
         if (FAILED(ec)) return ec;
-        ec = pContext->RequestToFinish(Flag);
-        pContext->Release();
+        ec = cbCtxObj->RequestToFinish(Flag);
+        cbCtxObj->Release();
     }
     else {
-        pContext = (CCallbackContext*)pCallbackContext;
-        ec = pContext->RequestToFinish(Flag);
+        cbCtxObj = (CCallbackContext*)callbackContext;
+        ec = cbCtxObj->RequestToFinish(Flag);
     }
     return ec;
 }
 
 ELAPI _Impl_CallbackSink_GetThreadEvent(
-    PInterface pCallbackContext,
-    sem_t* ppEvent)
+    /* [in] */ PInterface callbackContext,
+    /* [out] */ sem_t* event)
 {
-    if (NULL == pCallbackContext || NULL == ppEvent) {
+    if (NULL == callbackContext || NULL == event) {
         return E_INVALID_ARGUMENT;
     }
 
-    ppEvent = &((CCallbackContext *)pCallbackContext)->mThreadEvent;
+    event = &((CCallbackContext *)callbackContext)->mThreadEvent;
 
     return NOERROR;
 }
 
 ELAPI_(Int32) _Impl_CallbackSink_GetStatus(
-    PInterface pCallbackContext)
+    /* [in] */ PInterface callbackContext)
 {
-    if (pCallbackContext) {
-        return ((CCallbackContext *)pCallbackContext)->mStatus;
+    if (callbackContext) {
+        return ((CCallbackContext *)callbackContext)->mStatus;
     }
     return 0;
 }
 
-ECode _Impl_CheckClsId(
-    PInterface pServerObj,
-    const ClassID* pClassiD,
-    PInterface *ppServerObj)
+ELAPI _Impl_CheckClsId(
+    /* [in] */ PInterface serverObj,
+    /* [in] */ const ClassID* classiD,
+    /* [out] */ PInterface* outServerObj)
 {
-    IObject *pObject;
+    IObject* object;
 	char str[80];
     ClassID clsid;
 	clsid.pUunm = str;
 
-    pObject = (IObject*)pServerObj->Probe(EIID_IObject);
-    if (NULL == pObject) return E_INVALID_ARGUMENT;
+    object = (IObject*)serverObj->Probe(EIID_IObject);
+    if (NULL == object) return E_INVALID_ARGUMENT;
 
-    pObject->GetClassID(&clsid);
-    while (*(EMuid *)&clsid != *(EMuid *)pClassiD) {
-        pObject = (IObject*)pObject->Probe(EIID_SUPER_OBJECT);
-        if (NULL == pObject) return E_INVALID_ARGUMENT;
+    object->GetClassID(&clsid);
+    while (*(EMuid *)&clsid != *(EMuid *)classiD) {
+        object = (IObject*)object->Probe(EIID_SUPER_OBJECT);
+        if (NULL == object) return E_INVALID_ARGUMENT;
 
-        pObject->GetClassID(&clsid);
+        object->GetClassID(&clsid);
     }
-    *ppServerObj = pObject;  // don't AddRef, Caller don't Release either.
+    *outServerObj = object;  // don't AddRef, Caller don't Release either.
     return NOERROR;
 }
 
-ECode _Impl_AcquireCallbackHandler(
-    PInterface pServerObj,
-    REIID iid,
-    PInterface *ppHandler)
+ELAPI _Impl_AcquireCallbackHandler(
+    /* [in] */ PInterface serverObj,
+    /* [in] */ REIID iid,
+    /* [out] */ PInterface* outHandler)
 {
-    ICallbackSink *pSink = NULL;
-    PInterface pHandler = NULL;
-    ECode ec;
+    ICallbackSink* sink = NULL;
+    PInterface handler = NULL;
 
     do {
-        if (pServerObj) {
-            ec = _CObject_AcquireCallbackSink(pServerObj, &pSink);
+        if (serverObj) {
+            ECode ec = _CObject_AcquireCallbackSink(serverObj, &sink);
             if (FAILED(ec)) return ec;
-            pHandler = pSink->Probe(iid);
-            if (pHandler) break;
+            handler = sink->Probe(iid);
+            if (handler) break;
         }
         else {
             return E_NO_INTERFACE;
         }
 
-        pServerObj = pServerObj->Probe(EIID_SUPER_OBJECT);
-        pSink->Release();
+        serverObj = serverObj->Probe(EIID_SUPER_OBJECT);
+        sink->Release();
 
-    } while (NULL == pHandler);
+    } while (NULL == handler);
 
-    *ppHandler = pHandler;
+    *outHandler = handler;
     return NOERROR;
 }

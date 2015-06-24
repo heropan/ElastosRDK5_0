@@ -2,7 +2,7 @@
 ;; Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 ;;==========================================================================
 
-LIBRARY Elastos.Runtime.CarRuntime.eco
+LIBRARY Elastos.Runtime.eco
 #if defined(_GNUC)
 DESCRIPTION "Elastos Execution Engine"
 #define PRIVATE
