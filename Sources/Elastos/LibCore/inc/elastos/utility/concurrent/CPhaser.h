@@ -5,6 +5,7 @@
 #include "_Elastos_Utility_Concurrent_CPhaser.h"
 #include "Object.h"
 
+using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::Atomic::IAtomicReference;
 
 namespace Elastos {

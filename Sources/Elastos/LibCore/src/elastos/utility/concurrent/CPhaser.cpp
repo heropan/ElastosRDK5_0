@@ -8,6 +8,7 @@
 #include "CAtomicReference.h"
 #include "CForkJoinPool.h"
 
+using Elastos::Core::Thread;
 using Elastos::Core::ISystem;
 using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;
@@ -97,7 +98,7 @@ Int32 CPhaser::DoArrive(
 {
     AutoPtr<IPhaser> root = mRoot;
     for (;;) {
-        Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
+        Int64 s = Object::Equals(root, THIS_PROBE(IInterface)) ? mState : ReconcileState();
         Int32 phase = (Int32)(s >> PHASE_SHIFT);
         if (phase < 0)
             return phase;
@@ -195,7 +196,7 @@ Int64 CPhaser::ReconcileState()
 {
     AutoPtr<IPhaser> root = mRoot;
     Int64 s = mState;
-    if (!Object::Equals(root), this))) {
+    if (!Object::Equals(root, THIS_PROBE(IInterface))) {
         Int32 phase, p;
         // CAS to root phase with current parties, tripping unarrived
         assert(0 && "TODO");
@@ -303,7 +304,7 @@ ECode CPhaser::ArriveAndAwaitAdvance(
     // Specialization of doArrive+awaitAdvance eliminating some reads/paths
     AutoPtr<IPhaser> root = mRoot;
     for (;;) {
-        Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
+        Int64 s = Object::Equals(root, THIS_PROBE(IInterface)) ? mState : ReconcileState();
         Int32 phase = (Int32)(s >> PHASE_SHIFT);
         if (phase < 0) {
             *value = phase;
@@ -345,7 +346,7 @@ ECode CPhaser::AwaitAdvance(
 {
     VALIDATE_NOT_NULL(value);
     AutoPtr<IPhaser> root = mRoot;
-    Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
+    Int64 s = Object::Equals(root, THIS_PROBE(IInterface)) ? mState : ReconcileState();
     Int32 p = (Int32)(s >> PHASE_SHIFT);
     if (phase < 0) {
         *value = phase;
@@ -366,7 +367,7 @@ ECode CPhaser::AwaitAdvanceInterruptibly(
 {
     VALIDATE_NOT_NULL(value);
     AutoPtr<IPhaser> root = mRoot;
-    Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
+    Int64 s = Object::Equals(root, THIS_PROBE(IInterface)) ? mState : ReconcileState();
     Int32 p = (Int32)(s >> PHASE_SHIFT);
     if (phase < 0) {
         *value = phase;
@@ -393,7 +394,7 @@ ECode CPhaser::AwaitAdvanceInterruptibly(
     Int64 nanos;
     unit->ToNanos(timeout, &nanos);
     AutoPtr<IPhaser> root = mRoot;
-    Int64 s = Object::Equals(root, this) ? mState : ReconcileState();
+    Int64 s = Object::Equals(root, THIS_PROBE(IInterface)) ? mState : ReconcileState();
     Int32 p = (Int32)(s >> PHASE_SHIFT);
     if (phase < 0) {
         *value = phase;
@@ -525,7 +526,7 @@ void CPhaser::ReleaseWaiters(
     while ((head->Get((IInterface**)&q), q) != NULL &&
            q->mPhase != (Int32)(cr->mState >> PHASE_SHIFT)) {
         Boolean b = FALSE;
-        if ((head->CompareAndSet(q, q->mNext, &b), b) &&
+        if ((head->CompareAndSet(q->Probe(EIID_IInterface), q->mNext->Probe(EIID_IInterface), &b), b) &&
             (t = q->mThread) != NULL) {
             q->mThread = NULL;
             LockSupport::Unpark(t);
@@ -546,7 +547,7 @@ Int32 CPhaser::AbortWait(
         if (q == NULL || ((t = q->mThread) != NULL && q->mPhase == p))
             return p;
         Boolean b = FALSE;
-        head->CompareAndSet(q, q->mNext, &b);
+        head->CompareAndSet(q->Probe(EIID_IInterface), q->mNext->Probe(EIID_IInterface), &b);
         if (b && t != NULL) {
             q->mThread = NULL;
             LockSupport::Unpark(t);
@@ -591,7 +592,7 @@ Int32 CPhaser::InternalAwaitAdvance(
             node->mNext = q;
             if ((q == NULL || q->mPhase == phase) &&
                 (Int32)(mState >> PHASE_SHIFT) == phase) // avoid stale enq
-                head->CompareAndSet(q, node, &queued);
+                head->CompareAndSet(q->Probe(EIID_IInterface), node->Probe(EIID_IInterface), &queued);
         }
         else {
             // try {
@@ -692,9 +693,9 @@ ECode CPhaser::QNode::Block(
         return NOERROR;
     }
     else if (!mTimed)
-        LockSupport::Park(this);
+        LockSupport::Park(THIS_PROBE(IInterface));
     else if (mNanos > 0)
-        LockSupport::ParkNanos(this, mNanos);
+        LockSupport::ParkNanos(THIS_PROBE(IInterface), mNanos);
     return IsReleasable(res);
 }
 

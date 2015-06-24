@@ -12,8 +12,7 @@ namespace Concurrent {
 
 void CExecutorCompletionService::QueueingFuture::Done()
 {
-    Boolean result;
-    mOwner->mCompletionQueue->Add(mTask, &result);
+    ICollection::Probe(mOwner->mCompletionQueue)->Add(mTask);
 }
 
 CAR_INTERFACE_IMPL(CExecutorCompletionService, Object, IExecutorCompletionService)
@@ -51,7 +50,7 @@ AutoPtr<IRunnableFuture> CExecutorCompletionService::NewTaskFor(
         return f;
     }
     else {
-        AbstractExecutorService* aes = (AbstractExecutorService*)mAes->Probe(EIID_AbstractExecutorService);
+        AbstractExecutorService* aes = (AbstractExecutorService*)mAes.Get();
         assert(aes != NULL);
         return aes->NewTaskFor(task);
     }
@@ -67,7 +66,7 @@ AutoPtr<IRunnableFuture> CExecutorCompletionService::NewTaskFor(
         return f;
     }
     else {
-        AbstractExecutorService* aes = (AbstractExecutorService*)mAes->Probe(EIID_AbstractExecutorService);
+        AbstractExecutorService* aes = (AbstractExecutorService*)mAes.Get();
         assert(aes != NULL);
         return aes->NewTaskFor(task, result);
     }
@@ -118,7 +117,7 @@ ECode CExecutorCompletionService::Poll(
 {
     VALIDATE_NOT_NULL(future)
     AutoPtr<IInterface> e;
-    FAIL_RETURN(mCompletionQueue->Poll((IInterface**)&e));
+    FAIL_RETURN(IQueue::Probe(mCompletionQueue)->Poll((IInterface**)&e));
     *future = IFuture::Probe(e);
     REFCOUNT_ADD(*future);
     return NOERROR;
