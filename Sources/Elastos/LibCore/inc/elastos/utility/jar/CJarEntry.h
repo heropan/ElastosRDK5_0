@@ -4,7 +4,7 @@
 
 #include "_Elastos_Utility_Jar_CJarEntry.h"
 #include "ZipEntry.h"
-#include "List.h"
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Zip::IZipEntry;
@@ -28,36 +28,6 @@ public:
 
     CJarEntry();
 
-    CARAPI GetComment(
-        /* [out] */ String* comment);
-
-    CARAPI GetCompressedSize(
-        /* [out] */ Int64* size);
-
-    CARAPI GetCrc(
-        /* [out] */ Int64* checksum);
-
-    CARAPI GetExtra(
-        /* [out, callee] */ ArrayOf<Byte> ** extra);
-
-    CARAPI GetMethod(
-        /* [out] */ Int32* method);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetSize(
-        /* [out] */ Int64* size);
-
-    CARAPI GetTime(
-        /* [out] */ Int64* timeInMil);
-
-    CARAPI IsDirectory(
-        /* [out] */ Boolean* isDirectory);
-
-    CARAPI GetAttributes(
-        /* [out] */ IAttributes** attrib);
-
     CARAPI constructor(
         /* [in] */ const String& name);
 
@@ -67,23 +37,67 @@ public:
     CARAPI constructor(
         /* [in] */ IJarEntry* jarEntry);
 
+    CARAPI constructor(
+        /* [in] */ IZipEntry* jarEntry,
+        /* [in] */ IJarFile* parentJar);
+
+    /**
+     * Returns the {@code Attributes} object associated with this entry or
+     * {@code null} if none exists.
+     *
+     * @return the {@code Attributes} for this entry.
+     * @throws IOException
+     *                If an error occurs obtaining the {@code Attributes}.
+     * @see Attributes
+     */
+    CARAPI GetAttributes(
+        /* [out] */ IAttributes** attrib);
+
+    /**
+     * Returns an array of {@code Certificate} Objects associated with this
+     * entry or {@code null} if none exists. Make sure that the everything is
+     * read from the input stream before calling this method, or else the method
+     * returns {@code null}.
+     * <p>
+     * This method returns all the signers' unverified chains concatenated
+     * together in one array. To know which certificates were tied to the
+     * private keys that made the signatures on this entry, see
+     * {@link #getCodeSigners()} instead.
+     *
+     * @see java.security.cert.Certificate
+     */
     CARAPI GetCertificates(
         /* [out, callee] */ ArrayOf<ICertificate*>** certificates);
 
     CARAPI SetAttributes(
         /* [in] */ IAttributes* attrib);
 
+    /**
+     * Returns the code signers for the digital signatures associated with the
+     * JAR file. If there is no such code signer, it returns {@code null}. Make
+     * sure that the everything is read from the input stream before calling
+     * this method, or else the method returns {@code null}.
+     * <p>
+     * Only the digital signature on the entry is cryptographically verified.
+     * None of the certificates in the the {@link CertPath} returned from
+     * {@link CodeSigner#getSignerCertPath()} are verified and must be verified
+     * by the caller if needed. See {@link CertPathValidator} for more
+     * information.
+     *
+     * @return an array of CodeSigner for this JAR entry.
+     * @see CodeSigner
+     */
     CARAPI GetCodeSigners(
         /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigner);
 
 private:
     CARAPI GetCodeSigners(
-    /* [in] */ ArrayOf<ICertificate*>* certs,
-    /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigners);
+        /* [in] */ ArrayOf<AutoPtr<ArrayOf<ICertificate*> > > * certChains,
+        /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigners);
 
     CARAPI AddCodeSigner(
     /* [in] */ List<AutoPtr<ICodeSigner> >* asigners,
-    /* [in] */ List<AutoPtr<ICertificate> >* list);
+    /* [in] */ ArrayOf<ICertificate*>* certs);
 
 public:
     AutoPtr<IJarFile> mParentJar;

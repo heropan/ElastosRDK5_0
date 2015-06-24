@@ -1,6 +1,8 @@
 
 #include "CJarOutputStream.h"
+#include "CZipEntry.h"
 
+using Elastos::IO::EIID_IOutputStream;
 using Elastos::Utility::Zip::CZipEntry;
 
 namespace Elastos {
@@ -23,7 +25,7 @@ ECode CJarOutputStream::constructor(
     AutoPtr<IZipEntry> ze;
     CZipEntry::New(IJarFile::MANIFEST_NAME, (IZipEntry**)&ze);
     FAIL_RETURN(PutNextEntry(ze))
-    FAIL_RETURN(mManifest->Write(this))
+    FAIL_RETURN(mManifest->Write(THIS_PROBE(IOutputStream)))
     CloseEntry();
     return NOERROR;
 }

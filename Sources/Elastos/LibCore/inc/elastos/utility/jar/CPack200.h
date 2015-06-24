@@ -1,8 +1,8 @@
 
-#ifndef __ELASTOS_UTILITY_CPACK200HELPER_H__
-#define __ELASTOS_UTILITY_CPACK200HELPER_H__
+#ifndef __ELASTOS_UTILITY_CPACK200_H__
+#define __ELASTOS_UTILITY_CPACK200_H__
 
-#include "_Elastos_Utility_Jar_CPack200Helper.h"
+#include "_Elastos_Utility_Jar_CPack200.h"
 #include "Singleton.h"
 
 using Elastos::Utility::Jar::IPacker;
@@ -12,9 +12,9 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-CarClass(CPack200Helper)
+CarClass(CPack200)
     , public Singleton
-    , public IPack200Helper
+    , public IPack200
 {
 public:
     CAR_INTERFACE_DECL()
@@ -35,4 +35,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_CPACK200HELPER_H__
+#endif // __ELASTOS_UTILITY_CPACK200_H__

@@ -38,7 +38,23 @@ ManifestReader::ManifestReader(
 }
 
 ECode ManifestReader::ReadEntries(
-    /* [in] */ IMap* entries,
+    /* [in] */ IMap * entries,
+    /* [in] */ HashMap<String, AutoPtr<CManifest::Chunk> > * chunks)
+{
+    HashMap<String, AutoPtr<IAttributes> > map;
+    FAIL_RETURN(ReadEntries(&map, chunks))
+
+    HashMap<String, AutoPtr<IAttributes> >::Iterator it;
+    for (it = map.Begin(); it != map.End(); ++it) {
+        AutoPtr<ICharSequence> csq;
+        CStringWrapper::New(it->mFirst, (ICharSequence**)&csq);
+        entries->Put(csq, it->mSecond);
+    }
+    return NOERROR;
+}
+
+ECode ManifestReader::ReadEntries(
+    /* [in] */ HashMap<String, AutoPtr<IAttributes> > * entries,
     /* [in] */ HashMap<String, AutoPtr<CManifest::Chunk> > * chunks)
 {
     VALIDATE_NOT_NULL(entries)
@@ -46,6 +62,7 @@ ECode ManifestReader::ReadEntries(
     HashMap<String, AutoPtr<CManifest::Chunk> >::Iterator it;
     Boolean bval;
     Int32 mark = mPos;
+    HashMap<String, AutoPtr<IAttributes> >::Iterator sait;
     while (ReadHeader(&bval), bval) {
         if (CName::NAME->Equals(mName, &bval), !bval) {
             ALOGE("IOException: ManifestReader::ReadEntries: Entry is not named");
@@ -53,12 +70,11 @@ ECode ManifestReader::ReadEntries(
         }
 
         String entryNameValue = mValue;
-        AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(entryNameValue, (ICharSequence**)&csq);
-
-        AutoPtr<IInterface> obj;
-        IMap::Probe(entries)->Get(TO_IINTERFACE(csq), (IInterface**)&obj);
-        AutoPtr<IAttributes> entry = IAttributes::Probe(obj);
+        sait = entries->Find(entryNameValue);
+        AutoPtr<IAttributes> entry;
+        if (sait != entries->End()) {
+            entry = sait->mSecond;
+        }
         if (entry == NULL) {
             CAttributes::New(12, (IAttributes**)&entry);
         }
@@ -85,7 +101,7 @@ ECode ManifestReader::ReadEntries(
             mark = mPos;
         }
 
-        IMap::Probe(entries)->Put(TO_IINTERFACE(csq), TO_IINTERFACE(entry));
+        (*entries)[entryNameValue] = entry;
     }
     return NOERROR;
 }

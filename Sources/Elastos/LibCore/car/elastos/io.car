@@ -168,6 +168,8 @@ module
             [in] Int32 size);
 
         interface IByteArrayOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
         interface IFlushable;
     }
 

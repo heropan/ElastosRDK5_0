@@ -5,9 +5,11 @@
 #include "_Elastos_Utility_Jar_CJarFile.h"
 #include "ZipFile.h"
 #include "JarVerifier.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Zip::ZipFile;
 using Elastos::Utility::Zip::IZipEntry;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFile;
 
@@ -24,9 +26,11 @@ public:
         : public FilterInputStream
     {
     public:
-        JarFileInputStream(
+        JarFileInputStream();
+
+        CARAPI constructor(
             /* [in] */ IInputStream* is,
-            /* [in] */ IZipEntry* ze,
+            /* [in] */ Int64 size,
             /* [in] */ JarVerifier::VerifierEntry* e);
 
         CARAPI Available(
@@ -46,10 +50,34 @@ public:
             /* [out] */ Int64* val);
 
     private:
-        Int64 mCount;
-        AutoPtr<IZipEntry> mZipEntry;
         AutoPtr<JarVerifier::VerifierEntry> mEntry;
+        Int64 mCount;
         Boolean mDone;
+    };
+
+    class JarFileEnumerator
+        : public Object
+        , public IEnumeration
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        JarFileEnumerator(
+            /* [in] */ IEnumeration* enu,
+            /* [in] */ CJarFile* jarFile);
+
+        CARAPI HasMoreElements(
+            /* [out] */ Boolean * hasMore);
+
+        CARAPI GetNextElement(
+            /* [out] */ IInterface ** obj);
+
+        CARAPI GetNextElement(
+            /* [out] */ IJarEntry ** obj);
+
+    public:
+        AutoPtr<IEnumeration> mZipEntry;
+        CJarFile* mJarFile;
     };
 
 public:
@@ -58,23 +86,6 @@ public:
     CAR_OBJECT_DECL()
 
     CJarFile();
-
-    CARAPI Close();
-
-    CARAPI GetEntry(
-        /* [in] */ const String& entryName,
-        /* [out] */ IZipEntry** entry);
-
-    CARAPI GetInputStream(
-        /* [in] */ IZipEntry* entry,
-        /* [out] */ IInputStream** is);
-
-    CARAPI GetJarEntry(
-        /* [in] */ const String& name,
-        /* [out] */ IJarEntry** jarEntry);
-
-    CARAPI GetManifest(
-        /* [out] */ IManifest** manifest);
 
     CARAPI constructor(
         /* [in] */ IFile* file);
@@ -95,23 +106,114 @@ public:
         /* [in] */ const String& filename,
         /* [in] */ Boolean verify);
 
+    /**
+     * Return an enumeration containing the {@code JarEntrys} contained in this
+     * {@code JarFile}.
+     *
+     * @return the {@code Enumeration} containing the JAR entries.
+     * @throws IllegalStateException
+     *             if this {@code JarFile} is closed.
+     */
+    CARAPI GetEntries(
+        /* [out] */ IEnumeration** entries);
+
+    /**
+     * Return the {@code JarEntry} specified by its name or {@code null} if no
+     * such entry exists.
+     *
+     * @param name
+     *            the name of the entry in the JAR file.
+     * @return the JAR entry defined by the name.
+     */
+    CARAPI GetJarEntry(
+        /* [in] */ const String& name,
+        /* [out] */ IJarEntry** jarEntry);
+
+    /**
+     * Returns the {@code Manifest} object associated with this {@code JarFile}
+     * or {@code null} if no MANIFEST entry exists.
+     *
+     * @return the MANIFEST.
+     * @throws IOException
+     *             if an error occurs reading the MANIFEST file.
+     * @throws IllegalStateException
+     *             if the jar file is closed.
+     * @see Manifest
+     */
+    CARAPI GetManifest(
+        /* [out] */ IManifest** manifest);
+
+    /**
+     * Return an {@code InputStream} for reading the decompressed contents of
+     * ZIP entry.
+     *
+     * @param ze
+     *            the ZIP entry to be read.
+     * @return the input stream to read from.
+     * @throws IOException
+     *             if an error occurred while creating the input stream.
+     */
+    CARAPI GetInputStream(
+        /* [in] */ IZipEntry* entry,
+        /* [out] */ IInputStream** is);
+
+    /**
+     * Return the {@code JarEntry} specified by name or {@code null} if no such
+     * entry exists.
+     *
+     * @param name
+     *            the name of the entry in the JAR file.
+     * @return the ZIP entry extracted.
+     */
+    CARAPI GetEntry(
+        /* [in] */ const String& entryName,
+        /* [out] */ IZipEntry** entry);
+
+    /**
+     * Closes this {@code JarFile}.
+     *
+     * @throws IOException
+     *             if an error occurs.
+     */
+    CARAPI Close();
+
 private:
-    CARAPI ReadMetaEntries();
-    static CARAPI EndsWithIgnoreCase(
+    /**
+     * Called by the JarFile constructors, Reads the contents of the
+     * file's META-INF/ directory and picks out the MANIFEST.MF file and
+     * verifier signature files if they exist.
+     *
+     * @throws IOException
+     *             if there is a problem reading the jar file entries.
+     * @return a map of entry names to their {@code byte[]} content.
+     */
+    static AutoPtr<HashMap<String, AutoPtr<ArrayOf<Byte> > > > ReadMetaEntries(
+        /* [in] */ ZipFile* file,
+        /* [in] */ Boolean verificationRequired);
+
+    static Boolean EndsWithIgnoreCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& suffix,
-        /* [out] */ Boolean* result);
-    CARAPI GetMetaEntriesImpl(
-    /* [out, callee] */ ArrayOf<IZipEntry*>** zipEntries);
+        /* [in] */ const String& suffix);
+
+    /**
+     * Returns all the ZipEntry's that relate to files in the
+     * JAR's META-INF directory.
+     */
+    static CARAPI_(AutoPtr<ArrayOf<IZipEntry*> >) GetMetaEntries(
+        /* [in] */ IZipFile* zipFile);
 
 public:
     // The directory containing the manifest.
     static const String META_DIR;
+
     AutoPtr<JarVerifier> mVerifier;
 
 private:
     // The manifest after it has been read from the JAR.
     AutoPtr<IManifest> mManifest;
+
+    // The entry for the MANIFEST.MF file before the first call to getManifest().
+    AutoPtr<ArrayOf<Byte> > mManifestBytes;
 
     // The entry for the MANIFEST.MF file before it is read.
     AutoPtr<IZipEntry> mManifestEntry;

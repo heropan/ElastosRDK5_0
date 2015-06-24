@@ -2,10 +2,9 @@
 #ifndef __ELASTOS_UTILITY_JARVERIFIER_H__
 #define __ELASTOS_UTILITY_JARVERIFIER_H__
 
-#include "HashMap.h"
 #include "OutputStream.h"
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::IVector;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::OutputStream;
@@ -34,7 +33,8 @@ class JarVerifier
     : public Object
 {
 public:
-    typedef HashMap<String, AutoPtr<ArrayOf<ICertificate*> > > StringCertificateMap;
+    typedef ArrayOf<ICertificate*> CertificateArray;
+    typedef HashMap<String, AutoPtr<CertificateArray> > StringCertificateMap;
     typedef typename StringCertificateMap::Iterator StringCertificateMapIterator;
 
     /**
@@ -49,8 +49,8 @@ public:
             /* [in] */ const String& name,
             /* [in] */ IMessageDigest* digest,
             /* [in] */ ArrayOf<Byte>* hash,
-            /* [in] */ ArrayOf<IArrayOf*>* certificates,
-            /* [in] */ StringCertificateMap* map,
+            /* [in] */ ArrayOf<AutoPtr<CertificateArray> > * certificates,
+            /* [in] */ HashMap<String, AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > >* map,
             /* [in] */ JarVerifier* host);
 
         /**
@@ -90,9 +90,9 @@ public:
 
         AutoPtr<ArrayOf<Byte> > mHash;
 
-        AutoPtr<ArrayOf<IArrayOf*> > mCertificates;
+        AutoPtr<ArrayOf<AutoPtr<CertificateArray > > > mCertificates;
 
-        AutoPtr<StringCertificateMap> mVerifiedEntries;
+        AutoPtr<HashMap<String, AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > > > mVerifiedEntries;
 
         JarVerifier* mHost;
     };
@@ -107,7 +107,9 @@ public:
     JarVerifier(
         /* [in] */ const String& name,
         /* [in] */ IManifest* manifest,
-        /* [in] */ HashMap<String, AutoPtr<ArrayOf<Byte> >* metaEntries);
+        /* [in] */ HashMap<String, AutoPtr<ArrayOf<Byte> > >* metaEntries);
+
+    ~JarVerifier();
 
     CARAPI InitEntry(
         /* [in] */ const String& name,
@@ -128,7 +130,7 @@ public:
      *         otherwise.
      */
     CARAPI IsSignedJar(
-    /* [out] */ Boolean* isSigned);
+        /* [out] */ Boolean* isSigned);
 
     /**
      * Returns all of the {@link java.security.cert.Certificate} chains that
@@ -139,7 +141,7 @@ public:
      *            the name of a JAR entry.
      * @return an array of {@link java.security.cert.Certificate} chains.
      */
-    AutoPtr<ArrayOf<IArrayOf*> > GetCertificateChains(
+    AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > GetCertificateChains(
         /* [in] */ const String& name);
 
     CARAPI RemoveMetaEntries();
@@ -174,7 +176,7 @@ private:
     AutoPtr<HashMap<String, AutoPtr<StringAttributesMap> > > mSignatures;
 
     AutoPtr<StringCertificateMap > mCertificates;
-    AutoPtr<StringCertificateMap > mVerifiedEntries;
+    AutoPtr<HashMap<String, AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > > > mVerifiedEntries;
 };
 
 } // namespace Jar

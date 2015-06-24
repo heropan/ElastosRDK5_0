@@ -203,7 +203,6 @@ module
     merge("utility/zip/IGZIPOutputStream.car");
     merge("utility/zip/IZipFile.car");
 
-
     //======================================================
     // Elastos.Utility.Jar
     //======================================================
@@ -214,10 +213,12 @@ module
     merge("utility/jar/IJarInputStream.Car");
     merge("utility/jar/IJarOutputStream.car");
     merge("utility/jar/IPack200.car");
+    merge("utility/jar/IStrictJarFile.car");
 
 
     interface Elastos.Core.IAppendable;
     interface Elastos.IO.ISerializable;
+    interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IFilterInputStream;
     interface Elastos.IO.IFilterOutputStream;
     interface Elastos.IO.ICloseable;
@@ -225,6 +226,7 @@ module
     interface Elastos.IO.IReadable;
     interface Elastos.IO.IPrintStream;
     interface Elastos.IO.IFlushable;
+    interface Elastos.IO.IFile;
     interface Elastos.IO.Channels.IReadableByteChannel;
     interface Elastos.IO.Charset.ICharset;
     interface Elastos.Core.IComparable;
@@ -236,6 +238,7 @@ module
     interface Elastos.Core.IThreadUncaughtExceptionHandler;
     interface Elastos.Utility.ICollection;
     interface Elastos.Utility.ISet;
+    interface Elastos.Utility.IMap;
     interface Elastos.Utility.IDeque;
     interface Elastos.Utility.IQueue;
     interface Elastos.Utility.IIterable;
@@ -245,6 +248,11 @@ module
     interface Elastos.Utility.ISortedSet;
     interface Elastos.Utility.INavigableSet;
     interface Elastos.Utility.Zip.IZipEntry;
+    interface Elastos.Utility.Zip.IZipInputStream;
+    interface Elastos.Utility.Zip.IZipOutputStream;
+    interface Elastos.Utility.Zip.IInflaterInputStream;
+    interface Elastos.Utility.Zip.IDeflaterOutputStream;
+    interface Elastos.Utility.Zip.IZipFile;
 
 
     namespace Elastos {
@@ -2309,79 +2317,87 @@ module
             interface IMap;
         }
 
-    //     class CJarEntry {
-    //         constructor(
-    //             [in] String name);
+        class CJarEntry {
+            constructor(
+                [in] String name);
 
-    //         constructor(
-    //             [in] IZipEntry* zipEntry);
+            constructor(
+                [in] IZipEntry* zipEntry);
 
-    //         constructor(
-    //             [in] IJarEntry* jarEntry);
+            constructor(
+                [in] IJarEntry* jarEntry);
 
-    //         interface IJarEntry;
-    //         interface IZipEntry;
-    //     }
+            interface IJarEntry;
+            interface IZipEntry;
+            interface ICloneable;
+        }
 
-    //     [deprecated]
-    //     class CJarFile {
-    //         constructor(
-    //             [in] IFile* file);
+        [deprecated]
+        class CJarFile {
+            constructor(
+                [in] IFile* file);
 
-    //         constructor(
-    //             [in] IFile* file,
-    //             [in] Boolean verify);
+            constructor(
+                [in] IFile* file,
+                [in] Boolean verify);
 
-    //         constructor(
-    //             [in] IFile* file,
-    //             [in] Boolean verify,
-    //             [in] Int32 mode);
+            constructor(
+                [in] IFile* file,
+                [in] Boolean verify,
+                [in] Int32 mode);
 
-    //         constructor(
-    //             [in] String filename);
+            constructor(
+                [in] String filename);
 
-    //         constructor(
-    //             [in] String filename,
-    //             [in] Boolean verify);
+            constructor(
+                [in] String filename,
+                [in] Boolean verify);
 
-    //         interface IJarFile;
-    //         interface IZipFile;
-    //         interface IZipConstants;
-    //     }
+            interface IJarFile;
+            interface IZipFile;
+            interface ICloseable;
+        }
 
-    //     [deprecated]
-    //     class CJarInputStream {
-    //         constructor(
-    //             [in] IInputStream* stream,
-    //             [in] Boolean verify);
+        class CStrictJarFile {
+            constructor(
+                [in] String filename);
 
-    //         constructor(
-    //             [in] IInputStream* stream);
+            interface IStrictJarFile;
+        }
 
-    //         interface IJarInputStream;
-    //         interface IZipInputStream;
-    //         interface IInflaterInputStream;
-    //         interface IFilterInputStream;
-    //         interface IInputStream;
-    //         interface ICloseable;
-    //     }
+        [deprecated]
+        class CJarInputStream {
+            constructor(
+                [in] IInputStream* stream,
+                [in] Boolean verify);
 
-    //     class CJarOutputStream {
-    //         constructor(
-    //             [in] IOutputStream* os,
-    //             [in] IManifest* manifest);
+            constructor(
+                [in] IInputStream* stream);
 
-    //         constructor(
-    //             [in] IOutputStream* os);
+            interface IJarInputStream;
+            interface IZipInputStream;
+            interface IInflaterInputStream;
+            interface IFilterInputStream;
+            interface IInputStream;
+            interface ICloseable;
+        }
 
-    //         interface IJarOutputStream;
-    //         interface IZipOutputStream;
-    //         interface IDeflaterOutputStream;
-    //         interface IFilterOutputStream;
-    //         interface IOutputStream;
-    //         interface ICloseable;
-    //         interface IFlushable;
-    //     }
+        class CJarOutputStream {
+            constructor(
+                [in] IOutputStream* os,
+                [in] IManifest* manifest);
+
+            constructor(
+                [in] IOutputStream* os);
+
+            interface IJarOutputStream;
+            interface IZipOutputStream;
+            interface IDeflaterOutputStream;
+            interface IFilterOutputStream;
+            interface IOutputStream;
+            interface ICloseable;
+            interface IFlushable;
+        }
 
         class CManifest {
             constructor();
@@ -2396,9 +2412,9 @@ module
             interface ICloneable;
         }
 
-    //     singleton class CPack200Helper {
-    //         interface IPack200Helper;
-    //     }
+        singleton class CPack200 {
+            interface IPack200;
+        }
 
     } // namespace Jar
     } // namespace Utility

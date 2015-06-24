@@ -1,15 +1,17 @@
-#include "elastos/List.h"
+
 #include "CJarEntry.h"
 #include "CJarFile.h"
 #include "CManifest.h"
 #include "CStreams.h"
-#include <cutils/log.h>
+#include "CFile.h"
+#include <elastos/utility/etl//List.h>
 
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::FilterInputStream;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
 using Elastos::IO::EIID_IInputStream;
+using Elastos::IO::CFile;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace Utility {
@@ -17,40 +19,53 @@ namespace Jar {
 
 const String CJarFile::META_DIR("META-INF/");
 
-CJarFile::JarFileInputStream::JarFileInputStream(
-    /* [in] */ IInputStream* is,
-    /* [in] */ IZipEntry* ze,
-    /* [in] */ JarVerifier::VerifierEntry* e)
-    : mDone(FALSE)
+//===========================================================
+// CJarFile::JarFileInputStream
+//===========================================================
+CJarFile::JarFileInputStream::JarFileInputStream()
+    : mCount(0)
+    , mDone(FALSE)
 {
-    FilterInputStream::constructor(is);
-    mZipEntry = ze;
-    mZipEntry->GetSize(&mCount);
+}
+
+ECode CJarFile::JarFileInputStream::constructor(
+    /* [in] */ IInputStream* is,
+    /* [in] */ Int64 size,
+    /* [in] */ JarVerifier::VerifierEntry* e)
+{
+    FAIL_RETURN(FilterInputStream::constructor(is))
     mEntry = e;
+    mCount = size;
+    return NOERROR;
 }
 
 ECode CJarFile::JarFileInputStream::Read(
     /* [out] */ Int32* val)
 {
     VALIDATE_NOT_NULL(val)
+    *val = -1;
+
     if (mDone) {
-        *val = -1;
         return NOERROR;
     }
+
     if (mCount > 0) {
-        FilterInputStream::Read(val);
+        FAIL_RETURN(FilterInputStream::Read(val));
         if (*val != -1) {
-            FAIL_RETURN(mEntry->Write(val))
+            FAIL_RETURN(mEntry->Write(*val))
             mCount--;
-        } else {
+        }
+        else {
             mCount = 0;
         }
+
         if (mCount == 0) {
             mDone = TRUE;
             FAIL_RETURN(mEntry->Verify())
         }
         return NOERROR;
-    } else {
+    }
+    else {
         mDone = TRUE;
         FAIL_RETURN(mEntry->Verify())
         *val = -1;
@@ -65,10 +80,12 @@ ECode CJarFile::JarFileInputStream::Read(
     /* [out] */ Int32* val)
 {
     VALIDATE_NOT_NULL(val)
+    *val = -1;
+
     if (mDone) {
-        *val = -1;
         return NOERROR;
     }
+
     if (mCount > 0) {
         FAIL_RETURN(FilterInputStream::Read(buf, off, nbytes, val))
         if (*val != -1) {
@@ -76,17 +93,20 @@ ECode CJarFile::JarFileInputStream::Read(
             if (mCount < size) {
                 size = (Int32) mCount;
             }
-            FAIL_RETURN(mEntry->Write(*buf, off, size))
+            FAIL_RETURN(mEntry->Write(buf, off, size))
             mCount -= size;
-        } else {
+        }
+        else {
             mCount = 0;
         }
+
         if (mCount == 0) {
             mDone = TRUE;
             FAIL_RETURN(mEntry->Verify())
         }
         return NOERROR;
-    } else {
+    }
+    else {
         mDone = TRUE;
         FAIL_RETURN(mEntry->Verify())
         *val = -1;
@@ -112,9 +132,57 @@ ECode CJarFile::JarFileInputStream::Skip(
     VALIDATE_NOT_NULL(val)
     AutoPtr<IStreams> stream;
     FAIL_RETURN(CStreams::AcquireSingleton((IStreams**)&stream))
-    return stream->SkipByReading((IInputStream*)IInputStream::Probe(this), byteCount, val);
+    return stream->SkipByReading(THIS_PROBE(IInputStream), byteCount, val);
 }
 
+//===========================================================
+// CJarFile::JarFileEnumerator
+//===========================================================
+CAR_INTERFACE_IMPL(CJarFile::JarFileEnumerator, Object, IEnumeration)
+
+CJarFile::JarFileEnumerator::JarFileEnumerator(
+    /* [in] */ IEnumeration* enu,
+    /* [in] */ CJarFile* jarFile)
+    : mZipEntry(enu)
+    , mJarFile(jarFile)
+{
+}
+
+ECode CJarFile::JarFileEnumerator::HasMoreElements(
+    /* [out] */ Boolean * hasMore)
+{
+    return mZipEntry->HasMoreElements(hasMore);
+}
+
+ECode CJarFile::JarFileEnumerator::GetNextElement(
+    /* [out] */ IInterface ** obj)
+{
+    AutoPtr<IInterface> i;
+    mZipEntry->GetNextElement((IInterface**)&i);
+    AutoPtr<IJarEntry> je;
+    CJarEntry::New(String("name"), (IJarEntry**)&je);
+    ((CJarEntry*)je.Get())->constructor(IZipEntry::Probe(i), mJarFile);
+    *obj = je.Get();
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CJarFile::JarFileEnumerator::GetNextElement(
+    /* [out] */ IJarEntry ** obj)
+{
+    AutoPtr<IInterface> i;
+    mZipEntry->GetNextElement((IInterface**)&i);
+    AutoPtr<IJarEntry> je;
+    CJarEntry::New(String("name"), (IJarEntry**)&je);
+    ((CJarEntry*)je.Get())->constructor(IZipEntry::Probe(i), mJarFile);
+    *obj = je.Get();
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+//===========================================================
+// CJarFile
+//===========================================================
 CAR_INTERFACE_IMPL(CJarFile, ZipFile, IJarFile)
 
 CAR_OBJECT_IMPL(CJarFile)
@@ -123,94 +191,83 @@ CJarFile::CJarFile()
     : mClosed(FALSE)
 {}
 
-ECode CJarFile::Close()
+ECode CJarFile::constructor(
+    /* [in] */ IFile* file)
 {
-    FAIL_RETURN(ZipFile::Close())
-    mClosed = TRUE;
+    return constructor(file, TRUE);
+}
+
+ECode CJarFile::constructor(
+    /* [in] */ IFile * file,
+    /* [in] */ Boolean verify)
+{
+    return constructor(file, verify, IZipFile::OPEN_READ);
+}
+
+ECode CJarFile::constructor(
+    /* [in] */ IFile* file,
+    /* [in] */ Boolean verify,
+    /* [in] */ Int32 mode)
+{
+    FAIL_RETURN(ZipFile::constructor(file, mode))
+
+    // Step 1: Scan the central directory for meta entries (MANIFEST.mf
+    // & possibly the signature files) and read them fully.
+    AutoPtr<HashMap<String, AutoPtr<ArrayOf<Byte> > > > metaEntries;
+    metaEntries = ReadMetaEntries(this, verify);
+
+    // Step 2: Construct a verifier with the information we have.
+    // Verification is possible *only* if the JAR file contains a manifest
+    // *AND* it contains signing related information (signature block
+    // files and the signature files).
+    //
+    // TODO: Is this really the behaviour we want if verify == true ?
+    // We silently skip verification for files that have no manifest or
+    // no signatures.
+    HashMap<String, AutoPtr<ArrayOf<Byte> > >::Iterator it;
+    it = metaEntries->Find(MANIFEST_NAME);
+    if (verify && metaEntries->GetSize() > 1
+        && it != metaEntries->End()) {
+        // We create the manifest straight away, so that we can create
+        // the jar verifier as well.
+        CManifest::New((IManifest**)&mManifest);
+        ((CManifest*)mManifest.Get())->constructor(it->mSecond, TRUE);
+        String name;
+        GetName(&name);
+        mVerifier = new JarVerifier(name, mManifest, metaEntries);
+    }
+    else {
+        mVerifier = NULL;
+        mManifestBytes = it->mSecond;
+    }
+
     return NOERROR;
 }
 
-ECode CJarFile::GetEntry(
-    /* [in] */ const String& entryName,
-    /* [out] */ IZipEntry** entry)
+ECode CJarFile::constructor(
+    /* [in] */ const String& filename)
 {
-    VALIDATE_NOT_NULL(entry)
-    AutoPtr<IZipEntry> ze;
-    FAIL_RETURN(ZipFile::GetEntry(entryName, (IZipEntry**)&ze));
-    if (!ze) {
-        *entry = ze;
-        return NOERROR;
-    }
-    AutoPtr<IJarEntry> je;
-    FAIL_RETURN(CJarEntry::New((IZipEntry*)ze.Get(), (IJarEntry**)&je));
-    ((CJarEntry*)je.Get())->mParentJar = THIS_PROBE(IJarFile);
-    *entry = je.Get();
-    REFCOUNT_ADD(*entry)
-    return NOERROR;
+    return constructor(filename, TRUE);
 }
 
-ECode CJarFile::GetInputStream(
-    /* [in] */ IZipEntry* ze,
-    /* [out] */ IInputStream** is)
+ECode CJarFile::constructor(
+    /* [in] */ const String& filename,
+    /* [in] */ Boolean verify)
 {
-    VALIDATE_NOT_NULL(is)
-    *is = NULL;
-    AutoPtr<IManifest> mf;
-    if (mManifestEntry != NULL) {
-        GetManifest((IManifest**)&mf);
-    }
+    AutoPtr<IFile> file;
+    CFile::New(filename, (IFile**)&file);
+    return constructor(file, verify, IZipFile::OPEN_READ);
+}
 
-    if (mVerifier != NULL) {
-        if (mf == NULL) {
-            GetManifest((IManifest**)&mf);
-        }
-        FAIL_RETURN(mVerifier->SetManifest(mf))
-
-        if (mManifest != NULL) {
-            FAIL_RETURN(((CManifest*)mManifest.Get())->GetMainAttributesEnd(&mVerifier->mMainAttributesEnd))
-        }
-
-        Boolean isValid;
-        if (mVerifier->ReadCertificates(&isValid), isValid) {
-            mVerifier->RemoveMetaEntries();
-
-            if (mManifest != NULL) {
-                ((CManifest*)mManifest.Get())->RemoveChunks();
-            }
-
-            Boolean isSigned;
-            if ((mVerifier->IsSignedJar(&isSigned), !isSigned)) {
-                mVerifier = NULL;
-            }
-        }
-    }
-
-    AutoPtr<IInputStream> in;
-    ZipFile::GetInputStream(ze, (IInputStream**)&in);
-    if (in == NULL) {
-        return NOERROR;
-    }
-
-    Int64 size;
-    if (mVerifier == NULL || (ze->GetSize(&size), size) == -1) {
-        *is = in;
-        REFCOUNT_ADD(*is)
-        return NOERROR;
-    }
-
-    AutoPtr<JarVerifier::VerifierEntry> entry;
-    String name;
-    ze->GetName(&name);
-    mVerifier->InitEntry(name, (JarVerifier::VerifierEntry**)&entry);
-    if (entry == NULL) {
-        *is = in;
-        REFCOUNT_ADD(*is)
-        return NOERROR;
-    }
-
-    AutoPtr<IInputStream> ret = (IInputStream*)new CJarFile::JarFileInputStream(in, ze, entry);
-    *is = ret;
-    REFCOUNT_ADD(*is)
+ECode CJarFile::GetEntries(
+    /* [out] */ IEnumeration** entries)
+{
+    VALIDATE_NOT_NULL(entries)
+    AutoPtr<IEnumeration> e;
+    ZipFile::GetEntries((IEnumeration**)&e);
+    AutoPtr<JarFileEnumerator> jfe = new JarFileEnumerator(e, this);
+    *entries = jfe.Get();
+    REFCOUNT_ADD(*entries)
     return NOERROR;
 }
 
@@ -219,9 +276,11 @@ ECode CJarFile::GetJarEntry(
     /* [out] */ IJarEntry** jarEntry)
 {
     VALIDATE_NOT_NULL(jarEntry)
+    *jarEntry = NULL;
+
     AutoPtr<IZipEntry> ze;
     FAIL_RETURN(GetEntry(name, (IZipEntry**)&ze))
-    *jarEntry = ze.Get();
+    *jarEntry = IJarEntry::Probe(ze);
     REFCOUNT_ADD(*jarEntry)
     return NOERROR;
 }
@@ -241,196 +300,203 @@ ECode CJarFile::GetManifest(
         return NOERROR;
     }
 
-    AutoPtr<IInputStream> is;
-    FAIL_RETURN(ZipFile::GetInputStream(mManifestEntry, (IInputStream**)&is));
-
-    if (mVerifier != NULL) {
-        String name;
-        AutoPtr<ArrayOf<Byte> > meta;
-        AutoPtr<IStreams> stream;
-        mManifestEntry->GetName(&name);
-        CStreams::AcquireSingleton((IStreams**)&stream);
-        stream->ReadFully(is, (ArrayOf<Byte>**)&meta);
-        mVerifier->AddMetaEntry(name, meta);
-        is = NULL;
-        ZipFile::GetInputStream(mManifestEntry, (IInputStream**)&is);
-    }
-
-    mManifest = CManifest::Create(is, mVerifier != NULL);
-    REFCOUNT_ADD(mManifest)
-    ECode ec = is->Close();
-    FAIL_GOTO(ec, label)
-    mManifestEntry = NULL;
-
-label:
-    if (ec == E_NULL_POINTER_EXCEPTION) {
-        mManifestEntry = NULL;
-    }
-    else if (FAILED(ec)) {
-        return ec;
-    }
-
-    *manifest = mManifest;
-    REFCOUNT_ADD(*manifest)
-    return ec;
-}
-
-ECode CJarFile::constructor(
-    /* [in] */ IFile* file)
-{
-    // TODO: Add your code here
-    return constructor(file, TRUE);
-}
-
-ECode CJarFile::constructor(
-    /* [in] */ IFile * file,
-    /* [in] */ Boolean verify)
-{
-    // TODO: Add your code here
-    FAIL_RETURN(ZipFile::constructor(file))
-    if (verify) {
-        String path;
-        mVerifier = new JarVerifier((file->GetPath(&path), path));
-    }
-    return ReadMetaEntries();
-}
-
-ECode CJarFile::constructor(
-    /* [in] */ IFile* file,
-    /* [in] */ Boolean verify,
-    /* [in] */ Int32 mode)
-{
-    FAIL_RETURN(ZipFile::constructor(file))
-    if (verify) {
-        String path;
-        mVerifier = new JarVerifier((file->GetPath(&path), path));
-    }
-    return ReadMetaEntries();
-}
-
-ECode CJarFile::constructor(
-    /* [in] */ const String& filename)
-{
-    return constructor(filename, TRUE);
-}
-
-ECode CJarFile::constructor(
-    /* [in] */ const String& filename,
-    /* [in] */ Boolean verify)
-{
-    FAIL_RETURN(ZipFile::constructor(filename))
-    if (verify) {
-        mVerifier = new JarVerifier(filename);
-    }
-    return ReadMetaEntries();
-}
-
-/**
- * Called by the JarFile constructors, this method reads the contents of the
- * file's META-INF/ directory and picks out the MANIFEST.MF file and
- * verifier signature files if they exist. Any signature files found are
- * registered with the verifier.
- *
- * @throws IOException
- *             if there is a problem reading the jar file entries.
- */
-ECode CJarFile::ReadMetaEntries()
-{
-    // Get all meta directory entries
-    AutoPtr<ArrayOf<IZipEntry*> > metaEntries;
-    FAIL_RETURN(GetMetaEntriesImpl((ArrayOf<IZipEntry*>**)&metaEntries))
-    if (metaEntries == NULL) {
-        mVerifier = NULL;
+    // If manifest == null && manifestBytes == null, there's no manifest.
+    if (mManifestBytes == NULL) {
         return NOERROR;
     }
-    Boolean bSigned = FALSE;
-    Boolean bEndsWith;
-    String entryName;
-    Int32 eleNum = metaEntries->GetLength();
-    for (Int32 i = 0; i < eleNum; ++i) {
-        (*metaEntries)[i]->GetName(&entryName);
+
+    // We hit this code path only if the verification isn't necessary. If
+    // we did decide to verify this file, we'd have created the Manifest and
+    // the associated Verifier in the constructor itself.
+    CManifest::New((IManifest**)&mManifest);
+    ((CManifest*)mManifest.Get())->constructor(mManifestBytes, FALSE);
+    mManifestBytes = NULL;
+    *manifest = mManifest;
+    REFCOUNT_ADD(*manifest)
+    return NOERROR;
+}
+
+AutoPtr<HashMap<String, AutoPtr<ArrayOf<Byte> > > > CJarFile::ReadMetaEntries(
+    /* [in] */ ZipFile* zipFile,
+    /* [in] */ Boolean verificationRequired)
+{
+    AutoPtr<HashMap<String, AutoPtr<ArrayOf<Byte> > > > metaEntriesMap;
+    metaEntriesMap = new HashMap<String, AutoPtr<ArrayOf<Byte> > >();
+
+    // Get all meta directory entries
+    AutoPtr<ArrayOf<IZipEntry*> > metaEntries = GetMetaEntries(zipFile);
+    if (metaEntries == NULL) {
+        return metaEntriesMap;
+    }
+
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    HashMap<String, AutoPtr<ArrayOf<Byte> > >::Iterator it;
+    for (Int32 i = 0; i < metaEntries->GetLength(); ++i) {
+        IZipEntry* entry = (*metaEntries)[i];
+        String entryName;
+        entry->GetName(&entryName);
         // Is this the entry for META-INF/MANIFEST.MF ?
-        if (mManifestEntry == NULL && entryName.EqualsIgnoreCase(IJarFile::MANIFEST_NAME)) {
-            mManifestEntry = (*metaEntries)[i];
+        //
+        // TODO: Why do we need the containsKey check ? Shouldn't we discard
+        // files that contain duplicate entries like this as invalid ?.
+        it = metaEntriesMap->Find(MANIFEST_NAME);
+        if (entryName.EqualsIgnoreCase(MANIFEST_NAME) &&
+            it == metaEntriesMap->End()) {
+
+            AutoPtr<IInputStream> is;
+            zipFile->GetInputStream(entry, (IInputStream**)&is);
+            AutoPtr<ArrayOf<Byte> > bytes;
+            ECode ec = streams->ReadFully(is, (ArrayOf<Byte>**)&bytes);
+            if (FAILED(ec)) {
+                ALOGE("CJarFile::ReadMetaEntries failed!");
+                break;
+            }
+            (*metaEntriesMap)[MANIFEST_NAME] = bytes;
+
             // If there is no verifier then we don't need to look any further.
-            if (mVerifier == NULL) {
+            if (!verificationRequired) {
                 break;
             }
         }
-        else {
+        else if (verificationRequired) {
             // Is this an entry that the verifier needs?
-            if (mVerifier != NULL
-                && ((EndsWithIgnoreCase(entryName, String(".SF"), &bEndsWith), bEndsWith)
-                    || (EndsWithIgnoreCase(entryName, String(".DSA"), &bEndsWith), bEndsWith)
-                    || (EndsWithIgnoreCase(entryName, String(".RSA"), &bEndsWith), bEndsWith))) {
-                bSigned = TRUE;
+            if (EndsWithIgnoreCase(entryName, String(".SF"))
+                || EndsWithIgnoreCase(entryName, String(".DSA"))
+                || EndsWithIgnoreCase(entryName, String(".RSA"))
+                || EndsWithIgnoreCase(entryName, String(".EC"))) {
                 AutoPtr<IInputStream> is;
-                FAIL_RETURN(ZipFile::GetInputStream((*metaEntries)[i], (IInputStream**)&is))
-                AutoPtr<IStreams> stream;
-                CStreams::AcquireSingleton((IStreams**)&stream);
-                AutoPtr<ArrayOf<Byte> > buf;
-                FAIL_RETURN(stream->ReadFully(is, (ArrayOf<Byte>**)&buf))
-                FAIL_RETURN(mVerifier->AddMetaEntry(entryName, buf))
+                zipFile->GetInputStream(entry, (IInputStream**)&is);
+                AutoPtr<ArrayOf<Byte> > bytes;
+                ECode ec = streams->ReadFully(is, (ArrayOf<Byte>**)&bytes);
+                if (FAILED(ec)) {
+                    ALOGE("CJarFile::ReadMetaEntries failed!");
+                    break;
+                }
+
+                (*metaEntriesMap)[entryName.ToUpperCase()] = bytes;
             }
         }
     }
 
-    // If there were no signature files, then no verifier work to do.
-    if (!bSigned) {
-        mVerifier = NULL;
-    }
-    return NOERROR;
+    return metaEntriesMap;
 }
 
-ECode CJarFile::EndsWithIgnoreCase(
+Boolean CJarFile::EndsWithIgnoreCase(
     /* [in] */ const String& s,
-    /* [in] */ const String& suffix,
-    /* [out] */ Boolean* result)
+    /* [in] */ const String& suffix)
 {
-    VALIDATE_NOT_NULL(result)
-    *result = s.RegionMatches(s.GetLength() - suffix.GetLength(), suffix, 0, suffix.GetLength());
-    return NOERROR;
+    return s.RegionMatches(s.GetLength() - suffix.GetLength(), suffix, 0, suffix.GetLength());
 }
 
-/**
- * Returns all the ZipEntry's that relate to files in the
- * JAR's META-INF directory.
- *
- * @return the list of ZipEntry's or {@code null} if there are none.
- */
-ECode CJarFile::GetMetaEntriesImpl (
-    /* [out] */ ArrayOf<IZipEntry*> **zipEntries)
+ECode CJarFile::GetInputStream(
+    /* [in] */ IZipEntry* ze,
+    /* [out] */ IInputStream** is)
 {
-    AutoPtr<IObjectContainer> entries;
-    FAIL_RETURN(GetEntries((IObjectContainer**)&entries))
-    AutoPtr<List<AutoPtr<IZipEntry> > > list = new List<AutoPtr<IZipEntry> >();
-    AutoPtr<IObjectEnumerator> enumerator;
-    entries->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    Boolean hasNext = FALSE;
-    AutoPtr<IZipEntry> element;
-    Int32 i = 0;
-    while (enumerator->MoveNext(&hasNext), hasNext)
-    {
-        element = NULL;
-        enumerator->Current((IInterface**)&element);
-        String name;
-        if ((element->GetName(&name), name).StartWith(META_DIR)
-            && name.GetLength() > META_DIR.GetLength()) {
-            list->PushBack(element);
+    VALIDATE_NOT_NULL(is)
+    *is = NULL;
+    VALIDATE_NOT_NULL(ze)
+
+    if (mManifestBytes != NULL) {
+        AutoPtr<IManifest> m;
+        GetManifest((IManifest**)&m);
+    }
+
+    if (mVerifier != NULL) {
+        Boolean bval;
+        if (mVerifier->ReadCertificates(&bval), bval) {
+            mVerifier->RemoveMetaEntries();
+            ((CManifest*)mManifest.Get())->RemoveChunks();
+
+            if (mVerifier->IsSignedJar(&bval), !bval) {
+                mVerifier = NULL;
+            }
         }
     }
-    if (list->IsEmpty()) {
-        *zipEntries = NULL;
+
+    AutoPtr<IInputStream> in;
+    FAIL_RETURN(ZipFile::GetInputStream(ze, (IInputStream**)&in))
+    if (in == NULL) {
         return NOERROR;
     }
-    AutoPtr<ArrayOf<IZipEntry*> > result = ArrayOf<IZipEntry*>::Alloc(list->GetSize());
-    Int32 index = 0;
-    for (List<AutoPtr<IZipEntry> >::Iterator it = list->Begin();
-        it != list->End(); ++it) {
-        result->Set(index++, *it);
+
+    Int64 size;
+    if (mVerifier == NULL || (ze->GetSize(&size), size) == -1) {
+        *is = in;
+        REFCOUNT_ADD(*is)
+        return NOERROR;
     }
-    *zipEntries = result;
-    REFCOUNT_ADD(*zipEntries)
+
+    AutoPtr<JarVerifier::VerifierEntry> entry;
+    String name;
+    ze->GetName(&name);
+    FAIL_RETURN(mVerifier->InitEntry(name, (JarVerifier::VerifierEntry**)&entry))
+    if (entry == NULL) {
+        *is = in;
+        REFCOUNT_ADD(*is)
+        return NOERROR;
+    }
+
+    AutoPtr<JarFileInputStream> jfis = new JarFileInputStream();
+    jfis->constructor(in, size, entry);
+    *is = (IInputStream*)jfis.Get();
+    REFCOUNT_ADD(*is)
+    return NOERROR;
+}
+
+ECode CJarFile::GetEntry(
+    /* [in] */ const String& entryName,
+    /* [out] */ IZipEntry** entry)
+{
+    VALIDATE_NOT_NULL(entry)
+    AutoPtr<IZipEntry> ze;
+    FAIL_RETURN(ZipFile::GetEntry(entryName, (IZipEntry**)&ze));
+    if (ze == NULL) {
+        *entry = ze;
+        return NOERROR;
+    }
+
+    AutoPtr<IJarEntry> je;
+    FAIL_RETURN(CJarEntry::New((IZipEntry*)ze.Get(), (IJarEntry**)&je));
+    ((CJarEntry*)je.Get())->mParentJar = THIS_PROBE(IJarFile);
+    *entry = IZipEntry::Probe(je);
+    REFCOUNT_ADD(*entry)
+    return NOERROR;
+}
+
+AutoPtr<ArrayOf<IZipEntry*> > CJarFile::GetMetaEntries(
+    /* [in] */ IZipFile* zipFile)
+{
+    List<AutoPtr<IZipEntry> > list;
+
+    AutoPtr<IEnumeration> allEntries;
+    zipFile->GetEntries((IEnumeration**)&allEntries);
+    Boolean hasMore;
+    while (allEntries->HasMoreElements(&hasMore), hasMore) {
+        AutoPtr<IInterface> obj;
+        allEntries->GetNextElement((IInterface**)&obj);
+        AutoPtr<IZipEntry> ze = IZipEntry::Probe(obj);
+        String name;
+        ze->GetName(&name);
+        if (name.StartWith(META_DIR)
+                && name.GetLength() > META_DIR.GetLength()) {
+            list.PushBack(ze);
+        }
+    }
+
+    AutoPtr<ArrayOf<IZipEntry*> > array = ArrayOf<IZipEntry*>::Alloc(list.GetSize());
+    Int32 i = 0;
+    List<AutoPtr<IZipEntry> >::Iterator it;
+    for (it = list.Begin(); it != list.End(); ++it) {
+        array->Set(i++, *it);
+    }
+    return array;
+}
+
+ECode CJarFile::Close()
+{
+    FAIL_RETURN(ZipFile::Close())
+    mClosed = TRUE;
     return NOERROR;
 }
 

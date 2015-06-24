@@ -1,27 +1,26 @@
 
 #include "CJarEntry.h"
-#include "CCodeSigner.h"
-#include "CCertificateFactory.h"
-#include "CCertificateFactoryHelper.h"
-#include "CJarFile.h"
 #include "JarVerifier.h"
+#include "CJarFile.h"
 #include "CLinkedList.h"
-#include <cutils/log.h>
+// #include "CCodeSigner.h"
+// #include "CCertificateFactory.h"
+// #include "CCertificateFactoryHelper.h"
+// #include <cutils/log.h>
 
+
+using Elastos::Utility::CLinkedList;
+using Elastos::Utility::IList;
+// using Elastos::Utility::Zip::EIID_ZipEntry;
 using Elastos::Security::IPrincipal;
+//using Elastos::Security::CCodeSigner
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::ICertPath;
 using Elastos::Security::Cert::IX509Certificate;
-using Elastos::Security::Cert::ICertificateFactoryHelper;
+using Elastos::Security::Cert::ICertificateFactoryHelper;;
+//using Elastos::Security::Cert::CCertificateFactory;
+//using Elastos::Security::Cert::CCertificateFactoryHelper;
 using Elastosx::Security::Auth::X500::IX500Principal;
-using Elastos::Security::CCodeSigner;
-using Elastos::Security::Cert::CCertificateFactory;
-using Elastos::Security::Cert::CCertificateFactoryHelper;
-using Elastos::Utility::Jar::JarVerifier;
-using Elastos::Utility::Jar::CJarFile;
-using Elastos::Utility::CLinkedList;
-using Elastos::Utility::IList;
-using Elastos::Utility::Zip::EIID_ZipEntry;
 
 namespace Elastos {
 namespace Utility {
@@ -35,137 +34,6 @@ CJarEntry::CJarEntry()
     : mIsFactoryChecked(FALSE)
 {}
 
-ECode CJarEntry::GetComment(
-    /* [out] */ String* comment)
-{
-    VALIDATE_NOT_NULL(comment)
-    *comment = ZipEntry::GetComment();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetCompressedSize(
-    /* [out] */ Int64* size)
-{
-    VALIDATE_NOT_NULL(size)
-    *size = ZipEntry::GetCompressedSize();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetCrc(
-    /* [out] */ Int64* checksum)
-{
-    VALIDATE_NOT_NULL(checksum)
-    *checksum = ZipEntry::GetCrc();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetExtra(
-    /* [out, callee] */ ArrayOf<Byte>** extra)
-{
-    VALIDATE_NOT_NULL(extra)
-    *extra = ZipEntry::GetExtra();
-    REFCOUNT_ADD(*extra)
-    return NOERROR;
-}
-
-ECode CJarEntry::GetMethod(
-    /* [out] */ Int32* method)
-{
-    VALIDATE_NOT_NULL(method)
-    *method = ZipEntry::GetMethod();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name)
-    *name = ZipEntry::GetName();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetSize(
-    /* [out] */ Int64* size)
-{
-    VALIDATE_NOT_NULL(size)
-    *size = ZipEntry::GetSize();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetTime(
-    /* [out] */ Int64* time)
-{
-    VALIDATE_NOT_NULL(time)
-    *time = ZipEntry::GetTime();
-    return NOERROR;
-}
-
-ECode CJarEntry::IsDirectory(
-    /* [out] */ Boolean* isDirectory)
-{
-    VALIDATE_NOT_NULL(isDirectory)
-    *isDirectory = ZipEntry::IsDirectory();
-    return NOERROR;
-}
-
-ECode CJarEntry::GetAttributes(
-    /* [out] */ IAttributes** attrib)
-{
-    VALIDATE_NOT_NULL(attrib)
-    if (mAttributes != NULL || !mParentJar) {
-        *attrib = mAttributes;
-        REFCOUNT_ADD(*attrib)
-        return NOERROR;
-    }
-    AutoPtr<IManifest> manifest;
-    FAIL_RETURN(mParentJar->GetManifest((IManifest**)&manifest));
-    if (!manifest) {
-        *attrib = NULL;
-        return NOERROR;
-    }
-    String name;
-    GetName(&name);
-    mAttributes = NULL;
-    FAIL_RETURN(manifest->GetAttributes(name, (IAttributes**)&mAttributes));
-    *attrib = mAttributes;
-    REFCOUNT_ADD(*attrib)
-    return NOERROR;
-}
-
-/**
- * Returns an array of {@code Certificate} Objects associated with this
- * entry or {@code null} if none exists. Make sure that the everything is
- * read from the input stream before calling this method, or else the method
- * returns {@code null}.
- *
- * @return the certificate for this entry.
- * @see java.security.cert.Certificate
- */
-ECode CJarEntry::GetCertificates(
-        /* [out, callee] */ ArrayOf<ICertificate*>** certificates)
-{
-    VALIDATE_NOT_NULL(certificates)
-    if (mParentJar == NULL) {
-        *certificates = NULL;
-        return NOERROR;
-    }
-    AutoPtr<JarVerifier> jarVerifier = ((CJarFile*)mParentJar.Get())->mVerifier;
-    if (jarVerifier == NULL) {
-        *certificates = NULL;
-        return NOERROR;
-    }
-    String name;
-    GetName(&name);
-    return jarVerifier->GetCertificates(name, certificates);
-}
-
-ECode CJarEntry::SetAttributes(
-        /* [in] */ IAttributes* attrib)
-{
-    mAttributes = attrib;
-    return NOERROR;
-}
-
 ECode CJarEntry::constructor(
     /* [in] */ const String& name)
 {
@@ -175,138 +43,215 @@ ECode CJarEntry::constructor(
 ECode CJarEntry::constructor(
     /* [in] */ IZipEntry* zipEntry)
 {
-    return ZipEntry::constructor(reinterpret_cast<ZipEntry*>(zipEntry->Probe(EIID_ZipEntry)));
+    return constructor(zipEntry, NULL);
+}
+
+ECode CJarEntry::constructor(
+    /* [in] */ IZipEntry* zipEntry,
+    /* [in] */ IJarFile* parentJar)
+{
+    FAIL_RETURN(ZipEntry::constructor(zipEntry))
+    mParentJar = parentJar;
+    return NOERROR;
 }
 
 ECode CJarEntry::constructor(
     /* [in] */ IJarEntry* jarEntry)
 {
-    FAIL_RETURN(ZipEntry::constructor(reinterpret_cast<ZipEntry*>(jarEntry->Probe(EIID_ZipEntry))))
+    FAIL_RETURN(ZipEntry::constructor(IZipEntry::Probe(jarEntry)))
+
     mParentJar = ((CJarEntry*)jarEntry)->mParentJar;
     mAttributes = ((CJarEntry*)jarEntry)->mAttributes;
     mSigners = ((CJarEntry*)jarEntry)->mSigners;
     return NOERROR;
 }
 
-/**
- * Returns the code signers for the digital signatures associated with the
- * JAR file. If there is no such code signer, it returns {@code null}. Make
- * sure that the everything is read from the input stream before calling
- * this method, or else the method returns {@code null}.
- *
- * @return the code signers for the JAR entry.
- * @see CodeSigner
- */
-ECode CJarEntry::GetCodeSigners(
-        /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigner)
+ECode CJarEntry::GetAttributes(
+    /* [out] */ IAttributes** attrib)
 {
-    VALIDATE_NOT_NULL(codeSigner)
-    if (mSigners == NULL) {
-       AutoPtr<ArrayOf<ICertificate*> > certificates;
-       GetCertificates((ArrayOf<ICertificate*>**)&certificates);
-       GetCodeSigners(certificates, (ArrayOf<ICodeSigner*>**)&mSigners);
-    }
-    if (mSigners == NULL) {
-        *codeSigner = NULL;
+    VALIDATE_NOT_NULL(attrib)
+    if (mAttributes != NULL || mParentJar == NULL) {
+        *attrib = mAttributes;
+        REFCOUNT_ADD(*attrib)
         return NOERROR;
     }
-    AutoPtr<ArrayOf<ICodeSigner*> > tmp = ArrayOf<ICodeSigner*>::Alloc(mSigners->GetLength());
-    tmp->Copy(mSigners);
-    *codeSigner = tmp;
+
+    AutoPtr<IManifest> manifest;
+    FAIL_RETURN(mParentJar->GetManifest((IManifest**)&manifest));
+    if (!manifest) {
+        *attrib = NULL;
+        return NOERROR;
+    }
+
+    String name;
+    GetName(&name);
+    mAttributes = NULL;
+    FAIL_RETURN(manifest->GetAttributes(name, (IAttributes**)&mAttributes));
+    *attrib = mAttributes;
+    REFCOUNT_ADD(*attrib)
+    return NOERROR;
+}
+
+ECode CJarEntry::GetCertificates(
+    /* [out, callee] */ ArrayOf<ICertificate*>** certificates)
+{
+    VALIDATE_NOT_NULL(certificates)
+    *certificates = NULL;
+
+    if (mParentJar == NULL) {
+        return NOERROR;
+    }
+    AutoPtr<JarVerifier> jarVerifier = ((CJarFile*)mParentJar.Get())->mVerifier;
+    if (jarVerifier == NULL) {
+        return NOERROR;
+    }
+
+    String name;
+    GetName(&name);
+    AutoPtr<ArrayOf<AutoPtr<ArrayOf<ICertificate*> > > > certChains;
+    certChains = jarVerifier->GetCertificateChains(name);
+    if (certChains == NULL) {
+        return NOERROR;
+    }
+
+    // Measure number of certs.
+    Int32 count = 0;
+    for (Int32 i = 0; i < certChains->GetLength(); ++i) {
+        count += (*certChains)[i]->GetLength();
+    }
+
+    // Create new array and copy all the certs into it.
+    AutoPtr<ArrayOf<ICertificate*> > certs = ArrayOf<ICertificate*>::Alloc(count);
+    count = 0;
+    for (Int32 i = 0; i < certChains->GetLength(); ++i) {
+        certs->Copy(count, (*certChains)[i], 0, (*certChains)[i]->GetLength());
+        count += (*certChains)[i]->GetLength();
+    }
+
+    *certificates = certs;
+    REFCOUNT_ADD(*certificates)
+    return NOERROR;
+}
+
+ECode CJarEntry::SetAttributes(
+        /* [in] */ IAttributes* attrib)
+{
+    mAttributes = attrib;
+    return NOERROR;
+}
+
+ECode CJarEntry::GetCodeSigners(
+    /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigner)
+{
+    VALIDATE_NOT_NULL(codeSigner)
+    *codeSigner = NULL;
+
+    if (mParentJar == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<JarVerifier> jarVerifier = ((CJarFile*)mParentJar.Get())->mVerifier;
+    if (jarVerifier == NULL) {
+        return NOERROR;
+    }
+
+    String name;
+    GetName(&name);
+    AutoPtr<ArrayOf<AutoPtr<ArrayOf<ICertificate*> > > > certChains;
+    certChains = jarVerifier->GetCertificateChains(name);
+    if (certChains == NULL) {
+        return NOERROR;
+    }
+
+    if (mSigners == NULL) {
+        FAIL_RETURN(GetCodeSigners(certChains, (ArrayOf<ICodeSigner*>**)&mSigners))
+    }
+
+    if (mSigners == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<ArrayOf<ICodeSigner*> > cp = mSigners->Clone();
+    *codeSigner = mSigners;
     REFCOUNT_ADD(*codeSigner)
     return NOERROR;
 }
 
 ECode CJarEntry::GetCodeSigners(
-    /* [in] */ ArrayOf<ICertificate*>* certs,
+    /* [in] */ ArrayOf<AutoPtr<ArrayOf<ICertificate*> > > * certChains,
     /* [out, callee] */ ArrayOf<ICodeSigner*>** codeSigners)
 {
-    if (certs == NULL) {
-        *codeSigners = NULL;
+    VALIDATE_NOT_NULL(codeSigners)
+    *codeSigners = NULL;
+
+    if (certChains == NULL) {
         return NOERROR;
     }
 
-    AutoPtr<IX500Principal> prevIssuer;
-    Int32 length = certs->GetLength();
-    AutoPtr< List<AutoPtr<ICertificate> > > list = new List<AutoPtr<ICertificate> >(length);
-    AutoPtr<List<AutoPtr<ICodeSigner> > > asigners = new List<AutoPtr<ICodeSigner> >();
+    AutoPtr<List<AutoPtr<ICodeSigner> > > asigners;
+    asigners = new List<AutoPtr<ICodeSigner> >(certChains->GetLength());
 
-    for (Int32 i = 0; i < length; ++i) {
-        if(!IX509Certificate::Probe((*certs)[i])) {
-            // Only X509Certificate-s are taken into account - see API spec.
-            continue;
-        }
-        AutoPtr<IX509Certificate> x509 = IX509Certificate::Probe((*certs)[i]);
-        if (prevIssuer != NULL) {
-            AutoPtr<IX500Principal> subj;
-            x509->GetSubjectX500Principal((IX500Principal**)&subj);
-            Boolean equal;
-            if (!(IPrincipal::Probe(prevIssuer)->Equals(subj.Get(), &equal), equal)) {
-                // Ok, this ends the previous chain,
-                // so transform this one into CertPath ...
-                AddCodeSigner(asigners, list);
-                // ... and start a new one
-                list->Clear();
-            } // else { it's still the same chain }
-        }
-        prevIssuer = NULL;
-        x509->GetIssuerX500Principal((IX500Principal**)&prevIssuer);
-        list->PushBack(ICertificate::Probe(x509.Get()));
-    }
-
-    if (!list->IsEmpty()) {
-        AddCodeSigner(asigners, list);
-    }
-
-    if (asigners->IsEmpty()) {
-        // 'signers' is 'null' already
-        *codeSigners = NULL;
-        return NOERROR;
+    for (Int32 i = 0; i < certChains->GetLength(); ++i) {
+        AddCodeSigner(asigners, (*certChains)[i]);
     }
 
     AutoPtr<ArrayOf<ICodeSigner*> > tmp = ArrayOf<ICodeSigner*>::Alloc(asigners->GetSize());
-    Int32 iIndex = 0;
-    for (List<AutoPtr<ICodeSigner> >::Iterator it = asigners->Begin(); it != asigners->End(); ++it) {
-        tmp->Set(iIndex++, *it);
+    List<AutoPtr<ICodeSigner> >::Iterator it = asigners->Begin();
+    Int32 i = 0;
+    for (; it != asigners->End(); ++it) {
+        tmp->Set(i++, *it);
     }
     *codeSigners = tmp;
-    REFCOUNT_ADD(tmp)
+    REFCOUNT_ADD(*codeSigners)
     return NOERROR;
 }
 
 ECode CJarEntry::AddCodeSigner(
-    /* [in] */ List<AutoPtr<ICodeSigner> >* asigners,
-    /* [in] */ List<AutoPtr<ICertificate> >* list)
+    /* [in] */ List<AutoPtr<ICodeSigner> > * asigners,
+    /* [in] */ ArrayOf<ICertificate*> * certs)
 {
+    for (Int32 i = 0; i < certs->GetLength(); ++i) {
+        // Only X509Certificate instances are counted. See API spec.
+        if (IX509Certificate::Probe((*certs)[i]) == NULL) {
+            return NOERROR;
+        }
+    }
+
     AutoPtr<ICertPath> certPath;
     if (!mIsFactoryChecked) {
         AutoPtr<ICertificateFactoryHelper> helper;
-        CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
+        // CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
         mFactory = NULL;
         ECode ec = helper->GetInstance(String("X.509"), (ICertificateFactory**)&mFactory);
         if (ec == E_CERTIFICATE_EXCEPTION) {
+            // do nothing
         }
         else if (FAILED(ec)) {
             return ec;
         }
         mIsFactoryChecked = TRUE;
     }
+
     if (mFactory == NULL) {
         return NOERROR;
     }
+
     AutoPtr<IList> lst;
     FAIL_RETURN(CLinkedList::New((IList**)&lst))
-    List<AutoPtr<ICertificate> >::Iterator it = list->Begin();
-    for (Int32 i = 0; it != list->End(); ++it, ++i)
-    lst->Add(i, (*it).Get());
-    ECode ec = mFactory->GenerateCertPath(lst, (ICertPath**)&certPath);
-    if (ec == E_CERTIFICATE_EXCEPTION) {
-    } else if( FAILED(ec)) {
-        return ec;
-    }
+    List<AutoPtr<ICodeSigner> >::Iterator it = asigners->Begin();
+    for (Int32 i = 0; it != asigners->End(); ++it, ++i)
+        lst->Add(i, (*it).Get());
+    // ECode ec = mFactory->GenerateCertPath(lst, (ICertPath**)&certPath);
+    // if (ec == E_CERTIFICATE_EXCEPTION) {
+    //     // do nothing
+    // }
+    // else if( FAILED(ec)) {
+    //     return ec;
+    // }
+
     if (certPath != NULL) {
         AutoPtr<ICodeSigner> codeSigner;
-        CCodeSigner::New(certPath, NULL, (ICodeSigner**)&codeSigner);
+        // CCodeSigner::New(certPath, NULL, (ICodeSigner**)&codeSigner);
         asigners->PushBack(codeSigner);
     }
     return NOERROR;

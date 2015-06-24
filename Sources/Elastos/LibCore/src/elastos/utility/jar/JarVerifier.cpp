@@ -1,25 +1,21 @@
-#include <elastos.h>
 #include "JarVerifier.h"
-#include "CName.h"
-#include "CAttributes.h"
-#include "InitManifest.h"
-#include "CManifest.h"
-#include "CArrayList.h"
-#include "CVector.h"
-#include "CMessageDigestHelper.h"
 #include "CBase64.h"
-#include "CHashMap.h"
-#include <cutils/log.h>
+#include "Autolock.h"
+#include "CAttributes.h"
+#include "CName.h"
+#include "ManifestReader.h"
+#include <elastos/utility/etl/List.h>
+#include "CByteArrayInputStream.h"
+// #include "CMessageDigestHelper.h"
 
-using Elastos::IO::EIID_IOutputStream;
-using Elastos::Utility::CArrayList;
-using Elastos::Utility::CVector;
-using Elastos::Utility::CHashMap;
-using Elastos::Utility::ISet;
-using Elastos::Security::IMessageDigestHelper;
-using Elastos::Security::CMessageDigestHelper;
+using namespace Elastos::Utility::Etl;
+using Elastos::Utility::Etl::List;
+using Elastos::IO::IByteArrayInputStream;
+using Elastos::IO::CByteArrayInputStream;
 using Libcore::IO::IBase64;
 using Libcore::IO::CBase64;
+using Elastos::Security::IMessageDigestHelper;
+// using Elastos::Security::CMessageDigestHelper;
 // using Org::Apache::Harmony::Security::Utils::IJarUtils;
 
 namespace Elastos {
@@ -45,14 +41,14 @@ JarVerifier::VerifierEntry::VerifierEntry(
     /* [in] */ const String& name,
     /* [in] */ IMessageDigest* digest,
     /* [in] */ ArrayOf<Byte>* hash,
-    /* [in] */ ArrayOf<IArrayOf*>* certificates,
-    /* [in] */ StringCertificateMap* verifedEntries,
+    /* [in] */ ArrayOf<AutoPtr<CertificateArray > >* certificates,
+    /* [in] */ HashMap<String, AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > > * verifiedEntries,
     /* [in] */ JarVerifier* host)
     : mName(name)
     , mDigest(digest)
     , mHash(hash)
     , mCertificates(certificates)
-    , mVerifedEntries(verifedEntries)
+    , mVerifiedEntries(verifiedEntries)
     , mHost(host)
 {
 }
@@ -67,7 +63,7 @@ ECode JarVerifier::VerifierEntry::Write(
     /* [in] */ ArrayOf<Byte>* buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    return digest->Update(buffer, 0, buffer->GetLength());
+    return mDigest->UpdateEx(buffer, 0, buffer->GetLength());
 }
 
 ECode JarVerifier::VerifierEntry::Write(
@@ -75,7 +71,7 @@ ECode JarVerifier::VerifierEntry::Write(
     /* in */ Int32 off,
     /* in */ Int32 nbytes)
 {
-    return mDigest->Update(buf, off, nbytes);
+    return mDigest->UpdateEx(buf, off, nbytes);
 }
 
 ECode JarVerifier::VerifierEntry::Verify()
@@ -83,7 +79,7 @@ ECode JarVerifier::VerifierEntry::Verify()
     AutoPtr<ArrayOf<Byte> > d;
     mDigest->Digest((ArrayOf<Byte>**)&d);
     AutoPtr<IMessageDigestHelper> helper;
-    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
     Boolean isEqual;
     AutoPtr<IBase64> bs64;
     CBase64::AcquireSingleton((IBase64**)&bs64);
@@ -91,6 +87,8 @@ ECode JarVerifier::VerifierEntry::Verify()
     bs64->Decode(mHash, (ArrayOf<Byte>**)&rst);
     helper->IsEqual(d, rst, &isEqual);
     if (!isEqual) {
+        ALOGE("%s has invalid digest for %s in %s",
+            IJarFile::MANIFEST_NAME.string(), mName.string(), mName.string());
         return E_SECURITY_EXCEPTION;
     }
     (*mVerifiedEntries)[mName] = mCertificates;
@@ -103,7 +101,7 @@ ECode JarVerifier::VerifierEntry::Verify()
 JarVerifier::JarVerifier(
     /* [in] */ const String& name,
     /* [in] */ IManifest* manifest,
-    /* [in] */ HashMap<String, AutoPtr<ArrayOf<Byte> >* metaEntries)
+    /* [in] */ HashMap<String, AutoPtr<ArrayOf<Byte> > >* metaEntries)
     : mMainAttributesEnd(0)
     , mJarName(name)
     , mManifest(manifest)
@@ -111,7 +109,7 @@ JarVerifier::JarVerifier(
 {
     mSignatures = new HashMap<String, AutoPtr<StringAttributesMap> >(5);
     mCertificates = new StringCertificateMap(5);
-    mVerifiedEntries = new StringCertificateMap();
+    mVerifiedEntries = new HashMap<String, AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > >();
 }
 
 JarVerifier::~JarVerifier()
@@ -126,11 +124,13 @@ ECode JarVerifier::InitEntry(
     /* in */ const String& name,
     /* out */ VerifierEntry** entry)
 {
+    VALIDATE_NOT_NULL(entry)
+    *entry = NULL;
+
     // If no manifest is present by the time an entry is found,
     // verification cannot occur. If no signature files have
     // been found, do not verify.
     if (mManifest == NULL || mSignatures->IsEmpty()) {
-        *entry = NULL;
         return NOERROR;
     }
 
@@ -138,91 +138,75 @@ ECode JarVerifier::InitEntry(
     mManifest->GetAttributes(name, (IAttributes**)&attributes);
     // entry has no digest
     if (attributes == NULL) {
-        *entry = NULL;
         return NOERROR;
     }
 
-    AutoPtr<IArrayList> certs;
-    CArrayList::New((IArrayList**)&certs);
-    HashMap<String, AutoPtr<HashMap<String, AutoPtr<IAttributes> > > >::Iterator it;
+
+    Etl::List<AutoPtr<CertificateArray> > certArrList;
+    StringAttributesMapIterator sait;
+    StringCertificateMapIterator scit;
+    HashMap<String, AutoPtr<StringAttributesMap> >::Iterator it;
     for (it = mSignatures->Begin(); it != mSignatures->End(); ++it) {
-        //HashMap<String, AutoPtr<IAttributes> >* hm =
-        AutoPtr<IAttributes> attrib = (*(it->mSecond))[name];
-        if (attrib != NULL) {
-            // Found an entry for entry name in .SF file
-            String signatureFile = it->mFirst;
-            AutoPtr<IVector> vt;
-            GetSignerCertificates(signatureFile, mCertificates, (IVector**)&vt);
-            Boolean rst;
-            certs->AddAll(ICollection::Probe(vt.Get()), &rst);
+        StringAttributesMap* hm = it->mSecond;
+        sait = hm->Find(name);
+        if (sait != hm->End()) {
+            IAttributes * attr = sait->mSecond;
+            if (attr != NULL) {
+                // Found an entry for entry name in .SF file
+                String signatureFile = it->mFirst;
+                scit = mCertificates->Find(signatureFile);
+                if (scit != mCertificates->End()) {
+                    AutoPtr<ArrayOf<ICertificate*> > certArr = scit->mSecond;
+                    if (certArr) {
+                        certArrList.PushBack(certArr);
+                    }
+                }
+            }
         }
     }
 
     // entry is not signed
-    Boolean isEmpty;
-    if ((certs->IsEmpty(&isEmpty), isEmpty)) {
-        *entry = NULL;
+    if (certArrList.IsEmpty()) {
         return NOERROR;
     }
-    AutoPtr<ArrayOf<IInterface*> > tmp;
-    certs->ToArray((ArrayOf<PInterface>**)&tmp);
-    AutoPtr<ArrayOf<ICertificate*> > certificatesArray = ArrayOf<ICertificate*>::Alloc(tmp->GetLength());
-    for (Int32 i = 0; i < tmp->GetLength(); ++i) {
-        certificatesArray->Set(i, ICertificate::Probe((*tmp)[i]));
+
+    AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > certChainsArray;
+    certChainsArray = ArrayOf<AutoPtr<CertificateArray> >::Alloc(certArrList.GetSize());
+    Etl::List<AutoPtr<CertificateArray> >::Iterator cit;
+    Int32 i = 0;
+    for (cit = certArrList.Begin(); cit != certArrList.End(); ++cit) {
+        certChainsArray->Set(i++, *cit);
     }
 
-    String algorithms;
-    attributes->GetValue(String("Digest-Algorithms"), &algorithms);
-    if (algorithms.IsNull()) {
-        algorithms = "SHA SHA1";
-    }
-    StringTokenizer* tokens = new StringTokenizer(algorithms);
-    while (tokens->HasMoreTokens()) {
-        String algorithm = (String)(const char*)tokens->NextToken();
+    for (i = 0; i < DIGEST_ALGORITHMS->GetLength(); ++i) {
+        String algorithm = (*DIGEST_ALGORITHMS)[i];
         String hash;
         attributes->GetValue(algorithm + "-Digest", &hash);
         if (hash.IsNull()) {
             continue;
         }
-        UInt32 bytes = hash.GetByteLength();
-        AutoPtr<ArrayOf<Byte> > hashBytes = ArrayOf<Byte>::Alloc(bytes);
-        FAIL_RETURN(hashBytes->Copy((Byte*)const_cast<char*>(hash.string()), bytes))
-        AutoPtr<IMessageDigest> md;
+
         AutoPtr<IMessageDigestHelper> helper;
-        CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+        // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+        AutoPtr<IMessageDigest> md;
         ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
         if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
             //ignore
         }
         if (FAILED(ec)) {
-            delete tokens;
             return ec;
         }
-        AutoPtr<VerifierEntry> ret = new VerifierEntry(name, md,
-            hashBytes, certificatesArray, this);
+
+        AutoPtr<ArrayOf<Byte> > hashBytes = hash.GetBytes();//hash.getBytes(StandardCharsets.ISO_8859_1);
+        AutoPtr<VerifierEntry> ret = new VerifierEntry(name, md, hashBytes, certChainsArray, mVerifiedEntries, this);
         *entry = ret;
         REFCOUNT_ADD(*entry)
-        delete tokens;
         return NOERROR;
     }
-    delete tokens;
-    *entry = NULL;
+
     return NOERROR;
 }
 
-/**
- * Add a new meta entry to the internal collection of data held on each JAR
- * entry in the {@code META-INF} directory including the manifest
- * file itself. Files associated with the signing of a JAR would also be
- * added to this collection.
- *
- * @param name
- *            the name of the file located in the {@code META-INF}
- *            directory.
- * @param buf
- *            the file bytes for the file called {@code name}.
- * @see #removeMetaEntries()
- */
 ECode JarVerifier::AddMetaEntry(
     /* in */ const String& name,
     /* in */ ArrayOf<Byte>* buf)
@@ -231,32 +215,14 @@ ECode JarVerifier::AddMetaEntry(
     return NOERROR;
 }
 
-/**
- * If the associated JAR file is signed, check on the validity of all of the
- * known signatures.
- *
- * @return {@code true} if the associated JAR is signed and an internal
- *         check verifies the validity of the signature(s). {@code false} if
- *         the associated JAR file has no entries at all in its {@code
- *         META-INF} directory. This situation is indicative of an invalid
- *         JAR file.
- *         <p>
- *         Will also return {@code true} if the JAR file is <i>not</i>
- *         signed.
- * @throws SecurityException
- *             if the JAR file is signed and it is determined that a
- *             signature block file contains an invalid signature for the
- *             corresponding signature file.
- */
 ECode JarVerifier::ReadCertificates(
     /* out */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    *result = FALSE;
 
     Autolock lock(this);
-    VALIDATE_NOT_NULL(result)
-    if (mMetaEntries == NULL) {
+    if (mMetaEntries == NULL || mMetaEntries->IsEmpty()) {
         return NOERROR;
     }
 
@@ -264,12 +230,8 @@ ECode JarVerifier::ReadCertificates(
     HashMap<String, AutoPtr<ArrayOf<Byte> > >::Iterator it = mMetaEntries->Begin();
     for (; it != mMetaEntries->End();) {
         key = it->mFirst;
-        if (key.EndWith(".DSA") || key.EndWith(".RSA")) {
+        if (key.EndWith(".DSA") || key.EndWith(".RSA") || key.EndWith(".EC")) {
             FAIL_RETURN(VerifyCertificate(key))
-            // Check for recursive class load
-            if (mMetaEntries == NULL) {
-                return NOERROR;
-            }
             mMetaEntries->Erase(it++);
         }
         else {
@@ -285,35 +247,32 @@ ECode JarVerifier::VerifyCertificate(
     /* in */ const String& certFile)
 {
     // Found Digital Sig, .SF should already have been read
-    String signatureFile = certFile.Substring(0, certFile.LastIndexOf('.'))
-        + ".SF";
-    AutoPtr<ArrayOf<Byte> > sfBytes;
-    sfBytes = (*mMetaEntries)[signatureFile];
-    if (sfBytes == NULL) {
-        return NOERROR;
+    String signatureFile = certFile.Substring(0, certFile.LastIndexOf('.')) + ".SF";
+    AutoPtr<ArrayOf<Byte> > manifestBytes;
+    HashMap<String, AutoPtr<ArrayOf<Byte> > >::Iterator it = mMetaEntries->Find(signatureFile);
+    if (it != mMetaEntries->End()) {
+        manifestBytes = it->mSecond;
     }
-
-    AutoPtr<ArrayOf<Byte> > manifest = (*mMetaEntries)[IJarFile::MANIFEST_NAME];
     // Manifest entry is required for any verifications.
-    if (manifest == NULL) {
+    if (manifestBytes == NULL) {
         return NOERROR;
     }
 
-    AutoPtr<ArrayOf<Byte> > sBlockBytes = (*mMetaEntries)[certFile];
+    AutoPtr<ArrayOf<Byte> > sBlockBytes;
+    it = mMetaEntries->Find(certFile);
+    if (it != mMetaEntries->End()) {
+        sBlockBytes = it->mSecond;
+    }
+
+    // TODO signature
     /*
         try {
-        Certificate[] signerCertChain = JarUtils.verifySignature(
-                new ByteArrayInputStream(sfBytes),
-                new ByteArrayInputStream(sBlockBytes));
-
-         // Recursive call in loading security provider related class which
-         // is in a signed JAR.
-        if (metaEntries == null) {
-            return;
-        }
-        if (signerCertChain != null) {
-            certificates.put(signatureFile, signerCertChain);
-        }
+            Certificate[] signerCertChain = JarUtils.verifySignature(
+                    new ByteArrayInputStream(manifestBytes),
+                    new ByteArrayInputStream(sBlockBytes));
+            if (signerCertChain != null) {
+                certificates.put(signatureFile, signerCertChain);
+            }
         } catch (IOException e) {
             return;
         } catch (GeneralSecurityException e) {
@@ -325,16 +284,10 @@ ECode JarVerifier::VerifyCertificate(
 
     // AutoPtr<IJarUtils> jarUtils;
     // CJarUtils::AcquireSingleton((IJarUtils**)&jarUtils);
-    // AutoPtr<IByteArrayInputStream> sfi, sbi;
-    // CByteArrayInputStream::New(sfBytes, (IByteArrayInputStream**)&sfi);
-    // CByteArrayInputStream::New(sBlockBytes, (IByteArrayInputStream**)&sbi);
-    // jarUtils->VerifySignature(sfi, sbi, (ArrayOf<ICertificate*>**)&signerCertChain);
-
-    // Recursive call in loading security provider related class which
-    // is in a signed JAR.
-    if (mMetaEntries == NULL) {
-        return NOERROR;
-    }
+    AutoPtr<IByteArrayInputStream> sfi, sbi;
+    CByteArrayInputStream::New(manifestBytes, (IByteArrayInputStream**)&sfi);
+    CByteArrayInputStream::New(sBlockBytes, (IByteArrayInputStream**)&sbi);
+    // FAIL_RETURN(jarUtils->VerifySignature(sfi, sbi, (ArrayOf<ICertificate*>**)&signerCertChain))
     if (signerCertChain != NULL) {
         (*mCertificates)[signatureFile] = signerCertChain;
     }
@@ -342,35 +295,22 @@ ECode JarVerifier::VerifyCertificate(
     // Verify manifest hash in .sf file
     AutoPtr<IAttributes> attributes;
     FAIL_RETURN(CAttributes::New((IAttributes**)&attributes))
-    AutoPtr<IMap> _entries;
-    CHashMap::New((IMap**)&_entries);
-    AutoPtr<InitManifest> im = new InitManifest(sfBytes, attributes, CName::SIGNATURE_VERSION);
-    FAIL_RETURN(im->InitEntries(_entries, NULL))
 
-    //convert _entries to entries;
     AutoPtr<HashMap<String, AutoPtr<IAttributes> > > entries = new HashMap<String, AutoPtr<IAttributes> >();
-    AutoPtr<ISet> entrySet;
-    _entries->GetEntrySet((ISet**)&entrySet);
-    AutoPtr<IIterator> it;
-    entrySet->GetIterator((IIterator**)&it);
+    AutoPtr<ManifestReader> im = new ManifestReader(manifestBytes, attributes);
+    FAIL_RETURN(im->ReadEntries(entries, NULL))
 
-    Boolean hasNext;
-    String strKey;
-    IMapEntry* mapEnty;
-    for (; (it->HasNext(&hasNext), hasNext);) {
-        AutoPtr<IInterface> next, key, value;
-        it->GetNext((IInterface**)&next);
-        mapEnty = IMapEntry::Probe(next);
-        mapEnty->GetKey((IInterface**)&key);
-        mapEnty->GetValue((IInterface**)&value);
-        ICharSequence::Probe(key)->ToString(&strKey);
-        (*entries)[strKey] = IAttributes::Probe(value);
+    // Do we actually have any signatures to look at?
+    AutoPtr<IInterface> obj;
+    IMap::Probe(attributes)->Get(CName::SIGNATURE_VERSION, (IInterface**)&obj);
+    if (obj == NULL) {
+        return NOERROR;
     }
 
     Boolean createdBySigntool = FALSE;
     String createdBy;
-    FAIL_RETURN(attributes->GetValue(String("Created-By"), &createdBy))
-    if (createdBy != NULL) {
+    attributes->GetValue(String("Created-By"), &createdBy);
+    if (!createdBy.IsNull()) {
         createdBySigntool = createdBy.IndexOf("signtool") != -1;
     }
 
@@ -379,185 +319,47 @@ ECode JarVerifier::VerifyCertificate(
     // file, such as those created before java 1.5, then we ignore
     // such verification.
     if (mMainAttributesEnd > 0 && !createdBySigntool) {
-        String digestAttribute = String("-Digest-Manifest-Main-Attributes");
-        Boolean bVerified;
-        if (!(Verify(attributes, digestAttribute, manifest, 0, mMainAttributesEnd, FALSE, TRUE, &bVerified), bVerified)) {
-            //throw failedVerification(mJarName, signatureFile);
+        String digestAttribute("-Digest-Manifest-Main-Attributes");
+        Boolean bval;
+        Verify(attributes, digestAttribute, manifestBytes, 0, mMainAttributesEnd, FALSE, TRUE, &bval);
+        if (!bval) {
+            ALOGE("%s failed verification of %s.", mJarName.string(), signatureFile.string());
             return E_SECURITY_EXCEPTION;
+            // throw failedVerification(jarName, signatureFile);
         }
     }
 
     // Use .SF to verify the whole manifest.
-    String digestAttribute = createdBySigntool ? String("-Digest")
-            : String("-Digest-Manifest");
-    Boolean result;
-    if (Verify(attributes, digestAttribute, manifest, 0, manifest->GetLength(),
-        FALSE, FALSE, &result), !result) {
+    String digestAttribute = createdBySigntool ? String("-Digest") : String("-Digest-Manifest");
+    Boolean bval;
+    Verify(attributes, digestAttribute, manifestBytes, 0, manifestBytes->GetLength(), FALSE, FALSE, &bval);
+    if (!bval) {
+        CManifest* cm = (CManifest*)mManifest.Get();
         HashMap<String, AutoPtr<IAttributes> >::Iterator it = entries->Begin();
-        while (it != entries->End()) {
-
-            AutoPtr<CManifest::Chunk> chunk;
-            ((CManifest*)mManifest.Get())->GetChunk(it->mFirst, (CManifest::Chunk**)&chunk);
+        for (; it != entries->End(); ++it) {
+            AutoPtr<CManifest::Chunk> chunk = cm->GetChunk(it->mFirst);
             if (chunk == NULL) {
                 return NOERROR;
             }
-            if (Verify(it->mSecond, String("-Digest"), manifest,
-                    chunk->mStart, chunk->mEnd, createdBySigntool, FALSE, &result), !result) {
+
+            Verify(it->mSecond, String("-Digest"), manifestBytes,
+                    chunk->mStart, chunk->mEnd, createdBySigntool, FALSE, &bval);
+            if (!bval) {
+                ALOGE("%s has invalid digest for %s in %s.", signatureFile.string(),
+                    it->mFirst.string(), mJarName.string());
                 return E_SECURITY_EXCEPTION;
+                // throw invalidDigest(signatureFile, entry.getKey(), jarName);
             }
-            ++it;
         }
     }
 
-    (*mMetaEntries)[signatureFile] = NULL;
+    AutoPtr<ArrayOf<Byte> > barr;
+    (*mMetaEntries)[signatureFile] = barr;
     (*mSignatures)[signatureFile] = entries;
+
     return NOERROR;
 }
 
-ECode JarVerifier::Verify(
-        /* in */ IAttributes* attributes,
-        /* in */ const String& entry,
-        /* in */ ArrayOf<Byte>* data,
-        /* in */ Int32 start,
-        /* in */ Int32 end,
-        /* in */ Boolean ignoreSecondEndline,
-        /* in */ Boolean ignorable,
-        /* out */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    String algorithms;
-    attributes->GetValue(String("Digest-Algorithms"), &algorithms);
-    if (algorithms == NULL) {
-        algorithms = "SHA SHA1";
-    }
-    StringTokenizer* tokens = new StringTokenizer(algorithms);
-    while (tokens->HasMoreTokens()) {
-        String algorithm = (String)(const char*)tokens->NextToken();
-        String hash;
-        attributes->GetValue(algorithm + entry, &hash);
-        if (hash == NULL) {
-            continue;
-        }
-
-        AutoPtr<IMessageDigest> md;
-        AutoPtr<IMessageDigestHelper> helper;
-        CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
-        ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
-        if (E_NO_SUCH_ALGORITHM_EXCEPTION == ec) {
-            continue;
-        }
-        delete tokens;
-        FAIL_RETURN(ec)
-        if (ignoreSecondEndline && (*data)[end - 1] == '\n'
-            && (*data)[end - 2] == '\n') {
-            md->Update(data, start, end - 1 - start);
-        }
-        else {
-            md->Update(data, start, end - start);
-        }
-        AutoPtr<ArrayOf<Byte> > b;
-        md->Digest((ArrayOf<Byte>**)&b);
-        AutoPtr<ArrayOf<Byte> > hashBytes = ArrayOf<Byte>::Alloc(hash.GetByteLength());
-        hashBytes->Copy(hash.string(), hash.GetByteLength());
-        AutoPtr<IBase64> base64;
-        CBase64::AcquireSingleton((IBase64**)&base64);
-        AutoPtr<ArrayOf<Byte> > outData;
-        base64->Decode(hashBytes, (ArrayOf<Byte>**)&outData);
-        return helper->IsEqual(b, outData, result);
-
-    }
-    delete tokens;
-    *result = ignorable;
-    return NOERROR;
-}
-
-/**
- * Returns all of the {@link java.security.cert.Certificate} instances that
- * were used to verify the signature on the JAR entry called
- * {@code name}.
- *
- * @param name
- *            the name of a JAR entry.
- * @return an array of {@link java.security.cert.Certificate}.
- */
-ECode JarVerifier::GetCertificates(
-    /* [in] */ const String& name,
-    /* [out, callee] */ ArrayOf<ICertificate*>** certificates)
-{
-    VALIDATE_NOT_NULL(certificates)
-    AutoPtr<ArrayOf<ICertificate*> > verifiedCerts = (*mVerifiedEntries)[name];
-    if (verifiedCerts == NULL) {
-        *certificates = NULL;
-        return NOERROR;
-    }
-    *certificates = verifiedCerts->Clone();
-    REFCOUNT_ADD(*certificates)
-    return NOERROR;
-}
-
-/**
- * Remove all entries from the internal collection of data held about each
- * JAR entry in the {@code META-INF} directory.
- *
- * @see #addMetaEntry(String, byte[])
- */
-ECode JarVerifier::RemoveMetaEntries()
-{
-    mMetaEntries = NULL;
-    return NOERROR;
-}
-
-/**
- * Returns a {@code Vector} of all of the
- * {@link java.security.cert.Certificate}s that are associated with the
- * signing of the named signature file.
- *
- * @param signatureFileName
- *            the name of a signature file.
- * @param certificates
- *            a {@code Map} of all of the certificate chains discovered so
- *            far while attempting to verify the JAR that contains the
- *            signature file {@code signatureFileName}. This object is
- *            previously set in the course of one or more calls to
- *            {@link #verifyJarSignatureFile(String, String, String, Map, Map)}
- *            where it was passed as the last argument.
- * @return all of the {@code Certificate} entries for the signer of the JAR
- *         whose actions led to the creation of the named signature file.
- */
-ECode JarVerifier::GetSignerCertificates(
-    /* [in] */ const String& signatureFileName,
-    /* [in] */ HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >* certificates,
-    /* [out] */ IVector** certs)
-{
-    VALIDATE_NOT_NULL(certs)
-    AutoPtr<IVector> result;
-    CVector::New((IVector**)&result);
-    AutoPtr<ArrayOf<ICertificate*> > certChain = (*certificates)[signatureFileName];
-    if (certChain != NULL) {
-        for (Int32 i = 0; i < certChain->GetLength(); ++i) {
-            result->AddElement((*certChain)[i]);
-        }
-    }
-    *certs = result;
-    REFCOUNT_ADD(*certs)
-    return NOERROR;
-}
-
-
-ECode JarVerifier::SetManifest(
-        /* in */ IManifest* mf)
-{
-    mManifest = mf;
-    return NOERROR;
-}
-
-/**
- * Returns a <code>boolean</code> indication of whether or not the
- * associated jar file is signed.
- *
- * @return {@code true} if the JAR is signed, {@code false}
- *         otherwise.
- */
 ECode JarVerifier::IsSignedJar(
     /* [out] */ Boolean* isSigned)
 {
@@ -566,10 +368,81 @@ ECode JarVerifier::IsSignedJar(
     return NOERROR;
 }
 
-HashMap<String, AutoPtr<ArrayOf<ICertificate*> > >* JarVerifier::GetVerifiedEntry()
+ECode JarVerifier::Verify(
+    /* in */ IAttributes* attributes,
+    /* in */ const String& entry,
+    /* in */ ArrayOf<Byte>* data,
+    /* in */ Int32 start,
+    /* in */ Int32 end,
+    /* in */ Boolean ignoreSecondEndline,
+    /* in */ Boolean ignorable,
+    /* out */ Boolean* result)
 {
-    return mVerifiedEntries;
+    VALIDATE_NOT_NULL(result)
+    *result = ignorable;
+
+    for (Int32 i = 0; i < DIGEST_ALGORITHMS->GetLength(); i++) {
+        String algorithm = (*DIGEST_ALGORITHMS)[i];
+        String hash;
+        attributes->GetValue(algorithm + entry, &hash);
+        if (hash.IsNull()) {
+            continue;
+        }
+
+        AutoPtr<IMessageDigestHelper> helper;
+        // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+        AutoPtr<IMessageDigest> md;
+        ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
+        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+            //ignore
+        }
+        if (FAILED(ec)) {
+            return ec;
+        }
+
+        if (ignoreSecondEndline && (*data)[end - 1] == '\n' && (*data)[end - 2] == '\n') {
+            md->UpdateEx(data, start, end - 1 - start);
+        }
+        else {
+            md->UpdateEx(data, start, end - start);
+        }
+
+        AutoPtr<ArrayOf<Byte> > b;
+        md->Digest((ArrayOf<Byte>**)&b);
+
+        AutoPtr<IBase64> bs64;
+        CBase64::AcquireSingleton((IBase64**)&bs64);
+        AutoPtr<ArrayOf<Byte> > hashBytes = hash.GetBytes();//hash.getBytes(StandardCharsets.ISO_8859_1);
+        AutoPtr<ArrayOf<Byte> > rst;
+        bs64->Decode(hashBytes, (ArrayOf<Byte>**)&rst);
+
+        Boolean isEqual;
+        helper->IsEqual(b, rst, &isEqual);
+        *result = isEqual;
+        return NOERROR;
+    }
+
+    *result = ignorable;
+    return NOERROR;
 }
+
+AutoPtr<ArrayOf<AutoPtr<JarVerifier::CertificateArray> > > JarVerifier::GetCertificateChains(
+    /* [in] */ const String& name)
+{
+    HashMap<String, AutoPtr<ArrayOf<AutoPtr<CertificateArray> > > >::Iterator it;
+    it = mVerifiedEntries->Find(name);
+    if (it != mVerifiedEntries->End()) {
+        return it->mSecond;
+    }
+    return NULL;
+}
+
+ECode JarVerifier::RemoveMetaEntries()
+{
+    mMetaEntries->Clear();
+    return NOERROR;
+}
+
 
 } // namespace Jar
 } // namespace Utility

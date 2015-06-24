@@ -1,5 +1,5 @@
 
-#include "CPack200Helper.h"
+#include "CPack200.h"
 #include "CSystem.h"
 
 using Elastos::Core::ISystem;
@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Utility {
 namespace Jar {
 
-static const String TAG("CPack200Helper");
+static const String TAG("CPack200");
 
 static const String SYSTEM_PROPERTY_PACKER("java.util.jar.Pack200.Packer");
 
@@ -34,11 +34,11 @@ label: \
     REFCOUNT_ADD(*var) \
 } while(0);
 
-CAR_INTERFACE_IMPL(CPack200Helper, Singleton, IPack200Helper)
+CAR_INTERFACE_IMPL(CPack200, Singleton, IPack200)
 
-CAR_SINGLETON_IMPL(CPack200Helper)
+CAR_SINGLETON_IMPL(CPack200)
 
-ECode CPack200Helper::NewPacker(
+ECode CPack200::NewPacker(
     /* [out] */ IPacker** packer)
 {
     VALIDATE_NOT_NULL(packer)
@@ -52,7 +52,7 @@ ECode CPack200Helper::NewPacker(
     return NOERROR;
 }
 
-ECode CPack200Helper::NewUnpacker(
+ECode CPack200::NewUnpacker(
     /* [out] */ IUnpacker** unpacker)
 {
     VALIDATE_NOT_NULL(unpacker)

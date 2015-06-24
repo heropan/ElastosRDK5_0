@@ -31,21 +31,28 @@ String UrlUtils::CanonicalizePath(
          */
         if (i == segmentStart + 1 && path.RegionMatches(segmentStart, String("."), 0, 1)) {
             // Given "abc/def/./ghi", remove "./" to get "abc/def/ghi".
-            path = path.Substring(0, segmentStart) + path.Substring(nextSegmentStart);
+            String part = path.Substring(0, segmentStart);
+            part += path.Substring(nextSegmentStart);
+            path = part;
             i = segmentStart;
-        } else if (i == segmentStart + 2 && path.RegionMatches(segmentStart, String(".."), 0, 2)) {
+        }
+        else if (i == segmentStart + 2 && path.RegionMatches(segmentStart, String(".."), 0, 2)) {
             if (deletableSegments > 0 || discardRelativePrefix) {
                 // Given "abc/def/../ghi", remove "def/../" to get "abc/ghi".
                 deletableSegments--;
                 Int32 prevSegmentStart = path.LastIndexOf('/', segmentStart - 2) + 1;
-                path = path.Substring(0, prevSegmentStart) + path.Substring(nextSegmentStart);
+                String part = path.Substring(0, prevSegmentStart);
+                part += path.Substring(nextSegmentStart);
+                path = part;
                 i = segmentStart = prevSegmentStart;
-            } else {
+            }
+            else {
                 // There's no segment to delete; this ".." segment must be retained.
                 i++;
                 segmentStart = i;
             }
-        } else {
+        }
+        else {
             if (i > 0) {
                 deletableSegments++;
             }

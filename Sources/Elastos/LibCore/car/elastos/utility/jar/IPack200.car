@@ -262,7 +262,7 @@ module
             */
         }
 
-        interface IPack200Helper {
+        interface IPack200 {
             NewPacker(
                 [out] IPacker** packer);
 

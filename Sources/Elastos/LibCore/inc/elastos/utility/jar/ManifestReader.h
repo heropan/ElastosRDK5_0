@@ -26,7 +26,11 @@ public:
         /* [in] */ IAttributes* main);
 
     CARAPI ReadEntries(
-        /* [in] */ IMap* entries,
+        /* [in] */ HashMap<String, AutoPtr<IAttributes> > * entries,
+        /* [in] */ HashMap<String, AutoPtr<CManifest::Chunk> > * chunks);
+
+    CARAPI ReadEntries(
+        /* [in] */ IMap * entries,
         /* [in] */ HashMap<String, AutoPtr<CManifest::Chunk> > * chunks);
 
     CARAPI_(Int32) GetEndOfMainSection();
