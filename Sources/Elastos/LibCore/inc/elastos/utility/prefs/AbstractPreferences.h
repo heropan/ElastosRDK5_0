@@ -313,7 +313,7 @@ protected:
      *
      * @return the array of cached child nodes.
      */
-    CARAPI_(AutoPtr<ArrayOf<AutoPtr<AbstractPreferences> > >) CachedChildren();
+    CARAPI_(AutoPtr<ArrayOf<AbstractPreferences* > >) CachedChildren();
 
     /**
      * Returns the child node with the specified name or {@code null} if it

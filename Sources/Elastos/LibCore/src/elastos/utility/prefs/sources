@@ -13,9 +13,11 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/prefs;
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore/io;
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore/utility;
 
 SOURCES += Preferences.cpp
 SOURCES += NodeChangeEvent.cpp
 SOURCES += XMLParser.cpp
-#SOURCES += AbstractPreferences.cpp
+SOURCES += AbstractPreferences.cpp
 #SOURCES += NodeSet.cpp

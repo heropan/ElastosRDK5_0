@@ -23,7 +23,7 @@ EventObject::EventObject(
 }
 
 ECode EventObject::GetSource(
-    /* [out] */ IObject** object)
+    /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
     *object = mSource;

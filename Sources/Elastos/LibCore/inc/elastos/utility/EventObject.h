@@ -27,7 +27,7 @@ public:
      * Returns the object which fired the event.
      */
     virtual CARAPI GetSource(
-        /* [out] */ IObject** object);
+        /* [out] */ IInterface** object);
 
     /**
      * Returns the string representation of this {@code EventObject}.
