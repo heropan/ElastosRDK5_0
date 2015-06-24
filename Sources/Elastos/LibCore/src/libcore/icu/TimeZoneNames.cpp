@@ -20,9 +20,6 @@
 #include "unicode/tznames.h"
 #include "unicode/locid.h"
 
-// jni class
-#define NATIVE(x) ::x
-
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::UniquePtr;

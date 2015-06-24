@@ -954,3 +954,9 @@ public:                                                                         
 #endif // __UUNM_Elastos_CoreLibrary_DEFINED__
 
 #endif //__ELASTOS_CORE_DEF_H__
+
+#ifndef __SAME_CLASS_NAME_OF_JNI__
+#define __SAME_CLASS_NAME_OF_JNI__
+// for jni class has same name with car implement class
+#define NATIVE(x) ::x
+#endif // __SAME_CLASS_NAME_OF_JNI__
