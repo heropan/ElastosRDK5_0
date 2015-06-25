@@ -40,3 +40,4 @@ SOURCES += AlphabeticIndex.cpp
 SOURCES += ImmutableIndex.cpp
 SOURCES += DateIntervalFormat.cpp
 SOURCES += CDateIntervalFormat.cpp
+SOURCES += Transliterator.cpp

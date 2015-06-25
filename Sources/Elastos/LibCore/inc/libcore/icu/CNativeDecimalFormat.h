@@ -25,7 +25,7 @@ CarClass(CNativeDecimalFormat)
 {
 public:
     // Utility to get information about field positions from native (ICU) code.
-    class FieldPositionIterator : public ElRefBase
+    class FieldPositionIterator : public Object
     {
         friend class NativeDecimalFormat;
 
