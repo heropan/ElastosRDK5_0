@@ -16,6 +16,7 @@ module
     merge("icu/INativeNormalizerHelper.car");
     merge("icu/IAlphabeticIndex.car");
     merge("icu/IDateIntervalFormat.car");
+    merge("icu/ITransliterator.car");
 
     interface Elastos.Core.IComparable;
     interface Elastos.Text.ICollationKey;
@@ -99,6 +100,13 @@ module
 
     singleton class CDateIntervalFormat {
         interface IDateIntervalFormat;
+    }
+
+    class CTransliterator {
+        constructor(
+            [in] String id);
+
+        interface ITransliterator;
     }
 
     } // namespace ICU
