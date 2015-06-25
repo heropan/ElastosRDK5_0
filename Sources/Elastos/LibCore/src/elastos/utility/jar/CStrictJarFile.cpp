@@ -11,7 +11,10 @@
 #include "Math.h"
 #include "CZipEntry.h"
 #include "CStreams.h"
+#include "UniquePtr.h"
+#include <ziparchive/zip_archive.h>
 
+using Elastos::Core::UniquePtr;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
@@ -357,10 +360,50 @@ AutoPtr<HashMap<String, AutoPtr<ArrayOf<Byte> > > > CStrictJarFile::GetMetaEntri
     return metaEntries;
 }
 
+class IterationHandle {
+public:
+    IterationHandle(const char* prefix)
+        : cookie_(NULL)
+        , prefix_(strdup(prefix)) {
+    }
+
+    void** CookieAddress() {
+        return &cookie_;
+    }
+
+    const char* Prefix() const {
+        return prefix_;
+    }
+
+    ~IterationHandle() {
+        free(prefix_);
+    }
+
+private:
+    void* cookie_;
+    char* prefix_;
+};
+
 ECode CStrictJarFile::NativeOpenJarFile(
     /* [in] */ const String& fileName,
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
+    if (fileName.IsNull()) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    assert(0);
+    //TODO LIBRARIES += -lziparchive
+    ZipArchiveHandle handle;
+    // int32_t error = OpenArchive(fileName.string(), &handle);
+    // if (error) {
+    //     //throwIoException(env, error);
+    //     return E_IO_EXCEPTION;
+    // }
+
+    *result = reinterpret_cast<Int64>(handle);
     return NOERROR;
 }
 
@@ -369,14 +412,88 @@ ECode CStrictJarFile::NativeStartIteration(
     /* [in] */ const String& prefix,
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
+
+    assert(0);
+    //TODO LIBRARIES += -lziparchive
+    IterationHandle* handle = new IterationHandle(prefix.string());
+    int32_t error = 0;
+    // if (prefix.GetLength() == 0) {
+    //     error = StartIteration(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
+    //                 handle->CookieAddress(), NULL);
+    // } else {
+    //     error = StartIteration(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
+    //                 handle->CookieAddress(), handle->Prefix());
+    // }
+
+    if (error) {
+        //throwIoException(env, error);
+        return E_IO_EXCEPTION;
+    }
+
+    *result = reinterpret_cast<Int64>(handle);
+    return NOERROR;
+}
+
+static ECode NewZipEntry(
+    /* [in] */const ZipEntry& entry,
+    /* [in] */const String& entryName,
+    /* [in] */const uint16_t nameLength,
+    /* [out] */ IZipEntry** result)
+{
+    assert(result);
+    *result = NULL;
+
+    AutoPtr<IZipEntry> ze;
+    ECode ec = CZipEntry::New(entryName, (IZipEntry**)&ze);
+    FAIL_RETURN(ec)
+    ((CZipEntry*)ze.Get())->constructor(
+        entryName,
+        String(NULL), // comment
+        static_cast<Int64>(entry.crc32),
+        static_cast<Int64>(entry.compressed_length),
+        static_cast<Int64>(entry.uncompressed_length),
+        static_cast<Int32>(entry.method),
+        static_cast<Int32>(0),  // time
+        static_cast<Int32>(0),  // modData
+        NULL,  // byte[] extra
+        static_cast<Int32>(nameLength),
+        static_cast<Int64>(-1),  // local header offset
+        static_cast<Int64>(entry.offset));
+    FAIL_RETURN(ec)
+
+    *result = ze;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CStrictJarFile::NativeNextEntry(
-    /* [in] */ Int64 mIterationHandle,
+    /* [in] */ Int64 iterationHandle,
     /* [out] */ IZipEntry** ze)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(ze)
+    *ze = NULL;
+
+    assert(0);
+    //TODO LIBRARIES += -lziparchive
+
+    ZipEntry data;
+    ZipEntryName entryName;
+
+    IterationHandle* handle = reinterpret_cast<IterationHandle*>(iterationHandle);
+    // const int32_t error = Next(*handle->CookieAddress(), &data, &entryName);
+    // if (error) {
+    //     delete handle;
+    //     return NOERROR;
+    // }
+
+    UniquePtr<char[]> entryNameCString(new char[entryName.name_length + 1]);
+    memcpy(entryNameCString.get(), entryName.name, entryName.name_length);
+    entryNameCString[entryName.name_length] = '\0';
+    String entryNameString(entryNameCString.get());
+
+    return NewZipEntry(data, entryNameString, entryName.name_length, ze);
 }
 
 ECode CStrictJarFile::NativeFindEntry(
@@ -384,12 +501,28 @@ ECode CStrictJarFile::NativeFindEntry(
     /* [in] */ const String& entryName,
     /* [out] */ IZipEntry** ze)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(ze)
+    *ze = NULL;
+
+    assert(0);
+    //TODO LIBRARIES += -lziparchive
+
+    ZipEntry data;
+    // const int32_t error = ::FindEntry(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
+    //                         entryName.string(), &data);
+    // if (error) {
+    //     return NOERROR;
+    // }
+
+    return NewZipEntry(data, entryName, entryName.GetLength(), ze);
 }
 
 ECode CStrictJarFile::NativeClose(
     /* [in] */ Int64 nativeHandle)
 {
+    assert(0);
+    //TODO LIBRARIES += -lziparchive
+    //CloseArchive(reinterpret_cast<ZipArchiveHandle>(nativeHandle));
     return NOERROR;
 }
 
