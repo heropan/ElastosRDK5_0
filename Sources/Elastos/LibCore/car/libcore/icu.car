@@ -15,10 +15,12 @@ module
     merge("icu/INativePluralRules.car");
     merge("icu/INativeNormalizerHelper.car");
     merge("icu/IAlphabeticIndex.car");
+    merge("icu/IDateIntervalFormat.car");
 
     interface Elastos.Core.IComparable;
     interface Elastos.Text.ICollationKey;
     interface Elastos.Core.ICloneable;
+    interface Elastos.Utility.ILocale;
 
     namespace Libcore {
     namespace ICU {
@@ -93,6 +95,10 @@ module
             [in] ILocale* locale);
 
         interface IAlphabeticIndex;
+    }
+
+    singleton class CDateIntervalFormat {
+        interface IDateIntervalFormat;
     }
 
     } // namespace ICU

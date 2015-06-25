@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.ITimeZone;
 
     namespace Libcore {
     namespace ICU {
@@ -7,7 +9,7 @@ module
     /**
      * Exposes icu4c's DateIntervalFormat.
      */
-
+    [deprecated]
     interface IDateIntervalFormat {
         // These are all public API in DateUtils. There are others, but they're either for use with
         // other methods (like FORMAT_ABBREV_RELATIVE), don't internationalize (like FORMAT_CAP_AMPM),
@@ -33,7 +35,7 @@ module
             [in] Int64 startMs,
             [in] Int64 endMs,
             [in] Int32 flags,
-            [in] String olsonId,
+            [in] String* olsonId,
             [out] String* rst);
 
         // This is our slightly more sensible internal API. (A truly sane replacement would take a
@@ -42,7 +44,7 @@ module
             [in] ILocale* locale,
             [in] ITimeZone* tz,
             [in] Int64 startMs,
-            [in[ Int64 endMs,
+            [in] Int64 endMs,
             [in] Int32 flags,
             [out] String* rst);
     }
