@@ -2,13 +2,14 @@
 #ifndef __ELASTOS_NET_CURI_H__
 #define __ELASTOS_NET_CURI_H__
 
-#include "_ELASTOS_NET_CURI.h"
+#include "_Elastos_Net_CURI.h"
 
-#include <elastos/Character.h>
+#include "Object.h"
+#include "Character.h"
 #include "UriCodec.h"
-#include <elastos/core/Object.h>
 
 using Elastos::Core::Character;
+using Libcore::Net::UriCodec;
 
 namespace Elastos {
 namespace Net {
@@ -59,24 +60,40 @@ public:
         /* [in] */ const String& fragment);
 
     CARAPI CompareTo(
-        /* [in] */ IURI* uri,
+        /* [in] */ IInterface* uri,
         /* [out] */ Int32* result);
 
     static CARAPI Create(
         /* [in] */ const String& uri,
         /* [out] */ IURI** obj);
 
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetScheme(
+        /* [out] */ String* scheme);
+
+    CARAPI GetSchemeSpecificPart(
+        /* [out] */ String* schemeSpecific);
+
+    CARAPI GetRawSchemeSpecificPart(
+        /* [out] */ String* schemeSpecific);
+
     CARAPI GetAuthority(
         /* [out] */ String* authority);
 
-    CARAPI GetFragment(
-        /* [out] */ String* fragment);
+    CARAPI GetRawAuthority(
+        /* [out] */ String* authority);
+
+    CARAPI GetUserInfo(
+        /* [out] */ String* userInfo);
+
+    CARAPI GetRawUserInfo(
+        /* [out] */ String* userInfo);
 
     CARAPI GetHost(
         /* [out] */ String* host);
-
-    CARAPI GetPath(
-        /* [out] */ String* path);
 
     CARAPI GetPort(
         /* [out] */ Int32* port);
@@ -89,35 +106,27 @@ public:
         /* [in] */ const String& scheme,
         /* [in] */ Int32 specifiedPort);
 
-    CARAPI GetQuery(
-        /* [out] */ String* query);
-
-    CARAPI GetRawAuthority(
-        /* [out] */ String* authority);
-
-    CARAPI GetRawFragment(
-        /* [out] */ String* fragment);
+    CARAPI GetPath(
+        /* [out] */ String* path);
 
     CARAPI GetRawPath(
         /* [out] */ String* path);
 
+
+    CARAPI GetQuery(
+        /* [out] */ String* query);
+
     CARAPI GetRawQuery(
         /* [out] */ String* query);
 
-    CARAPI GetRawSchemeSpecificPart(
-        /* [out] */ String* schemeSpecific);
+    CARAPI GetFragment(
+        /* [out] */ String* fragment);
 
-    CARAPI GetRawUserInfo(
-        /* [out] */ String* userInfo);
+    CARAPI GetRawFragment(
+        /* [out] */ String* fragment);
 
-    CARAPI GetScheme(
-        /* [out] */ String* scheme);
-
-    CARAPI GetSchemeSpecificPart(
-        /* [out] */ String* schemeSpecific);
-
-    CARAPI GetUserInfo(
-        /* [out] */ String* userInfo);
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
     CARAPI IsAbsolute(
         /* [out] */ Boolean* isAbsolute);
@@ -146,13 +155,6 @@ public:
     CARAPI ToASCIIString(
         /* [out] */ String* str);
 
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* o,
-        /* [out] */ Boolean* result);
-
     CARAPI ToString(
         /* [out] */ String* s);
 
@@ -160,6 +162,18 @@ public:
         /* [out] */ IURL** url);
 
 private:
+    /**
+     * Breaks uri into its component parts. This first splits URI into scheme,
+     * scheme-specific part and fragment:
+     *   [scheme:][scheme-specific part][#fragment]
+     *
+     * Then it breaks the scheme-specific part into authority, path and query:
+     *   [//authority][path][?query]
+     *
+     * Finally it delegates to parseAuthority to break the authority into user
+     * info, host and port:
+     *   [user-info@][host][:port]
+     */
     CARAPI ParseURI(
         /* [in] */ const String& uri,
         /* [in] */ Boolean forceServer);
@@ -185,11 +199,7 @@ private:
     CARAPI_(Boolean) IsValidDomainName(
         /* [in] */ const String& host);
 
-    CARAPI_(String) QuoteComponent(
-        /* [in] */ const String& component,
-        /* [in] */ const String& legalSet);
-
-    CARAPI_(AutoPtr<CURI>) Duplicate();
+    CARAPI_(AutoPtr<IURI>) Duplicate();
 
     CARAPI_(String) ConvertHexToLowerCase(
         /* [in] */ const String& s);
@@ -210,18 +220,8 @@ private:
 
     CARAPI_(String) GetHashString();
 
-
 //    void readObject(ObjectInputStream in);
 //    void writeObject(ObjectOutputStream out);
-
-public:
-    static const String UNRESERVED;
-    static const String PUNCTUATION;
-    static const UriCodec& USER_INFO_ENCODER;
-    static const UriCodec& PATH_ENCODER;
-    static const UriCodec& AUTHORITY_ENCODER;
-    static const UriCodec& FILE_AND_QUERY_ENCODER;
-    static const UriCodec& ALL_LEGAL_ENCODER;
 
 private:
     class PartEncoder : public UriCodec
@@ -237,7 +237,7 @@ private:
         }
     protected:
         Boolean IsRetained(
-            /* [in] */ char c) const
+            /* [in] */ Char32 c)
         {
             return CURI::UNRESERVED.IndexOf(c) != -1
                     || PUNCTUATION.IndexOf(c) != -1
@@ -250,11 +250,22 @@ private:
     {
     protected:
         Boolean IsRetained(
-            /* [in] */ char c) const
+            /* [in] */ Char32 c)
         {
             return c < 127;
         }
     };
+
+public:
+    static const String UNRESERVED;
+    static const String PUNCTUATION;
+    static const AutoPtr<UriCodec> USER_INFO_ENCODER;
+    static const AutoPtr<UriCodec> PATH_ENCODER;
+    static const AutoPtr<UriCodec> AUTHORITY_ENCODER;
+    static const AutoPtr<UriCodec> FILE_AND_QUERY_ENCODER;
+    static const AutoPtr<UriCodec> ALL_LEGAL_ENCODER;
+    static const AutoPtr<UriCodec> ASCII_ONLY;
+
 private:
     String mString;
     String mScheme;
@@ -271,7 +282,6 @@ private:
     Boolean mServerAuthority;
     Int32 mHash;
 
-    static const UriCodec& ASCII_ONLY;
 };
 
 } // namespace Net

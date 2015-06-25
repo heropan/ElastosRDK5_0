@@ -2,6 +2,7 @@
 
 namespace Libcore {
 namespace Net {
+namespace Url {
 
 String UrlUtils::CanonicalizePath(
     /* [in] */ const String& path,
@@ -125,5 +126,6 @@ Int32 UrlUtils::FindFirstOf(
     return end;
 }
 
+} // namespace Url
 } // namespace Net
 } // namespace Libcore

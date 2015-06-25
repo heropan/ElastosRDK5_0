@@ -5,6 +5,7 @@
 
 namespace Libcore {
 namespace Net {
+namespace Url {
 
 class UrlUtils
 {
@@ -35,6 +36,7 @@ private:
     UrlUtils(const UrlUtils&);
 };
 
+} // namespace Url
 } // namespace Net
 } // namespace Libcore
 

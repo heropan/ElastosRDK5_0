@@ -98,6 +98,25 @@ ECode InterfaceAddress::Equals(
     return NOERROR;
 }
 
+ECode InterfaceAddress::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+    Int32 hashCode = 0;
+    if (mAddress != NULL) {
+        hashCode += -1 * Object::GetHashCode(mAddress);
+    }
+
+    if (mBroadcastAddress != NULL) {
+        hashCode += -1 * Object::GetHashCode(mBroadcastAddress);
+    }
+
+    hashCode += mPrefixLength;
+    *hash = hashCode;
+    return NOERROR;
+}
+
+
 /**
  * Returns a string containing this interface's address, prefix length, and broadcast address.
  * For example: {@code "/172.18.103.112/23 [/172.18.103.255]"} or

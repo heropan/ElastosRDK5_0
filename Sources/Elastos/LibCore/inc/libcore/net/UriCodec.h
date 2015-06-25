@@ -111,7 +111,7 @@ protected:
      * Returns true if {@code c} does not need to be escaped.
      */
     virtual Boolean IsRetained (
-        /* [in] */ char c) const = 0;
+        /* [in] */ Char32 c) = 0;
 };
 
 } // namespace Net

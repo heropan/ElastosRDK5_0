@@ -2,40 +2,45 @@
 #include "CURL.h"
 #include "CURI.h"
 #include "Thread.h"
-#include "CFileHandler.h"
-#include "CFtpHandler.h"
-#include "CHttpHandler.h"
-#include "CHttpsHandler.h"
 #include "CSystem.h"
 #include "StringUtils.h"
+#include "Autolock.h"
+// #include "CFileHandler.h"
+// #include "CFtpHandler.h"
+// #include "CHttpHandler.h"
+// #include "CHttpsHandler.h"
 
+using Elastos::IO::EIID_ISerializable;
+using Elastos::Core::EIID_IComparable;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IClassLoader;
-using Elastos::Net::Url::CFileHandler;
-using Elastos::Net::Url::IFileHandler;
-using Elastos::Net::Url::CFtpHandler;
-using Elastos::Net::Url::IFtpHandler;
-using Elastos::Net::Http::CHttpHandler;
-using Elastos::Net::Http::IHttpHandler;
-using Elastos::Net::Http::CHttpsHandler;
-using Elastos::Net::Http::IHttpsHandler;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+// using Elastos::Net::Url::IFileHandler;
+// using Elastos::Net::Url::CFileHandler;
+// using Elastos::Net::Url::IFtpHandler;
+// using Elastos::Net::Url::CFtpHandler;
+// using Elastos::Net::Http::IHttpHandler;
+// using Elastos::Net::Http::CHttpHandler;
+// using Elastos::Net::Http::IHttpsHandler;
+// using Elastos::Net::Http::CHttpsHandler;
 
 namespace Elastos {
 namespace Net {
 
 HashMap<String, AutoPtr<IURLStreamHandler> > CURL::sStreamHandlers;
 AutoPtr<IURLStreamHandlerFactory> CURL::sStreamHandlerFactory;
-Mutex CURL::sLock;
+Object CURL::sLock;
 
 CAR_INTERFACE_IMPL_2(CURL, Object, IURL, ISerializable)
 
 CAR_OBJECT_IMPL(CURL)
 
 CURL::CURL()
-    : mHashCode(0)
-    , mPort(-1)
+    : mPort(-1)
+    , mHashCode(0)
 {}
 
 ECode CURL::constructor(
@@ -274,7 +279,7 @@ ECode CURL::constructor(
 ECode CURL::SetURLStreamHandlerFactory(
     /* [in] */ IURLStreamHandlerFactory* streamFactory)
 {
-    Mutex::Autolock lock(sLock);
+    Autolock lock(sLock);
 
     if (sStreamHandlerFactory != NULL) {
 //        throw new Error("Factory already set");
@@ -349,12 +354,15 @@ ECode CURL::SameFile(
     return mStreamHandler->SameFile((IURL*)this, otherURL, isSame);
 }
 
-Int32 CURL::GetHashCode()
+ECode CURL::GetHashCode(
+    /* [out] */ Int32 * hash)
 {
+    VALIDATE_NOT_NULL(hash)
     if (mHashCode == 0) {
         mStreamHandler->GetHashCode((IURL*)this, &mHashCode);
     }
-    return mHashCode;
+    *hash = mHashCode;
+    return NOERROR;
 }
 
 void CURL::SetupStreamHandler()
@@ -419,13 +427,13 @@ void CURL::SetupStreamHandler()
     mStreamHandler = NULL;
     // Fall back to a built-in stream handler if the user didn't supply one
     if (mProtocol.Equals("file")) {
-        CFileHandler::New((IFileHandler**)&mStreamHandler);
+        // CFileHandler::New((IFileHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("ftp")) {
-        CFtpHandler::New((IFtpHandler**)&mStreamHandler);
+        // CFtpHandler::New((IFtpHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("http")) {
-        CHttpHandler::New((IHttpHandler**)&mStreamHandler);
+        // CHttpHandler::New((IHttpHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("https")) {
-        CHttpsHandler::New((IHttpsHandler**)&mStreamHandler);
+        // CHttpsHandler::New((IHttpsHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("jar")) {
         //TODO : not implement.
         // CJarHandler::New((IURLStreamHandler**)&mStreamHandler);
@@ -597,10 +605,10 @@ ECode CURL::GetAuthority(
 ECode CURL::ToURILenient(
     /* [out] */ IURI** uri)
 {
-    if(mStreamHandler == NULL)
-    {
+    if (mStreamHandler == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     String handlerStr;
     mStreamHandler->ToExternalForm((IURL*)this, TRUE, &handlerStr);
     return CURI::New(handlerStr, uri);
@@ -631,14 +639,13 @@ ECode CURL::Set(
 ECode CURL::GetDefaultPort(
     /* [out] */ Int32* port)
 {
-    VALIDATE_NOT_NULL(port);
     return mStreamHandler->GetDefaultPort(port);
 }
 
 ECode CURL::ToString(
-    String* str)
+    /* [out] */ String* str)
 {
-    return NOERROR;
+    return ToExternalForm(str);
 }
 
 } // namespace Net

@@ -34,7 +34,7 @@ static AutoPtr<IFile> InitSYS_CLASS_NET()
     return (IFile*)file.Get();
 }
 
-const AutoPtr<IFile> SYS_CLASS_NET = InitSYS_CLASS_NET();
+const AutoPtr<IFile> NetworkInterface::SYS_CLASS_NET = InitSYS_CLASS_NET();
 
 CAR_INTERFACE_IMPL(NetworkInterface, Object, INetworkInterface)
 

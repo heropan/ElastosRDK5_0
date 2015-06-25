@@ -73,7 +73,7 @@ module
     merge("../elastosx/net/ssl/ISSLServerSocket.car");
     merge("../elastosx/net/ssl/ITrustManagerFactorySpi.car");
 
-
+    interface Elastos.Core.IComparable;
     interface Elastos.IO.ISerializable;
 
     namespace Elastos {
@@ -109,6 +109,160 @@ module
     singleton class CNetworkInterfaceHelper {
         interface INetworkInterfaceHelper;
     }
+
+    class CURI {
+        /* private */
+        constructor();
+
+        /**
+         * Creates a new URI instance by parsing {@code spec}.
+         *
+         * @param spec a URI whose illegal characters have all been encoded.
+         */
+        constructor(
+            [in] String spec);
+
+        /**
+         * Creates a new URI instance of the given unencoded component parts.
+         *
+         * @param scheme the URI scheme, or null for a non-absolute URI.
+         */
+        constructor(
+            [in] String scheme,
+            [in] String schemeSpecificPart,
+            [in] String fragment);
+
+        /**
+         * Creates a new URI instance of the given unencoded component parts.
+         *
+         * @param scheme the URI scheme, or null for a non-absolute URI.
+         */
+        constructor(
+            [in] String scheme,
+            [in] String userInfo,
+            [in] String host,
+            [in] Int32 port,
+            [in] String path,
+            [in] String query,
+            [in] String fragment);
+
+        /**
+         * Creates a new URI instance of the given unencoded component parts.
+         *
+         * @param scheme the URI scheme, or null for a non-absolute URI.
+         */
+        constructor(
+            [in] String scheme,
+            [in] String host,
+            [in] String path,
+            [in] String fragment);
+
+        /**
+         * Creates a new URI instance of the given unencoded component parts.
+         *
+         * @param scheme the URI scheme, or null for a non-absolute URI.
+         */
+        constructor(
+            [in] String scheme,
+            [in] String authority,
+            [in] String path,
+            [in] String query,
+            [in] String fragment);
+
+        interface IURI;
+        interface IComparable;
+        interface ISerializable;
+    }
+
+    class CURL {
+        /**
+         * Creates a new URL instance by parsing {@code spec}.
+         *
+         * @throws MalformedURLException if {@code spec} could not be parsed as a
+         *     URL.
+         */
+        constructor(
+            [in] String spec);
+
+        /**
+         * Creates a new URL by resolving {@code spec} relative to {@code context}.
+         *
+         * @param context the URL to which {@code spec} is relative, or null for
+         *     no context in which case {@code spec} must be an absolute URL.
+         * @throws MalformedURLException if {@code spec} could not be parsed as a
+         *     URL or has an unsupported protocol.
+         */
+        constructor(
+            [in] IURL* context,
+            [in] String spec);
+
+        /**
+         * Creates a new URL by resolving {@code spec} relative to {@code context}.
+         *
+         * @param context the URL to which {@code spec} is relative, or null for
+         *     no context in which case {@code spec} must be an absolute URL.
+         * @param handler the stream handler for this URL, or null for the
+         *     protocol's default stream handler.
+         * @throws MalformedURLException if the given string {@code spec} could not
+         *     be parsed as a URL or an invalid protocol has been found.
+         */
+        constructor(
+            [in] IURL* context,
+            [in] String spec,
+            [in] IURLStreamHandler* handler);
+
+        /**
+         * Creates a new URL of the given component parts. The URL uses the
+         * protocol's default port.
+         *
+         * @throws MalformedURLException if the combination of all arguments do not
+         *     represent a valid URL or if the protocol is invalid.
+         */
+        constructor(
+            [in] String protocol,
+            [in] String host,
+            [in] String file);
+
+        /**
+         * Creates a new URL of the given component parts. The URL uses the
+         * protocol's default port.
+         *
+         * @param host the host name or IP address of the new URL.
+         * @param port the port, or {@code -1} for the protocol's default port.
+         * @param file the name of the resource.
+         * @throws MalformedURLException if the combination of all arguments do not
+         *     represent a valid URL or if the protocol is invalid.
+         */
+        constructor(
+            [in] String protocol,
+            [in] String host,
+            [in] Int32 port,
+            [in] String file);
+
+        /**
+         * Creates a new URL of the given component parts. The URL uses the
+         * protocol's default port.
+         *
+         * @param host the host name or IP address of the new URL.
+         * @param port the port, or {@code -1} for the protocol's default port.
+         * @param file the name of the resource.
+         * @param handler the stream handler for this URL, or null for the
+         *     protocol's default stream handler.
+         * @throws MalformedURLException if the combination of all arguments do not
+         *     represent a valid URL or if the protocol is invalid.
+         */
+        constructor(
+            [in] String protocol,
+            [in] String host,
+            [in] Int32 port,
+            [in] String file,
+            [in] IURLStreamHandler* handler);
+
+        interface IURL;
+        interface ISerializable;
+    }
+
+
 
     } //Net
     } // Elastos

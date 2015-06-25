@@ -22,4 +22,5 @@ module
     const E_SOCKET_CLOSE_EXCEPTION                          = 0xAB0D0000;
     const E_MALFORMED_REPLY_EXCEPTION                       = 0xAB0E0000;
     const E_INVALID_SOCKET_EXCEPTION                        = 0xAB0F0000;
+    const E_UNKNOWN_HOST_EXCEPTION                          = 0xAB100000;
 }

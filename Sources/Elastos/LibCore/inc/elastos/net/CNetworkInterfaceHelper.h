@@ -1,8 +1,10 @@
 #ifndef __ELASTOS_NET_CNETWORKINTERFACEHELPER_H__
 #define __ELASTOS_NET_CNETWORKINTERFACEHELPER_H__
 
-#include <_CNetworkInterfaceHelper.h>
+#include "_Elastos_Net_CNetworkInterfaceHelper.h"
 #include "Singleton.h"
+
+using Elastos::Utility::IEnumeration;
 
 namespace Elastos {
 namespace Net {
