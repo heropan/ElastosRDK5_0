@@ -106,6 +106,10 @@ module
         interface ISerializable;
     }
 
+    singleton class CNetworkInterfaceHelper {
+        interface INetworkInterfaceHelper;
+    }
+
     } //Net
     } // Elastos
 }

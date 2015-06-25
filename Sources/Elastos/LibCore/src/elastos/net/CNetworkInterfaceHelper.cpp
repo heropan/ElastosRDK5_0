@@ -1,7 +1,6 @@
 
-#include <cmdef.h>
 #include <CNetworkInterfaceHelper.h>
-#include <NetworkInterface.h>
+#include "NetworkInterface.h"
 
 namespace Elastos {
 namespace Net {

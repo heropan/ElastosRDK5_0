@@ -1,45 +1,40 @@
 
 #include "NetworkInterface.h"
 #include "CFile.h"
-#include "IoUtils.h"
-#include "CBufferedReader.h"
-#include "CFileReader.h"
+#include "Collections.h"
+ #include "IoUtils.h"
+#include "CLibcore.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
 #include "CInet4Address.h"
 #include "CInet6Address.h"
 #include "InterfaceAddress.h"
-#include "CLibcore.h"
-#include "CCollections.h"
 #include "CArrayList.h"
 #include "Arrays.h"
-
 #include <net/if.h>
-#include <sys/socket.h>
-#include <linux/sockios.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CObjectContainer;
-using Elastos::IO::IFile;
 using Elastos::IO::CFile;
-using Elastos::IO::IoUtils;
-using Elastos::IO::CBufferedReader;
-using Elastos::IO::IBufferedReader;
-using Elastos::IO::CFileReader;
-using Elastos::IO::IFileReader;
-using Elastos::IO::ICloseable;
+using Libcore::IO::IoUtils;
 using Libcore::IO::IOs;
-using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
-using Elastos::Utility::ICollections;
-using Elastos::Utility::CCollections;
-using Elastos::Utility::IArrayList;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::Collections;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Net {
+
+static AutoPtr<IFile> InitSYS_CLASS_NET()
+{
+    AutoPtr<CFile> file;
+    CFile::NewByFriend(String("/sys/class/net"), (CFile**)&file);
+    return (IFile*)file.Get();
+}
+
+const AutoPtr<IFile> SYS_CLASS_NET = InitSYS_CLASS_NET();
 
 CAR_INTERFACE_IMPL(NetworkInterface, Object, INetworkInterface)
 
@@ -55,13 +50,16 @@ NetworkInterface::NetworkInterface(
     /* [in] */ IList * interfaceAddresses)
     : mName(name)
     , mInterfaceIndex(interfaceIndex)
+    , mInterfaceAddresses(interfaceAddresses)
+    , mAddresses(addresses)
 {
-    mAddresses = addresses;
-    mInterfaceAddresses = interfaceAddresses;
 }
 
 NetworkInterface::~NetworkInterface()
 {
+    mAddresses = NULL;
+    mInterfaceAddresses = NULL;
+    mChildren = NULL;
 }
 
 ECode NetworkInterface::constructor(
@@ -74,6 +72,7 @@ ECode NetworkInterface::constructor(
     mInterfaceIndex = interfaceIndex;
     mAddresses = addresses;
     mInterfaceAddresses = interfaceAddresses;
+    return NOERROR;
 }
 
 AutoPtr<INetworkInterface> NetworkInterface::ForUnboundMulticastSocket()
@@ -84,9 +83,9 @@ AutoPtr<INetworkInterface> NetworkInterface::ForUnboundMulticastSocket()
     outarr->Set(0, CInet6Address::ANY);
     AutoPtr<IList> outlist1;
     Arrays::AsList(outarr, (IList**)&outlist1);
-    AutoPtr<IList> outlist2;
-    CCollections::_GetEmptyList((IList**)&outlist2);
-    return new NetworkInterface(String(NULL), -1, outlist1, outlist2);
+    AutoPtr<IList> outlist2 = Collections::EMPTY_LIST;
+    AutoPtr<INetworkInterface> ni = new NetworkInterface(String(NULL), -1, outlist1, outlist2);
+    return ni;
 }
 
 ECode NetworkInterface::GetIndex(
@@ -108,8 +107,7 @@ ECode NetworkInterface::GetName(
 ECode NetworkInterface::GetInetAddresses(
     /* [out] */ IEnumeration** addresses)
 {
-    VALIDATE_NOT_NULL(addresses);
-    // return CCollections::_NewEnumeration(mAddresses, addresses);
+    return Collections::Enumeration(ICollection::Probe(mAddresses), addresses);
 }
 
 ECode NetworkInterface::GetDisplayName(
@@ -117,56 +115,6 @@ ECode NetworkInterface::GetDisplayName(
 {
     VALIDATE_NOT_NULL(name);
     *name = mName;
-    return NOERROR;
-}
-
-ECode NetworkInterface::Equals(
-    /* [in] */  IInterface* obj,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-
-    INetworkInterface* otherni = INetworkInterface::Probe(obj);
-    if (otherni == NULL) {
-        return NOERROR;
-    }
-
-    NetworkInterface* rhs = (NetworkInterface*)otherni;
-    if(rhs == this) {
-        *result = TRUE;
-        return NOERROR;
-    }
-
-    *result = (rhs->mInterfaceIndex == mInterfaceIndex)
-        && (rhs->mName == mName)
-        && (rhs->mAddresses == mAddresses);
-    return NOERROR;
-}
-
-ECode NetworkInterface::ToString(
-    /* [out] */ String* str)
-{
-    VALIDATE_NOT_NULL(str);
-    StringBuilder sb(25);
-    sb.AppendChar('[');
-    sb.Append(mName);
-    sb.Append("][");
-    sb.Append(mInterfaceIndex);
-    sb.AppendChar(']');
-
-    AutoPtr<IIterator> outiter;
-    mAddresses->GetIterator((IIterator**)&outiter);
-    Boolean hasNext;
-    while (outiter->HasNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> address;
-        outiter->Next((IInterface**)&address);
-        String sAddress = Object::ToString(address);
-        sb.AppendChar(']');
-        sb.Append(sAddress);
-        sb.AppendChar(']');
-    }
-    *str = sb.ToString();
     return NOERROR;
 }
 
@@ -185,58 +133,193 @@ ECode NetworkInterface::GetByName(
         return NOERROR;
     }
 
+    AutoPtr<ArrayOf<String> > lines;
+    FAIL_RETURN(ReadIfInet6Lines((ArrayOf<String> **)&lines))
+    return GetByNameInternal(interfaceName, lines, networkInterface);
+}
+
+ECode NetworkInterface::GetByNameInternal(
+    /* [in] */ const String& interfaceName,
+    /* [in] */ ArrayOf<String> * ifInet6Lines,
+    /* [out] */ INetworkInterface** networkInterface)
+{
     StringBuilder sb("/sys/class/net/");
     sb.Append(interfaceName);
     sb.Append("/ifindex");
-    Int32 interfaceIndex = ReadIntFile(sb.ToString());
+    Int32 interfaceIndex;
+    FAIL_RETURN(ReadIntFile(sb.ToString(), &interfaceIndex))
 
     AutoPtr<IList> addresses;
     AutoPtr<IList> interfaceAddresses;
-    // CArrayList::New((IArrayList**)&addresses);
-    // CArrayList::New((IArrayList**)&interfaceAddresses);
-    CollectIpv6Addresses(interfaceName, interfaceIndex, addresses, interfaceAddresses);
+    CArrayList::New((IList**)&addresses);
+    CArrayList::New((IList**)&interfaceAddresses);
+    CollectIpv6Addresses(interfaceName, interfaceIndex, addresses, interfaceAddresses, ifInet6Lines);
     CollectIpv4Addresses(interfaceName, addresses, interfaceAddresses);
 
-    *networkInterface = (INetworkInterface*)(new NetworkInterface(interfaceName, interfaceIndex, addresses, interfaceAddresses));
+    AutoPtr<INetworkInterface> ni = new NetworkInterface(
+        interfaceName, interfaceIndex, addresses, interfaceAddresses);
+    *networkInterface = ni;
     REFCOUNT_ADD(*networkInterface);
     return NOERROR;
 }
 
-ECode NetworkInterface::FindAddress(
-    /* [in] */ IInetAddress* address,
-    /* [out] */ Boolean* found)
+ECode NetworkInterface::ReadIfInet6Lines(
+    /* [out, callee] */ ArrayOf<String> ** lines)
 {
-    VALIDATE_NOT_NULL(found);
-    AutoPtr<IIterator> em;
-    mAddresses->GetIterator((IIterator**)&em);
-    Boolean hasNext;
-    Boolean equals;
-    while (em->HasNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> add;
-        em->Next((IInterface**)&add);
-        if (Object::Equals(add, address))
-            break;
+    VALIDATE_NOT_NULL(lines)
+    // try {
+    String result;
+    ECode ec = IoUtils::ReadFileAsString(String("/proc/net/if_inet6"), &result);
+    if (ec == E_IO_EXCEPTION) {
+        return E_SOCKET_EXCEPTION;
     }
-    *found = hasNext;
-    return NOERROR;
+    return StringUtils::Split(result, String("\n"), lines);
+    // } catch (IOException ioe) {
+        // throw rethrowAsSocketException(ioe);
+    // }
 }
 
-ECode NetworkInterface::GetChildren(
-    /* [out] */ IList** children)
+ECode NetworkInterface::CollectIpv6Addresses(
+    /* [in] */ const String& interfaceName,
+    /* [in] */ Int32 interfaceIndex,
+    /* [in] */ IList* addresses,
+    /* [in] */ IList* interfaceAddresses,
+    /* [in] */ ArrayOf<String> * ifInet6Lines)
 {
-    VALIDATE_NOT_NULL(children);
-    *children = mChildren;
-    REFCOUNT_ADD(*children);
-    return NOERROR;
+    // Format of /proc/net/if_inet6.
+    // All numeric fields are implicit hex,
+    // but not necessarily two-digit (http://code.google.com/p/android/issues/detail?id=34022).
+    // 1. IPv6 address
+    // 2. interface index
+    // 3. prefix length
+    // 4. scope
+    // 5. flags
+    // 6. interface name
+    // "00000000000000000000000000000001 01 80 10 80       lo"
+    // "fe800000000000000000000000000000 407 40 20 80    wlan0"
+    String suffix = String(" ") + interfaceName;
+    ECode ec = NOERROR;
+    for (Int32 i = 0; i < ifInet6Lines->GetLength(); ++i) {
+        String line = (*ifInet6Lines)[i];
+        if (!line.EndWith(suffix)) {
+            continue;
+        }
+
+        // Extract the IPv6 address.
+        AutoPtr<ArrayOf<Byte> > addressBytes = ArrayOf<Byte>::Alloc(16);
+        for (Int32 i = 0; i < addressBytes->GetLength(); ++i) {
+            Int32 value;
+            ec = StringUtils::Parse(line.Substring(2*i, 2*i + 2), 16, &value);
+            if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
+                return E_SOCKET_EXCEPTION;
+            }
+            (*addressBytes)[i] = (Byte)value;
+        }
+
+        // Extract the prefix length.
+        // Skip the IPv6 address and its trailing space.
+        Int32 prefixLengthStart = 32 + 1;
+        // Skip the interface index and its trailing space.
+        prefixLengthStart = line.IndexOf(' ', prefixLengthStart) + 1;
+        Int32 prefixLengthEnd = line.IndexOf(' ', prefixLengthStart);
+        Int16 prefixLength;
+        ec = StringUtils::Parse(line.Substring(prefixLengthStart, prefixLengthEnd), 16, &prefixLength);
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
+            return E_SOCKET_EXCEPTION;
+        }
+
+        AutoPtr<IInetAddress> inet6Address;
+        CInet6Address::New(addressBytes, String(NULL), interfaceIndex, (IInetAddress**)&inet6Address);
+        addresses->Add(inet6Address);
+        AutoPtr<InterfaceAddress> addres = new InterfaceAddress(inet6Address, prefixLength);
+        interfaceAddresses->Add(TO_IINTERFACE(addres));
+    }
+
+    return ec;
 }
 
-ECode NetworkInterface::GetAddresses(
-    /* [out] */ IList** addresses)
+ECode NetworkInterface::CollectIpv4Addresses(
+    /* [in] */ const String& interfaceName,
+    /* [in] */ IList* addresses,
+    /* [in] */ IList* interfaceAddresses)
 {
-    VALIDATE_NOT_NULL(addresses);
-    *addresses = mAddresses;
-    REFCOUNT_ADD(*addresses);
-    return NOERROR;
+    AutoPtr<IFileDescriptor> fd;
+    Boolean isEquals;
+    AutoPtr<IInetAddress> address;
+    AutoPtr<IInetAddress> broadcast;
+    AutoPtr<IInetAddress> netmask;
+    AutoPtr<InterfaceAddress> ia;
+
+    ECode ec = NOERROR;
+    ec = CLibcore::sOs->Socket(AF_INET, SOCK_DGRAM, 0, (IFileDescriptor**)&fd);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = (CLibcore::sOs->IoctlInetAddress(fd, SIOCGIFADDR, interfaceName, (IInetAddress**)&address));
+    FAIL_GOTO(ec, _EXIT_)
+    ec = (CLibcore::sOs->IoctlInetAddress(fd, SIOCGIFBRDADDR, interfaceName, (IInetAddress**)&broadcast));
+    FAIL_GOTO(ec, _EXIT_)
+    ec = (CLibcore::sOs->IoctlInetAddress(fd, SIOCGIFNETMASK, interfaceName, (IInetAddress**)&netmask));
+    FAIL_GOTO(ec, _EXIT_)
+
+    isEquals = Object::Equals(broadcast, CInet4Address::ANY);
+    if (isEquals) {
+        broadcast = NULL;
+    }
+
+    addresses->Add(address);
+    ia = new InterfaceAddress(address, broadcast, netmask);
+    interfaceAddresses->Add(TO_IINTERFACE(ia));
+
+_EXIT_:
+    IoUtils::CloseQuietly(fd);
+
+    if (FAILED(ec)) {
+        return E_SOCKET_EXCEPTION;
+    }
+    return ec;
+}
+
+Boolean NetworkInterface::IsValidInterfaceName(
+    /* [in] */ const String& interfaceName)
+{
+    AutoPtr<ArrayOf<String> > files;
+    SYS_CLASS_NET->List((ArrayOf<String>**)&files);
+    if (files == NULL) {
+        return FALSE;
+    }
+
+    for(Int32 i = 0; i < files->GetLength(); ++i) {
+        if((*files)[i].Equals(interfaceName))
+            return TRUE;
+    }
+    return FALSE;
+}
+
+ECode NetworkInterface::ReadIntFile(
+    /* [in] */ const String& path,
+    /* [out] */ Int32 * value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = -1;
+
+    String s;
+    ECode ec = IoUtils::ReadFileAsString(path, &s);
+    FAIL_GOTO(ec, _EXIT_)
+
+    s= s.Trim();
+    if(s.StartWith(String("0x"))) {
+        FAIL_GOTO(StringUtils::Parse(s.Substring(2), 16, value), _EXIT_)
+    }
+    else {
+        FAIL_GOTO(StringUtils::Parse(s, value), _EXIT_)
+    }
+
+_EXIT_:
+    if (FAILED(ec)) {
+        return E_SOCKET_EXCEPTION;
+    }
+
+    return ec;
 }
 
 ECode NetworkInterface::GetByInetAddress(
@@ -244,94 +327,45 @@ ECode NetworkInterface::GetByInetAddress(
     /* [out] */ INetworkInterface** networkInterface)
 {
     VALIDATE_NOT_NULL(networkInterface);
-    if(address == NULL) {
+    *networkInterface = NULL;
+
+    if (address == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
+
     AutoPtr<IList> em = GetNetworkInterfacesList();
-    AutoPtr<IIterator> outiter;
-    em->GetIterator((IIterator**)&outiter);
-    Boolean hasNext;
-    while(outiter->HasNext(&hasNext), hasNext) {
-        AutoPtr<INetworkInterface> net;
-        outiter->Next((IInterface**)&net);
-        Boolean found;
-        AutoPtr<IList> outlist;
-        net->GetAddresses((IList**)&outlist);
-        if(outlist->Contains(address, &found), found) {
+    AutoPtr<IIterator> it;
+    IIterable::Probe(em)->GetIterator((IIterator**)&it);
+
+    Boolean hasNext, found;
+    while(it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        NetworkInterface* net = (NetworkInterface*)INetworkInterface::Probe(obj);
+        if (ICollection::Probe(net->mAddresses)->Contains(address, &found), found) {
             *networkInterface = net;
             REFCOUNT_ADD(*networkInterface);
             return NOERROR;
         }
     }
-    *networkInterface = NULL;
+
     return NOERROR;
 }
 
-AutoPtr<IList> NetworkInterface::GetNetworkInterfacesList()
+ECode NetworkInterface::GetByIndex(
+    /* [in] */ Int32 index,
+    /* [out] */ INetworkInterface** networkInterface)
 {
-    AutoPtr<IFile> file;
-    AutoPtr<ArrayOf<String> > interfaceNames;
-    CFile::New(String("/sys/class/net"),(IFile**)&file);
-    file->List((ArrayOf<String>**)&interfaceNames);
+    VALIDATE_NOT_NULL(networkInterface);
+    *networkInterface = NULL;
 
-    AutoPtr<ArrayOf<INetworkInterface*> > interfaces =
-            ArrayOf<INetworkInterface*>::Alloc(interfaceNames->GetLength());
-
-    AutoPtr<ArrayOf<Boolean> > done =
-            ArrayOf<Boolean>::Alloc(interfaceNames->GetLength());
-
-    for(Int32 i = 0; i < interfaceNames->GetLength(); ++i) {
-        (*done)[i] = FALSE;
-        AutoPtr<INetworkInterface> temp;
-        GetByName((*interfaceNames)[i], (INetworkInterface**)&temp);
-        interfaces->Set(i, temp);
-        if((*interfaces)[i] == NULL)
-            (*done)[i] = TRUE;
+    String name;
+    CLibcore::sOs->If_indextoname(index, &name);
+    if (name.IsNull()) {
+        return NOERROR;
     }
 
-    AutoPtr<IList> result;
-    CArrayList::New((IArrayList**)&result);
-
-    for(Int32 counter1 = 0; counter1 < interfaces->GetLength(); counter1++) {
-        // If this interface has been dealt with already, continue.
-        if ((*done)[counter1]) {
-            continue;
-        }
-
-        Int32 counter2 = counter1;
-        Boolean hasNext = FALSE;
-        // Checks whether the following interfaces are children.
-        for (; counter2 < interfaces->GetLength(); counter2++) {
-            if ((*done)[counter2]) {
-                continue;
-            }
-
-            String name1;
-            String name2;
-            (*interfaces)[counter1]->GetName(&name1);
-            (*interfaces)[counter2]->GetName(&name2);
-
-            if (name2.StartWith(name1 + ":") ) {
-                AutoPtr<IList> children1;
-                AutoPtr<INetworkInterface> parent2;
-                AutoPtr<IList> addresses1;
-                AutoPtr<IList> addresses2;
-                (*interfaces)[counter1]->GetChildren((IList**)&children1);
-                (*interfaces)[counter2]->GetParent((INetworkInterface**)&parent2);
-                (*interfaces)[counter1]->GetAddresses((IList**)&addresses1);
-                (*interfaces)[counter2]->GetAddresses((IList**)&addresses2);
-
-                children1->Add((*interfaces)[counter2], &hasNext);
-                parent2 = (*interfaces)[counter1];
-                addresses1->AddAll(addresses2, &hasNext);
-                (*done)[counter2] = TRUE;
-              }
-        }
-        result->Add((*interfaces)[counter1], &hasNext);
-        (*done)[counter1] = TRUE;
-    }
-    return result;
-
+    return GetByName(name, networkInterface);
 }
 
 ECode NetworkInterface::GetNetworkInterfaces(
@@ -340,40 +374,131 @@ ECode NetworkInterface::GetNetworkInterfaces(
     VALIDATE_NOT_NULL(enumerator);
 
     AutoPtr<IList> interfaces = GetNetworkInterfacesList();
-    return CCollections::_NewEnumeration(interfaces, enumerator);
+    return Collections::Enumeration(ICollection::Probe(interfaces), enumerator);
 }
 
-ECode NetworkInterface::GetByIndex(
-    /* [in] */ Int32 index,
-    /* [out] */ INetworkInterface** networkInterface)
+AutoPtr<IList> NetworkInterface::GetNetworkInterfacesList()
 {
-    VALIDATE_NOT_NULL(networkInterface);
-    char buf[IF_NAMESIZE];
-    char* name = if_indextoname(index, buf);
-    if(name == NULL) {
-        *networkInterface = NULL;
+    AutoPtr<ArrayOf<String> > interfaceNames;
+    SYS_CLASS_NET->List((ArrayOf<String>**)&interfaceNames);
+
+    AutoPtr<ArrayOf<INetworkInterface*> > interfaces =
+        ArrayOf<INetworkInterface*>::Alloc(interfaceNames->GetLength());
+
+    AutoPtr<ArrayOf<Boolean> > done =
+        ArrayOf<Boolean>::Alloc(interfaceNames->GetLength());
+
+    AutoPtr<ArrayOf<String> > ifInet6Lines;
+    ReadIfInet6Lines((ArrayOf<String> **)&ifInet6Lines);
+
+    for (Int32 i = 0; i < interfaceNames->GetLength(); ++i) {
+        AutoPtr<INetworkInterface> temp;
+        GetByNameInternal((*interfaceNames)[i], ifInet6Lines, (INetworkInterface**)&temp);
+        interfaces->Set(i, temp);
+        // http://b/5833739: getByName can return null if the interface went away between our
+        // readdir(2) and our stat(2), so mark interfaces that disappeared as 'done'.
+        if (temp == NULL)
+            (*done)[i] = TRUE;
+    }
+
+    AutoPtr<IList> result;
+    CArrayList::New((IList**)&result);
+
+    for (Int32 counter1 = 0; counter1 < interfaces->GetLength(); counter1++) {
+        // If this interface has been dealt with already, continue.
+        if ((*done)[counter1]) {
+            continue;
+        }
+
+        NetworkInterface* i1 =  (NetworkInterface*)(*interfaces)[counter1];
+        // Checks whether the following interfaces are children.
+        for (Int32 counter2 = counter1; counter2 < interfaces->GetLength(); counter2++) {
+            if ((*done)[counter2]) {
+                continue;
+            }
+
+            NetworkInterface* i2 =  (NetworkInterface*)(*interfaces)[counter2];
+            if (i2->mName.StartWith(i1->mName + ":") ) {
+                ICollection::Probe(i1->mChildren)->Add((*interfaces)[counter2]);
+                i2->mParent = i1;
+                ICollection::Probe(i1->mAddresses)->AddAll(ICollection::Probe(i2->mAddresses));
+                (*done)[counter2] = TRUE;
+            }
+        }
+
+        result->Add((*interfaces)[counter1]);
+        (*done)[counter1] = TRUE;
+    }
+    return result;
+}
+
+ECode NetworkInterface::Equals(
+    /* [in] */  IInterface* obj,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
+    INetworkInterface* otherni = INetworkInterface::Probe(obj);
+    if (otherni == NULL) {
         return NOERROR;
     }
-    GetByName(String(name), networkInterface);
+
+    NetworkInterface* rhs = (NetworkInterface*)otherni;
+    if (rhs == this) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    *result = (rhs->mInterfaceIndex == mInterfaceIndex)
+        && rhs->mName.Equals(mName)
+        && Object::Equals(rhs->mAddresses, mAddresses);
+    return NOERROR;
+}
+
+ECode NetworkInterface::GetHashCode(
+    /*  [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mName.GetHashCode();
+    return NOERROR;
+}
+
+ECode NetworkInterface::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    StringBuilder sb(25);
+    sb.AppendChar('[');
+    sb.Append(mName);
+    sb.Append("][");
+    sb.Append(mInterfaceIndex);
+    sb.AppendChar(']');
+
+    AutoPtr<IIterator> outiter;
+    IIterable::Probe(mAddresses)->GetIterator((IIterator**)&outiter);
+    Boolean hasNext;
+    while (outiter->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> address;
+        outiter->GetNext((IInterface**)&address);
+        sb.AppendChar(']');
+        sb.Append(Object::ToString(address));
+        sb.AppendChar(']');
+    }
+    *str = sb.ToString();
     return NOERROR;
 }
 
 ECode NetworkInterface::GetInterfaceAddresses(
     /* [out] */ IList** addresses)
 {
-    VALIDATE_NOT_NULL(addresses);
-    *addresses = mInterfaceAddresses;
-    REFCOUNT_ADD(*addresses)
-
-    return NOERROR;
+    return Collections::NewUnmodifiableList(mInterfaceAddresses, addresses);
 }
 
 ECode NetworkInterface::GetSubInterfaces(
     /* [out] */ IEnumeration** subInterfaces)
 {
-    VALIDATE_NOT_NULL(subInterfaces);
-
-    return CCollections::_NewEnumeration(mChildren, subInterfaces);
+    return Collections::Enumeration(ICollection::Probe(mChildren), subInterfaces);
 }
 
 ECode NetworkInterface::GetParent(
@@ -417,16 +542,35 @@ ECode NetworkInterface::SupportsMulticast(
     return NOERROR;
 }
 
+Boolean NetworkInterface::HasFlag(
+    /* [in] */ Int32 mask)
+{
+    Int32 flags;
+    ReadIntFile(String("/sys/class/net/") + mName + String("/flags"), &flags);
+    return (flags & mask) != 0;
+}
+
 ECode NetworkInterface::GetHardwareAddress(
     /* [out, callee] */ ArrayOf<Byte>** address)
 {
     VALIDATE_NOT_NULL(address);
+    *address = NULL;
+
     String s;
-    IoUtils::ReadFileAsString(String("/sys/class/net/") + mName + String("/address"), &s);
+    ECode ec = IoUtils::ReadFileAsString(String("/sys/class/net/") + mName + String("/address"), &s);
+    if (FAILED(ec)) {
+        return E_SOCKET_EXCEPTION;
+    }
+
     AutoPtr<ArrayOf<Byte> > result = ArrayOf<Byte>::Alloc(s.GetLength()/3);
-    for(Int32 i = 0; i < result->GetLength(); ++i)
-    {
-        (*result)[i] = (Byte)(StringUtils::ParseInt32(s.Substring(3*i, 3*i + 2), 16));
+    for (Int32 i = 0; i < result->GetLength(); ++i) {
+        Int32 value;
+        ec = StringUtils::Parse(s.Substring(3*i, 3*i + 2), 16, &value);
+        if (FAILED(ec)) {
+            return E_SOCKET_EXCEPTION;
+        }
+
+        (*result)[i] = (Byte)(value);
     }
 
     // We only want to return non-zero hardware addresses.
@@ -437,16 +581,14 @@ ECode NetworkInterface::GetHardwareAddress(
             return NOERROR;
         }
     }
-    *address = NULL;
+
     return NOERROR;
 }
 
 ECode NetworkInterface::GetMTU(
     /* [out] */ Int32* mtu)
 {
-    VALIDATE_NOT_NULL(mtu);
-    ReadIntFile(String("/sys/class/net/") + mName + String("/mtu"));
-    return NOERROR;
+    return ReadIntFile(String("/sys/class/net/") + mName + String("/mtu"), mtu);
 }
 
 ECode NetworkInterface::IsVirtual(
@@ -455,112 +597,6 @@ ECode NetworkInterface::IsVirtual(
     VALIDATE_NOT_NULL(isvirtual);
     *isvirtual = (mParent!= NULL);
     return NOERROR;
-}
-
-ECode NetworkInterface::CollectIpv6Addresses(
-    /* [in] */ const String& interfaceName,
-    /* [in] */ Int32 interfaceIndex,
-    /* [in] */ IList* addresses,
-    /* [in] */ IList* interfaceAddresses)
-{
-    AutoPtr<IBufferedReader> in;
-    AutoPtr<IFileReader> fileReader;
-    CFileReader::New(String("/proc/net/if_inet6"), (IFileReader**)&fileReader);
-    CBufferedReader::New(fileReader, (IBufferedReader**)&in);
-    String suffix = String(" ") + interfaceName;
-    String line;
-    while (in->ReadLine(&line), !line.IsNull()) {
-        if (!line.EndWith(suffix)) {
-            continue;
-        }
-
-        // Extract the IPv6 address.
-        AutoPtr<ArrayOf<Byte> > addressBytes = ArrayOf<Byte>::Alloc(16);
-        for (Int32 i = 0; i < addressBytes->GetLength(); ++i) {
-            (*addressBytes)[i] = (Byte) (StringUtils::ParseInt32(line.Substring(2*i, 2*i + 2), 16));
-        }
-
-        // Extract the prefix length.
-        // Skip the IPv6 address and its trailing space.
-        Int32 prefixLengthStart = 32 + 1;
-        // Skip the interface index and its trailing space.
-        prefixLengthStart = line.IndexOf(' ', prefixLengthStart) + 1;
-        Int32 prefixLengthEnd = line.IndexOf(' ', prefixLengthStart);
-        Int32 prefixLength = StringUtils::ParseInt32(line.Substring(prefixLengthStart, prefixLengthEnd), 16);
-
-        AutoPtr<IInet6Address> inet6Address;
-        CInet6Address::New(addressBytes, String(NULL), interfaceIndex, (IInet6Address**)&inet6Address);
-        Boolean isflag = FALSE;
-        addresses->Add(inet6Address, &isflag);
-        AutoPtr<InterfaceAddress> addres = new InterfaceAddress(inet6Address, prefixLength);
-        interfaceAddresses->Add(addres, &isflag);
-    }
-    if(ICloseable::Probe(in)) {
-        IoUtils::CloseQuietly(ICloseable::Probe(in));
-    }
-    return NOERROR;
-}
-
-ECode NetworkInterface::CollectIpv4Addresses(
-    /* [in] */ const String& interfaceName,
-    /* [in] */ IList* addresses,
-    /* [in] */ IList* interfaceAddresses)
-{
-    Int32 fdInt;
-    FAIL_RETURN(CLibcore::sOs->Socket(AF_INET, SOCK_DGRAM, 0, &fdInt));
-
-    AutoPtr<IInetAddress> address;
-    AutoPtr<IInetAddress> broadcast;
-    AutoPtr<IInetAddress> netmask;
-
-    FAIL_RETURN(CLibcore::sOs->IoctlInetAddress(fdInt, SIOCGIFADDR, interfaceName, (IInetAddress**)&address));
-    FAIL_RETURN(CLibcore::sOs->IoctlInetAddress(fdInt, SIOCGIFBRDADDR, interfaceName, (IInetAddress**)&broadcast));
-    FAIL_RETURN(CLibcore::sOs->IoctlInetAddress(fdInt, SIOCGIFNETMASK, interfaceName, (IInetAddress**)&netmask));
-    Boolean isEquals;
-    broadcast->Equals(CInet4Address::ANY, &isEquals);
-    if(isEquals) {
-        broadcast = NULL;
-    }
-    Boolean isflag = FALSE;
-    addresses->Add(address, &isflag);
-    AutoPtr<InterfaceAddress> ia = new InterfaceAddress(address, broadcast, netmask);
-    interfaceAddresses->Add(ia, &isflag);
-    return NOERROR;
-}
-
-Boolean NetworkInterface::IsValidInterfaceName(
-    /* [in] */ const String& interfaceName)
-{
-    AutoPtr<IFile> file;
-    CFile::New(String("/sys/class/net"), (IFile**)&file);
-    AutoPtr<ArrayOf<String> > files;
-    file->List((ArrayOf<String>**)&files);
-    for(Int32 i = 0; i < files->GetLength(); ++i) {
-        if((*files)[i] == interfaceName)
-            return TRUE;
-    }
-    return FALSE;
-}
-
-Int32 NetworkInterface::ReadIntFile(
-    /* [in] */ const String& path)
-{
-    String s;
-    FAIL_RETURN(IoUtils::ReadFileAsString(path, &s);)
-    s= s.Trim();
-    if(s.StartWith(String("0x"))) {
-        return StringUtils::ParseInt32(s.Substring(2), 16);
-    }
-    else {
-        return StringUtils::ParseInt32(s);
-    }
-}
-
-Boolean NetworkInterface::HasFlag(
-    /* [in] */ Int32 mask)
-{
-    Int32 flags = ReadIntFile(String("/sys/class/net/") + mName + String("/flags"));
-    return (flags & mask) != 0;
 }
 
 } // namespace Net

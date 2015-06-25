@@ -6,8 +6,8 @@
 #include "CFtpHandler.h"
 #include "CHttpHandler.h"
 #include "CHttpsHandler.h"
-#include <elastos/CSystem.h>
-#include <elastos/core/StringUtils.h>
+#include "CSystem.h"
+#include "StringUtils.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

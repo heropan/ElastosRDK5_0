@@ -84,7 +84,7 @@ module
      *            the collection to enumerate.
      * @return an Enumeration.
      */
-    NewEnumeration(
+    Enumeration(
         [in] ICollection* collection,
         [out] IEnumeration** result);
 

@@ -1,6 +1,6 @@
 
 #include "SocketImpl.h"
-#include <elastos/core/StringUtils.h>
+#include "StringUtils.h"
 
 using Elastos::Core::StringUtils;
 

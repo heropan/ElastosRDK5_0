@@ -13,6 +13,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/net;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../inc/droid/system;
 
 SOURCES = CIDN.cpp
@@ -21,5 +22,6 @@ SOURCES += InetAddress.cpp
 SOURCES += Inet4Address.cpp
 SOURCES += Inet6Address.cpp
 SOURCES += InterfaceAddress.cpp
-#SOURCES += NetworkInterface.cpp
+SOURCES += NetworkInterface.cpp
+SOURCES += CNetworkInterfaceHelper.cpp
 SOURCES += net.cpp

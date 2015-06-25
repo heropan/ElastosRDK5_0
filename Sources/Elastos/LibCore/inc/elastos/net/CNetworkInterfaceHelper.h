@@ -2,9 +2,7 @@
 #define __ELASTOS_NET_CNETWORKINTERFACEHELPER_H__
 
 #include <_CNetworkInterfaceHelper.h>
-#include <NetworkInterface.h>
 #include "Singleton.h"
-
 
 namespace Elastos {
 namespace Net {

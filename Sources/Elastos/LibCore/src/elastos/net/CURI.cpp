@@ -3,9 +3,9 @@
 #include "InetAddress.h"
 #include "CURL.h"
 #include "UrlUtils.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/core/Character.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "Character.h"
 
 namespace Elastos {
 namespace Net {

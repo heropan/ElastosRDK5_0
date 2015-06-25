@@ -4,9 +4,9 @@
 #include "CHttpCookie.h"
 #include "CCookiePolicyHelper.h"
 #include "CCollections.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/Math.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "Math.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::ICollections;

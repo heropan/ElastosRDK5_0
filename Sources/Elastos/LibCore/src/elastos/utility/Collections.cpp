@@ -4295,7 +4295,7 @@ ECode Collections::Copy(
     return NOERROR;
 }
 
-ECode Collections::NewEnumeration(
+ECode Collections::Enumeration(
     /* [in] */ ICollection* collection,
     /* [out] */ IEnumeration** result)
 {

@@ -1,6 +1,6 @@
 
 #include "Socks4Message.h"
-#include <elastos/Math.h>
+#include "Math.h"
 
 namespace Elastos {
 namespace Net {

@@ -3017,7 +3017,14 @@ public:
         /* [in] */ IList* destination,
         /* [in] */ IList* source);
 
-    static CARAPI NewEnumeration(
+    /**
+     * Returns an {@code Enumeration} on the specified collection.
+     *
+     * @param collection
+     *            the collection to enumerate.
+     * @return an Enumeration.
+     */
+    static CARAPI Enumeration(
         /* [in] */ ICollection* collection,
         /* [out] */ IEnumeration** result);
 

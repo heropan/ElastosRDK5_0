@@ -3,9 +3,9 @@
 #include "CHttpDate.h"
 #include "Arrays.h"
 #include "CStringWrapper.h"
-#include <elastos/core/Character.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/CSystem.h>
+#include "Character.h"
+#include "StringUtils.h"
+#include "CSystem.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

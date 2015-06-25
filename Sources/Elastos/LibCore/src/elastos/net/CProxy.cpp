@@ -1,6 +1,6 @@
 
 #include "CProxy.h"
-#include <elastos/core/StringBuilder.h>
+#include "StringBuilder.h"
 
 namespace Elastos {
 namespace Net {

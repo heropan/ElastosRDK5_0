@@ -59,8 +59,8 @@ module
          */
 
         Equals(
-                [in] IInterface* obj,
-                [out] Boolean* result);
+            [in] IInterface* obj,
+            [out] Boolean* result);
 
         /**
          * Returns a string containing details of this network interface.

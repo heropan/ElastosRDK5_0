@@ -3,9 +3,9 @@
 //#include "CURL.h"
 #include "InetAddress.h"
 //#include <Com.Kortide.Platform.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/Math.h>
+#include "StringBuffer.h"
+#include "StringUtils.h"
+#include "Math.h"
 //#include <Elastos.Security.h>
 #include <UrlUtils.h>
 

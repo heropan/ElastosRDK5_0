@@ -3,9 +3,9 @@
 #include "DefaultFileNameMap.h"
 #include "CDateHelper.h"
 #include "CSystem.h"
-#include <elastos/core/Character.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/StringUtils.h>
+#include "Character.h"
+#include "StringBuffer.h"
+#include "StringUtils.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
