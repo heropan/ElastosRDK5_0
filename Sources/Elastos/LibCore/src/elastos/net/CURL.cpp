@@ -295,6 +295,29 @@ ECode CURL::SetURLStreamHandlerFactory(
     return NOERROR;
 }
 
+ECode CURL::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (o == NULL) {
+        return NOERROR;
+    }
+    if (TO_IINTERFACE(this) == o) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    IURL * obj = IURL::Probe(o);
+    if (obj == NULL) {
+        return NOERROR;
+    }
+
+    return mStreamHandler->Equals(THIS_PROBE(IURL), obj, result);
+}
+
 void CURL::FixURL(
     /* [in] */ Boolean fixHost)
 {

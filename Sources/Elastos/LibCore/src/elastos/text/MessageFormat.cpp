@@ -32,7 +32,7 @@ using Elastos::Text::CParsePosition;
 namespace Elastos {
 namespace Text {
 
-static AutoPtr<IMessageFormatField> sInit(const String& name)
+static AutoPtr<IMessageFormatField> InitARGUMENT(const String& name)
 {
     AutoPtr<CMessageFormatField> field;
     CMessageFormatField::NewByFriend(name, (CMessageFormatField**)&field);
@@ -40,13 +40,17 @@ static AutoPtr<IMessageFormatField> sInit(const String& name)
 }
 
 const AutoPtr<IMessageFormatField> MessageFormat::MessageFormatField::ARGUMENT
-    = sInit(String("message argument field"));
+    = InitARGUMENT(String("message argument field"));
 
-ECode MessageFormat::MessageFormatField::Init(
+CAR_INTERFACE_IMPL(MessageFormat::MessageFormatField, FormatBase::Field, IMessageFormatField)
+
+ECode MessageFormat::MessageFormatField::constructor(
     /* [in] */ const String& fieldName)
 {
-    return Field::Init(fieldName);
+    return Field::constructor(fieldName);
 }
+
+CAR_INTERFACE_IMPL(MessageFormat, FormatBase, IMessageFormat)
 
 MessageFormat::~MessageFormat()
 {
@@ -93,7 +97,7 @@ ECode MessageFormat::ApplyPattern(
     Char32 ch;
 
     while (index < length) {
-        if (Format::UpTo(tem, position, buffer, '{', &succeeded), succeeded) {
+        if (FormatBase::UpTo(tem, position, buffer, '{', &succeeded), succeeded) {
             arg = 0;
             position->GetIndex(&offset);
             if (offset >= length) {
@@ -168,8 +172,10 @@ ECode MessageFormat::FormatToCharacterIterator(
     // format the message, and find fields
     AutoPtr<IFieldPosition> position;
     CFieldPosition::New(0, (IFieldPosition**)&position);
+    AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(1);
+    arr->Set(0, object);
     AutoPtr<IStringBuffer > sb;
-    FormatImpl((ArrayOf< IInterface* >*) object, &buffer, position, &fields, (IStringBuffer **)&sb);
+    FormatImpl(arr, &buffer, position, &fields, (IStringBuffer **)&sb);
 
     // create an AttributedString with the formatted buffer
     AutoPtr<IAttributedString> as;
@@ -187,7 +193,7 @@ ECode MessageFormat::FormatToCharacterIterator(
     return as->GetIterator(characterIterator);
 }
 
-ECode MessageFormat::FormatObjects(
+ECode MessageFormat::Format(
     /* [in] */ ArrayOf< IInterface* >* objects,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -344,20 +350,23 @@ ECode MessageFormat::HandleFormat(
     return NOERROR;
 }
 
-ECode MessageFormat::FormatObject(
+ECode MessageFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** value)
 {
-    return FormatObjects((ArrayOf< IInterface* >*) object, buffer, field, value);
+    AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(1);
+    arr->Set(0, object);
+    return Format(arr, buffer, field, value);
 }
 
 ECode MessageFormat::GetFormats(
     /* [out] */ ArrayOf< IFormat* >** arrayOfInstances)
 {
     VALIDATE_NOT_NULL(arrayOfInstances);
-    *arrayOfInstances = mFormats->Clone();
+    AutoPtr<ArrayOf<IFormat*> > arr = mFormats->Clone();
+    *arrayOfInstances = arr;
     REFCOUNT_ADD(*arrayOfInstances);
     return NOERROR;
 }
@@ -656,7 +665,7 @@ ECode MessageFormat::ParseVariable(
         Match(string, position, TRUE, tokens2, &dateStyle);
         if (dateStyle == -1) {
             Boolean succeeded;
-            Format::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded);
+            FormatBase::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded);
             AutoPtr<ISimpleDateFormat> sdf;
             String outstr;
             buffer.Substring(0, buffer.GetLength(),&outstr);
@@ -704,7 +713,7 @@ ECode MessageFormat::ParseVariable(
         Match(string, position, TRUE, tokens3, &numberStyle);
         if (numberStyle == -1) {
             Boolean succeeded;
-            FAIL_RETURN(Format::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded));
+            FAIL_RETURN(FormatBase::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded));
             AutoPtr<IDecimalFormatSymbols> dfs;
             CDecimalFormatSymbols::New(mLocale, (IDecimalFormatSymbols**)&dfs);
             AutoPtr<IDecimalFormat> df;
@@ -733,7 +742,7 @@ ECode MessageFormat::ParseVariable(
     }
 
     Boolean succeeded;
-    Format::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded);
+    FormatBase::UpToWithQuotes(string, position, buffer, '}', '{', &succeeded);
     AutoPtr<IChoiceFormat> cf;
     String outstr;
     buffer.Substring(0, buffer.GetLength(), &outstr);

@@ -18,30 +18,34 @@ using Elastos::Core::ICharSequence;
 namespace Elastos {
 namespace Text {
 
-static AutoPtr<INumberFormatField> sInit(const String& name)
+static AutoPtr<INumberFormatField> InitField(const String& name)
 {
      AutoPtr<CNumberFormatField> field;
      CNumberFormatField::NewByFriend(name, (CNumberFormatField**)&field);
-     return (INumberFormatField*)field->Probe(EIID_INumberFormatField);
+     return (INumberFormatField*)field.Get();
 }
 
-const AutoPtr<INumberFormatField> NumberFormat::Field::SIGN = sInit(String("sign"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::INTEGER = sInit(String("integer"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::FRACTION = sInit(String("fraction"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::EXPONENT = sInit(String("exponent"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::EXPONENT_SIGN = sInit(String("exponent sign"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::EXPONENT_SYMBOL = sInit(String("exponent symbol"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::DECIMAL_SEPARATOR = sInit(String("decimal separator"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::GROUPING_SEPARATOR = sInit(String("grouping separator"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::PERCENT = sInit(String("percent"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::PERMILLE = sInit(String("per mille"));
-const AutoPtr<INumberFormatField> NumberFormat::Field::CURRENCY = sInit(String("currency"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::SIGN = InitField(String("sign"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::INTEGER = InitField(String("integer"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::FRACTION = InitField(String("fraction"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::EXPONENT = InitField(String("exponent"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::EXPONENT_SIGN = InitField(String("exponent sign"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::EXPONENT_SYMBOL = InitField(String("exponent symbol"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::DECIMAL_SEPARATOR = InitField(String("decimal separator"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::GROUPING_SEPARATOR = InitField(String("grouping separator"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::PERCENT = InitField(String("percent"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::PERMILLE = InitField(String("per mille"));
+const AutoPtr<INumberFormatField> NumberFormat::Field::CURRENCY = InitField(String("currency"));
 
-ECode NumberFormat::Field::Init(
+CAR_INTERFACE_IMPL(NumberFormat::Field, FormatBase::Field, INumberFormatField)
+
+ECode NumberFormat::Field::constructor(
    /* [in] */ const String& fn)
 {
-   return Format::Field::Init(fn);
+   return FormatBase::Field::constructor(fn);
 }
+
+CAR_INTERFACE_IMPL(NumberFormat, FormatBase, INumberFormat)
 
 NumberFormat::NumberFormat()
     : mGroupingUsed(TRUE)
@@ -52,7 +56,7 @@ NumberFormat::NumberFormat()
     , mMinimumFractionDigits(0)
 {}
 
-ECode NumberFormat::FormatDouble(
+ECode NumberFormat::Format(
     /* [in] */ Double value,
     /* [out] */ String* result)
 {
@@ -62,11 +66,11 @@ ECode NumberFormat::FormatDouble(
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatDouble(value, sb, position, (IStringBuffer **)&outsb);
+    Format(value, sb, position, (IStringBuffer **)&outsb);
     return ICharSequence::Probe(outsb)->ToString(result);
 }
 
-ECode NumberFormat::FormatInt64(
+ECode NumberFormat::Format(
     /* [in] */ Int64 value,
     /* [out] */ String* result)
 {
@@ -76,11 +80,11 @@ ECode NumberFormat::FormatInt64(
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatInt64(value, sb, position, (IStringBuffer **)&outsb);
+    Format(value, sb, position, (IStringBuffer **)&outsb);
     return ICharSequence::Probe(outsb)->ToString(result);
 }
 
-ECode NumberFormat::FormatObject(
+ECode NumberFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -103,12 +107,12 @@ ECode NumberFormat::FormatObject(
         || (outint != NULL && bitlen < 64)) {
         Int64 lv(0);
         INumber::Probe(object)->Int64Value(&lv);
-        return FormatInt64(lv, buffer, field, value);
+        return Format(lv, buffer, field, value);
     }
     else if (INumber::Probe(object) != NULL) {
         Double dv(0);
         INumber::Probe(object)->DoubleValue(&dv);
-        return FormatDouble(dv, buffer, field, value);
+        return Format(dv, buffer, field, value);
     }
 
     return E_ILLEGAL_ARGUMENT_EXCEPTION;

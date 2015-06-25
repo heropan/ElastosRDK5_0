@@ -1,5 +1,5 @@
 
-#include "Format.h"
+#include "FormatBase.h"
 #include "CAttributedString.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
@@ -16,12 +16,15 @@ using Elastos::Text::CParsePosition;
 namespace Elastos {
 namespace Text {
 
-CAR_INTERFACE_IMPL_2(Format, Object, ISerializable, ICloneable)
+CAR_INTERFACE_IMPL_3(FormatBase, Object, IFormat, ISerializable, ICloneable)
 
-Format::Format()
+FormatBase::FormatBase()
 {}
 
-ECode Format::FormatObject(
+FormatBase::~FormatBase()
+{}
+
+ECode FormatBase::Format(
     /* [in] */ IInterface* object,
     /* [out] */ String* value)
 {
@@ -33,25 +36,25 @@ ECode Format::FormatObject(
     FAIL_RETURN(CFieldPosition::New(0, (IFieldPosition**)&field));
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatObject(object, sb, field, (IStringBuffer **)&outsb);
+    Format(object, sb, field, (IStringBuffer **)&outsb);
     return ICharSequence::Probe(outsb)->ToString(value);
 }
 
-ECode Format::FormatToCharacterIterator(
+ECode FormatBase::FormatToCharacterIterator(
     /* [in] */ IInterface* object,
     /* [out] */ IAttributedCharacterIterator** characterIterator)
 {
     VALIDATE_NOT_NULL(characterIterator);
 
     String value;
-    FormatObject(object, &value);
+    Format(object, &value);
     AutoPtr<IAttributedString> as;
     CAttributedString::New(value, (IAttributedString**)&as);
     as->GetIterator(characterIterator);
     return NOERROR;
 }
 
-ECode Format::ParseObject(
+ECode FormatBase::ParseObject(
     /* [in] */ const String& string,
     /* [out] */ IInterface** object)
 {
@@ -69,7 +72,7 @@ ECode Format::ParseObject(
     return NOERROR;
 }
 
-ECode Format::UpTo(
+ECode FormatBase::UpTo(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [in] */ StringBuffer& buffer,
@@ -109,7 +112,7 @@ ECode Format::UpTo(
     return NOERROR;
 }
 
-ECode Format::UpToWithQuotes(
+ECode FormatBase::UpToWithQuotes(
     /* [in] */ const String& string,
     /* [in] */ IParsePosition* position,
     /* [in] */ StringBuffer& buffer,

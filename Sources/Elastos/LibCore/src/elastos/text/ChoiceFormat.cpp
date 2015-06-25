@@ -24,6 +24,9 @@ using Elastos::Text::CParsePosition;
 namespace Elastos {
 namespace Text {
 
+
+CAR_INTERFACE_IMPL(ChoiceFormat, NumberFormat, IChoiceFormat)
+
 ChoiceFormat::~ChoiceFormat()
 {
 }
@@ -168,7 +171,7 @@ ECode ChoiceFormat::Equals(
             && mChoiceFormats->Equals(formats);
 }
 
-ECode ChoiceFormat::FormatDouble(
+ECode ChoiceFormat::Format(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * inbuffer,
     /* [in] */ IFieldPosition * field,
@@ -194,13 +197,13 @@ ECode ChoiceFormat::FormatDouble(
     return NOERROR;
 }
 
-ECode ChoiceFormat::FormatInt64(
+ECode ChoiceFormat::Format(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * inbuffer,
     /* [in] */ IFieldPosition * field ,
     /* [out] */ IStringBuffer ** outbuffer)
 {
-    return FormatDouble((Double)value,inbuffer,field,outbuffer);
+    return Format((Double)value,inbuffer,field,outbuffer);
 }
 
 ECode ChoiceFormat::GetHashCode(
@@ -226,6 +229,20 @@ ECode ChoiceFormat::GetFormats(
         CStringWrapper::New((*mChoiceFormats)[i], (ICharSequence**)&cs);
         temp->Set(i , (IInterface*)cs.Get());
     }
+    *arrayOfFormattedString = temp;
+    REFCOUNT_ADD(*arrayOfFormattedString)
+    return NOERROR;
+}
+
+ECode ChoiceFormat::GetFormats(
+    /* [out, callee] */ ArrayOf<String>** arrayOfFormattedString)
+{
+    VALIDATE_NOT_NULL(arrayOfFormattedString);
+    AutoPtr<ArrayOf<String> > temp = ArrayOf<String>::Alloc(mChoiceFormats->GetLength());
+    for (Int32 i = 0; i < mChoiceFormats->GetLength(); ++i) {
+        temp->Set(i , (*mChoiceFormats)[i]);
+    }
+
     *arrayOfFormattedString = temp;
     REFCOUNT_ADD(*arrayOfFormattedString)
     return NOERROR;
@@ -321,14 +338,14 @@ Double ChoiceFormat::PreviousDouble(
 }
 
 ECode ChoiceFormat::SetChoices(
-    /* [in] */ const ArrayOf<Double>& limits,
-    /* [in] */ const ArrayOf<String>& formats)
+    /* [in] */ ArrayOf<Double>* limits,
+    /* [in] */ ArrayOf<String>* formats)
 {
-    if (limits.GetLength() != formats.GetLength()) {
+    if (limits == NULL || formats == NULL || limits->GetLength() != formats->GetLength()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mChoiceLimits = limits.Clone();
-    mChoiceFormats = formats.Clone();
+    mChoiceLimits = limits->Clone();
+    mChoiceFormats = formats->Clone();
     return NOERROR;
 }
 

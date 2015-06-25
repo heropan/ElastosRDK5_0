@@ -5,10 +5,6 @@
 #include "Autolock.h"
 #include "CSystem.h"
 
-
-// using Elastos::Core::ISystem;
-// using Elastos::Core::CSystem;
-
 namespace Elastos {
 namespace Core {
 
@@ -231,14 +227,9 @@ ECode Thread::CheckAccess()
     // Forwards the message to the SecurityManager (if there's one) passing
     // the receiver as parameter
 
-//     AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORELIBRARY
-//     AutoPtr<CSystem> cs;
-//     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-//     system = (ISystem*)cs.Get();
-// #else
-//     CSystem::AcquireSingleton((ISystem**)&system);
-// #endif
+    AutoPtr<CSystem> cs;
+    CSystem::AcquireSingletonByFriend((CSystem**)&cs);
+    AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
     // SecurityManager currentManager = System.getSecurityManager();
     // if (currentManager != null) {
@@ -552,37 +543,31 @@ ECode Thread::Join(
         return NOERROR;
     }
 
-// TODO luozhaohui
-//     AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORELIBRARY
-//     AutoPtr<CSystem> cs;
-//     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-//     system = (ISystem*)cs.Get();
-// #else
-//     CSystem::AcquireSingleton((ISystem**)&system);
-// #endif
+    AutoPtr<CSystem> cs;
+    CSystem::AcquireSingletonByFriend((CSystem**)&cs);
+    AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
 //     // guaranteed not to overflow
-//     Int64 nanosToWait = millis * NANOS_PER_MILLI + nanos;
+    Int64 nanosToWait = millis * NANOS_PER_MILLI + nanos;
 
-//     // wait until this thread completes or the timeout has elapsed
-//     Int64 start, nanosElapsed, nanosRemaining;
-//     system->GetNanoTime(&start);
-//     while (TRUE) {
-//         //t.wait(millis, nanos);//todo: must call
-//         IsAlive(&isAlive);
-//         if (!isAlive) {
-//             break;
-//         }
-//         system->GetNanoTime(&nanosElapsed);
-//         nanosElapsed -= start;
-//         nanosRemaining = nanosToWait - nanosElapsed;
-//         if (nanosRemaining <= 0) {
-//             break;
-//         }
-//         millis = nanosRemaining / NANOS_PER_MILLI;
-//         nanos = (Int32) (nanosRemaining - millis * NANOS_PER_MILLI);
-//     }
+    // wait until this thread completes or the timeout has elapsed
+    Int64 start, nanosElapsed, nanosRemaining;
+    system->GetNanoTime(&start);
+    while (TRUE) {
+        //t.wait(millis, nanos);//todo: must call
+        IsAlive(&isAlive);
+        if (!isAlive) {
+            break;
+        }
+        system->GetNanoTime(&nanosElapsed);
+        nanosElapsed -= start;
+        nanosRemaining = nanosToWait - nanosElapsed;
+        if (nanosRemaining <= 0) {
+            break;
+        }
+        millis = nanosRemaining / NANOS_PER_MILLI;
+        nanos = (Int32) (nanosRemaining - millis * NANOS_PER_MILLI);
+    }
 
     return NOERROR;
 }
@@ -756,14 +741,9 @@ ECode Thread::Start()
 
 ECode Thread::Stop()
 {
-//     AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORELIBRARY
-//     AutoPtr<CSystem> cs;
-//     CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-//     system = (ISystem*)cs.Get();
-// #else
-//     CSystem::AcquireSingleton((ISystem**)&system);
-// #endif
+    AutoPtr<CSystem> cs;
+    CSystem::AcquireSingletonByFriend((CSystem**)&cs);
+    AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
     // SecurityManager securityManager = System.getSecurityManager();
     // if (securityManager != null) {
@@ -950,27 +930,22 @@ ECode Thread::ParkUntil(
          * spuriously return for any reason, and this situation
          * can safely be construed as just such a spurious return.
          */
-// TODO luozhaohui
-//         AutoPtr<ISystem> system;
-// #ifdef ELASTOS_CORELIBRARY
-//         AutoPtr<CSystem> cs;
-//         CSystem::AcquireSingletonByFriend((CSystem**)&cs);
-//         system = (ISystem*)cs.Get();
-// #else
-//         CSystem::AcquireSingleton((ISystem**)&system);
-// #endif
 
-//         Int64 delayMillis;
-//         system->GetCurrentTimeMillis(&delayMillis);
-//         delayMillis = time - delayMillis;
+        AutoPtr<CSystem> cs;
+        CSystem::AcquireSingletonByFriend((CSystem**)&cs);
+        AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
-//         if (delayMillis <= 0) {
-//             mParkState = ParkState::UNPARKED;
-//             return NOERROR;
-//         }
-//         else {
-//             return ParkFor(delayMillis * NANOS_PER_MILLI);
-//         }
+        Int64 delayMillis;
+        system->GetCurrentTimeMillis(&delayMillis);
+        delayMillis = time - delayMillis;
+
+        if (delayMillis <= 0) {
+            mParkState = ParkState::UNPARKED;
+            return NOERROR;
+        }
+        else {
+            return ParkFor(delayMillis * NANOS_PER_MILLI);
+        }
     }
 
     return NOERROR;

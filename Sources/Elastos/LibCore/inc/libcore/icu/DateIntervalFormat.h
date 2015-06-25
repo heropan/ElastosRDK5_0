@@ -25,7 +25,10 @@ public:
         // , public BasicLruCache<String, Int64>
     {
     public:
-        FormatterCache()/*:BasicLruCache<String, Int64>(8)*/{/*TODO: Wait for BasicLruCache*/assert(0);}
+        FormatterCache()/*:BasicLruCache<String, Int64>(8)*/
+        {
+        /*TODO: Wait for BasicLruCache*/;
+        }
 
     protected:
         void EntryEvicted(

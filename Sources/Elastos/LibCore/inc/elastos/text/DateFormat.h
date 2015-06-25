@@ -2,9 +2,8 @@
 #ifndef __ELASTOS_TEXT_DATEFORMAT_H__
 #define __ELASTOS_TEXT_DATEFORMAT_H__
 
-#include "Format.h"
+#include "FormatBase.h"
 #include <elastos/utility/etl/HashMap.h>
-#include "AttributedCharacterIteratorAttributeMacro.h"
 
 using Elastos::Utility::IDate;
 using Elastos::Utility::ICalendar;
@@ -17,21 +16,21 @@ using Elastos::Utility::Etl::HashMap;
 namespace Elastos {
 namespace Text {
 
-class DateFormat : public Format
+class DateFormat
+    : public FormatBase
+    , public IDateFormat
 {
 public:
     class Field
-        : public IDateFormatField
-        , public Format::Field
+        : public FormatBase::Field
+        , public IDateFormatField
     {
     public:
         CAR_INTERFACE_DECL()
 
-        TEXTATTRIBUITEDCHARACTERITERATORATTRIBUTE_METHODS_DECL()
-
         Field();
 
-        CARAPI Init(
+        CARAPI constructor(
             /* [in] */ const String& fieldName,
             /* [in] */ Int32 calendarField);
 
@@ -91,18 +90,20 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     //@Override
-    CARAPI FormatObject(
+    CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** value);
 
-    CARAPI FormatDate(
+    CARAPI Format(
         /* [in] */ IDate* date,
         /* [out] */ String* result);
 
-    virtual CARAPI FormatDate(
+    virtual CARAPI Format(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,

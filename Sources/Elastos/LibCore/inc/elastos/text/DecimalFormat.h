@@ -39,21 +39,21 @@ public:
         /* [out] */ IAttributedCharacterIterator** characterIterator);
 
     //@Override
-    CARAPI FormatDouble(
+    CARAPI Format(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
     //@Override
-    CARAPI FormatInt64(
+    CARAPI Format(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** result);
 
     //@Override
-    CARAPI FormatObject(
+    CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,

@@ -1,9 +1,8 @@
 
 #include "StringBuilder.h"
 #include "StringBuffer.h"
-#ifdef ELASTOS_CORELIBRARY
 #include "CStringWrapper.h"
-#endif
+
 
 namespace Elastos {
 namespace Core {

@@ -2,7 +2,7 @@
 #define __ELASTOS_TEXT_NUMBERFORMAT_H__
 
 #include <elastos/core/StringBuffer.h>
-#include "Format.h"
+#include "FormatBase.h"
 #include "CLocaleHelper.h"
 // #include "CICUHelper.h"
 // #include "CLocaleDataHelper.h"
@@ -29,13 +29,19 @@ using Elastos::Math::RoundingMode;
 namespace Elastos {
 namespace Text {
 
-class NumberFormat : public Format
+class NumberFormat
+    : public FormatBase
+    , public INumberFormat
 {
 public:
-    class Field : public Format::Field
+    class Field
+        : public FormatBase::Field
+        , INumberFormatField
     {
-    protected:
-        CARAPI Init(
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
             /* [in] */ const String& fn);
 
     public:
@@ -53,28 +59,30 @@ public:
     };
 
 public:
-    CARAPI FormatDouble(
+    CAR_INTERFACE_DECL()
+
+    CARAPI Format(
         /* [in] */ Double value,
         /* [out] */ String* result);
 
-    virtual CARAPI FormatDouble(
+    virtual CARAPI Format(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field,
         /* [out] */ IStringBuffer ** outbuffer) = 0;
 
-    CARAPI FormatInt64(
+    CARAPI Format(
         /* [in] */ Int64 value,
         /* [out] */ String* result);
 
-    virtual CARAPI FormatInt64(
+    virtual CARAPI Format(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field ,
         /* [out] */ IStringBuffer ** outbuffer) = 0;
 
     //@Override
-    CARAPI FormatObject(
+    CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,

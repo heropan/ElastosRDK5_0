@@ -19,9 +19,13 @@ extern "C" const InterfaceID EIID_SimpleDateFormat;
 namespace Elastos {
 namespace Text {
 
-class SimpleDateFormat : public DateFormat
+class SimpleDateFormat
+    : public DateFormat
+    , public ISimpleDateFormat
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     virtual ~SimpleDateFormat();
@@ -52,7 +56,7 @@ public:
         /* [out] */ IAttributedCharacterIterator** charactorIterator);
 
     //@Override
-    CARAPI FormatDate(
+    CARAPI Format(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* fieldPos,

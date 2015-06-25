@@ -7,6 +7,7 @@
 #include "CMessageFormat.h"
 #include "CMessageFormatField.h"
 #include "CNumberFormatField.h"
+#include "CDateFormatField.h"
 #include "CRuleBasedCollator.h"
 #include "CSimpleDateFormat.h"
 #include "CDecimalFormatSymbols.h"
@@ -34,6 +35,8 @@ CAR_OBJECT_IMPL(CMessageFormat)
 CAR_OBJECT_IMPL(CMessageFormatField)
 
 CAR_OBJECT_IMPL(CNumberFormatField)
+
+CAR_OBJECT_IMPL(CDateFormatField)
 
 CAR_OBJECT_IMPL(CRuleBasedCollator)
 

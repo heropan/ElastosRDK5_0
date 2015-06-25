@@ -163,6 +163,8 @@ module
             [in] String fieldName);
 
         interface INumberFormatField;
+        interface IAttributedCharacterIteratorAttribute;
+        interface ISerializable;
     }
 
     singleton class CNumberFormatHelper {
@@ -236,6 +238,8 @@ module
             [in] String name);
 
         interface IMessageFormatField;
+        interface IAttributedCharacterIteratorAttribute;
+        interface ISerializable;
     }
 
     class CDateFormatSymbols {
@@ -245,6 +249,16 @@ module
             [in] ILocale* locale);
 
         interface IDateFormatSymbols;
+    }
+
+    class CDateFormatField {
+        constructor(
+            [in] String fieldName,
+            [in] Int32 calendarField);
+
+        interface IDateFormatField;
+        interface IAttributedCharacterIteratorAttribute;
+        interface ISerializable;
     }
 
     singleton class CDateFormatSymbolsHelper {

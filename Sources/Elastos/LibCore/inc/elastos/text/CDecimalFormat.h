@@ -3,7 +3,6 @@
 #define __ELASTOS_TEXT_CDECIMALFORMAT_H__
 
 #include "_Elastos_Text_CDecimalFormat.h"
-#include "NumberFormatMacro.h"
 #include "DecimalFormat.h"
 
 using Elastos::Utility::ILocale;

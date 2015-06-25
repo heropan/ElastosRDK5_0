@@ -2,9 +2,7 @@
 #include <elastos/core/Math.h>
 #include <math.h>
 #include <stdlib.h>
-#ifdef ELASTOS_CORELIBRARY
 #include "CRandom.h"
-#endif
 
 using Elastos::Utility::CRandom;
 

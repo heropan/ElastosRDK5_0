@@ -4,7 +4,6 @@
 
 #include "_Elastos_Text_CSimpleDateFormat.h"
 #include "SimpleDateFormat.h"
-#include "DateFormatMacro.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Text::IFieldPosition;

@@ -54,6 +54,8 @@ const Int32 SimpleDateFormat::RFC_822_TIMEZONE_FIELD = 18;
 const Int32 SimpleDateFormat::STAND_ALONE_MONTH_FIELD = 19;
 const Int32 SimpleDateFormat::STAND_ALONE_DAY_OF_WEEK_FIELD = 20;
 
+CAR_INTERFACE_IMPL(SimpleDateFormat, DateFormat, ISimpleDateFormat)
+
 ECode SimpleDateFormat::constructor()
 {
     AutoPtr<ILocaleHelper> pILocaleHelper;
@@ -150,7 +152,9 @@ ECode SimpleDateFormat::constructor(
     constructor((ILocale*)pILocale);
     ValidatePattern(tem);
     mPattern = tem;
-    ICloneable::Probe(value)->Clone((IDateFormatSymbols **)&mFormatData);
+    AutoPtr<IInterface> obj;
+    ICloneable::Probe(value)->Clone((IInterface **)&obj);
+    mFormatData = IDateFormatSymbols::Probe(obj);
     return NOERROR;
 }
 
@@ -677,7 +681,7 @@ ECode SimpleDateFormat::Error(
     return NOERROR;
 }
 
-ECode SimpleDateFormat::FormatDate(
+ECode SimpleDateFormat::Format(
     /* [in] */ IDate* date,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* fieldPos,
@@ -711,7 +715,11 @@ ECode SimpleDateFormat::GetDateFormatSymbols(
 {
     VALIDATE_NOT_NULL(symbols)
 
-    return  ICloneable::Probe(mFormatData)->Clone(symbols);
+    AutoPtr<IInterface> obj;
+    ICloneable::Probe(mFormatData)->Clone((IInterface**)&obj);
+    *symbols = IDateFormatSymbols::Probe(obj);
+    REFCOUNT_ADD(*symbols)
+    return NOERROR;
 }
 
 ECode SimpleDateFormat::Parse(

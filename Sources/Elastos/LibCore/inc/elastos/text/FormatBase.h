@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_TEXT_FORMAT_H_
-#define __ELASTOS_TEXT_FORMAT_H_
+#ifndef __ELASTOS_TEXT_FORMATBASE_H_
+#define __ELASTOS_TEXT_FORMATBASE_H_
 
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuffer.h>
@@ -15,16 +15,18 @@ using Elastos::Core::ICloneable;
 namespace Elastos {
 namespace Text {
 
-class Format
+class FormatBase
     : public Object
+    , public IFormat
     , public ISerializable
     , public ICloneable
 {
 public:
-    class Field : public AttributedCharacterIteratorAttribute
+    class Field
+        : public AttributedCharacterIteratorAttribute
     {
     protected:
-        CARAPI Init(
+        CARAPI constructor(
             /* [in] */ const String& fieldName)
         {
             return AttributedCharacterIteratorAttribute::constructor(fieldName);
@@ -44,13 +46,13 @@ public:
     //public Object clone();
     CAR_INTERFACE_DECL()
 
-    virtual ~Format() {}
+    virtual ~FormatBase();
 
-    CARAPI FormatObject(
+    virtual CARAPI Format(
         /* [in] */ IInterface* object,
         /* [out] */ String* value);
 
-    virtual CARAPI FormatObject(
+    virtual CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
@@ -74,7 +76,7 @@ public:
         /* [out] */ Boolean* result) = 0;
 
 protected:
-    Format();
+    FormatBase();
 
     static CARAPI UpTo(
         /* [in] */ const String& string,
@@ -95,4 +97,4 @@ protected:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__ELASTOS_TEXT_FORMAT_H_
+#endif //__ELASTOS_TEXT_FORMATBASE_H_

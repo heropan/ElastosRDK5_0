@@ -10,7 +10,6 @@ namespace Text {
 CarClass(CDateFormatFieldHelper)
 {
 public:
-
     CARAPI GetDateFormatFieldByName(
         /* [in] */ const String& name,
         /* [out] */ IDateFormatField** field);

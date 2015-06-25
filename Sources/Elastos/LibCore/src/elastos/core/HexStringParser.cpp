@@ -29,15 +29,9 @@ static String InitHEX_PATTERN()
 static AutoPtr<IPattern> InitPATTERN()
 {
     AutoPtr<IPattern> pattern;
-#ifdef ELASTOS_CORELIBRARY
     AutoPtr<CPatternHelper> helper;
     CPatternHelper::AcquireSingletonByFriend((CPatternHelper**)&helper);
     helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-#else
-    AutoPtr<IPatternHelper> helper;
-    CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
-    helper->Compile(InitHEX_PATTERN(), (IPattern**)&pattern);
-#endif
     return pattern;
 }
 

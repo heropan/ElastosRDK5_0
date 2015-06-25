@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_TEXT_MESSAGEFORMAT_H__
 #define __ELASTOS_TEXT_MESSAGEFORMAT_H__
 
-#include "Format.h"
+#include "FormatBase.h"
 #include "NumberFormat.h"
 #include "DateFormat.h"
 #include <elastos/core/StringBuffer.h>
@@ -16,22 +16,27 @@ using Elastos::Text::IParsePosition;
 namespace Elastos {
 namespace Text {
 
-class MessageFormat : public Format
+class MessageFormat
+    : public FormatBase
+    , public IMessageFormat
 {
 public:
 
-    class MessageFormatField : public Format::Field
+    class MessageFormatField
+        : public FormatBase::Field
+        , public IMessageFormatField
     {
-        protected:
-            CARAPI Init(
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
             /* [in] */ const String& fieldName);
 
-        public:
-            //public static final Field ARGUMENT = new Field("message argument field");
-            const static AutoPtr<IMessageFormatField> ARGUMENT;
+        //public static final Field ARGUMENT = new Field("message argument field");
+        const static AutoPtr<IMessageFormatField> ARGUMENT;
 
-        private:
-            //const static Int64 serialVersionUID = 7899943957617360810L;
+    private:
+        //const static Int64 serialVersionUID = 7899943957617360810L;
     };
 
 private:
@@ -56,6 +61,7 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
 
     virtual ~MessageFormat();
 
@@ -82,14 +88,14 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ IAttributedCharacterIterator** characterIterator);
 
-    CARAPI FormatObjects(
+    CARAPI Format(
         /* [in] */ ArrayOf< IInterface* >* objects,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,
         /* [out] */ IStringBuffer ** value);
 
     //@Override
-    CARAPI FormatObject(
+    CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field,

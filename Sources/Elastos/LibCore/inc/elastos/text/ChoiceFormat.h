@@ -12,9 +12,13 @@ using Elastos::Text::IParsePosition;
 namespace Elastos {
 namespace Text {
 
-class ChoiceFormat : public NumberFormat
+class ChoiceFormat
+    : public NumberFormat
+    , public IChoiceFormat
 {
 public:
+    CAR_INTERFACE_DECL()
+
     virtual ~ChoiceFormat();
 
     CARAPI constructor(
@@ -34,13 +38,13 @@ public:
         /* [in] */ IInterface * object,
         /* [out] */ Boolean * value);
 
-    CARAPI FormatDouble(
+    CARAPI Format(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field,
         /* [out] */ IStringBuffer ** outbuffer);
 
-    CARAPI FormatInt64(
+    CARAPI Format(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * inbuffer,
         /* [in] */ IFieldPosition * field ,
@@ -49,7 +53,10 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32 * value);
 
-    virtual CARAPI GetFormats(
+    CARAPI GetFormats(
+        /* [out, callee] */ ArrayOf<String>** arrayOfFormattedString);
+
+    CARAPI GetFormats(
         /* [out, callee] */ ArrayOf<IInterface*>** arrayOfFormattedString);
 
     CARAPI GetChoiceFormats(
@@ -75,8 +82,8 @@ public:
         /* [in] */ Double value);
 
     virtual CARAPI SetChoices(
-        /* [in] */ const ArrayOf<Double>& limits,
-        /* [in] */ const ArrayOf<String>& formats);
+        /* [in] */ ArrayOf<Double>* limits,
+        /* [in] */ ArrayOf<String>* formats);
 
     virtual CARAPI ToPattern(
         /* [out] */ String* pattern);

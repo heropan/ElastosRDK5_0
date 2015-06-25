@@ -2,10 +2,12 @@
 #include "DecimalFormatSymbols.h"
 #include "CDecimalFormatSymbols.h"
 #include "CLocaleHelper.h"
+#include "StringBuilder.h"
 // #include "CLocaleDataHelper.h"
 // #include "CICUHelper.h"
 // #include "Currency.h"
 
+using Elastos::Core::StringBuilder;
 using Libcore::ICU::IICUHelper;
 // using Libcore::ICU::CICUHelper;
 using Elastos::Utility::ILocaleHelper;
@@ -103,6 +105,7 @@ ECode DecimalFormatSymbols::Clone(
     /* [out] */ IDecimalFormatSymbols** object)
 {
     VALIDATE_NOT_NULL(object);
+    assert(0);
     // try {
     //     return super.clone();
     // } catch (CloneNotSupportedException e) {
@@ -119,7 +122,7 @@ ECode DecimalFormatSymbols::Clone(
     outdec->SetDigit(mDigit);
     outdec->SetGroupingSeparator(mGroupingSeparator);
     outdec->SetInfinity(mInfinity);
-    outdec->SetMinusSign(mMinusSign);
+    // outdec->SetMinusSign(mMinusSign);
     outdec->SetMonetaryDecimalSeparator(mMonetarySeparator);
     outdec->SetNaN(mNaN);
     outdec->SetPatternSeparator(mPatternSeparator);
@@ -185,8 +188,16 @@ ECode DecimalFormatSymbols::GetInfinity(
 ECode DecimalFormatSymbols::GetMinusSign(
     /* [out] */ Char32* minusSign)
 {
-    *minusSign = mMinusSign;
-    return NOERROR;
+    VALIDATE_NOT_NULL(minusSign)
+
+    if (mMinusSign.GetLength() == 1) {
+        *minusSign  = mMinusSign.GetChar(0);
+        return NOERROR;
+    }
+
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+    // throw new UnsupportedOperationException(
+    //         "Minus sign spans multiple characters: " + minusSign);
 }
 
 ECode DecimalFormatSymbols::GetMonetaryDecimalSeparator(
@@ -315,7 +326,9 @@ ECode DecimalFormatSymbols::SetInfinity(
 ECode DecimalFormatSymbols::SetMinusSign(
     /* [in] */ Char32 value)
 {
-    mMinusSign = value;
+    StringBuilder sb;
+    sb.AppendChar(value);
+    mMinusSign = sb.ToString();
     return NOERROR;
 }
 
@@ -425,7 +438,7 @@ ECode DecimalFormatSymbols::Equals(
             mGroupingSeparator == groupingSeparator &&
             mInfinity.Equals(infinity) &&
             mIntlCurrencySymbol.Equals(intlCurrencySymbol) &&
-            mMinusSign == minusSign &&
+            mMinusSign.GetChar(0) == minusSign &&
             mMonetarySeparator == monetarySeparator &&
             mNaN.Equals(NaN) &&
             mPatternSeparator == patternSeparator &&

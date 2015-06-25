@@ -3,13 +3,13 @@
 #define __ELASTOS_TEXT_CMESSAGEFORMATFIELD_H__
 
 #include "_Elastos_Text_CMessageFormatField.h"
-#include <AttributedCharacterIteratorAttribute.h>
-#include <AttributedCharacterIteratorAttributeMacro.h>
+#include "MessageFormat.h"
 
 namespace Elastos {
 namespace Text {
 
-CarClass(CMessageFormatField) , public AttributedCharacterIteratorAttribute
+CarClass(CMessageFormatField)
+    , public MessageFormat::MessageFormatField
 {
 public:
     CAR_OBJECT_DECL()

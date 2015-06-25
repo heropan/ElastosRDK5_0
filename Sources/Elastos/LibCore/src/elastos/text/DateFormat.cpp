@@ -12,6 +12,7 @@
 // #include "CLocaleData.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
+#include "CDateFormatField.h"
 
 using Elastos::Utility::EIID_IDate;
 // using Elastos::Utility::CDate;
@@ -32,66 +33,63 @@ using Elastos::Text::CParsePosition;
 namespace Elastos {
 namespace Text {
 
-static AutoPtr<IDateFormatField> sInit(const String& name, Int32 value)
+static AutoPtr<IDateFormatField> InitField(const String& name, Int32 value)
 {
-    AutoPtr<DateFormat::Field> f  = new DateFormat::Field();
-    f->Init(name, value);
-    AutoPtr<IDateFormatField> field = (IDateFormatField*)f;
-    return field;
+    AutoPtr<CDateFormatField> cf;
+    CDateFormatField::NewByFriend(name, value, (CDateFormatField**)&cf);
+    return (IDateFormatField*)cf.Get();
 }
 
 const AutoPtr<IDateFormatField> DateFormat::Field::ERA
-    = sInit(String("era"), ICalendar::ERA);
+    = InitField(String("era"), ICalendar::ERA);
 const AutoPtr<IDateFormatField> DateFormat::Field::YEAR
-    = sInit(String("year"), ICalendar::YEAR);
+    = InitField(String("year"), ICalendar::YEAR);
 const AutoPtr<IDateFormatField> DateFormat::Field::MONTH
-    = sInit(String("month"), ICalendar::MONTH);
+    = InitField(String("month"), ICalendar::MONTH);
 const AutoPtr<IDateFormatField> DateFormat::Field::HOUR_OF_DAY0
-    = sInit(String("hour of day"), ICalendar::HOUR_OF_DAY);
+    = InitField(String("hour of day"), ICalendar::HOUR_OF_DAY);
 const AutoPtr<IDateFormatField> DateFormat::Field::HOUR_OF_DAY1
-    = sInit(String("hour of day 1"), -1);
+    = InitField(String("hour of day 1"), -1);
 const AutoPtr<IDateFormatField> DateFormat::Field::MINUTE
-    = sInit(String("minute"), ICalendar::MINUTE);
+    = InitField(String("minute"), ICalendar::MINUTE);
 const AutoPtr<IDateFormatField> DateFormat::Field::SECOND
-    = sInit(String("second"), ICalendar::SECOND);
+    = InitField(String("second"), ICalendar::SECOND);
 const AutoPtr<IDateFormatField> DateFormat::Field::MILLISECOND
-    = sInit(String("millisecond"), ICalendar::MILLISECOND);
+    = InitField(String("millisecond"), ICalendar::MILLISECOND);
 const AutoPtr<IDateFormatField> DateFormat::Field::DAY_OF_WEEK
-    = sInit(String("day of week"), ICalendar::DAY_OF_WEEK);
+    = InitField(String("day of week"), ICalendar::DAY_OF_WEEK);
 const AutoPtr<IDateFormatField> DateFormat::Field::DAY_OF_MONTH
-    = sInit(String("day of month"), ICalendar::DAY_OF_MONTH);
+    = InitField(String("day of month"), ICalendar::DAY_OF_MONTH);
 const AutoPtr<IDateFormatField> DateFormat::Field::DAY_OF_YEAR
-    = sInit(String("day of year"), ICalendar::DAY_OF_YEAR);
+    = InitField(String("day of year"), ICalendar::DAY_OF_YEAR);
 const AutoPtr<IDateFormatField> DateFormat::Field::DAY_OF_WEEK_IN_MONTH
-    = sInit(String("day of week in month"), ICalendar::DAY_OF_WEEK_IN_MONTH);
+    = InitField(String("day of week in month"), ICalendar::DAY_OF_WEEK_IN_MONTH);
 const AutoPtr<IDateFormatField> DateFormat::Field::WEEK_OF_YEAR
-    = sInit(String("week of year"), ICalendar::WEEK_OF_YEAR);
+    = InitField(String("week of year"), ICalendar::WEEK_OF_YEAR);
 const AutoPtr<IDateFormatField> DateFormat::Field::WEEK_OF_MONTH
-    = sInit(String("week of month"), ICalendar::WEEK_OF_MONTH);
+    = InitField(String("week of month"), ICalendar::WEEK_OF_MONTH);
 const AutoPtr<IDateFormatField> DateFormat::Field::AM_PM
-    = sInit(String("am pm"), ICalendar::AM_PM);
+    = InitField(String("am pm"), ICalendar::AM_PM);
 const AutoPtr<IDateFormatField> DateFormat::Field::HOUR0
-    = sInit(String("hour"), ICalendar::HOUR);
+    = InitField(String("hour"), ICalendar::HOUR);
 const AutoPtr<IDateFormatField> DateFormat::Field::HOUR1
-    = sInit(String("hour 1"), -1);
+    = InitField(String("hour 1"), -1);
 const AutoPtr<IDateFormatField> DateFormat::Field::TIME_ZONE
-    = sInit(String("time zone"), -1);
+    = InitField(String("time zone"), -1);
 
 HashMap<Int32, AutoPtr<IDateFormatField> > DateFormat::Field::sTable(11);
 
-TEXTATTRIBUITEDCHARACTERITERATORATTRIBUTE_METHODS_IMPL(DateFormat::Field, AttributedCharacterIteratorAttribute)
-
-CAR_INTERFACE_IMPL(DateFormat::Field, Object, IDateFormatField)
+CAR_INTERFACE_IMPL(DateFormat::Field, FormatBase::Field, IDateFormatField)
 
 DateFormat::Field::Field()
     : mCalendarField(-1)
 { }
 
-DateFormat::Field::Init(
+DateFormat::Field::constructor(
     /* [in] */ const String& fieldName,
     /* [in] */ Int32 calendarField)
 {
-    FAIL_RETURN(Format::Field::Init(fieldName));
+    FAIL_RETURN(FormatBase::Field::constructor(fieldName));
     mCalendarField = calendarField;
     // if (calendarField != -1 && sTable.Find(calendarField) == sTable.End()) {
     if (calendarField != -1 && sTable[calendarField] == NULL) {
@@ -103,7 +101,7 @@ DateFormat::Field::Init(
 // ECode DateFormat::Field::GetName(
 //     /* [out] */ String* name)
 // {
-//     return Format::Field::GetName(name);
+//     return FormatBase::Field::GetName(name);
 // }
 
 ECode DateFormat::Field::GetCalendarField(
@@ -131,23 +129,26 @@ ECode DateFormat::Field::OfCalendarField(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(DateFormat, FormatBase, IDateFormat)
+
 DateFormat::DateFormat()
 {}
 
-ECode DateFormat::FormatObject(
+ECode DateFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
     /* [out] */ IStringBuffer ** value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = NULL;
     VALIDATE_NOT_NULL(object)
     VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(field)
-    VALIDATE_NOT_NULL(value)
 
     IDate* date = IDate::Probe(object);
     if (date != NULL) {
-        return FormatDate(date, buffer, field, value);
+        return Format(date, buffer, field, value);
     }
 
     INumber* number = INumber::Probe(object) ;
@@ -157,13 +158,13 @@ ECode DateFormat::FormatObject(
         AutoPtr<IDate> dateObj;
         assert(0 && "TODO");
         // CDate::New(v, (IDate**)&dateObj);
-        return FormatDate(dateObj, buffer, field, value);
+        return Format(dateObj, buffer, field, value);
     }
 
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
-ECode DateFormat::FormatDate(
+ECode DateFormat::Format(
     /* [in] */ IDate* date,
     /* [out] */ String* value)
 {
@@ -173,7 +174,7 @@ ECode DateFormat::FormatDate(
     CFieldPosition::New(0, (IFieldPosition**)&field);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
     AutoPtr<IStringBuffer> outsb;
-    FormatDate(date, sb, field, (IStringBuffer **)&outsb);
+    Format(date, sb, field, (IStringBuffer **)&outsb);
     return ICharSequence::Probe(outsb)->ToString(value);
 }
 

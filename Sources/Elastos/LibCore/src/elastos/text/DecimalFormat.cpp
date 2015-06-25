@@ -79,7 +79,10 @@ ECode DecimalFormat::constructor(
     /* [in] */ IDecimalFormatSymbols* value)
 {
     if (value == NULL) return E_NULL_POINTER_EXCEPTION;
-    ICloneable::Probe(value)->Clone((IDecimalFormatSymbols**)&mSymbols);
+
+    AutoPtr<IInterface> obj;
+    ICloneable::Probe(value)->Clone((IInterface**)&obj);
+    mSymbols = IDecimalFormatSymbols::Probe(obj);
     return InitNative(pattern);
 }
 
@@ -152,7 +155,7 @@ ECode DecimalFormat::CheckBufferAndFieldPosition(
     return NOERROR;
 }
 
-ECode DecimalFormat::FormatDouble(
+ECode DecimalFormat::Format(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -170,7 +173,7 @@ ECode DecimalFormat::FormatDouble(
         CFieldPosition::New(0, (IFieldPosition**)&fp);
         AutoPtr<IStringBuffer> sb = new StringBuffer();
         AutoPtr<IStringBuffer> outsb;
-        FormatDouble(value, sb, fp, (IStringBuffer **)&outsb);
+        Format(value, sb, fp, (IStringBuffer **)&outsb);
         String upResult;
         ICharSequence::Probe(outsb)->ToString(&upResult);
 
@@ -178,7 +181,7 @@ ECode DecimalFormat::FormatDouble(
         AutoPtr<IFieldPosition> fpx;
         CFieldPosition::New(0, (IFieldPosition**)&fpx);
         String downResult;
-        FormatDouble(value, sb, fp, (IStringBuffer **)&outsb);
+        Format(value, sb, fp, (IStringBuffer **)&outsb);
         ICharSequence::Probe(outsb)->ToString(&downResult);
         if (!upResult.Equals(downResult)) {
             //throw new ArithmeticException("rounding mode UNNECESSARY but rounding required");
@@ -199,7 +202,7 @@ ECode DecimalFormat::FormatDouble(
     return NOERROR;
 }
 
-ECode DecimalFormat::FormatInt64(
+ECode DecimalFormat::Format(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -222,7 +225,7 @@ ECode DecimalFormat::FormatInt64(
     return NOERROR;
 }
 
-ECode DecimalFormat::FormatObject(
+ECode DecimalFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* field,
@@ -262,7 +265,7 @@ ECode DecimalFormat::FormatObject(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    return NumberFormat::FormatObject(object, buffer, field ,value);
+    return NumberFormat::Format(object, buffer, field ,value);
 }
 
 ECode DecimalFormat::GetDecimalFormatSymbols(
