@@ -13,15 +13,15 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CDateIntervalFormat)
-	, public Singleton
-	, public IDateIntervalFormat
+    , public Singleton
+    , public IDateIntervalFormat
 {
-	CAR_SINGLETON_DECL()
+    CAR_SINGLETON_DECL()
 
 public:
-	CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
-	CARAPI FormatDateRange(
+    CARAPI FormatDateRange(
         /* [in] */ Int64 startMs,
         /* [in] */ Int64 endMs,
         /* [in] */ Int32 flags,

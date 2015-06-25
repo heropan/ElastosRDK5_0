@@ -11,13 +11,13 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CNativePluralRulesHelper)
-	, public Singleton
-	, public INativePluralRulesHelper
+    , public Singleton
+    , public INativePluralRulesHelper
 {
-	CAR_SINGLETON_DECL()
+    CAR_SINGLETON_DECL()
 
 public:
-	CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
     CARAPI ForLocale(
         /* [in] */ ILocale * locale,

@@ -12,20 +12,20 @@ namespace ICU {
 extern "C" const _ELASTOS ClassID ECLSID_ImmutableIndex;
 
 class ImmutableIndex
-	: public Object
-	, public IImmutableIndex
+    : public Object
+    , public IImmutableIndex
 {
 public:
-	CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
 protected:
-	~ImmutableIndex();
+    ~ImmutableIndex();
 
 private:
-	ImmutableIndex(Int64 peer);
+    ImmutableIndex(Int64 peer);
 
 public:
-	CARAPI GetBucketCount(
+    CARAPI GetBucketCount(
         /* [out] */ Int32* count);
 
     CARAPI GetBucketIndex(
@@ -43,13 +43,13 @@ public:
         /* [out] */ ClassID *pCLSID);
 
 private:
-	CARAPI_(Int32) GetBucketCount(Int64 peer);
+    CARAPI_(Int32) GetBucketCount(Int64 peer);
 
-	CARAPI_(Int32) GetBucketIndex(Int64 peer, const String& s);
+    CARAPI_(Int32) GetBucketIndex(Int64 peer, const String& s);
 
-	CARAPI_(String) GetBucketLabel(Int64 peer, Int32 index);
+    CARAPI_(String) GetBucketLabel(Int64 peer, Int32 index);
 
-	Int64 mPeer;
+    Int64 mPeer;
 
 friend class AlphabeticIndex;
 };

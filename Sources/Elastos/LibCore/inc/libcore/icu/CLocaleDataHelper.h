@@ -11,13 +11,13 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CLocaleDataHelper)
-	, public Singleton
-	, public ILocaleDataHelper
+    , public Singleton
+    , public ILocaleDataHelper
 {
 public:
-	CAR_SINGLETON_DECL()
+    CAR_SINGLETON_DECL()
 
-	CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
     CARAPI MapInvalidAndNullLocales(
         /* [in] */ ILocale* locale,

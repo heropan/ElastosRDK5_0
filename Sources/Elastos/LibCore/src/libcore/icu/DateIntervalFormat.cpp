@@ -25,105 +25,105 @@ const Int32 DateIntervalFormat::EPOCH_JULIAN_DAY = 2440588;
 const AutoPtr<DateIntervalFormat::FormatterCache> DateIntervalFormat::CACHED_FORMATTERS = new DateIntervalFormat::FormatterCache;
 
 void DateIntervalFormat::FormatterCache::EntryEvicted(
-	const String& key,
-	Int64 value)
+    const String& key,
+    Int64 value)
 {
-	// TODO: Wait for class BasicLruCache complete
+    // TODO: Wait for class BasicLruCache complete
 #if 0 // for compiling
-	DestoryDateIntervalFormat(value);
+    DestoryDateIntervalFormat(value);
 #else
-	assert(0);
+    assert(0);
 #endif
 }
 
 String DateIntervalFormat::FormatDateRange(
-	Int64 startMs,
-	Int64 endMs,
-	Int32 flags,
-	String& olsonId)
+    Int64 startMs,
+    Int64 endMs,
+    Int32 flags,
+    String& olsonId)
 {
-	if ((flags & IDateIntervalFormat::FORMAT_UTC) != 0) {
-		olsonId = "UTC";
-	}
-	AutoPtr<ITimeZone> tz;
-	if (!olsonId.IsNull()) {
-		Elastos::Utility::TimeZone::GetTimeZone(olsonId, (ITimeZone**)&tz);
-	} else {
-		tz = Elastos::Utility::TimeZone::GetDefault();
-	}
-	return FormatDateRange(CLocale::GetDefault(), tz, startMs, endMs, flags);
+    if ((flags & IDateIntervalFormat::FORMAT_UTC) != 0) {
+        olsonId = "UTC";
+    }
+    AutoPtr<ITimeZone> tz;
+    if (!olsonId.IsNull()) {
+        Elastos::Utility::TimeZone::GetTimeZone(olsonId, (ITimeZone**)&tz);
+    } else {
+        tz = Elastos::Utility::TimeZone::GetDefault();
+    }
+    return FormatDateRange(CLocale::GetDefault(), tz, startMs, endMs, flags);
 }
 
 String DateIntervalFormat::FormatDateRange(ILocale* locale, ITimeZone* tz, Int64 startMs, Int64 endMs, Int32 flags)
 {
-	AutoPtr<ICalendarHelper> calendarHelper = NULL;
-	CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
-	AutoPtr<ICalendar> startCallendar = NULL;
-	calendarHelper->GetInstance(tz, (ICalendar**)&startCallendar);
-	startCallendar->SetTimeInMillis(startMs);
+    AutoPtr<ICalendarHelper> calendarHelper = NULL;
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    AutoPtr<ICalendar> startCallendar = NULL;
+    calendarHelper->GetInstance(tz, (ICalendar**)&startCallendar);
+    startCallendar->SetTimeInMillis(startMs);
 
-	AutoPtr<ICalendar> endCallendar = NULL;
-	if (startMs == endMs) {
-		endCallendar = startCallendar;
-	} else {
-		calendarHelper->GetInstance(tz, (ICalendar**)&endCallendar);
-		endCallendar->SetTimeInMillis(endMs);
-	}
+    AutoPtr<ICalendar> endCallendar = NULL;
+    if (startMs == endMs) {
+        endCallendar = startCallendar;
+    } else {
+        calendarHelper->GetInstance(tz, (ICalendar**)&endCallendar);
+        endCallendar->SetTimeInMillis(endMs);
+    }
 
-	Boolean endsAtMidnight = IsMidnight(endCallendar);
+    Boolean endsAtMidnight = IsMidnight(endCallendar);
 
-	// If we're not showing the time or the start and end times are on the same day, and the
+    // If we're not showing the time or the start and end times are on the same day, and the
     // end time is midnight, fudge the end date so we don't count the day that's about to start.
     // This is not the behavior of icu4c's DateIntervalFormat, but it's the historical behavior
     // of Android's DateUtils.formatDateRange.
-    if (startMs != endMs && endsAtMidnight && 
-    	(((flags | IDateIntervalFormat::FORMAT_SHOW_TIME) == 0) || (DayDistance(startCallendar, endCallendar) <= 1))) {
-    	endCallendar->Roll(ICalendar::DAY_OF_MONTH, false);
-    	endMs -= DAY_IN_MS;
+    if (startMs != endMs && endsAtMidnight &&
+        (((flags | IDateIntervalFormat::FORMAT_SHOW_TIME) == 0) || (DayDistance(startCallendar, endCallendar) <= 1))) {
+        endCallendar->Roll(ICalendar::DAY_OF_MONTH, false);
+        endMs -= DAY_IN_MS;
     }
 
     String skeleton = ToSkeleton(startCallendar, endCallendar, flags);
     String rev;
     synchronized(CACHED_FORMATTERS) {
-    	String s;
-    	locale->ToString(&s);
-    	String id;
-    	tz->GetID(&id);
-    	rev = FormatDateInterval(GetFormatter(skeleton, s, id), startMs, endMs);
+        String s;
+        locale->ToString(&s);
+        String id;
+        tz->GetID(&id);
+        rev = FormatDateInterval(GetFormatter(skeleton, s, id), startMs, endMs);
     }
     return rev;
 }
 
 Int64 DateIntervalFormat::GetFormatter(
-		const String& skeleton,
-		const String& localeName,
-		const String& tzName)
+    const String& skeleton,
+    const String& localeName,
+    const String& tzName)
 {
-	String key = skeleton + "\t" + localeName + "\t" + tzName;
-	Int64 formatter = 0;
-	// TODO: Waiting for class BasicLruCache
-#if 0	// for compiling
-	CACHED_FORMATTERS->Get(&key, &formatter);
+    String key = skeleton + "\t" + localeName + "\t" + tzName;
+    Int64 formatter = 0;
+    // TODO: Waiting for class BasicLruCache
+#if 0 // for compiling
+    CACHED_FORMATTERS->Get(&key, &formatter);
 #else
-	assert(0);
+    assert(0);
 #endif
-	if (formatter != 0) {
-		return formatter;
-	}
-	Int64 address = CreateDateIntervalFormat(skeleton, localeName, tzName);
-	return address;
+    if (formatter != 0) {
+        return formatter;
+    }
+    Int64 address = CreateDateIntervalFormat(skeleton, localeName, tzName);
+    return address;
 }
 
 String DateIntervalFormat::ToSkeleton(
-		ICalendar* startCalendar,
-		ICalendar* endCalendar,
-		Int32 flags)
+    ICalendar* startCalendar,
+    ICalendar* endCalendar,
+    Int32 flags)
 {
-	if ((flags & IDateIntervalFormat::FORMAT_ABBREV_ALL) != 0) {
-		flags |= IDateIntervalFormat::FORMAT_ABBREV_MONTH | IDateIntervalFormat::FORMAT_ABBREV_TIME | IDateIntervalFormat::FORMAT_ABBREV_WEEKDAY;
-	}
+    if ((flags & IDateIntervalFormat::FORMAT_ABBREV_ALL) != 0) {
+        flags |= IDateIntervalFormat::FORMAT_ABBREV_MONTH | IDateIntervalFormat::FORMAT_ABBREV_TIME | IDateIntervalFormat::FORMAT_ABBREV_WEEKDAY;
+    }
 
-	String monthPart("MMMM");
+    String monthPart("MMMM");
     if ((flags & IDateIntervalFormat::FORMAT_NUMERIC_DATE) != 0) {
         monthPart = "M";
     } else if ((flags & IDateIntervalFormat::FORMAT_ABBREV_MONTH) != 0) {
@@ -202,133 +202,133 @@ String DateIntervalFormat::ToSkeleton(
 
 static inline Int32 getField(ICalendar* c, Int32 field)
 {
-	Int32 value;
-	c->Get(field, &value);
-	return value;
+    Int32 value;
+    c->Get(field, &value);
+    return value;
 }
 
 Boolean DateIntervalFormat::IsMidnight(
-		ICalendar* c)
+    ICalendar* c)
 {
-	return getField(c, ICalendar::HOUR_OF_DAY) ==0 &&
-		getField(c, ICalendar::MINUTE) == 0 &&
-		getField(c, ICalendar::SECOND) == 0 &&
-		getField(c, ICalendar::MILLISECOND);
+    return getField(c, ICalendar::HOUR_OF_DAY) ==0 &&
+        getField(c, ICalendar::MINUTE) == 0 &&
+        getField(c, ICalendar::SECOND) == 0 &&
+        getField(c, ICalendar::MILLISECOND);
 }
 
 Boolean DateIntervalFormat::OnTheHour(
-	ICalendar* c)
+    ICalendar* c)
 {
-	return getField(c, ICalendar::MINUTE) == 0 && getField(c, ICalendar::SECOND) == 0;
+    return getField(c, ICalendar::MINUTE) == 0 && getField(c, ICalendar::SECOND) == 0;
 }
 
 Boolean DateIntervalFormat::FallOnDifferentDates(
-	ICalendar* c1,
-	ICalendar* c2)
+    ICalendar* c1,
+    ICalendar* c2)
 {
-	return getField(c1, ICalendar::YEAR) != getField(c2, ICalendar::YEAR) ||
-		getField(c1, ICalendar::MONTH) != getField(c2, ICalendar::MONTH) ||
-		getField(c1, ICalendar::DAY_OF_MONTH) != getField(c2, ICalendar::DAY_OF_MONTH);
+    return getField(c1, ICalendar::YEAR) != getField(c2, ICalendar::YEAR) ||
+        getField(c1, ICalendar::MONTH) != getField(c2, ICalendar::MONTH) ||
+        getField(c1, ICalendar::DAY_OF_MONTH) != getField(c2, ICalendar::DAY_OF_MONTH);
 }
 
 Boolean DateIntervalFormat::FallInSameMonth(
-	ICalendar* c1,
-	ICalendar* c2)
+    ICalendar* c1,
+    ICalendar* c2)
 {
-	return getField(c1, ICalendar::MONTH) == getField(c2, ICalendar::MONTH);
+    return getField(c1, ICalendar::MONTH) == getField(c2, ICalendar::MONTH);
 }
 
 Boolean DateIntervalFormat::FallInSameYear(
-	ICalendar* c1,
-	ICalendar* c2)
+    ICalendar* c1,
+    ICalendar* c2)
 {
-	return getField(c1, ICalendar::YEAR) == getField(c2, ICalendar::YEAR);
+    return getField(c1, ICalendar::YEAR) == getField(c2, ICalendar::YEAR);
 }
 
 Boolean DateIntervalFormat::IsThisYear(
-	ICalendar* c)
+    ICalendar* c)
 {
-	AutoPtr<ITimeZone> timeZone;
-	c->GetTimeZone((ITimeZone**)&timeZone);
-	AutoPtr<ICalendar> now;
-	AutoPtr<ICalendarHelper> calendarHelper;
-	CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
-	calendarHelper->GetInstance(timeZone, (ICalendar**)&now);
-	return getField(c, ICalendar::YEAR) == getField(now, ICalendar::YEAR);
+    AutoPtr<ITimeZone> timeZone;
+    c->GetTimeZone((ITimeZone**)&timeZone);
+    AutoPtr<ICalendar> now;
+    AutoPtr<ICalendarHelper> calendarHelper;
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    calendarHelper->GetInstance(timeZone, (ICalendar**)&now);
+    return getField(c, ICalendar::YEAR) == getField(now, ICalendar::YEAR);
 }
 
 Int32 DateIntervalFormat::DayDistance(
-	ICalendar* c1,
-	ICalendar* c2)
+    ICalendar* c1,
+    ICalendar* c2)
 {
-	return JulianDay(c2) - JulianDay(c1);
+    return JulianDay(c2) - JulianDay(c1);
 }
 
 Int32 DateIntervalFormat::JulianDay(
-	ICalendar* c)
+    ICalendar* c)
 {
-	Int64 utcMs;
-	c->GetTimeInMillis(&utcMs);
-	utcMs += getField(c, ICalendar::ZONE_OFFSET);
-	utcMs += getField(c, ICalendar::DST_OFFSET);
-	return (Int32) (utcMs / DateIntervalFormat::DAY_IN_MS) + DateIntervalFormat::EPOCH_JULIAN_DAY;
+    Int64 utcMs;
+    c->GetTimeInMillis(&utcMs);
+    utcMs += getField(c, ICalendar::ZONE_OFFSET);
+    utcMs += getField(c, ICalendar::DST_OFFSET);
+    return (Int32) (utcMs / DateIntervalFormat::DAY_IN_MS) + DateIntervalFormat::EPOCH_JULIAN_DAY;
 }
 
 Int64 DateIntervalFormat::CreateDateIntervalFormat(
-	const String& skeleton,
-	const String& localeName,
-	const String& tzName)
+    const String& skeleton,
+    const String& localeName,
+    const String& tzName)
 {
-	NATIVE(Locale) icuLocale;
-	icuLocale = NATIVE(Locale)::createFromName(localeName);
-	if (icuLocale.isBogus()) {
-		return 0;
-	}
+    NATIVE(Locale) icuLocale;
+    icuLocale = NATIVE(Locale)::createFromName(localeName);
+    if (icuLocale.isBogus()) {
+        return 0;
+    }
 
-	if (skeleton.IsNull()) {
-		return 0;
-	}
+    if (skeleton.IsNull()) {
+        return 0;
+    }
 
-	UErrorCode status = U_ZERO_ERROR;
-  	NATIVE(DateIntervalFormat)* formatter(NATIVE(DateIntervalFormat)::createInstance(UnicodeString::fromUTF8(skeleton.string()), icuLocale, status));
-  	if (!U_SUCCESS(status)) {
-    	return 0;
-  	}
+    UErrorCode status = U_ZERO_ERROR;
+      NATIVE(DateIntervalFormat)* formatter(NATIVE(DateIntervalFormat)::createInstance(UnicodeString::fromUTF8(skeleton.string()), icuLocale, status));
+      if (!U_SUCCESS(status)) {
+        return 0;
+      }
 
-  	if (tzName.IsNull()) {
-  		return 0;
-  	}
-	formatter->adoptTimeZone(NATIVE(TimeZone)::createTimeZone(UnicodeString::fromUTF8(tzName.string())));
+      if (tzName.IsNull()) {
+          return 0;
+      }
+    formatter->adoptTimeZone(NATIVE(TimeZone)::createTimeZone(UnicodeString::fromUTF8(tzName.string())));
 
-  	return reinterpret_cast<uintptr_t>(formatter);
+      return reinterpret_cast<uintptr_t>(formatter);
 }
 
 void DateIntervalFormat::DestroyDateIntervalFormat(
-   	Int64 address)
+    Int64 address)
 {
-	delete reinterpret_cast<NATIVE(DateIntervalFormat)*>(address);
+    delete reinterpret_cast<NATIVE(DateIntervalFormat)*>(address);
 }
 
 String DateIntervalFormat::FormatDateInterval(
-   	Int64 address,
-   	Int64 fromDate,
-   	Int64 toDate)
+    Int64 address,
+    Int64 fromDate,
+    Int64 toDate)
 {
-  	NATIVE(DateIntervalFormat)* formatter(reinterpret_cast<NATIVE(DateIntervalFormat)*>(address));
-  	DateInterval date_interval(fromDate, toDate);
+    NATIVE(DateIntervalFormat)* formatter(reinterpret_cast<NATIVE(DateIntervalFormat)*>(address));
+    DateInterval date_interval(fromDate, toDate);
 
-  	UnicodeString s;
-  	FieldPosition pos = 0;
-  	UErrorCode status = U_ZERO_ERROR;
-  	formatter->format(&date_interval, s, pos, status);
-  	if (!U_SUCCESS(status)) {
-    	return String(NULL);
-  	}
+    UnicodeString s;
+    FieldPosition pos = 0;
+    UErrorCode status = U_ZERO_ERROR;
+    formatter->format(&date_interval, s, pos, status);
+    if (!U_SUCCESS(status)) {
+        return String(NULL);
+    }
 
-  	String rev;
-  	ElStringByteSink sink(&rev);
-  	s.toUTF8(sink);
-  	return rev;
+    String rev;
+    ElStringByteSink sink(&rev);
+    s.toUTF8(sink);
+    return rev;
 }
 
 } // ICU

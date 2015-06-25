@@ -13,12 +13,12 @@ ECode CLocaleDataHelper::MapInvalidAndNullLocales(
     /* [in] */ ILocale* locale,
     /* [out] */ ILocale** rst)
 {
-	VALIDATE_NOT_NULL(rst);
+    VALIDATE_NOT_NULL(rst);
 
-	*rst = LocaleData::MapInvalidAndNullLocales(locale);
-	REFCOUNT_ADD(*rst);
+    *rst = LocaleData::MapInvalidAndNullLocales(locale);
+    REFCOUNT_ADD(*rst);
 
-	return NOERROR;
+    return NOERROR;
 }
 
 ECode CLocaleDataHelper::Get(
@@ -27,7 +27,7 @@ ECode CLocaleDataHelper::Get(
 {
     VALIDATE_NOT_NULL(localeData);
     if (NULL == locale)
-    	return E_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
 
     AutoPtr<ILocaleData> temp = LocaleData::Get(locale);
     *localeData = temp;

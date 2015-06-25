@@ -11,13 +11,13 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeNormalizerHelper)
-	, public Singleton
-	, public INativeNormalizerHelper
+    , public Singleton
+    , public INativeNormalizerHelper
 {
-	CAR_SINGLETON_DECL()
+    CAR_SINGLETON_DECL()
 
 public:
-	CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
     CARAPI IsNormalized(
         /* [in] */ ICharSequence * src,

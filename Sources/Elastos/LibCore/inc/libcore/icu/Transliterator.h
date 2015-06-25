@@ -15,7 +15,7 @@ class Transliterator
 {
 public:
     CAR_INTERFACE_DECL()
-    
+
     CARAPI constructor(
         /* [in] */ const String& id);
 

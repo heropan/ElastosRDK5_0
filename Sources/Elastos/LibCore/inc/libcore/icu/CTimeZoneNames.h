@@ -12,7 +12,7 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CTimeZoneNames)
-	, public Singleton
+    , public Singleton
     , public ITimeZoneNames
 {
 public:

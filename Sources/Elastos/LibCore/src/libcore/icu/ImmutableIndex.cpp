@@ -17,39 +17,39 @@ CAR_INTERFACE_IMPL(ImmutableIndex, Object, IImmutableIndex)
 
 ImmutableIndex::ImmutableIndex(Int64 peer)
 {
-	mPeer = peer;
+    mPeer = peer;
 }
 
 ImmutableIndex::~ImmutableIndex()
 {
-	synchronized(this)
-	{
-		AlphabeticIndex::Destroy(mPeer);
-		mPeer = 0;
-	}
+    synchronized(this)
+    {
+        AlphabeticIndex::Destroy(mPeer);
+        mPeer = 0;
+    }
 }
 
 ECode ImmutableIndex::GetBucketCount(
     /* [out] */ Int32* count)
 {
-	*count = GetBucketCount(mPeer);
-	return NOERROR;
+    *count = GetBucketCount(mPeer);
+    return NOERROR;
 }
 
 ECode ImmutableIndex::GetBucketIndex(
     /* [in] */ const String& s,
     /* [out] */ Int32* index)
 {
-	*index = GetBucketIndex(mPeer, s);
-	return NOERROR;
+    *index = GetBucketIndex(mPeer, s);
+    return NOERROR;
 }
 
 ECode ImmutableIndex::GetBucketLabel(
     /* [in] */ Int32 index,
     /* [out] */ String* label)
 {
-	*label = GetBucketLabel(mPeer, index);
-	return NOERROR;
+    *label = GetBucketLabel(mPeer, index);
+    return NOERROR;
 }
 
 static NATIVE(AlphabeticIndex::ImmutableIndex)* immutableIndexFromPeer(Int64 peer) {
@@ -58,57 +58,57 @@ static NATIVE(AlphabeticIndex::ImmutableIndex)* immutableIndexFromPeer(Int64 pee
 
 Int32 ImmutableIndex::GetBucketCount(Int64 peer)
 {
-	NATIVE(AlphabeticIndex::ImmutableIndex)* ii = immutableIndexFromPeer(peer);
-	// TODO: There is a problem here. Waiting for new .so files.
+    NATIVE(AlphabeticIndex::ImmutableIndex)* ii = immutableIndexFromPeer(peer);
+    // TODO: There is a problem here. Waiting for new .so files.
 #if 0 // for compiling
-	return ii->getBucketCount();
+    return ii->getBucketCount();
 #else
-	assert(0);
-	return 0;
+    assert(0);
+    return 0;
 #endif
 }
 
 Int32 ImmutableIndex::GetBucketIndex(Int64 peer, const String& s)
 {
-	NATIVE(AlphabeticIndex::ImmutableIndex)* ii = immutableIndexFromPeer(peer);
-	if(s.IsNull())
-		return -1;
-	UErrorCode status = U_ZERO_ERROR;
-	// TODO: There is a problem here. Waiting for new .so files.
+    NATIVE(AlphabeticIndex::ImmutableIndex)* ii = immutableIndexFromPeer(peer);
+    if(s.IsNull())
+        return -1;
+    UErrorCode status = U_ZERO_ERROR;
+    // TODO: There is a problem here. Waiting for new .so files.
 #if 0 // for compiling
-	Int32 result = ii->getBucketIndex(UnicodeString::fromUTF8(s.string()), status);
-	if(!U_SUCCESS(status))
-		return -1;
-	return result;
+    Int32 result = ii->getBucketIndex(UnicodeString::fromUTF8(s.string()), status);
+    if(!U_SUCCESS(status))
+        return -1;
+    return result;
 #else
-	assert(0);
-	return 0;
+    assert(0);
+    return 0;
 #endif
 }
 
 String ImmutableIndex::GetBucketLabel(Int64 peer, Int32 index)
 {
-	NATIVE(AlphabeticIndex::ImmutableIndex)* ii = immutableIndexFromPeer(peer);
-	// TODO: There is a problem here. Waiting for new .so files.
+    NATIVE(AlphabeticIndex::ImmutableIndex)* ii = immutableIndexFromPeer(peer);
+    // TODO: There is a problem here. Waiting for new .so files.
 #if 0 // for compiling
-	const NATIVE(AlphabeticIndex::Bucket)* bucket = ii->getBucket(index);
-	if(NULL == bucket) {
-		return String(NULL);
-	}
+    const NATIVE(AlphabeticIndex::Bucket)* bucket = ii->getBucket(index);
+    if(NULL == bucket) {
+        return String(NULL);
+    }
 
-	// Return "" for the underflow/inflow/overflow buckets.
-  	if (bucket->getLabelType() != U_ALPHAINDEX_NORMAL) {
-    	return String("");
-  	}
+    // Return "" for the underflow/inflow/overflow buckets.
+    if (bucket->getLabelType() != U_ALPHAINDEX_NORMAL) {
+        return String("");
+    }
 
-  	const UnicodeString& label(bucket->getLabel());
-  	String s;
-  	ElStringByteSink sink(&s);
-  	label.toUTF8(sink);
-  	return s;
+    const UnicodeString& label(bucket->getLabel());
+    String s;
+    ElStringByteSink sink(&s);
+    label.toUTF8(sink);
+    return s;
 #else
-	assert(0);
-	return String(NULL);
+    assert(0);
+    return String(NULL);
 #endif
 }
 

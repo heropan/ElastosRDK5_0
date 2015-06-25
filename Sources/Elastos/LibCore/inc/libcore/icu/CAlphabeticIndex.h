@@ -8,10 +8,10 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CAlphabeticIndex)
-	, public AlphabeticIndex
+    , public AlphabeticIndex
 {
 public:
-	CAR_OBJECT_DECL()
+    CAR_OBJECT_DECL()
 };
 
 } // namespace ICU

@@ -11,13 +11,13 @@ namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeIDNHelper)
-	, public Singleton
-	, public INativeIDNHelper
+    , public Singleton
+    , public INativeIDNHelper
 {
-	CAR_SINGLETON_DECL()
+    CAR_SINGLETON_DECL()
 
 public:
-	CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
     CARAPI ToASCII(
         /* [in] */ const String& s,
