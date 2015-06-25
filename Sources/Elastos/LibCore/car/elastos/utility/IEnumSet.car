@@ -1,0 +1,87 @@
+
+module
+{
+    namespace Elastos {
+    namespace Utility {
+
+    /**
+     * @Involve
+     * interface IIterable;
+     * interface ICollection;
+     * interface ISet;
+     * interface ICloneable;
+     * interface ISerializable;
+     */
+    interface IEnumSet {
+        Complement();
+
+        SetRange(
+            [in] IInterface* start,
+            [in] IInterface* end);
+    }
+
+    [deprecated]
+    interface IEnumSetHelper {
+       NoneOf(
+            [in] InterfaceID type,
+            [out] IEnumSet** res);
+
+        AllOf(
+            [in] InterfaceID type,
+            [out] IEnumSet** res);
+
+        CopyOf(
+            [in] IEnumSet* s,
+            [out] IEnumSet** res);
+
+        CopyOf(
+            [in] ICollection* c,
+            [out] IEnumSet** set);
+
+        ComplementOf(
+            [in] IEnumSet* s,
+            [out] IEnumSet** res);
+
+        Of(
+            [in] IInterface* i,
+            [out] IEnumSet** res);
+
+        Of(
+            [in] IInterface* i1,
+            [in] IInterface* i2,
+            [out] IEnumSet** res);
+
+        Of(
+            [in] IInterface* i1,
+            [in] IInterface* i2,
+            [in] IInterface* i3,
+            [out] IEnumSet** res);
+
+        Of(
+            [in] IInterface* i1,
+            [in] IInterface* i2,
+            [in] IInterface* i3,
+            [in] IInterface* i4,
+            [out] IEnumSet** res);
+
+        Of(
+            [in] IInterface* i1,
+            [in] IInterface* i2,
+            [in] IInterface* i3,
+            [in] IInterface* i4,
+            [in] IInterface* i5,
+            [out] IEnumSet** res);
+
+        Of(
+            [in] ArrayOf<IInterface*>* array,
+            [out] IEnumSet** res);
+
+        Range(
+            [in] IInterface* start,
+            [in] IInterface* end,
+            [out] IEnumSet** set);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}

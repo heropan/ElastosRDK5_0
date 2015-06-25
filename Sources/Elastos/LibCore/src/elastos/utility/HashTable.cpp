@@ -1489,9 +1489,9 @@ ECode HashTable::ToString(
             }
         }
     }
-
     result.AppendChar('}');
-    return result.ToString(str);
+    result.ToString(str);
+    return NOERROR;
 }
 
 Int32 HashTable::SecondaryHash(

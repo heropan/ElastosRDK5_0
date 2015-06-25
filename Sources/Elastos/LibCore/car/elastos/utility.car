@@ -60,6 +60,9 @@ module
     merge("utility/IObserver.car");
     merge("utility/IObservable.car");
     merge("utility/IPriorityQueue.car");
+    merge("utility/IEnumSet.car");
+    merge("utility/IHugeEnumSet.car");
+    merge("utility/IMiniEnumSet.car");
     merge("utility/IPropertyResourceBundle.car");
     merge("utility/IScanner.car");
     merge("utility/IServiceLoader.car");
@@ -648,6 +651,42 @@ module
             interface IIterable;
             interface IQueue;
             interface ISerializable;
+        }
+
+        [deprecated]
+        class CHugeEnumSet {
+            constructor();
+
+            constructor(
+                [in] InterfaceID cls,
+                [in] ArrayOf<IInterface *> * enums);
+
+            interface IHugeEnumSet;
+            interface ICollection;
+            interface IIterable;
+            interface ISet;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        [deprecated]
+        class CMiniEnumSet {
+            constructor();
+
+            constructor(
+                [in] InterfaceID cls,
+                [in] ArrayOf<IInterface *> * enums);
+
+            interface IMiniEnumSet;
+            interface ICollection;
+            interface IIterable;
+            interface ISet;
+            interface ICloneable;
+            interface ISerializable;
+        }
+
+        singleton class CEnumSetHelper {
+            interface IEnumSetHelper;
         }
 
         singleton class CCalendarHelper {

@@ -1,0 +1,26 @@
+
+module
+{
+    namespace Elastos {
+    namespace Utility {
+
+    /**
+     * @Involve
+     * interface IEnumSet;
+     * interface ISet;
+     * interface ICollection;
+     * interface IIterable;
+     * interface ICloneable;
+     * interface ISerializable;
+     */
+    interface IHugeEnumSet {
+        GetEnums(
+            [out, callee] ArrayOf<IInterface*>* arrays);
+
+        GetBits(
+            [out, callee] ArrayOf<Int64>* arrays);
+    }
+
+    } // namespace Utility
+    } // namespace Elastos
+}
