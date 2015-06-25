@@ -1,8 +1,6 @@
 
 #include "NodeChangeEvent.h"
 
-using Elastos::IO::EIID_ISerializable;
-
 namespace Elastos {
 namespace Utility {
 namespace Prefs {
@@ -10,7 +8,7 @@ namespace Prefs {
 extern "C" const InterfaceID EIID_NodeChangeEvent =
         { 0x3923b969, 0xe881, 0x407a, { 0xb2, 0xa8, 0x27, 0xb9, 0x47, 0x1d, 0xdd, 0x50 } };
 
-CAR_INTERFACE_IMPL_2(NodeChangeEvent, EventObject, INodeChangeEvent, ISerializable);
+CAR_INTERFACE_IMPL(NodeChangeEvent, EventObject, INodeChangeEvent);
 
 NodeChangeEvent::NodeChangeEvent(
     /* [in] */ IPreferences* p,

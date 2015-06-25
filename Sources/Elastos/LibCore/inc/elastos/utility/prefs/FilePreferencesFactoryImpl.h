@@ -26,13 +26,15 @@ public:
         /* [out] */ String* info);
 
 private:
+    static CARAPI_(Boolean) InitStatic();
+
+private:
+    static Boolean sInit;
     //  user root preferences
-    static final Preferences USER_ROOT = new FilePreferencesImpl(
-            System.getProperty("user.home") + "/.java/.userPrefs", true);
+    static AutoPtr<IPreferences> USER_ROOT;
 
     //  system root preferences
-    static final Preferences SYSTEM_ROOT = new FilePreferencesImpl(
-            System.getProperty("java.home") + "/.systemPrefs", false);
+    static AutoPtr<IPreferences> SYSTEM_ROOT;
 
 };
 

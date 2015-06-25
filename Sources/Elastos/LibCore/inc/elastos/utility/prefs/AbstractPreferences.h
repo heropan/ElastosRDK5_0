@@ -397,7 +397,7 @@ protected:
      * @param value
      *            the given preference value.
      */
-    virtual CARAPI_(void) PutSpi(
+    virtual CARAPI PutSpi(
         /* [in] */ const String& name,
         /* [in] */ const String& value) = 0;
 
@@ -450,7 +450,7 @@ protected:
      * @param key
      *            the key of the preference that is to be removed.
      */
-    virtual CARAPI_(void) RemoveSpi(
+    virtual CARAPI RemoveSpi(
         /* [in] */ const String& key) = 0;
 
     /**

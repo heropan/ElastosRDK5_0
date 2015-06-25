@@ -3,7 +3,6 @@
 
 #include "EventObject.h"
 
-using Elastos::IO::ISerializable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 
@@ -27,7 +26,6 @@ namespace Prefs {
 class NodeChangeEvent
     : public EventObject
     , public INodeChangeEvent
-    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL();

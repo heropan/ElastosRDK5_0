@@ -3,6 +3,7 @@
 
 #include "Object.h"
 
+using Elastos::IO::ISerializable;
 
 namespace Elastos {
 namespace Utility {
@@ -10,6 +11,7 @@ namespace Utility {
 class EventObject
     : public Object
     , public IEventObject
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL();

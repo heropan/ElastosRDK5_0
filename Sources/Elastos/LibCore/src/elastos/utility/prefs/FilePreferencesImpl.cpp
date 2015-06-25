@@ -1,5 +1,15 @@
 
 #include "FilePreferencesImpl.h"
+#include "CHashSet.h"
+#include "XMLParser.h"
+#include "CFile.h"
+#include "CStringWrapper.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CStringWrapper;
+using Elastos::IO::CFile;
+using Elastos::IO::EIID_IFilenameFilter;
+using Elastos::Utility::CHashSet;
 
 namespace Elastos {
 namespace Utility {
@@ -8,53 +18,79 @@ namespace Prefs {
 extern "C" const InterfaceID EIID_FilePreferencesImpl =
         { 0x41993109, 0xfb1f, 0x40e9, { 0xb3, 0x58, 0xcf, 0xac, 0xe7, 0xb4, 0x44, 0x16 } };
 
+
+
+CAR_INTERFACE_IMPL(FilePreferencesImpl::FilenameFilter, Object, IFilenameFilter);
+FilePreferencesImpl::FilenameFilter::FilenameFilter(
+    /* [in] */ FilePreferencesImpl* host)
+    : mHost(host)
+{
+}
+
+ECode FilePreferencesImpl::FilenameFilter::Accept(
+    /* [in] */ IFile* dir,
+    /* [in] */ const String& filename,
+    /* [out] */ Boolean* succeeded)
+{
+    VALIDATE_NOT_NULL(succeeded);
+    AutoPtr<IFile> file;
+    CFile::New(mHost->mPath + CFile::sSeparator + filename, (IFile**)&file);
+    return file->IsDirectory(succeeded);
+}
+
+
 CAR_INTERFACE_IMPL_2(FilePreferencesImpl, Object, IAbstractPreferences, IPreferences);
 
 const String FilePreferencesImpl::PREFS_FILE_NAME = String("prefs.xml");
 FilePreferencesImpl::FilePreferencesImpl(
     /* [in] */ const String& path,
     /* [in] */ Boolean isUserNode)
-    : AbstractPreferences(NULL, "")
+    : AbstractPreferences(NULL, String(""))
     , mPath(path)
-    , mUserNode(isUserNode)
 {
+    mUserNode = isUserNode;
     InitPrefs();
 }
 
 FilePreferencesImpl::FilePreferencesImpl(
-    /* [in] */ IAbstractPreferences* parent,
+    /* [in] */ AbstractPreferences* parent,
     /* [in] */ const String& name)
     : AbstractPreferences(parent, name)
 {
-    mPath = ((FilePreferencesImpl*) parent)->mPath + File::sSeparator + name;
+    mPath = ((FilePreferencesImpl*) parent)->mPath + CFile::sSeparator + name;
     InitPrefs();
 }
 
 void FilePreferencesImpl::InitPrefs()
 {
+    CHashSet::New((ISet**)&mRemoved);
+    CHashSet::New((ISet**)&mUpdated);
+
     CFile::New(mPath, (IFile**)&mDir);
-    dir->Exists(&mNewNode);
+    mDir->Exists(&mNewNode);
     mNewNode = !mNewNode;
-    CFile::New(path + File::sSeparator + PREFS_FILE_NAME, (IFile**)&mPrefsFile);
-    XMLParser::ReadXmlPreferences(prefsFile, (IProperties**)&mPrefs);
+    CFile::New(mPath + CFile::sSeparator + PREFS_FILE_NAME, (IFile**)&mPrefsFile);
+    XMLParser::ReadXmlPreferences(mPrefsFile, (IProperties**)&mPrefs);
 }
 
-AutoPtr<ArrayOf<String> > FilePreferencesImpl::ChildrenNamesSpi(
-    /* [out, callee] */ AutoPtr<ArrayOf<String> >** list)
+ECode FilePreferencesImpl::ChildrenNamesSpi(
+    /* [out, callee] */ ArrayOf<String>** list)
 {
-    String[] names = dir.list(new FilenameFilter() {
-        public boolean accept(File parent, String name) {
-            return new File(path + File.separator + name).isDirectory();
-        }
-    });
-    if (names == null) {// file is not a directory, exception case
-        throw new BackingStoreException("Cannot get child names for " + toString()
-                + " (path is " + path + ")");
+    VALIDATE_NOT_NULL(*list);
+    AutoPtr<FilenameFilter> filter = new FilenameFilter(this);
+    AutoPtr<ArrayOf<String> > names;
+    mDir->List((IFilenameFilter*)filter->Probe(EIID_IFilenameFilter), (ArrayOf<String>**)&names);
+    if (names == NULL) {// file is not a directory, exception case
+        // throw new BackingStoreException("Cannot get child names for " + toString()
+        //         + " (path is " + path + ")");
+        return E_BACKING_STORE_EXCEPTION;
     }
-    return names;
+    *list = names;
+    REFCOUNT_ADD(*list);
+    return NOERROR;
 }
 
-AutoPtr<IAbstractPreferences> FilePreferencesImpl::ChildSpi(
+AutoPtr<AbstractPreferences> FilePreferencesImpl::ChildSpi(
     /* [in] */ const String& name)
 {
     AutoPtr<FilePreferencesImpl> child = new FilePreferencesImpl(this, name);
@@ -63,39 +99,55 @@ AutoPtr<IAbstractPreferences> FilePreferencesImpl::ChildSpi(
 
 ECode FilePreferencesImpl::FlushSpi() /*throws BackingStoreException*/
 {
-    try {
-        //if removed, return
-        if(isRemoved()){
-            return;
-        }
-        // reload
-        Properties currentPrefs = XMLParser.readXmlPreferences(prefsFile);
-        // merge
-        Iterator<String> it = removed.iterator();
-        while (it.hasNext()) {
-            currentPrefs.remove(it.next());
-        }
-        removed.clear();
-        it = updated.iterator();
-        while (it.hasNext()) {
-            Object key = it.next();
-            currentPrefs.put(key, prefs.get(key));
-        }
-        updated.clear();
-        // flush
-        prefs = currentPrefs;
-        XMLParser.writeXmlPreferences(prefsFile, prefs);
-    } catch (Exception e) {
-        // throw new BackingStoreException(e);
+    // try {
+    //if removed, return
+    if(IsRemoved()){
+        return NOERROR;
+    }
+    // reload
+    AutoPtr<IProperties> currentPrefs;
+    if (FAILED(XMLParser::ReadXmlPreferences(mPrefsFile, (IProperties**)&currentPrefs))) {
         return E_BACKING_STORE_EXCEPTION;
     }
+    // merge
+    AutoPtr<IIterator> it;
+    IIterable::Probe(mRemoved)->GetIterator((IIterator**)&it);
+    Boolean has = FALSE;
+    while (it->HasNext(&has), has) {
+        AutoPtr<IInterface> value;
+        it->GetNext((IInterface**)&value);
+        IMap::Probe(currentPrefs)->Remove(value);
+    }
+    IMap::Probe(mRemoved)->Clear();
+
+    it = NULL;
+    IIterable::Probe(mUpdated)->GetIterator((IIterator**)&it);
+    while (it->HasNext(&has), has) {
+        AutoPtr<IInterface> key;
+        it->GetNext((IInterface**)&key);
+
+        AutoPtr<IInterface> value;
+        IMap::Probe(mPrefs)->Get(key, (IInterface**)&value);
+        IMap::Probe(currentPrefs)->Put(key, value);
+    }
+    IMap::Probe(mUpdated)->Clear();
+    // flush
+    mPrefs = currentPrefs;
+    if (FAILED(XMLParser::WriteXmlPreferences(mPrefsFile, mPrefs))) {
+        return E_BACKING_STORE_EXCEPTION;
+    }
+    return NOERROR;
+    // } catch (Exception e) {
+    //     // throw new BackingStoreException(e);
+    //     return E_BACKING_STORE_EXCEPTION;
+    // }
 }
 
 String FilePreferencesImpl::GetSpi(
     /* [in] */ const String& key)
 {
     if (mPrefs == NULL) {
-        mPrefs = XMLParser::ReadXmlPreferences(prefsFile);
+        XMLParser::ReadXmlPreferences(mPrefsFile, (IProperties**)&mPrefs);
     }
 
     String spi;
@@ -107,23 +159,34 @@ String FilePreferencesImpl::GetSpi(
     return spi;
 }
 
-AutoPtr<ArrayOf<IInterface*> > FilePreferencesImpl::KeysSpi()
+ECode FilePreferencesImpl::KeysSpi(
+    /* [out, callee] */ ArrayOf<String>** spi)
 {
     AutoPtr<ISet> ks;
     IMap::Probe(mPrefs)->GetKeySet((ISet**)&ks);
     Int32 size = 0;
-    ks->GetSize(&size);
-    AutoPtr<ArrayOf<IInterface*> > datas = ArrayOf<<IInterface*> >::Alloc(size);
-    ks->ToArray((ArrayOf<IInterface*>**)&datas);
-    return datas;
+    IMap::Probe(ks)->GetSize(&size);
+    AutoPtr<ArrayOf<IInterface*> > datas = ArrayOf<IInterface*>::Alloc(size);
+    ICollection::Probe(ks)->ToArray((ArrayOf<IInterface*>**)&datas);
+    *spi = ArrayOf<String>::Alloc(size);
+    for (Int32 i = 0; i < size; i++) {
+        String value;
+        IObject::Probe((*datas)[i])->ToString(&value);
+        (*spi)->Set(i, value);
+    }
+    REFCOUNT_ADD(*spi);
+    return NOERROR;
 }
 
 ECode FilePreferencesImpl::PutSpi(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
-    mPrefs->SetProperty(name, value);
-    return mUpdated->Add(name);
+    String tmp;
+    mPrefs->SetProperty(name, value, &tmp);
+    AutoPtr<ICharSequence> obj;
+    CStringWrapper::New(name, (ICharSequence**)&obj);
+    return ICollection::Probe(mUpdated)->Add(obj);
 }
 
 ECode FilePreferencesImpl::RemoveNodeSpi()
@@ -141,9 +204,12 @@ ECode FilePreferencesImpl::RemoveNodeSpi()
 ECode FilePreferencesImpl::RemoveSpi(
     /* [in] */ const String& key)
 {
-    mPrefs->Remove(key);
-    mUpdated->Remove(key);
-    return mRemoved->Add(key);
+    AutoPtr<ICharSequence> obj;
+    CStringWrapper::New(key, (ICharSequence**)&obj);
+
+    IMap::Probe(mPrefs)->Remove(obj);
+    IMap::Probe(mUpdated)->Remove(obj);
+    return ICollection::Probe(mRemoved)->Add(obj);
 }
 
 ECode FilePreferencesImpl::SyncSpi()

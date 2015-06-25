@@ -1,7 +1,10 @@
 #ifndef __UTILITY_PREFS_FILEPREFERENCESIMPL_H__
 #define __UTILITY_PREFS_FILEPREFERENCESIMPL_H__
 
-#include "Object.h"
+#include "AbstractPreferences.h"
+
+using Elastos::IO::IFile;
+using Elastos::IO::IFilenameFilter;
 
 namespace Elastos {
 namespace Utility {
@@ -10,6 +13,26 @@ namespace Prefs {
 class FilePreferencesImpl
     : public AbstractPreferences
 {
+private:
+    class FilenameFilter
+        : public Object
+        , public IFilenameFilter
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        FilenameFilter(
+            /* [in] */ FilePreferencesImpl* host);
+
+        CARAPI Accept(
+            /* [in] */ IFile* dir,
+            /* [in] */ const String& filename,
+            /* [out] */ Boolean* succeeded);
+
+    private:
+        AutoPtr<FilePreferencesImpl> mHost;
+    };
+
 public:
     CAR_INTERFACE_DECL();
 
@@ -40,7 +63,7 @@ protected:
         /* [out, callee] */ ArrayOf<String>** list) /*throws BackingStoreException*/;
 
     // @Override
-    CARAPI_(AutoPtr<IAbstractPreferences>) ChildSpi(
+    CARAPI_(AutoPtr<AbstractPreferences>) ChildSpi(
         /* [in] */ const String& name);
 
     // @Override
@@ -51,7 +74,8 @@ protected:
         /* [in] */ const String& key);
 
     // @Override
-    CARAPI_(AutoPtr<ArrayOf<IInterface*> >) KeysSpi()/* throws BackingStoreException*/;
+    CARAPI KeysSpi(
+        /* [out, callee] */ ArrayOf<String>** spi)/* throws BackingStoreException*/;
 
     // @Override
     CARAPI PutSpi(
@@ -73,7 +97,7 @@ private:
      * Construct a prefs using given parent and given name
      */
     FilePreferencesImpl(
-        /* [in] */ IAbstractPreferences* parent,
+        /* [in] */ AbstractPreferences* parent,
         /* [in] */ const String& name);
 
 private:
@@ -93,10 +117,10 @@ private:
     AutoPtr<IFile> mDir;
 
     //cache for removed prefs key-value pair
-    AutoPtr<ISet> mRemoved = new HashSet<String>();
+    AutoPtr<ISet> mRemoved;
 
     //cache for updated prefs key-value pair
-    AutoPtr<ISet> mUpdated = new HashSet<String>();
+    AutoPtr<ISet> mUpdated;
 };
 
 } // namespace Prefs
