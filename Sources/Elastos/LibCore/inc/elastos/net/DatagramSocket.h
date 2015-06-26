@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_DATAGRAMSOCKET_H__
 #define __ELASTOS_NET_DATAGRAMSOCKET_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IDatagramSocket;
@@ -168,6 +168,7 @@ public:
     Int32 mPort;
 
     static AutoPtr<IDatagramSocketImplFactory> mFactory;
+    static Object sLock;
 
     Boolean mIsBound;
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_NET_CDATAGRAMPACKET_H__
 
 #include "_Elastos_Net_CDatagramPacket.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 
 namespace Elastos {

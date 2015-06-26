@@ -4,7 +4,7 @@
 
 #include "_Elastos_Net_CSocketPermission.h"
 //#include "security/Permission.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::ISerializable;

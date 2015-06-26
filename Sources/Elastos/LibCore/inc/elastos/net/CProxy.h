@@ -2,7 +2,7 @@
 #define __ELASTOS_NET_CPROXY_H__
 
 #include "_Elastos_Net_CProxy.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 
 namespace Elastos {

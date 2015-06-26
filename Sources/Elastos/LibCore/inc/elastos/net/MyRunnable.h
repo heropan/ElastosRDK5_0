@@ -6,7 +6,7 @@
 #include <elastos.h>
 #include <eltypes.h>
 #include <stdio.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::IRunnable;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_CINETSOCKETADDRESSHELPER_H__
 #define __ELASTOS_NET_CINETSOCKETADDRESSHELPER_H__
 
-#include "_ELASTOS_NET_CInetSocketAddressHelper.h"
+#include "_Elastos_Net_CInetSocketAddressHelper.h"
 #include "Singleton.h"
 
 namespace Elastos {

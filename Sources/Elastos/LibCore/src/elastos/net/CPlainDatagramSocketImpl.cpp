@@ -7,6 +7,7 @@
 #include "CInteger32.h"
 #include "CInetAddressHelper.h"
 #include "CCloseGuardHelper.h"
+#include "Autolock.h"
 //#include "COsConstants.h"
 //#include "CStructGroupReq.h"
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_RESPONSECACHE_H__
 #define __ELASTOS_NET_RESPONSECACHE_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IMap;
 

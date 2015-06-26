@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_SOCKETIMPL_H__
 #define __ELASTOS_NET_SOCKETIMPL_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;

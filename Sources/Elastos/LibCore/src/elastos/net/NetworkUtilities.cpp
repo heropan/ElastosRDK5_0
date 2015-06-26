@@ -1,6 +1,8 @@
 
 #include "NetworkUtilities.h"
 
+using namespace Elastos::Core;
+
 ECode ByteArrayToSocketAddress(const ArrayOf<Byte>& byteArray, Int32 port, sockaddr_storage* ss)
 {
     // Convert the IP address bytes to the proper IP address type.

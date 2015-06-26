@@ -2,13 +2,8 @@
 #ifndef __ELASTOS_NET_CHTTPCOOKIE_H__
 #define __ELASTOS_NET_CHTTPCOOKIE_H__
 
-#ifndef __USE_MALLOC
-#define __USE_MALLOC
-#endif
-
 #include "_Elastos_Net_CHttpCookie.h"
 #include "InetAddress.h"
-#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/HashSet.h>

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_CONTENTHANDLER_H__
 #define __ELASTOS_NET_CONTENTHANDLER_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 
 namespace Elastos {

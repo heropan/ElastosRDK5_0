@@ -1,8 +1,7 @@
 
 #include "CURLEncoder.h"
-#include "CCharsetHelper.h"
+//#include "CCharsetHelper.h"
 #include "Character.h"
-
 
 // using Elastos::IO::Charset::ICharsetHelper;
 // using Elastos::IO::Charset::CCharsetHelper;

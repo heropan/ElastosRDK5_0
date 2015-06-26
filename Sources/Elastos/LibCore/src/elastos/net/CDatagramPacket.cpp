@@ -1,6 +1,7 @@
 
 #include "CDatagramPacket.h"
 #include "CInetSocketAddress.h"
+#include "Autolock.h"
 
 namespace Elastos {
 namespace Net {

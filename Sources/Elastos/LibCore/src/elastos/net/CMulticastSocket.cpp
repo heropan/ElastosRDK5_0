@@ -7,6 +7,7 @@
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CPlainDatagramSocketImpl.h"
+#include "Autolock.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

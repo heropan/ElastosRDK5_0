@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_NET_NETWORKUTILITIES_H__
 #define __ELASTOS_NET_NETWORKUTILITIES_H__
 
-#include <elastos.h>
+#include "Object.h"
 #include <arpa/inet.h>
+
+using namespace Elastos;
 
 ELAPI ByteArrayToSocketAddress(
     /* [in] */ const ArrayOf<Byte>& byteArray,

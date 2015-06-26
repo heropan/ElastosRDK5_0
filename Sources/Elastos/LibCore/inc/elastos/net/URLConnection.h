@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_URLCONNECTION_H__
 #define __ELASTOS_NET_URLCONNECTION_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IInputStream;
@@ -245,6 +245,8 @@ private:
     static Boolean sDefaultAllowUserInteraction;
 
     static Boolean sDefaultUseCaches;
+
+    static Object sLock;
 
     Int64 mLastModified;
 

@@ -3,7 +3,8 @@
 #include "CURI.h"
 #include "CHttpCookie.h"
 #include "CArrayList.h"
-#include "utility/Collections.h"
+#include "Collections.h"
+#include "Autolock.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

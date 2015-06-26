@@ -3,7 +3,7 @@
 #define __ELASTOS_NET_COOKIESTOREIMPL_H__
 
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
