@@ -49,7 +49,7 @@ public:
     CARAPI constructor(
         /* [in] */ IURL* url);
 
-    FtpURLConnection()
+    FtpURLConnection();
 
 private:
     CARAPI Cd();
