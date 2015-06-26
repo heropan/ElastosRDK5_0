@@ -74,8 +74,6 @@ module
     merge("../elastosx/net/ssl/ISSLServerSocket.car");
     merge("../elastosx/net/ssl/ITrustManagerFactorySpi.car");
 
-
-    interface Elastos.Core.IComparable;
     interface Elastos.Core.ICloneable;
     interface Elastos.Core.IComparable;
     interface Elastos.IO.ISerializable;
@@ -776,7 +774,6 @@ module
         interface ISerializable;
     }
 
-
     singleton class CCookieHandlerHelper {
         interface ICookieHandlerHelper;
     }
@@ -793,22 +790,19 @@ module
         interface IInetAddressHelper;
     }
 
-    singleton class CNetworkInterfaceHelper
-    {
+    singleton class CNetworkInterfaceHelper {
         interface INetworkInterfaceHelper;
     }
 
-    singleton class CURLEncoder
-    {
+    singleton class CURLEncoder {
         interface IURLEncoder;
     }
 
-    singleton class CURLDecoder
-    {
+    singleton class CURLDecoder {
         interface IURLDecoder;
     }
 
 
-    } //Net
+    } // Net
     } // Elastos
 }

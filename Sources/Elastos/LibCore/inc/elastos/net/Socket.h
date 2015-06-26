@@ -161,6 +161,11 @@ public:
         /* [in] */ Int32 latency,
         /* [in] */ Int32 bandwidth);
 
+    CARAPI_(void) SetIsCreated(
+        /* [in] */ Boolean value)
+    {
+        mIsCreated = value;
+    }
 //protected:
     Socket();
 

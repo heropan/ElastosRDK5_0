@@ -5,7 +5,6 @@
 #include "_Elastos_Net_CDatagramPacket.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Net {
 

@@ -3,12 +3,10 @@
 #define __ELASTOS_NET_CCOOKIEMANAGER_H__
 
 #include "_Elastos_Net_CCookieManager.h"
-#include "CStringWrapper.h"
 #include "CookieHandler.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
 using Elastos::Utility::IMap;
 using Elastos::Utility::Etl::List;
 
@@ -23,6 +21,16 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
+
+    CCookieManager();
+
+    virtual ~CCookieManager();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ ICookieStore* store,
+        /* [in] */ ICookiePolicy* cookiePolicy);
 
     CARAPI SetCookiePolicy(
         /* [in] */ ICookiePolicy* cookiePolicy);
@@ -41,12 +49,6 @@ public:
 
     static CARAPI_(String) PathToCookiePath(
         /* [in] */ const String& path);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ ICookieStore* store,
-        /* [in] */ ICookiePolicy* cookiePolicy);
 
 private:
     static CARAPI CookiesToHeaders(

@@ -1,7 +1,7 @@
 
 #include "CURI.h"
+#include "CURL.h"
 #include "InetAddress.h"
-// #include "CURL.h"
 #include "UrlUtils.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
@@ -1345,7 +1345,7 @@ ECode CURI::ToURL(
 
     String s;
     ToString(&s);
-    // return CURL::New(s, url);
+    return CURL::New(s, url);
 }
 
 } // namespace Net

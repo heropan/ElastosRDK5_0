@@ -19,8 +19,8 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace Net {
 
-const String CHttpCookie::CookieParser::ATTRIBUTE_NAME_TERMINATORS = String(",;= \t");
-const String CHttpCookie::CookieParser::WHITESPACE = String(" \t");
+const String CHttpCookie::CookieParser::ATTRIBUTE_NAME_TERMINATORS(",;= \t");
+const String CHttpCookie::CookieParser::WHITESPACE(" \t");
 
 CHttpCookie::CookieParser::CookieParser(
     /* [in] */ const String& input)

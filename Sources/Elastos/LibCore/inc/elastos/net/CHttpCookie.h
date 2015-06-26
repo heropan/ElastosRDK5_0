@@ -4,8 +4,8 @@
 
 #include "_Elastos_Net_CHttpCookie.h"
 #include "InetAddress.h"
+#include "StringBuilder.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::Object;

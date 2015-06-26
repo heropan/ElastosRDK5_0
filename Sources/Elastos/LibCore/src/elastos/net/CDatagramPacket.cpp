@@ -161,6 +161,7 @@ ECode CDatagramPacket::SetData(
     /* [in] */ Int32 anOffset,
     /* [in] */ Int32 aLength)
 {
+    assert(buf);
     synchronized(this) {
         if (0 > anOffset || anOffset > buf->GetLength() || 0 > aLength
                 || aLength > buf->GetLength() - anOffset) {
@@ -179,6 +180,7 @@ ECode CDatagramPacket::SetData(
 ECode CDatagramPacket::SetData(
     /* [in] */ ArrayOf<Byte>* buf)
 {
+    assert(buf);
     synchronized(this) {
         mLength = buf->GetLength(); // This will check for null
         mUserSuppliedLength = mLength;

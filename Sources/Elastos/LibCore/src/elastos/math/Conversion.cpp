@@ -2,11 +2,11 @@
 #include "BitLevel.h"
 #include "BigInt.h"
 #include "Division.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/IntegralToString.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
+#include "StringBuilder.h"
+#include "StringUtils.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::Character;

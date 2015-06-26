@@ -3,17 +3,18 @@
 #include "CookieStoreImpl.h"
 #include "CHttpCookie.h"
 #include "CCookiePolicyHelper.h"
-//#include "CCollections.h"
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/core/Math.h>
+#include "Collections.h"
+#include "CStringWrapper.h"
+#include "StringBuilder.h"
+#include "StringUtils.h"
+#include "Math.h"
 
+using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::ICollections;
-//using Elastos::Utility::CCollections;
-using Elastos::Utility::IMapEntry;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
+using Elastos::Utility::Collections;
+using Elastos::Utility::IMapEntry;
 using Elastos::Utility::IListIterator;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ISet;
@@ -22,12 +23,20 @@ using Elastos::Utility::ICollection;
 namespace Elastos {
 namespace Net {
 
-const String CCookieManager::VERSION_ZERO_HEADER = String("Set-cookie");
-const String CCookieManager::VERSION_ONE_HEADER = String("Set-cookie2");
+const String CCookieManager::VERSION_ZERO_HEADER("Set-cookie");
+const String CCookieManager::VERSION_ONE_HEADER("Set-cookie2");
 
 CAR_INTERFACE_IMPL(CCookieManager, CookieHandler, ICookieManager)
 
 CAR_OBJECT_IMPL(CCookieManager)
+
+CCookieManager::CCookieManager()
+{
+}
+
+CCookieManager::~CCookieManager()
+{
+}
 
 ECode CCookieManager::constructor()
 {
@@ -44,7 +53,9 @@ ECode CCookieManager::constructor(
         mPolicy = CCookiePolicyHelper::GetCookiePolicy(
                 CookiePolicyKind_ACCEPT_ORIGINAL_SERVER);
     }
-    else mPolicy = cookiePolicy;
+    else {
+        mPolicy = cookiePolicy;
+    }
 
     return NOERROR;
 }
@@ -55,6 +66,7 @@ ECode CCookieManager::Get(
     /* [out] */ IMap** cookiesMap)
 {
     VALIDATE_NOT_NULL(cookiesMap);
+    *cookiesMap = NULL;
 
     if (uri == NULL || requestHeaders == NULL) {
 //        throw new IllegalArgumentException();
@@ -86,11 +98,12 @@ ECode CCookieManager::CookiesToHeaders(
     /* [out] */ IMap** cookiesMap)
 {
     VALIDATE_NOT_NULL(cookiesMap)
+    *cookiesMap = NULL;
 
-    AutoPtr<ICollections> outcol;
-    /////////////////////CCollections::AcquireSingleton((ICollections**)&outcol);
     if (cookies.IsEmpty()) {
-        return outcol->GetEmptyMap(cookiesMap);
+        *cookiesMap = Collections::EMPTY_MAP;
+        REFCOUNT_ADD(*cookiesMap)
+        return NOERROR;
     }
 
     StringBuilder result;
@@ -118,10 +131,10 @@ ECode CCookieManager::CookiesToHeaders(
     }
     AutoPtr<IMap> resmap;
     AutoPtr<IList> outlist;
-    outcol->SingletonList(result.ToCharSequence(), (IList**)&outlist);
+    Collections::NewSingletonList(result.ToCharSequence(), (IList**)&outlist);
     AutoPtr<ICharSequence> Cookie;
     CStringWrapper::New(String("Cookie"), (ICharSequence**)&Cookie);
-    return outcol->SingletonMap(Cookie, outlist, cookiesMap);
+    return Collections::NewSingletonMap(Cookie, outlist, cookiesMap);
 }
 
 ECode CCookieManager::Put(

@@ -6,36 +6,49 @@ namespace Net {
 
 AutoPtr<ICookieHandler> CookieHandler::sSystemWideCookieHandler;
 
+CAR_INTERFACE_IMPL(CookieHandler, Object, ICookieHandler)
+
+CookieHandler::CookieHandler()
+{
+}
+
+CookieHandler::~CookieHandler()
+{
+}
+
 ECode CookieHandler::GetDefault(
     /* [out] */ ICookieHandler** handler)
 {
     VALIDATE_NOT_NULL(handler);
 
-    // SecurityManager sm = System.getSecurityManager();
-    // if (null != sm) {
-    //     sm.checkPermission(getCookieHandlerPermission);
-    // }
     *handler = sSystemWideCookieHandler;
     REFCOUNT_ADD(*handler);
 
     return NOERROR;
 }
 
-/**
- * Sets the system-wide cookie handler.
- *
- * @param cHandler
- *            a cookie handler to set as the system-wide default handler.
- */
 ECode CookieHandler::SetDefault(
     /* [in] */ ICookieHandler* cHandler)
 {
-    // SecurityManager sm = System.getSecurityManager();
-    // if (null != sm) {
-    //     sm.checkPermission(setCookieHandlerPermission);
-    // }
     sSystemWideCookieHandler = cHandler;
     return NOERROR;
+}
+
+ECode CookieHandler::Get(
+    /* [in] */ IURI* uri,
+    /* [in] */ IMap* requestHeaders,
+    /* [out]*/ IMap** cookiesMap)
+{
+    assert(0 && "Sub class must overwrite this method.");
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CookieHandler::Put(
+    /* [in] */ IURI* uri,
+    /* [in] */ IMap* requestHeaders)
+{
+    assert(0 && "Sub class must overwrite this method.");
+    return E_NOT_IMPLEMENTED;
 }
 
 } // namespace Net

@@ -1,6 +1,6 @@
 
 #include "Logical.h"
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include <assert.h>
 
 namespace Elastos {

@@ -18,37 +18,11 @@ using Elastos::Utility::IDateHelper;
 namespace Elastos {
 namespace Net {
 
-CAR_INTERFACE_IMPL(URLConnection, Object, IURLConnection)
+//=============================================================
+// URLConnection::DefaultContentHandler
+//=============================================================
 
-PInterface URLConnection::DefaultContentHandler::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IContentHandler) {
-        return (IContentHandler*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 URLConnection::DefaultContentHandler::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 URLConnection::DefaultContentHandler::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode URLConnection::DefaultContentHandler::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
+CAR_INTERFACE_IMPL(URLConnection::DefaultContentHandler, Object, IContentHandler)
 
 ECode URLConnection::DefaultContentHandler::GetContent(
     /* [in] */ IURLConnection* uConn,
@@ -75,8 +49,11 @@ ECode URLConnection::DefaultContentHandler::GetContent(
     return NOERROR;
 }
 
-// extern "C" const InterfaceID EIID_URLConnection =
-//     { 0x6ef700a4, 0x2101, 0x4d37, { 0xbe, 0x26, 0x1f, 0xf9, 0xf6, 0x46, 0x35, 0x4f } };
+//=============================================================
+// URLConnection
+//=============================================================
+
+CAR_INTERFACE_IMPL(URLConnection, Object, IURLConnection)
 
 Boolean URLConnection::sDefaultAllowUserInteraction = FALSE;
 Boolean URLConnection::sDefaultUseCaches = TRUE;
@@ -101,7 +78,7 @@ URLConnection::URLConnection()
 URLConnection::~URLConnection()
 {}
 
-ECode URLConnection::Init(
+ECode URLConnection::constructor(
     /* [in] */ IURL* url)
 {
     mUrl = url;

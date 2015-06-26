@@ -23,119 +23,119 @@ class DatagramSocket
 public:
     CAR_INTERFACE_DECL()
 
-    virtual CARAPI Close();
+    CARAPI Close();
 
-    virtual CARAPI OnClose();
+    CARAPI OnClose();
 
-    virtual CARAPI Connect(
+    CARAPI Connect(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 aPort);
 
-    virtual CARAPI OnConnect(
+    CARAPI OnConnect(
         /* [in] */ IInetAddress* remoteAddress,
         /* [in] */ Int32 remotePort);
 
-    virtual CARAPI Disconnect();
+    CARAPI Disconnect();
 
-    virtual CARAPI OnDisconnect();
+    CARAPI OnDisconnect();
 
-    virtual CARAPI CreateSocket(
+    CARAPI CreateSocket(
         /* [in] */ Int32 aPort,
         /* [in] */ IInetAddress* addr);
 
-    virtual CARAPI GetInetAddress(
+    CARAPI GetInetAddress(
         /* [out] */ IInetAddress** address);
 
-    virtual CARAPI GetLocalAddress(
+    CARAPI GetLocalAddress(
         /* [out] */ IInetAddress** address);
 
-    virtual CARAPI GetLocalPort(
+    CARAPI GetLocalPort(
         /* [out] */ Int32* port);
 
-    virtual CARAPI GetPort(
+    CARAPI GetPort(
         /* [out] */ Int32* port);
 
-    virtual CARAPI_(Boolean) IsMulticastSocket();
+    CARAPI_(Boolean) IsMulticastSocket();
 
-    virtual CARAPI GetReceiveBufferSize(
+    CARAPI GetReceiveBufferSize(
         /* [out] */ Int32* size);
 
-    virtual CARAPI GetSendBufferSize(
+    CARAPI GetSendBufferSize(
         /* [out] */ Int32* size);
 
-    virtual CARAPI GetSoTimeout(
+    CARAPI GetSoTimeout(
         /* [out] */ Int32* timeout);
 
-    virtual CARAPI Receive(
+    CARAPI Receive(
         /* [in, out] */ IDatagramPacket* pack);
 
-    virtual CARAPI Send(
+    CARAPI Send(
         /* [in] */ IDatagramPacket* pack);
 
-    virtual CARAPI SetSendBufferSize(
+    CARAPI SetSendBufferSize(
         /* [in] */ Int32 size);
 
-    virtual CARAPI SetReceiveBufferSize(
+    CARAPI SetReceiveBufferSize(
         /* [in] */ Int32 size);
 
-    virtual CARAPI SetSoTimeout(
+    CARAPI SetSoTimeout(
         /* [in] */ Int32 timeout);
 
     static CARAPI SetDatagramSocketImplFactory(
         /* [in] */ IDatagramSocketImplFactory* fac);
 
-    virtual CARAPI CheckOpen();
+    CARAPI CheckOpen();
 
-    virtual CARAPI Bind(
+    CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr);
 
-    virtual CARAPI OnBind(
+    CARAPI OnBind(
         /* [in] */ IInetAddress* localAddress,
         /* [in] */ Int32 localPort);
 
-    virtual CARAPI Connect(
+    CARAPI Connect(
         /* [in] */ ISocketAddress* peer);
 
-    virtual CARAPI IsBound(
+    CARAPI IsBound(
         /* [out] */ Boolean* isBound);
 
-    virtual CARAPI IsConnected(
+    CARAPI IsConnected(
         /* [out] */ Boolean* isConnected);
 
-    virtual CARAPI GetRemoteSocketAddress(
+    CARAPI GetRemoteSocketAddress(
         /* [out] */ ISocketAddress** address);
 
-    virtual CARAPI GetLocalSocketAddress(
+    CARAPI GetLocalSocketAddress(
         /* [out] */ ISocketAddress** address);
 
-    virtual CARAPI SetReuseAddress(
+    CARAPI SetReuseAddress(
         /* [in] */ Boolean reuse);
 
-    virtual CARAPI GetReuseAddress(
+    CARAPI GetReuseAddress(
         /* [out] */ Boolean* reuse);
 
-    virtual CARAPI SetBroadcast(
+    CARAPI SetBroadcast(
         /* [in] */ Boolean broadcast);
 
-    virtual CARAPI GetBroadcast(
+    CARAPI GetBroadcast(
         /* [out] */ Boolean* broadcast);
 
-    virtual CARAPI SetTrafficClass(
+    CARAPI SetTrafficClass(
         /* [in] */ Int32 value);
 
-    virtual CARAPI GetTrafficClass(
+    CARAPI GetTrafficClass(
         /* [out] */ Int32* value);
 
-    virtual CARAPI IsClosed(
+    CARAPI IsClosed(
         /* [out] */ Boolean* isClosed);
 
-    virtual CARAPI GetChannel(
+    CARAPI GetChannel(
         /* [out] */ IDatagramChannel** channel);
 
-    virtual CARAPI SetNetworkInterface(
+    CARAPI SetNetworkInterface(
         /* [in] */ INetworkInterface* netInterface);
 
-    virtual CARAPI GetFileDescriptor(
+    CARAPI GetFileDescriptor(
         /* [out] */ IFileDescriptor** fd);
 
 //protected:

@@ -10,25 +10,31 @@ using Elastos::Net::ICookieHandler;
 namespace Elastos {
 namespace Net {
 
-class CookieHandler : public Object
+class CookieHandler
+    : public Object
+    , public ICookieHandler
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CookieHandler();
+
+    virtual ~CookieHandler();
+
     static CARAPI GetDefault(
         /* [out] */ ICookieHandler** handler);
 
     static CARAPI SetDefault(
         /* [in] */ ICookieHandler* cHandler);
 
-    virtual CARAPI Get(
+    CARAPI Get(
         /* [in] */ IURI* uri,
         /* [in] */ IMap* requestHeaders,
-        /* [out]*/ IMap** cookiesMap) = 0;
+        /* [out]*/ IMap** cookiesMap);
 
-    virtual CARAPI Put(
+    CARAPI Put(
         /* [in] */ IURI* uri,
-        /* [in] */ IMap* requestHeaders) = 0;
-
-    static CARAPI StaticInit();
+        /* [in] */ IMap* requestHeaders);
 
 private:
     static AutoPtr<ICookieHandler> sSystemWideCookieHandler;

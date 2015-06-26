@@ -8,7 +8,8 @@
 namespace Elastos {
 namespace Net {
 
-CarClass(CDatagramSocket) , public DatagramSocket
+CarClass(CDatagramSocket)
+    , public DatagramSocket
 {
 public:
     CAR_OBJECT_DECL()

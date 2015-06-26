@@ -214,7 +214,7 @@ module
          * Returns the file of this URL.
          */
         GetFile(
-                [out]String* file);
+            [out]String* file);
 
         /**
          * Returns the path part of this URL.

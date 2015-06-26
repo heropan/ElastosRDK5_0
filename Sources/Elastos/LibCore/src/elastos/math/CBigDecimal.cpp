@@ -2,7 +2,7 @@
 #include "CMathContext.h"
 #include "Conversion.h"
 #include "Multiplication.h"
-#include <elastos/core/StringUtils.h>
+#include "StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_INumber;

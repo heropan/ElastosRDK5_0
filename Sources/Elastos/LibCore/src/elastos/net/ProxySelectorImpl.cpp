@@ -3,7 +3,7 @@
 #include "CProxy.h"
 #include "CInetSocketAddress.h"
 // #include <Com.Kortide.Platform.h>
-#include <elastos/core/StringUtils.h>
+#include "StringUtils.h"
 #include <elastos/core/StringBuffer.h>
 
 //using Elastos::Core::CObjectContainer;
