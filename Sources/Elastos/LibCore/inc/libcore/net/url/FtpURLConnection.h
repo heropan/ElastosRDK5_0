@@ -6,6 +6,10 @@
 
 using Elastos::Net::IURLConnection;
 using Elastos::Net::IURL;
+using Elastos::Net::URLConnection;
+using Elastos::Net::ISocket;
+using Elastos::Net::IServerSocket;
+using Elastos::Net::IURI;
 
 namespace Libcore {
 namespace Net {
@@ -19,9 +23,6 @@ class FtpURLConnection
 {
 public:
     CAR_INTERFACE_DECL()
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
 
     CARAPI ToString(
         /* [out] */ String* result);
@@ -54,7 +55,7 @@ protected:
 
     FtpURLConnection(
         /* [in] */ IURL* url,
-        /* [in] */ IProxy* proxy);
+        /* [in] */ Elastos::Net::IProxy* proxy);
 
 private:
     CARAPI Cd();
@@ -132,9 +133,9 @@ private:
 
     String mHostName;
 
-    AutoPtr<IProxy> mProxy;
+    AutoPtr<Elastos::Net::IProxy> mProxy;
 
-    AutoPtr<IProxy> mCurrentProxy;
+    AutoPtr<Elastos::Net::IProxy> mCurrentProxy;
 
     AutoPtr<IURI> mUri;
 };

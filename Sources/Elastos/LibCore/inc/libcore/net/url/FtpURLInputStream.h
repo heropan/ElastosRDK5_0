@@ -53,6 +53,7 @@ private:
     AutoPtr<IInputStream> mIs; // Actual input stream
 
     AutoPtr<ISocket> mControlSocket;
+    Object mLock;
 };
 
 } // namespace Url

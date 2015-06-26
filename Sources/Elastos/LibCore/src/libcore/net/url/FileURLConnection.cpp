@@ -1,5 +1,5 @@
 
-#include "elastos/Math.h"
+#include "Math.h"
 #include "FileURLConnection.h"
 #include "UriCodec.h"
 #include "CFile.h"
@@ -20,6 +20,7 @@ using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
+using Elastos::IO::ICloseable;
 
 namespace Libcore {
 namespace Net {
@@ -43,24 +44,137 @@ ECode FileURLConnection::constructor(
 
 ECode FileURLConnection::Connect()
 {
-    AutoPtr<IFile> f;
-    FAIL_RETURN(CFile::New(mFilename, (IFile**)&f));
-    Boolean isflag = FALSE;
-    if (f->IsDirectory(&isflag), isflag) {
-        mIsDir = TRUE;
-        mIs = GetDirectoryListing(f);
-        // use -1 for the contentLength
-    }
-    else {
-        AutoPtr<IFileInputStream> fis;
-        FAIL_RETURN(CFileInputStream::New(f, (IFileInputStream**)&fis));
-        mIs = NULL;
-        FAIL_RETURN(CBufferedInputStream::New(fis, (IBufferedInputStream**)&mIs));
-        Int64 lengthAsLong = 0;
-        f->GetLength(&lengthAsLong);
-        mLength = lengthAsLong <= Elastos::Core::Math::INT32_MAX_VALUE ? (Int32) lengthAsLong : Elastos::Core::Math::INT32_MAX_VALUE;
-    }
-    mConnected = TRUE;
+    //TODO
+    assert(0);
+    // File f = new File(filename);
+    // IOException error = null;
+    // if (f.isDirectory()) {
+    //     isDir = true;
+    //     is = getDirectoryListing(f);
+    //     // use -1 for the contentLength
+    //     lastModified = f.lastModified();
+    //     headerKeysAndValues[CONTENT_TYPE_VALUE_IDX] = "text/html";
+    // } else {
+    //     try {
+    //         is = new BufferedInputStream(new FileInputStream(f));
+    //     } catch (IOException ioe) {
+    //         error = ioe;
+    //     }
+
+    //     if (error == null) {
+    //         length = f.length();
+    //         lastModified = f.lastModified();
+    //         headerKeysAndValues[CONTENT_TYPE_VALUE_IDX] = getContentTypeForPlainFiles();
+    //     } else {
+    //         headerKeysAndValues[CONTENT_TYPE_VALUE_IDX] = "content/unknown";
+    //     }
+    // }
+
+    // headerKeysAndValues[CONTENT_LENGTH_VALUE_IDX] = String.valueOf(length);
+    // headerKeysAndValues[LAST_MODIFIED_VALUE_IDX] = String.valueOf(lastModified);
+
+    // connected = true;
+    // if (error != null) {
+    //     throw error;
+    // }
+    return NOERROR;
+}
+
+ECode FileURLConnection::GetHeaderField(
+    /* [in] */ const String& key,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+    //TODO
+    assert(0);
+    // if (!connected) {
+    //     try {
+    //         connect();
+    //     } catch (IOException ioe) {
+    //         return null;
+    //     }
+    // }
+
+    // for (int i = 0; i < headerKeysAndValues.length; i += 2) {
+    //     if (headerKeysAndValues[i].equalsIgnoreCase(key)) {
+    //         return headerKeysAndValues[i + 1];
+    //     }
+    // }
+
+    // return null;
+
+    return NOERROR;
+}
+
+ECode FileURLConnection::GetHeaderFieldKey(
+    /* [in] */ Int32 posn,
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+    //TODO
+    assert(0);
+    // if (!connected) {
+    //     try {
+    //         connect();
+    //     } catch (IOException ioe) {
+    //         return null;
+    //     }
+    // }
+
+    // if (position < 0 || position > headerKeysAndValues.length / 2) {
+    //     return null;
+    // }
+
+    // return headerKeysAndValues[position * 2];
+
+    return NOERROR;
+}
+
+ECode FileURLConnection::GetHeaderField(
+    /* [in] */ Int32 pos,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value);
+    //TODO
+    assert(0);
+
+    // if (!connected) {
+    //     try {
+    //         connect();
+    //     } catch (IOException ioe) {
+    //         return null;
+    //     }
+    // }
+
+    // if (position < 0 || position > headerKeysAndValues.length / 2) {
+    //     return null;
+    // }
+
+    // return headerKeysAndValues[(position * 2) + 1];
+
+    return NOERROR;
+}
+
+ECode FileURLConnection::GetHeaderFields(
+    /* [out] */ IMap** headerFields)
+{
+    VALIDATE_NOT_NULL(headerFields);
+    //TODO
+    assert(0);
+
+    // if (headerFields == null) {
+    //     final TreeMap<String, List<String>> headerFieldsMap = new TreeMap<>(HEADER_COMPARATOR);
+
+    //     for (int i = 0; i < headerKeysAndValues.length; i+=2) {
+    //         headerFieldsMap.put(headerKeysAndValues[i],
+    //                 Collections.singletonList(headerKeysAndValues[i + 1]));
+    //     }
+
+    //     headerFields = Collections.unmodifiableMap(headerFieldsMap);
+    // }
+
+    // return headerFields;
+
     return NOERROR;
 }
 
@@ -163,25 +277,47 @@ AutoPtr<IInputStream> FileURLConnection::GetDirectoryListing(
     AutoPtr<IByteArrayOutputStream> bytes;
     CByteArrayOutputStream::New((IByteArrayOutputStream**)&bytes);
     AutoPtr<IPrintStream> out;
-    CPrintStream::New(bytes, (IPrintStream**)&out);
-    out->PrintString(String("<title>Directory Listing</title>\n"));
-    out->PrintString(String("<base href=\"file:"));
+    CPrintStream::New(IOutputStream::Probe(bytes), (IPrintStream**)&out);
+    out->Print(String("<title>Directory Listing</title>\n"));
+    out->Print(String("<base href=\"file:"));
     String pathname;
-    out->PrintString((f->GetPath(&pathname), pathname).Replace('\\', '/')
+    out->Print((f->GetPath(&pathname), pathname).Replace('\\', '/')
                         + String("/\"><h1>")
                         + (f->GetPath(&pathname), pathname)
                         + String("</h1>\n<hr>\n"));
     Int32 i = 0;
     for (i = 0; i < fileList->GetLength(); i++) {
-        out->PrintString((*fileList)[i] + String("<br>\n"));
+        out->Print((*fileList)[i] + String("<br>\n"));
     }
-    out->Close();
+    ICloseable::Probe(out)->Close();
     AutoPtr<IInputStream> outinput;
     AutoPtr< ArrayOf<Byte> > outbytes;
     bytes->ToByteArray((ArrayOf<Byte>**)&outbytes);
     CByteArrayInputStream::New(outbytes, (IByteArrayInputStream**)&outinput);
 
     return outinput;
+}
+
+String FileURLConnection::GetContentTypeForPlainFiles()
+{
+    //TODO
+    assert(0);
+    // String result = guessContentTypeFromName(url.getFile());
+    // if (result != null) {
+    //     return result;
+    // }
+
+    // try {
+    //     result = guessContentTypeFromStream(is);
+    // } catch (IOException e) {
+    //     // Ignore
+    // }
+    // if (result != null) {
+    //     return result;
+    // }
+
+    // return "content/unknown";
+    return String(NULL);
 }
 
 } // namespace Url

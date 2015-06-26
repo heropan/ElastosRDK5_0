@@ -2,7 +2,7 @@
 #ifndef __LIBCORE_NET_URI_CFTPHANDLER_H__
 #define __LIBCORE_NET_URI_CFTPHANDLER_H__
 
-#include "_LIBCORE_NET_URI_CFtpHandler.h"
+#include "_Libcore_Net_Url_CFtpHandler.h"
 #include "FtpHandler.h"
 
 using Elastos::Net::IURLConnection;

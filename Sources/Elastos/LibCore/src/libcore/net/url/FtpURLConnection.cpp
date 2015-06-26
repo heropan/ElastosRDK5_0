@@ -1,8 +1,8 @@
 
 #include "FtpURLConnection.h"
 #include "ProxySelector.h"
-#include "elastos/List.h"
-#include "elastos/StringBuilder.h"
+#include "elastos/utility/etl/List.h"
+#include "elastos/core/StringBuilder.h"
 #include "CProxy.h"
 #include "CSocket.h"
 #include "CInetSocketAddress.h"
@@ -11,11 +11,22 @@
 #include "StringUtils.h"
 #include "CFtpURLInputStream.h"
 
-using Elastos::Utility::List;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Etl::List;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Net::IProxySelector;
+using Elastos::Net::ProxySelector;
+using Elastos::Net::CProxy;
+using Elastos::Net::ProxyType;
+using Elastos::Net::ProxyType_HTTP;
+using Elastos::Net::CSocket;
+using Elastos::Net::CServerSocket;
+using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::IInetAddress;
 
 namespace Libcore {
 namespace Net {
@@ -48,21 +59,11 @@ extern "C" const InterfaceID EIID_FtpURLConnection =
 
 CAR_INTERFACE_IMPL(FtpURLConnection, URLConnection, IFtpURLConnection)
 
-ECode FtpURLConnection::GetClassID(
-    /* [out] */ ClassID* clsid)
-{
-    VALIDATE_NOT_NULL(clsid);
-
-    *clsid = EIID_FtpURLConnection;
-    return NOERROR;
-}
-
 ECode FtpURLConnection::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-
-    result->AppendFormat("\nClass[%s]\n", String("FtpURLConnection"));
+    *result = String("Libcore.Net.Url.FtpURLConnection");
     return NOERROR;
 }
 
@@ -70,7 +71,7 @@ ECode FtpURLConnection::Connect()
 {
     // Use system-wide ProxySelect to select proxy list,
     // then try to connect via elements in the proxy list.
-    List< AutoPtr<IProxy> > proxyList;
+    List< AutoPtr<Elastos::Net::IProxy> > proxyList;
     if (mProxy != NULL) {
         proxyList.PushBack(mProxy);
     }
@@ -78,16 +79,15 @@ ECode FtpURLConnection::Connect()
         AutoPtr<IProxySelector> selector;
         ProxySelector::GetDefault((IProxySelector**)&selector);
         if (selector != NULL) {
-            AutoPtr<IObjectContainer> obj;
-            selector->Select(mUri, (IObjectContainer**)&obj);
-            AutoPtr<IObjectEnumerator> emu;
-            obj->GetObjectEnumerator((IObjectEnumerator **)&emu);
+            AutoPtr<IList> obj;
+            selector->Select(mUri, (IList**)&obj);
+            AutoPtr<IIterator> emu;
+            IIterable::Probe(obj)->GetIterator((IIterator **)&emu);
             Boolean hasNext = FALSE;
-            while(emu->MoveNext(&hasNext), hasNext) {
+            while(emu->HasNext(&hasNext), hasNext) {
                 AutoPtr<IInterface> itf;
-                emu->Current((IInterface **)&itf);
-                AutoPtr<IProxy> entry = IProxy::Probe(itf);
-                proxyList.PushBack(entry);
+                emu->GetNext((IInterface **)&itf);
+                proxyList.PushBack(Elastos::Net::IProxy::Probe(itf));
             }
         }
     }
@@ -98,7 +98,7 @@ ECode FtpURLConnection::Connect()
     else {
         AutoPtr<IProxySelector> selector;
         ProxySelector::GetDefault((IProxySelector**)&selector);
-        List< AutoPtr<IProxy> >::Iterator iter = proxyList.Begin();
+        List< AutoPtr<Elastos::Net::IProxy> >::Iterator iter = proxyList.Begin();
         Boolean connectOK = FALSE;
         String failureReason = String("");
         while ((++iter, iter != proxyList.End()) && !connectOK) {
@@ -237,7 +237,7 @@ FtpURLConnection::FtpURLConnection(
 
 FtpURLConnection::FtpURLConnection(
     /* [in] */ IURL* url,
-    /* [in] */ IProxy* proxy)
+    /* [in] */ Elastos::Net::IProxy* proxy)
 {
     Init(url);
     mProxy = proxy;
@@ -286,7 +286,7 @@ ECode FtpURLConnection::ConnectInternal()
     }
     AutoPtr<IInetSocketAddress> addr;
     FAIL_RETURN(CInetSocketAddress::New(mHostName, port, (IInetSocketAddress**)&addr));
-    mControlSocket->Connect(addr, connectTimeout);
+    mControlSocket->Connect(ISocketAddress::Probe(addr), connectTimeout);
     mConnected = TRUE;
     mCtrlOutput = NULL;
     mControlSocket->GetOutputStream((IOutputStream**)&mCtrlOutput);
@@ -328,9 +328,11 @@ ECode FtpURLConnection::ConnectInternal()
         AutoPtr<IInputStream> datainput;
         mDataSocket->GetInputStream((IInputStream**)&datainput);
         AutoPtr<IBufferedInputStream> bis;
-        CBufferedInputStream::New(datainput, (IBufferedInputStream**)&bis);
+        //TODO
+        assert(0);
+        // CBufferedInputStream::New(datainput, (IBufferedInputStream**)&bis);
         mInputStream = NULL;
-        CFtpURLInputStream::New(bis, mControlSocket, (IFtpURLInputStream**)&mInputStream);
+        CFtpURLInputStream::New(IInputStream::Probe(bis), mControlSocket, (IFtpURLInputStream**)&mInputStream);
     }
     return NOERROR;
 }
@@ -426,9 +428,9 @@ ECode FtpURLConnection::Port()
     iadd->GetHostAddress(&outstr);
     String inputstr = String("PORT ") + outstr.Replace('.',',');
     inputstr.Append(',');
-    inputstr += StringUtils::Int32ToString(mDataPort >> 8);
+    inputstr += StringUtils::ToString(mDataPort >> 8);
     inputstr.Append(',');
-    inputstr += StringUtils::Int32ToString(mDataPort & 255) + String("\r\n");
+    inputstr += StringUtils::ToString(mDataPort & 255) + String("\r\n");
     Write(inputstr);
 
     Int32 value = 0;
@@ -498,7 +500,7 @@ void FtpURLConnection::Write(
     for (Int32 i = 0; i < len; ++i) {
         (*buffer)[i] = (*buf32)[i] && 0xFF;
     }
-    mCtrlOutput->WriteBytes(*buffer);
+    mCtrlOutput->Write(buffer);
 }
 
 } // namespace Url

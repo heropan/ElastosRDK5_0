@@ -2,7 +2,7 @@
 #ifndef __LIBCORE_NET_URI_CFILEURLCONNECTION_H__
 #define __LIBCORE_NET_URI_CFILEURLCONNECTION_H__
 
-#include "_LIBCORE_NET_URI_CFileURLConnection.h"
+#include "_Libcore_Net_Url_CFileURLConnection.h"
 #include "FileURLConnection.h"
 
 using Elastos::Net::IURLConnection;

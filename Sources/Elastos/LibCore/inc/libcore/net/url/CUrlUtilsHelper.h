@@ -2,7 +2,7 @@
 #ifndef __LIBCORE_NET_URI_CURLUTILSHELPER_H__
 #define __LIBCORE_NET_URI_CURLUTILSHELPER_H__
 
-#include "_LIBCORE_NET_URI_CUrlUtilsHelper.h"
+#include "_Libcore_Net_Url_CUrlUtilsHelper.h"
 #include "Singleton.h"
 
 

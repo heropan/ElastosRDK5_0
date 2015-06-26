@@ -9,6 +9,8 @@ include $(MAKEDIR)/../../../sources.inc
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../elastos
 INCLUDES += $(MAKEDIR)/../../../../inc/libcore;
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore/io;
+INCLUDES += $(MAKEDIR)/../../../../inc/libcore/net;
 INCLUDES += $(MAKEDIR)/../../../../inc/libcore/net/url;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
@@ -16,3 +18,14 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/net;
 
 SOURCES = UrlUtils.cpp
+SOURCES += JarHandler.cpp
+SOURCES += FtpHandler.cpp
+SOURCES += CFtpHandler.cpp
+SOURCES += FileURLConnection.cpp
+SOURCES += CFileURLConnection.cpp
+SOURCES += FileHandler.cpp
+SOURCES += CFileHandler.cpp
+SOURCES += CUrlUtilsHelper.cpp
+SOURCES += FtpURLInputStream.cpp
+SOURCES += CFtpURLInputStream.cpp
+SOURCES += FtpURLConnection.cpp

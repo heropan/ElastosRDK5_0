@@ -2,9 +2,10 @@
 #include "JarHandler.h"
 #include "UrlUtils.h"
 #include "CURL.h"
-#include "elastos/StringBuilder.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
+using Elastos::Net::CURL;
 
 namespace Libcore {
 namespace Net {
@@ -16,21 +17,11 @@ extern "C" const InterfaceID EIID_JarHandler =
 
 CAR_INTERFACE_IMPL(JarHandler, URLStreamHandler, IJarHandler)
 
-ECode JarHandler::GetClassID(
-    /* [out] */ ClassID* clsid)
-{
-    VALIDATE_NOT_NULL(clsid);
-
-    *clsid = EIID_JarHandler;
-    return NOERROR;
-}
-
 ECode JarHandler::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-
-    result->AppendFormat("\nClass[%s]\n", String("JarHandler"));
+    *result = String("Libcore.Net.Url.JarHandler");
     return NOERROR;
 }
 
@@ -96,103 +87,17 @@ ECode JarHandler::ToExternalForm(
     VALIDATE_NOT_NULL(s)
 
     StringBuilder sb;
-    sb.AppendString(String("jar:"));
+    sb.Append(String("jar:"));
     String file;
     url->GetFile(&file);
-    sb.AppendString(file);
+    sb.Append(file);
     String ref;
     url->GetRef(&ref);
     if (!ref.IsNull()) {
-        sb.AppendString(ref);
+        sb.Append(ref);
     }
     *s = sb.ToString();
     return NOERROR;
-}
-
-
-ECode JarHandler::OpenConnection(
-    /* [in] */ IURL* u,
-    /* [in] */ IProxy* proxy,
-    /* [out] */ IURLConnection** urlConnection)
-{
-    return URLStreamHandler::OpenConnection(u, proxy, urlConnection);
-}
-
-ECode JarHandler::SetURL(
-    /* [in] */ IURL* u,
-    /* [in] */ const String& protocol,
-    /* [in] */ const String& host,
-    /* [in] */ Int32 port,
-    /* [in] */ const String& file,
-    /* [in] */ const String& ref)
-{
-    return URLStreamHandler::SetURL(u, protocol, host, port, file, ref);
-}
-
-ECode JarHandler::SetURL(
-    /* [in] */ IURL* u,
-    /* [in] */ const String& protocol,
-    /* [in] */ const String& host,
-    /* [in] */ Int32 port,
-    /* [in] */ const String& authority,
-    /* [in] */ const String& userInfo,
-    /* [in] */ const String& file,
-    /* [in] */ const String& query,
-    /* [in] */ const String& ref)
-{
-    return URLStreamHandler::SetURL(u, protocol, host, port, authority, userInfo, file, query, ref);
-}
-
-ECode JarHandler::ToExternalForm(
-    /* [in] */ IURL* url,
-    /* [in] */ Boolean escapeIllegalCharacters,
-    /* [out] */ String* s)
-{
-    return URLStreamHandler::ToExternalForm(url, escapeIllegalCharacters, s);
-}
-
-ECode JarHandler::Equals(
-    /* [in] */ IURL* url1,
-    /* [in] */ IURL* url2,
-    /* [out] */ Boolean* isEquals)
-{
-    return URLStreamHandler::Equals(url1, url2, isEquals);
-}
-
-ECode JarHandler::GetDefaultPort(
-    /* [out] */ Int32* portNum)
-{
-    return URLStreamHandler::GetDefaultPort(portNum);
-}
-
-ECode JarHandler::GetHostAddress(
-    /* [in] */ IURL* url,
-    /* [out] */ IInetAddress** hostAddress)
-{
-    return URLStreamHandler::GetHostAddress(url, hostAddress);
-}
-
-ECode JarHandler::GetHashCode(
-    /* [in] */ IURL* url,
-    /* [out] */ Int32* code)
-{
-    return URLStreamHandler::GetHashCode(url, code);
-}
-
-ECode JarHandler::HostsEqual(
-    /* [in] */ IURL* a,
-    /* [in] */ IURL* b,
-    /* [out] */ Boolean* isEqual)
-{
-    return URLStreamHandler::HostsEqual(a, b, isEqual);
-}
-
-ECode JarHandler::SameFile(
-    /* [in] */ IURL* url1,
-    /* [in] */ IURL* url2,
-    /* [out] */ Boolean* isSame)
-{
-    return URLStreamHandler::SameFile(url1, url2, isSame);
 }
 
 } // namespace Url

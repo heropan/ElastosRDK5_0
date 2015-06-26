@@ -3,9 +3,10 @@
 #include "CSimpleDateFormat.h"
 #include "CLocale.h"
 
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::CSimpleDateFormat;
+using Elastos::Text::IDateFormat;
 
 namespace Libcore {
 namespace Net {
@@ -41,7 +42,7 @@ static void ThreadDestructor(void* st)
     }
 }
 
-static Boolean InitTLS()
+Boolean CHttpDate::InitTLS()
 {
     Int32 result = pthread_key_create(&key_tls, ThreadDestructor);
     assert(result == 0);
@@ -83,7 +84,7 @@ ECode CHttpDate::_Parse(
         ECode ec = CSimpleDateFormat::New(BROWSER_COMPATIBLE_DATE_FORMATS[i], CLocale::US, (ISimpleDateFormat**)&sdf);
         if(ec == NOERROR) {
             AutoPtr<IDate> outdate;
-            sdf->Parse(value, (IDate**)&adate);
+            IDateFormat::Probe(sdf)->Parse(value, (IDate**)&adate);
             *adate = outdate;
             REFCOUNT_ADD(*adate)
             return NOERROR;

@@ -4,6 +4,7 @@
 
 #include "URLStreamHandler.h"
 
+using Elastos::Net::URLStreamHandler;
 using Elastos::Net::IURLConnection;
 using Elastos::Net::IURL;
 
@@ -15,11 +16,12 @@ class FtpHandler
     : public URLStreamHandler
     , public IFtpHandler
 {
-protected:
+public:
     CAR_INTERFACE_DECL()
 
     CARAPI constructor();
 
+protected:
     CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [out] */ IURLConnection** urlConnection);

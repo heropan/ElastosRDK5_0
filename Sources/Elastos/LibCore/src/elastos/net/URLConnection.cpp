@@ -21,6 +21,7 @@ namespace Net {
 //=============================================================
 // URLConnection::DefaultContentHandler
 //=============================================================
+Object URLConnection::sLock;
 
 CAR_INTERFACE_IMPL(URLConnection::DefaultContentHandler, Object, IContentHandler)
 
@@ -293,7 +294,17 @@ AutoPtr<IFileNameMap> URLConnection::GetFileNameMap()
     return sFileNameMap;
 }
 
-ECode URLConnection::GetHeaderFieldByPosition(
+ECode URLConnection::GetHeaderField(
+    /* [in] */ const String& key,
+    /* [out] */ String* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    *value = NULL;
+    return NOERROR;
+}
+
+ECode URLConnection::GetHeaderField(
     /* [in] */ Int32 pos,
     /* [out] */ String* value)
 {
@@ -303,9 +314,24 @@ ECode URLConnection::GetHeaderFieldByPosition(
     return NOERROR;
 }
 
-//    public Map<String, List<String>> getHeaderFields()
+ECode URLConnection::GetHeaderFields(
+    /* [out] */ IMap** headerFields)
+{
+    //TODO
+    assert(0);
+    // return Collections.emptyMap();
+    return NOERROR;
+}
 
-//    public Map<String, List<String>> getRequestProperties()
+ECode URLConnection::GetRequestProperties(
+    /* [out] */ IMap** properties)
+{
+    //TODO
+    assert(0);
+    // checkNotConnected();
+    // return Collections.emptyMap();
+    return NOERROR;
+}
 
 ECode URLConnection::CheckNotConnected()
 {
@@ -427,7 +453,15 @@ ECode URLConnection::GetOutputStream(
     return E_UNKNOWN_SERVICE_EXCEPTION;
 }
 
-//        public java.security.Permission getPermission();
+ECode URLConnection::GetPermission(
+    /* [out] */ IPermission** perm)
+{
+    VALIDATE_NOT_NULL(perm);
+    //TODO
+    assert(0);
+    // return new java.security.AllPermission();
+    return NOERROR;
+}
 
 ECode URLConnection::GetRequestProperty(
     /* [in] */ const String& field,

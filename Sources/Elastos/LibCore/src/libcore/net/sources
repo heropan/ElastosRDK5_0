@@ -10,12 +10,21 @@ INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../elastos
 INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/net;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/net/http;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/net/event;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/net;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
-SOURCES = MimeUtils.cpp
+VPATH := $(MAKEDIR)/http:$(MAKEDIR)/event
+
+SOURCES += CHttpDate.cpp
+SOURCES += MimeUtils.cpp
 SOURCES += CMimeUtils.cpp
 SOURCES += UriCodec.cpp
 SOURCES += CUriCodecHelper.cpp
+SOURCES += NetworkEventDispatcher.cpp
+SOURCES += NetworkEventListener.cpp

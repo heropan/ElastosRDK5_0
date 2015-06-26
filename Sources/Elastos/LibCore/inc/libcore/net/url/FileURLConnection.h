@@ -6,6 +6,7 @@
 
 using Elastos::Net::IURLConnection;
 using Elastos::Net::IURL;
+using Elastos::Net::URLConnection;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFilePermission;
 using Elastos::IO::IFile;
@@ -26,6 +27,21 @@ public:
 
     CARAPI Connect();
 
+    CARAPI GetHeaderField(
+        /* [in] */ const String& key,
+        /* [out] */ String* value);
+
+    CARAPI GetHeaderFieldKey(
+        /* [in] */ Int32 posn,
+        /* [out] */ String* key);
+
+    CARAPI GetHeaderField(
+        /* [in] */ Int32 pos,
+        /* [out] */ String* value);
+
+    virtual CARAPI GetHeaderFields(
+        /* [out] */ IMap** headerFields);
+
     CARAPI GetContentLength(
         /* [out] */ Int32* length);
 
@@ -40,6 +56,8 @@ public:
 private:
     CARAPI_(AutoPtr<IInputStream>) GetDirectoryListing(
         /* [in] */ IFile* f);
+
+    CARAPI_(String) GetContentTypeForPlainFiles();
 
 private:
     String mFilename;

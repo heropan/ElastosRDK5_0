@@ -64,7 +64,7 @@ ECode HttpURLConnection::GetResponseCode(
     AutoPtr<IInputStream> is;
     FAIL_RETURN(GetInputStream((IInputStream**)&is));
     String response;
-    GetHeaderFieldByPosition(0, &response);
+    GetHeaderField(0, &response);
     if (response.IsNull()) {
         *responseCode = -1;
         return NOERROR;

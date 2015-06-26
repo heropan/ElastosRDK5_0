@@ -2,7 +2,7 @@
 #ifndef __LIBCORE_NET_HTTP_CHTTPDATEHELPER_H__
 #define __LIBCORE_NET_HTTP_CHTTPDATEHELPER_H__
 
-#include "_LIBCORE_NET_HTTP_CHttpDate.h"
+#include "_Libcore_Net_Http_CHttpDate.h"
 #include "Singleton.h"
 #include <pthread.h>
 
@@ -37,6 +37,9 @@ public:
     static CARAPI _Format(
         /* [in] */ IDate* value,
         /* [out] */ String* str);
+
+private:
+    static CARAPI_(Boolean) InitTLS();
 
 private:
     /**

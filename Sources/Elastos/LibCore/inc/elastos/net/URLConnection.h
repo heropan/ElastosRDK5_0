@@ -7,6 +7,8 @@
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
+using Elastos::Security::IPermission;
+using Elastos::Utility::IMap;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -79,13 +81,19 @@ public:
 
     static CARAPI_(AutoPtr<IFileNameMap>) GetFileNameMap();
 
-    virtual CARAPI GetHeaderFieldByPosition(
+    virtual CARAPI GetHeaderField(
+        /* [in] */ const String& key,
+        /* [out] */ String* value);
+
+    virtual CARAPI GetHeaderField(
         /* [in] */ Int32 pos,
         /* [out] */ String* value);
 
-//    public Map<String, List<String>> getHeaderFields()
+    virtual CARAPI GetHeaderFields(
+        /* [out] */ IMap** headerFields);
 
-//    public Map<String, List<String>> getRequestProperties()
+    virtual CARAPI GetRequestProperties(
+        /* [out] */ IMap** properties);
 
     virtual CARAPI AddRequestProperty(
         /* [in] */ const String& field,
@@ -121,7 +129,8 @@ public:
     virtual CARAPI GetOutputStream(
         /* [out] */ IOutputStream** os);
 
-//        public java.security.Permission getPermission();
+    virtual CARAPI GetPermission(
+        /* [out] */ IPermission** perm);
 
     virtual CARAPI GetRequestProperty(
         /* [in] */ const String& field,

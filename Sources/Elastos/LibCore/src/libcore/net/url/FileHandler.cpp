@@ -3,6 +3,8 @@
 #include "CURL.h"
 #include "CFileURLConnection.h"
 
+using Elastos::Net::CURL;
+
 namespace Libcore {
 namespace Net {
 namespace Url {
@@ -23,7 +25,7 @@ ECode FileHandler::OpenConnection(
 
 ECode FileHandler::OpenConnection(
     /* [in] */ IURL* u,
-    /* [in] */ IProxy* proxy,
+    /* [in] */ Elastos::Net::IProxy* proxy,
     /* [out] */ IURLConnection** urlConnection)
 {
     VALIDATE_NOT_NULL(urlConnection)
@@ -38,7 +40,7 @@ ECode FileHandler::OpenConnection(
     if (host.IsNull() || host.IsEmpty() || host.EqualsIgnoreCase("localhost")) {
         AutoPtr<IFileURLConnection> furl;
         CFileURLConnection::New(u, (IFileURLConnection**)&furl);
-        *urlConnection = furl;
+        *urlConnection = IURLConnection::Probe(furl);
         REFCOUNT_ADD(*urlConnection)
         return NOERROR;
     }

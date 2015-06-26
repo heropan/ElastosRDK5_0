@@ -223,7 +223,7 @@ module
          *            the field position of the response header.
          * @return the value of the field at position {pos}.
          */
-        GetHeaderFieldByPosition(
+        GetHeaderField(
             [in] Int32 pos,
             [out] String* value);
 

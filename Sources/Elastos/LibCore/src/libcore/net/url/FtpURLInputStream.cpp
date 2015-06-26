@@ -1,8 +1,10 @@
 
 #include "FtpURLInputStream.h"
 #include "IoUtils.h"
+#include "Autolock.h"
 
-using Elastos::IO::IoUtils;
+using Elastos::Core::Autolock;
+using Libcore::IO::IoUtils;
 
 namespace Libcore {
 namespace Net {
@@ -27,7 +29,7 @@ ECode FtpURLInputStream::Available(
 
 ECode FtpURLInputStream::Close()
 {
-    IoUtils::CloseQuietly(mIs);
+    IoUtils::CloseQuietly(ICloseable::Probe(mIs));
     IoUtils::CloseQuietly(mControlSocket);
     return NOERROR;
 }
@@ -57,7 +59,7 @@ ECode FtpURLInputStream::ReadBytes(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
-    return mIs->ReadBytes(buffer, offset, length, number);
+    return mIs->Read(buffer, offset, length, number);
 }
 
 ECode FtpURLInputStream::Reset()

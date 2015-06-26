@@ -6,6 +6,7 @@
 
 using Elastos::Net::IURLConnection;
 using Elastos::Net::IURL;
+using Elastos::Net::URLStreamHandler;
 
 namespace Libcore {
 namespace Net {
@@ -26,7 +27,7 @@ public:
 
     CARAPI OpenConnection(
         /* [in] */ IURL* u,
-        /* [in] */ IProxy* proxy,
+        /* [in] */ Elastos::Net::IProxy* proxy,
         /* [out] */ IURLConnection** urlConnection);
 
     CARAPI ParseURL(
