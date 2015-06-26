@@ -140,7 +140,7 @@ ECode CRandomAccessFile::GetChannel(
 
     // BEGIN android-added
     if(mChannel == NULL) {
-        mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, mMode);
+        mChannel = NioUtils::NewFileChannel(THIS_PROBE(ICloseable), mFd, mMode);
     }
     // END android-added
     *channel = mChannel;

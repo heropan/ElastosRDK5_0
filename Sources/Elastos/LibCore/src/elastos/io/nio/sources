@@ -85,3 +85,4 @@ SOURCES += ByteBufferAsInt16Buffer.cpp
 SOURCES += ByteBufferAsInt32Buffer.cpp
 SOURCES += ByteBufferAsInt64Buffer.cpp
 SOURCES += ServerSocketChannelImpl.cpp
+SOURCES += CNioUtilsHelper.cpp

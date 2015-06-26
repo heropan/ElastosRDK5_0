@@ -42,10 +42,6 @@ const AutoPtr<IFileDescriptor> CFileDescriptor::IN = CreateSTDIN();
 const AutoPtr<IFileDescriptor> CFileDescriptor::OUT = CreateSTDOUT();
 const AutoPtr<IFileDescriptor> CFileDescriptor::ERR = CreateSTDERR();
 
-CAR_OBJECT_IMPL(CFileDescriptor)
-
-CAR_INTERFACE_IMPL(CFileDescriptor, Object, IFileDescriptor)
-
 CFileDescriptor::CFileDescriptor()
     : mDescriptor(-1)
 {}
@@ -58,16 +54,17 @@ ECode CFileDescriptor::constructor()
 ECode CFileDescriptor::Sync()
 {
     // try {
+    assert(0 && "TODO");
     AutoPtr<ILibcore> libcore;
     // CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     // libcore->GetOs((IOs**)&os);
     Boolean isAtty;
-    if (os->Isatty(this, &isAtty), isAtty) {
-        return os->Tcdrain(this);
+    if (os->Isatty(THIS_PROBE(IFileDescriptor), &isAtty), isAtty) {
+        return os->Tcdrain(THIS_PROBE(IFileDescriptor));
     }
     else {
-        return os->Fsync(this);
+        return os->Fsync(THIS_PROBE(IFileDescriptor));
     }
     // } catch (ErrnoException errnoException) {
     //     SyncFailedException sfe = new SyncFailedException(errnoException.getMessage());

@@ -180,17 +180,18 @@ public:
     CARAPI AsInt64Buffer(
         /* [out] */ IInt64Buffer** buffer);
 
+public:
+    /**
+     * These fields are non-private for NioUtils.unsafeArray.
+     */
+    AutoPtr<ArrayOf<Byte> > mBackingArray;
+
+    Int32 mArrayOffset;
 private:
     static AutoPtr<IByteBuffer> Copy(
         /* [in] */ IByteBuffer* other,
         /* [in] */ Int32 markOfOther,
         /* [in] */ Boolean isReadOnly);
-
-    /**
-     * These fields are non-private for NioUtils.unsafeArray.
-     */
-    AutoPtr<ArrayOf<Byte> > mBackingArray;
-    Int32 mArrayOffset;
 
     Boolean mIsReadOnly;
 };

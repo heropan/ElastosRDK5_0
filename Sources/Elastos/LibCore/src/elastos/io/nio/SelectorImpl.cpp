@@ -20,10 +20,140 @@ using Elastos::IO::Channels::Spi::AbstractSelectionKey;
 using Elastos::IO::Channels::Spi::EIID_IAbstractSelector;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
+using Elastos::Utility::EIID_ISet;
+using Elastos::Utility::EIID_ICollection;
+using Elastos::Utility::EIID_IIterable;
 
 namespace Elastos {
 namespace IO {
 
+//==========================================================
+//       SelectorImpl::UnaddableSet
+//==========================================================
+SelectorImpl::UnaddableSet::UnaddableSet(
+    /* [in] */ ISet* set)
+{
+    // this.set = set;
+}
+
+CAR_INTERFACE_IMPL_3(SelectorImpl::UnaddableSet, Object, ISet, ICollection, IIterable)
+
+ECode SelectorImpl::UnaddableSet::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* value)
+{
+    // return set.equals(object);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::GetHashCode(
+    /* [out] */ Int32* value)
+{
+    // return set.hashCode();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::Add(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* modified)
+{
+    // throw new UnsupportedOperationException();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::AddAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* value)
+{
+    // throw new UnsupportedOperationException();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::Clear()
+{
+    // set.clear();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::Contains(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    // return set.contains(object);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::ContainsAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* value)
+{
+    // return set.containsAll(c);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    // return set.isEmpty();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::Remove(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* modified)
+{
+    // return set.remove(object);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::RemoveAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* value)
+{
+    // return set.removeAll(c);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::GetSize(
+    /* [out] */ Int32* size)
+{
+    // return set.size();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    // return set.iterator();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::RetainAll(
+    /* [in] */ ICollection* c,
+    /* [out] */ Boolean* value)
+{
+    // return set.retainAll(c);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** outarr)
+{
+    // return set.toArray();
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode SelectorImpl::UnaddableSet::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* inarr,
+    /* [out, callee] */ ArrayOf<IInterface*>** outarr)
+{
+    // return set.toArray(a);
+    return E_NOT_IMPLEMENTED;
+}
+
+//==========================================================
+//       SelectorImpl
+//==========================================================
 ECode SelectorImpl::constructor()
 {
     return NOERROR;

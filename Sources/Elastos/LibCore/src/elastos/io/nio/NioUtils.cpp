@@ -4,18 +4,13 @@
 #include "MappedByteBuffer.h"
 #include "MappedByteBufferAdapter.h"
 #include "FileChannelImpl.h"
+#include "CByteArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
 
-Int32 NioUtils::GetDirectBufferAddress(
-    /* [in] */ Buffer* buffer)
-{
-    return buffer->mEffectiveDirectAddress;
-}
-
 ECode NioUtils::FreeDirectBuffer(
-    /* [in] */ ByteBuffer* buffer)
+    /* [in] */ IByteBuffer* buffer)
 {
     if (NULL == buffer)
         return NOERROR;
@@ -36,8 +31,16 @@ ECode NioUtils::FreeDirectBuffer(
     }
 }
 
+AutoPtr<IFileDescriptor> NioUtils::GetFD(
+    /* [in] */ IFileChannel* fc)
+{
+    AutoPtr<IFileDescriptor> outfd;
+    IFileChannelImpl::Probe(fc)->GetFD((IFileDescriptor**)&outfd);
+    return outfd;
+}
+
 AutoPtr<IFileChannel> NioUtils::NewFileChannel(
-    /* [in] */ IObject *stream,
+    /* [in] */ ICloseable *stream,
     /* [in] */ IFileDescriptor *fd,
     /* [in] */ Int32 mode)
 {
@@ -45,16 +48,16 @@ AutoPtr<IFileChannel> NioUtils::NewFileChannel(
     return res;
 }
 
-ArrayOf<Byte>* NioUtils::GetUnsafeArray(
-    /* [in] */ ByteBuffer* b)
+AutoPtr<ArrayOf<Byte> > NioUtils::GetUnsafeArray(
+    /* [in] */ IByteBuffer* b)
 {
-    // return b->mBackingArray;
+    return ((CByteArrayBuffer*)b)->mBackingArray;
 }
 
 Int32 NioUtils::GetUnsafeArrayOffset(
-    /* [in] */ ByteBuffer* b)
+    /* [in] */ IByteBuffer* b)
 {
-    // return b->mOffset;
+    return ((CByteArrayBuffer*)b)->mArrayOffset;
 }
 
 } // namespace IO

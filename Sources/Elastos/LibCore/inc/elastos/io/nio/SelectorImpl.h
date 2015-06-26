@@ -5,6 +5,9 @@
 
 using Elastos::Core::IRunnable;
 using Elastos::Utility::ISet;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IIterable;
 using Elastos::Utility::IUnsafeArrayList;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractSelector;
@@ -17,76 +20,75 @@ namespace IO {
 
 class SelectorImpl : public AbstractSelector
 {
-    // private static class UnaddableSet<E> implements Set<E> {
+private:
+    class UnaddableSet
+        : public ISet
+        , public ICollection
+        , public IIterable
+        , public Object
+    {
+    protected:
+        UnaddableSet(
+            /* [in] */ ISet* set);
 
-    //     private final Set<E> set;
+    public:
+        CAR_INTERFACE_DECL()
 
-    //     UnaddableSet(Set<E> set) {
-    //         this.set = set;
-    //     }
+        CARAPI Equals(
+            /* [in] */ IInterface* object,
+            /* [out] */ Boolean* value);
 
-    //     @Override
-    //     public boolean equals(Object object) {
-    //         return set.equals(object);
-    //     }
+        CARAPI GetHashCode(
+            /* [out] */ Int32* value);
 
-    //     @Override
-    //     public int hashCode() {
-    //         return set.hashCode();
-    //     }
+        CARAPI Add(
+            /* [in] */ IInterface* object,
+            /* [out] */ Boolean* modified);
 
-    //     public boolean add(E object) {
-    //         throw new UnsupportedOperationException();
-    //     }
+        CARAPI AddAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* value);
 
-    //     public boolean addAll(Collection<? extends E> c) {
-    //         throw new UnsupportedOperationException();
-    //     }
+        CARAPI Clear();
 
-    //     public void clear() {
-    //         set.clear();
-    //     }
+        CARAPI Contains(
+            /* [in] */ IInterface* object,
+            /* [out] */ Boolean* result);
 
-    //     public boolean contains(Object object) {
-    //         return set.contains(object);
-    //     }
+        CARAPI ContainsAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* value);
 
-    //     public boolean containsAll(Collection<?> c) {
-    //         return set.containsAll(c);
-    //     }
+        CARAPI IsEmpty(
+            /* [out] */ Boolean* result);
 
-    //     public boolean isEmpty() {
-    //         return set.isEmpty();
-    //     }
+        CARAPI Remove(
+            /* [in] */ IInterface* object,
+            /* [out] */ Boolean* modified);
 
-    //     public Iterator<E> iterator() {
-    //         return set.iterator();
-    //     }
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* value);
 
-    //     public boolean remove(Object object) {
-    //         return set.remove(object);
-    //     }
+        CARAPI GetSize(
+            /* [out] */ Int32* size);
 
-    //     public boolean removeAll(Collection<?> c) {
-    //         return set.removeAll(c);
-    //     }
+        CARAPI GetIterator(
+            /* [out] */ IIterator** it);
 
-    //     public boolean retainAll(Collection<?> c) {
-    //         return set.retainAll(c);
-    //     }
+        CARAPI RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* value);
 
-    //     public int size() {
-    //         return set.size();
-    //     }
+        CARAPI ToArray(
+            /* [out, callee] */ ArrayOf<IInterface*>** outarr);
 
-    //     public Object[] toArray() {
-    //         return set.toArray();
-    //     }
-
-    //     public <T> T[] toArray(T[] a) {
-    //         return set.toArray(a);
-    //     }
-    // };
+        CARAPI ToArray(
+            /* [in] */ ArrayOf<IInterface*>* inarr,
+            /* [out, callee] */ ArrayOf<IInterface*>** outarr);
+    private:
+        AutoPtr<ISet> mSet;
+    };
 
 public:
     CARAPI constructor();

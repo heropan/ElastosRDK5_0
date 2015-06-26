@@ -55,8 +55,8 @@ module
          *         UnsupportedOperationException if the buffer does not expose an array
          * @since 1.6
          */
-        //GetArray(
-        //    [out] IInterface** array);
+        // GetArray(
+        //     [out] IInterface** array);
 
         /**
          * Returns the offset into the array returned by {@code array} of the first

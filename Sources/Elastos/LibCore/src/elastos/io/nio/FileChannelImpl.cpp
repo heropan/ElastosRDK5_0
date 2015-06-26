@@ -125,7 +125,7 @@ ECode FileChannelImpl::FileLockImpl::ReleaseLock()
 CAR_INTERFACE_IMPL(FileChannelImpl, Object, IFileChannelImpl)
 
 FileChannelImpl::FileChannelImpl(
-    /* [in] */ IObject* stream,
+    /* [in] */ ICloseable* stream,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 mode)
     : mStream(stream)
@@ -352,7 +352,7 @@ ECode FileChannelImpl::ReleaseLock(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode FileChannelImpl:: Force(
+ECode FileChannelImpl::Force(
     /* [in] */ Boolean metadata)
 {
     ECode ecRet = CheckOpen();

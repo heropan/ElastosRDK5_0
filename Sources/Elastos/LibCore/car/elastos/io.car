@@ -69,8 +69,8 @@ module
     merge("io/nio/IMappedByteBuffer.car");
     merge("io/nio/INIOAccess.car");
     merge("io/nio/IFileDescriptorChannel.car");
-    merge("io/nio/IPipeImpl.car");
     merge("io/nio/IFileChannelImpl.car");
+    merge("io/nio/INioUtils.car");
 
     merge("io/channels/IChannel.car");
     merge("io/channels/IReadableByteChannel.car");
@@ -669,6 +669,10 @@ module
         interface ICloseable;
         interface IWriter;
         interface IOutputStreamWriter;
+    }
+
+    singleton class CNioUtilsHelper {
+        interface INioUtilsHelper;
     }
 
     namespace Channels {

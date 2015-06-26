@@ -1,118 +1,182 @@
 
 #include "PipeImpl.h"
-//#include "IoUtils.h"
+#include "SocketChannelImpl.h"
+#include "IoUtils.h"
+#include "CLibcore.h"
+#include "OsConstants.h"
+
+using Libcore::IO::IoUtils;
+using Libcore::IO::CLibcore;
+using Elastos::IO::Channels::EIID_ISinkChannel;
+using Elastos::IO::Channels::EIID_ISourceChannel;
+using Elastos::Droid::System::OsConstants;
 
 namespace Elastos{
 namespace IO{
 
-// PipeSoucreChannel
-PipeSourceChannel::PipeSourceChannel(
+//==========================================================
+//       PipeImpl::PipeSourceChannel
+//==========================================================
+CAR_INTERFACE_IMPL(PipeImpl::PipeSourceChannel, Object, IFileDescriptorChannel)
+
+PipeImpl::PipeSourceChannel::PipeSourceChannel(
     /* [in] */ ISelectorProvider* provider,
     /* [in] */ IFileDescriptor* fd)
-    : SourceChannel(provider), mFd(fd)
+    : SourceChannel(provider)
+    , mFd(fd)
 {
-    assert(NULL != provider);
-    assert(NULL != fd);
-//    mChannel = new SocketChannelImpl(provider, fd);
-    printf("ERROR:SocketChannelImpl Not Implemented Yet\n");
-    assert(false);
+    assert(0 && "TODO");
+    // mChannel = (ISocketChannel*) new SocketChannelImpl(provider, fd);
 }
 
-ECode PipeSourceChannel::ImplCloseSelectableChannel()
+ECode PipeImpl::PipeSourceChannel::ImplCloseSelectableChannel()
 {
     return ICloseable::Probe(mChannel)->Close();
 }
 
-ECode PipeSourceChannel::ImplConfigureBlocking(Boolean blocking)
+ECode PipeImpl::PipeSourceChannel::ImplConfigureBlocking(
+    /* [in] */ Boolean blocking)
 {
     AutoPtr<IFileDescriptor> descriptor;
-    ECode ecRet = GetFD((IFileDescriptor**)&descriptor);
-    if (NOERROR != ecRet)
-    {
-        return ecRet;
-    }
-
-    assert(0 && "TODO");
-    // return IoUtils::SetBlocking(descriptor, blocking);
-    return NOERROR;
+    FAIL_RETURN(GetFD((IFileDescriptor**)&descriptor))
+    return IoUtils::SetBlocking(descriptor, blocking);
 }
 
-ECode PipeSourceChannel::ReadByteBuffer(IByteBuffer* buffer, Int32* nRead)
+ECode PipeImpl::PipeSourceChannel::ReadByteBuffer(
+    /* [in] */ IByteBuffer* buffer,
+    /* [out] */ Int32* nRead)
 {
     return mChannel->ReadByteBuffer(buffer, nRead);
 }
 
-ECode PipeSourceChannel::ReadByteBuffers(const ArrayOf<IByteBuffer*> & buffers,
-        Int64* nRead)
+ECode PipeImpl::PipeSourceChannel::ReadByteBuffers(
+    /* [in] */ const ArrayOf<IByteBuffer*> & buffers,
+    /* [out] */ Int64* nRead)
 {
     return mChannel->ReadByteBuffers(buffers, nRead);
 }
 
-ECode PipeSourceChannel::ReadByteBuffers(
-        const ArrayOf<IByteBuffer*> & buffers, Int32 offset, Int32 length,
-        Int64* nRead)
+ECode PipeImpl::PipeSourceChannel::ReadByteBuffers(
+    /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [out] */ Int64* nRead)
 {
     return mChannel->ReadByteBuffers(buffers, offset, length, nRead);
 }
 
-ECode PipeSourceChannel::GetFD(IFileDescriptor** descriptor)
+ECode PipeImpl::PipeSourceChannel::GetFD(
+    /* [out] */ IFileDescriptor** descriptor)
 {
-    *descriptor = mFd.Get();
+    VALIDATE_NOT_NULL(descriptor)
+
+    *descriptor = mFd;
     REFCOUNT_ADD(*descriptor);
     return NOERROR;
 }
-// end PipeSourceChannel;
 
-// PipeSinkChannel
-PipeSinkChannel::PipeSinkChannel(ISelectorProvider* provider, IFileDescriptor* fd) :
-        SinkChannel(provider), mFd(fd)
+//==========================================================
+//       PipeImpl::PipeSinkChannel
+//==========================================================
+CAR_INTERFACE_IMPL(PipeImpl::PipeSinkChannel, Object, IFileDescriptorChannel)
+
+PipeImpl::PipeSinkChannel::PipeSinkChannel(
+    /* [in] */ ISelectorProvider* provider,
+    /* [in] */ IFileDescriptor* fd)
+    : SinkChannel(provider)
+    , mFd(fd)
 {
-    assert(NULL != provider);
-    assert(NULL != fd);
-  //  mChannel = new SocketChannnelImpl();
-    printf("ERROR: SocketChannelImpl Not Implemented Yet\n");
-    assert(false);
+    assert(0 && "TODO");
+    // mChannel = (ISocketChannel*) new SocketChannnelImpl(provider, fd);
 }
 
-ECode PipeSinkChannel::ImplCloseSelectableChannel()
+ECode PipeImpl::PipeSinkChannel::ImplCloseSelectableChannel()
 {
     return ICloseable::Probe(mChannel)->Close();
 }
 
-ECode PipeSinkChannel::ImplConfigureBlocking(Boolean blocking)
+ECode PipeImpl::PipeSinkChannel::ImplConfigureBlocking(
+    /* [in] */ Boolean blocking)
 {
     AutoPtr<IFileDescriptor> desc;
-    ECode ecRet = GetFD((IFileDescriptor**)&desc);
-    if(NOERROR != ecRet)
-        return ecRet;
-
-    assert(0 && "TODO");
-    // return IoUtils::SetBlocking(desc, blocking);
-    return NOERROR;
+    FAIL_RETURN(GetFD((IFileDescriptor**)&desc))
+    return IoUtils::SetBlocking(desc, blocking);
 }
 
-ECode PipeSinkChannel::WriteBuffer(IByteBuffer* buffer, Int32* nWrite)
+ECode PipeImpl::PipeSinkChannel::WriteBuffer(
+    /* [in] */ IByteBuffer* buffer,
+    /* [out] */ Int32* nWrite)
 {
     return mChannel->WriteByteBuffer(buffer, nWrite);
 }
 
-ECode PipeSinkChannel::WriteBuffers(ArrayOf<IByteBuffer*> & buffers, Int64* nWrite)
+ECode PipeImpl::PipeSinkChannel::WriteBuffers(
+    /* [in] */ ArrayOf<IByteBuffer*>& buffers,
+    /* [out] */ Int64* nWrite)
 {
     return mChannel->WriteByteBuffers(buffers, nWrite);
 }
 
-ECode PipeSinkChannel::WriteBuffers(ArrayOf<IByteBuffer*> & buffers,
-        Int32 offset, Int32 length, Int64* nWrite)
+ECode PipeImpl::PipeSinkChannel::WriteBuffers(
+    /* [in] */ ArrayOf<IByteBuffer*>& buffers,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [out] */ Int64* nWrite)
 {
     return mChannel->WriteByteBuffers(buffers, offset, length, nWrite);
 }
 
-ECode PipeSinkChannel::GetFD(IFileDescriptor** descriptor)
+ECode PipeImpl::PipeSinkChannel::GetFD(
+    /* [out] */ IFileDescriptor** descriptor)
 {
     VALIDATE_NOT_NULL(descriptor)
     *descriptor = mFd.Get();
     REFCOUNT_ADD(*descriptor);
 
+    return NOERROR;
+}
+
+//==========================================================
+//       PipeImpl
+//==========================================================
+PipeImpl::PipeImpl(
+    /* [in] */ ISelectorProvider* selectorProvider)
+{
+    assert(0 && "TODO");
+    // try {
+    AutoPtr<IFileDescriptor> fd1;
+    CFileDescriptor::New((IFileDescriptor**)&fd1);
+    AutoPtr<IFileDescriptor> fd2;
+    CFileDescriptor::New((IFileDescriptor**)&fd2);
+    CLibcore::sOs->Socketpair(OsConstants::_AF_UNIX, OsConstants::_SOCK_STREAM, 0, fd1, fd2);
+
+    // It doesn't matter which file descriptor we use for which end;
+    // they're guaranteed to be indistinguishable.
+    assert(0 && "TODO");
+    // mSink = (ISinkChannel*) new PipeSinkChannel(selectorProvider, fd1);
+    // mSource = (ISourceChannel*) new PipeSourceChannel(selectorProvider, fd2);
+    // } catch (ErrnoException errnoException) {
+    //     throw errnoException.rethrowAsIOException();
+    // }
+}
+
+ECode PipeImpl::Sink(
+    /* [out] */ ISinkChannel** channel)
+{
+    VALIDATE_NOT_NULL(channel)
+
+    *channel = (ISinkChannel*) mSink->Probe(EIID_ISinkChannel);
+    REFCOUNT_ADD(*channel)
+    return NOERROR;
+}
+
+ECode PipeImpl::Source(
+    /* [out] */ ISourceChannel** channel)
+{
+    VALIDATE_NOT_NULL(channel)
+
+    *channel = (ISourceChannel*) mSource->Probe(EIID_ISourceChannel);
+    REFCOUNT_ADD(*channel)
     return NOERROR;
 }
 

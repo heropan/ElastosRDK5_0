@@ -1,9 +1,8 @@
 #ifndef __ELASTOS_IO_CHANNELS_SINKCHANNEL_H__
 #define __ELASTOS_IO_CHANNELS_SINKCHANNEL_H__
 
-#include <Elastos.CoreLibrary_server.h>
 #include <elastos/core/Thread.h>
-#include "Object.h"
+#include <Object.h>
 #include "AbstractSelectableChannel.h"
 
 using Elastos::Core::IRunnable;

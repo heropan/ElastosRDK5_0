@@ -14,24 +14,22 @@ namespace IO {
 class NioUtils
 {
 public:
-    /*
-     * Gets the start address of a direct buffer.
-     * @ param buffer
-     *      The direct buffer whose address shall be return must not be NULL;
-     * @ return the address of the bugger given, or zero if the buffer is not a
-     *   direct buffer;
-     * */
-    static Int32 GetDirectBufferAddress(Buffer* buffer);
+    static CARAPI FreeDirectBuffer(
+        /* [in] */ IByteBuffer* buffer);
 
-    static CARAPI FreeDirectBuffer(ByteBuffer* buffer);
+    static AutoPtr<IFileDescriptor> GetFD(
+        /* [in] */ IFileChannel* fc);
 
-    // static IFileDescriptor GetFD(IFileChannel fc);
+    static AutoPtr<IFileChannel> NewFileChannel(
+        /* [in] */ ICloseable *stream,
+        /* [in] */ IFileDescriptor *fd,
+        /* [in] */ Int32 mode);
 
-    static AutoPtr<IFileChannel> NewFileChannel(IObject *stream, IFileDescriptor *fd, Int32 mode);
+    static AutoPtr<ArrayOf<Byte> > GetUnsafeArray(
+        /* [in] */ IByteBuffer* b);
 
-    static ArrayOf<Byte>* GetUnsafeArray(ByteBuffer* b);
-
-    static Int32 GetUnsafeArrayOffset(ByteBuffer* b);
+    static Int32 GetUnsafeArrayOffset(
+        /* [in] */ IByteBuffer* b);
 private:
     NioUtils() {}
 };

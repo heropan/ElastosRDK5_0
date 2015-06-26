@@ -89,7 +89,7 @@ ECode AbstractSelectableChannel::Register(
     }
 
     Int32 ops = 0;
-    ValidOps(&ops);
+    GetValidOps(&ops);
     if (!((interestSet & ~ops) == 0)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

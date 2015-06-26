@@ -32,11 +32,8 @@ ECode SelectionKeyImpl::InterestOps(
     /* [out] */ Int32* opts)
 {
     VALIDATE_NOT_NULL(opts)
-    ECode ecRet = CheckValid();
-    if(NOERROR != ecRet)
-    {
-        return ecRet;
-    }
+    FAIL_RETURN(CheckValid())
+
  //   mSelector->mKeysLock;
     printf("WARNING: Not synchronized yet\n");
     *opts = mInterestOps;
@@ -65,7 +62,7 @@ ECode SelectionKeyImpl::InterestOps(
     }
 
     Int32 ops;
-    mChannel->ValidOps(&ops);
+    mChannel->GetValidOps(&ops);
     if ((operations & ~ops) != 0)
     {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

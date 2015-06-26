@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_NIOAccess_H__
 #define __ELASTOS_IO_NIOAccess_H__
 
-#include <elastos/core/Object.h>
+#include <Object.h>
 
 namespace Elastos {
 namespace IO {
@@ -27,17 +27,6 @@ public:
         /* [in] */ IBuffer* b);
 
     /**
-     * Returns the number of bytes remaining in the given Buffer. That is,
-     * this scales <code>remaining()</code> by the byte-size of elements
-     * of this Buffer.
-     *
-     * @param Buffer b the Buffer to be queried
-     * @return the number of remaining bytes
-     */
-    static CARAPI_(Int32) GetRemainingBytes(
-        /* [in] */ IBuffer* b);
-
-    /**
      * Returns the underlying Java array containing the data of the
      * given Buffer, or null if the Buffer is not backed by a Java array.
      *
@@ -45,7 +34,8 @@ public:
      * @return the Java array containing the Buffer's data, or null if
      * there is none
      */
-    //static Object getBaseArray(Buffer b);
+    static AutoPtr<IInterface> GetBaseArray(
+        /* [in] */ IBuffer* b);
 
     /**
      * Returns the offset in bytes from the start of the underlying

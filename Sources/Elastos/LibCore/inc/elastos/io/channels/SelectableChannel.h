@@ -31,7 +31,7 @@ public:
      *
      * @return the blocking object as lock.
      */
-    virtual CARAPI BlockingLock(
+    virtual CARAPI GetBlockingLock(
         /* [out] */ IObject** obj) = 0;
 
     /**
@@ -84,7 +84,7 @@ public:
      * @return the selection key for the channel or {@code null} if this channel
      *         has not been registered with {@code sel}.
      */
-    virtual CARAPI KeyFor(
+    virtual CARAPI GetKeyFor(
         /* [in] */ ISelector* sel,
         /* [in] */ Int32 ops,
         /* [out] */ ISelectionKey** key) = 0;
@@ -142,7 +142,7 @@ public:
      *
      * @return the set of operations that this channel supports.
      */
-    virtual CARAPI ValidOps(
+    virtual CARAPI GetValidOps(
         /* [out] */ Int32* ops) = 0;
 
     /**

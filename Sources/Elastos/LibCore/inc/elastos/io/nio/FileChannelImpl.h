@@ -164,7 +164,7 @@ public:
         /* [out] */ Int64* number);
 
     FileChannelImpl(
-        /* [in] */ IObject* stream,
+        /* [in] */ ICloseable* stream,
         /* [in] */ IFileDescriptor* desc,
         /* [in] */ Int32 mode);
 
@@ -221,7 +221,7 @@ private:
 
 private:
     AutoPtr<IComparator> sCompator;
-    AutoPtr<IObject> mStream;
+    AutoPtr<ICloseable> mStream;
     AutoPtr<IFileDescriptor> mFd;
     Int32 mMode;
 //    Set<IFileLock*> mLocks;

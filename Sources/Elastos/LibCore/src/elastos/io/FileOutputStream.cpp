@@ -80,7 +80,7 @@ ECode FileOutputStream::constructor(
 //        throw new NullPointerException("fd == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    mFd = (CFileDescriptor*)fd;
+    mFd = fd;
     mShouldClose = FALSE;
     // AutoPtr<COsConstants> osConstans;
     // COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
@@ -153,6 +153,7 @@ ECode FileOutputStream::Write(
     CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
     // return IoUtils::Libcore2IoECode(ioBridge->Write(fd,
     //         buffer, byteOffset, byteCount));
+    return NOERROR;
 }
 
 ECode FileOutputStream::CloseInner()
