@@ -53,6 +53,7 @@ AutoPtr<TzData> CZoneInfoDB::GetInstance()
 ECode CZoneInfoDB::GetInstance(
     /* [out] */ ITzData** data)
 {
+    VALIDATE_NOT_NULL(data)
     *data = DATA;
     REFCOUNT_ADD(*data)
     return NOERROR;
@@ -150,6 +151,10 @@ Boolean TzData::LoadData(
 
 ECode TzData::ReadHeader()
 {
+    if (mMappedFile == NULL) {
+        return E_FAIL;
+    }
+
     // byte[12] tzdata_version  -- "tzdata2012f\0"
     // int index_offset
     // int data_offset

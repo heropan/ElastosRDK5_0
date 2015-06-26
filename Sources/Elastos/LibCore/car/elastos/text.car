@@ -145,8 +145,8 @@ module
     [deprecated]
     class CChoiceFormat {
         constructor(
-            [in] ArrayOf<Double> limits,
-            [in] ArrayOf<String> formats);
+            [in] ArrayOf<Double> * limits,
+            [in] ArrayOf<String> * formats);
 
         constructor(
             [in] String tem);

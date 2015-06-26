@@ -85,8 +85,15 @@ ECode CMemoryMappedFile::MmapRO(
     /* [in] */ String path,
     /* [in] */ IMemoryMappedFile** rst)
 {
+    VALIDATE_NOT_NULL(rst)
+    *rst = NULL;
+
     AutoPtr<IFileDescriptor> fd;
     AutoPtr<IOs> os = CLibcore::sOs;
+    if (os == NULL) {
+        // TODO upgrade: delete this
+        return NOERROR;
+    }
     FAIL_RETURN(os->Open(path, OsConstants::_O_RDONLY, 0, (IFileDescriptor**)&fd))
     AutoPtr<IStructStat> structState;
     FAIL_RETURN(os->Fstat(fd, (IStructStat**)&structState))

@@ -32,8 +32,8 @@ ChoiceFormat::~ChoiceFormat()
 }
 
 ECode ChoiceFormat::constructor(
-    /* [in] */ const ArrayOf<Double>& limits,
-    /* [in] */ const ArrayOf<String>& formats)
+    /* [in] */ ArrayOf<Double> * limits,
+    /* [in] */ ArrayOf<String> * formats)
 {
     return SetChoices(limits, formats);
 }
