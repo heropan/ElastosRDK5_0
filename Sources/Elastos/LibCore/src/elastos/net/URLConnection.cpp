@@ -6,6 +6,7 @@
 #include "Character.h"
 #include "StringBuffer.h"
 #include "StringUtils.h"
+#include "Autolock.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
@@ -307,7 +308,7 @@ ECode URLConnection::GetExpiration(
 
 AutoPtr<IFileNameMap> URLConnection::GetFileNameMap()
 {
-    synchronized(this) {
+    synchronized(sLock) {
         if (sFileNameMap == NULL) {
             sFileNameMap = new DefaultFileNameMap();
         }
@@ -509,37 +510,37 @@ String URLConnection::GuessContentTypeFromStream(
     }
 
     // Check for Unicode BOM encoding indicators
-    CString encoding = "US-ASCII";
+    String encoding("US-ASCII");
     Int32 start = 0;
     if (length > 1) {
         if (((*bytes)[0] == (Byte)0xFF) && ((*bytes)[1] == (Byte)0xFE)) {
-            encoding = "UTF-16LE";
+            encoding = String("UTF-16LE");
             start = 2;
             length -= length & 1;
         }
         if (((*bytes)[0] == (Byte)0xFE) && ((*bytes)[1] == (Byte)0xFF)) {
-            encoding = "UTF-16BE";
+            encoding = String("UTF-16BE");
             start = 2;
             length -= length & 1;
         }
         if (length > 2) {
             if (((*bytes)[0] == (Byte)0xEF) && ((*bytes)[1] == (Byte)0xBB)
                     && ((*bytes)[2] == (Byte)0xBF)) {
-                encoding = "UTF-8";
+                encoding = String("UTF-8");
                 start = 3;
             }
             if (length > 3) {
                 if (((*bytes)[0] == (Byte)0x00) && ((*bytes)[1] == (Byte)0x00)
                         && ((*bytes)[2] == (Byte)0xFE)
                         && ((*bytes)[3] == (Byte)0xFF)) {
-                    encoding = "UTF-32BE";
+                    encoding = String("UTF-32BE");
                     start = 4;
                     length -= length & 3;
                 }
                 if (((*bytes)[0] == (Byte)0xFF) && ((*bytes)[1] == (Byte)0xFE)
                         && ((*bytes)[2] == (Byte)0x00)
                         && ((*bytes)[3] == (Byte)0x00)) {
-                    encoding = "UTF-32LE";
+                    encoding = String("UTF-32LE");
                     start = 4;
                     length -= length & 3;
                 }
@@ -604,7 +605,7 @@ ECode URLConnection::SetAllowUserInteraction(
 ECode URLConnection::SetContentHandlerFactory(
     /* [in] */ IContentHandlerFactory* contentFactory)
 {
-    synchronized(this) {
+    synchronized(sLock) {
         if (sContentHandlerFactory != NULL) {
             //throw new Error("Factory already set");
             return NOERROR;
@@ -662,7 +663,7 @@ void URLConnection::SetFileNameMap(
 //    if (manager != null) {
 //        manager.checkSetFactory();
 //    }
-    synchronized(this) {
+    synchronized(sLock) {
         sFileNameMap = map;
     }
     return;

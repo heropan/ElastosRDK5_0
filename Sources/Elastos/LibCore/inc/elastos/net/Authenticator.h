@@ -2,13 +2,10 @@
 #ifndef __ELASTOS_NET_AUTHENTICATOR_H__
 #define __ELASTOS_NET_AUTHENTICATOR_H__
 
-#include <elastos/core/Object.h>
-
+#include "Object.h"
 
 namespace Elastos {
 namespace Net {
-
-extern "C" const InterfaceID EIID_Authenticator;
 
 class Authenticator
     : public Object
@@ -80,6 +77,7 @@ public:
 private:
     // the default authenticator that needs to be set
     static AutoPtr<Authenticator> sThisAuthenticator;
+    static Object sLock;
 
     // the requester connection info
     String mHost;

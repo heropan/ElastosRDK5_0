@@ -122,11 +122,18 @@ ECode HttpURLConnection::SetRequestMethod(
     }
     //Todo:
     // for (String permittedUserMethod : HttpURLConnectionImpl.PERMITTED_USER_METHODS)
-    CString PERMITTED_USER_METHODS[] = {"OPTIONS", "GET", "HEAD",
-            "POST", "PUT", "DELETE", "TRACE"};
+    static String PERMITTED_USER_METHODS[] = {
+        String("OPTIONS"),
+        String("GET"),
+        String("HEAD"),
+        String("POST"),
+        String("PUT"),
+        String("DELETE"),
+        String("TRACE")
+    };
     for (Int32 i = 0; i < 7; i++) {
-        CString permittedUserMethod = PERMITTED_USER_METHODS[i];
-        if (permittedUserMethod.Equals(mMethod.string())) {
+        String permittedUserMethod = PERMITTED_USER_METHODS[i];
+        if (method.Equals(permittedUserMethod)) {
             // if there is a supported method that matches the desired
             // method, then set the current method and return
             mMethod = permittedUserMethod;

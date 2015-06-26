@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_ADDRESSCACHE_H__
 #define __ELASTOS_NET_ADDRESSCACHE_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Libcore::Utility::IBasicLruCache;
 

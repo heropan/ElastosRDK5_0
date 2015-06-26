@@ -2,10 +2,6 @@
 #ifndef __ELASTOS_NET_CCOOKIEMANAGER_H__
 #define __ELASTOS_NET_CCOOKIEMANAGER_H__
 
-#ifndef __USE_MALLOC
-#define __USE_MALLOC
-#endif
-
 #include "_Elastos_Net_CCookieManager.h"
 #include "CStringWrapper.h"
 #include "CookieHandler.h"

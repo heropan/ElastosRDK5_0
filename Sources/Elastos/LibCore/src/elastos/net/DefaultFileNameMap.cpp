@@ -10,36 +10,6 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(DefaultFileNameMap, Object, IFileNameMap)
 
-// PInterface DefaultFileNameMap::Probe(
-//     /* [in] */ REIID riid)
-// {
-//     if (riid == EIID_IInterface) {
-//         return (PInterface)this;
-//     }
-//     else if (riid == EIID_IFileNameMap) {
-//         return (IFileNameMap*)this;
-//     }
-
-//     return NULL;
-// }
-
-// UInt32 DefaultFileNameMap::AddRef()
-// {
-//     return ElRefBase::AddRef();
-// }
-
-// UInt32 DefaultFileNameMap::Release()
-// {
-//     return ElRefBase::Release();
-// }
-
-// ECode DefaultFileNameMap::GetInterfaceID(
-//     /* [in] */ IInterface *pObject,
-//     /* [out] */ InterfaceID *pIID)
-// {
-//     return E_NOT_IMPLEMENTED;
-// }
-
 ECode DefaultFileNameMap::GetContentTypeFor(
     /* [in] */ const String& filename,
     /* [out] */ String* type)

@@ -12,7 +12,6 @@
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_IComparable;
-
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
@@ -286,6 +285,13 @@ ECode CURL::SetURLStreamHandlerFactory(
 //        throw new Error("Factory already set");
         assert(0);
     }
+//    SecurityManager sm = System.getSecurityManager();
+//    if (sm != null) {
+//        sm.checkSetFactory();
+//    }
+    sStreamHandlers.Clear();
+    sStreamHandlerFactory = streamFactory;
+
     return NOERROR;
 }
 

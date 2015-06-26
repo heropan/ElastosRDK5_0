@@ -110,16 +110,16 @@ ECode ProxySelectorImpl::Select(
     uri->GetHost(&host);
     AutoPtr<IProxy> proxy = CProxy::NO_PROXY;
 
-    if (CString("http").Equals(scheme.string())) {
+    if (scheme.Equals("http")) {
         proxy = SelectHttpProxy(host);
     }
-    else if (CString("https").Equals(scheme.string())) {
+    else if (scheme.Equals("https")) {
         proxy = SelectHttpsProxy();
     }
-    else if (CString("ftp").Equals(scheme.string())) {
+    else if (scheme.Equals("ftp")) {
         proxy = SelectFtpProxy(host);
     }
-    else if (CString("socket").Equals(scheme.string())) {
+    else if (scheme.Equals("socket")) {
         proxy = SelectSocksProxy();
     }
 

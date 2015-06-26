@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_DATAGRAMSOCKETIMPL_H__
 #define __ELASTOS_NET_DATAGRAMSOCKETIMPL_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IFileDescriptor;
 

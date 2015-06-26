@@ -8,12 +8,14 @@
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CSocket.h"
+#include "Autolock.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::IO::EIID_ICloseable;
+using Elastos::Net::ISocketImpl;
 using Elastos::Net::CSocket;
 using Elastos::Net::CInet4Address;
 using Elastos::Net::CPlainSocketImpl;
@@ -89,7 +91,7 @@ ECode ServerSocket::constructor(
 
     AutoPtr<IInetAddress> addr = localAddr == NULL ? CInet4Address::ANY.Get() : localAddr;
 
-    synchronized (this)
+    synchronized (this) {
         mImpl->Create(TRUE);
         mIsCreated = TRUE;
     //    try {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_NET_CCOOKIEHANDLERHELPER_H__
 #define __ELASTOS_NET_CCOOKIEHANDLERHELPER_H__
 
-#include "_ELASTOS_NET_CCookieHandlerHelper.h"
+#include "_Elastos_Net_CCookieHandlerHelper.h"
 #include "Singleton.h"
 
 namespace Elastos {

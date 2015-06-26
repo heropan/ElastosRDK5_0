@@ -2,12 +2,12 @@
 #include "URLStreamHandler.h"
 //#include "CURL.h"
 #include "InetAddress.h"
-//#include <Com.Kortide.Platform.h>
 #include "StringBuffer.h"
 #include "StringUtils.h"
 #include "Math.h"
-//#include <Elastos.Security.h>
 #include "url/UrlUtils.h"
+//#include <Com.Kortide.Platform.h>
+//#include <Elastos.Security.h>
 
 namespace Elastos {
 namespace Net {
@@ -223,19 +223,19 @@ ECode URLStreamHandler::ToExternalForm(
     url->GetFile(&file);
     url->GetRef(&ref);
     if (!file.IsNull()) {
-        if(escapeIllegalCharacters)
-        {
+        if(escapeIllegalCharacters) {
             //zhangjingcheng, not implement
-        }else{
+        }
+        else {
             answer += file;
         }
     }
     if (!ref.IsNull()) {
         answer += '#';
-        if(escapeIllegalCharacters)
-        {
+        if (escapeIllegalCharacters) {
             //zhangjingcheng, not implement
-        }else{
+        }
+        else {
             answer += ref;
         }
     }
@@ -366,7 +366,7 @@ String URLStreamHandler::GetHost(
     url->GetHost(&host);
     String protocol;
     url->GetProtocol(&protocol);
-    if (CString("file").Equals(protocol.string()) && host.IsEmpty()) {
+    if (protocol.Equals("file") && host.IsEmpty()) {
         host = "localhost";
     }
     return host;
@@ -378,10 +378,12 @@ String URLStreamHandler::RelativePath(
 {
     if (path.StartWith("/")) {
         return UrlUtils::CanonicalizePath(path, TRUE);
-    } else if (base != NULL) {
+    }
+    else if (base != NULL) {
         String combined = base.Substring(0, base.LastIndexOf('/') + 1) + path;
         return UrlUtils::CanonicalizePath(combined, TRUE);
-    } else {
+    }
+    else {
         return path;
     }
 }

@@ -6,6 +6,7 @@
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CPlainDatagramSocketImpl.h"
+#include "Autolock.h"
 //#include "CLibcore.h"
 //#include "COsConstants.h"
 #include <cutils/log.h>
@@ -26,6 +27,7 @@ namespace Net {
 
 const String DatagramSocket::TAG("DatagramSocket");
 AutoPtr<IDatagramSocketImplFactory> DatagramSocket::mFactory;
+Object DatagramSocket::sLock;
 
 CAR_INTERFACE_IMPL_2(DatagramSocket, Object, IDatagramSocket, ICloseable)
 
@@ -413,7 +415,7 @@ ECode DatagramSocket::SetSoTimeout(
 ECode DatagramSocket::SetDatagramSocketImplFactory(
     /* [in] */ IDatagramSocketImplFactory* fac)
 {
-    synchronized(this) {
+    synchronized(sLock) {
         if (mFactory != NULL) {
             ALOGD("Error in DatagramSocket: Factory already set!");
             return E_SOCKET_EXCEPTION;
