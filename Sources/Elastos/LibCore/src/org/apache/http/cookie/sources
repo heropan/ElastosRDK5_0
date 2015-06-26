@@ -1,0 +1,10 @@
+
+TARGET_NAME= cookie
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/cookie
+
+SOURCES = CCookieIdentityComparator.cpp
+SOURCES += CCookieOrigin.cpp
+SOURCES += CCookiePathComparator.cpp
+SOURCES += CCookieSpecRegistry.cpp

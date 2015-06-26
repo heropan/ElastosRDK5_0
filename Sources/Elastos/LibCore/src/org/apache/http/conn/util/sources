@@ -1,0 +1,7 @@
+
+TARGET_NAME= util
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/conn/util
+
+SOURCES = InetAddressUtils.cpp

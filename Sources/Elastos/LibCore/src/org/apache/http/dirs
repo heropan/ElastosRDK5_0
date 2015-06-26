@@ -11,3 +11,6 @@ DIRS += conn/params
 DIRS += conn/routing
 DIRS += conn/scheme
 DIRS += conn/ssl
+DIRS += conn/util
+DIRS += cookie
+DIRS += cookie/params

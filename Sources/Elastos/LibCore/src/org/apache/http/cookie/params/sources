@@ -1,0 +1,8 @@
+
+TARGET_NAME= params
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/cookie
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/params
+
+SOURCES = CCookieSpecParamBean.cpp

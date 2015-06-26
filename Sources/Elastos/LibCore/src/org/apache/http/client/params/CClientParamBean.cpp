@@ -1,6 +1,9 @@
 
 #include "CClientParamBean.h"
 
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CStringWrapper;
+
 namespace Org {
 namespace Apache {
 namespace Http {
@@ -14,67 +17,93 @@ CAR_OBJECT_IMPL(CClientParamBean)
 ECode CClientParamBean::SetConnectionManagerFactoryClassName(
     /* [in] */ const String& factory)
 {
-    return mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY_CLASS_NAME, factory);
+    AutoPtr<ICharSequence> cs;
+    CStringWrapper::New(factory, (ICharSequence**)&cs);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY_CLASS_NAME, cs,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetConnectionManagerFactory(
     /* [in] */ IClientConnectionManagerFactory factory)
 {
-    mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY, IObject::Probe(factory));
+    AutoPtr<IHttpParams> params;
+    return mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY, factory,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetHandleRedirects(
     /* [in] */ Boolean handle)
 {
-    mParams->SetBooleanParameter(IClientPNames::HANDLE_REDIRECTS, handle);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetBooleanParameter(IClientPNames::HANDLE_REDIRECTS, handle,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetRejectRelativeRedirect(
     /* [in] */ Boolean reject)
 {
-    mParams->SetBooleanParameter(IClientPNames::REJECT_RELATIVE_REDIRECT, reject);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetBooleanParameter(IClientPNames::REJECT_RELATIVE_REDIRECT, reject,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetMaxRedirects(
     /* [in] */ Int32 maxRedirects)
 {
-    mParams->SetInt32Parameter(IClientPNames::MAX_REDIRECTS, maxRedirects);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetInt32Parameter(IClientPNames::MAX_REDIRECTS, maxRedirects,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetAllowCircularRedirects(
     /* [in] */ Boolean allow)
 {
-    mParams->SetBooleanParameter(IClientPNames::ALLOW_CIRCULAR_REDIRECTS, allow);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetBooleanParameter(IClientPNames::ALLOW_CIRCULAR_REDIRECTS, allow,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetHandleAuthentication(
     /* [in] */ Boolean handle)
 {
-    mParams->SetBooleanParameter(IClientPNames::HANDLE_AUTHENTICATION, handle);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetBooleanParameter(IClientPNames::HANDLE_AUTHENTICATION, handle,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetCookiePolicy(
     /* [in] */ String policy)
 {
-    mParams->SetParameter(IClientPNames::COOKIE_POLICY, policy);
+    AutoPtr<ICharSequence> cs;
+    CStringWrapper::New(factory, (ICharSequence**)&cs);
+    AutoPtr<IHttpParams> params;
+    return mParams->SetParameter(IClientPNames::COOKIE_POLICY, cs,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetVirtualHost(
     /* [in] */ IHttpHost* host)
 {
-    mParams->SetParameter(IClientPNames::VIRTUAL_HOST, IObject::Probe(host));
+    AutoPtr<IHttpParams> params;
+    return mParams->SetParameter(IClientPNames::VIRTUAL_HOST, host,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetDefaultHeaders(
     /* [in] */ ICollection* headers)
 {
-    mParams->SetParameter(IClientPNames::DEFAULT_HEADERS, IObject::Probe(headers));
+    AutoPtr<IHttpParams> params;
+    return mParams->SetParameter(IClientPNames::DEFAULT_HEADERS, headers,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::SetDefaultHost(
     /* [in] */ IHttpHost* host)
 {
-    mParams->SetParameter(IClientPNames::DEFAULT_HOST, IObject::Probe(host));
+    AutoPtr<IHttpParams> params;
+    return mParams->SetParameter(IClientPNames::DEFAULT_HOST, host,
+            (IHttpParams**)&params);
 }
 
 ECode CClientParamBean::constructor(

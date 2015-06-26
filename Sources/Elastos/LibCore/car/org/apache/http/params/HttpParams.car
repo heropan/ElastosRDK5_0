@@ -31,7 +31,7 @@ module
          */
         GetParameter(
             [in] String name,
-            [out] IObject** parameter);
+            [out] IInterface** parameter);
 
         /**
          * Assigns the value to the parameter with the given name.
@@ -41,7 +41,7 @@ module
          */
         SetParameter(
             [in] String name,
-            [in] IObject* value,
+            [in] IInterface* value,
             [out] IHttpParams** httpParams);
 
         /**

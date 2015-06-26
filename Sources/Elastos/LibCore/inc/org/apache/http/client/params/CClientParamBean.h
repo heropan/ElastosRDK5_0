@@ -4,7 +4,9 @@
 
 #include "_Org_Apache_Http_Client_Params_CClientParamBean.h"
 #include "HttpAbstractParamBean.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::ICollection;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::Conn::IClientConnectionManagerFactory;
@@ -18,6 +20,7 @@ namespace Client {
 namespace Params {
 
 CarClass(CClientParamBean)
+    , public Object
     , public HttpAbstractParamBean
     , public IClientParamBean
 {

@@ -3,7 +3,11 @@ TARGET_NAME= ssl
 TARGET_TYPE= lib
 
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/conn/ssl
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/params
 
-SOURCES = CPlainSocketFactory.cpp
-SOURCES += CScheme.cpp
-SOURCES += CSchemeRegistry.cpp
+SOURCES = AbstractVerifier.cpp
+SOURCES += CAllowAllHostnameVerifier.cpp
+SOURCES += CBrowserCompatHostnameVerifier.cpp
+SOURCES += CStrictHostnameVerifier.cpp
+SOURCES += CSSLSocketFactory.cpp
+SOURCES += CSSLSocketFactoryHelper.cpp

@@ -63,5 +63,8 @@ LIBRARIES += conn/params/params.lib
 LIBRARIES += conn/routing/routing.lib
 LIBRARIES += conn/scheme/scheme.lib
 LIBRARIES += conn/ssl/ssl.lib
+LIBRARIES += conn/util/util.lib
+LIBRARIES += cookie/cookie.lib
+LIBRARIES += cookie/params/params.lib
 
 LIBRARIES += -lcutils

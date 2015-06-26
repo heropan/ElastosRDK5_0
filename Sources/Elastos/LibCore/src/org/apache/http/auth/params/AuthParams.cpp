@@ -50,7 +50,7 @@ ECode AuthParams::SetCredentialCharset(
     }
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(charset, (ICharSequence**)&cs);
-    return params->SetParameter(IAuthPNames::CREDENTIAL_CHARSET, IObject::Probe(cs));
+    return params->SetParameter(IAuthPNames::CREDENTIAL_CHARSET, cs);
 }
 
 } // namespace Params

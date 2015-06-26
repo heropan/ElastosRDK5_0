@@ -14,19 +14,25 @@ CAR_OBJECT_IMPL(CConnManagerParamBean)
 ECode CConnManagerParamBean::SetTimeout(
     /* [in] */ Int64 timeout)
 {
-    return params->SetInt64Parameter(IConnManagerPNames::TIMEOUT, timeout);
+    AutoPtr<IHttpParams> p;
+    return params->SetInt64Parameter(IConnManagerPNames::TIMEOUT, timeout,
+            (IHttpParams**)&p);
 }
 
 ECode CConnManagerParamBean::SetMaxTotalConnections(
     /* [in] */ Int32 maxConnections)
 {
-    return params->SetInt32Parameter(IConnManagerPNames::MAX_TOTAL_CONNECTIONS, maxConnections);
+    AutoPtr<IHttpParams> p;
+    return params->SetInt32Parameter(IConnManagerPNames::MAX_TOTAL_CONNECTIONS, maxConnections,
+            (IHttpParams**)&p);
 }
 
 ECode CConnManagerParamBean::SetConnectionsPerRoute(
     /* [in] */ IConnPerRouteBean* connPerRoute)
 {
-    return params->SetParameter(IConnManagerPNames::MAX_CONNECTIONS_PER_ROUTE, IObject::Probe(connPerRoute));
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(IConnManagerPNames::MAX_CONNECTIONS_PER_ROUTE, connPerRoute,
+            (IHttpParams**)&p);
 }
 
 ECode CConnManagerParamBean::constructor(

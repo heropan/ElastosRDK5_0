@@ -14,19 +14,25 @@ CAR_OBJECT_IMPL(CConnRouteParamBean)
 ECode CConnRouteParamBean::SetDefaultProxy(
     /* [in] */ IHttpHost* defaultProxy)
 {
-    return mParams->SetParameter(IConnRoutePNames::DEFAULT_PROXY, IObject::Probe(defaultProxy));
+    AutoPtr<IHttpParams> p;
+    return mParams->SetParameter(IConnRoutePNames::DEFAULT_PROXY, defaultProxy,
+            (IHttpParams**)&p);
 }
 
 ECode CConnRouteParamBean::SetLocalAddress(
     /* [in] */ IInetAddress* address)
 {
-    return mParams->SetParameter(IConnRoutePNames::LOCAL_ADDRESS, IObject::Probe(address));
+    AutoPtr<IHttpParams> p;
+    return mParams->SetParameter(IConnRoutePNames::LOCAL_ADDRESS, address,
+            (IHttpParams**)&p);
 }
 
 ECode CConnRouteParamBean::SetForcedRoute(
     /* [in] */ IHttpRoute* route)
 {
-    return mParams->SetParameter(IConnRoutePNames::FORCED_ROUTE, IObject::Probe(route));
+    AutoPtr<IHttpParams> p;
+    return mParams->SetParameter(IConnRoutePNames::FORCED_ROUTE, route,
+            (IHttpParams**)&p);
 }
 
 ECode CConnRouteParamBean::constructor(

@@ -34,7 +34,9 @@ ECode HttpClientParams::SetRedirecting(
         Logger::E("HttpClientParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetBooleanParameter(IClientPNames::HANDLE_REDIRECTS, value);
+    AutoPtr<IHttpParams> p;
+    return params->SetBooleanParameter(IClientPNames::HANDLE_REDIRECTS, value,
+            (IHttpParams**)&p);
 }
 
 ECode HttpClientParams::IsAuthenticating(
@@ -59,7 +61,9 @@ ECode HttpClientParams::SetAuthenticating(
         Logger::E("HttpClientParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetBooleanParameter(IClientPNames::HANDLE_AUTHENTICATION, value);
+    AutoPtr<IHttpParams> p;
+    return params->SetBooleanParameter(IClientPNames::HANDLE_AUTHENTICATION, value,
+            (IHttpParams**)&p);
 }
 
 ECode HttpClientParams::GetCookiePolicy(
@@ -73,8 +77,8 @@ ECode HttpClientParams::GetCookiePolicy(
         Logger::E("HttpClientParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IObject> o;
-    params->GetParameter(IClientPNames::COOKIE_POLICY, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    params->GetParameter(IClientPNames::COOKIE_POLICY, (IInterface**)&o);
     AutoPtr<ICharSequence> cs = ICharSequence::Probe(o);
     if (cs == NULL) {
         *cookiePolicy = ICookiePolicy::BEST_MATCH;
@@ -93,8 +97,8 @@ ECode HttpClientParams::SetCookiePolicy(
     }
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(cookiePolicy, (ICharSequence**)&cs);
-    AutoPtr<IObject> o = IObject::Probe(cs);
-    return params->SetParameter(IClientPNames::COOKIE_POLICY, o);
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(IClientPNames::COOKIE_POLICY, cs, (IHttpParams**)&p);
 }
 
 } // namespace Params

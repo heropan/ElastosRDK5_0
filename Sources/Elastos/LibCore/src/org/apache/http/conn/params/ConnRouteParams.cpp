@@ -45,8 +45,8 @@ ECode ConnRouteParams::GetDefaultProxy(
         Logger::E("ConnRouteParams", "Parameters must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IObject> o;
-    params->GetParameter(DEFAULT_PROXY, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    params->GetParameter(DEFAULT_PROXY, (IInterface**)&o);
     AutoPtr<IHttpHost> host = IHttpHost::Probe(o);
     if ((host != NULL) && NO_HOST->Equals(host)) {
         // value is explicitly unset
@@ -65,7 +65,8 @@ ECode ConnRouteParams::SetDefaultProxy(
         Logger::E("ConnRouteParams", "Parameters must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetParameter(DEFAULT_PROXY, IObject::Probe(proxy));
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(DEFAULT_PROXY, proxy, (IHttpParams**)&p);
 }
 
 ECode ConnRouteParams::GetForcedRoute(
@@ -79,8 +80,8 @@ ECode ConnRouteParams::GetForcedRoute(
         Logger::E("ConnRouteParams", "Parameters must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IObject> o;
-    params->GetParameter(FORCED_ROUTE, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    params->GetParameter(FORCED_ROUTE, (IInterface**)&o);
     AutoPtr<IHttpRoute> httpRoute = IHttpRoute::Probe(o);
     if ((httpRoute != NULL) && NO_ROUTE->Equals(httpRoute)) {
         // value is explicitly unset
@@ -99,7 +100,8 @@ ECode ConnRouteParams::SetForcedRoute(
         Logger::E("ConnRouteParams", "Parameters must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetParameter(FORCED_ROUTE, IObject::Probe(route));
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(FORCED_ROUTE, route, (IHttpParams**)&p);
 }
 
 ECode ConnRouteParams::GetLocalAddress(
@@ -113,8 +115,8 @@ ECode ConnRouteParams::GetLocalAddress(
         Logger::E("ConnRouteParams", "Parameters must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IObject> o;
-    params->GetParameter(LOCAL_ADDRESS, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    params->GetParameter(LOCAL_ADDRESS, (IInterface**)&o);
     *local = IInetAddress::Probe(o);
     REFCOUNT_ADD(*local)
     return NOERROR;
@@ -128,7 +130,8 @@ ECode ConnRouteParams::SetLocalAddress(
         Logger::E("ConnRouteParams", "Parameters must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetParameter(LOCAL_ADDRESS, IObject::Probe(local));
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(LOCAL_ADDRESS, local, (IHttpParams**)&p);
 }
 
 } // namespace Params

@@ -3,15 +3,12 @@
 #define __ORG_APACHE_HTTP_CONN_SSL_ABSTRACTVERIFIER_H__
 
 #include <Org.Apache.Http_server.h>
-#include "AbstractHttpMessage.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICloneable;
-using Elastos::Net::IURI;
-using Elastos::Utility::Concurrent::Locks::ILock;
-using Org::Apache::Http::IProtocolVersion;
-using Org::Apache::Http::Message::AbstractHttpMessage;
-using Org::Apache::Http::Conn::IClientConnectionRequest;
-using Org::Apache::Http::Conn::IConnectionReleaseTrigger;
+using Elastos::Core::Object;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastosx::Net::Ssl::ISSLSession;
+using Elastosx::Net::Ssl::ISSLSocket;
 
 namespace Org {
 namespace Apache {
@@ -32,7 +29,7 @@ class AbstractVerifier
     , public IHostnameVerifier
 {
 public:
-    AbstractVerifier();
+    AbstractVerifier() {}
 
     CAR_INTERFACE_DECL()
 

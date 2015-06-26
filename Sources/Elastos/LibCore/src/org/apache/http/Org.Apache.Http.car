@@ -120,6 +120,19 @@ module
     merge("../../../../car/org/apache/http/conn/ssl/SSLSocketFactory.car");
     merge("../../../../car/org/apache/http/conn/ssl/X509HostnameVerifier.car");
 
+    merge("../../../../car/org/apache/http/cookie/ClientCookie.car");
+    merge("../../../../car/org/apache/http/cookie/Cookie.car");
+    merge("../../../../car/org/apache/http/cookie/CookieAttributeHandler.car");
+    merge("../../../../car/org/apache/http/cookie/CookieOrigin.car");
+    merge("../../../../car/org/apache/http/cookie/CookieSpec.car");
+    merge("../../../../car/org/apache/http/cookie/CookieSpecFactory.car");
+    merge("../../../../car/org/apache/http/cookie/CookieSpecRegistry.car");
+    merge("../../../../car/org/apache/http/cookie/SetCookie.car");
+    merge("../../../../car/org/apache/http/cookie/SetCookie2.car");
+
+    merge("../../../../car/org/apache/http/cookie/params/CookieSpecParamBean.car");
+    merge("../../../../car/org/apache/http/cookie/params/CookieSpecPNames.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
@@ -128,10 +141,16 @@ module
     merge("../../../../car/org/apache/http/util/CharArrayBuffer.car");
 
     using interface Elastos.Core.ICloneable;
+    using interface Elastos.Core.IComparator;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.ISerializable;
     using interface Elastos.Net.IURI;
+    using interface Elastos.Security.IKeyStore;
+    using interface Elastos.Security.ISecureRandom;
     using interface Elastos.Utility.IList;
+
+    using interface Elastosx.Net.Ssl.ISSLSocketFactory;
 
     namespace Org {
     namespace Apache {
@@ -779,5 +798,126 @@ module
     } // namespace Http
     } // namespace Apache
     } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace SSL {
+
+    class CAllowAllHostnameVerifier {
+        interface IAbstractVerifier;
+        interface IX509HostnameVerifier;
+        interface IHostnameVerifier;
+    }
+
+    class CBrowserCompatHostnameVerifier {
+        interface IAbstractVerifier;
+        interface IX509HostnameVerifier;
+        interface IHostnameVerifier;
+    }
+
+    class CStrictHostnameVerifier {
+        interface IAbstractVerifier;
+        interface IX509HostnameVerifier;
+        interface IHostnameVerifier;
+    }
+
+    class CSSLSocketFactory {
+        constructor();
+
+        constructor(
+            [in] String algorithm,
+            [in] IKeyStore* keystore,
+            [in] String keystorePassword,
+            [in] IKeyStore* truststore,
+            [in] ISecureRandom* random,
+            [in] IHostNameResolver* nameResolver);
+
+        constructor(
+            [in] IKeyStore* keystore,
+            [in] String keystorePassword,
+            [in] IKeyStore* truststore);
+
+        constructor(
+            [in] IKeyStore* keystore,
+            [in] String keystorePassword);
+
+        constructor(
+            [in] IKeyStore* truststore);
+
+        constructor(
+            [in] Elastosx.Net.Ssl.ISSLSocketFactory* socketfactory);
+
+        interface ISSLSocketFactory;
+        interface ILayeredSocketFactory;
+        interface ISocketFactory;
+    }
+
+    class CSSLSocketFactoryHelper {
+        interface ISSLSocketFactoryHelper;
+    }
+
+    } // namespace SSL
+    } // namespace Conn
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Cookie {
+
+    class CCookieIdentityComparator {
+        interface IComparator;
+        interface ISerializable;
+    }
+
+    class CCookieOrigin {
+        constructor(
+            [in] String host,
+            [in] Int32 port,
+            [in] String path,
+            [in] Boolean secure);
+
+        interface ICookieOrigin;
+    }
+
+    class CCookiePathComparator {
+        interface IComparator;
+        interface ISerializable;
+    }
+
+    class CCookieSpecRegistry {
+        constructor();
+
+        interface ICookieSpecRegistry;
+    }
+
+    } // namespace Cookie
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Cookie {
+    namespace Params {
+
+    class CCookieSpecParamBean {
+        constructor(
+            [in] IHttpParams* params);
+
+        interface ICookieSpecParamBean;
+    }
+
+    } // namespace Params
+    } // namespace Cookie
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
 
 }

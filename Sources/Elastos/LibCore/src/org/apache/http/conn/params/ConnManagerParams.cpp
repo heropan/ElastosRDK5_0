@@ -64,7 +64,9 @@ ECode ConnManagerParams::SetTimeout(
         Logger::E("ConnManagerParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetInt64Parameter(TIMEOUT, timeout);
+    AutoPtr<IHttpParams> p;
+    return params->SetInt64Parameter(TIMEOUT, timeout,
+            (IHttpParams**)&p);
 }
 
 ECode ConnManagerParams::SetMaxConnectionsPerRoute(
@@ -75,7 +77,9 @@ ECode ConnManagerParams::SetMaxConnectionsPerRoute(
         Logger::E("ConnManagerParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    params->SetParameter(MAX_CONNECTIONS_PER_ROUTE, IObject::Probe(connPerRoute));
+    AutoPtr<IHttpParams> p;
+    params->SetParameter(MAX_CONNECTIONS_PER_ROUTE, connPerRoute,
+            (IHttpParams**)&p);
 }
 
 ECode ConnManagerParams::GetMaxConnectionsPerRoute(
@@ -88,8 +92,8 @@ ECode ConnManagerParams::GetMaxConnectionsPerRoute(
         Logger::E("ConnManagerParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<IObject> o;
-    params->GetParameter(MAX_CONNECTIONS_PER_ROUTE, (IObject**)&o);
+    AutoPtr<IInterface> o;
+    params->GetParameter(MAX_CONNECTIONS_PER_ROUTE, (IInterface**)&o);
     AutoPtr<IConnPerRoute> connPerRoute = IConnPerRoute::Probe(o);
     if (connPerRoute == NULL) {
         connPerRoute = DEFAULT_CONN_PER_ROUTE;
@@ -107,7 +111,9 @@ ECode ConnManagerParams::SetMaxTotalConnections(
         Logger::E("ConnManagerParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    params->SetInt32Parameter(MAX_TOTAL_CONNECTIONS, maxTotalConnections);
+    AutoPtr<IHttpParams> p;
+    params->SetInt32Parameter(MAX_TOTAL_CONNECTIONS, maxTotalConnections,
+            (IHttpParams**)&p);
 }
 
 ECode ConnManagerParams::GetMaxTotalConnections(

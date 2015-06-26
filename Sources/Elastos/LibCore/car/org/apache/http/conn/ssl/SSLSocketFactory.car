@@ -16,11 +16,31 @@ module
      */
     interface ISSLSocketFactory {
 
+        const String TLS   = "TLS";
+        const String SSL   = "SSL";
+        const String SSLV2 = "SSLv2";
+
         SetHostnameVerifier(
             [in] IX509HostnameVerifier* hostnameVerifier);
 
         GetHostnameVerifier(
             [out] IX509HostnameVerifier** hostnameVerifier);
+
+    }
+
+    interface ISSLSocketFactoryHelper {
+
+        GetAllowAllHostnameVerifier(
+            [out] IX509HostnameVerifier** verifier);
+
+        GetBrowserCompatibleHostnameVerifier(
+            [out] IX509HostnameVerifier** verifier);
+
+        GetStrictHostnameVerifier(
+            [out] IX509HostnameVerifier** verifier);
+
+        GetSocketFactory(
+            [out] ISSLSocketFactory** factory);
 
     }
 

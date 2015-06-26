@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMBEAN_H_
 #define __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMBEAN_H_
 
-#include "_Org_Apache_Http_Auth_CAuthParamBean.h"
+#include "_Org_Apache_Http_Auth_Params_CAuthParamBean.h"
 #include "HttpAbstractParamBean.h"
 #include <elastos/core/Object.h>
 
