@@ -19,21 +19,21 @@ class Collections
     : public Object
 {
 public:
-    class SynchronizedCollection
+    class _SynchronizedCollection
         : public Object
         , public ICollection
         , public IIterable
         , public ISerializable
     {
     public:
-        SynchronizedCollection(
+        _SynchronizedCollection(
             /* [in] */ ICollection* collection);
 
-        SynchronizedCollection(
+        _SynchronizedCollection(
             /* [in] */ ICollection* collection,
             /* [in] */ Object* lock);
 
-        ~SynchronizedCollection();
+        ~_SynchronizedCollection();
 
         CAR_INTERFACE_DECL()
 
@@ -118,15 +118,15 @@ public:
         AutoPtr<ICollection> mC;
     };
 
-    class SynchronizedList
-        : public SynchronizedCollection
+    class _SynchronizedList
+        : public _SynchronizedCollection
         , public IList
     {
     public:
-        SynchronizedList(
+        _SynchronizedList(
             /* [in] */ IList* l);
 
-        SynchronizedList(
+        _SynchronizedList(
             /* [in] */ IList* l,
             /* [in] */ Object* lock);
 
@@ -252,7 +252,7 @@ public:
     };
 
     class SynchronizedRandomAccessList
-        : public SynchronizedList
+        : public _SynchronizedList
         , public IRandomAccess
     {
     public:
@@ -274,15 +274,15 @@ public:
         CARAPI_(AutoPtr<IInterface>) WriteReplace();
     };
 
-    class SynchronizedSet
-        : public SynchronizedCollection
+    class _SynchronizedSet
+        : public _SynchronizedCollection
         , public ISet
     {
     public:
-        SynchronizedSet(
+        _SynchronizedSet(
             /* [in] */ ISet* set);
 
-        SynchronizedSet(
+        _SynchronizedSet(
             /* [in] */ ISet* set,
             /* [in] */ Object* lock);
 
@@ -346,20 +346,20 @@ public:
             /* [in] */ IObjectOutputStream* stream);
     };
 
-    class SynchronizedMap
+    class _SynchronizedMap
         : public Object
         , public IMap
         , public ISerializable
     {
     public:
-        SynchronizedMap(
+        _SynchronizedMap(
             /* [in] */ IMap* map);
 
-        SynchronizedMap(
+        _SynchronizedMap(
             /* [in] */ IMap* map,
             /* [in] */ Object* lock);
 
-        ~SynchronizedMap();
+        ~_SynchronizedMap();
 
         CAR_INTERFACE_DECL()
 
@@ -431,15 +431,15 @@ public:
         AutoPtr<IMap> mM;
     };
 
-    class SynchronizedSortedMap
-        : public SynchronizedMap
+    class _SynchronizedSortedMap
+        : public _SynchronizedMap
         , public ISortedMap
     {
     public:
-        SynchronizedSortedMap(
+        _SynchronizedSortedMap(
             /* [in] */ ISortedMap* map);
 
-        SynchronizedSortedMap(
+        _SynchronizedSortedMap(
             /* [in] */ ISortedMap* map,
             /* [in] */ Object* lock);
 
@@ -528,15 +528,15 @@ public:
         AutoPtr<ISortedMap> mSm;
     };
 
-    class SynchronizedSortedSet
-        : public SynchronizedSet
+    class _SynchronizedSortedSet
+        : public _SynchronizedSet
         , public ISortedSet
     {
     public:
-        SynchronizedSortedSet(
+        _SynchronizedSortedSet(
             /* [in] */ ISortedSet* set);
 
-        SynchronizedSortedSet(
+        _SynchronizedSortedSet(
             /* [in] */ ISortedSet* set,
             /* [in] */ Object* lock);
 
@@ -642,12 +642,12 @@ private:
         CARAPI Remove();
     };
 
-    class MyEnumeration
+    class _Enumeration
         : public Object
         , public IEnumeration
     {
     public:
-        MyEnumeration();
+        _Enumeration();
 
         CAR_INTERFACE_DECL()
 
@@ -658,12 +658,12 @@ private:
             /* [out] */ IInterface** inter);
     };
 
-    class MyEnumeration2
+    class _Enumeration2
         : public Object
         , public IEnumeration
     {
     public:
-        MyEnumeration2(
+        _Enumeration2(
             /* [in] */ ICollection* c);
 
         CAR_INTERFACE_DECL()
@@ -1160,12 +1160,12 @@ public:
         AutoPtr<IInterface> mElement;
     };
 
-    class SingletonList
+    class _SingletonList
         : public AbstractList
         , public ISerializable
     {
     public:
-        SingletonList(
+        _SingletonList(
             /* [in] */ IInterface* object);
 
         CAR_INTERFACE_DECL()
@@ -1269,7 +1269,7 @@ public:
         AutoPtr<IInterface> mElement;
     };
 
-    class SingletonMap
+    class _SingletonMap
         : public AbstractMap
         , public ISerializable
     {
@@ -1319,7 +1319,7 @@ public:
             };
         public:
             MySet(
-                /* [in] */ SingletonMap* owner);
+                /* [in] */ _SingletonMap* owner);
 
             CARAPI Contains(
                 /* [in] */ IInterface* object,
@@ -1375,10 +1375,10 @@ public:
                 /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
         private:
-            SingletonMap* mOwner;
+            _SingletonMap* mOwner;
         };
     public:
-        SingletonMap(
+        _SingletonMap(
             /* [in] */ IInterface* key,
             /* [in] */ IInterface* value);
 
@@ -1437,7 +1437,7 @@ public:
         AutoPtr<IInterface> mV;
     };
 
-    class UnmodifiableCollection
+    class _UnmodifiableCollection
         : public Object
         , public ICollection
         , public ISerializable
@@ -1449,7 +1449,7 @@ public:
         {
         public:
             Iterator(
-                /* [in] */ UnmodifiableCollection* owner);
+                /* [in] */ _UnmodifiableCollection* owner);
 
             CAR_INTERFACE_DECL()
 
@@ -1464,7 +1464,7 @@ public:
             AutoPtr<Iterator> mIterator;
         };
     public:
-        UnmodifiableCollection(
+        _UnmodifiableCollection(
             /* [in] */ ICollection* collection);
 
         CAR_INTERFACE_DECL()
@@ -1544,8 +1544,8 @@ public:
         AutoPtr<ICollection> mC;
     };
 
-    class UnmodifiableList
-        : public UnmodifiableCollection
+    class _UnmodifiableList
+        : public _UnmodifiableCollection
         , public IList
     {
     private:
@@ -1555,7 +1555,7 @@ public:
         {
         public:
             ListIterator(
-                /* [in] */ UnmodifiableList* owner,
+                /* [in] */ _UnmodifiableList* owner,
                 /* [in] */ Int32 location);
 
             CAR_INTERFACE_DECL()
@@ -1589,7 +1589,7 @@ public:
             AutoPtr<IListIterator> mIterator;
         };
     public:
-        UnmodifiableList(
+        _UnmodifiableList(
             /* [in] */ IList* l);
 
         CAR_INTERFACE_DECL()
@@ -1711,7 +1711,7 @@ public:
     };
 
     class UnmodifiableRandomAccessList
-        : public UnmodifiableList
+        : public _UnmodifiableList
         , public IRandomAccess
     {
     public:
@@ -1729,12 +1729,12 @@ public:
         CARAPI_(AutoPtr<IInterface>) WriteReplace();
     };
 
-    class UnmodifiableSet
-        : public UnmodifiableCollection
+    class _UnmodifiableSet
+        : public _UnmodifiableCollection
         , public ISet
     {
     public:
-        UnmodifiableSet(
+        _UnmodifiableSet(
             /* [in] */ ISet* set);
 
         CAR_INTERFACE_DECL()
@@ -1793,14 +1793,14 @@ public:
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
     };
 
-    class UnmodifiableMap
+    class _UnmodifiableMap
         : public Object
         , public IMap
         , public ISerializable
     {
     private:
         class UnmodifiableEntrySet
-            : public UnmodifiableSet
+            : public _UnmodifiableSet
         {
         private:
             class UnmodifiableMapEntry
@@ -1878,7 +1878,7 @@ public:
         };
 
     public:
-        UnmodifiableMap(
+        _UnmodifiableMap(
             /* [in] */ IMap* map);
 
         CAR_INTERFACE_DECL()
@@ -1943,12 +1943,12 @@ public:
         AutoPtr<IMap> mM;
     };
 
-    class UnmodifiableSortedMap
-        : public UnmodifiableMap
+    class _UnmodifiableSortedMap
+        : public _UnmodifiableMap
         , public ISortedMap
     {
     public:
-        UnmodifiableSortedMap(
+        _UnmodifiableSortedMap(
             /* [in] */ ISortedMap* map);
 
         CAR_INTERFACE_DECL()
@@ -2025,12 +2025,12 @@ public:
         AutoPtr<ISortedMap> mSm;
     };
 
-    class UnmodifiableSortedSet
-        : public UnmodifiableSet
+    class _UnmodifiableSortedSet
+        : public _UnmodifiableSet
         , public ISortedSet
     {
     public:
-        UnmodifiableSortedSet(
+        _UnmodifiableSortedSet(
             /* [in] */ ISortedSet* set);
 
         CAR_INTERFACE_DECL()
@@ -2112,12 +2112,12 @@ public:
         AutoPtr<ISortedSet> mSs;
     };
 
-    class SetFromMap
+    class _SetFromMap
         : public AbstractSet
         , public ISerializable
     {
     public:
-        SetFromMap(
+        _SetFromMap(
             /* [in] */ IMap* map);
 
         CAR_INTERFACE_DECL()
@@ -2185,12 +2185,12 @@ public:
         AutoPtr<ISet> mBackingSet;
     };
 
-    class AsLIFOQueue
+    class _AsLIFOQueue
         : public AbstractQueue
         , public ISerializable
     {
     public:
-        AsLIFOQueue(
+        _AsLIFOQueue(
             /* [in] */ IDeque* deque);
 
         CAR_INTERFACE_DECL()
@@ -2270,13 +2270,13 @@ public:
         AutoPtr<IDeque> mQ;
     };
 
-    class CheckedCollection
+    class _CheckedCollection
         : public Object
         , public ICollection
         , public ISerializable
     {
     public:
-       CheckedCollection(
+       _CheckedCollection(
             /* [in] */ ICollection* c,
             /* [in] */ InterfaceID type);
 
@@ -2400,12 +2400,12 @@ public:
         InterfaceID mType;
     };
 
-    class CheckedList
-        : public CheckedCollection
+    class _CheckedList
+        : public _CheckedCollection
         , public IList
     {
     public:
-       CheckedList(
+       _CheckedList(
             /* [in] */ IList* l,
             /* [in] */ InterfaceID type);
 
@@ -2528,7 +2528,7 @@ public:
      * A dynamically typesafe view of a RandomAccessList.
      */
     class CheckedRandomAccessList
-        : public CheckedList
+        : public _CheckedList
         , public IRandomAccess
     {
     public:
@@ -2542,12 +2542,12 @@ public:
     /**
      * A dynamically typesafe view of a Set.
      */
-    class CheckedSet
-        : public CheckedCollection
+    class _CheckedSet
+        : public _CheckedCollection
         , public ISet
     {
     public:
-       CheckedSet(
+       _CheckedSet(
             /* [in] */ ISet* s,
             /* [in] */ InterfaceID type);
 
@@ -2610,7 +2610,7 @@ public:
     /**
      * A dynamically typesafe view of a Map.
      */
-    class CheckedMap
+    class _CheckedMap
         : public Object
         , public IMap
         , public ISerializable
@@ -2750,7 +2750,7 @@ public:
         };
 
     public:
-        CheckedMap(
+        _CheckedMap(
             /* [in] */ IMap* m,
             /* [in] */ InterfaceID keyType,
             /* [in] */ InterfaceID valueType);
@@ -2824,12 +2824,12 @@ public:
     /**
      * A dynamically typesafe view of a SortedSet.
      */
-    class CheckedSortedSet
-        : public CheckedSet
+    class _CheckedSortedSet
+        : public _CheckedSet
         , public ISortedSet
     {
     public:
-        CheckedSortedSet(
+        _CheckedSortedSet(
             /* [in] */ ISortedSet* s,
             /* [in] */ InterfaceID type);
 
@@ -2915,12 +2915,12 @@ public:
     /**
      * A dynamically typesafe view of a SortedMap.
      */
-    class CheckedSortedMap
-        : public CheckedMap
+    class _CheckedSortedMap
+        : public _CheckedMap
         , public ISortedMap
     {
     public:
-       CheckedSortedMap(
+       _CheckedSortedMap(
             /* [in] */ ISortedMap* m,
             /* [in] */ InterfaceID keyType,
             /* [in] */ InterfaceID valueType);
@@ -3072,15 +3072,15 @@ public:
         /* [in] */ IList* list,
         /* [in] */ IRandom* random);
 
-    static CARAPI NewSingleton(
+    static CARAPI Singleton(
         /* [in] */ IInterface* object,
         /* [out] */ ISet** out);
 
-    static CARAPI NewSingletonList(
+    static CARAPI SingletonList(
         /* [in] */ IInterface* object,
         /* [out] */ IList** result);
 
-    static CARAPI NewSingletonMap(
+    static CARAPI SingletonMap(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value,
         /* [out] */ IMap** result);
@@ -3117,55 +3117,55 @@ public:
         /* [in] */ IList* sublist,
         /* [out] */ Int32* index);
 
-    static CARAPI NewList(
+    static CARAPI List(
         /* [in] */ IEnumeration* enumeration,
         /* [out] */ IArrayList** result);
 
-    static CARAPI NewSynchronizedCollection(
+    static CARAPI SynchronizedCollection(
         /* [in] */ ICollection* collection,
         /* [out] */ ICollection** result);
 
-    static CARAPI NewSynchronizedList(
+    static CARAPI SynchronizedList(
         /* [in] */ IList* list,
         /* [out] */ IList** result);
 
-    static CARAPI NewSynchronizedMap(
+    static CARAPI SynchronizedMap(
         /* [in] */ IMap* map,
         /* [out] */ IMap** result);
 
-    static CARAPI NewSynchronizedSet(
+    static CARAPI SynchronizedSet(
         /* [in] */ ISet* set,
         /* [out] */ ISet** result);
 
-    static CARAPI NewSynchronizedSortedMap(
+    static CARAPI SynchronizedSortedMap(
         /* [in] */ ISortedMap* map,
         /* [out] */ ISortedMap** result);
 
-    static CARAPI NewSynchronizedSortedSet(
+    static CARAPI SynchronizedSortedSet(
         /* [in] */ ISortedSet* set,
         /* [out] */ ISortedSet** result);
 
-    static CARAPI NewUnmodifiableCollection(
+    static CARAPI UnmodifiableCollection(
         /* [in] */ ICollection* collection,
         /* [out] */ ICollection** result);
 
-    static CARAPI NewUnmodifiableList(
+    static CARAPI UnmodifiableList(
         /* [in] */ IList* list,
         /* [out] */ IList** result);
 
-    static CARAPI NewUnmodifiableMap(
+    static CARAPI UnmodifiableMap(
         /* [in] */ IMap* map,
         /* [out] */ IMap** result);
 
-    static CARAPI NewUnmodifiableSet(
+    static CARAPI UnmodifiableSet(
         /* [in] */ ISet* set,
         /* [out] */ ISet** result);
 
-    static CARAPI NewUnmodifiableSortedMap(
+    static CARAPI UnmodifiableSortedMap(
         /* [in] */ ISortedMap* map,
         /* [out] */ ISortedMap** result);
 
-    static CARAPI NewUnmodifiableSortedSet(
+    static CARAPI UnmodifiableSortedSet(
         /* [in] */ ISortedSet* set,
         /* [out] */ ISortedSet** result);
 
@@ -3192,34 +3192,34 @@ public:
     static CARAPI GetEmptyListIterator(
         /* [out] */ IListIterator** result);
 
-    static CARAPI NewCheckedCollection(
+    static CARAPI CheckedCollection(
         /* [in] */ ICollection* c,
         /* [in] */ const InterfaceID& type,
         /* [out] */ ICollection** result);
 
-    static CARAPI NewCheckedMap(
+    static CARAPI CheckedMap(
         /* [in] */ IMap* m,
         /* [in] */ const InterfaceID& keyType,
         /* [in] */ const InterfaceID& valueType,
         /* [out] */ IMap** result);
 
-    static CARAPI NewCheckedList(
+    static CARAPI CheckedList(
         /* [in] */ IList* list,
         /* [in] */ const InterfaceID& type,
         /* [out] */ IList** result);
 
-    static CARAPI NewCheckedSet(
+    static CARAPI CheckedSet(
         /* [in] */ ISet* s,
         /* [in] */ const InterfaceID& type,
         /* [out] */ ISet** result);
 
-    static CARAPI NewCheckedSortedMap(
+    static CARAPI CheckedSortedMap(
         /* [in] */ ISortedMap* m,
         /* [in] */ const InterfaceID& keyType,
         /* [in] */ const InterfaceID& valueType,
         /* [out] */ ISortedMap** result);
 
-    static CARAPI NewCheckedSortedSet(
+    static CARAPI CheckedSortedSet(
         /* [in] */ ISortedSet* s,
         /* [in] */ const InterfaceID& type,
         /* [out] */ ISortedSet** result);
@@ -3238,11 +3238,11 @@ public:
         /* [in] */ IInterface* obj,
         /* [in] */ const InterfaceID& type);
 
-    static CARAPI NewSetFromMap(
+    static CARAPI SetFromMap(
         /* [in] */ IMap* map,
         /* [out] */ ISet** result);
 
-    static CARAPI NewAsLifoQueue(
+    static CARAPI AsLifoQueue(
         /* [in] */ IDeque* deque,
         /* [out] */ IQueue** result);
 

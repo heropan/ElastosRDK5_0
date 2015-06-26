@@ -688,6 +688,19 @@ module
             interface ISerializable;
         }
 
+        class CUnsafeArrayList {
+            constructor();
+
+            constructor(
+                [in] InterfaceID elementType,
+                [in] Int32 initialCapacity);
+
+            interface IUnsafeArrayList;
+            interface ICollection;
+            interface IIterable;
+            interface IList;
+        }
+
         singleton class CEnumSetHelper {
             interface IEnumSetHelper;
         }

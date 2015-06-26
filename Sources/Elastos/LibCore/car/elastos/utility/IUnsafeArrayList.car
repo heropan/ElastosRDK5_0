@@ -15,7 +15,8 @@ module
      * interface IList;
      */
     interface IUnsafeArrayList {
-
+        GetArrays(
+            [out, callee] ArrayOf<IInterface*> * array);
     }
 
     } // namespace Utility

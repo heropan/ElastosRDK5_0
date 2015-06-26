@@ -141,7 +141,7 @@ ECode CookieStoreImpl::Get(
             }
         }
 
-        return Collections::NewUnmodifiableList(outresult, result);
+        return Collections::UnmodifiableList(outresult, result);
     }
     return NOERROR;
 }
@@ -175,7 +175,7 @@ ECode CookieStoreImpl::GetCookies(
                 }
             }
         }
-        return Collections::NewUnmodifiableList(outresult, result);
+        return Collections::UnmodifiableList(outresult, result);
         }
     return NOERROR;
 }
@@ -196,7 +196,7 @@ ECode CookieStoreImpl::GetURIs(
             outresult->Add(uri, &isflag);
         }
         ICollection::Probe(outresult)->Remove(NULL, &isflag); // sigh
-        return Collections::NewUnmodifiableList(outresult, URIs);
+        return Collections::UnmodifiableList(outresult, URIs);
     }
     return NOERROR;
 }

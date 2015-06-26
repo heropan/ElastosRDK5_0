@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CMINIENUMSET_H__
-#define __UTILITY_CMINIENUMSET_H__
+#ifndef __ELASTOS_UTILITY_CMINIENUMSET_H__
+#define __ELASTOS_UTILITY_CMINIENUMSET_H__
 
 #include "_Elastos_Utility_CMiniEnumSet.h"
 #include "MiniEnumSet.h"
@@ -17,4 +17,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CMINIENUMSET_H__
+#endif // __ELASTOS_UTILITY_CMINIENUMSET_H__

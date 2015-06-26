@@ -492,7 +492,7 @@ ECode NetworkInterface::ToString(
 ECode NetworkInterface::GetInterfaceAddresses(
     /* [out] */ IList** addresses)
 {
-    return Collections::NewUnmodifiableList(mInterfaceAddresses, addresses);
+    return Collections::UnmodifiableList(mInterfaceAddresses, addresses);
 }
 
 ECode NetworkInterface::GetSubInterfaces(

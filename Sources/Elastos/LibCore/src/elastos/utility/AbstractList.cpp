@@ -197,6 +197,10 @@ ECode AbstractList::FullListIterator::Remove()
     return SimpleListIterator::Remove();
 }
 
+////////////////////////////////////////////
+// SubAbstractList::SubAbstractListIterator
+////////////////////////////////////////////
+
 SubAbstractList::SubAbstractListIterator::SubAbstractListIterator(
     /* [in] */ IListIterator* it,
     /* [in] */ SubAbstractList* list,
@@ -303,6 +307,10 @@ ECode SubAbstractList::SubAbstractListIterator::Set(
 {
     return mIterator->Set(object);
 }
+
+////////////////////////////////////////////
+//              SubAbstractList
+////////////////////////////////////////////
 
 SubAbstractList::SubAbstractList(
     /* [in] */ AbstractList* list,
@@ -614,6 +622,15 @@ ECode SubAbstractList::GetSubList(
     return AbstractList::GetSubList(start, end, subList);
 }
 
+////////////////////////////////////////////
+//              AbstractList
+////////////////////////////////////////////
+
+ECode AbstractList::constructor()
+{
+    mModCount = 0;
+}
+
 ECode AbstractList::Add(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
@@ -875,6 +892,14 @@ ECode AbstractList::RemoveRange(
 
 ECode AbstractList::Set(
     /* [in] */ Int32 location,
+    /* [in] */ IInterface* object,
+    /* [out] */ IInterface** prevObject)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode AbstractList::Set(
+    /* [in] */ Int32 location,
     /* [in] */ IInterface* object)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -905,6 +930,10 @@ ECode AbstractList::GetSubList(
     }
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
 }
+
+////////////////////////////////////////////
+//      SubAbstractListRandomAccess
+////////////////////////////////////////////
 
 SubAbstractListRandomAccess::SubAbstractListRandomAccess(
     /* [in] */ AbstractList* list,

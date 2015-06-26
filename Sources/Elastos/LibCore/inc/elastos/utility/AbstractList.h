@@ -85,6 +85,8 @@ public:
 
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     /**
      * Inserts the specified object into this List at the specified location.
      * The object is inserted before any previous element at the specified
@@ -390,7 +392,7 @@ public:
     virtual CARAPI Set(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object,
-        /* [out] */ IInterface** prevObject) = 0;
+        /* [out] */ IInterface** prevObject);
 
 protected:
     /**
