@@ -15,64 +15,60 @@ using namespace Elastos;
 
 EXTERN_C const InterfaceID EIID_IProxy;
 
-class CCallbackRendezvous : public ICallbackRendezvous
+class CCallbackRendezvous
+    : public ElLightRefBase
+    , public ICallbackRendezvous
 {
 public:
-    CARAPI_(PInterface) Probe(REIID riid);
-    CARAPI_(UInt32) AddRef();
-    CARAPI_(UInt32) Release();
-    CARAPI GetInterfaceID(IInterface *pObject, InterfaceID *pIID);
-
     CCallbackRendezvous(
-        PInterface pCallbackContext,
-        ICallbackSink* pCallbackSink,
-        Int32 eventId,
-        Boolean* pbEventFlag,
-        Boolean bNewCallback) :
-            m_pCallbackContext(pCallbackContext),
-            m_pCallbackSink(pCallbackSink),
-            m_EventId(eventId),
-            m_pbEventFlag(pbEventFlag),
-            m_bNewCallback(bNewCallback),
-            m_cRef(0)
-    {
-        if (m_pCallbackSink) m_pCallbackSink->AddRef();
-    }
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ ICallbackSink* callbackSink,
+        /* [in] */ Int32 eventId,
+        /* [out] */ Boolean* eventFlag,
+        /* [in] */ Boolean newCallback)
+        : mCallbackContext(callbackContext)
+        , mCallbackSink(callbackSink)
+        , mEventId(eventId)
+        , mEventFlag(eventFlag)
+        , mNewCallback(newCallback)
+    {}
 
     virtual ~CCallbackRendezvous();
 
-    CARAPI Wait(
-            /* in */ Millisecond32 msTimeout,
-            /* out */ WaitResult *result);
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
-    PInterface                  m_pCallbackContext;
-    ICallbackSink*              m_pCallbackSink;
-    Int32                       m_EventId;
-    Boolean*                    m_pbEventFlag;
-    Boolean                     m_bNewCallback;
-private:
-    Int32                 m_cRef;
+    CARAPI_(UInt32) AddRef()
+    {
+        return ElLightRefBase::AddRef();
+    }
+
+    CARAPI_(UInt32) Release()
+    {
+        return ElLightRefBase::Release();
+    }
+
+    CARAPI GetInterfaceID(
+        /* [in] */ IInterface* object,
+        /* [in] */ InterfaceID* iid)
+    {
+        return E_NOT_IMPLEMENTED;
+    }
+
+    CARAPI Wait(
+        /* in */ Millisecond32 msTimeout,
+        /* out */ WaitResult* result);
+
+public:
+    AutoPtr<IInterface> mCallbackContext;
+    AutoPtr<ICallbackSink> mCallbackSink;
+    Int32 mEventId;
+    Boolean* mEventFlag;
+    Boolean mNewCallback;
 };
 
-UInt32 CCallbackRendezvous::AddRef()
-{
-    Int32 ref = atomic_inc(&m_cRef);
-
-    return (UInt32)ref;
-}
-
-UInt32 CCallbackRendezvous::Release()
-{
-    Int32 ref = atomic_dec(&m_cRef);
-
-    if (0 == ref) {
-        delete this;
-    }
-    assert(ref >= 0);
-    return ref;
-}
-
-PInterface CCallbackRendezvous::Probe(REIID riid)
+PInterface CCallbackRendezvous::Probe(
+    /* [in] */ REIID riid)
 {
     if (riid == EIID_IInterface) {
         return (PInterface)this;
@@ -80,61 +76,42 @@ PInterface CCallbackRendezvous::Probe(REIID riid)
     return NULL;
 }
 
-ECode CCallbackRendezvous::GetInterfaceID(IInterface *pObject, InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 CCallbackRendezvous::~CCallbackRendezvous()
 {
-    if (m_pCallbackSink) {
-        if (m_bNewCallback) {
-            PInterface pOrgCtx;
-            pOrgCtx = (PInterface)pthread_getspecific(TL_CALLBACK_SLOT);
-            if (m_pCallbackContext) m_pCallbackContext->AddRef();
-            pthread_setspecific(TL_CALLBACK_SLOT, m_pCallbackContext);
-            m_pCallbackSink->RemoveCallback(
-                                            m_EventId, EventHandler::Make(NULL, NULL));
-            if (m_pCallbackContext) m_pCallbackContext->Release();
-            pthread_setspecific(TL_CALLBACK_SLOT, pOrgCtx);
+    if (mCallbackSink) {
+        if (mNewCallback) {
+            PInterface orgCtx;
+            orgCtx = (PInterface)pthread_getspecific(TL_CALLBACK_SLOT);
+            if (mCallbackContext) mCallbackContext->AddRef();
+            pthread_setspecific(TL_CALLBACK_SLOT, mCallbackContext);
+            mCallbackSink->RemoveCallback(mEventId, EventHandler::Make(NULL, NULL));
+            if (mCallbackContext) mCallbackContext->Release();
+            pthread_setspecific(TL_CALLBACK_SLOT, orgCtx);
         }
-        m_pCallbackSink->Release();
     }
-    if (m_pCallbackContext) m_pCallbackContext->Release();
 }
 
 ECode CCallbackRendezvous::Wait(
-    Millisecond32 msTimeOut,
-    WaitResult *result)
+    /* [in] */ Millisecond32 msTimeOut,
+    /* [in] */ WaitResult* result)
 {
-
-    ECode ec = _Impl_CallbackSink_WaitForCallbackEvent(
-                            m_pCallbackContext,
-                            msTimeOut,
-                            result,
-                            m_pbEventFlag,
-                            0);
-
-    return ec;
+    return _Impl_CallbackSink_WaitForCallbackEvent(
+            mCallbackContext, msTimeOut, result, mEventFlag, 0);
 }
 
 ELAPI _Impl_CCallbackRendezvous_New(
-        PInterface pCallbackContext,
-        ICallbackSink* pCallbackSink,
-        CallbackEventId eventId,
-        Boolean* pbEventFlag,
-        Boolean bNewCallback,
-        ICallbackRendezvous** ppICallbackRendezvous)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ ICallbackSink* callbackSink,
+    /* [in] */ CallbackEventId eventId,
+    /* [in] */ Boolean* eventFlag,
+    /* [in] */ Boolean newCallback,
+    /* [in] */ ICallbackRendezvous** callbackRendezvous)
 {
-    if (NULL == ppICallbackRendezvous) return E_INVALID_ARGUMENT;
-    *ppICallbackRendezvous = new CCallbackRendezvous(
-                                    pCallbackContext,
-                                    pCallbackSink,
-                                    eventId,
-                                    pbEventFlag,
-                                    bNewCallback);
-    if (*ppICallbackRendezvous == NULL) return E_OUT_OF_MEMORY;
-    (*ppICallbackRendezvous)->AddRef();
+    if (NULL == callbackRendezvous) return E_INVALID_ARGUMENT;
+    *callbackRendezvous = new CCallbackRendezvous(
+            callbackContext, callbackSink, eventId, eventFlag, newCallback);
+    if (*callbackRendezvous == NULL) return E_OUT_OF_MEMORY;
+    (*callbackRendezvous)->AddRef();
 
     return NOERROR;
 }
@@ -151,53 +128,57 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase()
 
 EXTERN void InitTLS()
 {
-    for (int i = 0; i < 10; i++) {
+    for (Int32 i = 0; i < 10; i++) {
         pthread_key_create(&g_TlSystemSlots[i], NULL);
     }
 }
 
 EXTERN void UninitTLS()
 {
-    for (int i = 0; i < 10; i++) {
+    for (Int32 i = 0; i < 10; i++) {
         pthread_key_delete(g_TlSystemSlots[i]);
     }
 }
 
-ELAPI _CObject_EnterRegime(PInterface pObject, PRegime pRegime)
+ELAPI _CObject_EnterRegime(
+    /* [in] */ PInterface object,
+    /* [in] */ PRegime regime)
 {
-    return pRegime->ObjectEnter(pObject);
+    return regime->ObjectEnter(object);
 }
 
-ELAPI _CObject_LeaveRegime(PInterface pObject, PRegime pRegime)
+ELAPI _CObject_LeaveRegime(
+    /* [in] */ PInterface object,
+    /* [in] */ PRegime regime)
 {
-    return pRegime->ObjectLeave(pObject);
+    return regime->ObjectLeave(object);
 }
 
-ELAPI_(Boolean) _Impl_CheckHelperInfoFlag(UInt32 flag)
+ELAPI_(Boolean) _Impl_CheckHelperInfoFlag(
+    /* [in] */ UInt32 flag)
 {
     UInt32 uFlag = 0;
 
     uFlag = (UInt32)pthread_getspecific(TL_HELPER_INFO_SLOT);
 
     if (uFlag & flag) return TRUE;
-    else return FALSE;
+    return FALSE;
 }
 
-ELAPI_(void) _Impl_SetHelperInfoFlag(UInt32 flag, Boolean bValue)
+ELAPI_(void) _Impl_SetHelperInfoFlag(
+    /* [in] */ UInt32 flag,
+    /* [in] */ Boolean value)
 {
-    UInt32 uFlag = 0;
-    ECode ec;
+    UInt32 uFlag = (UInt32)pthread_getspecific(TL_HELPER_INFO_SLOT);
 
-    uFlag = (UInt32)pthread_getspecific(TL_HELPER_INFO_SLOT);
-
-    if (bValue) {
+    if (value) {
         uFlag |= flag;
     }
     else {
         uFlag &= ~flag;
     }
 
-    ec = pthread_setspecific(TL_HELPER_INFO_SLOT, (void*)uFlag);
+    ECode ec = pthread_setspecific(TL_HELPER_INFO_SLOT, (void*)uFlag);
     assert(SUCCEEDED(ec));
 }
 
@@ -226,56 +207,56 @@ ELAPI _Impl_InsideProtectedZone()
 #include <marshal_rpc.h>
 
 ELAPI _CObject_MarshalInterface(
-    /* [in] */ IInterface *pObj,
+    /* [in] */ IInterface* object,
     /* [in] */ MarshalType type,
-    /* [out] */ void **ppBuf,
-    /* [out] */ Int32 *pSize)
+    /* [out] */ void** package,
+    /* [out] */ Int32* size)
 {
-    if (ppBuf == NULL) {
-        if (pSize) *pSize = 0;
+    if (package == NULL) {
+        if (size) *size = 0;
         return E_INVALID_ARGUMENT;
     }
-    *ppBuf = NULL;
+    *package = NULL;
 
-    if (pSize == NULL) {
+    if (size == NULL) {
         return E_INVALID_ARGUMENT;
     }
-    *pSize = 0;
+    *size = 0;
 
-    if (pObj == NULL || pSize == NULL) {
+    if (object == NULL || size == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
     if (type == MarshalType_IPC) {
-        Elastos::IPC::InterfacePack* pItfPack = (Elastos::IPC::InterfacePack*)calloc(sizeof(Elastos::IPC::InterfacePack), 1);
-        if (pItfPack == NULL) {
+        Elastos::IPC::InterfacePack* itfPack = (Elastos::IPC::InterfacePack*)calloc(sizeof(Elastos::IPC::InterfacePack), 1);
+        if (itfPack == NULL) {
             return E_OUT_OF_MEMORY;
         }
 
-        ECode ec = StdMarshalInterface(pObj, pItfPack);
+        ECode ec = StdMarshalInterface(object, itfPack);
         if (FAILED(ec)) {
-            free(pItfPack);
+            free(itfPack);
             return ec;
         }
 
-        *pSize = sizeof(Elastos::IPC::InterfacePack);
-        *ppBuf = pItfPack;
+        *size = sizeof(Elastos::IPC::InterfacePack);
+        *package = itfPack;
         return NOERROR;
     }
     else if (type == MarshalType_RPC) {
-        Elastos::RPC::InterfacePack* pItfPack = (Elastos::RPC::InterfacePack*)calloc(sizeof(Elastos::RPC::InterfacePack), 1);
-        if (pItfPack == NULL) {
+        Elastos::RPC::InterfacePack* itfPack = (Elastos::RPC::InterfacePack*)calloc(sizeof(Elastos::RPC::InterfacePack), 1);
+        if (itfPack == NULL) {
             return E_OUT_OF_MEMORY;
         }
 
-        ECode ec = StdMarshalInterface(pObj, pItfPack);
+        ECode ec = StdMarshalInterface(object, itfPack);
         if (FAILED(ec)) {
-            free(pItfPack);
+            free(itfPack);
             return ec;
         }
 
-        *pSize = sizeof(Elastos::RPC::InterfacePack);
-        *ppBuf = pItfPack;
+        *size = sizeof(Elastos::RPC::InterfacePack);
+        *package = itfPack;
         return NOERROR;
     }
 
@@ -283,43 +264,43 @@ ELAPI _CObject_MarshalInterface(
 }
 
 ELAPI _CObject_UnmarshalInterface(
-    /* [in] */ void *pBuf,
+    /* [in] */ void* package,
     /* [in] */ MarshalType type,
     /* [in] */ UnmarshalFlag flag,
-    /* [out] */ IInterface **ppObj,
-    /* [out] */ Int32 *pSize)
+    /* [out] */ IInterface** object,
+    /* [out] */ Int32* size)
 {
-    if (ppObj == NULL) {
-        if (pSize) *pSize = 0;
+    if (object == NULL) {
+        if (size) *size = 0;
         return E_INVALID_ARGUMENT;
     }
-    *ppObj = NULL;
+    *object = NULL;
 
-    if (pSize == NULL) {
+    if (size == NULL) {
         return E_INVALID_ARGUMENT;
     }
-    *pSize = 0;
+    *size = 0;
 
-    if (pBuf == NULL) {
+    if (package == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
     if (type == MarshalType_IPC) {
-        ECode ec = StdUnmarshalInterface(flag, (Elastos::IPC::InterfacePack*)pBuf, ppObj);
+        ECode ec = StdUnmarshalInterface(flag, (Elastos::IPC::InterfacePack*)package, object);
         if (FAILED(ec)) {
             return ec;
         }
 
-        *pSize = sizeof(Elastos::IPC::InterfacePack);
+        *size = sizeof(Elastos::IPC::InterfacePack);
         return NOERROR;
     }
     else if (type == MarshalType_RPC) {
-        ECode ec = StdUnmarshalInterface(flag, (Elastos::RPC::InterfacePack*)pBuf, ppObj);
+        ECode ec = StdUnmarshalInterface(flag, (Elastos::RPC::InterfacePack*)package, object);
         if (FAILED(ec)) {
             return ec;
         }
 
-        *pSize = sizeof(Elastos::RPC::InterfacePack);
+        *size = sizeof(Elastos::RPC::InterfacePack);
         return NOERROR;
     }
 

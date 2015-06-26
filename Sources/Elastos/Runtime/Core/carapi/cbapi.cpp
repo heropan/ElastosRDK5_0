@@ -226,9 +226,9 @@ ELAPI _Impl_CheckClsId(
     /* [out] */ PInterface* outServerObj)
 {
     IObject* object;
-	char str[80];
+    char str[80];
     ClassID clsid;
-	clsid.pUunm = str;
+    clsid.pUunm = str;
 
     object = (IObject*)serverObj->Probe(EIID_IObject);
     if (NULL == object) return E_INVALID_ARGUMENT;
