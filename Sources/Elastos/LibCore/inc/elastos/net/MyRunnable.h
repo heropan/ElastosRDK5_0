@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_NET_MyRunnable_H__
 #define __ELASTOS_NET_MyRunnable_H__
 
+#include "Elastos.CoreLibrary_server.h"
 #include <elastos.h>
 #include <eltypes.h>
 #include <stdio.h>
@@ -22,12 +23,6 @@ public:
 
 public:
     Boolean mStop;
-
-private:
-    //CARAPI_(Mutex*) GetSelfLock();
-
-private:
-    //Mutex mLock;
 };
 
 #endif //__ELASTOS_NET_MyRunnable_H__

@@ -84,7 +84,7 @@ public:
         /* [in] */ Int32 latency,
         /* [in] */ Int32 bandwidth);
 
-protected:
+//protected:
     ServerSocket();
 
     CARAPI constructor(
@@ -122,9 +122,6 @@ private:
     Boolean mIsBound;
 
     Boolean mIsClosed;
-
-    //Mutex mLock;
-    //static Mutex sLock;
 };
 
 } // namespace Net

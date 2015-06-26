@@ -8,8 +8,8 @@
 #include "UriCodec.h"
 
 using Elastos::Core::Character;
-using Elastos::IO::ISerializable;
 using Elastos::Core::IComparable;
+using Elastos::IO::ISerializable;
 using Libcore::Net::UriCodec;
 
 namespace Elastos {

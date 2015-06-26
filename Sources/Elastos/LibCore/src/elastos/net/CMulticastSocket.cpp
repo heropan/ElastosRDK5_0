@@ -373,28 +373,28 @@ ECode CMulticastSocket::CreateSocket(
     /* [in] */ Int32 aPort,
     /* [in] */ IInetAddress* addr)
 {
-    //Mutex::Autolock lock(_m_syncLock);
+    synchronized(this) {
+        if (mFactory != NULL) {
+            mFactory->CreateDatagramSocketImpl((IDatagramSocketImpl**)&mImpl);
+        }
+        else {
+            FAIL_RETURN(CPlainDatagramSocketImpl::New((IDatagramSocketImpl**)&mImpl));
+        }
 
-    if (mFactory != NULL) {
-        mFactory->CreateDatagramSocketImpl((IDatagramSocketImpl**)&mImpl);
-    }
-    else {
-        FAIL_RETURN(CPlainDatagramSocketImpl::New((IDatagramSocketImpl**)&mImpl));
-    }
+        mImpl->Create();
+        // try {
+        AutoPtr<IBoolean> value;
+        CBoolean::New(TRUE, (IBoolean**)&value);
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        option->SetOption(ISocketOptions::_SO_REUSEADDR, value);
+        ECode ec = mImpl->Bind(aPort, addr);
+        if (FAILED(ec)) {
+            Close();
+            return ec;
+        }
 
-    mImpl->Create();
-    // try {
-    AutoPtr<IBoolean> value;
-    CBoolean::New(TRUE, (IBoolean**)&value);
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    option->SetOption(ISocketOptions::_SO_REUSEADDR, value);
-    ECode ec = mImpl->Bind(aPort, addr);
-    if (FAILED(ec)) {
-        Close();
-        return ec;
+        mIsBound = TRUE;
     }
-
-    mIsBound = TRUE;
     return NOERROR;
     // } catch (SocketException e) {
     //    close();
@@ -625,11 +625,6 @@ ECode CMulticastSocket::GetFileDescriptor(
     VALIDATE_NOT_NULL(fd);
     return DatagramSocket::GetFileDescriptor(fd);
 }
-
-// Mutex* CMulticastSocket::GetSelfLock()
-// {
-//     return &_m_syncLock;
-// }
 
 } // namespace Net
 } // namespace Elastos

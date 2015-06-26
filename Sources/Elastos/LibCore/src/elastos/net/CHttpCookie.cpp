@@ -1,19 +1,19 @@
 
 #include "CHttpCookie.h"
-//#include "CHttpDate.h"
+//#include "http/CHttpDate.h"
 #include "Arrays.h"
 #include "CStringWrapper.h"
 #include "Character.h"
 #include "StringUtils.h"
 #include "CSystem.h"
 
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
 using Elastos::Core::Character;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-//using Elastos::Net::Http::CHttpDate;
+//using Libcore::Net::Http::CHttpDate;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -146,7 +146,7 @@ void CHttpCookie::CookieParser::SetAttribute(
         mHasExpires = TRUE;
         if (cookie->mMaxAge == -1ll) {
             AutoPtr<IDate> date;
-            CHttpDate::_Parse(value, (IDate**)&date);
+            //CHttpDate::_Parse(value, (IDate**)&date);
             if (date != NULL) {
                 cookie->SetExpires(date);
             }
@@ -157,7 +157,7 @@ void CHttpCookie::CookieParser::SetAttribute(
     }
     else if (name.Equals("max-age") && cookie->mMaxAge == -1ll) {
         mHasMaxAge = TRUE;
-        cookie->mMaxAge = StringUtils::Parse(value);
+        cookie->mMaxAge = StringUtils::ParseInt64(value);
     }
     else if (name.Equals("path") && cookie->mPath.IsNull()) {
         cookie->mPath = value;
@@ -362,7 +362,7 @@ Boolean CHttpCookie::PortMatches(
     cookie->GetPortList(&outstr);
     AutoPtr< ArrayOf<String> > outarr;
     StringUtils::Split(outstr, ",", (ArrayOf<String>**)&outarr);
-    return outarr->Contains(StringUtils::Int32ToString(port));
+    return outarr->Contains(StringUtils::ToString(port));
 }
 
 String CHttpCookie::MatchablePath(
@@ -689,7 +689,7 @@ ECode CHttpCookie::constructor(
 }
 
 ECode CHttpCookie::Clone(
-    /* [out] */ IHttpCookie** result)
+    /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result);
 
@@ -705,7 +705,7 @@ ECode CHttpCookie::Clone(
     cResult->mPortList = this->mPortList;
     cResult->mSecure = this->mSecure;
     cResult->mVersion = this->mVersion;
-    *result = reshtt;
+    *result = (IInterface*)reshtt;
     REFCOUNT_ADD(*result)
 
     return NOERROR;

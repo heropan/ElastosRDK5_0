@@ -26,7 +26,6 @@ namespace Net {
 
 const String DatagramSocket::TAG("DatagramSocket");
 AutoPtr<IDatagramSocketImplFactory> DatagramSocket::mFactory;
-//Mutex DatagramSocket::sLock;
 
 CAR_INTERFACE_IMPL_2(DatagramSocket, Object, IDatagramSocket, ICloseable)
 
@@ -111,6 +110,12 @@ ECode DatagramSocket::Close()
     return mImpl->Close();
 }
 
+ECode DatagramSocket::OnClose()
+{
+    mIsClosed = TRUE;
+    return mImpl->Close();
+}
+
 ECode DatagramSocket::Disconnect()
 {
     Boolean isClosed = FALSE;
@@ -125,33 +130,42 @@ ECode DatagramSocket::Disconnect()
     return NOERROR;
 }
 
+ECode DatagramSocket::OnDisconnect()
+{
+    mAddress = NULL;
+    mPort = -1;
+    mIsConnected = false;
+    mImpl->Disconnect();
+    return NOERROR;
+}
+
 ECode DatagramSocket::CreateSocket(
     /* [in] */ Int32 aPort,
     /* [in] */ IInetAddress* addr)
 {
-    //Mutex::Autolock lock(GetSelfLock());
+    synchronized(this) {
+        mImpl = NULL;
+        if (mFactory != NULL) {
+            mFactory->CreateDatagramSocketImpl((IDatagramSocketImpl**)&mImpl);
+        }
+        else {
+            FAIL_RETURN(CPlainDatagramSocketImpl::New((IDatagramSocketImpl**)&mImpl));
+        }
+        mImpl->Create();
 
-    mImpl = NULL;
-    if (mFactory != NULL) {
-        mFactory->CreateDatagramSocketImpl((IDatagramSocketImpl**)&mImpl);
+        // try {
+        ECode ec = mImpl->Bind(aPort, addr);
+        if (FAILED(ec)) {
+            Close();
+            ALOGD("Error in DatagramSocket: failed to create socket!");
+            return ec;
+        }
+        mIsBound = TRUE;
+        // } catch (SocketException e) {
+        //    close();
+        //    throw e;
+        // }
     }
-    else {
-        FAIL_RETURN(CPlainDatagramSocketImpl::New((IDatagramSocketImpl**)&mImpl));
-    }
-    mImpl->Create();
-
-    // try {
-    ECode ec = mImpl->Bind(aPort, addr);
-    if (FAILED(ec)) {
-        Close();
-        ALOGD("Error in DatagramSocket: failed to create socket!");
-        return ec;
-    }
-    mIsBound = TRUE;
-    // } catch (SocketException e) {
-    //    close();
-    //    throw e;
-    // }
 
     return NOERROR;
 }
@@ -226,13 +240,15 @@ ECode DatagramSocket::GetReceiveBufferSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size);
-    //Mutex::Autolock lock(GetSelfLock());
 
-    FAIL_RETURN(CheckOpen());
-    AutoPtr<IInteger32> optVal;
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_RCVBUF, (IInterface**)&optVal));
-    return optVal->GetValue(size);
+    synchronized(this) {
+        FAIL_RETURN(CheckOpen());
+        AutoPtr<IInteger32> optVal;
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        FAIL_RETURN(option->GetOption(ISocketOptions::_SO_RCVBUF, (IInterface**)&optVal));
+        return optVal->GetValue(size);
+    }
+    return NOERROR;
 }
 
 ECode DatagramSocket::GetSendBufferSize(
@@ -240,13 +256,14 @@ ECode DatagramSocket::GetSendBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    //Mutex::Autolock lock(GetSelfLock());
-
-    FAIL_RETURN(CheckOpen());
-    AutoPtr<IInteger32> optVal;
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_SNDBUF, (IInterface**)&optVal));
-    return optVal->GetValue(size);
+    synchronized(this) {
+        FAIL_RETURN(CheckOpen());
+        AutoPtr<IInteger32> optVal;
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        FAIL_RETURN(option->GetOption(ISocketOptions::_SO_SNDBUF, (IInterface**)&optVal));
+        return optVal->GetValue(size);
+    }
+    return NOERROR;
 }
 
 ECode DatagramSocket::GetSoTimeout(
@@ -254,30 +271,33 @@ ECode DatagramSocket::GetSoTimeout(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    //Mutex::Autolock lock(GetSelfLock());
-
-    FAIL_RETURN(CheckOpen());
-    AutoPtr<IInteger32> optVal;
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    FAIL_RETURN(option->GetOption(ISocketOptions::_SO_TIMEOUT, (IInterface**)&optVal));
-    return optVal->GetValue(timeout);
+    synchronized(this) {
+        FAIL_RETURN(CheckOpen());
+        AutoPtr<IInteger32> optVal;
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        FAIL_RETURN(option->GetOption(ISocketOptions::_SO_TIMEOUT, (IInterface**)&optVal));
+        return optVal->GetValue(timeout);
+    }
+    return NOERROR;
 }
 
 ECode DatagramSocket::Receive(
     /* [in] */ IDatagramPacket* pack)
 {
-    //Mutex::Autolock lock(GetSelfLock());
-    FAIL_RETURN(CheckOpen());
-    FAIL_RETURN(EnsureBound());
-    if (pack == NULL) {
-        ALOGD("Error in DatagramSocket: pack == null!");
-        return E_NULL_POINTER_EXCEPTION;
+    synchronized(this) {
+        FAIL_RETURN(CheckOpen());
+        FAIL_RETURN(EnsureBound());
+        if (pack == NULL) {
+            ALOGD("Error in DatagramSocket: pack == null!");
+            return E_NULL_POINTER_EXCEPTION;
+        }
+        if (FAILED(mPendingConnectException)) {
+            return E_SOCKET_EXCEPTION;
+        }
+        pack->ResetLengthForReceive();
+        return mImpl->Receive(pack);
     }
-    if (FAILED(mPendingConnectException)) {
-        return E_SOCKET_EXCEPTION;
-    }
-    pack->ResetLengthForReceive();
-    return mImpl->Receive(pack);
+    return NOERROR;
 }
 
 ECode DatagramSocket::Send(
@@ -342,60 +362,64 @@ ECode DatagramSocket::SetNetworkInterface(
 ECode DatagramSocket::SetSendBufferSize(
     /* [in] */ Int32 size)
 {
-    //Mutex::Autolock lock(GetSelfLock());
-
-    if (size < 1) {
-        ALOGD("Error in DatagramSocket: send buffer size < 1!");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    synchronized(this) {
+        if (size < 1) {
+            ALOGD("Error in DatagramSocket: send buffer size < 1!");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        FAIL_RETURN(CheckOpen());
+        AutoPtr<IInteger32> optVal;
+        CInteger32::New(size, (IInteger32**)&optVal);
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        return option->SetOption(ISocketOptions::_SO_SNDBUF, optVal);
     }
-    FAIL_RETURN(CheckOpen());
-    AutoPtr<IInteger32> optVal;
-    CInteger32::New(size, (IInteger32**)&optVal);
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    return option->SetOption(ISocketOptions::_SO_SNDBUF, optVal);
+    return NOERROR;
 }
 
 ECode DatagramSocket::SetReceiveBufferSize(
     /* [in] */ Int32 size)
 {
-    //Mutex::Autolock lock(GetSelfLock());
-
-    if (size < 1) {
-        ALOGD("Error in DatagramSocket: receive buffer size < 1!");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    synchronized(this) {
+        if (size < 1) {
+            ALOGD("Error in DatagramSocket: receive buffer size < 1!");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        FAIL_RETURN(CheckOpen());
+        AutoPtr<IInteger32> optVal;
+        CInteger32::New(size, (IInteger32**)&optVal);
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        return option->SetOption(ISocketOptions::_SO_RCVBUF, optVal);
     }
-    FAIL_RETURN(CheckOpen());
-    AutoPtr<IInteger32> optVal;
-    CInteger32::New(size, (IInteger32**)&optVal);
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    return option->SetOption(ISocketOptions::_SO_RCVBUF, optVal);
+    return NOERROR;
 }
 
 ECode DatagramSocket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    //Mutex::Autolock lock(GetSelfLock());
-
-    if (timeout < 0) {
-        ALOGD("Error in DatagramSocket: timeout < 0!");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    FAIL_RETURN(CheckOpen());
-    AutoPtr<IInteger32> optVal;
-    CInteger32::New(timeout, (IInteger32**)&optVal);
-    ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-    return option->SetOption(ISocketOptions::_SO_TIMEOUT, optVal);
+    synchronized(this) {
+        if (timeout < 0) {
+            ALOGD("Error in DatagramSocket: timeout < 0!");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        FAIL_RETURN(CheckOpen());
+        AutoPtr<IInteger32> optVal;
+        CInteger32::New(timeout, (IInteger32**)&optVal);
+        ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
+        return option->SetOption(ISocketOptions::_SO_TIMEOUT, optVal);
+        }
+    return NOERROR;
 }
 
 ECode DatagramSocket::SetDatagramSocketImplFactory(
     /* [in] */ IDatagramSocketImplFactory* fac)
 {
-    //Mutex::Autolock lock(&sLock);
-    if (mFactory != NULL) {
-        ALOGD("Error in DatagramSocket: Factory already set!");
-        return E_SOCKET_EXCEPTION;
+    synchronized(this) {
+        if (mFactory != NULL) {
+            ALOGD("Error in DatagramSocket: Factory already set!");
+            return E_SOCKET_EXCEPTION;
+        }
+        mFactory = fac;
     }
-    mFactory = fac;
     return NOERROR;
 }
 
@@ -448,6 +472,15 @@ ECode DatagramSocket::Bind(
     return NOERROR;
 }
 
+ECode DatagramSocket::OnBind(
+    /* [in] */ IInetAddress* localAddress,
+    /* [in] */ Int32 localPort)
+{
+    mIsBound = TRUE;
+    //return mImpl->OnBind(localAddress, localPort);
+    return NOERROR;
+}
+
 ECode DatagramSocket::Connect(
     /* [in] */ ISocketAddress* peer)
 {
@@ -471,8 +504,7 @@ ECode DatagramSocket::Connect(
         return E_SOCKET_EXCEPTION;
     }
 
-    {
-        //Mutex::Autolock lock(mLock);
+    synchronized(mLock) {
         FAIL_RETURN(CheckOpen());
         FAIL_RETURN(EnsureBound());
 
@@ -484,6 +516,18 @@ ECode DatagramSocket::Connect(
 
         return mImpl->Connect(addr, port);
     }
+    return NOERROR;
+}
+
+ECode DatagramSocket::OnConnect(
+    /* [in] */ IInetAddress* remoteAddress,
+    /* [in] */ Int32 remotePort)
+{
+    mIsConnected = true;
+    mAddress = remoteAddress;
+    mPort = remotePort;
+    //mImpl->OnConnect(remoteAddress, remotePort);
+    return NOERROR;
 }
 
 ECode DatagramSocket::Connect(

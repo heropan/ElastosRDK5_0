@@ -5,9 +5,9 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::IList;
 using Elastos::Core::Object;
+using Elastos::Utility::IList;
+using Elastos::Utility::Etl::List;
 using Elastos::Net::INetPermission;
 
 namespace Elastos {

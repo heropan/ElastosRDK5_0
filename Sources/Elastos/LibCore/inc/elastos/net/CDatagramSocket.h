@@ -2,10 +2,8 @@
 #ifndef __ELASTOS_NET_CDATAGRAMSOCKET_H__
 #define __ELASTOS_NET_CDATAGRAMSOCKET_H__
 
-#include "DatagramSocket.h"
 #include "_Elastos_Net_CDatagramSocket.h"
-
-using Elastos::IO::IFileDescriptor;
+#include "DatagramSocket.h"
 
 namespace Elastos {
 namespace Net {

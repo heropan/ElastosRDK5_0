@@ -24,6 +24,8 @@ public:
 
     CARAPI Close();
 
+    CARAPI OnClose();
+
     CARAPI GetInetAddress(
         /* [out] */ IInetAddress** address);
 
@@ -104,10 +106,18 @@ public:
     CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr);
 
+    CARAPI OnBind(
+        /* [in] */ IInetAddress* localAddress,
+        /* [in] */ Int32 localPort);
+
     CARAPI Connect(
         /* [in] */ ISocketAddress* remoteAddr);
 
     CARAPI Connect(
+        /* [in] */ ISocketAddress* remoteAddr,
+        /* [in] */ Int32 timeout);
+
+    CARAPI OnConnect(
         /* [in] */ ISocketAddress* remoteAddr,
         /* [in] */ Int32 timeout);
 
@@ -151,7 +161,7 @@ public:
         /* [in] */ Int32 latency,
         /* [in] */ Int32 bandwidth);
 
-protected:
+//protected:
     Socket();
 
     CARAPI constructor();
@@ -188,9 +198,6 @@ protected:
         /* [in] */ IInetAddress* addr,
         /* [in] */ Int32 port,
         /* [in] */ Boolean streaming);
-
-    //virtual CARAPI_(Mutex*) GetSelfLock() = 0;
-
 private:
     CARAPI TryAllAddresses(
         /* [in] */ const String& dstName,
@@ -226,7 +233,6 @@ public:
 
 private:
     static AutoPtr<ISocketImplFactory> sFactory;
-    //static Mutex sLock;
 
     AutoPtr<IProxy> mProxy;
 
@@ -238,7 +244,6 @@ private:
     Boolean mIsOutputShutdown;
 
     AutoPtr<IInetAddress> mLocalAddress;
-    //Mutex mConnectLock;
 };
 
 } // namespace Net

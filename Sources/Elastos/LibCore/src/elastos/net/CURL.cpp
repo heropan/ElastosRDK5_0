@@ -2,7 +2,6 @@
 #include "CURL.h"
 #include "CURI.h"
 #include "Thread.h"
-<<<<<<< HEAD
 #include "CSystem.h"
 #include "StringUtils.h"
 #include "Autolock.h"
@@ -13,24 +12,11 @@
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_IComparable;
-=======
-// #include "url/CFileHandler.h"
-// #include "url/CFtpHandler.h"
-//#include "CHttpHandler.h"
-//#include "CHttpsHandler.h"
-#include "CSystem.h"
-#include <elastos/core/StringUtils.h>
-#include <Thread.h>
 
-using Elastos::Core::IRunnable;
-using Elastos::Core::IThread;
-using Elastos::Core::Thread;
->>>>>>> 1234556
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IClassLoader;
-<<<<<<< HEAD
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
 // using Elastos::Net::Url::IFileHandler;
@@ -41,28 +27,13 @@ using Elastos::Core::IThread;
 // using Elastos::Net::Http::CHttpHandler;
 // using Elastos::Net::Http::IHttpsHandler;
 // using Elastos::Net::Http::CHttpsHandler;
-=======
-using Elastos::IO::EIID_ISerializable;
-// using Libcore::Net::Url::CFileHandler;
-// using Libcore::Net::Url::IFileHandler;
-// using Libcore::Net::Url::CFtpHandler;
-// using Libcore::Net::Url::IFtpHandler;
-// using Elastos::Net::Http::CHttpHandler;
-// using Elastos::Net::Http::IHttpHandler;
-// using Elastos::Net::Http::CHttpsHandler;
-// using Elastos::Net::Http::IHttpsHandler;
->>>>>>> 1234556
 
 namespace Elastos {
 namespace Net {
 
 HashMap<String, AutoPtr<IURLStreamHandler> > CURL::sStreamHandlers;
 AutoPtr<IURLStreamHandlerFactory> CURL::sStreamHandlerFactory;
-<<<<<<< HEAD
 Object CURL::sLock;
-=======
-//Mutex CURL::sLock;
->>>>>>> 1234556
 
 CAR_INTERFACE_IMPL_2(CURL, Object, IURL, ISerializable)
 
@@ -309,23 +280,12 @@ ECode CURL::constructor(
 ECode CURL::SetURLStreamHandlerFactory(
     /* [in] */ IURLStreamHandlerFactory* streamFactory)
 {
-<<<<<<< HEAD
     Autolock lock(sLock);
-=======
-    //Mutex::Autolock lock(sLock);
->>>>>>> 1234556
 
     if (sStreamHandlerFactory != NULL) {
 //        throw new Error("Factory already set");
         assert(0);
     }
-//    SecurityManager sm = System.getSecurityManager();
-//    if (sm != null) {
-//        sm.checkSetFactory();
-//    }
-    sStreamHandlers.Clear();
-    sStreamHandlerFactory = streamFactory;
-
     return NOERROR;
 }
 
@@ -484,7 +444,6 @@ void CURL::SetupStreamHandler()
     mStreamHandler = NULL;
     // Fall back to a built-in stream handler if the user didn't supply one
     if (mProtocol.Equals("file")) {
-<<<<<<< HEAD
         // CFileHandler::New((IFileHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("ftp")) {
         // CFtpHandler::New((IFtpHandler**)&mStreamHandler);
@@ -492,15 +451,6 @@ void CURL::SetupStreamHandler()
         // CHttpHandler::New((IHttpHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("https")) {
         // CHttpsHandler::New((IHttpsHandler**)&mStreamHandler);
-=======
-        /////////////////CFileHandler::New((IFileHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("ftp")) {
-        //////////////////CFtpHandler::New((IFtpHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("http")) {
-       ///////////////// CHttpHandler::New((IHttpHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("https")) {
-       ///////////////// CHttpsHandler::New((IHttpsHandler**)&mStreamHandler);
->>>>>>> 1234556
     } else if (mProtocol.Equals("jar")) {
         //TODO : not implement.
         // CJarHandler::New((IURLStreamHandler**)&mStreamHandler);

@@ -12,10 +12,10 @@ extern "C" const InterfaceID EIID_Authenticator;
 
 class Authenticator
     : public Object
-    //, public IAuthenticator
+    , public IAuthenticator
 {
 public:
-    //CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL()
 
     Authenticator();
 
@@ -97,8 +97,6 @@ private:
     AutoPtr<IURL> mUrl;
 
     AuthenticatorRequestorType mRt;
-
-    //static Mutex sLock;
 };
 
 } // namespace Net

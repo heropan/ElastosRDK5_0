@@ -494,7 +494,11 @@ ECode CURI::CompareTo(
     Int32 ret;
 
     // compare schemes
+<<<<<<< HEAD
     CURI* uriObj = (CURI*)uo;
+=======
+    CURI* uriObj = (CURI*)IURI::Probe(uri);
+>>>>>>> update net.
     if (!mScheme.IsNull() || !uriObj->mScheme.IsNull()) {
         return mScheme.Compare(uriObj->mScheme);
     }
@@ -925,10 +929,17 @@ Int32 CURI::GetEffectivePort(
         return specifiedPort;
     }
 
+<<<<<<< HEAD
     if (scheme.EqualsIgnoreCase("http")) {
         return 80;
     }
     else if (scheme.EqualsIgnoreCase("https")) {
+=======
+    if (CString("http").EqualsIgnoreCase(scheme.string())) {
+        return 80;
+    }
+    else if (CString("https").EqualsIgnoreCase(scheme.string())) {
+>>>>>>> update net.
         return 443;
     }
     else {

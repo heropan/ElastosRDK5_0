@@ -89,11 +89,13 @@ ECode CPlainDatagramSocketImpl::Bind(
 
 ECode CPlainDatagramSocketImpl::Close()
 {
-    //Mutex::Autolock lock(_m_syncLock);
-    mGuard->Close();
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CIoBridge::_CloseSocket(fd);
+    synchronized(this) {
+        mGuard->Close();
+        Int32 fd = 0;
+        mFd->GetDescriptor(&fd);
+        //return CIoBridge::_CloseSocket(fd);
+    }
+    return NOERROR;
 }
 
 ECode CPlainDatagramSocketImpl::Create()

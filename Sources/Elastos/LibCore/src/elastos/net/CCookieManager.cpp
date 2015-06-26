@@ -14,6 +14,10 @@ using Elastos::Utility::ICollections;
 using Elastos::Utility::IMapEntry;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
+using Elastos::Utility::IListIterator;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::ISet;
+using Elastos::Utility::ICollection;
 
 namespace Elastos {
 namespace Net {
@@ -61,12 +65,12 @@ ECode CCookieManager::Get(
     AutoPtr<IList> cookies;
     mStore->Get(uri, (IList**)&cookies);
     assert(cookies != NULL);
-    AutoPtr<IIterator> enumerator;
-    cookies->GetIterator((IIterator**)&enumerator);
+    AutoPtr<IListIterator> enumerator;
+    cookies->GetListIterator((IListIterator**)&enumerator);
     Boolean hasNext;
-    while(enumerator->HasNext(&hasNext), hasNext) {
+    while(IIterator::Probe(enumerator)->HasNext(&hasNext), hasNext) {
         AutoPtr<IHttpCookie> cookie;
-        enumerator->Next((IInterface**)&cookie);
+        IIterator::Probe(enumerator)->GetNext((IInterface**)&cookie);
         if (CHttpCookie::PathMatches(cookie, uri)
                 && CHttpCookie::SecureMatches(cookie, uri)
                 && CHttpCookie::PortMatches(cookie, uri)) {
@@ -98,7 +102,7 @@ ECode CCookieManager::CookiesToHeaders(
         IHttpCookie* cookie = *it;
         Int32 version;
         cookie->GetVersion(&version);
-        minVersion = Math::Min(minVersion, version);
+        minVersion = Elastos::Core::Math::Min(minVersion, version);
     }
     if (minVersion == 1) {
         result += "$Version=\"1\"; ";
@@ -114,10 +118,10 @@ ECode CCookieManager::CookiesToHeaders(
     }
     AutoPtr<IMap> resmap;
     AutoPtr<IList> outlist;
-    outcol->NewSingletonList(result.ToCharSequence(), (IList**)&outlist);
+    outcol->SingletonList(result.ToCharSequence(), (IList**)&outlist);
     AutoPtr<ICharSequence> Cookie;
     CStringWrapper::New(String("Cookie"), (ICharSequence**)&Cookie);
-    return outcol->NewSingletonMap(Cookie, outlist, cookiesMap);
+    return outcol->SingletonMap(Cookie, outlist, cookiesMap);
 }
 
 ECode CCookieManager::Put(
@@ -194,9 +198,9 @@ AutoPtr<List<AutoPtr<IHttpCookie> > > CCookieManager::ParseCookie(
 {
     AutoPtr<List<AutoPtr<IHttpCookie> > > cookies = new List< AutoPtr<IHttpCookie> >;
     AutoPtr<ISet> outset;
-    responseHeaders->EntrySet((ISet**)&outset);
+    responseHeaders->GetEntrySet((ISet**)&outset);
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
+    ICollection::Probe(outset)->ToArray((ArrayOf<IInterface*>**)&outarr);
     for(Int32 i = 0; i < outarr->GetLength(); ++i) {
         AutoPtr<IMapEntry> entry = IMapEntry::Probe((*outarr)[i]);
         AutoPtr<IInterface> keyface;
@@ -211,14 +215,14 @@ AutoPtr<List<AutoPtr<IHttpCookie> > > CCookieManager::ParseCookie(
             entry->GetValue((IInterface**)&valueface);
             AutoPtr<IList> outlist = IList::Probe(valueface);
             AutoPtr< ArrayOf<IInterface*> > outarr2;
-            outlist->ToArray((ArrayOf<IInterface*>**)&outarr2);
+            ICollection::Probe(outlist)->ToArray((ArrayOf<IInterface*>**)&outarr2);
             for (Int32 j = 0; j < outarr2->GetLength(); j++) {
                 // try {
                     String cookieStr;
                     ICharSequence::Probe((*outarr2)[j])->ToString(&cookieStr);
                     List< AutoPtr<IHttpCookie> > listhttp;
                     CHttpCookie::Parse(cookieStr, listhttp);
-                    for (Int32 k = 0; k < listhttp.GetSize(); k++) {
+                    for (UInt32 k = 0; k < listhttp.GetSize(); k++) {
                         cookies->PushBack(listhttp[k]);
                     }
                 // } catch (IllegalArgumentException ignored) {

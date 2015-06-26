@@ -9,6 +9,8 @@ using Elastos::Net::IDatagramSocket;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::Channels::IDatagramChannel;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IDatagramSocket;
 
 namespace Elastos {
 namespace Net {
@@ -23,11 +25,19 @@ public:
 
     virtual CARAPI Close();
 
+    virtual CARAPI OnClose();
+
     virtual CARAPI Connect(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 aPort);
 
+    virtual CARAPI OnConnect(
+        /* [in] */ IInetAddress* remoteAddress,
+        /* [in] */ Int32 remotePort);
+
     virtual CARAPI Disconnect();
+
+    virtual CARAPI OnDisconnect();
 
     virtual CARAPI CreateSocket(
         /* [in] */ Int32 aPort,
@@ -79,6 +89,10 @@ public:
     virtual CARAPI Bind(
         /* [in] */ ISocketAddress* localAddr);
 
+    virtual CARAPI OnBind(
+        /* [in] */ IInetAddress* localAddress,
+        /* [in] */ Int32 localPort);
+
     virtual CARAPI Connect(
         /* [in] */ ISocketAddress* peer);
 
@@ -124,7 +138,7 @@ public:
     virtual CARAPI GetFileDescriptor(
         /* [out] */ IFileDescriptor** fd);
 
-protected:
+//protected:
     DatagramSocket();
 
     CARAPI constructor();
@@ -164,8 +178,7 @@ private:
 
     Boolean mIsClosed;
 
-    //Mutex mLock;
-    //static Mutex sLock;
+    Object mLock;
 };
 
 } // namespace Net

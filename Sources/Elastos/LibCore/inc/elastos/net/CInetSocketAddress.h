@@ -6,9 +6,9 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
-using Elastos::Net::IInetSocketAddress;
-using Elastos::Net::ISocketAddress;
 using Elastos::IO::ISerializable;
+using Elastos::Net::ISocketAddress;
+using Elastos::Net::IInetSocketAddress;
 
 namespace Elastos {
 namespace Net {

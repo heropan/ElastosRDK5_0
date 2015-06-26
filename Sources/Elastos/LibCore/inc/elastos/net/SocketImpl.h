@@ -7,6 +7,7 @@
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
+using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Net {

@@ -220,6 +220,17 @@ ECode Socket::Close()
     return mImpl->Close();
 }
 
+ECode Socket::OnClose()
+{
+    mIsClosed = TRUE;
+    mIsConnected = FALSE;
+    // RI compatibility: the RI returns the any address (but the original local port) after
+    // close.
+    mLocalAddress = CInet4Address::ANY;
+    //return mImpl->OnClose();
+    return NOERROR;
+}
+
 ECode Socket::GetInetAddress(
     /* [out] */ IInetAddress** address)
 {
@@ -726,6 +737,16 @@ ECode Socket::Bind(
     // }
 }
 
+ECode Socket::OnBind(
+    /* [in] */ IInetAddress* localAddress,
+    /* [in] */ Int32 localPort)
+{
+    mIsBound = true;
+    mLocalAddress = localAddress;
+    //mImpl->OnBind(localAddress, localPort);
+    return NOERROR;
+}
+
 ECode Socket::Connect(
     /* [in] */ ISocketAddress* remoteAddr)
 {
@@ -797,6 +818,15 @@ ECode Socket::Connect(
     //    impl.close();
     //    throw e;
     // }
+    return NOERROR;
+}
+
+ECode Socket::OnConnect(
+    /* [in] */ ISocketAddress* remoteAddr,
+    /* [in] */ Int32 timeout)
+{
+    mIsConnected = TRUE;
+    //mImpl->OnConnect(remoteAddress, remotePort);
     return NOERROR;
 }
 

@@ -4,7 +4,8 @@
 #include "CPlainServerSocketImpl.h"
 #include "CPlainSocketImpl.h"
 #include "CSocks4Message.h"
-
+#include "CServerSocket.h"
+#include "CSocket.h"
 
 namespace Elastos {
 namespace Net {
@@ -20,6 +21,10 @@ CAR_OBJECT_IMPL(CPlainServerSocketImpl)
 CAR_OBJECT_IMPL(CPlainSocketImpl)
 
 CAR_OBJECT_IMPL(CSocks4Message)
+
+CAR_OBJECT_IMPL(CServerSocket)
+
+CAR_OBJECT_IMPL(CSocket)
 
 } // namespace Net
 } // namespace Elastos

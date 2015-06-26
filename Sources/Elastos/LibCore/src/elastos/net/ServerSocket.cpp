@@ -23,7 +23,6 @@ namespace Elastos {
 namespace Net {
 
 AutoPtr<ISocketImplFactory> ServerSocket::sFactory;
-//Mutex ServerSocket::sLock;
 
 CAR_INTERFACE_IMPL_2(ServerSocket, Object, IServerSocket, ICloseable)
 
@@ -89,21 +88,23 @@ ECode ServerSocket::constructor(
     }
 
     AutoPtr<IInetAddress> addr = localAddr == NULL ? CInet4Address::ANY.Get() : localAddr;
-    //Mutex::Autolock lock(&mLock);
-    mImpl->Create(TRUE);
-    mIsCreated = TRUE;
-//    try {
-    ec = mImpl->Bind(addr, aPort);
-    if (FAILED(ec)) {
-        Close();
-        return ec;
-    }
 
-    mIsBound = TRUE;
-    ec = mImpl->Listen(backlog > 0 ? backlog : DefaultBacklog());
-    if (FAILED(ec)) {
-        Close();
-        return ec;
+    synchronized (this)
+        mImpl->Create(TRUE);
+        mIsCreated = TRUE;
+    //    try {
+        ec = mImpl->Bind(addr, aPort);
+        if (FAILED(ec)) {
+            Close();
+            return ec;
+        }
+
+        mIsBound = TRUE;
+        ec = mImpl->Listen(backlog > 0 ? backlog : DefaultBacklog());
+        if (FAILED(ec)) {
+            Close();
+            return ec;
+        }
     }
 //    } catch (IOException e) {
 //        close();

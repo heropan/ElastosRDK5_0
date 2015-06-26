@@ -4,7 +4,7 @@
 namespace Elastos {
 namespace Net {
 
-CAR_INTERFACE_IMPL(CNetPermission, BasicPermission, INetPermission)
+CAR_INTERFACE_IMPL(CNetPermission, Object, INetPermission)
 
 CAR_OBJECT_IMPL(CNetPermission)
 

@@ -10,9 +10,7 @@ const InterfaceID EIID_Authenticator =
 
 AutoPtr<Authenticator> Authenticator::sThisAuthenticator = NULL;
 
-//Mutex Authenticator::sLock;
-
-//CAR_INTERFACE_IMPL(Authenticator, Object, IAuthenticator)
+CAR_INTERFACE_IMPL(Authenticator, Object, IAuthenticator)
 
 Authenticator::Authenticator()
     : mPort(0)
@@ -83,28 +81,29 @@ ECode Authenticator::RequestPasswordAuthentication(
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
 
-    //Mutex::Autolock lock(sLock);
+    synchronized(this) {
+        // SecurityManager sm = System.getSecurityManager();
+        // if (sm != null) {
+        //     sm.checkPermission(requestPasswordAuthenticationPermission);
+        // }
+        if (sThisAuthenticator == NULL) {
+            *passwordAuthentication = NULL;
+            return NOERROR;
+        }
+        // set the requester info so it knows what it is requesting
+        // authentication for
+        sThisAuthenticator->mAddr = rAddr;
+        sThisAuthenticator->mPort = rPort;
+        sThisAuthenticator->mProtocol = rProtocol;
+        sThisAuthenticator->mPrompt = rPrompt;
+        sThisAuthenticator->mScheme = rScheme;
+        sThisAuthenticator->mRt = AuthenticatorRequestorType_SERVER;
 
-//    SecurityManager sm = System.getSecurityManager();
-//    if (sm != null) {
-//        sm.checkPermission(requestPasswordAuthenticationPermission);
-//    }
-    if (sThisAuthenticator == NULL) {
-        *passwordAuthentication = NULL;
-        return NOERROR;
+        // returns the authentication info obtained by the registered
+        // Authenticator
+        return sThisAuthenticator->GetPasswordAuthentication(passwordAuthentication);
     }
-    // set the requester info so it knows what it is requesting
-    // authentication for
-    sThisAuthenticator->mAddr = rAddr;
-    sThisAuthenticator->mPort = rPort;
-    sThisAuthenticator->mProtocol = rProtocol;
-    sThisAuthenticator->mPrompt = rPrompt;
-    sThisAuthenticator->mScheme = rScheme;
-    sThisAuthenticator->mRt = AuthenticatorRequestorType_SERVER;
-
-    // returns the authentication info obtained by the registered
-    // Authenticator
-    return sThisAuthenticator->GetPasswordAuthentication(passwordAuthentication);
+    return NOERROR;
 }
 
 void Authenticator::SetDefault(
@@ -128,29 +127,29 @@ ECode Authenticator::RequestPasswordAuthentication(
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
 
-    //Mutex::Autolock lock(sLock);
+    synchronized(this) {
+        // SecurityManager sm = System.getSecurityManager();
+        // if (sm != null) {
+        //     sm.checkPermission(requestPasswordAuthenticationPermission);
+        // }
+        if (sThisAuthenticator == NULL) {
+            *passwordAuthentication = NULL;
+            return NOERROR;
+        }
+        // set the requester info so it knows what it is requesting
+        // authentication for
+        sThisAuthenticator->mHost = rHost;
+        sThisAuthenticator->mAddr = rAddr;
+        sThisAuthenticator->mPort = rPort;
+        sThisAuthenticator->mProtocol = rProtocol;
+        sThisAuthenticator->mPrompt = rPrompt;
+        sThisAuthenticator->mScheme = rScheme;
+        sThisAuthenticator->mRt = AuthenticatorRequestorType_SERVER;
 
-    // SecurityManager sm = System.getSecurityManager();
-    // if (sm != null) {
-    //     sm.checkPermission(requestPasswordAuthenticationPermission);
-    // }
-    if (sThisAuthenticator == NULL) {
-        *passwordAuthentication = NULL;
-        return NOERROR;
+        // returns the authentication info obtained by the registered
+        // Authenticator
+        return sThisAuthenticator->GetPasswordAuthentication(passwordAuthentication);
     }
-    // set the requester info so it knows what it is requesting
-    // authentication for
-    sThisAuthenticator->mHost = rHost;
-    sThisAuthenticator->mAddr = rAddr;
-    sThisAuthenticator->mPort = rPort;
-    sThisAuthenticator->mProtocol = rProtocol;
-    sThisAuthenticator->mPrompt = rPrompt;
-    sThisAuthenticator->mScheme = rScheme;
-    sThisAuthenticator->mRt = AuthenticatorRequestorType_SERVER;
-
-    // returns the authentication info obtained by the registered
-    // Authenticator
-    return sThisAuthenticator->GetPasswordAuthentication(passwordAuthentication);
 }
 
 ECode Authenticator::GetRequestingHost(
@@ -174,8 +173,6 @@ ECode Authenticator::RequestPasswordAuthentication(
     /* [out] */ IPasswordAuthentication** passwordAuthentication)
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
-
-    //Mutex::Autolock lock(sLock);
 
     // SecurityManager sm = System.getSecurityManager();
     // if (null != sm) {

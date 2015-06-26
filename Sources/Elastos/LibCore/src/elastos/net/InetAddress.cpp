@@ -44,7 +44,7 @@ namespace Net {
 
 AutoPtr<AddressCache> InetAddress::ADDRESS_CACHE = new AddressCache();
 AutoPtr<IOs> InetAddress::sOs;//TODO = CLibcore::sOs;
-AutoPtr<IInetAddress> InetAddress::UNSPECIFIED;
+AutoPtr<IInetAddress> InetAddress::UNSPECIFIED = new InetAddress(AF_UNSPEC, NULL, String(NULL));
 
 CAR_INTERFACE_IMPL_2(InetAddress, Object, IInetAddress, ISerializable)
 
@@ -473,6 +473,16 @@ ECode InetAddress::GetByAddress(
     VALIDATE_NOT_NULL(address);
 
     return GetByAddress(hostname, ipAddress, 0, address);
+}
+
+ECode InetAddress::GetUNSPECIFIED(
+    /* [out] */ IInetAddress** addr)
+{
+    VALIDATE_NOT_NULL(addr);
+
+    *addr = UNSPECIFIED;
+    REFCOUNT_ADD(*addr);
+    return NOERROR;
 }
 
 ECode InetAddress::BytesToInetAddresses(

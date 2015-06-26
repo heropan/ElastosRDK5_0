@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_INTERFACEADDRESS_H__
 #define __ELASTOS_NET_INTERFACEADDRESS_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 
 namespace Elastos {

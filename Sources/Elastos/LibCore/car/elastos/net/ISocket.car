@@ -279,7 +279,7 @@ module
          * @hide used in java.nio
          */
         OnBind(
-            [in] ISocketAddress* localAddr,
+            [in] IInetAddress* localAddr,
             [in] Int32 localPort);
 
         /**

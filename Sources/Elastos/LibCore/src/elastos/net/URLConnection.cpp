@@ -82,7 +82,6 @@ Boolean URLConnection::sDefaultUseCaches = TRUE;
 HashMap<String, AutoPtr<IContentHandler> > URLConnection::sContentHandlers;
 AutoPtr<IContentHandlerFactory> URLConnection::sContentHandlerFactory;
 AutoPtr<IFileNameMap> URLConnection::sFileNameMap;
-//Mutex URLConnection::sLock;
 
 URLConnection::URLConnection()
     : mIfModifiedSince(0)
@@ -308,10 +307,10 @@ ECode URLConnection::GetExpiration(
 
 AutoPtr<IFileNameMap> URLConnection::GetFileNameMap()
 {
-    //Mutex::Autolock lock(&sLock);
-
-    if (sFileNameMap == NULL) {
-        sFileNameMap = new DefaultFileNameMap();
+    synchronized(this) {
+        if (sFileNameMap == NULL) {
+            sFileNameMap = new DefaultFileNameMap();
+        }
     }
     return sFileNameMap;
 }
@@ -499,9 +498,9 @@ String URLConnection::GuessContentTypeFromStream(
     }
     // Look ahead up to 64 bytes for the longest encoded header
     is->Mark(64);
-    ArrayOf_<Byte, 64> bytes;
+    AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(64);
     Int32 length;
-    is->Read(&bytes, &length);
+    is->Read(bytes, &length);
     is->Reset();
 
     // If there is no data from the input stream, we can't determine content type.
@@ -513,33 +512,33 @@ String URLConnection::GuessContentTypeFromStream(
     CString encoding = "US-ASCII";
     Int32 start = 0;
     if (length > 1) {
-        if ((bytes[0] == (Byte)0xFF) && (bytes[1] == (Byte)0xFE)) {
+        if (((*bytes)[0] == (Byte)0xFF) && ((*bytes)[1] == (Byte)0xFE)) {
             encoding = "UTF-16LE";
             start = 2;
             length -= length & 1;
         }
-        if ((bytes[0] == (Byte)0xFE) && (bytes[1] == (Byte)0xFF)) {
+        if (((*bytes)[0] == (Byte)0xFE) && ((*bytes)[1] == (Byte)0xFF)) {
             encoding = "UTF-16BE";
             start = 2;
             length -= length & 1;
         }
         if (length > 2) {
-            if ((bytes[0] == (Byte)0xEF) && (bytes[1] == (Byte)0xBB)
-                    && (bytes[2] == (Byte)0xBF)) {
+            if (((*bytes)[0] == (Byte)0xEF) && ((*bytes)[1] == (Byte)0xBB)
+                    && ((*bytes)[2] == (Byte)0xBF)) {
                 encoding = "UTF-8";
                 start = 3;
             }
             if (length > 3) {
-                if ((bytes[0] == (Byte)0x00) && (bytes[1] == (Byte)0x00)
-                        && (bytes[2] == (Byte)0xFE)
-                        && (bytes[3] == (Byte)0xFF)) {
+                if (((*bytes)[0] == (Byte)0x00) && ((*bytes)[1] == (Byte)0x00)
+                        && ((*bytes)[2] == (Byte)0xFE)
+                        && ((*bytes)[3] == (Byte)0xFF)) {
                     encoding = "UTF-32BE";
                     start = 4;
                     length -= length & 3;
                 }
-                if ((bytes[0] == (Byte)0xFF) && (bytes[1] == (Byte)0xFE)
-                        && (bytes[2] == (Byte)0x00)
-                        && (bytes[3] == (Byte)0x00)) {
+                if (((*bytes)[0] == (Byte)0xFF) && ((*bytes)[1] == (Byte)0xFE)
+                        && ((*bytes)[2] == (Byte)0x00)
+                        && ((*bytes)[3] == (Byte)0x00)) {
                     encoding = "UTF-32LE";
                     start = 4;
                     length -= length & 3;
@@ -548,7 +547,7 @@ String URLConnection::GuessContentTypeFromStream(
         }
     }
 
-    String header((const char*)bytes.GetPayload() + start, length - start/*, encoding*/);
+    String header((const char*)bytes->GetPayload() + start, length - start/*, encoding*/);
 
     // Check binary types
     if (header.StartWith("PK")) {
@@ -605,17 +604,17 @@ ECode URLConnection::SetAllowUserInteraction(
 ECode URLConnection::SetContentHandlerFactory(
     /* [in] */ IContentHandlerFactory* contentFactory)
 {
-    //Mutex::Autolock lock(&sLock);
-
-    if (sContentHandlerFactory != NULL) {
-//        throw new Error("Factory already set");
-        return NOERROR;
+    synchronized(this) {
+        if (sContentHandlerFactory != NULL) {
+            //throw new Error("Factory already set");
+            return NOERROR;
+        }
+        // SecurityManager sManager = System.getSecurityManager();
+        // if (sManager != null) {
+        //    sManager.checkSetFactory();
+        // }
+        sContentHandlerFactory = contentFactory;
     }
-//    SecurityManager sManager = System.getSecurityManager();
-//    if (sManager != null) {
-//        sManager.checkSetFactory();
-//    }
-    sContentHandlerFactory = contentFactory;
     return NOERROR;
 }
 
@@ -663,9 +662,10 @@ void URLConnection::SetFileNameMap(
 //    if (manager != null) {
 //        manager.checkSetFactory();
 //    }
-    //Mutex::Autolock lock(&sLock);
-
-    sFileNameMap = map;
+    synchronized(this) {
+        sFileNameMap = map;
+    }
+    return;
 }
 
 ECode URLConnection::SetIfModifiedSince(

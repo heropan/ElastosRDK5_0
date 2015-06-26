@@ -171,8 +171,6 @@ private:
     AutoPtr<IProxy> mProxy;
     AutoPtr<ICloseGuard> mGuard;
 
-    //Mutex mLock;
-
 //    Int32 mIfd;
 };
 

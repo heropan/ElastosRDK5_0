@@ -366,7 +366,7 @@ String URLStreamHandler::GetHost(
     url->GetHost(&host);
     String protocol;
     url->GetProtocol(&protocol);
-    if (CString("file").Equals(protocol) && host.IsEmpty()) {
+    if (CString("file").Equals(protocol.string()) && host.IsEmpty()) {
         host = "localhost";
     }
     return host;

@@ -18,6 +18,9 @@ public:
 
     CAR_SINGLETON_DECL()
 
+    CARAPI GetUNSPECIFIED(
+        /* [out] */ IInetAddress** addr);
+
     CARAPI GetAllByName(
         /* [in] */ const String& host,
         /* [out, callee] */ ArrayOf<IInetAddress*>** interAddress);

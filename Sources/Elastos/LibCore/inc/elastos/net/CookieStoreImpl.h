@@ -2,13 +2,14 @@
 #ifndef __ELASTOS_NET_COOKIESTOREIMPL_H__
 #define __ELASTOS_NET_COOKIESTOREIMPL_H__
 
+
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/core/Object.h>
 
+using Elastos::Utility::IList;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::IList;
 
 using Elastos::Net::IURI;
 
@@ -45,18 +46,9 @@ class CookieStoreImpl
     , public ICookieStore
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ~CookieStoreImpl();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     CARAPI Add(
         /* [in] */ IURI* uri,
@@ -87,8 +79,6 @@ private:
 private:
     /** this map may have null keys! */
     HashMap<AutoPtr<IURI>, AutoPtr<List<AutoPtr<IHttpCookie> > > > mMap;
-
-    //Mutex mLock;
 };
 
 } // namespace Net

@@ -1,7 +1,7 @@
 
 #include "URLDecoder.h"
 #include "UriCodec.h"
-#include "CCharsetHelper.h"
+#include "charset/CCharsetHelper.h"
 
 namespace Elastos {
 namespace Net {
@@ -9,6 +9,7 @@ namespace Net {
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::CCharsetHelper;
 using Elastos::IO::Charset::ICharset;
+using Libcore::Net::UriCodec;
 
 ECode URLDecoder::Decode(
     /* [in] */ const String& s,

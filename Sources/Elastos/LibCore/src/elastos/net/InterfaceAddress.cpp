@@ -102,6 +102,7 @@ ECode InterfaceAddress::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash)
+<<<<<<< HEAD
     Int32 hashCode = 0;
     if (mAddress != NULL) {
         hashCode += -1 * Object::GetHashCode(mAddress);
@@ -111,12 +112,21 @@ ECode InterfaceAddress::GetHashCode(
         hashCode += -1 * Object::GetHashCode(mBroadcastAddress);
     }
 
+=======
+
+    Int32 addressHashCode, broadcastAddressHashCode;
+    Int32 hashCode = mAddress == NULL ? 0 : (IObject::Probe(mAddress)->GetHashCode(&addressHashCode), -addressHashCode);
+    hashCode += mBroadcastAddress == NULL ? 0 : (IObject::Probe(mBroadcastAddress)->GetHashCode(&broadcastAddressHashCode), broadcastAddressHashCode);
+>>>>>>> update net.
     hashCode += mPrefixLength;
     *hash = hashCode;
     return NOERROR;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> update net.
 /**
  * Returns a string containing this interface's address, prefix length, and broadcast address.
  * For example: {@code "/172.18.103.112/23 [/172.18.103.255]"} or

@@ -175,9 +175,6 @@ private:
 
     CARAPI CheckJoinOrLeave(
         /* [in] */ IInetAddress* groupAddr);
-
-    //CARAPI_(Mutex*) GetSelfLock();
-
 private:
     AutoPtr<IInetAddress> mSetAddress;
 };

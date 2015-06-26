@@ -39,7 +39,7 @@ module
          *
          * @hide used in java.nio
          */
-         OnClose();
+        OnClose();
 
         /**
          * Connects this datagram socket to the address and port specified by {peer}.

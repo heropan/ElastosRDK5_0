@@ -255,8 +255,6 @@ private:
     Int32 mConnectTimeout;
 
     static AutoPtr<IFileNameMap> sFileNameMap;
-
-    //static Mutex sLock;
 };
 
 } // namespace Net

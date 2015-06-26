@@ -126,7 +126,7 @@ ECode HttpURLConnection::SetRequestMethod(
             "POST", "PUT", "DELETE", "TRACE"};
     for (Int32 i = 0; i < 7; i++) {
         CString permittedUserMethod = PERMITTED_USER_METHODS[i];
-        if (permittedUserMethod.Equals(mMethod)) {
+        if (permittedUserMethod.Equals(mMethod.string())) {
             // if there is a supported method that matches the desired
             // method, then set the current method and return
             mMethod = permittedUserMethod;

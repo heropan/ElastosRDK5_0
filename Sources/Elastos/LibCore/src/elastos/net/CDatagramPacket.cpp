@@ -80,10 +80,11 @@ ECode CDatagramPacket::GetAddress(
     /* [out] */ IInetAddress** address)
 {
     VALIDATE_NOT_NULL(address);
-    //Mutex::Autolock lock(_m_syncLock);
 
-    *address = mAddress;
-    REFCOUNT_ADD(*address);
+    synchronized(this) {
+        *address = mAddress;
+        REFCOUNT_ADD(*address);
+    }
     return NOERROR;
 }
 
@@ -91,10 +92,11 @@ ECode CDatagramPacket::GetData(
     /* [out, callee] */ ArrayOf<Byte>** data)
 {
     VALIDATE_NOT_NULL(data);
-    //Mutex::Autolock lock(_m_syncLock);
 
-    *data = mData;
-    REFCOUNT_ADD(*data);
+    synchronized(this) {
+        *data = mData;
+        REFCOUNT_ADD(*data);
+    }
     return NOERROR;
 }
 
@@ -102,9 +104,10 @@ ECode CDatagramPacket::GetLength(
     /* [out] */ Int32* length)
 {
     VALIDATE_NOT_NULL(length);
-    //Mutex::Autolock lock(_m_syncLock);
 
-    *length = mLength;
+    synchronized(this) {
+        *length = mLength;
+    }
     return NOERROR;
 }
 
@@ -112,9 +115,10 @@ ECode CDatagramPacket::GetOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset);
-    //Mutex::Autolock lock(_m_syncLock);
 
-    *offset = mOffset;
+    synchronized(this) {
+        *offset = mOffset;
+    }
     return NOERROR;
 }
 
@@ -135,18 +139,19 @@ ECode CDatagramPacket::GetPort(
     /* [out] */ Int32* port)
 {
     VALIDATE_NOT_NULL(port);
-    //Mutex::Autolock lock(_m_syncLock);
 
-    *port = mPort;
+    synchronized(this) {
+        *port = mPort;
+    }
     return NOERROR;
 }
 
 ECode CDatagramPacket::SetAddress(
     /* [in] */ IInetAddress* addr)
 {
-    //Mutex::Autolock lock(_m_syncLock);
-
-    mAddress = addr;
+    synchronized(this) {
+        mAddress = addr;
+    }
     return NOERROR;
 }
 
@@ -155,57 +160,57 @@ ECode CDatagramPacket::SetData(
     /* [in] */ Int32 anOffset,
     /* [in] */ Int32 aLength)
 {
-    //Mutex::Autolock lock(_m_syncLock);
+    synchronized(this) {
+        if (0 > anOffset || anOffset > buf->GetLength() || 0 > aLength
+                || aLength > buf->GetLength() - anOffset) {
+            //throw new IllegalArgumentException();
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
 
-    if (0 > anOffset || anOffset > buf->GetLength() || 0 > aLength
-            || aLength > buf->GetLength() - anOffset) {
-//        throw new IllegalArgumentException();
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        mData = buf;
+        mOffset = anOffset;
+        mLength = aLength;
+        mUserSuppliedLength = aLength;
     }
-
-    mData = buf;
-    mOffset = anOffset;
-    mLength = aLength;
-    mUserSuppliedLength = aLength;
     return NOERROR;
 }
 
 ECode CDatagramPacket::SetData(
     /* [in] */ ArrayOf<Byte>* buf)
 {
-    //Mutex::Autolock lock(_m_syncLock);
-
-    mLength = buf->GetLength(); // This will check for null
-    mUserSuppliedLength = mLength;
-    mData = buf;
-    mOffset = 0;
+    synchronized(this) {
+        mLength = buf->GetLength(); // This will check for null
+        mUserSuppliedLength = mLength;
+        mData = buf;
+        mOffset = 0;
+    }
     return NOERROR;
 }
 
 ECode CDatagramPacket::SetLength(
     /* [in] */ Int32 len)
 {
-    //Mutex::Autolock lock(_m_syncLock);
-
-    if (0 > len || mOffset + len > mData->GetLength()) {
-//        throw new IndexOutOfBoundsException();
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    synchronized(this) {
+        if (0 > len || mOffset + len > mData->GetLength()) {
+            //throw new IndexOutOfBoundsException();
+            return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        }
+        mLength = len;
+        mUserSuppliedLength = len;
     }
-    mLength = len;
-    mUserSuppliedLength = len;
     return NOERROR;
 }
 
 ECode CDatagramPacket::SetPort(
     /* [in] */ Int32 aPort)
 {
-    //Mutex::Autolock lock(_m_syncLock);
-
-    if (aPort < 0 || aPort > 65535) {
-//        throw new IllegalArgumentException("Port out of range: " + aPort);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    synchronized(this) {
+        if (aPort < 0 || aPort > 65535) {
+            //throw new IllegalArgumentException("Port out of range: " + aPort);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        mPort = aPort;
     }
-    mPort = aPort;
     return NOERROR;
 }
 
@@ -213,39 +218,40 @@ ECode CDatagramPacket::GetSocketAddress(
     /* [out] */ ISocketAddress** sockAddr)
 {
     VALIDATE_NOT_NULL(sockAddr);
-    //Mutex::Autolock lock(_m_syncLock);
 
-    AutoPtr<IInetAddress> addr;
-    GetAddress((IInetAddress**)&addr);
-    Int32 port;
-    GetPort(&port);
-    AutoPtr<IInetSocketAddress> sa;
-    FAIL_RETURN(CInetSocketAddress::New(addr, port, (IInetSocketAddress**)&sa));
-    *sockAddr = ISocketAddress::Probe(sa);
-    REFCOUNT_ADD(*sockAddr);
+    synchronized(this) {
+        AutoPtr<IInetAddress> addr;
+        GetAddress((IInetAddress**)&addr);
+        Int32 port;
+        GetPort(&port);
+        AutoPtr<IInetSocketAddress> sa;
+        FAIL_RETURN(CInetSocketAddress::New(addr, port, (IInetSocketAddress**)&sa));
+        *sockAddr = ISocketAddress::Probe(sa);
+        REFCOUNT_ADD(*sockAddr);
+    }
     return NOERROR;
 }
 
 ECode CDatagramPacket::SetSocketAddress(
     /* [in] */ ISocketAddress* sockAddr)
 {
-    //Mutex::Autolock lock(_m_syncLock);
-
-    if (sockAddr == NULL || IInetSocketAddress::Probe(sockAddr) == NULL) {
-//        throw new IllegalArgumentException("Socket address not an InetSocketAddress: " +
-//                (sockAddr == null ? null : sockAddr.getClass()));
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    synchronized(this) {
+        if (sockAddr == NULL || IInetSocketAddress::Probe(sockAddr) == NULL) {
+            //throw new IllegalArgumentException("Socket address not an InetSocketAddress: " +
+                    //(sockAddr == null ? null : sockAddr.getClass()));
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        IInetSocketAddress* inetAddr = IInetSocketAddress::Probe(sockAddr);
+        Boolean isUnresolved = FALSE;
+        inetAddr->IsUnresolved(&isUnresolved);
+        if (isUnresolved) {
+            // throw new IllegalArgumentException("Socket address unresolved: " + sockAddr);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        inetAddr->GetPort(&mPort);
+        mAddress = NULL;
+        inetAddr->GetAddress((IInetAddress**)&mAddress);
     }
-    IInetSocketAddress* inetAddr = IInetSocketAddress::Probe(sockAddr);
-    Boolean isUnresolved = FALSE;
-    inetAddr->IsUnresolved(&isUnresolved);
-    if (isUnresolved) {
-        // throw new IllegalArgumentException("Socket address unresolved: " + sockAddr);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    inetAddr->GetPort(&mPort);
-    mAddress = NULL;
-    inetAddr->GetAddress((IInetAddress**)&mAddress);
     return NOERROR;
 }
 

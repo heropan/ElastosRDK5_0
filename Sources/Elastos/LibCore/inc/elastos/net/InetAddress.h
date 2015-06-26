@@ -7,8 +7,8 @@
 using Elastos::Core::Thread;
 using Libcore::IO::IOs;
 using Elastos::IO::ISerializable;
-using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::ICountDownLatch;
+using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 
 namespace Elastos {
 namespace Net {
@@ -159,6 +159,9 @@ public:
         /* [in] */ ArrayOf<Byte>* ipaddress,
         /* [in] */ Int32 scopeId,
         /* [out] */ IInetAddress** address);
+
+    static CARAPI GetUNSPECIFIED(
+        /* [out] */ IInetAddress** addr);
 
 protected:
     InetAddress();

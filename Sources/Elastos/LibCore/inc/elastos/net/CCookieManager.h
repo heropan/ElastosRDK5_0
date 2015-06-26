@@ -2,15 +2,19 @@
 #ifndef __ELASTOS_NET_CCOOKIEMANAGER_H__
 #define __ELASTOS_NET_CCOOKIEMANAGER_H__
 
+#ifndef __USE_MALLOC
+#define __USE_MALLOC
+#endif
+
 #include "_Elastos_Net_CCookieManager.h"
-#include <elastos/utility/etl/List.h>
 #include "CStringWrapper.h"
 #include "CookieHandler.h"
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::IMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Net {

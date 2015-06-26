@@ -5,8 +5,8 @@
 #include "ProxySelector.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Utility::IList;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Net {

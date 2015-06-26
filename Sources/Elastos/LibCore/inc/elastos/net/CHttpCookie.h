@@ -2,19 +2,23 @@
 #ifndef __ELASTOS_NET_CHTTPCOOKIE_H__
 #define __ELASTOS_NET_CHTTPCOOKIE_H__
 
+#ifndef __USE_MALLOC
+#define __USE_MALLOC
+#endif
+
 #include "_Elastos_Net_CHttpCookie.h"
-#include <elastos/utility/etl/HashSet.h>
-#include <elastos/utility/etl/List.h>
-#include <elastos/core/StringBuilder.h>
 #include "InetAddress.h"
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::IDate;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::IDate;
 
 namespace Elastos {
 namespace Net {
@@ -168,7 +172,7 @@ public:
         /* [out] */ String* result);
 
     CARAPI Clone(
-        /* [out] */ IHttpCookie** result);
+        /* [out] */ IInterface** result);
 
     CARAPI constructor(
         /* [in] */ const String& name,
