@@ -346,7 +346,7 @@ ECode CNativeDecimalFormat::constructor(
 
 ECode CNativeDecimalFormat::Close()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    Mutex::AutoLock lock(_m_syncLock);
 
     if (mAddress != 0) {
         Close(mAddress);

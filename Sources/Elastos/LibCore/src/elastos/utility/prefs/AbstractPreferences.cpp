@@ -4,7 +4,7 @@
 #include "CTreeSet.h"
 #include "CStringWrapper.h"
 #include "CBase64.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "XMLParser.h"
 #include "EmptyArray.h"
 #include "StringUtils.h"

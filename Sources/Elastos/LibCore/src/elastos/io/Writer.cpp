@@ -1,7 +1,7 @@
 
 #include "Writer.h"
 #include "Character.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::EIID_IAppendable;
@@ -57,7 +57,7 @@ ECode Writer::constructor(
 ECode Writer::Write(
     /* [in] */ Int32 oneChar32)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(1);
     (*buf)[0] = oneChar32;
@@ -91,7 +91,7 @@ ECode Writer::Write(
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > buf = str.GetChars(offset, offset + count);
     return Write(buf, 0, buf->GetLength());

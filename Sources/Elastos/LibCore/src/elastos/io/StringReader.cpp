@@ -1,7 +1,7 @@
 
 #include "StringReader.h"
 #include "Character.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Character;
 
@@ -56,7 +56,7 @@ ECode StringReader::Mark(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     mMarkpos = mPos;
@@ -87,7 +87,7 @@ ECode StringReader::Read(
     VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (mPos != mCount) {
@@ -113,7 +113,7 @@ ECode StringReader::Read(
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (offset < 0 || offset > buffer->GetLength()) {
 //      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
@@ -152,7 +152,7 @@ ECode StringReader::IsReady(
     *ready = FALSE;
     assert(mLock != NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     *ready = TRUE;
@@ -164,7 +164,7 @@ ECode StringReader::Reset()
 {
     assert(mLock != NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     mPos = mMarkpos != -1 ? mMarkpos : 0;
@@ -180,7 +180,7 @@ ECode StringReader::Skip(
     *number = 0;
     assert(mLock != NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     Int32 minSkip = -mPos;

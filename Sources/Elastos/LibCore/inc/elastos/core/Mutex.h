@@ -107,12 +107,12 @@ public:
     CARAPI_(Int32) TryLock();
 /*!
  @brief AutoLock is the inner class of the @a MUtex.Uses it to manage the mutex automatically.
- It'll be locked when @a Autolock is constructed and released when @a Autolock goes out of scope.
+ It'll be locked when @a AutoLock is constructed and released when @a AutoLock goes out of scope.
 
  @since
  @sa
 */
-    class Autolock
+    class AutoLock
     {
     public:
 /*!
@@ -122,7 +122,7 @@ public:
    @since
    @sa
 */
-        inline Autolock(Mutex& mutex) : mLock(mutex)  { mLock.Lock(); }
+        inline AutoLock(Mutex& mutex) : mLock(mutex)  { mLock.Lock(); }
 /*!
    @brief create a @a AutoLock instance,as a result of this constructing, the @a Mutex instance
    is locked.
@@ -130,12 +130,12 @@ public:
    @since
    @sa
 */
-        inline Autolock(Mutex* mutex) : mLock(*mutex) { mLock.Lock(); }
+        inline AutoLock(Mutex* mutex) : mLock(*mutex) { mLock.Lock(); }
 /*!
    @brief  the destructor of @a AutoLock instance.when an AutoLock instance goes out of its scope,
    this method is called to unlock the @a Mutex instance.
 */
-        inline ~Autolock() { mLock.Unlock(); }
+        inline ~AutoLock() { mLock.Unlock(); }
     private:
 /*!
    @brief a reference to a @a Mutex instance.

@@ -3,7 +3,7 @@
 #include "StringBuilder.h"
 #include "Memory.h"
 //#include "CMessageDigestHelper.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

@@ -1,9 +1,9 @@
 
 #include "FtpURLInputStream.h"
 #include "IoUtils.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
-using Elastos::Core::Autolock;
+using Elastos::Core::AutoLock;
 using Libcore::IO::IoUtils;
 
 namespace Libcore {
@@ -37,7 +37,7 @@ ECode FtpURLInputStream::Close()
 ECode FtpURLInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mIs->Mark(readLimit);;
 }
 
@@ -64,7 +64,7 @@ ECode FtpURLInputStream::ReadBytes(
 
 ECode FtpURLInputStream::Reset()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mIs->Reset();;
 }
 

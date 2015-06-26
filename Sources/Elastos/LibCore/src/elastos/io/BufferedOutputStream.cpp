@@ -1,6 +1,6 @@
 
 #include "BufferedOutputStream.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace IO {
@@ -41,7 +41,7 @@ ECode BufferedOutputStream::constructor(
 
 ECode BufferedOutputStream::Close()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     if (mBuf != NULL) {
         FilterOutputStream::Close();
         mBuf = NULL;
@@ -51,7 +51,7 @@ ECode BufferedOutputStream::Close()
 
 ECode BufferedOutputStream::Flush()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     FAIL_RETURN(CheckNotClosed());
     FAIL_RETURN(FlushInternal());
     return IFlushable::Probe(mOut)->Flush();
@@ -60,7 +60,7 @@ ECode BufferedOutputStream::Flush()
 ECode BufferedOutputStream::Write(
     /* [in] */ Int32 oneByte)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     FAIL_RETURN(CheckNotClosed());
 
     if (mCount == mBuf->GetLength()) {
@@ -78,7 +78,7 @@ ECode BufferedOutputStream::Write(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    Autolock lock(this);
+    AutoLock lock(this);
     FAIL_RETURN(CheckNotClosed());
 
     AutoPtr<ArrayOf<Byte> > localBuf = mBuf;

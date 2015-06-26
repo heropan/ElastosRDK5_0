@@ -7,7 +7,7 @@
 #include "Math.h"
 #include "Character.h"
 #include "StringUtils.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::Character;

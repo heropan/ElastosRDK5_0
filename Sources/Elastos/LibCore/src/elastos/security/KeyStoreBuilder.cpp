@@ -115,7 +115,7 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetKeyStore(
     // then it was stored in lastException variable and will be
     // thrown
     // all subsequent calls of this method.
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(keyStore)
     FAIL_RETURN(mEc)
     if (mKeyStore) {
@@ -172,7 +172,7 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetProtectionParameter(
 /* [in] */ const String& alias,
 /* [out] */ IKeyStoreProtectionParameter** protectionParameter)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(protectionParameter)
     if (alias.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;

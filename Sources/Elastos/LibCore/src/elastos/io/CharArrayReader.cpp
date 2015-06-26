@@ -1,7 +1,7 @@
 
 #include "CharArrayReader.h"
 #include "Character.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Character;
 
@@ -67,7 +67,7 @@ ECode CharArrayReader::constructor(
 
 ECode CharArrayReader::Close()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (IsOpen()) {
         mBuf = NULL;
@@ -88,7 +88,7 @@ Boolean CharArrayReader::IsClosed()
 ECode CharArrayReader::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     mMarkedPos = mPos;
@@ -119,7 +119,7 @@ ECode CharArrayReader::Read(
     VALIDATE_NOT_NULL(character)
     *character = -1;
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
 
@@ -152,7 +152,7 @@ ECode CharArrayReader::Read(
         return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (mPos < mCount) {
@@ -173,7 +173,7 @@ ECode CharArrayReader::IsReady(
     VALIDATE_NOT_NULL(isReady)
     *isReady = FALSE;
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     *isReady = mPos != mCount;
@@ -183,7 +183,7 @@ ECode CharArrayReader::IsReady(
 
 ECode CharArrayReader::Reset()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     mPos = mMarkedPos != -1 ? mMarkedPos : 0;
@@ -198,7 +198,7 @@ ECode CharArrayReader::Skip(
     VALIDATE_NOT_NULL(number)
     *number = 0;
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (n <= 0) {

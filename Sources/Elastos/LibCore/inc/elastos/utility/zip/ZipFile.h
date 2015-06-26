@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "InflaterInputStream.h"
 #include "InputStream.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::ICloseGuard;
 using Elastos::IO::IRandomAccessFile;

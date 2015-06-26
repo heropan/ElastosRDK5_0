@@ -1,7 +1,7 @@
 #include "CStrictLineReader.h"
 #include "charset/Charset.h"
 #include "StringUtils.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::Charset::Charset;
@@ -110,7 +110,7 @@ ECode CStrictLineReader::ReadLine(
     /* [out] */ String* line)
 {
     // synchronized (in) {
-    Autolock lock(mLockIn);
+    AutoLock lock(mLockIn);
     if (mBuf == NULL) {
         return E_IO_EXCEPTION;
         // throw new IOException("LineReader is closed");
@@ -190,7 +190,7 @@ ECode CStrictLineReader::HasUnterminatedLine(
 
 ECode CStrictLineReader::Close()
 {
-    Autolock lock(mLockIn);
+    AutoLock lock(mLockIn);
     ECode ec = NOERROR;
     if (mBuf != NULL) {
         mBuf = NULL;

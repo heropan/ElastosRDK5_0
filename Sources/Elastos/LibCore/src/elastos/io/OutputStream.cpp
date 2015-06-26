@@ -1,6 +1,6 @@
 
 #include "OutputStream.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -31,7 +31,7 @@ ECode OutputStream::Write(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     // BEGIN android-note
     // changed array notation to be consistent with the rest of harmony

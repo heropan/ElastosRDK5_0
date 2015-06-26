@@ -1,6 +1,6 @@
 
 #include "TimerTask.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::EIID_IRunnable;
 
@@ -26,7 +26,7 @@ ECode TimerTask::GetWhen(
     /* [out] */ Int64* when)
 {
     VALIDATE_NOT_NULL(when)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     *when = mWhen;
     return NOERROR;
 }
@@ -34,7 +34,7 @@ ECode TimerTask::GetWhen(
 ECode TimerTask::SetScheduledTime(
     /* [in] */ Int64 time)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     mScheduledTime = time;
     return NOERROR;
 }
@@ -43,7 +43,7 @@ ECode TimerTask::IsScheduled(
     /* [out] */ Boolean* scheduled)
 {
     VALIDATE_NOT_NULL(scheduled)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     *scheduled = mWhen > 0 || mScheduledTime > 0;
     return NOERROR;
 }
@@ -52,7 +52,7 @@ ECode TimerTask::Cancel(
     /* [out] */ Boolean* cancelled)
 {
     VALIDATE_NOT_NULL(cancelled)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     Boolean willRun = !mCancelled && mWhen > 0;
     mCancelled = TRUE;
     *cancelled = willRun;
@@ -63,7 +63,7 @@ ECode TimerTask::ScheduledExecutionTime(
     /* [out] */ Int64* time)
 {
     VALIDATE_NOT_NULL(time)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     *time = mScheduledTime;
     return NOERROR;
 }
@@ -71,7 +71,7 @@ ECode TimerTask::ScheduledExecutionTime(
 ECode TimerTask::SetWhen(
     /* [in] */ Int64 when)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     mWhen = when;
     return NOERROR;
 }
@@ -80,7 +80,7 @@ ECode TimerTask::IsCancelled(
     /* [out] */ Boolean* cancelled)
 {
     VALIDATE_NOT_NULL(cancelled)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     *cancelled = mCancelled;
     return NOERROR;
 }
@@ -89,7 +89,7 @@ ECode TimerTask::GetPeriod(
     /* [out] */ Int64* period)
 {
     VALIDATE_NOT_NULL(period)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     *period = mPeriod;
     return NOERROR;
 }
@@ -97,7 +97,7 @@ ECode TimerTask::GetPeriod(
 ECode TimerTask::SetPeriod(
     /* [in] */ Int64 period)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     mPeriod = period;
     return NOERROR;
 }
@@ -106,7 +106,7 @@ ECode TimerTask::IsFixedRate(
     /* [out] */ Boolean* fixed)
 {
     VALIDATE_NOT_NULL(fixed);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     *fixed = mFixedRate;
     return NOERROR;
 }
@@ -114,7 +114,7 @@ ECode TimerTask::IsFixedRate(
 ECode TimerTask::SetFixedRate(
     /* [in] */ Boolean fixed)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     mFixedRate = fixed;
     return NOERROR;
 }

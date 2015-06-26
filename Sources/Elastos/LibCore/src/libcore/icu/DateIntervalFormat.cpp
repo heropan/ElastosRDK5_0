@@ -4,7 +4,7 @@
 #include "TimeZone.h"
 #include "CLocale.h"
 #include "CCalendarHelper.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include <unicode/utypes.h>
 #include <unicode/uobject.h>
 #include <unicode/locid.h>

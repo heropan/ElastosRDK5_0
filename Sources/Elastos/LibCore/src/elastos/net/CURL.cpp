@@ -4,7 +4,7 @@
 #include "Thread.h"
 #include "CSystem.h"
 #include "StringUtils.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 // #include "CFileHandler.h"
 // #include "CFtpHandler.h"
 // #include "CHttpHandler.h"
@@ -279,7 +279,7 @@ ECode CURL::constructor(
 ECode CURL::SetURLStreamHandlerFactory(
     /* [in] */ IURLStreamHandlerFactory* streamFactory)
 {
-    Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sStreamHandlerFactory != NULL) {
 //        throw new Error("Factory already set");

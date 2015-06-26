@@ -1,6 +1,6 @@
 
 #include "XMLParser.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "COutputStreamWriter.h"
 #include "CBufferedWriter.h"
 #include "StringUtils.h"
@@ -15,7 +15,7 @@
 #include "CInputStreamReader.h"
 #include "NodeSet.h"
 
-using Elastos::Core::Autolock;
+using Elastos::Core::AutoLock;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IOutputStreamWriter;

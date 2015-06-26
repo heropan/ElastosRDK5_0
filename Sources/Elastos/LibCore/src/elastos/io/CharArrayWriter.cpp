@@ -3,7 +3,7 @@
 #include "Math.h"
 #include "Character.h"
 #include "CStringWrapper.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -78,7 +78,7 @@ ECode CharArrayWriter::Flush()
 
 ECode CharArrayWriter::Reset()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mCount = 0;
     return NOERROR;
@@ -89,7 +89,7 @@ ECode CharArrayWriter::GetSize(
 {
     VALIDATE_NOT_NULL(size)
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     *size = mCount;
     return NOERROR;
@@ -101,7 +101,7 @@ ECode CharArrayWriter::ToCharArray(
     VALIDATE_NOT_NULL(str)
     *str = NULL;
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > arr = mBuf->Clone();
     if (arr == NULL)
@@ -118,7 +118,7 @@ ECode CharArrayWriter::ToString(
     VALIDATE_NOT_NULL(result)
     *result = String(NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ArrayOf<Byte> > dst;
     Int32 dstOffset = 0;
@@ -132,7 +132,7 @@ ECode CharArrayWriter::ToString(
 ECode CharArrayWriter::Write(
     /* [in] */ Int32 oneChar32)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Expand(1);
     (*mBuf)[mCount++] = oneChar32;
@@ -160,7 +160,7 @@ ECode CharArrayWriter::Write(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Expand(count);
     mBuf->Copy(mCount, buffer, offset, count);
@@ -186,7 +186,7 @@ ECode CharArrayWriter::Write(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     // END android-changed
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ArrayOf<Char32> > charArray = str.GetChars(offset, offset + count);
     count = charArray->GetLength();
@@ -202,7 +202,7 @@ ECode CharArrayWriter::Write(
 ECode CharArrayWriter::WriteTo(
     /* [in] */ IWriter* out)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return out->Write(mBuf, 0, mCount);
 }

@@ -107,7 +107,7 @@ ECode ZipFile::RAFStream::Read(
     *number = -1;
     VALIDATE_NOT_NULL(buffer);
 
-    Autolock locK(this);
+    AutoLock locK(this);
 
     Int64 length = mEndOffset - mOffset;
     if (byteCount > length) {
@@ -345,7 +345,7 @@ ECode ZipFile::Close()
 
     if (raf != NULL) { // Only close initialized instances
         {
-            Autolock locK(this);
+            AutoLock locK(this);
             mRaf = NULL;
             ICloseable::Probe(raf)->Close();
         }
@@ -449,7 +449,7 @@ ECode ZipFile::GetInputStream(
     AutoPtr<IRandomAccessFile> raf = mRaf;
     CRandomAccessFile* craf = (CRandomAccessFile*)raf.Get();
 
-    Autolock locK(craf);
+    AutoLock locK(craf);
     // We don't know the entry data's start position. All we have is the
     // position of the entry's local header.
     // http://www.pkware.com/documents/casestudies/APPNOTE.TXT

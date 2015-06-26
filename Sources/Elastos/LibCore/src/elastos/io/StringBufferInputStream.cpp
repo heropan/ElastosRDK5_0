@@ -1,6 +1,6 @@
 
 #include "StringBufferInputStream.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace IO {
@@ -31,7 +31,7 @@ ECode StringBufferInputStream::Available(
 {
     VALIDATE_NOT_NULL(number)
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     *number = mCount - mPos;
 
@@ -43,7 +43,7 @@ ECode StringBufferInputStream::Read(
 {
     VALIDATE_NOT_NULL(value)
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     *value = mPos < mCount ? mBuffer.GetChar(mPos++) & 0xFF : -1;
     return NOERROR;
@@ -64,7 +64,7 @@ ECode StringBufferInputStream::Read(
     // END android-note
     // According to 22.7.6 should return -1 before checking other
     // parameters.
-    Autolock lock(this);
+    AutoLock lock(this);
 
     if (buffer == NULL) {
 //      throw new NullPointerException("buffer == null");
@@ -97,7 +97,7 @@ ECode StringBufferInputStream::Read(
 
 ECode StringBufferInputStream::Reset()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     mPos = 0;
     return NOERROR;
 }
@@ -109,7 +109,7 @@ ECode StringBufferInputStream::Skip(
     VALIDATE_NOT_NULL(number)
     *number = 0;
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     if (count <= 0) {
         return NOERROR;

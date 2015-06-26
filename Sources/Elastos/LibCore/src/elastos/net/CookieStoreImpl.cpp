@@ -4,7 +4,7 @@
 #include "CHttpCookie.h"
 #include "CArrayList.h"
 #include "Collections.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

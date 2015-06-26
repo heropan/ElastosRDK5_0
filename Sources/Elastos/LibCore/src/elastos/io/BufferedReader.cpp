@@ -1,7 +1,7 @@
 
 #include "BufferedReader.h"
 #include "StringBuilder.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::StringBuilder;
 
@@ -49,7 +49,7 @@ ECode BufferedReader::constructor(
 
 ECode BufferedReader::Close()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!IsClosed()) {
         FAIL_RETURN(ICloseable::Probe(mIn)->Close());
@@ -120,7 +120,7 @@ ECode BufferedReader::Mark(
 //      throw new IllegalArgumentException("markLimit < 0:" + markLimit);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     mMarkLimit = markLimit;
@@ -154,7 +154,7 @@ ECode BufferedReader::Read(
 {
     VALIDATE_NOT_NULL(value)
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     ReadChar(value);
@@ -190,7 +190,7 @@ ECode BufferedReader::Read(
     *number = -1;
     VALIDATE_NOT_NULL(buffer)
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     Int32 arrayLength = buffer->GetLength();
@@ -287,7 +287,7 @@ ECode BufferedReader::ReadLine(
     VALIDATE_NOT_NULL(contents)
     *contents = String(NULL);
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
 
@@ -340,7 +340,7 @@ ECode BufferedReader::IsReady(
     VALIDATE_NOT_NULL(ready)
     *ready = FALSE;
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     Boolean isReady;
@@ -350,7 +350,7 @@ ECode BufferedReader::IsReady(
 
 ECode BufferedReader::Reset()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (mMark == -1) {
@@ -373,7 +373,7 @@ ECode BufferedReader::Skip(
 //      throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
 

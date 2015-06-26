@@ -1,6 +1,6 @@
 
 #include "ByteArrayInputStream.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace IO {
@@ -50,7 +50,7 @@ ECode ByteArrayInputStream::Available(
 {
     VALIDATE_NOT_NULL(number)
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     *number = mCount - mPos;
     return NOERROR;
@@ -64,7 +64,7 @@ ECode ByteArrayInputStream::Close()
 CARAPI ByteArrayInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
 
     mMark = mPos;
     return NOERROR;
@@ -84,7 +84,7 @@ CARAPI ByteArrayInputStream::Read(
 {
     VALIDATE_NOT_NULL(value);
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     *value = mPos < mCount ? (*mBuf)[mPos++] & 0xFF : -1;
     return NOERROR;
@@ -107,7 +107,7 @@ CARAPI ByteArrayInputStream::Read(
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     // avoid int overflow
     // Exception priorities (in case of multiple errors) differ from
@@ -140,7 +140,7 @@ CARAPI ByteArrayInputStream::Read(
 
 CARAPI ByteArrayInputStream::Reset()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
 
     mPos = mMark;
     return NOERROR;
@@ -157,7 +157,7 @@ CARAPI ByteArrayInputStream::Skip(
         return NOERROR;
     }
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     Int32 temp = mPos;
     mPos = mCount - mPos < count ? mCount : (Int32)(mPos + count);

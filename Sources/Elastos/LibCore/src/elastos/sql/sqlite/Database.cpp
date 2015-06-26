@@ -7,7 +7,7 @@
 #include "CBlob.h"
 #include "CFunctionContext.h"
 #include "StringUtils.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Sql::SQLite::CFunctionContext;
@@ -265,7 +265,7 @@ ECode Database::Open(
         mode = IConstants::SQLITE_OPEN_READONLY;
 #endif
     }
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Open4(filename, mode, String(NULL), FALSE);
 }
 
@@ -288,7 +288,7 @@ ECode Database::Open(
         mode = IConstants::SQLITE_OPEN_READONLY;
 #endif
     }
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Open4(filename, mode, vfs, FALSE);
 }
 
@@ -312,26 +312,26 @@ ECode Database::Open(
         mode = IConstants::SQLITE_OPEN_READONLY;
 #endif
     }
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Open4(filename, mode, vfs, ver2);
 }
 
 ECode Database::OpenAuxFile(
     /* [in] */ const String& filename)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _OpenAuxFile(filename);
 }
 
 ECode Database::Finalize()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Finalize();
 }
 
 ECode Database::Close()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Close();
 }
 
@@ -339,7 +339,7 @@ ECode Database::Exec(
     /* [in] */ const String& sql,
     /* [in] */ ICallback* cb)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Exec(sql, cb);
 }
 
@@ -348,7 +348,7 @@ ECode Database::Exec(
     /* [in] */ ICallback* cb,
     /* [in] */ ArrayOf<String> * args)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Exec(sql, cb, args);
 }
 
@@ -356,14 +356,14 @@ ECode Database::LastInsertRowid(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id);
-    Autolock lock(this);
+    AutoLock lock(this);
     *id = _LastInsertRowid();
     return NOERROR;
 }
 
 ECode Database::Interrupt()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Interrupt();
 }
 
@@ -371,7 +371,7 @@ ECode Database::Changes(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    Autolock lock(this);
+    AutoLock lock(this);
     *value = _Changes();
     return NOERROR;
 }
@@ -379,14 +379,14 @@ ECode Database::Changes(
 ECode Database::BusyHandler(
     /* [in] */ IBusyHandler* bh)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _BusyHandler(bh);
 }
 
 ECode Database::BusyTimeout(
     /* [in] */ Int32 ms)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _BusyTimeout(ms);
 }
 
@@ -409,7 +409,7 @@ ECode Database::GetTable(
             }
         }
     } else {
-        Autolock lock(this);
+        AutoLock lock(this);
         // /* only one statement !!! */
             AutoPtr<IVm> vm;
             Compile(sql, (IVm**)&vm);
@@ -463,7 +463,7 @@ ECode Database::GetTable(
             }
         }
     } else {
-        Autolock lock(this);
+        AutoLock lock(this);
         // /* only one statement !!! */
         AutoPtr<IVm> vm;
         Compile(sql, args, (IVm**)&vm);
@@ -513,7 +513,7 @@ ECode Database::GetTable(
             }
         }
     } else {
-        Autolock lock(this);
+        AutoLock lock(this);
         /* only one statement !!! */
         AutoPtr<IVm> vm;
         Compile(sql, args, (IVm**)&vm);
@@ -587,7 +587,7 @@ ECode Database::CreateFunction(
     /* [in] */ Int32 nargs,
     /* [in] */ IFunction* f)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _CreateFunction(name, nargs, f);
 }
 
@@ -596,7 +596,7 @@ ECode Database::CreateAggregate(
     /* [in] */ Int32 nargs,
     /* [in] */ IFunction* f)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _CreateAggregate(name, nargs, f);
 }
 
@@ -604,7 +604,7 @@ ECode Database::FunctionType(
     /* [in] */ const String& name,
     /* [in] */ Int32 type)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _FunctionType(name, type);
 }
 
@@ -646,21 +646,21 @@ ECode Database::ErrorMessage(
 ECode Database::SetEncoding(
     /* [in] */ const String& enc)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _SetEncoding(enc);
 }
 
 ECode Database::SetAuthorizer(
     /* [in] */ IAuthorizer* auth)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _SetAuthorizer(auth);
 }
 
 ECode Database::Trace(
     /* [in] */ ITrace* tr)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Trace(tr);
 }
 
@@ -810,21 +810,21 @@ ECode Database::ProgressHandler(
     /* [in] */ Int32 n,
     /* [in] */ IProgressHandler* p)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _ProgressHandler(n, p);
 }
 
 ECode Database::Key(
     /* [in] */ ArrayOf<Byte> * ekey)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return _Key(ekey);
 }
 
 ECode Database::Key(
     /* [in] */ const String& skey)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<ArrayOf<Byte> > ekey;
     AutoPtr<ArrayOf<Char32> > charArray = skey.GetChars();
     Char32 c;

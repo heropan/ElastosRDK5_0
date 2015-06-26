@@ -40,7 +40,7 @@ CAR_INTERFACE_IMPL(DatagramChannelImpl::DatagramSocketAdapter, IDatagramSocket);
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Close()
 {
-    Mutex::Autolock lock(GetSelfLock());
+    Mutex::AutoLock lock(GetSelfLock());
     Boolean isflag = FALSE;
     if (mChannelImpl->IsOpen(&isflag), isflag) {
         // try {

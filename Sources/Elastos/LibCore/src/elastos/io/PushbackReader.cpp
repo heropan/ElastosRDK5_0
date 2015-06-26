@@ -1,7 +1,7 @@
 
 #include "PushbackReader.h"
 #include "Character.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos{
 namespace IO{
@@ -47,7 +47,7 @@ ECode PushbackReader::constructor(
 ECode PushbackReader::Close()
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mBuf = NULL;
     return ICloseable::Probe(mIn)->Close();
@@ -74,7 +74,7 @@ ECode PushbackReader::Read(
 {
     VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     /* Is there a pushback character available? */
@@ -106,7 +106,7 @@ ECode PushbackReader::Read(
     *number = 0;
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     // avoid int overflow
@@ -165,7 +165,7 @@ ECode PushbackReader::IsReady(
     VALIDATE_NOT_NULL(ready)
     *ready = FALSE;
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mBuf == NULL) {
 //      throw new IOException("Reader is closed");
@@ -186,7 +186,7 @@ ECode PushbackReader::Unread(
    /* [in] */ Int32 oneChar)
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (mPos == 0) {
@@ -211,7 +211,7 @@ ECode PushbackReader::Unread(
 {
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (length > mPos) {
@@ -247,7 +247,7 @@ ECode PushbackReader::Skip(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(CheckNotClosed());
     if (count == 0) {

@@ -79,7 +79,7 @@ ECode ThreadGroup::ActiveCount(
     Int32 count = 0;
     // Lock the children thread list
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         Boolean isAlive;
         for (Int32 i = 0; i < mNumThreads; i++) {
             (*mChildrenThreads)[i]->IsAlive(&isAlive);
@@ -92,7 +92,7 @@ ECode ThreadGroup::ActiveCount(
     // END android-changed
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         Int32 num;
         for (Int32 j = 0; j < mNumGroups; j++) {
             (*mChildrenGroups)[j]->ActiveCount(&num);
@@ -112,7 +112,7 @@ ECode ThreadGroup::ActiveGroupCount(
     Int32 count = 0;
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         Int32 num;
         for (Int32 i = 0; i < mNumGroups; i++) {
             // One for this group & the subgroups
@@ -128,7 +128,7 @@ ECode ThreadGroup::ActiveGroupCount(
 ECode ThreadGroup::AddThreadImpl(
     /* [in] */ IThread* thread)
 {
-    Mutex::Autolock lock(mChildrenThreadsLock);
+    Mutex::AutoLock lock(mChildrenThreadsLock);
 
     if (!mIsDestroyed) {
         Int32 len = mChildrenThreads->GetLength();
@@ -153,7 +153,7 @@ ECode ThreadGroup::AddThreadImpl(
 ECode ThreadGroup::AddThreadGroup(
     /* [in] */ IThreadGroup* g)
 {
-    Mutex::Autolock lock(mChildrenGroupsLock);
+    Mutex::AutoLock lock(mChildrenGroupsLock);
 
     if (!mIsDestroyed) {
         Int32 len = mChildrenGroups->GetLength();
@@ -201,9 +201,9 @@ ECode ThreadGroup::Destroy()
 
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         {
-            Mutex::Autolock lock(mChildrenGroupsLock);
+            Mutex::AutoLock lock(mChildrenGroupsLock);
             // BEGIN android-added
             if (mIsDestroyed) {
                 return E_ILLEGAL_THREAD_STATE_EXCEPTION;
@@ -244,9 +244,9 @@ ECode ThreadGroup::Destroy()
 void ThreadGroup::DestroyIfEmptyDaemon()
 {
     // Has to be non-destroyed daemon to make sense
-    Mutex::Autolock lock(mChildrenThreadsLock);
+    Mutex::AutoLock lock(mChildrenThreadsLock);
     if (mIsDaemon && !mIsDestroyed && mNumThreads == 0) {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         if (mNumGroups == 0) {
             Destroy();
         }
@@ -300,7 +300,7 @@ Int32 ThreadGroup::EnumerateThreadGeneric(
 
     Int32 len = enumeration->GetLength();
     {
-        Mutex::Autolock lock(mChildrenThreadsLock); // Lock this subpart of the tree as we walk
+        Mutex::AutoLock lock(mChildrenThreadsLock); // Lock this subpart of the tree as we walk
         for (Int32 i = mNumThreads; --i >= 0;) {
             Boolean isAlive;
             (*mChildrenThreads)[i]->IsAlive(&isAlive);
@@ -314,7 +314,7 @@ Int32 ThreadGroup::EnumerateThreadGeneric(
     }
 
     if (recurse) {  // Lock this subpart of the tree as we walk
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         ThreadGroup* tg;
         for (Int32 i = 0; i < mNumGroups; i++) {
             if (enumerationIndex >= len) {
@@ -341,7 +341,7 @@ Int32 ThreadGroup::EnumerateThreadGroupGeneric(
 
     Int32 len = enumeration->GetLength();
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         for (Int32 i = mNumGroups; --i >= 0;) {
             if (enumerationIndex >= len) {
                 return enumerationIndex;
@@ -351,7 +351,7 @@ Int32 ThreadGroup::EnumerateThreadGroupGeneric(
     }
 
     if (recurse) {  // Lock this subpart of the tree as we walk
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         ThreadGroup* tg;
         for (Int32 i = 0; i < mNumGroups; i++) {
             if (enumerationIndex >= len) {
@@ -397,7 +397,7 @@ ECode ThreadGroup::Interrupt()
     CheckAccess();
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         for (Int32 i = 0; i < mNumThreads; i++) {
             (*mChildrenThreads)[i]->Interrupt();
         }
@@ -405,7 +405,7 @@ ECode ThreadGroup::Interrupt()
 
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         for (Int32 i = 0; i < mNumGroups; i++) {
             (*mChildrenGroups)[i]->Interrupt();
         }
@@ -458,7 +458,7 @@ void ThreadGroup::ListImpl(
     //         System.out.println(this.childrenThreads[i]);
     //     }
     // }
-    Mutex::Autolock lock(mChildrenGroupsLock);
+    Mutex::AutoLock lock(mChildrenGroupsLock);
     ThreadGroup* tg;
     for (Int32 i = 0; i < mNumGroups; i++) {
         tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
@@ -488,7 +488,7 @@ ECode ThreadGroup::RemoveThreadImpl(
     /* [in] */ IThread* thread)
 {
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         for (Int32 i = 0; i < mNumThreads; i++) {
             if ((*mChildrenThreads)[i] == thread) {
                 mNumThreads--;
@@ -511,7 +511,7 @@ void ThreadGroup::RemoveThreadGroup(
     /* [in] */ IThreadGroup* g)
 {
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         for (Int32 i = 0; i < mNumGroups; i++) {
             if ((*mChildrenGroups)[i] == g) {
                 mNumGroups--;
@@ -533,14 +533,14 @@ ECode ThreadGroup::Resume()
     CheckAccess();
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         for (Int32 i = 0; i < mNumThreads; i++) {
             (*mChildrenThreads)[i]->Resume();
         }
     }
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         for (Int32 i = 0; i < mNumGroups; i++) {
             (*mChildrenGroups)[i]->Resume();
         }
@@ -572,7 +572,7 @@ ECode ThreadGroup::SetMaxPriority(
         Int32 parentPriority = mParent == NULL ? newMax : parentMaxPriority;
         mMaxPriority = parentPriority <= newMax ? parentPriority : newMax;
         // Lock this subpart of the tree as we walk
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         // ??? why not maxPriority
         for (Int32 i = 0; i < mNumGroups; i++) {
             (*mChildrenGroups)[i]->SetMaxPriority(newMax);
@@ -608,7 +608,7 @@ Boolean ThreadGroup::StopHelper()
     Boolean stopCurrent = FALSE;
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         AutoPtr<IThread> current = Thread::GetCurrentThread();
         for (Int32 i = 0; i < mNumThreads; i++) {
             if ((*mChildrenThreads)[i] == current) {
@@ -621,7 +621,7 @@ Boolean ThreadGroup::StopHelper()
     }
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         ThreadGroup* tg;
         for (Int32 i = 0; i < mNumGroups; i++) {
             tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
@@ -647,7 +647,7 @@ Boolean ThreadGroup::SuspendHelper()
     Boolean suspendCurrent = FALSE;
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenThreadsLock);
+        Mutex::AutoLock lock(mChildrenThreadsLock);
         AutoPtr<IThread> current = Thread::GetCurrentThread();
         for (Int32 i = 0; i < mNumThreads; i++) {
             if ((*mChildrenThreads)[i] == current) {
@@ -660,7 +660,7 @@ Boolean ThreadGroup::SuspendHelper()
     }
     // Lock this subpart of the tree as we walk
     {
-        Mutex::Autolock lock(mChildrenGroupsLock);
+        Mutex::AutoLock lock(mChildrenGroupsLock);
         ThreadGroup* tg;
         for (Int32 i = 0; i < mNumGroups; i++) {
             tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));

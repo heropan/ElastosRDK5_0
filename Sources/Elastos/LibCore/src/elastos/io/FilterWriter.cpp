@@ -1,6 +1,6 @@
 
 #include "FilterWriter.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace IO {
@@ -28,7 +28,7 @@ ECode FilterWriter::constructor(
 ECode FilterWriter::Close()
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return ICloseable::Probe(mOut)->Close();
 }
@@ -36,7 +36,7 @@ ECode FilterWriter::Close()
 ECode FilterWriter::Flush()
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return IFlushable::Probe(mOut)->Flush();
 }
@@ -47,7 +47,7 @@ ECode FilterWriter::Write(
     /* [in] */ Int32 count)
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mOut->Write(buffer, offset, count);
 }
@@ -56,7 +56,7 @@ ECode FilterWriter::Write(
     /* [in] */ Int32 oneChar32)
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mOut->Write(oneChar32);
 }
@@ -67,7 +67,7 @@ ECode FilterWriter::Write(
     /* [in] */ Int32 count)
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mOut->Write(str, offset, count);
 }

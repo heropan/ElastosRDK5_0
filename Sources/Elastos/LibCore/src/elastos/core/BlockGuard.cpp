@@ -3,7 +3,7 @@
 #include "Thread.h"
 #include "StringUtils.h"
 #include <cutils/log.h>
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Thread;
@@ -107,7 +107,7 @@ ECode BlockGuard::SetThreadPolicy(
     if (_policy.Get() != policy) {
         _policy->Release();
 
-        Autolock locK(sLock);
+        AutoLock locK(sLock);
         ASSERT_TRUE(pthread_setspecific(BlockGuard::sTlsKey, policy) == 0);
         REFCOUNT_ADD(policy);
     }

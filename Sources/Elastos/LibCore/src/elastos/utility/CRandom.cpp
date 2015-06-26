@@ -43,7 +43,7 @@ ECode CRandom::constructor(
 Int32 CRandom::Next(
     /* [in] */ Int32 bits)
 {
-    //Mutex::Autolock lock(_m_syncLock);
+    //Mutex::AutoLock lock(_m_syncLock);
 
     mSeed = (mSeed * sMultiplier + 0xbLL) & ((1LL << 48) - 1);
     return (Int32)(mSeed >> (48 - bits));
@@ -119,7 +119,7 @@ ECode CRandom::NextGaussian(
 {
     VALIDATE_NOT_NULL(value);
 
-//    Mutex::Autolock lock(_m_syncLock);
+//    Mutex::AutoLock lock(_m_syncLock);
 
     if (mHaveNextNextGaussian) {
         mHaveNextNextGaussian = FALSE;
@@ -199,7 +199,7 @@ ECode CRandom::NextInt64(
 ECode CRandom::SetSeed(
     /* [in] */ Int64 seed)
 {
-//    Mutex::Autolock lock(_m_syncLock);
+//    Mutex::AutoLock lock(_m_syncLock);
 
     mSeed = (seed ^ sMultiplier) & ((1LL << 48) - 1);
     mHaveNextNextGaussian = FALSE;

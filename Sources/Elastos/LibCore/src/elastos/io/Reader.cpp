@@ -2,7 +2,7 @@
 #include "Reader.h"
 #include "Character.h"
 #include "Math.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace IO {
@@ -71,7 +71,7 @@ ECode Reader::Read(
 {
     VALIDATE_NOT_NULL(value)
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(1);
     Int32 number;
@@ -124,7 +124,7 @@ ECode Reader::Skip(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int64 skipped = 0;
     Int32 toRead = count < 512 ? (Int32)count : 512;

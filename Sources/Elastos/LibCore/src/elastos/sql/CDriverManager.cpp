@@ -3,7 +3,7 @@
 #include "CSystem.h"
 #include "Pattern.h"
 #include "CProperties.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "Collections.h"
 #include "CArrayList.h"
 

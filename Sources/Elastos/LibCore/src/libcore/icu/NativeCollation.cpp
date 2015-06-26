@@ -66,7 +66,7 @@ void NativeCollation::CloseElements(
     /* [in] */ Int64 address)
 {
     ucol_closeElements(toCollationElements(address));
-    Mutex::Autolock lock(sUstrMapLock);
+    Mutex::AutoLock lock(sUstrMapLock);
     HashMap<Int32, UnicodeString*>::Iterator find = sUstrMap.Find(address);
     if (find != sUstrMap.End()) {
         delete find->mSecond;
@@ -124,7 +124,7 @@ ECode NativeCollation::GetCollationElementIterator(
         return ec;
     }
     *coleitr = static_cast<Int32>(reinterpret_cast<uintptr_t>(result));
-    Mutex::Autolock lock(sUstrMapLock);
+    Mutex::AutoLock lock(sUstrMapLock);
     sUstrMap[*coleitr] = ustr;
     return NOERROR;
 }
@@ -301,7 +301,7 @@ ECode NativeCollation::SetText(
         delete ustr;
         return ec;
     }
-    Mutex::Autolock lock(sUstrMapLock);
+    Mutex::AutoLock lock(sUstrMapLock);
     delete sUstrMap[address];
     sUstrMap[address] = ustr;
 

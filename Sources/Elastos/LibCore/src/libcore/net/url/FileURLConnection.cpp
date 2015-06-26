@@ -34,7 +34,7 @@ ECode FileURLConnection::constructor(
     mLength = -1;
     mIsDir = FALSE;
 
-    URLConnection::Init(url);
+    FAIL_RETURN(URLConnection::constructor(url))
     url->GetFile(&mFilename);
     if (mFilename.IsNull()) {
         mFilename = String("");

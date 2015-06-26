@@ -8,7 +8,7 @@
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CSocket.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -214,7 +214,7 @@ ECode ServerSocket::GetSoTimeout(
     VALIDATE_NOT_NULL(timeout);
 
     if (!mIsCreated) {
-        //Mutex::Autolock lock(&mLock);
+        //Mutex::AutoLock lock(&mLock);
 
         if (!mIsCreated) {
 //            try {
@@ -243,7 +243,7 @@ ECode ServerSocket::ImplAccept(
     /* [in] */ ISocket* aSocket)
 {
     {
-        //Mutex::Autolock lock(&mLock);
+        //Mutex::AutoLock lock(&mLock);
         mImpl->Accept(((CSocket*)aSocket)->mImpl);
         ((CSocket*)aSocket)->Accepted();
     }
@@ -260,7 +260,7 @@ ECode ServerSocket::ImplAccept(
 ECode ServerSocket::SetSocketFactory(
     /* [in] */ ISocketImplFactory* aFactory)
 {
-    //Mutex::Autolock lock(&sLock);
+    //Mutex::AutoLock lock(&sLock);
 
 //    SecurityManager security = System.getSecurityManager();
 //    if (security != null) {
@@ -277,7 +277,7 @@ ECode ServerSocket::SetSocketFactory(
 ECode ServerSocket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    //Mutex::Autolock lock(&mLock);
+    //Mutex::AutoLock lock(&mLock);
 
     FAIL_RETURN(CheckClosedAndCreate(TRUE));
     if (timeout < 0) {
@@ -328,7 +328,7 @@ ECode ServerSocket::Bind(
 //        security.checkListen(port);
 //    }
 
-    //Mutex::Autolock lock(mLock);
+    //Mutex::AutoLock lock(mLock);
 //    try {
     ECode ec = mImpl->Bind(addr, port);
     if (FAILED(ec)) {
@@ -396,7 +396,7 @@ ECode ServerSocket::CheckClosedAndCreate(
         return NOERROR;
     }
 
-    //Mutex::Autolock lock(mLock);
+    //Mutex::AutoLock lock(mLock);
 
     if (mIsCreated) {
         return NOERROR;

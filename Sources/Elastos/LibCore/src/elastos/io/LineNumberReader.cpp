@@ -1,7 +1,7 @@
 
 #include "LineNumberReader.h"
 #include "Character.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Character;
 
@@ -40,7 +40,7 @@ ECode LineNumberReader::GetLineNumber(
 {
     VALIDATE_NOT_NULL(lineNumber)
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     *lineNumber = mLineNumber;
 
@@ -51,7 +51,7 @@ ECode LineNumberReader::Mark(
     /* [in] */ Int32 readLimit)
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(BufferedReader::Mark(readLimit));
     mMarkedLineNumber = mLineNumber;
@@ -65,7 +65,7 @@ ECode LineNumberReader::Read(
 {
     VALIDATE_NOT_NULL(value)
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 ch;
     FAIL_RETURN(BufferedReader::Read(&ch));
@@ -96,7 +96,7 @@ ECode LineNumberReader::Read(
     *number = -1;
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 read;
     FAIL_RETURN(BufferedReader::Read(buffer, offset, length, &read));
@@ -132,7 +132,7 @@ ECode LineNumberReader::ReadLine(
     VALIDATE_NOT_NULL(result)
     *result = String(NULL);
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mLastWasCR) {
         FAIL_RETURN(ChompNewline());
@@ -151,7 +151,7 @@ ECode LineNumberReader::ReadLine(
 ECode LineNumberReader::Reset()
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     FAIL_RETURN(BufferedReader::Reset());
     mLineNumber = mMarkedLineNumber;
@@ -164,7 +164,7 @@ ECode LineNumberReader::SetLineNumber(
     /* [in] */ Int32 lineNumber)
 {
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mLineNumber = lineNumber;
 
@@ -184,7 +184,7 @@ ECode LineNumberReader::Skip(
     }
 
     assert(mLock != NULL);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 value;
     for (Int32 i = 0; i < count; i++) {

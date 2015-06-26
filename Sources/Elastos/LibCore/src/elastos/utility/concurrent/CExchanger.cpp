@@ -4,7 +4,7 @@
 #include "Thread.h"
 #include "Math.h"
 #include "CAtomicInteger32.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Thread;
 using Elastos::Core::Math;
@@ -128,7 +128,7 @@ void CExchanger::CreateSlot(
     AutoPtr<Slot> newSlot = new Slot();
     AutoPtr<ArrayOf<Slot*> > a = mArena;
     {
-        Autolock lock(this);
+        AutoLock lock(this);
         if ((*a)[index] == NULL)
             a->Set(index, newSlot);
     }

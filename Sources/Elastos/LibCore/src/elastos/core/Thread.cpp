@@ -2,7 +2,7 @@
 #include "Thread.h"
 #include "ThreadGroup.h"
 #include "Math.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "CSystem.h"
 
 namespace Elastos {
@@ -499,7 +499,7 @@ ECode Thread::Join()
     //     return;
     // }
 
-    Autolock lock(this);
+    AutoLock lock(this);
     Boolean isAlive;
     IsAlive(&isAlive);
     while (isAlive) {
@@ -536,7 +536,7 @@ ECode Thread::Join(
     //     return;
     // }
 
-    Autolock lock(this);
+    AutoLock lock(this);
     Boolean isAlive;
     IsAlive(&isAlive);
     if (!isAlive) {
@@ -726,7 +726,7 @@ ECode Thread::SetUncaughtExceptionHandler(
 
 ECode Thread::Start()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
 
     if (mHasBeenStarted) {
         // throw new IllegalThreadStateException("Thread already started."); // TODO Externalize?
@@ -815,7 +815,7 @@ ECode Thread::Unpark()
     }
 
     {
-        Autolock lock(this);
+        AutoLock lock(this);
 
         switch (mParkState) {
             case ParkState::PREEMPTIVELY_UNPARKED: {
@@ -853,7 +853,7 @@ ECode Thread::ParkFor(
     }
 
     {
-        Autolock lock(this);
+        AutoLock lock(this);
 
         switch (mParkState) {
             case ParkState::PREEMPTIVELY_UNPARKED: {
@@ -914,7 +914,7 @@ ECode Thread::ParkUntil(
     }
 
     {
-        Autolock lock(this);
+        AutoLock lock(this);
 
         /*
          * Note: This conflates the two time bases of "wall clock"

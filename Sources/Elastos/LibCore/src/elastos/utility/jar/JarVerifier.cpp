@@ -1,6 +1,6 @@
 #include "JarVerifier.h"
 #include "CBase64.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "CAttributes.h"
 #include "CName.h"
 #include "ManifestReader.h"
@@ -221,7 +221,7 @@ ECode JarVerifier::ReadCertificates(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    Autolock lock(this);
+    AutoLock lock(this);
     if (mMetaEntries == NULL || mMetaEntries->IsEmpty()) {
         return NOERROR;
     }

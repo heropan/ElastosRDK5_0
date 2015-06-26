@@ -1,6 +1,6 @@
 
 #include "SocketTagger.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::IO::IFileDescriptor;
 
@@ -61,7 +61,7 @@ ECode SocketTagger::Untag(
 ECode SocketTagger::Set(
     /* [in] */ ISocketTagger* tagger)
 {
-    Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (tagger == NULL) {
         //throw new NullPointerException("tagger == null");
@@ -79,7 +79,7 @@ ECode SocketTagger::Get(
 {
     VALIDATE_NOT_NULL(tagger);
 
-    Autolock lock(sLock);
+    AutoLock lock(sLock);
     *tagger = sTagger;
     REFCOUNT_ADD(*tagger)
     return NOERROR;

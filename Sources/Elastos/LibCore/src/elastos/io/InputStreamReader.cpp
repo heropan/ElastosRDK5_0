@@ -7,7 +7,7 @@
 #include "CCodingErrorAction.h"
 #include "Math.h"
 #include "Character.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Character;
 using Elastos::IO::Charset::CCoderResult;
@@ -107,7 +107,7 @@ ECode InputStreamReader::constructor(
 
 ECode InputStreamReader::Close()
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mDecoder != NULL) {
         mDecoder->Reset();
     }
@@ -139,7 +139,7 @@ ECode InputStreamReader::Read(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!IsOpen()) {
         return E_IO_EXCEPTION;
 //        throw new IOException("InputStreamReader is closed");
@@ -162,7 +162,7 @@ ECode InputStreamReader::Read(
     VALIDATE_NOT_NULL(number);
     *number = 0;
 
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!IsOpen()) {
         return E_IO_EXCEPTION;
@@ -290,7 +290,7 @@ ECode InputStreamReader::IsReady(
     /* [out] */ Boolean* ready)
 {
     VALIDATE_NOT_NULL(ready);
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mIn == NULL) {
         return E_IO_EXCEPTION;
 //        throw new IOException("InputStreamReader is closed");

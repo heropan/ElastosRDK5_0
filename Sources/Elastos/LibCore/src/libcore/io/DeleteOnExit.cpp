@@ -1,7 +1,7 @@
 
 #include "DeleteOnExit.h"
 #include "CStringWrapper.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::IO::IFile;
 // using Elastos::IO::CFile;
@@ -23,7 +23,7 @@ ECode DeleteOnExit::GetInstance(
     /* [out] */ IDeleteOnExit** instance)
 {
     VALIDATE_NOT_NULL(instance)
-    Autolock lock(sLockLock);
+    AutoLock lock(sLockLock);
     if (NULL == sInstance) {
         sInstance = new DeleteOnExit();
     }
@@ -35,7 +35,7 @@ ECode DeleteOnExit::GetInstance(
 ECode DeleteOnExit::AddFile(
     /* [in] */ const String& filename)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(filename, (ICharSequence**)&cs);
     Boolean isContained;

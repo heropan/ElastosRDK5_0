@@ -3,7 +3,7 @@
 #include <Thread.h>
 //#include "CForkJoinWorkerThread.h"
 #include "CSystem.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::ISystem;
@@ -64,7 +64,7 @@ Int32 ForkJoinTask::ExternalAwaitDone()
     if ((s = mStatus) >= 0) {
         Boolean interrupted = FALSE;
         {
-            Autolock lock(this);
+            AutoLock lock(this);
             while ((s = mStatus) >= 0) {
                 if (s == 0) {
                     assert(0 && "TODO");
@@ -93,7 +93,7 @@ Int32 ForkJoinTask::ExternalInterruptibleAwaitDone(
         return s;
 //        throw new InterruptedException();
     if ((s = mStatus) >= 0) {
-        Autolock lock(this);
+        AutoLock lock(this);
         while ((s = mStatus) >= 0) {
             if (s == 0) {
                 assert(0 && "TODO");

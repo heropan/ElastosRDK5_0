@@ -7,7 +7,7 @@
 #include "CIoBridge.h"
 #include "NioUtils.h"
 #include "CFileDescriptor.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
@@ -121,7 +121,7 @@ ECode FileInputStream::GetChannel(
 {
     VALIDATE_NOT_NULL(channel)
 
-    Autolock lock(this);
+    AutoLock lock(this);
 
     if (mChannel == NULL) {
         // mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, OsConstants::sO_RDONLY);

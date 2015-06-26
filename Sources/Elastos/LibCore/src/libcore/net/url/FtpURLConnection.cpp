@@ -201,10 +201,10 @@ ECode FtpURLConnection::SetDoOutput(
     return NOERROR;
 }
 
-ECode FtpURLConnection::Init(
+ECode FtpURLConnection::constructor(
     /* [in] */ IURL* url)
 {
-    FAIL_RETURN(URLConnection::Init(url));
+    FAIL_RETURN(URLConnection::constructor(url));
     mUsername = "anonymous";
     mPassword = "";
     mUrl->GetHost(&mHostName);
@@ -229,18 +229,9 @@ ECode FtpURLConnection::Init(
     return NOERROR;
 }
 
-FtpURLConnection::FtpURLConnection(
-    /* [in] */ IURL* url)
+FtpURLConnection::FtpURLConnection()
+    : mDataPort(0)
 {
-    Init(url);
-}
-
-FtpURLConnection::FtpURLConnection(
-    /* [in] */ IURL* url,
-    /* [in] */ Elastos::Net::IProxy* proxy)
-{
-    Init(url);
-    mProxy = proxy;
 }
 
 ECode FtpURLConnection::Cd()

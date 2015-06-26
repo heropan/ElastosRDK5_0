@@ -9,10 +9,10 @@ using Elastos::Core::EIID_ISynchronize;
 namespace Elastos {
 namespace Core {
 
-class Autolock
+class AutoLock
 {
 public:
-    Autolock(
+    AutoLock(
         /* [in] */ ISynchronize * obj)
         : mLocked(TRUE)
     {
@@ -21,7 +21,7 @@ public:
         ASSERT_SUCCEEDED(mSyncObj->Lock());
     }
 
-    Autolock(
+    AutoLock(
         /* [in] */ IInterface * obj)
         : mLocked(TRUE)
     {
@@ -31,7 +31,7 @@ public:
         ASSERT_SUCCEEDED(mSyncObj->Lock());
     }
 
-    Autolock(
+    AutoLock(
         /* [in] */ IObject * obj)
         : mLocked(TRUE)
     {
@@ -41,7 +41,7 @@ public:
         ASSERT_SUCCEEDED(mSyncObj->Lock());
     }
 
-    Autolock(
+    AutoLock(
         /* [in] */ Object * obj)
         : mLocked(TRUE)
     {
@@ -50,7 +50,7 @@ public:
         ASSERT_SUCCEEDED(mSyncObj->Lock());
     }
 
-    Autolock(
+    AutoLock(
         /* [in] */ Object & obj)
         : mLocked(TRUE)
     {
@@ -59,7 +59,7 @@ public:
         ASSERT_SUCCEEDED(mSyncObj->Lock());
     }
 
-    ~Autolock()
+    ~AutoLock()
     {
         assert(mSyncObj != NULL);
         ASSERT_SUCCEEDED(mSyncObj->Unlock());
@@ -78,7 +78,7 @@ public:
     }
 
 private:
-    Autolock(const Autolock&);
+    AutoLock(const AutoLock&);
 
 private:
     AutoPtr<ISynchronize> mSyncObj;
@@ -89,9 +89,9 @@ private:
 } // namespace Elastos
 
 #ifndef synchronized
-#define synchronized(obj)  for(Elastos::Core::Autolock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
+#define synchronized(obj)  for(Elastos::Core::AutoLock obj##_lock(obj); obj##_lock; obj##_lock.SetUnlock())
 #endif
 
-using Elastos::Core::Autolock;
+using Elastos::Core::AutoLock;
 
 #endif //__ELASTOS_CORE_AUTOLOCK_H__

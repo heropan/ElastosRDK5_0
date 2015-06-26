@@ -11,7 +11,7 @@
 #include "StringBuilder.h"
 #include "StringUtils.h"
 #include "CSystem.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
@@ -1134,7 +1134,7 @@ AutoPtr<IResourceBundle> ResourceBundle::HandleGetBundle(
 AutoPtr<IDictionary> ResourceBundle::GetLoaderCache(
     /* [in] */ IInterface* cacheKey)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<IInterface> outface;
     sCache->Get(cacheKey, (IInterface**)&outface);
     AutoPtr<IDictionary> loaderCache = IDictionary::Probe(outface);

@@ -22,7 +22,7 @@ ECode CObjectContainer::Add(
 {
     VALIDATE_NOT_NULL(pObject);
 
-    Mutex::Autolock lock(_m_syncLock);
+    Mutex::AutoLock lock(_m_syncLock);
 
     ObjectNode *pNode = new ObjectNode(pObject);
     if (NULL == pNode) {
@@ -41,7 +41,7 @@ ECode CObjectContainer::Remove(
 {
     VALIDATE_NOT_NULL(pObject);
 
-    Mutex::Autolock lock(_m_syncLock);
+    Mutex::AutoLock lock(_m_syncLock);
 
     ObjectNode *pNode;
     ForEachDLinkNode(ObjectNode *, pNode, &mHead) {
@@ -94,7 +94,7 @@ ECode CObjectContainer::Contains(
     *contains = FALSE;
     VALIDATE_NOT_NULL(object);
 
-    Mutex::Autolock lock(_m_syncLock);
+    Mutex::AutoLock lock(_m_syncLock);
 
     AutoPtr<IObjectEnumerator> pEnumerator;
     ECode ec = GetObjectEnumerator((IObjectEnumerator**)&pEnumerator);
@@ -119,7 +119,7 @@ ECode CObjectContainer::ContainsAll(
 {
     VALIDATE_NOT_NULL(contains);
 
-    Mutex::Autolock lock(_m_syncLock);
+    Mutex::AutoLock lock(_m_syncLock);
 
     AutoPtr<IObjectEnumerator> emu;
     objectContainer->GetObjectEnumerator((IObjectEnumerator**)&emu);
@@ -141,7 +141,7 @@ ECode CObjectContainer::ContainsAll(
 
 ECode CObjectContainer::Dispose()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    Mutex::AutoLock lock(_m_syncLock);
 
     mCount = 0;
     mState++;

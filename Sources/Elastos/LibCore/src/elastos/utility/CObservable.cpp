@@ -1,7 +1,7 @@
 
 #include "CObservable.h"
 #include "CArrayList.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace Utility {
@@ -27,7 +27,7 @@ ECode CObservable::AddObserver(
         return E_NULL_POINTER_EXCEPTION;
     }
     {
-        Autolock lock(this);
+        AutoLock lock(this);
         Boolean isflag = FALSE;
         if (!((ICollection::Probe(mObservers))->Contains(observer, &isflag), isflag))
             mObservers->Add(observer, &isflag);
@@ -44,13 +44,13 @@ ECode CObservable::CountObservers(
 ECode CObservable::DeleteObserver(
     /* [in] */ IObserver* observer)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return mObservers->Remove(observer);
 }
 
 ECode CObservable::DeleteObservers()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     return (ICollection::Probe(mObservers))->Clear();
 }
 
@@ -74,7 +74,7 @@ ECode CObservable::NotifyObservers(
     Int32 size = 0;
     AutoPtr< ArrayOf<IInterface*> > arrays;
     {
-        Autolock lock(this);
+        AutoLock lock(this);
         Boolean isflag = FALSE;
         if (HasChanged(&isflag), isflag) {
             ClearChanged();

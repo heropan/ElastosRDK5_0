@@ -1,6 +1,6 @@
 
 #include "NativeBreakIterator.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "CStringCharacterIterator.h"
 #include "StringBuilder.h"
 #include "ElStringByteSink.h"

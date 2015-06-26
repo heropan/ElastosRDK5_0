@@ -212,7 +212,7 @@ ECode Socket::CheckConnectPermission(
 
 ECode Socket::Close()
 {
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     mIsClosed = TRUE;
     // RI compatibility: the RI returns the any address (but the original local port) after close.
@@ -344,7 +344,7 @@ ECode Socket::GetReceiveBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
@@ -358,7 +358,7 @@ ECode Socket::GetSendBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
@@ -372,7 +372,7 @@ ECode Socket::GetSoTimeout(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
@@ -413,7 +413,7 @@ ECode Socket::SetKeepAlive(
 ECode Socket::SetSocketImplFactory(
     /* [in] */ ISocketImplFactory* fac)
 {
-    //Mutex::Autolock lock(&sLock);
+    //Mutex::AutoLock lock(&sLock);
 
     // SecurityManager security = System.getSecurityManager();
     // if (security != null) {
@@ -431,7 +431,7 @@ ECode Socket::SetSocketImplFactory(
 ECode Socket::SetSendBufferSize(
     /* [in] */ Int32 size)
 {
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     if (size < 1) {
@@ -447,7 +447,7 @@ ECode Socket::SetSendBufferSize(
 ECode Socket::SetReceiveBufferSize(
     /* [in] */ Int32 size)
 {
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     if (size < 1) {
@@ -486,7 +486,7 @@ ECode Socket::SetSoLinger(
 ECode Socket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     if (timeout < 0) {
@@ -524,7 +524,7 @@ ECode Socket::StartupSocket(
 
     IInetAddress* addr = localAddress == NULL ? CInet4Address::ANY.Get() : localAddress;
 
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
     mImpl->Create(streaming);
 
     mIsCreated = TRUE;
@@ -612,7 +612,7 @@ ECode Socket::CheckOpenAndCreate(
         return NOERROR;
     }
 
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     if (mIsCreated) {
         return NOERROR;
@@ -720,7 +720,7 @@ ECode Socket::Bind(
         inetAddr->GetPort(&port);
     }
 
-    //Mutex::Autolock lock(GetSelfLock());
+    //Mutex::AutoLock lock(GetSelfLock());
 
     // try {
     ECode ec= mImpl->Bind(addr, port);
@@ -789,7 +789,7 @@ ECode Socket::Connect(
 
     FAIL_RETURN(CheckDestination(addr, port));
 
-    //Mutex::Autolock lock(&mConnectLock);
+    //Mutex::AutoLock lock(&mConnectLock);
     // try {
     ECode ec = NOERROR;
     Boolean isBound;

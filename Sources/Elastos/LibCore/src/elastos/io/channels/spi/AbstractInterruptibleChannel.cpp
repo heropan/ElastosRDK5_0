@@ -1,6 +1,6 @@
 #include "AbstractInterruptibleChannel.h"
 #include "Thread.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::Thread;
 
@@ -75,7 +75,7 @@ AbstractInterruptibleChannel::~AbstractInterruptibleChannel()
 
 Boolean AbstractInterruptibleChannel::IsOpen()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     Boolean ret = !mClosed;
     return ret;
 }
@@ -93,7 +93,7 @@ ECode AbstractInterruptibleChannel::Close()
     ECode retCode = E_INTERRUPTED;
 
     if (!mClosed) {
-        Autolock lock(this);
+        AutoLock lock(this);
         if (!mClosed) {
             mClosed = TRUE;
             retCode = this->ImplCloseChannel();

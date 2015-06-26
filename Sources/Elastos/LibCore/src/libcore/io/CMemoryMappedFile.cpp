@@ -4,7 +4,7 @@
 #include "nio/CByteOrderHelper.h"
 #include "NioBufferIterator.h"
 #include "CLibcore.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::IO::CByteOrderHelper;
 using Elastos::IO::IByteOrderHelper;
@@ -73,7 +73,7 @@ ECode CMemoryMappedFile::Size(
 
 ECode CMemoryMappedFile::Close()
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     if (mAddress != 0) {
         CLibcore::sOs->Munmap(mAddress, mSize);
         mAddress = 0;

@@ -109,7 +109,7 @@ ECode CObjectEnumerator::Current(
         return E_INVALID_OPERATION;
     }
 
-    Mutex::Autolock lock(mLock);
+    Mutex::AutoLock lock(mLock);
 
     if (mOrgState != *mState) {
         mCurrent = NULL;
@@ -129,7 +129,7 @@ ECode CObjectEnumerator::MoveNext(
         return E_INVALID_OPERATION;
     }
 
-    Mutex::Autolock lock(mLock);
+    Mutex::AutoLock lock(mLock);
 
     if (mOrgState != *mState) {
         mCurrent = NULL;

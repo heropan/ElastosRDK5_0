@@ -848,7 +848,7 @@ ECode CX509CertFactoryImpl::GetCRL(
     /* [in] */ IInputStream* inStream,
     /* [out] */ ICRL** crl)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     inStream->Mark(CRL_CACHE_SEED_LENGTH);
     AutoPtr<ArrayOf<Byte> > buff;
     ReadBytes(inStream, CRL_CACHE_SEED_LENGTH, (ArrayOf<Byte>**)&buff);

@@ -3,7 +3,7 @@
 #include "Arrays.h"
 #include "Collections.h"
 #include "StringBuilder.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;

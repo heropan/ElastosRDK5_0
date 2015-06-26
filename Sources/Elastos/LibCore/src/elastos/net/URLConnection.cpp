@@ -1,19 +1,21 @@
 
 #include "URLConnection.h"
 #include "DefaultFileNameMap.h"
-//#include "CDateHelper.h"
+#include "CDateHelper.h"
 #include "CSystem.h"
 #include "Character.h"
 #include "StringBuffer.h"
 #include "StringUtils.h"
-#include "Autolock.h"
+#include "Collections.h"
+#include "AutoLock.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::ISystem;
+using Elastos::Utility::Collections;
 using Elastos::Utility::IDateHelper;
-//using Elastos::Utility::CDateHelper;
+using Elastos::Utility::CDateHelper;
 
 namespace Elastos {
 namespace Net {
@@ -317,19 +319,22 @@ ECode URLConnection::GetHeaderField(
 ECode URLConnection::GetHeaderFields(
     /* [out] */ IMap** headerFields)
 {
-    //TODO
-    assert(0);
-    // return Collections.emptyMap();
+    VALIDATE_NOT_NULL(headerFields)
+    *headerFields = Collections::EMPTY_MAP;
+    REFCOUNT_ADD(*headerFields)
     return NOERROR;
 }
 
 ECode URLConnection::GetRequestProperties(
     /* [out] */ IMap** properties)
 {
-    //TODO
-    assert(0);
-    // checkNotConnected();
-    // return Collections.emptyMap();
+    VALIDATE_NOT_NULL(properties)
+    *properties = NULL;
+
+    FAIL_RETURN(CheckNotConnected())
+    *properties = Collections::EMPTY_MAP;
+    REFCOUNT_ADD(*properties)
+    return NOERROR;
     return NOERROR;
 }
 

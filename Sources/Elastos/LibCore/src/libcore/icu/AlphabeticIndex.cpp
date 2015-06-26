@@ -3,7 +3,7 @@
 #include <unicode/alphaindex.h>
 #include <unicode/uniset.h>
 #include "ElStringByteSink.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 #include "ImmutableIndex.h"
 
 namespace Libcore {

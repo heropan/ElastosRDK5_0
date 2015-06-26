@@ -134,7 +134,7 @@ ECode CSecurity::InsertProviderAt(
     // position) position = max position + 1; insert provider, shift up
     // one position for next providers; Note: The position is 1-based
     VALIDATE_NOT_NULL(pos)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     String name;
     provider->GetName(&name);
     AutoPtr<IProvider> pro;
@@ -212,7 +212,7 @@ ECode CSecurity::GetProviders(
     /* [out, callee] */ ArrayOf<IProvider*>** providers)
 {
     VALIDATE_NOT_NULL(providers)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     //Todo ... after apache
     //return Services.getProviders();
     return NOERROR;
@@ -223,7 +223,7 @@ ECode CSecurity::GetProvider(
     /* [out] */ IProvider** provider)
 {
     VALIDATE_NOT_NULL(provider)
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     //Todo ... after apache
     //return Services.getProvider(name);
     return NOERROR;
@@ -316,7 +316,7 @@ ECode CSecurity::GetProvidersEx2(
     /* [in] */ IMap* filter,
     /* [out, callee] */ ArrayOf<IProvider*>** providers)
 {
-    Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(providers)
     if (filter == NULL) {
         //Slogger::E(TAG, "filter == null");

@@ -1,6 +1,6 @@
 
 #include "CBackup.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 namespace Elastos {
 namespace Sql {

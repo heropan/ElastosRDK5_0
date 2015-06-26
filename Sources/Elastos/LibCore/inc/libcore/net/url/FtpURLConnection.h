@@ -46,16 +46,10 @@ public:
     CARAPI SetDoOutput(
         /* [in] */ Boolean newValue);
 
-protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IURL* url);
 
-    FtpURLConnection(
-        /* [in] */ IURL* url);
-
-    FtpURLConnection(
-        /* [in] */ IURL* url,
-        /* [in] */ Elastos::Net::IProxy* proxy);
+    FtpURLConnection()
 
 private:
     CARAPI Cd();

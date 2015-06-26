@@ -6,7 +6,7 @@
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CPlainDatagramSocketImpl.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 //#include "CLibcore.h"
 //#include "COsConstants.h"
 #include <cutils/log.h>

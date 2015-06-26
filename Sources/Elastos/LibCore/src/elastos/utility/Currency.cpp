@@ -4,7 +4,7 @@
 //#include "ICUUtil.h"
 //#include "CLocaleData.h"
 #include "CLinkedHashSet.h"
-#include "Autolock.h"
+#include "AutoLock.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Utility::CLocale;
@@ -38,7 +38,7 @@ Currency::Currency(
 AutoPtr<ICurrency> Currency::GetInstance(
     /* [in] */ const String& currencyCode)
 {
-    Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<ICurrency> currency ;//= sCodesToCurrencies[currencyCode];
     if (currency == NULL) {
@@ -52,7 +52,7 @@ ECode Currency::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ ICurrency** instance)
 {
-    Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<ICurrency> currency ;//= sLocalesToCurrencies[locale];
     if (currency != NULL) {
