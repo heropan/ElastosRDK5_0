@@ -66,7 +66,7 @@ public:
 protected:
     HttpURLConnection();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IURL* url);
 
 protected:

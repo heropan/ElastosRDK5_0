@@ -23,10 +23,10 @@ HttpURLConnection::HttpURLConnection()
     , mFixedContentLength(-1)
 {}
 
-ECode HttpURLConnection::Init(
+ECode HttpURLConnection::constructor(
     /* [in] */ IURL* url)
 {
-    return URLConnection::Init(url);
+    return URLConnection::constructor(url);
 }
 
 ECode HttpURLConnection::GetErrorStream(

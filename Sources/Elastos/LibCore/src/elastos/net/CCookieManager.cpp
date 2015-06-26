@@ -131,10 +131,10 @@ ECode CCookieManager::CookiesToHeaders(
     }
     AutoPtr<IMap> resmap;
     AutoPtr<IList> outlist;
-    Collections::NewSingletonList(result.ToCharSequence(), (IList**)&outlist);
+    Collections::SingletonList(result.ToCharSequence(), (IList**)&outlist);
     AutoPtr<ICharSequence> Cookie;
     CStringWrapper::New(String("Cookie"), (ICharSequence**)&Cookie);
-    return Collections::NewSingletonMap(Cookie, outlist, cookiesMap);
+    return Collections::SingletonMap(Cookie, outlist, cookiesMap);
 }
 
 ECode CCookieManager::Put(
