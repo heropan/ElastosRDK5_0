@@ -1,11 +1,12 @@
 
-#ifndef __CDATATRUNCATION_H__
-#define __CDATATRUNCATION_H__
+#ifndef __ELASTOS_SQL_CDATATRUNCATION_H__
+#define __ELASTOS_SQL_CDATATRUNCATION_H__
 
 #include "_Elastos_Sql_CDataTruncation.h"
 #include "Object.h"
 
 using Elastos::IO::ISerializable;
+using Elastos::Core::IThrowable;
 
 namespace Elastos {
 namespace Sql {
@@ -21,6 +22,8 @@ public:
 
     CAR_INTERFACE_DECL();
 
+    CDataTruncation();
+
     CARAPI  constructor(
         /* [in] */ Int32 index,
         /* [in] */ Boolean parameter,
@@ -28,13 +31,13 @@ public:
         /* [in] */ Int32 dataSize,
         /* [in] */ Int32 transferSize);
 
-    // CARAPI  constructor(
-    //     /* [in] */ Int32 index,
-    //     /* [in] */ Boolean parameter,
-    //     /* [in] */ Boolean read,
-    //     /* [in] */ Int32 dataSize,
-    //     /* [in] */ Int32 transferSize,
-    //     /* [in] */ IThrowable * cause);
+    CARAPI  constructor(
+        /* [in] */ Int32 index,
+        /* [in] */ Boolean parameter,
+        /* [in] */ Boolean read,
+        /* [in] */ Int32 dataSize,
+        /* [in] */ Int32 transferSize,
+        /* [in] */ IThrowable * cause);
 
     CARAPI  GetDataSize(
         /* [out] */ Int32* size);
@@ -59,15 +62,15 @@ public:
 
 private:
 
-    Int32 index;
+    Int32 mIndex;
 
-    Boolean parameter;
+    Int32 mDataSize;
 
-    Boolean read;
+    Int32 mTransferSize;
 
-    Int32 dataSize;
+    Boolean mParameter;
 
-    Int32 transferSize;
+    Boolean mRead;
 
     const static String THE_REASON;
 
@@ -75,12 +78,12 @@ private:
 
     const static String THE_SQLSTATE_WRITE;
 
-    const static Int32 THE_ERROR_CODE = 0;
+    const static Int32 THE_ERROR_CODE;// = 0;
 
-    const static Int64 serialVersionUID = 6464298989504059473L;
+    // const static Int64 serialVersionUID = 6464298989504059473L;
 };
 
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDATATRUNCATION_H__
+#endif // __ELASTOS_SQL_CDATATRUNCATION_H__

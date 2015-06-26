@@ -1,6 +1,6 @@
 
-#ifndef __CSQL_CDATE_H__
-#define __CSQL_CDATE_H__
+#ifndef __ELASTOS_SQL_CSQL_CDATE_H__
+#define __ELASTOS_SQL_CSQL_CDATE_H__
 
 #include "_Elastos_Sql_CSqlDate.h"
 #include "Date.h"
@@ -17,6 +17,14 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL();
+
+    CARAPI constructor(
+        /* [in] */ Int64 theDate);
+
+    CARAPI constructor(
+        /* [in] */ Int32 theYear,
+        /* [in] */ Int32 theMonth,
+        /* [in] */ Int32 theDay);
 
     CARAPI GetHours(
         /* [out] */ Int32 * value);
@@ -42,17 +50,10 @@ public:
     CARAPI ToString(
         /* [out] */ String * str);
 
-    CARAPI constructor(
-        /* [in] */ Int32 theYear,
-        /* [in] */ Int32 theMonth,
-        /* [in] */ Int32 theDay);
-
-    CARAPI constructor(
-        /* [in] */ Int64 theDate);
-
 public:
-    static CARAPI_(AutoPtr<ISQLDate>) ValueOf(
-        /* [in] */ const String& dateString);
+    static CARAPI ValueOf(
+        /* [in] */ const String& dateString,
+        /* [out] */ ISQLDate** date);
 
 private:
     CARAPI_(void) Format(
@@ -61,6 +62,12 @@ private:
         /* [in] */ StringBuilder * sb);
 
 private:
+    /*
+     * Private method which normalizes a Time value, removing all low
+     * significance digits corresponding to milliseconds, seconds, minutes and
+     * hours, so that the returned Time value corresponds to 00:00:00 GMT on a
+     * particular day.
+     */
     static CARAPI_(Int64) NormalizeTime(
         /* [in] */ Int64 theTime);
 
@@ -71,4 +78,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSQL_CDATE_H__
+#endif // __ELASTOS_SQL_CSQL_CDATE_H__

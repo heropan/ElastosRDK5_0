@@ -19,8 +19,22 @@ public:
 
     CAR_OBJECT_DECL();
 
+    CTimestamp();
+
+    CARAPI constructor(
+        /* [in] */ Int32 theYear,
+        /* [in] */ Int32 theMonth,
+        /* [in] */ Int32 theDate,
+        /* [in] */ Int32 theHour,
+        /* [in] */ Int32 theMinute,
+        /* [in] */ Int32 theSecond,
+        /* [in] */ Int32 theNano);
+
+    CARAPI constructor(
+        /* [in] */ Int64 theTime);
+
     CARAPI CompareTo(
-        /* [in] */ IDate* date,
+        /* [in] */ IInterface* date,
         /* [out] */ Int32* result);
 
     CARAPI GetTime(
@@ -58,21 +72,10 @@ public:
     CARAPI SetNanos(
         /* [in] */ Int32 n);
 
-    CARAPI constructor(
-        /* [in] */ Int32 theYear,
-        /* [in] */ Int32 theMonth,
-        /* [in] */ Int32 theDate,
-        /* [in] */ Int32 theHour,
-        /* [in] */ Int32 theMinute,
-        /* [in] */ Int32 theSecond,
-        /* [in] */ Int32 theNano);
-
-    CARAPI constructor(
-        /* [in] */ Int64 theTime);
-
 public:
-    static CARAPI_(AutoPtr<ITimestamp>) ValueOf(
-        /* [in] */ const String& str);
+    static CARAPI ValueOf(
+        /* [in] */ const String& str,
+        /* [out] */ ITimestamp** ts);
 
 private:
     CARAPI_(void) Format(
@@ -80,7 +83,7 @@ private:
         /* [in] */ Int32 digits,
         /* [in] */ StringBuilder* sb);
 
-    CARAPI_(void) SetTimeImpl(
+    CARAPI SetTimeImpl(
         /* [in] */ Int64 theTime);
 
 private:
@@ -88,7 +91,7 @@ private:
         /* [in] */ const String& s);
 
 private:
-    Int32 nanos;
+    Int32 mNanos;
 
     const static String TIME_FORMAT_REGEX;
 

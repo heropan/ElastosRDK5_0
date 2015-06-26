@@ -2,32 +2,38 @@
 #include "CDriverManager.h"
 #include "CSystem.h"
 #include "Pattern.h"
-// #include "CProperties.h"
+#include "CProperties.h"
 #include "Autolock.h"
+#include "Collections.h"
+#include "CArrayList.h"
 
 using Elastos::Core::ISystem;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::Regex::Pattern;
 using Elastos::Utility::IProperties;
-// using Elastos::Utility::CProperties;
+using Elastos::Utility::CProperties;
+using Elastos::Utility::Collections;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Sql {
 
-List<AutoPtr<IDriver> > CDriverManager::theDrivers;
-Int32 CDriverManager::loginTimeout = 0;
-AutoPtr<IPrintStream> CDriverManager::thePrintStream;
-AutoPtr<IPrintWriter> CDriverManager::thePrintWriter;
-Boolean CDriverManager::isinitflag = FALSE;
+List<AutoPtr<IDriver> > CDriverManager::mTheDrivers;
+AutoPtr<IPrintStream> CDriverManager::mThePrintStream;
+AutoPtr<IPrintWriter> CDriverManager::mThePrintWriter;
+Int32 CDriverManager::mLoginTimeout = 0;
+Boolean CDriverManager::mIsInitflag = FALSE;
 
-CAR_INTERFACE_IMPL(CDriverManager, Object, IDriverManagerHelper);
+CAR_INTERFACE_IMPL(CDriverManager, Object, IDriverManager);
+
 CAR_SINGLETON_IMPL(CDriverManager);
 
 CDriverManager::CDriverManager()
 {
-    // pls use lock
-    if (isinitflag == FALSE) {
+    if (mIsInitflag == FALSE) {
         LoadInitialDrivers();
-        isinitflag = TRUE;
+        mIsInitflag = TRUE;
     }
 }
 
@@ -50,16 +56,17 @@ Boolean CDriverManager::LoadInitialDrivers()
     AutoPtr<ArrayOf<String> > theDriverNames;
     pat->Split(String(":"), (ArrayOf<String> **)&theDriverNames);
 
-    // for (String element : theDriverNames) {
-    //     try {
-    //         // Load the driver class
-    //         Class
-    //                 .forName(element, true, ClassLoader
-    //                         .getSystemClassLoader());
-    //     } catch (Throwable t) {
-    //         // Ignored
-    //     }
-    // }
+    if (theDriverNames) {
+        for (Int32 i = 0; i < theDriverNames->GetLength(); ++i) {
+            String element = (*theDriverNames)[i];
+            // try {
+                // Load the driver class
+            //    Class.forName(element, true, ClassLoader.getSystemClassLoader());
+            // } catch (Throwable t) {
+            //     // Ignored
+            // }
+        }
+    }
     return TRUE;
 }
 
@@ -72,11 +79,12 @@ ECode CDriverManager::DeregisterDriver(
     AutoPtr<IClassLoader> callerClassLoader ;// = VMStack.getCallingClassLoader();
     assert(0 && "TODO");
     if (!IsClassFromClassLoader(driver, callerClassLoader)) {
-        return E_SQL_SECURITY_EXCEPTION;
+        return E_SECURITY_EXCEPTION;
     }
 
-    synchronized(theDriversTmpLock) {
-        theDrivers.Remove((IDriver *)driver);
+    synchronized(mTheDriversLock) {
+        AutoPtr<IDriver> d = driver;
+        mTheDrivers.Remove(d);
     }
 
     return NOERROR;
@@ -86,10 +94,10 @@ ECode CDriverManager::GetConnection(
     /* [in] */ const String& url,
     /* [out] */ IConnection ** conn)
 {
+    VALIDATE_NOT_NULL(conn);
+
     AutoPtr<IProperties> mprope;
-    //TODO
-    assert(0);
-    // CProperties::New((IProperties **)&mprope);
+    CProperties::New((IProperties **)&mprope);
     return GetConnection(url, mprope , conn);
 }
 
@@ -98,6 +106,9 @@ ECode CDriverManager::GetConnection(
     /* [in] */ IProperties * info,
     /* [out] */ IConnection ** conn)
 {
+    VALIDATE_NOT_NULL(conn)
+    *conn = NULL;
+
     // 08 - connection exception
     // 001 - SQL-client unable to establish SQL-connection
     String sqlState = String("08001");
@@ -105,18 +116,19 @@ ECode CDriverManager::GetConnection(
         return E_SQL_EXCEPTION;
     }
 
-    synchronized(theDriversTmpLock) {
+    synchronized(mTheDriversLock) {
         /*
          * Loop over the drivers in the DriverSet checking to see if one can
          * open a connection to the supplied URL - return the first
          * connection which is returned
          */
-        List<AutoPtr<IDriver> >::Iterator iter = theDrivers.Begin();
-        while (iter != theDrivers.End()) {
+        List<AutoPtr<IDriver> >::Iterator iter = mTheDrivers.Begin();
+        while (iter != mTheDrivers.End()) {
             AutoPtr<IConnection> theConnection;
             (*iter)->Connect(url, info, (IConnection **)&theConnection);
             if (theConnection != NULL) {
                 *conn = theConnection;
+                REFCOUNT_ADD(*conn)
                 return NOERROR;
             }
         }
@@ -132,9 +144,7 @@ ECode CDriverManager::GetConnection(
     /* [out] */ IConnection ** conn)
 {
     AutoPtr<IProperties> theProperties;
-    //TODO
-    assert(0);
-    // CProperties::New((IProperties **)&theProperties);
+    CProperties::New((IProperties **)&theProperties);
 
     String temp;
     if (!user.IsNull()) {
@@ -152,19 +162,20 @@ ECode CDriverManager::GetDriver(
 {
     AutoPtr<IClassLoader> callerClassLoader  ;//= VMStack.getCallingClassLoader();
     assert(0 && "TODO");
-    synchronized(theDriversTmpLock) {
+    synchronized(mTheDriversLock) {
         /*
          * Loop over the drivers in the DriverSet checking to see if one
          * does understand the supplied URL - return the first driver which
          * does understand the URL
          */
-        List<AutoPtr<IDriver> >::Iterator iter = theDrivers.Begin();
-        while (iter != theDrivers.End()) {
+        List<AutoPtr<IDriver> >::Iterator iter = mTheDrivers.Begin();
+        while (iter != mTheDrivers.End()) {
             Boolean isiterflag = FALSE;
             (*iter)->AcceptsURL(url,&isiterflag);
             if (isiterflag &&
                 IsClassFromClassLoader(*iter, callerClassLoader)) {
                 *driver = *iter;
+                REFCOUNT_ADD(*driver)
                 return NOERROR;
             }
         }
@@ -179,6 +190,7 @@ ECode CDriverManager::GetDrivers(
     /* [out] */ IEnumeration ** enumeration)
 {
     VALIDATE_NOT_NULL(enumeration);
+    *enumeration = NULL;
 
     /*
      * Synchronize to avoid clashes with additions and removals of drivers
@@ -186,16 +198,16 @@ ECode CDriverManager::GetDrivers(
      */
     AutoPtr<IClassLoader> callerClassLoader ; //= VMStack.getCallingClassLoader();
     assert(0 && "TODO");
-    synchronized(theDriversTmpLock) {
-        List<AutoPtr<IDriver> > result;
-        List<AutoPtr<IDriver> >::Iterator iter = theDrivers.Begin();
-        while (iter != theDrivers.End()) {
+    synchronized(mTheDriversLock) {
+        AutoPtr<ICollection> result;
+        CArrayList::New((ICollection**)&result);
+        List<AutoPtr<IDriver> >::Iterator iter = mTheDrivers.Begin();
+        while (iter != mTheDrivers.End()) {
             if (IsClassFromClassLoader(*iter, callerClassLoader)) {
-                result.PushBack(*iter);
+                result->Add((*iter)->Probe(EIID_IInterface));
             }
         }
-        assert(0 && "TODO");
-        // return Collections.enumeration(result);
+        return Collections::Enumeration(result, enumeration);
     }
     return NOERROR;
 }
@@ -204,7 +216,7 @@ ECode CDriverManager::GetLoginTimeout(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value);
-    *value = loginTimeout;
+    *value = mLoginTimeout;
     return NOERROR;
 }
 
@@ -212,7 +224,8 @@ ECode CDriverManager::GetLogStream(
     /* [out] */ IPrintStream ** pntstream)
 {
     VALIDATE_NOT_NULL(pntstream);
-    *pntstream = thePrintStream;
+    *pntstream = mThePrintStream;
+    REFCOUNT_ADD(*pntstream)
     return NOERROR;
 }
 
@@ -220,19 +233,21 @@ ECode CDriverManager::GetLogWriter(
     /* [out] */ IPrintWriter ** pntwriter)
 {
     VALIDATE_NOT_NULL(pntwriter);
-    *pntwriter = thePrintWriter;
+    *pntwriter = mThePrintWriter;
+    REFCOUNT_ADD(*pntwriter);
     return NOERROR;
 }
 
 ECode CDriverManager::Println(
     /* [in] */ const String& message)
 {
-    if (thePrintWriter != NULL) {
-        thePrintWriter->Print(message);
-        // thePrintWriter->Flush();
-    } else if (thePrintStream != NULL) {
-        thePrintStream->Print(message);
-        // thePrintStream->Flush();
+    if (mThePrintWriter != NULL) {
+        mThePrintWriter->Print(message);
+        IFlushable::Probe(mThePrintWriter)->Flush();
+    }
+    else if (mThePrintStream != NULL) {
+        mThePrintStream->Print(message);
+        IFlushable::Probe(mThePrintStream)->Flush();
     }
     /*
      * If neither the PrintWriter not the PrintStream are set, then silently
@@ -245,10 +260,10 @@ ECode CDriverManager::RegisterDriver(
     /* [in] */ IDriver * driver)
 {
     if (driver == NULL) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
-    synchronized(theDriversTmpLock) {
-        theDrivers.PushBack(driver);
+    synchronized(mTheDriversLock) {
+        mTheDrivers.PushBack(driver);
     }
     return NOERROR;
 }
@@ -256,21 +271,21 @@ ECode CDriverManager::RegisterDriver(
 ECode CDriverManager::SetLoginTimeout(
     /* [in] */ Int32 seconds)
 {
-    loginTimeout = seconds;
+    mLoginTimeout = seconds;
     return NOERROR;
 }
 
 ECode CDriverManager::SetLogStream(
     /* [in] */ IPrintStream * pntstream)
 {
-    thePrintStream = pntstream;
+    mThePrintStream = pntstream;
     return NOERROR;
 }
 
 ECode CDriverManager::SetLogWriter(
     /* [in] */ IPrintWriter * pntwriter)
 {
-    thePrintWriter = pntwriter;
+    mThePrintWriter = pntwriter;
     return NOERROR;
 }
 

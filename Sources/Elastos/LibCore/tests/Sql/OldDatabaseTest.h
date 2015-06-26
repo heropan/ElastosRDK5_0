@@ -42,7 +42,7 @@ public:
 
     static AutoPtr<IFileHelper> dbFileHelper;
 
-    static AutoPtr<IDriverManagerHelper> driverManager;
+    static AutoPtr<IDriverManager> driverManager;
 
     static String filepath;
 
@@ -52,7 +52,7 @@ public:
         CFile::New(tmp,(IFile **)&(tmpDir));
         CFileHelper::AcquireSingleton((IFileHelper **)&dbFileHelper);
 
-        CDriverManager::AcquireSingleton((IDriverManagerHelper **)&driverManager);
+        CDriverManager::AcquireSingleton((IDriverManager **)&driverManager);
         Boolean isflag = FALSE;
         tmpDir->IsDirectory(&isflag);
         if (isflag) {
@@ -1341,7 +1341,7 @@ AutoPtr<IFile> OldSQLiteTest::dbFile ;
 
 AutoPtr<IFileHelper> OldSQLiteTest::dbFileHelper;
 
-AutoPtr<IDriverManagerHelper> OldSQLiteTest::driverManager;
+AutoPtr<IDriverManager> OldSQLiteTest::driverManager;
 
 String OldSQLiteTest::filepath = String("/data/data/com.elastos.runtime/elastos/sqliteTest.db");
 

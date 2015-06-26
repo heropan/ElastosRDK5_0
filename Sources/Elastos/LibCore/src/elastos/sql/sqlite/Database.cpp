@@ -882,7 +882,7 @@ ECode Database::_Open4(
     } else {
     h = (handle *)malloc(sizeof(handle));
     if (h == NULL) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     h->sqlite = NULL;
     h->bh = NULL;
@@ -919,7 +919,7 @@ ECode Database::_Open4(
 #endif
     }
     if (file.IsNull()) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 #if HAVE_SQLITE3_OPEN_V2
     if (vfs) {
@@ -1222,7 +1222,7 @@ ECode Database::_Exec(
     freemem *freeproc;
 
     if (sql.IsNull()) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (h) {
     if (h->sqlite) {
@@ -1271,7 +1271,7 @@ ECode Database::_Exec(
     }
     }
 
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 ECode Database::_Exec(
@@ -1282,7 +1282,7 @@ ECode Database::_Exec(
     handle *h = (handle *)mHandle;
     freemem *freeproc = 0;
     if (!sql) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (h) {
     if (h->sqlite) {
@@ -1310,7 +1310,7 @@ ECode Database::_Exec(
                 str = NULL;
                 h->cb = oldcb;
                 // throwex(env, "too much SQL parameters");
-                return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             } else if (h->ver >= 0x020500 && *p == 'Q') {
             nargs++;
@@ -1318,13 +1318,13 @@ ECode Database::_Exec(
                 str = NULL;
                 h->cb = oldcb;
                 // throwex(env, "too much SQL parameters");
-                return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             } else if (*p != '%') {
             str = NULL;
             h->cb = oldcb;
             // throwex(env, "bad % specification in query");
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         }
         ++p;
@@ -1334,7 +1334,7 @@ ECode Database::_Exec(
             str = NULL;
             h->cb = oldcb;
             // throwoom(env, "unable to allocate arg vector");
-            return E_SQL_NULL_POINTER_EXCEPTION;
+            return E_NULL_POINTER_EXCEPTION;
         }
         argv = (struct args *) (cargv + MAX_PARAMS);
         for (i = 0; i < MAX_PARAMS; i++) {
@@ -1507,7 +1507,7 @@ ECode Database::_Exec(
     }
     }
     //throwclosed(env);
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 Int64 Database::_LastInsertRowid()
@@ -1554,7 +1554,7 @@ ECode Database::_Interrupt()
 #endif
     return NOERROR;
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 Int64 Database::_Changes()
@@ -1606,7 +1606,7 @@ ECode Database::_BusyHandler(
     return NOERROR;
     }
 //     throwclosed(env);
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 ECode Database::_BusyTimeout(
@@ -1632,7 +1632,7 @@ ECode Database::_BusyTimeout(
     return NOERROR;
     }
 //     throwclosed(env);
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 Boolean Database::_Complete(
@@ -1708,11 +1708,11 @@ static ECode Mkfunc_common(handle * ihandle,AutoPtr<IDatabase> obj,Int32 isagg, 
     AutoPtr<IFunctionContext> fc;
     CFunctionContext::New((IFunctionContext **)&fc);
     if (!fi) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     f = (hfunc *)malloc(sizeof (hfunc));
     if (!f) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     f->fc = fc;
     f->fi = fi;
@@ -1777,7 +1777,7 @@ static ECode Mkfunc_common(handle * ihandle,AutoPtr<IDatabase> obj,Int32 isagg, 
     }
     return NOERROR;
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 ECode Database::_CreateFunction(
@@ -1831,7 +1831,7 @@ ECode Database::_FunctionType(
 #endif
     return NOERROR;
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 String Database::_Errmsg()
@@ -1873,7 +1873,7 @@ ECode Database::_SetEncoding(
 #endif
     return NOERROR;
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 ECode Database::_SetAuthorizer(
@@ -1904,7 +1904,7 @@ ECode Database::_SetAuthorizer(
 #endif
     return NOERROR;
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 #if HAVE_SQLITE_TRACE
@@ -1947,7 +1947,7 @@ ECode Database::_Trace(
 #endif
     return NOERROR;
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 ECode Database::_Backup(
@@ -2169,13 +2169,13 @@ ECode Database::Vm_compile(
     Int32 ret = 0;
 
     if (!h) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (!vm) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (!sql) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 #if HAVE_BOTH_SQLITE
     if (h->is3) {
@@ -2246,7 +2246,7 @@ ECode Database::Vm_compile(
     }
 #endif
     if (!svm) {
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
     }
     v = (hvm*)malloc(sizeof (hvm) + strlen(tail) + 1);
     if (!v) {
@@ -2264,7 +2264,7 @@ ECode Database::Vm_compile(
     sqlite3_finalize((sqlite3_stmt *) svm);
 #endif
 #endif
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
     }
     v->next = h->vms;
     h->vms = v;
@@ -2316,13 +2316,13 @@ ECode Database::Vm_compile_args(
 #endif
 #if HAVE_SQLITE3
     if (!h || !h->sqlite) {
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
     }
     if (!vm) {
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
     }
     if (sql.IsNull()) {
-    return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+    return E_ILLEGAL_ARGUMENT_EXCEPTION;
     } else {
     void *svm = 0;
     hvm *v;
@@ -2340,10 +2340,10 @@ ECode Database::Vm_compile_args(
         if (*p == 'q' || *p == 'Q' || *p == 's') {
             nargs++;
             if (nargs > MAX_PARAMS) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         } else if (*p != '%') {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         }
         ++p;
@@ -2351,7 +2351,7 @@ ECode Database::Vm_compile_args(
 
     cargv = (char **)malloc((sizeof (char *)) * MAX_PARAMS);
     if (!cargv) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     for (i = 0; i < MAX_PARAMS; i++) {
         cargv[i] = NULL;
@@ -2415,7 +2415,7 @@ ECode Database::Vm_compile_args(
             Freep((char **) &cargv);
             sqlite3_finalize((sqlite3_stmt *) svm);
             ((CVm *)vm.Get())->mError_code = SQLITE_NOMEM;
-            return E_SQL_NULL_POINTER_EXCEPTION;
+            return E_NULL_POINTER_EXCEPTION;
         }
         v->next = h->vms;
         h->vms = v;
@@ -2462,13 +2462,13 @@ ECode Database::Stmt_prepare(
     Int32 ret = 0;
 
     if (!h) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (!stmt) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     if (!sql) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 #ifdef HAVE_BOTH_SQLITE
     if (!h->is3) {
@@ -2478,7 +2478,7 @@ ECode Database::Stmt_prepare(
 #endif
     len16 = sql.GetByteLength();
     if (len16 < 1) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     sql16 = sql.string();
 #if HAVE_SQLITE3_PREPARE16_V2
@@ -2501,7 +2501,7 @@ ECode Database::Stmt_prepare(
         return E_SQL_EXCEPTION;
     }
     if (!svm) {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     len16 = len16 + sizeof (char) - ((char *) tail - (char *) sql16);
     if (len16 < sizeof (char)) {
@@ -2510,7 +2510,7 @@ ECode Database::Stmt_prepare(
     v = (hvm*)malloc(sizeof (hvm) + len16);
     if (!v) {
         sqlite3_finalize((sqlite3_stmt *) svm);
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     v->next = h->vms;
     h->vms = v;
@@ -2699,7 +2699,7 @@ ECode Database::_ProgressHandler(
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
 #endif
     }
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
 }
 
 ECode Database::_Key(

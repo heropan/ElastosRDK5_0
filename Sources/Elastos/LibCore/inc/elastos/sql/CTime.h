@@ -55,8 +55,9 @@ public:
         /* [in] */ Int64 theTime);
 
 public:
-    static CARAPI_(AutoPtr<ITime>) ValueOf(
-        /* [in] */ const String& timeString);
+    static CARAPI ValueOf(
+        /* [in] */ const String& timeString,
+        /* [out] */ ITime** time);
 
 private:
     CARAPI_(void) Format(

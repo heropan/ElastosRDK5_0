@@ -10,7 +10,7 @@ module
     // Elastos Sql exception codes (Family: 0x28)
     const E_SQL_EXCEPTION                                       = 0xA8010000;
     const E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION                 = 0xA8010001;
-    const E_SQL_CLINETINFO_EXCEPTION                            = 0xA8010002;
+    const E_SQL_CLINET_INFO_EXCEPTION                           = 0xA8010002;
     const E_SQL_DATA_EXCEPTION                                  = 0xA8010003;
     const E_SQL_INTEGRITY_CONSTRAINT_VIOLATION_EXCEPTION        = 0xA8010004;
     const E_SQL_INVALID_AUTHORIZATION_SPEC_EXCEPTION            = 0xA8010005;
@@ -22,15 +22,10 @@ module
     const E_SQL_TRANSACTION_ROLLBACK_EXCEPTION                  = 0xA801000B;
     const E_SQL_TRANSIENT_CONNECTION_EXCEPTION                  = 0xA801000C;
     const E_SQL_TRANSIENT_EXCEPTION                             = 0xA801000D;
-    const E_SQL_ILLEGAL_ARGUMENT_EXCEPTION                      = 0xA801000E;
-    const E_SQL_NUMBER_FORMAT_EXCEPTION                         = 0xA801000F;
-    const E_SQL_SECURITY_EXCEPTION                              = 0xA8010010;
-    const E_SQL_NULL_POINTER_EXCEPTION                          = 0xA8010011;
 
-    const E_BATCH_UPDATE_EXCEPTION                              = 0xA8020000;
+    const E_BATCH_UPDATE_EXCEPTION                              = 0xA801000E;
 
-    const E_SQL_SQLITE_JDBC_EXCEPTION                           = 0xA8030000;
-    const E_SQL_SQLITE_JDBC_BATCHUPDATE_EXCEPTION               = 0xA8030001;
-
-    const E_SQL_SQLITE_THROWEX_EXCEPTION                        = 0xA8040001;
+    const E_SQL_SQLITE_JDBC_EXCEPTION                           = 0xA801000F;
+    const E_SQL_SQLITE_JDBC_BATCHUPDATE_EXCEPTION               = 0xA8010010;
+    const E_SQL_SQLITE_THROWEX_EXCEPTION                        = 0xA8010011;
 }

@@ -1,32 +1,69 @@
 
 #include "CTimestamp.h"
-#include <elastos/core/StringUtils.h>
-//#include "CPatternHelper.h"
-//#include "CParsePosition.h"
+#include "StringUtils.h"
+#include "Pattern.h"
 #include "CLocaleHelper.h"
+#include "CSimpleDateFormat.h"
+#include "CParsePosition.h"
 
 using Elastos::Core::StringUtils;
-using Elastos::Utility::Regex::IPatternHelper;
-//using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::IDate;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
-// using Elastos::Text::ISimpleDateFormat;
-// using Elastos::Text::CSimpleDateFormat;
+using Elastos::Utility::Regex::Pattern;
+using Elastos::Text::IDateFormat;
+using Elastos::Text::ISimpleDateFormat;
+using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::IParsePosition;
-//using Elastos::Text::CParsePosition;
+using Elastos::Text::CParsePosition;
 
 namespace Elastos {
 namespace Sql {
 
-const String CTimestamp::TIME_FORMAT_REGEX = String("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.*");
-const String CTimestamp::PADDING = String("000000000");
+const String CTimestamp::TIME_FORMAT_REGEX("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.*");
+const String CTimestamp::PADDING("000000000");
 
 CAR_INTERFACE_IMPL(CTimestamp, Date, ITimestamp);
+
 CAR_OBJECT_IMPL(CTimestamp);
 
+CTimestamp::CTimestamp()
+    : mNanos(0)
+{}
+
+ECode CTimestamp::constructor(
+    /* [in] */ Int32 theYear,
+    /* [in] */ Int32 theMonth,
+    /* [in] */ Int32 theDate,
+    /* [in] */ Int32 theHour,
+    /* [in] */ Int32 theMinute,
+    /* [in] */ Int32 theSecond,
+    /* [in] */ Int32 theNano)
+{
+    FAIL_RETURN(Date::constructor(theYear, theMonth, theDate, theHour, theMinute, theSecond))
+
+    if (theNano < 0 || theNano > 999999999) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mNanos = theNano;
+    return NOERROR;
+}
+
+ECode CTimestamp::constructor(
+    /* [in] */ Int64 theTime)
+{
+    FAIL_RETURN(Date::constructor(theTime))
+
+    /*
+     * Now set the time for this Timestamp object - which deals with the
+     * nanosecond value as well as the base time
+     */
+    return SetTimeImpl(theTime);
+}
+
 ECode CTimestamp::CompareTo(
-    /* [in] */ IDate* date,
+    /* [in] */ IInterface* date,
     /* [out] */ Int32* result)
 {
     return CompareTo(ITimestamp::Probe(date), result);
@@ -39,7 +76,7 @@ ECode CTimestamp::GetTime(
 
     Int64 theTime = 0;
     Date::GetTime(&theTime);
-    theTime = theTime + (nanos / 1000000);
+    theTime = theTime + (mNanos / 1000000);
     *time = theTime;
     return NOERROR;
 }
@@ -47,49 +84,48 @@ ECode CTimestamp::GetTime(
 ECode CTimestamp::SetTime(
     /* [in] */ Int64 milliseconds)
 {
-    SetTimeImpl(milliseconds);
-    return NOERROR;
+    return SetTimeImpl(milliseconds);
 }
 
 ECode CTimestamp::ToString(
     /* [out] */ String* localeStr)
 {
-    AutoPtr<StringBuilder> sb = new StringBuilder(29);
+    StringBuilder sb(29);
 
     Int32 value = 0;
     Date::GetYear(&value);
-    Format(value + 1900, 4, sb);
-    sb->AppendChar('-');
+    Format(value + 1900, 4, &sb);
+    sb.AppendChar('-');
 
     Date::GetMonth(&value);
-    Format(value + 1, 2, sb);
-    sb->AppendChar('-');
+    Format(value + 1, 2, &sb);
+    sb.AppendChar('-');
 
     Date::GetDate(&value);
-    Format(value, 2, sb);
-    sb->AppendChar(' ');
+    Format(value, 2, &sb);
+    sb.AppendChar(' ');
 
     Date::GetHours(&value);
-    Format(value, 2, sb);
-    sb->AppendChar(':');
+    Format(value, 2, &sb);
+    sb.AppendChar(':');
 
     Date::GetMinutes(&value);
-    Format(value, 2, sb);
-    sb->AppendChar(':');
+    Format(value, 2, &sb);
+    sb.AppendChar(':');
 
     Date::GetSeconds(&value);
-    Format(value, 2, sb);
-    sb->AppendChar('.');
-    if (nanos == 0) {
-        sb->AppendChar('0');
+    Format(value, 2, &sb);
+    sb.AppendChar('.');
+    if (mNanos == 0) {
+        sb.AppendChar('0');
     } else {
-        Format(nanos, 9, sb);
-        while (sb->GetCharAt(sb->GetLength() - 1) == '0') {
-            sb->SetLength(sb->GetLength() - 1);
+        Format(mNanos, 9, &sb);
+        while (sb.GetCharAt(sb.GetLength() - 1) == '0') {
+            sb.SetLength(sb.GetLength() - 1);
         }
     }
 
-    sb->ToString(localeStr);
+    sb.ToString(localeStr);
     return NOERROR;
 }
 
@@ -97,10 +133,13 @@ ECode CTimestamp::After(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Boolean * value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = FALSE;
+
     Int64 thisTime = 0;
     GetTime(&thisTime);
     Int64 compareTime = 0;
-    Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&compareTime);
+    IDate::Probe(theTimestamp)->GetTime(&compareTime);
 
     Int32 thisNano = 0;
     GetNanos(&thisNano);
@@ -121,7 +160,8 @@ ECode CTimestamp::After(
      */
     else if (thisNano > comparenano) {
         *value = TRUE;
-    } else {
+    }
+    else {
         *value = FALSE;
     }
     return NOERROR;
@@ -131,10 +171,13 @@ ECode CTimestamp::Before(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Boolean * value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = FALSE;
+
     Int64 thisTime = 0;
     GetTime(&thisTime);
     Int64 compareTime = 0;
-    Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&compareTime);
+    IDate::Probe(theTimestamp)->GetTime(&compareTime);
 
     Int32 thisNano = 0;
     GetNanos(&thisNano);
@@ -155,7 +198,8 @@ ECode CTimestamp::Before(
      */
     else if (thisNano < comparenano) {
         *value = TRUE;
-    } else {
+    }
+    else {
         *value = FALSE;
     }
     return NOERROR;
@@ -165,24 +209,26 @@ ECode CTimestamp::CompareTo(
     /* [in] */ ITimestamp * theTimestamp,
     /* [out] */ Int32 * value)
 {
-    //TODO
-    assert(0);
+    VALIDATE_NOT_NULL(value)
+
     Int32 result = 0;
-    // Int32 result = Date::CompareTo(IDate::Probe(theTimestamp));
+    Date::CompareTo(TO_IINTERFACE(theTimestamp), &result);
     if (result == 0) {
-        Int32 thisNano = 0;
-        GetNanos(&thisNano);
         Int32 thatNano = 0;
         theTimestamp->GetNanos(&thatNano);
-        if (thisNano > thatNano) {
+        if (mNanos > thatNano) {
             *value = 1;
-        } else if (thisNano == thatNano) {
+        }
+        else if (mNanos == thatNano) {
             *value = 0;
-        } else {
+        }
+        else {
             *value = -1;
         }
     }
-    *value = result;
+    else {
+        *value = result;
+    }
     return NOERROR;
 }
 
@@ -209,21 +255,19 @@ ECode CTimestamp::Equals(
 
     Int64 atime = 0;
     Int64 btime = 0;
-    Int32 ananos = 0;
     Int32 bnanos = 0;
     GetTime(&atime);
-    Elastos::Utility::IDate::Probe(theTimestamp)->GetTime(&btime);
-    GetNanos(&ananos);
+    IDate::Probe(theTimestamp)->GetTime(&btime);
     theTimestamp->GetNanos(&bnanos);
-    *value = (atime == btime) && (ananos == bnanos);
+    *value = (atime == btime) && (mNanos == bnanos);
     return NOERROR;
 }
-
 
 ECode CTimestamp::GetNanos(
     /* [out] */ Int32 * pNano)
 {
-    *pNano = nanos;
+    VALIDATE_NOT_NULL(pNano)
+    *pNano = mNanos;
     return NOERROR;
 }
 
@@ -231,71 +275,40 @@ ECode CTimestamp::SetNanos(
     /* [in] */ Int32 n)
 {
     if ((n < 0) || (n > 999999999)) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    nanos = n;
+    mNanos = n;
     return NOERROR;
 }
 
-ECode CTimestamp::constructor(
-    /* [in] */ Int32 theYear,
-    /* [in] */ Int32 theMonth,
-    /* [in] */ Int32 theDate,
-    /* [in] */ Int32 theHour,
-    /* [in] */ Int32 theMinute,
-    /* [in] */ Int32 theSecond,
-    /* [in] */ Int32 theNano)
+ECode CTimestamp::ValueOf(
+    /* [in] */ const String& str,
+    /* [out] */ ITimestamp** ts)
 {
-    Date::constructor(theYear, theMonth, theDate, theHour, theMinute, theSecond);
-    if (theNano < 0 || theNano > 999999999) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    nanos = theNano;
-    return NOERROR;
-}
+    VALIDATE_NOT_NULL(ts)
+    *ts = NULL;
 
-ECode CTimestamp::constructor(
-    /* [in] */ Int64 theTime)
-{
-    Date::constructor(theTime);
-    /*
-     * Now set the time for this Timestamp object - which deals with the
-     * nanosecond value as well as the base time
-     */
-    SetTimeImpl(theTime);
-    return NOERROR;
-}
-
-AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
-{
     if (str.IsNull()) {
-        //TODO throw new IllegalArgumentException("Argument cannot be null");
-        return NULL;
+        //throw new IllegalArgumentException("Argument cannot be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     // Omit trailing whitespace
     String s = str.Trim();
-    AutoPtr<IPatternHelper> pat;
-    //TODO
-    assert(0);
-    // CPatternHelper::AcquireSingleton((IPatternHelper **)&pat);
-    Boolean ispat = FALSE;
-    pat->Matches(TIME_FORMAT_REGEX, s, &ispat);
+    Boolean ispat = Pattern::Matches(TIME_FORMAT_REGEX, s);
     if (!ispat) {
-        //TODO throw badTimestampString(s);
-        return NULL;
+        return BadTimestampString(s);;
     }
 
-    assert(0 && "TODO");
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> us;
     localeHelper->GetUS((ILocale**)&us);
 
-    // AutoPtr<ISimpleDateFormat> df;
-    // CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), us, (ISimpleDateFormat **)&df);
-    // AutoPtr<IParsePosition> pp;
-    // CParsePosition::New(0, (IParsePosition **)&pp);
+    AutoPtr<ISimpleDateFormat> df;
+    CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), us, (ISimpleDateFormat **)&df);
+    AutoPtr<IParsePosition> pp;
+    CParsePosition::New(0, (IParsePosition **)&pp);
 
     /*
      * First parse out the yyyy-MM-dd HH:mm:ss component of the String into
@@ -304,16 +317,15 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
      * with the ParsePosition indicating the index of the "." which should
      * precede the nanoseconds value
      */
-    // AutoPtr<IDate> theDate;
+    AutoPtr<IDate> theDate;
+    ECode ec = IDateFormat::Probe(df)->Parse(s, pp, (IDate **)&theDate);
+    if (FAILED(ec)) {
+        return BadTimestampString(s);;
+    }
 
-    // ECode ec = df->Parse(s, pp,(IDate **)&theDate);
-    // if (ec != NOERROR ) {
-    //     return NULL;
-    // }
-
-    // if (theDate == NULL) {
-    //     return NULL;
-    // }
+    if (theDate == NULL) {
+        return BadTimestampString(s);;
+    }
 
     /*
      * If we get here, the Date part of the string was OK - now for the
@@ -324,7 +336,7 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
      * will generate an IllegalArgumentException
      */
     Int32 position = 0;
-    // pp->GetIndex(&position);
+    pp->GetIndex(&position);
     Int32 remaining = s.GetLength() - position;
     Int32 nanos;
 
@@ -334,16 +346,12 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
     } else {
         // Validate the string is in the range ".0" to ".999999999"
         if (remaining < 2 || remaining > 10 || s.GetChar(position) != '.') {
-            // throw badTimestampString(s);
-            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            return NULL;
+            return BadTimestampString(s);
         }
 
         Int64 tmp = 0;
         if (FAILED(StringUtils::ParsePositiveInt64(s.Substring(position + 1), &tmp))) {
-            // throw badTimestampString(s);
-            // return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            return NULL;
+            return BadTimestampString(s);
         }
         nanos = tmp;
         // We must adjust for the cases where the nanos String was not 9
@@ -357,19 +365,17 @@ AutoPtr<ITimestamp> CTimestamp::ValueOf(const String& str)
 
     AutoPtr<ITimestamp> theTimestamp;
     Int64 outtime = 0;
-    //TODO
-    assert(0);
-    // theDate->GetTime(&outtime);
+    theDate->GetTime(&outtime);
     CTimestamp::New(outtime, (ITimestamp **)&theTimestamp);
-    theTimestamp->SetNanos(nanos);
-
-    return theTimestamp;
+    return theTimestamp->SetNanos(nanos);
 }
 
 ECode CTimestamp::BadTimestampString(
     /* [in] */ const String& s)
 {
-    return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+    ALOGE("E_ILLEGAL_ARGUMENT_EXCEPTION: Timestamp format must be "
+        "yyyy-MM-dd HH:mm:ss.fffffffff; was '%s'", s.string());
+    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 void CTimestamp::Format(
@@ -384,7 +390,7 @@ void CTimestamp::Format(
     sb->Append(str);
 }
 
-void CTimestamp::SetTimeImpl(
+ECode CTimestamp::SetTimeImpl(
     /* [in] */ Int64 theTime)
 {
     Int32 milliseconds = (Int32) (theTime % 1000);
@@ -393,8 +399,8 @@ void CTimestamp::SetTimeImpl(
         theTime = theTime - 1000;
         milliseconds = 1000 + milliseconds;
     }
-    Date::SetTime(theTime);
-    SetNanos(milliseconds * 1000000);
+    FAIL_RETURN(Date::SetTime(theTime))
+    return SetNanos(milliseconds * 1000000);
 }
 
 } // namespace Sql

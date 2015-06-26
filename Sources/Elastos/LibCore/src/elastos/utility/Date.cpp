@@ -201,6 +201,7 @@ ECode Date::CompareTo(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = -1;
 
     AutoPtr<IDate> date = IDate::Probe(_date);
     if (date == NULL) {

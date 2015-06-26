@@ -1,10 +1,9 @@
 
-#ifndef __CDRIVERPROPERTYINFO_H__
-#define __CDRIVERPROPERTYINFO_H__
+#ifndef __ELASTOS_SQL_CDRIVERPROPERTYINFO_H__
+#define __ELASTOS_SQL_CDRIVERPROPERTYINFO_H__
 
 #include "_Elastos_Sql_CDriverPropertyInfo.h"
 #include "Object.h"
-
 
 namespace Elastos {
 namespace Sql {
@@ -18,23 +17,25 @@ public:
 
     CAR_INTERFACE_DECL();
 
+    CDriverPropertyInfo();
+
     CARAPI constructor(
         /* [in] */ const String& name,
         /* [in] */ const String& value);
 
 public:
-    AutoPtr<ArrayOf<String> > choices;
+    AutoPtr<ArrayOf<String> > mChoices;
 
-    String description;
+    String mDescription;
 
-    String name;
+    String mName;
 
-    Boolean required;
+    Boolean mRequired;
 
-    String value;
+    String mValue;
 };
 
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDRIVERPROPERTYINFO_H__
+#endif // __ELASTOS_SQL_CDRIVERPROPERTYINFO_H__

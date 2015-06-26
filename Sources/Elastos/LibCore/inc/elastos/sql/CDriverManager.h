@@ -1,6 +1,6 @@
 
-#ifndef __CDRIVERMANAGER_H__
-#define __CDRIVERMANAGER_H__
+#ifndef __ELASTOS_SQL_CDRIVERMANAGER_H__
+#define __ELASTOS_SQL_CDRIVERMANAGER_H__
 
 #include "_Elastos_Sql_CDriverManager.h"
 #include "Singleton.h"
@@ -18,12 +18,14 @@ namespace Sql {
 
 CarClass(CDriverManager)
     , public Singleton
-    , public IDriverManagerHelper
+    , public IDriverManager
 {
 public:
     CAR_INTERFACE_DECL();
 
     CAR_SINGLETON_DECL();
+
+    CDriverManager();
 
     CARAPI DeregisterDriver(
         /* [in] */ IDriver * driver);
@@ -74,10 +76,7 @@ public:
     CARAPI SetLogWriter(
         /* [in] */ IPrintWriter * pntwriter);
 
-    CDriverManager();
-
 private:
-
     static CARAPI_(Boolean) LoadInitialDrivers();
 
     static CARAPI_(Boolean) IsClassFromClassLoader(
@@ -89,29 +88,28 @@ private:
      * Facilities for logging. The Print Stream is deprecated but is maintained
      * here for compatibility.
      */
-    static AutoPtr<IPrintStream> thePrintStream;
+    static AutoPtr<IPrintStream> mThePrintStream;
 
-    static AutoPtr<IPrintWriter> thePrintWriter;
+    static AutoPtr<IPrintWriter> mThePrintWriter;
 
     // Login timeout value - by default set to 0 -> "wait forever"
-    static Int32 loginTimeout;
+    static Int32 mLoginTimeout;
 
     /*
      * Set to hold Registered Drivers - initial capacity 10 drivers (will expand
      * automatically if necessary.
      */
-    static List<AutoPtr<IDriver> > theDrivers;
+    static List<AutoPtr<IDriver> > mTheDrivers;
+    Object mTheDriversLock;
 
     // Permission for setting log
-    // const static SQLPermission logPermission = new SQLPermission("setLog");
-
-    Object theDriversTmpLock;
+    static AutoPtr<ISQLPermission> mLogPermission;// = new SQLPermission("setLog");
 
 public:
-    static Boolean isinitflag;
+    static Boolean mIsInitflag;
 };
 
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDRIVERMANAGER_H__
+#endif // __ELASTOS_SQL_CDRIVERMANAGER_H__

@@ -510,7 +510,7 @@ dofin:
     } else {
     //throwex(env, "vm already closed");
         *value = FALSE;
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     //throwex(env, "unsupported");
@@ -554,7 +554,7 @@ ECode CVm::Compile(
     if (v && v->h && v->h->sqlite) {
     if (!v->tail) {
         *value = FALSE;
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #if HAVE_BOTH_SQLITE
     if (v->is3) {
@@ -634,7 +634,7 @@ ECode CVm::Compile(
     if (!svm) {
         v->tail = 0;
         *value = FALSE;
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     v->vm = svm;
     v->tail = (char *) tail;
@@ -644,7 +644,7 @@ ECode CVm::Compile(
     } else {
         //throwex(env, "vm already closed");
         *value = FALSE;
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 
 #else
@@ -701,7 +701,7 @@ ECode CVm::Stop()
     }
     if (!final) {
     //throwex(env, "vm already closed");
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     //throwex(env, "unsupported");
@@ -755,7 +755,7 @@ ECode CVm::Finalize()
     }
     if (!final) {
     //throwex(env, "vm already closed");
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #endif
     return NOERROR;

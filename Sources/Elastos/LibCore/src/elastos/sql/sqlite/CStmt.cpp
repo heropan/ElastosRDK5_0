@@ -70,14 +70,14 @@ ECode CStmt::Prepare(
     if (!svm) {
         v->tail = 0;
         *value = FALSE;
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
     v->vm = svm;
     v->tail = (char *) tail;
     v->hh.row1 = 1;
     *value = TRUE;
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -106,7 +106,7 @@ ECode CStmt::Step(
             return E_SQL_EXCEPTION;
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -131,7 +131,7 @@ ECode CStmt::Close()
         }
         return NOERROR;
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -148,7 +148,7 @@ ECode CStmt::Reset()
     if (v && v->vm && v->h) {
         sqlite3_reset((sqlite3_stmt *) v->vm);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -164,7 +164,7 @@ ECode CStmt::ClearBindings()
     if (v && v->vm && v->h) {
         sqlite3_clear_bindings((sqlite3_stmt *) v->vm);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -184,7 +184,7 @@ ECode CStmt::Bind(
     Int32 ret = 0;
 
     if (pos < 1 || pos > npar) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ret = sqlite3_bind_int((sqlite3_stmt *) v->vm, pos, value);
     if (ret != SQLITE_OK) {
@@ -192,7 +192,7 @@ ECode CStmt::Bind(
         return E_SQL_EXCEPTION;
     }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
         return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -212,7 +212,7 @@ ECode CStmt::Bind(
     Int32 ret = 0;
 
     if (pos < 1 || pos > npar) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ret = sqlite3_bind_int64((sqlite3_stmt *) v->vm, pos, value);
     if (ret != SQLITE_OK) {
@@ -220,7 +220,7 @@ ECode CStmt::Bind(
         return E_SQL_EXCEPTION;
     }
     } else {
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -240,7 +240,7 @@ ECode CStmt::Bind(
     Int32 ret = 0;
 
     if (pos < 1 || pos > npar) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ret = sqlite3_bind_double((sqlite3_stmt *) v->vm, pos, value);
     if (ret != SQLITE_OK) {
@@ -248,7 +248,7 @@ ECode CStmt::Bind(
         return E_SQL_EXCEPTION;
     }
     } else {
-    return E_SQL_NULL_POINTER_EXCEPTION;
+    return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -269,7 +269,7 @@ ECode CStmt::Bind(
         Int32 len = 0;
 
         if (pos < 1 || pos > npar) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
 
         if (value.GetPayload()) {
@@ -289,7 +289,7 @@ ECode CStmt::Bind(
             return E_SQL_EXCEPTION;
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -310,7 +310,7 @@ ECode CStmt::Bind(
         UInt32 len = 0, count = 0;
 
         if (pos < 1 || pos > npar) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         if (!value.IsNull()) {
             len = value.GetByteLength();
@@ -329,7 +329,7 @@ ECode CStmt::Bind(
             return E_SQL_EXCEPTION;
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -348,7 +348,7 @@ ECode CStmt::Bind(
     Int32 ret = 0;
 
     if (pos < 1 || pos > npar) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ret = sqlite3_bind_null((sqlite3_stmt *) v->vm, pos);
     if (ret != SQLITE_OK) {
@@ -356,7 +356,7 @@ ECode CStmt::Bind(
         return E_SQL_EXCEPTION;
     }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -376,7 +376,7 @@ ECode CStmt::BindZeroblob(
     Int32 ret = 0;
 
     if (pos < 1 || pos > npar) {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     ret = sqlite3_bind_zeroblob((sqlite3_stmt *) v->vm, pos, len);
     if (ret != SQLITE_OK) {
@@ -384,7 +384,7 @@ ECode CStmt::BindZeroblob(
         return E_SQL_EXCEPTION;
     }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -401,7 +401,7 @@ ECode CStmt::BindParameterCount(
     if (v && v->vm && v->h) {
         *count = sqlite3_bind_parameter_count((sqlite3_stmt *) v->vm);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -422,14 +422,14 @@ ECode CStmt::BindParameterName(
 
         if (pos < 1 || pos > npar) {
             *str = String(NULL) ;
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         name = sqlite3_bind_parameter_name((sqlite3_stmt *) v->vm, pos);
         if (name) {
             *str = String(name);
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -451,7 +451,7 @@ ECode CStmt::BindParameterIndex(
         pos = sqlite3_bind_parameter_index((sqlite3_stmt *) v->vm, n);
         *index = pos;
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -470,11 +470,11 @@ ECode CStmt::ColumnInt(
         Int32 ncol = sqlite3_data_count((sqlite3_stmt *) v->vm);
 
         if (col < 0 || col >= ncol) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         *value = sqlite3_column_int((sqlite3_stmt *) v->vm, col);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -493,11 +493,11 @@ ECode CStmt::ColumnLong(
         Int32 ncol = sqlite3_data_count((sqlite3_stmt *) v->vm);
 
         if (col < 0 || col >= ncol) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         *value = sqlite3_column_int64((sqlite3_stmt *) v->vm, col);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -516,7 +516,7 @@ ECode CStmt::ColumnDouble(
         Int32 ncol = sqlite3_data_count((sqlite3_stmt *) v->vm);
 
         if (col < 0 || col >= ncol) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         *value = sqlite3_column_double((sqlite3_stmt *) v->vm, col);
 
@@ -543,7 +543,7 @@ ECode CStmt::ColumnBytes(
 
         if (col < 0 || col >= ncol) {
             *array = NULL;
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         data = (const unsigned char *)sqlite3_column_blob((sqlite3_stmt *) v->vm, col);
         if (data) {
@@ -556,7 +556,7 @@ ECode CStmt::ColumnBytes(
         outchar->Copy(data,nbytes);
         *array = outchar;
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -577,7 +577,7 @@ ECode CStmt::ColumnString(
         const char *data = NULL;
 
         if (col < 0 || col >= ncol) {
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         data = (const char *)sqlite3_column_text((sqlite3_stmt *) v->vm, col);
         if (data) {
@@ -588,7 +588,7 @@ ECode CStmt::ColumnString(
         }
         *str = String((char *)data);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -608,11 +608,11 @@ ECode CStmt::ColumnType(
 
         if (col < 0 || col >= ncol) {
             *type = 0;
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         *type = sqlite3_column_type((sqlite3_stmt *) v->vm, col);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -629,7 +629,7 @@ ECode CStmt::ColumnCount(
     if (v && v->vm && v->h) {
         *count = sqlite3_column_count((sqlite3_stmt *) v->vm);
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -690,14 +690,14 @@ ECode CStmt::ColumnTableName(
 
         if (col < 0 || col >= ncol) {
             *str = String(NULL);
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         strchar = (const char *)sqlite3_column_database_name((sqlite3_stmt *) v->vm, col);
         if (strchar) {
             *str = String(strchar);
         }
     } else {
-        return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -718,14 +718,14 @@ ECode CStmt::ColumnDatabaseName(
 
         if (col < 0 || col >= ncol) {
             *str = String(NULL);
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         strchar = sqlite3_column_database_name((sqlite3_stmt *) v->vm, col);
         if (strchar) {
             *str = String(strchar);
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -746,14 +746,14 @@ ECode CStmt::ColumnDecltype(
 
         if (col < 0 || col >= ncol) {
             *str = String(NULL);
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         strchar = (const char *)sqlite3_column_decltype((sqlite3_stmt *) v->vm, col);
         if (strchar) {
             *str = String((char *)strchar);
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;
@@ -774,14 +774,14 @@ ECode CStmt::ColumnOriginName(
 
         if (col < 0 || col >= ncol) {
             *str = String(NULL);
-            return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         strchar = sqlite3_column_origin_name((sqlite3_stmt *) v->vm, col);
         if (strchar) {
             *str = String(strchar));
         }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;

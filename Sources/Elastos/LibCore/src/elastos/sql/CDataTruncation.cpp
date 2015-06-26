@@ -6,15 +6,25 @@ using Elastos::IO::EIID_ISerializable;
 namespace Elastos {
 namespace Sql {
 
-const String CDataTruncation::THE_REASON = String("Data truncation");
+const String CDataTruncation::THE_REASON("Data truncation");
+const String CDataTruncation::THE_SQLSTATE_READ("01004");
+const String CDataTruncation::THE_SQLSTATE_WRITE("22001");
 
-const String CDataTruncation::THE_SQLSTATE_READ = String("01004");
-
-const String CDataTruncation::THE_SQLSTATE_WRITE = String("22001");
+const Int32 CDataTruncation::THE_ERROR_CODE = 0;
 
 CAR_OBJECT_IMPL(CDataTruncation);
 
 CAR_INTERFACE_IMPL_3(CDataTruncation, Object, IDataTruncation, ISQLWarning, ISerializable);
+
+CDataTruncation::CDataTruncation()
+    : mIndex(0)
+    , mDataSize(0)
+    , mTransferSize(0)
+    , mParameter(0)
+    , mRead(0)
+{
+
+}
 
 ECode CDataTruncation::constructor(
     /* [in] */ Int32 index,
@@ -23,65 +33,69 @@ ECode CDataTruncation::constructor(
     /* [in] */ Int32 dataSize,
     /* [in] */ Int32 transferSize)
 {
-    assert(0 && "TODO");
     //super(THE_REASON, THE_SQLSTATE_READ, THE_ERROR_CODE);
-    this->index = index;
-    this->parameter = parameter;
-    this->read = read;
-    this->dataSize = dataSize;
-    this->transferSize = transferSize;
+    mIndex = index;
+    mParameter = parameter;
+    mRead = read;
+    mDataSize = dataSize;
+    mTransferSize = transferSize;
     return NOERROR;
 }
 
-// ECode CDataTruncation::constructor(
-//     /* [in] */ Int32 index,
-//     /* [in] */ Boolean parameter,
-//     /* [in] */ Boolean read,
-//     /* [in] */ Int32 dataSize,
-//     /* [in] */ Int32 transferSize,
-//     /* [in] */ IThrowable * cause)
-// {
-//     //super(THE_REASON, read ? THE_SQLSTATE_READ : THE_SQLSTATE_WRITE, THE_ERROR_CODE, cause);
-//     this->index = index;
-//     this->parameter = parameter;
-//     this->read = read;
-//     this->dataSize = dataSize;
-//     this->transferSize = transferSize;
-//     return NOERROR;
-// }
+ECode CDataTruncation::constructor(
+    /* [in] */ Int32 index,
+    /* [in] */ Boolean parameter,
+    /* [in] */ Boolean read,
+    /* [in] */ Int32 dataSize,
+    /* [in] */ Int32 transferSize,
+    /* [in] */ IThrowable * cause)
+{
+    //super(THE_REASON, read ? THE_SQLSTATE_READ : THE_SQLSTATE_WRITE, THE_ERROR_CODE, cause);
+    mIndex = index;
+    mParameter = parameter;
+    mRead = read;
+    mDataSize = dataSize;
+    mTransferSize = transferSize;
+    return NOERROR;
+}
 
 ECode CDataTruncation::GetDataSize(
     /* [out] */ Int32* size)
 {
-    *size = dataSize;
+    VALIDATE_NOT_NULL(size)
+    *size = mDataSize;
     return NOERROR;
 }
 
 ECode CDataTruncation::GetIndex(
     /* [out] */ Int32* index)
 {
-    *index = this->index;
+    VALIDATE_NOT_NULL(index)
+    *index = mIndex;
     return NOERROR;
 }
 
 ECode CDataTruncation::GetParameter(
     /* [out] */ Boolean* isPara)
 {
-    *isPara = parameter;
+    VALIDATE_NOT_NULL(isPara)
+    *isPara = mParameter;
     return NOERROR;
 }
 
 ECode CDataTruncation::GetRead(
     /* [out] */ Boolean* isRead)
 {
-    *isRead = read;
+    VALIDATE_NOT_NULL(isRead)
+    *isRead = mRead;
     return NOERROR;
 }
 
 ECode CDataTruncation::GetTransferSize(
     /* [out] */ Int32* size)
 {
-    *size = transferSize;
+    VALIDATE_NOT_NULL(size)
+    *size = mTransferSize;
     return NOERROR;
 }
 

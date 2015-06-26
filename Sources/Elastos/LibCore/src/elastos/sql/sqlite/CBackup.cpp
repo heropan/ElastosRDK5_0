@@ -151,12 +151,12 @@ ECode CBackup::_Step(
                 break;
             default:
                 *state = FALSE;
-                return E_SQL_ILLEGAL_ARGUMENT_EXCEPTION;
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 break;
         }
     }
     } else {
-        return E_SQL_NULL_POINTER_EXCEPTION;
+        return E_NULL_POINTER_EXCEPTION;
     }
 #else
     return E_SQL_FEATURE_NOT_SUPPORTED_EXCEPTION;

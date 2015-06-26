@@ -436,7 +436,7 @@ ECode CJDBCConnection::SetClientInfo(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
-    return E_SQL_CLINETINFO_EXCEPTION;
+    return E_SQL_CLINET_INFO_EXCEPTION;
 }
 
 ECode CJDBCConnection::GetClientInfo(
@@ -641,7 +641,7 @@ ECode CJDBCConnection::IsWrapperFor(
 ECode CJDBCConnection::SetClientInfo(
     /* [in] */ IProperties* properties)
 {
-    return E_SQL_CLINETINFO_EXCEPTION;
+    return E_SQL_CLINET_INFO_EXCEPTION;
 }
 
 ECode CJDBCConnection::CreateArrayOf(
