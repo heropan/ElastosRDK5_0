@@ -25,16 +25,4 @@ ${InterfaceNamespaceEnd(interface)}$^
 $  END IF;; not sink
 $END DO ;; all interfaces
 $
-$WITH all classes DO
-$   IF type is not "sink" and type is not "clsobj" and attrib is not "private" and type is not "generic"
-${ClassNamespaceBegin(class)}$^
-$TEMPLATE "headercpp/basenewimpl.lub"
-$
-$
-$IF type is not "generic" and attrib is not "private"
-$TEMPLATE "headercpp/classnewimpl.lub"
-$END IF
-${ClassNamespaceEnd(class)}$^
-$   END IF ;; is not sink and is not private and is not clsobj and is not "generic"
-$END DO ;; all classes
 $END OUTPUT

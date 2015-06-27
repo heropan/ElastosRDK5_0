@@ -1,55 +1,54 @@
 $ INPUT class
+$ IF type is not "aspect"
 $   IF attrib is not "hasctor" OR attrib is "hasdefaultctor"
 $   WITH all interfaces DO
 $       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
 
 $           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingletonInRegime(
+    static _ELASTOS ECode AcquireSingletonInRegime(
 $           ELSE
-ECode ${class.name}::NewInRegime(
+    static _ELASTOS ECode NewInRegime(
 $           END IF ;; is singleton
-    /* [in] */ IRegime* regime,
-    /* [out] */ ${namespace}${name}** ${name})
-{
-
-    return _CObject_CreateInstance(ECLSID_${class.name}, regime, ${namespace}EIID_${name}, (IInterface**)${name});
-
-}
+        /* [in] */ IRegime* regime,
+        /* [out] */ ${namespace}${name}** ${name})
+    {
+        return _CObject_CreateInstance(ECLSID_${class.name}, regime, ${namespace}EIID_${name}, (IInterface**)${name});
+    }
 
 $           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingletonInRegime(
+    static _ELASTOS ECode AcquireSingletonInRegime(
 $           ELSE
-ECode ${class.name}::NewInRegime(
+    static _ELASTOS ECode NewInRegime(
 $           END IF ;; is singleton
-    /* [in] */ PInterface __regime,
-    /* [out] */ ${namespace}${name}** __${name})
-{
-    PRegime regime = NULL;
+        /* [in] */ PInterface __regime,
+        /* [out] */ ${namespace}${name}** __${name})
+    {
+        PRegime regime = NULL;
 
-    if (!IS_RGM_NUMBER(__regime)){
-        regime = IRegime::Probe(__regime);
-        if (!regime) return E_NO_INTERFACE;
-    }
-    else regime = (PRegime)__regime;
+        if (!IS_RGM_NUMBER(__regime)){
+            regime = IRegime::Probe(__regime);
+            if (!regime) return E_NO_INTERFACE;
+        }
+        else regime = (PRegime)__regime;
 
-    return $^
+        return $^
 $           IF class.attrib is "singleton"
 AcquireSingletonInRegime($^
 $           ELSE
 NewInRegime($^
 $           END IF ;; is singleton
 regime, __${name});
-}
+    }
 
 $           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingleton(
+    static _ELASTOS ECode AcquireSingleton(
 $           ELSE
-ECode ${class.name}::New(
+    static _ELASTOS ECode New(
 $           END IF ;; is singleton
-    /* [out] */ ${namespace}${name}** ${name})
-{
-    return _CObject_CreateInstance(ECLSID_${class.name}, RGM_SAME_DOMAIN, ${namespace}EIID_${name}, (PInterface*)${name});
-}
+        /* [out] */ ${namespace}${name}** ${name})
+    {
+        return _CObject_CreateInstance(ECLSID_${class.name}, RGM_SAME_DOMAIN, ${namespace}EIID_${name}, (PInterface*)${name});
+    }
 $
 $       END IF ;; attrib is not clsobj and is not callback and ...
 $   END DO ;; all interfaces
@@ -64,30 +63,30 @@ $                   WITH all interfaces DO
 $                       IF attrib is not "clsobj" AND attrib is not "callback" and attrib is not "callbacksink" and attrib is not "delegatesink" and attrib is not "filter"
 
 $                           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingletonInRegime(
+    static _ELASTOS ECode AcquireSingletonInRegime(
 $                           ELSE
-ECode ${class.name}::NewInRegime(
+    static _ELASTOS ECode NewInRegime(
 $                           END IF ;; is singleton
-    /* [in] */ PInterface __regime$^
+        /* [in] */ PInterface __regime$^
 $                           WITH all parameters DO
 ,
 $                               IF parameter is not last
-    /* [${attrib}] */ ${ParamNamespaceType(type)} ${name}$^
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${name}$^
 $                               ELSE
-    /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
+        /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
-{
-    IInterface* __pNewObj;
-    PRegime pRegime = NULL;
+    {
+        IInterface* __pNewObj;
+        PRegime pRegime = NULL;
 
-    if (!IS_RGM_NUMBER(__regime)){
-        pRegime = IRegime::Probe(__regime);
-        if (!pRegime) return E_NO_INTERFACE;
-    }
-    else pRegime = (PRegime)__regime;
+        if (!IS_RGM_NUMBER(__regime)){
+            pRegime = IRegime::Probe(__regime);
+            if (!pRegime) return E_NO_INTERFACE;
+        }
+        else pRegime = (PRegime)__regime;
 
-    ECode ec = $^
+        _ELASTOS ECode ec = $^
 $                           IF class.attrib is "singleton"
 _AcquireSingletonInRegime($^
 $                           ELSE
@@ -102,30 +101,30 @@ $                               ELSE
 &__pNewObj);
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
-    if (FAILED(ec)) return ec;
+        if (FAILED(ec)) return ec;
 
-    *__${name} = ${namespace}${name}::Probe(__pNewObj);
-    if (*__${name}) (*__${name})->AddRef();
-    else ec = E_NO_INTERFACE;
-    __pNewObj->Release();
+        *__${name} = ${namespace}${name}::Probe(__pNewObj);
+        if (*__${name}) (*__${name})->AddRef();
+        else ec = E_NO_INTERFACE;
+        __pNewObj->Release();
 
-    return ec;
-}
+        return ec;
+    }
 
 $                           IF class.attrib is "singleton"
-ECode ${class.name}::AcquireSingleton(
+    static _ELASTOS ECode AcquireSingleton(
 $                           ELSE
-ECode ${class.name}::New(
+    static _ELASTOS ECode New(
 $                           END IF ;; is singleton
 $                           WITH all parameters DO
 $                               IF parameter is not last
-    /* [${attrib}] */ ${ParamNamespaceType(type)} ${name},
+        /* [${attrib}] */ ${ParamNamespaceType(type)} ${name},
 $                               ELSE
-    /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
+        /* [out] */ ${interface.namespace}${interface.name}** __${interface.name})
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
-{
-    return $^
+    {
+        return $^
 $                           IF class.attrib is "singleton"
 AcquireSingletonInRegime($^
 $                           ELSE
@@ -140,7 +139,7 @@ $                               ELSE
 __${interface.name});
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
-}
+    }
 $                       END IF ;; attrib is not clsobj and is not callback and ...
 $                   END DO ;; all interfaces
 $               END IF ;; is not defaultctor
@@ -148,3 +147,17 @@ $           END DO ;; all methods
 $       END IF ;; is clsobj
 $   END DO ;; all interfaces
 $   END IF ;; attrib is hasctor
+$
+$ ELSE ;; !(is not aspect)
+$
+    CAR_INLINE static _ELASTOS ECode Attach(/* [in] */ IInterface* pObject)
+    {
+        return _CObject_AttachAspect(pObject, ECLSID_${name});
+    }
+
+    CAR_INLINE static _ELASTOS ECode Detach(/* [in] */ IInterface* pObject)
+    {
+        return _CObject_DetachAspect(pObject, ECLSID_${name});
+    }
+$
+$ END IF ;; is not aspect
