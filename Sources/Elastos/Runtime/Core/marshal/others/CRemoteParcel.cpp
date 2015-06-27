@@ -272,7 +272,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                 pItfPack = (InterfacePack*)m_elemPtr;
                 m_elemPtr = (UInt32*)((InterfacePack*)m_elemPtr + 1);
                 if (IsParcelable(pItfPack, &pClassInfo)) {
-                    classId.clsid = pItfPack->m_clsid;
+                    classId.clsid = pItfPack->mClsid;
                     classId.pUunm = pClassInfo->pszUunm;
 
                     ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
@@ -280,7 +280,7 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                     if (FAILED(ec)) return ec;
 
                     pParcelable->ReadFromParcel(this);
-                    iid = pClassInfo->interfaces[pItfPack->m_uIndex]->iid;
+                    iid = pClassInfo->interfaces[pItfPack->mIndex]->iid;
                     *(IInterface**)pValue = pParcelable->Probe(iid);
                 }
                 else {
@@ -745,10 +745,10 @@ Boolean CRemoteParcel::IsParcelable(
     CIInterfaceInfo *pInterfaceInfo = NULL;
     ECode ec;
 
-    ec = LookupClassInfo(pInterfacePack->m_clsid, ppClassInfo);
+    ec = LookupClassInfo(pInterfacePack->mClsid, ppClassInfo);
     if (FAILED(ec)) {
         ec = GetRemoteClassInfo(pInterfacePack->m_stubConnName,
-                                pInterfacePack->m_clsid,
+                                pInterfacePack->mClsid,
                                 ppClassInfo);
         if (FAILED(ec)) return FALSE;
     }

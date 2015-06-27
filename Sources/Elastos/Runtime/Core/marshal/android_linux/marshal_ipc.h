@@ -11,19 +11,19 @@ namespace IPC {
 
 typedef struct InterfacePack
 {
-    EMuid               m_clsid;            // clsid of object
-    UInt32              m_uIndex;           // interface index in class
-    android::sp<android::IBinder> m_pBinder;// binder object of stub
-}   InterfacePack;
+    EMuid               mClsid;            // clsid of object
+    UInt32              mIndex;           // interface index in class
+    android::sp<android::IBinder> mBinder;// binder object of stub
+} InterfacePack;
 
 extern ECode StdMarshalInterface(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfacePack *pInterfacePack);
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfacePack* interfacePack);
 
 extern ECode StdUnmarshalInterface(
     /* [in] */ UnmarshalFlag flag,
-    /* [in] */ InterfacePack *pInterfacePack,
-    /* [out] */ IInterface **ppObject);
+    /* [in] */ InterfacePack* interfacePack,
+    /* [out] */ IInterface** object);
 
 } // namespace IPC
 } // namespace Elastos

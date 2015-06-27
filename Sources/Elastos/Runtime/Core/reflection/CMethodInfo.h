@@ -76,7 +76,7 @@ public:
 
 public:
     MethodDescriptor   *m_pMethodDescriptor;
-    UInt32              m_uIndex;
+    UInt32              mIndex;
     CLSModule          *m_pClsMod;
     AutoPtr<CClsModule> m_pCClsModule;
 

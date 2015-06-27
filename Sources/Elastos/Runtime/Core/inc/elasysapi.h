@@ -21,55 +21,55 @@ class CReflector
 public:
     STATIC CARAPI AcquireModuleInfo(
         /* [in] */ const String& name,
-        /* [out] */ IModuleInfo **ppModuleInfo)
+        /* [out] */ IModuleInfo** moduleInfo)
     {
-        return _CReflector_AcquireModuleInfo(name, ppModuleInfo);
+        return _CReflector_AcquireModuleInfo(name, moduleInfo);
     }
 
     STATIC CARAPI AcquireIntrinsicTypeInfo(
         /* [in] */ CarDataType intrinsicType,
-        /* [out] */ IDataTypeInfo **ppIntrinsicTypeInfo)
+        /* [out] */ IDataTypeInfo** intrinsicTypeInfo)
     {
         return _CReflector_AcquireIntrinsicTypeInfo(intrinsicType,
-            ppIntrinsicTypeInfo);
+                intrinsicTypeInfo);
     }
 
     STATIC CARAPI AcquireEnumInfo(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<String>* itemNames,
         /* [in] */ ArrayOf<Int32>* itemValues,
-        /* [out] */ IEnumInfo **ppEnumInfo)
+        /* [out] */ IEnumInfo** enumInfo)
     {
         return _CReflector_AcquireEnumInfo(name, itemNames, itemValues,
-            ppEnumInfo);
+                enumInfo);
     }
 
     STATIC CARAPI AcquireCppVectorInfo(
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
+        /* [in] */ IDataTypeInfo* elementTypeInfo,
         /* [in] */ Int32 length,
-        /* [out] */ ICppVectorInfo **ppCppVectorInfo)
+        /* [out] */ ICppVectorInfo** cppVectorInfo)
     {
-        return _CReflector_AcquireCppVectorInfo(pElementTypeInfo, length,
-            ppCppVectorInfo);
+        return _CReflector_AcquireCppVectorInfo(elementTypeInfo, length,
+                cppVectorInfo);
     }
 
     STATIC CARAPI AcquireStructInfo(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<String>* fieldNames,
         /* [in] */ ArrayOf<IDataTypeInfo *>* fieldTypeInfos,
-        /* [out] */ IStructInfo **ppStructInfo)
+        /* [out] */ IStructInfo** structInfo)
     {
         return _CReflector_AcquireStructInfo(name, fieldNames,
-            fieldTypeInfos, ppStructInfo);
+                fieldTypeInfos, structInfo);
     }
 
     STATIC CARAPI AcquireCarArrayInfo(
         /* [in] */ CarDataType quintetType,
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
-        /* [out] */ ICarArrayInfo **ppCarArrayInfo)
+        /* [in] */ IDataTypeInfo* elementTypeInfo,
+        /* [out] */ ICarArrayInfo** carArrayInfo)
     {
-        return _CReflector_AcquireCarArrayInfo(quintetType, pElementTypeInfo,
-            ppCarArrayInfo);
+        return _CReflector_AcquireCarArrayInfo(quintetType, elementTypeInfo,
+                carArrayInfo);
     }
 };
 
@@ -77,70 +77,74 @@ class CObject
 {
 public:
     STATIC CARAPI_(Boolean) Compare(
-        /* [in] */ PInterface pObjectA,
-        /* [in] */ PInterface pObjectB)
+        /* [in] */ PInterface objectA,
+        /* [in] */ PInterface objectB)
     {
-        return _CObject_Compare(pObjectA, pObjectB);
+        return _CObject_Compare(objectA, objectB);
     }
 
-    STATIC CARAPI EnterRegime(PInterface pObject, PRegime pRegime)
+    STATIC CARAPI EnterRegime(
+        /* [in] */ PInterface object,
+        /* [in] */ PRegime regime)
     {
-        if (!pRegime) return E_NO_INTERFACE;
-        return _CObject_EnterRegime(pObject, pRegime);
+        if (!regime) return E_NO_INTERFACE;
+        return _CObject_EnterRegime(object, regime);
     }
 
-    STATIC CARAPI LeaveRegime(PInterface pObject, PRegime pRegime)
+    STATIC CARAPI LeaveRegime(
+        /* [in] */ PInterface object,
+        /* [in] */ PRegime regime)
     {
-        if (!pRegime) return E_NO_INTERFACE;
-        return _CObject_LeaveRegime(pObject, pRegime);
+        if (!regime) return E_NO_INTERFACE;
+        return _CObject_LeaveRegime(object, regime);
     }
 
     STATIC CARAPI CreateInstance(
-        RClassID rclsid,
-        PRegime pRegime,
-        REIID riid,
-        PInterface *ppObj)
+        /* [in] */ RClassID rclsid,
+        /* [in] */ PRegime regime,
+        /* [in] */ REIID riid,
+        /* [out] */ PInterface* object)
     {
-        return _CObject_CreateInstance(rclsid, pRegime, riid, ppObj);
+        return _CObject_CreateInstance(rclsid, regime, riid, object);
     }
 
     STATIC CARAPI CreateInstanceEx(
-        RClassID rclsid,
-        PRegime pRegime,
-        UInt32 cmq,
-        PMULTIQI pResults)
+        /* [in] */ RClassID rclsid,
+        /* [in] */ PRegime regime,
+        /* [in] */ UInt32 cmq,
+        /* [out] */ PMULTIQI results)
     {
-        return _CObject_CreateInstanceEx(rclsid, pRegime, cmq, pResults);
+        return _CObject_CreateInstanceEx(rclsid, regime, cmq, results);
     }
 
     STATIC CARAPI AcquireClassFactory(
-        RClassID rclsid,
-        PRegime pRegime,
-        REIID iid,
-        PInterface *ppObject)
+        /* [in] */ RClassID rclsid,
+        /* [in] */ PRegime regime,
+        /* [in] */ REIID iid,
+        /* [out] */ PInterface* object)
     {
-        return _CObject_AcquireClassFactory(rclsid, pRegime, iid, ppObject);
+        return _CObject_AcquireClassFactory(rclsid, regime, iid, object);
     }
 
     STATIC CARAPI ReflectModuleInfo(
-        PInterface pObj,
-        IModuleInfo **piModuleInfo)
+        /* [in] */ PInterface object,
+        /* [out] */ IModuleInfo** moduleInfo)
     {
-        return _CObject_ReflectModuleInfo(pObj, piModuleInfo);
+        return _CObject_ReflectModuleInfo(object, moduleInfo);
     }
 
     STATIC CARAPI ReflectClassInfo(
-        PInterface pObj,
-        IClassInfo **piClassInfo)
+        /* [in] */ PInterface object,
+        /* [out] */ IClassInfo** classInfo)
     {
-        return _CObject_ReflectClassInfo(pObj, piClassInfo);
+        return _CObject_ReflectClassInfo(object, classInfo);
     }
 
     STATIC CARAPI ReflectInterfaceInfo(
-        PInterface pObj,
-        IInterfaceInfo **piInterfaceInfo)
+        /* [in] */ PInterface object,
+        /* [out] */ IInterfaceInfo** interfaceInfo)
     {
-        return _CObject_ReflectInterfaceInfo(pObj, piInterfaceInfo);
+        return _CObject_ReflectInterfaceInfo(object, interfaceInfo);
     }
 };
 
@@ -148,9 +152,9 @@ class CCallbackParcel
 {
 public:
     STATIC CARAPI New(
-        /* [out] */ IParcel ** ppParcel)
+        /* [out] */ IParcel** parcel)
     {
-        return _CCallbackParcel_New(ppParcel);
+        return _CCallbackParcel_New(parcel);
     }
 };
 
@@ -158,9 +162,9 @@ class CParcel
 {
 public:
     STATIC CARAPI New(
-        /* [out] */ IParcel ** ppParcel)
+        /* [out] */ IParcel** parcel)
     {
-        return _CParcel_New(ppParcel);
+        return _CParcel_New(parcel);
     }
 };
 

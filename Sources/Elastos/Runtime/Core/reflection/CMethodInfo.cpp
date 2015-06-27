@@ -27,7 +27,7 @@ CMethodInfo::CMethodInfo(
     /* [in] */ UInt32 uIndex)
 {
     m_pMethodDescriptor = pMethodDescriptor;
-    m_uIndex = uIndex;
+    mIndex = uIndex;
     m_pCClsModule = pCClsModule;
     m_pClsMod = m_pCClsModule->m_pClsMod;
     m_pParamElem = NULL;
@@ -64,7 +64,7 @@ UInt32 CMethodInfo::Release()
     Int32 nRef = atomic_dec(&mRef);
 
     if (0 == nRef) {
-        g_objInfoList.RemoveMethodInfo(m_pMethodDescriptor, m_uIndex);
+        g_objInfoList.RemoveMethodInfo(m_pMethodDescriptor, mIndex);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Method);
@@ -419,7 +419,7 @@ ECode CMethodInfo::Invoke(
     }
 
     InterfaceDirEntry* pIFDir = getInterfaceDirAddr(m_nBase,
-            m_pClsMod->ppInterfaceDir, INTERFACE_INDEX(m_uIndex));
+            m_pClsMod->ppInterfaceDir, INTERFACE_INDEX(mIndex));
     EIID iid = adjustInterfaceDescAddr(m_nBase, pIFDir->pDesc)->iid;
     PInterface pVObject;
     pVObject = target->Probe(iid);
@@ -431,6 +431,6 @@ ECode CMethodInfo::Invoke(
     *(PInterface *)pParamBuf = pVObject;
 
     VObject* vobj = reinterpret_cast<VObject*>(pVObject);
-    void* pMethodAddr = vobj->vtab->methods[METHOD_INDEX(m_uIndex)];
+    void* pMethodAddr = vobj->vtab->methods[METHOD_INDEX(mIndex)];
     return (ECode)invoke(pMethodAddr, pParamBuf,  m_uParamBufSize);
 }

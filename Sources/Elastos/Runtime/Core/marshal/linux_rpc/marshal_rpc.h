@@ -10,8 +10,8 @@ namespace RPC {
 
 typedef struct InterfacePack
 {
-    EMuid               m_clsid;            // clsid of object
-    UInt32              m_uIndex;           // interface index in class
+    EMuid               mClsid;            // clsid of object
+    UInt32              mIndex;           // interface index in class
     String              m_sNetAddress;      // net address of stub
 }   InterfacePack;
 

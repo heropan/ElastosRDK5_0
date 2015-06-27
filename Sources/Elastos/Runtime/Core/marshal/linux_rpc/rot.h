@@ -11,14 +11,14 @@ namespace RPC {
 typedef struct ExportObject: SLinkNode
 {
     String              m_sNetAddress;
-    IInterface          *m_pObject;
-    IStub               *m_pIStub;
+    IInterface          *mObject;
+    IStub               *mIStub;
 } ExportObject;
 
 typedef struct ImportObject: SLinkNode
 {
     String              m_sNetAddress;
-    IProxy              *m_pIProxy;
+    IProxy              *mIProxy;
 } ImportObject;
 
 extern ECode InitROT();

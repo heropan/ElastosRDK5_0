@@ -31,268 +31,273 @@ typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCallbackEventHandleRoutine)(_ELASTOS PV
 
 typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCoalesceEventFunc)(_ELASTOS PVoid* ppOld, _ELASTOS PVoid* ppNew);
 
-class _EzCallbackEvent
+class CarCallbackEvent
 {
 public:
-    _EzCallbackEvent()
-        : m_id(0)
-        , m_flags(0)
-        , m_pSender(NULL)
-        , m_pReceiver(NULL)
-        , m_pCoalesceFunc(NULL)
-        , m_pHandlerThis(NULL)
-        , m_pHandlerFunc(NULL)
-        , m_typeOfFunc(0)
-        , m_ecRet(NOERROR)
-        , m_Status(CallingStatus_Created)
-        , m_bCompleted(0)
-        , m_pParameters(NULL)
-        , m_pPrev(NULL)
-        , m_pNext(NULL)
-        , m_when(0)
-        , m_cRef(0)
+    CarCallbackEvent()
+        : mID(0)
+        , mFlags(0)
+        , mSender(NULL)
+        , mReceiver(NULL)
+        , mCoalesceFunc(NULL)
+        , mHandlerThis(NULL)
+        , mHandlerFunc(NULL)
+        , mTypeOfFunc(0)
+        , mRet(NOERROR)
+        , mStatus(CallingStatus_Created)
+        , mCompleted(0)
+        , mParameters(NULL)
+        , mPrev(NULL)
+        , mNext(NULL)
+        , mWhen(0)
+        , mRef(0)
     {
-        sem_init(&m_pSyncEvent, 0, 0);
-        AddRef();
+        sem_init(&mSyncEvent, 0, 0);
     }
 
-    _EzCallbackEvent(
-        CallbackEventId id,
-        CallbackEventFlags flags,
-        PInterface pSender,
-        PInterface pReceiver,
-        _ELASTOS PVoid pCoalesceFunc,
-        _ELASTOS PVoid pHandlerThis,
-        _ELASTOS PVoid pHandlerFunc,
-        _ELASTOS Int32 typeOfFunc,
-        IParcel* pParameters)
-        : m_id(id)
-        , m_flags(flags)
-        , m_pSender(pSender)
-        , m_pReceiver(pReceiver)
-        , m_pCoalesceFunc(pCoalesceFunc)
-        , m_pHandlerThis(pHandlerThis)
-        , m_pHandlerFunc(pHandlerFunc)
-        , m_typeOfFunc(typeOfFunc)
-        , m_ecRet(NOERROR)
-        , m_Status(CallingStatus_Created)
-        , m_bCompleted(0)
-        , m_pParameters(pParameters)
-        , m_pPrev(NULL)
-        , m_pNext(NULL)
-        , m_when(0)
-        , m_cRef(0)
+    CarCallbackEvent(
+        /* [in] */ CallbackEventId id,
+        /* [in] */ CallbackEventFlags flags,
+        /* [in] */ PInterface sender,
+        /* [in] */ PInterface receiver,
+        /* [in] */ _ELASTOS PVoid coalesceFunc,
+        /* [in] */ _ELASTOS PVoid handlerThis,
+        /* [in] */ _ELASTOS PVoid handlerFunc,
+        /* [in] */ _ELASTOS Int32 typeOfFunc,
+        /* [in] */ IParcel* parameters)
+        : mID(id)
+        , mFlags(flags)
+        , mSender(sender)
+        , mReceiver(receiver)
+        , mCoalesceFunc(coalesceFunc)
+        , mHandlerThis(handlerThis)
+        , mHandlerFunc(handlerFunc)
+        , mTypeOfFunc(typeOfFunc)
+        , mRet(NOERROR)
+        , mStatus(CallingStatus_Created)
+        , mCompleted(0)
+        , mParameters(parameters)
+        , mPrev(NULL)
+        , mNext(NULL)
+        , mWhen(0)
+        , mRef(0)
     {
-        if (m_pSender) m_pSender->AddRef();
-        if (m_pParameters) m_pParameters->AddRef();
-        sem_init(&m_pSyncEvent, 0, 0);
-        AddRef();
+        sem_init(&mSyncEvent, 0, 0);
     }
 
-    virtual ~_EzCallbackEvent()
+    virtual ~CarCallbackEvent()
     {
-        if (m_pSender) m_pSender->Release();
-        if (m_pParameters) m_pParameters->Release();
-
-        sem_post(&m_pSyncEvent);
-        sem_destroy(&m_pSyncEvent);
+        sem_post(&mSyncEvent);
+        sem_destroy(&mSyncEvent);
     }
 
     _ELASTOS UInt32 AddRef()
     {
-        _ELASTOS Int32 ref = atomic_inc(&m_cRef);
+        _ELASTOS Int32 ref = atomic_inc(&mRef);
         return (_ELASTOS UInt32)ref;
     }
 
     _ELASTOS UInt32 Release()
     {
-        _ELASTOS Int32 nRef = atomic_dec(&m_cRef);
+        _ELASTOS Int32 nRef = atomic_dec(&mRef);
         if (nRef == 0) _Impl_CallbackSink_FreeCallbackEvent(this);
         return nRef;
     }
 
-    _EzCallbackEvent *Prev() const { return m_pPrev; }
+    CarCallbackEvent* Prev() const { return mPrev; }
 
     // Return the next node.
-    _EzCallbackEvent *Next() const { return m_pNext; }
+    CarCallbackEvent* Next() const { return mNext; }
 
-    _EzCallbackEvent *Detach()
+    CarCallbackEvent* Detach()
     {
-        m_pPrev->m_pNext = m_pNext;
-        m_pNext->m_pPrev = m_pPrev;
+        mPrev->mNext = mNext;
+        mNext->mPrev = mPrev;
     #ifdef _DEBUG
-        m_pPrev = m_pNext = (_EzCallbackEvent *)INVALID_ADDRVALUE;
+        mPrev = mNext = (CarCallbackEvent *)INVALID_ADDRVALUE;
     #endif
 
         return this;
     }
 
-    void Initialize() { m_pPrev = m_pNext = this; }
+    void Initialize() { mPrev = mNext = this; }
 
-    _ELASTOS Boolean IsEmpty() const { return this == m_pNext; }
+    _ELASTOS Boolean IsEmpty() const { return this == mNext; }
 
-    _EzCallbackEvent *First() const { return Next(); }
+    CarCallbackEvent* First() const { return Next(); }
 
-    _EzCallbackEvent *InsertNext(_EzCallbackEvent *pNextNode)
+    CarCallbackEvent* InsertNext(
+        /* [in] */ CarCallbackEvent* nextNode)
     {
-        assert(pNextNode);
+        assert(nextNode);
 
-        pNextNode->m_pPrev  = this;
-        pNextNode->m_pNext  = m_pNext;
-        m_pNext->m_pPrev    = pNextNode;
-        m_pNext             = pNextNode;
+        nextNode->mPrev = this;
+        nextNode->mNext = mNext;
+        mNext->mPrev = nextNode;
+        mNext = nextNode;
 
-        return pNextNode;
+        return nextNode;
     }
 
-    _EzCallbackEvent *InsertFirst(_EzCallbackEvent *pFirstNode)
+    CarCallbackEvent* InsertFirst(
+        /* [in] */ CarCallbackEvent* firstNode)
     {
-        return InsertNext(pFirstNode);
+        return InsertNext(firstNode);
     }
 
 public:
-    CallbackEventId             m_id;
-    CallbackEventFlags          m_flags;
-    PInterface                  m_pSender;
-    PInterface                  m_pReceiver;
-    _ELASTOS PVoid              m_pCoalesceFunc;
-    _ELASTOS PVoid              m_pHandlerThis;
-    _ELASTOS PVoid              m_pHandlerFunc;
-    _ELASTOS Int32              m_typeOfFunc;
-    _ELASTOS ECode              m_ecRet;
-    sem_t                       m_pSyncEvent;
-    _ELASTOS Int16              m_Status;
-    _ELASTOS Int16              m_bCompleted;
-    IParcel*                    m_pParameters;
-    _EzCallbackEvent            *m_pPrev;
-    _EzCallbackEvent            *m_pNext;
-    _ELASTOS Millisecond64      m_when;
+    CallbackEventId                 mID;
+    CallbackEventFlags              mFlags;
+    _ELASTOS AutoPtr<IInterface>    mSender;
+    PInterface                      mReceiver;
+    _ELASTOS PVoid                  mCoalesceFunc;
+    _ELASTOS PVoid                  mHandlerThis;
+    _ELASTOS PVoid                  mHandlerFunc;
+    _ELASTOS Int32                  mTypeOfFunc;
+    _ELASTOS ECode                  mRet;
+    sem_t                           mSyncEvent;
+    _ELASTOS Int16                  mStatus;
+    _ELASTOS Int16                  mCompleted;
+    _ELASTOS AutoPtr<IParcel>       mParameters;
+    CarCallbackEvent*               mPrev;
+    CarCallbackEvent*               mNext;
+    _ELASTOS Millisecond64          mWhen;
+
 private:
-    _ELASTOS Int32              m_cRef;
+    _ELASTOS Int32                  mRef;
 };
 
-typedef class _EzCallbackEvent  *PCallbackEvent;
+typedef class CarCallbackEvent* PCallbackEvent;
 
 ELAPI _Impl_CallbackSink_InitCallbackContext(
-            PInterface *ppCallbackContext);
+    /* [out] */ PInterface* callbackContext);
 
 ELAPI _Impl_CallbackSink_GetCallbackContext(
-            PInterface *ppCallbackContext);
+    /* [out] */ PInterface* callbackContext);
 
 ELAPI _Impl_CallbackSink_AcquireCallbackContext(
-            PInterface *ppCallbackContext);
+    /* [out] */ PInterface* callbackContext);
 
 ELAPI_(PCallbackEvent) _Impl_CallbackSink_AllocCallbackEvent(
-            _ELASTOS MemorySize size);
+    /* [in] */ _ELASTOS Int32 size);
 
 ELAPI _Impl_CallbackSink_GetThreadEvent(
-            PInterface pCallbackContext, sem_t* ppEvent);
+    /* [in] */ PInterface callbackContext,
+    /* [out] */ sem_t* event);
 
 ELAPI _Impl_CallbackSink_PostCallbackEvent(
-            PInterface pCallbackContext,
-            PCallbackEvent pCallbackEvent);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PCallbackEvent callbackEvent);
 
 ELAPI _Impl_CallbackSink_PostCallbackEventAtTime(
-            PInterface pCallbackContext,
-            PCallbackEvent pCallbackEvent,
-            _ELASTOS Millisecond64 uptimeMillis);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PCallbackEvent callbackEvent,
+    /* [in] */ _ELASTOS Millisecond64 uptimeMillis);
 
 ELAPI _Impl_CallbackSink_SendCallbackEvent(
-            PInterface pCallbackContext,
-            PCallbackEvent pCallbackEvent,
-            _ELASTOS Millisecond32 timeOut);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PCallbackEvent callbackEvent,
+    /* [in] */ _ELASTOS Millisecond32 timeOut);
 
 ELAPI _Impl_CallbackSink_WaitForCallbackEvent(
-            PInterface pCallbackContext,
-            _ELASTOS Millisecond32 msTimeOut,
-            WaitResult* pResult,
-            _ELASTOS Boolean *pbEventOccured,
-            _ELASTOS UInt32 fPriority);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ _ELASTOS Millisecond32 msTimeOut,
+    /* [in] */ WaitResult* result,
+    /* [out] */ _ELASTOS Boolean* eventOccured,
+    /* [in] */ _ELASTOS UInt32 priority);
 
 ELAPI _Impl_CallbackSink_CleanupAllCallbacks(
-    IInterface *pCallbackContext);
+    /* [in] */ PInterface callbackContext);
 
 ELAPI _Impl_CallbackSink_CancelAllPendingCallbacks(
-            PInterface pCallbackContext,
-            PInterface pSender);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender);
 
 ELAPI _Impl_CallbackSink_CancelPendingCallback(
-            PInterface pCallbackContext,
-            PInterface pSender,
-            CallbackEventId id);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id);
 
 ELAPI _Impl_CallbackSink_CancelCallbackEvents(
-            PInterface pCallbackContext,
-            PInterface pSender,
-            CallbackEventId id,
-            _ELASTOS PVoid pHandlerThis,
-            _ELASTOS PVoid pHandlerFunc);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id,
+    /* [in] */ _ELASTOS PVoid handlerThis,
+    /* [in] */ _ELASTOS PVoid handlerFunc);
 
 ELAPI _Impl_CallbackSink_RequestToFinish(
-    PInterface pCallbackContext, _ELASTOS Int32 Flag);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ _ELASTOS Int32 flag);
 
 ELAPI_(_ELASTOS Int32) _Impl_CallbackSink_GetStatus(
-    PInterface pCallbackContext);
+    /* [in] */ PInterface callbackContext);
 
-ELAPI _Impl_CallbackSink_TryToHandleEvents(IInterface* pCallbackContext);
+ELAPI _Impl_CallbackSink_TryToHandleEvents(
+    /* [in] */ PInterface callbackContext);
 
 ELAPI _Impl_CCallbackRendezvous_New(
-        PInterface pCallbackContext,
-        ICallbackSink* pCallbackSink,
-        CallbackEventId eventId,
-        _ELASTOS Boolean* pbEventFlag,
-        _ELASTOS Boolean bNewCallback,
-        ICallbackRendezvous** ppICallbackRendezvous);
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ ICallbackSink* callbackSink,
+    /* [in] */ CallbackEventId eventId,
+    /* [in] */ _ELASTOS Boolean* eventFlag,
+    /* [in] */ _ELASTOS Boolean newCallback,
+    /* [out] */ ICallbackRendezvous** callbackRendezvous);
 
 //
 //  struct DelegateNode
 //
 struct DelegateNode
 {
-    DelegateNode() : m_pCallbackContext(NULL) {}
+    DelegateNode() : mCallbackContext(NULL) {}
 
-    DelegateNode(PInterface pCallbackContext, _ELASTOS EventHandler delegate)
-        : m_pCallbackContext(pCallbackContext), m_delegate(delegate)
+    DelegateNode(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ _ELASTOS EventHandler delegate)
+        : mCallbackContext(callbackContext)
+        , mDelegate(delegate)
     {
-        assert(pCallbackContext);
+        assert(callbackContext);
     }
 
-    _ELASTOS ECode CancelCallbackEvents(PInterface pSender, CallbackEventId id)
+    _ELASTOS ECode CancelCallbackEvents(
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id)
     {
         return _Impl_CallbackSink_CancelCallbackEvents(
-                    m_pCallbackContext, pSender, id,
-                    m_delegate.GetThisPtr(),
-                    m_delegate.GetFuncPtr());
+                mCallbackContext, sender, id,
+                mDelegate.GetThisPtr(),
+                mDelegate.GetFuncPtr());
     }
 
-    DelegateNode *Prev()
+    DelegateNode* Prev()
     {
-        return m_pPrev;
+        return mPrev;
     }
 
     DelegateNode* Next()
     {
-        return m_pNext;
+        return mNext;
     }
 
-    DelegateNode *InsertPrev(DelegateNode *pPrevNode)
+    DelegateNode* InsertPrev(
+        /* [in] */ DelegateNode* prevNode)
     {
-        assert(pPrevNode);
+        assert(prevNode);
 
-        pPrevNode->m_pPrev  = m_pPrev;
-        pPrevNode->m_pNext  = this;
-        m_pPrev->m_pNext    = pPrevNode;
-        m_pPrev             = pPrevNode;
+        prevNode->mPrev = mPrev;
+        prevNode->mNext = this;
+        mPrev->mNext = prevNode;
+        mPrev = prevNode;
 
-        return pPrevNode;
+        return prevNode;
     }
 
     DelegateNode* Detach()
     {
-        m_pPrev->m_pNext = m_pNext;
-        m_pNext->m_pPrev = m_pPrev;
+        mPrev->mNext = mNext;
+        mNext->mPrev = mPrev;
     #ifdef _DEBUG
-        m_pPrev = m_pNext = (DelegateNode *)INVALID_ADDRVALUE;
+        mPrev = mNext = (DelegateNode *)INVALID_ADDRVALUE;
     #endif
 
         return this;
@@ -300,23 +305,23 @@ struct DelegateNode
 
     void Initialize()
     {
-        m_pPrev = m_pNext = this;
+        mPrev = mNext = this;
     }
 
     _ELASTOS Boolean IsEmpty()
     {
-        return this == m_pNext;
+        return this == mNext;
     }
 
-    DelegateNode *First()
+    DelegateNode* First()
     {
         return Next();
     }
 
-    IInterface     *m_pCallbackContext;
-    _ELASTOS EventHandler  m_delegate;
-    DelegateNode      *m_pPrev;
-    DelegateNode      *m_pNext;
+    PInterface              mCallbackContext;
+    _ELASTOS EventHandler   mDelegate;
+    DelegateNode*           mPrev;
+    DelegateNode*           mNext;
 };
 
 class DelegateContainer
@@ -325,122 +330,130 @@ public:
     DelegateContainer();
 
     _ELASTOS ECode Current(
-            DelegateNode **ppNode);
+        /* [in] */ DelegateNode** node);
 
     _ELASTOS ECode MoveNext();
 
     _ELASTOS ECode Reset();
 
-    _ELASTOS ECode Add(PInterface pCallbackContext, const _ELASTOS EventHandler & delegate);
+    _ELASTOS ECode Add(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ const _ELASTOS EventHandler& delegate);
 
     _ELASTOS ECode Remove(
-            _ELASTOS EventHandler & delegate, PInterface pSender, CallbackEventId id);
+        /* [in] */ _ELASTOS EventHandler& delegate,
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
 
     _ELASTOS ECode Dispose(
-            PInterface pSender, CallbackEventId id);
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
 
     ~DelegateContainer();
 
 public:
-    DelegateNode  m_head;
-    DelegateNode  *m_pCurrent;
+    DelegateNode    mHead;
+    DelegateNode*   mCurrent;
 };
 
 CAR_INLINE DelegateContainer::DelegateContainer()
 {
-    m_head.Initialize();
-    m_pCurrent = &m_head;
+    mHead.Initialize();
+    mCurrent = &mHead;
 }
 
 CAR_INLINE DelegateContainer::~DelegateContainer()
 {
-    DelegateNode *pNode;
+    DelegateNode* node;
 
-    while (!m_head.IsEmpty()) {
-        pNode = (DelegateNode *)m_head.First();
-        pNode->Detach();
-        delete pNode;
+    while (!mHead.IsEmpty()) {
+        node = (DelegateNode *)mHead.First();
+        node->Detach();
+        delete node;
     }
-    m_pCurrent = NULL;
+    mCurrent = NULL;
 }
 
-CAR_INLINE _ELASTOS ECode DelegateContainer::Dispose(PInterface pSender,
-    CallbackEventId id)
+CAR_INLINE _ELASTOS ECode DelegateContainer::Dispose(
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    DelegateNode *pNode;
+    DelegateNode* node;
 
-    while (!m_head.IsEmpty()) {
-        pNode = (DelegateNode *)m_head.First();
-        pNode->Detach();
-        pNode->CancelCallbackEvents(pSender, id);
-        delete pNode;
+    while (!mHead.IsEmpty()) {
+        node = (DelegateNode *)mHead.First();
+        node->Detach();
+        node->CancelCallbackEvents(sender, id);
+        delete node;
     }
-    m_pCurrent = NULL;
+    mCurrent = NULL;
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode DelegateContainer::Current(
-    DelegateNode **ppNode)
+    /* [in] */ DelegateNode** node)
 {
-    assert(NULL != ppNode);
+    assert(NULL != node);
 
-    if (NULL == m_pCurrent || &m_head == m_pCurrent) {
+    if (NULL == mCurrent || &mHead == mCurrent) {
         return E_INVALID_OPERATION;
     }
-    *ppNode = m_pCurrent;
+    *node = mCurrent;
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode DelegateContainer::MoveNext()
 {
-    if (NULL == m_pCurrent) {
+    if (NULL == mCurrent) {
         return E_INVALID_OPERATION;
     }
-    if (m_pCurrent == m_head.Prev()) {
-        m_pCurrent = NULL;
+    if (mCurrent == mHead.Prev()) {
+        mCurrent = NULL;
         return S_FALSE;
     }
-    m_pCurrent = m_pCurrent->Next();
+    mCurrent = mCurrent->Next();
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode DelegateContainer::Reset()
 {
-    m_pCurrent = &m_head;
+    mCurrent = &mHead;
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode DelegateContainer::Add(
-    PInterface pCallbackContext,
-    const _ELASTOS EventHandler & delegate)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ const _ELASTOS EventHandler& delegate)
 {
-    DelegateNode *pNode;
+    DelegateNode* node;
 
-    assert(pCallbackContext);
+    assert(callbackContext);
 
-    pNode = new DelegateNode(pCallbackContext, delegate);
-    if (NULL == pNode) {
+    node = new DelegateNode(callbackContext, delegate);
+    if (NULL == node) {
         return E_OUT_OF_MEMORY;
     }
 
-    m_head.InsertPrev(pNode);
+    mHead.InsertPrev(node);
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode DelegateContainer::Remove(
-    _ELASTOS EventHandler & delegate, PInterface pSender, CallbackEventId id)
+    /* [in] */ _ELASTOS EventHandler& delegate,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    DelegateNode *pNode;
+    DelegateNode* node;
     _ELASTOS ECode ec = NOERROR;
 
-    for (pNode = m_head.m_pNext; pNode != &m_head; pNode = pNode->m_pNext) {
-        if (pNode->m_delegate == delegate) {
-            if (m_pCurrent == pNode) {
-                m_pCurrent = m_pCurrent->Prev();
+    for (node = mHead.mNext; node != &mHead; node = node->mNext) {
+        if (node->mDelegate == delegate) {
+            if (mCurrent == node) {
+                mCurrent = mCurrent->Prev();
             }
-            pNode->Detach();
-            ec = pNode->CancelCallbackEvents(pSender, id);
-            delete pNode;
+            node->Detach();
+            ec = node->CancelCallbackEvents(sender, id);
+            delete node;
             break;
         }
     }
@@ -453,31 +466,28 @@ CAR_INLINE _ELASTOS ECode DelegateContainer::Remove(
 //
 struct CallbackContextNode
 {
-    CallbackContextNode() : m_pCallbackContext(NULL){}
+    CallbackContextNode() : mCallbackContext(NULL) {}
 
-    CallbackContextNode(PInterface pCallbackContext, _ELASTOS Boolean bOccured)
-        : m_pCallbackContext(pCallbackContext), m_bEventOccured(bOccured),
-        m_bEmpty(TRUE)
+    CallbackContextNode(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ _ELASTOS Boolean occured)
+        : mCallbackContext(callbackContext)
+        , mEventOccured(occured)
+        , mEmpty(TRUE)
     {
-        assert(m_pCallbackContext);
-
-        m_pCallbackContext->AddRef();
-    }
-
-    ~CallbackContextNode()
-    {
-        if (m_pCallbackContext) m_pCallbackContext->Release();
+        assert(mCallbackContext);
     }
 
     void Initialize();
 
-    CallbackContextNode *Prev();
+    CallbackContextNode* Prev();
 
-    CallbackContextNode *Next();
+    CallbackContextNode* Next();
 
-    CallbackContextNode *InsertPrev(CallbackContextNode *pPrevNode);
+    CallbackContextNode* InsertPrev(
+        /* [in] */ CallbackContextNode* prevNode);
 
-    CallbackContextNode *Detach();
+    CallbackContextNode* Detach();
 
     _ELASTOS Boolean IsEmpty();
 
@@ -486,57 +496,62 @@ struct CallbackContextNode
     _ELASTOS ECode Reset();
 
     _ELASTOS ECode Current(
-            _ELASTOS EventHandler **ppDelegate);
+        /* [out] */ _ELASTOS EventHandler** delegate);
 
-    _ELASTOS ECode Add(const _ELASTOS EventHandler & delegate);
+    _ELASTOS ECode Add(
+        /* [in] */ const _ELASTOS EventHandler& delegate);
 
     _ELASTOS ECode Remove(
-            _ELASTOS EventHandler & delegate, PInterface pSender, CallbackEventId id);
+        /* [in] */ _ELASTOS EventHandler& delegate,
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
 
     _ELASTOS ECode Dispose(
-            PInterface pSender, CallbackEventId id);
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
 
-    IInterface     *m_pCallbackContext;
-    DelegateContainer m_delegateContainer;
-    _ELASTOS Boolean m_bEventOccured;
-    _ELASTOS Boolean m_bEmpty;
-    CallbackContextNode      *m_pPrev;
-    CallbackContextNode      *m_pNext;
+    _ELASTOS AutoPtr<IInterface>    mCallbackContext;
+    DelegateContainer               mDelegateContainer;
+    _ELASTOS Boolean                mEventOccured;
+    _ELASTOS Boolean                mEmpty;
+    CallbackContextNode*            mPrev;
+    CallbackContextNode*            mNext;
 };
 
 CAR_INLINE void CallbackContextNode::Initialize()
 {
-    m_pPrev = m_pNext = this;
+    mPrev = mNext = this;
 }
 
-CAR_INLINE CallbackContextNode *CallbackContextNode::Prev()
+CAR_INLINE CallbackContextNode* CallbackContextNode::Prev()
 {
-    return m_pPrev;
+    return mPrev;
 }
 
-CAR_INLINE CallbackContextNode *CallbackContextNode::Next()
+CAR_INLINE CallbackContextNode* CallbackContextNode::Next()
 {
-    return m_pNext;
+    return mNext;
 }
 
-CAR_INLINE CallbackContextNode *CallbackContextNode::InsertPrev(CallbackContextNode *pPrevNode)
+CAR_INLINE CallbackContextNode* CallbackContextNode::InsertPrev(
+    /* [in] */ CallbackContextNode* prevNode)
 {
-    assert(pPrevNode);
+    assert(prevNode);
 
-    pPrevNode->m_pPrev  = m_pPrev;
-    pPrevNode->m_pNext  = this;
-    m_pPrev->m_pNext    = pPrevNode;
-    m_pPrev             = pPrevNode;
+    prevNode->mPrev = mPrev;
+    prevNode->mNext = this;
+    mPrev->mNext = prevNode;
+    mPrev = prevNode;
 
-    return pPrevNode;
+    return prevNode;
 }
 
-CAR_INLINE CallbackContextNode *CallbackContextNode::Detach()
+CAR_INLINE CallbackContextNode* CallbackContextNode::Detach()
 {
-    m_pPrev->m_pNext = m_pNext;
-    m_pNext->m_pPrev = m_pPrev;
+    mPrev->mNext = mNext;
+    mNext->mPrev = mPrev;
 #ifdef _DEBUG
-    m_pPrev = m_pNext = (CallbackContextNode *)INVALID_ADDRVALUE;
+    mPrev = mNext = (CallbackContextNode *)INVALID_ADDRVALUE;
 #endif
 
     return this;
@@ -544,55 +559,59 @@ CAR_INLINE CallbackContextNode *CallbackContextNode::Detach()
 
 CAR_INLINE _ELASTOS Boolean CallbackContextNode::IsEmpty()
 {
-    return this == m_pNext;
+    return this == mNext;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextNode::MoveNext()
 {
-    return m_delegateContainer.MoveNext();
+    return mDelegateContainer.MoveNext();
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextNode::Reset()
 {
-    return m_delegateContainer.Reset();
+    return mDelegateContainer.Reset();
 }
 
-CAR_INLINE _ELASTOS ECode CallbackContextNode::Dispose(PInterface pSender,
-    CallbackEventId id)
+CAR_INLINE _ELASTOS ECode CallbackContextNode::Dispose(
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    _ELASTOS ECode ec = m_delegateContainer.Dispose(pSender, id);
+    _ELASTOS ECode ec = mDelegateContainer.Dispose(sender, id);
     if (FAILED(ec)) return ec;
     Detach();
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextNode::Current(
-    _ELASTOS EventHandler **ppDelegate)
+    /* [in] */ _ELASTOS EventHandler** delegate)
 {
     _ELASTOS ECode ec;
-    DelegateNode *pNode;
+    DelegateNode* node;
 
-    ec = m_delegateContainer.Current(&pNode);
+    ec = mDelegateContainer.Current(&node);
     if (NOERROR == ec) {
-        *ppDelegate = &pNode->m_delegate;
+        *delegate = &node->mDelegate;
     }
     return ec;
 }
 
-CAR_INLINE _ELASTOS ECode CallbackContextNode::Add(const _ELASTOS EventHandler & delegate)
+CAR_INLINE _ELASTOS ECode CallbackContextNode::Add(
+    /* [in] */ const _ELASTOS EventHandler& delegate)
 {
-    m_bEmpty = FALSE;
-    return m_delegateContainer.Add(m_pCallbackContext, delegate);
+    mEmpty = FALSE;
+    return mDelegateContainer.Add(mCallbackContext, delegate);
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextNode::Remove(
-    _ELASTOS EventHandler & delegate, PInterface pSender, CallbackEventId id)
+    /* [in] */ _ELASTOS EventHandler& delegate,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    _ELASTOS ECode ec = m_delegateContainer.Remove(delegate, pSender, id);
+    _ELASTOS ECode ec = mDelegateContainer.Remove(delegate, sender, id);
     if (FAILED(ec)) return ec;
 
-    if (m_delegateContainer.m_head.IsEmpty()) {
-        m_bEmpty = TRUE;
+    if (mDelegateContainer.mHead.IsEmpty()) {
+        mEmpty = TRUE;
         Detach();
     }
     return NOERROR;
@@ -604,176 +623,191 @@ CAR_INLINE _ELASTOS ECode CallbackContextNode::Remove(
 class CallbackContextContainer
 {
 public:
-    _ELASTOS ECode Find(
-            PInterface pCallbackContext, CallbackContextNode **ppNode);
-
-    _ELASTOS ECode Current(
-            CallbackContextNode **ppNode);
-
-    _ELASTOS ECode MoveNext();
-
-    _ELASTOS ECode Add(PInterface pCallbackContext, const _ELASTOS EventHandler & delegate);
-
-    _ELASTOS ECode Remove(CallbackContextNode *pNode);
-
-    _ELASTOS ECode Remove(
-            PInterface pCallbackContext, _ELASTOS EventHandler & delegate,
-            PInterface pSender, CallbackEventId id);
-
-    _ELASTOS ECode Dispose(
-            PInterface pCallbackContext, PInterface pSender, CallbackEventId id);
-
-    _ELASTOS ECode Reset();
-
-    CallbackContextContainer():m_bEventOccured(FALSE)
+    CallbackContextContainer()
+        : mEventOccured(FALSE)
     {
-        m_head.Initialize();
-        m_pCurrent = &m_head;
+        mHead.Initialize();
+        mCurrent = &mHead;
     }
 
     ~CallbackContextContainer();
 
+    _ELASTOS ECode Find(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ CallbackContextNode** node);
+
+    _ELASTOS ECode Current(
+        /* [in] */ CallbackContextNode** node);
+
+    _ELASTOS ECode MoveNext();
+
+    _ELASTOS ECode Add(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ const _ELASTOS EventHandler& delegate);
+
+    _ELASTOS ECode Remove(
+        /* [in] */ CallbackContextNode* node);
+
+    _ELASTOS ECode Remove(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ _ELASTOS EventHandler& delegate,
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
+
+    _ELASTOS ECode Dispose(
+        /* [in] */ PInterface callbackContext,
+        /* [in] */ PInterface sender,
+        /* [in] */ CallbackEventId id);
+
+    _ELASTOS ECode Reset();
+
 public:
-    CallbackContextNode  m_head;
-    CallbackContextNode  *m_pCurrent;
-    _ELASTOS Boolean  m_bEventOccured;
+    CallbackContextNode     mHead;
+    CallbackContextNode*    mCurrent;
+    _ELASTOS Boolean        mEventOccured;
 };
 
 CAR_INLINE CallbackContextContainer::~CallbackContextContainer()
 {
-    CallbackContextNode *pNode;
+    CallbackContextNode* node;
 
     Reset();
-    assert(m_head.IsEmpty() && "You should call CFoo::RemoveAllCallbacks first.");
+    assert(mHead.IsEmpty() && "You should call CFoo::RemoveAllCallbacks first.");
 
     while (MoveNext() == NOERROR) {
-        if (Current(&pNode) != NOERROR) {
+        if (Current(&node) != NOERROR) {
             break;
         }
-        Remove(pNode);
-        delete pNode;
+        Remove(node);
+        delete node;
     }
-    assert(m_head.IsEmpty());
-    m_pCurrent = NULL;
+    assert(mHead.IsEmpty());
+    mCurrent = NULL;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::Find(
-    PInterface pCallbackContext, CallbackContextNode **ppNode)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ CallbackContextNode** node)
 {
-    CallbackContextNode *pCurrNode;
+    CallbackContextNode* currNode;
 
-    for (pCurrNode = m_head.m_pNext; pCurrNode != &m_head; pCurrNode = pCurrNode->m_pNext) {
-        if (pCurrNode->m_pCallbackContext == pCallbackContext) {
-            *ppNode = pCurrNode;
+    for (currNode = mHead.mNext; currNode != &mHead; currNode = currNode->mNext) {
+        if (currNode->mCallbackContext.Get() == callbackContext) {
+            *node = currNode;
             return NOERROR;
         }
     }
-    *ppNode = NULL;
+    *node = NULL;
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::Dispose(
-    PInterface pCallbackContext, PInterface pSender, CallbackEventId id)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    CallbackContextNode *pNode;
+    CallbackContextNode* node;
 
-    pNode = m_head.Next();
-    while (&m_head != pNode) {
-        if (pNode->m_pCallbackContext == pCallbackContext) {
-            pNode->Dispose(pSender, id);
-            delete pNode;
+    node = mHead.Next();
+    while (&mHead != node) {
+        if (node->mCallbackContext.Get() == callbackContext) {
+            node->Dispose(sender, id);
+            delete node;
             break;
         }
-        pNode = pNode->Next();
+        node = node->Next();
     }
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::Current(
-    CallbackContextNode **ppNode)
+    /* [in] */ CallbackContextNode** node)
 {
-    assert(NULL != ppNode);
+    assert(NULL != node);
 
-    if (NULL == m_pCurrent || &m_head == m_pCurrent) {
+    if (NULL == mCurrent || &mHead == mCurrent) {
         return E_INVALID_OPERATION;
     }
-    *ppNode = m_pCurrent;
+    *node = mCurrent;
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::MoveNext()
 {
-    if (NULL == m_pCurrent) {
+    if (NULL == mCurrent) {
         return E_INVALID_OPERATION;
     }
-    if (m_pCurrent == m_head.Prev()) {
-        m_pCurrent = NULL;
+    if (mCurrent == mHead.Prev()) {
+        mCurrent = NULL;
         return S_FALSE;
     }
-    m_pCurrent = m_pCurrent->Next();
+    mCurrent = mCurrent->Next();
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::Add(
-    PInterface pCallbackContext,
-    const _ELASTOS EventHandler & delegate)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ const _ELASTOS EventHandler& delegate)
 {
-    _ELASTOS Boolean bFound = FALSE;
-    CallbackContextNode *pNode;
+    _ELASTOS Boolean found = FALSE;
+    CallbackContextNode* node;
     _ELASTOS ECode ec;
 
-    if (NULL == pCallbackContext) {
-        ec = _Impl_CallbackSink_GetCallbackContext(&pCallbackContext);
+    if (NULL == callbackContext) {
+        ec = _Impl_CallbackSink_GetCallbackContext(&callbackContext);
         if (FAILED(ec)) return ec;
     }
     else {
-        pCallbackContext->AddRef();
+        callbackContext->AddRef();
     }
 
-    for (pNode = m_head.m_pNext; pNode != &m_head; pNode = pNode->m_pNext) {
-        if (pNode->m_pCallbackContext == pCallbackContext) {
-            bFound = TRUE;
+    for (node = mHead.mNext; node != &mHead; node = node->mNext) {
+        if (node->mCallbackContext.Get() == callbackContext) {
+            found = TRUE;
             break;
         }
     }
 
-    if (!bFound) {
-        pNode = new CallbackContextNode(pCallbackContext, FALSE);
-        if (NULL == pNode) {
-            pCallbackContext->Release();
+    if (!found) {
+        node = new CallbackContextNode(callbackContext, FALSE);
+        if (NULL == node) {
+            callbackContext->Release();
             return E_OUT_OF_MEMORY;
         }
-        m_head.InsertPrev(pNode);
+        mHead.InsertPrev(node);
     }
 
-    ec = pNode->Add(delegate);
-    pCallbackContext->Release();
+    ec = node->Add(delegate);
+    callbackContext->Release();
 
     return ec;
 }
 
-CAR_INLINE _ELASTOS ECode CallbackContextContainer::Remove(CallbackContextNode *pNode)
+CAR_INLINE _ELASTOS ECode CallbackContextContainer::Remove(
+    /* [in] */ CallbackContextNode* node)
 {
-    if (m_pCurrent == pNode) {
-        m_pCurrent = m_pCurrent->Prev();
+    if (mCurrent == node) {
+        mCurrent = mCurrent->Prev();
     }
-    pNode->Detach();
+    node->Detach();
     return NOERROR;
 }
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::Remove(
-    PInterface pCallbackContext, _ELASTOS EventHandler & delegate,
-    PInterface pSender, CallbackEventId id)
+    /* [in] */ PInterface callbackContext,
+    /* [in] */ _ELASTOS EventHandler& delegate,
+    /* [in] */ PInterface sender,
+    /* [in] */ CallbackEventId id)
 {
-    assert(pCallbackContext);
+    assert(callbackContext);
 
-    CallbackContextNode *pNode;
+    CallbackContextNode* node;
 
-    for (pNode = m_head.m_pNext; pNode != &m_head; pNode = pNode->m_pNext) {
-        if (pNode->m_pCallbackContext == pCallbackContext) {
-            _ELASTOS ECode ec = pNode->Remove(delegate, pSender, id);
+    for (node = mHead.mNext; node != &mHead; node = node->mNext) {
+        if (node->mCallbackContext.Get() == callbackContext) {
+            _ELASTOS ECode ec = node->Remove(delegate, sender, id);
             if (FAILED(ec)) return ec;
-            if (pNode->m_bEmpty) delete pNode;
+            if (node->mEmpty) delete node;
             return NOERROR;
         }
     }
@@ -783,7 +817,7 @@ CAR_INLINE _ELASTOS ECode CallbackContextContainer::Remove(
 
 CAR_INLINE _ELASTOS ECode CallbackContextContainer::Reset()
 {
-    m_pCurrent = &m_head;
+    mCurrent = &mHead;
     return NOERROR;
 }
 

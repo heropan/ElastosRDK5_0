@@ -90,8 +90,8 @@ public:
     pthread_mutex_t mQueueLock;
     Boolean mExitRequested;
     Boolean mRequestToQuit;
-    _EzCallbackEvent mEventQueue;
-    _EzCallbackEvent mCurrentEvents;
+    CarCallbackEvent mEventQueue;
+    CarCallbackEvent mCurrentEvents;
     sem_t mThreadEvent;
     Int32 mStatus;
     Int32 mEventsCount;

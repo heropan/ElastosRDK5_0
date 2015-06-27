@@ -14,7 +14,7 @@ CInterfaceInfo::CInterfaceInfo(
     m_pInterfaceDirEntry =
             getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
     m_pDesc = adjustInterfaceDescAddr(m_nBase, m_pInterfaceDirEntry->pDesc);
-    m_uIndex = uIndex;
+    mIndex = uIndex;
     m_pIFList = NULL;
 }
 
@@ -157,7 +157,7 @@ ECode CInterfaceInfo::HasBase(
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_uIndex != m_pDesc->sParentIndex) {
+    if (mIndex != m_pDesc->sParentIndex) {
         *pHasBase = TRUE;
     }
     else {
@@ -259,7 +259,7 @@ ECode CInterfaceInfo::CreateIFList()
 
     int i, j = 0;
     m_uIFCount = 0;
-    UInt32 uIndex = m_uIndex;
+    UInt32 uIndex = mIndex;
     InterfaceDirEntry* pIFDir = NULL;
     while (uIndex != 0) {
         pIndexList[m_uIFCount++] = uIndex;

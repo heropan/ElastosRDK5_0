@@ -8,7 +8,8 @@ _ELASTOS_NAMESPACE_USING
 
 extern "C" Int32 g_dllLockCount;
 
-PInterface  _CBaseClassObject::Probe(REIID riid)
+PInterface _CBaseClassObject::Probe(
+    /* [in] */ REIID riid)
 {
     if (EIID_IInterface == riid) {
         return (IInterface *)(IClassObject *)this;
@@ -37,16 +38,16 @@ UInt32 _CBaseClassObject::Release()
 }
 
 ECode _CBaseClassObject::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
+    if (NULL == iid) return E_INVALID_ARGUMENT;
 
-    if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
+    if (object == (IInterface *)(IObject *)this) {
+        *iid = EIID_IObject;
     }
-    else if (pObject == (IInterface *)(IClassObject *)this) {
-        *pIID = EIID_IClassObject;
+    else if (object == (IInterface *)(IClassObject *)this) {
+        *iid = EIID_IClassObject;
     }
     else {
         return E_INVALID_ARGUMENT;
@@ -62,40 +63,43 @@ ECode _CBaseClassObject::Aggregate(
 }
 
 ECode _CBaseClassObject::GetDomain(
-    /* [out] */ PInterface *ppObj)
+    /* [out] */ PInterface* object)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode _CBaseClassObject::GetClassID(
-    ClassID *pCLSID)
+    /* [out] */ ClassID* clsid)
 {
-    if (NULL == pCLSID) return E_INVALID_ARGUMENT;
+    if (NULL == clsid) return E_INVALID_ARGUMENT;
 
-    *pCLSID = ECLSID_CClassObject;
+    *clsid = ECLSID_CClassObject;
     return NOERROR;
 }
 
 ECode _CBaseClassObject::CreateObject(
-    IInterface *pOuter, REIID riid, IInterface **ppObj)
+    /* [in] */ IInterface* outer,
+    /* [in] */ REIID riid,
+    /* [out] */ IInterface** retObject)
 {
-    IInterface *pObj;
+    IInterface* object;
     if (NULL == m_fnCreateObject) return E_CLASS_NOT_AVAILABLE;
-    ECode ec = (*m_fnCreateObject)(&pObj);
+    ECode ec = (*m_fnCreateObject)(&object);
     if (FAILED(ec)) return ec;
-    *ppObj = pObj->Probe(riid);
-    if (!(* ppObj)) {
-        pObj->Release();
+    *retObject = object->Probe(riid);
+    if (!(*retObject)) {
+        object->Release();
         return E_NO_INTERFACE;
     }
-	(*ppObj)->AddRef();
-	pObj->Release();
+    (*retObject)->AddRef();
+    object->Release();
     return ec;
 }
 
-ECode _CBaseClassObject::StayResident(_ELASTOS Boolean bIsStayResident)
+ECode _CBaseClassObject::StayResident(
+    /* [in] */ Boolean isStayResident)
 {
-    if (bIsStayResident) {
+    if (isStayResident) {
         atomic_inc(&g_dllLockCount);
     }
     else {

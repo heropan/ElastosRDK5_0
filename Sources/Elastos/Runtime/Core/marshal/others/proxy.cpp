@@ -263,9 +263,9 @@ ECode CInterfaceProxy::MarshalIn(
     if (SUCCEEDED(ec)) {
         pHeader = pParcel->GetMarshalHeader();
         assert(pHeader != NULL);
-        pHeader->m_uMagic = MARSHAL_MAGIC;
-        pHeader->m_hInterfaceIndex = m_uIndex;
-        pHeader->m_hMethodIndex = uMethodIndex + 4;
+        pHeader->mMagic = MARSHAL_MAGIC;
+        pHeader->mInterfaceIndex = mIndex;
+        pHeader->mMethodIndex = uMethodIndex + 4;
     }
 
     return ec;
@@ -278,29 +278,29 @@ ECode CInterfaceProxy::UnmarshalOut(
 {
     MarshalHeader *pHeader = pParcel->GetMarshalHeader();
 
-    if (pHeader->m_uMagic != MARSHAL_MAGIC) {
+    if (pHeader->mMagic != MARSHAL_MAGIC) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
-                printf("Proxy unmsh: invalid magic(%x)\n", pHeader->m_uMagic));
+                printf("Proxy unmsh: invalid magic(%x)\n", pHeader->mMagic));
         return E_MARSHAL_DATA_TRANSPORT_ERROR;
     }
 
 #if defined(_DEBUG)
-    if (pHeader->m_hInterfaceIndex != (Int16)m_uIndex) {
+    if (pHeader->mInterfaceIndex != (Int16)mIndex) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Proxy unmsh: invalid iidx(%x)\n",
-                pHeader->m_hInterfaceIndex));
+                pHeader->mInterfaceIndex));
         return E_MARSHAL_DATA_TRANSPORT_ERROR;
     }
-    if (pHeader->m_hMethodIndex != (Int16)(uMethodIndex + 4)) {
+    if (pHeader->mMethodIndex != (Int16)(uMethodIndex + 4)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
-                "Proxy unmsh: invalid method(%x)\n", pHeader->m_hMethodIndex));
+                "Proxy unmsh: invalid method(%x)\n", pHeader->mMethodIndex));
     }
 #endif
 
     return Proxy_ProcessUnmsh_Out(
             &(m_pInfo->methods[uMethodIndex]),
             (IParcel*)pParcel,
-            pHeader->m_uOutSize - sizeof(MarshalHeader),
+            pHeader->mOutSize - sizeof(MarshalHeader),
             puArgs);
 }
 
@@ -380,7 +380,7 @@ ECode CInterfaceProxy::ProxyEntry(UInt32 *puArgs)
     //
     // NOTE:
     //  1. Alloc pOutHeader on the stack with MAX-out-size
-    //  2. Assign pInHeader->m_uOutSize with MAX-out-size
+    //  2. Assign pInHeader->mOutSize with MAX-out-size
     //  3. Pass the MIN-out-size to SysInvoke's last parameter
     //  4. Call Thread::ReallocBuffer in SysReply if necessary to pass back the
     //      marshaled-out data with error info
@@ -402,8 +402,8 @@ ECode CInterfaceProxy::ProxyEntry(UInt32 *puArgs)
         pInParcel->GetElementSize(&size);
         pInParcel->GetElementPayload((Handle32*)&pInBuffer);
         pInHeader = pInParcel->GetMarshalHeader();
-        pInHeader->m_uInSize = size;
-        pInHeader->m_uOutSize = uOutSize;
+        pInHeader->mInSize = size;
+        pInHeader->mOutSize = uOutSize;
         MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
                 "Before RemoteInvoke: ParcelSize(%d)\n", size));
 
@@ -833,7 +833,7 @@ ECode CObjectProxy::S_CreateObject(
     pProxy->m_pInterfaces = pInterfaces;
     memset(pInterfaces, 0, sizeof(CInterfaceProxy) * pProxy->m_cInterfaces);
     for (n = 0; n < pProxy->m_cInterfaces; n++) {
-        pInterfaces[n].m_uIndex = n;
+        pInterfaces[n].mIndex = n;
         pInterfaces[n].m_pOwner = pProxy;
         CIInterfaceInfo *pInterfaceInfo =
             (CIInterfaceInfo *)GetUnalignedPtr(
