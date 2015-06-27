@@ -17,43 +17,41 @@ namespace IPC {
 extern pthread_mutex_t g_marshalLock;
 
 ECode StdMarshalInterface(
-    /* [in] */ IInterface *pObj,
-    /* [out] */ InterfacePack *pInterfacePack)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfacePack* interfacePack)
 {
     ExportObject ex;
-    ECode ec;
-    IStub *pIStub;
-    IProxy *pv;
 
     pthread_mutex_lock(&g_marshalLock);
-    ec = FindExportObject(pObj, &ex);
+    ECode ec = FindExportObject(object, &ex);
     if (SUCCEEDED(ec)) {
-        pInterfacePack->m_pBinder = ex.m_pBinder;
-        ex.m_pIStub->Release();
-        ex.m_pIStub->GetClassID(&pInterfacePack->m_clsid);
-        ec = ex.m_pIStub->GetInterfaceIndex(pObj, &pInterfacePack->m_uIndex);
+        interfacePack->mBinder = ex.mBinder;
+        ex.mIStub->Release();
+        ex.mIStub->GetClassID(&interfacePack->mClsid);
+        ec = ex.mIStub->GetInterfaceIndex(object, &interfacePack->mIndex);
         if (ec == E_NO_INTERFACE) {
             ec = E_CONFLICT_WITH_LOCAL_KEYWORD;
         }
         pthread_mutex_unlock(&g_marshalLock);
     }
     else {
-        pv = (IProxy*)pObj->Probe(EIID_IProxy);
-        if (pv) {
+        IProxy* proxy = (IProxy*)object->Probe(EIID_IProxy);
+        if (proxy) {
             pthread_mutex_unlock(&g_marshalLock);
-            pInterfacePack->m_pBinder = ((CObjectProxy*)pv)->m_pBinder;
-            ASSERT_PROXY(pv);
-            pv->GetClassID(&pInterfacePack->m_clsid);
-            ec = pv->GetInterfaceIndex(pObj, &(pInterfacePack->m_uIndex));
+            interfacePack->mBinder = ((CObjectProxy*)proxy)->mBinder;
+            ASSERT_PROXY(proxy);
+            proxy->GetClassID(&interfacePack->mClsid);
+            ec = proxy->GetInterfaceIndex(object, &(interfacePack->mIndex));
         }
         else {
-            ec = CObjectStub::S_CreateObject(pObj, &pIStub);
+            IStub* stub;
+            ec = CObjectStub::S_CreateObject(object, &stub);
             pthread_mutex_unlock(&g_marshalLock);
             if (SUCCEEDED(ec)) {
-                pInterfacePack->m_pBinder = (android::IBinder*)(CObjectStub*)pIStub;
-                pIStub->Release();
-                pIStub->GetClassID(&(pInterfacePack->m_clsid));
-                ec = pIStub->GetInterfaceIndex(pObj, &(pInterfacePack->m_uIndex));
+                interfacePack->mBinder = (android::IBinder*)(CObjectStub*)stub;
+                stub->Release();
+                stub->GetClassID(&(interfacePack->mClsid));
+                ec = stub->GetInterfaceIndex(object, &(interfacePack->mIndex));
                 if (ec == E_NO_INTERFACE) {
                     ec = E_CONFLICT_WITH_LOCAL_KEYWORD;
                 }
@@ -65,23 +63,21 @@ ECode StdMarshalInterface(
 }
 
 static ECode StdUnmarshalCustomInterface(
-    /* [in] */ ICustomMarshal *pCustomMarshal,
-    /* [in] */ InterfacePack *pInterfacePack,
-    /* [out] */ IInterface **ppObj)
+    /* [in] */ ICustomMarshal* customMarshal,
+    /* [in] */ InterfacePack* interfacePack,
+    /* [out] */ IInterface** object)
 {
-    ECode ec;
-
     ClassID proxyClsid;
     char uunmbuf[80];
     proxyClsid.pUunm = uunmbuf;
 
-    ec = pCustomMarshal->GetClsid(&proxyClsid);
+    ECode ec = customMarshal->GetClsid(&proxyClsid);
     if (SUCCEEDED(ec)) {
-        AutoPtr<ICustomMarshal> pITempCustMsh;
+        AutoPtr<ICustomMarshal> tempCustMsh;
         ec = _CObject_CreateInstance(proxyClsid, RGM_SAME_DOMAIN,
-                EIID_ICustomMarshal, (IInterface **)&pITempCustMsh);
+                EIID_ICustomMarshal, (IInterface **)&tempCustMsh);
         if (SUCCEEDED(ec)) {
-            ec = pITempCustMsh->CreateObject(pCustomMarshal, ppObj);
+            ec = tempCustMsh->CreateObject(customMarshal, object);
         }
     }
 
@@ -90,64 +86,60 @@ static ECode StdUnmarshalCustomInterface(
 
 ECode StdUnmarshalInterface(
     /* [in] */ UnmarshalFlag flag,
-    /* [in] */ InterfacePack *pInterfacePack,
-    /* [out] */ IInterface **ppObj)
+    /* [in] */ InterfacePack* interfacePack,
+    /* [out] */ IInterface** object)
 {
-    *ppObj = NULL;
-
-    ImportObject im;
     ExportObject ex;
-    ECode ec;
-    ICustomMarshal * pCustomMarshal;
+    ICustomMarshal* customMarshal;
+    *object = NULL;
 
     pthread_mutex_lock(&g_marshalLock);
-    ec = FindExportObject(pInterfacePack->m_pBinder.get(), &ex);
+    ECode ec = FindExportObject(interfacePack->mBinder.get(), &ex);
     if (SUCCEEDED(ec) && (flag == UnmarshalFlag_Noncoexisting)) {
         pthread_mutex_unlock(&g_marshalLock);
-        pCustomMarshal = ICustomMarshal::Probe(ex.m_pObject);
-        if (!pCustomMarshal) {
-            CObjectStub* pSt = (CObjectStub*)ex.m_pIStub;
-            *ppObj = pSt->m_pInterfaces[pInterfacePack->m_uIndex].m_pObject;
-            (*ppObj)->AddRef();
-            ex.m_pIStub->Release();
+        customMarshal = ICustomMarshal::Probe(ex.mObject);
+        if (!customMarshal) {
+            CObjectStub* stub = (CObjectStub*)ex.mIStub;
+            *object = stub->m_pInterfaces[interfacePack->mIndex].mObject;
+            (*object)->AddRef();
+            ex.mIStub->Release();
 
             return NOERROR;
         }
         else {
             ec = StdUnmarshalCustomInterface(\
-                pCustomMarshal, pInterfacePack, ppObj);
+                customMarshal, interfacePack, object);
             return ec;
         }
     }
 
-    ec = FindImportObject(pInterfacePack->m_pBinder.get(), &im);
+    ImportObject im;
+    ec = FindImportObject(interfacePack->mBinder.get(), &im);
     if (SUCCEEDED(ec)) {
         pthread_mutex_unlock(&g_marshalLock);
-        pCustomMarshal = ICustomMarshal::Probe(im.m_pIProxy);
-        if (!pCustomMarshal) {
-            ec = im.m_pIProxy->GetInterface(pInterfacePack->m_uIndex, ppObj);
+        customMarshal = ICustomMarshal::Probe(im.mIProxy);
+        if (!customMarshal) {
+            ec = im.mIProxy->GetInterface(interfacePack->mIndex, object);
         }
         else {
-            ec = StdUnmarshalCustomInterface(\
-                pCustomMarshal, pInterfacePack, ppObj);
+            ec = StdUnmarshalCustomInterface(customMarshal, interfacePack, object);
         }
-        im.m_pIProxy->Release();
+        im.mIProxy->Release();
     }
     else {
-        AutoPtr<IProxy> pIProxy;
+        AutoPtr<IProxy> proxy;
         ec = CObjectProxy::S_CreateObject(
-            pInterfacePack->m_clsid,
-            pInterfacePack->m_pBinder,
-            (IProxy **)&pIProxy);
+            interfacePack->mClsid,
+            interfacePack->mBinder,
+            (IProxy **)&proxy);
         pthread_mutex_unlock(&g_marshalLock);
         if (SUCCEEDED(ec)) {
-            pCustomMarshal = ICustomMarshal::Probe(pIProxy);
-            if (!pCustomMarshal) {
-                ec = pIProxy->GetInterface(pInterfacePack->m_uIndex, ppObj);
+            customMarshal = ICustomMarshal::Probe(proxy);
+            if (!customMarshal) {
+                ec = proxy->GetInterface(interfacePack->mIndex, object);
             }
             else {
-                ec = StdUnmarshalCustomInterface(\
-                    pCustomMarshal, pInterfacePack, ppObj);
+                ec = StdUnmarshalCustomInterface(customMarshal, interfacePack, object);
             }
         }
     }

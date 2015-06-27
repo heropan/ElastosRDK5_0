@@ -88,7 +88,7 @@ ELAPI _Impl_CallbackSink_PostCallbackEventAtTime(
         return E_INVALID_ARGUMENT;
     }
 
-    callbackEvent->m_when = uptimeMillis;
+    callbackEvent->mWhen = uptimeMillis;
 
     return ((CCallbackContext *)callbackContext)->
                 PostCallbackEvent(callbackEvent);

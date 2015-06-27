@@ -97,7 +97,7 @@ public:
     PVoid                   m_pvVptr;       // must be first member
     PVoid                   m_pvProxyEntry; // must be m_pvVptr's next member
 
-    UInt32                  m_uIndex;       // interface index in object
+    UInt32                  mIndex;       // interface index in object
     CObjectProxy            *m_pOwner;
     const CIInterfaceInfo   *m_pInfo;
 };
@@ -145,7 +145,7 @@ public:
     void warnIfStillLive();
 
 private:
-    IProxyDeathRecipient* m_pObject;
+    IProxyDeathRecipient* mObject;
     android::wp<DeathRecipientList> m_List;
 };
 
@@ -198,7 +198,7 @@ public:
             /* [out] */ IProxy **ppIProxy);
 
 public:
-    android::sp<android::IBinder> m_pBinder;
+    android::sp<android::IBinder> mBinder;
     android::sp<DeathRecipientList> m_pOrgue;
     CIClassInfo         *m_pInfo;
     Int32               m_cInterfaces;
@@ -233,7 +233,7 @@ public:
 public:
     union
     {
-        IInterface          *m_pObject;
+        IInterface          *mObject;
         InterfaceStruct     *m_pInterface;
     };
 

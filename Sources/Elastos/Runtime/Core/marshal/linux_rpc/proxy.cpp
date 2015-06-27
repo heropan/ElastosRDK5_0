@@ -473,9 +473,9 @@ ECode CInterfaceProxy::MarshalIn(
     if (SUCCEEDED(ec)) {
         pHeader = pParcel->GetMarshalHeader();
         assert(pHeader != NULL);
-        pHeader->m_uMagic = MARSHAL_MAGIC;
-        pHeader->m_hInterfaceIndex = m_uIndex;
-        pHeader->m_hMethodIndex = uMethodIndex + 4;
+        pHeader->mMagic = MARSHAL_MAGIC;
+        pHeader->mInterfaceIndex = mIndex;
+        pHeader->mMethodIndex = uMethodIndex + 4;
     }
 
     return ec;
@@ -489,23 +489,23 @@ ECode CInterfaceProxy::UnmarshalOut(
     // TODO:
 //    MarshalHeader *pHeader = pParcel->GetMarshalHeader();
 //
-//    if (pHeader->m_uMagic != MARSHAL_MAGIC) {
+//    if (pHeader->mMagic != MARSHAL_MAGIC) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR,
-//                printf("Proxy unmsh: invalid magic(%x)\n", pHeader->m_uMagic));
+//                printf("Proxy unmsh: invalid magic(%x)\n", pHeader->mMagic));
 //        return E_MARSHAL_DATA_TRANSPORT_ERROR;
 //    }
 
 #if defined(_DEBUG)
     // TODO:
-//    if (pHeader->m_hInterfaceIndex != (Int16)m_uIndex) {
+//    if (pHeader->mInterfaceIndex != (Int16)mIndex) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR,
 //                printf("Proxy unmsh: invalid iidx(%x)\n",
-//                pHeader->m_hInterfaceIndex));
+//                pHeader->mInterfaceIndex));
 //        return E_MARSHAL_DATA_TRANSPORT_ERROR;
 //    }
-//    if (pHeader->m_hMethodIndex != (Int16)(uMethodIndex + 4)) {
+//    if (pHeader->mMethodIndex != (Int16)(uMethodIndex + 4)) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
-//                "Proxy unmsh: invalid method(%x)\n", pHeader->m_hMethodIndex));
+//                "Proxy unmsh: invalid method(%x)\n", pHeader->mMethodIndex));
 //    }
 #endif
 
@@ -513,7 +513,7 @@ ECode CInterfaceProxy::UnmarshalOut(
     return Proxy_ProcessUnmsh_Out(
             &(m_pInfo->methods[uMethodIndex]),
             (IParcel*)pParcel,
-            0/*pHeader->m_uOutSize - sizeof(MarshalHeader)*/,
+            0/*pHeader->mOutSize - sizeof(MarshalHeader)*/,
             puArgs);
 }
 
@@ -606,7 +606,7 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
     //
     // NOTE:
     //  1. Alloc pOutHeader on the stack with MAX-out-size
-    //  2. Assign pInHeader->m_uOutSize with MAX-out-size
+    //  2. Assign pInHeader->mOutSize with MAX-out-size
     //  3. Pass the MIN-out-size to SysInvoke's last parameter
     //  4. Call Thread::ReallocBuffer in SysReply if necessary to pass back the
     //      marshaled-out data with error info
@@ -672,8 +672,8 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
         pInParcel->GetElementSize(&payloadSize);
         pInParcel->GetElementPayload((Handle32*)&pData);
         pInHeader = pInParcel->GetMarshalHeader();
-        pInHeader->m_uInSize = payloadSize;
-        pInHeader->m_uOutSize = uOutSize;
+        pInHeader->mInSize = payloadSize;
+        pInHeader->mOutSize = uOutSize;
         totalSize = htonl(sizeof(totalSize) + sizeof(tag) + strlen(INVOKE) + 1 + sizeof(pad)
                 + (isMethodOneway ? sizeof(tag) + strlen(ONEWAY) + 1 + sizeof(pad) : 0)
                 + payloadSize);
@@ -873,10 +873,10 @@ void DeathRecipientList::NotifyAll(
 CarDeathRecipient::CarDeathRecipient(
     /* [in] */ IProxyDeathRecipient* recipient,
     /* [in] */ const AutoPtr<DeathRecipientList>& list)
-    : m_pObject(recipient)
+    : mObject(recipient)
 {
-    if (m_pObject != NULL) {
-        m_pObject->AddRef();
+    if (mObject != NULL) {
+        mObject->AddRef();
     }
 
     AutoPtr<IWeakReference> wr;
@@ -888,9 +888,9 @@ CarDeathRecipient::CarDeathRecipient(
 
 CarDeathRecipient::~CarDeathRecipient()
 {
-    if (m_pObject != NULL) {
-        m_pObject->Release();
-        m_pObject = NULL;
+    if (mObject != NULL) {
+        mObject->Release();
+        mObject = NULL;
     }
 }
 
@@ -898,8 +898,8 @@ void CarDeathRecipient::StubDied(
     /* [in] */ const CObjectProxy* who)
 {
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("Receiving StubDied() on CarDeathRecipient %p\n", this));
-    if (m_pObject != NULL) {
-        ECode ec = m_pObject->ProxyDied();
+    if (mObject != NULL) {
+        ECode ec = mObject->ProxyDied();
         if (FAILED(ec)) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("*** Uncaught exception returned from death notification!"));
@@ -907,8 +907,8 @@ void CarDeathRecipient::StubDied(
 
         // Demote from strong ref to weak after StubDied() has been delivered,
         // to allow the DeathRecipient and BinderProxy to be GC'd if no longer needed.
-        m_pObject->Release();
-        m_pObject = NULL;
+        mObject->Release();
+        mObject = NULL;
     }
 }
 
@@ -931,15 +931,15 @@ Boolean CarDeathRecipient::Matches(
 {
     Boolean result;
 
-    if (m_pObject == NULL || recipient == NULL) result = FALSE;
-    else result = m_pObject == recipient;
+    if (mObject == NULL || recipient == NULL) result = FALSE;
+    else result = mObject == recipient;
 
     return result;
 }
 
 void CarDeathRecipient::WarnIfStillLive()
 {
-    if (m_pObject != NULL) {
+    if (mObject != NULL) {
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 printf("BinderProxy is being destroyed but the application did not call "
                         "unlinkToDeath to unlink all of its death recipients beforehand.  "));
@@ -1290,7 +1290,7 @@ ECode CObjectProxy::S_CreateObject(
     pProxy->m_pInterfaces = pInterfaces;
     memset(pInterfaces, 0, sizeof(CInterfaceProxy) * pProxy->m_cInterfaces);
     for (n = 0; n < pProxy->m_cInterfaces; n++) {
-        pInterfaces[n].m_uIndex = n;
+        pInterfaces[n].mIndex = n;
         pInterfaces[n].m_pOwner = pProxy;
         CIInterfaceInfo *pInterfaceInfo =
             (CIInterfaceInfo *)GetUnalignedPtr(

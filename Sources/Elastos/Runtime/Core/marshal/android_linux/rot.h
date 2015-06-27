@@ -10,15 +10,15 @@ namespace IPC {
 
 typedef struct ExportObject: SLinkNode
 {
-    android::IBinder    *m_pBinder;
-    IInterface          *m_pObject;
-    IStub               *m_pIStub;
+    android::IBinder*   mBinder;
+    IInterface*         mObject;
+    IStub*              mIStub;
 } ExportObject;
 
 typedef struct ImportObject: SLinkNode
 {
-    android::IBinder    *m_pBinder;
-    IProxy              *m_pIProxy;
+    android::IBinder*   mBinder;
+    IProxy*             mIProxy;
 } ImportObject;
 
 extern ECode InitROT();
@@ -26,31 +26,31 @@ extern ECode InitROT();
 extern void UninitROT();
 
 extern ECode RegisterExportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [in] */ IInterface *pObject,
-    /* [in] */ IStub *pIStub);
+    /* [in] */ android::IBinder* binder,
+    /* [in] */ IInterface* object,
+    /* [in] */ IStub* stub);
 
 extern ECode UnregisterExportObject(
-    /* [in] */ android::IBinder *pBinder);
+    /* [in] */ android::IBinder* binder);
 
 extern ECode FindExportObject(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ ExportObject *pExport);
+    /* [in] */ IInterface* object,
+    /* [out] */ ExportObject* expObj);
 
 extern ECode FindExportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [out] */ ExportObject *pExport);
+    /* [in] */ android::IBinder* binder,
+    /* [out] */ ExportObject* expObj);
 
 extern ECode RegisterImportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [in] */ IProxy *pIProxy);
+    /* [in] */ android::IBinder* binder,
+    /* [in] */ IProxy* proxy);
 
 extern ECode UnregisterImportObject(
-    /* [in] */ android::IBinder *pBinder);
+    /* [in] */ android::IBinder* binder);
 
 extern ECode FindImportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [out] */ ImportObject *pImport);
+    /* [in] */ android::IBinder* binder,
+    /* [out] */ ImportObject* impObj);
 
 } // namespace IPC
 } // namespace Elastos

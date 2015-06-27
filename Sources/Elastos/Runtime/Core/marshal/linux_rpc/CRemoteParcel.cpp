@@ -780,7 +780,7 @@ ECode CRemoteParcel::ReadArrayOfInner(
                         Read((void *)&ipack, sizeof(InterfacePack));
                         ipack.m_sNetAddress = netAddress;
                         if (IsParcelable(&ipack, &pClassInfo)) {
-                            classId.clsid = ipack.m_clsid;
+                            classId.clsid = ipack.mClsid;
                             classId.pUunm = pClassInfo->pszUunm;
 
                             ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
@@ -788,7 +788,7 @@ ECode CRemoteParcel::ReadArrayOfInner(
                             if (FAILED(ec)) return ec;
 
                             pParcelable->ReadFromParcel(this);
-                            iid = pClassInfo->interfaces[ipack.m_uIndex]->iid;
+                            iid = pClassInfo->interfaces[ipack.mIndex]->iid;
                             *((IInterface**)pBuf + i) = pParcelable->Probe(iid);
                         }
                         else {
@@ -847,7 +847,7 @@ ECode CRemoteParcel::ReadInterfacePtr(
         CIClassInfo *pClassInfo = NULL;
         if (IsParcelable(pItfPack, &pClassInfo)) {
             ClassID classId;
-            classId.clsid = pItfPack->m_clsid;
+            classId.clsid = pItfPack->mClsid;
             classId.pUunm = pClassInfo->pszUunm;
 
             IParcelable *pParcelable = NULL;
@@ -856,7 +856,7 @@ ECode CRemoteParcel::ReadInterfacePtr(
             if (FAILED(ec)) return ec;
 
             pParcelable->ReadFromParcel(this);
-            InterfaceID iid = pClassInfo->interfaces[pItfPack->m_uIndex]->iid;
+            InterfaceID iid = pClassInfo->interfaces[pItfPack->mIndex]->iid;
             *(IInterface**)pItfPtr = pParcelable->Probe(iid);
         }
         else {
@@ -1236,10 +1236,10 @@ Boolean CRemoteParcel::IsParcelable(
     CIInterfaceInfo *pInterfaceInfo = NULL;
     ECode ec;
 
-    ec = LookupClassInfo(pInterfacePack->m_clsid, ppClassInfo);
+    ec = LookupClassInfo(pInterfacePack->mClsid, ppClassInfo);
     if (FAILED(ec)) {
         ec = GetRemoteClassInfo(pInterfacePack->m_sNetAddress,
-                                pInterfacePack->m_clsid,
+                                pInterfacePack->mClsid,
                                 ppClassInfo);
         if (FAILED(ec)) return FALSE;
     }

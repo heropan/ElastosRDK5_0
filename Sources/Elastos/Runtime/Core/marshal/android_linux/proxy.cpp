@@ -399,9 +399,9 @@ ECode CInterfaceProxy::MarshalIn(
     if (SUCCEEDED(ec)) {
         pHeader = pParcel->GetMarshalHeader();
         assert(pHeader != NULL);
-        pHeader->m_uMagic = MARSHAL_MAGIC;
-        pHeader->m_hInterfaceIndex = m_uIndex;
-        pHeader->m_hMethodIndex = uMethodIndex + 4;
+        pHeader->mMagic = MARSHAL_MAGIC;
+        pHeader->mInterfaceIndex = mIndex;
+        pHeader->mMethodIndex = uMethodIndex + 4;
     }
 
     return ec;
@@ -415,23 +415,23 @@ ECode CInterfaceProxy::UnmarshalOut(
     // TODO:
 //    MarshalHeader *pHeader = pParcel->GetMarshalHeader();
 //
-//    if (pHeader->m_uMagic != MARSHAL_MAGIC) {
+//    if (pHeader->mMagic != MARSHAL_MAGIC) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR,
-//                ALOGE("Proxy unmsh: invalid magic(%x)\n", pHeader->m_uMagic));
+//                ALOGE("Proxy unmsh: invalid magic(%x)\n", pHeader->mMagic));
 //        return E_MARSHAL_DATA_TRANSPORT_ERROR;
 //    }
 
 #if defined(_DEBUG)
     // TODO:
-//    if (pHeader->m_hInterfaceIndex != (Int16)m_uIndex) {
+//    if (pHeader->mInterfaceIndex != (Int16)mIndex) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR,
 //                ALOGE("Proxy unmsh: invalid iidx(%x)\n",
-//                pHeader->m_hInterfaceIndex));
+//                pHeader->mInterfaceIndex));
 //        return E_MARSHAL_DATA_TRANSPORT_ERROR;
 //    }
-//    if (pHeader->m_hMethodIndex != (Int16)(uMethodIndex + 4)) {
+//    if (pHeader->mMethodIndex != (Int16)(uMethodIndex + 4)) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
-//                "Proxy unmsh: invalid method(%x)\n", pHeader->m_hMethodIndex));
+//                "Proxy unmsh: invalid method(%x)\n", pHeader->mMethodIndex));
 //    }
 #endif
 
@@ -439,7 +439,7 @@ ECode CInterfaceProxy::UnmarshalOut(
     return Proxy_ProcessUnmsh_Out(
             &(m_pInfo->methods[uMethodIndex]),
             (IParcel*)pParcel,
-            0/*pHeader->m_uOutSize - sizeof(MarshalHeader)*/,
+            0/*pHeader->mOutSize - sizeof(MarshalHeader)*/,
             puArgs);
 }
 
@@ -541,7 +541,7 @@ ECode CInterfaceProxy::ProxyEntry(UInt32 *puArgs)
     //
     // NOTE:
     //  1. Alloc pOutHeader on the stack with MAX-out-size
-    //  2. Assign pInHeader->m_uOutSize with MAX-out-size
+    //  2. Assign pInHeader->mOutSize with MAX-out-size
     //  3. Pass the MIN-out-size to SysInvoke's last parameter
     //  4. Call Thread::ReallocBuffer in SysReply if necessary to pass back the
     //      marshaled-out data with error info
@@ -566,13 +566,13 @@ ECode CInterfaceProxy::ProxyEntry(UInt32 *puArgs)
         pInParcel->GetElementSize(&size);
         pInParcel->GetElementPayload((Handle32*)&pData);
         pInHeader = pInParcel->GetMarshalHeader();
-        pInHeader->m_uInSize = size;
-        pInHeader->m_uOutSize = uOutSize;
+        pInHeader->mInSize = size;
+        pInHeader->mOutSize = uOutSize;
         MARSHAL_DBGOUT(MSHDBG_NORMAL, ALOGD(
                 "Before RemoteInvoke: ParcelSize(%d)\n", size));
         uint32_t flags = pThis->IsMethodOneway(uMethodIndex) ? android::IBinder::FLAG_ONEWAY : 0;
         android::status_t st;
-        if ((st = pThis->m_pOwner->m_pBinder->transact(IStub::INVOKE, *pData, &reply, flags))
+        if ((st = pThis->m_pOwner->mBinder->transact(IStub::INVOKE, *pData, &reply, flags))
                 != android::NO_ERROR) {
             if (pThis->m_pOwner && pThis->m_pOwner->m_pInfo) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("package : %s, interfaceNum: %d",
@@ -709,11 +709,11 @@ android::sp<CarDeathRecipient> DeathRecipientList::Find(
 CarDeathRecipient::CarDeathRecipient(
     /* [in] */ IProxyDeathRecipient* recipient,
     /* [in] */ const android::sp<DeathRecipientList>& list) :
-    m_pObject(recipient),
+    mObject(recipient),
     m_List(list)
 {
-    if (m_pObject != NULL) {
-        m_pObject->AddRef();
+    if (mObject != NULL) {
+        mObject->AddRef();
     }
     // These objects manage their own lifetimes so are responsible for final bookkeeping.
     // The list holds a strong reference to this object.
@@ -723,9 +723,9 @@ CarDeathRecipient::CarDeathRecipient(
 
 CarDeathRecipient::~CarDeathRecipient()
 {
-    if (m_pObject != NULL) {
-        m_pObject->Release();
-        m_pObject = NULL;
+    if (mObject != NULL) {
+        mObject->Release();
+        mObject = NULL;
     }
 }
 
@@ -733,18 +733,18 @@ void CarDeathRecipient::binderDied(
     /* [in] */ const android::wp<android::IBinder>& who)
 {
     MARSHAL_DBGOUT(MSHDBG_NORMAL, ALOGD("Receiving binderDied() on CarDeathRecipient %p\n", this));
-    if (m_pObject != NULL) {
-        ECode ec = m_pObject->ProxyDied();
+    if (mObject != NULL) {
+        ECode ec = mObject->ProxyDied();
         if (FAILED(ec)) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
-                ALOGE("*** Uncaught exception returned from death notification ProxyDied()! this: %p, m_pObject: %p",
-                    this, m_pObject));
+                ALOGE("*** Uncaught exception returned from death notification ProxyDied()! this: %p, mObject: %p",
+                    this, mObject));
         }
 
         // Demote from strong ref to weak after binderDied() has been delivered,
         // to allow the DeathRecipient and BinderProxy to be GC'd if no longer needed.
-        m_pObject->Release();
-        m_pObject = NULL;
+        mObject->Release();
+        mObject = NULL;
     }
 }
 
@@ -765,15 +765,15 @@ bool CarDeathRecipient::matches(
 {
     bool result;
 
-    if (m_pObject == NULL || recipient == NULL) result = FALSE;
-    else result = m_pObject == recipient;
+    if (mObject == NULL || recipient == NULL) result = FALSE;
+    else result = mObject == recipient;
 
     return result;
 }
 
 void CarDeathRecipient::warnIfStillLive()
 {
-    if (m_pObject != NULL) {
+    if (mObject != NULL) {
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 ALOGD("BinderProxy is being destroyed but the application did not call "
                         "unlinkToDeath to unlink all of its death recipients beforehand.  "));
@@ -801,7 +801,7 @@ CObjectProxy::~CObjectProxy()
         delete [] m_pInterfaces;
     }
 
-    m_pBinder = NULL;
+    mBinder = NULL;
     m_pOrgue = NULL;
 }
 
@@ -880,7 +880,7 @@ UInt32 CObjectProxy::Release(void)
         MARSHAL_DBGOUT(MSHDBG_NORMAL, ALOGD(
                 "Proxy destructed.\n"));
 
-        ec = UnregisterImportObject(m_pBinder.get());
+        ec = UnregisterImportObject(mBinder.get());
         if (ec == S_FALSE) {
             return 1;// other thread hold the proxy
         }
@@ -895,7 +895,7 @@ UInt32 CObjectProxy::Release(void)
         // The following codes to ensure that BBinder can be released
         //
         android::Parcel data, reply;
-        if (m_pBinder->transact(IStub::RELEASE, data, &reply) != android::NO_ERROR) {
+        if (mBinder->transact(IStub::RELEASE, data, &reply) != android::NO_ERROR) {
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("Call stub release failed.\n"));
         }
 
@@ -981,7 +981,7 @@ ECode CObjectProxy::GetClassInfo(
 ECode CObjectProxy::IsStubAlive(
     /* [out] */ Boolean* result)
 {
-    android::IBinder* target = m_pBinder.get();
+    android::IBinder* target = mBinder.get();
     if (target == NULL) {
         *result = FALSE;
         return NOERROR;
@@ -999,7 +999,7 @@ ECode CObjectProxy::LinkToDeath(
         return E_INVALID_ARGUMENT;
     }
 
-    android::IBinder* target = m_pBinder.get();
+    android::IBinder* target = mBinder.get();
     if (target == NULL) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 ALOGE("Binder has been finalized when calling linkToDeath() with recip=%p)\n", recipient));
@@ -1036,7 +1036,7 @@ ECode CObjectProxy::UnlinkToDeath(
         return E_INVALID_ARGUMENT;
     }
 
-    android::IBinder* target = m_pBinder.get();
+    android::IBinder* target = mBinder.get();
     if (target == NULL) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 ALOGE("Binder has been finalized when calling linkToDeath() with recip=%p)\n", recipient));
@@ -1096,11 +1096,11 @@ ECode CObjectProxy::S_CreateObject(
         return E_OUT_OF_MEMORY;
     }
 
-    pProxy->m_pBinder = binder;
+    pProxy->mBinder = binder;
 
     ec = LookupClassInfo(rclsid, &(pProxy->m_pInfo));
     if (FAILED(ec)) {
-        ec = GetRemoteClassInfo(pProxy->m_pBinder.get(),
+        ec = GetRemoteClassInfo(pProxy->mBinder.get(),
                                  rclsid,
                                  &pProxy->m_pInfo);
         if (FAILED(ec)) goto ErrorExit;
@@ -1117,7 +1117,7 @@ ECode CObjectProxy::S_CreateObject(
     pProxy->m_pInterfaces = pInterfaces;
     memset(pInterfaces, 0, sizeof(CInterfaceProxy) * pProxy->m_cInterfaces);
     for (n = 0; n < pProxy->m_cInterfaces; n++) {
-        pInterfaces[n].m_uIndex = n;
+        pInterfaces[n].mIndex = n;
         pInterfaces[n].m_pOwner = pProxy;
         CIInterfaceInfo *pInterfaceInfo =
             (CIInterfaceInfo *)GetUnalignedPtr(
@@ -1136,7 +1136,7 @@ ECode CObjectProxy::S_CreateObject(
 #endif
     }
 
-    ec = RegisterImportObject(pProxy->m_pBinder.get(), (IProxy*)pProxy);
+    ec = RegisterImportObject(pProxy->mBinder.get(), (IProxy*)pProxy);
     if (FAILED(ec)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                 "Create proxy: register import object failed, ec(%x)\n",

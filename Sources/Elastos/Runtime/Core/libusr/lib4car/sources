@@ -7,6 +7,3 @@ TARGET_TYPE= lib
 
 SOURCES = baseclsobj.cpp
 SOURCES += libusr.cpp
-SOURCES += modglbs.cpp
-
-

@@ -19,16 +19,16 @@
 #define NanoSecPerSec 1000000000
 
 #define ForEachDLinkNode(t, p, h) \
-        for (p = (t)((h)->m_pNext); p != (t)h; p = (t)(p->m_pNext))
+        for (p = (t)((h)->mNext); p != (t)h; p = (t)(p->mNext))
 
 #define ForEachDLinkNodeReversely(t, p, h) \
-        for (p = (t)((h)->m_pPrev); p != (t)h; p = (t)(p->m_pPrev))
+        for (p = (t)((h)->mPrev); p != (t)h; p = (t)(p->mPrev))
 
 EXTERN_C int CDECL printf(const char *fmt,...);
 EXTERN_C int invokeCoalescer(void* pFunc, void* pOldParam, void* pNewParam, int size);
 EXTERN_C int invokeCallback(CallbackEventFlags flags, void* sender, void* pThis, void* pFunc, void* pParam, int size);
 
-ELAPI_(PCallbackEvent) _Impl_CallbackSink_AllocCallbackEvent(Elastos::MemorySize size)
+ELAPI_(PCallbackEvent) _Impl_CallbackSink_AllocCallbackEvent(Elastos::Int32 size)
 {
     // TODO: optimize
     return (PCallbackEvent)malloc(size);
@@ -38,7 +38,7 @@ ELAPI_(void) _Impl_CallbackSink_FreeCallbackEvent(Elastos::PVoid callbackEvent)
 {
     // TODO: optimize
 
-    ((PCallbackEvent)callbackEvent)->~_EzCallbackEvent();
+    ((PCallbackEvent)callbackEvent)->~CarCallbackEvent();
     free(callbackEvent);
 }
 
@@ -138,8 +138,8 @@ PCallbackEvent CCallbackContext::PopEvent()
 Boolean CCallbackContext::IsExistEvent(
     /* [in] */ PCallbackEvent event)
 {
-    return IsExistEvent(event->m_pSender, event->m_id,
-            event->m_pHandlerThis, event->m_pHandlerFunc);
+    return IsExistEvent(event->mSender, event->mID,
+            event->mHandlerThis, event->mHandlerFunc);
 }
 
 Boolean CCallbackContext::IsExistEvent(
@@ -151,10 +151,10 @@ Boolean CCallbackContext::IsExistEvent(
     PCallbackEvent curtEvent;
     pthread_mutex_lock(&mQueueLock);
     ForEachDLinkNode(PCallbackEvent, curtEvent, &mCurrentEvents) {
-        if ( (sender == curtEvent->m_pSender || sender == (PInterface)-1)
-            && (id == curtEvent->m_id || id == (CallbackEventId)-1)
-            && (handlerThis == curtEvent->m_pHandlerThis || handlerThis == (PVoid)-1)
-            && (handlerFunc == curtEvent->m_pHandlerFunc || handlerFunc == (PVoid)-1)) {
+        if ( (sender == curtEvent->mSender || sender == (PInterface)-1)
+            && (id == curtEvent->mID || id == (CallbackEventId)-1)
+            && (handlerThis == curtEvent->mHandlerThis || handlerThis == (PVoid)-1)
+            && (handlerFunc == curtEvent->mHandlerFunc || handlerFunc == (PVoid)-1)) {
             pthread_mutex_unlock(&mQueueLock);
             return TRUE;
         }
@@ -178,9 +178,9 @@ ECode CCallbackContext::PostCallbackEvent(
 
         pthread_mutex_unlock(&mQueueLock);
 
-        callbackEvent->m_Status = CallingStatus_Cancelled;
-        callbackEvent->m_bCompleted = TRUE;
-        sem_post(&callbackEvent->m_pSyncEvent);
+        callbackEvent->mStatus = CallingStatus_Cancelled;
+        callbackEvent->mCompleted = TRUE;
+        sem_post(&callbackEvent->mSyncEvent);
         callbackEvent->Release();
 
         return NOERROR;
@@ -192,25 +192,25 @@ ECode CCallbackContext::PostCallbackEvent(
     PCallbackEvent prevCBEvent;
     PCallbackEvent cancelingCBEvent;
 
-    if (callbackEvent->m_flags & CallbackEventFlag_Duplicated) {
+    if (callbackEvent->mFlags & CallbackEventFlag_Duplicated) {
         CallbackEventFlags highestFlag =
-            callbackEvent->m_flags & CallbackEventFlag_PriorityMask;
+            callbackEvent->mFlags & CallbackEventFlag_PriorityMask;
         ForEachDLinkNodeReversely(PCallbackEvent, prevCBEvent, &mEventQueue) {
-            if (callbackEvent->m_id == prevCBEvent->m_id
-              && callbackEvent->m_pSender == prevCBEvent->m_pSender
-              && callbackEvent->m_pHandlerThis == prevCBEvent->m_pHandlerThis
-              && callbackEvent->m_pHandlerFunc == prevCBEvent->m_pHandlerFunc) {
-                PVoid userFunc = callbackEvent->m_pCoalesceFunc;
+            if (callbackEvent->mID == prevCBEvent->mID
+              && callbackEvent->mSender == prevCBEvent->mSender
+              && callbackEvent->mHandlerThis == prevCBEvent->mHandlerThis
+              && callbackEvent->mHandlerFunc == prevCBEvent->mHandlerFunc) {
+                PVoid userFunc = callbackEvent->mCoalesceFunc;
                 if (userFunc) {
                     Int32 size = 0;
                     Byte* newBuf = NULL;
                     Byte* oldBuf = NULL;
 
-                    if ((NULL != callbackEvent->m_pParameters)
-                        && (NULL != prevCBEvent->m_pParameters)) {
-                        callbackEvent->m_pParameters->GetElementSize(&size);
-                        callbackEvent->m_pParameters->GetElementPayload((Handle32*)&newBuf);
-                        prevCBEvent->m_pParameters->GetElementPayload((Handle32*)&oldBuf);
+                    if ((NULL != callbackEvent->mParameters)
+                        && (NULL != prevCBEvent->mParameters)) {
+                        callbackEvent->mParameters->GetElementSize(&size);
+                        callbackEvent->mParameters->GetElementPayload((Handle32*)&newBuf);
+                        prevCBEvent->mParameters->GetElementPayload((Handle32*)&oldBuf);
                     }
 
                     ec = invokeCoalescer(userFunc, oldBuf, newBuf, size);
@@ -226,7 +226,7 @@ ECode CCallbackContext::PostCallbackEvent(
                         continue;
                     }
                 }
-                highestFlag = prevCBEvent->m_flags & CallbackEventFlag_PriorityMask;
+                highestFlag = prevCBEvent->mFlags & CallbackEventFlag_PriorityMask;
                 cancelingCBEvent = prevCBEvent;
                 prevCBEvent = (PCallbackEvent)prevCBEvent->Next();
                 cancelingCBEvent->Detach();
@@ -234,18 +234,18 @@ ECode CCallbackContext::PostCallbackEvent(
                 cancelingCBEvent->Release();
             }
         }
-        if ((callbackEvent->m_flags & CallbackEventFlag_PriorityMask)
+        if ((callbackEvent->mFlags & CallbackEventFlag_PriorityMask)
                 > highestFlag) {
-            callbackEvent->m_flags &= ~CallbackEventFlag_PriorityMask;
-            callbackEvent->m_flags |= highestFlag;
+            callbackEvent->mFlags &= ~CallbackEventFlag_PriorityMask;
+            callbackEvent->mFlags |= highestFlag;
         }
     }
 
     ForEachDLinkNodeReversely(PCallbackEvent, prevCBEvent, &mEventQueue) {
-        CallbackEventFlags prevPri = prevCBEvent->m_flags & CallbackEventFlag_PriorityMask;
-        CallbackEventFlags currPri = callbackEvent->m_flags & CallbackEventFlag_PriorityMask;
+        CallbackEventFlags prevPri = prevCBEvent->mFlags & CallbackEventFlag_PriorityMask;
+        CallbackEventFlags currPri = callbackEvent->mFlags & CallbackEventFlag_PriorityMask;
         if ((prevPri < currPri) || ((prevPri == currPri) &&
-            (prevCBEvent->m_when <= callbackEvent->m_when))) {
+            (prevCBEvent->mWhen <= callbackEvent->mWhen))) {
             prevCBEvent->InsertNext(callbackEvent);
             mEventsCount++;
             goto Next;
@@ -295,14 +295,14 @@ ECode CCallbackContext::SendCallbackEvent(
 
     if (orgCallbackContext && CCStatus > CallbackContextStatus_Created) {
         ec = _Impl_CallbackSink_GetThreadEvent(
-                orgCallbackContext, &callbackEvent->m_pSyncEvent);
+                orgCallbackContext, &callbackEvent->mSyncEvent);
         if (NOERROR == ec) {
             ec = _Impl_CallbackSink_PostCallbackEvent(
                     this, callbackEvent);
             if (NOERROR == ec) {
                 ec = _Impl_CallbackSink_WaitForCallbackEvent(
                         orgCallbackContext, timeOut, &wr,
-                        (Boolean*)&callbackEvent->m_bCompleted,
+                        (Boolean*)&callbackEvent->mCompleted,
                         CallbackEventFlag_SyncCall);
                 if (NOERROR == ec) {
                     if (WaitResult_OK == wr) ec = NOERROR;
@@ -319,15 +319,15 @@ ECode CCallbackContext::SendCallbackEvent(
         }
     }
     else {
-        ec = sem_init(&callbackEvent->m_pSyncEvent, 0, 0);
+        ec = sem_init(&callbackEvent->mSyncEvent, 0, 0);
         if (NOERROR == ec) {
             ec = _Impl_CallbackSink_PostCallbackEvent(this, callbackEvent);
             if (NOERROR == ec) {
                 if (INFINITE == timeOut) {
-                    ec = sem_wait(&callbackEvent->m_pSyncEvent);
+                    ec = sem_wait(&callbackEvent->mSyncEvent);
                 }
                 else {
-                    ec = sem_timedwait(&callbackEvent->m_pSyncEvent, &ts);
+                    ec = sem_timedwait(&callbackEvent->mSyncEvent, &ts);
                 }
 
                 if ( ec == -1) {
@@ -347,12 +347,12 @@ ECode CCallbackContext::SendCallbackEvent(
         }
     }
 
-    if (callbackEvent->m_Status == CallingStatus_Cancelled) {
+    if (callbackEvent->mStatus == CallingStatus_Cancelled) {
         ec = E_CALLBACK_CANCELED;
     }
 
     if (cancelled) {
-        callbackEvent->m_Status = CallingStatus_Cancelled;
+        callbackEvent->mStatus = CallingStatus_Cancelled;
     }
 
     return ec;
@@ -383,15 +383,15 @@ ECode CCallbackContext::CancelAllPendingCallbacks(
 
     pthread_mutex_lock(&mQueueLock);
     ForEachDLinkNode(PCallbackEvent, cbEvent, &mEventQueue) {
-        if (cbEvent->m_pSender == sender) {
+        if (cbEvent->mSender.Get() == sender) {
             cancelingCBEvent = cbEvent;
             cbEvent = (PCallbackEvent)cancelingCBEvent->Prev();
             cancelingCBEvent->Detach();
             --mEventsCount;
 
-            cancelingCBEvent->m_Status = CallingStatus_Cancelled;
-            cancelingCBEvent->m_bCompleted = TRUE;
-            sem_post(&cancelingCBEvent->m_pSyncEvent);
+            cancelingCBEvent->mStatus = CallingStatus_Cancelled;
+            cancelingCBEvent->mCompleted = TRUE;
+            sem_post(&cancelingCBEvent->mSyncEvent);
             cancelingCBEvent->Release();
         }
     }
@@ -410,16 +410,16 @@ ECode CCallbackContext::CancelPendingCallback(
 
     pthread_mutex_lock(&mQueueLock);
     ForEachDLinkNode(PCallbackEvent, cbEvent, &mEventQueue) {
-        if (cbEvent->m_pSender == sender
-            && cbEvent->m_id == id) {
+        if (cbEvent->mSender.Get() == sender
+            && cbEvent->mID == id) {
             cancelingCBEvent = cbEvent;
             cbEvent = (PCallbackEvent)cancelingCBEvent->Prev();
             cancelingCBEvent->Detach();
             --mEventsCount;
 
-            cancelingCBEvent->m_Status = CallingStatus_Cancelled;
-            cancelingCBEvent->m_bCompleted = TRUE;
-            sem_post(&cancelingCBEvent->m_pSyncEvent);
+            cancelingCBEvent->mStatus = CallingStatus_Cancelled;
+            cancelingCBEvent->mCompleted = TRUE;
+            sem_post(&cancelingCBEvent->mSyncEvent);
             cancelingCBEvent->Release();
         }
     }
@@ -440,18 +440,18 @@ ECode CCallbackContext::CancelCallbackEvents(
 
     pthread_mutex_lock(&mQueueLock);
     ForEachDLinkNode(PCallbackEvent, cbEvent, &mEventQueue) {
-        if (cbEvent->m_pSender == sender
-            && cbEvent->m_id == id
-            && cbEvent->m_pHandlerThis == handlerThis
-            && cbEvent->m_pHandlerFunc == handlerFunc) {
+        if (cbEvent->mSender.Get() == sender
+            && cbEvent->mID == id
+            && cbEvent->mHandlerThis == handlerThis
+            && cbEvent->mHandlerFunc == handlerFunc) {
             cancelingCBEvent = cbEvent;
             cbEvent = (PCallbackEvent)cancelingCBEvent->Prev();
             cancelingCBEvent->Detach();
             --mEventsCount;
 
-            cancelingCBEvent->m_Status = CallingStatus_Cancelled;
-            cancelingCBEvent->m_bCompleted = TRUE;
-            sem_post(&cancelingCBEvent->m_pSyncEvent);
+            cancelingCBEvent->mStatus = CallingStatus_Cancelled;
+            cancelingCBEvent->mCompleted = TRUE;
+            sem_post(&cancelingCBEvent->mSyncEvent);
             cancelingCBEvent->Release();
         }
     }
@@ -481,9 +481,9 @@ void CCallbackContext::CancelAllCallbackEvents()
         callbackEvent->Detach();
         --mEventsCount;
 
-        callbackEvent->m_Status = CallingStatus_Cancelled;
-        callbackEvent->m_bCompleted = TRUE;
-        sem_post(&callbackEvent->m_pSyncEvent);
+        callbackEvent->mStatus = CallingStatus_Cancelled;
+        callbackEvent->mCompleted = TRUE;
+        sem_post(&callbackEvent->mSyncEvent);
         callbackEvent->Release();
 
     }
@@ -506,13 +506,13 @@ again:
     if (priority) {
         while (callbackEvent != &mEventQueue) {
             if ((priority & CallbackEventFlag_PriorityMask) <
-                ((UInt32)callbackEvent->m_flags & CallbackEventFlag_PriorityMask)) {
+                ((UInt32)callbackEvent->mFlags & CallbackEventFlag_PriorityMask)) {
                 if ((priority & ~CallbackEventFlag_PriorityMask) == 0
                         || ((priority & ~CallbackEventFlag_PriorityMask)
-                        & callbackEvent->m_flags)) {
-                    if (now < callbackEvent->m_when) {
+                        & callbackEvent->mFlags)) {
+                    if (now < callbackEvent->mWhen) {
                         pthread_mutex_unlock(&mQueueLock);
-                        usleep((callbackEvent->m_when - now) *
+                        usleep((callbackEvent->mWhen - now) *
                                 (MicrosecPerSec / MillisecPerSec));
                         pthread_mutex_lock(&mQueueLock);
                         goto again;
@@ -529,9 +529,9 @@ again:
         return NULL;
     }
     else {
-        if (now < callbackEvent->m_when) {
+        if (now < callbackEvent->mWhen) {
             pthread_mutex_unlock(&mQueueLock);
-            usleep((callbackEvent->m_when - now) *
+            usleep((callbackEvent->mWhen - now) *
                     (MicrosecPerSec / MillisecPerSec));
             pthread_mutex_lock(&mQueueLock);
             goto again;
@@ -624,55 +624,55 @@ Int32 CCallbackContext::HandleCallbackEvents(
             mStatus = CallbackContextStatus_Working;
             pthread_mutex_unlock(&mQueueLock);
 
-            if (NULL != callbackEvent->m_pHandlerFunc) {
+            if (NULL != callbackEvent->mHandlerFunc) {
                 clientObj = NULL;
-                if (CallbackType_CAR == callbackEvent->m_typeOfFunc) {
-                    clientObj = (IObject*)callbackEvent->m_pReceiver->Probe(EIID_IObject);
+                if (CallbackType_CAR == callbackEvent->mTypeOfFunc) {
+                    clientObj = (IObject*)callbackEvent->mReceiver->Probe(EIID_IObject);
                     assert(clientObj);
                     if (clientObj->AddRef() == 1) goto Cancel;
                     clientObj->Aggregate(AggrType_FriendEnter, (PInterface)&lock);
                 }
 
-                if (callbackEvent->m_flags & CallbackEventFlag_SyncCall) {
-                    if (CallingStatus_Cancelled == callbackEvent->m_Status) {
-                        callbackEvent->m_bCompleted = TRUE;
-                        sem_post(&callbackEvent->m_pSyncEvent);
+                if (callbackEvent->mFlags & CallbackEventFlag_SyncCall) {
+                    if (CallingStatus_Cancelled == callbackEvent->mStatus) {
+                        callbackEvent->mCompleted = TRUE;
+                        sem_post(&callbackEvent->mSyncEvent);
                         goto CallingCompleted;
                     }
-                    callbackEvent->m_Status = CallingStatus_Running;
+                    callbackEvent->mStatus = CallingStatus_Running;
                 }
 
-                if (callbackEvent->m_flags & CallbackEventFlag_DirectCall) {
+                if (callbackEvent->mFlags & CallbackEventFlag_DirectCall) {
                         _Impl_SetHelperInfoFlag(HELPER_ASYNC_CALLING, TRUE);
                 }
                 {
                     Int32 size = 0;
                     Byte* buf = NULL;
 
-                    if (callbackEvent->m_pParameters != NULL) {
-                        callbackEvent->m_pParameters->GetElementPayload((Handle32*)&buf);
-                        callbackEvent->m_pParameters->GetElementSize(&size);
+                    if (callbackEvent->mParameters != NULL) {
+                        callbackEvent->mParameters->GetElementPayload((Handle32*)&buf);
+                        callbackEvent->mParameters->GetElementSize(&size);
                     }
 
-                    CallbackEventFlags flags = callbackEvent->m_flags;
-                    PVoid sender = callbackEvent->m_pSender;
-                    PVoid pThis = callbackEvent->m_pHandlerThis;
-                    PVoid pFunc = callbackEvent->m_pHandlerFunc;
+                    CallbackEventFlags flags = callbackEvent->mFlags;
+                    PVoid sender = callbackEvent->mSender;
+                    PVoid pThis = callbackEvent->mHandlerThis;
+                    PVoid pFunc = callbackEvent->mHandlerFunc;
 
-                    callbackEvent->m_ecRet = invokeCallback(flags, sender, pThis, pFunc, buf, size);
+                    callbackEvent->mRet = invokeCallback(flags, sender, pThis, pFunc, buf, size);
                 }
-                if (callbackEvent->m_flags & CallbackEventFlag_DirectCall) {
+                if (callbackEvent->mFlags & CallbackEventFlag_DirectCall) {
                     _Impl_SetHelperInfoFlag(HELPER_ASYNC_CALLING, FALSE);
                 }
 
-                if (callbackEvent->m_flags & CallbackEventFlag_SyncCall) {
-                    callbackEvent->m_Status = CallingStatus_Completed;
-                    callbackEvent->m_bCompleted = TRUE;
-                    sem_post(&callbackEvent->m_pSyncEvent);
+                if (callbackEvent->mFlags & CallbackEventFlag_SyncCall) {
+                    callbackEvent->mStatus = CallingStatus_Completed;
+                    callbackEvent->mCompleted = TRUE;
+                    sem_post(&callbackEvent->mSyncEvent);
                 }
 
 CallingCompleted:
-                if ((CallbackType_CAR == callbackEvent->m_typeOfFunc) && (clientObj)) {
+                if ((CallbackType_CAR == callbackEvent->mTypeOfFunc) && (clientObj)) {
                     clientObj->Aggregate(AggrType_FriendLeave, (PInterface)lock);
                     clientObj->Release();
                 }

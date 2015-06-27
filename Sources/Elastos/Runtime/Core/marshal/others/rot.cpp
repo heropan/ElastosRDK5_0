@@ -75,8 +75,8 @@ ECode RegisterExportObject(
     assert(connName != NULL && connName[0] != '\0');
     pObjNode->m_connName = (char*)malloc(strlen(connName) + 1);
     strcpy(pObjNode->m_connName, connName);
-    pObjNode->m_pObject = pObject;
-    pObjNode->m_pIStub = pIStub;
+    pObjNode->mObject = pObject;
+    pObjNode->mIStub = pIStub;
 
     pthread_mutex_lock(&g_exportTableLock);
     s_hashExportObjects[Hash(connName)].InsertFirst(pObjNode);
@@ -96,9 +96,9 @@ ECode FindExportObject(
     for (int n = 0; n < ROT_HASHTABLE_SIZE; n++) {
         pIter = s_hashExportObjects + n;
         for (; NULL != pIter; pIter = (ExportObject*)(pIter->Next())) {
-            if (pIter->m_pObject == pObject) {
+            if (pIter->mObject == pObject) {
                 memcpy(pExport, pIter, sizeof(ExportObject));
-                pExport->m_pIStub->AddRef();
+                pExport->mIStub->AddRef();
                 pthread_mutex_unlock(&g_exportTableLock);
                 return NOERROR;
             }
@@ -120,7 +120,7 @@ ECode FindExportObject(
         pIter = (ExportObject*)(pIter->Next())) {
         if (!strcmp(pIter->m_connName, connName)) {
             memcpy(pExport, pIter, sizeof(ExportObject));
-            pExport->m_pIStub->AddRef();
+            pExport->mIStub->AddRef();
             pthread_mutex_unlock(&g_exportTableLock);
             return NOERROR;
         }
@@ -140,7 +140,7 @@ ECode UnregisterExportObject(
     for (ExportObject* pIter = pHead; NULL != pIter; \
         pIter = (ExportObject*)(pIter->Next())) {
         if (!strcmp(pIter->m_connName, connName)) {
-            if ((Int32)(((CObjectStub*)(pIter->m_pIStub))->m_cRef) != 0) {
+            if ((Int32)(((CObjectStub*)(pIter->mIStub))->m_cRef) != 0) {
                 pthread_mutex_unlock(&g_exportTableLock);
                 return S_FALSE;
             }
@@ -172,7 +172,7 @@ ECode RegisterImportObject(
     assert(stubConnName != NULL && stubConnName[0] != '\0');
     pObjNode->m_stubConnName = (char*)malloc(strlen(stubConnName) + 1);
     strcpy(pObjNode->m_stubConnName, stubConnName);
-    pObjNode->m_pIProxy = pIProxy;
+    pObjNode->mIProxy = pIProxy;
     pthread_mutex_lock(&g_importTableLock);
     s_hashImportObjects[Hash(stubConnName)].InsertFirst(pObjNode);
     pthread_mutex_unlock(&g_importTableLock);
@@ -191,7 +191,7 @@ ECode FindImportObject(
         pIter = (ImportObject*)(pIter->Next())) {
         if (!strcmp(pIter->m_stubConnName, stubConnName)) {
             memcpy(pImport, pIter, sizeof(ImportObject));
-            pImport->m_pIProxy->AddRef();
+            pImport->mIProxy->AddRef();
             pthread_mutex_unlock(&g_importTableLock);
             return NOERROR;
         }
@@ -212,7 +212,7 @@ ECode UnregisterImportObject(
     for (ImportObject* pIter = pHead; NULL != pIter; \
         pIter = (ImportObject*)(pIter->Next())) {
         if (!strcmp(pIter->m_stubConnName, stubConnName)) {
-            if ((Int32)(((CObjectProxy *)(pIter->m_pIProxy))->m_cRef) != 0) {
+            if ((Int32)(((CObjectProxy *)(pIter->mIProxy))->m_cRef) != 0) {
                 pthread_mutex_unlock(&g_importTableLock);
                 return S_FALSE;
             }

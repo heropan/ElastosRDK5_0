@@ -47,7 +47,7 @@ ECode CInterfaceStub::MarshalOut(
     ECode ec;
 
     ec = Stub_ProcessMsh_Out(
-            &(m_pInfo->methods[pInHeader->m_hMethodIndex - 4]),
+            &(m_pInfo->methods[pInHeader->mMethodIndex - 4]),
             puArgs,
             (UInt32 *)pOutHeader,
             bOnlyReleaseIn,
@@ -56,9 +56,9 @@ ECode CInterfaceStub::MarshalOut(
     if (pParcel && SUCCEEDED(ec)) {
         pHeader = pParcel->GetMarshalHeader();
         assert(pHeader != NULL);
-        pHeader->m_uMagic = pInHeader->m_uMagic;
-        pHeader->m_hInterfaceIndex = pInHeader->m_hInterfaceIndex ;
-        pHeader->m_hMethodIndex = pInHeader->m_hMethodIndex;
+        pHeader->mMagic = pInHeader->mMagic;
+        pHeader->mInterfaceIndex = pInHeader->mInterfaceIndex ;
+        pHeader->mMethodIndex = pInHeader->mMethodIndex;
     }
 
     return ec;
@@ -107,7 +107,7 @@ PInterface CObjectStub::Probe(
         return NULL;
     }
 
-    return m_pInterfaces[n].m_pObject;
+    return m_pInterfaces[n].mObject;
 }
 
 UInt32 CObjectStub::AddRef(void)
@@ -210,9 +210,9 @@ ECode CObjectStub::Invoke(
             printf("Stub: in Invoke: isize(%d)\n", uInSize));
 
     pInHeader = (MarshalHeader *)pInData;
-    if (pInHeader->m_uMagic != MARSHAL_MAGIC) {
+    if (pInHeader->mMagic != MARSHAL_MAGIC) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
-                printf("Stub: invalid magic - %x\n", pInHeader->m_uMagic));
+                printf("Stub: invalid magic - %x\n", pInHeader->mMagic));
         goto ErrorExit;
     }
 
@@ -220,27 +220,27 @@ ECode CObjectStub::Invoke(
     if (uInSize < sizeof(MarshalHeader)) {
         goto ErrorExit;
     }
-    if (uInSize != pInHeader->m_uInSize) {
+    if (uInSize != pInHeader->mInSize) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Stub: in size error - %d:%d\n",
-                uInSize, pInHeader->m_uInSize + sizeof(MarshalHeader) - 1));
+                uInSize, pInHeader->mInSize + sizeof(MarshalHeader) - 1));
         goto ErrorExit;
     }
-    if (pInHeader->m_hInterfaceIndex >= m_cInterfaces) {
+    if (pInHeader->mInterfaceIndex >= m_cInterfaces) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Stub: interface index error - %d:%d\n",
-                pInHeader->m_hInterfaceIndex, m_cInterfaces));
+                pInHeader->mInterfaceIndex, m_cInterfaces));
         goto ErrorExit;
     }
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
             printf("Stub: interface idx(%d), method idx(%d)\n",
-            pInHeader->m_hInterfaceIndex, pInHeader->m_hMethodIndex));
+            pInHeader->mInterfaceIndex, pInHeader->mMethodIndex));
 #endif
 
-    if (pInHeader->m_hMethodIndex >= 4) {
-        pCurInterface = &(m_pInterfaces[pInHeader->m_hInterfaceIndex]);
+    if (pInHeader->mMethodIndex >= 4) {
+        pCurInterface = &(m_pInterfaces[pInHeader->mInterfaceIndex]);
 
-        uMethodIndex = pInHeader->m_hMethodIndex - 4;
+        uMethodIndex = pInHeader->mMethodIndex - 4;
         if (uMethodIndex >= pCurInterface->m_pInfo->methodNumMinus4) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub: method index out of range - %d:%d\n",
@@ -252,8 +252,8 @@ ECode CObjectStub::Invoke(
         uMethodAddr =
                 pCurInterface->m_pInterface->m_vPtr->m_vTable[uMethodIndex + 4];
 
-        if (0 != pInHeader->m_uOutSize) {
-            pOutHeader = (MarshalHeader *)alloca(pInHeader->m_uOutSize);
+        if (0 != pInHeader->mOutSize) {
+            pOutHeader = (MarshalHeader *)alloca(pInHeader->mOutSize);
             if (!pOutHeader) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR,
                         printf("Stub error: alloca() failed.\n"));
@@ -288,7 +288,7 @@ ECode CObjectStub::Invoke(
             goto ErrorExit;
         }
 
-        *puArgs = (UInt32)pCurInterface->m_pObject; // fill this
+        *puArgs = (UInt32)pCurInterface->mObject; // fill this
 
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 printf("Stub: invoke method - args(%x), addr(%x) \n",
@@ -415,19 +415,19 @@ ECode CObjectStub::Invoke(
         }
     }
     else {
-        if (pInHeader->m_hMethodIndex == 0) {
+        if (pInHeader->mMethodIndex == 0) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote Probe().\n"));
         }
-        else if (pInHeader->m_hMethodIndex == 1) {
+        else if (pInHeader->mMethodIndex == 1) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote AddRef().\n"));
         }
-        else if (pInHeader->m_hMethodIndex == 2) {
+        else if (pInHeader->mMethodIndex == 2) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote Release().\n"));
         }
-        else if (pInHeader->m_hMethodIndex == 3) {
+        else if (pInHeader->mMethodIndex == 3) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote GetInterfaceID().\n"));
         }
@@ -468,7 +468,7 @@ ECode CObjectStub::GetInterfaceIndex(
     /* [out] */ UInt32 *puIndex)
 {
     for (UInt32 n = 0; n < (UInt32)m_cInterfaces; n++) {
-        if (m_pInterfaces[n].m_pObject == pObj) {
+        if (m_pInterfaces[n].mObject == pObj) {
             *puIndex = n;
             return NOERROR;
         }
@@ -811,7 +811,7 @@ ECode CObjectStub::S_CreateObject(
             goto ErrorExit;
         }
         pInterfaces[n].m_pInfo = pInterfaceInfo;
-        pInterfaces[n].m_pObject = pObj;
+        pInterfaces[n].mObject = pObj;
     }
 
     //Start stub ipc service

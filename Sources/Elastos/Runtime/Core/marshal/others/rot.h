@@ -16,8 +16,8 @@ typedef struct ExportObject: SLinkNode
         if (!m_connName) free(m_connName);
     }
     char            *m_connName;
-    IInterface      *m_pObject;
-    IStub           *m_pIStub;
+    IInterface      *mObject;
+    IStub           *mIStub;
 } ExportObject;
 
 typedef struct ImportObject: SLinkNode
@@ -29,7 +29,7 @@ typedef struct ImportObject: SLinkNode
         if (!m_stubConnName) free(m_stubConnName);
     }
     char            *m_stubConnName;
-    IProxy          *m_pIProxy;
+    IProxy          *mIProxy;
 } ImportObject;
 
 extern ECode InitROT();

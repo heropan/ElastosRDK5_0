@@ -48,17 +48,17 @@ extern int _DumpBin(const void *pv, int size);
 
 typedef struct MarshalHeader
 {
-    UInt32              m_uMagic;           // magic number
-    Int16               m_hInterfaceIndex;  // interface index in object
-    Int16               m_hMethodIndex;     // method index in interface
-    UInt32              m_uInSize;          // size of in data
-    UInt32              m_uOutSize;         // size of out data
+    UInt32              mMagic;           // magic number
+    Int16               mInterfaceIndex;  // interface index in object
+    Int16               mMethodIndex;     // method index in interface
+    UInt32              mInSize;          // size of in data
+    UInt32              mOutSize;         // size of out data
 }   MarshalHeader;
 
 typedef struct InterfacePack
 {
-    EMuid               m_clsid;            // clsid of object
-    UInt32              m_uIndex;           // interface index in class
+    EMuid               mClsid;            // clsid of object
+    UInt32              mIndex;           // interface index in class
     Byte                m_stubConnName[256];// dbus unique connection name of stub
 }   InterfacePack;
 

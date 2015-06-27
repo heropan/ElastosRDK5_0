@@ -17,7 +17,7 @@ public:
         /* [in] */ Boolean writeMarshalHeader = TRUE);
 
     CRemoteParcel(
-        /* [in] */ android::Parcel *pData);
+        /* [in] */ android::Parcel* data);
 
     ~CRemoteParcel();
 
@@ -29,8 +29,8 @@ public:
         /* [in] */ REIID riid);
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Marshall(
         /* [out, callee] */ ArrayOf<Byte>** bytes);
@@ -49,95 +49,95 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI ReadByte(
-        /* [out] */ Byte *pValue);
+        /* [out] */ Byte* value);
 
     CARAPI WriteByte(
         /* [in] */ Byte value);
 
     CARAPI ReadBoolean(
-        /* [out] */ Boolean *pValue);
+        /* [out] */ Boolean* value);
 
     CARAPI WriteBoolean(
         /* [in] */ Boolean value);
 
     CARAPI ReadChar(
-        /* [out] */ Char32 *pValue);
+        /* [out] */ Char32* value);
 
     CARAPI WriteChar(
         /* [in] */ Char32 value);
 
     CARAPI ReadInt16(
-        /* [out] */ Int16 *pValue);
+        /* [out] */ Int16* value);
 
     CARAPI WriteInt16(
         /* [in] */ Int16 value);
 
     CARAPI ReadInt32(
-        /* [out] */ Int32 *pValue);
+        /* [out] */ Int32* value);
 
     CARAPI WriteInt32(
         /* [in] */ Int32 value);
 
     CARAPI ReadInt64(
-        /* [out] */ Int64 *pValue);
+        /* [out] */ Int64* value);
 
     CARAPI WriteInt64(
         /* [in] */ Int64 value);
 
     CARAPI ReadFloat(
-        /* [out] */ Float *value);
+        /* [out] */ Float* value);
 
     CARAPI WriteFloat(
         /* [in] */ Float value);
 
     CARAPI ReadDouble(
-        /* [out] */ Double *value);
+        /* [out] */ Double* value);
 
     CARAPI WriteDouble(
         /* [in] */ Double value);
 
     CARAPI ReadString(
-        /* [out] */ String* pStr);
+        /* [out] */ String* str);
 
     CARAPI WriteString(
         /* [in] */ const String& str);
 
     CARAPI ReadStruct(
-        /* [out] */ Handle32 *pAddress);
+        /* [out] */ Handle32* address);
 
     CARAPI WriteStruct(
-        /* [in] */ Handle32 pValue,
+        /* [in] */ Handle32 value,
         /* [in] */ Int32 size);
 
     CARAPI ReadEMuid(
-        /* [out] */ EMuid *pId);
+        /* [out] */ EMuid* id);
 
     CARAPI WriteEMuid(
-        /* [in] */ const EMuid & id);
+        /* [in] */ const EMuid& id);
 
     CARAPI ReadEGuid(
-        /* [out] */ EGuid *pId);
+        /* [out] */ EGuid* id);
 
     CARAPI WriteEGuid(
-        /* [in] */ const EGuid & id);
+        /* [in] */ const EGuid& id);
 
     CARAPI ReadArrayOf(
-        /* [out] */ Handle32 *ppArray);
+        /* [out] */ Handle32* array);
 
     CARAPI WriteArrayOf(
-        /* [in] */ Handle32 pArray);
+        /* [in] */ Handle32 array);
 
     CARAPI ReadArrayOfString(
-        /* [out, callee] */ ArrayOf<String>** ppArray);
+        /* [out, callee] */ ArrayOf<String>** array);
 
     CARAPI WriteArrayOfString(
         /* [in] */ ArrayOf<String>* array);
 
     CARAPI ReadInterfacePtr(
-        /* [out] */ Handle32 *pItfPtr);
+        /* [out] */ Handle32* itfPtr);
 
     CARAPI WriteInterfacePtr(
-        /* [in] */ IInterface* pValue);
+        /* [in] */ IInterface* value);
 
     // Place a file descriptor into the parcel.  The given fd must remain
     // valid for the lifetime of the parcel.
@@ -155,7 +155,7 @@ public:
         /* [out] */ Int32* fd);
 
     CARAPI Clone(
-        /* [in] */ IParcel* pSrcParcel);
+        /* [in] */ IParcel* srcParcel);
 
     CARAPI GetDataPosition(
         /* [out] */ Int32* position);
@@ -164,29 +164,33 @@ public:
         /* [in] */ Int32 position);
 
     CARAPI GetElementSize(
-        /* [out] */ Int32* pSize);
+        /* [out] */ Int32* size);
 
     CARAPI GetElementPayload(
-        /* [ouy] */ Handle32* pBuffer);
+        /* [ouy] */ Handle32* buffer);
 
-public:
     CARAPI_(MarshalHeader*) GetMarshalHeader();
 
 private:
     CARAPI GrowElemBuffer(
         /* [in] */ Int32 minSize);
 
-    CARAPI ReadValue(PVoid pValue, Int32 type);
+    CARAPI ReadValue(
+        /* [in] */ PVoid value,
+        /* [in] */ Int32 type);
 
-    CARAPI WriteValue(PVoid pValue, Int32 type, Int32 size);
+    CARAPI WriteValue(
+        /* [in] */ PVoid value,
+        /* [in] */ Int32 type,
+        /* [in] */ Int32 size);
 
     CARAPI_(Boolean) IsParcelable(
-        /* [in] */ InterfacePack *pInterfacePack,
-        /* [out] */ CIClassInfo **ppClassInfo);
+        /* [in] */ InterfacePack* interfacePack,
+        /* [out] */ CIClassInfo** classInfo);
 
 private:
-    android::Parcel* m_pData;
-    Boolean m_freeDataTag;
+    android::Parcel* mData;
+    Boolean mFreeDataTag;
 };
 
 } // namespace IPC

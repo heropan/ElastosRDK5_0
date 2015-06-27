@@ -95,7 +95,7 @@ public:
     PVoid                   m_pvVptr;       // must be first member
     PVoid                   m_pvProxyEntry; // must be m_pvVptr's next member
 
-    UInt32                  m_uIndex;       // interface index in object
+    UInt32                  mIndex;       // interface index in object
     CObjectProxy        *m_pOwner;
     const CIInterfaceInfo   *m_pInfo;
 };
@@ -162,7 +162,7 @@ public:
     CARAPI_(void) WarnIfStillLive();
 
 private:
-    IProxyDeathRecipient* m_pObject;
+    IProxyDeathRecipient* mObject;
     AutoPtr<IWeakReference> m_List;  //DeathRecipientList
 };
 
@@ -272,7 +272,7 @@ public:
 public:
     union
     {
-        IInterface          *m_pObject;
+        IInterface          *mObject;
         InterfaceStruct     *m_pInterface;
     };
 

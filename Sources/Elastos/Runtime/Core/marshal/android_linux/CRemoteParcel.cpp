@@ -6,15 +6,15 @@
 
 ECode LookupClassInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIClassInfo **ppClassInfo);
+    /* [out] */ CIClassInfo** classInfo);
 
 namespace Elastos {
 namespace IPC {
 
 ECode GetRemoteClassInfo(
-    /* [in] */ android::IBinder* pRemoteObj,
+    /* [in] */ android::IBinder* remoteObj,
     /* [in] */ REMuid clsId,
-    /* [out] */ CIClassInfo ** ppClassInfo);
+    /* [out] */ CIClassInfo** classInfo);
 
 #define ROUND4(n)       (((n)+3)&~3)   // round up to multiple of 4 bytes
 #define ROUND8(n)       (((n)+7)&~7)   // round up to multiple of 8 bytes
@@ -42,24 +42,22 @@ enum Type {
 
 CRemoteParcel::CRemoteParcel(
     /* [in] */ Boolean writeMarshalHeader)
-    : m_pData(new android::Parcel())
-    , m_freeDataTag(TRUE)
+    : mData(new android::Parcel())
+    , mFreeDataTag(TRUE)
 {
-    if (writeMarshalHeader) m_pData->writeInplace(sizeof(MarshalHeader));
+    if (writeMarshalHeader) mData->writeInplace(sizeof(MarshalHeader));
 }
 
 CRemoteParcel::CRemoteParcel(
-    /* [in] */ android::Parcel *pData)
-    : m_pData(pData)
-    , m_freeDataTag(FALSE)
-{
-//    m_pData->writeInplace(sizeof(MarshalHeader));
-}
+    /* [in] */ android::Parcel* data)
+    : mData(data)
+    , mFreeDataTag(FALSE)
+{}
 
 CRemoteParcel::~CRemoteParcel()
 {
-    if (m_freeDataTag) {
-        delete m_pData;
+    if (mFreeDataTag) {
+        delete mData;
     }
 }
 
@@ -87,13 +85,13 @@ UInt32 CRemoteParcel::Release()
 }
 
 ECode CRemoteParcel::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
+    if (NULL == iid) return E_INVALID_ARGUMENT;
 
-    if (pObject == (IInterface *)(IParcel *)this) {
-        *pIID = EIID_IParcel;
+    if (object == (IInterface *)(IParcel *)this) {
+        *iid = EIID_IParcel;
     }
     else {
         return E_INVALID_ARGUMENT;
@@ -108,13 +106,13 @@ ECode CRemoteParcel::Marshall(
     *bytes = NULL;
 
     // do not marshall if there are binder objects in the parcel
-    if (m_pData->objectsCount()) {
+    if (mData->objectsCount()) {
         ALOGD("RuntimeException Tried to marshall a Parcel that contained Binder objects.");
         return E_NOT_SUPPORTED;
     }
 
-    ArrayOf<Byte>* array = ArrayOf<Byte>::Alloc(m_pData->dataSize());
-    memcpy(array->GetPayload(), m_pData->data(), m_pData->dataSize());
+    ArrayOf<Byte>* array = ArrayOf<Byte>::Alloc(mData->dataSize());
+    memcpy(array->GetPayload(), mData->data(), mData->dataSize());
     *bytes = array;
     (*bytes)->AddRef();
 
@@ -131,10 +129,10 @@ ECode CRemoteParcel::Unmarshall(
        return NOERROR;
     }
 
-    m_pData->setDataSize(length);
-    m_pData->setDataPosition(0);
+    mData->setDataSize(length);
+    mData->setDataPosition(0);
 
-    void* raw = m_pData->writeInplace(length);
+    void* raw = mData->writeInplace(length);
     memcpy(raw, (data->GetPayload() + offset), length);
 
     return NOERROR;
@@ -154,7 +152,7 @@ ECode CRemoteParcel::AppendFrom(
     android::Parcel* parcelObj;
     parcel->GetElementPayload((Handle32*)&parcelObj);
     if (parcelObj == NULL) return E_INVALID_ARGUMENT;
-    m_pData->appendFrom(parcelObj, offset, length);
+    mData->appendFrom(parcelObj, offset, length);
     return NOERROR;
 }
 
@@ -162,70 +160,72 @@ ECode CRemoteParcel::HasFileDescriptors(
     /* [out] */ Boolean* result)
 {
     if (NULL == result) return E_INVALID_ARGUMENT;
-    *result = m_pData->hasFileDescriptors();
+    *result = mData->hasFileDescriptors();
     return NOERROR;
 }
 
-ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
+ECode CRemoteParcel::ReadValue(
+    /* [in] */ PVoid value,
+    /* [in] */ Int32 type)
 {
     switch(type) {
         case Type_Byte:
-            *(Byte*)pValue = (Byte)m_pData->readInt32();
+            *(Byte*)value = (Byte)mData->readInt32();
             break;
 
         case Type_Boolean:
-            *(Boolean*)pValue = (Boolean)m_pData->readInt32();
+            *(Boolean*)value = (Boolean)mData->readInt32();
             break;
 
         case Type_Char32:
-            *(Char32*)pValue = (Char32)m_pData->readInt32();
+            *(Char32*)value = (Char32)mData->readInt32();
             break;
 
         case Type_Int16:
-            *(Int16*)pValue = (Int16)m_pData->readInt32();
+            *(Int16*)value = (Int16)mData->readInt32();
             break;
 
         case Type_Int32:
-            *(Int32*)pValue = (Int32)m_pData->readInt32();
+            *(Int32*)value = (Int32)mData->readInt32();
             break;
 
         case Type_Int64:
         case Type_Double:
-            *(Int64*)pValue = (Int64)m_pData->readInt64();
+            *(Int64*)value = (Int64)mData->readInt64();
             break;
 
         case Type_Float:
-            *(Float*)pValue = (Float)m_pData->readFloat();
+            *(Float*)value = (Float)mData->readFloat();
             break;
 
         case Type_String:
             {
-                Int32 tag = m_pData->readInt32();
+                Int32 tag = mData->readInt32();
                 if (tag != MSH_NULL) {
-                    const char* str = m_pData->readCString();
-                    *(String*)pValue = str;
+                    const char* str = mData->readCString();
+                    *(String*)value = str;
                 }
                 else {
-                    *(String*)pValue = NULL;
+                    *(String*)value = NULL;
                 }
             }
             break;
 
         case Type_Struct:
             {
-                Int32 tag = (Int32)m_pData->readInt32();
+                Int32 tag = (Int32)mData->readInt32();
                 if (tag != MSH_NULL) {
-                    Int32 len = (Int32)m_pData->readInt32();
-                    m_pData->read(pValue, len);
+                    Int32 len = (Int32)mData->readInt32();
+                    mData->read(value, len);
                 }
                 else {
-                    pValue = NULL;
+                    value = NULL;
                 }
             }
             break;
 
         case Type_EMuid:
-            m_pData->read(pValue, sizeof(EMuid));
+            mData->read(value, sizeof(EMuid));
 
             break;
 
@@ -233,73 +233,73 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
             {
                 const char* str;
 
-                m_pData->read(pValue, sizeof(EGuid));
-                str = m_pData->readCString();
-                (*(EGuid*)pValue).pUunm = (char*)malloc(strlen(str) + 1);
-                strcpy((*(EGuid*)pValue).pUunm, str);
+                mData->read(value, sizeof(EGuid));
+                str = mData->readCString();
+                (*(EGuid*)value).pUunm = (char*)malloc(strlen(str) + 1);
+                strcpy((*(EGuid*)value).pUunm, str);
             }
             break;
 
         case Type_ArrayOf:
             {
-                Int32 tag = (Int32)m_pData->readInt32();
+                Int32 tag = (Int32)mData->readInt32();
                 if (tag != MSH_NULL) {
                     CarQuintet q;
-                    m_pData->read((void*)&q, sizeof(CarQuintet));
+                    mData->read((void*)&q, sizeof(CarQuintet));
                     Int32 size = q.m_size;
                     PCarQuintet qq = _ArrayOf_Alloc(size, q.m_flags);
                     if (qq == NULL) {
-                        *(PCARQUINTET*)pValue = NULL;
+                        *(PCARQUINTET*)value = NULL;
                         break;
                     }
                     _CarQuintet_AddRef(qq);
-                    *(PCARQUINTET*)pValue = qq;
+                    *(PCARQUINTET*)value = qq;
                     if (size != 0) {
                         if (CarQuintetFlag_Type_IObject
                             != (q.m_flags & CarQuintetFlag_TypeMask)) {
                             if (CarQuintetFlag_Type_String
                                 == (q.m_flags & CarQuintetFlag_TypeMask)) {
-                                ArrayOf<String>* strArr = (ArrayOf<String>*)(*(PCARQUINTET*)pValue);
+                                ArrayOf<String>* strArr = (ArrayOf<String>*)(*(PCARQUINTET*)value);
                                 for (Int32 i = 0; i < (Int32)(size / sizeof(String)); i++) {
-                                    Int32 tag = m_pData->readInt32();
+                                    Int32 tag = mData->readInt32();
                                     if (tag != MSH_NULL) {
-                                        const char* str = m_pData->readCString();
+                                        const char* str = mData->readCString();
                                         (*strArr)[i] = str;
                                     }
                                 }
                             }
                             else {
-                                m_pData->read((void*)qq->m_pBuf, size);
+                                mData->read((void*)qq->m_pBuf, size);
                             }
                         }
                         else {
                             IInterface** pBuf = (IInterface**)qq->m_pBuf;
                             size = size / sizeof(IInterface *);
                             for (int i = 0; i < size; i++) {
-                                tag = (Int32)m_pData->readInt32();
+                                tag = (Int32)mData->readInt32();
                                 if (tag != MSH_NULL) {
                                     InterfacePack ipack;
-                                    CIClassInfo *pClassInfo = NULL;
-                                    IParcelable *pParcelable = NULL;
+                                    CIClassInfo* classInfo = NULL;
+                                    IParcelable* parcelable = NULL;
                                     ClassID classId;
                                     InterfaceID iid;
                                     ECode ec;
 
-                                    android::sp<android::IBinder> binder = m_pData->readStrongBinder();
-                                    m_pData->read((void *)&ipack, sizeof(InterfacePack));
-                                    assert(ipack.m_pBinder == NULL);
-                                    ipack.m_pBinder = binder;
-                                    if (IsParcelable(&ipack, &pClassInfo)) {
-                                        classId.clsid = ipack.m_clsid;
-                                        classId.pUunm = pClassInfo->pszUunm;
+                                    android::sp<android::IBinder> binder = mData->readStrongBinder();
+                                    mData->read((void *)&ipack, sizeof(InterfacePack));
+                                    assert(ipack.mBinder == NULL);
+                                    ipack.mBinder = binder;
+                                    if (IsParcelable(&ipack, &classInfo)) {
+                                        classId.clsid = ipack.mClsid;
+                                        classId.pUunm = classInfo->pszUunm;
 
                                         ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
-                                                EIID_IParcelable, (IInterface**)&pParcelable);
+                                                EIID_IParcelable, (IInterface**)&parcelable);
                                         if (FAILED(ec)) return ec;
 
-                                        pParcelable->ReadFromParcel(this);
-                                        iid = pClassInfo->interfaces[ipack.m_uIndex]->iid;
-                                        *((IInterface**)pBuf + i) = pParcelable->Probe(iid);
+                                        parcelable->ReadFromParcel(this);
+                                        iid = classInfo->interfaces[ipack.mIndex]->iid;
+                                        *((IInterface**)pBuf + i) = parcelable->Probe(iid);
                                     }
                                     else {
                                         ec = StdUnmarshalInterface(
@@ -321,28 +321,28 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                     }
                 }
                 else {
-                    *(UInt32*)pValue = (UInt32)NULL;
+                    *(UInt32*)value = (UInt32)NULL;
                 }
             }
             break;
 
         case Type_ArrayOfString:
             {
-                Int32 tag = (Int32)m_pData->readInt32();
+                Int32 tag = (Int32)mData->readInt32();
                 if (tag != MSH_NULL) {
                     CarQuintet buf;
 
-                    m_pData->read((void*)&buf, sizeof(buf));
+                    mData->read((void*)&buf, sizeof(buf));
                     Int32 size = buf.m_size / sizeof(String);
                     ArrayOf<String>* strArray = ArrayOf<String>::Alloc(size);
                     for (Int32 i = 0; i < size; i++) {
-                        Int32 tag = m_pData->readInt32();
+                        Int32 tag = mData->readInt32();
                         if (tag != MSH_NULL) {
-                            const char* str = m_pData->readCString();
+                            const char* str = mData->readCString();
                             (*strArray)[i] = str;
                         }
                     }
-                    *(ArrayOf<String>**)pValue = strArray;
+                    *(ArrayOf<String>**)value = strArray;
                     strArray->AddRef();
                 }
             }
@@ -350,41 +350,41 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
 
         case Type_InterfacePtr:
             {
-                Int32 tag = (Int32)m_pData->readInt32();
+                Int32 tag = (Int32)mData->readInt32();
                 if (tag != MSH_NULL) {
                     InterfacePack ipack;
-                    CIClassInfo *pClassInfo = NULL;
-                    IParcelable *pParcelable = NULL;
+                    CIClassInfo* classInfo = NULL;
+                    IParcelable* parcelable = NULL;
                     ClassID classId;
                     InterfaceID iid;
                     ECode ec;
 
-                    android::sp<android::IBinder> binder = m_pData->readStrongBinder();
-                    m_pData->read((void *)&ipack, sizeof(InterfacePack));
-                    if (ipack.m_pBinder != NULL) {
+                    android::sp<android::IBinder> binder = mData->readStrongBinder();
+                    mData->read((void *)&ipack, sizeof(InterfacePack));
+                    if (ipack.mBinder != NULL) {
                         memset(&ipack, 0, sizeof(InterfacePack));
                         return E_INVALID_PARCEL_DATA;
                     }
-                    ipack.m_pBinder = binder;
-                    if (IsParcelable(&ipack, &pClassInfo)) {
-                        classId.clsid = ipack.m_clsid;
-                        classId.pUunm = pClassInfo->pszUunm;
+                    ipack.mBinder = binder;
+                    if (IsParcelable(&ipack, &classInfo)) {
+                        classId.clsid = ipack.mClsid;
+                        classId.pUunm = classInfo->pszUunm;
 
                         ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
-                                EIID_IParcelable, (IInterface**)&pParcelable);
+                                EIID_IParcelable, (IInterface**)&parcelable);
                         if (FAILED(ec)) return ec;
 
-                        ec = pParcelable->ReadFromParcel(this);
+                        ec = parcelable->ReadFromParcel(this);
                         if (FAILED(ec)) return ec;
 
-                        iid = pClassInfo->interfaces[ipack.m_uIndex]->iid;
-                        *(IInterface**)pValue = pParcelable->Probe(iid);
+                        iid = classInfo->interfaces[ipack.mIndex]->iid;
+                        *(IInterface**)value = parcelable->Probe(iid);
                     }
                     else {
                         ec = StdUnmarshalInterface(
                                 UnmarshalFlag_Noncoexisting,
                                 &ipack,
-                                (IInterface **)pValue);
+                                (IInterface **)value);
                         if (FAILED(ec)) {
                             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                                     "MshProc: unmsh interface, ec = %x\n", ec));
@@ -393,13 +393,13 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
                     }
                 }
                 else {
-                    *(IInterface**)pValue = NULL;
+                    *(IInterface**)value = NULL;
                 }
             }
             break;
 
         case Type_Fd:
-            *(Int32*)pValue = (Int32)m_pData->readFileDescriptor();
+            *(Int32*)value = (Int32)mData->readFileDescriptor();
             break;
 
         default:
@@ -410,128 +410,131 @@ ECode CRemoteParcel::ReadValue(PVoid pValue, Int32 type)
     return NOERROR;
 }
 
-ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
+ECode CRemoteParcel::WriteValue(
+    /* [in] */ PVoid value,
+    /* [in] */ Int32 type,
+    /* [in] */ Int32 size)
 {
     ECode ec;
 
     switch(type) {
         case Type_Byte:
         case Type_Boolean:
-            m_pData->writeInt32(*((Byte*)pValue));
+            mData->writeInt32(*((Byte*)value));
             break;
 
         case Type_Int16:
-            m_pData->writeInt32(*((Int16*)pValue));
+            mData->writeInt32(*((Int16*)value));
             break;
 
         case Type_Char32:
         case Type_Int32:
-            m_pData->writeInt32(*((Int32*)pValue));
+            mData->writeInt32(*((Int32*)value));
             break;
 
         case Type_Float:
-            m_pData->writeFloat(*((Float*)pValue));
+            mData->writeFloat(*((Float*)value));
             break;
 
         case Type_Int64:
-            m_pData->writeInt64(*((Int64*)pValue));
+            mData->writeInt64(*((Int64*)value));
             break;
 
         case Type_Double:
-            m_pData->writeDouble(*((Double*)pValue));
+            mData->writeDouble(*((Double*)value));
             break;
 
         case Type_String:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
+            mData->writeInt32(value ? MSH_NOT_NULL : MSH_NULL);
 
-            if (pValue) {
-                m_pData->writeCString((const char*)pValue);
+            if (value) {
+                mData->writeCString((const char*)value);
             }
             break;
 
         case Type_InterfacePtr:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
+            mData->writeInt32(value ? MSH_NOT_NULL : MSH_NULL);
 
-            if (pValue) {
+            if (value) {
                 InterfacePack itfPack;
                 ec = StdMarshalInterface(
-                        (IInterface*)pValue,
+                        (IInterface*)value,
                         &itfPack);
                 if (FAILED(ec)) return ec;
 
-                m_pData->writeStrongBinder(itfPack.m_pBinder);
-                itfPack.m_pBinder = NULL;
-                m_pData->write((const void *)&itfPack, (int32_t)sizeof(InterfacePack));
+                mData->writeStrongBinder(itfPack.mBinder);
+                itfPack.mBinder = NULL;
+                mData->write((const void *)&itfPack, (int32_t)sizeof(InterfacePack));
 
-                IParcelable *pParcelable = \
-                        (IParcelable*)((IInterface*)pValue)->Probe(EIID_IParcelable);
-                if (pParcelable != NULL) pParcelable->WriteToParcel(this);
+                IParcelable* parcelable = \
+                        (IParcelable*)((IInterface*)value)->Probe(EIID_IParcelable);
+                if (parcelable != NULL) parcelable->WriteToParcel(this);
             }
             break;
 
         case Type_Struct:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
+            mData->writeInt32(value ? MSH_NOT_NULL : MSH_NULL);
 
-            if (pValue) {
-                m_pData->writeInt32(size);
-                m_pData->write(pValue, size);
+            if (value) {
+                mData->writeInt32(size);
+                mData->write(value, size);
             }
             break;
 
         case Type_EMuid:
-            m_pData->write(pValue, sizeof(EMuid));
+            mData->write(value, sizeof(EMuid));
 
             break;
 
         case Type_EGuid:
             {
-                m_pData->write(pValue, sizeof(EGuid));
-                m_pData->writeCString(((EGuid *)pValue)->pUunm);
+                mData->write(value, sizeof(EGuid));
+                mData->writeCString(((EGuid *)value)->pUunm);
             }
             break;
 
         case Type_ArrayOf:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
+            mData->writeInt32(value ? MSH_NOT_NULL : MSH_NULL);
 
-            if (pValue) {
-                m_pData->write(pValue, sizeof(CarQuintet));
+            if (value) {
+                mData->write(value, sizeof(CarQuintet));
 
                 if (CarQuintetFlag_Type_IObject
-                    != (((PCARQUINTET)pValue)->m_flags
+                    != (((PCARQUINTET)value)->m_flags
                             & CarQuintetFlag_TypeMask)) {
                     // copy the storaged data
                     //
-                    if (CarQuintetFlag_Type_String == (((PCARQUINTET)pValue)->m_flags
+                    if (CarQuintetFlag_Type_String == (((PCARQUINTET)value)->m_flags
                             & CarQuintetFlag_TypeMask)) {
-                        Int32 size = ((PCARQUINTET)pValue)->m_size / sizeof(String);
-                        String* pBuf = (String*)((PCARQUINTET)pValue)->m_pBuf;
+                        Int32 size = ((PCARQUINTET)value)->m_size / sizeof(String);
+                        String* strBuf = (String*)((PCARQUINTET)value)->m_pBuf;
                         for (Int32 i = 0; i < size; ++i) {
-                            // ALOGD("i: %d, str: %s", i, pBuf[i].string());
-                            if (!pBuf[i].IsNull()) {
-                                m_pData->writeInt32(MSH_NOT_NULL);
-                                m_pData->writeCString(pBuf[i].string());
+                            // ALOGD("i: %d, str: %s", i, strBuf[i].string());
+                            if (!strBuf[i].IsNull()) {
+                                mData->writeInt32(MSH_NOT_NULL);
+                                mData->writeCString(strBuf[i].string());
                             }
                             else {  // null pointer
-                                m_pData->writeInt32(MSH_NULL);
+                                mData->writeInt32(MSH_NULL);
                             }
                         }
                     }
                     else {
-                        m_pData->write(((PCARQUINTET)pValue)->m_pBuf,
-                                ((PCARQUINTET)pValue)->m_size);
+                        mData->write(((PCARQUINTET)value)->m_pBuf,
+                                ((PCARQUINTET)value)->m_size);
                     }
                 }
                 else {
-                    Int32 size = ((PCARQUINTET)pValue)->m_size
+                    Int32 size = ((PCARQUINTET)value)->m_size
                                 / sizeof(IInterface *);
-                    Int32 *pBuf = (Int32*)((PCARQUINTET)pValue)->m_pBuf;
+                    Int32* int32Buf = (Int32*)((PCARQUINTET)value)->m_pBuf;
                     for (Int32 i = 0; i < size; i++) {
-                        if (pBuf[i]) {
-                            m_pData->writeInt32(MSH_NOT_NULL);
+                        if (int32Buf[i]) {
+                            mData->writeInt32(MSH_NOT_NULL);
 
                             InterfacePack itfPack;
                             ec = StdMarshalInterface(
-                                    (IInterface *)pBuf[i],
+                                    (IInterface *)int32Buf[i],
                                     &itfPack);
                             if (FAILED(ec)) {
                                 MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
@@ -539,16 +542,16 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
                                 return ec;
                             }
 
-                            m_pData->writeStrongBinder(itfPack.m_pBinder);
-                            itfPack.m_pBinder = NULL;
-                            m_pData->write((void*)&itfPack, sizeof(itfPack));
+                            mData->writeStrongBinder(itfPack.mBinder);
+                            itfPack.mBinder = NULL;
+                            mData->write((void*)&itfPack, sizeof(itfPack));
 
-                            IParcelable *pParcelable = \
-                                    (IParcelable*)((IInterface*)pBuf[i])->Probe(EIID_IParcelable);
-                            if (pParcelable != NULL) pParcelable->WriteToParcel(this);
+                            IParcelable* parcelable = \
+                                    (IParcelable*)((IInterface*)int32Buf[i])->Probe(EIID_IParcelable);
+                            if (parcelable != NULL) parcelable->WriteToParcel(this);
                         }
                         else {  // null pointer
-                            m_pData->writeInt32(MSH_NULL);
+                            mData->writeInt32(MSH_NULL);
                         }
                     }
                 }
@@ -556,32 +559,32 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
             break;
 
         case Type_ArrayOfString:
-            m_pData->writeInt32(pValue ? MSH_NOT_NULL : MSH_NULL);
+            mData->writeInt32(value ? MSH_NOT_NULL : MSH_NULL);
 
-            if (pValue) {
-                m_pData->write(pValue, sizeof(CarQuintet));
+            if (value) {
+                mData->write(value, sizeof(CarQuintet));
 
-                Int32 size = ((PCARQUINTET)pValue)->m_size
+                Int32 size = ((PCARQUINTET)value)->m_size
                             / sizeof(String);
-                String *pBuf = (String*)((PCARQUINTET)pValue)->m_pBuf;
+                String* strBuf = (String*)((PCARQUINTET)value)->m_pBuf;
                 for (Int32 i = 0; i < size; i++) {
-                    if (!pBuf[i].IsNull()) {
-                        m_pData->writeInt32(MSH_NOT_NULL);
-                        m_pData->writeCString(pBuf[i].string());
+                    if (!strBuf[i].IsNull()) {
+                        mData->writeInt32(MSH_NOT_NULL);
+                        mData->writeCString(strBuf[i].string());
                     }
                     else {  // null pointer
-                        m_pData->writeInt32(MSH_NULL);
+                        mData->writeInt32(MSH_NULL);
                     }
                 }
             }
             break;
 
         case Type_Fd:
-            m_pData->writeFileDescriptor(*((Int32*)pValue));
+            mData->writeFileDescriptor(*((Int32*)value));
             break;
 
         case Type_Fd_Dup:
-            m_pData->writeDupFileDescriptor(*((Int32*)pValue));
+            mData->writeDupFileDescriptor(*((Int32*)value));
             break;
 
         default:
@@ -593,113 +596,115 @@ ECode CRemoteParcel::WriteValue(PVoid pValue, Int32 type, Int32 size)
 }
 
 ECode CRemoteParcel::ReadByte(
-    /* [out] */ Byte *pValue)
+    /* [out] */ Byte* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Byte);
+    return ReadValue((PVoid)value, Type_Byte);
 }
 
 ECode CRemoteParcel::ReadBoolean(
-    /* [out] */ Boolean *pValue)
+    /* [out] */ Boolean* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Boolean);
+    return ReadValue((PVoid)value, Type_Boolean);
 }
 
 ECode CRemoteParcel::ReadChar(
-    /* [out] */ Char32 *pValue)
+    /* [out] */ Char32* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Char32);
+    return ReadValue((PVoid)value, Type_Char32);
 }
 
 ECode CRemoteParcel::ReadInt16(
-    /* [out] */ Int16 *pValue)
+    /* [out] */ Int16* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Int16);
+    return ReadValue((PVoid)value, Type_Int16);
 }
 
 ECode CRemoteParcel::ReadInt32(
-    /* [out] */ Int32 *pValue)
+    /* [out] */ Int32* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Int32);
+    return ReadValue((PVoid)value, Type_Int32);
 }
 
 ECode CRemoteParcel::ReadInt64(
-    /* [out] */ Int64 *pValue)
+    /* [out] */ Int64* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Int64);
+    return ReadValue((PVoid)value, Type_Int64);
 }
 
 ECode CRemoteParcel::ReadFloat(
-    /* [out] */ Float *pValue)
+    /* [out] */ Float* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Float);
+    return ReadValue((PVoid)value, Type_Float);
 }
 
 ECode CRemoteParcel::ReadDouble(
-    /* [out] */ Double *pValue)
+    /* [out] */ Double* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pValue, Type_Double);
+    return ReadValue((PVoid)value, Type_Double);
 }
 
 ECode CRemoteParcel::ReadString(
-    /* [out] */ String* pStr)
+    /* [out] */ String* str)
 {
-    if (pStr == NULL) return E_INVALID_ARGUMENT;
+    if (str == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadValue((PVoid)pStr, Type_String);
+    return ReadValue((PVoid)str, Type_String);
 }
 
 ECode CRemoteParcel::ReadStruct(
-    /* [out] */ Handle32 *paddr)
+    /* [out] */ Handle32* addr)
 {
-    return ReadValue((PVoid)paddr, Type_Struct);
+    return ReadValue((PVoid)addr, Type_Struct);
 }
 
-ECode CRemoteParcel::ReadEMuid(EMuid *pId)
+ECode CRemoteParcel::ReadEMuid(
+    /* [in] */ EMuid* id)
 {
-    return ReadValue((PVoid)pId, Type_EMuid);
+    return ReadValue((PVoid)id, Type_EMuid);
 }
 
-ECode CRemoteParcel::ReadEGuid(EGuid *pId)
+ECode CRemoteParcel::ReadEGuid(
+    /* [in] */ EGuid* id)
 {
-    return ReadValue((PVoid)pId, Type_EGuid);
+    return ReadValue((PVoid)id, Type_EGuid);
 }
 
 ECode CRemoteParcel::ReadInterfacePtr(
-    /* [out] */ Handle32 *pItfPtr)
+    /* [out] */ Handle32* itfPtr)
 {
-    assert(pItfPtr != NULL);
+    assert(itfPtr != NULL);
 
-    return ReadValue((PVoid)pItfPtr, Type_InterfacePtr);
+    return ReadValue((PVoid)itfPtr, Type_InterfacePtr);
 }
 
 ECode CRemoteParcel::ReadArrayOf(
-    /* [out] */ Handle32 *ppArray)
+    /* [out] */ Handle32* array)
 {
-    assert(ppArray != NULL);
+    assert(array != NULL);
 
-    return ReadValue((PVoid)ppArray, Type_ArrayOf);
+    return ReadValue((PVoid)array, Type_ArrayOf);
 }
 
 ECode CRemoteParcel::ReadArrayOfString(
-    /* [out, callee] */ ArrayOf<String>** ppArray)
+    /* [out, callee] */ ArrayOf<String>** array)
 {
-    return ReadValue((PVoid)ppArray, Type_ArrayOfString);
+    return ReadValue((PVoid)array, Type_ArrayOfString);
 }
 
 // Retrieve a file descriptor from the parcel.  This returns the raw fd
@@ -712,7 +717,8 @@ ECode CRemoteParcel::ReadFileDescriptor(
     return ReadValue((PVoid)fd, Type_Fd);
 }
 
-ECode CRemoteParcel::WriteByte(Byte value)
+ECode CRemoteParcel::WriteByte(
+    /* [in] */ Byte value)
 {
     return WriteValue((PVoid)&value, Type_Byte, 4);
 }
@@ -729,12 +735,14 @@ ECode CRemoteParcel::WriteChar(
     return WriteValue((PVoid)&value, Type_Char32, 4);
 }
 
-ECode CRemoteParcel::WriteInt16(Int16 value)
+ECode CRemoteParcel::WriteInt16(
+    /* [in] */ Int16 value)
 {
     return WriteValue((PVoid)&value, Type_Int16, 4);
 }
 
-ECode CRemoteParcel::WriteInt32(Int32 value)
+ECode CRemoteParcel::WriteInt32(
+    /* [in] */ Int32 value)
 {
     return WriteValue((PVoid)&value, Type_Int32, 4);
 }
@@ -757,7 +765,8 @@ ECode CRemoteParcel::WriteDouble(
     return WriteValue((PVoid)&value, Type_Double, 8);
 }
 
-ECode CRemoteParcel::WriteString(const String& str)
+ECode CRemoteParcel::WriteString(
+    /* [in] */ const String& str)
 {
     Int32 size = sizeof(UInt32);
 
@@ -768,33 +777,38 @@ ECode CRemoteParcel::WriteString(const String& str)
     return WriteValue((PVoid)str.string(), Type_String, size);
 }
 
-ECode CRemoteParcel::WriteInterfacePtr(IInterface* pValue)
+ECode CRemoteParcel::WriteInterfacePtr(
+    /* [in] */ IInterface* value)
 {
-    return WriteValue((PVoid)pValue, Type_InterfacePtr, sizeof(UInt32) + sizeof(InterfacePack));
+    return WriteValue((PVoid)value, Type_InterfacePtr, sizeof(UInt32) + sizeof(InterfacePack));
 }
 
-ECode CRemoteParcel::WriteStruct(Handle32 pValue, Int32 size)
+ECode CRemoteParcel::WriteStruct(
+    /* [in] */ Handle32 value,
+    /* [in] */ Int32 size)
 {
-    return WriteValue((PVoid)pValue, Type_Struct, size + sizeof(UInt32));
+    return WriteValue((PVoid)value, Type_Struct, size + sizeof(UInt32));
 }
 
-ECode CRemoteParcel::WriteEMuid(const EMuid& id)
+ECode CRemoteParcel::WriteEMuid(
+    /* [in] */ const EMuid& id)
 {
     return WriteValue((PVoid)&id, Type_EMuid, sizeof(EMuid));
 }
 
-ECode CRemoteParcel::WriteEGuid(const EGuid& id)
+ECode CRemoteParcel::WriteEGuid(
+    /* [in] */ const EGuid& id)
 {
     return WriteValue((PVoid)&id, Type_EGuid, sizeof(EGuid) +
-                      MSH_ALIGN_4(strlen(id.pUunm) + 1) + sizeof(UInt32) * 2);
+            MSH_ALIGN_4(strlen(id.pUunm) + 1) + sizeof(UInt32) * 2);
 }
 
 ECode CRemoteParcel::WriteArrayOf(
-    /* [in] */ Handle32 pArray)
+    /* [in] */ Handle32 array)
 {
-    Int32 size = pArray != 0 ? sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)pArray)->m_size
+    Int32 size = array != 0 ? sizeof(UInt32) + sizeof(CarQuintet) + ((CarQuintet*)array)->m_size
         : sizeof(UInt32);
-    return WriteValue((PVoid)pArray, Type_ArrayOf, size);
+    return WriteValue((PVoid)array, Type_ArrayOf, size);
 }
 
 ECode CRemoteParcel::WriteArrayOfString(
@@ -821,7 +835,7 @@ ECode CRemoteParcel::WriteDupFileDescriptor(
 }
 
 ECode CRemoteParcel::Clone(
-    /* [in] */ IParcel* pSrcParcel)
+    /* [in] */ IParcel* srcParcel)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -831,56 +845,51 @@ ECode CRemoteParcel::GetDataPosition(
 {
     if (position == NULL) return E_NOT_IMPLEMENTED;
 
-    *position = m_pData->dataPosition();
+    *position = mData->dataPosition();
     return NOERROR;
 }
 
 ECode CRemoteParcel::SetDataPosition(
     /* [in] */ Int32 position)
 {
-    m_pData->setDataPosition(position);
+    mData->setDataPosition(position);
     return NOERROR;
 }
 
 ECode CRemoteParcel::GetElementPayload(
-    /* [out] */ Handle32* pBuffer)
+    /* [out] */ Handle32* buffer)
 {
-    *pBuffer = (Handle32)m_pData;
-
+    *buffer = (Handle32)mData;
     return NOERROR;
 }
 
 ECode CRemoteParcel::GetElementSize(
-    /* [in] */ Int32* pSize)
+    /* [in] */ Int32* size)
 {
-    *pSize = (Int32)m_pData->dataSize();
-
+    *size = (Int32)mData->dataSize();
     return NOERROR;
 }
 
 MarshalHeader* CRemoteParcel::GetMarshalHeader()
 {
-    return (MarshalHeader*)m_pData->data();
+    return (MarshalHeader*)mData->data();
 }
 
 Boolean CRemoteParcel::IsParcelable(
-    /* [in] */ InterfacePack *pInterfacePack,
-    /* [out] */ CIClassInfo **ppClassInfo)
+    /* [in] */ InterfacePack* interfacePack,
+    /* [out] */ CIClassInfo** classInfo)
 {
-    CIInterfaceInfo *pInterfaceInfo = NULL;
-    ECode ec;
-
-    ec = LookupClassInfo(pInterfacePack->m_clsid, ppClassInfo);
+    ECode ec = LookupClassInfo(interfacePack->mClsid, classInfo);
     if (FAILED(ec)) {
-        ec = GetRemoteClassInfo(pInterfacePack->m_pBinder.get(),
-                                pInterfacePack->m_clsid,
-                                ppClassInfo);
+        ec = GetRemoteClassInfo(interfacePack->mBinder.get(),
+                                interfacePack->mClsid,
+                                classInfo);
         if (FAILED(ec)) return FALSE;
     }
 
-    for (UInt16 i = 0; i < (*ppClassInfo)->interfaceNum; i++) {
-        pInterfaceInfo = (*ppClassInfo)->interfaces[i];
-        if (pInterfaceInfo->iid == EIID_IParcelable) {
+    for (UInt16 i = 0; i < (*classInfo)->interfaceNum; i++) {
+        CIInterfaceInfo* interfaceInfo = (*classInfo)->interfaces[i];
+        if (interfaceInfo->iid == EIID_IParcelable) {
             return TRUE;
         }
     }
@@ -892,17 +901,16 @@ Boolean CRemoteParcel::IsParcelable(
 } // namespace Elastos
 
 ELAPI _CParcel_New(
-    /* [out] */ IParcel **ppObj)
+    /* [out] */ IParcel** parcel)
 {
-    if (ppObj == NULL) return E_INVALID_ARGUMENT;
-    Elastos::IPC::CRemoteParcel *pObj = NULL;
-    void* pLocation = calloc(sizeof(Elastos::IPC::CRemoteParcel), 1);
-    if (!pLocation) return E_OUT_OF_MEMORY;
+    if (parcel == NULL) return E_INVALID_ARGUMENT;
+    void* location = calloc(sizeof(Elastos::IPC::CRemoteParcel), 1);
+    if (!location) return E_OUT_OF_MEMORY;
 
-    pObj = (Elastos::IPC::CRemoteParcel *)new(pLocation) Elastos::IPC::CRemoteParcel(FALSE);
-    pObj->AddRef();
+    Elastos::IPC::CRemoteParcel* parcelObj = new(location) Elastos::IPC::CRemoteParcel(FALSE);
+    parcelObj->AddRef();
 
-    *ppObj = (IParcel*)pObj;
+    *parcel = (IParcel*)parcelObj;
 
     return NOERROR;
 }

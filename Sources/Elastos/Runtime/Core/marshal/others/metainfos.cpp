@@ -15,9 +15,9 @@ void RelocateModuleInfo(
     /* [in] */ CIModuleInfo* pSrcModInfo,
     /* [out] */ CIModuleInfo* pDestModInfo);
 
-static CIModuleInfoNode *s_pModuleInfoList = NULL;
+static CIModuleInfoNode *sModuleInfoList = NULL;
 
-static pthread_mutex_t s_moduleInfoLock;
+static pthread_mutex_t sModuleInfoLock;
 
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)
 int _DumpGUID(REIID riid)
@@ -41,7 +41,7 @@ ECode InitMIL()
     pthread_mutexattr_t recursiveAttr;
     pthread_mutexattr_init(&recursiveAttr);
     pthread_mutexattr_settype(&recursiveAttr, PTHREAD_MUTEX_RECURSIVE);
-    if (pthread_mutex_init(&s_moduleInfoLock, &recursiveAttr)) {
+    if (pthread_mutex_init(&sModuleInfoLock, &recursiveAttr)) {
         return E_FAIL;
     }
     pthread_mutexattr_destroy(&recursiveAttr);
@@ -51,7 +51,7 @@ ECode InitMIL()
 
 void UninitMIL()
 {
-    pthread_mutex_destroy(&s_moduleInfoLock);
+    pthread_mutex_destroy(&sModuleInfoLock);
 }
 
 ECode RegisterModuleInfo(
@@ -68,11 +68,11 @@ ECode RegisterModuleInfo(
     // TODO: compare component uuid, need car support
     // prevent from registering same ClassInfo again
     //
-    pthread_mutex_lock(&s_moduleInfoLock);
+    pthread_mutex_lock(&sModuleInfoLock);
     if (pSrcModuleInfo->classNum != 0) {
         pClassInfo = (CIClassInfo *)((UInt32)pSrcModuleInfo->classes \
                 + (UInt32)pSrcModuleInfo);
-        pCurNode = s_pModuleInfoList;
+        pCurNode = sModuleInfoList;
         while (pCurNode != NULL) {
             if (pCurNode->m_pModInfo->classNum != 0 \
                 && pClassInfo[0].clsid == \
@@ -85,7 +85,7 @@ ECode RegisterModuleInfo(
     else if (pSrcModuleInfo->interfaceNum != 0) {
         pInterfaceInfo = (CIInterfaceInfo *)((UInt32)pSrcModuleInfo->interfaces \
                 + (UInt32)pSrcModuleInfo);
-        pCurNode = s_pModuleInfoList;
+        pCurNode = sModuleInfoList;
         while (pCurNode != NULL) {
             if (pCurNode->m_pModInfo->interfaceNum != 0 \
                 && pInterfaceInfo[0].iid == \
@@ -96,19 +96,19 @@ ECode RegisterModuleInfo(
         }
     }
     else {
-        pthread_mutex_unlock(&s_moduleInfoLock);
+        pthread_mutex_unlock(&sModuleInfoLock);
         // No class info need to register
         return NOERROR;
     }
 
     if (pCurNode != NULL) {
-        pthread_mutex_unlock(&s_moduleInfoLock);
+        pthread_mutex_unlock(&sModuleInfoLock);
         return NOERROR;
     }
 
     pModuleInfo = (CIModuleInfo *)malloc(pSrcModuleInfo->totalSize);
     if (NULL == pModuleInfo) {
-        pthread_mutex_unlock(&s_moduleInfoLock);
+        pthread_mutex_unlock(&sModuleInfoLock);
         return E_OUT_OF_MEMORY;
     }
     RelocateModuleInfo(pSrcModuleInfo, pModuleInfo);
@@ -116,19 +116,19 @@ ECode RegisterModuleInfo(
     pNewNode = (CIModuleInfoNode *)malloc(sizeof(CIModuleInfoNode));
     if (pNewNode == NULL) {
         free(pModuleInfo);
-        pthread_mutex_unlock(&s_moduleInfoLock);
+        pthread_mutex_unlock(&sModuleInfoLock);
         return E_OUT_OF_MEMORY;
     }
     pNewNode->m_pModInfo = (CIModuleInfo *)pModuleInfo;
     pNewNode->m_pNext = NULL;
-    if (s_pModuleInfoList == NULL) {
-        s_pModuleInfoList = pNewNode;
+    if (sModuleInfoList == NULL) {
+        sModuleInfoList = pNewNode;
     }
     else {
-        pNewNode->m_pNext = s_pModuleInfoList->m_pNext;
-        s_pModuleInfoList->m_pNext = pNewNode;
+        pNewNode->m_pNext = sModuleInfoList->m_pNext;
+        sModuleInfoList->m_pNext = pNewNode;
     }
-    pthread_mutex_unlock(&s_moduleInfoLock);
+    pthread_mutex_unlock(&sModuleInfoLock);
 
     return NOERROR;
 }
@@ -140,9 +140,9 @@ ECode UnregisterModuleInfo(
 
     assert(pModuleInfo != NULL);
 
-    pthread_mutex_lock(&s_moduleInfoLock);
+    pthread_mutex_lock(&sModuleInfoLock);
     pPreNode = NULL;
-    pCurNode = s_pModuleInfoList;
+    pCurNode = sModuleInfoList;
     while (pCurNode != NULL) {
         if ((*pCurNode).m_pModInfo == pModuleInfo) {
             break;
@@ -153,18 +153,18 @@ ECode UnregisterModuleInfo(
 
     if (pCurNode != NULL) {
         if (pPreNode == NULL) {
-            s_pModuleInfoList = pCurNode->m_pNext;
+            sModuleInfoList = pCurNode->m_pNext;
         }
         else {
             pPreNode->m_pNext = pCurNode->m_pNext;
         }
-        pthread_mutex_unlock(&s_moduleInfoLock);
+        pthread_mutex_unlock(&sModuleInfoLock);
         free(pCurNode);
 
         return NOERROR;
     }
 
-    pthread_mutex_unlock(&s_moduleInfoLock);
+    pthread_mutex_unlock(&sModuleInfoLock);
     return E_DOES_NOT_EXIST;
 }
 
@@ -178,20 +178,20 @@ ECode LookupClassInfo(
 
     assert(ppClassInfo != NULL);
 
-    pthread_mutex_lock(&s_moduleInfoLock);
-    pCurNode = s_pModuleInfoList;
+    pthread_mutex_lock(&sModuleInfoLock);
+    pCurNode = sModuleInfoList;
     while (pCurNode != NULL) {
         pModInfo = pCurNode->m_pModInfo;
         for (m = 0; m < pModInfo->classNum; m++) {
             if (pModInfo->classes[m].clsid == rclsid) {
                 *ppClassInfo = &(pModInfo->classes[m]);
-                pthread_mutex_unlock(&s_moduleInfoLock);
+                pthread_mutex_unlock(&sModuleInfoLock);
                 return NOERROR;
             }
         }
         pCurNode = pCurNode->m_pNext;
     }
-    pthread_mutex_unlock(&s_moduleInfoLock);
+    pthread_mutex_unlock(&sModuleInfoLock);
 
     return E_DOES_NOT_EXIST;
 }
@@ -206,20 +206,20 @@ ECode LookupModuleInfo(
 
     assert(ppModuleInfo != NULL);
 
-    pthread_mutex_lock(&s_moduleInfoLock);
-    pCurNode = s_pModuleInfoList;
+    pthread_mutex_lock(&sModuleInfoLock);
+    pCurNode = sModuleInfoList;
     while (pCurNode != NULL) {
         pModInfo = pCurNode->m_pModInfo;
         for (m = 0; m < pModInfo->classNum; m++) {
             if (pModInfo->classes[m].clsid == rclsid) {
                 *ppModuleInfo = pModInfo;
-                pthread_mutex_unlock(&s_moduleInfoLock);
+                pthread_mutex_unlock(&sModuleInfoLock);
                 return NOERROR;
             }
         }
         pCurNode = pCurNode->m_pNext;
     }
-    pthread_mutex_unlock(&s_moduleInfoLock);
+    pthread_mutex_unlock(&sModuleInfoLock);
 
     return E_DOES_NOT_EXIST;
 }

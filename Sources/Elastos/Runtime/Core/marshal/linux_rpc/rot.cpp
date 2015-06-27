@@ -74,8 +74,8 @@ ECode RegisterExportObject(
     pObjNode = new ExportObject;
     if (NULL == pObjNode) return E_OUT_OF_MEMORY;
     pObjNode->m_sNetAddress = netAddress;
-    pObjNode->m_pObject = pObject;
-    pObjNode->m_pIStub = pIStub;
+    pObjNode->mObject = pObject;
+    pObjNode->mIStub = pIStub;
 
     pthread_mutex_lock(&g_exportTableLock);
     s_hashExportObjects[Hash(netAddress)].InsertFirst(pObjNode);
@@ -95,11 +95,11 @@ ECode FindExportObject(
     for (int n = 0; n < ROT_HASHTABLE_SIZE; n++) {
         pIter = &s_hashExportObjects[n];
         for (; NULL != pIter; pIter = (ExportObject*)(pIter->Next())) {
-            if (pIter->m_pObject == pObject/* && pIter->m_pBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
+            if (pIter->mObject == pObject/* && pIter->mBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
                 pExport->m_sNetAddress = pIter->m_sNetAddress;
-                pExport->m_pObject = pIter->m_pObject;
-                pExport->m_pIStub = pIter->m_pIStub;
-                pExport->m_pIStub->AddRef();
+                pExport->mObject = pIter->mObject;
+                pExport->mIStub = pIter->mIStub;
+                pExport->mIStub->AddRef();
                 pthread_mutex_unlock(&g_exportTableLock);
                 return NOERROR;
             }
@@ -119,11 +119,11 @@ ECode FindExportObject(
 
     for (ExportObject* pIter = pHead; NULL != pIter; \
         pIter = (ExportObject*)(pIter->Next())) {
-        if (pIter->m_sNetAddress.Equals(netAddress)/* && pIter->m_pBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
+        if (pIter->m_sNetAddress.Equals(netAddress)/* && pIter->mBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
             pExport->m_sNetAddress = pIter->m_sNetAddress;
-            pExport->m_pObject = pIter->m_pObject;
-            pExport->m_pIStub = pIter->m_pIStub;
-            pExport->m_pIStub->AddRef();
+            pExport->mObject = pIter->mObject;
+            pExport->mIStub = pIter->mIStub;
+            pExport->mIStub->AddRef();
             pthread_mutex_unlock(&g_exportTableLock);
             return NOERROR;
         }
@@ -143,12 +143,12 @@ ECode UnregisterExportObject(
     for (ExportObject* pIter = pHead; NULL != pIter; \
         pIter = (ExportObject*)(pIter->Next())) {
         if (pIter->m_sNetAddress.Equals(netAddress)) {
-            // if ((Int32)(((CObjectStub*)(pIter->m_pIStub))->getStrongCount()) != 0) {
+            // if ((Int32)(((CObjectStub*)(pIter->mIStub))->getStrongCount()) != 0) {
             //     pthread_mutex_unlock(&g_exportTableLock);
             //     return S_FALSE;
             // }
 
-            pIter->m_pObject->Release();
+            pIter->mObject->Release();
 
             if (pIter != pHead) {
                 pIter->Detach(pPrev);
@@ -175,7 +175,7 @@ ECode RegisterImportObject(
         return E_OUT_OF_MEMORY;
     }
     pObjNode->m_sNetAddress = netAddress;
-    pObjNode->m_pIProxy = pIProxy;
+    pObjNode->mIProxy = pIProxy;
     pthread_mutex_lock(&g_importTableLock);
     s_hashImportObjects[Hash(netAddress)].InsertFirst(pObjNode);
     pthread_mutex_unlock(&g_importTableLock);
@@ -194,8 +194,8 @@ ECode FindImportObject(
         pIter = (ImportObject*)(pIter->Next())) {
         if (pIter->m_sNetAddress.Equals(netAddress)) {
             pImport->m_sNetAddress = pIter->m_sNetAddress;
-            pImport->m_pIProxy = pIter->m_pIProxy;
-            pImport->m_pIProxy->AddRef();
+            pImport->mIProxy = pIter->mIProxy;
+            pImport->mIProxy->AddRef();
             pthread_mutex_unlock(&g_importTableLock);
             return NOERROR;
         }
@@ -216,7 +216,7 @@ ECode UnregisterImportObject(
     for (ImportObject* pIter = pHead; NULL != pIter; \
         pIter = (ImportObject*)(pIter->Next())) {
         if (pIter->m_sNetAddress.Equals(netAddress)) {
-            if ((Int32)(((Elastos::RPC::CObjectProxy *)(pIter->m_pIProxy))->m_cRef) != 0) {
+            if ((Int32)(((Elastos::RPC::CObjectProxy *)(pIter->mIProxy))->m_cRef) != 0) {
                 pthread_mutex_unlock(&g_importTableLock);
                 return S_FALSE;
             }

@@ -14,7 +14,7 @@ pthread_mutex_t g_marshalLock;
 static ImportObject s_hashImportObjects[ROT_HASHTABLE_SIZE];
 static ExportObject s_hashExportObjects[ROT_HASHTABLE_SIZE];
 
-static UInt32 Hash(android::IBinder *key)
+static UInt32 Hash(android::IBinder* key)
 {
     UInt32 mask = 0x01;
     UInt32 val = (UInt32)key;
@@ -62,41 +62,38 @@ void UninitROT()
 }
 
 ECode RegisterExportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [in] */ IInterface *pObject,
-    /* [in] */ IStub *pIStub)
+    /* [in] */ android::IBinder* binder,
+    /* [in] */ IInterface* object,
+    /* [in] */ IStub* stub)
 {
-    ExportObject* pObjNode;
+    object = object->Probe(EIID_IInterface);
+    if (!object) return E_NO_INTERFACE;
 
-    pObject = pObject->Probe(EIID_IInterface);
-    if (!pObject) return E_NO_INTERFACE;
-
-    pObjNode = new ExportObject;
-    if (NULL == pObjNode) return E_OUT_OF_MEMORY;
-    pObjNode->m_pBinder = pBinder;
-    pObjNode->m_pObject = pObject;
-    pObjNode->m_pIStub = pIStub;
+    ExportObject* expObj = new ExportObject;
+    if (NULL == expObj) return E_OUT_OF_MEMORY;
+    expObj->mBinder = binder;
+    expObj->mObject = object;
+    expObj->mIStub = stub;
 
     pthread_mutex_lock(&g_exportTableLock);
-    s_hashExportObjects[Hash(pBinder)].InsertFirst(pObjNode);
+    s_hashExportObjects[Hash(binder)].InsertFirst(expObj);
     pthread_mutex_unlock(&g_exportTableLock);
     return NOERROR;
 }
 
 ECode FindExportObject(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ ExportObject *pExport)
+    /* [in] */ IInterface* object,
+    /* [out] */ ExportObject* expObj)
 {
-    pObject = pObject->Probe(EIID_IInterface);
-    if (!pObject) return E_NO_INTERFACE;
+    object = object->Probe(EIID_IInterface);
+    if (!object) return E_NO_INTERFACE;
 
     pthread_mutex_lock(&g_exportTableLock);
-    ExportObject* pIter;
-    for (int n = 0; n < ROT_HASHTABLE_SIZE; n++) {
-        pIter = &s_hashExportObjects[n];
-        for (; NULL != pIter; pIter = (ExportObject*)(pIter->Next())) {
-            if (pIter->m_pObject == pObject && pIter->m_pBinder->getWeakRefs()->attemptIncStrong(NULL)) {
-                memcpy(pExport, pIter, sizeof(ExportObject));
+    for (Int32 n = 0; n < ROT_HASHTABLE_SIZE; n++) {
+        ExportObject* it = &s_hashExportObjects[n];
+        for (; NULL != it; it = (ExportObject*)(it->Next())) {
+            if (it->mObject == object && it->mBinder->getWeakRefs()->attemptIncStrong(NULL)) {
+                memcpy(expObj, it, sizeof(ExportObject));
                 pthread_mutex_unlock(&g_exportTableLock);
                 return NOERROR;
             }
@@ -108,16 +105,15 @@ ECode FindExportObject(
 }
 
 ECode FindExportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [out] */ ExportObject *pExport)
+    /* [in] */ android::IBinder* binder,
+    /* [out] */ ExportObject* expObj)
 {
     pthread_mutex_lock(&g_exportTableLock);
-    ExportObject* pHead = s_hashExportObjects + Hash(pBinder);
+    ExportObject* head = s_hashExportObjects + Hash(binder);
 
-    for (ExportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ExportObject*)(pIter->Next())) {
-        if (pIter->m_pBinder == pBinder && pIter->m_pBinder->getWeakRefs()->attemptIncStrong(NULL)) {
-            memcpy(pExport, pIter, sizeof(ExportObject));
+    for (ExportObject* it = head; NULL != it; it = (ExportObject*)(it->Next())) {
+        if (it->mBinder == binder && it->mBinder->getWeakRefs()->attemptIncStrong(NULL)) {
+            memcpy(expObj, it, sizeof(ExportObject));
             pthread_mutex_unlock(&g_exportTableLock);
             return NOERROR;
         }
@@ -128,30 +124,29 @@ ECode FindExportObject(
 }
 
 ECode UnregisterExportObject(
-    /* [in] */ android::IBinder *pBinder)
+    /* [in] */ android::IBinder* binder)
 {
     pthread_mutex_lock(&g_exportTableLock);
-    ExportObject* pHead = s_hashExportObjects + Hash(pBinder);
-    ExportObject* pPrev = NULL;
+    ExportObject* head = s_hashExportObjects + Hash(binder);
+    ExportObject* prev = NULL;
 
-    for (ExportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ExportObject*)(pIter->Next())) {
-        if (pIter->m_pBinder == pBinder) {
-            if ((Int32)(((CObjectStub*)(pIter->m_pIStub))->getStrongCount()) != 0) {
+    for (ExportObject* it = head; NULL != it; it = (ExportObject*)(it->Next())) {
+        if (it->mBinder == binder) {
+            if ((Int32)(((CObjectStub*)(it->mIStub))->getStrongCount()) != 0) {
                 pthread_mutex_unlock(&g_exportTableLock);
                 return S_FALSE;
             }
 
-            pIter->m_pObject->Release();
+            it->mObject->Release();
 
-            if (pIter != pHead) {
-                pIter->Detach(pPrev);
-                delete pIter;
+            if (it != head) {
+                it->Detach(prev);
+                delete it;
             }
             pthread_mutex_unlock(&g_exportTableLock);
             return NOERROR;
         }
-        pPrev = pIter;
+        prev = it;
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
@@ -159,36 +154,33 @@ ECode UnregisterExportObject(
 }
 
 ECode RegisterImportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [in] */ IProxy *pIProxy)
+    /* [in] */ android::IBinder* binder,
+    /* [in] */ IProxy* proxy)
 {
-    ImportObject * pObjNode;
-
-    pObjNode = new ImportObject;
-    if (NULL == pObjNode) {
+    ImportObject* impObj = new ImportObject;
+    if (NULL == impObj) {
         return E_OUT_OF_MEMORY;
     }
-    pObjNode->m_pBinder = pBinder;
-    pObjNode->m_pIProxy = pIProxy;
+    impObj->mBinder = binder;
+    impObj->mIProxy = proxy;
     pthread_mutex_lock(&g_importTableLock);
-    s_hashImportObjects[Hash(pBinder)].InsertFirst(pObjNode);
+    s_hashImportObjects[Hash(binder)].InsertFirst(impObj);
     pthread_mutex_unlock(&g_importTableLock);
 
     return NOERROR;
 }
 
 ECode FindImportObject(
-    /* [in] */ android::IBinder *pBinder,
-    /* [out] */ ImportObject *pImport)
+    /* [in] */ android::IBinder* binder,
+    /* [out] */ ImportObject* impObj)
 {
     pthread_mutex_lock(&g_importTableLock);
-    ImportObject* pHead = s_hashImportObjects + Hash(pBinder);
+    ImportObject* head = s_hashImportObjects + Hash(binder);
 
-    for (ImportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ImportObject*)(pIter->Next())) {
-        if (pIter->m_pBinder == pBinder) {
-            memcpy(pImport, pIter, sizeof(ImportObject));
-            pImport->m_pIProxy->AddRef();
+    for (ImportObject* it = head; NULL != it; it = (ImportObject*)(it->Next())) {
+        if (it->mBinder == binder) {
+            memcpy(impObj, it, sizeof(ImportObject));
+            impObj->mIProxy->AddRef();
             pthread_mutex_unlock(&g_importTableLock);
             return NOERROR;
         }
@@ -200,29 +192,28 @@ ECode FindImportObject(
 
 // BUGBUG: must atomic operation with delete proxy
 ECode UnregisterImportObject(
-    /* [in] */ android::IBinder *pBinder)
+    /* [in] */ android::IBinder* binder)
 {
     pthread_mutex_lock(&g_importTableLock);
-    ImportObject* pHead = s_hashImportObjects + Hash(pBinder);
-    ImportObject* pPrev = NULL;
+    ImportObject* head = s_hashImportObjects + Hash(binder);
+    ImportObject* prev = NULL;
 
-    for (ImportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ImportObject*)(pIter->Next())) {
-        if (pIter->m_pBinder == pBinder) {
-            if ((Int32)(((CObjectProxy *)(pIter->m_pIProxy))->m_cRef) != 0) {
+    for (ImportObject* it = head; NULL != it; it = (ImportObject*)(it->Next())) {
+        if (it->mBinder == binder) {
+            if ((Int32)(((CObjectProxy *)(it->mIProxy))->m_cRef) != 0) {
                 pthread_mutex_unlock(&g_importTableLock);
                 return S_FALSE;
             }
 
-            if (pIter != pHead) {
-                pIter->Detach(pPrev);
-                delete pIter;
+            if (it != head) {
+                it->Detach(prev);
+                delete it;
             }
 
             pthread_mutex_unlock(&g_importTableLock);
             return NOERROR;
         }
-        pPrev = pIter;
+        prev = it;
     }
 
     pthread_mutex_unlock(&g_importTableLock);

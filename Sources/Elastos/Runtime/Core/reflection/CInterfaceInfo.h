@@ -81,7 +81,7 @@ private:
     InterfaceDescriptor *m_pDesc;
     IFIndexEntry        *m_pIFList;
 
-    UInt32  m_uIndex;
+    UInt32  mIndex;
     UInt32  m_uIFCount;
     UInt32  m_uMethodCount;
     Int32   m_nBase;
