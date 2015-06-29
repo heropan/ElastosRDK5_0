@@ -70,6 +70,7 @@ module
     merge("utility/IStack.car");
     merge("utility/IStringTokenizer.car");
     merge("utility/IUnsafeArrayList.car");
+    merge("utility/IPropertyPermission.car");
     merge("utility/ICollections.car");
     merge("utility/IEnumMap.car");
 

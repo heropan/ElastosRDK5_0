@@ -5,7 +5,13 @@
 namespace Elastos {
 namespace Security {
 
-ECode Permission::Init(
+CAR_INTERFACE_IMPL(Permission, Object, IPermission)
+
+Permission::Permission(
+    /* [in] */ const String& name)
+{}
+
+ECode Permission::constructor(
         /* [in] */ const String& name)
 {
     return NOERROR;

@@ -2,23 +2,33 @@
 #ifndef __PERMISSION_H__
 #define __PERMISSION_H__
 
+#include "Object.h"
 
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Security {
 
-class Permission {
+class Permission
+    : public Object
+    , public IPermission
+{
 public:
-    CARAPI Init(
+    CAR_INTERFACE_DECL()
+
+    Permission(
         /* [in] */ const String& name);
 
-    virtual CARAPI GetName(
+    CARAPI constructor(
+        /* [in] */ const String& name);
+
+    CARAPI GetName(
         /* [out] */ String *name) const;
 
-    virtual CARAPI CheckGuard(
+    CARAPI CheckGuard(
         /* [in] */ IInterface *obj);
 
-    virtual CARAPI NewPermissionCollection(
+    CARAPI NewPermissionCollection(
         /* [out] */ IPermissionCollection **coll);
 
     virtual CARAPI GetActions(

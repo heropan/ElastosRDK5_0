@@ -4,6 +4,19 @@
 namespace Elastos {
 namespace Security {
 
+BasicPermission::BasicPermission(
+    /* [in] */ const String& name)
+    : Permission(String(""))
+{
+}
+
+BasicPermission::BasicPermission(
+    /* [in] */ const String& name,
+    /* [in] */ const String& action)
+    : Permission(String(""))
+{
+}
+
 ECode BasicPermission::GetActions(
     /* [out] */ String *actions)
 {
@@ -21,13 +34,27 @@ ECode BasicPermission::Implies(
     return NOERROR;
 }
 
-ECode BasicPermission::Init(
+ECode BasicPermission::GetName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+    return Permission::GetName(name);
+}
+
+ECode BasicPermission::NewPermissionCollection(
+    /* [out] */ IPermissionCollection** permissions)
+{
+    VALIDATE_NOT_NULL(permissions)
+    return Permission::NewPermissionCollection(permissions);
+}
+
+ECode BasicPermission::constructor(
     /* [in] */ const String& name)
 {
     return Permission::Init(String(""));
 }
 
-ECode BasicPermission::Init(
+ECode BasicPermission::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& action)
 {

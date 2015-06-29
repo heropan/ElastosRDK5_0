@@ -1,7 +1,6 @@
 
-#ifndef __BASICPERMISSION_H__
-#define __BASICPERMISSION_H__
-
+#ifndef __ELASTOS_SECURITY_BASICPERMISSION_H__
+#define __ELASTOS_SECURITY_BASICPERMISSION_H__
 
 #include "Permission.h"
 
@@ -9,16 +8,30 @@ namespace Elastos {
 namespace Security {
 
 class BasicPermission
-    : public Permission {
+    : public Permission
+{
 public:
-    virtual CARAPI GetActions(
+    BasicPermission(
+        /* [in] */ const String& name);
+
+    BasicPermission(
+        /* [in] */ const String& name,
+        /* [in] */ const String& action);
+
+    CARAPI GetActions(
         /* [out] */ String *actions);
 
-    virtual CARAPI Implies(
+    CARAPI Implies(
         /* [in] */ IPermission *permission,
         /* [out] */ Boolean *ret);
 
-    CARAPI Init(
+    CARAPI GetName(
+        /* [out] */ String* name);
+
+    CARAPI NewPermissionCollection(
+        /* [out] */ IPermissionCollection** permissions);
+
+    CARAPI constructor(
         /* [in] */ const String& name);
 
     CARAPI Init(
@@ -29,3 +42,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
+#endif //__ELASTOS_SECURITY_BASICPERMISSION_H__
