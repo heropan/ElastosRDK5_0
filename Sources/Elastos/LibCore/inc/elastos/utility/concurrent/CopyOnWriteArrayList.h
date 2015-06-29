@@ -5,8 +5,10 @@
 #include "AbstractList.h"
 #include "Object.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
+using Elastos::IO::ISerializable;
 using Elastos::Utility::AbstractList;
 
 namespace Elastos {
@@ -16,9 +18,12 @@ namespace Concurrent {
 class CopyOnWriteArrayList
     : public Object
     , public ICopyOnWriteArrayList
+    , public IList
     , public ICollection
     , public IIterable
     , public IRandomAccess
+    , public ICloneable
+    , public ISerializable
 {
 protected:
     class Slice
@@ -603,6 +608,10 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
+    CARAPI AddAll(
+        /* [in] */ Int32 location,
+        /* [in] */ ICollection* collection);
+
     /**
      * Returns the element at the specified location in this {@code List}.
      *
@@ -684,6 +693,9 @@ public:
         /* [in] */ Int32 location,
         /* [out] */ IInterface** object);
 
+    CARAPI Remove(
+        /* [in] */ Int32 location);
+
     /**
      * Replaces the element at the specified location in this {@code List} with the
      * specified object. This operation does not change the size of the {@code List}.
@@ -707,6 +719,10 @@ public:
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object,
         /* [out] */ IInterface** prevObject);
+
+    CARAPI Set(
+        /* [in] */ Int32 location,
+        /* [in] */ IInterface* object);
 
     /**
      * Returns a {@code List} of the specified portion of this {@code List} from the given start

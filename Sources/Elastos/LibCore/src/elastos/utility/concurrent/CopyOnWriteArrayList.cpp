@@ -276,6 +276,15 @@ ECode CopyOnWriteArrayList::AddAll(
     return NOERROR;
 }
 
+ECode CopyOnWriteArrayList::AddAll(
+    /* [in] */ Int32 location,
+    /* [in] */ ICollection* collection)
+{
+    Autolock lock(this);
+    Boolean res;
+    return AddAll(location, collection, &res);
+}
+
 ECode CopyOnWriteArrayList::Get(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
@@ -351,6 +360,13 @@ ECode CopyOnWriteArrayList::Remove(
     return NOERROR;
 }
 
+ECode CopyOnWriteArrayList::Remove(
+    /* [in] */ Int32 location)
+{
+    AutoPtr<IInterface> res;
+    return Remove(location, (IInterface**)&res);
+}
+
 ECode CopyOnWriteArrayList::Set(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object,
@@ -365,6 +381,14 @@ ECode CopyOnWriteArrayList::Set(
     *prevObject = result;
     REFCOUNT_ADD(*prevObject)
     return NOERROR;
+}
+
+ECode CopyOnWriteArrayList::Set(
+    /* [in] */ Int32 location,
+    /* [in] */ IInterface* object)
+{
+    AutoPtr<IInterface> res;
+    return Set(location, object, (IInterface**)&res);
 }
 
 ECode CopyOnWriteArrayList::GetSubList(
