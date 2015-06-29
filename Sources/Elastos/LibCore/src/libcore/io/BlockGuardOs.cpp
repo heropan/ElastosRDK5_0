@@ -300,8 +300,6 @@ ECode BlockGuardOs::Posix_fallocate(
     return mOs->Posix_fallocate(fd, offset, length);
 }
 
-//ECode BlockGuardOs::int pread(FileDescriptor fd, ByteBuffer buffer, long offset)
-
 ECode BlockGuardOs::Pread(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
@@ -328,9 +326,6 @@ ECode BlockGuardOs::Pread(
     return mOs->Pread(fd, buffer, offset, num);
 }
 
-
-//ECode BlockGuardOs::int pwrite(FileDescriptor fd, ByteBuffer buffer, long offset)
-
 ECode BlockGuardOs::Pwrite(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ ArrayOf<Byte>* bytes,
@@ -354,8 +349,6 @@ ECode BlockGuardOs::Pwrite(
     BLOCKGUARD_THREADPOLICY_CALL(OnWriteToDisk)
     return mOs->Pwrite(fd, buffer, offset, num);
 }
-
-//ECode BlockGuardOs::int read(FileDescriptor fd, ByteBuffer buffer)
 
 ECode BlockGuardOs::Read(
     /* [in] */ IFileDescriptor* fd,
@@ -567,17 +560,6 @@ ECode BlockGuardOs::Writev(
     BLOCKGUARD_THREADPOLICY_CALL(OnWriteToDisk)
     return mOs->Writev(fd, buffers, offsets, byteCounts, result);
 }
-
-//ECode BlockGuardOs::int writev(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts)
-
-
-
-
-
-
-
-
-
 
 } // namespace IO
 } // namespace Libcore

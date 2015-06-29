@@ -12,13 +12,13 @@ module
     [deprecated]
     interface IIoBridge {
         // Socket options used by java.net but not exposed in SocketOptions.
-        const Int32 MCAST_JOIN_GROUP = 19;
-        const Int32 MCAST_LEAVE_GROUP = 20;
-        const Int32 MCAST_JOIN_SOURCE_GROUP = 21;
-        const Int32 MCAST_LEAVE_SOURCE_GROUP = 22;
-        const Int32 MCAST_BLOCK_SOURCE = 23;
-        const Int32 MCAST_UNBLOCK_SOURCE = 24;
-        const Int32 IP_MULTICAST_TTL = 17;
+        const Int32 _MCAST_JOIN_GROUP = 19;
+        const Int32 _MCAST_LEAVE_GROUP = 20;
+        const Int32 _MCAST_JOIN_SOURCE_GROUP = 21;
+        const Int32 _MCAST_LEAVE_SOURCE_GROUP = 22;
+        const Int32 _MCAST_BLOCK_SOURCE = 23;
+        const Int32 _MCAST_UNBLOCK_SOURCE = 24;
+        const Int32 _IP_MULTICAST_TTL = 17;
 
         Available(
             [in] IFileDescriptor* fd,

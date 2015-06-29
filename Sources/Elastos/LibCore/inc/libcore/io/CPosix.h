@@ -1,5 +1,5 @@
-#ifndef __CPOSIX_H__
-#define __CPOSIX_H__
+#ifndef __LIBCORE_IO_CPOSIX_H__
+#define __LIBCORE_IO_CPOSIX_H__
 
 #include "Object.h"
 #include "_Libcore_IO_CPosix.h"
