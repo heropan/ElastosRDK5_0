@@ -280,7 +280,7 @@ ECode CopyOnWriteArrayList::AddAll(
     /* [in] */ Int32 location,
     /* [in] */ ICollection* collection)
 {
-    Autolock lock(this);
+    AutoLock lock(this);
     Boolean res;
     return AddAll(location, collection, &res);
 }
