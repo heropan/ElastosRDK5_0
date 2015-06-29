@@ -1,51 +1,49 @@
 
 module
 {
-    importlib("Elastos.CoreLibrary.eco");
+    merge("xml/sax/Exceptions.car");
+    merge("xml/sax/IAttributeList.car");
+    merge("xml/sax/IAttributes.car");
+    merge("xml/sax/IContentHandler.car");
+    merge("xml/sax/IDocumentHandler.car");
+    merge("xml/sax/IDTDHandler.car");
+    merge("xml/sax/IEntityResolver.car");
+    merge("xml/sax/IErrorHandler.car");
+    merge("xml/sax/IInputSource.car");
+    merge("xml/sax/ILocator.car");
+    merge("xml/sax/IParser.car");
+    merge("xml/sax/IXMLReader.car");
+    merge("xml/sax/IXMLFilter.car");
 
-    merge("../../../../car/org/xml/sax/Exceptions.car");
-    //merge("../../../../car/org/xml/sax/IAttributeList.car");
-    //merge("../../../../car/org/xml/sax/IAttributes.car");
-    //merge("../../../../car/org/xml/sax/IContentHandler.car");
-    //merge("../../../../car/org/xml/sax/IDocumentHandler.car");
-    //merge("../../../../car/org/xml/sax/IDTDHandler.car");
-    //merge("../../../../car/org/xml/sax/IEntityResolver.car");
-    //merge("../../../../car/org/xml/sax/IErrorHandler.car");
-    //merge("../../../../car/org/xml/sax/IInputSource.car");
-    //merge("../../../../car/org/xml/sax/ILocator.car");
-    //merge("../../../../car/org/xml/sax/IParser.car");
-    //merge("../../../../car/org/xml/sax/IXMLReader.car");
-    merge("../../../../car/org/xml/sax/IXMLFilter.car");
+    merge("xml/sax/helpers/IAttributeListImpl.car");
+    merge("xml/sax/helpers/IAttributesImpl.car");
+    merge("xml/sax/helpers/ILocatorImpl.car");
+    merge("xml/sax/helpers/INamespaceSupport.car");
+    merge("xml/sax/helpers/IParserFactory.car");
+    merge("xml/sax/helpers/IXMLReaderFactory.car");
 
-    merge("../../../../car/org/xml/sax/helpers/IAttributeListImpl.car");
-    merge("../../../../car/org/xml/sax/helpers/IAttributesImpl.car");
-    merge("../../../../car/org/xml/sax/helpers/ILocatorImpl.car");
-    merge("../../../../car/org/xml/sax/helpers/INamespaceSupport.car");
-    merge("../../../../car/org/xml/sax/helpers/IParserFactory.car");
-    merge("../../../../car/org/xml/sax/helpers/IXMLReaderFactory.car");
-
-    merge("../../../../car/org/xml/sax/ext/IAttributes2.car");
-    merge("../../../../car/org/xml/sax/ext/IAttributes2Impl.car");
-    merge("../../../../car/org/xml/sax/ext/IDeclHandler.car");
-    merge("../../../../car/org/xml/sax/ext/IEntityResolver2.car");
-    merge("../../../../car/org/xml/sax/ext/ILexicalHandler.car");
-    merge("../../../../car/org/xml/sax/ext/ILocator2.car");
-    merge("../../../../car/org/xml/sax/ext/ILocator2Impl.car");
+    merge("xml/sax/ext/IAttributes2.car");
+    merge("xml/sax/ext/IAttributes2Impl.car");
+    merge("xml/sax/ext/IDeclHandler.car");
+    merge("xml/sax/ext/IEntityResolver2.car");
+    merge("xml/sax/ext/ILexicalHandler.car");
+    merge("xml/sax/ext/ILocator2.car");
+    merge("xml/sax/ext/ILocator2Impl.car");
 
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IReader;
 
-    using interface Org.Xml.Sax.IContentHandler;
-    using interface Org.Xml.Sax.IErrorHandler;
-    using interface Org.Xml.Sax.IEntityResolver;
-    using interface Org.Xml.Sax.IDTDHandler;
-    using interface Org.Xml.Sax.IAttributes;
-    using interface Org.Xml.Sax.IAttributeList;
-    using interface Org.Xml.Sax.ILocator;
-    using interface Org.Xml.Sax.IParser;
-    using interface Org.Xml.Sax.IXMLReader;
-    using interface Org.Xml.Sax.IXMLFilter;
-    using interface Org.Xml.Sax.IDocumentHandler;
+    interface Org.Xml.Sax.IContentHandler;
+    interface Org.Xml.Sax.IErrorHandler;
+    interface Org.Xml.Sax.IEntityResolver;
+    interface Org.Xml.Sax.IDTDHandler;
+    interface Org.Xml.Sax.IAttributes;
+    interface Org.Xml.Sax.IAttributeList;
+    interface Org.Xml.Sax.ILocator;
+    interface Org.Xml.Sax.IParser;
+    interface Org.Xml.Sax.IXMLReader;
+    interface Org.Xml.Sax.IXMLFilter;
+    interface Org.Xml.Sax.IDocumentHandler;
     interface Org.Xml.Sax.Ext.ILocator2;
     interface Org.Xml.Sax.Ext.ILocator2Impl;
 

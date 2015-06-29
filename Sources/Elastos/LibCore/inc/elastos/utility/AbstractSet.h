@@ -1,5 +1,5 @@
-#ifndef __UTILITY_ABSTRACTSET_H__
-#define __UTILITY_ABSTRACTSET_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTSET_H__
+#define __ELASTOS_UTILITY_ABSTRACTSET_H__
 
 #include "AbstractCollection.h"
 
@@ -76,4 +76,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_ABSTRACTSET_H__
+#endif // __ELASTOS_UTILITY__ABSTRACTSET_H__

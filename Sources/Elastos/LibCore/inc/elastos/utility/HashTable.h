@@ -1,5 +1,5 @@
-#ifndef __UTILITY_HASHTABLE_H__
-#define __UTILITY_HASHTABLE_H__
+#ifndef __ELASTOS_UTILITY_HASHTABLE_H__
+#define __ELASTOS_UTILITY_HASHTABLE_H__
 
 #include "AbstractSet.h"
 
@@ -844,4 +844,4 @@ struct Conversion<Elastos::Utility::HashTable::HashtableEntry*, IInterface*>
 };
 
 
-#endif // __UTILITY_HASHTABLE_H__
+#endif // __ELASTOS_UTILITY__HASHTABLE_H__

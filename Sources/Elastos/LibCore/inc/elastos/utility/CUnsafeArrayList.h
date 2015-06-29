@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CUNSAFEARRAYLIST_H__
-#define __UTILITY_CUNSAFEARRAYLIST_H__
+#ifndef __ELASTOS_UTILITY_CUNSAFEARRAYLIST_H__
+#define __ELASTOS_UTILITY_CUNSAFEARRAYLIST_H__
 
 #include "_Elastos_Utility_CUnsafeArrayList.h"
 #include "UnsafeArrayList.h"
@@ -17,4 +17,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CUNSAFEARRAYLIST_H__
+#endif // __ELASTOS_UTILITY__CUNSAFEARRAYLIST_H__

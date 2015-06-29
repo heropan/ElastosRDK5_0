@@ -201,7 +201,7 @@ ECode XMLParser::ExportSubTree(
     if (names->GetLength() > 0) {
         for (Int32 i = 0; i < names->GetLength(); i++) {
             AutoPtr<IPreferences> child;
-            FAIL_RETURN(prefs->Node((*names)[i], (IPreferences**)&child));
+            FAIL_RETURN(prefs->GetNode((*names)[i], (IPreferences**)&child));
 
             AutoPtr<ArrayOf<String> > na = ArrayOf<String>::Alloc(1);
             na->Set(0, String("name"));
@@ -223,7 +223,7 @@ ECode XMLParser::ExportEntries(
     /* [in] */ IBufferedWriter* out) /*throws BackingStoreException, IOException*/
 {
     AutoPtr<ArrayOf<String> > keys;
-    FAIL_RETURN(prefs->Keys((ArrayOf<String>**)&keys));
+    FAIL_RETURN(prefs->GetKeys((ArrayOf<String>**)&keys));
     Int32 len = keys->GetLength();
     AutoPtr<ArrayOf<String> > values = ArrayOf<String>::Alloc(len);
     for (Int32 i = 0; i < len; i++) {
@@ -439,7 +439,7 @@ ECode XMLParser::LoadNode(
     AutoPtr<ArrayOf<AutoPtr<IPreferences> > > prefChildren = ArrayOf<AutoPtr<IPreferences> >::Alloc(childNumber);
     Int32 entryNumber = 0;
     entries->GetLength(&entryNumber);
-    AutoPtr<AbstractPreferences> apf = reinterpret_cast<AbstractPreferences*>(prefs->Probe(EIID_AbstractPreferences));
+    AutoPtr<AbstractPreferences> apf = (AbstractPreferences*)prefs;
     AutoPtr<Object> lock = &apf->mLock;
     synchronized (lock) {
         if (apf->IsRemoved()) {
@@ -462,7 +462,7 @@ ECode XMLParser::LoadNode(
             IElement::Probe(child)->GetAttribute(String("name"), &name);
 
             AutoPtr<IPreferences> pf;
-            prefs->Node(name, (IPreferences**)&pf);
+            prefs->GetNode(name, (IPreferences**)&pf);
             prefChildren->Set(i, pf);
         }
     }

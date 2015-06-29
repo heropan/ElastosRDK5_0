@@ -241,7 +241,7 @@ Boolean NativePrepMainThread()
         return FALSE;
     }
 
-    Thread* _t = reinterpret_cast<Thread*>(threadObj->Probe(EIID_Thread));
+    Thread* _t = (Thread*)threadObj.Get();
     assert(_t != NULL);
     _t->mNativeThread = thread;
     thread->mThreadObj = reinterpret_cast<Int32>(_t);
@@ -1289,7 +1289,7 @@ void NativeDetachCurrentThread()
      */
     AutoPtr<IThread> threadObj;
     if (group != NULL) {
-        ThreadGroup* tg = reinterpret_cast<ThreadGroup*>(group->Probe(EIID_ThreadGroup));
+        ThreadGroup* tg = (ThreadGroup*)group.Get();
         /*
          * Use threadObj to take the ref of self->mThreadObj;
          */

@@ -6,9 +6,6 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/DualPivotQuicksort.h>
-#ifdef ELASTOS_CORELIBRARY
-#include "CArrayList.h"
-#endif
 
 using Elastos::Core::IComparator;
 using Elastos::Core::IComparable;
@@ -74,8 +71,43 @@ public:
         /* [in] */ ArrayOf<T> * array,
         /* [out] */ IList** outList);
 
+    template<typename T>
     static CARAPI AsList(
-        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array,
+        /* [out] */ IList** outList);
+
+    // Notes: there is not implementation for converting ArrayOf<Boolean> to IList.
+    //
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Byte> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Char32> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Int16> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Int32> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Int64> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Float> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<Double> * array,
+        /* [out] */ IList** outList);
+
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<String> * array,
         /* [out] */ IList** outList);
 
     /**
@@ -104,7 +136,7 @@ public:
 
     template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
         /* [in] */ T value,
@@ -128,7 +160,7 @@ public:
 
     template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
         /* [in] */ T value,
         /* [out] */ Int32* index);
 
@@ -267,7 +299,7 @@ public:
 
     template<typename T>
     static CARAPI Fill(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
         /* [in] */ T value);
 
     /**
@@ -295,7 +327,7 @@ public:
 
     template<typename T>
     static CARAPI Fill(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ T value);
@@ -322,7 +354,7 @@ public:
 
     template<typename T>
     static CARAPI_(Int32) GetHashCode(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array);
 
     static CARAPI_(Int32) GetHashCode(
         /* [in] */ ArrayOf<Boolean>* array);
@@ -366,8 +398,8 @@ public:
 
     template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array1,
-        /* [in] */ AutoPtr<ArrayOf<T> >& array2);
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array1,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array2);
 
     static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<Float>* array1,
@@ -407,7 +439,7 @@ public:
 
     template<typename T>
     static CARAPI Sort(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array);
 
     template<typename T>
     static CARAPI Sort(
@@ -417,7 +449,7 @@ public:
 
     template<typename T>
     static CARAPI Sort(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
@@ -463,7 +495,7 @@ public:
 
     template<typename T>
     static CARAPI_(String) ToString(
-        /* [in] */ AutoPtr<ArrayOf<T> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T> >& array);
 
     static CARAPI_(String) ToString(
         /* [in] */ ArrayOf<Char32> * array);
@@ -479,7 +511,7 @@ public:
 
     template<typename T>
     static CARAPI CopyOf(
-        /* [in] */ AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
         /* [in] */ Int32 newLength,
         /* [out, callee] */ ArrayOf<T> ** result);
 
@@ -492,7 +524,7 @@ public:
 
     template<typename T>
     static CARAPI CopyOfRange(
-        /* [in] */ AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<T> ** result);
@@ -503,10 +535,9 @@ public:
         /* [in] */ Int32 newLength,
         /* [out, callee] */ ArrayOf<U> ** result);
 
-
     template<typename T, typename U>
     static CARAPI CopyOf(
-        /* [in] */ AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
         /* [in] */ Int32 newLength,
         /* [out, callee] */ ArrayOf<U> ** result);
 
@@ -519,7 +550,7 @@ public:
 
     template<typename T, typename U>
     static CARAPI CopyOfRange(
-        /* [in] */ AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<U> ** result);
@@ -536,6 +567,9 @@ public:
         /* [in] */ Int32 count);
 
 private:
+    static CARAPI_(AutoPtr<IList>) CreateArrayList(
+        /* [in] */ Int32 length);
+
     static CARAPI CheckBinarySearchBounds(
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
@@ -574,16 +608,9 @@ ECode Arrays::AsList(
     *outList = NULL;
 
     if (array) {
-#ifdef ELASTOS_CORELIBRARY
-        AutoPtr<CArrayList> al;
-        CArrayList::NewByFriend(array->GetLength(), (CArrayList**)&al);
-        IList* l = IList::Probe(al);
-#else
-        AutoPtr<IList> l;
-        CArrayList::New(array->GetLength(), (IList**)&l);
-#endif
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
         for (Int32 i = 0; i < array->GetLength(); ++i) {
-            al->Add(i, TO_IINTERFACE((*array)[i]));
+            l->Add(i, TO_IINTERFACE((*array)[i]));
         }
 
         *outList = l;
@@ -591,6 +618,14 @@ ECode Arrays::AsList(
     }
 
     return NOERROR;
+}
+
+template<typename T>
+ECode Arrays::AsList(
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array,
+    /* [out] */ IList** outList)
+{
+    return AsList(array.Get(), outList);
 }
 
 template<typename T>
@@ -653,7 +688,7 @@ ECode Arrays::BinarySearch(
 
 template<typename T>
 ECode Arrays::BinarySearch(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
     /* [in] */ T value,
@@ -664,7 +699,7 @@ ECode Arrays::BinarySearch(
 
 template<typename T>
 ECode Arrays::BinarySearch(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
     /* [in] */ T value,
     /* [out] */ Int32* index)
 {
@@ -704,7 +739,7 @@ ECode Arrays::Fill(
 
 template<typename T>
 ECode Arrays::Fill(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ T value)
@@ -714,7 +749,7 @@ ECode Arrays::Fill(
 
 template<typename T>
 ECode Arrays::Fill(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
     /* [in] */ T value)
 {
     return Fill(array.Get(), value);
@@ -737,7 +772,7 @@ Int32 Arrays::GetHashCode(
 
 template<typename T>
 Int32 Arrays::GetHashCode(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array)
 {
     return GetHashCode(array.Get());
 }
@@ -766,8 +801,8 @@ Boolean Arrays::Equals(
 
 template<typename T>
 Boolean Arrays::Equals(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array1,
-    /* [in] */ AutoPtr<ArrayOf<T> >& array2)
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array1,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array2)
 {
     return Equals(array1.Get(), array2.Get());
 }
@@ -781,7 +816,7 @@ ECode Arrays::Sort(
 
 template<typename T>
 ECode Arrays::Sort(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array)
 {
     return DualPivotQuicksort::Sort(array.Get());
 }
@@ -797,7 +832,7 @@ ECode Arrays::Sort(
 
 template<typename T>
 ECode Arrays::Sort(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
@@ -829,7 +864,7 @@ String Arrays::ToString(
 
 template<typename T>
 String Arrays::ToString(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<T> >& array)
 {
     return ToString(array.Get());
 }
@@ -883,7 +918,7 @@ ECode Arrays::CopyOf(
 
 template<typename T>
 ECode Arrays::CopyOfRange(
-    /* [in] */ AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out, callee] */ ArrayOf<T> ** result)
@@ -893,7 +928,7 @@ ECode Arrays::CopyOfRange(
 
 template<typename T>
 ECode Arrays::CopyOf(
-    /* [in] */ AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<T> ** result)
 {
@@ -952,7 +987,7 @@ ECode Arrays::CopyOf(
 
 template<typename T, typename U>
 ECode Arrays::CopyOfRange(
-    /* [in] */ AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out, callee] */ ArrayOf<U> ** result)
@@ -962,7 +997,7 @@ ECode Arrays::CopyOfRange(
 
 template<typename T, typename U>
 ECode Arrays::CopyOf(
-    /* [in] */ AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<U> ** result)
 {

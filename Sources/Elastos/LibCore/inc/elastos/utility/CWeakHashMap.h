@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CWEAKHASHMAP_H__
-#define __UTILITY_CWEAKHASHMAP_H__
+#ifndef __ELASTOS_UTILITY_CWEAKHASHMAP_H__
+#define __ELASTOS_UTILITY_CWEAKHASHMAP_H__
 
 #include "_Elastos_Utility_CWeakHashMap.h"
 #include "AbstractMap.h"
@@ -551,4 +551,4 @@ struct Conversion<Elastos::Utility::CWeakHashMap::Entry*, IInterface*>
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
-#endif // __UTILITY_CWEAKHASHMAP_H__
+#endif // __ELASTOS_UTILITY__CWEAKHASHMAP_H__

@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CCOLLECTIONS_H__
-#define __UTILITY_CCOLLECTIONS_H__
+#ifndef __ELASTOS_UTILITY_CCOLLECTIONS_H__
+#define __ELASTOS_UTILITY_CCOLLECTIONS_H__
 
 #include "AbstractList.h"
 #include "AbstractSet.h"
@@ -3264,4 +3264,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CCOLLECTIONS_H__
+#endif // __ELASTOS_UTILITY__CCOLLECTIONS_H__

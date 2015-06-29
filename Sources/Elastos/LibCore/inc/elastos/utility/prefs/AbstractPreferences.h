@@ -1,6 +1,6 @@
 
-#ifndef __UTILITY_PREFS_ABSTRACTPREFERENCES_H__
-#define __UTILITY_PREFS_ABSTRACTPREFERENCES_H__
+#ifndef __ELASTOS_UTILITY_PREFS_ABSTRACTPREFERENCES_H__
+#define __ELASTOS_UTILITY_PREFS_ABSTRACTPREFERENCES_H__
 
 #include "Preferences.h"
 #include "NodeChangeEvent.h"
@@ -12,7 +12,6 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-extern "C" const InterfaceID EIID_AbstractPreferences;
 class XMLParser;
 
 class AbstractPreferences
@@ -93,7 +92,8 @@ public:
         : public NodeChangeEvent
     {
     public:
-        NodeAddEvent(
+
+        CARAPI constructor(
             /* [in] */ Preferences* p,
             /* [in] */ Preferences* c);
 
@@ -106,9 +106,6 @@ public:
         : public NodeChangeEvent
     {
     public:
-        NodeRemoveEvent(
-            /* [in] */ Preferences* p,
-            /* [in] */ Preferences* c);
 
     private:
         //The base class is NOT serializable, so this class isn't either.
@@ -191,25 +188,25 @@ public:
         /* [out] */ Boolean* value);
 
     // @Override
-    CARAPI Keys(
+    CARAPI GetKeys(
         /* [out, callee] */ ArrayOf<String>** keys) /*throws BackingStoreException*/;
 
     // @Override
-    CARAPI Name(
+    CARAPI GetName(
         /* [out] */ String* name);
 
     // @Override
-    CARAPI Node(
+    CARAPI GetNode(
         /* [in] */ const String& name,
         /* [out] */ IPreferences** pfs);
 
     // @Override
-    CARAPI NodeExists(
+    CARAPI IsNodeExists(
         /* [in] */ const String& name,
         /* [out] */ Boolean* exist) /*throws BackingStoreException*/;
 
     // @Override
-    CARAPI Parent(
+    CARAPI GetParent(
         /* [out] */IPreferences** pf);
 
     // @Override
@@ -561,4 +558,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PREFS_ABSTRACTPREFERENCES_H__
+#endif // __ELASTOS_UTILITY__PREFS_ABSTRACTPREFERENCES_H__

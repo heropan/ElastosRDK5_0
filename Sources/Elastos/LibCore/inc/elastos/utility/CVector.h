@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CVECTOR_H__
-#define __UTILITY_CVECTOR_H__
+#ifndef __ELASTOS_UTILITY_CVECTOR_H__
+#define __ELASTOS_UTILITY_CVECTOR_H__
 
 #include "_Elastos_Utility_CVector.h"
 #include "Vector.h"
@@ -18,4 +18,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CVECTOR_H__
+#endif // __ELASTOS_UTILITY__CVECTOR_H__

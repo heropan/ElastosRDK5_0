@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CLINKEDLIST_H__
-#define __UTILITY_CLINKEDLIST_H__
+#ifndef __ELASTOS_UTILITY_CLINKEDLIST_H__
+#define __ELASTOS_UTILITY_CLINKEDLIST_H__
 
 #include "_Elastos_Utility_CLinkedList.h"
 #include "AbstractSequentialList.h"
@@ -321,4 +321,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CLINKEDLIST_H__
+#endif // __ELASTOS_UTILITY__CLINKEDLIST_H__

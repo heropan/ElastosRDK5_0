@@ -1,5 +1,5 @@
-#ifndef __UTILITY_ABSTRACTLIST_H__
-#define __UTILITY_ABSTRACTLIST_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTLIST_H__
+#define __ELASTOS_UTILITY_ABSTRACTLIST_H__
 
 #include "AbstractCollection.h"
 
@@ -598,4 +598,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_ABSTRACTLIST_H__
+#endif // __ELASTOS_UTILITY__ABSTRACTLIST_H__

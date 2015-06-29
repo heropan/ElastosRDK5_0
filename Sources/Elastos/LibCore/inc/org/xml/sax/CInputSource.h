@@ -3,7 +3,7 @@
 #define __ORG_XML_SAX_CINPUTSOURCE_H__
 
 #include "_Org_Xml_Sax_CInputSource.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStream;

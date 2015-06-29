@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CLINKEDHASHSET_H__
-#define __UTILITY_CLINKEDHASHSET_H__
+#ifndef __ELASTOS_UTILITY_CLINKEDHASHSET_H__
+#define __ELASTOS_UTILITY_CLINKEDHASHSET_H__
 
 #include "_Elastos_Utility_CLinkedHashSet.h"
 #include "HashSet.h"
@@ -314,4 +314,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CLINKEDHASHSET_H__
+#endif // __ELASTOS_UTILITY__CLINKEDHASHSET_H__

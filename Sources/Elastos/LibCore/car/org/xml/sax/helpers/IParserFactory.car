@@ -1,6 +1,6 @@
 module
 {
-    using interface Org.Xml.Sax.IParser;
+    interface Org.Xml.Sax.IParser;
 
     namespace Org {
     namespace Xml {

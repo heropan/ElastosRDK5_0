@@ -1,5 +1,5 @@
-#ifndef __UTILITY_ABSTRACTSEQUENTIALLIST_H__
-#define __UTILITY_ABSTRACTSEQUENTIALLIST_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTSEQUENTIALLIST_H__
+#define __ELASTOS_UTILITY_ABSTRACTSEQUENTIALLIST_H__
 
 #include "AbstractList.h"
 
@@ -49,4 +49,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_ABSTRACTSEQUENTIALLIST_H__
+#endif // __ELASTOS_UTILITY__ABSTRACTSEQUENTIALLIST_H__

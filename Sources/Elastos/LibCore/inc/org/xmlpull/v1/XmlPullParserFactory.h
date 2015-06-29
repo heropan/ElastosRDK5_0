@@ -4,7 +4,6 @@
 
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
-#include "Org.Xmlpull.V1_server.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Org::Xmlpull::V1::IXmlPullParserFactory;

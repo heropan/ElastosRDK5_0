@@ -10,5 +10,5 @@ DIRS += utility
 DIRS += droid
 
 DIRS += ../libcore
-DIRS += ../org/w3c
+DIRS += ../org
 DIRS += ../elastosx

@@ -1,5 +1,5 @@
-#ifndef __UTILITY_HASHSET_H__
-#define __UTILITY_HASHSET_H__
+#ifndef __ELASTOS_UTILITY_HASHSET_H__
+#define __ELASTOS_UTILITY_HASHSET_H__
 
 #include "AbstractSet.h"
 
@@ -173,4 +173,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_HASHSET_H__
+#endif // __ELASTOS_UTILITY__HASHSET_H__

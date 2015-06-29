@@ -1,9 +1,8 @@
 module
 {
-    using interface Elastos.Core.IBoolean;
-
-    using interface Elastos.IO.IOutputStream;
-    using interface Elastos.IO.IWriter;
+    interface Elastos.Core.IBoolean;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IWriter;
 
     namespace Org {
     namespace Xmlpull {

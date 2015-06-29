@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CIDENTITYHASHMAP_H__
-#define __UTILITY_CIDENTITYHASHMAP_H__
+#ifndef __ELASTOS_UTILITY_CIDENTITYHASHMAP_H__
+#define __ELASTOS_UTILITY_CIDENTITYHASHMAP_H__
 
 #include "_Elastos_Utility_CIdentityHashMap.h"
 #include "AbstractMap.h"
@@ -534,4 +534,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CIDENTITYHASHMAP_H__
+#endif // __ELASTOS_UTILITY__CIDENTITYHASHMAP_H__

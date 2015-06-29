@@ -1,6 +1,5 @@
 
 #include "CCloseGuard.h"
-#include <elastos.h>
 
 namespace Elastos {
 namespace Core {

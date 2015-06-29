@@ -1,25 +1,26 @@
 
 #include "PreferenceChangeEvent.h"
 
-
 namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-extern "C" const InterfaceID EIID_PreferenceChangeEvent =
-        { 0xf27739bc, 0x3d95, 0x44cd, { 0x99, 0x79, 0xfa, 0x1b, 0x1a, 0x79, 0xf5, 0x64 } };
-
 CAR_INTERFACE_IMPL(PreferenceChangeEvent, EventObject, IPreferenceChangeEvent);
 
-PreferenceChangeEvent::PreferenceChangeEvent(
+PreferenceChangeEvent::PreferenceChangeEvent()
+{
+}
+
+ECode PreferenceChangeEvent::constructor(
     /* [in] */ Preferences* p,
     /* [in] */ const String& k,
     /* [in] */ const String& v)
-    : EventObject(p)
-    , mNode(p)
-    , mKey(k)
-    , mValue(v)
 {
+    FAIL_RETURN(EventObject::constructor(p))
+    mNode = p;
+    mKey = k;
+    mValue = v;
+    return NOERROR;
 }
 
 ECode PreferenceChangeEvent::GetKey(

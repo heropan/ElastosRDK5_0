@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CTREESET_H__
-#define __UTILITY_CTREESET_H__
+#ifndef __ELASTOS_UTILITY_CTREESET_H__
+#define __ELASTOS_UTILITY_CTREESET_H__
 
 #include "_Elastos_Utility_CTreeSet.h"
 #include "AbstractSet.h"
@@ -178,4 +178,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CTREESET_H__
+#endif // __ELASTOS_UTILITY__CTREESET_H__

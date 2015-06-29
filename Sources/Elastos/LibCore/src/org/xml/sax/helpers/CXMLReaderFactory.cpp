@@ -3,6 +3,9 @@
 #include "NewInstanceHelper.h"
 #include "CParserFactory.h"
 #include "CParserAdapter.h"
+#include "CSystem.h"
+#include "CBufferedReader.h"
+#include "CInputStreamReader.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

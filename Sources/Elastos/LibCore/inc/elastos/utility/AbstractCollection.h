@@ -1,5 +1,5 @@
-#ifndef __UTILITY_ABSTRACTCOLLECTION_H__
-#define __UTILITY_ABSTRACTCOLLECTION_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTCOLLECTION_H__
+#define __ELASTOS_UTILITY_ABSTRACTCOLLECTION_H__
 
 #include "Object.h"
 
@@ -303,4 +303,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_ABSTRACTCOLLECTION_H__
+#endif // __ELASTOS_UTILITY__ABSTRACTCOLLECTION_H__

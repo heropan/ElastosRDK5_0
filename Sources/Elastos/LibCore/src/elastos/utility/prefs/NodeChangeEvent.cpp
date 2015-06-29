@@ -5,18 +5,26 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-extern "C" const InterfaceID EIID_NodeChangeEvent =
-        { 0x3923b969, 0xe881, 0x407a, { 0xb2, 0xa8, 0x27, 0xb9, 0x47, 0x1d, 0xdd, 0x50 } };
 
 CAR_INTERFACE_IMPL(NodeChangeEvent, EventObject, INodeChangeEvent);
 
-NodeChangeEvent::NodeChangeEvent(
+NodeChangeEvent::NodeChangeEvent()
+{
+}
+
+NodeChangeEvent::~NodeChangeEvent()
+{
+}
+
+ECode NodeChangeEvent::constructor(
     /* [in] */ IPreferences* p,
     /* [in] */ IPreferences* c)
-    : EventObject(IObject::Probe(p))
-    , mParent(p)
-    , mChild(c)
 {
+    FAIL_RETURN(EventObject::constructor(IObject::Probe(p)))
+
+    mParent = p;
+    mChild = c;
+    return NOERROR;
 }
 
 ECode NodeChangeEvent::GetParent(
@@ -51,14 +59,6 @@ ECode NodeChangeEvent::ReadObject(
     /* [in] */ IObjectInputStream* in) /*throws IOException, ClassNotFoundException*/
 {
     return E_NOT_SERIALIZABLE_EXCEPTION;
-}
-
-ECode NodeChangeEvent::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    *info = String("Elastos.Utility.Prefs.NodeChangeEvent");
-    return NOERROR;
 }
 
 } // namespace Prefs

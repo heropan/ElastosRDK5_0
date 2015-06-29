@@ -1,6 +1,6 @@
 
-#ifndef __CTEXT_H__
-#define __CTEXT_H__
+#ifndef __ORG_W3C_DOM_CTEXT_H__
+#define __ORG_W3C_DOM_CTEXT_H__
 
 #include "_Org_W3c_Dom_CText.h"
 #include <elastos/core/Object.h>
@@ -29,53 +29,53 @@ public:
         /* [out] */ Int16 * pValue);
 
     CARAPI GetParentNode(
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [out] */ INode ** ppNode);
 
     CARAPI GetChildNodes(
-        /* [out] */ Org::W3c::Dom::INodeList ** ppNodelist);
+        /* [out] */ INodeList ** ppNodelist);
 
     CARAPI GetFirstChild(
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [out] */ INode ** ppNode);
 
     CARAPI GetLastChild(
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [out] */ INode ** ppNode);
 
     CARAPI GetPreviousSibling(
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [out] */ INode ** ppNode);
 
     CARAPI GetNextSibling(
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [out] */ INode ** ppNode);
 
     CARAPI GetAttributes(
-        /* [out] */ Org::W3c::Dom::INamedNodeMap ** ppNodemap);
+        /* [out] */ INamedNodeMap ** ppNodemap);
 
     CARAPI GetOwnerDocument(
-        /* [out] */ Org::W3c::Dom::IDocument ** ppDoc);
+        /* [out] */ IDocument ** ppDoc);
 
     CARAPI InsertBefore(
-        /* [in] */ Org::W3c::Dom::INode * pNewChild,
-        /* [in] */ Org::W3c::Dom::INode * pRefChild,
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [in] */ INode * pNewChild,
+        /* [in] */ INode * pRefChild,
+        /* [out] */ INode ** ppNode);
 
     CARAPI ReplaceChild(
-        /* [in] */ Org::W3c::Dom::INode * pNewChild,
-        /* [in] */ Org::W3c::Dom::INode * pOldChild,
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [in] */ INode * pNewChild,
+        /* [in] */ INode * pOldChild,
+        /* [out] */ INode ** ppNode);
 
     CARAPI RemoveChild(
-        /* [in] */ Org::W3c::Dom::INode * pOldChild,
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [in] */ INode * pOldChild,
+        /* [out] */ INode ** ppNode);
 
     CARAPI AppendChild(
-        /* [in] */ Org::W3c::Dom::INode * pNewChild,
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [in] */ INode * pNewChild,
+        /* [out] */ INode ** ppNode);
 
     CARAPI HasChildNodes(
         /* [out] */ Boolean * pValue);
 
     CARAPI CloneNode(
         /* [in] */ Boolean deep,
-        /* [out] */ Org::W3c::Dom::INode ** ppNode);
+        /* [out] */ INode ** ppNode);
 
     CARAPI Normalize();
 
@@ -103,7 +103,7 @@ public:
         /* [out] */ String * pStr);
 
     CARAPI CompareDocumentPosition(
-        /* [in] */ Org::W3c::Dom::INode * pOther,
+        /* [in] */ INode * pOther,
         /* [out] */ Int16 * pValue);
 
     CARAPI GetTextContent(
@@ -113,7 +113,7 @@ public:
         /* [in] */ const String& textContent);
 
     CARAPI IsSameNode(
-        /* [in] */ Org::W3c::Dom::INode * pOther,
+        /* [in] */ INode * pOther,
         /* [out] */ Boolean * pValue);
 
     CARAPI LookupPrefix(
@@ -129,7 +129,7 @@ public:
         /* [out] */ String * pStr);
 
     CARAPI IsEqualNode(
-        /* [in] */ Org::W3c::Dom::INode * pArg,
+        /* [in] */ INode * pArg,
         /* [out] */ Boolean * pValue);
 
     CARAPI GetFeature(
@@ -140,7 +140,7 @@ public:
     CARAPI SetUserData(
         /* [in] */ const String& key,
         /* [in] */ IObject * pData,
-        /* [in] */ Org::W3c::Dom::IUserDataHandler * pHandler,
+        /* [in] */ IUserDataHandler * pHandler,
         /* [out] */ IObject ** ppObj);
 
     CARAPI GetUserData(
@@ -179,7 +179,7 @@ public:
 
     CARAPI SplitText(
         /* [in] */ Int32 offset,
-        /* [out] */ Org::W3c::Dom::IText ** ppText);
+        /* [out] */ IText ** ppText);
 
     CARAPI IsElementContentWhitespace(
         /* [out] */ Boolean * pValue);
@@ -189,7 +189,7 @@ public:
 
     CARAPI ReplaceWholeText(
         /* [in] */ const String& content,
-        /* [out] */ Org::W3c::Dom::IText ** ppText);
+        /* [out] */ IText ** ppText);
 
 private:
     // TODO: Add your private member variables here.
@@ -199,4 +199,4 @@ private:
 }
 }
 
-#endif // __CTEXT_H__
+#endif // __ORG_W3C_DOM_CTEXT_H__

@@ -1,5 +1,5 @@
-#ifndef __UTILITY_MAPENTRY_H__
-#define __UTILITY_MAPENTRY_H__
+#ifndef __ELASTOS_UTILITY_MAPENTRY_H__
+#define __ELASTOS_UTILITY_MAPENTRY_H__
 
 #include "Object.h"
 
@@ -69,4 +69,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_MAPENTRY_H__
+#endif // __ELASTOS_UTILITY__MAPENTRY_H__

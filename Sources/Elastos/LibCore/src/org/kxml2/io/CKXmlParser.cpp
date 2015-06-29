@@ -1,6 +1,9 @@
 
 #include "CKXmlParser.h"
-#include <elastos/core/StringUtils.h>
+#include "StringUtils.h"
+#include "CStringWrapper.h"
+#include "CInputStreamReader.h"
+#include "CBoolean.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

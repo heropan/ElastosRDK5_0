@@ -8,23 +8,9 @@ namespace Prefs {
 const Int32 Preferences::MAX_KEY_LENGTH = 80;
 const Int32 Preferences::MAX_NAME_LENGTH = 80;
 const Int32 Preferences::MAX_VALUE_LENGTH = 8192;
-volatile AutoPtr<IPreferencesFactory> Preferences::mFactory = FindPreferencesFactory();
 
-CAR_INTERFACE_IMPL(Preferences, Object, IPreferences);
-
-AutoPtr<IPreferencesFactory> Preferences::SetPreferencesFactory(
-    /* [in] */ IPreferencesFactory* pf)
+static AutoPtr<IPreferencesFactory> InitFactory()
 {
-    AutoPtr<IPreferencesFactory> previous = mFactory;
-    mFactory = pf;
-    return previous;
-}
-
-AutoPtr<IPreferencesFactory> Preferences::FindPreferencesFactory()
-{
-    //TODO
-    assert(0);
-    return NULL;
     // // Try the system property first...
     // AutoPtr<IPreferencesFactory> result = ServiceLoader::LoadFromSystemProperty(PreferencesFactory.class);
     // if (result != NULL) {
@@ -38,7 +24,28 @@ AutoPtr<IPreferencesFactory> Preferences::FindPreferencesFactory()
     // return new FilePreferencesFactoryImpl();
 }
 
+volatile AutoPtr<IPreferencesFactory> Preferences::mFactory = InitFactory();
+
+CAR_INTERFACE_IMPL(Preferences, Object, IPreferences);
+
+AutoPtr<IPreferencesFactory> Preferences::SetPreferencesFactory(
+    /* [in] */ IPreferencesFactory* pf)
+{
+    AutoPtr<IPreferencesFactory> previous = mFactory;
+    mFactory = pf;
+    return previous;
+}
+
+AutoPtr<IPreferencesFactory> Preferences::FindPreferencesFactory()
+{
+    return InitFactory();
+}
+
 Preferences::Preferences()
+{
+}
+
+Preferences::~Preferences()
 {
 }
 

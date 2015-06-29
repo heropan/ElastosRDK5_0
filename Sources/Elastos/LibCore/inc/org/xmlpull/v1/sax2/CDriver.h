@@ -4,7 +4,6 @@
 
 #include "_Org_Xmlpull_V1_Sax2_CDriver.h"
 #include <elastos/core/Object.h>
-#include <Org.Xml.Sax.h>
 
 using Org::Xml::Sax::ILocator;
 using Org::Xml::Sax::IXMLReader;

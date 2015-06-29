@@ -1,7 +1,5 @@
 module
 {
-
-
     namespace Org {
     namespace Xml {
     namespace Sax {

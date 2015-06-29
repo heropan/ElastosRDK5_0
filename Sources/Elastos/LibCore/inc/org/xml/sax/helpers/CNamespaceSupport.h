@@ -3,7 +3,7 @@
 #define __ORG_XML_SAX_HELPERS_CNAMESPACESUPPORT_H__
 
 #include "_Org_Xml_Sax_Helpers_CNamespaceSupport.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
@@ -80,7 +80,8 @@ private:
     static AutoPtr<IEnumeration> EMPTY_ENUMERATION;
 
 public:
-    class Context : public Object
+    class Context
+        : public Object
     {
     public:
         /**
