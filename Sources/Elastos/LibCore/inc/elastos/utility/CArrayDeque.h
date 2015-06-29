@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CARRAYDEQUE_H__
-#define __UTILITY_CARRAYDEQUE_H__
+#ifndef __ELASTOS_UTILITY_CARRAYDEQUE_H__
+#define __ELASTOS_UTILITY_CARRAYDEQUE_H__
 
 #include "_Elastos_Utility_CArrayDeque.h"
 #include "AbstractCollection.h"
@@ -303,4 +303,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CARRAYDEQUE_H__
+#endif // __ELASTOS_UTILITY__CARRAYDEQUE_H__

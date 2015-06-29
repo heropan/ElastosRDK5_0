@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CLINKEDHASHMAP_H__
-#define __UTILITY_CLINKEDHASHMAP_H__
+#ifndef __ELASTOS_UTILITY_CLINKEDHASHMAP_H__
+#define __ELASTOS_UTILITY_CLINKEDHASHMAP_H__
 
 #include "_Elastos_Utility_CLinkedHashMap.h"
 #include "HashMap.h"
@@ -466,4 +466,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CLINKEDHASHMAP_H__
+#endif // __ELASTOS_UTILITY__CLINKEDHASHMAP_H__

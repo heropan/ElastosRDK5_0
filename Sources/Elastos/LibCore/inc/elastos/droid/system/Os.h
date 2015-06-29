@@ -579,6 +579,7 @@ public:
         /* [in] */ ArrayOf<Int32>* offsets,
         /* [in] */ ArrayOf<Int32>* byteCounts,
         /* [out] */ Int32* result);
+
 private:
     Os();
     Os(const Os &);

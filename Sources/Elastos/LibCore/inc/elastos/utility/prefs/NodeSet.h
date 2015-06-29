@@ -1,5 +1,5 @@
-#ifndef __UTILITY_PREFS_NODESET_H__
-#define __UTILITY_PREFS_NODESET_H__
+#ifndef __ELASTOS_UTILITY_PREFS_NODESET_H__
+#define __ELASTOS_UTILITY_PREFS_NODESET_H__
 
 #include "Object.h"
 
@@ -38,4 +38,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PREFS_NODESET_H__
+#endif // __ELASTOS_UTILITY__PREFS_NODESET_H__

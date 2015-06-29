@@ -1,5 +1,5 @@
-#ifndef __UTILITY_PREFS_XMLPARSER_H__
-#define __UTILITY_PREFS_XMLPARSER_H__
+#ifndef __ELASTOS_UTILITY_PREFS_XMLPARSER_H__
+#define __ELASTOS_UTILITY_PREFS_XMLPARSER_H__
 
 #include "Object.h"
 
@@ -55,7 +55,6 @@ public:
         /* [out] */ String* info);
 
 private:
-    XMLParser();
     /*
      * init DOM builder
      */
@@ -126,6 +125,10 @@ private:
         /* [in] */ IElement* documentElement,
         /* [in] */ const String& string);
 
+private:
+    XMLParser();
+    XMLParser(const XMLParser&);
+
 public:
     /*
      * Constant - the specified DTD URL
@@ -174,4 +177,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PREFS_XMLPARSER_H__
+#endif // __ELASTOS_UTILITY__PREFS_XMLPARSER_H__

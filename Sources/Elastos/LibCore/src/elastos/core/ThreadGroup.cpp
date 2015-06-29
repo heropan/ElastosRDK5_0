@@ -5,11 +5,7 @@
 namespace Elastos {
 namespace Core {
 
-// {8BF3F538-74DA-4997-B0DC-0F8086BA8835}
-extern "C" const InterfaceID EIID_ThreadGroup =
-        { 0x8bf3f538, 0x74da, 0x4997, { 0xb0, 0xdc, 0xf, 0x80, 0x86, 0xba, 0x88, 0x35 } };
-
-CAR_INTERFACE_IMPL_WITH_CPP_CAST_2(ThreadGroup, Object, IThreadGroup, IThreadUncaughtExceptionHandler)
+CAR_INTERFACE_IMPL_2(ThreadGroup, Object, IThreadGroup, IThreadUncaughtExceptionHandler)
 
 ThreadGroup::ThreadGroup()
     : mNumThreads(0)
@@ -228,7 +224,7 @@ ECode ThreadGroup::Destroy()
             }
 
             if (mParent != NULL) {
-                ThreadGroup* g = reinterpret_cast<ThreadGroup*>(mParent->Probe(EIID_ThreadGroup));
+                ThreadGroup* g = (ThreadGroup*)mParent.Get();
                 g->RemoveThreadGroup(THIS_PROBE(IThreadGroup));
             }
 
@@ -320,7 +316,7 @@ Int32 ThreadGroup::EnumerateThreadGeneric(
             if (enumerationIndex >= len) {
                 return enumerationIndex;
             }
-            tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
+            tg = (ThreadGroup*)(*mChildrenGroups)[i];
             enumerationIndex = tg->EnumerateThreadGeneric(recurse, enumerationIndex, enumeration);
         }
     }
@@ -357,7 +353,7 @@ Int32 ThreadGroup::EnumerateThreadGroupGeneric(
             if (enumerationIndex >= len) {
                 return enumerationIndex;
             }
-            tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
+            tg = (ThreadGroup*)(*mChildrenGroups)[i];
             enumerationIndex = tg->EnumerateThreadGroupGeneric(recurse, enumerationIndex, enumeration);
         }
     }
@@ -461,7 +457,7 @@ void ThreadGroup::ListImpl(
     Mutex::AutoLock lock(mChildrenGroupsLock);
     ThreadGroup* tg;
     for (Int32 i = 0; i < mNumGroups; i++) {
-        tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
+        tg = (ThreadGroup*)(*mChildrenGroups)[i];
         tg->ListImpl(levels + 1);
     }
 }
@@ -477,7 +473,7 @@ ECode ThreadGroup::IsParentOf(
             *result = TRUE;
             return NOERROR;
         }
-        tg = reinterpret_cast<ThreadGroup*>(g->Probe(EIID_ThreadGroup));
+        tg = (ThreadGroup*)g;;
         g = tg->mParent;
     }
     *result = FALSE;
@@ -586,7 +582,7 @@ void ThreadGroup::SetParent(
     /* [in] */ IThreadGroup* parent)
 {
     if (parent != NULL) {
-        ThreadGroup* tg = reinterpret_cast<ThreadGroup*>(parent->Probe(EIID_ThreadGroup));
+        ThreadGroup* tg = (ThreadGroup*)parent;
         tg->AddThreadGroup(THIS_PROBE(IThreadGroup));
     }
     mParent = parent;
@@ -624,7 +620,7 @@ Boolean ThreadGroup::StopHelper()
         Mutex::AutoLock lock(mChildrenGroupsLock);
         ThreadGroup* tg;
         for (Int32 i = 0; i < mNumGroups; i++) {
-            tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
+            tg = (ThreadGroup*)(*mChildrenGroups)[i];
             stopCurrent |= tg->StopHelper();
         }
     }
@@ -663,7 +659,7 @@ Boolean ThreadGroup::SuspendHelper()
         Mutex::AutoLock lock(mChildrenGroupsLock);
         ThreadGroup* tg;
         for (Int32 i = 0; i < mNumGroups; i++) {
-            tg = reinterpret_cast<ThreadGroup*>((*mChildrenGroups)[i]->Probe(EIID_ThreadGroup));
+            tg = (ThreadGroup*)(*mChildrenGroups)[i];
             suspendCurrent |= tg->SuspendHelper();
         }
     }

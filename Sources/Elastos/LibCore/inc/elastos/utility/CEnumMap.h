@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CENUMMAP_H__
-#define __UTILITY_CENUMMAP_H__
+#ifndef __ELASTOS_UTILITY_CENUMMAP_H__
+#define __ELASTOS_UTILITY_CENUMMAP_H__
 
 #include "_Elastos_Utility_CEnumMap.h"
 #include "AbstractMap.h"
@@ -675,4 +675,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CENUMMAP_H__
+#endif // __ELASTOS_UTILITY__CENUMMAP_H__

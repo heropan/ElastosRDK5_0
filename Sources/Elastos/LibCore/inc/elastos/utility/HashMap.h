@@ -1,5 +1,5 @@
-#ifndef __UTILITY_HashMap_H__
-#define __UTILITY_HashMap_H__
+#ifndef __ELASTOS_UTILITY_HashMap_H__
+#define __ELASTOS_UTILITY_HashMap_H__
 
 #include "AbstractMap.h"
 #include "Object.h"
@@ -814,4 +814,4 @@ struct Conversion<Elastos::Utility::HashMap::HashMapEntry*, IInterface*>
 };
 
 
-#endif // __UTILITYHashMap_H__
+#endif // __ELASTOS_UTILITY_HashMap_H__

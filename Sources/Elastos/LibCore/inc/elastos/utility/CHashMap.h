@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CHASHMAP_H__
-#define __UTILITY_CHASHMAP_H__
+#ifndef __ELASTOS_UTILITY_CHASHMAP_H__
+#define __ELASTOS_UTILITY_CHASHMAP_H__
 
 #include "_Elastos_Utility_CHashMap.h"
 #include "HashMap.h"
@@ -17,4 +17,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CHASHMAP_H__
+#endif // __ELASTOS_UTILITY__CHASHMAP_H__

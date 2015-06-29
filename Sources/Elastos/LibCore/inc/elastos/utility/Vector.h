@@ -1,5 +1,5 @@
 #ifndef __UTILITYVector_H__
-#define __UTILITYVector_H__
+#define __ELASTOS_UTILITY_Vector_H__
 
 #include "AbstractList.h"
 
@@ -249,4 +249,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITYVector_H__
+#endif // __ELASTOS_UTILITY_Vector_H__

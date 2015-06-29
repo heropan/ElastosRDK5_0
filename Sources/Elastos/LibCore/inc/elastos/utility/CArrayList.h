@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CARRAYLIST_H__
-#define __UTILITY_CARRAYLIST_H__
+#ifndef __ELASTOS_UTILITY_CARRAYLIST_H__
+#define __ELASTOS_UTILITY_CARRAYLIST_H__
 
 #include "_Elastos_Utility_CArrayList.h"
 #include "AbstractList.h"
@@ -216,4 +216,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CARRAYLIST_H__
+#endif // __ELASTOS_UTILITY__CARRAYLIST_H__

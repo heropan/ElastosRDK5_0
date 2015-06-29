@@ -1,5 +1,5 @@
-#ifndef __UTILITY_EVENTOBJECT_H__
-#define __UTILITY_EVENTOBJECT_H__
+#ifndef __ELASTOS_UTILITY_EVENTOBJECT_H__
+#define __ELASTOS_UTILITY_EVENTOBJECT_H__
 
 #include "Object.h"
 
@@ -16,13 +16,17 @@ class EventObject
 public:
     CAR_INTERFACE_DECL();
 
+    EventObject();
+
+    virtual ~EventObject();
+
     /**
      * Constructs a new instance of this class.
      *
      * @param source
      *            the object which fired the event.
      */
-    EventObject(
+    CARAPI constructor(
         /* [in] */ IObject* source);
 
     /**
@@ -44,4 +48,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_EVENTOBJECT_H__
+#endif // __ELASTOS_UTILITY_EVENTOBJECT_H__

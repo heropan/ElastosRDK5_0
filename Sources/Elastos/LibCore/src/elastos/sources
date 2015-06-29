@@ -41,6 +41,14 @@ INCLUDES += $(MAKEDIR)/../../inc/libcore/net/url
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net/utility
 INCLUDES += $(MAKEDIR)/../../inc/libcore/utility
 INCLUDES += $(MAKEDIR)/../../inc/org/w3c/dom
+INCLUDES += $(MAKEDIR)/../../inc/org/xml/sax
+INCLUDES += $(MAKEDIR)/../../inc/org/xml/sax/ext
+INCLUDES += $(MAKEDIR)/../../inc/org/xml/sax/helpers
+INCLUDES += $(MAKEDIR)/../../inc/org/xmlpull
+INCLUDES += $(MAKEDIR)/../../inc/org/xmlpull/v1
+INCLUDES += $(MAKEDIR)/../../inc/org/xmlpull/v1/sax2
+INCLUDES += $(MAKEDIR)/../../inc/org/kxml2
+INCLUDES += $(MAKEDIR)/../../inc/org/kxml2/io
 
 SOURCES = Elastos.CoreLibrary.car
 
@@ -71,6 +79,9 @@ LIBRARIES += ../libcore/net/net.lib
 LIBRARIES += ../libcore/net/url/url.lib
 LIBRARIES += ../libcore/utility/utility.lib
 LIBRARIES += ../org/w3c/dom/dom.lib
+LIBRARIES += ../org/xml/sax/sax.lib
+LIBRARIES += ../org/xmlpull/v1/v1.lib
+LIBRARIES += ../org/kxml2/io/io.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

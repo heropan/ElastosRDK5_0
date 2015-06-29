@@ -8,8 +8,6 @@
 namespace Elastos {
 namespace Core {
 
-extern "C" const InterfaceID EIID_Thread;
-
 enum {
     /*
      * ***********************************************

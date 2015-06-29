@@ -1,5 +1,5 @@
-#ifndef __UTILITY_PREFS_PREFERENCECHANGEEVENT_H__
-#define __UTILITY_PREFS_PREFERENCECHANGEEVENT_H__
+#ifndef __ELASTOS_UTILITY_PREFS_PREFERENCECHANGEEVENT_H__
+#define __ELASTOS_UTILITY_PREFS_PREFERENCECHANGEEVENT_H__
 
 #include "EventObject.h"
 #include "Preferences.h"
@@ -33,6 +33,8 @@ class PreferenceChangeEvent
 public:
     CAR_INTERFACE_DECL();
 
+    PreferenceChangeEvent();
+
     /**
      * Construct a new {@code PreferenceChangeEvent} instance.
      *
@@ -45,7 +47,7 @@ public:
      *            the new value of the changed preference, this value can be
      *            {@code null}, which means the preference has been removed.
      */
-    PreferenceChangeEvent(
+    CARAPI constructor(
         /* [in] */ Preferences* p,
         /* [in] */ const String& k,
         /* [in] */ const String& v);
@@ -107,4 +109,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PREFS_PREFERENCECHANGEEVENT_H__
+#endif // __ELASTOS_UTILITY__PREFS_PREFERENCECHANGEEVENT_H__

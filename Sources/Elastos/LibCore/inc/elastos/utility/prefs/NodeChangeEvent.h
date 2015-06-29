@@ -1,5 +1,5 @@
-#ifndef __UTILITY_PREFS_NODECHANGEEVENT_H__
-#define __UTILITY_PREFS_NODECHANGEEVENT_H__
+#ifndef __ELASTOS_UTILITY_PREFS_NODECHANGEEVENT_H__
+#define __ELASTOS_UTILITY_PREFS_NODECHANGEEVENT_H__
 
 #include "EventObject.h"
 
@@ -29,6 +29,11 @@ class NodeChangeEvent
 {
 public:
     CAR_INTERFACE_DECL();
+
+    NodeChangeEvent();
+
+    virtual ~NodeChangeEvent();
+
     /**
      * Constructs a new {@code NodeChangeEvent} instance.
      *
@@ -38,7 +43,7 @@ public:
      * @param c
      *            the child {@code Preferences} instance that was added or deleted.
      */
-    NodeChangeEvent(
+    CARAPI constructor(
         /* [in] */ IPreferences* p,
         /* [in] */ IPreferences* c);
 
@@ -57,9 +62,6 @@ public:
      */
     CARAPI GetChild(
         /* [out] */ IPreferences** child);
-
-    CARAPI ToString(
-        /* [out] */ String* info);
 
 private:
     /**
@@ -87,4 +89,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PREFS_NODECHANGEEVENT_H__
+#endif // __ELASTOS_UTILITY__PREFS_NODECHANGEEVENT_H__

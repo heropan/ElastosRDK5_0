@@ -1,15 +1,9 @@
 
 module
 {
-    importlib("Elastos.CoreLibrary.eco");
+    merge("kxml2/io/IKXmlParser.car");
 
-    merge("../../../../car/org/xmlpull/v1/Exceptions.car");
-    merge("../../../../car/org/xmlpull/v1/IXmlPullParser.car");
-    merge("../../../../car/org/xmlpull/v1/IXmlSerializer.car");
-
-    merge("../../../../car/org/kxml2/io/IKXmlParser.car");
-
-    using interface Elastos.IO.ICloseable;
+    interface Elastos.IO.ICloseable;
     interface Org.Kxml2.IO.IKXmlParser;
     interface Org.Xmlpull.V1.IXmlSerializer;
 

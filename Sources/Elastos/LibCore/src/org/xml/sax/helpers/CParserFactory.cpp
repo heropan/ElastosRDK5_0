@@ -1,5 +1,6 @@
 #include "CParserFactory.h"
 #include "NewInstanceHelper.h"
+#include "CSystem.h"
 #include <utils/Log.h>
 
 using Elastos::Core::ISystem;

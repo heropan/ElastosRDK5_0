@@ -4,10 +4,12 @@
 #include "CParserFactory.h"
 #include "CAttributesImpl.h"
 #include "CNamespaceSupport.h"
+#include "CSystem.h"
 #include <utils/Log.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 
 namespace Org {
 namespace Xml {

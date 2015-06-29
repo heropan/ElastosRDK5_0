@@ -405,7 +405,7 @@ module
          * @throws IllegalStateException
          *             if this node has been removed.
          */
-        Keys(
+        GetKeys(
             [out, callee] ArrayOf<String>* outarr);
 
         /**
@@ -413,7 +413,7 @@ module
          *
          * @return the name of this node.
          */
-        Name(
+        GetName(
             [out] String* str);
 
         /**
@@ -435,7 +435,7 @@ module
          * @throws NullPointerException
          *             if the given path is {@code null}.
          */
-        Node(
+        GetNode(
             [in] String path,
             [out] IPreferences** outpre);
 
@@ -464,7 +464,7 @@ module
          *             if the backing store is unavailable or causes an operation
          *             failure.
          */
-        NodeExists(
+        IsNodeExists(
             [in] String path,
             [out] Boolean* value);
 
@@ -476,7 +476,7 @@ module
          * @throws IllegalStateException
          *             if this node has been removed.
          */
-        Parent(
+        GetParent(
             [out] IPreferences** outpre);
 
         /**

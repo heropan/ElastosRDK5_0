@@ -2,6 +2,8 @@
 #include "CKXmlSerializer.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include "CBufferedWriter.h"
+#include "COutputStreamWriter.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -19,6 +21,7 @@ namespace IO {
 const Int32 CKXmlSerializer::WRITE_BUFFER_SIZE;
 
 CAR_INTERFACE_IMPL(CKXmlSerializer, Object, IXmlSerializer)
+
 CAR_OBJECT_IMPL(CKXmlSerializer)
 
 CKXmlSerializer::CKXmlSerializer()

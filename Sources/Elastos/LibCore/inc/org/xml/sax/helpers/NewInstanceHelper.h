@@ -2,8 +2,7 @@
 #ifndef __ORG_XML_SAX_HELPERS_NEWINSTANCEHELPER_H__
 #define __ORG_XML_SAX_HELPERS_NEWINSTANCEHELPER_H__
 
-#include <elastos/core/Object.h>
-#include <elastos.h>
+#include "Object.h"
 
 using Elastos::Core::IClassLoader;
 using namespace Elastos;

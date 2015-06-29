@@ -1,13 +1,16 @@
 
-#include "CDriver.h"
+#include "sax2/CDriver.h"
 #include <elastos/core/StringBuilder.h>
 #include "XmlPullParserFactory.h"
+#include "CInputSource.h"
+#include "CDefaultHandler.h"
+#include "CURL.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
 using Elastos::Net::IURL;
-// using Elastos::Net::CURL;
+using Elastos::Net::CURL;
 using Org::Xml::Sax::EIID_IXMLReader;
 using Org::Xml::Sax::EIID_IContentHandler;
 using Org::Xml::Sax::EIID_IErrorHandler;
@@ -294,7 +297,7 @@ ECode CDriver::Parse(
             // NOTE: replace with Connection to run in J2ME environment
             // try {
             AutoPtr<IURL> url;
-            // CURL::New(mSystemId, (IURL**)&url);
+            CURL::New(mSystemId, (IURL**)&url);
             url->OpenStream((IInputStream**)&stream);
             // } catch (MalformedURLException nue) {
             //     try {

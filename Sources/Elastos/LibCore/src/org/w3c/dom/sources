@@ -3,9 +3,14 @@ TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
-INCLUDES += $(MAKEDIR)/../../../../inc/org/w3c/dom
-#INCLUDES += $(MAKEDIR)/../../../../inc/common
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/org;
+INCLUDES += $(MAKEDIR)/../../../../inc/org/w3c;
+INCLUDES += $(MAKEDIR)/../../../../inc/org/w3c/dom;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 
 SOURCES += CText.cpp
-

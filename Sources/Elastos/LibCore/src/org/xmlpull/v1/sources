@@ -1,30 +1,25 @@
-TARGET_NAME= Org.Xmlpull.V1
-TARGET_TYPE= eco
+TARGET_NAME= v1
+TARGET_TYPE= lib
 
-IMPORTS += Elastos.CoreLibrary.eco
-IMPORTS += Org.Xml.Sax.eco
+C_DEFINES += -DELASTOS_CORELIBRARY
 
-INCLUDES += ./;
-INCLUDES += $(MAKEDIR)/../../../../inc/org;
-INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1;
-INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1/sax2;
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys
+INCLUDES += ../../../elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/org
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/v1
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xmlpull/sax2
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax/helpers
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/net
 
 VPATH := $(MAKEDIR)/sax2
 
-CAR_FLAGS += -n -u
-LUBE_FLAGS += -n -u
-
-SOURCES = Org.Xmlpull.V1.car
 SOURCES += XmlPullParserFactory.cpp
 SOURCES += CXmlPullParserFactory.cpp
 SOURCES += CXmlPullParserFactoryHelper.cpp
 SOURCES += CDriver.cpp
-SOURCES += Elastos.CoreLibrary.cpp
-SOURCES += Org.Xml.Sax.cpp
-
-LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += $(PREBUILD_LIB)/libm.a
-LIBRARIES += -licuuc -licui18n -lm -lcutils

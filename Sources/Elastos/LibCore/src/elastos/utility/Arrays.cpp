@@ -2,7 +2,32 @@
 #include "Arrays.h"
 #include "ComparableTimSort.h"
 #include "TimSort.h"
-// #include "CArrayList.h"
+#include "CByte.h"
+#include "CChar32.h"
+#include "CInteger16.h"
+#include "CInteger32.h"
+#include "CInteger64.h"
+#include "CFloat.h"
+#include "CDouble.h"
+#include "CStringWrapper.h"
+#include "CArrayList.h"
+
+using Elastos::Core::IByte;
+using Elastos::Core::CByte;
+using Elastos::Core::IChar32;
+using Elastos::Core::CChar32;
+using Elastos::Core::IInteger16;
+using Elastos::Core::CInteger16;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::CInteger64;
+using Elastos::Core::IFloat;
+using Elastos::Core::CFloat;
+using Elastos::Core::IDouble;
+using Elastos::Core::CDouble;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CStringWrapper;
 
 
 namespace Elastos {
@@ -214,25 +239,194 @@ ECode Arrays::CheckOffsetAndCount(
 //====================================================================
 // Arrays
 //====================================================================
+AutoPtr<IList> Arrays::CreateArrayList(
+    /* [in] */ Int32 length)
+{
+    // return new ArrayList<T>(array);
+    AutoPtr<CArrayList> al;
+    CArrayList::NewByFriend(length, (CArrayList**)&al);
+    return (IList*)al->Probe(EIID_IList);
+}
 
 ECode Arrays::AsList(
-    /* [in] */ ArrayOf<IInterface*>* array,
+    /* [in] */ ArrayOf<Byte> * array,
     /* [out] */ IList** outList)
 {
     VALIDATE_NOT_NULL(outList)
     *outList = NULL;
 
     if (array) {
-        // return new ArrayList<T>(array);
-        // AutoPtr<CArrayList> al;
-        // CArrayList::NewByFriend(array->GetLength(), (CArrayList**)&al);
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
 
-        // for (Int32 i = 0; i < array->GetLength(); ++i) {
-        //     al->Add(i, (*array)[i]);
-        // }
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IByte> obj;
+            CByte::New((*array)[i], (IByte**)&obj);
+            l->Add(i, obj);
+        }
 
-        // *outList = (IList*)al->Probe(EIID_IList);
-        // REFCOUNT_ADD(*outList)
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<Char32> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IChar32> obj;
+            CChar32::New((*array)[i], (IChar32**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<Int16> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IInteger16> obj;
+            CInteger16::New((*array)[i], (IInteger16**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<Int32> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IInteger32> obj;
+            CInteger32::New((*array)[i], (IInteger32**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<Int64> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IInteger64> obj;
+            CInteger64::New((*array)[i], (IInteger64**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<Float> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IFloat> obj;
+            CFloat::New((*array)[i], (IFloat**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<Double> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IDouble> obj;
+            CDouble::New((*array)[i], (IDouble**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
+
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<String> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+        AutoPtr<IList> l = CreateArrayList(array->GetLength());
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<ICharSequence> obj;
+            CStringWrapper::New((*array)[i], (ICharSequence**)&obj);
+            l->Add(i, obj);
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
     }
 
     return NOERROR;

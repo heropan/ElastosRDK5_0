@@ -1,5 +1,5 @@
-#ifndef __UTILITY_PREFS_PREFERENCES_H__
-#define __UTILITY_PREFS_PREFERENCES_H__
+#ifndef __ELASTOS_UTILITY_PREFS_PREFERENCES_H__
+#define __ELASTOS_UTILITY_PREFS_PREFERENCES_H__
 
 #include "Object.h"
 
@@ -446,7 +446,7 @@ public:
      * @throws IllegalStateException
      *             if this node has been removed.
      */
-    virtual CARAPI Keys(
+    virtual CARAPI GetKeys(
         /* [out, callee] */ ArrayOf<String>** outarr) = 0/* throws BackingStoreException*/;
 
     /**
@@ -454,7 +454,7 @@ public:
      *
      * @return the name of this node.
      */
-    virtual CARAPI Name(
+    virtual CARAPI GetName(
         /* [out] */ String* name) = 0;
 
     /**
@@ -476,7 +476,7 @@ public:
      * @throws NullPointerException
      *             if the given path is {@code null}.
      */
-    virtual CARAPI Node(
+    virtual CARAPI GetNode(
         /* [in] */ const String& path,
         /* [out] */ IPreferences** pfs) = 0;
 
@@ -505,7 +505,7 @@ public:
      *             if the backing store is unavailable or causes an operation
      *             failure.
      */
-    virtual CARAPI NodeExists(
+    virtual CARAPI IsNodeExists(
         /* [in] */ const String& path,
         /* [out] */ Boolean* exists) = 0/* throws BackingStoreException*/;
 
@@ -517,7 +517,7 @@ public:
      * @throws IllegalStateException
      *             if this node has been removed.
      */
-    virtual CARAPI Parent(
+    virtual CARAPI GetParent(
         /* [out] */ IPreferences** pfs) = 0;
 
     /**
@@ -883,6 +883,8 @@ protected:
      */
     Preferences();
 
+    virtual ~Preferences();
+
     static CARAPI_(AutoPtr<IPreferencesFactory>) FindPreferencesFactory();
 
 private:
@@ -915,4 +917,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_PREFS_PREFERENCES_H__
+#endif // __ELASTOS_UTILITY__PREFS_PREFERENCES_H__

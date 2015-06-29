@@ -1,5 +1,5 @@
-#ifndef __UTILITY_ABSTRACTQUEUE_H__
-#define __UTILITY_ABSTRACTQUEUE_H__
+#ifndef __ELASTOS_UTILITY_ABSTRACTQUEUE_H__
+#define __ELASTOS_UTILITY_ABSTRACTQUEUE_H__
 
 #include "AbstractCollection.h"
 
@@ -180,4 +180,4 @@ protected:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_ABSTRACTQUEUE_H__
+#endif // __ELASTOS_UTILITY__ABSTRACTQUEUE_H__

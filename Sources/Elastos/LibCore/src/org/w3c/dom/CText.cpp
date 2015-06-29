@@ -36,90 +36,90 @@ ECode CText::GetNodeType(
 }
 
 ECode CText::GetParentNode(
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetChildNodes(
-    /* [out] */ Org::W3c::Dom::INodeList ** ppNodelist)
+    /* [out] */ INodeList ** ppNodelist)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetFirstChild(
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetLastChild(
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetPreviousSibling(
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetNextSibling(
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetAttributes(
-    /* [out] */ Org::W3c::Dom::INamedNodeMap ** ppNodemap)
+    /* [out] */ INamedNodeMap ** ppNodemap)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::GetOwnerDocument(
-    /* [out] */ Org::W3c::Dom::IDocument ** ppDoc)
+    /* [out] */ IDocument ** ppDoc)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::InsertBefore(
-    /* [in] */ Org::W3c::Dom::INode * pNewChild,
-    /* [in] */ Org::W3c::Dom::INode * pRefChild,
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [in] */ INode * pNewChild,
+    /* [in] */ INode * pRefChild,
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::ReplaceChild(
-    /* [in] */ Org::W3c::Dom::INode * pNewChild,
-    /* [in] */ Org::W3c::Dom::INode * pOldChild,
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [in] */ INode * pNewChild,
+    /* [in] */ INode * pOldChild,
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::RemoveChild(
-    /* [in] */ Org::W3c::Dom::INode * pOldChild,
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [in] */ INode * pOldChild,
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CText::AppendChild(
-    /* [in] */ Org::W3c::Dom::INode * pNewChild,
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [in] */ INode * pNewChild,
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
@@ -134,7 +134,7 @@ ECode CText::HasChildNodes(
 
 ECode CText::CloneNode(
     /* [in] */ Boolean deep,
-    /* [out] */ Org::W3c::Dom::INode ** ppNode)
+    /* [out] */ INode ** ppNode)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
@@ -198,7 +198,7 @@ ECode CText::GetBaseURI(
 }
 
 ECode CText::CompareDocumentPosition(
-    /* [in] */ Org::W3c::Dom::INode * pOther,
+    /* [in] */ INode * pOther,
     /* [out] */ Int16 * pValue)
 {
     // TODO: Add your code here
@@ -220,7 +220,7 @@ ECode CText::SetTextContent(
 }
 
 ECode CText::IsSameNode(
-    /* [in] */ Org::W3c::Dom::INode * pOther,
+    /* [in] */ INode * pOther,
     /* [out] */ Boolean * pValue)
 {
     // TODO: Add your code here
@@ -252,7 +252,7 @@ ECode CText::LookupNamespaceURI(
 }
 
 ECode CText::IsEqualNode(
-    /* [in] */ Org::W3c::Dom::INode * pArg,
+    /* [in] */ INode * pArg,
     /* [out] */ Boolean * pValue)
 {
     // TODO: Add your code here
@@ -271,7 +271,7 @@ ECode CText::GetFeature(
 ECode CText::SetUserData(
     /* [in] */ const String& key,
     /* [in] */ IObject * pData,
-    /* [in] */ Org::W3c::Dom::IUserDataHandler * pHandler,
+    /* [in] */ IUserDataHandler * pHandler,
     /* [out] */ IObject ** ppObj)
 {
     // TODO: Add your code here
@@ -350,7 +350,7 @@ ECode CText::ReplaceData(
 
 ECode CText::SplitText(
     /* [in] */ Int32 offset,
-    /* [out] */ Org::W3c::Dom::IText ** ppText)
+    /* [out] */ IText ** ppText)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
@@ -372,7 +372,7 @@ ECode CText::GetWholeText(
 
 ECode CText::ReplaceWholeText(
     /* [in] */ const String& content,
-    /* [out] */ Org::W3c::Dom::IText ** ppText)
+    /* [out] */ IText ** ppText)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;

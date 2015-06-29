@@ -2,8 +2,7 @@
 #ifndef __ORG_XML_SAX_HELPERS_DEFAULTHANDLER_H__
 #define __ORG_XML_SAX_HELPERS_DEFAULTHANDLER_H__
 
-#include <Org.Xml.Sax_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 
 namespace Org {

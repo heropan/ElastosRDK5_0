@@ -1,5 +1,5 @@
-#ifndef __UTILITY_CTREEMAP_H__
-#define __UTILITY_CTREEMAP_H__
+#ifndef __ELASTOS_UTILITY_CTREEMAP_H__
+#define __ELASTOS_UTILITY_CTREEMAP_H__
 
 #include "_Elastos_Utility_CTreeMap.h"
 #include "AbstractMap.h"
@@ -1957,4 +1957,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __UTILITY_CTREEMAP_H__
+#endif // __ELASTOS_UTILITY__CTREEMAP_H__

@@ -2,8 +2,7 @@
 #ifndef __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__
 #define __ORG_XML_SAX_HELPERS_ATTRIBUTESIMPL_H__
 
-#include <elastos/core/Object.h>
-#include <Org.Xml.Sax_server.h>
+#include "Object.h"
 
 using Org::Xml::Sax::IAttributes;
 

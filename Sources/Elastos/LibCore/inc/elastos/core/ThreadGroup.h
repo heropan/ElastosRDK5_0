@@ -5,11 +5,8 @@
 #include "Mutex.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Core {
-
-extern "C" const InterfaceID EIID_ThreadGroup;
 
 class ThreadGroup
     : public Object

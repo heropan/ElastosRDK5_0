@@ -1,12 +1,14 @@
 
 #include "CNamespaceSupport.h"
+#include "CArrayList.h"
+#include "Collections.h"
+#include "CStringWrapper.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
-using Elastos::Utility::ICollections;
-// using Elastos::Utility::CCollections;
+using Elastos::Utility::Collections;
 using Elastos::Utility::IList;
 
 namespace Org {
@@ -16,18 +18,16 @@ namespace Helpers {
 
 static AutoPtr<IEnumeration> InitEMPTY_ENUMERATION()
 {
-    AutoPtr<ICollections> collections;
-    // CCollections::AcquireSingleton((ICollections**)&collections);
-    AutoPtr<IList> list;
-    collections->GetEmptyList((IList**)&list);
+    AutoPtr<IList> list = Collections::EMPTY_LIST;
     AutoPtr<IEnumeration> enu;
-    // collections->Enumeration(list, (IEnumeration**)&enu);
+    Collections::Enumeration(ICollection::Probe(list), (IEnumeration**)&enu);
     return enu;
 }
 
-AutoPtr<IEnumeration> CNamespaceSupport::EMPTY_ENUMERATION = InitEMPTY_ENUMERATION();
+AutoPtr<IEnumeration> CNamespaceSupport::EMPTY_ENUMERATION;
 
 CAR_INTERFACE_IMPL(CNamespaceSupport, Object, INamespaceSupport)
+
 CAR_OBJECT_IMPL(CNamespaceSupport)
 
 ECode CNamespaceSupport::Reset()
@@ -418,13 +418,14 @@ String CNamespaceSupport::Context::GetPrefix (
 AutoPtr<IEnumeration> CNamespaceSupport::Context::GetDeclaredPrefixes()
 {
     if (mDeclarations == NULL) {
+        if (EMPTY_ENUMERATION == NULL) {
+            EMPTY_ENUMERATION = InitEMPTY_ENUMERATION();
+        }
         return EMPTY_ENUMERATION;
     }
     else {
-        AutoPtr<ICollections> collections;
-        // CCollections::AcquireSingleton((ICollections**)&collections);
         AutoPtr<IEnumeration> enu;
-        // collections->Enumeration(IList::Probe(mDeclarations), (IEnumeration**)&enu);
+        Collections::Enumeration(ICollection::Probe(mDeclarations), (IEnumeration**)&enu);
         return enu;
     }
 }
@@ -432,6 +433,9 @@ AutoPtr<IEnumeration> CNamespaceSupport::Context::GetDeclaredPrefixes()
 AutoPtr<IEnumeration> CNamespaceSupport::Context::GetPrefixes ()
 {
     if (mPrefixTable.IsEmpty()) {
+        if (EMPTY_ENUMERATION == NULL) {
+            EMPTY_ENUMERATION = InitEMPTY_ENUMERATION();
+        }
         return EMPTY_ENUMERATION;
     }
     else {
@@ -446,10 +450,8 @@ AutoPtr<IEnumeration> CNamespaceSupport::Context::GetPrefixes ()
             iter++;
         }
 
-        AutoPtr<ICollections> collections;
-        // CCollections::AcquireSingleton((ICollections**)&collections);
         AutoPtr<IEnumeration> enu;
-        // collections->Enumeration(IList::Probe(prefixes), (IEnumeration**)&enu);
+        Collections::Enumeration(ICollection::Probe(prefixes), (IEnumeration**)&enu);
         return enu;
     }
 }

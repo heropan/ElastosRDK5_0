@@ -26,28 +26,14 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-extern "C" const InterfaceID EIID_AbstractPreferences =
-        { 0x65b26745, 0x85b5, 0x425a, { 0x9a, 0xef, 0x85, 0xab, 0x0b, 0x42, 0xb7, 0x1f } };
-
 const Int64 AbstractPreferences::NodeAddEvent::serialVersionUID = 1L;
-AbstractPreferences::NodeAddEvent::NodeAddEvent(
-    /* [in] */ Preferences* p,
-    /* [in] */ Preferences* c)
-    : NodeChangeEvent(p, c)
-{}
-
 const Int64 AbstractPreferences::NodeRemoveEvent::serialVersionUID = 1L;
-AbstractPreferences::NodeRemoveEvent::NodeRemoveEvent(
-    /* [in] */ Preferences* p,
-    /* [in] */ Preferences* c)
-    : NodeChangeEvent(p, c)
-{}
 
 Boolean AbstractPreferences::sStaticInit = AbstractPreferences::staticInit();
 AutoPtr<IList> AbstractPreferences::sEvents;
 // AutoPtr<EventDispatcher> AbstractPreferences::sDispatcher;
 
-CAR_INTERFACE_IMPL_WITH_CPP_CAST(AbstractPreferences, Preferences, IAbstractPreferences);
+CAR_INTERFACE_IMPL(AbstractPreferences, Preferences, IAbstractPreferences);
 
 Boolean AbstractPreferences::staticInit()
 {
@@ -220,7 +206,7 @@ ECode AbstractPreferences::Clear() /*throws BackingStoreException */
 {
     synchronized (mLock) {
         AutoPtr<ArrayOf<String> > keys;
-        FAIL_RETURN(Keys((ArrayOf<String>**)&keys));
+        FAIL_RETURN(GetKeys((ArrayOf<String>**)&keys));
         String key;
         for (Int32 i = 0; i < keys->GetLength(); i++) {
             FAIL_RETURN(Remove((*keys)[i]));
@@ -450,7 +436,7 @@ ECode AbstractPreferences::IsUserNode(
     return NOERROR;
 }
 
-ECode AbstractPreferences::Keys(
+ECode AbstractPreferences::GetKeys(
     /* [out, callee] */ ArrayOf<String>** keys) /*throws BackingStoreException*/
 {
     VALIDATE_NOT_NULL(keys);
@@ -462,7 +448,7 @@ ECode AbstractPreferences::Keys(
     return ec;
 }
 
-ECode AbstractPreferences::Name(
+ECode AbstractPreferences::GetName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -470,7 +456,7 @@ ECode AbstractPreferences::Name(
     return NOERROR;
 }
 
-ECode AbstractPreferences::Node(
+ECode AbstractPreferences::GetNode(
     /* [in] */ const String& _name,
     /* [out] */ IPreferences** pfs)
 {
@@ -585,7 +571,7 @@ ECode AbstractPreferences::GetNodeFromBackend(
     return NOERROR;
 }
 
-ECode AbstractPreferences::NodeExists(
+ECode AbstractPreferences::IsNodeExists(
     /* [in] */ const String& _name,
     /* [out] */ Boolean* exist)
 {
@@ -631,7 +617,7 @@ ECode AbstractPreferences::NodeExists(
     // }
 }
 
-ECode AbstractPreferences::Parent(
+ECode AbstractPreferences::GetParent(
     /* [out] */IPreferences** pf)
 {
     VALIDATE_NOT_NULL(pf);
@@ -871,7 +857,8 @@ ECode AbstractPreferences::ToString(
 void AbstractPreferences::NotifyChildAdded(
     /* [in] */ Preferences* child)
 {
-    AutoPtr<NodeChangeEvent> nce = new NodeAddEvent(this, child);
+    AutoPtr<NodeChangeEvent> nce = new NodeAddEvent();
+    nce->constructor(this, child);
     synchronized (sEvents) {
         sEvents->Add(nce->Probe(EIID_IInterface));
         ISynchronize::Probe(sEvents)->NotifyAll();
@@ -881,7 +868,8 @@ void AbstractPreferences::NotifyChildAdded(
 void AbstractPreferences::NotifyChildRemoved(
     /* [in] */ Preferences* child)
 {
-    AutoPtr<NodeChangeEvent> nce = new NodeRemoveEvent(this, child);
+    AutoPtr<NodeChangeEvent> nce = new NodeRemoveEvent();
+    nce->constructor(this, child);
     synchronized (sEvents) {
         sEvents->Add(nce->Probe(EIID_IInterface));
         ISynchronize::Probe(sEvents)->NotifyAll();
