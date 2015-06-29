@@ -19,6 +19,9 @@ public:
     virtual ~BufferedInputStream();
 
     CARAPI constructor(
+        /* [in] */ IInputStream* in);
+
+    CARAPI constructor(
         /* [in] */ IInputStream* in,
         /* [in] */ Int32 size);
 

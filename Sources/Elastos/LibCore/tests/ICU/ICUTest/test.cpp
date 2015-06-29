@@ -8,7 +8,7 @@ using namespace Elastos::Core;
 
 CTest::CTest()
 {
-    CICUHelper::AcquireSingleton((IICUHelper **)&icuhep);
+    CICUUtil::AcquireSingleton((IICUUtil **)&icuhep);
 }
 
 void assertNotNull(String str)
@@ -118,7 +118,7 @@ int CTest::test_localeFromString(int argc, char* argv[])
     return 0;
 }
 
-void assertEquals(String one, String two , AutoPtr<IICUHelper> icuhep)
+void assertEquals(String one, String two , AutoPtr<IICUUtil> icuhep)
 {
     String addstr , scrstr;
     icuhep->AddLikelySubtags(String("en_US") , &addstr);

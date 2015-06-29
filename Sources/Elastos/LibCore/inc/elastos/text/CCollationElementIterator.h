@@ -11,9 +11,12 @@ using Elastos::Text::ICharacterIterator;
 namespace Elastos {
 namespace Text {
 
-CarClass(CCollationElementIterator) , public Object
+CarClass(CCollationElementIterator)
+    , public Object
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ ICollationElementIteratorICU* iterator);
 
@@ -27,7 +30,7 @@ public:
     CARAPI GetNext(
         /* [out] */ Int32* nextValue);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Int32* previousValue);
 
     CARAPI Reset();

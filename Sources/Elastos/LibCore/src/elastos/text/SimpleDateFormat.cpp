@@ -12,6 +12,9 @@
 #include "CLocale.h"
 // #include "TimeZones.h"
 #include "CArrayOf.h"
+#include "CFieldPosition.h"
+#include "CParsePosition.h"
+#include "CLocaleHelper.h"
 
 // using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::IGregorianCalendar;
@@ -22,6 +25,8 @@ using Elastos::Utility::ISimpleTimeZone;
 // using Elastos::Utility::CSimpleTimeZone;
 using Elastos::Utility::ITimeZoneHelper;
 // using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;

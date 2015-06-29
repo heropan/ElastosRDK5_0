@@ -18,9 +18,9 @@ static Int64 GetCurrentTimeMillis()
 int CTest::test1(int argc, char* argv[])
 {
 //    ArrayOf<String> *languages;
-//    AutoPtr<IICUHelper> pICUHelper;
+//    AutoPtr<IICUUtil> pICUHelper;
 //    ECode ec = NOERROR;
-//    ec = CICUHelper::AcquireSingleton((IICUHelper **)&pICUHelper);
+//    ec = CICUUtil::AcquireSingleton((IICUUtil **)&pICUHelper);
 //
 //    //Get ICUHelper
 //    printf("========================================\n");
@@ -45,9 +45,9 @@ int CTest::test2(int argc, char* argv[])
 //    (*str)[1] = String("zh_ZH_FFHHFF");
 //    printf("%s %d", __FILE__, __LINE__);
 //    ArrayOf<ILocale*> *ppLocales;
-//    AutoPtr<IICUHelper> pICUHelper;
+//    AutoPtr<IICUUtil> pICUHelper;
 //    ECode ec = NOERROR;
-//    ec = CICUHelper::AcquireSingleton((IICUHelper **)&pICUHelper);
+//    ec = CICUUtil::AcquireSingleton((IICUUtil **)&pICUHelper);
 //
 //    pICUHelper->LocalesFromStrings((*str), &ppLocales);
 //    printf("***%s %d\n", __FILE__, __LINE__);

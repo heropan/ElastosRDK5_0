@@ -68,11 +68,11 @@ module
             [in] Int64 address,
             [out] Int32 * value);
 
-        Next(
+        GetNext(
             [in] Int64 address,
             [out] Int32 * value);
 
-        Previous(
+        GetPrevious(
             [in] Int64 address,
             [out] Int32 * value);
 

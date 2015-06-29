@@ -1,6 +1,6 @@
 
 #include "RuleBasedBreakIterator.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::ICloneable;

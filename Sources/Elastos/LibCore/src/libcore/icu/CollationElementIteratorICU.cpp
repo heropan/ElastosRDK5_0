@@ -17,7 +17,10 @@ const Int32 CollationElementIteratorICU::PRIMARY_ORDER_SHIFT_ = 16;
 const Int32 CollationElementIteratorICU::SECONDARY_ORDER_SHIFT_ = 8;
 const Int32 CollationElementIteratorICU::UNSIGNED_16_BIT_MASK_ = 0x0000FFFF;
 
+CAR_INTERFACE_IMPL(CollationElementIteratorICU, Object, ICollationElementIteratorICU)
+
 CollationElementIteratorICU::CollationElementIteratorICU()
+    : mAddress(0)
 {}
 
 CollationElementIteratorICU::CollationElementIteratorICU(
@@ -34,26 +37,22 @@ CollationElementIteratorICU::~CollationElementIteratorICU()
     //}
 }
 
-CAR_INTERFACE_IMPL(CollationElementIteratorICU, Object, ICollationElementIteratorICU)
-
 ECode CollationElementIteratorICU::Reset()
 {
     NativeCollation::Reset(mAddress);
     return NOERROR;
 }
 
-ECode CollationElementIteratorICU::Next(
+ECode CollationElementIteratorICU::GetNext(
     /* [out] */ Int32* nextValue)
 {
-    VALIDATE_NOT_NULL(nextValue);
-    return NativeCollation::Next(mAddress, nextValue);
+    return NativeCollation::GetNext(mAddress, nextValue);
 }
 
-ECode CollationElementIteratorICU::Previous(
+ECode CollationElementIteratorICU::GetPrevious(
     /* [out] */ Int32* previousValue)
 {
-    VALIDATE_NOT_NULL(previousValue);
-    return NativeCollation::Previous(mAddress, previousValue);
+    return NativeCollation::GetPrevious(mAddress, previousValue);
 }
 
 ECode CollationElementIteratorICU::GetMaxExpansion(
@@ -74,8 +73,7 @@ ECode CollationElementIteratorICU::SetText(
 ECode CollationElementIteratorICU::SetText(
     /* [in] */ ICharacterIterator* source)
 {
-    return NativeCollation::SetText(mAddress,
-            String("CharacterIterator")/*source.toString()*/);
+    return NativeCollation::SetText(mAddress, Object::ToString(source));
 }
 
 ECode CollationElementIteratorICU::GetOffset(

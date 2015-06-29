@@ -11,9 +11,16 @@ namespace ICU {
 
 CAR_INTERFACE_IMPL(AlphabeticIndex, Object, IAlphabeticIndex)
 
+AlphabeticIndex::AlphabeticIndex()
+    : mPeer(0)
+{
+}
+
 ECode AlphabeticIndex::constructor(
     /* [in] */ ILocale* locale)
 {
+    VALIDATE_NOT_NULL(locale)
+
     String s;
     locale->ToString(&s);
     mPeer = Create(s);
@@ -29,6 +36,8 @@ AlphabeticIndex::~AlphabeticIndex()
 ECode AlphabeticIndex::GetMaxLabelCount(
     /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count)
+
     synchronized(this) {
         *count = GetMaxLabelCount(mPeer);
     }
@@ -47,6 +56,8 @@ ECode AlphabeticIndex::SetMaxLabelCount(
 ECode AlphabeticIndex::AddLabels(
     /* [in] */ ILocale* locale)
 {
+    VALIDATE_NOT_NULL(locale)
+
     synchronized(this) {
         String s;
         locale->ToString(&s);
@@ -68,6 +79,8 @@ ECode AlphabeticIndex::AddLabelRange(
 ECode AlphabeticIndex::GetBucketCount(
     /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count)
+
     synchronized(this) {
         *count = GetBucketCount(mPeer);
     }
@@ -78,6 +91,8 @@ ECode AlphabeticIndex::GetBucketIndex(
     /* [in] */ const String& s,
     /* [out] */ Int32* index)
 {
+    VALIDATE_NOT_NULL(index)
+
     synchronized(this) {
         *index = GetBucketIndex(mPeer, s);
     }
@@ -88,6 +103,8 @@ ECode AlphabeticIndex::GetBucketLabel(
     /* [in] */ Int32 index,
     /* [out] */ String* label)
 {
+    VALIDATE_NOT_NULL(label)
+
     synchronized(this) {
         *label = GetBucketLabel(mPeer, index);
     }
@@ -97,6 +114,8 @@ ECode AlphabeticIndex::GetBucketLabel(
 ECode AlphabeticIndex::GetImmutableIndex(
         /* [out] */ IImmutableIndex** index)
 {
+    VALIDATE_NOT_NULL(index)
+
     synchronized(this) {
         *index = new ImmutableIndex(BuildImmutableIndex(mPeer));
         REFCOUNT_ADD(*index);
@@ -104,7 +123,8 @@ ECode AlphabeticIndex::GetImmutableIndex(
     return NOERROR;
 }
 
-Int64 AlphabeticIndex::Create(const String& locale)
+Int64 AlphabeticIndex::Create(
+    /* [in] */ const String& locale)
 {
     UErrorCode status = U_ZERO_ERROR;
     NATIVE(Locale) icuLocale;
@@ -118,29 +138,37 @@ Int64 AlphabeticIndex::Create(const String& locale)
     return reinterpret_cast<uintptr_t>(ai);
 }
 
-static NATIVE(AlphabeticIndex)* fromPeer(Int64 peer) {
+static NATIVE(AlphabeticIndex)* fromPeer(
+    /* [in] */ Int64 peer)
+{
   return reinterpret_cast<NATIVE(AlphabeticIndex)*>(static_cast<uintptr_t>(peer));
 }
 
-void AlphabeticIndex::Destroy(Int64 peer)
+void AlphabeticIndex::Destroy(
+    /* [in] */ Int64 peer)
 {
     delete fromPeer(peer);
 }
 
-Int32 AlphabeticIndex::GetMaxLabelCount(Int64 peer)
+Int32 AlphabeticIndex::GetMaxLabelCount(
+    /* [in] */ Int64 peer)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     return ai->getMaxLabelCount();
 }
 
-void AlphabeticIndex::SetMaxLabelCount(Int64 peer, Int32 count)
+void AlphabeticIndex::SetMaxLabelCount(
+    /* [in] */ Int64 peer,
+    /* [in] */ Int32 count)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     UErrorCode status = U_ZERO_ERROR;
     ai->setMaxLabelCount(count, status);
 }
 
-void AlphabeticIndex::AddLabels(Int64 peer, const String& locale)
+void AlphabeticIndex::AddLabels(
+    /* [in] */ Int64 peer,
+    /* [in] */ const String& locale)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     NATIVE(Locale) icuLocale;
@@ -152,14 +180,18 @@ void AlphabeticIndex::AddLabels(Int64 peer, const String& locale)
     ai->addLabels(icuLocale, status);
 }
 
-void AlphabeticIndex::AddLabelRange(Int64 peer, Int32 codePointStart, Int32 codePointEnd)
+void AlphabeticIndex::AddLabelRange(
+    /* [in] */ Int64 peer,
+    /* [in] */ Int32 codePointStart,
+    /* [in] */ Int32 codePointEnd)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     UErrorCode status = U_ZERO_ERROR;
     ai->addLabels(UnicodeSet(codePointStart, codePointEnd), status);
 }
 
-Int32 AlphabeticIndex::GetBucketCount(Int64 peer)
+Int32 AlphabeticIndex::GetBucketCount(
+    /* [in] */ Int64 peer)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     UErrorCode status = U_ZERO_ERROR;
@@ -170,7 +202,9 @@ Int32 AlphabeticIndex::GetBucketCount(Int64 peer)
     return result;
 }
 
-Int32 AlphabeticIndex::GetBucketIndex(Int64 peer, const String& s)
+Int32 AlphabeticIndex::GetBucketIndex(
+    /* [in] */ Int64 peer,
+    /* [in] */ const String& s)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     if (s.IsNull()) {
@@ -187,7 +221,9 @@ Int32 AlphabeticIndex::GetBucketIndex(Int64 peer, const String& s)
     return result;
 }
 
-String AlphabeticIndex::GetBucketLabel(Int64 peer, Int32 index)
+String AlphabeticIndex::GetBucketLabel(
+    /* [in] */ Int64 peer,
+    /* [in] */ Int32 index)
 {
     if (index < 0) {
         return String(NULL);
@@ -222,7 +258,8 @@ String AlphabeticIndex::GetBucketLabel(Int64 peer, Int32 index)
     return s;
 }
 
-Int64 AlphabeticIndex::BuildImmutableIndex(Int64 peer)
+Int64 AlphabeticIndex::BuildImmutableIndex(
+    /* [in] */ Int64 peer)
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     UErrorCode status = U_ZERO_ERROR;

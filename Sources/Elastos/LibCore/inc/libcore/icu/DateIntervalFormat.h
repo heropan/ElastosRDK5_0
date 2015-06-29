@@ -12,7 +12,6 @@
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ICalendar;
-using Elastos::Core::Object;
 
 namespace Libcore {
 namespace ICU {

@@ -1,12 +1,15 @@
 #include "ChoiceFormat.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/Character.h>
-#include <elastos/core/StringUtils.h>
+#include "Math.h"
+#include "StringBuffer.h"
+#include "StringBuilder.h"
+#include "Character.h"
+#include "StringUtils.h"
 #include "CChoiceFormat.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
+#include "CLocaleHelper.h"
+#include "CFieldPosition.h"
+#include "CParsePosition.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
@@ -17,6 +20,8 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Text::IChoiceFormat;
 using Elastos::Text::EIID_IChoiceFormat;
 using Elastos::Text::CParsePosition;

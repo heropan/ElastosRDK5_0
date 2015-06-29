@@ -2,7 +2,7 @@
 #define __ELASTOS_TEXT_FORMATBASE_H_
 
 #include <elastos/core/Object.h>
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 #include "AttributedCharacterIteratorAttribute.h"
 
 using Elastos::Text::IAttributedCharacterIterator;;

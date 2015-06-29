@@ -8,7 +8,6 @@
 
 #include <Elastos.CoreLibrary_server.h>
 
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Libcore::ICU::INativeBreakIterator;
 using Elastos::Text::ICharacterIterator;

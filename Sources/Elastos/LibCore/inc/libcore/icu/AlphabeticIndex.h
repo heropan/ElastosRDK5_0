@@ -4,12 +4,14 @@
 
 #include "Object.h"
 
-using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {
 
+/**
+ * Exposes icu4c's AlphabeticIndex.
+ */
 class AlphabeticIndex
     : public Object
     , public IAlphabeticIndex
@@ -20,8 +22,9 @@ public:
     CARAPI constructor(
         /* [in] */ ILocale* locale);
 
-protected:
-    ~AlphabeticIndex();
+    AlphabeticIndex();
+
+    virtual ~AlphabeticIndex();
 
 public:
     CARAPI GetMaxLabelCount(
@@ -52,6 +55,8 @@ public:
         /* [out] */ IImmutableIndex** index);
 
 private:
+    friend class ImmutableIndex;
+
     static CARAPI_(Int64) Create(const String& locale);
 
     static CARAPI_(void) Destroy(Int64 peer);
@@ -72,10 +77,8 @@ private:
 
     static CARAPI_(Int64) BuildImmutableIndex(Int64 peer);
 
+private:
     Int64 mPeer;
-
-friend class ImmutableIndex;
-
 };
 
 } // namespace ICU

@@ -50,8 +50,8 @@ using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::View::IView;
-using Libcore::ICU::IICUHelper;
-using Libcore::ICU::CICUHelper;
+using Libcore::ICU::IICUUtil;
+using Libcore::ICU::CICUUtil;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::CLocaleHelper;
 
@@ -1641,9 +1641,9 @@ Int32 TextUtils::GetLayoutDirectionFromLocale(
     helper->GetROOT((ILocale**)&root);
     Boolean result;
     if (locale != NULL && !(locale->Equals(root, &result), result)) {
-        AutoPtr<IICUHelper> icuHelper;
+        AutoPtr<IICUUtil> icuHelper;
         String scriptSubtag;
-        CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
+        CICUUtil::AcquireSingleton((IICUUtil**)&icuHelper);
         locale->ToString(&scriptSubtag);
         icuHelper->AddLikelySubtags(scriptSubtag, &scriptSubtag);
         icuHelper->GetScript(scriptSubtag, &scriptSubtag);

@@ -3,8 +3,8 @@
 
 #include "DateFormat.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/core/StringBuffer.h>
-#include "elastos/core/Character.h"
+#include "StringBuffer.h"
+#include "Character.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Etl::List;

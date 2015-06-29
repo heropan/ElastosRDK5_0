@@ -120,18 +120,18 @@ ECode CNativeCollationHelper::GetOffset(
     return NOERROR;
 }
 
-ECode CNativeCollationHelper::Next(
+ECode CNativeCollationHelper::GetNext(
     /* [in] */ Int64 address,
     /* [out] */ Int32 * value)
 {
-    return NativeCollation::Next(address,value);
+    return NativeCollation::GetNext(address,value);
 }
 
-ECode CNativeCollationHelper::Previous(
+ECode CNativeCollationHelper::GetPrevious(
     /* [in] */ Int64 address,
     /* [out] */ Int32 * value)
 {
-    return NativeCollation::Previous(address,value);
+    return NativeCollation::GetPrevious(address,value);
 }
 
 ECode CNativeCollationHelper::Reset(

@@ -4,7 +4,6 @@
 #include "Object.h"
 #include "AlphabeticIndex.h"
 
-using Elastos::Core::Object;
 
 namespace Libcore {
 namespace ICU {

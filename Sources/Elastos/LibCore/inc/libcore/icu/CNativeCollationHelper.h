@@ -78,11 +78,11 @@ public:
         /* [in] */ Int64 address,
         /* [out] */ Int32 * value);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [in] */ Int64 address,
         /* [out] */ Int32 * value);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [in] */ Int64 address,
         /* [out] */ Int32 * value);
 

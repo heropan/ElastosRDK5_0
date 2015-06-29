@@ -8,7 +8,7 @@
 #include "CLocaleHelper.h"
 //#include "CLocaleDataHelper.h"
 //#include "CLocaleData.h"
-//#include "CICUHelper.h"
+//#include "CICUUtil.h"
 #include "StringUtils.h"
 #include "StringBuilder.h"
 #include "CHashMap.h"
@@ -38,8 +38,8 @@ using Libcore::ICU::ILocaleDataHelper;
 //using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
 //using Libcore::ICU::CLocaleData;
-using Libcore::ICU::IICUHelper;
-//using Libcore::ICU::CICUHelper;
+using Libcore::ICU::IICUUtil;
+//using Libcore::ICU::CICUUtil;
 
 const String Calendar::FIELD_NAMES[] = {String("ERA"), String("YEAR"), String("MONTH"),
         String("WEEK_OF_YEAR"), String("WEEK_OF_MONTH"), String("DAY_OF_MONTH"), String("DAY_OF_YEAR"),
@@ -329,8 +329,8 @@ ECode Calendar::GetAvailableLocales(
 {
     VALIDATE_NOT_NULL(ppLocales);
 //    AutoLock lock(this);
-    AutoPtr<IICUHelper> icuHelper;
-//    CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
+    AutoPtr<IICUUtil> icuHelper;
+//    CICUUtil::AcquireSingleton((IICUUtil**)&icuHelper);
     return icuHelper->GetAvailableCalendarLocales(ppLocales);
 }
 

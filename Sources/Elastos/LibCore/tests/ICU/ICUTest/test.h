@@ -24,7 +24,7 @@ public:
     int test_11152(int argc, char* argv[]);
 
 private:
-    AutoPtr<IICUHelper> icuhep;
+    AutoPtr<IICUUtil> icuhep;
 };
 
 

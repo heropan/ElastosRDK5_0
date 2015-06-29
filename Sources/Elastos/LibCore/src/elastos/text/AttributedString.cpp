@@ -1,6 +1,6 @@
 
 #include "AttributedString.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 #include <utils/Log.h>
 
 using Elastos::Core::StringBuffer;

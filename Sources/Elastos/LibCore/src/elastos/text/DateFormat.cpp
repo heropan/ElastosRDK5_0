@@ -1,10 +1,10 @@
 
 #include "DateFormat.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CSimpleDateFormat.h"
 // #include "CDate.h"
-// #include "CICUHelper.h"
+// #include "CICUUtil.h"
 #include "CLocaleHelper.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
@@ -19,8 +19,8 @@ using Elastos::Utility::EIID_IDate;
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::IICUHelper;
-// using Libcore::ICU::CICUHelper;
+using Libcore::ICU::IICUUtil;
+// using Libcore::ICU::CICUUtil;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
@@ -182,9 +182,9 @@ ECode DateFormat::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
-    AutoPtr<IICUHelper> ICUHelper;
+    AutoPtr<IICUUtil> ICUHelper;
     assert(0 && "TODO");
-    // FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper**)&ICUHelper));
+    // FAIL_RETURN(CICUUtil::AcquireSingleton((IICUUtil**)&ICUHelper));
     return ICUHelper->GetAvailableDateFormatLocales(locales);
 }
 

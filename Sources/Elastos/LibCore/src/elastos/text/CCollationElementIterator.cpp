@@ -4,9 +4,12 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CCollationElementIterator, Object, ICollationElementIterator)
+
 ECode CCollationElementIterator::constructor(
     /* [in] */ ICollationElementIteratorICU* iterator)
 {
+    VALIDATE_NOT_NULL(iterator)
     mIcuIterator = iterator;
     return NOERROR;
 }
@@ -27,13 +30,13 @@ ECode CCollationElementIterator::GetOffset(
 ECode CCollationElementIterator::GetNext(
     /* [out] */ Int32* nextValue)
 {
-    return mIcuIterator->Next(nextValue);
+    return mIcuIterator->GetNext(nextValue);
 }
 
-ECode CCollationElementIterator::Previous(
+ECode CCollationElementIterator::GetPrevious(
     /* [out] */ Int32* previousValue)
 {
-    return mIcuIterator->Previous(previousValue);
+    return mIcuIterator->GetPrevious(previousValue);
 }
 
 ECode CCollationElementIterator::Reset()

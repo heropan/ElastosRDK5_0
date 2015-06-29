@@ -1,5 +1,5 @@
 
-#include <elastos/core/StringBuilder.h>
+#include "StringBuilder.h"
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CAttributedCharacterIteratorAttribute.h"
 #include <utils/Log.h>

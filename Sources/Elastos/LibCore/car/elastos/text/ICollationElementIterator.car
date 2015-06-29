@@ -71,13 +71,13 @@ module
         /**
          * Obtains the next collation element in the source string.
          */
-        Next(
+        GetNext(
             [out] Int32* nextValue);
 
         /**
          * Obtains the previous collation element in the source string.
          */
-        Previous(
+        GetPrevious(
             [out] Int32* previousValue);
 
         /**

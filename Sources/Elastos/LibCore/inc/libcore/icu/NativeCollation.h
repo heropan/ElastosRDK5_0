@@ -19,6 +19,7 @@ class NativeCollation
 {
 private:
     NativeCollation();
+    NativeCollation(const NativeCollation&);
 
 public:
     // Collator.
@@ -83,11 +84,11 @@ public:
     static CARAPI_(Int32) GetOffset(
         /* [in] */ Int64 address);
 
-    static CARAPI Next(
+    static CARAPI GetNext(
         /* [in] */ Int64 address,
         /* [out] */ Int32* result);
 
-    static CARAPI Previous(
+    static CARAPI GetPrevious(
         /* [in] */ Int64 address,
         /* [out] */ Int32* result);
 

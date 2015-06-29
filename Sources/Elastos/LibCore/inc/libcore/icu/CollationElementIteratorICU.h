@@ -16,18 +16,18 @@ class CollationElementIteratorICU
     , public ICollationElementIteratorICU
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CollationElementIteratorICU();
 
     ~CollationElementIteratorICU();
 
-    CAR_INTERFACE_DECL()
-
     CARAPI Reset();
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Int32* nextValue);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Int32* previousValue);
 
     CARAPI GetMaxExpansion(

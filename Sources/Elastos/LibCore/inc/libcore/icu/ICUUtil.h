@@ -4,7 +4,7 @@
 
 #include "LocaleData.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {

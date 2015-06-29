@@ -12,6 +12,9 @@
 #include "CDecimalFormatSymbols.h"
 // #include "CNativeDecimalFormat.h"
 // #include "CBigDecimal.h"
+#include "CFieldPosition.h"
+#include "CParsePosition.h"
+#include "CLocaleHelper.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
@@ -21,6 +24,8 @@ using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Utility::EIID_IDate;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Text::IDecimalFormatSymbols;

@@ -581,6 +581,7 @@ public:
         /* [out] */ Int32* result);
 private:
     Os();
+    Os(const Os &);
 };
 
 }// namespace System

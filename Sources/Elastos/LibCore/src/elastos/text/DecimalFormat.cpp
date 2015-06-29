@@ -1,15 +1,18 @@
 
 #include "DecimalFormat.h"
-#include <elautoptr.h>
-#include <elastos/core/Math.h>
+#include "Math.h"
 #include <unistd.h>
-#include <elastos/core/Character.h>
+#include "Character.h"
 #include "CDouble.h"
 #include "CInteger64.h"
 #include "CDecimalFormatSymbols.h"
 // #include "CNativeDecimalFormat.h"
 // #include "CBigDecimal.h"
 // #include "Currency.h"
+#include "CLocaleHelper.h"
+#include "CLocaleDataHelper.h"
+#include "CFieldPosition.h"
+#include "CParsePosition.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
@@ -29,6 +32,11 @@ using Elastos::Math::IBigDecimal;
 using Elastos::Math::EIID_IBigDecimal;
 // using Elastos::Math::CBigDecimal;
 // using Elastos::Utility::Currency;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Libcore::ICU::ILocaleData;
+using Libcore::ICU::ILocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 
 namespace Elastos {
 namespace Text {

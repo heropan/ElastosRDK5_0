@@ -18,6 +18,12 @@ BufferedInputStream::~BufferedInputStream()
 {}
 
 ECode BufferedInputStream::constructor(
+    /* [in] */ IInputStream* in)
+{
+    return constructor(in, IBufferedInputStream::DEFAULT_BUFFER_SIZE);
+}
+
+ECode BufferedInputStream::constructor(
     /* [in] */ IInputStream* in,
     /* [in] */ Int32 size)
 {

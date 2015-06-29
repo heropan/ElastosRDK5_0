@@ -3,7 +3,7 @@
 #include "CRuleBasedBreakIterator.h"
 #include "CLocaleHelper.h"
 // #include "CLocaleDataHelper.h"
-// #include "CICUHelper.h"
+// #include "CICUUtil.h"
 // #include "CNativeBreakIteratorHelper.h"
 
 using Elastos::Utility::ILocaleHelper;
@@ -11,8 +11,8 @@ using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
 // using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-using Libcore::ICU::IICUHelper;
-// // using Libcore::ICU::CICUHelper;
+using Libcore::ICU::IICUUtil;
+// // using Libcore::ICU::CICUUtil;
 using Libcore::ICU::INativeBreakIteratorHelper;
 // using Libcore::ICU::CNativeBreakIteratorHelper;
 
@@ -32,9 +32,9 @@ ECode BreakIterator::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
-    AutoPtr<IICUHelper> ICUHelper;
+    AutoPtr<IICUUtil> ICUHelper;
     assert(0 && "TODO");
-    // CICUHelper::AcquireSingleton((IICUHelper**)&ICUHelper);
+    // CICUUtil::AcquireSingleton((IICUUtil**)&ICUHelper);
     return ICUHelper->GetAvailableBreakIteratorLocales(locales);
 }
 

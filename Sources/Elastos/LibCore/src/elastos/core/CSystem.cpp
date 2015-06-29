@@ -1,18 +1,19 @@
 
 #include "CSystem.h"
-#include <stdlib.h>
-#include <StringBuilder.h>
+#include "StringBuilder.h"
 #include "CStringWrapper.h"
-/*#include "CHashMap.h"
+#include "CHashMap.h"
 #include "CProperties.h"
-#include "CICUHelper.h"
-#include "CSelectorProviderHelper.h"
+#include "ICUUtil.h"
+//#include "CSelectorProviderHelper.h"
 #include "CFileDescriptor.h"
 #include "CFileInputStream.h"
 #include "CFileOutputStream.h"
 #include "CBufferedInputStream.h"
-#include "CPrintStream.h"*/
+#include "CPrintStream.h"
+#include "droid/system/Os.h"
 
+#include <stdlib.h>
 #include <cutils/log.h>
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -22,7 +23,7 @@
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-/*using Elastos::Utility::IMap;
+using Elastos::Utility::IMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CProperties;
 using Elastos::IO::CFileDescriptor;
@@ -35,9 +36,10 @@ using Elastos::IO::EIID_IOutputStream;
 using Elastos::IO::EIID_IPrintStream;
 using Elastos::IO::Channels::Spi::ISelectorProvider;
 using Elastos::IO::Channels::Spi::ISelectorProviderHelper;
-using Elastos::IO::Channels::Spi::CSelectorProviderHelper;
-using Libcore::ICU::CICUHelper;
-using Libcore::ICU::IICUHelper;*/
+//using Elastos::IO::Channels::Spi::CSelectorProviderHelper;
+using Libcore::ICU::ICUUtil;
+using Elastos::Droid::System::Os;
+using Elastos::Droid::System::IStructPasswd;
 
 namespace Elastos {
 namespace Core {
@@ -54,7 +56,7 @@ CAR_SINGLETON_IMPL(CSystem)
 
 ECode CSystem::constructor()
 {
-    /*AutoPtr<CFileInputStream> input;
+    AutoPtr<CFileInputStream> input;
     CFileInputStream::NewByFriend(CFileDescriptor::IN, (CFileInputStream**)&input);
     AutoPtr<CBufferedInputStream> bi;
     CBufferedInputStream::NewByFriend((IInputStream*)input->Probe(EIID_IInputStream), (CBufferedInputStream**)&bi);
@@ -70,10 +72,9 @@ ECode CSystem::constructor()
     CFileOutputStream::NewByFriend(CFileDescriptor::ERR, (CFileOutputStream**)&err);
     AutoPtr<CPrintStream> errPs;
     CPrintStream::NewByFriend((IOutputStream*)err->Probe(EIID_IOutputStream), (CPrintStream**)&errPs);
-    //if (errPs)
-    {
+    if (errPs) {
         mErr = (IPrintStream*)errPs->Probe(EIID_IPrintStream);
-    }*/
+    }
     return NOERROR;
 }
 
@@ -226,7 +227,7 @@ ECode CSystem::GetEnvs(
 {
     VALIDATE_NOT_NULL(map);
 
-   /* AutoPtr<CHashMap> hashMap;
+    AutoPtr<CHashMap> hashMap;
     CHashMap::NewByFriend((CHashMap**)&hashMap);
     char ** p = environ;
     Int32 index = 0;
@@ -247,7 +248,7 @@ ECode CSystem::GetEnvs(
     }
 
     *map = (IMap*)hashMap.Get();
-    REFCOUNT_ADD(*map);*/
+    REFCOUNT_ADD(*map);
     return NOERROR;
 }
 
@@ -256,6 +257,7 @@ ECode CSystem::InheritedChannel(
 {
     VALIDATE_NOT_NULL(value);
 
+    // TODO upgrade
     /*AutoPtr<CSelectorProviderHelper> helper;
     CSelectorProviderHelper::AcquireSingletonByFriend((CSelectorProviderHelper**)&helper);
     AutoPtr<ISelectorProvider> provider;
@@ -301,10 +303,6 @@ ECode CSystem::InitSystemProperties()
     GetEnv(String("JAVA_HOME"), String("/system"), &tmp);
     p->SetProperty(String("java.home"), tmp, NULL);
 
-    p->SetProperty(String("java.io.tmpdir"), String("/tmp"), NULL);
-    GetEnv(String("LD_LIBRARY_PATH"), &tmp);
-    p->SetProperty(String("java.library.path"), tmp, NULL);
-
     p->SetProperty(String("java.specification.name"), String("Dalvik Core Library"), NULL);
     p->SetProperty(String("java.specification.vendor"), projectName, NULL);
     p->SetProperty(String("java.specification.version"), String("0.9"), NULL);
@@ -330,10 +328,15 @@ ECode CSystem::InitSystemProperties()
     p->SetProperty(String("user.language"), String("en"), NULL);
     p->SetProperty(String("user.region"), String("US"), NULL);
 
-    GetEnv(String("HOME"), String(""), &tmp);
-    p->SetProperty(String("user.home"), tmp, NULL);
-    GetEnv(String("USER"), String(""), &tmp);
-    p->SetProperty(String("user.name"), tmp, NULL);
+    Int32 uid;
+    Os::Getuid(&uid);
+    AutoPtr<IStructPasswd> pwd;
+    Os::Getpwuid(uid, (IStructPasswd**)&pwd);
+    if (pwd) {
+        String name;
+        pwd->GetName(&name);
+        p->SetProperty(String("user.name"), name, NULL);
+    }
 
     struct utsname info;
     if (uname(&info) == 0) {
@@ -342,22 +345,20 @@ ECode CSystem::InitSystemProperties()
         p->SetProperty(String("os.version"), String(info.release), NULL);
     }
 
-    /*AutoPtr<CICUHelper> icuHelper;
-    CICUHelper::AcquireSingletonByFriend((CICUHelper**)&icuHelper);
-    String icuVersion, unicodeVersion;
-    icuHelper->GetIcuVersion(&icuVersion);
-    icuHelper->GetUnicodeVersion(&unicodeVersion);
+    String icuVersion = ICUUtil::GetIcuVersion();
+    String unicodeVersion = ICUUtil::GetUnicodeVersion();
+    String cldrVersion;/* = ICUUtil::GetCldrVersion(); */
     // Undocumented Android-only properties.
     p->SetProperty(String("android.icu.library.version"), icuVersion, NULL);
     p->SetProperty(String("android.icu.unicode.version"), unicodeVersion, NULL);
-    // TODO: it would be nice to have this but currently it causes circularity.
-    // p->SetProperty(String("android.tzdata.version"), ZoneInfoDB.getVersion(), NULL);
+    p->SetProperty(String("android.icu.cldr.version"), cldrVersion, NULL);
+
     ParsePropertyAssignments(p, SpecialProperties());
 
     // Override built-in properties with settings from the command line.
     //TODO parsePropertyAssignments(p, runtime.properties());
 
-    CSystem::sSystemProperties = p;*/
+    CSystem::sSystemProperties = p;
     return NOERROR;
 }
 

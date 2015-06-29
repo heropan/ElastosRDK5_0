@@ -2,11 +2,13 @@
 #include "NumberFormat.h"
 #include "CNumberFormatField.h"
 #include "CDecimalFormat.h"
-// #include "CLocaleData.h"
+#include "CLocaleHelper.h"
+#include "CLocaleDataHelper.h"
+#include "CFieldPosition.h"
+#include "CParsePosition.h"
+#include "ICUUtil.h"
+#include "StringBuffer.h"
 
-using Elastos::Text::IFieldPosition;
-using Elastos::Text::CFieldPosition;
-// using Libcore::ICU::CLocaleData;
 using Elastos::Math::IBigInteger;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
@@ -14,6 +16,12 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::IStringBuffer;
 using Elastos::Core::ICharSequence;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Libcore::ICU::ICUUtil;
+using Libcore::ICU::ILocaleData;
+using Libcore::ICU::ILocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 
 namespace Elastos {
 namespace Text {
@@ -121,13 +129,7 @@ ECode NumberFormat::Format(
 ECode NumberFormat::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    VALIDATE_NOT_NULL(locales);
-    *locales = NULL;
-
-    AutoPtr<IICUHelper> ICUHelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper **)&ICUHelper));
-    return ICUHelper->GetAvailableNumberFormatLocales(locales);
+    // return ICUUtil::GetAvailableNumberFormatLocales(locales);
 }
 
 ECode NumberFormat::GetCurrency(

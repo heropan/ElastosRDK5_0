@@ -21,7 +21,7 @@ module
          *         text is reached.
          * @stable ICU 2.4
          */
-        Next(
+        GetNext(
             [out] Int32 * value);
 
         /**
@@ -31,7 +31,7 @@ module
          *         the text is reached.
          * @stable ICU 2.4
          */
-        Previous(
+        GetPrevious(
             [out] Int32 * value);
 
         /**

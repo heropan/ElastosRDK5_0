@@ -186,7 +186,7 @@ AutoPtr<ArrayOf<Byte> > NativeCollation::GetSortKey(
     return result;
 }
 
-ECode NativeCollation::Next(
+ECode NativeCollation::GetNext(
     /* [in] */ Int64 address,
     /* [out] */ Int32* result)
 {
@@ -240,7 +240,7 @@ ECode NativeCollation::OpenCollatorFromRules(
     return NOERROR;
 }
 
-ECode NativeCollation::Previous(
+ECode NativeCollation::GetPrevious(
     /* [in] */ Int64 address,
     /* [out] */ Int32* result)
 {

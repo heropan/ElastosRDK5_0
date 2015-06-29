@@ -4,7 +4,7 @@
 #include "CStringWrapper.h"
 #include "CLocaleHelper.h"
 // #include "CLocaleDataHelper.h"
-// #include "CICUHelper.h"
+// #include "CICUUtil.h"
 // #include "TimeZones.h"
 #include "AutoLock.h"
 
@@ -16,8 +16,8 @@ using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
 // using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-using Libcore::ICU::IICUHelper;
-// using Libcore::ICU::CICUHelper;
+using Libcore::ICU::IICUUtil;
+// using Libcore::ICU::CICUUtil;
 // using Libcore::ICU::TimeZones;
 
 namespace Elastos {
@@ -185,9 +185,9 @@ ECode DateFormatSymbols::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** arrayOfLocales)
 {
     VALIDATE_NOT_NULL(arrayOfLocales)
-    AutoPtr<IICUHelper> pICUHelper;
+    AutoPtr<IICUUtil> pICUHelper;
     assert(0 && "TODO");
-    // FAIL_RETURN(CICUHelper::AcquireSingleton((IICUHelper**)&pICUHelper))
+    // FAIL_RETURN(CICUUtil::AcquireSingleton((IICUUtil**)&pICUHelper))
     return pICUHelper->GetAvailableDateFormatSymbolsLocales(arrayOfLocales);
 }
 

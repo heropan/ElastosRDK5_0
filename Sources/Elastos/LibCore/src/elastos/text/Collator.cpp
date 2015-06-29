@@ -1,13 +1,13 @@
 #include "Collator.h"
 #include "CRuleBasedCollator.h"
 #include "CLocaleHelper.h"
-// #include "CICUHelper.h"
+// #include "CICUUtil.h"
 // #include "CRuleBasedCollatorICU.h"
 
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
-using Libcore::ICU::IICUHelper;
-// using Libcore::ICU::CICUHelper;
+using Libcore::ICU::IICUUtil;
+// using Libcore::ICU::CICUUtil;
 // using Libcore::ICU::CRuleBasedCollatorICU;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;
@@ -91,9 +91,9 @@ ECode Collator::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
-    AutoPtr<IICUHelper> icuHelper;
+    AutoPtr<IICUUtil> icuHelper;
     assert(0 && "TODO");
-    // CICUHelper::AcquireSingleton((IICUHelper**)&icuHelper);
+    // CICUUtil::AcquireSingleton((IICUUtil**)&icuHelper);
     return icuHelper->GetAvailableCollatorLocales(locales);
 }
 
