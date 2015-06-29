@@ -345,8 +345,8 @@ ECode CSystem::InitSystemProperties()
         p->SetProperty(String("os.version"), String(info.release), NULL);
     }
 
-    String icuVersion = ICUUtil::GetIcuVersion();
-    String unicodeVersion = ICUUtil::GetUnicodeVersion();
+    String icuVersion;/* = ICUUtil::GetIcuVersion(); */
+    String unicodeVersion;/* = ICUUtil::GetUnicodeVersion(); */
     String cldrVersion;/* = ICUUtil::GetCldrVersion(); */
     // Undocumented Android-only properties.
     p->SetProperty(String("android.icu.library.version"), icuVersion, NULL);

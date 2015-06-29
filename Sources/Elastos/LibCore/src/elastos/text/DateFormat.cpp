@@ -4,7 +4,7 @@
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CSimpleDateFormat.h"
 // #include "CDate.h"
-// #include "CICUUtil.h"
+// #include "ICUUtil.h"
 #include "CLocaleHelper.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
@@ -19,8 +19,7 @@ using Elastos::Utility::EIID_IDate;
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::IICUUtil;
-// using Libcore::ICU::CICUUtil;
+// using Libcore::ICU::ICUUtil;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
@@ -181,11 +180,7 @@ ECode DateFormat::Format(
 ECode DateFormat::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    VALIDATE_NOT_NULL(locales);
-    AutoPtr<IICUUtil> ICUHelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CICUUtil::AcquireSingleton((IICUUtil**)&ICUHelper));
-    return ICUHelper->GetAvailableDateFormatLocales(locales);
+    // return ICUUtil::GetAvailableDateFormatLocales(locales);
 }
 
 ECode DateFormat::GetCalendar(

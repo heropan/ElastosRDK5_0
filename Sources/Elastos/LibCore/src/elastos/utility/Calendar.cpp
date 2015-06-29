@@ -8,17 +8,10 @@
 #include "CLocaleHelper.h"
 //#include "CLocaleDataHelper.h"
 //#include "CLocaleData.h"
-//#include "CICUUtil.h"
+//#include "ICUUtil.h"
 #include "StringUtils.h"
 #include "StringBuilder.h"
 #include "CHashMap.h"
-
-namespace Elastos{
-namespace Utility{
-
-    //2d103daa-a4a7-4fb8-a1e7-af5e32f9ef44
-extern "C" const InterfaceID EIID_Calendar =
-    { 0x2d103daa, 0xa4a7, 0x4fb8, { 0xa1, 0xe7, 0xaf, 0x5e, 032, 0xf9, 0xef, 0x44 } };
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::IInteger32;
@@ -38,8 +31,14 @@ using Libcore::ICU::ILocaleDataHelper;
 //using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
 //using Libcore::ICU::CLocaleData;
-using Libcore::ICU::IICUUtil;
-//using Libcore::ICU::CICUUtil;
+// using Libcore::ICU::ICUUtil;
+
+namespace Elastos{
+namespace Utility{
+
+    //2d103daa-a4a7-4fb8-a1e7-af5e32f9ef44
+extern "C" const InterfaceID EIID_Calendar =
+    { 0x2d103daa, 0xa4a7, 0x4fb8, { 0xa1, 0xe7, 0xaf, 0x5e, 032, 0xf9, 0xef, 0x44 } };
 
 const String Calendar::FIELD_NAMES[] = {String("ERA"), String("YEAR"), String("MONTH"),
         String("WEEK_OF_YEAR"), String("WEEK_OF_MONTH"), String("DAY_OF_MONTH"), String("DAY_OF_YEAR"),
@@ -327,11 +326,8 @@ ECode Calendar::GetActualMinimum(
 ECode Calendar::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** ppLocales)
 {
-    VALIDATE_NOT_NULL(ppLocales);
 //    AutoLock lock(this);
-    AutoPtr<IICUUtil> icuHelper;
-//    CICUUtil::AcquireSingleton((IICUUtil**)&icuHelper);
-    return icuHelper->GetAvailableCalendarLocales(ppLocales);
+    // return ICUUtil::GetAvailableCalendarLocales(ppLocales);
 }
 
 ECode Calendar::GetFirstDayOfWeek(

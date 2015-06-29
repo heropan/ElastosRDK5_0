@@ -4,12 +4,11 @@
 #include "CLocaleHelper.h"
 #include "StringBuilder.h"
 // #include "CLocaleDataHelper.h"
-// #include "CICUUtil.h"
+// #include "ICUUtil.h"
 // #include "Currency.h"
 
 using Elastos::Core::StringBuilder;
-using Libcore::ICU::IICUUtil;
-// using Libcore::ICU::CICUUtil;
+//using Libcore::ICU::ICUUtil;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
@@ -93,12 +92,7 @@ ECode DecimalFormatSymbols::GetInstance(
 ECode DecimalFormatSymbols::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    VALIDATE_NOT_NULL(locales);
-
-    AutoPtr<IICUUtil> ICUHelper;
-    assert(0 && "TODO");
-    // CICUUtil::AcquireSingleton((IICUUtil**)&ICUHelper);
-    return ICUHelper->GetAvailableDecimalFormatSymbolsLocales(locales);
+    // return ICUUtil::GetAvailableDecimalFormatSymbolsLocales(locales);
 }
 
 ECode DecimalFormatSymbols::Clone(

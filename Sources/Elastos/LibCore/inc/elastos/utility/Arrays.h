@@ -6,6 +6,9 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/DualPivotQuicksort.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "CArrayList.h"
+#endif
 
 using Elastos::Core::IComparator;
 using Elastos::Core::IComparable;
@@ -66,6 +69,11 @@ private:
     // };
 
 public:
+    template<typename T>
+    static CARAPI AsList(
+        /* [in] */ ArrayOf<T> * array,
+        /* [out] */ IList** outList);
+
     static CARAPI AsList(
         /* [in] */ ArrayOf<IInterface *> * array,
         /* [out] */ IList** outList);
@@ -557,6 +565,33 @@ private:
 };
 
 //=========================================================================
+template<typename T>
+ECode Arrays::AsList(
+    /* [in] */ ArrayOf<T> * array,
+    /* [out] */ IList** outList)
+{
+    VALIDATE_NOT_NULL(outList)
+    *outList = NULL;
+
+    if (array) {
+#ifdef ELASTOS_CORELIBRARY
+        AutoPtr<CArrayList> al;
+        CArrayList::NewByFriend(array->GetLength(), (CArrayList**)&al);
+        IList* l = IList::Probe(al);
+#else
+        AutoPtr<IList> l;
+        CArrayList::New(array->GetLength(), (IList**)&l);
+#endif
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            al->Add(i, TO_IINTERFACE((*array)[i]));
+        }
+
+        *outList = l;
+        REFCOUNT_ADD(*outList)
+    }
+
+    return NOERROR;
+}
 
 template<typename T>
 ECode Arrays::BinarySearch(
