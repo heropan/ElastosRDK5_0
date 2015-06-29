@@ -48,10 +48,12 @@
 #include "ErrnoRestorer.h"
 #include "LocalArray.h"
 #include <elastos/utility/etl/Vector.h>
+#include "net/CInetSocketAddress.h"
 
 using Elastos::Core::UniquePtr;
 using Elastos::IO::IBuffer;
 using Elastos::IO::CFileDescriptor;
+using Elastos::Net::CInetSocketAddress;
 using Elastos::Utility::Etl::Vector;
 using Elastos::Droid::System::CStructPasswd;
 using Elastos::Droid::System::CStructStat;
@@ -154,7 +156,7 @@ static AutoPtr<ISocketAddress> MakeSocketAddress(
         return NULL;
     }
     AutoPtr<ISocketAddress> rst;
-    // CInetSocketAddress::New(inetAddress, port, (ISocketAddress**)&rst);
+    CInetSocketAddress::New(inetAddress, port, (ISocketAddress**)&rst);
     return rst;
 }
 

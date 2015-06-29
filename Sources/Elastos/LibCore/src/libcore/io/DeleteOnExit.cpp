@@ -2,9 +2,11 @@
 #include "DeleteOnExit.h"
 #include "CStringWrapper.h"
 #include "AutoLock.h"
+#include "CFile.h"
+// #include "utility/CCollections.h"
 
 using Elastos::IO::IFile;
-// using Elastos::IO::CFile;
+using Elastos::IO::CFile;
 using Elastos::Utility::IList;
 using Elastos::Utility::ICollections;
 // using Elastos::Utility::CCollections;
@@ -67,7 +69,7 @@ ECode DeleteOnExit::Run()
         String fileName;
         ICharSequence::Probe(elem)->ToString(&fileName);
         AutoPtr<IFile> file;
-        // CFile::New(fileName, (IFile**)&file);
+        CFile::New(fileName, (IFile**)&file);
         Boolean isDeleted;
         FAIL_RETURN(file->Delete(&isDeleted))
     }

@@ -1,6 +1,7 @@
 #include "NetworkUtilities.h"
 #include "cutils/log.h"
-
+#include "net/InetUnixAddress.h"
+#include "net/InetAddress.h"
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -8,6 +9,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+using Elastos::Net::InetAddress;
+using Elastos::Net::InetUnixAddress;
 
 AutoPtr<IInetAddress> SockaddrToInetAddress(
     /* [in] */ const sockaddr_storage& ss,
@@ -68,18 +71,12 @@ AutoPtr<IInetAddress> SockaddrToInetAddress(
         // Note that we get here for AF_UNIX sockets on accept(2). The unix(7) man page claims
         // that the peer's sun_path will contain the path, but in practice it doesn't, and the
         // peer length is returned as 2 (meaning only the sun_family field was set).
-        // static jmethodID ctor = env->GetMethodID(JniConstants::inetUnixAddressClass, "<init>", "([B)V");
-        // return env->NewObject(JniConstants::inetUnixAddressClass, ctor, byteArray.get());
+        return new InetUnixAddress(byteArray);
     }
 
-    // static jmethodID getByAddressMethod = env->GetStaticMethodID(JniConstants::inetAddressClass,
-    //         "getByAddress", "(Ljava/lang/String;[BI)Ljava/net/InetAddress;");
-    // if (getByAddressMethod == NULL) {
-    //     return NULL;
-    // }
-    // return env->CallStaticObjectMethod(JniConstants::inetAddressClass, getByAddressMethod,
-    //         NULL, byteArray.get(), scope_id);
-    return NULL;
+    AutoPtr<IInetAddress> rst;
+    InetAddress::GetByAddress(String(NULL), byteArray, scope_id, (IInetAddress**)&rst);
+    return rst;
 }
 
 static Boolean InetAddressToSockaddr(

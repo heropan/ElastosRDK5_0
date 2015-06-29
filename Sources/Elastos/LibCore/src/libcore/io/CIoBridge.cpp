@@ -3,17 +3,17 @@
 #include "CLibcore.h"
 #include "droid/system/OsConstants.h"
 #include "CAsynchronousCloseMonitor.h"
-//#include "CInetSocketAddress.h"
+#include "net/CInetSocketAddress.h"
 #include "droid/system/CStructLinger.h"
 #include "droid/system/CStructPollfd.h"
 #include "droid/system/CStructTimeval.h"
 #include "core/Math.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
-// #include "io/IoUtils.h"
+#include "io/CIoUtils.h"
 #include "io/CFileDescriptor.h"
-// #include "CInet6Address.h"
-// #include "NetworkInterface.h"
+#include "net/CInet6Address.h"
+#include "net/NetworkInterface.h"
 #include "CSystem.h"
 
 using Elastos::Core::ISystem;
@@ -22,17 +22,18 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
-// using Elastos::IO::IoUtils; //TODO::
+using Libcore::IO::CIoUtils;
+using Libcore::IO::IIoUtils;
 using Elastos::IO::IBuffer;
 using Elastos::IO::CFileDescriptor;
-//using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::IInet4Address;
 using Elastos::Net::IInet6Address;
-// using Elastos::Net::CInet6Address;
+using Elastos::Net::CInet6Address;
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::ISocketOptions;
 using Elastos::Net::INetworkInterface;
-// using Elastos::Net::NetworkInterface;
+using Elastos::Net::NetworkInterface;
 using Elastos::Net::ISocketOptions;
 using Elastos::Droid::System::IStructLinger;
 using Elastos::Droid::System::IStructPollfd;
@@ -89,11 +90,12 @@ ECode CIoBridge::_Bind(
     AutoPtr<IInet6Address> inet6 = IInet6Address::Probe(inetAddress);
     Int32 scopeid = 0;
     Boolean isLinkLocalAddress;
+    AutoPtr<IInet6Address> v6Addr;
     if (inet6 != NULL && ((inet6->GetScopeId(&scopeid), scopeid) == 0) &&
             (inetAddress->IsLinkLocalAddress(&isLinkLocalAddress), isLinkLocalAddress)) {
        // Linux won't let you bind a link-local address without a scope id. Find one.
         AutoPtr<INetworkInterface> nif;
-        // NetworkInterface::GetByInetAddress(inetAddress, (INetworkInterface**)&nif); // TODO::
+        NetworkInterface::GetByInetAddress(inetAddress, (INetworkInterface**)&nif);
         if (nif == NULL) {
             // throw new SocketException("Can't bind to a link-local address without a scope id: " + inetAddress);
             return E_LIBCORE_SOCKET_EXCEPTION;
@@ -105,13 +107,14 @@ ECode CIoBridge::_Bind(
         inetAddress->GetAddress((ArrayOf<Byte>**)&outbyte);
         Int32 index = 0;
         nif->GetIndex(&index);
-        // CInet6Address::GetByAddress(hostname, outbyte, index, (IInetAddress**)&inetAddress);
+        CInet6Address::GetByAddress(hostname, outbyte, index, (IInet6Address**)&v6Addr);
         // } catch (UnknownHostException ex) {
         //     // throw new AssertionError(ex); // Can't happen.
         // }
     }
     // try {
-    return CLibcore::sOs->Bind(fd, inetAddress, port);
+    AutoPtr<IInetAddress> arg = IInetAddress::Probe(v6Addr);
+    return CLibcore::sOs->Bind(fd, arg, port);
     // } catch (ErrnoException errnoException) {
     //    throw new BindException(errnoException.getMessage(), errnoException);
     // }
@@ -171,7 +174,9 @@ ECode CIoBridge::ConnectErrno(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
     // 1. set the socket to non-blocking.
-    // IoUtils::SetBlocking(fd, FALSE); // TODO::
+    AutoPtr<IIoUtils> utils;
+    CIoUtils::AcquireSingleton((IIoUtils**)&utils);
+    utils->SetBlocking(fd, FALSE); // TODO::
 
     // 2. call connect(2) non-blocking.
     Int64 finishTimeMs;
@@ -180,7 +185,7 @@ ECode CIoBridge::ConnectErrno(
     // try {
     ECode ec = CLibcore::sOs->Connect(fd, inetAddress, port);
     if (!FAILED(ec)) {
-        // IoUtils::SetBlocking(fd, TRUE); // 4. set the socket back to blocking. // TODO::
+        utils->SetBlocking(fd, TRUE); // 4. set the socket back to blocking. // TODO::
         return NOERROR;
     }
 
@@ -204,7 +209,7 @@ ECode CIoBridge::ConnectErrno(
             return E_SOCKET_TIMEOUT_EXCEPTION;
         }
     } while (_IsConnected(fd, inetAddress, port, timeoutMs, remainingTimeoutMs, &isflag), !isflag);
-    // IoUtils::SetBlocking(fd, TRUE); // 4. set the socket back to blocking. // TODO::
+    utils->SetBlocking(fd, TRUE); // 4. set the socket back to blocking. // TODO::
     return NOERROR;
 }
 
@@ -339,7 +344,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case IP_MULTICAST_TTL:
+    case _IP_MULTICAST_TTL:
     {
         // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
         // it doesn't matter which we return.
@@ -544,7 +549,7 @@ ECode CIoBridge::SetSocketOptionErrno(
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_LOOP, BooleanToInt(b)));
         return NOERROR;
     }
-    case CIoBridge::IP_MULTICAST_TTL:
+    case CIoBridge::_IP_MULTICAST_TTL:
     {
         // Although IPv6 was cleaned up to use int, and IPv4 non-multicast TTL uses int,
         // IPv4 multicast TTL uses a byte.
@@ -658,22 +663,22 @@ ECode CIoBridge::SetSocketOptionErrno(
                 OsConstants::_IPPROTO_TCP, OsConstants::_TCP_NODELAY, BooleanToInt(b)));
         return NOERROR;
     }
-    case MCAST_JOIN_GROUP:
-    case MCAST_LEAVE_GROUP:
+    case _MCAST_JOIN_GROUP:
+    case _MCAST_LEAVE_GROUP:
     {
         assert(IStructGroupReq::Probe(value) != NULL);
         AutoPtr<IStructGroupReq> groupReq = IStructGroupReq::Probe(value);
         AutoPtr<IInetAddress> group;
         groupReq->GetGrGroup((IInetAddress**)&group);
         Int32 level = (IInet4Address::Probe(group) != NULL) ? OsConstants::_IPPROTO_IP : OsConstants::_IPPROTO_IPV6;
-        Int32 op = (option == MCAST_JOIN_GROUP) ? MCAST_JOIN_GROUP : MCAST_LEAVE_GROUP;
+        Int32 op = (option == _MCAST_JOIN_GROUP) ? _MCAST_JOIN_GROUP : _MCAST_LEAVE_GROUP;
         FAIL_RETURN(CLibcore::sOs->SetsockoptGroupReq(fd, level, op, groupReq));
         return NOERROR;
     }
-    case MCAST_JOIN_SOURCE_GROUP:
-    case MCAST_LEAVE_SOURCE_GROUP:
-    case MCAST_BLOCK_SOURCE:
-    case MCAST_UNBLOCK_SOURCE:
+    case _MCAST_JOIN_SOURCE_GROUP:
+    case _MCAST_LEAVE_SOURCE_GROUP:
+    case _MCAST_BLOCK_SOURCE:
+    case _MCAST_UNBLOCK_SOURCE:
     {
         assert(IStructGroupSourceReq::Probe(value) != NULL);
         AutoPtr<IStructGroupSourceReq> groupSourceReq = IStructGroupSourceReq::Probe(value);
@@ -695,13 +700,13 @@ Int32 CIoBridge::GetGroupSourceReqOp(
     /* [in] */ Int32 value)
 {
     switch (value) {
-        case IIoBridge::MCAST_JOIN_SOURCE_GROUP:
+        case IIoBridge::_MCAST_JOIN_SOURCE_GROUP:
             return OsConstants::_MCAST_JOIN_SOURCE_GROUP;
-        case IIoBridge::MCAST_LEAVE_SOURCE_GROUP:
+        case IIoBridge::_MCAST_LEAVE_SOURCE_GROUP:
             return OsConstants::_MCAST_LEAVE_SOURCE_GROUP;
-        case IIoBridge::MCAST_BLOCK_SOURCE:
+        case IIoBridge::_MCAST_BLOCK_SOURCE:
             return OsConstants::_MCAST_BLOCK_SOURCE;
-        case IIoBridge::MCAST_UNBLOCK_SOURCE:
+        case IIoBridge::_MCAST_UNBLOCK_SOURCE:
             return OsConstants::_MCAST_UNBLOCK_SOURCE;
         default:
             return -1;
@@ -735,7 +740,9 @@ ECode CIoBridge::_Open(
 
 FILE_NOT_FOUND:
     if (*fd != NULL) {
-        // IoUtils::Close(*fd); //TODO::
+        AutoPtr<IIoUtils> utils;
+        CIoUtils::AcquireSingleton((IIoUtils**)&utils);
+        utils->Close(*fd); //TODO::
     }
     return E_LIBCORE_FILE_NOT_FOUND_EXCEPTION;
 }
@@ -873,7 +880,7 @@ ECode CIoBridge::_Recvfrom(
     // try {
     AutoPtr<IInetSocketAddress> srcAddress;
     if (packet != NULL && !isConnected) {
-        //CInetSocketAddress::New((IInetSocketAddress**)&srcAddress); //TODO::
+        CInetSocketAddress::New((IInetSocketAddress**)&srcAddress);
     }
     FAIL_RETURN(CLibcore::sOs->Recvfrom(fd, bytes, byteOffset, byteCount, flags, srcAddress, result));
     *result = PostRecvfrom(isRead, packet, isConnected, srcAddress, *result);
@@ -898,7 +905,7 @@ ECode CIoBridge::_Recvfrom(
     // try {
     AutoPtr<IInetSocketAddress> srcAddress;
     if (packet != NULL && !isConnected) {
-        //CInetSocketAddress::New((IInetSocketAddress**)&srcAddress); //TODO::
+        CInetSocketAddress::New((IInetSocketAddress**)&srcAddress); //TODO::
     }
 
     FAIL_RETURN(CLibcore::sOs->Recvfrom(fd, buffer, flags, srcAddress, result));
