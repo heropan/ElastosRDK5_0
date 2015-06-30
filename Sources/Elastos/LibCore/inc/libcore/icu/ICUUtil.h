@@ -5,12 +5,16 @@
 #include "LocaleData.h"
 
 using Elastos::Utility::ILocale;
+using Libcore::Utility::IBasicLruCache;
 
 namespace Libcore {
 namespace ICU {
 
 class ICUUtil
 {
+private:
+    ICUUtil(){}
+
 public:
     /**
      * Returns an array of ISO language names (two-letter codes), fetched either
@@ -36,9 +40,9 @@ public:
      * this method can parse strings that {@code Locale.toString} won't produce.
      * Used to remove duplication.
      */
-    static CARAPI LocaleFromString(
-        /* [in] */ const String& localeName,
-        /* [out] */ ILocale** locale);
+    static CARAPI LocaleFromIcuLocaleId(
+        /* [in] */ const String& localeId,
+        /* [out, callee] */ ILocale** locale);
 
     static CARAPI LocalesFromStrings(
         /* [in] */ const ArrayOf<String>& localeNames,
@@ -80,11 +84,11 @@ public:
 
     static CARAPI_(String) ToLowerCase(
         /* [in] */ const String& s,
-        /* [in] */ ILocale* locale);
+        /* [in] */ const String& languageTag);
 
     static CARAPI_(String) ToUpperCase(
         /* [in] */ const String& s,
-        /* [in] */ ILocale* locale);
+        /* [in] */ const String& languageTag);
 
     static CARAPI GetAvailableCurrencyCodes(
         /* [out, callee] */ ArrayOf<String>** codes);
@@ -92,34 +96,84 @@ public:
     static CARAPI_(String) GetCurrencyCode(
         /* [in] */ const String& locale);
 
+    static CARAPI GetCurrencyDisplayName(
+        /* [in] */ ILocale* locale,
+        /* [in] */ const String& currencyCode,
+        /* [out] */ String* displayName);
+
+private:
     static CARAPI_(String) GetCurrencyDisplayName(
         /* [in] */ const String& locale,
         /* [in] */ const String& currencyCode);
 
+public:
     static CARAPI_(Int32) GetCurrencyFractionDigits(
         /* [in] */ const String& currencyCode);
 
+    static CARAPI_(Int32) GetCurrencyNumericCode(
+        /* [in] */ const String& currencyCode);
+
+    static CARAPI GetCurrencySymbol(
+        /* [in] */ ILocale* locale,
+        /* [in] */ String currencyCode,
+        /* [out] */ String* currencySymbol);
+
+private:
     static CARAPI_(String) GetCurrencySymbol(
         /* [in] */ const String& locale,
         /* [in] */ const String& currencyCode);
 
-    static CARAPI_(String) GetDisplayCountry(
-        /* [in] */ const String& countryCode,
-        /* [in] */ const String& locale);
+public:
+    static CARAPI GetDisplayCountry(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* displayCountry);
 
-    static CARAPI_(String) GetDisplayLanguage(
-        /* [in] */ const String& languageCode,
-        /* [in] */ const String& locale);
+private:
+    static CARAPI_(String) GetDisplayCountryNative(
+        /* [in] */ const String& targetLanguageTag,
+        /* [in] */ const String& languageTag);
 
+public:
+    static CARAPI GetDisplayLanguage(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* displayLanguage);
+
+private:
+    static CARAPI_(String) GetDisplayLanguageNative(
+        /* [in] */ const String& targetLanguageTag,
+        /* [in] */ const String& languageTag);
+
+public:
     static CARAPI_(String) GetDisplayVariant(
-        /* [in] */ const String& variantCode,
-        /* [in] */ const String& locale);
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale);
 
+private:
+    static CARAPI_(String) GetDisplayVariantNative(
+        /* [in] */ const String& targetLanguageTag,
+        /* [in] */ const String& languageTag);
+
+public:
+    static CARAPI_(String) GetDisplayScript(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale);
+
+private:
+    static CARAPI_(String) GetDisplayScriptNative(
+        const String& targetLanguageTag,
+        const String& languageTag);
+
+public:
     static CARAPI_(String) GetISO3Country(
-        /* [in] */ const String& locale);
+        /* [in] */ const String& languageTag);
 
     static CARAPI_(String) GetISO3Language(
-        /* [in] */ const String& locale);
+        /* [in] */ const String& languageTag);
+public:
+    static CARAPI_(ILocale*) AddLikelySubtags(
+        /* [in] */ ILocale* locale);
 
     static CARAPI_(String) AddLikelySubtags(
         /* [in] */ const String& locale);
@@ -128,9 +182,15 @@ public:
         /* [in] */ const String& locale);
 
     /* pacakge */
-    static CARAPI_(Boolean) InitLocaleDataImpl(
+    static CARAPI_(Boolean) InitLocaleDataNative(
         /* [in] */ const String& locale,
         /* [in] */ LocaleData* result);
+
+    static CARAPI SetDefaultLocale(
+        /* [in] */ const String& languageTag);
+
+    static CARAPI GetDefaultLocale(
+        /* [out] */ String* defaultLocale);
 
 private:
     static CARAPI GetAvailableBreakIteratorLocalesNative(
@@ -155,18 +215,54 @@ private:
 
     static CARAPI_(AutoPtr<ArrayOf<String> >) GetISOCountriesNative();
 
-private:
-    /**
-     * Cache for ISO language names.
+    /*
+     * Parse the {Language, Script, Region, Variant*} section of the ICU locale
+     * ID. This is the bit that appears before the keyword separate "@". The general
+     * structure is a series of ASCII alphanumeric strings (subtags)
+     * separated by underscores.
+     *
+     * Each subtag is interpreted according to its position in the list of subtags
+     * AND its length (groan...). The various cases are explained in comments
+     * below.
      */
+    static CARAPI_(void) ParseLangScriptRegionAndVariants(
+        const String& string,
+        AutoPtr<ArrayOf<String> > outputArray);
+
+public:
+    static CARAPI GetBestDateTimePattern(
+        /* [in] */ String skeleton,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* rst);
+
+private:
+    static CARAPI GetBestDateTimePatternNative(
+        const String& skeleton,
+        const String& languageTag,
+        String* rev);
+
+public:
+    static CARAPI GetDateFormatOrder(
+        /* [in] */ String pattern,
+        /* [out, callee] */ ArrayOf<Char32>** locales);
+
+    static CARAPI GetCldrVersion(
+        /* [out] */ String* cldrVersion);
+
+private:
+    static const AutoPtr<IBasicLruCache> CACHED_PATTERNS;
+
     static AutoPtr<ArrayOf<String> > sIsoLanguages;
 
-    /**
-     * Cache for ISO country names.
-     */
     static AutoPtr<ArrayOf<String> > sIsoCountries;
 
     static AutoPtr<ArrayOf<ILocale *> > sAvailableLocalesCache;
+
+    static const Int32 IDX_LANGUAGE;
+
+    static const Int32 IDX_SCRIPT;
+    static const Int32 IDX_REGION;
+    static const Int32 IDX_VARIANT;
 };
 
 } // namespace ICU

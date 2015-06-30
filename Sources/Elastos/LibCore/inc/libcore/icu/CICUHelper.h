@@ -1,28 +1,38 @@
 
-#ifndef __ICU_CICUHELPER_H__
-#define __ICU_CICUHELPER_H__
+#ifndef __LIBCORE_ICU_CICUHELPER_H__
+#define __LIBCORE_ICU_CICUHELPER_H__
 
-#include "_CICUHelper.h"
+#include "Singleton.h"
+#include "_Libcore_ICU_CICUHelper.h"
+
+using Elastos::Core::Singleton;
+using Elastos::Utility::ILocale;
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CICUHelper)
+    , public Singleton
+    , public IICUHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetISOLanguages(
         /* [out, callee] */ ArrayOf<String>** languages);
 
     CARAPI GetISOCountries(
         /* [out, callee] */ ArrayOf<String>** countries);
 
-    CARAPI LocaleFromString(
-        /* [in] */ const String& localeName,
-        /* [out] */ ILocale** locale);
-
     CARAPI LocalesFromStrings(
-        /* [in] */ const ArrayOf<String>& localeNames,
+        /* [in] */ ArrayOf<String>* localeNames,
         /* [out, callee] */ ArrayOf<ILocale*>** locales);
+
+    CARAPI LocaleFromIcuLocaleId(
+        /* [in] */ const String& localeName,
+        /* [out, callee] */ ILocale** locale);
 
     CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** locales);
@@ -48,26 +58,39 @@ public:
     CARAPI GetAvailableNumberFormatLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** locales);
 
+    CARAPI GetCldrVersion(
+        /* [out] */ String* cldrVersion);
+
     /**
-     * Returns the ICU version in use. This is "4.4" for gingerbread, for example.
+     * Returns the icu4c version in use, such as "50.1.1".
      */
     CARAPI GetIcuVersion(
         /* [out] */ String* icuVersion);
 
     /**
-     * Returns the Unicode version our ICU supports. This is "5.2" for gingerbread, for example.
+     * Returns the Unicode version our ICU supports, such as "6.2".
      */
     CARAPI GetUnicodeVersion(
         /* [out] */ String* unicodeVersion);
 
     CARAPI ToLowerCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& localname,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* ls);
+
+    CARAPI ToLowerCase(
+        /* [in] */ const String& s,
+        /* [in] */ const String& languageTag,
         /* [out] */ String* ls);
 
     CARAPI ToUpperCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& localname,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* us);
+
+    CARAPI ToUpperCase(
+        /* [in] */ const String& s,
+        /* [in] */ const String& languageTag,
         /* [out] */ String* us);
 
     CARAPI GetAvailableCurrencyCodes(
@@ -78,7 +101,7 @@ public:
         /* [out] */ String* currencyCode);
 
     CARAPI GetCurrencyDisplayName(
-        /* [in] */ const String& locale,
+        /* [in] */ ILocale* locale,
         /* [in] */ const String& currencyCode,
         /* [out] */ String* displayName);
 
@@ -86,44 +109,73 @@ public:
         /* [in] */ const String& currencyCode,
         /* [out] */ Int32* currencyFractionDigits);
 
+    CARAPI GetCurrencyNumericCode(
+        /* [in] */ const String& currencyCode,
+        /* [out] */ Int32* currencyFractionDigits);
+
     CARAPI GetCurrencySymbol(
-        /* [in] */ const String& locale,
+        /* [in] */ ILocale* locale,
         /* [in] */ const String& currencyCode,
         /* [out] */ String* currencySymbol);
 
     CARAPI GetDisplayCountry(
-        /* [in] */ const String& countryCode,
-        /* [in] */ const String& locale,
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale,
         /* [out] */ String* displayCountry);
 
     CARAPI GetDisplayLanguage(
-        /* [in] */ const String& languageCode,
-        /* [in] */ const String& locale,
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale,
         /* [out] */ String* displayLanguage);
 
     CARAPI GetDisplayVariant(
-        /* [in] */ const String& variantCode,
-        /* [in] */ const String& locale,
+        /* [in] */ ILocale* variant,
+        /* [in] */ ILocale* locale,
         /* [out] */ String* displayVariant);
 
+    CARAPI GetDisplayScript(
+        /* [in] */ ILocale* targetLocale,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* script);
+
     CARAPI GetISO3Country(
-        /* [in] */ const String& locale,
+        /* [in] */ const String& languageTag,
         /* [out] */ String* ISO3country);
 
     CARAPI GetISO3Language(
-        /* [in] */ const String& locale,
+        /* [in] */ const String& languageTag,
         /* [out] */ String* ISO3Language);
+
+    CARAPI AddLikelySubtags(
+        /* [in] */ ILocale* locale,
+        /* [out] */ ILocale** target);
 
     CARAPI AddLikelySubtags(
         /* [in] */ const String& locale,
         /* [out] */ String* result);
 
+    CARAPI GetBestDateTimePattern(
+        /* [in] */ const String& skeleton,
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* rst);
+
+    CARAPI GetDateFormatOrder(
+        /* [in] */ const String& pattern,
+        /* [out, callee] */ ArrayOf<Char32>** locales);
+
     CARAPI GetScript(
         /* [in] */ const String& locale,
         /* [out] */ String* script);
+
+    CARAPI SetDefaultLocale(
+        /* [in] */ const String& languageTag);
+
+    CARAPI GetDefaultLocale(
+        /* [out] */ String* defaultLocale);
+
 };
 
 } // namespace ICU
 } // namespace Libcore
 
-#endif // __ICU_CICUHELPER_H__
+#endif // __LIBCORE_ICU_CICUHELPER_H__

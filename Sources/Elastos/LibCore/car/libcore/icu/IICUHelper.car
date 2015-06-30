@@ -6,21 +6,25 @@ module
     namespace Libcore {
     namespace ICU {
 
+    [deprecated, local]
     interface IICUHelper {
+        // --- Errors.
+
+        // Just the subset of error codes needed by CharsetDecoderICU/CharsetEncoderICU.
+        const Int32 U_ZERO_ERROR = 0;
+        const Int32 U_INVALID_CHAR_FOUND = 10;
+        const Int32 U_TRUNCATED_CHAR_FOUND = 11;
+        const Int32 U_ILLEGAL_CHAR_FOUND = 12;
+        const Int32 U_BUFFER_OVERFLOW_ERROR = 15;
+
         /**
-         * Returns an array of ISO language names (two-letter codes), fetched either
-         * from ICU's database or from our memory cache.
-         *
-         * @return The array.
+         * Returns an array of two-letter ISO 639-1 language codes, either from ICU or our cache.
          */
         GetISOLanguages(
             [out, callee] ArrayOf<String>* languages);
 
         /**
-         * Returns an array of ISO country names (two-letter codes), fetched either
-         * from ICU's database or from our memory cache.
-         *
-         * @return The array.
+         * Returns an array of two-letter ISO 3166 country codes, either from ICU or our cache.
          */
         GetISOCountries(
             [out, callee] ArrayOf<String>* countries);
@@ -35,8 +39,9 @@ module
             [in] String localeId,
             [out] ILocale** locale);
 
+
         LocalesFromStrings(
-            [in] ArrayOf<String> localeNames,
+            [in] ArrayOf<String>* localeNames,
             [out, callee] ArrayOf<ILocale*>* locales);
 
         GetAvailableLocales(
@@ -73,7 +78,13 @@ module
             [out, callee] ArrayOf<Char32>* locales);
 
         /**
-         * Returns the ICU version in use. This is "4.4" for gingerbread, for example.
+         * Returns the version of the CLDR data in use, such as "22.1.1".
+         */
+        GetCldrVersion(
+            [out] String* cldrVersion);
+
+        /**
+         * Returns the icu4c version in use, such as "50.1.1".
          */
         GetIcuVersion(
             [out] String* icuVersion);
@@ -86,8 +97,18 @@ module
 
         ToLowerCase(
             [in] String s,
+            [in] String languageTag,
+            [out] String* ls);
+
+        ToLowerCase(
+            [in] String s,
             [in] ILocale* locale,
             [out] String* ls);
+
+        ToUpperCase(
+            [in] String s,
+            [in] String languageTag,
+            [out] String* us);
 
         ToUpperCase(
             [in] String s,
@@ -120,18 +141,18 @@ module
             [out] String* currencySymbol);
 
         GetDisplayCountry(
-            [in] ILocale* country,
-            [in] String locale,
+            [in] ILocale* targetLocale,
+            [in] ILocale* locale,
             [out] String* displayCountry);
 
         GetDisplayLanguage(
-            [in] ILocale* language,
-            [in] String locale,
+            [in] ILocale* targetLocale,
+            [in] ILocale* locale,
             [out] String* displayLanguage);
 
         GetDisplayVariant(
             [in] ILocale* variant,
-            [in] String locale,
+            [in] ILocale* locale,
             [out] String* displayVariant);
 
         GetDisplayScript(
@@ -140,7 +161,7 @@ module
             [out] String* script);
 
         GetISO3Country(
-            [in] String locale,
+            [in] String languageTag,
             [out] String* ISO3country);
 
         GetISO3Language(
@@ -158,6 +179,11 @@ module
             [in] String locale,
             [out] String* result);
 
+        /**
+         * @deprecated use {@link java.util.Locale#getScript()} instead. This has been kept
+         *     around only for the support library.
+         */
+        // @Deprecated
         GetScript(
             [in] String locale,
             [out] String* script);
