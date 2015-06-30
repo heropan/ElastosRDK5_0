@@ -1,5 +1,5 @@
 
-#include "JarHandler.h"
+#include "CJarHandler.h"
 #include "UrlUtils.h"
 #include "CURL.h"
 #include "StringBuilder.h"
@@ -15,17 +15,14 @@ namespace Url {
 extern "C" const InterfaceID EIID_JarHandler =
     { 0x6b5a0016, 0x9e17, 0x4dc5, { 0x80, 0xd7, 0x39, 0x7f, 0xf4, 0x11, 0x8c, 0x2f } };
 
-CAR_INTERFACE_IMPL(JarHandler, URLStreamHandler, IJarHandler)
+CAR_INTERFACE_IMPL(CJarHandler, URLStreamHandler, IJarHandler)
 
-ECode JarHandler::ToString(
-    /* [out] */ String* result)
+ECode CJarHandler::constructor()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = String("Libcore.Net.Url.JarHandler");
     return NOERROR;
 }
 
-ECode JarHandler::OpenConnection(
+ECode CJarHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [out] */ IURLConnection** urlConnection)
 {
@@ -36,7 +33,7 @@ ECode JarHandler::OpenConnection(
     return NOERROR;
 }
 
-ECode JarHandler::ParseURL(
+ECode CJarHandler::ParseURL(
     /* [in] */ IURL* url,
     /* [in] */ const String& spec,
     /* [in] */ Int32 start,
@@ -80,7 +77,7 @@ ECode JarHandler::ParseURL(
     return SetURL(url, String("jar"), String(""), -1, String(NULL), String(NULL), file, String(NULL), String(NULL));
 }
 
-ECode JarHandler::ToExternalForm(
+ECode CJarHandler::ToExternalForm(
     /* [in] */ IURL* url,
     /* [out] */ String* s)
 {

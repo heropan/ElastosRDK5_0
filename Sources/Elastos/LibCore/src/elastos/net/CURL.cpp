@@ -5,6 +5,7 @@
 #include "CSystem.h"
 #include "StringUtils.h"
 #include "AutoLock.h"
+#include "CJarHandler.h"
 // #include "CFileHandler.h"
 // #include "CFtpHandler.h"
 // #include "CHttpHandler.h"
@@ -18,6 +19,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
+using Libcore::Net::Url::CJarHandler;
 // using Elastos::Net::Url::IFileHandler;
 // using Elastos::Net::Url::CFileHandler;
 // using Elastos::Net::Url::IFtpHandler;
@@ -458,9 +460,7 @@ void CURL::SetupStreamHandler()
     } else if (mProtocol.Equals("https")) {
         // CHttpsHandler::New((IHttpsHandler**)&mStreamHandler);
     } else if (mProtocol.Equals("jar")) {
-        //TODO : not implement.
-        // CJarHandler::New((IURLStreamHandler**)&mStreamHandler);
-        assert(0);
+        CJarHandler::New((IURLStreamHandler**)&mStreamHandler);
     }
 
     if (mStreamHandler != NULL) {

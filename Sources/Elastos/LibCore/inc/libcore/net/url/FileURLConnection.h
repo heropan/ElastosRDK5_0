@@ -4,6 +4,7 @@
 
 #include "URLConnection.h"
 
+using Elastos::Core::IComparator;
 using Elastos::Net::IURLConnection;
 using Elastos::Net::IURL;
 using Elastos::Net::URLConnection;
@@ -15,16 +16,52 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
+/**
+ * This subclass extends <code>URLConnection</code>.
+ * <p>
+ * This class is responsible for connecting, getting content and input stream of
+ * the file.
+ */
 class FileURLConnection
     : public URLConnection
     , public IFileURLConnection
 {
-public:
-    CAR_INTERFACE_DECL()
+private:
+    class Comparator
+        : public Object
+        , public IComparator
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
+        CARAPI Compare(
+            /* [in] */ IInterface* a,
+            /* [in] */ IInterface* b,
+            /* [out] */ Int32* result);
+};
+
+public:
+    CAR_INTERFACE_DECL();
+
+    FileURLConnection();
+
+    /**
+     * Creates an instance of <code>FileURLConnection</code> for establishing
+     * a connection to the file pointed by this <code>URL<code>
+     *
+     * @param url The URL this connection is connected to
+     */
     CARAPI constructor(
         /* [in] */ IURL* url);
 
+    /**
+     * This methods will attempt to obtain the input stream of the file pointed
+     * by this <code>URL</code>. If the file is a directory, it will return
+     * that directory listing as an input stream.
+     *
+     * @throws IOException
+     *             if an IO error occurs while connecting
+     */
     CARAPI Connect();
 
     CARAPI GetHeaderField(
@@ -42,16 +79,53 @@ public:
     virtual CARAPI GetHeaderFields(
         /* [out] */ IMap** headerFields);
 
+    /**
+     * Returns the length of the file in bytes, or {@code -1} if the length cannot be
+     * represented as an {@code int}. See {@link #getContentLengthLong()} for a method that can
+     * handle larger files.
+     */
     CARAPI GetContentLength(
         /* [out] */ Int32* length);
 
+    /**
+     * Returns the content type of the resource. Just takes a guess based on the
+     * name.
+     *
+     * @return the content type
+     */
     CARAPI GetContentType(
         /* [out] */ String* type);
 
+
+    /**
+     * Returns the input stream of the object referred to by this
+     * <code>URLConnection</code>
+     *
+     * File Sample : "/ZIP211/+/harmony/tools/javac/resources/javac.properties"
+     * Invalid File Sample:
+     * "/ZIP/+/harmony/tools/javac/resources/javac.properties"
+     * "ZIP211/+/harmony/tools/javac/resources/javac.properties"
+     *
+     * @return input stream of the object
+     *
+     * @throws IOException
+     *             if an IO error occurs
+     */
     CARAPI GetInputStream(
         /* [out] */ IInputStream** is);
 
-    // public java.security.Permission getPermission();
+    /**
+     * Returns the permission, in this case the subclass, FilePermission object
+     * which represents the permission necessary for this URLConnection to
+     * establish the connection.
+     *
+     * @return the permission required for this URLConnection.
+     *
+     * @throws IOException
+     *             if an IO exception occurs while creating the permission.
+     */
+    CARAPI GetPermission(
+        /* [out] */ IPermission** permission);
 
 private:
     CARAPI_(AutoPtr<IInputStream>) GetDirectoryListing(
@@ -59,16 +133,36 @@ private:
 
     CARAPI_(String) GetContentTypeForPlainFiles();
 
+    /**
+     * Returns the length of the file in bytes.
+     */
+    CARAPI_(Int64) GetContentLengthInt64();
+
+    static CARAPI_(AutoPtr<IComparator>) InitComparator();
+
 private:
     String mFilename;
 
     AutoPtr<IInputStream> mIs;
 
-    Int32 mLength; // = -1;
+    Int64 mLength; // = -1;
+    Int64 mLastModified/* = -1*/;
 
     Boolean mIsDir;
 
     AutoPtr<IFilePermission> mPermission;
+    /**
+     * A set of three key value pairs representing the headers we support.
+     */
+    AutoPtr<ArrayOf<String> > mHeaderKeysAndValues;
+
+    static const Int32 CONTENT_TYPE_VALUE_IDX;
+    static const Int32 CONTENT_LENGTH_VALUE_IDX;
+    static const Int32 LAST_MODIFIED_VALUE_IDX;
+
+    AutoPtr<IMap> mHeaderFields;
+
+    static AutoPtr<IComparator> HEADER_COMPARATOR;
 };
 
 } // namespace Url

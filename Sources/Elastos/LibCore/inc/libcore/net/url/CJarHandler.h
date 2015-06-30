@@ -2,6 +2,7 @@
 #ifndef __LIBCORE_NET_URI_JARHANDLER_H__
 #define __LIBCORE_NET_URI_JARHANDLER_H__
 
+#include "_Libcore_Net_Url_CJarHandler.h"
 #include "URLStreamHandler.h"
 
 using Elastos::Net::URLStreamHandler;
@@ -15,21 +16,19 @@ namespace Url {
 
 extern "C"  const InterfaceID EIID_JarHandler;
 
-class JarHandler
-    : public URLStreamHandler
+CarClass(CJarHandler)
+    , public URLStreamHandler
     , public IJarHandler
 {
 public:
     CAR_INTERFACE_DECL();
 
-    CARAPI ToString(
-        /* [out] */ String* result);
+    CARAPI constructor();
 
     virtual CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [out] */ IURLConnection** urlConnection);
 
-protected:
     CARAPI ParseURL(
         /* [in] */ IURL* url,
         /* [in] */ const String& spec,

@@ -4,6 +4,8 @@
 
 #include "Object.h"
 
+using Elastos::Utility::Concurrent::ICopyOnWriteArrayList;
+
 namespace Libcore {
 namespace Net {
 namespace Event {
@@ -51,6 +53,7 @@ private:
 
     // private final List<NetworkEventListener> listeners =
     //   new CopyOnWriteArrayList<NetworkEventListener>();
+    AutoPtr<ICopyOnWriteArrayList> mListeners;
 };
 
 } // namespace Event

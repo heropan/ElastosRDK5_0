@@ -21,6 +21,7 @@ using Libcore::Net::Url::UrlUtils;
 const InterfaceID EIID_URLStreamHandler =
     { 0x99e0a5eb, 0xddd7, 0x4ab4, { 0x82, 0xe, 0x7b, 0x92, 0x6c, 0xa, 0x70, 0x36 } };
 
+CAR_INTERFACE_IMPL(URLStreamHandler, Object, IURLStreamHandler);
 ECode URLStreamHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,

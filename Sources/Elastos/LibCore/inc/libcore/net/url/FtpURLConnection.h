@@ -38,7 +38,18 @@ public:
     CARAPI GetOutputStream(
         /* [out] */ IOutputStream** os);
 
-//        public java.security.Permission getPermission();
+    /**
+     * Returns the permission object (in this case, SocketPermission) with the
+     * host and the port number as the target name and "resolve, connect" as the
+     * action list.
+     *
+     * @return the permission object required for this connection
+     * @throws IOException
+     *             thrown when an IO exception occurs during the creation of the
+     *             permission object.
+     */
+    CARAPI GetPermission(
+        /* [out] */ IPermission** permission);
 
     CARAPI SetDoInput(
         /* [in] */ Boolean newValue);

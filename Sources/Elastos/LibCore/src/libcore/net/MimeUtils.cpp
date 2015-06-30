@@ -1,27 +1,27 @@
 
 #include "MimeUtils.h"
-//#include "CFile.h"
-//#include "CFileHelper.h"
-//#include "CFileInputStream.h"
-//#include "CBufferedReader.h"
-//#include "CInputStreamReader.h"
+#include "CFile.h"
+// #include "CFileHelper.h"
+#include "CFileInputStream.h"
+#include "CBufferedReader.h"
+#include "CInputStreamReader.h"
 #include "StringBuilder.h"
 #include "CSystem.h"
 #include "Character.h"
 
 using Elastos::IO::IFile;
-//using Elastos::IO::CFile;
+using Elastos::IO::CFile;
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::IFileHelper;
-//using Elastos::IO::CFileHelper;
+// using Elastos::IO::CFileHelper;
 using Elastos::IO::IFileInputStream;
-//using Elastos::IO::CFileInputStream;
-//using Elastos::IO::CBufferedReader;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::CBufferedReader;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStreamReader;
-//using Elastos::IO::CInputStreamReader;
+using Elastos::IO::CInputStreamReader;
 using Elastos::Core::Character;
 using Elastos::Core::ISystem;
 using Elastos::Core::StringBuilder;
@@ -115,12 +115,20 @@ void MimeUtils::Add(
     /* [in] */ const String& mimeType,
     /* [in] */ const String& extension)
 {
+    // If we have an existing x -> y mapping, we do not want to
+    // override it with another mapping x -> y2.
+    // If a mime type maps to several extensions
+    // the first extension added is considered the most popular
+    // so we do not want to overwrite it later.
     HashMap<String, String>::Iterator find = mMimeTypeToExtensionMap.Find(mimeType);
-    if(find == mMimeTypeToExtensionMap.End())
-    {
+    if(find == mMimeTypeToExtensionMap.End()) {
         mMimeTypeToExtensionMap[mimeType] = extension;
     }
-    mExtensionToMimeTypeMap[extension] = mimeType;
+
+    find = mExtensionToMimeTypeMap.Find(extension);
+    if(find == mExtensionToMimeTypeMap.End()) {
+        mExtensionToMimeTypeMap[extension] = mimeType;
+    }
 }
 
 void MimeUtils::Init()
@@ -130,18 +138,18 @@ void MimeUtils::Init()
 
     Add(String("application/andrew-inset"), String("ez"));
     Add(String("application/dsptype"), String("tsp"));
-    Add(String("application/futuresplash"), String("spl"));
     Add(String("application/hta"), String("hta"));
     Add(String("application/mac-binhex40"), String("hqx"));
-    Add(String("application/mac-compactpro"), String("cpt"));
     Add(String("application/mathematica"), String("nb"));
     Add(String("application/msaccess"), String("mdb"));
     Add(String("application/oda"), String("oda"));
     Add(String("application/ogg"), String("ogg"));
+    Add(String("application/ogg"), String("oga"));
     Add(String("application/pdf"), String("pdf"));
     Add(String("application/pgp-keys"), String("key"));
     Add(String("application/pgp-signature"), String("pgp"));
     Add(String("application/pics-rules"), String("prf"));
+    Add(String("application/pkix-cert"), String("cer"));
     Add(String("application/rar"), String("rar"));
     Add(String("application/rdf+xml"), String("rdf"));
     Add(String("application/rss+xml"), String("rss"));
@@ -213,19 +221,20 @@ void MimeUtils::Init()
     Add(String("application/x-dms"), String("dms"));
     Add(String("application/x-doom"), String("wad"));
     Add(String("application/x-dvi"), String("dvi"));
-    Add(String("application/x-flac"), String("flac"));
     Add(String("application/x-font"), String("pfa"));
     Add(String("application/x-font"), String("pfb"));
     Add(String("application/x-font"), String("gsf"));
     Add(String("application/x-font"), String("pcf"));
     Add(String("application/x-font"), String("pcf.Z"));
     Add(String("application/x-freemind"), String("mm"));
+    // application/futuresplash isn't IANA, so application/x-futuresplash should come first.
     Add(String("application/x-futuresplash"), String("spl"));
+    Add(String("application/futuresplash"), String("spl"));
     Add(String("application/x-gnumeric"), String("gnumeric"));
     Add(String("application/x-go-sgf"), String("sgf"));
     Add(String("application/x-graphing-calculator"), String("gcf"));
-    Add(String("application/x-gtar"), String("gtar"));
     Add(String("application/x-gtar"), String("tgz"));
+    Add(String("application/x-gtar"), String("gtar"));
     Add(String("application/x-gtar"), String("taz"));
     Add(String("application/x-hdf"), String("hdf"));
     Add(String("application/x-ica"), String("ica"));
@@ -263,6 +272,7 @@ void MimeUtils::Init()
     Add(String("application/x-nwc"), String("nwc"));
     Add(String("application/x-object"), String("o"));
     Add(String("application/x-oz-application"), String("oza"));
+    Add(String("application/x-pem-file"), String("pem"));
     Add(String("application/x-pkcs12"), String("p12"));
     Add(String("application/x-pkcs12"), String("pfx"));
     Add(String("application/x-pkcs7-certreqresp"), String("p7r"));
@@ -286,21 +296,31 @@ void MimeUtils::Init()
     Add(String("application/x-webarchive-xml"), String("webarchivexml"));
     Add(String("application/x-x509-ca-cert"), String("crt"));
     Add(String("application/x-x509-user-cert"), String("crt"));
+    Add(String("application/x-x509-server-cert"), String("crt"));
     Add(String("application/x-xcf"), String("xcf"));
     Add(String("application/x-xfig"), String("fig"));
     Add(String("application/xhtml+xml"), String("xhtml"));
     Add(String("audio/3gpp"), String("3gpp"));
+    Add(String("audio/aac"), String("aac"));
+    Add(String("audio/aac-adts"), String("aac"));
     Add(String("audio/amr"), String("amr"));
+    Add(String("audio/amr-wb"), String("awb"));
     Add(String("audio/basic"), String("snd"));
+    Add(String("audio/flac"), String("flac"));
+    Add(String("application/x-flac"), String("flac"));
+    Add(String("audio/imelody"), String("imy"));
     Add(String("audio/midi"), String("mid"));
     Add(String("audio/midi"), String("midi"));
+    Add(String("audio/midi"), String("ota"));
     Add(String("audio/midi"), String("kar"));
+    Add(String("audio/midi"), String("rtttl"));
     Add(String("audio/midi"), String("xmf"));
     Add(String("audio/mobile-xmf"), String("mxmf"));
+    // add ".mp3" first so it will be the default for guessExtensionFromMimeType
+    Add(String("audio/mpeg"), String("mp3"));
     Add(String("audio/mpeg"), String("mpga"));
     Add(String("audio/mpeg"), String("mpega"));
     Add(String("audio/mpeg"), String("mp2"));
-    Add(String("audio/mpeg"), String("mp3"));
     Add(String("audio/mpeg"), String("m4a"));
     Add(String("audio/mpegurl"), String("m3u"));
     Add(String("audio/prs.sid"), String("sid"));
@@ -308,6 +328,7 @@ void MimeUtils::Init()
     Add(String("audio/x-aiff"), String("aiff"));
     Add(String("audio/x-aiff"), String("aifc"));
     Add(String("audio/x-gsm"), String("gsm"));
+    Add(String("audio/x-matroska"), String("mka"));
     Add(String("audio/x-mpegurl"), String("m3u"));
     Add(String("audio/x-ms-wma"), String("wma"));
     Add(String("audio/x-ms-wax"), String("wax"));
@@ -318,8 +339,12 @@ void MimeUtils::Init()
     Add(String("audio/x-scpls"), String("pls"));
     Add(String("audio/x-sd2"), String("sd2"));
     Add(String("audio/x-wav"), String("wav"));
+    // image/bmp isn't IANA, so image/x-ms-bmp should come first.
+    Add(String("image/x-ms-bmp"), String("bmp"));
     Add(String("image/bmp"), String("bmp"));
     Add(String("image/gif"), String("gif"));
+    // image/ico isn't IANA, so image/x-icon should come first.
+    Add(String("image/x-icon"), String("ico"));
     Add(String("image/ico"), String("cur"));
     Add(String("image/ico"), String("ico"));
     Add(String("image/ief"), String("ief"));
@@ -335,15 +360,14 @@ void MimeUtils::Init()
     Add(String("image/vnd.djvu"), String("djvu"));
     Add(String("image/vnd.djvu"), String("djv"));
     Add(String("image/vnd.wap.wbmp"), String("wbmp"));
+    Add(String("image/webp"), String("webp"));
     Add(String("image/x-cmu-raster"), String("ras"));
     Add(String("image/x-coreldraw"), String("cdr"));
     Add(String("image/x-coreldrawpattern"), String("pat"));
     Add(String("image/x-coreldrawtemplate"), String("cdt"));
     Add(String("image/x-corelphotopaint"), String("cpt"));
-    Add(String("image/x-icon"), String("ico"));
     Add(String("image/x-jg"), String("art"));
     Add(String("image/x-jng"), String("jng"));
-    Add(String("image/x-ms-bmp"), String("bmp"));
     Add(String("image/x-photoshop"), String("psd"));
     Add(String("image/x-portable-anymap"), String("pnm"));
     Add(String("image/x-portable-bitmap"), String("pbm"));
@@ -367,7 +391,7 @@ void MimeUtils::Init()
     Add(String("text/h323"), String("323"));
     Add(String("text/iuls"), String("uls"));
     Add(String("text/mathml"), String("mml"));
-    // Add ".txt" first so it will be the default for ExtensionFromMimeType
+    // Add ".txt" first so it will be the default for guessExtensionFromMimeType
     Add(String("text/plain"), String("txt"));
     Add(String("text/plain"), String("asc"));
     Add(String("text/plain"), String("text"));
@@ -375,18 +399,18 @@ void MimeUtils::Init()
     Add(String("text/plain"), String("po"));     // reserve "pot" for vnd.ms-powerpoint
     Add(String("text/richtext"), String("rtx"));
     Add(String("text/rtf"), String("rtf"));
-    Add(String("text/texmacs"), String("ts"));
     Add(String("text/text"), String("phps"));
     Add(String("text/tab-separated-values"), String("tsv"));
     Add(String("text/xml"), String("xml"));
     Add(String("text/x-bibtex"), String("bib"));
     Add(String("text/x-boo"), String("boo"));
-    Add(String("text/x-c++hdr"), String("h++"));
     Add(String("text/x-c++hdr"), String("hpp"));
+    Add(String("text/x-c++hdr"), String("h++"));
     Add(String("text/x-c++hdr"), String("hxx"));
     Add(String("text/x-c++hdr"), String("hh"));
-    Add(String("text/x-c++src"), String("c++"));
     Add(String("text/x-c++src"), String("cpp"));
+    Add(String("text/x-c++src"), String("c++"));
+    Add(String("text/x-c++src"), String("cc"));
     Add(String("text/x-c++src"), String("cxx"));
     Add(String("text/x-chdr"), String("h"));
     Add(String("text/x-component"), String("htc"));
@@ -410,12 +434,15 @@ void MimeUtils::Init()
     Add(String("text/x-vcard"), String("vcf"));
     Add(String("video/3gpp"), String("3gpp"));
     Add(String("video/3gpp"), String("3gp"));
-    Add(String("video/3gpp"), String("3g2"));
+    Add(String("video/3gpp2"), String("3gpp2"));
+    Add(String("video/3gpp2"), String("3g2"));
+    Add(String("video/avi"), String("avi"));
     Add(String("video/dl"), String("dl"));
     Add(String("video/dv"), String("dif"));
     Add(String("video/dv"), String("dv"));
     Add(String("video/fli"), String("fli"));
     Add(String("video/m4v"), String("m4v"));
+    Add(String("video/mp2ts"), String("ts"));
     Add(String("video/mpeg"), String("mpeg"));
     Add(String("video/mpeg"), String("mpg"));
     Add(String("video/mpeg"), String("mpe"));
@@ -424,8 +451,10 @@ void MimeUtils::Init()
     Add(String("video/quicktime"), String("qt"));
     Add(String("video/quicktime"), String("mov"));
     Add(String("video/vnd.mpegurl"), String("mxu"));
+    Add(String("video/webm"), String("webm"));
     Add(String("video/x-la-asf"), String("lsf"));
     Add(String("video/x-la-asf"), String("lsx"));
+    Add(String("video/x-matroska"), String("mkv"));
     Add(String("video/x-mng"), String("mng"));
     Add(String("video/x-ms-asf"), String("asf"));
     Add(String("video/x-ms-asf"), String("asx"));
@@ -433,7 +462,6 @@ void MimeUtils::Init()
     Add(String("video/x-ms-wmv"), String("wmv"));
     Add(String("video/x-ms-wmx"), String("wmx"));
     Add(String("video/x-ms-wvx"), String("wvx"));
-    Add(String("video/x-msvideo"), String("avi"));
     Add(String("video/x-sgi-movie"), String("movie"));
     Add(String("video/x-webex"), String("wrf"));
     Add(String("x-epoc/x-sisx-app"), String("sisx"));

@@ -10,6 +10,7 @@
 #include "CBufferedInputStream.h"
 #include "StringUtils.h"
 #include "CFtpURLInputStream.h"
+#include "CSocketPermission.h"
 
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
@@ -27,6 +28,8 @@ using Elastos::Net::CSocket;
 using Elastos::Net::CServerSocket;
 using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::IInetAddress;
+using Elastos::Net::CSocketPermission;
+using Elastos::Net::ISocketPermission;
 
 namespace Libcore {
 namespace Net {
@@ -175,7 +178,22 @@ ECode FtpURLConnection::GetOutputStream(
     return NOERROR;
 }
 
-//        public java.security.Permission getPermission();
+ECode FtpURLConnection::GetPermission(
+    /* [out] */ IPermission** permission)
+{
+    VALIDATE_NOT_NULL(*permission);
+    Int32 port = 0;
+    mUrl->GetPort(&port);
+    if (port <= 0) {
+        port = FTP_PORT;
+    }
+    AutoPtr<ISocketPermission> sp;
+    CSocketPermission::New(mHostName + String(":") + StringUtils::ToString(port), String("connect, resolve"),
+            (ISocketPermission**)&sp);
+    *permission = IPermission::Probe(sp);
+    REFCOUNT_ADD(*permission);
+    return NOERROR;
+}
 
 ECode FtpURLConnection::SetDoInput(
     /* [in] */ Boolean newValue)
