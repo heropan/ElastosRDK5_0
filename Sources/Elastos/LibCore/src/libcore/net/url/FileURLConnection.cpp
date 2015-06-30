@@ -8,8 +8,18 @@
 #include "CPrintStream.h"
 #include "CByteArrayInputStream.h"
 #include "CByteArrayOutputStream.h"
+#include "StringUtils.h"
+#include "CTreeMap.h"
+#include "CStringWrapper.h"
+#include "Collections.h"
+#include "CFilePermission.h"
 
+using Elastos::Core::StringUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CStringWrapper;
+using Elastos::Core::EIID_IComparator;
 using Elastos::IO::CFile;
+using Elastos::IO::CFilePermission;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IBufferedInputStream;
@@ -21,63 +31,117 @@ using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::ICloseable;
+using Elastos::Utility::ITreeMap;
+using Elastos::Utility::CTreeMap;
+using Elastos::Utility::IList;
+using Elastos::Utility::Collections;
 
 namespace Libcore {
 namespace Net {
 namespace Url {
 
+CAR_INTERFACE_IMPL(FileURLConnection::Comparator, Object, IComparator);
+ECode FileURLConnection::Comparator::Compare(
+    /* [in] */ IInterface* a,
+    /* [in] */ IInterface* b,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (a == b) {
+        *result = 0;
+        return NOERROR;
+    } else if (a == NULL) {
+        *result = -1;
+        return NOERROR;
+    } else if (b == NULL) {
+        *result = 1;
+        return NOERROR;
+    }
+
+    String as, bs;
+    IObject::Probe(a)->ToString(&as);
+    IObject::Probe(b)->ToString(&bs);
+    *result = as.CompareIgnoreCase(bs);
+    return NOERROR;
+}
+
 CAR_INTERFACE_IMPL(FileURLConnection, URLConnection, IFileURLConnection)
+AutoPtr<IComparator> FileURLConnection::HEADER_COMPARATOR = FileURLConnection::InitComparator();
+const Int32 FileURLConnection::CONTENT_TYPE_VALUE_IDX = 1;
+const Int32 FileURLConnection::CONTENT_LENGTH_VALUE_IDX = 3;
+const Int32 FileURLConnection::LAST_MODIFIED_VALUE_IDX = 5;
+
+AutoPtr<IComparator> FileURLConnection::InitComparator()
+{
+    return new Comparator();
+}
+
+FileURLConnection::FileURLConnection()
+    : mLength(-1)
+    , mLastModified(-1)
+    , mIsDir(FALSE)
+{}
 
 ECode FileURLConnection::constructor(
     /* [in] */ IURL* url)
 {
-    mLength = -1;
-    mIsDir = FALSE;
-
     FAIL_RETURN(URLConnection::constructor(url))
     url->GetFile(&mFilename);
     if (mFilename.IsNull()) {
         mFilename = String("");
     }
+
+    mHeaderKeysAndValues = ArrayOf<String>::Alloc(6);
+    mHeaderKeysAndValues->Set(0, String("content-type"));
+    mHeaderKeysAndValues->Set(1, String(NULL));
+    mHeaderKeysAndValues->Set(2, String("content-length"));
+    mHeaderKeysAndValues->Set(3, String(NULL));
+    mHeaderKeysAndValues->Set(4, String("last-modified"));
+    mHeaderKeysAndValues->Set(5, String(NULL));
+
     return UriCodec::Decode(mFilename, &mFilename);
 }
 
 ECode FileURLConnection::Connect()
 {
-    //TODO
-    assert(0);
-    // File f = new File(filename);
-    // IOException error = null;
-    // if (f.isDirectory()) {
-    //     isDir = true;
-    //     is = getDirectoryListing(f);
-    //     // use -1 for the contentLength
-    //     lastModified = f.lastModified();
-    //     headerKeysAndValues[CONTENT_TYPE_VALUE_IDX] = "text/html";
-    // } else {
-    //     try {
-    //         is = new BufferedInputStream(new FileInputStream(f));
-    //     } catch (IOException ioe) {
-    //         error = ioe;
-    //     }
+    AutoPtr<IFile> f;
+    CFile::New(mFilename, (IFile**)&f);
+    ECode error = NOERROR;
+    Boolean isDirectory = FALSE;
+    if (f->IsDirectory(&isDirectory), isDirectory) {
+        mIsDir = true;
+        mIs = GetDirectoryListing(f);
+        // use -1 for the contentLength
+        f->GetLastModified(&mLastModified);
+        (*mHeaderKeysAndValues)[CONTENT_TYPE_VALUE_IDX] = "text/html";
+    } else {
+        // try {
+        AutoPtr<IFileInputStream> fs;
+        error = CFileInputStream::New(f, (IFileInputStream**)&fs);
+        if (error != (Int32)E_IO_EXCEPTION) {
+            error = CBufferedInputStream::New(IInputStream::Probe(fs), (IInputStream**)&mIs);
+        }
+        // } catch (IOException ioe) {
+        //     error = ioe;
+        // }
 
-    //     if (error == null) {
-    //         length = f.length();
-    //         lastModified = f.lastModified();
-    //         headerKeysAndValues[CONTENT_TYPE_VALUE_IDX] = getContentTypeForPlainFiles();
-    //     } else {
-    //         headerKeysAndValues[CONTENT_TYPE_VALUE_IDX] = "content/unknown";
-    //     }
-    // }
+        if (error == NOERROR) {
+            f->GetLength(&mLength);
+            f->GetLastModified(&mLastModified);
+            (*mHeaderKeysAndValues)[CONTENT_TYPE_VALUE_IDX] = GetContentTypeForPlainFiles();
+        } else {
+            (*mHeaderKeysAndValues)[CONTENT_TYPE_VALUE_IDX] = "content/unknown";
+        }
+    }
 
-    // headerKeysAndValues[CONTENT_LENGTH_VALUE_IDX] = String.valueOf(length);
-    // headerKeysAndValues[LAST_MODIFIED_VALUE_IDX] = String.valueOf(lastModified);
+    (*mHeaderKeysAndValues)[CONTENT_LENGTH_VALUE_IDX] = StringUtils::ToString(mLength);
+    (*mHeaderKeysAndValues)[LAST_MODIFIED_VALUE_IDX] = StringUtils::ToString(mLastModified);
 
-    // connected = true;
+    mConnected = TRUE;
     // if (error != null) {
     //     throw error;
     // }
-    return NOERROR;
+    return error;
 }
 
 ECode FileURLConnection::GetHeaderField(
@@ -85,73 +149,76 @@ ECode FileURLConnection::GetHeaderField(
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value);
-    //TODO
-    assert(0);
-    // if (!connected) {
-    //     try {
-    //         connect();
-    //     } catch (IOException ioe) {
-    //         return null;
-    //     }
-    // }
+    if (!mConnected) {
+        // try {
+        if (FAILED(Connect())) {
+            *value = String(NULL);
+            return NOERROR;
+        }
+        // } catch (IOException ioe) {
+        //     return null;
+        // }
+    }
 
-    // for (int i = 0; i < headerKeysAndValues.length; i += 2) {
-    //     if (headerKeysAndValues[i].equalsIgnoreCase(key)) {
-    //         return headerKeysAndValues[i + 1];
-    //     }
-    // }
+    for (Int32 i = 0; i < mHeaderKeysAndValues->GetLength(); i += 2) {
+        if ((*mHeaderKeysAndValues)[i].EqualsIgnoreCase(key)) {
+            *value = (*mHeaderKeysAndValues)[i + 1];
+            return NOERROR;
+        }
+    }
 
-    // return null;
-
+    *value = String(NULL);
     return NOERROR;
 }
 
 ECode FileURLConnection::GetHeaderFieldKey(
-    /* [in] */ Int32 posn,
+    /* [in] */ Int32 position,
     /* [out] */ String* key)
 {
     VALIDATE_NOT_NULL(key);
-    //TODO
-    assert(0);
-    // if (!connected) {
-    //     try {
-    //         connect();
-    //     } catch (IOException ioe) {
-    //         return null;
-    //     }
-    // }
+    if (!mConnected) {
+        // try {
+        if (FAILED(Connect())) {
+            *key = String(NULL);
+            return NOERROR;
+        }
+        // } catch (IOException ioe) {
+        //     return null;
+        // }
+    }
 
-    // if (position < 0 || position > headerKeysAndValues.length / 2) {
-    //     return null;
-    // }
+    if (position < 0 || position > mHeaderKeysAndValues->GetLength() / 2) {
+        *key = String(NULL);
+        return NOERROR;
+    }
 
-    // return headerKeysAndValues[position * 2];
-
+    *key = (*mHeaderKeysAndValues)[position * 2];
     return NOERROR;
 }
 
 ECode FileURLConnection::GetHeaderField(
-    /* [in] */ Int32 pos,
+    /* [in] */ Int32 position,
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value);
-    //TODO
-    assert(0);
 
-    // if (!connected) {
-    //     try {
-    //         connect();
-    //     } catch (IOException ioe) {
-    //         return null;
-    //     }
-    // }
+    if (!mConnected) {
+        // try {
+        if (FAILED(Connect())) {
+            *value = String(NULL);
+            return NOERROR;
+        }
+        // } catch (IOException ioe) {
+        //     return null;
+        // }
+    }
 
-    // if (position < 0 || position > headerKeysAndValues.length / 2) {
-    //     return null;
-    // }
+    if (position < 0 || position > mHeaderKeysAndValues->GetLength() / 2) {
+        *value = String(NULL);
+        return NOERROR;
+    }
 
-    // return headerKeysAndValues[(position * 2) + 1];
-
+    *value = (*mHeaderKeysAndValues)[(position * 2) + 1];
     return NOERROR;
 }
 
@@ -159,22 +226,27 @@ ECode FileURLConnection::GetHeaderFields(
     /* [out] */ IMap** headerFields)
 {
     VALIDATE_NOT_NULL(headerFields);
-    //TODO
-    assert(0);
 
-    // if (headerFields == null) {
-    //     final TreeMap<String, List<String>> headerFieldsMap = new TreeMap<>(HEADER_COMPARATOR);
+    if (mHeaderFields == NULL) {
+        AutoPtr<ITreeMap> headerFieldsMap;
+        CTreeMap::New(HEADER_COMPARATOR, (ITreeMap**)&headerFieldsMap);
 
-    //     for (int i = 0; i < headerKeysAndValues.length; i+=2) {
-    //         headerFieldsMap.put(headerKeysAndValues[i],
-    //                 Collections.singletonList(headerKeysAndValues[i + 1]));
-    //     }
+        for (Int32 i = 0; i < mHeaderKeysAndValues->GetLength(); i += 2) {
+            AutoPtr<ICharSequence> key;
+            CStringWrapper::New((*mHeaderKeysAndValues)[i], (ICharSequence**)&key);
 
-    //     headerFields = Collections.unmodifiableMap(headerFieldsMap);
-    // }
+            AutoPtr<ICharSequence> key2;
+            CStringWrapper::New((*mHeaderKeysAndValues)[i + 1], (ICharSequence**)&key2);
+            AutoPtr<IList> list;
+            Collections::SingletonList(key2, (IList**)&list);
+            IMap::Probe(headerFieldsMap)->Put(key, list);
+        }
 
-    // return headerFields;
+        Collections::UnmodifiableMap(IMap::Probe(headerFieldsMap), (IMap**)&mHeaderFields);
+    }
 
+    *headerFields = mHeaderFields;
+    REFCOUNT_ADD(*headerFields);
     return NOERROR;
 }
 
@@ -183,52 +255,38 @@ ECode FileURLConnection::GetContentLength(
 {
     VALIDATE_NOT_NULL(length)
 
-    // try {
-    ECode ec = NOERROR;
-    if (!mConnected) {
-        ec = Connect();
-    }
+    mLength = GetContentLengthInt64();
+    *length = mLength <= Elastos::Core::Math::INT32_MAX_VALUE ? (Int32) mLength : -1;
+    return NOERROR;
+}
 
-    if (ec != NOERROR)
-    {
-        *length = -1;
-        return ec;
+Int64 FileURLConnection::GetContentLengthInt64()
+{
+    // try {
+    if (!mConnected) {
+        Connect();
     }
     // } catch (IOException e) {
     //     // default is -1
     // }
-    *length = mLength;
-    return NOERROR;
+    return mLength;
 }
 
 ECode FileURLConnection::GetContentType(
     /* [out] */ String* type)
 {
     VALIDATE_NOT_NULL(type)
+    // The content-type header field is always at position 0.
+    return GetHeaderField(0, type);
+}
 
-    // try {
-    ECode ec = NOERROR;
-    if (!mConnected) {
-        ec = Connect();
-    }
-
-    if (ec != NOERROR)
-    {
-        *type = String("content/unknown");
-        return ec;
-    }
-    // } catch (IOException e) {
-    //     return "content/unknown";
-    // }
-    if (mIsDir) {
-        *type = String("text/plain");
-    }
-    String filename;
-    mUrl->GetFile(&filename);
-    String result = GuessContentTypeFromName(filename);
-    if (result.IsNull()) {
-        *type = result;
-        return NOERROR;
+String FileURLConnection::GetContentTypeForPlainFiles()
+{
+    String result;
+    mUrl->GetFile(&result);
+    result = GuessContentTypeFromName(result);
+    if (result != NULL) {
+        return result;
     }
 
     // try {
@@ -236,38 +294,12 @@ ECode FileURLConnection::GetContentType(
     // } catch (IOException e) {
     //     // Ignore
     // }
-    if (result.IsNull()) {
-        *type = result;
-        return NOERROR;
+    if (result != NULL) {
+        return result;
     }
 
-    *type = String("content/unknown");
-    return NOERROR;
+    return String("content/unknown");
 }
-
-ECode FileURLConnection::GetInputStream(
-    /* [out] */ IInputStream** is)
-{
-    VALIDATE_NOT_NULL(is)
-
-    if (!mConnected) {
-        Connect();
-    }
-    *is = mIs;
-    REFCOUNT_ADD(*is)
-    return NOERROR;
-}
-
-// public java.security.Permission getPermission() {
-//     if (permission == null) {
-//         String path = filename;
-//         if (File.separatorChar != '/') {
-//             path = path.replace('/', File.separatorChar);
-//         }
-//         permission = new FilePermission(path, "read");
-//     }
-//     return permission;
-// }
 
 AutoPtr<IInputStream> FileURLConnection::GetDirectoryListing(
     /* [in] */ IFile* f)
@@ -298,26 +330,34 @@ AutoPtr<IInputStream> FileURLConnection::GetDirectoryListing(
     return outinput;
 }
 
-String FileURLConnection::GetContentTypeForPlainFiles()
+ECode FileURLConnection::GetInputStream(
+    /* [out] */ IInputStream** is)
 {
-    //TODO
-    assert(0);
-    // String result = guessContentTypeFromName(url.getFile());
-    // if (result != null) {
-    //     return result;
-    // }
+    VALIDATE_NOT_NULL(is)
 
-    // try {
-    //     result = guessContentTypeFromStream(is);
-    // } catch (IOException e) {
-    //     // Ignore
-    // }
-    // if (result != null) {
-    //     return result;
-    // }
+    if (!mConnected) {
+        Connect();
+    }
+    *is = mIs;
+    REFCOUNT_ADD(*is)
+    return NOERROR;
+}
 
-    // return "content/unknown";
-    return String(NULL);
+ECode FileURLConnection::GetPermission(
+    /* [out] */ IPermission** permission)
+{
+    VALIDATE_NOT_NULL(*permission);
+    if (mPermission == NULL) {
+        String path = mFilename;
+        if (CFile::sSeparatorChar != '/') {
+            path = path.Replace('/', CFile::sSeparatorChar);
+        }
+        CFilePermission::New(path, String("read"), (IFilePermission**)&mPermission);
+    }
+
+    *permission = IPermission::Probe(mPermission);
+    REFCOUNT_ADD(*permission);
+    return NOERROR;
 }
 
 } // namespace Url

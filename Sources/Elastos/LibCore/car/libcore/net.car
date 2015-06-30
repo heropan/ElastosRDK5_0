@@ -21,6 +21,7 @@ module
     interface Elastos.IO.IInputStream;
     interface Elastos.Net.IURLConnection;
     interface Elastos.Net.IURLStreamHandler;
+    interface Elastos.Net.IJarURLConnection;
     interface Libcore.Net.Http.IHttpDate;
     interface Libcore.Net.Url.IFileHandler;
     interface Libcore.Net.Url.IFileURLConnection;
@@ -80,6 +81,22 @@ module
 
             singleton class CUrlUtilsHelper {
                 interface IUrlUtilsHelper;
+            }
+
+            class CJarHandler {
+                constructor();
+
+                interface IURLStreamHandler;
+                interface IJarHandler;
+            }
+
+            class CJarURLConnectionImpl {
+                constructor(
+                    [in] Elastos.Net.IURL* url);
+
+                interface IJarURLConnectionImpl;
+                interface IJarURLConnection;
+                interface IURLConnection;
             }
         } // namespace Url
 

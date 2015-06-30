@@ -1,6 +1,7 @@
 #include "UriCodec.h"
 #include "Character.h"
 #include "IntegralToString.h"
+#include "Math.h"
 //#include "CCharBufferHelper.h"
 //#include "CByteArrayOutputStream.h"
 //#include "CCharsets.h"
@@ -110,7 +111,7 @@ ECode UriCodec::AppendEncoded(
             }
 
             if (c =='%' && isPartiallyEncoded){
-                builder.Append(s.Substring(i, i + 3));
+                builder.Append(s.Substring(i, Elastos::Core::Math::Min(i + 3, s.GetLength())));
                 i += 2;
             }
             else if (c == ' '){

@@ -131,7 +131,7 @@ protected:
     /**
      * The location part of the represented URL.
      */
-    AutoPtr<IURLConnection> jarFileURLConnection;
+    AutoPtr<IURLConnection> mJarFileURLConnection;
 
 private:
     String mEntryName;

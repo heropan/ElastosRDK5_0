@@ -1,5 +1,12 @@
 
 #include "NetworkEventDispatcher.h"
+#include "concurrent/CCopyOnWriteArrayList.h"
+#include "logging/Logger.h"
+
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Concurrent::CCopyOnWriteArrayList;
 
 namespace Libcore {
 namespace Net {
@@ -16,45 +23,49 @@ AutoPtr<INetworkEventDispatcher> NetworkEventDispatcher::GetInstance()
 
 NetworkEventDispatcher::NetworkEventDispatcher()
 {
+    CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mListeners);
 }
 
 ECode NetworkEventDispatcher::AddListener(
     /* [in] */ INetworkEventListener* toAdd)
 {
-    //TODO
-    assert(0);
-    // if (toAdd == null) {
-    //   throw new NullPointerException("toAdd == null");
-    // }
-    // listeners.add(toAdd);
-    return NOERROR;
+    if (toAdd == NULL) {
+        // throw new NullPointerException("toAdd == null");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
+    return IList::Probe(mListeners)->Add(toAdd);
 }
 
 ECode NetworkEventDispatcher::RemoveListener(
     /* [in] */ INetworkEventListener* toRemove)
 {
-    //TODO
-    assert(0);
-    // for (NetworkEventListener listener : listeners) {
-    //   if (listener == toRemove) {
-    //     listeners.remove(listener);
-    //     return;
-    //   }
-    // }
+    AutoPtr<IIterator> ator;
+    IIterable::Probe(mListeners)->GetIterator((IIterator**)&ator);
+    Boolean has = FALSE;
+    while (ator->HasNext(&has), has) {
+        AutoPtr<IInterface> listener;
+        ator->GetNext((IInterface**)&listener);
+        if (INetworkEventListener::Probe(listener) == toRemove) {
+            ICollection::Probe(mListeners)->Remove(INetworkEventListener::Probe(listener));
+            return NOERROR;
+        }
+    }
     return NOERROR;
 }
 
 ECode NetworkEventDispatcher::OnNetworkConfigurationChanged()
 {
-    //TODO
-    assert(0);
-    // for (NetworkEventListener listener : listeners) {
-    //   try {
-    //     listener.onNetworkConfigurationChanged();
-    //   } catch (RuntimeException e) {
-    //     System.logI("Exception thrown during network event propagation", e);
-    //   }
-    // }
+    AutoPtr<IIterator> ator;
+    IIterable::Probe(mListeners)->GetIterator((IIterator**)&ator);
+    Boolean has = FALSE;
+    while (ator->HasNext(&has), has) {
+        AutoPtr<IInterface> listener;
+        ator->GetNext((IInterface**)&listener);
+        if (FAILED(INetworkEventListener::Probe(listener)->OnNetworkConfigurationChanged())) {
+            Logger::I("NetworkEventDispatcher", "Exception thrown during network event propagation");
+        }
+    }
     return NOERROR;
 }
 

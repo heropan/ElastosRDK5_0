@@ -9,9 +9,13 @@ extern "C" const InterfaceID EIID_URLStreamHandler;
 namespace Elastos {
 namespace Net {
 
-class URLStreamHandler : public Object
+class URLStreamHandler
+    : public Object
+    , public IURLStreamHandler
 {
 public:
+    CAR_INTERFACE_DECL();
+
     virtual CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [out] */ IURLConnection** urlConnection) = 0;
