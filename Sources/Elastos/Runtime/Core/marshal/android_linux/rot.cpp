@@ -200,7 +200,7 @@ ECode UnregisterImportObject(
 
     for (ImportObject* it = head; NULL != it; it = (ImportObject*)(it->Next())) {
         if (it->mBinder == binder) {
-            if ((Int32)(((CObjectProxy *)(it->mIProxy))->m_cRef) != 0) {
+            if ((Int32)(((CObjectProxy *)(it->mIProxy))->mRef) != 0) {
                 pthread_mutex_unlock(&g_importTableLock);
                 return S_FALSE;
             }

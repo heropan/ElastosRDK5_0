@@ -1,7 +1,3 @@
 
-ifeq "$(XDK_TARGET_PLATFORM)" "android"
 DIRS += android_linux
 DIRS += linux_rpc
-else
-DIRS += others
-endif

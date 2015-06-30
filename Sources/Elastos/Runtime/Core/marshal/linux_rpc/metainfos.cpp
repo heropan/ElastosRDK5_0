@@ -11,8 +11,8 @@
 _ELASTOS_NAMESPACE_USING
 
 ECode RegisterModuleInfo(
-    /* [in] */ CIModuleInfo *pSrcModuleInfo);
+    /* [in] */ CIModuleInfo* srcModuleInfo);
 
 ECode LookupModuleInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIModuleInfo **ppModuleInfo);
+    /* [out] */ CIModuleInfo** moduleInfo);

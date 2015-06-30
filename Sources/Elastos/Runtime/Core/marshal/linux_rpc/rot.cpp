@@ -63,43 +63,40 @@ void UninitROT_RPC()
 
 ECode RegisterExportObject(
     /* [in] */ const String& netAddress,
-    /* [in] */ IInterface *pObject,
-    /* [in] */ IStub *pIStub)
+    /* [in] */ IInterface* object,
+    /* [in] */ IStub* stub)
 {
-    ExportObject* pObjNode;
+    object = object->Probe(EIID_IInterface);
+    if (!object) return E_NO_INTERFACE;
 
-    pObject = pObject->Probe(EIID_IInterface);
-    if (!pObject) return E_NO_INTERFACE;
-
-    pObjNode = new ExportObject;
-    if (NULL == pObjNode) return E_OUT_OF_MEMORY;
-    pObjNode->m_sNetAddress = netAddress;
-    pObjNode->mObject = pObject;
-    pObjNode->mIStub = pIStub;
+    ExportObject* expObj = new ExportObject;
+    if (NULL == expObj) return E_OUT_OF_MEMORY;
+    expObj->mNetAddress = netAddress;
+    expObj->mObject = object;
+    expObj->mIStub = stub;
 
     pthread_mutex_lock(&g_exportTableLock);
-    s_hashExportObjects[Hash(netAddress)].InsertFirst(pObjNode);
+    s_hashExportObjects[Hash(netAddress)].InsertFirst(expObj);
     pthread_mutex_unlock(&g_exportTableLock);
     return NOERROR;
 }
 
 ECode FindExportObject(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ ExportObject *pExport)
+    /* [in] */ IInterface* object,
+    /* [out] */ ExportObject* expObj)
 {
-    pObject = pObject->Probe(EIID_IInterface);
-    if (!pObject) return E_NO_INTERFACE;
+    object = object->Probe(EIID_IInterface);
+    if (!object) return E_NO_INTERFACE;
 
     pthread_mutex_lock(&g_exportTableLock);
-    ExportObject* pIter;
-    for (int n = 0; n < ROT_HASHTABLE_SIZE; n++) {
-        pIter = &s_hashExportObjects[n];
-        for (; NULL != pIter; pIter = (ExportObject*)(pIter->Next())) {
-            if (pIter->mObject == pObject/* && pIter->mBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
-                pExport->m_sNetAddress = pIter->m_sNetAddress;
-                pExport->mObject = pIter->mObject;
-                pExport->mIStub = pIter->mIStub;
-                pExport->mIStub->AddRef();
+    for (Int32 n = 0; n < ROT_HASHTABLE_SIZE; n++) {
+        ExportObject* it = &s_hashExportObjects[n];
+        for (; NULL != it; it = (ExportObject*)(it->Next())) {
+            if (it->mObject == object/* && it->mBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
+                expObj->mNetAddress = it->mNetAddress;
+                expObj->mObject = it->mObject;
+                expObj->mIStub = it->mIStub;
+                expObj->mIStub->AddRef();
                 pthread_mutex_unlock(&g_exportTableLock);
                 return NOERROR;
             }
@@ -112,18 +109,18 @@ ECode FindExportObject(
 
 ECode FindExportObject(
     /* [in] */ const String& netAddress,
-    /* [out] */ ExportObject *pExport)
+    /* [out] */ ExportObject* expObj)
 {
     pthread_mutex_lock(&g_exportTableLock);
-    ExportObject* pHead = s_hashExportObjects + Hash(netAddress);
+    ExportObject* head = s_hashExportObjects + Hash(netAddress);
 
-    for (ExportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ExportObject*)(pIter->Next())) {
-        if (pIter->m_sNetAddress.Equals(netAddress)/* && pIter->mBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
-            pExport->m_sNetAddress = pIter->m_sNetAddress;
-            pExport->mObject = pIter->mObject;
-            pExport->mIStub = pIter->mIStub;
-            pExport->mIStub->AddRef();
+    for (ExportObject* it = head; NULL != it; \
+        it = (ExportObject*)(it->Next())) {
+        if (it->mNetAddress.Equals(netAddress)/* && it->mBinder->getWeakRefs()->attemptIncStrong(NULL)*/) {
+            expObj->mNetAddress = it->mNetAddress;
+            expObj->mObject = it->mObject;
+            expObj->mIStub = it->mIStub;
+            expObj->mIStub->AddRef();
             pthread_mutex_unlock(&g_exportTableLock);
             return NOERROR;
         }
@@ -137,27 +134,27 @@ ECode UnregisterExportObject(
     /* [in] */ const String& netAddress)
 {
     pthread_mutex_lock(&g_exportTableLock);
-    ExportObject* pHead = s_hashExportObjects + Hash(netAddress);
-    ExportObject* pPrev = NULL;
+    ExportObject* head = s_hashExportObjects + Hash(netAddress);
+    ExportObject* prev = NULL;
 
-    for (ExportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ExportObject*)(pIter->Next())) {
-        if (pIter->m_sNetAddress.Equals(netAddress)) {
-            // if ((Int32)(((CObjectStub*)(pIter->mIStub))->getStrongCount()) != 0) {
+    for (ExportObject* it = head; NULL != it; \
+        it = (ExportObject*)(it->Next())) {
+        if (it->mNetAddress.Equals(netAddress)) {
+            // if ((Int32)(((CObjectStub*)(it->mIStub))->getStrongCount()) != 0) {
             //     pthread_mutex_unlock(&g_exportTableLock);
             //     return S_FALSE;
             // }
 
-            pIter->mObject->Release();
+            it->mObject->Release();
 
-            if (pIter != pHead) {
-                pIter->Detach(pPrev);
-                delete pIter;
+            if (it != head) {
+                it->Detach(prev);
+                delete it;
             }
             pthread_mutex_unlock(&g_exportTableLock);
             return NOERROR;
         }
-        pPrev = pIter;
+        prev = it;
     }
 
     pthread_mutex_unlock(&g_exportTableLock);
@@ -166,18 +163,16 @@ ECode UnregisterExportObject(
 
 ECode RegisterImportObject(
     /* [in] */ const String& netAddress,
-    /* [in] */ IProxy *pIProxy)
+    /* [in] */ IProxy* proxy)
 {
-    ImportObject * pObjNode;
-
-    pObjNode = new ImportObject;
-    if (NULL == pObjNode) {
+    ImportObject* impObj = new ImportObject;
+    if (NULL == impObj) {
         return E_OUT_OF_MEMORY;
     }
-    pObjNode->m_sNetAddress = netAddress;
-    pObjNode->mIProxy = pIProxy;
+    impObj->mNetAddress = netAddress;
+    impObj->mIProxy = proxy;
     pthread_mutex_lock(&g_importTableLock);
-    s_hashImportObjects[Hash(netAddress)].InsertFirst(pObjNode);
+    s_hashImportObjects[Hash(netAddress)].InsertFirst(impObj);
     pthread_mutex_unlock(&g_importTableLock);
 
     return NOERROR;
@@ -185,17 +180,17 @@ ECode RegisterImportObject(
 
 ECode FindImportObject(
     /* [in] */ const String& netAddress,
-    /* [out] */ ImportObject *pImport)
+    /* [out] */ ImportObject* impObj)
 {
     pthread_mutex_lock(&g_importTableLock);
-    ImportObject* pHead = s_hashImportObjects + Hash(netAddress);
+    ImportObject* head = s_hashImportObjects + Hash(netAddress);
 
-    for (ImportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ImportObject*)(pIter->Next())) {
-        if (pIter->m_sNetAddress.Equals(netAddress)) {
-            pImport->m_sNetAddress = pIter->m_sNetAddress;
-            pImport->mIProxy = pIter->mIProxy;
-            pImport->mIProxy->AddRef();
+    for (ImportObject* it = head; NULL != it; \
+        it = (ImportObject*)(it->Next())) {
+        if (it->mNetAddress.Equals(netAddress)) {
+            impObj->mNetAddress = it->mNetAddress;
+            impObj->mIProxy = it->mIProxy;
+            impObj->mIProxy->AddRef();
             pthread_mutex_unlock(&g_importTableLock);
             return NOERROR;
         }
@@ -210,26 +205,26 @@ ECode UnregisterImportObject(
     /* [in] */ const String& netAddress)
 {
     pthread_mutex_lock(&g_importTableLock);
-    ImportObject* pHead = s_hashImportObjects + Hash(netAddress);
-    ImportObject* pPrev = NULL;
+    ImportObject* head = s_hashImportObjects + Hash(netAddress);
+    ImportObject* prev = NULL;
 
-    for (ImportObject* pIter = pHead; NULL != pIter; \
-        pIter = (ImportObject*)(pIter->Next())) {
-        if (pIter->m_sNetAddress.Equals(netAddress)) {
-            if ((Int32)(((Elastos::RPC::CObjectProxy *)(pIter->mIProxy))->m_cRef) != 0) {
+    for (ImportObject* it = head; NULL != it; \
+        it = (ImportObject*)(it->Next())) {
+        if (it->mNetAddress.Equals(netAddress)) {
+            if ((Int32)(((Elastos::RPC::CObjectProxy *)(it->mIProxy))->mRef) != 0) {
                 pthread_mutex_unlock(&g_importTableLock);
                 return S_FALSE;
             }
 
-            if (pIter != pHead) {
-                pIter->Detach(pPrev);
-                delete pIter;
+            if (it != head) {
+                it->Detach(prev);
+                delete it;
             }
 
             pthread_mutex_unlock(&g_importTableLock);
             return NOERROR;
         }
-        pPrev = pIter;
+        prev = it;
     }
 
     pthread_mutex_unlock(&g_importTableLock);

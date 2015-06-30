@@ -8,25 +8,22 @@ namespace Elastos {
 namespace IPC {
 
 ECode Proxy_ProcessMsh_BufferSize(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ UInt32 *puArgs,
-    /* [out] */ UInt32 *puInSize,
-    /* [out] */ UInt32 *puOutSize)
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ UInt32* args,
+    /* [out] */ UInt32* retInSize,
+    /* [out] */ UInt32* retOutSize)
 {
-    int n, cParams;
-    UInt32 uInSize, uOutSize, uSize = 0;
-    const CIBaseType *pParams;
+    UInt32 uSize = 0;
+    UInt32 inSize = 0;
+    UInt32 outSize = 0;
+    Int32 paramNum = methodInfo->paramNum;
+    const CIBaseType* params = methodInfo->params;
 
-    uInSize = 0;
-    uOutSize = 0;
-    cParams = pMethodInfo->paramNum;
-    pParams = pMethodInfo->params;
+    for (Int32 n = 0; n < paramNum; n++) {
+        if (BT_IS_OUT(params[n])) {    // [out]
+            outSize += sizeof(UInt32); // for pointer
 
-    for (n = 0; n < cParams; n++) {
-        if (BT_IS_OUT(pParams[n])) {    // [out]
-            uOutSize += sizeof(UInt32); // for pointer
-
-            switch (BT_TYPE(pParams[n])) {
+            switch (BT_TYPE(params[n])) {
                 case BT_TYPE_PUINT8:
                 case BT_TYPE_PUINT16:
                 case BT_TYPE_PUINT32:
@@ -47,7 +44,7 @@ ECode Proxy_ProcessMsh_BufferSize(
                     break;
 
                 case BT_TYPE_PSTRUCT :
-                    uSize = sizeof(UInt32) * BT_TYPE_SIZE(pParams[n]);
+                    uSize = sizeof(UInt32) * BT_TYPE_SIZE(params[n]);
                     break;
 
                 case BT_TYPE_PSTRING:
@@ -56,10 +53,9 @@ ECode Proxy_ProcessMsh_BufferSize(
 
                 case BT_TYPE_STRINGBUF:
                 case BT_TYPE_BUFFEROF:
-                case BT_TYPE_ARRAYOF:{
+                case BT_TYPE_ARRAYOF:
                     uSize = sizeof(PCARQUINTET);
                     break;
-                }
 
                 case BT_TYPE_PINTERFACE:
                     uSize = sizeof(InterfacePack);
@@ -68,235 +64,231 @@ ECode Proxy_ProcessMsh_BufferSize(
                 default:
                     MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                         "MshProc: Invalid [in, out] type(%08x), param index: %d.\n",
-                        pParams[n], n));
+                        params[n], n));
                     assert(0);
                     return E_INVALID_ARGUMENT;
             }
 
-            if (*puArgs) {
-                uOutSize += uSize;
+            if (*args) {
+                outSize += uSize;
             }
             // else: null pointer do not contain data.
         }
 
-        if (BT_IS_IN(pParams[n])) { // [in]
-            switch (BT_TYPE(pParams[n])) {
+        if (BT_IS_IN(params[n])) { // [in]
+            switch (BT_TYPE(params[n])) {
                 case BT_TYPE_UINT8:
                 case BT_TYPE_UINT16:
                 case BT_TYPE_UINT32:
-                    uInSize += sizeof(UInt32);
-                    puArgs++;
+                    inSize += sizeof(UInt32);
+                    args++;
                     break;
 
                 case BT_TYPE_PUINT8:
                 case BT_TYPE_PUINT16:
                 case BT_TYPE_PUINT32:
-                    if (*puArgs) {
-                        uInSize += sizeof(UInt32) * 2;
+                    if (*args) {
+                        inSize += sizeof(UInt32) * 2;
                     }
                     else { // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
                     if (!(n % 2)) {
-                        uInSize += 4;
-                        puArgs += 1;
+                        inSize += 4;
+                        args += 1;
                     }
 #endif
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                    puArgs = (UInt32*)ROUND8((Int32)puArgs);
+                    args = (UInt32*)ROUND8((Int32)args);
 #endif
-                    uInSize += sizeof(UInt64) + 1; //+1 for 8-byte alignment
-                    puArgs += 2;
+                    inSize += sizeof(UInt64) + 1; //+1 for 8-byte alignment
+                    args += 2;
                     break;
 
                 case BT_TYPE_PUINT64:
-                    if (*puArgs) {
-                        uInSize += sizeof(UInt32) + sizeof(UInt64);
+                    if (*args) {
+                        inSize += sizeof(UInt32) + sizeof(UInt64);
                     }
                     else { // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_EGUID:
-                    uInSize += sizeof(EMuid) + sizeof(char*) \
+                    inSize += sizeof(EMuid) + sizeof(char*) \
                               + 80 * sizeof(char);
-                    puArgs += sizeof(EMuid) / 4 + sizeof(char*) / 4;
+                    args += sizeof(EMuid) / 4 + sizeof(char*) / 4;
                     break;
 
                 case BT_TYPE_EMUID:
-                    uInSize += sizeof(EMuid);
-                    puArgs += sizeof(EMuid) / 4;
+                    inSize += sizeof(EMuid);
+                    args += sizeof(EMuid) / 4;
                     break;
 
                 case BT_TYPE_PSTRUCT:
                 case BT_TYPE_STRUCT:
-                    if (*puArgs) {
-                        uInSize += sizeof(UInt32) + sizeof(UInt32) * BT_TYPE_SIZE(pParams[n]);
+                    if (*args) {
+                        inSize += sizeof(UInt32) + sizeof(UInt32) * BT_TYPE_SIZE(params[n]);
                     }
                     else {  // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_PEGUID:
-                    if (*puArgs) {
-                        uInSize += sizeof(UInt32) + sizeof(EMuid)
+                    if (*args) {
+                        inSize += sizeof(UInt32) + sizeof(EMuid)
                                    + 80 * sizeof(char)
                                    + sizeof(wchar_t*);
                     }
                     else {  // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_PEMUID:
-                    if (*puArgs) {
-                        uInSize += sizeof(UInt32) + sizeof(EMuid);
+                    if (*args) {
+                        inSize += sizeof(UInt32) + sizeof(EMuid);
                     }
                     else {  // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_STRING:
-                    if (*puArgs) {
-                        UInt32 nBufLen = (strlen((char *)(*puArgs)) + 1)
+                    if (*args) {
+                        UInt32 nBufLen = (strlen((char *)(*args)) + 1)
                             * sizeof(char);
-                        uInSize += sizeof(UInt32) + sizeof(UInt32) +
+                        inSize += sizeof(UInt32) + sizeof(UInt32) +
                             MSH_ALIGN_4(nBufLen);
                     }
                     else {
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_INTERFACE:
-                    if (*puArgs) {
-                        uInSize += sizeof(InterfacePack);
+                    if (*args) {
+                        inSize += sizeof(InterfacePack);
                     }
                     else {  // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_PINTERFACE:
-                    if (*puArgs) {
-                        if (*(UInt32 *)(*puArgs)) {
-                            uInSize += sizeof(InterfacePack);
+                    if (*args) {
+                        if (*(UInt32 *)(*args)) {
+                            inSize += sizeof(InterfacePack);
                         }
                         else {
-                            uInSize += sizeof(UInt32);
+                            inSize += sizeof(UInt32);
                         }
                     }
-                    uInSize += sizeof(UInt32);  // for pointer
-                    puArgs++;
+                    inSize += sizeof(UInt32);  // for pointer
+                    args++;
                     break;
 
                 case BT_TYPE_STRINGBUF:
                 case BT_TYPE_BUFFEROF:
                 case BT_TYPE_ARRAYOF:
-                    if (*puArgs) {
+                    if (*args) {
                         if (CarQuintetFlag_Type_IObject
-                            != (((PCARQUINTET)*puArgs)->m_flags
+                            != (((PCARQUINTET)*args)->m_flags
                                     & CarQuintetFlag_TypeMask)) {
-                            uInSize += MSH_ALIGN_4(sizeof(UInt32) \
+                            inSize += MSH_ALIGN_4(sizeof(UInt32) \
                               + sizeof(CarQuintet) \
-                              + ((PCARQUINTET)*puArgs)->m_size);
+                              + ((PCARQUINTET)*args)->m_size);
                         }
                         else {
-                            uInSize += MSH_ALIGN_4(sizeof(UInt32) \
+                            inSize += MSH_ALIGN_4(sizeof(UInt32) \
                               + sizeof(CarQuintet));
-                            int used = ((PCARQUINTET)*puArgs)->m_used
+                            Int32 used = ((PCARQUINTET)*args)->m_used
                                         / sizeof(IInterface *);
-                            int *pBuf = (int*)((PCARQUINTET)*puArgs)->m_pBuf;
+                            Int32* int32Buf = (Int32*)((PCARQUINTET)*args)->m_pBuf;
                             uint_t uUsedSize = 0;
-                            for (int i = 0; i < used; i++) {
-                                if (pBuf[i]) {
+                            for (Int32 i = 0; i < used; i++) {
+                                if (int32Buf[i]) {
                                     uUsedSize += sizeof(InterfacePack);
                                 }
                                 else {  // null pointer
                                     uUsedSize += sizeof(UInt32);
                                 }
                             }
-                            uInSize += MAX((MemorySize)uUsedSize, \
-                                MSH_ALIGN_4(((PCARQUINTET)*puArgs)->m_size));
+                            inSize += MAX((MemorySize)uUsedSize, \
+                                MSH_ALIGN_4(((PCARQUINTET)*args)->m_size));
                         }
                     }
                     else {  // null pointer
-                        uInSize += sizeof(UInt32);
+                        inSize += sizeof(UInt32);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 default:
                     MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                         "MshProc: Invalid [in, out] type(%08x), param index: %d.\n",
-                        pParams[n], n));
+                        params[n], n));
                     assert(0);
                     return E_INVALID_ARGUMENT;
             }
         }
         else {  // [out]
-            if (((BT_TYPE(pParams[n]) == BT_TYPE_BUFFEROF) ||
-                (BT_TYPE(pParams[n]) == BT_TYPE_ARRAYOF) ||
-                (BT_TYPE(pParams[n]) == BT_TYPE_STRINGBUF)) && *puArgs) {
-                uInSize += sizeof(UInt32); // for size only
+            if (((BT_TYPE(params[n]) == BT_TYPE_BUFFEROF) ||
+                (BT_TYPE(params[n]) == BT_TYPE_ARRAYOF) ||
+                (BT_TYPE(params[n]) == BT_TYPE_STRINGBUF)) && *args) {
+                inSize += sizeof(UInt32); // for size only
             }
-            puArgs++;
-            uInSize += sizeof(UInt32);
+            args++;
+            inSize += sizeof(UInt32);
         }
     }
 
-    *puInSize = uInSize;
-    *puOutSize = uOutSize;
+    *retInSize = inSize;
+    *retOutSize = outSize;
     return NOERROR;
 }
 
 ECode Proxy_ProcessMsh_In(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ UInt32 *puArgs,
-    /* [in, out] */ IParcel *pParcel)
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ UInt32* args,
+    /* [in, out] */ IParcel* parcel)
 {
-    int n, cParams;
-    const CIBaseType *pParams;
-    ECode ec;
+    Int32 paramNum = methodInfo->paramNum;
+    const CIBaseType* params = methodInfo->params;
 
-    cParams = pMethodInfo->paramNum;
-    pParams = pMethodInfo->params;
-
-    for (n = 0; n < cParams; n++) {
-        if (BT_IS_IN(pParams[n])) { // [in] or [in, out]
-            switch (BT_TYPE(pParams[n])) {
+    for (Int32 n = 0; n < paramNum; n++) {
+        if (BT_IS_IN(params[n])) { // [in] or [in, out]
+            switch (BT_TYPE(params[n])) {
                 case BT_TYPE_UINT8:
                 case BT_TYPE_UINT16:
                 case BT_TYPE_UINT32:
-                    pParcel->WriteInt32((Int32)*puArgs);
-                    puArgs++;
+                    parcel->WriteInt32((Int32)*args);
+                    args++;
                     break;
 
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
-                    if (!(n % 2)) puArgs += 1;
+                    if (!(n % 2)) args += 1;
 #endif
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                    puArgs = (UInt32*)ROUND8((Int32)puArgs);
+                    args = (UInt32*)ROUND8((Int32)args);
 #endif
-                    pParcel->WriteInt64((Int64)(*(UInt64 *)puArgs));
-                    puArgs += 2;
+                    parcel->WriteInt64((Int64)(*(UInt64 *)args));
+                    args += 2;
                     break;
 
                 case BT_TYPE_PUINT8:
@@ -304,44 +296,45 @@ ECode Proxy_ProcessMsh_In(
                 case BT_TYPE_PUINT32:
                 case BT_TYPE_PUINT64:
                     assert(0);
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_STRUCT:
                 case BT_TYPE_PSTRUCT:
-                    pParcel->WriteStruct(*puArgs, BT_TYPE_SIZE(pParams[n]) * 4);
-                    puArgs++;
+                    parcel->WriteStruct(*args, BT_TYPE_SIZE(params[n]) * 4);
+                    args++;
                     break;
 
                 case BT_TYPE_EMUID:
-                    pParcel->WriteEMuid(*(EMuid *)puArgs);
-                    puArgs += sizeof(EMuid) / 4;
+                    parcel->WriteEMuid(*(EMuid *)args);
+                    args += sizeof(EMuid) / 4;
                     break;
 
                 case BT_TYPE_EGUID:
-                    pParcel->WriteEGuid(*(EGuid *)puArgs);
-                    puArgs += sizeof(EGuid) / 4;
+                    parcel->WriteEGuid(*(EGuid *)args);
+                    args += sizeof(EGuid) / 4;
                     break;
 
                 case BT_TYPE_ARRAYOF:
-                    pParcel->WriteArrayOf((Handle32)*puArgs);
-                    puArgs++;
+                    parcel->WriteArrayOf((Handle32)*args);
+                    args++;
                     break;
 
                 case BT_TYPE_STRING:
-                    pParcel->WriteString(**(String**)puArgs);
-                    puArgs++;
+                    parcel->WriteString(**(String**)args);
+                    args++;
                     break;
 
-                case BT_TYPE_INTERFACE:
-                    ec = pParcel->WriteInterfacePtr((IInterface *)*puArgs);
+                case BT_TYPE_INTERFACE:{
+                    ECode ec = parcel->WriteInterfacePtr((IInterface *)*args);
                     if (FAILED(ec)) {
                         MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                                 "MshProc: marshal interface, ec = %x, param index: %d\n", ec, n));
                         return ec;
                     }
-                    puArgs++;
+                    args++;
                     break;
+                }
 
                 case BT_TYPE_PEMUID:
                 case BT_TYPE_PEGUID:
@@ -349,27 +342,27 @@ ECode Proxy_ProcessMsh_In(
                 case BT_TYPE_BUFFEROF:
                 case BT_TYPE_PINTERFACE:
                     assert(0);
-                    puArgs++;
+                    args++;
                     break;
 
                 default:
                     MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                         "MshProc: Invalid [in, out] type(%08x), param index: %d.\n",
-                        pParams[n], n));
+                        params[n], n));
                     assert(0);
                     return E_INVALID_ARGUMENT;
             }
         }
         else {  // [out]
-            if (*puArgs) pParcel->WriteInt32(MSH_NOT_NULL);
-            else pParcel->WriteInt32(MSH_NULL);
+            if (*args) parcel->WriteInt32(MSH_NOT_NULL);
+            else parcel->WriteInt32(MSH_NULL);
 
-            if (((BT_TYPE(pParams[n]) == BT_TYPE_BUFFEROF) ||
-                (BT_TYPE(pParams[n]) == BT_TYPE_ARRAYOF) ||
-                (BT_TYPE(pParams[n]) == BT_TYPE_STRINGBUF)) && !BT_IS_CALLEE(pParams[n]) && *puArgs) {
-                    pParcel->WriteInt32(((PCARQUINTET)*puArgs)->m_size);
+            if (((BT_TYPE(params[n]) == BT_TYPE_BUFFEROF) ||
+                (BT_TYPE(params[n]) == BT_TYPE_ARRAYOF) ||
+                (BT_TYPE(params[n]) == BT_TYPE_STRINGBUF)) && !BT_IS_CALLEE(params[n]) && *args) {
+                    parcel->WriteInt32(((PCARQUINTET)*args)->m_size);
             }
-            puArgs++;
+            args++;
         }
     }
 
@@ -377,121 +370,121 @@ ECode Proxy_ProcessMsh_In(
 }
 
 ECode Proxy_ProcessUnmsh_Out(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ IParcel *pParcel,
-    /* [in] */ UInt32 uDataSize,
-    /* [in, out] */ UInt32 *puArgs)
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ IParcel* parcel,
+    /* [in] */ UInt32 dataSize,
+    /* [in, out] */ UInt32* args)
 {
-    Int32 n, cParams, pointValue;
-    const CIBaseType *pParams;
-    cParams = pMethodInfo->paramNum;
-    pParams = pMethodInfo->params;
+    Int32 paramNum = methodInfo->paramNum;
+    const CIBaseType* params = methodInfo->params;
 
-    for (n = 0; n < cParams; n++) {
-        if (BT_IS_OUT(pParams[n])) {   // [out] or [in, out]
-            if (*puArgs) {
-                pParcel->ReadInt32(&pointValue);
+    for (Int32 n = 0; n < paramNum; n++) {
+        if (BT_IS_OUT(params[n])) {   // [out] or [in, out]
+            if (*args) {
+                Int32 pointValue;
+                parcel->ReadInt32(&pointValue);
                 if (pointValue != (Int32)MSH_NOT_NULL) {
                     MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                         "MshProc: param conflict in proxy's unmarshal, param index: %d.\n", n));
                     return E_INVALID_ARGUMENT;
                 }
 
-                switch (BT_TYPE(pParams[n])) {
+                switch (BT_TYPE(params[n])) {
                     case BT_TYPE_PUINT8:
-                        pParcel->ReadByte((Byte*)*puArgs);
+                        parcel->ReadByte((Byte*)*args);
                         break;
 
                     case BT_TYPE_PUINT16:
-                        pParcel->ReadInt16((Int16*)*puArgs);
+                        parcel->ReadInt16((Int16*)*args);
                         break;
 
                     case BT_TYPE_PUINT32:
-                        pParcel->ReadInt32((Int32*)*puArgs);
+                        parcel->ReadInt32((Int32*)*args);
                         break;
 
                     case BT_TYPE_PUINT64:
-                        pParcel->ReadInt64((Int64*)*puArgs);
+                        parcel->ReadInt64((Int64*)*args);
                         break;
 
                     case BT_TYPE_PSTRUCT:
-                        pParcel->ReadStruct((Handle32*)*puArgs);
+                        parcel->ReadStruct((Handle32*)*args);
                         break;
 
                     case BT_TYPE_PEMUID:
-                        pParcel->ReadEMuid((EMuid*)*puArgs);
+                        parcel->ReadEMuid((EMuid*)*args);
                         break;
 
                     case BT_TYPE_PEGUID:
-                        pParcel->ReadEGuid((EGuid*)*puArgs);
+                        parcel->ReadEGuid((EGuid*)*args);
                         break;
 
                     case BT_TYPE_PSTRING:
-                        pParcel->ReadString((String*)*puArgs);
+                        parcel->ReadString((String*)*args);
                         break;
 
                     case BT_TYPE_STRINGBUF:
                     case BT_TYPE_BUFFEROF:
                     case BT_TYPE_ARRAYOF:
-                        if (!BT_IS_CALLEE(pParams[n])) {
+                        if (!BT_IS_CALLEE(params[n])) {
                             PCARQUINTET p;
-                            pParcel->ReadArrayOf((Handle32*)&p);
-                            PCARQUINTET qArg = (PCARQUINTET)*puArgs;
+                            parcel->ReadArrayOf((Handle32*)&p);
+                            PCARQUINTET qArg = (PCARQUINTET)*args;
                             qArg->m_used = p->m_used;
                             memcpy(qArg->m_pBuf, p->m_pBuf, p->m_size);
                             _CarQuintet_Release(p);
                         }
                         else {
-                            pParcel->ReadArrayOf((Handle32*)*puArgs);
+                            parcel->ReadArrayOf((Handle32*)*args);
                         }
                         break;
 
                     case BT_TYPE_PINTERFACE:
-                        pParcel->ReadInterfacePtr((Handle32*)*puArgs);
+                        parcel->ReadInterfacePtr((Handle32*)*args);
                         break;
 
                     default:
                         MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
-                                "MshProc: Invalid param type(%08x), param index: %d\n", pParams[n], n));
+                                "MshProc: Invalid param type(%08x), param index: %d\n", params[n], n));
                         assert(0);
                         return E_INVALID_ARGUMENT;
                 }
             }
             else {
-                pParcel->ReadInt32(&pointValue);
+                Int32 pointValue;
+                parcel->ReadInt32(&pointValue);
                 if (pointValue != MSH_NULL) {
                     MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                             "MshProc: param conflict in proxy's unmarshal, param index: %d.\n", n));
                     return E_INVALID_ARGUMENT;
                 }
             }
-            puArgs++;
+            args++;
         }
         else {      // [in]
-            switch (BT_TYPE(pParams[n])) {
+            switch (BT_TYPE(params[n])) {
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
                     if (!(n % 2)) {
-                        puArgs += 1;
+                        args += 1;
                     }
 #endif
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                    puArgs = (UInt32*)ROUND8((Int32)puArgs);
+                    args = (UInt32*)ROUND8((Int32)args);
 #endif
-                    puArgs += 2;
+                    args += 2;
                     break;
 
                 case BT_TYPE_EMUID:
-                    puArgs += sizeof(EMuid) / 4;
+                    args += sizeof(EMuid) / 4;
                     break;
 
                 case BT_TYPE_EGUID:
-                    puArgs += sizeof(EMuid) / 4 + sizeof(char*) /4;
+                    args += sizeof(EMuid) / 4 + sizeof(char*) /4;
                     break;
 
                 default:
-                    puArgs++;
+                    args++;
                     break;
             }
         }
@@ -501,131 +494,127 @@ ECode Proxy_ProcessUnmsh_Out(
 }
 
 ECode Stub_ProcessUnmsh_In(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ IParcel *pParcel,
-    /* [in, out] */ UInt32 *puOutBuffer,
-    /* [in, out] */ UInt32 *puArgs)
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ IParcel* parcel,
+    /* [in, out] */ UInt32* outBuffer,
+    /* [in, out] */ UInt32* args)
 {
-    int n, cParams;
-    const CIBaseType *pParams;
-    Int32 pointValue;
-    ECode ec;
-
-    if (puOutBuffer) {
-        puOutBuffer = (UInt32 *)((MarshalHeader *)puOutBuffer + 1);
+    if (outBuffer) {
+        outBuffer = (UInt32 *)((MarshalHeader *)outBuffer + 1);
     }
-    cParams = pMethodInfo->paramNum;
-    pParams = pMethodInfo->params;
+    Int32 paramNum = methodInfo->paramNum;
+    const CIBaseType* params = methodInfo->params;
 
-    for (n = 0; n < cParams; n++) {
-        if (BT_IS_OUT(pParams[n])) {    // [out] or [in, out]
-            assert(puOutBuffer);
-            pParcel->ReadInt32(&pointValue);
+    for (Int32 n = 0; n < paramNum; n++) {
+        if (BT_IS_OUT(params[n])) {    // [out] or [in, out]
+            assert(outBuffer);
+            Int32 pointValue;
+            parcel->ReadInt32(&pointValue);
             if (pointValue == (Int32)MSH_NOT_NULL) {
-                *puOutBuffer = MSH_NOT_NULL;
-                puOutBuffer++;
+                *outBuffer = MSH_NOT_NULL;
+                outBuffer++;
 
-                switch (BT_TYPE(pParams[n])) { // [out]
+                switch (BT_TYPE(params[n])) { // [out]
                     case BT_TYPE_PUINT8:
                     case BT_TYPE_PUINT16:
                     case BT_TYPE_PUINT32:
-                        *puArgs = (UInt32)puOutBuffer;
-                        puOutBuffer++;
+                        *args = (UInt32)outBuffer;
+                        outBuffer++;
                         break;
 
                     case BT_TYPE_PUINT64:
-                        *puArgs = (UInt32)puOutBuffer;
-                        puOutBuffer += 2;
+                        *args = (UInt32)outBuffer;
+                        outBuffer += 2;
                         break;
 
                     case BT_TYPE_PEGUID:
-                        *puArgs = (UInt32)puOutBuffer;
-                        puOutBuffer += sizeof(EMuid) / 4;
-                        *puOutBuffer = (UInt32)(puOutBuffer + 1);
-                        puOutBuffer += sizeof(char*) / 4
+                        *args = (UInt32)outBuffer;
+                        outBuffer += sizeof(EMuid) / 4;
+                        *outBuffer = (UInt32)(outBuffer + 1);
+                        outBuffer += sizeof(char*) / 4
                                     + 80 * sizeof(char) / 4;
                         break;
 
                     case BT_TYPE_PEMUID:
-                        *puArgs = (UInt32)puOutBuffer;
-                        puOutBuffer += sizeof(EMuid) / 4;
+                        *args = (UInt32)outBuffer;
+                        outBuffer += sizeof(EMuid) / 4;
                         break;
 
                     case BT_TYPE_PSTRUCT:
-                        *puArgs = (UInt32)puOutBuffer;
-                        puOutBuffer += BT_TYPE_SIZE(pParams[n]);
+                        *args = (UInt32)outBuffer;
+                        outBuffer += BT_TYPE_SIZE(params[n]);
                         break;
 
                     case BT_TYPE_PSTRING:
-                        *puArgs = (UInt32)puOutBuffer;
-                        new((void*)puOutBuffer) String();
-                        puOutBuffer += sizeof(String) / 4;
+                        *args = (UInt32)outBuffer;
+                        new((void*)outBuffer) String();
+                        outBuffer += sizeof(String) / 4;
                         break;
 
                     case BT_TYPE_STRINGBUF:
                     case BT_TYPE_BUFFEROF:
                     case BT_TYPE_ARRAYOF:
-                        if (!BT_IS_CALLEE(pParams[n])) {
+                        if (!BT_IS_CALLEE(params[n])) {
                             Int32 size;
-                            pParcel->ReadInt32(&size);
-                            *puOutBuffer = (UInt32)malloc(sizeof(CarQuintet));
-                            *(PCARQUINTET*)puArgs = (PCARQUINTET)*puOutBuffer;
-                            ((PCARQUINTET)*puArgs)->m_size = size;
-                            ((PCARQUINTET)*puArgs)->m_pBuf = malloc(size);
+                            parcel->ReadInt32(&size);
+                            *outBuffer = (UInt32)malloc(sizeof(CarQuintet));
+                            *(PCARQUINTET*)args = (PCARQUINTET)*outBuffer;
+                            ((PCARQUINTET)*args)->m_size = size;
+                            ((PCARQUINTET)*args)->m_pBuf = malloc(size);
                         }
                         else {
-                            *puOutBuffer = 0;
-                            *puArgs = (UInt32)puOutBuffer;
+                            *outBuffer = 0;
+                            *args = (UInt32)outBuffer;
                         }
-                        puOutBuffer++;
+                        outBuffer++;
                         break;
 
                     case BT_TYPE_PINTERFACE:
-                        *puOutBuffer = 0;
-                        *puArgs = (UInt32)puOutBuffer;
-                        puOutBuffer += sizeof(InterfacePack) / 4;
+                        *outBuffer = 0;
+                        *args = (UInt32)outBuffer;
+                        outBuffer += sizeof(InterfacePack) / 4;
                         break;
 
                     default:
                         MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                             "MshProc: Invalid param type(%08x) in UnMsh_in, param index: %d.\n",
-                            pParams[n], n));
+                            params[n], n));
                         return E_INVALID_ARGUMENT;
                 }
             }
             else if (pointValue == MSH_NULL) {
-                *puOutBuffer = MSH_NULL;
-                puOutBuffer++;
-                *puArgs = 0;
+                *outBuffer = MSH_NULL;
+                outBuffer++;
+                *args = 0;
             }
             else {
                 MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                     "MshProc: Invalid pointer value in unmarshal in, param index: %d.\n", n));
                 return E_INVALID_ARGUMENT;
             }
-            puArgs++;
+            args++;
         }
-        else if (BT_IS_IN(pParams[n])) {    // [in]
-            switch (BT_TYPE(pParams[n])) {
+        else if (BT_IS_IN(params[n])) {    // [in]
+            switch (BT_TYPE(params[n])) {
                 case BT_TYPE_UINT8:
                 case BT_TYPE_UINT16:
                 case BT_TYPE_UINT32:
-                    pParcel->ReadInt32((Int32*)puArgs);
-                    puArgs++;
+                    parcel->ReadInt32((Int32*)args);
+                    args++;
                     break;
 
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
                     if (!(n % 2)) {
-                        puArgs += 1;
+                        args += 1;
                     }
 #endif
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                    puArgs = (UInt32*)ROUND8((Int32)puArgs);
+                    args = (UInt32*)ROUND8((Int32)args);
 #endif
-                    pParcel->ReadInt64((Int64*)puArgs);
-                    puArgs += 2;
+                    parcel->ReadInt64((Int64*)args);
+                    args += 2;
                     break;
 
                 case BT_TYPE_PUINT8:
@@ -633,18 +622,18 @@ ECode Stub_ProcessUnmsh_In(
                 case BT_TYPE_PUINT32:
                 case BT_TYPE_PUINT64:
                     assert(0);
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_EMUID:
-                    pParcel->ReadEMuid((EMuid*)puArgs);
-                    puArgs += sizeof(EMuid) / 4;
+                    parcel->ReadEMuid((EMuid*)args);
+                    args += sizeof(EMuid) / 4;
                     break;
 
                 case BT_TYPE_EGUID:
-                    pParcel->ReadEGuid((EGuid*)puArgs);
-                    puArgs += (sizeof(EGuid) +
-                               MSH_ALIGN_4(strlen(((EGuid*)puArgs)->pUunm) + 1)) / 4;
+                    parcel->ReadEGuid((EGuid*)args);
+                    args += (sizeof(EGuid) +
+                               MSH_ALIGN_4(strlen(((EGuid*)args)->pUunm) + 1)) / 4;
                     break;
 
                 case BT_TYPE_STRUCT:
@@ -654,47 +643,48 @@ ECode Stub_ProcessUnmsh_In(
                 case BT_TYPE_STRINGBUF:
                 case BT_TYPE_BUFFEROF:
                     assert(0);
-                    puArgs++;
+                    args++;
                     break;
 
 
                 case BT_TYPE_ARRAYOF:
-                    pParcel->ReadArrayOf((Handle32*)puArgs);
-                    puArgs++;
+                    parcel->ReadArrayOf((Handle32*)args);
+                    args++;
                     break;
 
                 case BT_TYPE_STRING: {
                     String str;
-                    pParcel->ReadString(&str);
-                    *(String**)puArgs = new String(str);
-                    puArgs++;
+                    parcel->ReadString(&str);
+                    *(String**)args = new String(str);
+                    args++;
                     break;
                 }
 
-                case BT_TYPE_INTERFACE:
-                    ec = pParcel->ReadInterfacePtr((Handle32*)puArgs);
+                case BT_TYPE_INTERFACE: {
+                    ECode ec = parcel->ReadInterfacePtr((Handle32*)args);
                     if (FAILED(ec)) {
                         MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                                 "MshProc: unmsh interface, ec = %x\n", ec));
                         return ec;
                     }
-                    puArgs++;
+                    args++;
                     break;
+                }
 
                 case BT_TYPE_PINTERFACE:
                     assert(0);
-                    puArgs++;
+                    args++;
                     break;
 
                 default:
                     MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
-                        "MshProc: Invalid param type(%08x), param index: %d\n", pParams[n], n));
+                        "MshProc: Invalid param type(%08x), param index: %d\n", params[n], n));
                     return E_INVALID_ARGUMENT;
             }
         }
         else {
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
-                "MshProc: Invalid param type(%08x), param index: %d\n", pParams[n], n));
+                "MshProc: Invalid param type(%08x), param index: %d\n", params[n], n));
             return E_INVALID_ARGUMENT;
         }
     }
@@ -703,56 +693,52 @@ ECode Stub_ProcessUnmsh_In(
 }
 
 ECode Stub_ProcessMsh_Out(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ UInt32 *puArgs,
-    /* [in] */ UInt32 *puOutBuffer,
-    /* [in] */ Boolean bOnlyReleaseIn,
-    /* [in, out] */ IParcel* pParcel)
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ UInt32* args,
+    /* [in] */ UInt32* outBuffer,
+    /* [in] */ Boolean onlyReleaseIn,
+    /* [in, out] */ IParcel* parcel)
 {
-    int n, cParams;
-    const CIBaseType *pParams;
-    ECode ec;
-
-    cParams = pMethodInfo->paramNum;
-    pParams = pMethodInfo->params;
+    Int32 paramNum = methodInfo->paramNum;
+    const CIBaseType* params = methodInfo->params;
 
     // skip the Out Marshal Header;
-    if (puOutBuffer) {
-        puOutBuffer = (UInt32 *)((MarshalHeader *)puOutBuffer + 1);
+    if (outBuffer) {
+        outBuffer = (UInt32 *)((MarshalHeader *)outBuffer + 1);
     }
 
-    for (n = 0; n < cParams; n++) {
-        if (BT_IS_OUT(pParams[n])) {    // [out] or [in, out]
-            puArgs++;
-            if (bOnlyReleaseIn)
+    for (Int32 n = 0; n < paramNum; n++) {
+        if (BT_IS_OUT(params[n])) {    // [out] or [in, out]
+            args++;
+            if (onlyReleaseIn)
                 continue;
 
-            if (*puOutBuffer != MSH_NULL) {
-                assert(*puOutBuffer == MSH_NOT_NULL);
-                pParcel->WriteInt32(MSH_NOT_NULL);
-                puOutBuffer++;
+            if (*outBuffer != MSH_NULL) {
+                assert(*outBuffer == MSH_NOT_NULL);
+                parcel->WriteInt32(MSH_NOT_NULL);
+                outBuffer++;
 
-                switch (BT_TYPE(pParams[n])) {
+                switch (BT_TYPE(params[n])) {
                     case BT_TYPE_PUINT64:
-                        pParcel->WriteInt64(*(Int64*)puOutBuffer);
-                        puOutBuffer += 2;
+                        parcel->WriteInt64(*(Int64*)outBuffer);
+                        outBuffer += 2;
                         break;
 
                     case BT_TYPE_PSTRING:
-                        if (*puOutBuffer) {
-                            String* p = (String*)puOutBuffer;
-                            pParcel->WriteString(*p);
+                        if (*outBuffer) {
+                            String* p = (String*)outBuffer;
+                            parcel->WriteString(*p);
                             p->~String();
                         }
                         else {
-                            pParcel->WriteInt32(MSH_NULL);
+                            parcel->WriteInt32(MSH_NULL);
                         }
-                        puOutBuffer += sizeof(String) / 4;
+                        outBuffer += sizeof(String) / 4;
                         break;
 
                     case BT_TYPE_STRINGBUF:
                         assert(0);
-                        puOutBuffer++;
+                        outBuffer++;
                         break;
 
                     case BT_TYPE_BUFFEROF:
@@ -760,128 +746,127 @@ ECode Stub_ProcessMsh_Out(
                         break;
 
                     case BT_TYPE_ARRAYOF:
-                        pParcel->WriteArrayOf((Handle32)*puOutBuffer);
-                        if (!BT_IS_CALLEE(pParams[n])) {
-                            PCARQUINTET p = (PCARQUINTET)*puOutBuffer;
+                        parcel->WriteArrayOf((Handle32)*outBuffer);
+                        if (!BT_IS_CALLEE(params[n])) {
+                            PCARQUINTET p = (PCARQUINTET)*outBuffer;
                             free(p->m_pBuf);
                             free(p);
                         }
-                        puOutBuffer++;
+                        outBuffer++;
                         break;
 
                     case BT_TYPE_PEMUID:
-                        pParcel->WriteEMuid(*(EMuid*)puOutBuffer);
-                        puOutBuffer += sizeof(EMuid) / 4;
+                        parcel->WriteEMuid(*(EMuid*)outBuffer);
+                        outBuffer += sizeof(EMuid) / 4;
                         break;
 
                     case BT_TYPE_PSTRUCT:
-                        pParcel->WriteStruct((Handle32)puOutBuffer, BT_TYPE_SIZE(pParams[n]) * 4);
-                        puOutBuffer += BT_TYPE_SIZE(pParams[n]);
+                        parcel->WriteStruct((Handle32)outBuffer, BT_TYPE_SIZE(params[n]) * 4);
+                        outBuffer += BT_TYPE_SIZE(params[n]);
                         break;
 
                     case BT_TYPE_PEGUID:
-                        pParcel->WriteEGuid(*(EGuid*)puOutBuffer);
-                        puOutBuffer += sizeof(EMuid) / 4 + sizeof(char*) / 4 \
+                        parcel->WriteEGuid(*(EGuid*)outBuffer);
+                        outBuffer += sizeof(EMuid) / 4 + sizeof(char*) / 4 \
                                        + 80 * sizeof(char) / 4;
                         break;
 
-                    case BT_TYPE_PINTERFACE:
-                        IInterface *pObj;
-
-                        pObj = (IInterface *)*puOutBuffer;
-                        ec = pParcel->WriteInterfacePtr(pObj);
+                    case BT_TYPE_PINTERFACE: {
+                        IInterface* object = (IInterface *)*outBuffer;
+                        ECode ec = parcel->WriteInterfacePtr(object);
                         if (FAILED(ec)) {
                             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                                     "MshProc: marshal interface, ec = %x, param index: %d\n", ec, n));
                             return ec;
                         }
 
-                        if (NULL != pObj) pObj->Release();
+                        if (NULL != object) object->Release();
 
-                        puOutBuffer += sizeof(InterfacePack) / 4;
+                        outBuffer += sizeof(InterfacePack) / 4;
                         break;
+                    }
 
                     default:
-                        pParcel->WriteInt32(*(Int32*)puOutBuffer);
-                        puOutBuffer++;
+                        parcel->WriteInt32(*(Int32*)outBuffer);
+                        outBuffer++;
                         break;
                 }
             }
             else {
-                assert(*puOutBuffer == MSH_NULL);
-                pParcel->WriteInt32(MSH_NULL);
-                puOutBuffer++;
+                assert(*outBuffer == MSH_NULL);
+                parcel->WriteInt32(MSH_NULL);
+                outBuffer++;
             }
         }
         else {  // BT_IS_IN
-            switch (BT_TYPE(pParams[n])) {
+            switch (BT_TYPE(params[n])) {
                 case BT_TYPE_UINT64:
 #ifdef _mips
                     // Adjust for 64bits align on mips
-                    if (!(n % 2)) puArgs += 1;
+                    if (!(n % 2)) args += 1;
 #endif
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-                    puArgs = (UInt32*)ROUND8((Int32)puArgs);
+                    args = (UInt32*)ROUND8((Int32)args);
 #endif
-                    puArgs += 2;
+                    args += 2;
                     break;
 
                 case BT_TYPE_PUINT8:
                 case BT_TYPE_PUINT16:
                 case BT_TYPE_PUINT32:
-                    free(*(Int32**)puArgs);
-                    puArgs++;
+                    free(*(Int32**)args);
+                    args++;
                     break;
 
                 case BT_TYPE_PUINT64:
-                    free(*(Int64**)puArgs);
-                    puArgs++;
+                    free(*(Int64**)args);
+                    args++;
                     break;
 
                 case BT_TYPE_STRING: {
-                    String* p = *(String**)puArgs;
+                    String* p = *(String**)args;
                     delete p;
-                    puArgs++;
+                    args++;
                     break;
                 }
 
                 case BT_TYPE_EMUID:
-                    puArgs += sizeof(EMuid) / 4;
+                    args += sizeof(EMuid) / 4;
                     break;
 
                 case BT_TYPE_EGUID:
-                    puArgs += sizeof(EMuid) / 4 + sizeof(char*) / 4;
+                    args += sizeof(EMuid) / 4 + sizeof(char*) / 4;
                     break;
 
                 case BT_TYPE_PEGUID:
-                    free(*(EGuid**)puArgs);
-                    puArgs++;
+                    free(*(EGuid**)args);
+                    args++;
                     break;
 
                 case BT_TYPE_PINTERFACE:
-                    if (*puArgs && *(UInt32 *)(*puArgs)) {
-                        ((IInterface *)*(UInt32 *)*puArgs)->Release();
+                    if (*args && *(UInt32 *)(*args)) {
+                        ((IInterface *)*(UInt32 *)*args)->Release();
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_INTERFACE:
-                    if (*puArgs) {
-                        ((IInterface *)*puArgs)->Release();
+                    if (*args) {
+                        ((IInterface *)*args)->Release();
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 case BT_TYPE_STRINGBUF:
                 case BT_TYPE_BUFFEROF:
                 case BT_TYPE_ARRAYOF:
-                    if (*puArgs) {
+                    if (*args) {
                         if (CarQuintetFlag_Type_IObject
-                            == (((PCARQUINTET)*puArgs)->m_flags
+                            == (((PCARQUINTET)*args)->m_flags
                                     & CarQuintetFlag_TypeMask)) {
-                            int used = ((PCARQUINTET)*puArgs)->m_used
+                            int used = ((PCARQUINTET)*args)->m_used
                                         / sizeof(IInterface *);
-                            int *pBuf = (int*)((PCARQUINTET)*puArgs)->m_pBuf;
+                            int *pBuf = (int*)((PCARQUINTET)*args)->m_pBuf;
                             for (int i = 0; i < used; i++) {
                                 if (pBuf[i]) {
                                     ((IInterface *)pBuf[i])->Release();
@@ -890,24 +875,24 @@ ECode Stub_ProcessMsh_Out(
                             }
                         }
                         else if (CarQuintetFlag_Type_String
-                            == (((PCARQUINTET)*puArgs)->m_flags
+                            == (((PCARQUINTET)*args)->m_flags
                                     & CarQuintetFlag_TypeMask)) {
-                            int size = ((PCARQUINTET)*puArgs)->m_size
+                            int size = ((PCARQUINTET)*args)->m_size
                                         / sizeof(String);
-                            String *pBuf = (String*)((PCARQUINTET)*puArgs)->m_pBuf;
+                            String *pBuf = (String*)((PCARQUINTET)*args)->m_pBuf;
                             for (int i = 0; i < size; i++) {
                                 if (!pBuf[i].IsNull()) {
                                     pBuf[i] = NULL;
                                 }
                             }
                         }
-                        _CarQuintet_Release((PCARQUINTET)*puArgs);
+                        _CarQuintet_Release((PCARQUINTET)*args);
                     }
-                    puArgs++;
+                    args++;
                     break;
 
                 default:
-                    puArgs++;
+                    args++;
                     break;
             }
         }

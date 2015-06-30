@@ -10,15 +10,15 @@ namespace RPC {
 
 typedef struct ExportObject: SLinkNode
 {
-    String              m_sNetAddress;
-    IInterface          *mObject;
-    IStub               *mIStub;
+    String              mNetAddress;
+    IInterface*         mObject;
+    IStub*              mIStub;
 } ExportObject;
 
 typedef struct ImportObject: SLinkNode
 {
-    String              m_sNetAddress;
-    IProxy              *mIProxy;
+    String              mNetAddress;
+    IProxy*             mIProxy;
 } ImportObject;
 
 extern ECode InitROT();
@@ -27,30 +27,30 @@ extern void UninitROT();
 
 extern ECode RegisterExportObject(
     /* [in] */ const String& netAddress,
-    /* [in] */ IInterface *pObject,
-    /* [in] */ IStub *pIStub);
+    /* [in] */ IInterface* object,
+    /* [in] */ IStub* stub);
 
 extern ECode UnregisterExportObject(
     /* [in] */ const String& netAddress);
 
 extern ECode FindExportObject(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ ExportObject *pExport);
+    /* [in] */ IInterface* object,
+    /* [out] */ ExportObject* expObj);
 
 extern ECode FindExportObject(
     /* [in] */ const String& netAddress,
-    /* [out] */ ExportObject *pExport);
+    /* [out] */ ExportObject* expObj);
 
 extern ECode RegisterImportObject(
     /* [in] */ const String& netAddress,
-    /* [in] */ IProxy *pIProxy);
+    /* [in] */ IProxy* proxy);
 
 extern ECode UnregisterImportObject(
     /* [in] */ const String& netAddress);
 
 extern ECode FindImportObject(
     /* [in] */ const String& netAddress,
-    /* [out] */ ImportObject *pImport);
+    /* [out] */ ImportObject* impObj);
 
 } // namespace RPC
 } // namespace Elastos

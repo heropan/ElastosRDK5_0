@@ -10,19 +10,19 @@ namespace RPC {
 
 typedef struct InterfacePack
 {
-    EMuid               mClsid;            // clsid of object
+    EMuid               mClsid;           // clsid of object
     UInt32              mIndex;           // interface index in class
-    String              m_sNetAddress;      // net address of stub
+    String              mNetAddress;      // net address of stub
 }   InterfacePack;
 
 extern ECode StdMarshalInterface(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfacePack *pInterfacePack);
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfacePack* interfacePack);
 
 extern ECode StdUnmarshalInterface(
     /* [in] */ UnmarshalFlag flag,
-    /* [in] */ InterfacePack *pInterfacePack,
-    /* [out] */ IInterface **ppObject);
+    /* [in] */ InterfacePack* interfacePack,
+    /* [out] */ IInterface** object);
 
 } // namespace RPC
 } // namespace Elastos
