@@ -22,6 +22,43 @@ class Socket
 public:
     CAR_INTERFACE_DECL()
 
+    Socket();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IProxy* proxy);
+
+    CARAPI constructor(
+        /* [in] */ const String& dstName,
+        /* [in] */ Int32 dstPort);
+
+    CARAPI constructor(
+        /* [in] */ const String& dstName,
+        /* [in] */ Int32 dstPort,
+        /* [in] */ IInetAddress* localAddress,
+        /* [in] */ Int32 localPort);
+
+    CARAPI constructor(
+        /* [in] */ const String& hostName,
+        /* [in] */ Int32 port,
+        /* [in] */ Boolean streaming);
+
+    CARAPI constructor(
+        /* [in] */ IInetAddress* dstAddress,
+        /* [in] */ Int32 dstPort);
+
+    CARAPI constructor(
+        /* [in] */ IInetAddress* dstAddress,
+        /* [in] */ Int32 dstPort,
+        /* [in] */ IInetAddress* localAddress,
+        /* [in] */ Int32 localPort);
+
+    CARAPI constructor(
+        /* [in] */ IInetAddress* addr,
+        /* [in] */ Int32 port,
+        /* [in] */ Boolean streaming);
+
     CARAPI Close();
 
     CARAPI OnClose();
@@ -166,43 +203,7 @@ public:
     {
         mIsCreated = value;
     }
-//protected:
-    Socket();
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IProxy* proxy);
-
-    CARAPI constructor(
-        /* [in] */ const String& dstName,
-        /* [in] */ Int32 dstPort);
-
-    CARAPI constructor(
-        /* [in] */ const String& dstName,
-        /* [in] */ Int32 dstPort,
-        /* [in] */ IInetAddress* localAddress,
-        /* [in] */ Int32 localPort);
-
-    CARAPI constructor(
-        /* [in] */ const String& hostName,
-        /* [in] */ Int32 port,
-        /* [in] */ Boolean streaming);
-
-    CARAPI constructor(
-        /* [in] */ IInetAddress* dstAddress,
-        /* [in] */ Int32 dstPort);
-
-    CARAPI constructor(
-        /* [in] */ IInetAddress* dstAddress,
-        /* [in] */ Int32 dstPort,
-        /* [in] */ IInetAddress* localAddress,
-        /* [in] */ Int32 localPort);
-
-    CARAPI constructor(
-        /* [in] */ IInetAddress* addr,
-        /* [in] */ Int32 port,
-        /* [in] */ Boolean streaming);
 private:
     CARAPI TryAllAddresses(
         /* [in] */ const String& dstName,
@@ -213,10 +214,6 @@ private:
 
     CARAPI CheckDestination(
         /* [in] */ IInetAddress* destAddr,
-        /* [in] */ Int32 dstPort);
-
-    CARAPI CheckConnectPermission(
-        /* [in] */ const String& hostname,
         /* [in] */ Int32 dstPort);
 
     CARAPI StartupSocket(
@@ -238,10 +235,11 @@ public:
 
 private:
     static AutoPtr<ISocketImplFactory> sFactory;
+    static Object sLock;
 
     AutoPtr<IProxy> mProxy;
 
-    Boolean mIsCreated;
+    volatile Boolean mIsCreated;
     Boolean mIsBound;
     Boolean mIsConnected;
     Boolean mIsClosed;
@@ -249,6 +247,7 @@ private:
     Boolean mIsOutputShutdown;
 
     AutoPtr<IInetAddress> mLocalAddress;
+    Object mConnectLock;
 };
 
 } // namespace Net

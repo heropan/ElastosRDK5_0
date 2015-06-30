@@ -7,10 +7,10 @@ module
     interface Elastos.Net.ICacheResponse;
     interface Elastos.Net.ICacheRequest;
 
-    namespace Elastos{
-    namespace Net{
+    namespace Elastos {
+    namespace Net {
 
-    enum ResponseSource{
+    enum ResponseSource {
         /**
          * Return the response from the cache immediately.
          */

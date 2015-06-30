@@ -1,25 +1,32 @@
 
 #include "URLStreamHandler.h"
-//#include "CURL.h"
+#include "CURL.h"
+#include "CURI.h"
 #include "InetAddress.h"
-#include "StringBuffer.h"
+#include "StringBuilder.h"
 #include "StringUtils.h"
 #include "Math.h"
 #include "url/UrlUtils.h"
-//#include <Com.Kortide.Platform.h>
-//#include <Elastos.Security.h>
+
 
 namespace Elastos {
 namespace Net {
 
-using Elastos::Core::StringBuffer;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
 using Libcore::Net::Url::UrlUtils;
 
-// {99E0A5EB-DDD7-4ab4-820E-7B926C0A7036}
-const InterfaceID EIID_URLStreamHandler =
-    { 0x99e0a5eb, 0xddd7, 0x4ab4, { 0x82, 0xe, 0x7b, 0x92, 0x6c, 0xa, 0x70, 0x36 } };
+
+CAR_INTERFACE_IMPL(URLStreamHandler, Object, IURLStreamHandler)
+
+URLStreamHandler::URLStreamHandler()
+{
+}
+
+URLStreamHandler::~URLStreamHandler()
+{
+}
 
 CAR_INTERFACE_IMPL(URLStreamHandler, Object, IURLStreamHandler);
 ECode URLStreamHandler::OpenConnection(
@@ -37,14 +44,10 @@ ECode URLStreamHandler::ParseURL(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-// For compatibility, refer to Harmony-2941
-    //zhangjingcheng not implement
-//    URLStreamHandler* handler =
-//            (URLStreamHandler*)((CURL*)u)->mStrmHandler->Probe(EIID_URLStreamHandler);
-//    if (this != handler)
-//    {
-//        return E_SECURITY_EXCEPTION;
-//    }
+    CURL* curl = (CURL*)url;
+    if (THIS_PROBE(IURLStreamHandler) != curl->mStreamHandler) {
+       return E_SECURITY_EXCEPTION;
+    }
 
     if (end < start) {
         return E_STRING_INDEX_OUT_OF_BOUNDS_EXCEPTION;
@@ -98,7 +101,8 @@ ECode URLStreamHandler::ParseURL(
         path = NULL;
         query = NULL;
         ref = NULL;
-    } else {
+    }
+    else {
         // Get the authority from the context URL.
         fileStart = start;
         url->GetAuthority(&authority);
@@ -156,26 +160,24 @@ ECode URLStreamHandler::ParseURL(
 }
 
 ECode URLStreamHandler::SetURL(
-    /* [in] */ IURL* u,
+    /* [in] */ IURL* url,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [in] */ const String& file,
     /* [in] */ const String& ref)
 {
-//    zhangjingcheng not implement
-//    URLStreamHandler* handler =
-//            (URLStreamHandler*)((CURL*)u)->mStrmHandler->Probe(EIID_URLStreamHandler);
-//    if (this != handler) {
-////            throw new SecurityException();
-//        return E_SECURITY_EXCEPTION;
-//    }
-//    ((CURL*)u)->Set(protocol, host, port, file, ref);
+    CURL* curl = (CURL*)url;
+    if (THIS_PROBE(IURLStreamHandler) != curl->mStreamHandler) {
+       return E_SECURITY_EXCEPTION;
+    }
+
+    curl->Set(protocol, host, port, file, ref);
     return NOERROR;
 }
 
 ECode URLStreamHandler::SetURL(
-    /* [in] */ IURL* u,
+    /* [in] */ IURL* url,
     /* [in] */ const String& protocol,
     /* [in] */ const String& host,
     /* [in] */ Int32 port,
@@ -185,14 +187,11 @@ ECode URLStreamHandler::SetURL(
     /* [in] */ const String& query,
     /* [in] */ const String& ref)
 {
-    //zhangjingcheng not implement
-//    URLStreamHandler* handler =
-//            (URLStreamHandler*)((CURL*)u)->mStrmHandler->Probe(EIID_URLStreamHandler);
-//    if (this != handler) {
-////            throw new SecurityException();
-//        return E_SECURITY_EXCEPTION;
-//    }
-//    ((CURL*)u)->Set(protocol, host, port, authority, userInfo, file, query, ref);
+    CURL* curl = (CURL*)url;
+    if (THIS_PROBE(IURLStreamHandler) != curl->mStreamHandler) {
+       return E_SECURITY_EXCEPTION;
+    }
+    curl->Set(protocol, host, port, authority, userInfo, file, query, ref);
     return NOERROR;
 }
 
@@ -203,38 +202,38 @@ ECode URLStreamHandler::ToExternalForm(
 {
     VALIDATE_NOT_NULL(s)
 
-    StringBuffer answer;
+    StringBuilder answer;
     String protocol;
     url->GetProtocol(&protocol);
     answer += protocol;
-    answer += ':';
+    answer.AppendChar(':');
     String authority;
     url->GetAuthority(&authority);
     if (!authority.IsNullOrEmpty()) {
         answer += "//";
-        if(escapeIllegalCharacters)
-        {
-            //zhangjingcheng, not implement
-        }else{
+        if(escapeIllegalCharacters) {
+            CURI::AUTHORITY_ENCODER->AppendPartiallyEncoded(answer, authority);
+        }
+        else{
             answer += authority;
         }
     }
 
-    String file, ref;
-    url->GetFile(&file);
+    String fileAndQuery, ref;
+    url->GetFile(&fileAndQuery);
     url->GetRef(&ref);
-    if (!file.IsNull()) {
+    if (!fileAndQuery.IsNull()) {
         if(escapeIllegalCharacters) {
-            //zhangjingcheng, not implement
+            CURI::FILE_AND_QUERY_ENCODER->AppendPartiallyEncoded(answer, fileAndQuery);
         }
         else {
-            answer += file;
+            answer += fileAndQuery;
         }
     }
     if (!ref.IsNull()) {
-        answer += '#';
+        answer.AppendChar('#');
         if (escapeIllegalCharacters) {
-            //zhangjingcheng, not implement
+            CURI::ALL_LEGAL_ENCODER->AppendPartiallyEncoded(answer, ref);
         }
         else {
             answer += ref;

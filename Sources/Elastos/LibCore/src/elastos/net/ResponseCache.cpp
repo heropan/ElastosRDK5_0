@@ -6,6 +6,16 @@ namespace Net {
 
 AutoPtr<IResponseCache> ResponseCache::sDefaultResponseCache;
 
+CAR_INTERFACE_IMPL(ResponseCache, Object, IResponseCache)
+
+ResponseCache::ResponseCache()
+{
+}
+
+ResponseCache::~ResponseCache()
+{
+}
+
 ECode ResponseCache::GetDefault(
     /* [out] */ IResponseCache** responseCache)
 {

@@ -9,9 +9,17 @@ using Elastos::Utility::IMap;
 namespace Elastos {
 namespace Net {
 
-class ResponseCache : public Object
+class ResponseCache
+    : public Object
+    , public IResponseCache
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    ResponseCache();
+
+    virtual ~ResponseCache();
+
     /**
      * Returns the system's default response cache, or null.
      */

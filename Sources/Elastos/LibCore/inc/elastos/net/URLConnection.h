@@ -39,27 +39,35 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
+    URLConnection();
+
+    virtual ~URLConnection();
+
+    CARAPI constructor(
+        /* [in] */ IURL* url);
+
     virtual CARAPI Connect() = 0;
 
-    virtual CARAPI GetAllowUserInteraction(
+    CARAPI GetAllowUserInteraction(
         /* [out] */ Boolean* value);
 
-    virtual CARAPI GetContent(
+    CARAPI GetContent(
         /* [out] */ IInterface** content);
 
-    // Param is not generic in spec
-//        public Object getContent(Class[] types);
+    CARAPI GetContent(
+        /* [in] */ ArrayOf<InterfaceID> * types,
+        /* [out] */ IInterface** obj);
 
-    virtual CARAPI GetContentEncoding(
+    CARAPI GetContentEncoding(
         /* [out] */ String* encoding);
 
-    virtual CARAPI GetContentLength(
+    CARAPI GetContentLength(
         /* [out] */ Int32* length);
 
-    virtual CARAPI GetContentType(
+    CARAPI GetContentType(
         /* [out] */ String* type);
 
-    virtual CARAPI GetDate(
+    CARAPI GetDate(
         /* [out] */ Int64* date);
 
     static CARAPI_(Boolean) GetDefaultAllowUserInteraction();
@@ -67,79 +75,79 @@ public:
     static CARAPI_(String) GetDefaultRequestProperty(
         /* [in] */ const String& field);
 
-    virtual CARAPI GetDefaultUseCaches(
+    CARAPI GetDefaultUseCaches(
         /* [out] */ Boolean* value);
 
-    virtual CARAPI GetDoInput(
+    CARAPI GetDoInput(
         /* [out] */ Boolean* allowed);
 
-    virtual CARAPI GetDoOutput(
+    CARAPI GetDoOutput(
         /* [out] */ Boolean* allowed);
 
-    virtual CARAPI GetExpiration(
+    CARAPI GetExpiration(
         /* [out] */ Int64* expiration);
 
     static CARAPI_(AutoPtr<IFileNameMap>) GetFileNameMap();
 
-    virtual CARAPI GetHeaderField(
+    CARAPI GetHeaderField(
         /* [in] */ const String& key,
         /* [out] */ String* value);
 
-    virtual CARAPI GetHeaderField(
+    CARAPI GetHeaderField(
         /* [in] */ Int32 pos,
         /* [out] */ String* value);
 
-    virtual CARAPI GetHeaderFields(
+    CARAPI GetHeaderFields(
         /* [out] */ IMap** headerFields);
 
-    virtual CARAPI GetRequestProperties(
+    CARAPI GetRequestProperties(
         /* [out] */ IMap** properties);
 
-    virtual CARAPI AddRequestProperty(
+    CARAPI AddRequestProperty(
         /* [in] */ const String& field,
         /* [in] */ const String& newValue);
 
-    virtual CARAPI GetHeaderFieldByKey(
+    CARAPI GetHeaderFieldByKey(
         /* [in] */ const String& key,
         /* [out] */ String* value);
 
-    virtual CARAPI GetHeaderFieldDate(
+    CARAPI GetHeaderFieldDate(
         /* [in] */ const String& field,
         /* [in] */ Int64 defaultValue,
         /* [out] */ Int64* value);
 
-    virtual CARAPI GetHeaderFieldInt32(
+    CARAPI GetHeaderFieldInt32(
         /* [in] */ const String& field,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32* value);
 
-    virtual CARAPI GetHeaderFieldKey(
+    CARAPI GetHeaderFieldKey(
         /* [in] */ Int32 posn,
         /* [out] */ String* key);
 
-    virtual CARAPI GetIfModifiedSince(
+    CARAPI GetIfModifiedSince(
         /* [out] */ Int64* time);
 
-    virtual CARAPI GetInputStream(
+    CARAPI GetInputStream(
         /* [out] */ IInputStream** is);
 
-    virtual CARAPI GetLastModified(
+    CARAPI GetLastModified(
         /* [out] */ Int64* value);
 
-    virtual CARAPI GetOutputStream(
+    CARAPI GetOutputStream(
         /* [out] */ IOutputStream** os);
 
-    virtual CARAPI GetPermission(
+    CARAPI GetPermission(
         /* [out] */ IPermission** perm);
 
-    virtual CARAPI GetRequestProperty(
+    CARAPI GetRequestProperty(
         /* [in] */ const String& field,
         /* [out] */ String* property);
 
-    virtual CARAPI GetURL(
+    CARAPI GetURL(
         /* [out] */ IURL** url);
 
-    virtual CARAPI GetUseCaches(
+    CARAPI GetUseCaches(
         /* [out] */ Boolean* allowed);
 
     static CARAPI_(String) GuessContentTypeFromName(
@@ -148,7 +156,7 @@ public:
     static CARAPI_(String) GuessContentTypeFromStream(
         /* [in] */ IInputStream* is);
 
-    virtual CARAPI SetAllowUserInteraction(
+    CARAPI SetAllowUserInteraction(
         /* [in] */ Boolean newValue);
 
     static CARAPI SetContentHandlerFactory(
@@ -161,47 +169,39 @@ public:
         /* [in] */ const String& field,
         /* [in] */ const String& value);
 
-    virtual CARAPI SetDefaultUseCaches(
+    CARAPI SetDefaultUseCaches(
         /* [in] */ Boolean newValue);
 
-    virtual CARAPI SetDoInput(
+    CARAPI SetDoInput(
         /* [in] */ Boolean newValue);
 
-    virtual CARAPI SetDoOutput(
+    CARAPI SetDoOutput(
         /* [in] */ Boolean newValue);
 
     static CARAPI_(void) SetFileNameMap(
         /* [in] */ IFileNameMap* map);
 
-    virtual CARAPI SetIfModifiedSince(
+    CARAPI SetIfModifiedSince(
         /* [in] */ Int64 newValue);
 
-    virtual CARAPI SetRequestProperty(
+    CARAPI SetRequestProperty(
         /* [in] */ const String& field,
         /* [in] */ const String& newValue);
 
-    virtual CARAPI SetUseCaches(
+    CARAPI SetUseCaches(
         /* [in] */ Boolean newValue);
 
-    virtual CARAPI SetConnectTimeout(
+    CARAPI SetConnectTimeout(
         /* [in] */ Int32 timeout);
 
-    virtual CARAPI GetConnectTimeout(
+    CARAPI GetConnectTimeout(
         /* [out] */ Int32* timeout);
 
-    virtual CARAPI SetReadTimeout(
+    CARAPI SetReadTimeout(
         /* [in] */ Int32 timeout);
 
-    virtual CARAPI GetReadTimeout(
+    CARAPI GetReadTimeout(
         /* [out] */ Int32* timeout);
-
-protected:
-    URLConnection();
-
-    virtual ~URLConnection();
-
-    CARAPI constructor(
-        /* [in] */ IURL* url);
 
 private:
     CARAPI GetContentHandler(

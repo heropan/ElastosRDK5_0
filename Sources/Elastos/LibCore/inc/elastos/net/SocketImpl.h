@@ -30,7 +30,6 @@ public:
     virtual ToString(
         /* [out] */ String* str);
 
-protected:
     virtual CARAPI Accept(
         /* [in] */ ISocketImpl* newSocket) = 0;
 
@@ -93,6 +92,40 @@ protected:
         /* [in] */ Int32 connectionTime,
         /* [in] */ Int32 latency,
         /* [in] */ Int32 bandwidth);
+
+    /**
+     * Initialize the bind() state.
+     * @hide used in java.nio.
+     */
+    CARAPI OnBind(
+        /* [in] */ IInetAddress * localAddress,
+        /* [in] */ Int32 localPort) {
+        // Do not add any code to these methods. They are concrete only to preserve API
+        // compatibility.
+        return NOERROR;
+    }
+
+    /**
+     * Initialize the connect() state.
+     * @hide used in java.nio.
+     */
+    CARAPI OnConnect(
+        /* [in] */ IInetAddress * remoteAddress,
+        /* [in] */ Int32 remotePort) {
+        // Do not add any code to these methods. They are concrete only to preserve API
+        // compatibility.
+        return NOERROR;
+    }
+
+    /**
+     * Initialize the close() state.
+     * @hide used in java.nio.
+     */
+    CARAPI OnClose() {
+        // Do not add any code to these methods. They are concrete only to preserve API
+        // compatibility.
+        return NOERROR;
+    }
 
 public:
     Boolean mStreaming;

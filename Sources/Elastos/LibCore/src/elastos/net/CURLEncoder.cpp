@@ -1,13 +1,15 @@
 
 #include "CURLEncoder.h"
-//#include "CCharsetHelper.h"
+#include "charset/CCharsetHelper.h"
 #include "Character.h"
 
-// using Elastos::IO::Charset::ICharsetHelper;
-// using Elastos::IO::Charset::CCharsetHelper;
+using Elastos::IO::Charset::ICharsetHelper;
+using Elastos::IO::Charset::CCharsetHelper;
 
 namespace Elastos {
 namespace Net {
+
+CURLEncoder::MyUriCodec CURLEncoder::ENCODER;
 
 CAR_INTERFACE_IMPL(CURLEncoder, Singleton, IURLEncoder)
 
@@ -17,9 +19,9 @@ ECode CURLEncoder::Encode(
     /* [in] */ const String& s,
     /* [out] */ String* result)
 {
-    // AutoPtr<ICharset> charset = UriCodec::GetDefaultCharset();
-    // ENCODER.Encode(s, charset, result);
-    // return NOERROR;
+    AutoPtr<ICharset> charset = UriCodec::GetDefaultCharset();
+    ENCODER.Encode(s, charset, result);
+    return NOERROR;
 }
 
 ECode CURLEncoder::Encode(
@@ -27,11 +29,11 @@ ECode CURLEncoder::Encode(
     /* [in] */ const String& charsetName,
     /* [out] */ String* result)
 {
-    // AutoPtr<ICharsetHelper> helper;
-    // AutoPtr<ICharset> charset;
-    // CCharsetHelper::AcquireSingleton((ICharsetHelper**)&helper);
-    // helper->ForName(charsetName, (ICharset**)&charset);
-    // return ENCODER.Encode(s, charset, result);
+    AutoPtr<ICharsetHelper> helper;
+    AutoPtr<ICharset> charset;
+    CCharsetHelper::AcquireSingleton((ICharsetHelper**)&helper);
+    helper->ForName(charsetName, (ICharset**)&charset);
+    return ENCODER.Encode(s, charset, result);
 }
 
 } // namespace Net

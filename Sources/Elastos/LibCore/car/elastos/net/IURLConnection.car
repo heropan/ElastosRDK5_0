@@ -73,6 +73,7 @@ module
      *
      * @sa setURLStreamHandlerFactory(URLStreamHandlerFactory)
      */
+    [deprecated]
     interface IURLConnection {
         /**
          * Opens a connection to the resource. This method will <strong>not</strong>
@@ -130,8 +131,9 @@ module
          * :-|:------------|
          * IOException | if an error occurs obtaining the content.
          */
-        // Param is not generic in spec
-//        public Object getContent(Class[] types);
+        GetContent(
+            [in] ArrayOf<InterfaceID> * types,
+            [out] IInterface** obj);
 
         /**
          * Returns the content encoding type specified by the response header field

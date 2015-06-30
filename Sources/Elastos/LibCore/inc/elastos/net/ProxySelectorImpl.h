@@ -3,27 +3,16 @@
 #define __ELASTOS_NET_PROXYSELECTORIMPL_H__
 
 #include "ProxySelector.h"
-#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::IList;
-using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Net {
 
-class ProxySelectorImpl : ProxySelector
+class ProxySelectorImpl
+    : ProxySelector
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     //@Override
     CARAPI ConnectFailed(
@@ -36,73 +25,34 @@ public:
         /* [in] */ IURI* uri,
         /* [out] */ IList** container);
 
-    // read net.properties file
-    // static {
-    //     AccessController.doPrivileged(new java.security.PrivilegedAction() {
-    //         public Object run() {
-    //             File f = new File(System.getProperty("java.home")
-    //                     + File.separator + "lib" + File.separator
-    //                     + "net.properties");
-
-    //             if (f.exists()) {
-    //                 try {
-    //                     FileInputStream fis = new FileInputStream(f);
-    //                     InputStream is = new BufferedInputStream(fis);
-    //                     netProps = new Properties();
-    //                     netProps.load(is);
-    //                     is.close();
-    //                 } catch (IOException e) {
-    //                 }
-    //             }
-    //             return null;
-    //         }
-    //     });
-    // }
-
 private:
-    CARAPI_(AutoPtr<IProxy>) SelectHttpProxy(
-        /* [in] */ const String& uriHost);
+    CARAPI SelectOneProxy(
+        /* [in] */ IURI* uri,
+        /* [out] */ IProxy** proxy);
 
-    CARAPI_(AutoPtr<IProxy>) SelectHttpsProxy();
+    /**
+     * Returns the proxy identified by the {@code hostKey} system property, or
+     * null.
+     */
+    CARAPI LookupProxy(
+        /* [in] */ const String& hostKey,
+        /* [in] */ const String& portKey,
+        /* [in] */ ProxyType type,
+        /* [in] */Int32 defaultPort,
+        /* [out] */ IProxy** proxy);
 
-    CARAPI_(AutoPtr<IProxy>) SelectFtpProxy(
-        /* [in] */ const String& uriHost);
+    CARAPI GetSystemPropertyInt(
+        /* [in] */ const String& key,
+        /* [in] */ Int32 defaultValue,
+        /* [out] */ Int32 * result);
 
-    CARAPI_(AutoPtr<IProxy>) SelectSocksProxy();
-
+    /**
+     * Returns true if the {@code nonProxyHosts} system property pattern exists
+     * and matches {@code host}.
+     */
     CARAPI_(Boolean) IsNonProxyHost(
         /* [in] */ const String& host,
         /* [in] */ const String& nonProxyHosts);
-
-    CARAPI_(AutoPtr<IProxy>) CreateProxy(
-        /* [in] */ ProxyType type,
-        /* [in] */ const String& host,
-        /* [in] */ const String& port,
-        /* [in] */ Int32 defaultPort);
-
-    CARAPI_(String) GetSystemProperty(
-        /* [in] */ const String& property);
-
-    CARAPI_(String) GetSystemProperty(
-        /* [in] */ const String& property,
-        /* [in] */ const String& defaultValue);
-
-    CARAPI_(String) GetSystemPropertyOrAlternative(
-        /* [in] */ const String& key,
-        /* [in] */ const String& alternativeKey,
-        /* [in] */ const String& defaultValue);
-
-private:
-    static const Int32 HTTP_PROXY_PORT = 80;
-
-    static const Int32 HTTPS_PROXY_PORT = 443;
-
-    static const Int32 FTP_PROXY_PORT = 80;
-
-    static const Int32 SOCKS_PROXY_PORT = 1080;
-
-    // Net properties read from net.properties file.
-//    static AutoPtr<IProperties> mNetProps;// = null;
 };
 
 } // namespace Net

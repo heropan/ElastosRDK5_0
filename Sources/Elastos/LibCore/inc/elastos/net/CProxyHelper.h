@@ -16,7 +16,7 @@ public:
 
     CAR_SINGLETON_DECL()
 
-    GetNO_PROXY(
+    CARAPI GetNO_PROXY(
         /* [out] */ IProxy** proxy);
 };
 

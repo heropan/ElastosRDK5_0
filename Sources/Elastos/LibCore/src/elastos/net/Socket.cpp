@@ -6,8 +6,8 @@
 #include "CPlainSocketImpl.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
-//#include "CIoBridge.h"
-#include <stdio.h>
+#include "CIoBridge.h"
+#include "AutoLock.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -18,13 +18,13 @@ using Elastos::Core::EIID_ICloneable;
 using Elastos::Net::CInet4Address;
 using Elastos::Net::CPlainSocketImpl;
 using Elastos::Net::CInetSocketAddress;
-//using Libcore::IO::CIoBridge;
+using Libcore::IO::CIoBridge;
 
 namespace Elastos {
 namespace Net {
 
 AutoPtr<ISocketImplFactory> Socket::sFactory;
-//Mutex Socket::sLock;
+Object Socket::sLock;
 
 CAR_INTERFACE_IMPL_2(Socket, Object, ISocket, ICloneable)
 
@@ -55,29 +55,13 @@ ECode Socket::constructor()
 ECode Socket::constructor(
     /* [in] */ IProxy* proxy)
 {
-    mProxy = proxy;
     ProxyType type;
     if (proxy == NULL || (proxy->GetType(&type), type == ProxyType_HTTP)) {
 //        throw new IllegalArgumentException("Proxy is null or invalid type");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<ISocketAddress> socketAddress;
-    proxy->GetAddress((ISocketAddress**)&socketAddress);
-    IInetSocketAddress* address = IInetSocketAddress::Probe(socketAddress);
-    if (NULL != address) {
-        AutoPtr<IInetAddress> addr;
-        address->GetAddress((IInetAddress**)&addr);
-        String host;
-        if (NULL != addr) {
-            addr->GetHostAddress(&host);
-        }
-        else {
-            address->GetHostName(&host);
-        }
-        Int32 port;
-        address->GetPort(&port);
-        FAIL_RETURN(CheckConnectPermission(host, port));
-    }
+
+    mProxy = proxy;
 
     if (sFactory != NULL) {
         sFactory->CreateSocketImpl((ISocketImpl**)&mImpl);
@@ -93,7 +77,6 @@ ECode Socket::constructor(
     /* [in] */ const String& dstName,
     /* [in] */ Int32 dstPort)
 {
-
     return constructor(dstName, dstPort, NULL, 0);
 }
 
@@ -103,7 +86,6 @@ ECode Socket::constructor(
     /* [in] */ IInetAddress* localAddress,
     /* [in] */ Int32 localPort)
 {
-
     FAIL_RETURN(constructor());
 
     return TryAllAddresses(dstName, dstPort, localAddress, localPort, TRUE);
@@ -193,28 +175,16 @@ ECode Socket::CheckDestination(
         // throw new IllegalArgumentException("Port out of range: " + dstPort);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    String address;
-    destAddr->GetHostAddress(&address);
-    return CheckConnectPermission(address, dstPort);
-}
-
-ECode Socket::CheckConnectPermission(
-    /* [in] */ const String& hostname,
-    /* [in] */ Int32 dstPort)
-{
-    // SecurityManager security = System.getSecurityManager();
-    // if (security != null) {
-    //    security.checkConnect(hostname, dstPort);
-    // }
 
     return NOERROR;
 }
 
 ECode Socket::Close()
 {
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     mIsClosed = TRUE;
+    mIsConnected = FALSE;
     // RI compatibility: the RI returns the any address (but the original local port) after close.
     mLocalAddress = CInet4Address::ANY;
     return mImpl->Close();
@@ -227,8 +197,7 @@ ECode Socket::OnClose()
     // RI compatibility: the RI returns the any address (but the original local port) after
     // close.
     mLocalAddress = CInet4Address::ANY;
-    //return mImpl->OnClose();
-    return NOERROR;
+    return ((SocketImpl *)mImpl.Get())->OnClose();
 }
 
 ECode Socket::GetInetAddress(
@@ -344,7 +313,7 @@ ECode Socket::GetReceiveBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
@@ -358,7 +327,7 @@ ECode Socket::GetSendBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
@@ -372,7 +341,7 @@ ECode Socket::GetSoTimeout(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     AutoPtr<IInteger32> optVal;
@@ -413,12 +382,8 @@ ECode Socket::SetKeepAlive(
 ECode Socket::SetSocketImplFactory(
     /* [in] */ ISocketImplFactory* fac)
 {
-    //Mutex::AutoLock lock(&sLock);
+    AutoLock lock(&sLock);
 
-    // SecurityManager security = System.getSecurityManager();
-    // if (security != null) {
-    //    security.checkSetFactory();
-    // }
     if (sFactory != NULL) {
         // throw new SocketException("Factory already set");
         return E_SOCKET_EXCEPTION;
@@ -431,7 +396,7 @@ ECode Socket::SetSocketImplFactory(
 ECode Socket::SetSendBufferSize(
     /* [in] */ Int32 size)
 {
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     if (size < 1) {
@@ -447,7 +412,7 @@ ECode Socket::SetSendBufferSize(
 ECode Socket::SetReceiveBufferSize(
     /* [in] */ Int32 size)
 {
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     if (size < 1) {
@@ -486,7 +451,7 @@ ECode Socket::SetSoLinger(
 ECode Socket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     FAIL_RETURN(CheckOpenAndCreate(TRUE));
     if (timeout < 0) {
@@ -516,7 +481,6 @@ ECode Socket::StartupSocket(
     /* [in] */ Int32 localPort,
     /* [in] */ Boolean streaming)
 {
-
     if (localPort < 0 || localPort > 65535) {
         // throw new IllegalArgumentException("Local port out of range: " + localPort);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -524,7 +488,7 @@ ECode Socket::StartupSocket(
 
     IInetAddress* addr = localAddress == NULL ? CInet4Address::ANY.Get() : localAddress;
 
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
     mImpl->Create(streaming);
 
     mIsCreated = TRUE;
@@ -612,7 +576,7 @@ ECode Socket::CheckOpenAndCreate(
         return NOERROR;
     }
 
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     if (mIsCreated) {
         return NOERROR;
@@ -720,14 +684,12 @@ ECode Socket::Bind(
         inetAddr->GetPort(&port);
     }
 
-    //Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(this);
 
     // try {
-    ECode ec= mImpl->Bind(addr, port);
-    if (FAILED(ec)) {
-        mImpl->Close();
-        return ec;
-    }
+    ECode ec = mImpl->Bind(addr, port);
+    FAIL_GOTO(ec ,_EXIT_)
+
     mIsBound = TRUE;
     CacheLocalAddress();
     return NOERROR;
@@ -735,6 +697,10 @@ ECode Socket::Bind(
     //    impl.close();
     //    throw e;
     // }
+_EXIT_:
+
+    mImpl->Close();
+    return ec;
 }
 
 ECode Socket::OnBind(
@@ -743,8 +709,7 @@ ECode Socket::OnBind(
 {
     mIsBound = true;
     mLocalAddress = localAddress;
-    //mImpl->OnBind(localAddress, localPort);
-    return NOERROR;
+    return ((SocketImpl*)mImpl.Get())->OnBind(localAddress, localPort);
 }
 
 ECode Socket::Connect(
@@ -789,7 +754,7 @@ ECode Socket::Connect(
 
     FAIL_RETURN(CheckDestination(addr, port));
 
-    //Mutex::AutoLock lock(&mConnectLock);
+    AutoLock lock(mConnectLock);
     // try {
     ECode ec = NOERROR;
     Boolean isBound;
@@ -822,12 +787,11 @@ ECode Socket::Connect(
 }
 
 ECode Socket::OnConnect(
-    /* [in] */ ISocketAddress* remoteAddr,
-    /* [in] */ Int32 timeout)
+    /* [in] */ ISocketAddress* remoteAddress,
+    /* [in] */ Int32 remotePort)
 {
     mIsConnected = TRUE;
-    //mImpl->OnConnect(remoteAddress, remotePort);
-    return NOERROR;
+    return ((SocketImpl*)mImpl.Get())->OnConnect(IInetAddress::Probe(remoteAddress), remotePort);
 }
 
 ECode Socket::IsInputShutdown(
@@ -932,14 +896,13 @@ void Socket::CacheLocalAddress()
 {
     AutoPtr<IFileDescriptor> fd;
     mImpl->GetFileDescriptor((IFileDescriptor**)&fd);
-    Int32 oufd;
-    fd->GetDescriptor(&oufd);
-    ///////////////CIoBridge::_GetSocketLocalAddress(oufd, (IInetAddress**)&mLocalAddress);
+    CIoBridge::_GetSocketLocalAddress(fd, (IInetAddress**)&mLocalAddress);
 }
 
 ECode Socket::GetChannel(
     /* [out] */ ISocketChannel** channel)
 {
+    VALIDATE_NOT_NULL(channel)
     *channel = NULL;
     return NOERROR;
 }

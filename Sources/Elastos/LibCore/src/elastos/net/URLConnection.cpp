@@ -135,13 +135,43 @@ ECode URLConnection::GetContent(
     return NOERROR;
 }
 
-//        public Object getContent(Class[] types);
+ECode URLConnection::GetContent(
+    /* [in] */ ArrayOf<InterfaceID> * types,
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(types)
+
+    if (!mConnected) {
+        Connect();
+    }
+
+    GetContentType(&mContentType);
+    if (mContentType.IsNull()) {
+        String fileName;
+        mUrl->GetFile(&fileName);
+        mContentType = GuessContentTypeFromName(fileName);
+        if (mContentType.IsNull()) {
+            AutoPtr<IInputStream> inputStream;
+            GetInputStream((IInputStream**)&inputStream);
+            mContentType = GuessContentTypeFromStream(inputStream);
+        }
+    }
+
+    if (!mContentType.IsNull()) {
+        AutoPtr<IContentHandler> handler;
+        GetContentHandler(mContentType, (IContentHandler**)&handler);
+
+        return handler->GetContent(THIS_PROBE(IURLConnection), types, obj);
+    }
+
+    return NOERROR;
+}
 
 ECode URLConnection::GetContentEncoding(
     /* [out] */ String* encoding)
 {
-    VALIDATE_NOT_NULL(encoding)
-
     return GetHeaderFieldByKey(String("Content-Encoding"), encoding);
 }
 
@@ -173,56 +203,51 @@ ECode URLConnection::GetContentHandler(
 
     // search through the package list for the right class for the Content
     // Type
-//  zhangjingcheng not implement
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     String packageList;
     system->GetEnv(String("java.content.handler.pkgs"), &packageList);
-    if (packageList.IsNull()) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
 
-//    String packageList = AccessController
-//            .doPrivileged(new PriviAction<String>(
-//                    "java.content.handler.pkgs"));
-//    if (!packageList.IsNull()) {
-        // AutoPtr<ArrayOf<String> > values;
-        // StringUtils::Split(packageList, String("|"), (ArrayOf<String>**)&values);
-        // Int32 count = (values ? values->GetLength() : 0);
-        // for (Int32 i = 0; i < count; ++i) {
-//            try {
-//                Class<?> cl = Class.forName((*values)[i] + "."
-//                        + typeString, true, ClassLoader
-//                        .getSystemClassLoader());
-//                cHandler = cl.newInstance();
-//            } catch (ClassNotFoundException e) {
-//            } catch (IllegalAccessException e) {
-//            } catch (InstantiationException e) {
-//            }
-//        }
-//    }
+   if (!packageList.IsNull()) {
+        AutoPtr<ArrayOf<String> > values;
+        StringUtils::Split(packageList, String("|"), (ArrayOf<String>**)&values);
+        Int32 count = (values ? values->GetLength() : 0);
+        for (Int32 i = 0; i < count; ++i) {
+            // try {
+            String className((*values)[i]);
+            className += ".";
+            className += typeString;
+
+            assert(0);
+            //TODO reflection
+            //
+               // Class<?> cl = Class.forName((*values)[i] + "."
+               //         + typeString, true, ClassLoader
+               //         .getSystemClassLoader());
+               // cHandler = cl.newInstance();
+           // } catch (ClassNotFoundException e) {
+           // } catch (IllegalAccessException e) {
+           // } catch (InstantiationException e) {
+           // }
+       }
+   }
 
     if (cHandler == NULL) {
-//        cHandler = AccessController
-//                .doPrivileged(new PrivilegedAction<Object>() {
-//                    public Object run() {
-//                        try {
-//                            // Try looking up AWT image content handlers
-//                            String className = "org.apache.harmony.awt.www.content."
-//                                    + typeString;
-//                            return Class.forName(className).newInstance();
-//                        } catch (ClassNotFoundException e) {
-//                        } catch (IllegalAccessException e) {
-//                        } catch (InstantiationException e) {
-//                        }
-//                        return null;
-//                   }
-//                });
+        assert(0);
+        // try {
+        //     // Try looking up AWT image content handlers
+        //     String className = "org.apache.harmony.awt.www.content." + typeString;
+        //     cHandler = Class.forName(className).newInstance();
+        // } catch (ClassNotFoundException e) {
+        // } catch (IllegalAccessException e) {
+        // } catch (InstantiationException e) {
+        // }
     }
     if (cHandler != NULL) {
-//        if (!(cHandler instanceof ContentHandler)) {
-//            throw new UnknownServiceException();
-//        }
+        if (IContentHandler::Probe(cHandler) == NULL) {
+            // throw new UnknownServiceException();
+            return E_UNKNOWN_SERVICE_EXCEPTION;
+        }
         sContentHandlers[type] = cHandler; // if we got the handler,
         // cache it for next time
         *contentHandler = cHandler;
@@ -384,6 +409,7 @@ ECode URLConnection::GetHeaderFieldDate(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = defaultValue;
 
     String date;
     FAIL_RETURN(GetHeaderFieldByKey(field, &date));
@@ -393,10 +419,9 @@ ECode URLConnection::GetHeaderFieldDate(
     }
 
     AutoPtr<IDateHelper> dateHelper;
-    ///////////////////////////CDateHelper::AcquireSingleton((IDateHelper**)&dateHelper);
+    CDateHelper::AcquireSingleton((IDateHelper**)&dateHelper);
     ECode ec = dateHelper->Parse(date, value);
-    if(FAILED(ec))
-    {
+    if (FAILED(ec)) {
         *value = defaultValue;
     }
     return NOERROR;
@@ -409,10 +434,12 @@ ECode URLConnection::GetHeaderFieldInt32(
 {
     VALIDATE_NOT_NULL(value)
 //    try {
-//    return Integer.parseInt(getHeaderField(field));
     String s;
     GetHeaderFieldByKey(field, &s);
-    *value = StringUtils::ParseInt32(s, 10, defaultValue);
+    ECode ec = StringUtils::Parse(s, 10, value);
+    if (FAILED(ec)) {
+        *value = defaultValue;
+    }
     return NOERROR;
 //    } catch (NumberFormatException e) {
 //        return defaultValue;
@@ -470,6 +497,7 @@ ECode URLConnection::GetPermission(
     /* [out] */ IPermission** perm)
 {
     VALIDATE_NOT_NULL(perm);
+    *perm = NULL;
     //TODO
     assert(0);
     // return new java.security.AllPermission();
@@ -683,10 +711,6 @@ ECode URLConnection::SetDoOutput(
 void URLConnection::SetFileNameMap(
     /* [in] */ IFileNameMap* map)
 {
-//    SecurityManager manager = System.getSecurityManager();
-//    if (manager != null) {
-//        manager.checkSetFactory();
-//    }
     synchronized(sLock) {
         sFileNameMap = map;
     }

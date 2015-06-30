@@ -3,7 +3,9 @@
 
 #include "_Elastos_Net_CURLEncoder.h"
 #include "UriCodec.h"
-#include <elastos/core/Singleton.h>
+#include "Singleton.h"
+
+using Libcore::Net::UriCodec;
 
 namespace Elastos {
 namespace Net {
@@ -26,17 +28,18 @@ public:
         /* [in] */ const String& charsetName,
         /* [out] */ String* result);
 private:
-    // class UriCodecEx : public UriCodec
-    // {
-    //     Boolean IsRetained(
-    //         /* [in] */ char c) const
-    //     {
-    //         String str(" .-*_");
-    //         return str.IndexOf(c) != -1;
-    //     }
-    // };
+    class MyUriCodec
+        : public UriCodec
+    {
+        Boolean IsRetained(
+            /* [in] */ Char32 c)
+        {
+            String str(" .-*_");
+            return str.IndexOf(c) != -1;
+        }
+    };
 
-    // UriCodecEx ENCODER;
+    static MyUriCodec ENCODER;
 };
 
 } // namespace Net

@@ -34,9 +34,9 @@ public:
     CARAPI GetActions(
         /* [out] */ String* actions);
 
-    // CARAPI Implies(
-    //     /* [in] */ IPermission* permission,
-    //     /* [out] */ Boolean* isImplied);
+    CARAPI Implies(
+        /* [in] */ IPermission* permission,
+        /* [out] */ Boolean* isImplied);
 };
 
 } // namespace Net

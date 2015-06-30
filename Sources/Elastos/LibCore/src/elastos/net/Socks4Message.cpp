@@ -1,17 +1,16 @@
 
 #include "Socks4Message.h"
 #include "Math.h"
+#include "StringBuilder.h"
+#include "StringBuilder.h"
+
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Net {
 
 CAR_INTERFACE_IMPL(Socks4Message, Object, ISocks4Message)
-
-// Socks4Message::Socks4Message()
-// {
-//     assert(0);
-//     Init();
-// }
 
 ECode Socks4Message::constructor()
 {
@@ -90,6 +89,28 @@ ECode Socks4Message::SetUserId(
 ECode Socks4Message::ToString(
     /* [out] */ String* str )
 {
+    VALIDATE_NOT_NULL(str)
+
+    Int32 version, command, ip, port;
+    version = GetVersionNumber();
+    GetPort(&port);
+    GetCommandOrResult(&command);
+    GetIP(&ip);
+    String userId;
+    GetUserId(&userId);
+
+    StringBuilder buf (50);
+    buf.Append("Version: ");
+    buf.Append(StringUtils::ToHexString(version));
+    buf.Append(" Command: ");
+    buf.Append(StringUtils::ToHexString(command));
+    buf.Append(" Port: ");
+    buf.Append(port);
+    buf.Append(" IP: ");
+    buf.Append(StringUtils::ToHexString(ip));
+    buf.Append(" User ID: ");
+    buf.Append(userId);
+    *str = buf.ToString();
     return NOERROR;
 }
 
@@ -119,7 +140,16 @@ ECode Socks4Message::GetErrorString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-
+    switch (error) {
+    case RETURN_FAILURE:
+        return String("Failure to connect to SOCKS server");
+    case RETURN_CANNOT_CONNECT_TO_IDENTD:
+        return String("Unable to connect to identd to verify user");
+    case RETURN_DIFFERENT_USER_IDS:
+        return String("Failure - user ids do not match");
+    default:
+        return String("Success");
+    }
     return NOERROR;
 }
 
@@ -132,6 +162,7 @@ ECode Socks4Message::GetBytes(
     REFCOUNT_ADD(*bytes);
     return NOERROR;
 }
+
 //private-------------------------------------
 Int32 Socks4Message::GetInt16(
     /* [in] */ Int32 offset)
@@ -143,8 +174,9 @@ Int32 Socks4Message::GetInt32(
     /* [in] */ Int32 offset)
 {
     return (((*mBuffer)[offset + 3] & 0xFF)
-            + (((*mBuffer)[offset + 2] & 0xFF) << 8)
-            + (((*mBuffer)[offset + 1] & 0xFF) << 16) + (((*mBuffer)[offset + 0] & 0xFF) << 24));
+        + (((*mBuffer)[offset + 2] & 0xFF) << 8)
+        + (((*mBuffer)[offset + 1] & 0xFF) << 16)
+        + (((*mBuffer)[offset + 0] & 0xFF) << 24));
 
 }
 
@@ -182,7 +214,6 @@ void Socks4Message::SetString(
     /* [in] */ Int32 maxLength,
     /* [in] */ const String& theString)
 {
-
     AutoPtr< ArrayOf<Char32> > stringBytes = theString.GetChars(/*Charsets.ISO_8859_1*/);
     Int32 length = Elastos::Core::Math::Min(stringBytes->GetLength(), maxLength);
     for (Int32 i = 0; i < length; ++i) {

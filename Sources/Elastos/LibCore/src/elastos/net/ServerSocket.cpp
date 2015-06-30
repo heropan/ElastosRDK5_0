@@ -2,14 +2,16 @@
 #include "ServerSocket.h"
 #include "CInet4Address.h"
 #include "CInetSocketAddress.h"
-#include <stdio.h>
 #include "CPlainServerSocketImpl.h"
 #include "CPlainSocketImpl.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
 #include "CSocket.h"
 #include "AutoLock.h"
+#include "CIoBridge.h"
+#include "StringBuilder.h"
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IBoolean;
@@ -20,17 +22,20 @@ using Elastos::Net::CSocket;
 using Elastos::Net::CInet4Address;
 using Elastos::Net::CPlainSocketImpl;
 using Elastos::Net::CPlainServerSocketImpl;
+using Libcore::IO::CIoBridge;
 
 namespace Elastos {
 namespace Net {
 
 AutoPtr<ISocketImplFactory> ServerSocket::sFactory;
+Object ServerSocket::sLock;
+
+const Int32 ServerSocket::DEFAULT_BACKLOG = 50;
 
 CAR_INTERFACE_IMPL_2(ServerSocket, Object, IServerSocket, ICloseable)
 
 ServerSocket::ServerSocket()
-    : mIsCreated(FALSE)
-    , mIsBound(FALSE)
+    : mIsBound(FALSE)
     , mIsClosed(FALSE)
 {}
 
@@ -48,16 +53,9 @@ ECode ServerSocket::constructor()
 }
 
 ECode ServerSocket::constructor(
-    /* [in] */ ISocketImpl* impl)
-{
-    mImpl = impl;
-    return NOERROR;
-}
-
-ECode ServerSocket::constructor(
     /* [in] */ Int32 aPort)
 {
-    return constructor(aPort, DefaultBacklog(), CInet4Address::ANY);
+    return constructor(aPort, DEFAULT_BACKLOG, CInet4Address::ANY);
 }
 
 ECode ServerSocket::constructor(
@@ -93,26 +91,37 @@ ECode ServerSocket::constructor(
 
     synchronized (this) {
         mImpl->Create(TRUE);
-        mIsCreated = TRUE;
     //    try {
         ec = mImpl->Bind(addr, aPort);
-        if (FAILED(ec)) {
-            Close();
-            return ec;
-        }
+        FAIL_GOTO(ec, _EXIT_)
+
+        ec = ReadBackBindState();
+        FAIL_GOTO(ec, _EXIT_)
 
         mIsBound = TRUE;
-        ec = mImpl->Listen(backlog > 0 ? backlog : DefaultBacklog());
-        if (FAILED(ec)) {
-            Close();
-            return ec;
-        }
+        ec = mImpl->Listen(backlog > 0 ? backlog : DEFAULT_BACKLOG);
+        FAIL_GOTO(ec, _EXIT_)
     }
+
+_EXIT_:
+
+    Close();
+
 //    } catch (IOException e) {
 //        close();
 //        throw e;
 //    }
 
+    return ec;
+}
+
+ECode ServerSocket::ReadBackBindState()
+{
+    AutoPtr<IFileDescriptor> fd;
+    FAIL_RETURN(mImpl->GetFileDescriptor((IFileDescriptor**)&fd))
+    mLocalAddress = NULL;
+    FAIL_RETURN(CIoBridge::_GetSocketLocalAddress(fd, (IInetAddress**)&mLocalAddress))
+    mIsBound = true;
     return NOERROR;
 }
 
@@ -129,7 +138,10 @@ ECode ServerSocket::Accept(
     /* [out] */ ISocket** socket)
 {
     VALIDATE_NOT_NULL(socket);
-    FAIL_RETURN(CheckClosedAndCreate(FALSE));
+    *socket = NULL;
+
+    FAIL_RETURN(CheckOpen());
+
     Boolean isBound;
     if (IsBound(&isBound), !isBound) {
         // throw new SocketException("Socket is not bound");
@@ -164,10 +176,6 @@ ECode ServerSocket::CheckListen(
 //        throw new IllegalArgumentException("Port out of range: " + aPort);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-//    SecurityManager security = System.getSecurityManager();
-//    if (security != null) {
-//        security.checkListen(aPort);
-//    }
     return NOERROR;
 }
 
@@ -177,22 +185,21 @@ ECode ServerSocket::Close()
     return mImpl->Close();
 }
 
-Int32 ServerSocket::DefaultBacklog()
-{
-    return 50;
-}
-
 ECode ServerSocket::GetInetAddress(
     /* [out] */ IInetAddress** address)
 {
     VALIDATE_NOT_NULL(address);
 
     Boolean isBound;
+    *address = NULL;
+
     if (IsBound(&isBound), !isBound) {
-        *address = NULL;
         return NOERROR;
     }
-    return mImpl->GetInetAddress(address);
+
+    *address = mLocalAddress;
+    REFCOUNT_ADD(*address)
+    return NOERROR;
 }
 
 ECode ServerSocket::GetLocalPort(
@@ -212,27 +219,12 @@ ECode ServerSocket::GetSoTimeout(
     /* [out] */ Int32* timeout)
 {
     VALIDATE_NOT_NULL(timeout);
+    *timeout = 0;
 
-    if (!mIsCreated) {
-        //Mutex::AutoLock lock(&mLock);
+    AutoLock lock(this);
 
-        if (!mIsCreated) {
-//            try {
-            ECode ec = mImpl->Create(TRUE);
-            if (ec == E_SOCKET_EXCEPTION) {
-                return ec;
-            }
-            else if (ec == E_IO_EXCEPTION) {
-                return E_SOCKET_EXCEPTION;
-            }
-//            } catch (SocketException e) {
-//                throw e;
-//            } catch (IOException e) {
-//                throw new SocketException(e.toString());
-//            }
-            mIsCreated = TRUE;
-        }
-    }
+    FAIL_RETURN(CheckOpen());
+
     AutoPtr<IInteger32> optVal;
     ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
     FAIL_RETURN(option->GetOption(ISocketOptions::_SO_TIMEOUT, (IInterface**)&optVal));
@@ -242,30 +234,18 @@ ECode ServerSocket::GetSoTimeout(
 ECode ServerSocket::ImplAccept(
     /* [in] */ ISocket* aSocket)
 {
-    {
-        //Mutex::AutoLock lock(&mLock);
-        mImpl->Accept(((CSocket*)aSocket)->mImpl);
-        ((CSocket*)aSocket)->Accepted();
-    }
+    AutoLock lock(this);
+    mImpl->Accept(((CSocket*)aSocket)->mImpl);
+    ((CSocket*)aSocket)->Accepted();
 
     return NOERROR;
-
-//    SecurityManager security = System.getSecurityManager();
-//    if (security != null) {
-//        security.checkAccept(aSocket.getInetAddress().getHostAddress(),
-//                aSocket.getPort());
-//    }
 }
 
 ECode ServerSocket::SetSocketFactory(
     /* [in] */ ISocketImplFactory* aFactory)
 {
-    //Mutex::AutoLock lock(&sLock);
+    AutoLock lock(&sLock);
 
-//    SecurityManager security = System.getSecurityManager();
-//    if (security != null) {
-//        security.checkSetFactory();
-//    }
     if (sFactory != NULL) {
 //        throw new SocketException("Factory already set");
         return E_SOCKET_EXCEPTION;
@@ -277,9 +257,9 @@ ECode ServerSocket::SetSocketFactory(
 ECode ServerSocket::SetSoTimeout(
     /* [in] */ Int32 timeout)
 {
-    //Mutex::AutoLock lock(&mLock);
+    AutoLock lock(this);
 
-    FAIL_RETURN(CheckClosedAndCreate(TRUE));
+    FAIL_RETURN(CheckOpen())
     if (timeout < 0) {
 //        throw new IllegalArgumentException("timeout < 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -290,22 +270,54 @@ ECode ServerSocket::SetSoTimeout(
     return option->SetOption(ISocketOptions::_SO_TIMEOUT, optVal);
 }
 
+ECode ServerSocket::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info)
+    StringBuilder result(64);
+    result.Append("ServerSocket[");
+    Boolean bval;
+    if (IsBound(&bval), !bval) {
+        result.Append("unbound]");
+        *info = result.ToString();
+        return NOERROR;
+    }
+
+    result.Append("addr=");
+    AutoPtr<IInetAddress> ia;
+    GetInetAddress((IInetAddress**)&ia);
+    String hostname, address;
+    ia->GetHostName(&hostname);
+    ia->GetHostAddress(&address);
+    result.Append(hostname);
+    result.Append("/");
+    result.Append(address);
+    result.Append(",port=0,localport=");
+    Int32 port;
+    GetLocalPort(&port);
+    result.Append(port);
+    result.Append("]");
+    *info = result.ToString();
+    return NOERROR;
+}
+
 ECode ServerSocket::Bind(
     /* [in] */ ISocketAddress* localAddr)
 {
-    return Bind(localAddr, DefaultBacklog());
+    return Bind(localAddr, DEFAULT_BACKLOG);
 }
 
 ECode ServerSocket::Bind(
     /* [in] */ ISocketAddress* localAddr,
     /* [in] */ Int32 backlog)
 {
-    FAIL_RETURN(CheckClosedAndCreate(TRUE));
+    FAIL_RETURN(CheckOpen());
     Boolean isBound;
     if (IsBound(&isBound), isBound) {
 //        throw new BindException("Socket is already bound");
         return E_BIND_EXCEPTION;
     }
+
     Int32 port = 0;
     AutoPtr<IInetAddress> addr = CInet4Address::ANY;
     if (localAddr != NULL) {
@@ -323,30 +335,25 @@ ECode ServerSocket::Bind(
         }
         inetAddr->GetPort(&port);
     }
-//    SecurityManager security = System.getSecurityManager();
-//    if (security != null) {
-//        security.checkListen(port);
-//    }
 
-    //Mutex::AutoLock lock(mLock);
+    AutoLock lock(this);
 //    try {
     ECode ec = mImpl->Bind(addr, port);
-    if (FAILED(ec)) {
-        Close();
-        return ec;
-    }
+    FAIL_GOTO(ec, _EXIT_)
+
     mIsBound = TRUE;
-    ec = mImpl->Listen(backlog > 0 ? backlog : DefaultBacklog());
-    if (FAILED(ec)) {
-        Close();
-        return ec;
-    }
+    ec = ReadBackBindState();
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = mImpl->Listen(backlog > 0 ? backlog : DEFAULT_BACKLOG);
+    FAIL_GOTO(ec, _EXIT_)
     // } catch (IOException e) {
     //     close();
     //     throw e;
     // }
-
-    return NOERROR;
+_EXIT_:
+    Close();
+    return ec;
 }
 
 ECode ServerSocket::GetLocalSocketAddress(
@@ -383,8 +390,7 @@ ECode ServerSocket::IsClosed(
     return NOERROR;
 }
 
-ECode ServerSocket::CheckClosedAndCreate(
-    /* [in] */ Boolean create)
+ECode ServerSocket::CheckOpen()
 {
     Boolean isClosed;
     if (IsClosed(&isClosed), isClosed) {
@@ -392,34 +398,13 @@ ECode ServerSocket::CheckClosedAndCreate(
         return E_SOCKET_EXCEPTION;
     }
 
-    if (!create || mIsCreated) {
-        return NOERROR;
-    }
-
-    //Mutex::AutoLock lock(mLock);
-
-    if (mIsCreated) {
-        return NOERROR;
-    }
-//    try {
-    ECode ec = mImpl->Create(TRUE);
-    if (FAILED(ec)) {
-        return E_SOCKET_EXCEPTION;
-    }
-    // } catch (SocketException e) {
-    //     throw e;
-    // } catch (IOException e) {
-    //     throw new SocketException(e.toString());
-    // }
-    mIsCreated = TRUE;
-
     return NOERROR;
 }
 
 ECode ServerSocket::SetReuseAddress(
     /* [in] */ Boolean reuse)
 {
-    CheckClosedAndCreate(TRUE);
+    FAIL_RETURN(CheckOpen())
     AutoPtr<IBoolean> optVal;
     CBoolean::New(reuse, (IBoolean**)&optVal);
     ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
@@ -431,7 +416,7 @@ ECode ServerSocket::GetReuseAddress(
 {
     VALIDATE_NOT_NULL(reuse);
 
-    FAIL_RETURN(CheckClosedAndCreate(TRUE));
+    FAIL_RETURN(CheckOpen())
     AutoPtr<IBoolean> optVal;
     ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
     FAIL_RETURN(option->GetOption(ISocketOptions::_SO_REUSEADDR, (IInterface**)&optVal));
@@ -441,7 +426,7 @@ ECode ServerSocket::GetReuseAddress(
 ECode ServerSocket::SetReceiveBufferSize(
     /* [in] */ Int32 size)
 {
-    FAIL_RETURN(CheckClosedAndCreate(TRUE));
+    FAIL_RETURN(CheckOpen())
     if (size < 1) {
 //        throw new IllegalArgumentException("size < 1");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -457,7 +442,7 @@ ECode ServerSocket::GetReceiveBufferSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    FAIL_RETURN(CheckClosedAndCreate(TRUE));
+    FAIL_RETURN(CheckOpen())
     AutoPtr<IInteger32> optVal;
     ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
     FAIL_RETURN(option->GetOption(ISocketOptions::_SO_RCVBUF, (IInterface**)&optVal));

@@ -35,15 +35,15 @@ ECode CSocketPermission::GetActions(
     return NOERROR;
 }
 
-// ECode CSocketPermission::Implies(
-//     /* [in] */ IPermission* permission,
-//     /* [out] */ Boolean* isImplied)
-// {
-//     VALIDATE_NOT_NULL(isImplied);
+ECode CSocketPermission::Implies(
+    /* [in] */ IPermission* permission,
+    /* [out] */ Boolean* isImplied)
+{
+    VALIDATE_NOT_NULL(isImplied);
 
-//     *isImplied = TRUE;
-//     return NOERROR;
-// }
+    *isImplied = TRUE;
+    return NOERROR;
+}
 
 } // namespace Net
 } // namespace Elastos

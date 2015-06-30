@@ -4,8 +4,6 @@
 
 #include "Object.h"
 
-extern "C" const InterfaceID EIID_URLStreamHandler;
-
 namespace Elastos {
 namespace Net {
 
@@ -14,24 +12,28 @@ class URLStreamHandler
     , public IURLStreamHandler
 {
 public:
-    CAR_INTERFACE_DECL();
+    CAR_INTERFACE_DECL()
+
+    URLStreamHandler();
+
+    virtual ~URLStreamHandler();
 
     virtual CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [out] */ IURLConnection** urlConnection) = 0;
 
-    virtual CARAPI OpenConnection(
+    CARAPI OpenConnection(
         /* [in] */ IURL* u,
         /* [in] */ IProxy* proxy,
         /* [out] */ IURLConnection** urlConnection);
 
-    virtual CARAPI ParseURL(
+    CARAPI ParseURL(
         /* [in] */ IURL* url,
         /* [in] */ const String& spec,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual CARAPI SetURL(
+    CARAPI SetURL(
         /* [in] */ IURL* u,
         /* [in] */ const String& protocol,
         /* [in] */ const String& host,
@@ -39,7 +41,7 @@ public:
         /* [in] */ const String& file,
         /* [in] */ const String& ref);
 
-    virtual CARAPI SetURL(
+    CARAPI SetURL(
         /* [in] */ IURL* u,
         /* [in] */ const String& protocol,
         /* [in] */ const String& host,
@@ -50,37 +52,37 @@ public:
         /* [in] */ const String& query,
         /* [in] */ const String& ref);
 
-    virtual CARAPI ToExternalForm(
+    CARAPI ToExternalForm(
         /* [in] */ IURL* url,
         /* [in] */ Boolean escapeIllegalCharacters,
         /* [out] */ String* s);
 
-    virtual CARAPI ToExternalForm(
+    CARAPI ToExternalForm(
         /* [in] */ IURL* url,
         /* [out] */ String* s);
 
-    virtual CARAPI Equals(
+    CARAPI Equals(
         /* [in] */ IURL* url1,
         /* [in] */ IURL* url2,
         /* [out] */ Boolean* isEquals);
 
-    virtual CARAPI GetDefaultPort(
+    CARAPI GetDefaultPort(
         /* [out] */ Int32* portNum);
 
-    virtual CARAPI GetHostAddress(
+    CARAPI GetHostAddress(
         /* [in] */ IURL* url,
         /* [out] */ IInetAddress** hostAddress);
 
-    virtual CARAPI GetHashCode(
+    CARAPI GetHashCode(
         /* [in] */ IURL* url,
         /* [out] */ Int32* code);
 
-    virtual CARAPI HostsEqual(
+    CARAPI HostsEqual(
         /* [in] */ IURL* a,
         /* [in] */ IURL* b,
         /* [out] */ Boolean* isEqual);
 
-    virtual CARAPI SameFile(
+    CARAPI SameFile(
         /* [in] */ IURL* url1,
         /* [in] */ IURL* url2,
         /* [out] */ Boolean* isSame);

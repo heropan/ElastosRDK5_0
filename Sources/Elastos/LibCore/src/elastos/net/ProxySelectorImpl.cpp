@@ -2,77 +2,20 @@
 #include "ProxySelectorImpl.h"
 #include "CProxy.h"
 #include "CInetSocketAddress.h"
-// #include <Com.Kortide.Platform.h>
 #include "StringUtils.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuilder.h"
+#include "Collections.h"
+#include "CSystem.h"
 
-//using Elastos::Core::CObjectContainer;
-using Elastos::Core::StringBuffer;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::Collections;
 
 namespace Elastos {
 namespace Net {
 
-const Int32 ProxySelectorImpl::HTTP_PROXY_PORT;
-const Int32 ProxySelectorImpl::HTTPS_PROXY_PORT;
-const Int32 ProxySelectorImpl::FTP_PROXY_PORT;
-const Int32 ProxySelectorImpl::SOCKS_PROXY_PORT;
-
-//    static AutoPtr<IProperties> mNetProps;// = null;
-
-// read net.properties file
-    // static {
-    //     AccessController.doPrivileged(new java.security.PrivilegedAction() {
-    //         public Object run() {
-    //             File f = new File(System.getProperty("java.home")
-    //                     + File.separator + "lib" + File.separator
-    //                     + "net.properties");
-
-    //             if (f.exists()) {
-    //                 try {
-    //                     FileInputStream fis = new FileInputStream(f);
-    //                     InputStream is = new BufferedInputStream(fis);
-    //                     netProps = new Properties();
-    //                     netProps.load(is);
-    //                     is.close();
-    //                 } catch (IOException e) {
-    //                 }
-    //             }
-    //             return null;
-    //         }
-    //     });
-    // }
-
-PInterface ProxySelectorImpl::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        assert(0 && "TODO");
-        //return (PInterface)this;
-    }
-    else if (riid == EIID_IProxySelector) {
-        return (IProxySelector*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 ProxySelectorImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ProxySelectorImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ProxySelectorImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
 
 ECode ProxySelectorImpl::ConnectFailed(
     /* [in] */ IURI* uri,
@@ -92,168 +35,122 @@ ECode ProxySelectorImpl::Select(
     /* [out] */ IList** container)
 {
     VALIDATE_NOT_NULL(container);
+    *container = NULL;
 
-    // argument check
-    if (uri == NULL) {
-//        throw new IllegalArgumentException("uri == null");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    // check scheme
+    AutoPtr<IProxy> proxy;
+    FAIL_RETURN(SelectOneProxy(uri, (IProxy**)&proxy))
+    return Collections::SingletonList(proxy, container);
+}
+
+ECode ProxySelectorImpl::SelectOneProxy(
+    /* [in] */ IURI* uri,
+    /* [out] */ IProxy** proxy)
+{
+    VALIDATE_NOT_NULL(proxy)
+    *proxy = NULL;
+    VALIDATE_NOT_NULL(uri)
+
     String scheme;
     uri->GetScheme(&scheme);
     if (scheme.IsNull()) {
-//        throw new IllegalArgumentException();
+        // throw new IllegalArgumentException("scheme == null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
+    Int32 port = -1;
+    String nonProxyHostsKey;
+    Boolean httpProxyOkay = TRUE;
+    if (scheme.EqualsIgnoreCase("http")) {
+        port = 80;
+        nonProxyHostsKey = String("http.nonProxyHosts");
+        LookupProxy(String("http.proxyHost"), String("http.proxyPort"),
+            ProxyType_HTTP, port, proxy);
+    }
+    else if (scheme.EqualsIgnoreCase("https")) {
+        port = 443;
+        nonProxyHostsKey = String("https.nonProxyHosts"); // RI doesn't support this
+        LookupProxy(String("https.proxyHost"), String("https.proxyPort"),
+            ProxyType_HTTP, port, proxy);
+    }
+    else if (scheme.EqualsIgnoreCase("ftp")) {
+        port = 80; // not 21 as you might guess
+        nonProxyHostsKey = String("ftp.nonProxyHosts");
+        LookupProxy(String("ftp.proxyHost"), String("ftp.proxyPort"),
+            ProxyType_HTTP, port, proxy);
+    }
+    else if (scheme.EqualsIgnoreCase("socket")) {
+        httpProxyOkay = FALSE;
+    }
+    else {
+        *proxy = CProxy::NO_PROXY;
+        REFCOUNT_ADD(*proxy)
+        return NOERROR;
+    }
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String prop;
+    system->GetProperty(nonProxyHostsKey, &prop);
     String host;
     uri->GetHost(&host);
-    AutoPtr<IProxy> proxy = CProxy::NO_PROXY;
-
-    if (scheme.Equals("http")) {
-        proxy = SelectHttpProxy(host);
-    }
-    else if (scheme.Equals("https")) {
-        proxy = SelectHttpsProxy();
-    }
-    else if (scheme.Equals("ftp")) {
-        proxy = SelectFtpProxy(host);
-    }
-    else if (scheme.Equals("socket")) {
-        proxy = SelectSocksProxy();
+    if (!nonProxyHostsKey.IsNull() && IsNonProxyHost(host, prop)) {
+        *proxy = CProxy::NO_PROXY;
+        REFCOUNT_ADD(*proxy)
+        return NOERROR;
     }
 
-    //////////////////////////FAIL_RETURN(CObjectContainer::New(container));
-    (*container)->Add(proxy);
+    if (*proxy != NULL) {
+        return NOERROR;
+    }
+
+    if (httpProxyOkay) {
+        LookupProxy(String("proxyHost"), String("proxyPort"),
+            ProxyType_HTTP, port, proxy);
+        if (*proxy != NULL) {
+            return NOERROR;
+        }
+    }
+
+    LookupProxy(String("socksProxyHost"), String("socksProxyPort"),
+        ProxyType_SOCKS, 1080, proxy);
+    if (*proxy != NULL) {
+        return NOERROR;
+    }
+
+    *proxy = CProxy::NO_PROXY;
+    REFCOUNT_ADD(*proxy)
     return NOERROR;
 }
 
-AutoPtr<IProxy> ProxySelectorImpl::SelectHttpProxy(
-    /* [in] */ const String& uriHost)
+ECode ProxySelectorImpl::LookupProxy(
+    /* [in] */ const String& hostKey,
+    /* [in] */ const String& portKey,
+    /* [in] */ ProxyType type,
+    /* [in] */Int32 defaultPort,
+    /* [out] */ IProxy** proxy)
 {
+    VALIDATE_NOT_NULL(proxy)
+    *proxy = NULL;
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
     String host;
-    String port;
-    ProxyType type = ProxyType_DIRECT;
-
-    String nonProxyHosts = GetSystemProperty(String("http.nonProxyHosts"));
-    // if host is in non proxy host list, returns Proxy.NO_PROXY
-    if (IsNonProxyHost(uriHost, nonProxyHosts)) {
-        return CProxy::NO_PROXY;
+    system->GetProperty(hostKey, &host);
+    if (host.IsNullOrEmpty()) {
+        return NOERROR;
     }
 
-    host = GetSystemProperty(String("http.proxyHost"));
-    if (!host.IsNull()) {
-        // case 1: http.proxyHost is set, use exact http proxy
-        type = ProxyType_HTTP;
-        port = GetSystemPropertyOrAlternative(String("http.proxyPort"),
-                String("proxyPort"), StringUtils::ToString(HTTP_PROXY_PORT));
-    }
-    else if (!(host = GetSystemProperty(String("proxyHost"), String(NULL))).IsNull()) {
-        // case 2: proxyHost is set, use exact http proxy
-        type = ProxyType_HTTP;
-        port = GetSystemPropertyOrAlternative(String("proxyPort"),
-                String("http.proxyPort"), StringUtils::ToString(HTTP_PROXY_PORT));
-
-    }
-    else if (!(host = GetSystemProperty(String("socksProxyHost"))).IsNull()) {
-        // case 3: use socks proxy instead
-        type = ProxyType_SOCKS;
-        port = GetSystemProperty(
-                String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
-    }
-    Int32 defaultPort = (type == ProxyType_SOCKS) ? SOCKS_PROXY_PORT
-            : HTTP_PROXY_PORT;
-    return CreateProxy(type, host, port, defaultPort);
+    Int32 port;
+    FAIL_RETURN(GetSystemPropertyInt(portKey, defaultPort, &port))
+    AutoPtr<IInetSocketAddress> isa;
+    CInetSocketAddress::CreateUnresolved(host, port, (IInetSocketAddress**)&isa);
+    AutoPtr<IProxy> p;
+    CProxy::New(type, ISocketAddress::Probe(isa), (IProxy**)&p);
+    *proxy = p;
+    REFCOUNT_ADD(*proxy)
+    return NOERROR;
 }
 
-/*
- * Gets proxy for https request.
- */
-AutoPtr<IProxy> ProxySelectorImpl::SelectHttpsProxy()
-{
-    String host;
-    String port;
-    ProxyType type = ProxyType_DIRECT;
-
-    host = GetSystemProperty(String("https.proxyHost"));
-    if (!host.IsNull()) {
-        // case 1: use exact https proxy
-        type = ProxyType_HTTP;
-        port = GetSystemProperty(
-                String("https.proxyPort"), StringUtils::ToString(HTTPS_PROXY_PORT));
-    }
-    else {
-        host = GetSystemProperty(String("socksProxyHost"));
-        if (!host.IsNull()) {
-            // case 2: use socks proxy instead
-            type = ProxyType_SOCKS;
-            port = GetSystemProperty(
-                    String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
-        }
-    }
-    Int32 defaultPort = (type == ProxyType_SOCKS) ? SOCKS_PROXY_PORT
-            : HTTPS_PROXY_PORT;
-    return CreateProxy(type, host, port, defaultPort);
-}
-
-/*
- * Gets proxy for ftp request.
- */
-AutoPtr<IProxy> ProxySelectorImpl::SelectFtpProxy(
-    /* [in] */ const String& uriHost)
-{
-    String host;
-    String port;
-    ProxyType type = ProxyType_DIRECT;
-    String nonProxyHosts = GetSystemProperty(String("ftp.nonProxyHosts"));
-    // if host is in non proxy host list, returns Proxy.NO_PROXY
-    if (IsNonProxyHost(uriHost, nonProxyHosts)) {
-        return CProxy::NO_PROXY;
-    }
-
-    host = GetSystemProperty(String("ftp.proxyHost"));
-    if (!host.IsNull()) {
-        // case 1: use exact ftp proxy
-        type = ProxyType_HTTP;
-        port = GetSystemProperty(
-                String("ftp.proxyPort"), StringUtils::ToString(FTP_PROXY_PORT));
-    }
-    else {
-        host = GetSystemProperty(String("socksProxyHost"));
-        if (!host.IsNull()) {
-            // case 2: use socks proxy instead
-            type = ProxyType_SOCKS;
-            port = GetSystemProperty(
-                    String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
-        }
-    }
-    Int32 defaultPort = (type == ProxyType_SOCKS) ? SOCKS_PROXY_PORT
-            : FTP_PROXY_PORT;
-    return CreateProxy(type, host, port, defaultPort);
-}
-
-/*
- * Gets proxy for socks request.
- */
-AutoPtr<IProxy> ProxySelectorImpl::SelectSocksProxy()
-{
-    String host;
-    String port;
-    ProxyType type = ProxyType_DIRECT;
-
-    host = GetSystemProperty(String("socksProxyHost"));
-    if (!host.IsNull()) {
-        type = ProxyType_SOCKS;
-        port = GetSystemProperty(
-                String("socksProxyPort"), StringUtils::ToString(SOCKS_PROXY_PORT));
-    }
-    return CreateProxy(type, host, port, SOCKS_PROXY_PORT);
-}
-
-/*
- * checks whether the host needs proxy. return true if it doesn't need a
- * proxy.
- */
 Boolean ProxySelectorImpl::IsNonProxyHost(
     /* [in] */ const String& host,
     /* [in] */ const String& nonProxyHosts)
@@ -264,19 +161,19 @@ Boolean ProxySelectorImpl::IsNonProxyHost(
     }
     // Construct regex expression of nonProxyHosts
     Char32 ch;
-    StringBuffer buf;
+    StringBuilder buf;
     AutoPtr<ArrayOf<Char32> > char32Array = nonProxyHosts.GetChars();
     for (Int32 i = 0; (UInt32)i < char32Array->GetLength(); i++) {
         ch = (*char32Array)[i];
         switch (ch) {
             case '.':
-                buf += "\\.";
+                buf.Append("\\.");
                 break;
             case '*':
-                buf += ".*";
+                buf.Append(".*");
                 break;
             default:
-                buf += ch;
+                buf.AppendChar(ch);
         }
     }
     String nonProxyHostsReg;
@@ -287,87 +184,23 @@ Boolean ProxySelectorImpl::IsNonProxyHost(
     return isflag;
 }
 
-/*
- * Create Proxy by "type","host" and "port".
- */
-AutoPtr<IProxy> ProxySelectorImpl::CreateProxy(
-    /* [in] */ ProxyType type,
-    /* [in] */ const String& host,
-    /* [in] */ const String& port,
-    /* [in] */ Int32 defaultPort)
-{
-    AutoPtr<IProxy> proxy;
-    if (type == ProxyType_DIRECT) {
-        proxy = CProxy::NO_PROXY;
-    }
-    else {
-        Int32 iPort;
-//        try {
-            // BEGIN android-changed
-        iPort = StringUtils::ParseInt32(port);
-        if (iPort == -1) {
-            iPort = defaultPort;
-        }
-            // END android-changed
-//        } catch (NumberFormatException e) {
-//            iPort = defaultPort;
-//        }
-        AutoPtr<IInetSocketAddress> address;
-        ASSERT_SUCCEEDED(CInetSocketAddress::CreateUnresolved(
-                host, iPort, (IInetSocketAddress**)&address));
-        ASSERT_SUCCEEDED(CProxy::New(type,
-                ISocketAddress::Probe(address), (IProxy**)&proxy));
-    }
-    return proxy;
-}
-
-/*
- * gets system property, privileged operation. If the value of the property
- * is null or empty String, it returns defaultValue.
- */
-String ProxySelectorImpl::GetSystemProperty(
-    /* [in] */ const String& property)
-{
-    return GetSystemProperty(property, String(NULL));
-}
-
-/*
- * gets system property, privileged operation. If the value of the property
- * is null or empty String, it returns defaultValue.
- */
-String ProxySelectorImpl::GetSystemProperty(
-    /* [in] */ const String& property,
-    /* [in] */ const String& defaultValue)
-{
-    // String value = AccessController.doPrivileged(new PriviAction<String>(
-    //         property));
-    // if (value.IsNull() || value.IsEmpty()) {
-    //     value = (!mNetProps.IsNull())
-    //             ? netProps.getProperty(property, defaultValue)
-    //             : defaultValue;
-    // }
-    // return value;
-    return String(NULL);
-}
-
-/*
- * gets system property, privileged operation. If the value of "key"
- * property is null, then retrieve value from "alternative" property.
- * Finally, if the value is null or empty String, it returns defaultValue.
- */
-String ProxySelectorImpl::GetSystemPropertyOrAlternative(
+ECode ProxySelectorImpl::GetSystemPropertyInt(
     /* [in] */ const String& key,
-    /* [in] */ const String& alternativeKey,
-    /* [in] */ const String& defaultValue)
+    /* [in] */ Int32 defaultValue,
+    /* [out] */ Int32 * result)
 {
-    String value = GetSystemProperty(key);
-    if (value.IsNull()) {
-        value = GetSystemProperty(alternativeKey);
-        if (value.IsNull()) {
-            value = defaultValue;
-        }
+    VALIDATE_NOT_NULL(result)
+    *result = defaultValue;
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String prop;
+    system->GetProperty(key, &prop);
+    if (!prop.IsNull()) {
+        StringUtils::Parse(prop, result);
     }
-    return value;
+
+    return NOERROR;
 }
 
 } // namespace Net

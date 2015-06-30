@@ -59,6 +59,7 @@ SOURCES += CProxyHelper.cpp
 SOURCES += ProxySelector.cpp
 SOURCES += ProxySelectorImpl.cpp
 SOURCES += ResponseCache.cpp
+SOURCES += CResponseCacheHelper.cpp
 SOURCES += ServerSocket.cpp
 SOURCES += CServerSocketHelper.cpp
 SOURCES += Socket.cpp
