@@ -109,6 +109,10 @@ module
         interface ITransliterator;
     }
 
+    singleton class CICUHelper {
+        interface IICUHelper;
+    }
+
     } // namespace ICU
     } // namespace LibCore
 }
