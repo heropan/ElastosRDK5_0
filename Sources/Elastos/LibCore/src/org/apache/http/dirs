@@ -14,3 +14,4 @@ DIRS += conn/ssl
 DIRS += conn/util
 DIRS += cookie
 DIRS += cookie/params
+DIRS += entity

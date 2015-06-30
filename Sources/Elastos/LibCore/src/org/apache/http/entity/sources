@@ -1,0 +1,18 @@
+
+TARGET_NAME= entity
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/entity
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/message
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/util
+
+SOURCES = AbstractHttpEntity.cpp
+SOURCES += HttpEntityWrapper.cpp
+SOURCES += CBasicHttpEntity.cpp
+SOURCES += CBufferedHttpEntity.cpp
+SOURCES += CByteArrayEntity.cpp
+SOURCES += CEntityTemplate.cpp
+SOURCES += CFileEntity.cpp
+SOURCES += CInputStreamEntity.cpp
+SOURCES += CSerializableEntity.cpp
+SOURCES += CStringEntity.cpp

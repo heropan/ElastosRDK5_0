@@ -133,6 +133,11 @@ module
     merge("../../../../car/org/apache/http/cookie/params/CookieSpecParamBean.car");
     merge("../../../../car/org/apache/http/cookie/params/CookieSpecPNames.car");
 
+    merge("../../../../car/org/apache/http/entity/AbstractHttpEntity.car");
+    merge("../../../../car/org/apache/http/entity/BasicHttpEntity.car");
+    merge("../../../../car/org/apache/http/entity/ContentLengthStrategy.car");
+    merge("../../../../car/org/apache/http/entity/ContentProducer.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
@@ -143,6 +148,7 @@ module
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.IComparator;
     using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IFile;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.ISerializable;
     using interface Elastos.Net.IURI;
@@ -915,6 +921,93 @@ module
 
     } // namespace Params
     } // namespace Cookie
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Entity {
+
+    class CBasicHttpEntity {
+        constructor();
+
+        interface IBasicHttpEntity;
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+    }
+
+    class CBufferedHttpEntity {
+        constructor(
+            [in] IHttpEntity* entity);
+
+        interface IHttpEntity;
+    }
+
+    class CByteArrayEntity {
+        constructor(
+            [in] ArrayOf<Byte>* b);
+
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+        interface ICloneable;
+    }
+
+    class CEntityTemplate {
+        constructor(
+            [in] IContentProducer* contentproducer);
+
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+    }
+
+    class CFileEntity {
+        constructor(
+            [in] IFile* file,
+            [in] String contentType);
+
+        constructor();
+
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+        interface ICloneable;
+    }
+
+    class CInputStreamEntity {
+        constructor(
+            [in] IInputStream* instream,
+            [in] Int64 length);
+
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+    }
+
+    class CSerializableEntity {
+        constructor(
+            [in] ISerializable* ser,
+            [in] Boolean bufferize);
+
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+    }
+
+    class CStringEntity {
+        constructor(
+            [in] String s,
+            [in] String charset);
+
+        constructor(
+            [in] String s);
+
+        constructor();
+
+        interface IAbstractHttpEntity;
+        interface IHttpEntity;
+        interface ICloneable;
+    }
+
+    } // namespace Entity
     } // namespace Http
     } // namespace Apache
     } // namespace Org
