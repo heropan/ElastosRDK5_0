@@ -94,9 +94,9 @@ module
             interface IStrictLineReader;
             interface ICloseable;
         }
-//        class CPosix {
-//            interface IOs;
-//        }
+        class CPosix {
+            interface IOs;
+        }
     }
     }
 }

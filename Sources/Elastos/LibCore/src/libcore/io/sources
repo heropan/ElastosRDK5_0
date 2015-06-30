@@ -17,7 +17,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
 SOURCES = AsynchronousCloseMonitorNative.cpp
 SOURCES += CAsynchronousCloseMonitor.cpp
-#SOURCES += CPosix.cpp  //need libc.so
+SOURCES += CPosix.cpp
 SOURCES += NetworkUtilities.cpp
 SOURCES += SocketTagger.cpp
 SOURCES += CBase64.cpp

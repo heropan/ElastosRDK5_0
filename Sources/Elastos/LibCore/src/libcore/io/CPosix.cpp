@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/un.h>
-
+#include <dns/resolv_netid.h>
 #include "CPosix.h"
 #include "AsynchronousCloseMonitorNative.h"
 #include "io/CFileDescriptor.h"
@@ -143,6 +143,8 @@ static rc_t ErrorIfMinusOne(const char* name, rc_t rc, ECode* ec) {
     }
     return rc;
 }
+
+extern char** environ; // Standard, but not in any header file.
 
 namespace Libcore {
 namespace IO {
@@ -463,7 +465,7 @@ ECode CPosix::Elastos_getaddrinfo(
 
     addrinfo* addressList = NULL;
     errno = 0;
-    Int32 rc;// = android_getaddrinfofornet(node.c_str(), NULL, &hints, netId, 0, &addressList);
+    Int32 rc = android_getaddrinfofornet(node, NULL, &hints, netId, 0, &addressList);
     UniquePtr<addrinfo, addrinfo_deleter> addressListDeleter(addressList);
     if (rc != 0) {
         // throwGaiException(env, "android_getaddrinfo", rc);
@@ -622,7 +624,7 @@ ECode CPosix::Dup2(
 ECode CPosix::Environ(
     /* [out, callee] */ ArrayOf<String>** env)
 {
-    extern char** environ; // Standard, but not in any header file.
+
     Int32 size = 0;
     while(*environ) size++;
     AutoPtr<ArrayOf<String> > envTmp = ArrayOf<String>::Alloc(size);
@@ -644,12 +646,12 @@ ECode CPosix::Execv(
     }
 
     Int32 length = argv->GetLength();
-    char const ** array_ = new char const *[length + 1];
+    char const ** array_ = new char const*[length + 1];
     array_[length] = NULL;
     for (Int32 i = 0; i < length; i++) {
         array_[i] = (*argv)[i];
     }
-    execv(filename, array_);
+    execv(filename, (char* const*)array_);
 
     ALOGE("execv returned errno = %d", errno);
     return E_ERRNO_EXCEPTION;
@@ -2221,7 +2223,7 @@ ECode CPosix::Unsetenv(
         return NOERROR;
     }
     ECode ec;
-    Int32 rc = ErrorIfMinusOne("unsetenv", unsetenv(name), &ec);
+    ErrorIfMinusOne("unsetenv", unsetenv(name), &ec);
     return ec;
 }
 
