@@ -4,6 +4,7 @@
 
 #include "_Elastos_Utility_CLocale.h"
 #include "Object.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::ICloneable;
 using Elastos::IO::ISerializable;
@@ -14,6 +15,8 @@ namespace Elastos {
 namespace Utility {
 
 class CLocaleBuilder;
+
+typedef Elastos::Utility::Etl::HashMap<String, String> StringMap;
 
 CarClass(CLocale)
     , public Object
@@ -712,7 +715,7 @@ private:
     /**
      * Map of grandfathered language tags to their modern replacements.
      */
-    static AutoPtr<IMap> GRANDFATHERED_LOCALES;
+    static AutoPtr< StringMap > GRANDFATHERED_LOCALES;
 
 
     // Initialize a default which is used during static

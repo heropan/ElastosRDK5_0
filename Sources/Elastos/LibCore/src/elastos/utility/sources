@@ -13,7 +13,9 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/charset;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 
 SOURCES += AbstractCollection.cpp

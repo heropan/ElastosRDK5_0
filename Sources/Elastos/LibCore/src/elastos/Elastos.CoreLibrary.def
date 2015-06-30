@@ -402,13 +402,15 @@ EXPORTS
     ;;Character
     _ZN7Elastos4Core9Character10IsMirroredEj
     _ZN7Elastos4Core9Character10UNASSIGNEDE
+    _ZN7Elastos4Core9Character11ForNameImplERKNS_6StringE
+    _ZN7Elastos4Core9Character11GetTypeImplEi
     _ZN7Elastos4Core9Character11IsCarLetterEj
+    _ZN7Elastos4Core9Character11IsDigitImplEi
     _ZN7Elastos4Core9Character11IsLowerCaseEj
     _ZN7Elastos4Core9Character11IsSpaceCharEj
     _ZN7Elastos4Core9Character11IsSurrogateEj
     _ZN7Elastos4Core9Character11IsTitleCaseEj
     _ZN7Elastos4Core9Character11IsUpperCaseEj
-    _ZN7Elastos4Core9Character11IsValidCharEj
     _ZN7Elastos4Core9Character11MATH_SYMBOLE
     _ZN7Elastos4Core9Character11PRIVATE_USEE
     _ZN7Elastos4Core9Character11ToLowerCaseEj
@@ -418,6 +420,7 @@ EXPORTS
     _ZN7Elastos4Core9Character12GetCharCountERKNS_6StringEiiPi
     _ZN7Elastos4Core9Character12GetCharCountERKNS_7ArrayOfIhEEiiPi
     _ZN7Elastos4Core9Character12IsISOControlEj
+    _ZN7Elastos4Core9Character12IsLetterImplEi
     _ZN7Elastos4Core9Character12IsWhitespaceEj
     _ZN7Elastos4Core9Character12OTHER_LETTERE
     _ZN7Elastos4Core9Character12OTHER_NUMBERE
@@ -559,12 +562,14 @@ EXPORTS
     _ZN7Elastos4Core9Character12UnicodeBlockD2Ev
     _ZN7Elastos4Core9Character13GetCharBeforeERKNS_6StringEiPj
     _ZN7Elastos4Core9Character13GetCharBeforeERKNS_7ArrayOfIhEEiPj
+    _ZN7Elastos4Core9Character13IsDefinedImplEi
     _ZN7Elastos4Core9Character13LETTER_NUMBERE
     _ZN7Elastos4Core9Character13MAX_SURROGATEE
     _ZN7Elastos4Core9Character13MIN_SURROGATEE
     _ZN7Elastos4Core9Character14DIRECTIONALITYE
     _ZN7Elastos4Core9Character14ENCLOSING_MARKE
     _ZN7Elastos4Core9Character14IsLowSurrogateEj
+    _ZN7Elastos4Core9Character14IsMirroredImplEi
     _ZN7Elastos4Core9Character14LINE_SEPARATORE
     _ZN7Elastos4Core9Character14MAX_CODE_POINTE
     _ZN7Elastos4Core9Character14MIN_CODE_POINTE
@@ -573,17 +578,27 @@ EXPORTS
     _ZN7Elastos4Core9Character15GetNumericValueEj
     _ZN7Elastos4Core9Character15IsHighSurrogateEj
     _ZN7Elastos4Core9Character15IsLetterOrDigitEj
+    _ZN7Elastos4Core9Character15IsLowerCaseImplEi
+    _ZN7Elastos4Core9Character15IsSpaceCharImplEi
     _ZN7Elastos4Core9Character15IsSurrogatePairEjj
+    _ZN7Elastos4Core9Character15IsTitleCaseImplEi
+    _ZN7Elastos4Core9Character15IsUpperCaseImplEi
     _ZN7Elastos4Core9Character15MODIFIER_LETTERE
     _ZN7Elastos4Core9Character15MODIFIER_SYMBOLE
     _ZN7Elastos4Core9Character15SPACE_SEPARATORE
+    _ZN7Elastos4Core9Character15ToLowerCaseImplEi
+    _ZN7Elastos4Core9Character15ToTitleCaseImplEi
+    _ZN7Elastos4Core9Character15ToUpperCaseImplEi
     _ZN7Elastos4Core9Character16DASH_PUNCTUATIONE
     _ZN7Elastos4Core9Character16GetOffsetByCharsERKNS_6StringEiiPi
     _ZN7Elastos4Core9Character16GetOffsetByCharsERKNS_7ArrayOfIhEEiiiiPi
+    _ZN7Elastos4Core9Character16IsValidCodePointEj
+    _ZN7Elastos4Core9Character16IsWhitespaceImplEi
     _ZN7Elastos4Core9Character16LOWERCASE_LETTERE
     _ZN7Elastos4Core9Character16NON_SPACING_MARKE
     _ZN7Elastos4Core9Character16TITLECASE_LETTERE
     _ZN7Elastos4Core9Character16UPPERCASE_LETTERE
+    _ZN7Elastos4Core9Character17GetCharAtInternalEPKcPi
     _ZN7Elastos4Core9Character17GetDirectionalityEj
     _ZN7Elastos4Core9Character17MAX_LOW_SURROGATEE
     _ZN7Elastos4Core9Character17MIN_LOW_SURROGATEE
@@ -592,21 +607,28 @@ EXPORTS
     _ZN7Elastos4Core9Character18IsCarLetterOrDigitEj
     _ZN7Elastos4Core9Character18MAX_HIGH_SURROGATEE
     _ZN7Elastos4Core9Character18MIN_HIGH_SURROGATEE
+    _ZN7Elastos4Core9Character19GetNumericValueImplEi
     _ZN7Elastos4Core9Character19IsCarIdentifierPartEj
+    _ZN7Elastos4Core9Character19IsLetterOrDigitImplEi
     _ZN7Elastos4Core9Character19PARAGRAPH_SEPARATORE
     _ZN7Elastos4Core9Character20DECIMAL_DIGIT_NUMBERE
     _ZN7Elastos4Core9Character20IsCarIdentifierStartEj
     _ZN7Elastos4Core9Character21CONNECTOR_PUNCTUATIONE
+    _ZN7Elastos4Core9Character21GetDirectionalityImplEi
     _ZN7Elastos4Core9Character21IsIdentifierIgnorableEj
+    _ZN7Elastos4Core9Character21WriteUTFBytesToBufferEPhji
     _ZN7Elastos4Core9Character22COMBINING_SPACING_MARKE
     _ZN7Elastos4Core9Character23FINAL_QUOTE_PUNCTUATIONE
     _ZN7Elastos4Core9Character24DIRECTIONALITY_UNDEFINEDE
     _ZN7Elastos4Core9Character24IsUnicodeIdentifierStartEj
     _ZN7Elastos4Core9Character25DIRECTIONALITY_WHITESPACEE
     _ZN7Elastos4Core9Character25INITIAL_QUOTE_PUNCTUATIONE
+    _ZN7Elastos4Core9Character25IsIdentifierIgnorableImplEi
+    _ZN7Elastos4Core9Character27IsUnicodeIdentifierPartImplEi
     _ZN7Elastos4Core9Character28DIRECTIONALITY_ARABIC_NUMBERE
     _ZN7Elastos4Core9Character28DIRECTIONALITY_LEFT_TO_RIGHTE
     _ZN7Elastos4Core9Character28DIRECTIONALITY_RIGHT_TO_LEFTE
+    _ZN7Elastos4Core9Character28IsUnicodeIdentifierStartImplEi
     _ZN7Elastos4Core9Character28MIN_SUPPLEMENTARY_CODE_POINTE
     _ZN7Elastos4Core9Character29DIRECTIONALITY_OTHER_NEUTRALSE
     _ZN7Elastos4Core9Character30DIRECTIONALITY_EUROPEAN_NUMBERE
@@ -625,6 +647,7 @@ EXPORTS
     _ZN7Elastos4Core9Character41DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATORE
     _ZN7Elastos4Core9Character4SIZEE
     _ZN7Elastos4Core9Character6FORMATE
+    _ZN7Elastos4Core9Character6OfImplEi
     _ZN7Elastos4Core9Character6Subset8ToStringEPNS_6StringE
     _ZN7Elastos4Core9Character6SubsetC1ERKNS_6StringE
     _ZN7Elastos4Core9Character6SubsetC2ERKNS_6StringE
@@ -641,14 +664,15 @@ EXPORTS
     _ZN7Elastos4Core9Character7ToDigitEji
     _ZN7Elastos4Core9Character8ForDigitEii
     _ZN7Elastos4Core9Character8IsLetterEj
+    _ZN7Elastos4Core9Character9DigitImplEii
     _ZN7Elastos4Core9Character9GetCharAtEPKciiPi
+    _ZN7Elastos4Core9Character9GetCharAtERKNS_6StringEiPjPi
     _ZN7Elastos4Core9Character9GetCharAtERKNS_7ArrayOfIhEEiPjPi
     _ZN7Elastos4Core9Character9IsDefinedEj
     _ZN7Elastos4Core9Character9MAX_RADIXE
     _ZN7Elastos4Core9Character9MIN_RADIXE
     _ZN7Elastos4Core9Character9SURROGATEE
     _ZN7Elastos4Core9Character9ToChar32sERKNS_6StringEiiPNS_7ArrayOfIjEEi
-    _ZThn8_N7Elastos4Core9Character6Subset8ToStringEPNS_6StringE
 
     ;; CaseMapper
     _ZN7Elastos4Core10CaseMapper11ToLowerCaseEPNS_7Utility7ILocaleERKNS_6StringEPNS_7ArrayOfIjEEii

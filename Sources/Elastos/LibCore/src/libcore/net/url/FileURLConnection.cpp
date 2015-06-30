@@ -314,9 +314,9 @@ AutoPtr<IInputStream> FileURLConnection::GetDirectoryListing(
     out->Print(String("<base href=\"file:"));
     String pathname;
     out->Print((f->GetPath(&pathname), pathname).Replace('\\', '/')
-                        + String("/\"><h1>")
-                        + (f->GetPath(&pathname), pathname)
-                        + String("</h1>\n<hr>\n"));
+        + String("/\"><h1>")
+        + (f->GetPath(&pathname), pathname)
+        + String("</h1>\n<hr>\n"));
     Int32 i = 0;
     for (i = 0; i < fileList->GetLength(); i++) {
         out->Print((*fileList)[i] + String("<br>\n"));

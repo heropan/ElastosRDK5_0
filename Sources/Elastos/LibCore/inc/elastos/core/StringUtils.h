@@ -114,6 +114,12 @@ public:
         /* [in] */ Int64 v,
         /* [in] */ Boolean upperCase = TRUE);
 
+    static CARAPI_(String) ToHexString(
+        /* [in] */ Float v);
+
+    static CARAPI_(String) ToHexString(
+        /* [in] */ Double v);
+
     static CARAPI_(String) ToOctalString(
         /* [in] */ Int32 i);
 

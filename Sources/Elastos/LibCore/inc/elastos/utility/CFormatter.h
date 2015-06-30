@@ -27,7 +27,6 @@ CarClass(CFormatter)
     , public ICloseable
     , public IFlushable
 {
-    friend Boolean InitTLS();
 public:
     /**
      * The enumeration giving the available styles for formatting very large
@@ -684,10 +683,11 @@ private:
     CARAPI_(void) TransformA(
         /* [in] */ StringBuilder* result);
 
-private:
+public:
     static pthread_key_t sCachedDecimalFormat;
     static Boolean sHaveKey;
 
+private:
     static const AutoPtr<ArrayOf<Char32> > ZEROS;
 
     // User-settable parameters.

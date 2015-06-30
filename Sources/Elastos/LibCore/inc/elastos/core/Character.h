@@ -965,7 +965,7 @@ public:
      *         {@code false} otherwise.
      * @since 1.5
      */
-    static CARAPI_(Boolean) IsValidChar(
+    static CARAPI_(Boolean) IsValidCodePoint(
         /* [in] */ Char32 c);
 
     /**

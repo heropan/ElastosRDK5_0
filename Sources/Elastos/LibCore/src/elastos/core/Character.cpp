@@ -422,7 +422,7 @@ AutoPtr<Character::UnicodeBlock>
 Character::UnicodeBlock::Of(
     /* [in] */ Char32 c)
 {
-    if (!IsValidChar(c)) {
+    if (!IsValidCodePoint(c)) {
         return NULL;
     }
 
@@ -449,7 +449,7 @@ Character::UnicodeBlock::~UnicodeBlock()
 {
 }
 
-Boolean Character::IsValidChar(
+Boolean Character::IsValidCodePoint(
     /* [in] */ Char32 c)
 {
     if (c > MAX_CODE_POINT) {
@@ -465,7 +465,7 @@ Boolean Character::IsValidChar(
 Int32 Character::GetByteCount(
     /* [in] */ Char32 c)
 {
-    if (!IsValidChar(c)) {
+    if (!IsValidCodePoint(c)) {
         return 0;
     }
 
@@ -590,7 +590,7 @@ ECode Character::ToChars(
 {
     VALIDATE_NOT_NULL(number);
 
-    if (!IsValidChar(c)) {
+    if (!IsValidCodePoint(c)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -610,7 +610,7 @@ ECode Character::ToChars(
 {
     VALIDATE_NOT_NULL(seq);
 
-    if (!IsValidChar(c)) {
+    if (!IsValidCodePoint(c)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 

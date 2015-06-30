@@ -28,7 +28,6 @@ URLStreamHandler::~URLStreamHandler()
 {
 }
 
-CAR_INTERFACE_IMPL(URLStreamHandler, Object, IURLStreamHandler);
 ECode URLStreamHandler::OpenConnection(
     /* [in] */ IURL* u,
     /* [in] */ IProxy* proxy,

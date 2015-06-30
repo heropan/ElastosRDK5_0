@@ -2,13 +2,13 @@
 #include "CFormatter.h"
 //#include "CNativeDecimalFormat.h"
 #include "CLocale.h"
-//#include "LocaleData.h"
+#include "LocaleData.h"
 #include "CFile.h"
 #include "CFileOutputStream.h"
 #include "COutputStreamWriter.h"
 #include "CBufferedWriter.h"
 #include "IoUtils.h"
-//#include "Charset.h"
+#include "Charset.h"
 #include "CStringWrapper.h"
 #include "CBigInteger.h"
 #include "Date.h"
@@ -24,7 +24,8 @@
 #include "CDate.h"
 
 //using Libcore::ICU::CNativeDecimalFormat;
-//using Libcore::ICU::LocaleData;
+using Libcore::ICU::LocaleData;
+using Libcore::IO::IoUtils;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::EIID_IStringBuilder;
@@ -46,6 +47,7 @@ using Elastos::Core::Math;
 using Elastos::Core::IDouble;
 using Elastos::Core::CDouble;
 using Elastos::Core::IFloat;
+using Elastos::Core::IChar32;
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::EIID_IFloat;
@@ -58,9 +60,8 @@ using Elastos::IO::IOutputStreamWriter;
 using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::IBufferedWriter;
 using Elastos::IO::CBufferedWriter;
-//using Elastos::IO::IoUtils;
 using Elastos::IO::Charset::ICharset;
-//using Elastos::IO::Charset::Charset;
+using Elastos::IO::Charset::Charset;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::EIID_IFlushable;
 using Elastos::IO::IWriter;
@@ -207,15 +208,16 @@ ECode CFormatter::constructor(
     /* [in] */ ILocale* l)
 {
     AutoPtr<IFileOutputStream> fout;
-    // try {
-    ECode ec1 = CFileOutputStream::New(file, (IFileOutputStream**)&fout);
-    if (ec1 != NOERROR) {
-//        IoUtils::CloseQuietly(fout);
-        return ec1;
-    }
     AutoPtr<IOutputStreamWriter> osw;
-    FAIL_RETURN(COutputStreamWriter::New(IOutputStream::Probe(fout), csn, (IOutputStreamWriter**)&osw));
-    FAIL_RETURN(CBufferedWriter::New(IWriter::Probe(osw), (IBufferedWriter**)&mOut));
+    // try {
+    ECode ec = CFileOutputStream::New(file, (IFileOutputStream**)&fout);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = COutputStreamWriter::New(IOutputStream::Probe(fout), csn, (IOutputStreamWriter**)&osw);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = CBufferedWriter::New(IWriter::Probe(osw), (IBufferedWriter**)&mOut);
+    FAIL_GOTO(ec, _EXIT_)
     // } catch (RuntimeException e) {
     //     IoUtils.closeQuietly(fout);
     //     throw e;
@@ -223,16 +225,19 @@ ECode CFormatter::constructor(
     //     IoUtils.closeQuietly(fout);
     //     throw e;
     // }
-
     mLocale = l;
     return NOERROR;
+
+_EXIT_:
+    IoUtils::CloseQuietly(ICloseable::Probe(fout));
+    return ec;
 }
 
 ECode CFormatter::constructor(
     /* [in] */ IOutputStream* os)
 {
     AutoPtr<ICharset> defchar;
-//    Charset::DefaultCharset((ICharset**)&defchar);
+    Charset::DefaultCharset((ICharset**)&defchar);
     String charname;
     defchar->GetName(&charname);
     AutoPtr<IOutputStreamWriter> osw;
@@ -386,7 +391,7 @@ ECode CFormatter::Format(
     AutoPtr<ILocale> originalLocale = mLocale;
     // try {
     mLocale = (l == NULL ? (CLocale::US).Get() : l);
-//    mLocaleData = LocaleData::Get(mLocale);
+    mLocaleData = LocaleData::Get(mLocale);
     FAIL_RETURN(DoFormat(format, mArgs));
     // } finally {
     mLocale = originalLocale;
@@ -526,7 +531,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
                 String argValue;
                 if (isNumber) {
                     INumber* number = INumber::Probe(mArg);
-//                    number->ToString(&argValue);  // Compile error
+                    argValue = Object::ToString(number);
                 }
 
                 Char32 zeroDigit;
@@ -682,7 +687,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBoolean()
     String result;
     AutoPtr<IBoolean> res = (IBoolean*)mArg->Probe(EIID_IBoolean);
     if (res != NULL) {
-//        res->ToString(&result);
+        result = Object::ToString(res);
     }
     else if (mArg == NULL) {
         result = "FALSE";
@@ -745,22 +750,20 @@ AutoPtr<ICharSequence> CFormatter::TransformFromCharacter()
         CStringWrapper::New(String("null"), (ICharSequence**)&cs);
         return Padding(cs, 0);
     }
-    if (Elastos::Core::IChar32::Probe(mArg) /*mArg instanceof Character*/) {
-        String str;
-//        Elastos::Core::IChar32::Probe(mArg)->ToString(&str);
+    if (IChar32::Probe(mArg) /*mArg instanceof Character*/) {
+        String str = Object::ToString(mArg);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         return Padding(cs, 0);
     }
     else if (IByte::Probe(mArg) || IInteger16::Probe(mArg) || IInteger32::Probe(mArg)) {
-        // Int32 codePoint = 0;
-        // INumber::Probe(mArg)->Int32Value(&codePoint);
-        // if (!Character::IsValidCodePoint(codePoint)) {
-        //     // throw new IllegalFormatCodePointException(codePoint);
-        //     return NULL
-        // }
-        String str;
-//        INumber::Probe(mArg)->ToString(&str);
+        Int32 codePoint = 0;
+        INumber::Probe(mArg)->Int32Value(&codePoint);
+        if (!Character::IsValidCodePoint(codePoint)) {
+            // throw new IllegalFormatCodePointException(codePoint);
+            return NULL;
+        }
+        String str = Object::ToString(mArg);
         AutoPtr<ICharSequence> cs;
         CStringWrapper::New(str, (ICharSequence**)&cs);
         return Padding(cs, 0);
@@ -1613,7 +1616,7 @@ void CFormatter::TransformF(
     /* [in] */ StringBuilder* result)
 {
     // All zeros in this method are *pattern* characters, so no localization.
-    String pattern = String("0.000000");
+    String pattern("0.000000");
     Int32 precision = mFormatToken->GetPrecision();
     if (mFormatToken->mFlagComma || precision != FormatToken::DEFAULT_PRECISION) {
         StringBuilder patternBuilder;
@@ -1663,14 +1666,12 @@ void CFormatter::TransformA(
     if (IFloat::Probe(mArg)) {
         Float fvalue = 0;
         ((IFloat*) mArg->Probe(EIID_IFloat))->GetValue(&fvalue);
-        assert(0 && "TODO");
-        // result->Append(Float.toHexString());
+        result->Append(StringUtils::ToHexString(fvalue));
     }
     else if (IDouble::Probe(mArg)) {
         Double dvalue = 0;
         ((IDouble*) mArg->Probe(EIID_IDouble))->GetValue(&dvalue);
-        assert(0 && "TODO");
-        // result.append(Double.toHexString());
+        result->Append(StringUtils::ToHexString(dvalue));
     }
     else {
         // throw badArgumentType();
