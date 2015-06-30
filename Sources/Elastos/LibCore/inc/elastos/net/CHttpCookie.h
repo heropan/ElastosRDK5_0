@@ -12,6 +12,7 @@ using Elastos::Core::Object;
 using Elastos::Core::ICloneable;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::IDate;
+using Elastos::Utility::IList;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
 
@@ -31,7 +32,7 @@ public:
             /* [in] */ const String& input);
 
         CARAPI Parse(
-            /* [out] */ List< AutoPtr<IHttpCookie> >& httpCookies);
+            /* [out] */ IList** httpCookies);
 
     private:
         CARAPI_(void) SetAttribute(
@@ -75,7 +76,7 @@ public:
 
     CHttpCookie();
 
-    static CARAPI_(Boolean) DomainMatches(
+    static CARAPI_(Boolean) IsDomainMatches(
         /* [in] */ const String& domainPattern,
         /* [in] */ const String& host);
 
@@ -93,7 +94,7 @@ public:
 
     static CARAPI Parse(
         /* [in] */ const String& header,
-        /* [out] */ List< AutoPtr<IHttpCookie> >& httpCookies);
+        /* [out] */ IList** httpCookies);
 
     CARAPI GetComment(
         /* [out] */ String* comment);
@@ -208,6 +209,7 @@ private:
     String mPath;
     String mPortList;
     Boolean mSecure;
+    Boolean mHttpOnly;
     String mValue;
     Int32 mVersion;
 };

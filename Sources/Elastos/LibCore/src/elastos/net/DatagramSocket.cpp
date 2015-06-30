@@ -7,8 +7,9 @@
 #include "CBoolean.h"
 #include "CPlainDatagramSocketImpl.h"
 #include "AutoLock.h"
-//#include "CLibcore.h"
-//#include "COsConstants.h"
+#include "CLibcore.h"
+#include "CIoBridge.h"
+#include "OsConstants.h"
 #include <cutils/log.h>
 
 using Elastos::Core::IInteger32;
@@ -17,15 +18,17 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
-using Libcore::IO::IOs;
-//using Libcore::IO::CLibcore;
-//using Libcore::IO::COsConstants;
 using Elastos::Net::EIID_ISocketOptions;
+using Libcore::IO::IOs;
+using Libcore::IO::CLibcore;
+using Libcore::IO::CIoBridge;
+using Droid::System::OsConstants;
 
 namespace Elastos {
 namespace Net {
 
 const String DatagramSocket::TAG("DatagramSocket");
+
 AutoPtr<IDatagramSocketImplFactory> DatagramSocket::mFactory;
 Object DatagramSocket::sLock;
 
@@ -187,23 +190,9 @@ ECode DatagramSocket::GetLocalAddress(
 {
     VALIDATE_NOT_NULL(address);
 
-    Boolean isClosed = FALSE;
-    if (IsClosed(&isClosed), isClosed) {
-        *address = NULL;
-        return NOERROR;
-    }
-
-    Boolean isBound = FALSE;
-    if (IsBound(&isBound), !isBound) {
-        *address = CInet4Address::ANY;
-        REFCOUNT_ADD(*address);
-        return NOERROR;
-    }
-    AutoPtr<IInetAddress> anAddr;
-    mImpl->GetLocalAddress((IInetAddress**)&anAddr);
-    *address = anAddr;
-    REFCOUNT_ADD(*address);
-    return NOERROR;
+    AutoPtr<IFileDescriptor> fd;
+    mImpl->GetFileDescriptor((IFileDescriptor**)&fd);
+    return CIoBridge::_GetSocketLocalAddress(fd, address);
 }
 
 ECode DatagramSocket::GetLocalPort(
@@ -346,11 +335,9 @@ ECode DatagramSocket::SetNetworkInterface(
     //try {
     AutoPtr<IFileDescriptor> outfd;
     mImpl->GetFileDescriptor((IFileDescriptor**)&outfd);
-    Int32 fd;
-    outfd->GetDescriptor(&fd);
     String netname;
     netInterface->GetName(&netname);
-    ECode ec;// = CLibcore::sOs->SetsockoptIfreq(fd, COsConstants::sSOL_SOCKET, COsConstants::sSO_BINDTODEVICE, netname);
+    ECode ec = CLibcore::sOs->SetsockoptIfreq(outfd, OsConstants::_SOL_SOCKET, OsConstants::_SO_BINDTODEVICE, netname);
     if (FAILED(ec)) {
         return E_SOCKET_EXCEPTION;
     }
@@ -479,8 +466,7 @@ ECode DatagramSocket::OnBind(
     /* [in] */ Int32 localPort)
 {
     mIsBound = TRUE;
-    //return mImpl->OnBind(localAddress, localPort);
-    return NOERROR;
+    return ((DatagramSocketImpl*)mImpl.Get())->OnBind(localAddress, localPort);
 }
 
 ECode DatagramSocket::Connect(
@@ -528,7 +514,7 @@ ECode DatagramSocket::OnConnect(
     mIsConnected = true;
     mAddress = remoteAddress;
     mPort = remotePort;
-    //mImpl->OnConnect(remoteAddress, remotePort);
+    ((DatagramSocketImpl*)mImpl.Get())->OnConnect(remoteAddress, remotePort);
     return NOERROR;
 }
 

@@ -5,46 +5,11 @@
 namespace Elastos {
 namespace Net {
 
-PInterface CCookiePolicyHelper::CookiePolicyAcceptAll::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ICookiePolicy*)this;
-    }
-    else if (riid == EIID_ICookiePolicy) {
-        return (ICookiePolicy*)this;
-    }
+//========================================================================
+// CCookiePolicyHelper::CookiePolicyAcceptAll
+//========================================================================
 
-    return NULL;
-}
-
-UInt32 CCookiePolicyHelper::CookiePolicyAcceptAll::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CCookiePolicyHelper::CookiePolicyAcceptAll::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CCookiePolicyHelper::CookiePolicyAcceptAll::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(ICookiePolicy*)this) {
-        *pIID = EIID_ICookiePolicy;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CCookiePolicyHelper::CookiePolicyAcceptAll, Object, ICookiePolicy)
 
 ECode CCookiePolicyHelper::CookiePolicyAcceptAll::ShouldAccept(
     /* [in] */ IURI* uri,
@@ -57,47 +22,11 @@ ECode CCookiePolicyHelper::CookiePolicyAcceptAll::ShouldAccept(
     return NOERROR;
 }
 
+//========================================================================
+// CCookiePolicyHelper::CookiePolicyAcceptNone
+//========================================================================
 
-PInterface CCookiePolicyHelper::CookiePolicyAcceptNone::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ICookiePolicy*)this;
-    }
-    else if (riid == EIID_ICookiePolicy) {
-        return (ICookiePolicy*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CCookiePolicyHelper::CookiePolicyAcceptNone::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CCookiePolicyHelper::CookiePolicyAcceptNone::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CCookiePolicyHelper::CookiePolicyAcceptNone::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(ICookiePolicy*)this) {
-        *pIID = EIID_ICookiePolicy;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CCookiePolicyHelper::CookiePolicyAcceptNone, Object, ICookiePolicy)
 
 ECode CCookiePolicyHelper::CookiePolicyAcceptNone::ShouldAccept(
     /* [in] */ IURI* uri,
@@ -110,47 +39,11 @@ ECode CCookiePolicyHelper::CookiePolicyAcceptNone::ShouldAccept(
     return NOERROR;
 }
 
+//========================================================================
+// CCookiePolicyHelper::CookiePolicyAcceptOriginalServer
+//========================================================================
 
-PInterface CCookiePolicyHelper::CookiePolicyAcceptOriginalServer::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ICookiePolicy*)this;
-    }
-    else if (riid == EIID_ICookiePolicy) {
-        return (ICookiePolicy*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CCookiePolicyHelper::CookiePolicyAcceptOriginalServer::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CCookiePolicyHelper::CookiePolicyAcceptOriginalServer::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CCookiePolicyHelper::CookiePolicyAcceptOriginalServer::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(ICookiePolicy*)this) {
-        *pIID = EIID_ICookiePolicy;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CCookiePolicyHelper::CookiePolicyAcceptOriginalServer, Object, ICookiePolicy)
 
 ECode CCookiePolicyHelper::CookiePolicyAcceptOriginalServer::ShouldAccept(
     /* [in] */ IURI* uri,
@@ -162,10 +55,14 @@ ECode CCookiePolicyHelper::CookiePolicyAcceptOriginalServer::ShouldAccept(
     String domain, host;
     cookie->GetDomainAttr(&domain);
     uri->GetHost(&host);
-    *result = CHttpCookie::DomainMatches(domain, host);
+    *result = CHttpCookie::IsDomainMatches(domain, host);
     return NOERROR;
 }
 
+
+//========================================================================
+// CCookiePolicyHelper
+//========================================================================
 
 AutoPtr<ICookiePolicy> CCookiePolicyHelper::ACCEPT_ALL;
 AutoPtr<ICookiePolicy> CCookiePolicyHelper::ACCEPT_NONE;

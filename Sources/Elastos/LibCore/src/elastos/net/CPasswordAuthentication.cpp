@@ -14,10 +14,11 @@ CPasswordAuthentication::~CPasswordAuthentication()
 
 ECode CPasswordAuthentication::constructor(
     /* [in] */ const String& userName,
-    /* [in] */ const ArrayOf<Char32>& password)
+    /* [in] */ ArrayOf<Char32> * password)
 {
+    VALIDATE_NOT_NULL(password)
     mUserName = userName;
-    mPassword = password.Clone();
+    mPassword = password->Clone();
 
     return NOERROR;
 }
@@ -26,8 +27,9 @@ ECode CPasswordAuthentication::GetPassword(
     /* [out, callee] */ ArrayOf<Char32>** password)
 {
     VALIDATE_NOT_NULL(password);
-    *password = mPassword->Clone();
-    REFCOUNT_ADD(*password);
+    AutoPtr<ArrayOf<Char32> > pwd = mPassword->Clone();
+    *password = pwd;
+    REFCOUNT_ADD(*password)
     return NOERROR;
 }
 

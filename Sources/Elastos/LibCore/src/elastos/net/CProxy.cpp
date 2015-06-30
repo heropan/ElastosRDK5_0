@@ -2,6 +2,8 @@
 #include "CProxy.h"
 #include "StringBuilder.h"
 
+using Elastos::Core::StringBuilder;
+
 namespace Elastos {
 namespace Net {
 
@@ -65,6 +67,69 @@ ECode CProxy::GetNO_PROXY(
     VALIDATE_NOT_NULL(proxy);
     *proxy = NO_PROXY;
     REFCOUNT_ADD(*proxy);
+    return NOERROR;
+}
+
+ECode CProxy::ToString(
+    /* [out] */ String * str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    StringBuilder builder;
+    if (mType == ProxyType_DIRECT) {
+        builder.Append("DIRECT");
+    }
+    else if (mType == ProxyType_HTTP) {
+        builder.Append("HTTP");
+    }
+    else if (mType == ProxyType_SOCKS) {
+        builder.Append("SOCKS");
+    }
+
+    builder.Append("@");
+    if (mType != ProxyType_DIRECT && mAddress != NULL) {
+        String info = Object::ToString(mAddress);
+        builder.Append(info);
+    }
+    *str = builder.ToString();
+    return NOERROR;
+}
+
+ECode CProxy::Equals(
+    /* [in] */ IInterface * o,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    IProxy * other = IProxy::Probe(o);
+    if (NULL == other) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    if (other == THIS_PROBE(IProxy)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    CProxy* another = (CProxy *) other;
+    // address is null when and only when it's NO_PROXY.
+    *result = (mType == another->mType)
+        && Object::Equals(mAddress, another->mAddress);
+
+    return NOERROR;
+}
+
+ECode CProxy::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+
+    Int32 ret = 0;
+    ret += mType;
+    if (mAddress != NULL) {
+        ret += Object::GetHashCode(mAddress);
+    }
+    *hash = ret;
     return NOERROR;
 }
 

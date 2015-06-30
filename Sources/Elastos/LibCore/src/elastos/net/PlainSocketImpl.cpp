@@ -3,17 +3,18 @@
 #include "CFileDescriptor.h"
 #include "CInetSocketAddress.h"
 #include "CInteger32.h"
-//#include "CIoBridge.h"
 #include "CInetAddressHelper.h"
 #include "CSocks4Message.h"
 #include "Arrays.h"
 #include "CCloseGuard.h"
-//#include "CLibcore.h"
-//#include "COsConstants.h"
-//#include "Memory.h"
+#include "CLibcore.h"
+#include "CIoBridge.h"
+#include "OsConstants.h"
+#include "Memory.h"
+#include "CPlainSocketInputStream.h"
+#include "CPlainSocketOutputStream.h"
 
 using Elastos::IO::CFileDescriptor;
-//using Elastos::IO::Memory;
 using Elastos::IO::EIID_IInputStream;
 using Elastos::IO::EIID_IOutputStream;
 using Elastos::Net::CInetSocketAddress;
@@ -26,18 +27,15 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::CCloseGuard;
 using Elastos::Utility::Arrays;
 using Libcore::IO::IIoBridge;
-// using Libcore::IO::CIoBridge;
-// using Libcore::IO::CLibcore;
-// using Libcore::IO::COsConstants;
+using Libcore::IO::CIoBridge;
+using Libcore::IO::CLibcore;
+using Libcore::IO::Memory;
+using Droid::System::OsConstants;
 
 namespace Elastos {
 namespace Net {
 
-// 1d3d148a-53bb-4c22-8c4b-f53cf5305f65
-extern "C" const InterfaceID EIID_PlainSocketImpl =
-    { 0x1d3d148a, 0x53bb, 0x4c22, { 0x8c, 0x4b, 0xf5, 0x3c, 0xf5, 0x30, 0x5f, 0x65 } };
-
-AutoPtr<IInetAddress> PlainSocketImpl::sLastConnectedAddress = NULL;
+AutoPtr<IInetAddress> PlainSocketImpl::sLastConnectedAddress;
 Int32 PlainSocketImpl::sLastConnectedPort = 0;
 
 CAR_INTERFACE_IMPL(PlainSocketImpl, SocketImpl, IPlainSocketImpl)
@@ -102,7 +100,7 @@ ECode PlainSocketImpl::Accept(
     /* [in] */ ISocketImpl* newImpl)
 {
     if (UsingSocks()) {
-        PlainSocketImpl* p;// = (PlainSocketImpl*) newImpl->Probe(EIID_PlainSocketImpl);
+        PlainSocketImpl* p = (PlainSocketImpl*)IPlainSocketImpl::Probe(newImpl);
         if (p != NULL) {
             p->SocksBind();
             p->SocksAccept();
@@ -112,23 +110,17 @@ ECode PlainSocketImpl::Accept(
 
     AutoPtr<IInetSocketAddress> peerAddress;
     CInetSocketAddress::New((IInetSocketAddress**)&peerAddress);
-    Int32 outfd;
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //CLibcore::sOs->Accept(fd, peerAddress, &outfd);
     AutoPtr<IFileDescriptor> clientFd;
-    CFileDescriptor::New((IFileDescriptor**)&clientFd);
-    clientFd->SetDescriptor(outfd);
+    CLibcore::sOs->Accept(mFd, peerAddress, (IFileDescriptor**)&clientFd);
 
     // TODO: we can't just set newImpl.fd to clientFd because a nio SocketChannel may
     // be sharing the FileDescriptor. http://b//4452981.
-    Int32 id;
-    clientFd->GetDescriptor(&id);
-    PlainSocketImpl* p;// = (PlainSocketImpl*) newImpl->Probe(EIID_PlainSocketImpl);
+
+    PlainSocketImpl* p = (PlainSocketImpl*)IPlainSocketImpl::Probe(newImpl);
     if (p == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    p->mFd->SetDescriptor(id);
+    p->mFd = clientFd;
 
     peerAddress->GetAddress((IInetAddress**)&(p->mAddress));
     peerAddress->GetPort(&(p->mPort));
@@ -137,8 +129,7 @@ ECode PlainSocketImpl::Accept(
     AutoPtr<IInteger32> val;
     CInteger32::New(0, (IInteger32**)&val);
     ISocketOptions::Probe(newImpl)->SetOption(ISocketOptions::_SO_TIMEOUT, val);
-    p->mFd->GetDescriptor(&fd);
-    //CIoBridge::_GetSocketLocalPort(fd, &(p->mLocalport));
+    CIoBridge::_GetSocketLocalPort(p->mFd, &(p->mLocalport));
     return NOERROR;
 }
 
@@ -192,34 +183,29 @@ ECode PlainSocketImpl::Available(
         *value = 0;
         return NOERROR;
     }
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CIoBridge::_Available(fd, value);
+
+    return CIoBridge::_Available(mFd, value);
 }
 
 ECode PlainSocketImpl::Bind(
     /* [in] */ IInetAddress* address,
     /* [in] */ Int32 port)
 {
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //FAIL_RETURN(CIoBridge::_Bind(fd, address, port));
+    FAIL_RETURN(CIoBridge::_Bind(mFd, address, port));
     mAddress = address;
     if (port != 0) {
         mLocalport = port;
         return NOERROR;
     }
     else {
-       //return CIoBridge::_GetSocketLocalPort(fd, &mLocalport);
+       return CIoBridge::_GetSocketLocalPort(mFd, &mLocalport);
     }
 }
 
 ECode PlainSocketImpl::Close()
 {
     mGuard->Close();
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CIoBridge::_CloseSocket(fd);
+    return CIoBridge::_CloseAndSignalBlockedThreads(mFd);
 }
 
 ECode PlainSocketImpl::Connect(
@@ -262,10 +248,7 @@ ECode PlainSocketImpl::Connect(
         ec = SocksConnect(anAddr, aPort, 0);
     }
     else {
-        Int32 fd = 0;
-        mFd->GetDescriptor(&fd);
-        Boolean isflag = FALSE;
-        //ec = CIoBridge::_Connect(fd, normalAddr, aPort, timeout, &isflag);
+        ec = CIoBridge::_Connect(mFd, normalAddr, aPort, timeout);
     }
 
     mAddress = normalAddr;
@@ -277,9 +260,9 @@ ECode PlainSocketImpl::Create(
     /* [in] */ Boolean streaming)
 {
     mStreaming = streaming;
-    Int32 outfd = 0;
-    //FAIL_RETURN(CIoBridge::_Socket(streaming, &outfd));
-    mFd->SetDescriptor(outfd);
+    AutoPtr<IFileDescriptor> outfd;
+    FAIL_RETURN(CIoBridge::_Socket(streaming, (IFileDescriptor **)&outfd));
+    mFd = outfd;
     return NOERROR;
 }
 
@@ -299,10 +282,11 @@ ECode PlainSocketImpl::GetInputStream(
     VALIDATE_NOT_NULL(in)
 
     FAIL_RETURN(CheckNotClosed());
-    // AutoPtr<CSocketInputStream> inS;
-    // FAIL_RETURN(CSocketInputStream::NewByFriend((ISocketImpl*)this, (CSocketInputStream**)&inS));
-    // *in = (IInputStream*) inS->Probe(EIID_IInputStream);
-    // REFCOUNT_ADD(*in)
+
+    AutoPtr<CPlainSocketInputStream> inS;
+    FAIL_RETURN(CPlainSocketInputStream::NewByFriend(THIS_PROBE(ISocketImpl), (CPlainSocketInputStream**)&inS));
+    *in = (IInputStream *)inS->Probe(EIID_IInputStream);
+    REFCOUNT_ADD(*in)
     return NOERROR;
 }
 
@@ -313,9 +297,7 @@ ECode PlainSocketImpl::GetOption(
     VALIDATE_NOT_NULL(res)
 
     AutoPtr<IInterface> out;
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //CIoBridge::_GetSocketOption(fd, option, (IInterface**)&out);
+    CIoBridge::_GetSocketOption(mFd, option, (IInterface**)&out);
     *res = out;
     REFCOUNT_ADD(*res)
     return NOERROR;
@@ -327,10 +309,10 @@ ECode PlainSocketImpl::GetOutputStream(
     VALIDATE_NOT_NULL(out)
 
     FAIL_RETURN(CheckNotClosed());
-    // AutoPtr<CSocketOutputStream> res;
-    // CSocketOutputStream::NewByFriend((ISocketImpl*)this, (CSocketOutputStream**)&res);
-    // *out = (IOutputStream*) res->Probe(EIID_IOutputStream);
-    // REFCOUNT_ADD(*out)
+    AutoPtr<CPlainSocketOutputStream> res;
+    CPlainSocketOutputStream::NewByFriend(THIS_PROBE(ISocketImpl), (CPlainSocketOutputStream**)&res);
+    *out = (IOutputStream*) res->Probe(EIID_IOutputStream);
+    REFCOUNT_ADD(*out)
     return NOERROR;
 }
 
@@ -342,18 +324,14 @@ ECode PlainSocketImpl::Listen(
         // server during the bind.
         return E_SOCKET_EXCEPTION;
     }
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CLibcore::sOs->Listen(fd, backlog);
+    return CLibcore::sOs->Listen(mFd, backlog);
 }
 
 ECode PlainSocketImpl::SetOption(
     /* [in] */ Int32 option,
     /* [in] */ IInterface* value)
 {
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CIoBridge::_SetSocketOption(fd, option, value);
+    return CIoBridge::_SetSocketOption(mFd, option, value);
 }
 
 Int32 PlainSocketImpl::SocksGetServerPort()
@@ -393,9 +371,7 @@ ECode PlainSocketImpl::SocksConnect(
     /* [in] */ Int32 timeout)
 {
     AutoPtr<IInetAddress> outadd = SocksGetServerAddress();
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //CIoBridge::_Connect(fd, outadd, SocksGetServerPort(), timeout);
+    CIoBridge::_Connect(mFd, outadd, SocksGetServerPort(), timeout);
     SocksRequestConnection(applicationServerAddress, applicationServerPort);
     sLastConnectedAddress = applicationServerAddress;
     sLastConnectedPort = applicationServerPort;
@@ -438,16 +414,12 @@ ECode PlainSocketImpl::SocksAccept()
 ECode PlainSocketImpl::ShutdownInput()
 {
     mShutdownInput = TRUE;
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CLibcore::sOs->Shutdown(fd, COsConstants::sSHUT_RD);
+    return CLibcore::sOs->Shutdown(mFd, OsConstants::_SHUT_RD);
 }
 
 ECode PlainSocketImpl::ShutdownOutput()
 {
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CLibcore::sOs->Shutdown(fd, COsConstants::sSHUT_WR);
+    return CLibcore::sOs->Shutdown(mFd, OsConstants::_SHUT_WR);
 }
 
 ECode PlainSocketImpl::SocksBind()
@@ -456,10 +428,7 @@ ECode PlainSocketImpl::SocksBind()
     AutoPtr<ArrayOf<Byte> > array;
     addr->GetAddress((ArrayOf<Byte>**)&array);
 
-    Boolean isflag = FALSE;
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //FAIL_RETURN(CIoBridge::_Connect(fd, addr, SocksGetServerPort(), &isflag));
+    FAIL_RETURN(CIoBridge::_Connect(mFd, addr, SocksGetServerPort()));
 
     // There must be a connection to an application host for the bind to
     // work.
@@ -498,7 +467,7 @@ ECode PlainSocketImpl::SocksBind()
         AutoPtr<ArrayOf<Byte> > replyBytes = ArrayOf<Byte>::Alloc(4);
         Int32 replyip = 0;
         reply->GetIP(&replyip);
-        //Memory::PokeInt32(replyBytes, 0, replyip, Elastos::IO::ByteOrder_BIG_ENDIAN);
+        Memory::PokeInt32(replyBytes, 0, replyip, Elastos::IO::ByteOrder_BIG_ENDIAN);
         AutoPtr<IInetAddressHelper> helper;
         CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&helper);
         helper->GetByAddress(replyBytes, (IInetAddress**)&mAddress);
@@ -518,7 +487,7 @@ ECode PlainSocketImpl::SocksSendRequest(
     request.SetPort(port);
     AutoPtr<ArrayOf<Byte> > array;
     mAddress->GetAddress((ArrayOf<Byte>**)&array);
-    request.SetIP(*array);
+    request.SetIP(array);
     request.SetUserId(String("default"));
 
     AutoPtr<IOutputStream> out;
@@ -582,9 +551,7 @@ ECode PlainSocketImpl::SendUrgentData(
     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(4);
     memcpy(buffer->GetPayload(), &value, 4);
     Int32 outvalue = 0;
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //return CLibcore::sOs->Sendto(fd, *buffer, 0, 1, COsConstants::sMSG_OOB, NULL, 0, &outvalue);
+    return CLibcore::sOs->Sendto(mFd, buffer, 0, 1, OsConstants::_MSG_OOB, NULL, 0, &outvalue);
 }
 
 ECode PlainSocketImpl::Read(
@@ -593,6 +560,9 @@ ECode PlainSocketImpl::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = -1;
+
     if (byteCount == 0) {
         *value = 0;
         return NOERROR;
@@ -604,9 +574,7 @@ ECode PlainSocketImpl::Read(
     }
 
     Int32 readCount;
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //CIoBridge::_Recvfrom(TRUE, fd, buffer, offset, byteCount, 0, NULL, FALSE, &readCount);
+    CIoBridge::_Recvfrom(TRUE, mFd, buffer, offset, byteCount, 0, NULL, FALSE, &readCount);
     // Return of zero bytes for a blocking socket means a timeout occurred
     if (readCount == 0) {
         // throw new SocketTimeoutException();
@@ -621,18 +589,20 @@ ECode PlainSocketImpl::Read(
 }
 
 ECode PlainSocketImpl::Write(
-    /* [in] */ const ArrayOf<Byte>& buffer,
+    /* [in] */ ArrayOf<Byte> * buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* value)
 {
-    Arrays::CheckOffsetAndCount(buffer.GetLength(), offset, byteCount);
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
+    VALIDATE_NOT_NULL(value)
+    *value = 0;
+    VALIDATE_NOT_NULL(buffer)
+
+    Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, byteCount);
     if (mStreaming) {
         while (byteCount > 0) {
             Int32 bytesWritten;
-            //FAIL_RETURN(CIoBridge::_Sendto(fd, buffer, offset, byteCount, 0, NULL, 0, &bytesWritten));
+            FAIL_RETURN(CIoBridge::_Sendto(mFd, buffer, offset, byteCount, 0, NULL, 0, &bytesWritten));
             byteCount -= bytesWritten;
             offset += bytesWritten;
         }
@@ -641,7 +611,7 @@ ECode PlainSocketImpl::Write(
         // Unlike writes to a streaming socket, writes to a datagram
         // socket are all-or-nothing, so we don't need a loop here.
         // http://code.google.com/p/android/issues/detail?id=15304
-        //FAIL_RETURN(CIoBridge::_Sendto(fd, buffer, offset, byteCount, 0, mAddress, mPort, value));
+        FAIL_RETURN(CIoBridge::_Sendto(mFd, buffer, offset, byteCount, 0, mAddress, mPort, value));
     }
     *value = byteCount;
     return NOERROR;

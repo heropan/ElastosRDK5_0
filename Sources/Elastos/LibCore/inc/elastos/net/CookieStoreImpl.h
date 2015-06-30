@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_NET_COOKIESTOREIMPL_H__
 #define __ELASTOS_NET_COOKIESTOREIMPL_H__
 
-
 #include "Object.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -31,7 +30,7 @@ template<> struct EqualTo<AutoPtr<IURI> >
     Boolean operator()(const AutoPtr<IURI>& x,
                        const AutoPtr<IURI>& y) const
     {
-        return x == y;
+        return Object::Equals(x.Get(), y.Get());
     }
 };
 

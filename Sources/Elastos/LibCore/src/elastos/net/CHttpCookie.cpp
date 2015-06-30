@@ -1,11 +1,12 @@
 
 #include "CHttpCookie.h"
-//#include "http/CHttpDate.h"
+#include "http/CHttpDate.h"
 #include "Arrays.h"
 #include "CStringWrapper.h"
 #include "Character.h"
 #include "StringUtils.h"
 #include "CSystem.h"
+#include "CArrayList.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::ISystem;
@@ -13,11 +14,16 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-//using Libcore::Net::Http::CHttpDate;
 using Elastos::Utility::Arrays;
+using Elastos::Utility::CArrayList;
+using Libcore::Net::Http::CHttpDate;
 
 namespace Elastos {
 namespace Net {
+
+//========================================================
+// CHttpCookie::CookieParser
+//========================================================
 
 const String CHttpCookie::CookieParser::ATTRIBUTE_NAME_TERMINATORS(",;= \t");
 const String CHttpCookie::CookieParser::WHITESPACE(" \t");
@@ -34,27 +40,37 @@ CHttpCookie::CookieParser::CookieParser(
 }
 
 ECode CHttpCookie::CookieParser::Parse(
-    /* [out] */ List< AutoPtr<IHttpCookie> >& cookies)
+    /* [out] */ IList** cookies)
 {
+    VALIDATE_NOT_NULL(cookies)
+    AutoPtr<IList> list;
+    CArrayList::New(2, (IList**)&list);
+    *cookies = list;
+    REFCOUNT_ADD(*cookies)
+
     // The RI permits input without either the "Set-Cookie:" or "Set-Cookie2" headers.
     Boolean pre2965 = TRUE;
-    if (mInputLowerCase.StartWith("set-cookie2:")) {
-        mPos += String("set-cookie2:").GetLength();
+    const String setCookie("set-cookie:");
+    const String setCookie2("set-cookie2:");
+    if (mInputLowerCase.StartWith(setCookie2)) {
+        mPos += setCookie2.GetLength();
         pre2965 = FALSE;
         mHasVersion = TRUE;
     }
-    else if (mInputLowerCase.StartWith("set-cookie:")) {
-        mPos += String("set-cookie:").GetLength();
+    else if (mInputLowerCase.StartWith(setCookie)) {
+        mPos += setCookie.GetLength();
     }
 
     /*
      * Read a comma-separated list of cookies. Note that the values may contain commas!
      *   <NAME> "=" <VALUE> ( ";" <ATTR NAME> ( "=" <ATTR VALUE> )? )*
      */
+    Boolean bval;
+    ICollection* cl = ICollection::Probe(list);
     while (TRUE) {
         String name = ReadAttributeName(FALSE);
         if (name.IsNull()) {
-            if (cookies.IsEmpty()) {
+            if (cl->IsEmpty(&bval), bval) {
                 // throw new IllegalArgumentException("No cookies in " + input);
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
@@ -72,7 +88,7 @@ ECode CHttpCookie::CookieParser::Parse(
         AutoPtr<CHttpCookie> cookie;
         FAIL_RETURN(CHttpCookie::NewByFriend(name, value, (CHttpCookie**)&cookie));
         cookie->mVersion = pre2965 ? 0 : 1;
-        cookies.PushBack((IHttpCookie*)cookie.Get());
+        cl->Add((IHttpCookie*)cookie.Get());
 
         /*
          * Read the attributes of the current cookie. Each iteration of this loop should
@@ -146,7 +162,7 @@ void CHttpCookie::CookieParser::SetAttribute(
         mHasExpires = TRUE;
         if (cookie->mMaxAge == -1ll) {
             AutoPtr<IDate> date;
-            //CHttpDate::_Parse(value, (IDate**)&date);
+            CHttpDate::_Parse(value, (IDate**)&date);
             if (date != NULL) {
                 cookie->SetExpires(date);
             }
@@ -156,8 +172,13 @@ void CHttpCookie::CookieParser::SetAttribute(
         }
     }
     else if (name.Equals("max-age") && cookie->mMaxAge == -1ll) {
+        Int64 maxAge;
+        ECode ec = StringUtils::ParseInt64(value, &maxAge);
+        if (FAILED(ec)) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
         mHasMaxAge = TRUE;
-        cookie->mMaxAge = StringUtils::ParseInt64(value);
+        cookie->mMaxAge = maxAge;
     }
     else if (name.Equals("path") && cookie->mPath.IsNull()) {
         cookie->mPath = value;
@@ -167,6 +188,9 @@ void CHttpCookie::CookieParser::SetAttribute(
     }
     else if (name.Equals("secure")) {
         cookie->mSecure = TRUE;
+    }
+    else if (name.Equals("httponly")) {
+        cookie->mHttpOnly = TRUE;
     }
     else if (name.Equals("version") && !mHasVersion) {
         cookie->mVersion = StringUtils::ParseInt32(value);
@@ -230,7 +254,7 @@ Int32 CHttpCookie::CookieParser::Find(
     /* [in] */ const String& chars)
 {
     AutoPtr<ArrayOf<Char32> > charArray = mInput.GetChars();
-    for (Int32 c = mPos; (UInt32)c < charArray->GetLength(); c++) {
+    for (UInt32 c = mPos; c < charArray->GetLength(); c++) {
         if (chars.IndexOf((*charArray)[c]) != -1) {
             return c;
         }
@@ -248,6 +272,9 @@ void CHttpCookie::CookieParser::SkipWhitespace()
     }
 }
 
+//========================================================
+// CHttpCookie
+//========================================================
 static AutoPtr< HashSet<String> > InitRESERVED_NAMES()
 {
     AutoPtr< HashSet<String> > names = new HashSet<String>();
@@ -257,6 +284,7 @@ static AutoPtr< HashSet<String> > InitRESERVED_NAMES()
     names->Insert(String("discard"));   //                     RFC 2965
     names->Insert(String("domain"));    // Netscape  RFC 2109  RFC 2965
     names->Insert(String("expires"));   // Netscape
+    names->Insert(String("httponly"));  //
     names->Insert(String("max-age"));   //           RFC 2109  RFC 2965
     names->Insert(String("path"));      // Netscape  RFC 2109  RFC 2965
     names->Insert(String("port"));      //                     RFC 2965
@@ -276,11 +304,12 @@ CHttpCookie::CHttpCookie()
     : mDiscard(FALSE)
     , mMaxAge(-1ll)
     , mSecure(FALSE)
+    , mHttpOnly(FALSE)
     , mVersion(1)
 {
 }
 
-Boolean CHttpCookie::DomainMatches(
+Boolean CHttpCookie::IsDomainMatches(
     /* [in] */ const String& domainPattern,
     /* [in] */ const String& host)
 {
@@ -389,10 +418,10 @@ Boolean CHttpCookie::IsFullyQualifiedDomainName(
 
 ECode CHttpCookie::Parse(
     /* [in] */ const String& header,
-    /* [out] */ List<AutoPtr<IHttpCookie> >& httpCookies)
+    /* [out] */ IList** cookies)
 {
     AutoPtr<CookieParser> parser = new CookieParser(header);
-    return parser->Parse(httpCookies);
+    return parser->Parse(cookies);
 }
 
 Boolean CHttpCookie::IsValidName(
@@ -704,6 +733,7 @@ ECode CHttpCookie::Clone(
     cResult->mPath = this->mPath;
     cResult->mPortList = this->mPortList;
     cResult->mSecure = this->mSecure;
+    cResult->mHttpOnly = this->mHttpOnly;
     cResult->mVersion = this->mVersion;
     *result = (IInterface*)reshtt;
     REFCOUNT_ADD(*result)
@@ -717,23 +747,23 @@ ECode CHttpCookie::Equals(
 {
     VALIDATE_NOT_NULL(result);
 
-    if(obj->Probe(EIID_IHttpCookie) == NULL)
-    {
+    if (IHttpCookie::Probe(obj) == NULL) {
         *result = FALSE;
         return NOERROR;
-    }else{
-        AutoPtr<IHttpCookie> cookie = (IHttpCookie*)obj->Probe(EIID_IHttpCookie);
+    }
+    else{
+        AutoPtr<IHttpCookie> cookie = IHttpCookie::Probe(obj);
         CHttpCookie* cObj = (CHttpCookie*)(cookie.Get());
-        if(cObj == (CHttpCookie*)this)
-        {
+        if (cObj == this) {
             *result = TRUE;
-        }else{
+        }
+        else{
             *result = mDomain.IsNull() ? cObj->mDomain.IsNull() : cObj->mDomain == mDomain;
             *result = *result && (mName == cObj->mName);
             *result = *result && (mPath == cObj->mPath);
         }
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CHttpCookie::ToString(

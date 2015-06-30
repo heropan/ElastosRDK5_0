@@ -1,11 +1,11 @@
 
 #include "AddressCache.h"
 #include "CSystem.h"
-//#include "CBasicLruCache.h"
+#include "CBasicLruCache.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-//using Libcore::Utility::CBasicLruCache;
+using Libcore::Utility::CBasicLruCache;
 
 namespace Elastos {
 namespace Net {
@@ -18,7 +18,6 @@ const Int32 AddressCache::MAX_ENTRIES = 16;
 
 // The TTL for the Java-level cache is short, just 2s.
 const Int64 AddressCache::TTL_NANOS = 2 * 1000000000ll;
-
 
 //=================================================================
 // AddressCache::AddressCacheKey
@@ -94,7 +93,7 @@ AddressCacheEntry::~AddressCacheEntry()
 
 AddressCache::AddressCache()
 {
-    //CBasicLruCache::New(MAX_ENTRIES, (IBasicLruCache**)&mCache);
+    CBasicLruCache::New(MAX_ENTRIES, (IBasicLruCache**)&mCache);
 }
 
 AddressCache::~AddressCache()
@@ -105,9 +104,6 @@ AddressCache::~AddressCache()
     }
 }
 
-/**
- * Removes all entries from the cache.
- */
 void AddressCache::Clear()
 {
     mCache->EvictAll();

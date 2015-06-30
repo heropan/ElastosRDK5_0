@@ -34,7 +34,13 @@ public:
         /* [in] */ Int32 port,
         /* [in] */ IInetAddress* address);
 
+    CARAPI OnBind(
+        /* [in] */ IInetAddress* inetAddr,
+        /* [in] */ Int32 port);
+
     CARAPI Close();
+
+    CARAPI OnClose();
 
     CARAPI Create();
 
@@ -86,16 +92,13 @@ public:
         /* [in] */ IInetAddress* inetAddr,
         /* [in] */ Int32 port);
 
+    CARAPI OnConnect(
+        /* [in] */ IInetAddress* inetAddr,
+        /* [in] */ Int32 port);
+
     CARAPI Disconnect();
 
-    CARAPI GetFileDescriptor(
-        /* [out] */ IFileDescriptor** fileDescriptor);
-
-    CARAPI GetLocalAddress(
-        /* [out] */ IInetAddress** address);
-
-    CARAPI GetLocalPort(
-        /* [out] */ Int32* port);
+    CARAPI OnDisconnect();
 
 protected:
     CARAPI Peek(
@@ -115,7 +118,7 @@ private:
         /* [in] */ IDatagramPacket* packet);
 
 private:
-    Boolean mIsNativeConnected;
+    volatile Boolean mIsNativeConnected;
     AutoPtr<ICloseGuard> mGuard;
     AutoPtr<IInetAddress> mConnectedAddress;
     Int32 mConnectedPort;

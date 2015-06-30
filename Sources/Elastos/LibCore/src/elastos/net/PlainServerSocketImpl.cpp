@@ -1,4 +1,8 @@
 #include "PlainServerSocketImpl.h"
+#include "CBoolean.h"
+
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
 
 namespace Elastos {
 namespace Net {
@@ -21,14 +25,14 @@ ECode PlainServerSocketImpl::Create(
 {
     ECode ec = NOERROR;
     ec = PlainSocketImpl::Create(isStreaming);
-    if (FAILED(ec)) {
-        return ec;
-    }
+    FAIL_RETURN(ec)
 
     if (isStreaming) {
-        SetOption(0, TRUE);
+        AutoPtr<IBoolean> obj;
+        CBoolean::New(TRUE, (IBoolean**)&obj);
+        SetOption(0, obj.Get());
     }
-    return ec;
+    return NOERROR;
 }
 
 } // namespace Net

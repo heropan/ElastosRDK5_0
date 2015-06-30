@@ -5,6 +5,7 @@
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Net {
@@ -23,19 +24,9 @@ public:
         /* [in] */ const String& host,
         /* [out] */ Boolean* match);
 
-private:
-    /**
-     * Returns true if {@code s.substring(firstCharacter)} contains a dot
-     * between its first and last characters, exclusive. This considers both
-     * {@code android.com} and {@code co.uk} to be fully qualified domain names,
-     * but not {@code android.com.}, {@code .com}. or {@code android}.
-     *
-     * <p>Although this implements the cookie spec's definition of FQDN, it is
-     * not general purpose. For example, this returns true for IPv4 addresses.
-     */
-    CARAPI_(Boolean) IsFullyQualifiedDomainName(
-        /* [in] */ const String& s,
-        /* [in] */ Int32 firstCharacter);
+    CARAPI Parse(
+        /* [in] */ const String& header,
+        /* [out] */ IList** cookies);
 };
 
 } // namespace Net

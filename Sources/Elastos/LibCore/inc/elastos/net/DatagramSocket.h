@@ -23,6 +23,20 @@ class DatagramSocket
 public:
     CAR_INTERFACE_DECL()
 
+    DatagramSocket();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 aPort);
+
+    CARAPI constructor(
+        /* [in] */ Int32 aport,
+        /* [in] */ IInetAddress* addr);
+
+    CARAPI constructor(
+        /* [in] */ ISocketAddress* localAddr);
+
     CARAPI Close();
 
     CARAPI OnClose();
@@ -138,21 +152,6 @@ public:
     CARAPI GetFileDescriptor(
         /* [out] */ IFileDescriptor** fd);
 
-//protected:
-    DatagramSocket();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 aPort);
-
-    CARAPI constructor(
-        /* [in] */ Int32 aport,
-        /* [in] */ IInetAddress* addr);
-
-    CARAPI constructor(
-        /* [in] */ ISocketAddress* localAddr);
-
 private:
     CARAPI CheckPort(
         /* [in] */ Int32 aPort);
@@ -161,6 +160,7 @@ private:
 
 public:
     static const String TAG;
+
     AutoPtr<IDatagramSocketImpl> mImpl;
 
     AutoPtr<IInetAddress> mAddress;

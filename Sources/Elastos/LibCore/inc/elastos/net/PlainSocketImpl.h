@@ -8,14 +8,13 @@ using Elastos::Core::ICloseGuard;
 namespace Elastos {
 namespace Net {
 
-extern "C" const InterfaceID EIID_PlainSocketImpl;
-
 class PlainSocketImpl
     : public SocketImpl
     , public IPlainSocketImpl
 {
-    friend class CSocketInputStream;
-    friend class CSocketOutputStream;
+    friend class CPlainSocketInputStream;
+    friend class CPlainSocketOutputStream;
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -52,9 +51,6 @@ public:
 
     CARAPI SocksAccept();
 
-    // CARAPI GetFD(
-    //      [out]  IFileDescriptor** ppFd);
-
     CARAPI Read(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
@@ -62,12 +58,11 @@ public:
         /* [out] */ Int32* value);
 
     CARAPI Write(
-        /* [in] */ const ArrayOf<Byte>& buffer,
+        /* [in] */ ArrayOf<Byte> * buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 byteCount,
         /* [out] */ Int32* value);
 
-//    void PrintAddr();
 protected:
     CARAPI Accept(
         /* [in] */ ISocketImpl* newImpl);
@@ -117,16 +112,8 @@ protected:
     CARAPI SendUrgentData(
         /* [in] */ Int32 value);
 
-//    CARAPI Set(
-//        /* [in] */ IFileDescriptor* fd,
-//        /* [in] */ Int32 localport,
-//        /* [in] */ IInetAddress* addr,
-//        /* [in] */ Int32 port)
-
 private:
     Boolean UsingSocks();
-
-//    Field getSocketImplField(final String fieldName);
 
     CARAPI CheckNotClosed();
 
@@ -149,11 +136,6 @@ private:
         /* [in] */ Int32 applicationServerPort);
 
     CARAPI SocksBind();
-
-    // static CARAPI IntToBytes(
-    //     /* [in] */ Int32 value,
-    //     /* [in] */ ArrayOf<Byte>* bytes,
-    //     /* [in] */ Int32 start);
 
     CARAPI SocksSendRequest(
         /* [in] */ Int32 command,

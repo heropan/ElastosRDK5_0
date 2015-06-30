@@ -14,20 +14,11 @@ CarClass(CCookiePolicyHelper)
 {
 private:
     class CookiePolicyAcceptAll
-        : public ElRefBase
+        : public Object
         , public ICookiePolicy
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [out] */ InterfaceID* pIID);
+        CAR_INTERFACE_DECL()
 
         CARAPI ShouldAccept(
             /* [in] */ IURI* uri,
@@ -36,20 +27,11 @@ private:
     };
 
     class CookiePolicyAcceptNone
-        : public ElRefBase
+        : public Object
         , public ICookiePolicy
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [out] */ InterfaceID* pIID);
+        CAR_INTERFACE_DECL()
 
         CARAPI ShouldAccept(
             /* [in] */ IURI* uri,
@@ -58,20 +40,11 @@ private:
     };
 
     class CookiePolicyAcceptOriginalServer
-        : public ElRefBase
+        : public Object
         , public ICookiePolicy
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [out] */ InterfaceID* pIID);
+        CAR_INTERFACE_DECL()
 
         CARAPI ShouldAccept(
             /* [in] */ IURI* uri,

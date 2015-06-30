@@ -4,20 +4,19 @@
 
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Net {
 
-extern "C"  const InterfaceID EIID_ContentHandler;
-
-class ContentHandler : public Object
+class ContentHandler
+    : public Object
+    , public IContentHandler
 {
 public:
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
+    CAR_INTERFACE_DECL()
 
-    CARAPI ToString(
-        /* [out] */ String* result);
+    ContentHandler();
+
+    virtual ~ContentHandler();
 
     virtual CARAPI GetContent(
         /* [in] */ IURLConnection* uConn,
@@ -25,7 +24,7 @@ public:
 
     virtual CARAPI GetContent(
         /* [in] */ IURLConnection* uConn,
-        /* [in] */ const ArrayOf<InterfaceID>& types,
+        /* [in] */ ArrayOf<InterfaceID> * types,
         /* [out] */ IInterface** obj);
 };
 

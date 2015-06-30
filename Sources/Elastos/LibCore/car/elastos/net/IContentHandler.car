@@ -6,6 +6,7 @@ module
     namespace Elastos {
     namespace Net {
 
+    [deprecated]
     interface IContentHandler {
         /**
          * Returns the object pointed by the specified URL connection {@code uConn}.
@@ -35,7 +36,7 @@ module
         // Class arg not generified in the spec.
         GetContent(
             [in] IURLConnection* uConn,
-            [in] ArrayOf<InterfaceID> types,
+            [in] ArrayOf<InterfaceID> * types,
             [out] IInterface** obj);
     }
 

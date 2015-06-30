@@ -15,6 +15,10 @@ BasicLruCache::BasicLruCache()
 {
 }
 
+BasicLruCache::~BasicLruCache()
+{
+}
+
 ECode BasicLruCache::constructor(
     /* [in] */ Int32 maxSize)
 {

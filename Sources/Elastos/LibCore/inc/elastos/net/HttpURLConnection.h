@@ -7,7 +7,6 @@
 namespace Elastos {
 namespace Net {
 
-//extern "C" const InterfaceID EIID_HttpURLConnection;
 
 class HttpURLConnection
     : public URLConnection

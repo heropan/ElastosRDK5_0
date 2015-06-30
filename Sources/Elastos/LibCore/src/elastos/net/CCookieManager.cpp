@@ -17,6 +17,7 @@ using Elastos::Utility::Collections;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::IListIterator;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::IIterable;
 using Elastos::Utility::ISet;
 using Elastos::Utility::ICollection;
 
@@ -229,15 +230,24 @@ AutoPtr<List<AutoPtr<IHttpCookie> > > CCookieManager::ParseCookie(
             AutoPtr<IList> outlist = IList::Probe(valueface);
             AutoPtr< ArrayOf<IInterface*> > outarr2;
             ICollection::Probe(outlist)->ToArray((ArrayOf<IInterface*>**)&outarr2);
+            ECode ec = NOERROR;
             for (Int32 j = 0; j < outarr2->GetLength(); j++) {
                 // try {
-                    String cookieStr;
-                    ICharSequence::Probe((*outarr2)[j])->ToString(&cookieStr);
-                    List< AutoPtr<IHttpCookie> > listhttp;
-                    CHttpCookie::Parse(cookieStr, listhttp);
-                    for (UInt32 k = 0; k < listhttp.GetSize(); k++) {
-                        cookies->PushBack(listhttp[k]);
+                String cookieStr;
+                ICharSequence::Probe((*outarr2)[j])->ToString(&cookieStr);
+                AutoPtr<IList> listhttp;
+                ec = CHttpCookie::Parse(cookieStr, (IList**)&listhttp);
+                if (SUCCEEDED(ec)) {
+                    AutoPtr<IIterator> it;
+                    IIterable::Probe(listhttp)->GetIterator((IIterator**)&it);
+                    Boolean hasNext;
+                    while (it->HasNext(&hasNext), hasNext) {
+                        AutoPtr<IInterface> obj;
+                        it->GetNext((IInterface**)&obj);
+                        IHttpCookie* hc = IHttpCookie::Probe(obj);
+                        cookies->PushBack(hc);
                     }
+                }
                 // } catch (IllegalArgumentException ignored) {
                 //     // this string is invalid, jump to the next one.
                 // }

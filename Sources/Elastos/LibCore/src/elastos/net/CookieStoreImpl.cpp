@@ -122,7 +122,7 @@ ECode CookieStoreImpl::Get(
                 String attr, host;
                 cookie->GetDomainAttr(&attr);
                 uri->GetHost(&host);
-                if (!CHttpCookie::DomainMatches(attr, host)) {
+                if (!CHttpCookie::IsDomainMatches(attr, host)) {
                     ++cookieIt;
                     continue;
                 }
@@ -176,7 +176,8 @@ ECode CookieStoreImpl::GetCookies(
             }
         }
         return Collections::UnmodifiableList(outresult, result);
-        }
+    }
+
     return NOERROR;
 }
 

@@ -40,8 +40,6 @@ ECode XmlPullParserFactory::SetNamespaceAware(
 ECode XmlPullParserFactory::IsNamespaceAware(
     /* [out] */ Boolean* isNspAware)
 {
-    VALIDATE_NOT_NULL(isNspAware)
-
     return GetFeature(IXmlPullParser::FEATURE_PROCESS_NAMESPACES, isNspAware);
 }
 
@@ -63,17 +61,21 @@ ECode XmlPullParserFactory::IsValidating(
 ECode XmlPullParserFactory::NewPullParser(
     /* [out] */ IXmlPullParser** pullParser)
 {
-    assert(0 && "TODO");
-    // final XmlPullParser pp = getParserInstance();
-    // for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-    //     // NOTE: This test is needed for compatibility reasons. We guarantee
-    //     // that we only set a feature on a parser if its value is true.
-    //     if (entry.getValue()) {
-    //         pp.setFeature(entry.getKey(), entry.getValue());
-    //     }
-    // }
+    AutoPtr<IXmlPullParser> pp;
+    FAIL_RETURN(GetParserInstance((IXmlPullParser**)&pp))
+    if (pp) {
+        HashMap<String, Boolean>::Iterator it;
+        for (it = mFeatures.Begin(); it != mFeatures.End(); ++it) {
+            // NOTE: This test is needed for compatibility reasons. We guarantee
+            // that we only set a feature on a parser if its value is true.
+            if (it->mSecond) {
+                pp->SetFeature(it->mFirst, it->mSecond);
+            }
+        }
+    }
 
-    // return pp;
+    *pullParser = pp;
+    REFCOUNT_ADD(*pullParser)
     return NOERROR;
 }
 

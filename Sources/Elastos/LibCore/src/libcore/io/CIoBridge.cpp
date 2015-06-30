@@ -344,7 +344,7 @@ ECode CIoBridge::GetSocketOptionErrno(
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    case _IP_MULTICAST_TTL:
+    case JAVA_IP_MULTICAST_TTL:
     {
         // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
         // it doesn't matter which we return.
@@ -549,7 +549,7 @@ ECode CIoBridge::SetSocketOptionErrno(
                 OsConstants::_IPPROTO_IPV6, OsConstants::_IPV6_MULTICAST_LOOP, BooleanToInt(b)));
         return NOERROR;
     }
-    case CIoBridge::_IP_MULTICAST_TTL:
+    case CIoBridge::JAVA_IP_MULTICAST_TTL:
     {
         // Although IPv6 was cleaned up to use int, and IPv4 non-multicast TTL uses int,
         // IPv4 multicast TTL uses a byte.
@@ -663,22 +663,22 @@ ECode CIoBridge::SetSocketOptionErrno(
                 OsConstants::_IPPROTO_TCP, OsConstants::_TCP_NODELAY, BooleanToInt(b)));
         return NOERROR;
     }
-    case _MCAST_JOIN_GROUP:
-    case _MCAST_LEAVE_GROUP:
+    case JAVA_MCAST_JOIN_GROUP:
+    case JAVA_MCAST_LEAVE_GROUP:
     {
         assert(IStructGroupReq::Probe(value) != NULL);
         AutoPtr<IStructGroupReq> groupReq = IStructGroupReq::Probe(value);
         AutoPtr<IInetAddress> group;
         groupReq->GetGrGroup((IInetAddress**)&group);
         Int32 level = (IInet4Address::Probe(group) != NULL) ? OsConstants::_IPPROTO_IP : OsConstants::_IPPROTO_IPV6;
-        Int32 op = (option == _MCAST_JOIN_GROUP) ? _MCAST_JOIN_GROUP : _MCAST_LEAVE_GROUP;
+        Int32 op = (option == JAVA_MCAST_JOIN_GROUP) ? JAVA_MCAST_JOIN_GROUP : JAVA_MCAST_LEAVE_GROUP;
         FAIL_RETURN(CLibcore::sOs->SetsockoptGroupReq(fd, level, op, groupReq));
         return NOERROR;
     }
-    case _MCAST_JOIN_SOURCE_GROUP:
-    case _MCAST_LEAVE_SOURCE_GROUP:
-    case _MCAST_BLOCK_SOURCE:
-    case _MCAST_UNBLOCK_SOURCE:
+    case JAVA_MCAST_JOIN_SOURCE_GROUP:
+    case JAVA_MCAST_LEAVE_SOURCE_GROUP:
+    case JAVA_MCAST_BLOCK_SOURCE:
+    case JAVA_MCAST_UNBLOCK_SOURCE:
     {
         assert(IStructGroupSourceReq::Probe(value) != NULL);
         AutoPtr<IStructGroupSourceReq> groupSourceReq = IStructGroupSourceReq::Probe(value);
@@ -700,13 +700,13 @@ Int32 CIoBridge::GetGroupSourceReqOp(
     /* [in] */ Int32 value)
 {
     switch (value) {
-        case IIoBridge::_MCAST_JOIN_SOURCE_GROUP:
+        case IIoBridge::JAVA_MCAST_JOIN_SOURCE_GROUP:
             return OsConstants::_MCAST_JOIN_SOURCE_GROUP;
-        case IIoBridge::_MCAST_LEAVE_SOURCE_GROUP:
+        case IIoBridge::JAVA_MCAST_LEAVE_SOURCE_GROUP:
             return OsConstants::_MCAST_LEAVE_SOURCE_GROUP;
-        case IIoBridge::_MCAST_BLOCK_SOURCE:
+        case IIoBridge::JAVA_MCAST_BLOCK_SOURCE:
             return OsConstants::_MCAST_BLOCK_SOURCE;
-        case IIoBridge::_MCAST_UNBLOCK_SOURCE:
+        case IIoBridge::JAVA_MCAST_UNBLOCK_SOURCE:
             return OsConstants::_MCAST_UNBLOCK_SOURCE;
         default:
             return -1;

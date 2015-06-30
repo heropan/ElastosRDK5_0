@@ -32,7 +32,7 @@ public:
 
         CARAPI GetContent(
             /* [in] */ IURLConnection* uConn,
-            /* [in] */ const ArrayOf<InterfaceID>& types,
+            /* [in] */ ArrayOf<InterfaceID> * types,
             /* [out] */ IInterface** obj);
     };
 

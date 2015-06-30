@@ -5,11 +5,7 @@
 namespace Elastos {
 namespace Net {
 
-// {83E9D351-ACF2-49a2-AD77-643EC6CDDAF7}
-const InterfaceID EIID_Authenticator =
-    { 0x83e9d351, 0xacf2, 0x49a2, { 0xad, 0x77, 0x64, 0x3e, 0xc6, 0xcd, 0xda, 0xf7 } };
-
-AutoPtr<Authenticator> Authenticator::sThisAuthenticator = NULL;
+AutoPtr<Authenticator> Authenticator::sThisAuthenticator;
 
 CAR_INTERFACE_IMPL(Authenticator, Object, IAuthenticator)
 
@@ -21,7 +17,6 @@ ECode Authenticator::GetPasswordAuthentication(
     /* [out] */ IPasswordAuthentication** passwordAuthentication)
 {
     VALIDATE_NOT_NULL(passwordAuthentication)
-
     *passwordAuthentication = NULL;
     return NOERROR;
 }
@@ -114,7 +109,7 @@ void Authenticator::SetDefault(
     // if (sm != null) {
     //     sm.checkPermission(setDefaultAuthenticatorPermission);
     // }
-    //sThisAuthenticator = (a == NULL ? NULL : (Authenticator*)a->Probe(EIID_Authenticator));
+    sThisAuthenticator = (Authenticator*)a;
 }
 
 ECode Authenticator::RequestPasswordAuthentication(

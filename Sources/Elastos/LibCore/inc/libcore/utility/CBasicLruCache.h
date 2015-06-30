@@ -1,5 +1,5 @@
-#ifndef __CBASICLRUCACHE_H__
-#define __CBASICLRUCACHE_H__
+#ifndef __LIBCORE_UTILITY_CBASICLRUCACHE_H__
+#define __LIBCORE_UTILITY_CBASICLRUCACHE_H__
 
 #include "_Libcore_Utility_CBasicLruCache.h"
 #include "BasicLruCache.h"
@@ -17,4 +17,4 @@ public:
 }
 }
 
-#endif
+#endif // __LIBCORE_UTILITY_CBASICLRUCACHE_H__

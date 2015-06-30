@@ -1,6 +1,9 @@
 
 #include "CNetPermission.h"
 
+//using Elastos::Security::IBasicPermission;
+//using Elastos::Security::IPermission;
+
 namespace Elastos {
 namespace Net {
 

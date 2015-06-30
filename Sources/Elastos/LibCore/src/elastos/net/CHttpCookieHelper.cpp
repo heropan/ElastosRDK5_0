@@ -1,5 +1,6 @@
 
 #include "CHttpCookieHelper.h"
+#include "CHttpCookie.h"
 
 namespace Elastos {
 namespace Net {
@@ -14,20 +15,17 @@ ECode CHttpCookieHelper::IsDomainMatches(
     /* [out] */ Boolean* match)
 {
     VALIDATE_NOT_NULL(match)
-
-
+    *match = CHttpCookie::IsDomainMatches(domainPattern, host);
     return NOERROR;
 }
 
-Boolean CHttpCookieHelper::IsFullyQualifiedDomainName(
-    /* [in] */ const String& s,
-    /* [in] */ Int32 firstCharacter)
+ECode CHttpCookieHelper::Parse(
+    /* [in] */ const String& header,
+    /* [out] */ IList** cookies)
 {
-    //Int32 dotPosition = s.indexOf('.', firstCharacter + 1);
-    //return dotPosition != -1 && dotPosition < s.length() - 1;
-
-    return FALSE;
+    return CHttpCookie::Parse(header, cookies);
 }
+
 
 } // namespace Net
 } // namespace Elastos

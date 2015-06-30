@@ -22,7 +22,7 @@ public:
 
     CARAPI constructor(
         /* [in] */ const String& userName,
-        /* [in] */ const ArrayOf<Char32>& password);
+        /* [in] */ ArrayOf<Char32> * password);
 
     CARAPI GetPassword(
         /* [out, callee] */ ArrayOf<Char32>** password);

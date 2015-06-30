@@ -7,8 +7,6 @@ using Elastos::Core::StringUtils;
 namespace Elastos {
 namespace Net {
 
-// extern "C" const InterfaceID EIID_HttpURLConnection =
-//     { 0xfd8d9e46, 0x48f9, 0x4437, { 0x92, 0x3f, 0x6, 0xb1, 0xb3, 0x50, 0x87, 0xac } };
 
 Boolean HttpURLConnection::sFollowRedirects = TRUE;
 
@@ -16,7 +14,7 @@ CAR_INTERFACE_IMPL(HttpURLConnection, URLConnection, IHttpURLConnection)
 
 HttpURLConnection::HttpURLConnection()
     : URLConnection()
-    , mMethod("GET")/*HttpURLConnectionImpl.GET*/
+    , mMethod("GET")
     , mResponseCode(-1)
     , mInstanceFollowRedirects(sFollowRedirects)
     , mChunkLength(-1)

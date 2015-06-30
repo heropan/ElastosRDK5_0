@@ -31,24 +31,32 @@ ECode URLConnection::DefaultContentHandler::GetContent(
     /* [in] */ IURLConnection* uConn,
     /* [out] */ IInterface** obj)
 {
-    VALIDATE_NOT_NULL(obj);
-    return uConn->GetInputStream((IInputStream**)obj);
+    VALIDATE_NOT_NULL(obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(uConn)
+    AutoPtr<IInputStream> o;
+    FAIL_RETURN(uConn->GetInputStream((IInputStream**)&o))
+    *obj = o.Get();
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
 }
 
 ECode URLConnection::DefaultContentHandler::GetContent(
     /* [in] */ IURLConnection* uConn,
-    /* [in] */ const ArrayOf<InterfaceID>& types,
+    /* [in] */ ArrayOf<InterfaceID> * types,
     /* [out] */ IInterface** obj)
 {
-    GetContent(uConn, obj);
-    for(Int32 i =0; i < types.GetLength(); ++i)
-    {
-        if(((IInterface*)*obj)->Probe(types[i]) != NULL)
-        {
+    VALIDATE_NOT_NULL(obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(types)
+
+    FAIL_RETURN(GetContent(uConn, obj))
+    for (Int32 i =0; i < types->GetLength(); ++i) {
+        if ((*obj)->Probe((*types)[i]) != NULL) {
             return NOERROR;
         }
     }
-    *obj = NULL;
+
     return NOERROR;
 }
 
@@ -120,7 +128,7 @@ ECode URLConnection::GetContent(
     if (!mContentType.IsNull()) {
         AutoPtr<IContentHandler> handler;
         GetContentHandler(mContentType, (IContentHandler**)&handler);
-        return handler->GetContent((IURLConnection*)this->Probe(EIID_IURLConnection), content);
+        return handler->GetContent(THIS_PROBE(IURLConnection), content);
     }
 
     *content = NULL;

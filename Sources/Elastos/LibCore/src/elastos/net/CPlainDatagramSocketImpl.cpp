@@ -1,15 +1,15 @@
 #include "CPlainDatagramSocketImpl.h"
 #include "CFileDescriptor.h"
-//#include "CIoBridge.h"
 #include "CBoolean.h"
 #include "CDatagramPacket.h"
-//#include "CLibcore.h"
 #include "CInteger32.h"
 #include "CInetAddressHelper.h"
 #include "CCloseGuardHelper.h"
 #include "AutoLock.h"
-//#include "COsConstants.h"
-//#include "CStructGroupReq.h"
+#include "OsConstants.h"
+#include "CStructGroupReq.h"
+#include "CLibcore.h"
+#include "CIoBridge.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -18,10 +18,11 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
 using Elastos::IO::CFileDescriptor;
-//using Libcore::IO::CIoBridge;
-//using Libcore::IO::CLibcore;
-//using Libcore::IO::COsConstants;
-//using Elastos::Droid::System::CStructGroupReq;
+using Libcore::IO::IIoBridge;
+using Libcore::IO::CIoBridge;
+using Libcore::IO::CLibcore;
+using Elastos::Droid::System::OsConstants;
+using Elastos::Droid::System::CStructGroupReq;
 
 namespace Elastos {
 namespace Net {
@@ -74,38 +75,46 @@ ECode CPlainDatagramSocketImpl::Bind(
     /* [in] */ Int32 port,
     /* [in] */ IInetAddress* address)
 {
-    Int32 fd = 0;
-    mFd->GetDescriptor(&fd);
-    //FAIL_RETURN(CIoBridge::_Bind(fd, address, port));
+    FAIL_RETURN(CIoBridge::_Bind(mFd, address, port));
     if (port != 0) {
         mLocalPort = port;
     }
     else {
-        //FAIL_RETURN(CIoBridge::_GetSocketLocalPort(fd, &mLocalPort));
+        FAIL_RETURN(CIoBridge::_GetSocketLocalPort(mFd, &mLocalPort));
     }
     AutoPtr<IBoolean> ib;
     CBoolean::New(TRUE, (IBoolean**)&ib);
     return SetOption(ISocketOptions::_SO_BROADCAST, ib);
 }
 
+ECode CPlainDatagramSocketImpl::OnBind(
+        /* [in] */ IInetAddress* inetAddr,
+        /* [in] */ Int32 port)
+{
+    mLocalPort = port;
+    return NOERROR;
+}
+
 ECode CPlainDatagramSocketImpl::Close()
 {
     synchronized(this) {
         mGuard->Close();
-        Int32 fd = 0;
-        mFd->GetDescriptor(&fd);
-        //return CIoBridge::_CloseSocket(fd);
+        return CIoBridge::_CloseAndSignalBlockedThreads(mFd);
     }
+    return NOERROR;
+}
+
+ECode CPlainDatagramSocketImpl::OnClose()
+{
+    mGuard->Close();
     return NOERROR;
 }
 
 ECode CPlainDatagramSocketImpl::Create()
 {
-    Int32 result;
-    //FAIL_RETURN(CIoBridge::_Socket(FALSE, &result));
-    mFd = NULL;
-    CFileDescriptor::New((IFileDescriptor**)&mFd);
-    mFd->SetDescriptor(result);
+    AutoPtr<IFileDescriptor> fd;
+    FAIL_RETURN(CIoBridge::_Socket(FALSE, (IFileDescriptor **)&fd));
+    mFd = fd;
     return NOERROR;
 }
 
@@ -116,9 +125,7 @@ ECode CPlainDatagramSocketImpl::GetOption(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IInterface> socketOption;
-    Int32 value = 0;
-    mFd->GetDescriptor(&value);
-    //FAIL_RETURN(CIoBridge::_GetSocketOption(value, option, (IInterface**)&socketOption));
+    FAIL_RETURN(CIoBridge::_GetSocketOption(mFd, option, (IInterface**)&socketOption));
     *result = socketOption;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -129,7 +136,7 @@ ECode CPlainDatagramSocketImpl::GetTimeToLive(
 {
     VALIDATE_NOT_NULL(timeToLive);
     AutoPtr<IInterface> result;
-    //FAIL_RETURN(GetOption(CIoBridge::IP_MULTICAST_TTL, (IInterface**)&result));
+    FAIL_RETURN(GetOption(IIoBridge::JAVA_IP_MULTICAST_TTL, (IInterface**)&result));
     AutoPtr<IInteger32> i32Obj = (IInteger32*)IInteger32::Probe(result);
     return i32Obj->GetValue(timeToLive);
 }
@@ -156,7 +163,7 @@ AutoPtr<IStructGroupReq> CPlainDatagramSocketImpl::MakeGroupReq(
     }
 
     AutoPtr<IStructGroupReq> sGroupReq;
-    //CStructGroupReq::New(gr_interface, gr_group, (IStructGroupReq**)&sGroupReq);
+    CStructGroupReq::New(gr_interface, gr_group, (IStructGroupReq**)&sGroupReq);
     return sGroupReq;
 }
 
@@ -164,7 +171,7 @@ ECode CPlainDatagramSocketImpl::Join(
     /* [in] */ IInetAddress* addr)
 {
     AutoPtr<IStructGroupReq> structGroupReq = MakeGroupReq(addr, NULL);
-    //return SetOption(CIoBridge::MCAST_JOIN_GROUP, structGroupReq);
+    return SetOption(IIoBridge::JAVA_MCAST_JOIN_GROUP, structGroupReq);
 }
 
 ECode CPlainDatagramSocketImpl::JoinGroup(
@@ -175,7 +182,7 @@ ECode CPlainDatagramSocketImpl::JoinGroup(
         AutoPtr<IInetAddress> groupAddr;
         IInetSocketAddress::Probe(addr)->GetAddress((IInetAddress**)&groupAddr);
         AutoPtr<IStructGroupReq> structGroupReq = MakeGroupReq(groupAddr, netInterface);
-        //return SetOption(CIoBridge::MCAST_JOIN_GROUP, structGroupReq);
+        return SetOption(IIoBridge::JAVA_MCAST_JOIN_GROUP, structGroupReq);
     }
     return NOERROR;
 }
@@ -184,7 +191,7 @@ ECode CPlainDatagramSocketImpl::Leave(
     /* [in] */ IInetAddress* addr)
 {
     AutoPtr<IStructGroupReq> structGroupReq = MakeGroupReq(addr, NULL);
-    //return SetOption(CIoBridge::MCAST_LEAVE_GROUP, structGroupReq);
+    return SetOption(IIoBridge::JAVA_MCAST_LEAVE_GROUP, structGroupReq);
 }
 
 ECode CPlainDatagramSocketImpl::LeaveGroup(
@@ -195,7 +202,7 @@ ECode CPlainDatagramSocketImpl::LeaveGroup(
         AutoPtr<IInetAddress> groupAddr;
         IInetSocketAddress::Probe(addr)->GetAddress((IInetAddress**)&groupAddr);
         AutoPtr<IStructGroupReq> structGroupReq = MakeGroupReq(groupAddr, netInterface);
-        //return SetOption(CIoBridge::MCAST_LEAVE_GROUP, structGroupReq);
+        return SetOption(IIoBridge::JAVA_MCAST_LEAVE_GROUP, structGroupReq);
     }
     return NOERROR;
 }
@@ -232,9 +239,7 @@ ECode CPlainDatagramSocketImpl::DoRecv(
     Int32 length;
     pack->GetLength(&length);
     Int32 result;
-    Int32 value = 0;
-    mFd->GetDescriptor(&value);
-    //FAIL_RETURN(CIoBridge::_Recvfrom(FALSE, value, bytes, byteOffset, length, flags, pack, mIsNativeConnected, &result));
+    FAIL_RETURN(CIoBridge::_Recvfrom(FALSE, mFd, bytes, byteOffset, length, flags, pack, mIsNativeConnected, &result));
     if (mIsNativeConnected) {
         UpdatePacketRecvAddress(pack);
     }
@@ -252,7 +257,7 @@ ECode CPlainDatagramSocketImpl::PeekData(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    //FAIL_RETURN(DoRecv(pack, COsConstants::sMSG_PEEK));
+    FAIL_RETURN(DoRecv(pack, OsConstants::_MSG_PEEK));
     return pack->GetPort(result);
 }
 
@@ -272,18 +277,14 @@ ECode CPlainDatagramSocketImpl::Send(
     Int32 length;
     packet->GetLength(&length);
     Int32 result;
-    Int32 value = 0;
-    mFd->GetDescriptor(&value);
-    //return CIoBridge::_Sendto(value, *bytes, byteOffset, length, 0, address, port, &result);
+    return CIoBridge::_Sendto(mFd, bytes, byteOffset, length, 0, address, port, &result);
 }
 
 ECode CPlainDatagramSocketImpl::SetOption(
     /* [in] */ Int32 option,
     /* [in] */ IInterface* value)
 {
-    Int32 outvalue = 0;
-    mFd->GetDescriptor(&outvalue);
-    //return CIoBridge::_SetSocketOption(outvalue, option, value);
+    return CIoBridge::_SetSocketOption(mFd, option, value);
 }
 
 ECode CPlainDatagramSocketImpl::SetTimeToLive(
@@ -291,7 +292,7 @@ ECode CPlainDatagramSocketImpl::SetTimeToLive(
 {
     AutoPtr<IInteger32> value;
     CInteger32::New(ttl, (IInteger32**)&value);
-    //return SetOption(CIoBridge::IP_MULTICAST_TTL, value);
+    return SetOption(IIoBridge::JAVA_IP_MULTICAST_TTL, value);
 }
 
 ECode CPlainDatagramSocketImpl::SetTTL(
@@ -301,13 +302,10 @@ ECode CPlainDatagramSocketImpl::SetTTL(
 }
 
 ECode CPlainDatagramSocketImpl::Connect(
-        /* [in] */ IInetAddress* inetAddr,
-        /* [in] */ Int32 port)
+    /* [in] */ IInetAddress* inetAddr,
+    /* [in] */ Int32 port)
 {
-    Boolean result = FALSE;
-    Int32 value = 0;
-    mFd->GetDescriptor(&value);
-    //FAIL_RETURN(CIoBridge::_Connect(value, inetAddr, port, &result));
+    FAIL_RETURN(CIoBridge::_Connect(mFd, inetAddr, port));
     AutoPtr<ArrayOf<Byte> > address;
     inetAddr->GetAddress((ArrayOf<Byte>**)&address);
     AutoPtr<IInetAddressHelper> inetAddressHelper;
@@ -324,12 +322,20 @@ ECode CPlainDatagramSocketImpl::Connect(
     return NOERROR;
 }
 
+ECode CPlainDatagramSocketImpl::OnConnect(
+    /* [in] */ IInetAddress* remoteAddress,
+    /* [in] */ Int32 remotePort)
+{
+    mIsNativeConnected = TRUE;
+    mConnectedAddress = remoteAddress;
+    mConnectedPort = remotePort;
+    return NOERROR;
+}
+
 ECode CPlainDatagramSocketImpl::Disconnect()
 {
     // try {
-    Int32 value = 0;
-    mFd->GetDescriptor(&value);
-    //FAIL_RETURN(CLibcore::sOs->Connect(value, InetAddress::UNSPECIFIED, 0));
+    FAIL_RETURN(CLibcore::sOs->Connect(mFd, InetAddress::UNSPECIFIED, 0));
     // } catch (ErrnoException errnoException) {
         // throw new AssertionError(errnoException);
     // } catch (SocketException ignored) {
@@ -341,34 +347,23 @@ ECode CPlainDatagramSocketImpl::Disconnect()
     return NOERROR;
 }
 
+ECode CPlainDatagramSocketImpl::OnDisconnect()
+{
+    mIsNativeConnected = FALSE;
+    mConnectedAddress = NULL;
+    mConnectedPort = -1;
+    return NOERROR;
+}
+
 void CPlainDatagramSocketImpl::UpdatePacketRecvAddress(
     /* [in] */ IDatagramPacket* packet)
 {
-    VALIDATE_NOT_NULL(packet);
-    packet->SetAddress(mConnectedAddress);
-    packet->SetPort(mConnectedPort);
+    if (packet) {
+        packet->SetAddress(mConnectedAddress);
+        packet->SetPort(mConnectedPort);
+    }
 }
 
-ECode CPlainDatagramSocketImpl::GetFileDescriptor(
-        /* [out] */ IFileDescriptor** fileDescriptor)
-{
-    VALIDATE_NOT_NULL(fileDescriptor);
-    return DatagramSocketImpl::GetFileDescriptor(fileDescriptor);
-}
-
-ECode CPlainDatagramSocketImpl::GetLocalAddress(
-        /* [out] */ IInetAddress** address)
-{
-    VALIDATE_NOT_NULL(address);
-    return DatagramSocketImpl::GetLocalAddress(address);
-}
-
-ECode CPlainDatagramSocketImpl::GetLocalPort(
-        /* [out] */ Int32* port)
-{
-    VALIDATE_NOT_NULL(port);
-    return DatagramSocketImpl::GetLocalPort(port);
-}
 
 } // namespace Net
 } // namespace Elastos

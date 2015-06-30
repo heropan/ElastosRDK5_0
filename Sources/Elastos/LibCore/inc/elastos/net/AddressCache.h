@@ -9,7 +9,8 @@ using Libcore::Utility::IBasicLruCache;
 namespace Elastos {
 namespace Net {
 
-class AddressCacheEntry : public Object
+class AddressCacheEntry
+    : public Object
 {
 public:
     AddressCacheEntry(
@@ -42,10 +43,12 @@ public:
  * the C library level caching. The main thing caching at this level buys us is avoiding repeated
  * conversions from 'struct sockaddr's to InetAddress[].
  */
-class AddressCache : public Object
+class AddressCache
+    : public Object
 {
 private:
-    class AddressCacheKey : public Object
+    class AddressCacheKey
+        : public Object
     {
     public:
         AddressCacheKey(
@@ -110,7 +113,7 @@ private:
      */
     static const Int32 MAX_ENTRIES;
 
-	//The TTL for the Java-level cache is short ,just 2s.
+    //The TTL for the Java-level cache is short ,just 2s.
     static const Int64 TTL_NANOS;
 
     // The actual cache.
