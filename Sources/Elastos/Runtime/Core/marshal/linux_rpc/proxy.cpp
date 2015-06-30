@@ -12,17 +12,17 @@
 EXTERN_C const InterfaceID EIID_IProxy;
 
 ECode RegisterModuleInfo(
-    /* [in] */ CIModuleInfo *pSrcModuleInfo);
+    /* [in] */ CIModuleInfo* srcModuleInfo);
 
 ECode LookupClassInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIClassInfo **ppClassInfo);
+    /* [out] */ CIClassInfo** classInfo);
 
 ECode LookupModuleInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIModuleInfo **ppModuleInfo);
+    /* [out] */ CIModuleInfo** moduleInfo);
 
-void *GetUnalignedPtr(void *pPtr);
+void *GetUnalignedPtr(void* ptr);
 
 #define SYS_PROXY_RET_OFFSET    9
 
@@ -73,9 +73,9 @@ inline UInt32 CalcMethodIndex(UInt32 uCallerAddr)
 
 #elif defined(_mips)
 
-inline UInt32 CalcMethodIndex(UInt32 uCallerAddr)
+inline UInt32 CalcMethodIndex(UInt32 callerAddr)
 {
-    return (uCallerAddr - PROXY_ENTRY_BASE) >> PROXY_ENTRY_SHIFT;
+    return (callerAddr - PROXY_ENTRY_BASE) >> PROXY_ENTRY_SHIFT;
 }
 
 #ifdef _GNUC
@@ -151,9 +151,9 @@ EXTERN_C void ProxyEntryFunc_RPC(void);
 
 EXTERN_C void __ProxyEntry_RPC(void);
 
-EXTERN_C ECode GlobalProxyEntry_RPC(UInt32 *puArgs)
+EXTERN_C ECode GlobalProxyEntry_RPC(UInt32* args)
 {
-    return Elastos::RPC::CInterfaceProxy::ProxyEntry_RPC(puArgs);
+    return Elastos::RPC::CInterfaceProxy::ProxyEntry_RPC(args);
 }
 
 #ifdef _GNUC
@@ -181,9 +181,9 @@ DECL_PROXY_ENTRY();
 
 #ifdef _mips
 
-EXTERN_C ECode GlobalProxyEntry_RPC(UInt32 *puArgs)
+EXTERN_C ECode GlobalProxyEntry_RPC(UInt32* args)
 {
-    return Elastos::RPC::CInterfaceProxy::ProxyEntry_RPC(puArgs);
+    return Elastos::RPC::CInterfaceProxy::ProxyEntry_RPC(args);
 }
 
 #ifdef _GNUC
@@ -223,25 +223,24 @@ namespace RPC {
 
 void InitProxyEntry()
 {
-    s_proxyEntryAddress =
-            (Address)mmap((void*)0,
-                          PAGE_ALIGN(PROXY_ENTRY_NUM * PROXY_ENTRY_SIZE),
-                          PROT_READ | PROT_WRITE | PROT_EXEC,
-                          MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    s_proxyEntryAddress = (Address)mmap((void*)0,
+            PAGE_ALIGN(PROXY_ENTRY_NUM * PROXY_ENTRY_SIZE),
+            PROT_READ | PROT_WRITE | PROT_EXEC,
+            MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (s_proxyEntryAddress == 0) {
         printf("out of memory.\n");
         return;
     }
 
 #if defined(_x86)
-    char *p = (char *)s_proxyEntryAddress;
-    for (UInt32 n = 0; n < PROXY_ENTRY_NUM; n++) {
+    char* p = (char *)s_proxyEntryAddress;
+    for (Int32 n = 0; n < PROXY_ENTRY_NUM; n++) {
         memcpy(p, (void*)&ProxyEntryFunc_RPC, PROXY_ENTRY_SIZE);
-        *(Int16*)&(p[SYS_PROXY_RET_OFFSET]) = ( (n + 1) << 2);
+        *(Int16*)&(p[SYS_PROXY_RET_OFFSET]) = ((n + 1) << 2);
         p+= PROXY_ENTRY_SIZE;
     }
 #elif defined(_arm)
-    char * p = (char *)s_proxyEntryAddress;
+    char* p = (char *)s_proxyEntryAddress;
     for (Int32 n = 0; n < PROXY_ENTRY_NUM; n++) {
         memcpy(p, (void *)&ProxyEntryFunc_RPC, PROXY_ENTRY_SIZE);
         p[8] = n;
@@ -255,7 +254,7 @@ void InitProxyEntry()
     g_marshalVtbl[1] = (UInt32)&Elastos::RPC::CInterfaceProxy::S_AddRef;
     g_marshalVtbl[2] = (UInt32)&Elastos::RPC::CInterfaceProxy::S_Release;
     g_marshalVtbl[3] = (UInt32)&Elastos::RPC::CInterfaceProxy::S_GetInterfaceID;
-    for (int m = 4; m < MSH_MAX_METHODS; m++) {
+    for (Int32 m = 4; m < MSH_MAX_METHODS; m++) {
         g_marshalVtbl[m] = PROXY_ENTRY_BASE + ((m - 4) << PROXY_ENTRY_SHIFT);
     }
 
@@ -274,11 +273,11 @@ void UninitProxyEntry()
 ECode GetRemoteClassInfo(
     /* [in] */ const String& netAddress,
     /* [in] */ REMuid clsId,
-    /* [out] */ CIClassInfo ** ppClassInfo)
+    /* [out] */ CIClassInfo** classInfo)
 {
     ECode ec;
     Int32 ciSize;
-    CIModuleInfo *pModInfo;
+    CIModuleInfo* modInfo;
     Int32 socketfd = -1;
     struct sockaddr_in name;
     String ipAddr;
@@ -290,7 +289,7 @@ ECode GetRemoteClassInfo(
     Byte buf[4096];
     AutoPtr<DataBuffer> dataBuf;
 
-    if (ppClassInfo == NULL) return E_INVALID_ARGUMENT;
+    if (classInfo == NULL) return E_INVALID_ARGUMENT;
 
     socketfd = socket(PF_INET, SOCK_STREAM, 0);
     if (socketfd < 0) {
@@ -360,8 +359,8 @@ ECode GetRemoteClassInfo(
         goto Exit;
     }
     reply->ReadInt32(&ciSize);
-    pModInfo = (CIModuleInfo*)reply->ReadInplace(ciSize);
-    ec = RegisterModuleInfo(pModInfo);
+    modInfo = (CIModuleInfo*)reply->ReadInplace(ciSize);
+    ec = RegisterModuleInfo(modInfo);
     if (FAILED(ec)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
             _DumpGUID(clsId));
@@ -370,7 +369,7 @@ ECode GetRemoteClassInfo(
         goto Exit;
     }
 
-    if (FAILED(LookupModuleInfo(clsId, &pModInfo))) {
+    if (FAILED(LookupModuleInfo(clsId, &modInfo))) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
             _DumpGUID(clsId));
         MARSHAL_DBGOUT(MSHDBG_ERROR,
@@ -379,17 +378,17 @@ ECode GetRemoteClassInfo(
     }
 
     ec = E_DOES_NOT_EXIST;
-    for (Int32 m = 0; m < pModInfo->classNum; m++) {
-        if (pModInfo->classes[m].clsid == clsId) {
-            *ppClassInfo = &(pModInfo->classes[m]);
+    for (Int32 m = 0; m < modInfo->classNum; m++) {
+        if (modInfo->classes[m].clsid == clsId) {
+            *classInfo = &(modInfo->classes[m]);
 
             MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("iid: "));
             MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                    DUMP_GUID((*ppClassInfo)->clsid));
+                    DUMP_GUID((*classInfo)->clsid));
             MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                    printf("UUNM: %s.\n", (*ppClassInfo)->pszUunm));
+                    printf("UUNM: %s.\n", (*classInfo)->pszUunm));
             MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                    printf("InterfaceNumber: %d.\n", (*ppClassInfo)->interfaceNum));
+                    printf("InterfaceNumber: %d.\n", (*classInfo)->interfaceNum));
 
             ec = NOERROR;
             goto Exit;
@@ -402,92 +401,81 @@ Exit:
 }
 
 PInterface CInterfaceProxy::S_Probe(
-    /* [in] */ CInterfaceProxy *pThis,
+    /* [in] */ CInterfaceProxy* thisPtr,
     /* [in] */ REIID riid)
 {
-    return pThis->m_pOwner->Probe(riid);
+    return thisPtr->mOwner->Probe(riid);
 }
 
 UInt32 CInterfaceProxy::S_AddRef(
-    /* [in] */ CInterfaceProxy *pThis)
+    /* [in] */ CInterfaceProxy* thisPtr)
 {
-    return pThis->m_pOwner->AddRef();
+    return thisPtr->mOwner->AddRef();
 }
 
 UInt32 CInterfaceProxy::S_Release(
-    /* [in] */ CInterfaceProxy *pThis)
+    /* [in] */ CInterfaceProxy* thisPtr)
 {
-    return pThis->m_pOwner->Release();
+    return thisPtr->mOwner->Release();
 }
 
 ECode CInterfaceProxy::S_GetInterfaceID(
-    /* [in] */ CInterfaceProxy *pThis,
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ CInterfaceProxy* thisPtr,
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     //todo: not correct.
-    return pThis->m_pOwner->GetInterfaceID(pObject, pIID);
+    return thisPtr->mOwner->GetInterfaceID(object, iid);
 }
 
 ECode CInterfaceProxy::BufferSize(
-    /* [in] */ UInt32 uMethodIndex,
-    /* [in] */ UInt32 *puArgs,
-    /* [out] */ UInt32 *puInSize,
-    /* [out] */ UInt32 *puOutSize)
+    /* [in] */ UInt32 methodIndex,
+    /* [in] */ UInt32* args,
+    /* [out] */ UInt32* inSize,
+    /* [out] */ UInt32* outSize)
 {
-    ECode ec;
-    const CIMethodInfo *pMethodInfo;
-    pMethodInfo = &(m_pInfo->methods[uMethodIndex]);
+    const CIMethodInfo* methodInfo = &(mInfo->methods[methodIndex]);
 
-    ec = Proxy_ProcessMsh_BufferSize(
-            pMethodInfo,
-            puArgs,
-            puInSize,
-            puOutSize);
-    if (0 != *puOutSize){
-        *puOutSize += sizeof(MarshalHeader);
+    ECode ec = Proxy_ProcessMsh_BufferSize(
+            methodInfo, args, inSize, outSize);
+    if (0 != *outSize){
+        *outSize += sizeof(MarshalHeader);
     }
 
     if (SUCCEEDED(ec)) {
-        *puInSize += sizeof(MarshalHeader);
+        *inSize += sizeof(MarshalHeader);
     }
     return ec;
 }
 
 ECode CInterfaceProxy::MarshalIn(
-    /* [in] */ UInt32 uMethodIndex,
-    /* [in] */ UInt32 *puArgs,
-    /* [in, out] */ CRemoteParcel *pParcel)
+    /* [in] */ UInt32 methodIndex,
+    /* [in] */ UInt32* args,
+    /* [in, out] */ CRemoteParcel* parcel)
 {
-    ECode ec;
-    const CIMethodInfo *pMethodInfo;
-    MarshalHeader *pHeader;
+    const CIMethodInfo* methodInfo = &(mInfo->methods[methodIndex]);
 
-    pMethodInfo = &(m_pInfo->methods[uMethodIndex]);
-
-    ec = Proxy_ProcessMsh_In(
-            pMethodInfo,
-            puArgs,
-            (IParcel*)pParcel);
+    ECode ec = Proxy_ProcessMsh_In(
+            methodInfo, args, (IParcel*)parcel);
 
     if (SUCCEEDED(ec)) {
-        pHeader = pParcel->GetMarshalHeader();
-        assert(pHeader != NULL);
-        pHeader->mMagic = MARSHAL_MAGIC;
-        pHeader->mInterfaceIndex = mIndex;
-        pHeader->mMethodIndex = uMethodIndex + 4;
+        MarshalHeader* header = parcel->GetMarshalHeader();
+        assert(header != NULL);
+        header->mMagic = MARSHAL_MAGIC;
+        header->mInterfaceIndex = mIndex;
+        header->mMethodIndex = methodIndex + 4;
     }
 
     return ec;
 }
 
 ECode CInterfaceProxy::UnmarshalOut(
-    /* [in] */ UInt32 uMethodIndex,
-    /* [out] */ CRemoteParcel *pParcel,
-    /* [in] */ UInt32 *puArgs)
+    /* [in] */ UInt32 methodIndex,
+    /* [out] */ CRemoteParcel* parcel,
+    /* [in] */ UInt32* args)
 {
     // TODO:
-//    MarshalHeader *pHeader = pParcel->GetMarshalHeader();
+//    MarshalHeader *pHeader = parcel->GetMarshalHeader();
 //
 //    if (pHeader->mMagic != MARSHAL_MAGIC) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR,
@@ -503,7 +491,7 @@ ECode CInterfaceProxy::UnmarshalOut(
 //                pHeader->mInterfaceIndex));
 //        return E_MARSHAL_DATA_TRANSPORT_ERROR;
 //    }
-//    if (pHeader->mMethodIndex != (Int16)(uMethodIndex + 4)) {
+//    if (pHeader->mMethodIndex != (Int16)(methodIndex + 4)) {
 //        MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
 //                "Proxy unmsh: invalid method(%x)\n", pHeader->mMethodIndex));
 //    }
@@ -511,50 +499,47 @@ ECode CInterfaceProxy::UnmarshalOut(
 
     // TODO:
     return Proxy_ProcessUnmsh_Out(
-            &(m_pInfo->methods[uMethodIndex]),
-            (IParcel*)pParcel,
+            &(mInfo->methods[methodIndex]),
+            (IParcel*)parcel,
             0/*pHeader->mOutSize - sizeof(MarshalHeader)*/,
-            puArgs);
+            args);
 }
 
 UInt32 CInterfaceProxy::CountMethodArgs(
-    /* [in] */ UInt32 uMethodIndex)
+    /* [in] */ UInt32 methodIndex)
 {
-    return GET_LENGTH((m_pInfo->methods[uMethodIndex]).reserved1);
+    return GET_LENGTH((mInfo->methods[methodIndex]).reserved1);
 }
 
 Boolean CInterfaceProxy::MethodHasOutArgs(
-    /* [in] */ UInt32 uMethodIndex)
+    /* [in] */ UInt32 methodIndex)
 {
-    int n, cParams;
-    const CIMethodInfo *pMethodInfo;
-    const CIBaseType *pParams;
+    const CIMethodInfo* methodInfo = &(mInfo->methods[methodIndex]);
+    Int32 paramNum = methodInfo->paramNum;
+    const CIBaseType* params = methodInfo->params;
 
-    pMethodInfo = &(m_pInfo->methods[uMethodIndex]);
-    cParams = pMethodInfo->paramNum;
-    pParams = pMethodInfo->params;
-
-    for (n = 0; n < cParams; n++) {
-        if (BT_IS_OUT(pParams[n])) return TRUE;
+    for (Int32 n = 0; n < paramNum; n++) {
+        if (BT_IS_OUT(params[n])) return TRUE;
     }
 
     return FALSE;
 }
 
 Boolean CInterfaceProxy::IsMethodOneway(
-    /* [in] */ UInt32 uMethodIndex)
+    /* [in] */ UInt32 methodIndex)
 {
-    return BT_IS_ONEWAY((m_pInfo->methods[uMethodIndex]).dwAttribs);
+    return BT_IS_ONEWAY((mInfo->methods[methodIndex]).dwAttribs);
 }
 
-ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
+ECode CInterfaceProxy::ProxyEntry_RPC(
+    /* [in] */ UInt32* args)
 {
-    CInterfaceProxy *pThis;
-    UInt32 uMethodIndex, uInSize, uOutSize;
+    CInterfaceProxy* thisPtr;
+    UInt32 methodIndex, inSize, outSize;
     Int32 size, payloadSize, totalSize;
     Boolean isMethodOneway;
-    MarshalHeader *pInHeader = NULL;
-    AutoPtr<CRemoteParcel> pInParcel, pOutParcel;
+    MarshalHeader* inHeader = NULL;
+    AutoPtr<CRemoteParcel> inParcel, outParcel;
     Int32 socketfd;
     struct sockaddr_in name;
     timeval recvTimeout = {60, 0};
@@ -565,53 +550,53 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
     const char pad = '\0';
     const char* INVOKE = "INVOKE";
     const char* ONEWAY = "ONEWAY";
-    UInt8* pData = NULL;
+    UInt8* data = NULL;
     char buf[4096];
     AutoPtr<DataBuffer> dataBuf, replyBuf;
     ECode ec, orgec;
 #ifndef _mips
-    UInt32 cArgs;
+    UInt32 argNum;
 #endif
 
 
-    puArgs++; // skip ret address
+    args++; // skip ret address
 
-    pThis = (CInterfaceProxy *)*puArgs;
-    puArgs++; // skip this
+    thisPtr = (CInterfaceProxy *)*args;
+    args++; // skip this
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
-            printf("*puArgs = %x, puArgs = %x, ", *puArgs, (UInt32)puArgs));
+            printf("*args = %x, args = %x, ", *args, (UInt32)args));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("iid: "));
-    MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(pThis->m_pInfo->iid));
+    MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(thisPtr->mInfo->iid));
 
 #ifdef _x86
-    uMethodIndex = CalcMethodIndex(*(UInt32 *)((UInt32)&puArgs - 4));
+    methodIndex = CalcMethodIndex(*(UInt32 *)((UInt32)&args - 4));
 #elif defined(_arm)
-    uMethodIndex = puArgs[-3];
+    methodIndex = args[-3];
 #elif defined(_mips)
-    uMethodIndex = CalcMethodIndex(*(puArgs - 4) - 4);
+    methodIndex = CalcMethodIndex(*(args - 4) - 4);
 #else
 #error unknown architecture
 #endif
 
 #ifndef _mips
     // Get the stack length, not contain "this"
-    cArgs = pThis->CountMethodArgs(uMethodIndex);
+    argNum = thisPtr->CountMethodArgs(methodIndex);
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
-            "Method index(%d), args size(%d)\n", uMethodIndex + 4, cArgs * 4));
+            "Method index(%d), args size(%d)\n", methodIndex + 4, argNum * 4));
 #endif
 
     // Calculate the package size
     //
     // NOTE:
-    //  1. Alloc pOutHeader on the stack with MAX-out-size
-    //  2. Assign pInHeader->mOutSize with MAX-out-size
+    //  1. Alloc outHeader on the stack with MAX-out-size
+    //  2. Assign inHeader->mOutSize with MAX-out-size
     //  3. Pass the MIN-out-size to SysInvoke's last parameter
     //  4. Call Thread::ReallocBuffer in SysReply if necessary to pass back the
     //      marshaled-out data with error info
     //
-    ec = pThis->BufferSize(uMethodIndex, puArgs, &uInSize, &uOutSize);
+    ec = thisPtr->BufferSize(methodIndex, args, &inSize, &outSize);
     if (FAILED(ec)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Proxy BufferSize() failed, ec = %x\n", ec));
@@ -619,14 +604,14 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
     }
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
-            "Buffer size: inSize(%d), outSize(%d)\n", uInSize, uOutSize));
-    assert(uInSize >= sizeof(MarshalHeader));
+            "Buffer size: inSize(%d), outSize(%d)\n", inSize, outSize));
+    assert(inSize >= sizeof(MarshalHeader));
 
-    pInParcel = new CRemoteParcel();
-    ec = pThis->MarshalIn(uMethodIndex, puArgs, pInParcel);
+    inParcel = new CRemoteParcel();
+    ec = thisPtr->MarshalIn(methodIndex, args, inParcel);
 
     if (SUCCEEDED(ec)) {
-        if (pThis->m_pOwner->m_cSocketfd == -1) {
+        if (thisPtr->mOwner->mSocketfd == -1) {
             socketfd = socket(PF_INET, SOCK_STREAM, 0);
             if (socketfd < 0) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR,
@@ -635,7 +620,7 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
                 goto ProxyExit;
             }
 
-            netAddress = pThis->m_pOwner->m_sNetAddress;
+            netAddress = thisPtr->mOwner->mNetAddress;
             index = netAddress.IndexOf(":");
             ipAddr = netAddress.Substring(0, index);
             port = atoi(netAddress.Substring(index + 1).string());
@@ -658,22 +643,22 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
                 goto ProxyExit;
             }
 
-            pThis->m_pOwner->m_cSocketfd = socketfd;
+            thisPtr->mOwner->mSocketfd = socketfd;
 
-            if (pThis->m_pOwner->m_pPingTask == NULL) {
-                AutoPtr<CObjectProxy::PingRunnable> r = new CObjectProxy::PingRunnable(pThis->m_pOwner);
+            if (thisPtr->mOwner->mPingTask == NULL) {
+                AutoPtr<CObjectProxy::PingRunnable> r = new CObjectProxy::PingRunnable(thisPtr->mOwner);
                 ThreadPoolExecutor::Self()->RunTask(r);
-                pThis->m_pOwner->m_pPingTask = r;
+                thisPtr->mOwner->mPingTask = r;
             }
         }
 
-        isMethodOneway = pThis->IsMethodOneway(uMethodIndex);
+        isMethodOneway = thisPtr->IsMethodOneway(methodIndex);
         dataBuf = new DataBuffer();
-        pInParcel->GetElementSize(&payloadSize);
-        pInParcel->GetElementPayload((Handle32*)&pData);
-        pInHeader = pInParcel->GetMarshalHeader();
-        pInHeader->mInSize = payloadSize;
-        pInHeader->mOutSize = uOutSize;
+        inParcel->GetElementSize(&payloadSize);
+        inParcel->GetElementPayload((Handle32*)&data);
+        inHeader = inParcel->GetMarshalHeader();
+        inHeader->mInSize = payloadSize;
+        inHeader->mOutSize = outSize;
         totalSize = htonl(sizeof(totalSize) + sizeof(tag) + strlen(INVOKE) + 1 + sizeof(pad)
                 + (isMethodOneway ? sizeof(tag) + strlen(ONEWAY) + 1 + sizeof(pad) : 0)
                 + payloadSize);
@@ -686,15 +671,15 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
             dataBuf->Append(ONEWAY, strlen(ONEWAY) + 1);
             dataBuf->Append((void*)&pad, sizeof(pad));
         }
-        dataBuf->Append(pData, payloadSize);
+        dataBuf->Append(data, payloadSize);
         MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
                 "Before RemoteInvoke: ParcelSize(%d)\n", payloadSize));
         assert((Int32)ntohl(totalSize) == dataBuf->DataSize());
 
         {
-            android::AutoMutex _l(pThis->m_pOwner->m_Lock);
+            android::AutoMutex _l(thisPtr->mOwner->mLock);
 
-            if (send(pThis->m_pOwner->m_cSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
+            if (send(thisPtr->mOwner->mSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR,
                         printf("RemoteInvoke: send socket failed.\n"));
                 ec = E_FAIL;
@@ -702,22 +687,22 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
             }
 
             replyBuf = new DataBuffer();
-            size = recv(pThis->m_pOwner->m_cSocketfd, (void*)buf, sizeof(buf), 0);
+            size = recv(thisPtr->mOwner->mSocketfd, (void*)buf, sizeof(buf), 0);
             if (size <= 0) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR,
                         printf("RemoteInvoke: remote socket broken.\n"));
-                pThis->m_pOwner->StubDied();
+                thisPtr->mOwner->StubDied();
                 ec = E_FAIL;
                 goto ProxyExit;
             }
             totalSize = ntohl(*(Int32*)buf);
             replyBuf->Append(buf + sizeof(Int32), size - sizeof(Int32));
             while((totalSize = totalSize - size) > 0) {
-                size = recv(pThis->m_pOwner->m_cSocketfd, (void*)buf, sizeof(buf), 0);
+                size = recv(thisPtr->mOwner->mSocketfd, (void*)buf, sizeof(buf), 0);
                 if (size <= 0) {
                     MARSHAL_DBGOUT(MSHDBG_ERROR,
                             printf("RemoteInvoke: remote socket broken.\n"));
-                    pThis->m_pOwner->StubDied();
+                    thisPtr->mOwner->StubDied();
                     ec = E_FAIL;
                     goto ProxyExit;
                 }
@@ -725,16 +710,16 @@ ECode CInterfaceProxy::ProxyEntry_RPC(UInt32 *puArgs)
             }
         }
 
-        if (!pThis->IsMethodOneway(uMethodIndex)) {
-            pOutParcel = new CRemoteParcel(FALSE);
-            pOutParcel->SetData((UInt8*)replyBuf->Data(), replyBuf->DataSize());
-            pOutParcel->ReadInt32(&ec);
+        if (!thisPtr->IsMethodOneway(methodIndex)) {
+            outParcel = new CRemoteParcel(FALSE);
+            outParcel->SetData((UInt8*)replyBuf->Data(), replyBuf->DataSize());
+            outParcel->ReadInt32(&ec);
             if (SUCCEEDED(ec)) {
-                if (pThis->MethodHasOutArgs(uMethodIndex)) {
-                    if (uOutSize) {
-                        orgec = pThis->UnmarshalOut(uMethodIndex,
-                                                    pOutParcel,
-                                                    puArgs);
+                if (thisPtr->MethodHasOutArgs(methodIndex)) {
+                    if (outSize) {
+                        orgec = thisPtr->UnmarshalOut(methodIndex,
+                                                    outParcel,
+                                                    args);
                         if (FAILED(orgec)) {
                             ec = orgec;
                         }
@@ -756,9 +741,9 @@ ProxyExit:
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("Exit proxy: ec(%x)\n", ec));
 
 #ifndef _mips
-    SYS_PROXY_EXIT(ec, &puArgs - 1, cArgs);
+    SYS_PROXY_EXIT(ec, &args - 1, argNum);
 #else
-    SYS_PROXY_EXIT(ec, &puArgs - 1, 0);
+    SYS_PROXY_EXIT(ec, &args - 1, 0);
 #endif
 }
 
@@ -770,14 +755,14 @@ DeathRecipientList::DeathRecipientList()
 DeathRecipientList::~DeathRecipientList()
 {
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("Destroy DRL @ %p", this));
-    android::AutoMutex _l(m_Lock);
+    android::AutoMutex _l(mLock);
 
     // Should never happen -- the JavaDeathRecipient objects that have added themselves
     // to the list are holding references on the list object.  Only when they are torn
     // down can the list header be destroyed.
-    if (m_List.size() > 0) {
+    if (mDeathRecipients.size() > 0) {
         android::List< AutoPtr<CarDeathRecipient> >::iterator iter;
-        for (iter = m_List.begin(); iter != m_List.end(); iter++) {
+        for (iter = mDeathRecipients.begin(); iter != mDeathRecipients.end(); iter++) {
             (*iter)->WarnIfStillLive();
         }
     }
@@ -823,22 +808,22 @@ ECode DeathRecipientList::GetWeakReference(
 void DeathRecipientList::Add(
     /* [in] */ const AutoPtr<CarDeathRecipient>& recipient)
 {
-    android::AutoMutex _l(m_Lock);
+    android::AutoMutex _l(mLock);
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("DRL @ %p : add CDR %p", this, recipient.Get()));
-    m_List.push_back(recipient);
+    mDeathRecipients.push_back(recipient);
 }
 
 void DeathRecipientList::Remove(
     /* [in] */ const AutoPtr<CarDeathRecipient>& recipient)
 {
-    android::AutoMutex _l(m_Lock);
+    android::AutoMutex _l(mLock);
 
     android::List< AutoPtr<CarDeathRecipient> >::iterator iter;
-    for (iter = m_List.begin(); iter != m_List.end(); iter++) {
+    for (iter = mDeathRecipients.begin(); iter != mDeathRecipients.end(); iter++) {
         if (*iter == recipient) {
             MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("DRL @ %p : remove CDR %p", this, recipient.Get()));
-            m_List.erase(iter);
+            mDeathRecipients.erase(iter);
             return;
         }
     }
@@ -847,10 +832,10 @@ void DeathRecipientList::Remove(
 AutoPtr<CarDeathRecipient> DeathRecipientList::Find(
     /* [in] */ IProxyDeathRecipient* recipient)
 {
-    android::AutoMutex _l(m_Lock);
+    android::AutoMutex _l(mLock);
 
     android::List< AutoPtr<CarDeathRecipient> >::iterator iter;
-    for (iter = m_List.begin(); iter != m_List.end(); iter++) {
+    for (iter = mDeathRecipients.begin(); iter != mDeathRecipients.end(); iter++) {
         if ((*iter)->Matches(recipient)) {
             return *iter;
         }
@@ -861,12 +846,12 @@ AutoPtr<CarDeathRecipient> DeathRecipientList::Find(
 void DeathRecipientList::NotifyAll(
     /* [in] */ CObjectProxy* proxy)
 {
-    android::AutoMutex _l(m_Lock);
+    android::AutoMutex _l(mLock);
 
-    android::List< AutoPtr<CarDeathRecipient> >::iterator iter = m_List.begin();
-    while (iter != m_List.end()) {
+    android::List< AutoPtr<CarDeathRecipient> >::iterator iter = mDeathRecipients.begin();
+    while (iter != mDeathRecipients.end()) {
         (*iter)->StubDied(proxy);
-        iter = m_List.erase(iter);
+        iter = mDeathRecipients.erase(iter);
     }
 }
 
@@ -883,7 +868,7 @@ CarDeathRecipient::CarDeathRecipient(
     IWeakReferenceSource::Probe(list)->GetWeakReference((IWeakReference**)&wr);
     // These objects manage their own lifetimes so are responsible for final bookkeeping.
     // The list holds a strong reference to this object.
-    m_List = wr;
+    mDeathRecipients = wr;
 }
 
 CarDeathRecipient::~CarDeathRecipient()
@@ -915,7 +900,7 @@ void CarDeathRecipient::StubDied(
 void CarDeathRecipient::ClearReference()
 {
     AutoPtr<IInterface> obj;
-    m_List->Resolve(EIID_IInterface, (IInterface**)&obj);
+    mDeathRecipients->Resolve(EIID_IInterface, (IInterface**)&obj);
     DeathRecipientList* list = (DeathRecipientList*)obj.Get();
     if (list != NULL) {
         MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("Removing CDR %p from DRL %p", this, list));
@@ -959,15 +944,15 @@ ECode CObjectProxy::PingRunnable::Run()
     while (TRUE) {
         sleep(30);
 
-        android::AutoMutex _l(mHost->m_Lock);
+        android::AutoMutex _l(mHost->mLock);
 
-        if (send(mHost->m_cSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
+        if (send(mHost->mSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("PingRunnable: send socket failed.\n"));
         }
 
         Byte buf[32];
-        Int32 size = recv(mHost->m_cSocketfd, (void*)buf, sizeof(buf), 0);
+        Int32 size = recv(mHost->mSocketfd, (void*)buf, sizeof(buf), 0);
         if (size <= 0) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("PingRunnable: recv socket broken.\n"));
@@ -978,37 +963,36 @@ ECode CObjectProxy::PingRunnable::Run()
     return mHost->StubDied();
 }
 
-CObjectProxy::CObjectProxy() :
-    m_cSocketfd(-1),
-    m_pInterfaces(NULL),
-    m_pICallbackConnector(NULL),
-    m_bStubDied(FALSE),
-    m_cRef(1)
+CObjectProxy::CObjectProxy()
+    : mSocketfd(-1)
+    , mInterfaces(NULL)
+    , mCallbackConnector(NULL)
+    , mStubDied(FALSE)
+    , mRef(1)
 {}
 
 CObjectProxy::~CObjectProxy()
 {
-    if (m_pInterfaces) {
-        // m_pInterfaces[n].m_pvVptr = &g_marshalVtbl, delete it ????
+    if (mInterfaces) {
+        // mInterfaces[n].mVTPtr = &g_marshalVtbl, delete it ????
         //
-        // for (Int32 n = 0; n < m_cInterfaces; n++) {
-        //     if (m_pInterfaces[n].m_pvVptr) {
-        //         delete [] (UInt32 *)(m_pInterfaces[n].m_pvVptr);
+        // for (Int32 n = 0; n < mInterfaceNum; n++) {
+        //     if (mInterfaces[n].mVTPtr) {
+        //         delete [] (UInt32 *)(mInterfaces[n].mVTPtr);
         //     }
         // }
-        delete [] m_pInterfaces;
+        delete [] mInterfaces;
     }
-    ThreadPoolExecutor::Self()->StopTask(m_pPingTask);
+    ThreadPoolExecutor::Self()->StopTask(mPingTask);
 }
 
 static const EMuid ECLSID_XOR_CallbackSink = \
 /* e724df56-e16a-4599-8edd-a97ab245d583 */
 {0xe724df56,0xe16a,0x4599,{0x8e,0xdd,0xa9,0x7a,0xb2,0x45,0xd5,0x83}};
 
-PInterface CObjectProxy::Probe(REIID riid)
+PInterface CObjectProxy::Probe(
+    /* [in] */ REIID riid)
 {
-    int n;
-
     if (riid == EIID_IInterface) {
         return (IInterface*)(IProxy*)this;
     }
@@ -1017,9 +1001,9 @@ PInterface CObjectProxy::Probe(REIID riid)
     }
 
     if (riid == EIID_CALLBACK_CONNECTOR) {
-        if (NULL == m_pICallbackConnector) {
+        if (NULL == mCallbackConnector) {
             ClassID ezclsid;
-            IInterface *pTemp = (IInterface *)&(m_pInterfaces[0].m_pvVptr);
+            IInterface *pTemp = (IInterface *)&(mInterfaces[0].mVTPtr);
             this->GetClassID(&ezclsid.clsid);
 
             ezclsid.clsid.Data1    ^= ECLSID_XOR_CallbackSink.Data1;
@@ -1034,20 +1018,21 @@ PInterface CObjectProxy::Probe(REIID riid)
             ezclsid.clsid.Data4[6] ^= ECLSID_XOR_CallbackSink.Data4[6];
             ezclsid.clsid.Data4[7] ^= ECLSID_XOR_CallbackSink.Data4[7];
             ezclsid.pUunm = (char*)alloca(sizeof(char) \
-                    * (strlen(((CIClassInfo*)m_pInfo)->pszUunm) + 1));
-            strcpy(ezclsid.pUunm, ((CIClassInfo*)m_pInfo)->pszUunm);
+                    * (strlen(((CIClassInfo*)mInfo)->pszUunm) + 1));
+            strcpy(ezclsid.pUunm, ((CIClassInfo*)mInfo)->pszUunm);
             _CObject_AcquireClassFactory(ezclsid, RGM_SAME_DOMAIN, EIID_CALLBACK_CONNECTOR, &pTemp);
-            m_pICallbackConnector = (ICallbackConnector*)pTemp;
+            mCallbackConnector = (ICallbackConnector*)pTemp;
         }
-        return (IInterface*)m_pICallbackConnector;
+        return (IInterface*)mCallbackConnector;
     }
 
-    for (n = 0; n < m_cInterfaces; n++) {
-        if (riid == m_pInterfaces[n].m_pInfo->iid) {
+    Int32 n;
+    for (n = 0; n < mInterfaceNum; n++) {
+        if (riid == mInterfaces[n].mInfo->iid) {
             break;
         }
     }
-    if (n == m_cInterfaces) {
+    if (n == mInterfaceNum) {
         MARSHAL_DBGOUT(MSHDBG_WARNING, printf(
                 "Proxy: QI failed, iid: "));
         MARSHAL_DBGOUT(MSHDBG_WARNING, DUMP_GUID(riid));
@@ -1055,35 +1040,33 @@ PInterface CObjectProxy::Probe(REIID riid)
         return NULL;
     }
 
-    return (IInterface *)&(m_pInterfaces[n].m_pvVptr);
+    return (IInterface *)&(mInterfaces[n].mVTPtr);
 }
 
-UInt32 CObjectProxy::AddRef(void)
+UInt32 CObjectProxy::AddRef()
 {
-    Int32 lRefs = atomic_inc(&m_cRef);
+    Int32 lRefs = atomic_inc(&mRef);
 
     MARSHAL_DBGOUT(MSHDBG_CREF, printf(
             "Proxy AddRef: %d\n", lRefs));
     return (UInt32)lRefs;
 }
 
-UInt32 CObjectProxy::Release(void)
+UInt32 CObjectProxy::Release()
 {
-    ECode ec;
-
-    Int32 lRefs = atomic_dec(&m_cRef);
+    Int32 lRefs = atomic_dec(&mRef);
     if (lRefs == 0) {
         MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
                 "Proxy destructed.\n"));
 
-        ec = UnregisterImportObject(m_sNetAddress);
+        ECode ec = UnregisterImportObject(mNetAddress);
         if (ec == S_FALSE) {
             return 1;// other thread hold the proxy
         }
 
-        if (m_pICallbackConnector) {
-            m_pICallbackConnector->DisconnectCallbackSink();
-            delete m_pICallbackConnector;
+        if (mCallbackConnector) {
+            mCallbackConnector->DisconnectCallbackSink();
+            delete mCallbackConnector;
         }
 
         //bugbug: maybe we don't need call release of stub,
@@ -1096,7 +1079,7 @@ UInt32 CObjectProxy::Release(void)
         dataBuf->Append((void*)&tag, sizeof(tag));
         dataBuf->Append(RELEASE, strlen(RELEASE) + 1);
         assert((Int32)ntohl(totalSize) == dataBuf->DataSize());
-        if (send(m_cSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
+        if (send(mSocketfd, dataBuf->Data(), dataBuf->DataSize(), 0) == -1) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("GetRemoteClassInfo: send socket failed.\n"));
         }
@@ -1113,13 +1096,13 @@ UInt32 CObjectProxy::Release(void)
 }
 
 ECode CObjectProxy::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
+    if (NULL == iid) return E_INVALID_ARGUMENT;
 
-    if (pObject == (IInterface *)(IProxy *)this) {
-        *pIID = EIID_IProxy;
+    if (object == (IInterface *)(IProxy *)this) {
+        *iid = EIID_IProxy;
     }
     else {
         return E_INVALID_ARGUMENT;
@@ -1128,55 +1111,55 @@ ECode CObjectProxy::GetInterfaceID(
 }
 
 ECode CObjectProxy::GetInterface(
-    /* [in] */ UInt32 uIndex,
-    /* [out] */ IInterface **ppObj)
+    /* [in] */ UInt32 index,
+    /* [out] */ IInterface** object)
 {
-    assert(ppObj != NULL);
+    assert(object != NULL);
 
-    if (uIndex < (UInt32)m_cInterfaces) {
-        *ppObj = (IInterface *)&(m_pInterfaces[uIndex].m_pvVptr);
+    if (index < (UInt32)mInterfaceNum) {
+        *object = (IInterface *)&(mInterfaces[index].mVTPtr);
         this->AddRef();
         return NOERROR;
     }
     MARSHAL_DBGOUT(MSHDBG_WARNING, printf(
             "Proxy: IndexQI failed - idx(%d), cInterfaces(%d)\n",
-            uIndex, m_cInterfaces));
+            index, mInterfaceNum));
 
     return E_NO_INTERFACE;
 }
 
 ECode CObjectProxy::GetInterfaceIndex(
-     /* [in] */ IInterface *pObj,
-     /* [out] */ UInt32* pIndex)
+     /* [in] */ IInterface* object,
+     /* [out] */ UInt32* index)
 {
-    assert(pIndex != NULL);
+    assert(index != NULL);
 
-    Int32 Index = 0;
-    while (Index < m_cInterfaces) {
-        if ((void*)pObj == &(m_pInterfaces[Index].m_pvVptr)) {
-            *pIndex = Index;
+    Int32 i = 0;
+    while (i < mInterfaceNum) {
+        if ((void*)object == &(mInterfaces[i].mVTPtr)) {
+            *index = i;
             return NOERROR;
         }
-        Index++;
+        i++;
     }
     return E_NO_INTERFACE;
 }
 
 ECode CObjectProxy::GetClassID(
-    /* [out] */ EMuid *pClsid)
+    /* [out] */ EMuid* clsid)
 {
-    assert(pClsid != NULL);
+    assert(clsid != NULL);
 
-    *pClsid = ((CIClassInfo*)m_pInfo)->clsid;
+    *clsid = ((CIClassInfo*)mInfo)->clsid;
     return NOERROR;
 }
 
 ECode CObjectProxy::GetClassInfo(
-    /* [out] */ CIClassInfo **ppClassInfo)
+    /* [out] */ CIClassInfo** classInfo)
 {
-    assert(ppClassInfo != NULL);
+    assert(classInfo != NULL);
 
-    *ppClassInfo = m_pInfo;
+    *classInfo = mInfo;
     return NOERROR;
 }
 
@@ -1195,7 +1178,7 @@ ECode CObjectProxy::LinkToDeath(
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_bStubDied) {
+    if (mStubDied) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Remote stub is died when calling linkToDeath() with recip=%p)\n", recipient));
         return E_FAIL;
@@ -1204,10 +1187,10 @@ ECode CObjectProxy::LinkToDeath(
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 printf("linkToDeath: recipient=%p\n", recipient));
 
-    if (m_pOrgue == NULL) m_pOrgue = new DeathRecipientList();
-    AutoPtr<CarDeathRecipient> cdr = new CarDeathRecipient(recipient, m_pOrgue);
-    MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("Adding CDR %p to DRL %p", cdr.Get(), m_pOrgue.Get()));
-    m_pOrgue->Add(cdr);
+    if (mOrgue == NULL) mOrgue = new DeathRecipientList();
+    AutoPtr<CarDeathRecipient> cdr = new CarDeathRecipient(recipient, mOrgue);
+    MARSHAL_DBGOUT(MSHDBG_NORMAL, printf("Adding CDR %p to DRL %p", cdr.Get(), mOrgue.Get()));
+    mOrgue->Add(cdr);
 
     return NOERROR;
 }
@@ -1224,7 +1207,7 @@ ECode CObjectProxy::UnlinkToDeath(
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_bStubDied) {
+    if (mStubDied) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Remote stub is died when calling linkToDeath() with recip=%p)\n", recipient));
         return E_FAIL;
@@ -1234,9 +1217,9 @@ ECode CObjectProxy::UnlinkToDeath(
                 printf("unlinkToDeath: recipient=%p\n", recipient));
 
     // If we find the matching recipient, proceed to unlink using that
-    AutoPtr<CarDeathRecipient> origCDR = m_pOrgue->Find(recipient);
+    AutoPtr<CarDeathRecipient> origCDR = mOrgue->Find(recipient);
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
-            printf("   unlink found list %p and CDR %p", m_pOrgue.Get(), origCDR.Get()));
+            printf("   unlink found list %p and CDR %p", mOrgue.Get(), origCDR.Get()));
     if (origCDR != NULL) {
         origCDR->ClearReference();
     }
@@ -1246,70 +1229,69 @@ ECode CObjectProxy::UnlinkToDeath(
 
 ECode CObjectProxy::StubDied()
 {
-    m_pOrgue->NotifyAll(this);
+    mOrgue->NotifyAll(this);
     return NOERROR;
 }
 
 ECode CObjectProxy::S_CreateObject(
     /* [in] */ REMuid rclsid,
     /* [in] */ const String& address,
-    /* [out] */ IProxy **ppIProxy)
+    /* [out] */ IProxy** proxy)
 {
-    CObjectProxy *pProxy;
-    CInterfaceProxy *pInterfaces;
+    CObjectProxy* proxyObj;
+    CInterfaceProxy* interfaces;
     Int32 n;
-    ECode ec;
 
-    if (ppIProxy == NULL) return E_INVALID_ARGUMENT;
+    if (proxy == NULL) return E_INVALID_ARGUMENT;
 
-    pProxy = new CObjectProxy();
-    if (!pProxy) {
+    proxyObj = new CObjectProxy();
+    if (!proxyObj) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Create proxy object: out of memory.\n"));
         return E_OUT_OF_MEMORY;
     }
 
-    pProxy->m_sNetAddress = address;
+    proxyObj->mNetAddress = address;
 
-    ec = LookupClassInfo(rclsid, &(pProxy->m_pInfo));
+    ECode ec = LookupClassInfo(rclsid, &(proxyObj->mInfo));
     if (FAILED(ec)) {
-        ec = GetRemoteClassInfo(pProxy->m_sNetAddress,
+        ec = GetRemoteClassInfo(proxyObj->mNetAddress,
                                 rclsid,
-                                &pProxy->m_pInfo);
+                                &proxyObj->mInfo);
         if (FAILED(ec)) goto ErrorExit;
     }
 
-    pProxy->m_cInterfaces = ((CIClassInfo*)(pProxy->m_pInfo))->interfaceNum;
-    pInterfaces = new CInterfaceProxy[pProxy->m_cInterfaces];
-    if (!pInterfaces) {
+    proxyObj->mInterfaceNum = ((CIClassInfo*)(proxyObj->mInfo))->interfaceNum;
+    interfaces = new CInterfaceProxy[proxyObj->mInterfaceNum];
+    if (!interfaces) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Create proxy interfaces: out of memory.\n"));
         ec = E_OUT_OF_MEMORY;
         goto ErrorExit;
     }
-    pProxy->m_pInterfaces = pInterfaces;
-    memset(pInterfaces, 0, sizeof(CInterfaceProxy) * pProxy->m_cInterfaces);
-    for (n = 0; n < pProxy->m_cInterfaces; n++) {
-        pInterfaces[n].mIndex = n;
-        pInterfaces[n].m_pOwner = pProxy;
-        CIInterfaceInfo *pInterfaceInfo =
+    proxyObj->mInterfaces = interfaces;
+    memset(interfaces, 0, sizeof(CInterfaceProxy) * proxyObj->mInterfaceNum);
+    for (n = 0; n < proxyObj->mInterfaceNum; n++) {
+        interfaces[n].mIndex = n;
+        interfaces[n].mOwner = proxyObj;
+        CIInterfaceInfo* interfaceInfo =
             (CIInterfaceInfo *)GetUnalignedPtr(
-                    pProxy->m_pInfo->interfaces + n);
-        pInterfaces[n].m_pInfo = pInterfaceInfo;
-        pInterfaces[n].m_pvVptr = g_marshalVtbl;
+                    proxyObj->mInfo->interfaces + n);
+        interfaces[n].mInfo = interfaceInfo;
+        interfaces[n].mVTPtr = g_marshalVtbl;
 
 #ifdef _x86
-        pInterfaces[n].m_pvProxyEntry = (PVoid)&CInterfaceProxy::ProxyEntry_RPC;
+        interfaces[n].mProxyEntry = (PVoid)&CInterfaceProxy::ProxyEntry_RPC;
 #elif defined(_arm)
-        pInterfaces[n].m_pvProxyEntry = (PVoid)&__ProxyEntry_RPC;
+        interfaces[n].mProxyEntry = (PVoid)&__ProxyEntry_RPC;
 #elif defined(_mips)
-        pInterfaces[n].m_pvProxyEntry = (PVoid)&ProxyContinue;
+        interfaces[n].mProxyEntry = (PVoid)&ProxyContinue;
 #else
 #error unknown architecture
 #endif
     }
 
-    ec = RegisterImportObject(pProxy->m_sNetAddress, (IProxy*)pProxy);
+    ec = RegisterImportObject(proxyObj->mNetAddress, (IProxy*)proxyObj);
     if (FAILED(ec)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create proxy: register import object failed, ec(%x)\n",
@@ -1317,12 +1299,12 @@ ECode CObjectProxy::S_CreateObject(
         goto ErrorExit;
     }
 
-    *ppIProxy = (IProxy*)pProxy;
+    *proxy = (IProxy*)proxyObj;
 
     return NOERROR;
 
 ErrorExit:
-    delete pProxy;
+    delete proxyObj;
     return ec;
 }
 

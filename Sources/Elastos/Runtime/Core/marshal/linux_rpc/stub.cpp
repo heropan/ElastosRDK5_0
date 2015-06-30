@@ -63,7 +63,7 @@
     ASM("ldr    "#reg", %0;"            \
         : :"m"(v))
 
-#define STUB_INVOKE_METHOD1(ec, puArgs, addr) \
+#define STUB_INVOKE_METHOD1(ec, args, addr) \
     ASM("mov    lr, %1;"                \
         "ldr    r0, [lr];"              \
         "ldr    r1, [lr, #4];"          \
@@ -73,9 +73,9 @@
         "ldr    pc, %2;"                \
         "__StubInvokeNext1:"            \
         "str    r0, %0;"                \
-        :"=m"(ec) :"r"(puArgs), "m"(addr))
+        :"=m"(ec) :"r"(args), "m"(addr))
 
-#define STUB_INVOKE_METHOD2(ec, puArgs, addr) \
+#define STUB_INVOKE_METHOD2(ec, args, addr) \
     ASM("mov    lr, %1;"                \
         "ldr    r0, [lr];"              \
         "ldr    r1, [lr, #4];"          \
@@ -86,7 +86,7 @@
         "ldr    pc, %2;"                \
         "__StubInvokeNext2:"            \
         "str    r0, %0;"                \
-        :"=m"(ec) :"r"(puArgs), "m"(addr))
+        :"=m"(ec) :"r"(args), "m"(addr))
 
 #elif defined(_mips)
 
@@ -106,7 +106,7 @@
 #define SET_REG(reg, v)                 \
     ASM("move "#reg", %0;", v)
 
-#define STUB_INVOKE_METHOD(ec, puArgs, addr)    \
+#define STUB_INVOKE_METHOD(ec, args, addr)    \
     ASM(                                        \
         "addiu  sp, sp, -0x20;"                 \
         "sw     s0, 0x10(sp);"                  \
@@ -127,7 +127,7 @@
         "lw     s1, 0x14(sp);"                  \
         "lw     s2, 0x18(sp);"                  \
         "addiu  sp, sp, 0x20;"                  \
-        , &ec, puArgs, addr)
+        , &ec, args, addr)
 #else
 #error unknown architecture
 #endif
@@ -158,62 +158,55 @@
 
 ECode LookupModuleInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIModuleInfo **ppModuleInfo);
+    /* [out] */ CIModuleInfo** moduleInfo);
 
 ECode LookupClassInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIClassInfo **ppClassInfo);
+    /* [out] */ CIClassInfo** classInfo);
 
 ECode AcquireClassInfo(
-    /* [in] */ const ClassID & classId,
-    /* [out] */ CIClassInfo **ppClassInfo);
+    /* [in] */ const ClassID& classId,
+    /* [out] */ CIClassInfo** classInfo);
 
 void FlatModuleInfo(
-    /* [in] */ CIModuleInfo *pSrcModInfo,
-    /* [out] */ CIModuleInfo *pDestModInfo);
+    /* [in] */ CIModuleInfo* srcModInfo,
+    /* [out] */ CIModuleInfo* destModInfo);
 
-void *GetUnalignedPtr(void *pPtr);
+void *GetUnalignedPtr(void* ptr);
 
 namespace Elastos {
 namespace RPC {
 
 ECode CInterfaceStub::UnmarshalIn(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ CRemoteParcel *pParcel,
-    /* [in, out] */ MarshalHeader *pOutHeader,
-    /* [in, out] */ UInt32 *puArgs)
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ CRemoteParcel* parcel,
+    /* [in, out] */ MarshalHeader* outHeader,
+    /* [in, out] */ UInt32* args)
 {
     return Stub_ProcessUnmsh_In(
-            pMethodInfo,
-            (IParcel*)pParcel,
-            (UInt32 *)pOutHeader,
-            puArgs);
+            methodInfo, (IParcel*)parcel, (UInt32 *)outHeader, args);
 }
 
 ECode CInterfaceStub::MarshalOut(
-    /* [in] */ UInt32 *puArgs,
-    /* [in] */ MarshalHeader *pInHeader,
-    /* [out] */ MarshalHeader *pOutHeader,
-    /* [in] */ Boolean bOnlyReleaseIn,
-    /* [in, out] */ CRemoteParcel* pParcel)
+    /* [in] */ UInt32* args,
+    /* [in] */ MarshalHeader* inHeader,
+    /* [out] */ MarshalHeader* outHeader,
+    /* [in] */ Boolean onlyReleaseIn,
+    /* [in, out] */ CRemoteParcel* parcel)
 {
 //    MarshalHeader *pHeader;
-    ECode ec;
 
-    ec = Stub_ProcessMsh_Out(
-            &(m_pInfo->methods[pInHeader->mMethodIndex - 4]),
-            puArgs,
-            (UInt32 *)pOutHeader,
-            bOnlyReleaseIn,
-            (IParcel*)pParcel);
+    ECode ec = Stub_ProcessMsh_Out(
+            &(mInfo->methods[inHeader->mMethodIndex - 4]),
+            args, (UInt32 *)outHeader, onlyReleaseIn, (IParcel*)parcel);
 
-    if (pParcel && SUCCEEDED(ec)) {
+    if (parcel && SUCCEEDED(ec)) {
         // TODO:
-//        pHeader = pParcel->GetMarshalHeader();
+//        pHeader = parcel->GetMarshalHeader();
 //        assert(pHeader != NULL);
-//        pHeader->mMagic = pInHeader->mMagic;
-//        pHeader->mInterfaceIndex = pInHeader->mInterfaceIndex ;
-//        pHeader->mMethodIndex = pInHeader->mMethodIndex;
+//        pHeader->mMagic = inHeader->mMagic;
+//        pHeader->mInterfaceIndex = inHeader->mInterfaceIndex ;
+//        pHeader->mMethodIndex = inHeader->mMethodIndex;
     }
 
     return ec;
@@ -223,25 +216,25 @@ ECode CInterfaceStub::MarshalOut(
 // pthread_mutex_t CObjectStub::s_bEPoolStartedMutex = PTHREAD_MUTEX_INITIALIZER;
 
 CObjectStub::CObjectStub()
-    : m_pInterfaces(NULL)
-    , m_bRequestToQuit(FALSE)
-    , m_cSocketfd(-1)
-    , m_cConnfd(-1)
+    : mInterfaces(NULL)
+    , mRequestToQuit(FALSE)
+    , mSocketfd(-1)
+    , mConnfd(-1)
 {
 }
 
 CObjectStub::~CObjectStub()
 {
-    if (m_pInterfaces) {
-        delete [] m_pInterfaces;
+    if (mInterfaces) {
+        delete [] mInterfaces;
     }
-    if (m_cConnfd != -1) {
-        Looper::GetLooper()->RemoveFd(m_cConnfd);
-        close(m_cConnfd);
+    if (mConnfd != -1) {
+        Looper::GetLooper()->RemoveFd(mConnfd);
+        close(mConnfd);
     }
-    if (m_cSocketfd != -1) {
-        Looper::GetLooper()->RemoveFd(m_cSocketfd);
-        close(m_cSocketfd);
+    if (mSocketfd != -1) {
+        Looper::GetLooper()->RemoveFd(mSocketfd);
+        close(mSocketfd);
     }
 }
 
@@ -254,12 +247,12 @@ PInterface CObjectStub::Probe(
         return (IInterface*)(IStub*)this;
     }
 
-    for (n = 0; n < m_cInterfaces; n++) {
-        if (riid == m_pInterfaces[n].m_pInfo->iid) {
+    for (n = 0; n < mInterfaceNum; n++) {
+        if (riid == mInterfaces[n].mInfo->iid) {
             break;
         }
     }
-    if (n == m_cInterfaces) {
+    if (n == mInterfaceNum) {
         MARSHAL_DBGOUT(MSHDBG_WARNING, printf(
                 "Stub: Probe failed, iid: "));
         MARSHAL_DBGOUT(MSHDBG_WARNING, DUMP_GUID(riid));
@@ -267,7 +260,7 @@ PInterface CObjectStub::Probe(
         return NULL;
     }
 
-    return m_pInterfaces[n].mObject;
+    return mInterfaces[n].mObject;
 }
 
 UInt32 CObjectStub::AddRef(void)
@@ -294,8 +287,8 @@ UInt32 CObjectStub::Release(void)
 }
 
 ECode CObjectStub::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -310,14 +303,14 @@ ECode CObjectStub::Invoke(
     /* [in] */ CRemoteParcel* data,
     /* [out] */ CRemoteParcel* reply)
 {
-    MarshalHeader *pInHeader = NULL, *pOutHeader = NULL;
-    UInt32 *puArgs, uMethodAddr, uMethodIndex;
+    MarshalHeader *inHeader = NULL, *outHeader = NULL;
+    UInt32 *args, uMethodAddr, uMethodIndex;
     ECode ec, orgec = NOERROR;
-    CInterfaceStub *pCurInterface;
-    const CIMethodInfo *pMethodInfo;
-    CRemoteParcel *pParcel = NULL;
-    CRemoteParcel* pReplyParcel = NULL;
-    UInt32 uInSize;
+    CInterfaceStub* curInterface;
+    const CIMethodInfo* methodInfo;
+    CRemoteParcel* parcel = NULL;
+    CRemoteParcel* replyParcel = NULL;
+    UInt32 inSize;
 #ifdef _x86
     UInt32 uEAX, uEDX, uECX, uESP;
 #elif defined(_arm)
@@ -341,58 +334,58 @@ ECode CObjectStub::Invoke(
 #else
 #error unknown architecture
 #endif
-    Boolean bOnlyReleaseIn = FALSE;
+    Boolean onlyReleaseIn = FALSE;
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
             printf("Stub: in Invoke.\n"));
 
-    pInHeader = (MarshalHeader*)data->ReadInplace(sizeof(*pInHeader));
-    if (pInHeader == NULL) {
+    inHeader = (MarshalHeader*)data->ReadInplace(sizeof(*inHeader));
+    if (inHeader == NULL) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Stub error: read MarshalHeader failed.\n"));
         goto ErrorExit;
     }
-    if (pInHeader->mMagic != MARSHAL_MAGIC) {
+    if (inHeader->mMagic != MARSHAL_MAGIC) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
-                printf("Stub: invalid magic - %x\n", pInHeader->mMagic));
+                printf("Stub: invalid magic - %x\n", inHeader->mMagic));
         goto ErrorExit;
     }
 
 #if defined(_DEBUG)
-    if (pInHeader->mInSize < sizeof(MarshalHeader)) {
+    if (inHeader->mInSize < sizeof(MarshalHeader)) {
         goto ErrorExit;
     }
-    if (pInHeader->mInterfaceIndex >= m_cInterfaces) {
+    if (inHeader->mInterfaceIndex >= mInterfaceNum) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
                 printf("Stub: interface index error - %d:%d\n",
-                pInHeader->mInterfaceIndex, m_cInterfaces));
+                inHeader->mInterfaceIndex, mInterfaceNum));
         goto ErrorExit;
     }
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
             printf("Stub: interface idx(%d), method idx(%d)\n",
-            pInHeader->mInterfaceIndex, pInHeader->mMethodIndex));
+            inHeader->mInterfaceIndex, inHeader->mMethodIndex));
 #endif
 
-    if (pInHeader->mMethodIndex >= 4) {
-        pCurInterface = &(m_pInterfaces[pInHeader->mInterfaceIndex]);
+    if (inHeader->mMethodIndex >= 4) {
+        curInterface = &(mInterfaces[inHeader->mInterfaceIndex]);
 
         // Uncomment the follow line to enable IPC invoke log.
-        // PrintIpcLog(pInHeader);
-        uMethodIndex = pInHeader->mMethodIndex - 4;
-        if (uMethodIndex >= pCurInterface->m_pInfo->methodNumMinus4) {
+        // PrintIpcLog(inHeader);
+        uMethodIndex = inHeader->mMethodIndex - 4;
+        if (uMethodIndex >= curInterface->mInfo->methodNumMinus4) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub: method index out of range - %d:%d\n",
                     uMethodIndex,
-                    pCurInterface->m_pInfo->methodNumMinus4));
+                    curInterface->mInfo->methodNumMinus4));
             goto ErrorExit;
         }
 
         uMethodAddr =
-                pCurInterface->m_pInterface->m_vPtr->m_vTable[uMethodIndex + 4];
+                curInterface->mInterface->mVPtr->mVTable[uMethodIndex + 4];
 
-        if (0 != pInHeader->mOutSize) {
-            pOutHeader = (MarshalHeader *)alloca(pInHeader->mOutSize);
-            if (!pOutHeader) {
+        if (0 != inHeader->mOutSize) {
+            outHeader = (MarshalHeader *)alloca(inHeader->mOutSize);
+            if (!outHeader) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR,
                         printf("Stub error: alloca() failed.\n"));
                 ec = E_OUT_OF_MEMORY;
@@ -400,69 +393,69 @@ ECode CObjectStub::Invoke(
             }
         }
 
-        pMethodInfo = &((pCurInterface->m_pInfo)->methods[uMethodIndex]);
-        uInSize = GET_LENGTH(pMethodInfo->reserved1) * 4 + 4;
+        methodInfo = &((curInterface->mInfo)->methods[uMethodIndex]);
+        inSize = GET_LENGTH(methodInfo->reserved1) * 4 + 4;
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                printf("Stub: method args stack size (%d)\n", uInSize));
-        puArgs = (UInt32 *)alloca(uInSize);
-        if (!puArgs) {
+                printf("Stub: method args stack size (%d)\n", inSize));
+        args = (UInt32 *)alloca(inSize);
+        if (!args) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: alloca() failed.\n"));
             ec = E_OUT_OF_MEMORY;
             goto ErrorExit;
         }
 #ifdef _x86
-        GET_REG(ESP, puArgs);
+        GET_REG(ESP, args);
 #endif
 
-        pParcel = data;
-        if (!pParcel) {
+        parcel = data;
+        if (!parcel) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: new CRemoteParcel failed.\n"));
             ec = E_OUT_OF_MEMORY;
             goto ErrorExit;
         }
-        ec = pCurInterface->UnmarshalIn(pMethodInfo,
-                                        pParcel,
-                                        pOutHeader,
-                                        puArgs + 1);
+        ec = curInterface->UnmarshalIn(methodInfo,
+                                        parcel,
+                                        outHeader,
+                                        args + 1);
         if (FAILED(ec)) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: UnmarshalIn() failed.\n"));
             goto ErrorExit;
         }
 
-        *puArgs = (UInt32)pCurInterface->mObject; // fill this
+        *args = (UInt32)curInterface->mObject; // fill this
 
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 printf("Stub: invoke method - args(%x), addr(%x) \n",
-                (UInt32)puArgs, (UInt32)uMethodAddr));
+                (UInt32)args, (UInt32)uMethodAddr));
 
 #ifdef _x86
         GET_REG(EAX, uEAX);
         GET_REG(EDX, uEDX);
         GET_REG(ECX, uECX);
         GET_REG(ESP, uESP);
-        assert(uESP == (UInt32)puArgs);
+        assert(uESP == (UInt32)args);
         // NOTE: we should promise STUB_INVOKE_METHOD just occures
         // in use space , if it used in kernel mode , the return
         // args in stack have the possibilty for being modified
         //
-        STUB_INVOKE_METHOD(ec, puArgs, uMethodAddr);
+        STUB_INVOKE_METHOD(ec, args, uMethodAddr);
         SET_REG(ECX, uECX);
         SET_REG(EDX, uEDX);
         SET_REG(EAX, uEAX);
 #elif defined(_arm)
 
 #if defined(_GNUC)
-        if (sizeof(UInt32) * 4 >= uInSize) {
+        if (sizeof(UInt32) * 4 >= inSize) {
             GET_REG(r0, r0);
             GET_REG(r1, r1);
             GET_REG(r2, r2);
             GET_REG(r3, r3);
             GET_REG(ip, ip);
             GET_REG(lr, lr);
-            STUB_INVOKE_METHOD1(ec, puArgs, uMethodAddr);
+            STUB_INVOKE_METHOD1(ec, args, uMethodAddr);
             SET_REG(lr, lr);
             SET_REG(ip, ip);
             SET_REG(r3, r3);
@@ -471,7 +464,7 @@ ECode CObjectStub::Invoke(
             SET_REG(r0, r0);
         }
         else {
-            argbuf = *(ArgumentBuffer *)puArgs;
+            argbuf = *(ArgumentBuffer *)args;
             GET_REG(r0, r0);
             GET_REG(r1, r1);
             GET_REG(r2, r2);
@@ -479,7 +472,7 @@ ECode CObjectStub::Invoke(
             GET_REG(ip, ip);
             GET_REG(lr, lr);
             GET_REG(sp, sp);
-            STUB_INVOKE_METHOD2(ec, puArgs, uMethodAddr);
+            STUB_INVOKE_METHOD2(ec, args, uMethodAddr);
             SET_REG(sp, sp);
             SET_REG(lr, lr);
             SET_REG(ip, ip);
@@ -487,7 +480,7 @@ ECode CObjectStub::Invoke(
             SET_REG(r2, r2);
             SET_REG(r1, r1);
             SET_REG(r0, r0);
-            *(ArgumentBuffer *)puArgs = argbuf;
+            *(ArgumentBuffer *)args = argbuf;
         }
 #else
 
@@ -513,7 +506,7 @@ ECode CObjectStub::Invoke(
         GET_REG($24, uT8);
         GET_REG($25, uT9);
         GET_REG($29, uSp);
-        STUB_INVOKE_METHOD(ec, puArgs, uMethodAddr);
+        STUB_INVOKE_METHOD(ec, args, uMethodAddr);
         SET_REG($29, uSp);
         SET_REG($2, uV0);
         SET_REG($3, uV1);
@@ -535,24 +528,24 @@ ECode CObjectStub::Invoke(
 #error unknown architecture
 #endif
 
-        if (FAILED(ec) && GET_IN_INTERFACE_MARK(pMethodInfo->reserved1)) {
-            bOnlyReleaseIn = TRUE;
+        if (FAILED(ec) && GET_IN_INTERFACE_MARK(methodInfo->reserved1)) {
+            onlyReleaseIn = TRUE;
         }
 
         reply->WriteInt32((int32_t)ec);
-        // puArgs + 1 , skip this pointer
-        if ((pOutHeader && SUCCEEDED(ec))
-            || GET_IN_INTERFACE_MARK(pMethodInfo->reserved1)) {
+        // args + 1 , skip this pointer
+        if ((outHeader && SUCCEEDED(ec))
+            || GET_IN_INTERFACE_MARK(methodInfo->reserved1)) {
 
-            if (pOutHeader && SUCCEEDED(ec)) {
-                pReplyParcel = reply;
+            if (outHeader && SUCCEEDED(ec)) {
+                replyParcel = reply;
             }
 
-            orgec = pCurInterface->MarshalOut(puArgs + 1,
-                                              pInHeader,
-                                              pOutHeader,
-                                              bOnlyReleaseIn,
-                                              pReplyParcel);
+            orgec = curInterface->MarshalOut(args + 1,
+                                              inHeader,
+                                              outHeader,
+                                              onlyReleaseIn,
+                                              replyParcel);
 
             if (FAILED(orgec)) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
@@ -563,19 +556,19 @@ ECode CObjectStub::Invoke(
         }
     }
     else {
-        if (pInHeader->mMethodIndex == 0) {
+        if (inHeader->mMethodIndex == 0) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote Probe().\n"));
         }
-        else if (pInHeader->mMethodIndex == 1) {
+        else if (inHeader->mMethodIndex == 1) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote AddRef().\n"));
         }
-        else if (pInHeader->mMethodIndex == 2) {
+        else if (inHeader->mMethodIndex == 2) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote Release().\n"));
         }
-        else if (pInHeader->mMethodIndex == 3) {
+        else if (inHeader->mMethodIndex == 3) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub error: Remote GetInterfaceID().\n"));
         }
@@ -607,8 +600,8 @@ static void __DumpGUID(REIID riid)
 void CObjectStub::PrintIpcLog(
     /* [in] */ MarshalHeader* header)
 {
-    CInterfaceStub* pCurInterface = &(m_pInterfaces[header->mInterfaceIndex]);
-    InterfaceID temp = pCurInterface->m_pInfo->iid;
+    CInterfaceStub* curInterface = &(mInterfaces[header->mInterfaceIndex]);
+    InterfaceID temp = curInterface->mInfo->iid;
     __DumpGUID(temp);
     PFL_EX("Interface Index = %d", header->mInterfaceIndex)
     PFL_EX("Method Index = %d", header->mMethodIndex)
@@ -617,35 +610,35 @@ void CObjectStub::PrintIpcLog(
 }
 
 ECode CObjectStub::GetClassID(
-    /* [out] */ EMuid *pClsid)
+    /* [out] */ EMuid* clsid)
 {
-    assert(pClsid != NULL);
+    assert(clsid != NULL);
 
-    *pClsid = ((CIClassInfo*)m_pInfo)->clsid;
+    *clsid = ((CIClassInfo*)mInfo)->clsid;
     return NOERROR;
 }
 
 ECode CObjectStub::GetClassInfo(
-    /* [out] */ CIClassInfo **ppClassInfo)
+    /* [out] */ CIClassInfo** classInfo)
 {
-    assert(ppClassInfo != NULL);
+    assert(classInfo != NULL);
 
-    *ppClassInfo = m_pInfo;
+    *classInfo = mInfo;
     return NOERROR;
 }
 
 ECode CObjectStub::GetInterfaceIndex(
-    /* [in] */ IInterface *pObj,
-    /* [out] */ UInt32 *puIndex)
+    /* [in] */ IInterface* object,
+    /* [out] */ UInt32* index)
 {
-    for (UInt32 n = 0; n < (UInt32)m_cInterfaces; n++) {
-        if (m_pInterfaces[n].mObject == pObj) {
-            *puIndex = n;
+    for (UInt32 n = 0; n < (UInt32)mInterfaceNum; n++) {
+        if (mInterfaces[n].mObject == object) {
+            *index = n;
             return NOERROR;
         }
     }
     MARSHAL_DBGOUT(MSHDBG_WARNING, printf(
-        "Stub: InterfaceIndex failed - pObj(%x)\n", (UInt32)pObj));
+            "Stub: InterfaceIndex failed - object(%x)\n", (UInt32)object));
 
     return E_NO_INTERFACE;
 }
@@ -662,24 +655,24 @@ ECode CObjectStub::OnTransact(
     }
     else if (cmd.Equals("GET_CLASS_INFO")) {
         EMuid clsid;
-        CIModuleInfo *pSrcModInfo;
-        CIModuleInfo *pDestModInfo;
+        CIModuleInfo* srcModInfo;
+        CIModuleInfo* destModInfo;
         GetClassID(&clsid);
-        if (FAILED(LookupModuleInfo(clsid, &pSrcModInfo))) {
+        if (FAILED(LookupModuleInfo(clsid, &srcModInfo))) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Lookup module info fail.\n"));
             reply->WriteInt32((int32_t)E_FAIL);
             return NOERROR;
         }
 
-        pDestModInfo = (CIModuleInfo *)calloc(pSrcModInfo->totalSize, 1);
-        FlatModuleInfo(pSrcModInfo, pDestModInfo);
+        destModInfo = (CIModuleInfo *)calloc(srcModInfo->totalSize, 1);
+        FlatModuleInfo(srcModInfo, destModInfo);
 
         reply->WriteInt32((int32_t)NOERROR);
-        reply->WriteInt32(pDestModInfo->totalSize);
-        reply->Write((void*)pDestModInfo, pDestModInfo->totalSize);
+        reply->WriteInt32(destModInfo->totalSize);
+        reply->Write((void*)destModInfo, destModInfo->totalSize);
 
-        free(pDestModInfo);
+        free(destModInfo);
         return NOERROR;
     }
     else if (cmd.Equals("PING")) {
@@ -700,11 +693,11 @@ ECode CObjectStub::OnTransact(
 
 ECode CObjectStub::TransactRunnable::Run()
 {
-    CObjectStub* pStub = (CObjectStub*)mObject;
+    CObjectStub* stubObj = (CObjectStub*)mObject;
     String cmd;
     mData->ReadString(&cmd);
     AutoPtr<CRemoteParcel> reply = new CRemoteParcel(FALSE);
-    ECode ec = pStub->OnTransact(cmd, mData, reply);
+    ECode ec = stubObj->OnTransact(cmd, mData, reply);
     if (SUCCEEDED(ec)) {
         void* payload;
         reply->GetElementPayload((Handle32*)&payload);
@@ -794,22 +787,22 @@ Int32 CObjectStub::ListenCallback(
             CObjectStub::AcceptCallback,
             data);
 
-    ((CObjectStub*)data)->m_cConnfd = connfd;
+    ((CObjectStub*)data)->mConnfd = connfd;
     return 1;
 }
 
 ECode CObjectStub::S_CreateObject(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ IStub **ppIStub)
+    /* [in] */ IInterface* object,
+    /* [out] */ IStub** stub)
 {
-    CObjectStub *pStub;
-    CInterfaceStub *pInterfaces;
-    IInterface *pObj;
-    IObject *pObj1;
+    CObjectStub* stubObj;
+    CInterfaceStub* interfaces;
+    IInterface* tempObj;
+    IObject* iObj;
     ClassID clsid;
     InterfaceID iid;
     ECode ec = NOERROR;
-    CIClassInfo ** ppClassInfo = NULL;
+    CIClassInfo** classInfo = NULL;
     Int32 n;
     Int32 socketfd = -1;
     struct sockaddr_in name, realAddr;
@@ -819,26 +812,26 @@ ECode CObjectStub::S_CreateObject(
     socklen_t socklen;
     String netAddress;
 
-    if (!pObject || !ppIStub) {
+    if (!object || !stub) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppIStub = NULL;
+    *stub = NULL;
 
-    pStub = new CObjectStub();
-    if (!pStub) {
+    stubObj = new CObjectStub();
+    if (!stubObj) {
         return E_OUT_OF_MEMORY;
     }
 
-    pObj1 = (IObject*)pObject->Probe(EIID_IObject);
-    if (!pObj1) {
-        // DUMP_ITFID(pObject);
+    iObj = (IObject*)object->Probe(EIID_IObject);
+    if (!iObj) {
+        // DUMP_ITFID(object);
 	    MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: interface do not support EIID_IObject QI.\n"));
         goto ErrorExit;
     }
 
-    ec = pObj1->GetClassID(&clsid);
+    ec = iObj->GetClassID(&clsid);
     if (FAILED(ec)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: fail to get object's ClassID.\n"));
@@ -849,7 +842,7 @@ ECode CObjectStub::S_CreateObject(
             "QI class info ok. EMuid is:\n"));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_CLSID(clsid));
 
-    ec = pObject->GetInterfaceID(pObject, &iid);
+    ec = object->GetInterfaceID(object, &iid);
     if (FAILED(ec)) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: interface does not have InterfaceID.\n"));
@@ -859,9 +852,9 @@ ECode CObjectStub::S_CreateObject(
             "QI EIID info ok. EIID is:\n"));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(iid));
 
-    ec = LookupClassInfo(clsid.clsid, &(pStub->m_pInfo));
+    ec = LookupClassInfo(clsid.clsid, &(stubObj->mInfo));
     if (FAILED(ec)) {
-        ec = AcquireClassInfo(clsid, &(pStub->m_pInfo));
+        ec = AcquireClassInfo(clsid, &(stubObj->mInfo));
         if (FAILED(ec)) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Create Stub: get class info fail, the ec = 0x%08x\n", ec));
@@ -869,41 +862,41 @@ ECode CObjectStub::S_CreateObject(
         }
     }
 
-    ppClassInfo = &(pStub->m_pInfo);
+    classInfo = &(stubObj->mInfo);
 
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
             "Create stub: Get class info ok.\n"));
 
-    pInterfaces = new CInterfaceStub[(*ppClassInfo)->interfaceNum];
-    if (!pInterfaces) {
+    interfaces = new CInterfaceStub[(*classInfo)->interfaceNum];
+    if (!interfaces) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf("Create stub: out of memory.\n"));
         ec = E_OUT_OF_MEMORY;
         goto ErrorExit;
     }
-    pStub->m_cInterfaces = (*ppClassInfo)->interfaceNum;
-    pStub->m_pInterfaces = pInterfaces;
-    pObject->AddRef();
-    for (n = 0; n < (*ppClassInfo)->interfaceNum; n++) {
+    stubObj->mInterfaceNum = (*classInfo)->interfaceNum;
+    stubObj->mInterfaces = interfaces;
+    object->AddRef();
+    for (n = 0; n < (*classInfo)->interfaceNum; n++) {
         CIInterfaceInfo *pInterfaceInfo =
                 (CIInterfaceInfo *)GetUnalignedPtr(
-                        (*ppClassInfo)->interfaces + n);
-        pObj = pObject->Probe(pInterfaceInfo->iid);
-        if (!pObj) {
+                        (*classInfo)->interfaces + n);
+        tempObj = object->Probe(pInterfaceInfo->iid);
+        if (!tempObj) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Create stub: no such interface.\n"));
             ec = E_NO_INTERFACE;
-            pObject->Release();
+            object->Release();
             goto ErrorExit;
         }
-        pInterfaces[n].m_pInfo = pInterfaceInfo;
-        pInterfaces[n].mObject = pObj;
+        interfaces[n].mInfo = pInterfaceInfo;
+        interfaces[n].mObject = tempObj;
     }
 
     Looper::StartLooper();
 
     socketfd = socket(PF_INET, SOCK_STREAM, 0);
     if (socketfd < 0) {
-        pObject->Release();
+        object->Release();
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: create socket failed\n"));
         ec = E_FAIL;
@@ -914,7 +907,7 @@ ECode CObjectStub::S_CreateObject(
     name.sin_addr.s_addr = htonl(INADDR_ANY);
     name.sin_port = htons(0);
     if (bind(socketfd, (struct sockaddr*)&name, sizeof(name)) < 0) {
-        pObject->Release();
+        object->Release();
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: bind socket failed\n"));
         ec = E_FAIL;
@@ -922,7 +915,7 @@ ECode CObjectStub::S_CreateObject(
     }
 
     if (listen(socketfd, 10) == -1) {
-        pObject->Release();
+        object->Release();
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: listen socket failed\n"));
         ec = E_FAIL;
@@ -933,7 +926,7 @@ ECode CObjectStub::S_CreateObject(
     memset(&ifr_ip, 0, sizeof(ifr_ip));
     strncpy(ifr_ip.ifr_name, "eth0", sizeof(ifr_ip.ifr_name) - 1);
     if (ioctl(socketfd, SIOCGIFADDR, &ifr_ip) < 0) {
-        pObject->Release();
+        object->Release();
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: get ip address failed\n"));
         ec = E_FAIL;
@@ -944,17 +937,17 @@ ECode CObjectStub::S_CreateObject(
 
     socklen = sizeof(realAddr);
     if (getsockname(socketfd, (struct sockaddr*)&realAddr, &socklen) == -1) {
-        pObject->Release();
+        object->Release();
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: getsocketname failed\n"));
         ec = E_FAIL;
         goto ErrorExit;
     }
     netAddress.AppendFormat(":%d", ntohs(realAddr.sin_port));
-    pStub->m_sNetAddress = netAddress;
-    ec = RegisterExportObject(netAddress, pObject, pStub);
+    stubObj->mNetAddress = netAddress;
+    ec = RegisterExportObject(netAddress, object, stubObj);
     if (FAILED(ec)) {
-        pObject->Release();
+        object->Release();
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                 "Create stub: register export object failed, ec(%x)\n", ec));
         goto ErrorExit;
@@ -966,15 +959,15 @@ ECode CObjectStub::S_CreateObject(
             LOOPER_POLL_CALLBACK,
             LOOPER_EVENT_INPUT,
             CObjectStub::ListenCallback,
-            (void*)pStub);
+            (void*)stubObj);
 
-    pStub->m_cSocketfd = socketfd;
-    *ppIStub = (IStub *)pStub;
+    stubObj->mSocketfd = socketfd;
+    *stub = (IStub *)stubObj;
 
     return NOERROR;
 
 ErrorExit:
-    delete pStub;
+    delete stubObj;
     if (socketfd != -1) close(socketfd);
     return ec;
 }

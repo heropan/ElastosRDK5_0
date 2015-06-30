@@ -14,34 +14,34 @@ namespace Elastos {
 namespace RPC {
 
 extern ECode Proxy_ProcessMsh_BufferSize(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ UInt32 *puArgs,
-    /* [out] */ UInt32 *puInSize,
-    /* [out] */ UInt32 *puOutSize);
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ UInt32* args,
+    /* [out] */ UInt32* inSize,
+    /* [out] */ UInt32* outSize);
 
 extern ECode Proxy_ProcessMsh_In(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ UInt32 *puArgs,
-    /* [in, out] */ IParcel *pParcel);
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ UInt32* args,
+    /* [in, out] */ IParcel* parcel);
 
 extern ECode Proxy_ProcessUnmsh_Out(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ IParcel *pParcel,
-    /* [in] */ UInt32 uDataSize,
-    /* [in, out] */ UInt32 *puArgs);
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ IParcel* parcel,
+    /* [in] */ UInt32 dataSize,
+    /* [in, out] */ UInt32* args);
 
 extern ECode Stub_ProcessUnmsh_In(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ IParcel *pParcel,
-    /* [in, out] */ UInt32 *puOutBuffer,
-    /* [in, out] */ UInt32 *puArgs);
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ IParcel* parcel,
+    /* [in, out] */ UInt32* outBuffer,
+    /* [in, out] */ UInt32* args);
 
 extern ECode Stub_ProcessMsh_Out(
-    /* [in] */ const CIMethodInfo *pMethodInfo,
-    /* [in] */ UInt32 *puArgs,
-    /* [in] */ UInt32 *puOutBuffer,
-    /* [in] */ Boolean bOnlyReleaseIn,
-    /* [in, out] */ IParcel* pParcel);
+    /* [in] */ const CIMethodInfo* methodInfo,
+    /* [in] */ UInt32* args,
+    /* [in] */ UInt32* outBuffer,
+    /* [in] */ Boolean onlyReleaseIn,
+    /* [in, out] */ IParcel* parcel);
 
 class CObjectProxy;
 
@@ -49,55 +49,55 @@ class CInterfaceProxy
 {
 public:
     static CARAPI_(PInterface) S_Probe(
-            /* [in] */ CInterfaceProxy *pThis,
-            /* [in] */ REIID riid);
+        /* [in] */ CInterfaceProxy* thisPtr,
+        /* [in] */ REIID riid);
 
     static CARAPI_(UInt32) S_AddRef(
-            /* [in] */ CInterfaceProxy *pThis);
+        /* [in] */ CInterfaceProxy* thisPtr);
 
     static CARAPI_(UInt32) S_Release(
-            /* [in] */ CInterfaceProxy *pThis);
+        /* [in] */ CInterfaceProxy* thisPtr);
 
     static CARAPI S_GetInterfaceID(
-            /* [in] */ CInterfaceProxy *pThis,
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        /* [in] */ CInterfaceProxy* thisPtr,
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI BufferSize(
-            /* [in] */ UInt32 uMethodIndex,
-            /* [in] */ UInt32 *puArgs,
-            /* [out] */ UInt32 *puInSize,
-            /* [out] */ UInt32 *puOutSize);
+        /* [in] */ UInt32 methodIndex,
+        /* [in] */ UInt32* args,
+        /* [out] */ UInt32* inSize,
+        /* [out] */ UInt32* outSize);
 
     CARAPI MarshalIn(
-            /* [in] */ UInt32 uMethodIndex,
-            /* [in] */ UInt32 *puArgs,
-            /* [in, out] */ CRemoteParcel *pParcel);
+        /* [in] */ UInt32 methodIndex,
+        /* [in] */ UInt32* args,
+        /* [in, out] */ CRemoteParcel* parcel);
 
     CARAPI UnmarshalOut(
-            /* [in] */ UInt32 uMethodIndex,
-            /* [out] */ CRemoteParcel *pParcel,
-            /* [in] */ UInt32 *puArgs);
+        /* [in] */ UInt32 methodIndex,
+        /* [out] */ CRemoteParcel* parcel,
+        /* [in] */ UInt32* args);
 
     inline CARAPI_(UInt32) CountMethodArgs(
-            /* [in] */ UInt32 uMethodIndex);
+        /* [in] */ UInt32 methodIndex);
 
     CARAPI_(Boolean) MethodHasOutArgs(
-            /* [in] */ UInt32 uMethodIndex);
+        /* [in] */ UInt32 methodIndex);
 
     inline CARAPI_(Boolean) IsMethodOneway(
-            /* [in] */ UInt32 uMethodIndex);
+        /* [in] */ UInt32 methodIndex);
 
     static CARAPI ProxyEntry_RPC(
-            /* [in] */ UInt32 *puArgs);
+        /* [in] */ UInt32* args);
 
 public:
-    PVoid                   m_pvVptr;       // must be first member
-    PVoid                   m_pvProxyEntry; // must be m_pvVptr's next member
+    PVoid                   mVTPtr;       // must be first member
+    PVoid                   mProxyEntry; // must be mVTPtr's next member
 
     UInt32                  mIndex;       // interface index in object
-    CObjectProxy        *m_pOwner;
-    const CIInterfaceInfo   *m_pInfo;
+    CObjectProxy*           mOwner;
+    const CIInterfaceInfo*  mInfo;
 };
 
 class CarDeathRecipient;
@@ -138,8 +138,8 @@ public:
         /* [in] */ CObjectProxy* proxy);
 
 public:
-    android::List< AutoPtr<CarDeathRecipient> > m_List;
-    android::Mutex m_Lock;
+    android::List< AutoPtr<CarDeathRecipient> > mDeathRecipients;
+    android::Mutex mLock;
 };
 
 class CarDeathRecipient : public ElLightRefBase
@@ -163,7 +163,7 @@ public:
 
 private:
     IProxyDeathRecipient* mObject;
-    AutoPtr<IWeakReference> m_List;  //DeathRecipientList
+    AutoPtr<IWeakReference> mDeathRecipients;  //DeathRecipientList
 };
 
 class CObjectProxy : public IProxy
@@ -191,109 +191,108 @@ public:
     CARAPI_(PInterface) Probe(
             /* [in] */ REIID riid);
 
-    CARAPI_(UInt32) AddRef(void);
+    CARAPI_(UInt32) AddRef();
 
-    CARAPI_(UInt32) Release(void);
+    CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetInterface(
-            /* [in] */ UInt32 uIndex,
-            /* [out] */ IInterface **ppObj);
+        /* [in] */ UInt32 index,
+        /* [out] */ IInterface** object);
 
     CARAPI GetInterfaceIndex(
-             /* [in] */ IInterface *pObj,
-             /* [out] */UInt32* pIndex);
+        /* [in] */ IInterface* object,
+        /* [out] */ UInt32* index);
 
     CARAPI GetClassID(
-            /* [out] */ EMuid *pClsid);
+        /* [out] */ EMuid* clsid);
 
     CARAPI GetClassInfo(
-            /* [out] */ CIClassInfo **ppInfo);
+        /* [out] */ CIClassInfo** classInfo);
 
     CARAPI IsStubAlive(
-            /* [out] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI LinkToDeath(
-            /* [in] */ IProxyDeathRecipient* recipient,
-            /* [in] */ Int32 flags);
+        /* [in] */ IProxyDeathRecipient* recipient,
+        /* [in] */ Int32 flags);
 
     CARAPI UnlinkToDeath(
-            /* [in] */ IProxyDeathRecipient* recipient,
-            /* [in] */ Int32 flags,
-            /* [out] */ Boolean* result);
+        /* [in] */ IProxyDeathRecipient* recipient,
+        /* [in] */ Int32 flags,
+        /* [out] */ Boolean* result);
 
     CARAPI StubDied();
 
     static CARAPI S_CreateObject(
-            /* [in] */ REMuid rclsid,
-            /* [in] */ const String& address,
-            /* [out] */ IProxy **ppIProxy);
+        /* [in] */ REMuid rclsid,
+        /* [in] */ const String& address,
+        /* [out] */ IProxy** proxy);
 
 public:
-    String              m_sNetAddress;
-    Int32               m_cSocketfd;
-    AutoPtr<DeathRecipientList> m_pOrgue;
-    CIClassInfo         *m_pInfo;
-    Int32               m_cInterfaces;
-    CInterfaceProxy *m_pInterfaces; // sizeis(m_cInterfaces)
-    ICallbackConnector  *m_pICallbackConnector;
-    AutoPtr<PingRunnable> m_pPingTask;
-    Boolean             m_bStubDied;
-    android::Mutex      m_Lock;
-
-    Int32               m_cRef;
+    String              mNetAddress;
+    Int32               mSocketfd;
+    AutoPtr<DeathRecipientList> mOrgue;
+    CIClassInfo*        mInfo;
+    Int32               mInterfaceNum;
+    CInterfaceProxy*    mInterfaces; // sizeis(mInterfaceNum)
+    ICallbackConnector* mCallbackConnector;
+    AutoPtr<PingRunnable> mPingTask;
+    Boolean             mStubDied;
+    android::Mutex      mLock;
+    Int32               mRef;
 };
 
 typedef struct InterfaceStruct {
     struct {
-        UInt32 m_vTable[1];
-    } *m_vPtr;
+        UInt32 mVTable[1];
+    } *mVPtr;
 }   InterfaceStruct;
 
 class CInterfaceStub
 {
 public:
     CARAPI UnmarshalIn(
-            /* [in] */ const CIMethodInfo *pMethodInfo,
-            /* [in] */ CRemoteParcel *pParcel,
-            /* [in, out] */ MarshalHeader *pOutHeader,
-            /* [in, out] */ UInt32 *puArgs);
+        /* [in] */ const CIMethodInfo* methodInfo,
+        /* [in] */ CRemoteParcel* parcel,
+        /* [in, out] */ MarshalHeader* outHeader,
+        /* [in, out] */ UInt32* args);
 
     CARAPI MarshalOut(
-            /* [in] */ UInt32 *puArgs,
-            /* [in] */ MarshalHeader *pInHeader,
-            /* [out] */ MarshalHeader *pOutHeader,
-            /* [in] */ Boolean bOnlyReleaseIn,
-            /* [in, out] */ CRemoteParcel *pParcel);
+        /* [in] */ UInt32* args,
+        /* [in] */ MarshalHeader* inHeader,
+        /* [out] */ MarshalHeader* outHeader,
+        /* [in] */ Boolean onlyReleaseIn,
+        /* [in, out] */ CRemoteParcel* parcel);
 
 public:
     union
     {
-        IInterface          *mObject;
-        InterfaceStruct     *m_pInterface;
+        IInterface*         mObject;
+        InterfaceStruct*    mInterface;
     };
 
-    const CIInterfaceInfo   *m_pInfo;
+    const CIInterfaceInfo*  mInfo;
 };
 
 interface IStub : public IInterface
 {
     virtual CARAPI Invoke(
-            /* [in] */ CRemoteParcel* data,
-            /* [out] */ CRemoteParcel* reply) = 0;
+        /* [in] */ CRemoteParcel* data,
+        /* [out] */ CRemoteParcel* reply) = 0;
 
     virtual CARAPI GetClassID(
-            /* [out] */ EMuid *pClsid) = 0;
+        /* [out] */ EMuid* clsid) = 0;
 
     virtual CARAPI GetInterfaceIndex(
-            /* [in] */ IInterface *pObj,
-            /* [out] */ UInt32 *puIndex) = 0;
+        /* [in] */ IInterface* object,
+        /* [out] */ UInt32* index) = 0;
 
     virtual CARAPI GetClassInfo(
-            /* [out] */ CIClassInfo **ppClassInfo) = 0;
+        /* [out] */ CIClassInfo** classInfo) = 0;
 };
 
 class CObjectStub
@@ -337,33 +336,33 @@ public:
     CARAPI_(UInt32) Release(void);
 
     CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Invoke(
-            /* [in] */ CRemoteParcel* data,
-            /* [out] */ CRemoteParcel* reply);
+        /* [in] */ CRemoteParcel* data,
+        /* [out] */ CRemoteParcel* reply);
 
     CARAPI GetClassID(
-            /* [out] */ EMuid *pClsid);
+        /* [out] */ EMuid* clsid);
 
     CARAPI GetInterfaceIndex(
-            /* [in] */ IInterface *pObj,
-            /* [out] */ UInt32 *puIndex);
+        /* [in] */ IInterface* object,
+        /* [out] */ UInt32* index);
 
     CARAPI GetClassInfo(
-            /* [out] */ CIClassInfo **ppClassInfo);
+        /* [out] */ CIClassInfo** classInfo);
 
     static CARAPI S_CreateObject(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ IStub **ppIStub);
+        /* [in] */ IInterface* object,
+        /* [out] */ IStub** stub);
 
 private:
     CARAPI OnTransact(
-            /* [in] */ const String& code,
-            /* [in] */ CRemoteParcel* data,
-            /* [out] */ CRemoteParcel* reply,
-            /* [in] */ Int32 flags = 0);
+        /* [in] */ const String& code,
+        /* [in] */ CRemoteParcel* data,
+        /* [out] */ CRemoteParcel* reply,
+        /* [in] */ Int32 flags = 0);
 
     CARAPI_(void) PrintIpcLog(
         /* [in] */ MarshalHeader* header);
@@ -382,13 +381,13 @@ private:
         /* [in] */ void* data);
 
 public:
-    CIClassInfo         *m_pInfo;
-    Int32               m_cInterfaces;
-    CInterfaceStub      *m_pInterfaces; // size_is(m_cInterfaces)
-    Boolean             m_bRequestToQuit;
-    Int32               m_cSocketfd;
-    Int32               m_cConnfd;
-    String              m_sNetAddress;
+    CIClassInfo*        mInfo;
+    Int32               mInterfaceNum;
+    CInterfaceStub*     mInterfaces; // size_is(m_cInterfaces)
+    Boolean             mRequestToQuit;
+    Int32               mSocketfd;
+    Int32               mConnfd;
+    String              mNetAddress;
 };
 
 } // namespace RPC

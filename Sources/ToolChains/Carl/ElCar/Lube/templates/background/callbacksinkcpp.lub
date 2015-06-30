@@ -75,13 +75,13 @@ ECode _CCallbackSink_::_AcquireCallbackRendezvous(
 {
     assert(nEvent < _m_nMaxEvents);
 
-    PInterface pCallbackContext;
+    AutoPtr<IInterface> pCallbackContext;
     CallbackContextContainer *pContainer;
     CallbackContextNode *pCallbackNode;
     Boolean bNewAdded = FALSE;
     ECode ec;
 
-    ec = _Impl_CallbackSink_AcquireCallbackContext(&pCallbackContext);
+    ec = _Impl_CallbackSink_AcquireCallbackContext((IInterface**)&pCallbackContext);
     if (FAILED(ec)) return ec;
 
     {
@@ -119,7 +119,6 @@ Exit:
         EventHandler nullDelegate;
         _RemoveCallback(pCallbackContext, nEvent, nullDelegate);
     }
-    pCallbackContext->Release();
     return ec;
 }
 
@@ -200,7 +199,7 @@ ECode _CCallbackSink_::_PostCallbackEvent(
     EventHandler *_pDelegate_;
     ECode _ec_ = NOERROR;
     ECode _ecLast_ = NOERROR;
-    PCallbackEvent _pCallbackEvent_;
+    AutoPtr<CarCallbackEvent> _pCallbackEvent_;
     CallbackContextNode* _pContext_;
     Millisecond32 timeOut = 0;
 
@@ -225,8 +224,8 @@ ECode _CCallbackSink_::_PostCallbackEvent(
             _pvThis_ = _pDelegate_->GetThisPtr();
             _pvFunc_ = _pDelegate_->GetFuncPtr();
 
-            _pCallbackEvent_ = _Impl_CallbackSink_AllocCallbackEvent(sizeof(_EzCallbackEvent));
-            _pCallbackEvent_ = new(_pCallbackEvent_) _EzCallbackEvent(
+            _pCallbackEvent_ = _Impl_CallbackSink_AllocCallbackEvent(sizeof(CarCallbackEvent));
+            _pCallbackEvent_ = new(_pCallbackEvent_) CarCallbackEvent(
                     _EventId_, _cFlags_, _pServer_, _pDelegate_->m_pCarObjClient,
                     pCoalesceFunc, _pvThis_, _pvFunc_,
                     _pDelegate_->GetFuncType(), *_ppParams_);
@@ -256,7 +255,6 @@ ECode _CCallbackSink_::_PostCallbackEvent(
                 *_ppParams_ = newParcel;
             }
 
-            _pCallbackEvent_->Release();
             if (FAILED(_ec_)) _ecLast_ = _ec_;
         }
     }

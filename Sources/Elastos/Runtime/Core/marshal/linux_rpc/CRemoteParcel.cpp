@@ -9,7 +9,7 @@
 
 ECode LookupClassInfo(
     /* [in] */ REMuid rclsid,
-    /* [out] */ CIClassInfo **ppClassInfo);
+    /* [out] */ CIClassInfo** classInfo);
 
 template<bool> struct CompileTimeAssert;
 template<> struct CompileTimeAssert<true> {};
@@ -26,7 +26,7 @@ namespace RPC {
 ECode GetRemoteClassInfo(
     /* [in] */ const String& netAddress,
     /* [in] */ REMuid clsId,
-    /* [out] */ CIClassInfo ** ppClassInfo);
+    /* [out] */ CIClassInfo** classInfo);
 
 CRemoteParcel::CRemoteParcel(
     /* [in] */ Boolean writeMarshalHeader)
@@ -66,13 +66,13 @@ UInt32 CRemoteParcel::Release()
 }
 
 ECode CRemoteParcel::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
+    if (NULL == iid) return E_INVALID_ARGUMENT;
 
-    if (pObject == (IInterface *)(IParcel *)this) {
-        *pIID = EIID_IParcel;
+    if (object == (IInterface *)(IParcel *)this) {
+        *iid = EIID_IParcel;
     }
     else {
         return E_INVALID_ARGUMENT;
@@ -292,26 +292,26 @@ ECode CRemoteParcel::WriteString(
 }
 
 ECode CRemoteParcel::WriteStruct(
-    /* [in] */ Handle32 pValue,
+    /* [in] */ Handle32 value,
     /* [in] */ Int32 size)
 {
-    if (pValue == 0) {
+    if (value == 0) {
         return WriteInt32(MSH_NULL);
     }
 
     WriteInt32(MSH_NOT_NULL);
     WriteInt32(size);
-    return Write((void*)pValue, size);
+    return Write((void*)value, size);
 }
 
 ECode CRemoteParcel::WriteEMuid(
-    /* [in] */ const EMuid & id)
+    /* [in] */ const EMuid& id)
 {
     return Write((void*)&id, sizeof(EMuid));
 }
 
 ECode CRemoteParcel::WriteEGuid(
-    /* [in] */ const EGuid & id)
+    /* [in] */ const EGuid& id)
 {
     ECode ec = Write(&id, sizeof(EGuid));
     if (FAILED(ec)) return ec;
@@ -319,9 +319,9 @@ ECode CRemoteParcel::WriteEGuid(
 }
 
 ECode CRemoteParcel::WriteArrayOf(
-    /* [in] */ Handle32 pArray)
+    /* [in] */ Handle32 array)
 {
-    return WriteArrayOfInner((PCARQUINTET)pArray);
+    return WriteArrayOfInner((PCARQUINTET)array);
 }
 
 ECode CRemoteParcel::WriteArrayOfString(
@@ -333,13 +333,12 @@ ECode CRemoteParcel::WriteArrayOfString(
 
     Write((void*)array, sizeof(CarQuintet));
 
-    Int32 size = ((PCARQUINTET)array)->m_size
-                / sizeof(String);
-    String *pBuf = (String*)((PCARQUINTET)array)->m_pBuf;
+    Int32 size = ((PCARQUINTET)array)->m_size / sizeof(String);
+    String* strBuf = (String*)((PCARQUINTET)array)->m_pBuf;
     for (Int32 i = 0; i < size; i++) {
-        if (!pBuf[i].IsNull()) {
+        if (!strBuf[i].IsNull()) {
             WriteInt32(MSH_NOT_NULL);
-            WriteCStringInner(pBuf[i].string());
+            WriteCStringInner(strBuf[i].string());
         }
         else {  // null pointer
             WriteInt32(MSH_NULL);
@@ -349,29 +348,29 @@ ECode CRemoteParcel::WriteArrayOfString(
 }
 
 ECode CRemoteParcel::WriteArrayOfInner(
-    /* [in] */ PCARQUINTET pValue)
+    /* [in] */ PCARQUINTET value)
 {
-    if (pValue == NULL) {
+    if (value == NULL) {
         return WriteInt32(MSH_NULL);
     }
 
     WriteInt32(MSH_NOT_NULL);
-    Write((void*)pValue, sizeof(CarQuintet));
+    Write((void*)value, sizeof(CarQuintet));
 
     if (CarQuintetFlag_Type_IObject
-            != (((PCARQUINTET)pValue)->m_flags
+            != (((PCARQUINTET)value)->m_flags
                     & CarQuintetFlag_TypeMask)) {
         // copy the storaged data
         //
-        if (CarQuintetFlag_Type_String == (((PCARQUINTET)pValue)->m_flags
+        if (CarQuintetFlag_Type_String == (((PCARQUINTET)value)->m_flags
                 & CarQuintetFlag_TypeMask)) {
-            Int32 size = ((PCARQUINTET)pValue)->m_size / sizeof(String);
-            String* pBuf = (String*)((PCARQUINTET)pValue)->m_pBuf;
+            Int32 size = ((PCARQUINTET)value)->m_size / sizeof(String);
+            String* strBuf = (String*)((PCARQUINTET)value)->m_pBuf;
             for (Int32 i = 0; i < size; ++i) {
-                // ALOGD("i: %d, str: %s", i, pBuf[i].string());
-                if (!pBuf[i].IsNull()) {
+                // ALOGD("i: %d, str: %s", i, strBuf[i].string());
+                if (!strBuf[i].IsNull()) {
                     WriteInt32(MSH_NOT_NULL);
-                    WriteCStringInner(pBuf[i].string());
+                    WriteCStringInner(strBuf[i].string());
                 }
                 else {  // null pointer
                     WriteInt32(MSH_NULL);
@@ -379,35 +378,33 @@ ECode CRemoteParcel::WriteArrayOfInner(
             }
         }
         else {
-            Write(((PCARQUINTET)pValue)->m_pBuf,
-                    ((PCARQUINTET)pValue)->m_size);
+            Write(((PCARQUINTET)value)->m_pBuf,
+                    ((PCARQUINTET)value)->m_size);
         }
     }
     else {
-        Int32 size = ((PCARQUINTET)pValue)->m_size
-                    / sizeof(IInterface *);
-        Int32 *pBuf = (Int32*)((PCARQUINTET)pValue)->m_pBuf;
+        Int32 size = ((PCARQUINTET)value)->m_size
+                / sizeof(IInterface *);
+        IInterface** itfBuf = (IInterface**)((PCARQUINTET)value)->m_pBuf;
         for (Int32 i = 0; i < size; i++) {
-            if (pBuf[i]) {
+            if (itfBuf[i]) {
                 WriteInt32(MSH_NOT_NULL);
 
                 InterfacePack itfPack;
-                ECode ec = StdMarshalInterface(
-                        (IInterface *)pBuf[i],
-                        &itfPack);
+                ECode ec = StdMarshalInterface(itfBuf[i], &itfPack);
                 if (FAILED(ec)) {
                     MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                             "CRemoteParcel: marshal interface, ec = %x\n", ec));
                     return ec;
                 }
 
-                WriteString(itfPack.m_sNetAddress);
-                itfPack.m_sNetAddress = NULL;
+                WriteString(itfPack.mNetAddress);
+                itfPack.mNetAddress = NULL;
                 Write((void*)&itfPack, sizeof(itfPack));
 
-                IParcelable *pParcelable = \
-                        (IParcelable*)((IInterface*)pBuf[i])->Probe(EIID_IParcelable);
-                if (pParcelable != NULL) pParcelable->WriteToParcel(this);
+                IParcelable* parcelable = \
+                        (IParcelable*)itfBuf[i]->Probe(EIID_IParcelable);
+                if (parcelable != NULL) parcelable->WriteToParcel(this);
             }
             else {  // null pointer
                 WriteInt32(MSH_NULL);
@@ -418,23 +415,23 @@ ECode CRemoteParcel::WriteArrayOfInner(
 }
 
 ECode CRemoteParcel::WriteInterfacePtr(
-    /* [in] */ IInterface* pValue)
+    /* [in] */ IInterface* value)
 {
     Boolean enoughData = (mDataPos + sizeof(UInt32) + sizeof(InterfacePack)) <= mDataCapacity;
     Boolean enoughObjects = mObjectsSize < mObjectsCapacity;
     if (enoughData && enoughObjects) {
 restart_write:
-        *reinterpret_cast<Int32*>(mData + mDataPos) = pValue ? MSH_NOT_NULL : MSH_NULL;
+        *reinterpret_cast<Int32*>(mData + mDataPos) = value ? MSH_NOT_NULL : MSH_NULL;
         FinishWrite(sizeof(UInt32));
-        if (pValue) {
-            ECode ec = StdMarshalInterface(pValue,
+        if (value) {
+            ECode ec = StdMarshalInterface(value,
                     reinterpret_cast<InterfacePack*>(mData + mDataPos));
             if (FAILED(ec)) return ec;
 
             FinishWrite(sizeof(InterfacePack));
-            IParcelable *pParcelable = \
-                    (IParcelable*)((IInterface*)pValue)->Probe(EIID_IParcelable);
-            if (pParcelable != NULL) pParcelable->WriteToParcel(this);
+            IParcelable* parcelable = \
+                    (IParcelable*)((IInterface*)value)->Probe(EIID_IParcelable);
+            if (parcelable != NULL) parcelable->WriteToParcel(this);
         }
 
         mObjects[mObjectsSize] = mDataPos;
@@ -560,152 +557,152 @@ const char* CRemoteParcel::ReadCStringInner() const
 }
 
 ECode CRemoteParcel::ReadByte(
-    /* [out] */ Byte* pValue)
+    /* [out] */ Byte* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
     Int32 i;
     ECode ec = ReadInt32(&i);
-    *pValue = SUCCEEDED(ec) ? (Byte)i : 0;
+    *value = SUCCEEDED(ec) ? (Byte)i : 0;
     return ec;
 }
 
 ECode CRemoteParcel::ReadBoolean(
-    /* [out] */ Boolean* pValue)
+    /* [out] */ Boolean* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
     Int32 i;
     ECode ec = ReadInt32(&i);
-    *pValue = SUCCEEDED(ec) ? (i != 0 ? TRUE : FALSE) : FALSE;
+    *value = SUCCEEDED(ec) ? (i != 0 ? TRUE : FALSE) : FALSE;
     return ec;
 }
 
 ECode CRemoteParcel::ReadChar(
-    /* [out] */ Char32* pValue)
+    /* [out] */ Char32* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
     Int32 i;
     ECode ec = ReadInt32(&i);
-    *pValue = SUCCEEDED(ec) ? (Char32)i : 0;
+    *value = SUCCEEDED(ec) ? (Char32)i : 0;
     return ec;
 }
 
 ECode CRemoteParcel::ReadInt16(
-    /* [out] */ Int16 *pValue)
+    /* [out] */ Int16* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
     Int32 i;
     ECode ec = ReadInt32(&i);
-    *pValue = SUCCEEDED(ec) ? (Int16)i : 0;
+    *value = SUCCEEDED(ec) ? (Int16)i : 0;
     return ec;
 }
 
 ECode CRemoteParcel::ReadInt32(
-    /* [out] */ Int32 *pValue)
+    /* [out] */ Int32* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    ECode ec = ReadAligned(pValue);
+    ECode ec = ReadAligned(value);
     if (FAILED(ec)) return ec;
-    *pValue = ntohl(*pValue);
+    *value = ntohl(*value);
     return NOERROR;
 }
 
 ECode CRemoteParcel::ReadInt64(
-    /* [out] */ Int64 *pValue)
+    /* [out] */ Int64* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadAligned(pValue);
+    return ReadAligned(value);
 }
 
 ECode CRemoteParcel::ReadFloat(
-    /* [out] */ Float *pValue)
+    /* [out] */ Float* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadAligned(pValue);
+    return ReadAligned(value);
 }
 
 ECode CRemoteParcel::ReadDouble(
-    /* [out] */ Double *pValue)
+    /* [out] */ Double* value)
 {
-    if (pValue == NULL) return E_INVALID_ARGUMENT;
+    if (value == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadAligned(pValue);
+    return ReadAligned(value);
 }
 
 ECode CRemoteParcel::ReadString(
-    /* [out] */ String* pStr)
+    /* [out] */ String* str)
 {
-    if (pStr == NULL) return E_INVALID_ARGUMENT;
+    if (str == NULL) return E_INVALID_ARGUMENT;
 
     Int32 tag;
     ECode ec = ReadInt32(&tag);
     if (FAILED(ec) || tag == MSH_NULL) {
-        *pStr = NULL;
+        *str = NULL;
         return ec;
     }
 
     assert((UInt32)tag == MSH_NOT_NULL);
-    *pStr = ReadCStringInner();
+    *str = ReadCStringInner();
     return NOERROR;
 }
 
 ECode CRemoteParcel::ReadStruct(
-    /* [out] */ Handle32 *pAddress)
+    /* [out] */ Handle32* address)
 {
-    if (pAddress == NULL) return E_INVALID_ARGUMENT;
+    if (address == NULL) return E_INVALID_ARGUMENT;
 
     Int32 tag;
     ECode ec = ReadInt32(&tag);
     if (FAILED(ec) || tag == MSH_NULL) {
-        *pAddress = (Handle32)NULL;
+        *address = (Handle32)NULL;
         return ec;
     }
 
     assert((UInt32)tag == MSH_NOT_NULL);
     Int32 len;
     ReadInt32(&len);
-    return Read(pAddress, len);
+    return Read(address, len);
 }
 
 ECode CRemoteParcel::ReadEMuid(
-    /* [out] */ EMuid *pId)
+    /* [out] */ EMuid* id)
 {
-    if (pId == NULL) return E_INVALID_ARGUMENT;
+    if (id == NULL) return E_INVALID_ARGUMENT;
 
-    return Read((void*)pId, sizeof(EMuid));
+    return Read((void*)id, sizeof(EMuid));
 }
 
 ECode CRemoteParcel::ReadEGuid(
-    /* [out] */ EGuid *pId)
+    /* [out] */ EGuid* id)
 {
-    if (pId == NULL) return E_INVALID_ARGUMENT;
+    if (id == NULL) return E_INVALID_ARGUMENT;
 
-    ECode ec = Read((void*)pId, sizeof(EGuid));
+    ECode ec = Read((void*)id, sizeof(EGuid));
     if (FAILED(ec)) return ec;
     const char* str = ReadCStringInner();
-    pId->pUunm = (char*)malloc(strlen(str) + 1);
-    strcpy(pId->pUunm, str);
+    id->pUunm = (char*)malloc(strlen(str) + 1);
+    strcpy(id->pUunm, str);
     return NOERROR;
 }
 
 ECode CRemoteParcel::ReadArrayOf(
-    /* [out] */ Handle32 *ppArray)
+    /* [out] */ Handle32* array)
 {
-    if (ppArray == NULL) return E_INVALID_ARGUMENT;
+    if (array == NULL) return E_INVALID_ARGUMENT;
 
-    return ReadArrayOfInner((PCARQUINTET*)ppArray);
+    return ReadArrayOfInner((PCARQUINTET*)array);
 }
 
 ECode CRemoteParcel::ReadArrayOfString(
-    /* [out, callee] */ ArrayOf<String>** ppArray)
+    /* [out, callee] */ ArrayOf<String>** array)
 {
-    if (ppArray == NULL) return E_INVALID_ARGUMENT;
+    if (array == NULL) return E_INVALID_ARGUMENT;
 
     Int32 tag;
     ReadInt32(&tag);
@@ -722,14 +719,14 @@ ECode CRemoteParcel::ReadArrayOfString(
                 (*strArray)[i] = str;
             }
         }
-        *(ArrayOf<String>**)ppArray = strArray;
+        *(ArrayOf<String>**)array = strArray;
         strArray->AddRef();
     }
     return NOERROR;
 }
 
 ECode CRemoteParcel::ReadArrayOfInner(
-    /* [out] */ PCARQUINTET* pValue)
+    /* [out] */ PCARQUINTET* value)
 {
     Int32 tag;
     ReadInt32(&tag);
@@ -739,17 +736,17 @@ ECode CRemoteParcel::ReadArrayOfInner(
         Int32 size = q.m_size;
         PCarQuintet qq = _ArrayOf_Alloc(size, q.m_flags);
         if (qq == NULL) {
-            *pValue = NULL;
+            *value = NULL;
             return NOERROR;
         }
         _CarQuintet_AddRef(qq);
-        *pValue = qq;
+        *value = qq;
         if (size != 0) {
             if (CarQuintetFlag_Type_IObject
                 != (q.m_flags & CarQuintetFlag_TypeMask)) {
                 if (CarQuintetFlag_Type_String
                     == (q.m_flags & CarQuintetFlag_TypeMask)) {
-                    ArrayOf<String>* strArr = (ArrayOf<String>*)(*pValue);
+                    ArrayOf<String>* strArr = (ArrayOf<String>*)(*value);
                     for (Int32 i = 0; i < (Int32)(size / sizeof(String)); i++) {
                         ReadInt32(&tag);
                         if (tag != MSH_NULL) {
@@ -763,14 +760,14 @@ ECode CRemoteParcel::ReadArrayOfInner(
                 }
             }
             else {
-                IInterface** pBuf = (IInterface**)qq->m_pBuf;
+                IInterface** itfBuf = (IInterface**)qq->m_pBuf;
                 size = size / sizeof(IInterface *);
-                for (int i = 0; i < size; i++) {
+                for (Int32 i = 0; i < size; i++) {
                     ReadInt32(&tag);
                     if (tag != MSH_NULL) {
                         InterfacePack ipack;
-                        CIClassInfo *pClassInfo = NULL;
-                        IParcelable *pParcelable = NULL;
+                        CIClassInfo* classInfo = NULL;
+                        IParcelable* parcelable = NULL;
                         ClassID classId;
                         InterfaceID iid;
                         ECode ec;
@@ -778,24 +775,24 @@ ECode CRemoteParcel::ReadArrayOfInner(
                         String netAddress;
                         ReadString(&netAddress);
                         Read((void *)&ipack, sizeof(InterfacePack));
-                        ipack.m_sNetAddress = netAddress;
-                        if (IsParcelable(&ipack, &pClassInfo)) {
+                        ipack.mNetAddress = netAddress;
+                        if (IsParcelable(&ipack, &classInfo)) {
                             classId.clsid = ipack.mClsid;
-                            classId.pUunm = pClassInfo->pszUunm;
+                            classId.pUunm = classInfo->pszUunm;
 
                             ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
-                                    EIID_IParcelable, (IInterface**)&pParcelable);
+                                    EIID_IParcelable, (IInterface**)&parcelable);
                             if (FAILED(ec)) return ec;
 
-                            pParcelable->ReadFromParcel(this);
-                            iid = pClassInfo->interfaces[ipack.mIndex]->iid;
-                            *((IInterface**)pBuf + i) = pParcelable->Probe(iid);
+                            parcelable->ReadFromParcel(this);
+                            iid = classInfo->interfaces[ipack.mIndex]->iid;
+                            *((IInterface**)itfBuf + i) = parcelable->Probe(iid);
                         }
                         else {
                             ec = StdUnmarshalInterface(
                                     UnmarshalFlag_Noncoexisting,
                                     &ipack,
-                                    (IInterface **)&pBuf[i]);
+                                    (IInterface **)&itfBuf[i]);
                             if (FAILED(ec)) {
                                 MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                                         "MshProc: unmsh interface, ec = %x\n", ec));
@@ -804,14 +801,14 @@ ECode CRemoteParcel::ReadArrayOfInner(
                         }
                     }
                     else {
-                        pBuf[i] = NULL;
+                        itfBuf[i] = NULL;
                     }
                 }
             }
         }
     }
     else {
-        pValue = NULL;
+        value = NULL;
     }
     return NOERROR;
 }
@@ -830,40 +827,40 @@ ECode CRemoteParcel::Read(
 }
 
 ECode CRemoteParcel::ReadInterfacePtr(
-    /* [out] */ Handle32 *pItfPtr)
+    /* [out] */ Handle32* itfPtr)
 {
     UInt32 tag;
     ECode ec = ReadAligned(&tag);
     if (FAILED(ec) || tag == MSH_NULL) {
-        *pItfPtr = 0;
+        *itfPtr = 0;
         return ec;
     }
 
     assert(tag == MSH_NOT_NULL);
     UInt32 DPOS = mDataPos;
     if (DPOS + sizeof(InterfacePack) <= mDataSize){
-        InterfacePack *pItfPack = reinterpret_cast<InterfacePack*>(mData + DPOS);
+        InterfacePack* itfPack = reinterpret_cast<InterfacePack*>(mData + DPOS);
         mDataPos = DPOS + sizeof(InterfacePack);
-        CIClassInfo *pClassInfo = NULL;
-        if (IsParcelable(pItfPack, &pClassInfo)) {
+        CIClassInfo* classInfo = NULL;
+        if (IsParcelable(itfPack, &classInfo)) {
             ClassID classId;
-            classId.clsid = pItfPack->mClsid;
-            classId.pUunm = pClassInfo->pszUunm;
+            classId.clsid = itfPack->mClsid;
+            classId.pUunm = classInfo->pszUunm;
 
-            IParcelable *pParcelable = NULL;
+            IParcelable* parcelable = NULL;
             ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
-                    EIID_IParcelable, (IInterface**)&pParcelable);
+                    EIID_IParcelable, (IInterface**)&parcelable);
             if (FAILED(ec)) return ec;
 
-            pParcelable->ReadFromParcel(this);
-            InterfaceID iid = pClassInfo->interfaces[pItfPack->mIndex]->iid;
-            *(IInterface**)pItfPtr = pParcelable->Probe(iid);
+            parcelable->ReadFromParcel(this);
+            InterfaceID iid = classInfo->interfaces[itfPack->mIndex]->iid;
+            *(IInterface**)itfPtr = parcelable->Probe(iid);
         }
         else {
             ec = StdUnmarshalInterface(
                     UnmarshalFlag_Noncoexisting,
-                    pItfPack,
-                    (IInterface **)pItfPtr);
+                    itfPack,
+                    (IInterface **)itfPtr);
             if (FAILED(ec)) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR, printf(
                         "MshProc: unmsh interface, ec = %x\n", ec));
@@ -915,7 +912,7 @@ ECode CRemoteParcel::ReadInterfacePtr(
         ALOGW("Attempt to read object from Parcel %p at offset %d that is not in the object list",
              this, DPOS);
     }
-    *pItfPtr = 0;
+    *itfPtr = 0;
     return NOERROR;
 }
 
@@ -1189,7 +1186,7 @@ ECode CRemoteParcel::AppendFrom(
 }
 
 ECode CRemoteParcel::Clone(
-    /* [in] */ IParcel* pSrcParcel)
+    /* [in] */ IParcel* srcParcel)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -1211,16 +1208,16 @@ ECode CRemoteParcel::SetDataPosition(
 }
 
 ECode CRemoteParcel::GetElementPayload(
-    /* [out] */ Handle32* pBuffer)
+    /* [out] */ Handle32* buffer)
 {
-    *pBuffer = (Handle32)mData;
+    *buffer = (Handle32)mData;
     return NOERROR;
 }
 
 ECode CRemoteParcel::GetElementSize(
-    /* [in] */ Int32* pSize)
+    /* [in] */ Int32* size)
 {
-    *pSize = (Int32)DataSize();
+    *size = (Int32)DataSize();
     return NOERROR;
 }
 
@@ -1230,23 +1227,20 @@ MarshalHeader* CRemoteParcel::GetMarshalHeader()
 }
 
 Boolean CRemoteParcel::IsParcelable(
-    /* [in] */ InterfacePack *pInterfacePack,
-    /* [out] */ CIClassInfo **ppClassInfo)
+    /* [in] */ InterfacePack* interfacePack,
+    /* [out] */ CIClassInfo** classInfo)
 {
-    CIInterfaceInfo *pInterfaceInfo = NULL;
-    ECode ec;
-
-    ec = LookupClassInfo(pInterfacePack->mClsid, ppClassInfo);
+    ECode ec = LookupClassInfo(interfacePack->mClsid, classInfo);
     if (FAILED(ec)) {
-        ec = GetRemoteClassInfo(pInterfacePack->m_sNetAddress,
-                                pInterfacePack->mClsid,
-                                ppClassInfo);
+        ec = GetRemoteClassInfo(interfacePack->mNetAddress,
+                                interfacePack->mClsid,
+                                classInfo);
         if (FAILED(ec)) return FALSE;
     }
 
-    for (UInt16 i = 0; i < (*ppClassInfo)->interfaceNum; i++) {
-        pInterfaceInfo = (*ppClassInfo)->interfaces[i];
-        if (pInterfaceInfo->iid == EIID_IParcelable) {
+    for (UInt16 i = 0; i < (*classInfo)->interfaceNum; i++) {
+        CIInterfaceInfo* interfaceInfo = (*classInfo)->interfaces[i];
+        if (interfaceInfo->iid == EIID_IParcelable) {
             return TRUE;
         }
     }

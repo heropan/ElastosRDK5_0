@@ -9,7 +9,7 @@ _ELASTOS_NAMESPACE_USING
 EXTERN_C const InterfaceID EIID_IProxy;
 
 #define ASSERT_PROXY(pProxy) \
-    do {assert(((CObjectProxy*)pProxy)->m_cInterfaces > 0);} while (0);
+    do {assert(((CObjectProxy*)pProxy)->mInterfaceNum > 0);} while (0);
 
 namespace Elastos {
 namespace IPC {
@@ -100,15 +100,14 @@ ECode StdUnmarshalInterface(
         customMarshal = ICustomMarshal::Probe(ex.mObject);
         if (!customMarshal) {
             CObjectStub* stub = (CObjectStub*)ex.mIStub;
-            *object = stub->m_pInterfaces[interfacePack->mIndex].mObject;
+            *object = stub->mInterfaces[interfacePack->mIndex].mObject;
             (*object)->AddRef();
             ex.mIStub->Release();
 
             return NOERROR;
         }
         else {
-            ec = StdUnmarshalCustomInterface(\
-                customMarshal, interfacePack, object);
+            ec = StdUnmarshalCustomInterface(customMarshal, interfacePack, object);
             return ec;
         }
     }
