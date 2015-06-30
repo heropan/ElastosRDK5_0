@@ -1,6 +1,5 @@
 
 #include "Int64Buffer.h"
-#include "ReadWriteInt64ArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
@@ -25,14 +24,11 @@ ECode Int64Buffer::Allocate(
 {
     VALIDATE_NOT_NULL(buf);
 
-    if (capacity < 0) {
-        // throw new IllegalArgumentException("capacity < 0: " + capacity);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
     assert(0 && "TODO");
-    // *buf = (IInt64Buffer*)new ReadWriteInt64ArrayBuffer(capacity);
-    REFCOUNT_ADD(*buf)
+    // if (capacity < 0) {
+    //     throw new IllegalArgumentException("capacity < 0: " + capacity);
+    // }
+    // return new LongArrayBuffer(new long[capacity]);
     return NOERROR;
 }
 
@@ -50,19 +46,13 @@ ECode Int64Buffer::Wrap(
     /* [out] */ IInt64Buffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    Int32 arrayLength = array->GetLength();
-    if ((start | int64Count) < 0 || start > arrayLength || arrayLength - start < int64Count) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
 
     assert(0 && "TODO");
-    AutoPtr<ReadWriteInt64ArrayBuffer> rwBuf; // = new ReadWriteInt64ArrayBuffer(array);
-    rwBuf->mPosition = start;
-    rwBuf->mLimit = start + int64Count;
-    *buf = (IInt64Buffer*)rwBuf.Get();
-    REFCOUNT_ADD(*buf)
+    // Arrays.checkOffsetAndCount(array.length, start, longCount);
+    // LongBuffer buf = new LongArrayBuffer(array);
+    // buf.position = start;
+    // buf.limit = start + longCount;
+    // return buf;
     return NOERROR;
 }
 
@@ -95,7 +85,7 @@ ECode Int64Buffer::CompareTo(
     Int64 thisInt64 = 0;
     Int64 otherInt64 = 0;
     while (compareRemaining > 0) {
-        GetInt64(thisPos, &thisInt64);
+        Get(thisPos, &thisInt64);
         otherBuffer->Get(otherPos, &otherInt64);
         // checks for Int64 and NaN inequality
         if (thisInt64 != otherInt64) {
@@ -138,7 +128,7 @@ ECode Int64Buffer::Equals(
     Int64 thisValue = 0;
     Int64 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetInt64(myPosition++, &thisValue))
+        FAIL_RETURN(Get(myPosition++, &thisValue))
         FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
@@ -146,13 +136,13 @@ ECode Int64Buffer::Equals(
     return NOERROR;
 }
 
-ECode Int64Buffer::GetInt64s(
+ECode Int64Buffer::Get(
     /* [out] */ ArrayOf<Int64>* dst)
 {
-    return GetInt64s(dst, 0, dst->GetLength());
+    return Get(dst, 0, dst->GetLength());
 }
 
-ECode Int64Buffer::GetInt64s(
+ECode Int64Buffer::Get(
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int64Count)
@@ -173,7 +163,7 @@ ECode Int64Buffer::GetInt64s(
     }
 
     for (Int32 i = dstOffset; i < dstOffset + int64Count; ++i) {
-        GetInt64(&(*dst)[i]);
+        Get(&(*dst)[i]);
     }
     return NOERROR;
 }
@@ -184,13 +174,13 @@ ECode Int64Buffer::HasArray(
     return ProtectedHasArray(hasArray);
 }
 
-ECode Int64Buffer::PutInt64s(
+ECode Int64Buffer::Put(
     /* [in] */ const ArrayOf<Int64>& src)
 {
-    return PutInt64s(src, 0, src.GetLength());
+    return Put(src, 0, src.GetLength());
 }
 
-ECode Int64Buffer::PutInt64s(
+ECode Int64Buffer::Put(
     /* [in] */ const ArrayOf<Int64>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int64Count)
@@ -210,12 +200,12 @@ ECode Int64Buffer::PutInt64s(
     }
 
     for (Int32 i = srcOffset; i < srcOffset + int64Count; ++i) {
-        PutInt64(src[i]);
+        Put(src[i]);
     }
     return NOERROR;
 }
 
-ECode Int64Buffer::PutInt64Buffer(
+ECode Int64Buffer::Put(
     /* [in] */ IInt64Buffer* src)
 {
     if (src == (IInt64Buffer*)this->Probe(EIID_IInt64Buffer)) {
@@ -233,7 +223,7 @@ ECode Int64Buffer::PutInt64Buffer(
 
     AutoPtr< ArrayOf<Int64> > contents = ArrayOf<Int64>::Alloc(srcRemaining);
     FAIL_RETURN(src->Get(contents))
-    return PutInt64s(*contents);
+    return Put(*contents);
 }
 
 } // namespace IO

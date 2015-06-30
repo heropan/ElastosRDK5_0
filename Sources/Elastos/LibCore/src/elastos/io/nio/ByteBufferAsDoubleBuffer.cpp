@@ -20,6 +20,7 @@ AutoPtr<IDoubleBuffer> ByteBufferAsDoubleBuffer::AsDoubleBuffer(
     // ByteBuffer slice = byteBuffer.slice();
     // slice.order(byteBuffer.order());
     // return new ByteBufferAsDoubleBuffer(slice);
+    return NULL;
 }
 
 ECode ByteBufferAsDoubleBuffer::AsReadOnlyBuffer(

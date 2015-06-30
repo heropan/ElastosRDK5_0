@@ -42,6 +42,7 @@ module
     * interface Elastos.IO.Channels.IChannel;
     * interface ISelectableChannel;
     */
+    [deprecated]
     interface ISocketChannel {
        /**
         * Returns the socket assigned to this channel, which does not declare any public
@@ -163,7 +164,7 @@ module
          * IOException | if another I/O error occurs.
          * @see java.nio.channels.ReadableByteChannel#read(java.nio.ByteBuffer)
          */
-        ReadByteBuffer(
+        Read(
             [in] IByteBuffer* target,
             [out] Int32* number);
 
@@ -195,8 +196,8 @@ module
          * @see java.nio.channels.ScatteringByteChannel#read(java.nio.ByteBuffer[],
          *      int, int)
          */
-        ReadByteBuffers(
-            [in] ArrayOf<IByteBuffer*> targets,
+        Read(
+            [in] ArrayOf<IByteBuffer*>* targets,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int64* number);
@@ -225,8 +226,8 @@ module
          * IOException | if another I/O error occurs.
          * NotYetConnectedException | if this channel is not yet connected.
          */
-        ReadByteBuffers(
-            [in] ArrayOf<IByteBuffer*> targets,
+        Read(
+            [in] ArrayOf<IByteBuffer*>* targets,
             [out] Int64* number);
 
         /**
@@ -254,7 +255,7 @@ module
          * NotYetConnectedException | if this channel is not connected yet.
          * @see java.nio.channels.WritableByteChannel#write(java.nio.ByteBuffer)
          */
-        WriteByteBuffer(
+        Write(
             [in] IByteBuffer* buffer,
             [out] Int32* number);
 
@@ -288,8 +289,8 @@ module
          * @see java.nio.channels.GatheringByteChannel#write(java.nio.ByteBuffer[],
          *      int, int)
          */
-        WriteByteBuffers(
-            [in] ArrayOf<IByteBuffer*> sources,
+        Write(
+            [in] ArrayOf<IByteBuffer*>* sources,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int64* number);
@@ -310,8 +311,8 @@ module
          * NotYetConnectedException | if this channel is not yet connected.
          * @see java.nio.channels.GatheringByteChannel#write(java.nio.ByteBuffer[])
          */
-        WriteByteBuffers(
-            [in] ArrayOf<IByteBuffer*> buffers,
+        Write(
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [out] Int64* number);
     }
 

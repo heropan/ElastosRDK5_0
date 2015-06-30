@@ -1,8 +1,6 @@
 #ifndef __ELASTOS_IO_PIPEIMPL_H__
 #define __ELASTOS_IO_PIPEIMPL_H__
 
-// #include "SourceChannel.h"
-// #include "SinkChannel.h"
 #include "Pipe.h"
 
 using Elastos::IO::IFileDescriptorChannel;
@@ -10,8 +8,6 @@ using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::Pipe;
 using Elastos::IO::Channels::ISinkChannel;
 using Elastos::IO::Channels::ISourceChannel;
-// using Elastos::IO::Channels::SourceChannel;
-// using Elastos::IO::Channels::SinkChannel;
 
 namespace Elastos {
 namespace IO {
@@ -24,18 +20,22 @@ private:
         , public IFileDescriptorChannel
     {
     public:
+        PipeSourceChannel(
+            /* [in] */ ISelectorProvider* provider,
+            /* [in] */ IFileDescriptor* fd);
+
         CAR_INTERFACE_DECL()
 
-        CARAPI ReadByteBuffer(
+        CARAPI Read(
             /* [in] */ IByteBuffer* buffer,
             /* [out] */ Int32* nRead);
 
-        CARAPI ReadByteBuffers(
-            /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+        CARAPI Read(
+            /* [in] */ ArrayOf<IByteBuffer*>* buffers,
             /* [out] */ Int64* nRead);
 
-        CARAPI ReadByteBuffers(
-            /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+        CARAPI Read(
+            /* [in] */ ArrayOf<IByteBuffer*>* buffers,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
             /* [out] */ Int64* nRead);
@@ -48,10 +48,6 @@ private:
 
         CARAPI ImplConfigureBlocking(
             /* [in] */ Boolean blocking);
-    private:
-        PipeSourceChannel(
-            /* [in] */ ISelectorProvider* provider,
-            /* [in] */ IFileDescriptor* fd);
 
     private:
         AutoPtr<IFileDescriptor> mFd;
@@ -63,18 +59,22 @@ private:
         , public IFileDescriptorChannel
     {
     public:
+        PipeSinkChannel(
+            /* [in] */ ISelectorProvider* provider,
+            /* [in] */ IFileDescriptor* fd);
+
         CAR_INTERFACE_DECL()
 
-        CARAPI WriteBuffer(
+        CARAPI Write(
             /* [in] */ IByteBuffer* buffer,
             /* [out] */ Int32* nWrite);
 
-        CARAPI WriteBuffers(
-            /* [in] */ ArrayOf<IByteBuffer*>& buffers,
+        CARAPI Write(
+            /* [in] */ ArrayOf<IByteBuffer*>* buffers,
             /* [out] */ Int64* nWrite);
 
-        CARAPI WriteBuffers(
-            /* [in] */ ArrayOf<IByteBuffer*>& buffers,
+        CARAPI Write(
+            /* [in] */ ArrayOf<IByteBuffer*>* buffers,
             /* [in] */ Int32 offset,
             /* [in] */ Int32 length,
             /* [out] */ Int64* nWrite);
@@ -87,11 +87,6 @@ private:
 
         CARAPI ImplConfigureBlocking(
             /* [out] */ Boolean blocking);
-
-    private:
-        PipeSinkChannel(
-            /* [in] */ ISelectorProvider* provider,
-            /* [in] */ IFileDescriptor* fd);
 
     private:
         AutoPtr<IFileDescriptor> mFd;

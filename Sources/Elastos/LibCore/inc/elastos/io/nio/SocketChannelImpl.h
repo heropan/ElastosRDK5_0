@@ -176,19 +176,20 @@ public:
         /* [out] */ Int32* ret);
 
     CARAPI Read(
-        /* [in] */ ArrayOf<IByteBuffer*>& target,
+        /* [in] */ ArrayOf<IByteBuffer*>* target,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
-        /* [out] */ Int32* ret);
+        /* [out] */ Int64* ret);
 
     CARAPI Write(
-        /* [in] */ IByteBuffer* src);
+        /* [in] */ IByteBuffer* src,
+        /* [out] */ Int32* number);
 
     CARAPI Write(
-        /* [in] */ ArrayOf<IByteBuffer*>& source,
+        /* [in] */ ArrayOf<IByteBuffer*>* source,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
-        /* [out] */ Int32* ret);
+        /* [out] */ Int64* ret);
 
     /*
      * Get local address.

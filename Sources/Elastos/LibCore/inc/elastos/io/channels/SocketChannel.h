@@ -71,7 +71,7 @@ public:
      * @return the operations supported by this channel.
      * @see java.nio.channels.SelectableChannel#validOps()
      */
-    CARAPI ValidOps(
+    CARAPI GetValidOps(
         /* [out] */ Int32* ret);
 
     /**
@@ -286,7 +286,7 @@ public:
      * NotYetConnectedException | if this channel is not connected yet.
      * @see java.nio.channels.WritableByteChannel#write(java.nio.ByteBuffer)
      */
-    virtual CARAPI WriteByteBuffer(
+    virtual CARAPI Write(
         /* [in] */ IByteBuffer* buffer,
         /* [out] */ Int32* number) = 0;
 

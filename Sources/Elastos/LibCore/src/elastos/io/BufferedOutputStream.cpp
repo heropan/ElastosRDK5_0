@@ -19,7 +19,7 @@ BufferedOutputStream::~BufferedOutputStream()
 ECode BufferedOutputStream::constructor(
     /* [in] */ IOutputStream* outs)
 {
-    constructor(outs, 8192);
+    return constructor(outs, 8192);
 }
 
 ECode BufferedOutputStream::constructor(

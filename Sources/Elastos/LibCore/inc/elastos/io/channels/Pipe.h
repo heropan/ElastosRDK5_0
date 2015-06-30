@@ -45,7 +45,7 @@ public:
          *
          * @return a static value of OP_WRITE.
          */
-        CARAPI ValidOps(
+        CARAPI GetValidOps(
             /* [out] */ Int32* value);
     };
 
@@ -75,7 +75,7 @@ public:
          *
          * @return a static value of OP_READ.
          */
-        CARAPI ValidOps(
+        CARAPI GetValidOps(
             /* [out] */ Int32* value);
     };
 

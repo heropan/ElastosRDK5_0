@@ -1,22 +1,23 @@
 
 #include "SelectorImpl.h"
-// #include "CLibcore.h"
-//#include "IoUtils.h"
+#include "CLibcore.h"
+#include "IoUtils.h"
 #include "CStructPollfd.h"
-// #include "COsConstants.h"
-// #include "CIoBridge.h"
+#include "OsConstants.h"
+#include "CIoBridge.h"
 #include "SelectionKeyImpl.h"
 #include "AutoLock.h"
 
 using Libcore::IO::IOs;
 using Libcore::IO::ILibcore;
-// using Libcore::IO::CLibcore;
+using Libcore::IO::CLibcore;
+using Libcore::IO::IoUtils;
 using Elastos::Droid::System::IStructPollfd;
 using Elastos::Droid::System::CStructPollfd;
-// using Libcore::IO::COsConstants;
-// using Libcore::IO::CIoBridge;
+using Elastos::Droid::System::OsConstants;
+using Libcore::IO::CIoBridge;
 using Elastos::IO::Channels::EIID_ISelector;
-using Elastos::IO::Channels::Spi::AbstractSelectionKey;
+using Elastos::IO::Channels::Spi::IAbstractSelectionKey;
 using Elastos::IO::Channels::Spi::EIID_IAbstractSelector;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
@@ -33,7 +34,7 @@ namespace IO {
 SelectorImpl::UnaddableSet::UnaddableSet(
     /* [in] */ ISet* set)
 {
-    // this.set = set;
+    mSet = set;
 }
 
 CAR_INTERFACE_IMPL_3(SelectorImpl::UnaddableSet, Object, ISet, ICollection, IIterable)
@@ -42,15 +43,13 @@ ECode SelectorImpl::UnaddableSet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* value)
 {
-    // return set.equals(object);
-    return E_NOT_IMPLEMENTED;
+    return IObject::Probe(mSet)->Equals(object, value);
 }
 
 ECode SelectorImpl::UnaddableSet::GetHashCode(
     /* [out] */ Int32* value)
 {
-    // return set.hashCode();
-    return E_NOT_IMPLEMENTED;
+    return IObject::Probe(mSet)->GetHashCode(value);
 }
 
 ECode SelectorImpl::UnaddableSet::Add(
@@ -58,7 +57,7 @@ ECode SelectorImpl::UnaddableSet::Add(
     /* [out] */ Boolean* modified)
 {
     // throw new UnsupportedOperationException();
-    return E_NOT_IMPLEMENTED;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode SelectorImpl::UnaddableSet::AddAll(
@@ -66,89 +65,78 @@ ECode SelectorImpl::UnaddableSet::AddAll(
     /* [out] */ Boolean* value)
 {
     // throw new UnsupportedOperationException();
-    return E_NOT_IMPLEMENTED;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode SelectorImpl::UnaddableSet::Clear()
 {
-    // set.clear();
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->Clear();
 }
 
 ECode SelectorImpl::UnaddableSet::Contains(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    // return set.contains(object);
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->Contains(object, result);
 }
 
 ECode SelectorImpl::UnaddableSet::ContainsAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* value)
 {
-    // return set.containsAll(c);
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->ContainsAll(c, value);
 }
 
 ECode SelectorImpl::UnaddableSet::IsEmpty(
     /* [out] */ Boolean* result)
 {
-    // return set.isEmpty();
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->IsEmpty(result);
 }
 
 ECode SelectorImpl::UnaddableSet::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    // return set.remove(object);
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->Remove(object, modified);
 }
 
 ECode SelectorImpl::UnaddableSet::RemoveAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* value)
 {
-    // return set.removeAll(c);
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->RemoveAll(c, value);
 }
 
 ECode SelectorImpl::UnaddableSet::GetSize(
     /* [out] */ Int32* size)
 {
-    // return set.size();
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->GetSize(size);
 }
 
 ECode SelectorImpl::UnaddableSet::GetIterator(
     /* [out] */ IIterator** it)
 {
-    // return set.iterator();
-    return E_NOT_IMPLEMENTED;
+    return IIterable::Probe(mSet)->GetIterator(it);
 }
 
 ECode SelectorImpl::UnaddableSet::RetainAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* value)
 {
-    // return set.retainAll(c);
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->RetainAll(c,value);
 }
 
 ECode SelectorImpl::UnaddableSet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** outarr)
 {
-    // return set.toArray();
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->ToArray(outarr);
 }
 
 ECode SelectorImpl::UnaddableSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inarr,
     /* [out, callee] */ ArrayOf<IInterface*>** outarr)
 {
-    // return set.toArray(a);
-    return E_NOT_IMPLEMENTED;
+    return ICollection::Probe(mSet)->ToArray(inarr, outarr);
 }
 
 //==========================================================
@@ -164,23 +152,23 @@ ECode SelectorImpl::constructor(
 {
     AbstractSelector::constructor(selectorProvider);
     ECode result = NOERROR;
-    AutoPtr<ArrayOf<Int32> > fds;
-    assert(0 && "TODO");
-    // result = CLibcore::sOs->Pipe((ArrayOf<Int32>**)&fds);
+    AutoPtr<ArrayOf<IFileDescriptor*> > fds;
+    result = CLibcore::sOs->Pipe((ArrayOf<IFileDescriptor*>**)&fds);
     assert(result == NOERROR);
 
-    mWakeupIn->SetDescriptor((*fds)[0]);
-    mWakeupOut->SetDescriptor((*fds)[1]);
-    assert(0 && "TODO");
-    // result = IoUtils::SetBlocking(mWakeupIn, FALSE);
+    Int32 fdint = 0;
+    (*fds)[0]->GetDescriptor(&fdint);
+    mWakeupIn->SetDescriptor(fdint);
+    (*fds)[1]->GetDescriptor(&fdint);
+    mWakeupOut->SetDescriptor(fdint);
+    result = IoUtils::SetBlocking(mWakeupIn, FALSE);
     assert(result == NOERROR);
 
     AutoPtr<IStructPollfd> structfd;
     CStructPollfd::New((IStructPollfd**)&structfd);
     Boolean isflag = FALSE;
     ICollection::Probe(mPollFds)->Add(structfd, &isflag);
-    assert(0 && "TODO");
-    // SetPollFd(0, mWakeupIn, COsConstants::sPOLLIN, NULL);
+    SetPollFd(0, mWakeupIn, OsConstants::_POLLIN, NULL);
     return NOERROR;
 }
 
@@ -212,17 +200,15 @@ ECode SelectorImpl::ImplCloseSelector()
     Wakeup();
 
     AutoLock lock(mLock);
-    assert(0 && "TODO");
-    // FAIL_RETURN(IoUtils::Close(mWakeupIn));
-    // FAIL_RETURN(IoUtils::Close(mWakeupOut));
+    FAIL_RETURN(IoUtils::Close(mWakeupIn));
+    FAIL_RETURN(IoUtils::Close(mWakeupOut));
     DoCancel();
 
     AutoPtr< ArrayOf<IInterface*> > outarr;
     ICollection::Probe(mMutableKeys)->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
-        assert(0 && "TODO");
-        // AutoPtr<AbstractSelectionKey> ask = (AbstractSelectionKey*)(*outarr)[i];
-        // Deregister(ask);
+        AutoPtr<IAbstractSelectionKey> ask = IAbstractSelectionKey::Probe((*outarr)[i]);
+        Deregister(ISelectionKey::Probe(ask));
     }
     return NOERROR;
 }
@@ -237,24 +223,22 @@ ECode SelectorImpl::Register(
     *key = NULL;
     VALIDATE_NOT_NULL(asc)
 
-    AbstractSelectableChannel* channel = (AbstractSelectableChannel*)asc;
-
     AutoPtr<ISelectorProvider> sp1;
     GetProvider((ISelectorProvider**)&sp1);
     AutoPtr<ISelectorProvider> sp2;
-    channel->GetProvider((ISelectorProvider**)&sp2);
+    ISelectableChannel::Probe(asc)->GetProvider((ISelectorProvider**)&sp2);
     if (!Object::Equals(sp1,sp2)) {
         // throw new IllegalSelectorException();
         return E_ILLEGAL_SELECTOR_EXCEPTION;
     }
     AutoLock lock(mLock);
-    assert(0 && "TODO");
-    // SelectionKeyImpl selectionKey = new SelectionKeyImpl(channel, operations,
-    //         attachment, this);
-    // mutableKeys.add(selectionKey);
-    // ensurePollFdsCapacity();
-    // return selectionKey;
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<SelectionKeyImpl> selectionKey = new SelectionKeyImpl(asc, operations,
+            attachment, this);
+    ICollection::Probe(mMutableKeys)->Add(TO_IINTERFACE(selectionKey));
+    EnsurePollFdsCapacity();
+    *key = selectionKey;
+    REFCOUNT_ADD(*key)
+    return NOERROR;
 }
 
 ECode SelectorImpl::GetKeys(
@@ -313,8 +297,7 @@ ECode SelectorImpl::SelectInternal(
     PreparePollFds();
     Int32 rc = -1;
     if(isBlock) {
-        assert(0 && "TODO");
-        // Begin();
+        Begin();
     }
     AutoPtr< ArrayOf<IInterface*> > outarr;
     ICollection::Probe(mPollFds)->ToArray((ArrayOf<IInterface*>**)&outarr);
@@ -323,11 +306,9 @@ ECode SelectorImpl::SelectInternal(
         AutoPtr<IStructPollfd> it = IStructPollfd::Probe((*outarr)[i]);
         array->Set(i, it);
     }
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLibcore::sOs->Poll(*array, (Int32)timeout, &rc));
+    FAIL_RETURN(CLibcore::sOs->Poll(array, (Int32)timeout, &rc));
     if (isBlock) {
-        assert(0 && "TODO");
-        // End();
+        End();
     }
     Int32 readyCount = (rc > 0) ? ProcessPollFds() : 0;
     readyCount -= DoCancel();
@@ -355,28 +336,18 @@ void SelectorImpl::PreparePollFds()
 {
     AutoPtr< ArrayOf<IInterface*> > outarr;
     ICollection::Probe(mMutableKeys)->ToArray((ArrayOf<IInterface*>**)&outarr);
-    assert(0 && "TODO");
-    // if (pollFds.get(0).revents == POLLIN) {
-    //     // Read bytes from the wakeup pipe until the pipe is empty.
-    //     byte[] buffer = new byte[8];
-    //     while (IoBridge.read(wakeupIn, buffer, 0, 1) > 0) {
-    //     }
-    // }
 
     for (Int32 i = 1; i < outarr->GetLength(); i++) {
         AutoPtr<ISelectionKey> key = ISelectionKey::Probe((*outarr)[i]);
         if (key != NULL) {
-            Int32 interestOps = 0;
-            assert(0 && "TODO");
-            // key->InterestOpsNoCheck(&interestOps);
+            Int32 interestOps = ((SelectionKeyImpl*)key.Get())->InterestOpsNoCheck();
             Int16 eventMask = 0;
-            assert(0 && "TODO");
-            // if (((ISelectionKey::OP_ACCEPT | ISelectionKey::OP_READ) & interestOps) != 0) {
-            //     eventMask |= COsConstants::sPOLLIN;
-            // }
-            // if (((ISelectionKey::OP_CONNECT | ISelectionKey::OP_WRITE) & interestOps) != 0) {
-            //     eventMask |= COsConstants::sPOLLOUT;
-            // }
+            if (((ISelectionKey::OP_ACCEPT | ISelectionKey::OP_READ) & interestOps) != 0) {
+                eventMask |= OsConstants::_POLLIN;
+            }
+            if (((ISelectionKey::OP_CONNECT | ISelectionKey::OP_WRITE) & interestOps) != 0) {
+                eventMask |= OsConstants::_POLLOUT;
+            }
             if (eventMask != 0) {
                 AutoPtr<ISelectableChannel> sc;
                 ISelectionKey::Probe(key)->GetChannel((ISelectableChannel**)&sc);
@@ -415,16 +386,13 @@ Int32 SelectorImpl::ProcessPollFds()
     if (IStructPollfd::Probe((*outarr)[0]) != NULL) {
         IStructPollfd::Probe((*outarr)[0])->GetRevents(&revents);
     }
-    assert(0 && "TODO");
-    // if (revents == COsConstants::sPOLLIN) {
-    //     // Read bytes from the wakeup pipe until the pipe is empty.
-    //     AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(8);
-    //     Int32 readnum = 0;
-    //     Int32 infd = 0;
-    //     mWakeupIn->GetDescriptor(&infd);
-    //     while (CIoBridge::_Read(infd, buffer, 0, 1, &readnum), readnum > 0) {
-    //     }
-    // }
+    if (revents == OsConstants::_POLLIN) {
+        // Read bytes from the wakeup pipe until the pipe is empty.
+        AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(8);
+        Int32 readnum = 0;
+        while (CIoBridge::_Read(mWakeupIn, buffer, 0, 1, &readnum), readnum > 0) {
+        }
+    }
 
     Int32 readyKeyCount = 0;
     AutoPtr<IFileDescriptor> fdvalue = 0;
@@ -447,23 +415,21 @@ Int32 SelectorImpl::ProcessPollFds()
             pollFd->SetFd(0);
             pollFd->SetUserData(NULL);
 
-            Int32 ops = 0;
-            // key->InterestOpsNoCheck(&ops);
+            Int32 ops = ((SelectionKeyImpl*)key.Get())->InterestOpsNoCheck();
             Int32 selectedOp = 0;
             Boolean isflag = FALSE;
-            assert(0 && "TODO");
-            // if ((revents & COsConstants::sPOLLIN) != 0) {
-            //     selectedOp = ops & (ISelectionKey::OP_ACCEPT | ISelectionKey::OP_READ);
-            // }
-            // else if ((revents & COsConstants::sPOLLOUT) != 0) {
+            if ((revents & OsConstants::_POLLIN) != 0) {
+                selectedOp = ops & (ISelectionKey::OP_ACCEPT | ISelectionKey::OP_READ);
+            }
+            else if ((revents & OsConstants::_POLLOUT) != 0) {
 
-            //     if (key->IsConnectable(&isflag), isflag) {
-            //         selectedOp = ops & ISelectionKey::OP_WRITE;
-            //     }
-            //     else {
-            //         selectedOp = ops & ISelectionKey::OP_CONNECT;
-            //     }
-            // }
+                if (key->IsConnectable(&isflag), isflag) {
+                    selectedOp = ops & ISelectionKey::OP_WRITE;
+                }
+                else {
+                    selectedOp = ops & ISelectionKey::OP_CONNECT;
+                }
+            }
 
             if (selectedOp != 0) {
                 Boolean wasSelected = 0;
@@ -471,13 +437,11 @@ Int32 SelectorImpl::ProcessPollFds()
                 Int32 opsvalue = 0;
                 ISelectionKey::Probe(key)->GetReadyOps(&opsvalue);
                 if (wasSelected && opsvalue != selectedOp) {
-                    assert(0 && "TODO");
-                    // key->SetReadyOps(opsvalue | selectedOp);
+                    ((SelectionKeyImpl*)key.Get())->SetReadyOps(opsvalue | selectedOp);
                     ++readyKeyCount;
                 }
                 else if (!wasSelected) {
-                    assert(0 && "TODO");
-                    // key->SetReadyOps(selectedOp);
+                    ((SelectionKeyImpl*)key.Get())->SetReadyOps(selectedOp);
                     ICollection::Probe(mMutableSelectedKeys)->Add(key, &isflag);
                     ++readyKeyCount;
                 }
@@ -513,8 +477,7 @@ Int32 SelectorImpl::DoCancel()
             AutoPtr<IInterface> currentKey = (*outarr)[i];
             Boolean isflag = FALSE;
             ICollection::Probe(mMutableKeys)->Remove(currentKey, &isflag);
-            assert(0 && "TODO");
-            // Deregister((AbstractSelectionKey*)currentKey.Get());
+            Deregister(ISelectionKey::Probe(currentKey));
             if (ICollection::Probe(mMutableSelectedKeys)->Remove(currentKey, &isflag), isflag) {
                 deselected++;
             }
@@ -527,12 +490,10 @@ Int32 SelectorImpl::DoCancel()
 
 ECode SelectorImpl::Wakeup()
 {
-    Int32 fd, nWrite;
-    mWakeupOut->GetDescriptor(&fd);
+    Int32 nWrite;
     AutoPtr< ArrayOf<Byte> > inbyte = ArrayOf<Byte>::Alloc(1);
     (*inbyte)[0] = 1;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLibcore::sOs->Write(fd, *inbyte, 0, 1, &nWrite));
+    FAIL_RETURN(CLibcore::sOs->Write(mWakeupOut, inbyte, 0, 1, &nWrite));
 
     return NOERROR;
 }

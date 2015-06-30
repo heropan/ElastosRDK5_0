@@ -9,7 +9,7 @@ namespace Spi {
 ECode CSelectorProviderHelper::GetProvider(
         /* [out] */ ISelectorProvider** provider)
 {
-    return SelectorProvider::Provider(provider);
+    return SelectorProvider::GetProvider(provider);
 }
 
 } // namespace Spi

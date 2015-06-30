@@ -27,7 +27,7 @@ ECode AbstractSelectionKey::Cancel()
     if (mIsValid) {
         mIsValid = FALSE;
         AutoPtr<ISelector> selector;
-        ECode ecRet = Selector((ISelector**)&selector);
+        ECode ecRet = GetSelector((ISelector**)&selector);
         if (NOERROR == ecRet) {
             IAbstractSelector* absSel = IAbstractSelector::Probe(selector);
             assert(0 && "TODO");

@@ -86,7 +86,6 @@ public:
      */
     virtual CARAPI GetKeyFor(
         /* [in] */ ISelector* sel,
-        /* [in] */ Int32 ops,
         /* [out] */ ISelectionKey** key) = 0;
 
     /**
@@ -94,7 +93,7 @@ public:
      *
      * @return the provider of this channel.
      */
-    virtual CARAPI Provider(
+    virtual CARAPI GetProvider(
         /* [out] */ ISelectorProvider** provider) = 0;
 
     /**

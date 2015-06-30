@@ -43,4 +43,5 @@ module
     const E_UNMAPPABLE_CHARACTER_EXCEPTION              = 0xA2210000;
     const E_MALFORMED_INPUT_EXCEPTION                   = 0xA2220000;
     const E_UTF_DATA_FORMAT_EXCEPTION                   = 0xA2230000;
+    const E_BUFFER_UNDERFLOW_EXCEPTION                  = 0xA2230000;
 }

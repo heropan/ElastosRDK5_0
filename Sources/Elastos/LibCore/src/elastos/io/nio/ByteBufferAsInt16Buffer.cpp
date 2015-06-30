@@ -22,6 +22,7 @@ AutoPtr<IInt16Buffer> ByteBufferAsInt16Buffer::AsInt16Buffer(
     // ByteBuffer slice = byteBuffer.slice();
     // slice.order(byteBuffer.order());
     // return new ByteBufferAsShortBuffer(slice);
+    return NULL;
 }
 
 ECode ByteBufferAsInt16Buffer::AsReadOnlyBuffer(

@@ -48,7 +48,7 @@ public:
      *
      * @return the provider.
      */
-    static CARAPI Provider(
+    static CARAPI GetProvider(
         /* [out] */ ISelectorProvider** provider);
 
     /**

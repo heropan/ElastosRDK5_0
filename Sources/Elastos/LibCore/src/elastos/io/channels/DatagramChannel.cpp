@@ -27,7 +27,7 @@ ECode DatagramChannel::Open(
     VALIDATE_NOT_NULL(channel)
 
     AutoPtr<ISelectorProvider> sp;
-    FAIL_RETURN(SelectorProvider::Provider((ISelectorProvider**)&sp));
+    FAIL_RETURN(SelectorProvider::GetProvider((ISelectorProvider**)&sp));
     return sp->OpenDatagramChannel(channel);
 }
 

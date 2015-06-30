@@ -18,7 +18,7 @@ SelectorProvider::~SelectorProvider()
 {
 }
 
-ECode SelectorProvider::Provider(
+ECode SelectorProvider::GetProvider(
     /* [out] */ ISelectorProvider** provider)
 {
     if (NULL == sProvider) {

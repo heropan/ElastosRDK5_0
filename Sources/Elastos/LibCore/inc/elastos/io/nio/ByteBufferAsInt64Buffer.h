@@ -29,11 +29,11 @@ class ByteBufferAsInt64Buffer
 {
 private:
     ByteBufferAsInt64Buffer(
-        /* [in] */ ByteBuffer* byteBuffer);
+        /* [in] */ IByteBuffer* byteBuffer);
 
 protected:
     static CARAPI_(AutoPtr<IInt64Buffer>) AsInt64Buffer(
-        /* [in] */ ByteBuffer* byteBuffer);
+        /* [in] */ IByteBuffer* byteBuffer);
 
 public:
     // @Override
@@ -41,8 +41,7 @@ public:
         /* [out] */ IInt64Buffer** buffer);
 
     // @Override
-    CARAPI Compact(
-        /* [out] */ IInt64Buffer** outbuf);
+    CARAPI Compact();
 
     // @Override
     CARAPI Duplicate(
@@ -111,7 +110,7 @@ protected:
         /* [out] */ Boolean* result);
 
 private:
-    AutoPtr<ByteBuffer> mByteBuffer;
+    AutoPtr<IByteBuffer> mByteBuffer;
 };
 
 } // namespace IO

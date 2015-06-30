@@ -9,7 +9,7 @@ using Elastos::IO::Channels::ISelector;
 using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::ISelectableChannel;
 using Elastos::IO::Channels::Spi::AbstractSelectionKey;
-using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
+using Elastos::IO::Channels::Spi::IAbstractSelectableChannel;
 using Elastos::IO::Channels::Spi::IAbstractSelector;
 
 namespace Elastos {
@@ -23,27 +23,27 @@ class SelectionKeyImpl
 {
 public:
     SelectionKeyImpl(
-        /* [in] */ AbstractSelectableChannel* channel,
+        /* [in] */ IAbstractSelectableChannel* channel,
         /* [in] */ Int32 opts,
         /* [in] */ IObject* attach,
         /* [in] */ IAbstractSelector* selector);
 
-    CARAPI Channel(
+    CARAPI GetChannel(
         /* [out] */ ISelectableChannel** channel);
 
-    CARAPI InterestOps(
+    CARAPI GetInterestOps(
         /* [out] */ Int32* opts);
 
     Int32 InterestOpsNoCheck();
 
-    CARAPI InterestOps(
+    CARAPI GetInterestOps(
         /* [in] */ Int32 operations,
-        /* [out] */ SelectionKey** key);
+        /* [out] */ ISelectionKey** key);
 
-    CARAPI ReadyOps(
+    CARAPI GetReadyOps(
         /* [out] */ Int32* ret);
 
-    CARAPI Selector(
+    CARAPI GetSelector(
         /* [in] */ ISelector** selector);
 
     CARAPI SetReadyOps(
@@ -55,10 +55,10 @@ public:
         /* [out] */ Boolean* isConnected);
 
 private:
-    AbstractSelectableChannel* mChannel;
+    AutoPtr<IAbstractSelectableChannel> mChannel;
     Int32 mInterestOps;
     Int32 mReadyOps;
-    IAbstractSelector* mSelector;
+    AutoPtr<IAbstractSelector> mSelector;
 };
 
 

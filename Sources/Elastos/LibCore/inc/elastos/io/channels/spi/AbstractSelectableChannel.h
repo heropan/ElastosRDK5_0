@@ -63,7 +63,7 @@ public:
      * @return the selection key for the channel or {@code null} if this channel
      *         has not been registered with {@code selector}.
      */
-    CARAPI KeyFor(
+    CARAPI GetKeyFor(
         /* [in] */ ISelector* selector,
         /* [out] */ ISelectionKey** key);
 
@@ -115,8 +115,8 @@ public:
      *
      * @return the synchronization object.
      */
-    CARAPI BlockingLock(
-        /* [out] */ Object** obj);
+    CARAPI GetBlockingLock(
+        /* [out] */ IObject** obj);
 
     /**
      * Sets the blocking mode of this channel. A call to this method blocks if

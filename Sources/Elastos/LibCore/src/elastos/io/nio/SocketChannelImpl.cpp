@@ -400,10 +400,10 @@ ECode SocketChannelImpl::Read(
 }
 
 ECode SocketChannelImpl::Read(
-    /* [in] */ ArrayOf<IByteBuffer*>& target,
+    /* [in] */ ArrayOf<IByteBuffer*>* target,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
-    /* [out] */ Int32* ret)
+    /* [out] */ Int64* ret)
 {
     // Arrays.checkOffsetAndCount(targets.length, offset, length);
     // checkOpenConnected();
@@ -433,7 +433,8 @@ ECode SocketChannelImpl::Read(
 }
 
 ECode SocketChannelImpl::Write(
-    /* [in] */ IByteBuffer* src)
+    /* [in] */ IByteBuffer* src,
+    /* [out] */ Int32* number)
 {
     // if (src == null) {
     //     throw new NullPointerException("src == null");
@@ -447,10 +448,10 @@ ECode SocketChannelImpl::Write(
 }
 
 ECode SocketChannelImpl::Write(
-    /* [in] */ ArrayOf<IByteBuffer*>& source,
+    /* [in] */ ArrayOf<IByteBuffer*>* source,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
-    /* [out] */ Int32* ret)
+    /* [out] */ Int64* ret)
 {
     // Arrays.checkOffsetAndCount(sources.length, offset, length);
     // checkOpenConnected();

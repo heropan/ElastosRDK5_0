@@ -252,7 +252,7 @@ private:
     Int32 DoCancel();
 
 public:
-    AutoPtr<IInterface> mKeysLock;
+    Object mKeysLock;
 
 private:
     AutoPtr<ISet> mMutableKeys;

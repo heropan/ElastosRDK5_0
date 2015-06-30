@@ -44,7 +44,7 @@ ECode AbstractSelectableChannel::IsRegistered(
     return NOERROR;
 }
 
-ECode AbstractSelectableChannel::KeyFor(
+ECode AbstractSelectableChannel::GetKeyFor(
     /* [in] */ ISelector* selector,
     /* [out] */ ISelectionKey** key)
 {
@@ -109,7 +109,7 @@ ECode AbstractSelectableChannel::Register(
     }
 
     AutoPtr<ISelectionKey> key;
-    KeyFor(selector, (ISelectionKey**)&key);
+    GetKeyFor(selector, (ISelectionKey**)&key);
     if (NULL == key) {
         AbstractSelector* absSel = (AbstractSelector*)selector;
         absSel->Register(this, interestSet, obj, (ISelectionKey**)&key);
@@ -138,11 +138,11 @@ ECode AbstractSelectableChannel::IsBlocking(
     return NOERROR;
 }
 
-ECode AbstractSelectableChannel::BlockingLock(
-    /* [out] */ Object** obj)
+ECode AbstractSelectableChannel::GetBlockingLock(
+    /* [out] */ IObject** obj)
 {
     VALIDATE_NOT_NULL(obj)
-    *obj = &mBlockingLock;
+    *obj = (IObject*)&mBlockingLock;
     return NOERROR;
 }
 

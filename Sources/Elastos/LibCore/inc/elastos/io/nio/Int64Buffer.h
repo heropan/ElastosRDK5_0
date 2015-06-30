@@ -174,7 +174,7 @@ public:
      * @exception BufferUnderflowException
      *                if the position is equal or greater than limit.
      */
-    virtual CARAPI GetInt64(
+    virtual CARAPI Get(
         /* [out] */ Int64* value) = 0;
 
     /**
@@ -186,7 +186,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetInt64(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value) = 0;
 
@@ -203,7 +203,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt64s(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Int64>* dst);
 
     /**
@@ -225,7 +225,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code longCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt64s(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);
@@ -282,7 +282,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64(
+    virtual CARAPI Put(
         /* [in] */ Int64 d) = 0;
 
     /**
@@ -299,7 +299,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Int64 d) = 0;
 
@@ -318,7 +318,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutInt64s(
+    CARAPI Put(
         /* [in] */ const ArrayOf<Int64>& src);
 
     /**
@@ -342,7 +342,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64s(
+    virtual CARAPI Put(
         /* [in] */ const ArrayOf<Int64>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int64Count);
@@ -363,7 +363,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt64Buffer(
+    virtual CARAPI Put(
         /* [in] */ IInt64Buffer* src);
 
     /**

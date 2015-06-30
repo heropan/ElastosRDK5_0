@@ -7,6 +7,7 @@
 
 using Libcore::IO::IoUtils;
 using Libcore::IO::CLibcore;
+using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::EIID_ISinkChannel;
 using Elastos::IO::Channels::EIID_ISourceChannel;
 using Elastos::Droid::System::OsConstants;
@@ -25,8 +26,7 @@ PipeImpl::PipeSourceChannel::PipeSourceChannel(
     : SourceChannel(provider)
     , mFd(fd)
 {
-    assert(0 && "TODO");
-    // mChannel = (ISocketChannel*) new SocketChannelImpl(provider, fd);
+    mChannel = (ISocketChannel*) new SocketChannelImpl(provider, fd);
 }
 
 ECode PipeImpl::PipeSourceChannel::ImplCloseSelectableChannel()
@@ -42,27 +42,27 @@ ECode PipeImpl::PipeSourceChannel::ImplConfigureBlocking(
     return IoUtils::SetBlocking(descriptor, blocking);
 }
 
-ECode PipeImpl::PipeSourceChannel::ReadByteBuffer(
+ECode PipeImpl::PipeSourceChannel::Read(
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* nRead)
 {
-    return mChannel->ReadByteBuffer(buffer, nRead);
+    return mChannel->Read(buffer, nRead);
 }
 
-ECode PipeImpl::PipeSourceChannel::ReadByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*> & buffers,
+ECode PipeImpl::PipeSourceChannel::Read(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [out] */ Int64* nRead)
 {
-    return mChannel->ReadByteBuffers(buffers, nRead);
+    return mChannel->Read(buffers, nRead);
 }
 
-ECode PipeImpl::PipeSourceChannel::ReadByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*>& buffers,
+ECode PipeImpl::PipeSourceChannel::Read(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int64* nRead)
 {
-    return mChannel->ReadByteBuffers(buffers, offset, length, nRead);
+    return mChannel->Read(buffers, offset, length, nRead);
 }
 
 ECode PipeImpl::PipeSourceChannel::GetFD(
@@ -86,8 +86,7 @@ PipeImpl::PipeSinkChannel::PipeSinkChannel(
     : SinkChannel(provider)
     , mFd(fd)
 {
-    assert(0 && "TODO");
-    // mChannel = (ISocketChannel*) new SocketChannnelImpl(provider, fd);
+    mChannel = (ISocketChannel*) new SocketChannelImpl(provider, fd);
 }
 
 ECode PipeImpl::PipeSinkChannel::ImplCloseSelectableChannel()
@@ -103,27 +102,27 @@ ECode PipeImpl::PipeSinkChannel::ImplConfigureBlocking(
     return IoUtils::SetBlocking(desc, blocking);
 }
 
-ECode PipeImpl::PipeSinkChannel::WriteBuffer(
+ECode PipeImpl::PipeSinkChannel::Write(
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ Int32* nWrite)
 {
-    return mChannel->WriteByteBuffer(buffer, nWrite);
+    return mChannel->Write(buffer, nWrite);
 }
 
-ECode PipeImpl::PipeSinkChannel::WriteBuffers(
-    /* [in] */ ArrayOf<IByteBuffer*>& buffers,
+ECode PipeImpl::PipeSinkChannel::Write(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [out] */ Int64* nWrite)
 {
-    return mChannel->WriteByteBuffers(buffers, nWrite);
+    return mChannel->Write(buffers, nWrite);
 }
 
-ECode PipeImpl::PipeSinkChannel::WriteBuffers(
-    /* [in] */ ArrayOf<IByteBuffer*>& buffers,
+ECode PipeImpl::PipeSinkChannel::Write(
+    /* [in] */ ArrayOf<IByteBuffer*>* buffers,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int64* nWrite)
 {
-    return mChannel->WriteByteBuffers(buffers, offset, length, nWrite);
+    return mChannel->Write(buffers, offset, length, nWrite);
 }
 
 ECode PipeImpl::PipeSinkChannel::GetFD(
@@ -142,7 +141,6 @@ ECode PipeImpl::PipeSinkChannel::GetFD(
 PipeImpl::PipeImpl(
     /* [in] */ ISelectorProvider* selectorProvider)
 {
-    assert(0 && "TODO");
     // try {
     AutoPtr<IFileDescriptor> fd1;
     CFileDescriptor::New((IFileDescriptor**)&fd1);
@@ -152,9 +150,8 @@ PipeImpl::PipeImpl(
 
     // It doesn't matter which file descriptor we use for which end;
     // they're guaranteed to be indistinguishable.
-    assert(0 && "TODO");
-    // mSink = (ISinkChannel*) new PipeSinkChannel(selectorProvider, fd1);
-    // mSource = (ISourceChannel*) new PipeSourceChannel(selectorProvider, fd2);
+    mSink = new PipeSinkChannel(selectorProvider, fd1);
+    mSource = new PipeSourceChannel(selectorProvider, fd2);
     // } catch (ErrnoException errnoException) {
     //     throw errnoException.rethrowAsIOException();
     // }

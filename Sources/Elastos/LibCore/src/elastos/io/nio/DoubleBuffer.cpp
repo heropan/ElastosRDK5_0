@@ -1,6 +1,5 @@
 
 #include "DoubleBuffer.h"
-#include "ReadWriteDoubleArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
@@ -50,18 +49,13 @@ ECode DoubleBuffer::Wrap(
     /* [out] */ IDoubleBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    Int32 arrayLength = array->GetLength();
-    if ((start | doubleCount) < 0 || start > arrayLength || arrayLength - start < doubleCount) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+
     assert(0 && "TODO");
-    AutoPtr<ReadWriteDoubleArrayBuffer> rwbuf; // = new ReadWriteDoubleArrayBuffer(array);
-    rwbuf->mPosition = start;
-    rwbuf->mLimit = start + doubleCount;
-    *buf = (IDoubleBuffer*)rwbuf.Get();
-    REFCOUNT_ADD(*buf)
+    // Arrays.checkOffsetAndCount(array.length, start, doubleCount);
+    // DoubleBuffer buf = new DoubleArrayBuffer(array);
+    // buf.position = start;
+    // buf.limit = start + doubleCount;
+    // return buf;
     return NOERROR;
 }
 

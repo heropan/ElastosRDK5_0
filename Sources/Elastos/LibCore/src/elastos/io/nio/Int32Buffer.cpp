@@ -1,6 +1,5 @@
 
 #include "Int32Buffer.h"
-#include "ReadWriteInt32ArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
@@ -25,14 +24,11 @@ ECode Int32Buffer::Allocate(
 {
     VALIDATE_NOT_NULL(buf);
 
-    if (capacity < 0) {
-        // throw new IllegalArgumentException("capacity < 0: " + capacity);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
     assert(0 && "TODO");
-    // *buf = (IInt32Buffer*)new ReadWriteInt32ArrayBuffer(capacity);
-    REFCOUNT_ADD(*buf)
+    // if (capacity < 0) {
+    //     throw new IllegalArgumentException("capacity < 0: " + capacity);
+    // }
+    // return new IntArrayBuffer(new int[capacity]);
     return NOERROR;
 }
 
@@ -50,19 +46,13 @@ ECode Int32Buffer::Wrap(
     /* [out] */ IInt32Buffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    Int32 arrayLength = array->GetLength();
-    if ((start | int32Count) < 0 || start > arrayLength || arrayLength - start < int32Count) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
 
     assert(0 && "TODO");
-    AutoPtr<ReadWriteInt32ArrayBuffer> rwBuf; // = new ReadWriteInt32ArrayBuffer(array);
-    rwBuf->mPosition = start;
-    rwBuf->mLimit = start + int32Count;
-    *buf = (IInt32Buffer*)rwBuf.Get();
-    REFCOUNT_ADD(*buf)
+    // Arrays.checkOffsetAndCount(array.length, start, intCount);
+    // IntBuffer buf = new IntArrayBuffer(array);
+    // buf.position = start;
+    // buf.limit = start + intCount;
+    // return buf;
     return NOERROR;
 }
 

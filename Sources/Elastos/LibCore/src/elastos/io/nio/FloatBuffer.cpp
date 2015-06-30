@@ -1,6 +1,5 @@
 
 #include "FloatBuffer.h"
-#include "ReadWriteFloatArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
@@ -25,13 +24,11 @@ ECode FloatBuffer::Allocate(
 {
     VALIDATE_NOT_NULL(buf);
 
-    if (capacity < 0) {
-        // throw new IllegalArgumentException("capacity < 0: " + capacity);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    *buf = (IFloatBuffer*)new ReadWriteFloatArrayBuffer(capacity);
-    REFCOUNT_ADD(*buf)
+    assert(0 && "TODO");
+    // if (capacity < 0) {
+    //     throw new IllegalArgumentException("capacity < 0: " + capacity);
+    // }
+    // return new FloatArrayBuffer(new float[capacity]);
     return NOERROR;
 }
 
@@ -50,18 +47,11 @@ ECode FloatBuffer::Wrap(
 {
     VALIDATE_NOT_NULL(buf);
 
-    Int32 arrayLength = array->GetLength();
-    if ((start | floatCount) < 0 || start > arrayLength || arrayLength - start < floatCount) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    AutoPtr<ReadWriteFloatArrayBuffer> rwBuf = new ReadWriteFloatArrayBuffer(array);
-    rwBuf->mPosition = start;
-    rwBuf->mLimit = start + floatCount;
-    *buf = (IFloatBuffer*)rwBuf.Get();
-    REFCOUNT_ADD(*buf)
+    // Arrays.checkOffsetAndCount(array.length, start, floatCount);
+    // FloatBuffer buf = new FloatArrayBuffer(array);
+    // buf.position = start;
+    // buf.limit = start + floatCount;
+    // return buf;
     return NOERROR;
 }
 

@@ -328,5 +328,53 @@ ECode CByteArrayBuffer::AsInt64Buffer(
     return NOERROR;
 }
 
+ECode CByteArrayBuffer::GetChars(
+    /* [in] */ ArrayOf<Char32>* dst,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ Int32 charCount)
+{
+    return NOERROR;
+}
+
+ECode CByteArrayBuffer::GetDoubles(
+    /* [in] */ ArrayOf<Double>* dst,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ Int32 doubleCount)
+{
+    return NOERROR;
+}
+
+ECode CByteArrayBuffer::GetFloats(
+    /* [in] */ ArrayOf<Float>* dst,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ Int32 floatCount)
+{
+    return NOERROR;
+}
+
+ECode CByteArrayBuffer::GetInt32s(
+    /* [in] */ ArrayOf<Int32>* dst,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ Int32 intCount)
+{
+    return NOERROR;
+}
+
+ECode CByteArrayBuffer::GetInt64s(
+    /* [in] */ ArrayOf<Int64>* dst,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ Int32 longCount)
+{
+    return NOERROR;
+}
+
+ECode CByteArrayBuffer::GetInt16s(
+    /* [in] */ ArrayOf<Int16>* dst,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ Int32 shortCount)
+{
+    return NOERROR;
+}
+
 } // namespace IO
 } // namespace Elastos

@@ -1,12 +1,15 @@
 #include "SelectionKeyImpl.h"
+#include "AutoLock.h"
+#include "SelectorImpl.h"
 
+using Elastos::Core::AutoLock;
 using Elastos::IO::Channels::EIID_ISelectableChannel;
 
 namespace Elastos {
 namespace IO {
 
 SelectionKeyImpl::SelectionKeyImpl(
-    /* [in] */ AbstractSelectableChannel* channel,
+    /* [in] */ IAbstractSelectableChannel* channel,
     /* [in] */ Int32 ops,
     /* [in] */ IObject* attachment,
     /* [in] */ IAbstractSelector* selector)
@@ -20,7 +23,7 @@ SelectionKeyImpl::SelectionKeyImpl(
     Attach(attachment, (IObject**)&tempObj);
 }
 
-ECode SelectionKeyImpl::Channel(
+ECode SelectionKeyImpl::GetChannel(
     /* [in] */ ISelectableChannel** channel)
 {
     *channel = (ISelectableChannel*) mChannel->Probe(EIID_ISelectableChannel);
@@ -28,79 +31,68 @@ ECode SelectionKeyImpl::Channel(
     return NOERROR;
 }
 
-ECode SelectionKeyImpl::InterestOps(
+ECode SelectionKeyImpl::GetInterestOps(
     /* [out] */ Int32* opts)
 {
     VALIDATE_NOT_NULL(opts)
-    FAIL_RETURN(CheckValid())
 
- //   mSelector->mKeysLock;
-    printf("WARNING: Not synchronized yet\n");
+    FAIL_RETURN(CheckValid())
+    AutoLock lock(((SelectorImpl*)mSelector.Get())->mKeysLock);
     *opts = mInterestOps;
     return NOERROR;
 }
 
 Int32 SelectionKeyImpl::InterestOpsNoCheck()
 {
-    printf("WARNING: Not synchronized yet\n");
-//    mSelector->mKeysLock.Lock();
-    Int32 ret = mInterestOps;
-//    mSelector->mKeysLock.Unlock();
-    return ret;
+    AutoLock lock(((SelectorImpl*)mSelector.Get())->mKeysLock);
+    return mInterestOps;
 }
 
-ECode SelectionKeyImpl::InterestOps(
+ECode SelectionKeyImpl::GetInterestOps(
     /* [in] */ Int32 operations,
-    /* [out] */ SelectionKey** key)
+    /* [out] */ ISelectionKey** key)
 {
     VALIDATE_NOT_NULL(key)
 
-    ECode ecRet = CheckValid();
-    if(ecRet != CheckValid())
-    {
-        return ecRet;
-    }
-
+    FAIL_RETURN(CheckValid());
     Int32 ops;
-    mChannel->GetValidOps(&ops);
+    ISelectableChannel::Probe(mChannel)->GetValidOps(&ops);
     if ((operations & ~ops) != 0)
     {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    printf("WARNING: Not synchronized yet\n");
-//          mSelector->KeyLock;
+    AutoLock lock(((SelectorImpl*)mSelector.Get())->mKeysLock);
     mInterestOps = operations;
     *key = this;
 
     return NOERROR;
 }
 
-ECode SelectionKeyImpl::ReadyOps(
+ECode SelectionKeyImpl::GetReadyOps(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret)
-    ECode ecRet = CheckValid();
-    if(NOERROR != ecRet)
-    {
-        return ecRet;
-    }
+
+    FAIL_RETURN(CheckValid());
     *ret = mReadyOps;
     return NOERROR;
 }
 
-ECode SelectionKeyImpl::Selector(
+ECode SelectionKeyImpl::GetSelector(
     /* [out] */ ISelector** selector)
 {
-      *selector = ISelector::Probe(mSelector);
-      REFCOUNT_ADD(*selector);
-      return NOERROR;
+    VALIDATE_NOT_NULL(selector)
+
+    *selector = ISelector::Probe(mSelector);
+    REFCOUNT_ADD(*selector);
+    return NOERROR;
 }
 
 ECode SelectionKeyImpl::SetReadyOps(
     /* [in] */ Int32 readyOps)
 {
-    this->mReadyOps = readyOps;
+    mReadyOps = readyOps;
     return NOERROR;
 }
 
@@ -126,7 +118,7 @@ ECode SelectionKeyImpl::IsConnected(
     }
 
     Boolean isConn = FALSE;
-    ((ISocketChannel*) mChannel)->IsConnected(isConnected);
+    ISocketChannel::Probe(mChannel)->IsConnected(isConnected);
     *isConnected = isConn;
     return NOERROR;
 }

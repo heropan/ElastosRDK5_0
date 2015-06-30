@@ -43,7 +43,7 @@ ECode SelectionKey::IsAcceptable(
     /* [out] */ Boolean* acceptable)
 {
     Int32 ops;
-    ECode ecRet = ReadyOps(&ops);
+    ECode ecRet = GetReadyOps(&ops);
     if ((ops & sOP_ACCEPT) == sOP_ACCEPT)
         *acceptable = TRUE;
     else
@@ -55,7 +55,7 @@ ECode SelectionKey::IsConnectable(
     /* [out] */ Boolean* connectable)
 {
     Int32 ops;
-    ECode ecRet = ReadyOps(&ops);
+    ECode ecRet = GetReadyOps(&ops);
     *connectable = (ops & sOP_CONNECT) == sOP_CONNECT;
     return ecRet;
 }
@@ -64,7 +64,7 @@ ECode SelectionKey::IsReadable(
     /* [out] */ Boolean* readable)
 {
     Int32 ops;
-    ECode ecRet = ReadyOps(&ops);
+    ECode ecRet = GetReadyOps(&ops);
     if ((ops & sOP_READ) == sOP_READ)
         *readable = TRUE;
     else
@@ -76,7 +76,7 @@ ECode SelectionKey::IsWritable(
     /* [out] */ Boolean* writable)
 {
     Int32 ops;
-    ECode ecRet = ReadyOps(&ops);
+    ECode ecRet = GetReadyOps(&ops);
     *writable = (ops & sOP_WRITE) == sOP_WRITE;
     return ecRet;
 }

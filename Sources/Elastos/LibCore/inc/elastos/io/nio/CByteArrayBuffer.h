@@ -180,6 +180,36 @@ public:
     CARAPI AsInt64Buffer(
         /* [out] */ IInt64Buffer** buffer);
 
+    CARAPI GetChars(
+        /* [in] */ ArrayOf<Char32>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 charCount);
+
+    CARAPI GetDoubles(
+        /* [in] */ ArrayOf<Double>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 doubleCount);
+
+    CARAPI GetFloats(
+        /* [in] */ ArrayOf<Float>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 floatCount);
+
+    CARAPI GetInt32s(
+        /* [in] */ ArrayOf<Int32>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 intCount);
+
+    CARAPI GetInt64s(
+        /* [in] */ ArrayOf<Int64>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 longCount);
+
+    CARAPI GetInt16s(
+        /* [in] */ ArrayOf<Int16>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 shortCount);
+
 public:
     /**
      * These fields are non-private for NioUtils.unsafeArray.

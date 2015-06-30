@@ -1,4 +1,7 @@
 #include "Pipe.h"
+#include "SelectorProvider.h"
+
+using Elastos::IO::Channels::Spi::SelectorProvider;
 
 namespace Elastos{
 namespace IO{
@@ -9,36 +12,39 @@ namespace Channels{
 //==========================================================
 Pipe::SinkChannel::SinkChannel(
     /* [in] */ ISelectorProvider* provider)
+    : AbstractSelectableChannel(provider)
 {
-    // super(provider);
 }
 
 CAR_INTERFACE_IMPL_2(Pipe::SinkChannel, Object, IWritableByteChannel, IGatheringByteChannel)
 
-ECode Pipe::SinkChannel::ValidOps(
+ECode Pipe::SinkChannel::GetValidOps(
     /* [out] */ Int32* value)
 {
-    // return SelectionKey.OP_WRITE;
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(value)
+
+    *value = ISelectionKey::OP_WRITE;
+    return NOERROR;
 }
 
 //==========================================================
 //       Pipe::SourceChannel
 //==========================================================
-
 Pipe::SourceChannel::SourceChannel(
     /* [in] */ ISelectorProvider* provider)
+    : AbstractSelectableChannel(provider)
 {
-    // super(provider);
 }
 
 CAR_INTERFACE_IMPL_2(Pipe::SourceChannel, Object, IReadableByteChannel, IScatteringByteChannel)
 
-ECode Pipe::SourceChannel::ValidOps(
+ECode Pipe::SourceChannel::GetValidOps(
     /* [out] */ Int32* value)
 {
-    // return SelectionKey.OP_READ;
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(value)
+
+    *value = ISelectionKey::OP_READ;
+    return NOERROR;
 }
 
 //==========================================================
@@ -46,15 +52,16 @@ ECode Pipe::SourceChannel::ValidOps(
 //==========================================================
 Pipe::Pipe()
 {
-
 }
 
 CAR_INTERFACE_IMPL(Pipe, Object, IPipe)
 
-ECode Pipe::Open(IPipe** pipe)
+ECode Pipe::Open(
+    /* [out] */ IPipe** pipe)
 {
-    // return SelectorProvider.provider().openPipe();
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<ISelectorProvider> sp;
+    FAIL_RETURN(SelectorProvider::GetProvider((ISelectorProvider**)&sp));
+    return sp->OpenPipe(pipe);
 }
 
 } // namespace Channels

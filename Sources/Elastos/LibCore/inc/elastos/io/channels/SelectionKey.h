@@ -75,7 +75,7 @@ public:
      *
      * @return the channel of this key.
      */
-    virtual CARAPI Channel(
+    virtual CARAPI GetChannel(
         /* [out] */ ISelectableChannel** channel) = 0;
 
     /**
@@ -86,7 +86,7 @@ public:
      * @throws CancelledKeyException
      *             if the key has already been canceled.
      */
-    virtual CARAPI InterestOps(
+    virtual CARAPI GetInterestOps(
         /* [out] */ Int32* ops) = 0;
 
     /**
@@ -102,7 +102,7 @@ public:
      * @throws CancelledKeyException
      *             if the key has already been canceled.
      */
-    virtual CARAPI InterestOps(
+    virtual CARAPI GetInterestOps(
         /* [in] */ Int32 ops,
         /* [out] */ ISelectionKey** key) = 0;
 
@@ -176,10 +176,10 @@ public:
      * @throws CancelledKeyException
      *             if the key has already been canceled.
      */
-    virtual CARAPI ReadyOps(
+    virtual CARAPI GetReadyOps(
         /* [out] */ Int32* ops) = 0;
 
-    virtual CARAPI Selector(
+    virtual CARAPI GetSelector(
         /* [out] */ ISelector** sel) = 0;
 
 public:

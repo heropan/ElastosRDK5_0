@@ -36,7 +36,7 @@ ECode SocketChannel::Open(
     return ecRet;
 }
 
-ECode SocketChannel::ValidOps(
+ECode SocketChannel::GetValidOps(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret)

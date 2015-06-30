@@ -1,6 +1,5 @@
 
 #include "Int16Buffer.h"
-#include "ReadWriteInt16ArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
@@ -50,19 +49,13 @@ ECode Int16Buffer::Wrap(
     /* [out] */ IInt16Buffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    Int32 arrayLength = array->GetLength();
-    if ((start | int16Count) < 0 || start > arrayLength || arrayLength - start < int16Count) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
 
     assert(0 && "TODO");
-    AutoPtr<ReadWriteInt16ArrayBuffer> rwBuf; // = new ReadWriteInt16ArrayBuffer(array);
-    rwBuf->mPosition = start;
-    rwBuf->mLimit = start + int16Count;
-    *buf = (IInt16Buffer*)rwBuf.Get();
-    REFCOUNT_ADD(*buf)
+    // Arrays.checkOffsetAndCount(array.length, start, shortCount);
+    // ShortBuffer buf = new ShortArrayBuffer(array);
+    // buf.position = start;
+    // buf.limit = start + shortCount;
+    // return buf;
     return NOERROR;
 }
 
