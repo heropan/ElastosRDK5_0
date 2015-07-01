@@ -394,13 +394,10 @@ ECode CLocale::GetDisplayCountry(
         return NOERROR;
     }
 
-    String thisStr, locStr;
-    ToString(&thisStr);
-    locale->ToString(&locStr);
-    String result = ICUUtil::GetDisplayCountry(thisStr, locStr);
+    String result;
+    ICUUtil::GetDisplayCountry(THIS_PROBE(ILocale), locale, &result);
     if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
-        GetDefault()->ToString(&locStr);
-        result = ICUUtil::GetDisplayCountry(thisStr, locStr);
+        ICUUtil::GetDisplayCountry(THIS_PROBE(ILocale), CLocale::GetDefault(), &result);
     }
     *country = result;
     return NOERROR;
@@ -409,7 +406,6 @@ ECode CLocale::GetDisplayCountry(
 ECode CLocale::GetDisplayLanguage(
     /* [out] */ String* language)
 {
-    VALIDATE_NOT_NULL(language);
     return GetDisplayLanguage(GetDefault(), language);
 }
 
@@ -439,13 +435,10 @@ ECode CLocale::GetDisplayLanguage(
         return NOERROR;
     }
 
-    String thisStr, locStr;
-    ToString(&thisStr);
-    locale->ToString(&locStr);
-    String result = ICUUtil::GetDisplayLanguage(thisStr, locStr);
+    String result;
+    ICUUtil::GetDisplayLanguage(THIS_PROBE(ILocale), locale, &result);
     if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
-        GetDefault()->ToString(&locStr);
-        result = ICUUtil::GetDisplayLanguage(thisStr, locStr);
+        ICUUtil::GetDisplayLanguage(THIS_PROBE(ILocale), CLocale::GetDefault(), &result);
     }
     *language = result;
     return NOERROR;
@@ -538,13 +531,9 @@ ECode CLocale::GetDisplayVariant(
     //      return mVariantCode;
     // }
 
-    String thisStr, locStr;
-    ToString(&thisStr);
-    locale->ToString(&locStr);
-    result = ICUUtil::GetDisplayVariant(thisStr, locStr);
+    result = ICUUtil::GetDisplayVariant(THIS_PROBE(ILocale), locale);
     if (result.IsNull()) { // TODO: do we need to do this, or does ICU do it for us?
-        GetDefault()->ToString(&locStr);
-        result = ICUUtil::GetDisplayVariant(thisStr, locStr);
+        result = ICUUtil::GetDisplayVariant(THIS_PROBE(ILocale), CLocale::GetDefault());
     }
     *variantName = result;
     return NOERROR;

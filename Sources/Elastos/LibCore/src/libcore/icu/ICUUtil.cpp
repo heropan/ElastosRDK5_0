@@ -2,6 +2,17 @@
 #include "ElStringByteSink.h"
 #include "ICUUtil.h"
 #include "CLocale.h"
+#include "logging/Logger.h"
+#include "StringBuilder.h"
+#include <UniquePtr.h>
+#include "CBasicLruCache.h"
+#include "AutoLock.h"
+// #include "CCollections.h"
+#include "Set.h"
+#include "CHashMap.h"
+#include "CHashSet.h"
+#include "StringUtils.h"
+#include "CStringWrapper.h"
 
 #include <unicode/ucat.h>
 #include <unicode/ureslocs.h>
@@ -28,17 +39,6 @@
 #include <unicode/dtptngen.h>
 #include <unicode/ulocdata.h>
 #include <unicode/ucurr.h>
-#include "logging/Logger.h"
-#include "StringBuilder.h"
-#include <UniquePtr.h>
-#include "CBasicLruCache.h"
-#include "Autolock.h"
-// #include "CCollections.h"
-#include "Set.h"
-#include "CHashMap.h"
-#include "CHashSet.h"
-#include "StringUtils.h"
-#include "CStringWrapper.h"
 
 using Elastos::Core::UniquePtr;
 using Libcore::Utility::CBasicLruCache;
@@ -868,7 +868,7 @@ String ICUUtil::GetDisplayScript(
 
     return GetDisplayScriptNative(targetLanguageTag, languageTag);
 }
-        
+
 String ICUUtil::GetDisplayScriptNative(
     const String& targetLanguageTag,
     const String& languageTag)
