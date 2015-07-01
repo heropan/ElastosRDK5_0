@@ -11,8 +11,16 @@ namespace Utility {
 CAR_INTERFACE_IMPL(BasicLruCache, Object, IBasicLruCache)
 
 BasicLruCache::BasicLruCache()
-    : mMaxSize(0)
+    : mMaxSize(1)
 {
+}
+
+BasicLruCache::BasicLruCache(
+    /* [in] */ Int32 maxSize)
+{
+    assert(maxSize > 0);
+    mMaxSize = maxSize;
+    ASSERT_SUCCEEDED(CLinkedHashMap::New(0, 0.75f, TRUE, (IMap**)&mMap));
 }
 
 BasicLruCache::~BasicLruCache()

@@ -1,26 +1,16 @@
 #ifndef __COLLATIONKEYICU_H__
 #define __COLLATIONKEYICU_H__
 
-#if 0 // for compiling
-#include "CollationKey.h"
+#include "text/CollationKey.h"
 
 using Elastos::Text::CollationKey;
 using Elastos::Text::ICollationKey;
-#else
-#include <Object.h>
-#endif // #if 0
-
-extern "C" const InterfaceID EIID_CollationKeyICU;
 
 namespace Libcore {
 namespace ICU {
 
 class CollationKeyICU
-#if 0 // for compiling
     : public CollationKey
-#else
-    : public Object
-#endif // #if 0
     , public ICollationKeyICU
 {
 public:

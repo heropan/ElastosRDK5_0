@@ -3,13 +3,14 @@
 
 #include "Object.h"
 
-
+using Elastos::Core::IComparable;
 namespace Elastos {
 namespace Text {
 
 class CollationKey
     : public Object
     , public ICollationKey
+    , public IComparable
 {
 public:
     CAR_INTERFACE_DECL()

@@ -19,6 +19,9 @@ public:
 
     BasicLruCache();
 
+    BasicLruCache(
+        /* [in] */ Int32 maxSize);
+
     virtual ~BasicLruCache();
 
     CARAPI constructor(

@@ -8,7 +8,9 @@
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
+#include "utility/BasicLruCache.h"
 
+using Libcore::Utility::BasicLruCache;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ICalendar;
@@ -20,89 +22,85 @@ class DateIntervalFormat
 {
 public:
     class FormatterCache
-        : public Object
-        // , public BasicLruCache<String, Int64>
+        : public BasicLruCache
     {
     public:
-        FormatterCache()/*:BasicLruCache<String, Int64>(8)*/
-        {
-        /*TODO: Wait for BasicLruCache*/;
-        }
+        FormatterCache();
 
     protected:
-        void EntryEvicted(
-            const String& key,
-            Int64 value);
+        virtual CARAPI_(void) EntryEvicted(
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* value);
     };
 
 private:
     DateIntervalFormat(){}
 
 public:
-    static String FormatDateRange(
-        Int64 startMs,
-        Int64 endMs,
-        Int32 flags,
-        String& olsonId);
+    static CARAPI_(String) FormatDateRange(
+        /* [in] */ Int64 startMs,
+        /* [in] */ Int64 endMs,
+        /* [in] */ Int32 flags,
+        /* [in] */ String& olsonId);
 
-    static String FormatDateRange(
-        ILocale* locale,
-        ITimeZone* tz,
-        Int64 startMs,
-        Int64 endMs,
-        Int32 flags);
+    static CARAPI_(String) FormatDateRange(
+        /* [in] */ ILocale* locale,
+        /* [in] */ ITimeZone* tz,
+        /* [in] */ Int64 startMs,
+        /* [in] */ Int64 endMs,
+        /* [in] */ Int32 flags);
 
 private:
-    static Int64 GetFormatter(
-        const String& skeleton,
-        const String& localeName,
-        const String& tzName);
+    static CARAPI_(Int64) GetFormatter(
+        /* [in] */ const String& skeleton,
+        /* [in] */ const String& localeName,
+        /* [in] */ const String& tzName);
 
-    static String ToSkeleton(
-        ICalendar* startCalendar,
-        ICalendar* endCalendar,
-        Int32 flags);
+    static CARAPI_(String) ToSkeleton(
+        /* [in] */ ICalendar* startCalendar,
+        /* [in] */ ICalendar* endCalendar,
+        /* [in] */ Int32 flags);
 
-    static Boolean IsMidnight(
-        ICalendar* c);
+    static CARAPI_(Boolean) IsMidnight(
+        /* [in] */ ICalendar* c);
 
-    static Boolean OnTheHour(
-        ICalendar* c);
+    static CARAPI_(Boolean) OnTheHour(
+        /* [in] */ ICalendar* c);
 
-    static Boolean FallOnDifferentDates(
-        ICalendar* c1,
-        ICalendar* c2);
+    static CARAPI_(Boolean) FallOnDifferentDates(
+        /* [in] */ ICalendar* c1,
+        /* [in] */ ICalendar* c2);
 
-    static Boolean FallInSameMonth(
-        ICalendar* c1,
-        ICalendar* c2);
+    static CARAPI_(Boolean) FallInSameMonth(
+        /* [in] */ ICalendar* c1,
+        /* [in] */ ICalendar* c2);
 
-    static Boolean FallInSameYear(
-        ICalendar* c1,
-        ICalendar* c2);
+    static CARAPI_(Boolean) FallInSameYear(
+        /* [in] */ ICalendar* c1,
+        /* [in] */ ICalendar* c2);
 
-    static Boolean IsThisYear(
-        ICalendar* c);
+    static CARAPI_(Boolean) IsThisYear(
+        /* [in] */ ICalendar* c);
 
-    static Int32 DayDistance(
-        ICalendar* c1,
-        ICalendar* c2);
+    static CARAPI_(Int32) DayDistance(
+        /* [in] */ ICalendar* c1,
+        /* [in] */ ICalendar* c2);
 
-    static Int32 JulianDay(
-        ICalendar* c);
+    static CARAPI_(Int32) JulianDay(
+        /* [in] */ ICalendar* c);
 
-    static Int64 CreateDateIntervalFormat(
-        const String& skeleton,
-        const String& localeName,
-        const String& tzName);
+    static CARAPI_(Int64) CreateDateIntervalFormat(
+        /* [in] */ const String& skeleton,
+        /* [in] */ const String& localeName,
+        /* [in] */ const String& tzName);
 
-    static void DestroyDateIntervalFormat(
-        Int64 address);
+    static CARAPI_(void) DestroyDateIntervalFormat(
+        /* [in] */ Int64 address);
 
-    static String FormatDateInterval(
-        Int64 address,
-        Int64 fromDate,
-        Int64 toDate);
+    static CARAPI_(String) FormatDateInterval(
+        /* [in] */ Int64 address,
+        /* [in] */ Int64 fromDate,
+        /* [in] */ Int64 toDate);
 
 private:
     static const Int32 DAY_IN_MS;

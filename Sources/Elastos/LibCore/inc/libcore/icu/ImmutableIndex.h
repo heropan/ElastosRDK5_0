@@ -21,7 +21,8 @@ protected:
     ~ImmutableIndex();
 
 private:
-    ImmutableIndex(Int64 peer);
+    ImmutableIndex(
+        /* [in] */ Int64 peer);
 
 public:
     CARAPI GetBucketCount(
@@ -48,9 +49,11 @@ private:
 
     CARAPI_(String) GetBucketLabel(Int64 peer, Int32 index);
 
+
+private:
     Int64 mPeer;
 
-friend class AlphabeticIndex;
+    friend class AlphabeticIndex;
 };
 
 } // namespace ICU

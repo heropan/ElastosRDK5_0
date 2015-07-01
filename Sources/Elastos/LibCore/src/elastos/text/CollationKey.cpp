@@ -1,9 +1,11 @@
 #include "CollationKey.h"
 
+using Elastos::Core::EIID_IComparable;
+
 namespace Elastos {
 namespace Text {
 
-CAR_INTERFACE_IMPL(CollationKey, Object, ICollationKey)
+CAR_INTERFACE_IMPL_2(CollationKey, Object, ICollationKey, IComparable)
 
 CollationKey::CollationKey()
 {}

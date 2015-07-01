@@ -128,6 +128,7 @@ Int64 AlphabeticIndex::Create(
 {
     UErrorCode status = U_ZERO_ERROR;
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus()) {
         return 0;
