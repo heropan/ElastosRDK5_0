@@ -4,11 +4,11 @@
 #include "CBufferedReader.h"
 #include "COutputStreamWriter.h"
 #include "CPrintStream.h"
-//#include "CCharsetHelper.h"
+#include "CCharsetHelper.h"
 #include "CStringWrapper.h"
 #include "CDate.h"
 #include "CHashTable.h"
-//#include "CCollections.h"
+#include "Collections.h"
 #include "CSystem.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
@@ -21,6 +21,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ISystem;
+using Elastos::Utility::Collections;
 using Elastos::IO::IBufferedReader;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
@@ -31,19 +32,21 @@ using Elastos::IO::CPrintStream;
 using Elastos::IO::IFlushable;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetHelper;
-//using Elastos::IO::Charset::CCharsetHelper;
+using Elastos::IO::Charset::CCharsetHelper;
 
 namespace Elastos{
 namespace Utility{
 
-const String Properties::PROP_DTD_NAME = String("http://java.sun.com/dtd/properties.dtd");
+const String Properties::PROP_DTD_NAME =
+    String("http://java.sun.com/dtd/properties.dtd");
 
-const String Properties::PROP_DTD = String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                                  + String("    <!ELEMENT properties (comment?, entry*) >")
-                                  + String("    <!ATTLIST properties version CDATA #FIXED \"1.0\" >")
-                                  + String("    <!ELEMENT comment (#PCDATA) >")
-                                  + String("    <!ELEMENT entry (#PCDATA) >")
-                                  + String("    <!ATTLIST entry key CDATA #REQUIRED >");
+const String Properties::PROP_DTD =
+    String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        + String("    <!ELEMENT properties (comment?, entry*) >")
+        + String("    <!ATTLIST properties version CDATA #FIXED \"1.0\" >")
+        + String("    <!ELEMENT comment (#PCDATA) >")
+        + String("    <!ELEMENT entry (#PCDATA) >")
+        + String("    <!ATTLIST entry key CDATA #REQUIRED >");
 
 const Int32 Properties::NONE = 0;
 const Int32 Properties::SLASH = 1;
@@ -123,6 +126,8 @@ ECode Properties::GetProperty(
     /* [in] */ const String& name,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     AutoPtr<IInterface> result;
     HashTable::Get(StrToCS(name), (IInterface**)&result);
     String property;
@@ -140,6 +145,8 @@ ECode Properties::GetProperty(
     /* [in] */ const String& defaultValue,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     AutoPtr<IInterface> result;
     HashTable::Get(StrToCS(name), (IInterface**)&result);
     String property;
@@ -418,7 +425,7 @@ ECode Properties::StringPropertyNames(
     SelectProperties(stringProperties, TRUE);
     AutoPtr<ISet> keySet;
     stringProperties->GetKeySet((ISet**)&keySet);
-//    return CCollections::_NewUnmodifiableSet(keySet, strNames);
+    return Collections::UnmodifiableSet(keySet, strNames);
 }
 
 ECode Properties::SelectProperties(
@@ -641,7 +648,7 @@ ECode Properties::StoreToXML(
 
     String encodingCanonicalName("UTF-8");
     AutoPtr<ICharsetHelper> sethelper;
-//    CCharsetHelper::AcquireSingleton((ICharsetHelper **)&sethelper);
+    CCharsetHelper::AcquireSingleton((ICharsetHelper **)&sethelper);
     AutoPtr<ICharset> charset;
     if (SUCCEEDED(sethelper->ForName(encoding, (ICharset**)&charset))) {
         charset->GetName(&encodingCanonicalName);

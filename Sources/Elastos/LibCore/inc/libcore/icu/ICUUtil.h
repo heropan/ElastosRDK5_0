@@ -13,7 +13,8 @@ namespace ICU {
 class ICUUtil
 {
 private:
-    ICUUtil(){}
+    ICUUtil();
+    ICUUtil(const ICUUtil&);
 
 public:
     /**
@@ -101,12 +102,10 @@ public:
         /* [in] */ const String& currencyCode,
         /* [out] */ String* displayName);
 
-private:
     static CARAPI_(String) GetCurrencyDisplayName(
         /* [in] */ const String& locale,
         /* [in] */ const String& currencyCode);
 
-public:
     static CARAPI_(Int32) GetCurrencyFractionDigits(
         /* [in] */ const String& currencyCode);
 
@@ -118,60 +117,50 @@ public:
         /* [in] */ String currencyCode,
         /* [out] */ String* currencySymbol);
 
-private:
     static CARAPI_(String) GetCurrencySymbol(
         /* [in] */ const String& locale,
         /* [in] */ const String& currencyCode);
 
-public:
     static CARAPI GetDisplayCountry(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale,
         /* [out] */ String* displayCountry);
 
-private:
     static CARAPI_(String) GetDisplayCountryNative(
         /* [in] */ const String& targetLanguageTag,
         /* [in] */ const String& languageTag);
 
-public:
     static CARAPI GetDisplayLanguage(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale,
         /* [out] */ String* displayLanguage);
 
-private:
     static CARAPI_(String) GetDisplayLanguageNative(
         /* [in] */ const String& targetLanguageTag,
         /* [in] */ const String& languageTag);
 
-public:
     static CARAPI_(String) GetDisplayVariant(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale);
 
-private:
     static CARAPI_(String) GetDisplayVariantNative(
         /* [in] */ const String& targetLanguageTag,
         /* [in] */ const String& languageTag);
 
-public:
     static CARAPI_(String) GetDisplayScript(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale);
 
-private:
     static CARAPI_(String) GetDisplayScriptNative(
         const String& targetLanguageTag,
         const String& languageTag);
 
-public:
     static CARAPI_(String) GetISO3Country(
         /* [in] */ const String& languageTag);
 
     static CARAPI_(String) GetISO3Language(
         /* [in] */ const String& languageTag);
-public:
+
     static CARAPI_(ILocale*) AddLikelySubtags(
         /* [in] */ ILocale* locale);
 

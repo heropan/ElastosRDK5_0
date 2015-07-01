@@ -10,36 +10,7 @@ using Elastos::Net::IURL;
 using Elastos::Net::JarURLConnection;
 using Elastos::IO::FilterInputStream;
 
-_ETL_NAMESPACE_BEGIN
-#ifndef AUTOPTR_LIBCORE_NET_URL_HASH_FUNC
-#define AUTOPTR_LIBCORE_NET_URL_HASH_FUNC
-
-template<> struct Hash<AutoPtr<IURL> >
-{
-    size_t operator()(AutoPtr<IURL> s) const
-    {
-        assert(s != NULL);
-        Int32 hashCode = 0;
-        IObject::Probe(s)->GetHashCode(&hashCode);
-        return (size_t)hashCode;
-    }
-};
-
-template<> struct EqualTo<AutoPtr<IURL> >
-{
-    size_t operator()(
-        const AutoPtr<IURL> x,
-        const AutoPtr<IURL> y) const
-    {
-        assert(x != NULL);
-        Boolean e = FALSE;
-        IObject::Probe(x)->Equals(y, &e);
-        return e;
-    }
-};
-
-#endif // AUTOPTR_LIBCORE_NET_URL_HASH_FUNC
-_ETL_NAMESPACE_END
+DEFINE_OBJECT_HASH_FUNC_FOR(IURL)
 
 namespace Libcore {
 namespace Net {

@@ -3,13 +3,17 @@
 #define __ELASTOS_TEXT_CDATEFORMATHELPER_H__
 
 #include "_Elastos_Text_CDateFormatHelper.h"
+#include "Singleton.h"
 
+using Elastos::Core::Singleton;
 using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Text {
 
 CarClass(CDateFormatHelper)
+    , public Singleton
+    , public IDateFormatHelper
 {
 public:
     CARAPI GetAvailableLocales(

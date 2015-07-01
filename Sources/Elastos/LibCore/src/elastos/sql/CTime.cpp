@@ -121,11 +121,11 @@ ECode CTime::ValueOf(
     }
     // parse each part of the string
     Int32 hour, minute, second;
-    FAIL_RETURN(StringUtils::ParseInt32(
+    FAIL_RETURN(StringUtils::Parse(
         timeString.Substring(0, firstIndex), &hour))
-    FAIL_RETURN(StringUtils::ParseInt32(
+    FAIL_RETURN(StringUtils::Parse(
         timeString.Substring(firstIndex + 1, secondIndex), &minute))
-    FAIL_RETURN(StringUtils::ParseInt32(
+    FAIL_RETURN(StringUtils::Parse(
         timeString.Substring(secondIndex + 1, timeString.GetLength()), &second))
     AutoPtr<CTime> theTime;
     CTime::NewByFriend(hour, minute, second, (CTime **)&theTime);

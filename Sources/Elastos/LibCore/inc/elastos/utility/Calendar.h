@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_UTILITY_CCALENDAR_H__
 #define __ELASTOS_UTILITY_CCALENDAR_H__
 
-#include <elautoptr.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IComparable;
@@ -11,8 +10,6 @@ using Elastos::IO::ISerializable;
 
 namespace Elastos{
 namespace Utility{
-
-extern "C" const InterfaceID EIID_Calendar;
 
 class Calendar
     : public Object
@@ -641,6 +638,7 @@ private:
 
 private:
     static const String FIELD_NAMES[];
+    static Object sLock;
 
 protected:
     /**

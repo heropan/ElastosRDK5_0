@@ -33,9 +33,14 @@ public:
     CARAPI GetAvailableIDs(
         /* [out] */ ArrayOf<String>** ids);
 
+    CARAPI_(AutoPtr<ArrayOf<String> >) GetAvailableIDs();
+
     CARAPI GetAvailableIDs(
         /* [in] */ Int32 rawUtcOffset,
         /* [out] */ ArrayOf<String>** ids);
+
+    CARAPI_(AutoPtr<ArrayOf<String> >) GetAvailableIDs(
+        /* [in] */ Int32 rawUtcOffset);
 
     CARAPI GetVersion(
         /* [out] */ String* version);

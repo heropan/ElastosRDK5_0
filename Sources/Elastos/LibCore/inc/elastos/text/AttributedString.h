@@ -6,6 +6,8 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
 
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Text::IAttributedCharacterIteratorAttribute)
+
 using Elastos::Core::ICloneable;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
@@ -13,17 +15,6 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IMap;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;
-
-_ETL_NAMESPACE_BEGIN
-template<> struct Hash<AutoPtr<IAttributedCharacterIteratorAttribute> >
-{
-    size_t operator()(AutoPtr<IAttributedCharacterIteratorAttribute> s) const
-    {
-        assert(s != NULL);
-        return (size_t)s.Get();
-    }
-};
-_ETL_NAMESPACE_END
 
 namespace Elastos {
 namespace Text {

@@ -1600,6 +1600,7 @@ module
                 [in] Int32 daylightSavings);
 
             interface ISimpleTimeZone;
+            interface ITimeZone;
             interface ICloneable;
             interface ISerializable;
         }

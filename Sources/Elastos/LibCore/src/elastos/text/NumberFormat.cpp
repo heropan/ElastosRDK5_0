@@ -129,7 +129,7 @@ ECode NumberFormat::Format(
 ECode NumberFormat::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    // return ICUUtil::GetAvailableNumberFormatLocales(locales);
+    return ICUUtil::GetAvailableNumberFormatLocales(locales);
 }
 
 ECode NumberFormat::GetCurrency(
@@ -160,8 +160,7 @@ ECode NumberFormat::GetCurrencyInstance(
     *instance = NULL;
 
     AutoPtr<ILocaleDataHelper> helper;
-    assert(0 && "TODO");
-    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     String currencyPattern;
@@ -192,8 +191,7 @@ ECode NumberFormat::GetIntegerInstance(
     AutoPtr<INumberFormat> result;
     AutoPtr<ILocaleDataHelper> datahelper;
     AutoPtr<ILocaleData> data;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&datahelper));
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&datahelper));
     datahelper->Get(locale,(ILocaleData **)&data);
 
     String integerPattern;

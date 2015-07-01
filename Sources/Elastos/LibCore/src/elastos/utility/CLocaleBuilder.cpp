@@ -1,13 +1,15 @@
 #include "CLocaleBuilder.h"
-//#include "CTreeSet.h"
-//#include "CTreeMap.h"
+#include "CTreeSet.h"
+#include "CTreeMap.h"
 #include "CLocale.h"
 #include "StringUtils.h"
 #include "CStringWrapper.h"
 #include "CChar32.h"
+#include "CoreUtils.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IChar32;
 using Elastos::Core::CChar32;
@@ -33,9 +35,9 @@ ECode CLocaleBuilder::constructor()
     // because serialized forms of the unicode locale extension (and
     // of the extension map itself) are specified to be in alphabetic
     // order of keys.
-    // CTreeSet::New((ISet**)&mAttributes);
-    // CTreeMap::New((IMap**)&mKeywords);
-    // CTreeMap::New((IMap**)&mExtensions);
+    CTreeSet::New((ISet**)&mAttributes);
+    CTreeMap::New((IMap**)&mKeywords);
+    CTreeMap::New((IMap**)&mExtensions);
     return NOERROR;
 }
 
@@ -389,9 +391,8 @@ ECode CLocaleBuilder::SetUnicodeLocaleKeyword(
     }
 
     // Everything checks out fine, add the <key, type> mapping to the list.
-    AutoPtr<ICharSequence> keycsq, typecsq;
-    CStringWrapper::New(lowerCaseKey, (ICharSequence**)&keycsq);
-    CStringWrapper::New(lowerCaseType, (ICharSequence**)&typecsq);
+    AutoPtr<ICharSequence> keycsq = CoreUtils::Convert(lowerCaseKey);
+    AutoPtr<ICharSequence> typecsq = CoreUtils::Convert(lowerCaseType);
     mKeywords->Put(TO_IINTERFACE(keycsq), TO_IINTERFACE(typecsq));
     return NOERROR;
 }

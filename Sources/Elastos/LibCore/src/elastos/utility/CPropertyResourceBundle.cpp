@@ -132,6 +132,7 @@ ECode CPropertyResourceBundle::HandleGetObject(
     /* [in] */ const String& key,
     /* [out] */ IInterface** outface)
 {
+    VALIDATE_NOT_NULL(outface)
     AutoPtr<ICharSequence> sq;
     CStringWrapper::New(key, (ICharSequence**)&sq);
     return (IDictionary::Probe(mResources))->Get(sq, outface);
