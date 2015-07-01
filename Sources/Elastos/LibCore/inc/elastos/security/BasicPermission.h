@@ -34,7 +34,7 @@ public:
     CARAPI constructor(
         /* [in] */ const String& name);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& name,
         /* [in] */ const String& action);
 };
