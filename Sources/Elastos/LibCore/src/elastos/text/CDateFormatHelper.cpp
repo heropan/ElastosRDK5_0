@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(CDateFormatHelper, Singleton, IDateFormatHelper)
+
+CAR_SINGLETON_IMPL(CDateFormatHelper)
+
 ECode CDateFormatHelper::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {

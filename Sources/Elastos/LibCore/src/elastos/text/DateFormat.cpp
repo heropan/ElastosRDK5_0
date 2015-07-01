@@ -4,7 +4,7 @@
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CSimpleDateFormat.h"
 // #include "CDate.h"
-// #include "ICUUtil.h"
+#include "ICUUtil.h"
 #include "CLocaleHelper.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
@@ -14,20 +14,20 @@
 #include "CParsePosition.h"
 #include "CDateFormatField.h"
 
-using Elastos::Utility::EIID_IDate;
-// using Elastos::Utility::CDate;
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::ICharSequence;
-// using Libcore::ICU::ICUUtil;
+using Elastos::Text::CFieldPosition;
+using Elastos::Text::CParsePosition;
+using Elastos::Utility::EIID_IDate;
+// using Elastos::Utility::CDate;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
 // using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
 // using Libcore::ICU::CLocaleData;
-using Elastos::Text::CFieldPosition;
-using Elastos::Text::CParsePosition;
+using Libcore::ICU::ICUUtil;
 
 namespace Elastos {
 namespace Text {
@@ -178,9 +178,9 @@ ECode DateFormat::Format(
 }
 
 ECode DateFormat::GetAvailableLocales(
-    /* [out] */ ArrayOf<ILocale*>** locales)
+    /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
-    // return ICUUtil::GetAvailableDateFormatLocales(locales);
+    return ICUUtil::GetAvailableDateFormatLocales(locales);
 }
 
 ECode DateFormat::GetCalendar(

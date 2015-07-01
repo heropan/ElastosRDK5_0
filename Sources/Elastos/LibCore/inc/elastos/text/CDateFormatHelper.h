@@ -16,6 +16,10 @@ CarClass(CDateFormatHelper)
     , public IDateFormatHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*> ** locales);
 

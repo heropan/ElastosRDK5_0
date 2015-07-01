@@ -731,6 +731,8 @@ EXPORTS
     _ZN7Elastos4Core11StringUtils10ReplaceAllERKNS_6StringES4_S4_PS2_
     _ZN7Elastos4Core11StringUtils11ParseDoubleERKNS_6StringEd
     _ZN7Elastos4Core11StringUtils11ToHexStringERNS_7ArrayOfIhEEh
+    _ZN7Elastos4Core11StringUtils11ToHexStringEd
+    _ZN7Elastos4Core11StringUtils11ToHexStringEf
     _ZN7Elastos4Core11StringUtils11ToHexStringEhh
     _ZN7Elastos4Core11StringUtils11ToHexStringEihi
     _ZN7Elastos4Core11StringUtils11ToHexStringExh
@@ -1106,6 +1108,17 @@ EXPORTS
     _ZThn8_N7Elastos4Core12StringBuffer6AddRefEv
     _ZThn8_N7Elastos4Core12StringBuffer7ReleaseEv
     _ZThn8_N7Elastos4Core12StringBuffer8ToStringEPNS_6StringE
+
+    ;;CoreUtils
+    _ZN7Elastos4Core9CoreUtils11ConvertByteEh
+    _ZN7Elastos4Core9CoreUtils13ConvertChar32Ej
+    _ZN7Elastos4Core9CoreUtils7ConvertERKNS_6StringE
+    _ZN7Elastos4Core9CoreUtils7ConvertEd
+    _ZN7Elastos4Core9CoreUtils7ConvertEf
+    _ZN7Elastos4Core9CoreUtils7ConvertEh
+    _ZN7Elastos4Core9CoreUtils7ConvertEi
+    _ZN7Elastos4Core9CoreUtils7ConvertEs
+    _ZN7Elastos4Core9CoreUtils7ConvertEx
 
     ;;Logger
     _ZN7Elastos7Utility7Logging6Logger10IsLoggableEPKci

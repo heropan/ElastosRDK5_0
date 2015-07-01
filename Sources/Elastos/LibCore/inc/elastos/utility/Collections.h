@@ -3246,10 +3246,9 @@ public:
         /* [in] */ IDeque* deque,
         /* [out] */ IQueue** result);
 
-    private:
-
-        Collections();
-        ~Collections();
+private:
+    Collections();
+    ~Collections();
 
 public:
     static const AutoPtr<IList> EMPTY_LIST;

@@ -233,6 +233,10 @@ module
         interface ICloneable;
     }
 
+    singleton class CDateFormatHelper {
+        interface IDateFormatHelper;
+    }
+
     singleton class CNormalizerHelper {
         interface INormalizer;
     }
