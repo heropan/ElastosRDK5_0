@@ -336,8 +336,7 @@ ECode CLocale::Equals(
 ECode CLocale::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    VALIDATE_NOT_NULL(locales);
-    // return ICUUtil::GetAvailableLocales(locales);
+    return ICUUtil::GetAvailableLocales(locales);
 }
 
 ECode CLocale::GetCountry(

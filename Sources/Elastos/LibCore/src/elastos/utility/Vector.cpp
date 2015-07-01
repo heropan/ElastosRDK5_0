@@ -126,6 +126,7 @@ ECode Vector::AddAll(
     /* [out] */ Boolean* modified)
 {
     VALIDATE_NOT_NULL(modified);
+    *modified = FALSE;
     VALIDATE_NOT_NULL(collection);
     synchronized (this) {
         if (location >= 0 && location <= mElementCount) {
@@ -164,7 +165,6 @@ ECode Vector::AddAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified)
     return AddAll(mElementCount, collection, modified);
 }
 

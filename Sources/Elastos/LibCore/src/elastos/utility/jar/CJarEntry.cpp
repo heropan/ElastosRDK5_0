@@ -11,7 +11,6 @@
 
 using Elastos::Utility::CLinkedList;
 using Elastos::Utility::IList;
-// using Elastos::Utility::Zip::EIID_ZipEntry;
 using Elastos::Security::IPrincipal;
 //using Elastos::Security::CCodeSigner
 using Elastos::Security::Cert::ICertificate;

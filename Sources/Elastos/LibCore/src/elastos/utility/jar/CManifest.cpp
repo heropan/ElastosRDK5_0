@@ -6,17 +6,15 @@
 #include "CStringWrapper.h"
 #include "CAttributes.h"
 #include "CName.h"
-//#include "CCharsets.h"
-//#include "CCharBufferHelper.h"
+#include "CharBuffer.h"
+#include "ByteBuffer.h"
 //#include "CCoderResultHelper.h"
-//#include "CByteBufferHelper.h"
+//#include "CCharsets.h"
 
 using Elastos::IO::IBuffer;
 using Elastos::IO::ICharBuffer;
-using Elastos::IO::ICharBufferHelper;
-//using Elastos::IO::CCharBufferHelper;
-//using Elastos::IO::CByteBufferHelper;
-using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::CharBuffer;
+using Elastos::IO::ByteBuffer;
 //using Elastos::IO::Charset::CCharsets;
 using Elastos::IO::Charset::ICharsets;
 using Elastos::IO::Charset::ICharset;
@@ -277,9 +275,7 @@ ECode CManifest::Write(
     charset->NewEncoder((ICharsetEncoder**)&encoder);
 
     AutoPtr<IByteBuffer> buffer;
-    AutoPtr<IByteBufferHelper> helper;
-    // CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
-    helper->Allocate(LINE_LENGTH_LIMIT, (IByteBuffer**)&buffer);
+    ByteBuffer::Allocate(LINE_LENGTH_LIMIT, (IByteBuffer**)&buffer);
 
     CManifest* cm = (CManifest*)manifest;
 
@@ -366,11 +362,9 @@ ECode CManifest::WriteEntry(
     IBuffer::Probe(bBuf)->Clear();
     IBuffer::Probe(bBuf)->SetLimit(LINE_LENGTH_LIMIT - nameString.GetLength() - 2);
 
-    AutoPtr<ICharBuffer> cBuf;
-    AutoPtr<ICharBufferHelper> helper;
-    // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&helper);
     AutoPtr<ArrayOf<Char32> > chars = value.GetChars();
-    helper->Wrap(chars, (ICharBuffer**)&cBuf);
+    AutoPtr<ICharBuffer> cBuf;
+    CharBuffer::Wrap(chars, (ICharBuffer**)&cBuf);
 
     AutoPtr<ICoderResultHelper> crHelper;
     // CCoderResultHelper::AcquireSingleton((ICoderResultHelper**)&crHelper);

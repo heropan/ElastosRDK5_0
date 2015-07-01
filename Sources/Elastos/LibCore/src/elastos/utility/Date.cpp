@@ -6,7 +6,7 @@
 #include <StringUtils.h>
 #include "CGregorianCalendar.h"
 #include "CTimeZoneHelper.h"
-// #include "CDateFormatHelper.h"
+#include "CDateFormatHelper.h"
 #include "CSimpleDateFormat.h"
 #include "CDateFormatSymbols.h"
 #include "CLocaleHelper.h"
@@ -21,7 +21,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Text::IFormat;
 using Elastos::Text::IDateFormatHelper;
-// using Elastos::Text::CDateFormatHelper;
+using Elastos::Text::CDateFormatHelper;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::IDateFormatSymbols;
@@ -682,7 +682,7 @@ ECode Date::ToLocaleString(
     VALIDATE_NOT_NULL(localeStr)
 
     AutoPtr<IDateFormatHelper> helper;
-    // CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
+    CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
     AutoPtr<IDateFormat> format;
     helper->GetDateTimeInstance((IDateFormat**)&format);
     format->Format((IDate*)this, localeStr);

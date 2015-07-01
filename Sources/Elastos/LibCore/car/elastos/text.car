@@ -1,7 +1,6 @@
 
 module
 {
-
     merge("text/Exceptions.car");
     merge("text/IAnnotation.car");
     merge("text/IAttributedCharacterIterator.car");
@@ -35,6 +34,7 @@ module
     merge("text/spi/INumberFormatProvider.car");
 
     interface Elastos.Core.ICloneable;
+    interface Elastos.Core.IComparator;
     interface Elastos.Text.IAnnotation;
     interface Elastos.Text.IAttributedCharacterIteratorAttribute;
     interface Elastos.IO.ISerializable;
@@ -93,6 +93,7 @@ module
             [in] INativeBreakIterator * iterator);
 
         interface IBreakIterator;
+        interface ICloneable;
     }
 
     class CFieldPosition {
@@ -137,7 +138,7 @@ module
 
         // constructor(
         //     [in] String value,
-        //     [in] IObjectMap * attributes);
+        //     [in] IMap * attributes);
 
         interface IAttributedString;
     }
@@ -152,6 +153,10 @@ module
             [in] String tem);
 
         interface IChoiceFormat;
+        interface INumberFormat;
+        interface IFormat;
+        interface ISerializable;
+        interface ICloneable;
     }
 
     singleton class CChoiceFormatHelper {
@@ -186,6 +191,10 @@ module
             [in] ILocale* locale);
 
         interface IDecimalFormat;
+        interface INumberFormat;
+        interface IFormat;
+        interface ISerializable;
+        interface ICloneable;
     }
 
     class CDecimalFormatSymbols {
@@ -195,6 +204,8 @@ module
             [in] ILocale* locale);
 
         interface IDecimalFormatSymbols;
+        interface ISerializable;
+        interface ICloneable;
     }
 
     singleton class CDecimalFormatSymbolsHelper {
@@ -210,6 +221,9 @@ module
             [in] String tem);
 
         interface IMessageFormat;
+        interface IFormat;
+        interface ISerializable;
+        interface ICloneable;
     }
 
     class CSimpleDateFormat {
@@ -257,6 +271,8 @@ module
             [in] ILocale* locale);
 
         interface IDateFormatSymbols;
+        interface ISerializable;
+        interface ICloneable;
     }
 
     class CDateFormatField {
@@ -292,7 +308,9 @@ module
             [in] String rules);
 
         interface IRuleBasedCollator;
-        // interface IComparator;
+        interface ICollator;
+        interface IComparator;
+        interface ICloneable;
     }
 
     class CStringCharacterIterator {

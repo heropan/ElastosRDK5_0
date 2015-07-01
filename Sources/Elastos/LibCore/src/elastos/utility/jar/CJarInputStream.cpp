@@ -5,7 +5,7 @@
 #include "CAttributes.h"
 #include "CStringWrapper.h"
 #include "JarVerifier.h"
-//#include "CJarFile.h"
+#include "CJarFile.h"
 #include "CStreams.h"
 
 using Elastos::IO::IByteArrayOutputStream;
@@ -43,7 +43,7 @@ ECode CJarInputStream::constructor(
 
     String name;
     IZipEntry::Probe(mCurrentJarEntry)->GetName(&name);
-    if (name.EqualsIgnoreCase(/*CJarFile::META_DIR*/String("META-INF/"))) {
+    if (name.EqualsIgnoreCase(CJarFile::META_DIR)) {
         CloseEntry();
         je = NULL;
         GetNextJarEntry((IJarEntry**)&je);
