@@ -14,14 +14,12 @@ PropertyPermission::PropertyPermission(
 ECode PropertyPermission::GetName(
     /* [out] */ String* name)
 {
-    VALIDATE_NOT_NULL(name)
     return BasicPermission::GetName(name);
 }
 
 ECode PropertyPermission::NewPermissionCollection(
     /* [out] */ IPermissionCollection** permissions)
 {
-    VALIDATE_NOT_NULL(permissions)
     return BasicPermission::NewPermissionCollection(permissions);
 }
 

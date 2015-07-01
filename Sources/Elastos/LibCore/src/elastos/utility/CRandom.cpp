@@ -2,6 +2,7 @@
 #include "CRandom.h"
 #include "CSystem.h"
 #include "Math.h"
+#include "AutoLock.h"
 
 using Elastos::Core::CSystem;
 using Elastos::IO::EIID_ISerializable;
@@ -43,7 +44,7 @@ ECode CRandom::constructor(
 Int32 CRandom::Next(
     /* [in] */ Int32 bits)
 {
-    //Mutex::AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     mSeed = (mSeed * sMultiplier + 0xbLL) & ((1LL << 48) - 1);
     return (Int32)(mSeed >> (48 - bits));
@@ -119,7 +120,7 @@ ECode CRandom::NextGaussian(
 {
     VALIDATE_NOT_NULL(value);
 
-//    Mutex::AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     if (mHaveNextNextGaussian) {
         mHaveNextNextGaussian = FALSE;
@@ -199,7 +200,7 @@ ECode CRandom::NextInt64(
 ECode CRandom::SetSeed(
     /* [in] */ Int64 seed)
 {
-//    Mutex::AutoLock lock(_m_syncLock);
+    AutoLock lock(this);
 
     mSeed = (seed ^ sMultiplier) & ((1LL << 48) - 1);
     mHaveNextNextGaussian = FALSE;

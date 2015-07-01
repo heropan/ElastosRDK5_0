@@ -4,11 +4,11 @@
 
 #include "CDate.h"
 #include "StringBuffer.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::StringBuffer;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Regex::IPattern;
-//using Libcore::ICU::ILocale;
 
 namespace Elastos {
 namespace Utility {
@@ -25,6 +25,9 @@ public:
     TimeZone() {}
 
     virtual ~TimeZone() {}
+
+    CARAPI CloneImpl(
+        /* [out] */ ITimeZone * other);
 
     /**
      * Equivalent to {@code getDisplayName(false, TimeZone.LONG, Locale.getDefault())}.
@@ -183,10 +186,6 @@ public:
     virtual CARAPI UseDaylightTime(
         /* [out] */ Boolean* isUsed) = 0;
 
-    virtual CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean* isEqual) = 0;
-
     static CARAPI_(AutoPtr<ArrayOf<String> >) GetAvailableIDs();
 
     static CARAPI_(AutoPtr<ArrayOf<String> >) GetAvailableIDs(
@@ -200,13 +199,17 @@ public:
 
     static CARAPI GetTimeZone(
         /* [in] */ const String& id,
-        /* [out, callee] */ ITimeZone** timeZone);
+        /* [out] */ ITimeZone** timeZone);
 
     static CARAPI SetDefault(
         /* [in] */ ITimeZone * timezone);
 
+    static CARAPI_(String) CreateGmtOffsetString(
+        /* [in] */ Boolean includeGmt,
+        /* [in] */ Boolean includeMinuteSeparator,
+        /* [in] */ Int32 offsetMillis);
 private:
-    void AppendNumber(
+    static void AppendNumber(
         /* [out] */ StringBuffer* buffer,
         /* [in] */ Int32 count,
         /* [in] */ Int32 value);
@@ -225,7 +228,8 @@ private:
     static AutoPtr<ITimeZone> sUTC;
     static AutoPtr<ITimeZone> sCHINA;
     static AutoPtr<ITimeZone> sDefaultTimeZone;
-    static AutoPtr<IPattern>  sCustomZoneIDPattern;
+    static AutoPtr<IPattern>  CUSTOM_ZONE_ID_PATTERN;
+    static Object sLock;
 };
 
 } // namespace Utility

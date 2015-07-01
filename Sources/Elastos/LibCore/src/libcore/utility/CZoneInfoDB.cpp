@@ -269,14 +269,23 @@ ECode TzData::ReadIndex(
 ECode TzData::GetAvailableIDs(
     /* [out, callee] */ ArrayOf<String>** ids)
 {
+    VALIDATE_NOT_NULL(ids)
     *ids = mIds->Clone();
     return NOERROR;
+}
+
+AutoPtr<ArrayOf<String> > TzData::GetAvailableIDs()
+{
+    AutoPtr<ArrayOf<String> > clone = mIds->Clone();
+    return clone;
 }
 
 ECode TzData::GetAvailableIDs(
     /* [in] */ Int32 rawUtcOffset,
     /* [out, callee] */ ArrayOf<String>** ids)
 {
+    VALIDATE_NOT_NULL(ids)
+
     List<String> matches;
     AutoPtr<ArrayOf<Int32> > rawUtcOffsets = GetRawUtcOffsets();
     for (Int32 i = 0; i < rawUtcOffsets->GetLength(); ++i) {
@@ -293,9 +302,18 @@ ECode TzData::GetAvailableIDs(
     return NOERROR;
 }
 
+AutoPtr<ArrayOf<String> > TzData::GetAvailableIDs(
+    /* [in] */ Int32 rawUtcOffset)
+{
+    AutoPtr<ArrayOf<String> > copy;
+    GetAvailableIDs(rawUtcOffset, (ArrayOf<String>**)&copy);
+    return copy;
+}
+
 ECode TzData::GetVersion(
     /* [out] */ String* version)
 {
+    VALIDATE_NOT_NULL(version)
     *version = mVersion;
     return NOERROR;
 }
@@ -303,6 +321,7 @@ ECode TzData::GetVersion(
 ECode TzData::GetZoneTab(
     /* [out] */ String* tab)
 {
+    VALIDATE_NOT_NULL(tab)
     *tab = mZoneTab;
     return NOERROR;
 }

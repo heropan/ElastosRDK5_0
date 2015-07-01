@@ -12,30 +12,7 @@ using Elastos::Utility::Etl::HashMap;
 
 using Elastos::Net::IURI;
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_IURI
-#define HASH_FUNC_FOR_AUTOPTR_IURI
-
-_ETL_NAMESPACE_BEGIN
-
-template<> struct Hash<AutoPtr<IURI> >
-{
-    size_t operator()(AutoPtr<IURI> name) const
-    {
-        return (size_t)name.Get();
-    }
-};
-
-template<> struct EqualTo<AutoPtr<IURI> >
-{
-    Boolean operator()(const AutoPtr<IURI>& x,
-                       const AutoPtr<IURI>& y) const
-    {
-        return Object::Equals(x.Get(), y.Get());
-    }
-};
-
-_ETL_NAMESPACE_END
-#endif
+DEFINE_OBJECT_HASH_FUNC_FOR(IURI)
 
 namespace Elastos {
 namespace Net {

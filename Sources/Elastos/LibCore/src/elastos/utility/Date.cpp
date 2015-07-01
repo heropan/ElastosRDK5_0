@@ -4,13 +4,13 @@
 #include <Character.h>
 #include <StringBuilder.h>
 #include <StringUtils.h>
-//#include "CGregorianCalendar.h"
-//#include "CTimeZoneHelper.h"
-//#include "CDateFormatHelper.h"
-//#include "CSimpleDateFormat.h"
-//#include "CDateFormatSymbols.h"
+#include "CGregorianCalendar.h"
+#include "CTimeZoneHelper.h"
+// #include "CDateFormatHelper.h"
+#include "CSimpleDateFormat.h"
+#include "CDateFormatSymbols.h"
 #include "CLocaleHelper.h"
-//#include "CLocaleDataHelper.h"
+#include "CLocaleDataHelper.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_ICloneable;
@@ -21,18 +21,18 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Text::IFormat;
 using Elastos::Text::IDateFormatHelper;
-//using Elastos::Text::CDateFormatHelper;
+// using Elastos::Text::CDateFormatHelper;
 using Elastos::Text::ISimpleDateFormat;
-//using Elastos::Text::CSimpleDateFormat;
+using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::IDateFormatSymbols;
-//using Elastos::Text::CDateFormatSymbols;
+using Elastos::Text::CDateFormatSymbols;
 using Elastos::Text::IDateFormat;
-//using Libcore::ICU::ILocale;
-//using Libcore::ICU::ILocaleHelper;
-//using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
-//using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 
 namespace Elastos{
 namespace Utility{
@@ -111,10 +111,10 @@ ECode Date::constructor(
     /* [in] */ Int32 month,
     /* [in] */ Int32 day)
 {
-    // AutoPtr<CGregorianCalendar> cal;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
-    // FAIL_RETURN(cal->Set(1900 + year, month, day));
-    // FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
+    AutoPtr<CGregorianCalendar> cal;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
+    FAIL_RETURN(cal->Set(1900 + year, month, day));
+    FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
     return NOERROR;
 }
 
@@ -125,10 +125,10 @@ ECode Date::constructor(
     /* [in] */ Int32 hour,
     /* [in] */ Int32 minute)
 {
-    // AutoPtr<CGregorianCalendar> cal;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
-    // FAIL_RETURN(cal->Set(1900 + year, month, day, hour, minute));
-    // FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
+    AutoPtr<CGregorianCalendar> cal;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
+    FAIL_RETURN(cal->Set(1900 + year, month, day, hour, minute));
+    FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
     return NOERROR;
 }
 
@@ -140,10 +140,10 @@ ECode Date::constructor(
     /* [in] */ Int32 minute,
     /* [in] */ Int32 second)
 {
-    // AutoPtr<CGregorianCalendar> cal;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
-    // FAIL_RETURN(cal->Set(1900 + year, month, day, hour, minute, second));
-    // FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
+    AutoPtr<CGregorianCalendar> cal;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(FALSE, (CGregorianCalendar**)&cal));
+    FAIL_RETURN(cal->Set(1900 + year, month, day, hour, minute, second));
+    FAIL_RETURN(cal->GetTimeInMillis(&mMilliseconds));
     return NOERROR;
 }
 
@@ -242,9 +242,9 @@ ECode Date::GetDate(
 {
     VALIDATE_NOT_NULL(date);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // return calendar->Get(ICalendar::DATE, date);
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    return calendar->Get(ICalendar::DATE, date);
 }
 
 ECode Date::GetDay(
@@ -252,9 +252,9 @@ ECode Date::GetDay(
 {
     VALIDATE_NOT_NULL(day);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Get(ICalendar::DAY_OF_WEEK, day));
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Get(ICalendar::DAY_OF_WEEK, day));
     *day = *day - 1;
     return NOERROR;
 }
@@ -264,9 +264,9 @@ ECode Date::GetHours(
 {
     VALIDATE_NOT_NULL(hours);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // return calendar->Get(ICalendar::HOUR_OF_DAY, hours);
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    return calendar->Get(ICalendar::HOUR_OF_DAY, hours);
 }
 
 ECode Date::GetMinutes(
@@ -274,9 +274,9 @@ ECode Date::GetMinutes(
 {
     VALIDATE_NOT_NULL(minutes);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // return calendar->Get(ICalendar::MINUTE, minutes);
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    return calendar->Get(ICalendar::MINUTE, minutes);
 }
 
 ECode Date::GetMonth(
@@ -284,9 +284,9 @@ ECode Date::GetMonth(
 {
     VALIDATE_NOT_NULL(month);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // return calendar->Get(ICalendar::MONTH, month);
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    return calendar->Get(ICalendar::MONTH, month);
 }
 
 ECode Date::GetSeconds(
@@ -294,9 +294,9 @@ ECode Date::GetSeconds(
 {
     VALIDATE_NOT_NULL(seconds);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // return calendar->Get(ICalendar::SECOND, seconds);
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    return calendar->Get(ICalendar::SECOND, seconds);
 }
 
 ECode Date::GetTime(
@@ -313,12 +313,12 @@ ECode Date::GetTimezoneOffset(
 {
     VALIDATE_NOT_NULL(timezoneOffset);
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // Int32 zoneOff, dstOff;
-    // calendar->Get(ICalendar::ZONE_OFFSET, &zoneOff);
-    // calendar->Get(ICalendar::DST_OFFSET, &dstOff);
-    // *timezoneOffset = -(zoneOff + dstOff) / 60000;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    Int32 zoneOff, dstOff;
+    calendar->Get(ICalendar::ZONE_OFFSET, &zoneOff);
+    calendar->Get(ICalendar::DST_OFFSET, &dstOff);
+    *timezoneOffset = -(zoneOff + dstOff) / 60000;
     return NOERROR;
 }
 
@@ -328,9 +328,9 @@ ECode Date::GetYear(
     VALIDATE_NOT_NULL(year);
     *year = 0;
 
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Get(ICalendar::YEAR, year));
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Get(ICalendar::YEAR, year));
     *year = *year - 1900;
     return NOERROR;
 }
@@ -516,7 +516,7 @@ ECode Date::Parse(
                 CLocaleHelper::AcquireSingleton((ILocaleHelper**)&lochep);
                 lochep->GetUS((ILocale**)&locus);
                 AutoPtr<IDateFormatSymbols> symbols;
-//                CDateFormatSymbols::New(locus, (IDateFormatSymbols**)&symbols);
+                CDateFormatSymbols::New(locus, (IDateFormatSymbols**)&symbols);
                 AutoPtr<ArrayOf<String> > weekdays, months;
                 symbols->GetWeekdays((ArrayOf<String>**)&weekdays);
                 symbols->GetMonths((ArrayOf<String>**)&months);
@@ -594,51 +594,46 @@ ECode Date::Parse(
 ECode Date::SetDate(
     /* [in] */ Int32 day)
 {
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Set(ICalendar::DATE, day));
-    // return calendar->GetTimeInMillis(&mMilliseconds);
-    return E_NO_SUCH_METHOD_EXCEPTION;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Set(ICalendar::DATE, day));
+    return calendar->GetTimeInMillis(&mMilliseconds);
 }
 
 ECode Date::SetHours(
     /* [in] */ Int32 hour)
 {
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Set(ICalendar::HOUR_OF_DAY, hour));
-    // return calendar->GetTimeInMillis(&mMilliseconds);
-    return E_NO_SUCH_METHOD_EXCEPTION;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Set(ICalendar::HOUR_OF_DAY, hour));
+    return calendar->GetTimeInMillis(&mMilliseconds);
 }
 
 ECode Date::SetMinutes(
     /* [in] */ Int32 minute)
 {
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Set(ICalendar::MINUTE, minute));
-    // return calendar->GetTimeInMillis(&mMilliseconds);
-    return E_NO_SUCH_METHOD_EXCEPTION;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Set(ICalendar::MINUTE, minute));
+    return calendar->GetTimeInMillis(&mMilliseconds);
 }
 
 ECode Date::SetMonth(
     /* [in] */ Int32 month)
 {
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Set(ICalendar::MONTH, month));
-    // return calendar->GetTimeInMillis(&mMilliseconds);
-    return E_NO_SUCH_METHOD_EXCEPTION;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Set(ICalendar::MONTH, month));
+    return calendar->GetTimeInMillis(&mMilliseconds);
 }
 
 ECode Date::SetSeconds(
     /* [in] */ Int32 second)
 {
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Set(ICalendar::SECOND, second));
-    // return calendar->GetTimeInMillis(&mMilliseconds);
-    return E_NO_SUCH_METHOD_EXCEPTION;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Set(ICalendar::SECOND, second));
+    return calendar->GetTimeInMillis(&mMilliseconds);
 }
 
 ECode Date::SetTime(
@@ -651,11 +646,10 @@ ECode Date::SetTime(
 ECode Date::SetYear(
     /* [in] */ Int32 year)
 {
-    // AutoPtr<CGregorianCalendar> calendar;
-    // FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
-    // FAIL_RETURN(calendar->Set(ICalendar::YEAR, year + 1900));
-    // return calendar->GetTimeInMillis(&mMilliseconds);
-    return E_NO_SUCH_METHOD_EXCEPTION;
+    AutoPtr<CGregorianCalendar> calendar;
+    FAIL_RETURN(CGregorianCalendar::NewByFriend(mMilliseconds, (CGregorianCalendar**)&calendar));
+    FAIL_RETURN(calendar->Set(ICalendar::YEAR, year + 1900));
+    return calendar->GetTimeInMillis(&mMilliseconds);
 }
 
 ECode Date::ToGMTString(
@@ -668,14 +662,14 @@ ECode Date::ToGMTString(
     AutoPtr<ILocale> loc;
     lochep->GetUS((ILocale**)&loc);
     AutoPtr<ISimpleDateFormat> sdf;
-//    FAIL_RETURN(CSimpleDateFormat::New(String("d MMM y HH:mm:ss 'GMT'"), loc, (ISimpleDateFormat**)&sdf));
+    FAIL_RETURN(CSimpleDateFormat::New(String("d MMM y HH:mm:ss 'GMT'"), loc, (ISimpleDateFormat**)&sdf));
     AutoPtr<ITimeZoneHelper> tzh;
-//    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
     AutoPtr<ITimeZone> gmtZone;
     tzh->GetTimeZone(String("GMT"), (ITimeZone**)&gmtZone);
     (IDateFormat::Probe(sdf))->SetTimeZone(gmtZone);
     AutoPtr<IGregorianCalendar> gc;
-//    FAIL_RETURN(CGregorianCalendar::New(gmtZone, (IGregorianCalendar**)&gc));
+    FAIL_RETURN(CGregorianCalendar::New(gmtZone, (IGregorianCalendar**)&gc));
     (ICalendar::Probe(gc))->SetTimeInMillis(mMilliseconds);
     (IDateFormat::Probe(sdf))->Format((IDate*)this, gmtStr);
 
@@ -688,7 +682,7 @@ ECode Date::ToLocaleString(
     VALIDATE_NOT_NULL(localeStr)
 
     AutoPtr<IDateFormatHelper> helper;
-//    CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
+    // CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
     AutoPtr<IDateFormat> format;
     helper->GetDateTimeInstance((IDateFormat**)&format);
     format->Format((IDate*)this, localeStr);
@@ -708,10 +702,10 @@ ECode Date::ToString(
     CLocaleHelper::AcquireSingleton((ILocaleHelper **)&lochep);
     lochep->GetUS((ILocale **)&usloc);
     AutoPtr<ILocaleDataHelper> ldh;
-//    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&ldh);
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&ldh);
     ldh->Get(usloc , (ILocaleData **)&localeData);
     AutoPtr<IGregorianCalendar> cal;
-//    CGregorianCalendar::New(mMilliseconds, (IGregorianCalendar**)&cal);
+    CGregorianCalendar::New(mMilliseconds, (IGregorianCalendar**)&cal);
     AutoPtr<ITimeZone> tz;
     (ICalendar::Probe(cal))->GetTimeZone((ITimeZone**)&tz);
     Int32 zonevalue = 0;
@@ -768,10 +762,10 @@ Int64 Date::UTC(
     /* [in] */ Int32 second)
 {
     AutoPtr<IGregorianCalendar> cal;
-//    CGregorianCalendar::New(FALSE, (IGregorianCalendar**)&cal);
+    CGregorianCalendar::New(FALSE, (IGregorianCalendar**)&cal);
     AutoPtr<ITimeZone> timezone;
     AutoPtr<ITimeZoneHelper> timezoneHelper;
-//    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timezoneHelper);
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timezoneHelper);
     timezoneHelper->GetTimeZone(String("GMT"), (ITimeZone**)&timezone);
     (ICalendar::Probe(cal))->SetTimeZone(timezone);
     (ICalendar::Probe(cal))->Set(1900 + year, month, day, hour, minute, second);

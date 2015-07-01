@@ -2,42 +2,22 @@
 #ifndef __ELASTOS_UTILITY_CURRENCY_H__
 #define __ELASTOS_UTILITY_CURRENCY_H__
 
-#include <HashMap.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::ILocale;
-using Elastos::Utility::HashMap;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::IO::ISerializable;
 
-// _ETL_NAMESPACE_BEGIN
-// #ifndef DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE
-// #define DEFINE_HASH_AUTOPTR_ILOCALE_USING_HASH_CODE(ILocale)
-// template<> struct Hash<AutoPtr<ILocale> >
-// {
-//     size_t operator()(const AutoPtr<ILocale> s) const
-//     {
-//         assert(s != NULL);
-//         Int32 hashCode;
-//         s->GetHashCode(&hashCode);
-//         return (size_t)hashCode;
-//     }
-// };
-
-// template<> struct EqualTo<AutoPtr<ILocale> >
-// {
-//     size_t operator()(const AutoPtr<ILocale> x, const AutoPtr<ILocale> y) const
-//     {
-//         assert(x != NULL);
-//         Boolean isEqual;
-//         x->Equals(y, &isEqual);
-//         return isEqual;
-//     }
-// };
-// #endif
-// _ETL_NAMESPACE_END
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Utility::ILocale)
 
 namespace Elastos{
 namespace Utility{
 
+/**
+ * A currency corresponding to an <a href="http://en.wikipedia.org/wiki/ISO_4217">ISO 4217</a>
+ * currency code such as "EUR" or "USD".
+ */
 class Currency
     : public Object
     , public ICurrency
@@ -80,18 +60,22 @@ public:
         /* [out] */ ISet** currencies);
 
 private:
-    Currency(
+    Currency();
+
+    CARAPI constructor(
         /* [in] */ const String& currencyCode);
 
     CARAPI_(AutoPtr<IInterface>) ReadResolve();
 
 private:
-//    static HashMap<String, AutoPtr<ICurrency> > sCodesToCurrencies; // = new HashMap<String, Currency>();
-//    static HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > sLocalesToCurrencies; // = new HashMap<Locale, Currency>();
+    static HashMap<String, AutoPtr<ICurrency> > sCodesToCurrencies; // = new HashMap<String, Currency>();
+    static HashMap<AutoPtr<ILocale>, AutoPtr<ICurrency> > sLocalesToCurrencies; // = new HashMap<Locale, Currency>();
+
+    static Object sCodesLock;
+    static Object sLocalesLock;
 
     String mCurrencyCode;
 
-    static Object sLock;
 };
 
 } // namespace Utility

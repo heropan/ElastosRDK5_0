@@ -1,15 +1,15 @@
 
 #include "CScanner.h"
-//#include "Pattern.h"
+#include "Pattern.h"
 #include "CLocale.h"
-//#include "Charset.h"
+#include "Charset.h"
 #include "IoUtils.h"
 #include "CStringReader.h"
 #include "CFileInputStream.h"
 #include "CInputStreamReader.h"
 #include "CStringWrapper.h"
-//#include "CBigDecimal.h"
-//#include "CBigInteger.h"
+#include "CBigDecimal.h"
+#include "CBigInteger.h"
 #include "CByte.h"
 #include "CDouble.h"
 #include "CFloat.h"
@@ -17,8 +17,8 @@
 #include "CInteger32.h"
 #include "CInteger64.h"
 #include "Character.h"
-//#include "CharBuffer.h"
-//#include "NumberFormat.h"
+#include "CharBuffer.h"
+#include "NumberFormat.h"
 #include <Math.h>
 #include <StringUtils.h>
 
@@ -38,66 +38,52 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Core::Character;
-//using Elastos::Utility::Regex::Pattern;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
-//using Elastos::IO::IoUtils;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IStringReader;
 using Elastos::IO::CStringReader;
-//using Elastos::IO::CharBuffer;
+using Elastos::IO::CharBuffer;
 using Elastos::IO::Charset::ICharset;
-//using Elastos::IO::Charset::Charset;
+using Elastos::IO::Charset::Charset;
 using Elastos::IO::IBuffer;
-//using Elastos::Math::CBigDecimal;
+using Elastos::Math::CBigDecimal;
 using Elastos::Math::IBigInteger;
-//using Elastos::Math::CBigInteger;
+using Elastos::Math::CBigInteger;
 using Elastos::Text::INumberFormat;
-//using Elastos::Text::NumberFormat;
+using Elastos::Text::NumberFormat;
 using Elastos::Text::IDecimalFormatSymbols;
 using Elastos::Utility::CLocale;
+using Elastos::Utility::Regex::Pattern;
+using Libcore::IO::IoUtils;
 
 namespace Elastos {
 namespace Utility {
 
-const AutoPtr<IPattern> CScanner::DEFAULT_DELIMITER;
+static AutoPtr<IPattern> InitPattern(
+    /* [in] */ const String str)
+{
+    AutoPtr<IPattern> p;
+    Pattern::Compile(str, (IPattern**)&p);
+    return p;
+}
 
-const AutoPtr<IPattern> CScanner::BOOLEAN_PATTERN;
-
-const AutoPtr<IPattern> CScanner::LINE_TERMINATOR;
-
-const AutoPtr<IPattern> CScanner::MULTI_LINE_TERMINATOR;
-
-const AutoPtr<IPattern> CScanner::LINE_PATTERN;
-
-const AutoPtr<IPattern> CScanner::ANY_PATTERN;
+const AutoPtr<IPattern> CScanner::DEFAULT_DELIMITER = InitPattern(String("\\p{javaWhitespace}+"));
+const AutoPtr<IPattern> CScanner::BOOLEAN_PATTERN = InitPattern(String("TRUE|FALSE"));
+const AutoPtr<IPattern> CScanner::LINE_TERMINATOR = InitPattern(String("\n|\r\n|\r|\u0085|\u2028|\u2029"));
+const AutoPtr<IPattern> CScanner::MULTI_LINE_TERMINATOR = InitPattern(String("(\n|\r\n|\r|\u0085|\u2028|\u2029)+"));
+const AutoPtr<IPattern> CScanner::LINE_PATTERN = InitPattern(String(".*(\n|\r\n|\r|\u0085|\u2028|\u2029)|.+(\n|\r\n|\r|\u0085|\u2028|\u2029)?"));
+const AutoPtr<IPattern> CScanner::ANY_PATTERN = InitPattern(String("(?s).*"));
 
 const Int32 CScanner::DIPLOID;
-
 const Int32 CScanner::DEFAULT_RADIX;
-
 const Int32 CScanner::DEFAULT_TRUNK_SIZE;
 
 CAR_INTERFACE_IMPL_2(CScanner, Object, IScanner, IIterator)
 
 CAR_OBJECT_IMPL(CScanner)
-
-Boolean CScanner::StaticInit()
-{
-//    Pattern::Compile(String("\\p{javaWhitespace}+"), (IPattern**)&DEFAULT_DELIMITER);
-//    Pattern::Compile(String("TRUE|FALSE"), IPattern::CASE_INSENSITIVE, (IPattern**)&BOOLEAN_PATTERN);
-//    Pattern::Compile(String("(?s).*"), (IPattern**)&ANY_PATTERN);
-
-    String NL = String("\n|\r\n|\r|\u0085|\u2028|\u2029");
-//    Pattern::Compile(NL, (IPattern**)&LINE_TERMINATOR);
-//    Pattern::Compile(String("(") + NL + String(")+"), (IPattern**)&MULTI_LINE_TERMINATOR);
-//    Pattern::Compile(String(".*(") + NL + String(")|.+(") + NL + String(")?"), (IPattern**)&LINE_PATTERN);
-    return TRUE;
-}
-
-Boolean CScanner::sStaticflag = StaticInit();
 
 CScanner::CScanner()
     : mDelimiter(DEFAULT_DELIMITER)
@@ -118,7 +104,7 @@ ECode CScanner::constructor(
     /* [in] */ IFile* filesrc)
 {
     AutoPtr<ICharset> outset;
-//    Charset::DefaultCharset((ICharset**)&outset);
+    Charset::DefaultCharset((ICharset**)&outset);
     String outname;
     outset->GetName(&outname);
     return this->constructor(filesrc, outname);
@@ -143,13 +129,12 @@ ECode CScanner::constructor(
     ECode ec = CInputStreamReader::New((IInputStream::Probe(fis)), charsetName, (IInputStreamReader**)&isr);
     // } catch (UnsupportedEncodingException e) {
     if (ec != NOERROR) {
-//        IoUtils::CloseQuietly(ICloseable::Probe(fis));
+        IoUtils::CloseQuietly(ICloseable::Probe(fis));
         // throw new IllegalArgumentException(e.getMessage());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // }
-    mInput = IReadable::Probe(isr);
-    return Initialization();
+    return Initialization(IReadable::Probe(isr));
 }
 
 ECode CScanner::constructor(
@@ -157,15 +142,14 @@ ECode CScanner::constructor(
 {
     AutoPtr<IStringReader> sr;
     FAIL_RETURN(CStringReader::New(strsrc, (IStringReader**)&sr));
-    mInput = IReadable::Probe(sr);
-    return Initialization();
+    return Initialization(IReadable::Probe(sr));
 }
 
 ECode CScanner::constructor(
     /* [in] */ IInputStream* inputsrc)
 {
     AutoPtr<ICharset> outset;
-//    Charset::DefaultCharset((ICharset**)&outset);
+    Charset::DefaultCharset((ICharset**)&outset);
     String outname;
     outset->GetName(&outname);
     return this->constructor(inputsrc, outname);
@@ -182,11 +166,10 @@ ECode CScanner::constructor(
     // try {
     AutoPtr<IInputStreamReader> isr;
     FAIL_RETURN(CInputStreamReader::New(inputsrc, charsetName, (IInputStreamReader**)&isr));
-    mInput = IReadable::Probe(isr);
     // } catch (UnsupportedEncodingException e) {
         // throw new IllegalArgumentException(e.getMessage());
     // }
-    return Initialization();
+    return Initialization(IReadable::Probe(isr));
 }
 
 ECode CScanner::constructor(
@@ -196,15 +179,15 @@ ECode CScanner::constructor(
         // throw new NullPointerException("readsrc == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    mInput = readsrc;
-    return Initialization();
+
+    return Initialization(readsrc);
 }
 
 ECode CScanner::constructor(
     /* [in] */ IReadableByteChannel* rbcsrc)
 {
     AutoPtr<ICharset> outset;
-//    Charset::DefaultCharset((ICharset**)&outset);
+    Charset::DefaultCharset((ICharset**)&outset);
     String outname;
     outset->GetName(&outname);
     return this->constructor(rbcsrc, outname);
@@ -222,9 +205,11 @@ ECode CScanner::constructor(
         // throw new IllegalArgumentException("charsetName == NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     assert(0 && "TODO");
-    // input = Channels.newReader(rbcsrc, charsetName);
-    return Initialization();
+    AutoPtr<IReadable> r;
+    //Channels::NewReader(rbcsrc, charsetName, (IReadable**)&r);
+    return Initialization(r);
 }
 
 ECode CScanner::HasNext(
@@ -284,6 +269,7 @@ ECode CScanner::FindInLine(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
 
     FAIL_RETURN(CheckClosed());
     FAIL_RETURN(CheckNull(pattern));
@@ -374,7 +360,7 @@ ECode CScanner::FindInLine(
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
-//    Pattern::Compile(pattern, (IPattern**)&outpat);
+    Pattern::Compile(pattern, (IPattern**)&outpat);
     return FindInLine(outpat, str);
 }
 
@@ -384,6 +370,7 @@ ECode CScanner::FindWithinHorizon(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
 
     FAIL_RETURN(CheckClosed());
     FAIL_RETURN(CheckNull(pattern));
@@ -454,7 +441,7 @@ ECode CScanner::FindWithinHorizon(
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
-//    Pattern::Compile(pattern, (IPattern**)&outpat);
+    Pattern::Compile(pattern, (IPattern**)&outpat);
     return FindWithinHorizon(outpat, horizon, str);
 }
 
@@ -463,6 +450,7 @@ ECode CScanner::HasNext(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     FAIL_RETURN(CheckClosed());
     FAIL_RETURN(CheckNull(pattern));
@@ -492,8 +480,11 @@ ECode CScanner::HasNext(
     /* [in] */ const String& pattern,
     /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = FALSE;
+
     AutoPtr<IPattern> outpat;
-//    Pattern::Compile(pattern, (IPattern**)&outpat);
+    Pattern::Compile(pattern, (IPattern**)&outpat);
     return HasNext(outpat, value);
 }
 
@@ -508,13 +499,13 @@ ECode CScanner::HasNextBigDecimal(
         floatString = RemoveLocaleInfoFromFloat(floatString);
         // try {
         AutoPtr<IBigDecimal> outbd;
-        ECode ec;// = CBigDecimal::New(floatString, (IBigDecimal**)&outbd);
+        ECode ec = CBigDecimal::New(floatString, (IBigDecimal**)&outbd);
         // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
         }
         // }
-        if (ec == NOERROR) {
+        if (SUCCEEDED(ec)) {
             isBigDecimalValue = TRUE;
             mCacheHasNextValue = outbd;
         }
@@ -544,13 +535,13 @@ ECode CScanner::HasNextBigInteger(
         intString = RemoveLocaleInfo(intString, INT);
         // try {
         AutoPtr<IBigInteger> outbi;
-        ECode ec;// = CBigInteger::New(intString, radix, (IBigInteger**)&outbi);
+        ECode ec = CBigInteger::New(intString, radix, (IBigInteger**)&outbi);
         // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
         }
         // }
-        if (ec == NOERROR) {
+        if (SUCCEEDED(ec)) {
             isBigIntegerValue = TRUE;
             mCacheHasNextValue = outbi;
         }
@@ -583,19 +574,19 @@ ECode CScanner::HasNextByte(
         (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
-        Int32 outbyte = StringUtils::ParseInt32(intString, radix);
-        AutoPtr<IByte> inbyte;
-        ECode ec = CByte::New((Byte)outbyte, (IByte**)&inbyte);
-        // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
-            mMatchSuccessful = FALSE;
-        }
-        // }
-        if (ec == NOERROR){
+        Int32 outbyte;
+        ECode ec = StringUtils::Parse(intString, radix, &outbyte);
+        if (SUCCEEDED(ec)) {
+            AutoPtr<IByte> inbyte;
+            CByte::New((Byte)outbyte, (IByte**)&inbyte);
             mCacheHasNextValue = inbyte;
             isByteValue = TRUE;
         }
-
+        // } catch (NumberFormatException e) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
+            mMatchSuccessful = FALSE;
+        }
+        // }
     }
     *value = isByteValue;
     return NOERROR;
@@ -613,18 +604,19 @@ ECode CScanner::HasNextDouble(
         (IMatchResult::Probe(mMatcher))->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
         // try {
-        Double outdouble = StringUtils::ParseDouble(floatString);
-        AutoPtr<IDouble> indouble;
-        ECode ec = CDouble::New(outdouble, (IDouble**)&indouble);
-        // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
-            mMatchSuccessful = FALSE;
-        }
-        // }
-        if (ec == NOERROR) {
+        Double outdouble;
+        ECode ec = StringUtils::Parse(floatString, &outdouble);
+        if (SUCCEEDED(ec)) {
+            AutoPtr<IDouble> indouble;
+            CDouble::New(outdouble, (IDouble**)&indouble);
             mCacheHasNextValue = indouble;
             isDoubleValue = TRUE;
         }
+        // } catch (NumberFormatException e) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
+            mMatchSuccessful = FALSE;
+        }
+        // }
     }
     *value = isDoubleValue;
     return NOERROR;
@@ -642,15 +634,17 @@ ECode CScanner::HasNextFloat(
         (IMatchResult::Probe(mMatcher))->Group(&floatString);
         floatString = RemoveLocaleInfoFromFloat(floatString);
         // try {
-        Float outfloat = StringUtils::ParseFloat(floatString);
-        AutoPtr<IFloat> infloat;
-        ECode ec = CFloat::New(outfloat, (IFloat**)&infloat);
-        if (ec == NOERROR) {
+        Float outfloat;
+        ECode ec = StringUtils::Parse(floatString, &outfloat);
+        if (SUCCEEDED(ec)) {
+            AutoPtr<IFloat> infloat;
+            CFloat::New(outfloat, (IFloat**)&infloat);
+
             mCacheHasNextValue = infloat;
             isFloatValue = TRUE;
         }
         // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
         }
         // }
@@ -670,6 +664,7 @@ ECode CScanner::HasNextInt32(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isIntValue = FALSE;
@@ -678,15 +673,16 @@ ECode CScanner::HasNextInt32(
         (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
-        Int32 outint = StringUtils::ParseInt32(intString, radix);
-        AutoPtr<IInteger32> inint;
-        ECode ec = CInteger32::New(outint, (IInteger32**)&inint);
-        if (ec == NOERROR) {
+        Int32 outint;
+        ECode ec = StringUtils::Parse(intString, radix, &outint);
+        if (SUCCEEDED(ec)) {
+            AutoPtr<IInteger32> inint;
+            CInteger32::New(outint, (IInteger32**)&inint);
             mCacheHasNextValue = inint;
             isIntValue = TRUE;
         }
         // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
         }
         // }
@@ -699,6 +695,7 @@ ECode CScanner::HasNextLine(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     FAIL_RETURN(CheckClosed());
     mMatcher->UsePattern(LINE_PATTERN);
@@ -740,6 +737,7 @@ ECode CScanner::HasNextInt64(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isLongValue = FALSE;
@@ -748,15 +746,16 @@ ECode CScanner::HasNextInt64(
         (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
-        Int64 outint = StringUtils::ParseInt64(intString, radix);
-        AutoPtr<IInteger64> inint;
-        ECode ec = CInteger64::New(outint, (IInteger64**)&inint);
-        if (ec == NOERROR) {
+        Int64 outint;
+        ECode ec = StringUtils::Parse(intString, radix, &outint);
+        if (SUCCEEDED(ec)) {
+            AutoPtr<IInteger64> inint;
+            CInteger64::New(outint, (IInteger64**)&inint);
             mCacheHasNextValue = inint;
             isLongValue = TRUE;
         }
         // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
         }
         // }
@@ -776,6 +775,7 @@ ECode CScanner::HasNextInt16(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = FALSE;
 
     AutoPtr<IPattern> integerPattern = GetIntegerPattern(radix);
     Boolean isShortValue = FALSE;
@@ -784,15 +784,16 @@ ECode CScanner::HasNextInt16(
         (IMatchResult::Probe(mMatcher))->Group(&intString);
         intString = RemoveLocaleInfo(intString, INT);
         // try {
-        Int16 outint = StringUtils::ParseInt16(intString, radix);
-        AutoPtr<IInteger16> inint;
-        ECode ec = CInteger16::New(outint, (IInteger16**)&inint);
-        if (ec == NOERROR) {
+        Int16 outint;
+        ECode ec = StringUtils::Parse(intString, radix, &outint);
+        if (SUCCEEDED(ec)) {
+            AutoPtr<IInteger16> inint;
+            CInteger16::New(outint, (IInteger16**)&inint);
             mCacheHasNextValue = inint;
             isShortValue = TRUE;
         }
         // } catch (NumberFormatException e) {
-        if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+        if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
             mMatchSuccessful = FALSE;
         }
         // }
@@ -819,6 +820,9 @@ ECode CScanner::GetLocale(
 ECode CScanner::GetMatch(
     /* [out] */ IMatchResult** outmatch)
 {
+    VALIDATE_NOT_NULL(outmatch)
+    *outmatch = NULL;
+
     if (!mMatchSuccessful) {
         // throw new IllegalStateException();
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -830,6 +834,9 @@ ECode CScanner::Next(
     /* [in] */ IPattern* pattern,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
+
     FAIL_RETURN(CheckClosed());
     FAIL_RETURN(CheckNull(pattern));
     mMatchSuccessful = FALSE;
@@ -856,7 +863,7 @@ ECode CScanner::Next(
     /* [out] */ String* str)
 {
     AutoPtr<IPattern> outpat;
-//    Pattern::Compile(pattern, (IPattern**)&outpat);
+    Pattern::Compile(pattern, (IPattern**)&outpat);
     return Next(outpat, str);
 }
 
@@ -864,6 +871,7 @@ ECode CScanner::NextBigDecimal(
     /* [out] */ IBigDecimal** outbig)
 {
     VALIDATE_NOT_NULL(outbig)
+    *outbig = NULL;
 
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
@@ -880,9 +888,9 @@ ECode CScanner::NextBigDecimal(
     floatString = RemoveLocaleInfoFromFloat(floatString);
     AutoPtr<IBigDecimal> bigDecimalValue;
     // try {
-    ECode ec;// = CBigDecimal::New(floatString, (IBigDecimal**)&bigDecimalValue);
+    ECode ec = CBigDecimal::New(floatString, (IBigDecimal**)&bigDecimalValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -905,6 +913,7 @@ ECode CScanner::NextBigInteger(
     /* [out] */ IBigInteger** outbig)
 {
     VALIDATE_NOT_NULL(outbig)
+    *outbig = NULL;
 
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
@@ -921,9 +930,9 @@ ECode CScanner::NextBigInteger(
     intString = RemoveLocaleInfo(intString, INT);
     AutoPtr<IBigInteger> bigIntegerValue;
     // try {
-    ECode ec;// = CBigInteger::New(intString, radix, (IBigInteger**)&bigIntegerValue);
+    ECode ec = CBigInteger::New(intString, radix, (IBigInteger**)&bigIntegerValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -938,9 +947,12 @@ ECode CScanner::NextBigInteger(
 ECode CScanner::NextBoolean(
     /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = FALSE;
+
     String outstr;
     Next(BOOLEAN_PATTERN, &outstr);
-    *value = String("true").EqualsIgnoreCase(outstr);
+    *value = outstr.EqualsIgnoreCase("true");
     return NOERROR;
 }
 
@@ -955,6 +967,7 @@ ECode CScanner::NextByte(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
@@ -969,9 +982,9 @@ ECode CScanner::NextByte(
     intString = RemoveLocaleInfo(intString, INT);
     // try {
     Int32 byteValue = 0;
-    ECode ec = StringUtils::ParseInt32(intString, radix, &byteValue);
+    ECode ec = StringUtils::Parse(intString, radix, &byteValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -986,6 +999,7 @@ ECode CScanner::NextDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
@@ -1002,7 +1016,7 @@ ECode CScanner::NextDouble(
     // try {
     ECode ec = StringUtils::Parse(floatString, &doubleValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -1016,6 +1030,9 @@ ECode CScanner::NextDouble(
 ECode CScanner::NextFloat(
     /* [out] */ Float* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = 0;
+
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
     mCacheHasNextValue = NULL;
@@ -1031,7 +1048,7 @@ ECode CScanner::NextFloat(
     // try {
     ECode ec = StringUtils::Parse(floatString, &floatValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -1053,6 +1070,7 @@ ECode CScanner::NextInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
@@ -1069,7 +1087,7 @@ ECode CScanner::NextInt32(
     // try {
     ECode ec = StringUtils::Parse(intString, radix, &intValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -1084,6 +1102,7 @@ ECode CScanner::NextLine(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
 
     FAIL_RETURN(CheckClosed());
 
@@ -1139,6 +1158,7 @@ ECode CScanner::NextInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = 0;
 
     FAIL_RETURN(CheckClosed());
     AutoPtr<IInterface> obj = mCacheHasNextValue;
@@ -1155,7 +1175,7 @@ ECode CScanner::NextInt64(
     // try {
     ECode ec = StringUtils::Parse(intString, radix, &longValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -1191,9 +1211,9 @@ ECode CScanner::NextInt16(
     intString = RemoveLocaleInfo(intString, INT);
     Int16 shortValue = 0;
     // try {
-    ECode ec = StringUtils::ParseInt16(intString, radix, &shortValue);
+    ECode ec = StringUtils::Parse(intString, radix, &shortValue);
     // } catch (NumberFormatException e) {
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         mMatchSuccessful = FALSE;
         RecoverPreviousStatus();
         // throw new InputMismatchException();
@@ -1258,7 +1278,7 @@ ECode CScanner::Skip(
     /* [out] */ IScanner** outscan)
 {
     AutoPtr<IPattern> outpat;
-//    Pattern::Compile(pattern, (IPattern**)&outpat);
+    Pattern::Compile(pattern, (IPattern**)&outpat);
     return Skip(outpat, outscan);
 }
 
@@ -1294,7 +1314,7 @@ ECode CScanner::UseDelimiter(
     /* [out] */ IScanner** outscan)
 {
     AutoPtr<IPattern> outpat;
-//    Pattern::Compile(pattern, (IPattern**)&outpat);
+    Pattern::Compile(pattern, (IPattern**)&outpat);
     return UseDelimiter(outpat, outscan);
 }
 
@@ -1350,8 +1370,10 @@ ECode CScanner::CheckRadix(
     return NOERROR;
 }
 
-ECode CScanner::Initialization()
+ECode CScanner::Initialization(
+    /* [in] */ IReadable* reader)
 {
+    mInput = reader;
 //    FAIL_RETURN(CharBuffer::Allocate(DEFAULT_TRUNK_SIZE, (ICharBuffer**)&mBuffer));
     (IBuffer::Probe(mBuffer))->SetLimit(0);
     String outstr;
@@ -1435,7 +1457,7 @@ AutoPtr<IPattern> CScanner::GetIntegerPattern(
     integer += ")";
 
     AutoPtr<IPattern> integerPattern;
-//    Pattern::Compile(integer.ToString(), (IPattern**)&integerPattern);
+    Pattern::Compile(integer.ToString(), (IPattern**)&integerPattern);
     return integerPattern;
 }
 
@@ -1512,7 +1534,7 @@ AutoPtr<IPattern> CScanner::GetFloatPattern()
     floatString += "|";
     floatString += singedNonNumber;
     AutoPtr<IPattern> floatPattern;
-//    Pattern::Compile(floatString.ToString(), (IPattern**)&floatPattern);
+    Pattern::Compile(floatString.ToString(), (IPattern**)&floatPattern);
     return floatPattern;
 }
 
@@ -1636,25 +1658,28 @@ String CScanner::RemoveLocaleInfo(
     tokenBuilder.IndexOf(decimalSeparator, &separatorIndex);
     StringBuilder result("");
     if (INT == type) {
-        for (Int32 i = 0; i < tokenBuilder.GetLength(); i++) {
-            if (-1 != Character::ToDigit(tokenBuilder.GetCharAt(i),
-                    Character::MAX_RADIX)) {
-                result += tokenBuilder.GetCharAt(i);
+        String sbstr = tokenBuilder.ToString();
+        AutoPtr<ArrayOf<Char32> > chars = sbstr.GetChars();
+        for (Int32 i = 0; i < chars->GetLength(); i++) {
+            if (-1 != Character::ToDigit((*chars)[i], Character::MAX_RADIX)) {
+                result += (*chars)[i];
             }
         }
     }
     if (FLOAT == type) {
+        String sbstr = tokenBuilder.ToString();
         String strnan;
-        if (tokenBuilder.ToString().Equals((dfs->GetNaN(&strnan), strnan))) {
+        if (sbstr.Equals((dfs->GetNaN(&strnan), strnan))) {
             result += "NaN";
         }
-        else if (tokenBuilder.ToString().Equals((dfs->GetInfinity(&strnan), strnan))) {
+        else if (sbstr.Equals((dfs->GetInfinity(&strnan), strnan))) {
             result += "Infinity";
         }
         else {
-            for (Int32 i = 0; i < tokenBuilder.GetLength(); i++) {
-                if (-1 != Character::ToDigit(tokenBuilder.GetCharAt(i), 10)) {
-                    result += Character::ToDigit(tokenBuilder.GetCharAt(i), 10);
+            AutoPtr<ArrayOf<Char32> > chars = sbstr.GetChars();
+            for (Int32 i = 0; i < chars->GetLength(); i++) {
+                if (-1 != Character::ToDigit((*chars)[i], 10)) {
+                    result += Character::ToDigit((*chars)[i], 10);
                 }
             }
         }
@@ -1664,7 +1689,7 @@ String CScanner::RemoveLocaleInfo(
         result += tokenBuilder;
     }
     if (-1 != separatorIndex) {
-        result.InsertChar(separatorIndex, ".");
+        result.InsertChar(separatorIndex, '.');
     }
     // If input is negative
     if (negative) {
@@ -1689,29 +1714,31 @@ Boolean CScanner::RemoveLocaleSign(
     if ((tokenBuilder->IndexOf(String("+"), &indexvalue), indexvalue) == 0) {
         tokenBuilder->Delete(0, 1);
     }
-    if (!positivePrefix.IsEmpty() && (tokenBuilder->IndexOf(positivePrefix, &indexvalue), indexvalue) == 0) {
+    if (!positivePrefix.IsEmpty()
+        && (tokenBuilder->IndexOf(positivePrefix, &indexvalue), indexvalue) == 0) {
         tokenBuilder->Delete(0, positivePrefix.GetLength());
     }
     if (!positiveSuffix.IsEmpty()
             && -1 != (tokenBuilder->IndexOf(positiveSuffix, &indexvalue), indexvalue)) {
         tokenBuilder->Delete(
-                tokenBuilder->GetLength() - positiveSuffix.GetLength(),
-                tokenBuilder->GetLength());
+            tokenBuilder->GetLength() - positiveSuffix.GetLength(),
+            tokenBuilder->GetLength());
     }
     Boolean negative = FALSE;
     if (tokenBuilder->IndexOf(String("-"), &indexvalue), indexvalue == 0) {
         tokenBuilder->Delete(0, 1);
         negative = TRUE;
     }
-    if (!negativePrefix.IsEmpty() && (tokenBuilder->IndexOf(negativePrefix, &indexvalue), indexvalue) == 0) {
+    if (!negativePrefix.IsEmpty()
+        && (tokenBuilder->IndexOf(negativePrefix, &indexvalue), indexvalue) == 0) {
         tokenBuilder->Delete(0, negativePrefix.GetLength());
         negative = TRUE;
     }
     if (!negativeSuffix.IsEmpty()
             && -1 != (tokenBuilder->IndexOf(negativeSuffix, &indexvalue), indexvalue)) {
         tokenBuilder->Delete(
-                tokenBuilder->GetLength() - negativeSuffix.GetLength(),
-                tokenBuilder->GetLength());
+            tokenBuilder->GetLength() - negativeSuffix.GetLength(),
+            tokenBuilder->GetLength());
         negative = TRUE;
     }
     return negative;
@@ -1851,13 +1878,19 @@ ECode CScanner::ReadMore()
     // try {
     (IBuffer::Probe(mBuffer))->SetLimit(capacitylen);
     (IBuffer::Probe(mBuffer))->SetPosition(oldBufferLength);
-    assert(0 && "TODO");
-    ECode ec = NOERROR;
-    // while ((readCount = mInput->Read(buffer)) == 0) {
-    //     // nothing to do here
-    // }
+
+    ECode ec = mInput->Read(mBuffer, &readCount);
+    FAIL_GOTO(ec, _EXIT_)
+
+    while (readCount == 0) {
+        // nothing to do here
+        ec = mInput->Read(mBuffer, &readCount);
+        FAIL_GOTO(ec, _EXIT_)
+    }
+
+_EXIT_:
     // } catch (IOException e) {
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         // Consider the scenario: readable puts 4 chars into
         // buffer and then an IOException is thrown out. In this case,
         // buffer is
@@ -1896,7 +1929,8 @@ ECode CScanner::ExpandBuffer()
     AutoPtr< ArrayOf<Char32> > outarr;
     mBuffer->GetArray((ArrayOf<Char32>**)&outarr);
     newBuffer->Copy(0, outarr, 0, oldLimit);
-//    CharBuffer::WrapArray(newBuffer, 0, newCapacity, (ICharBuffer**)&mBuffer);
+    mBuffer = NULL;
+    CharBuffer::Wrap(newBuffer, 0, newCapacity, (ICharBuffer**)&mBuffer);
     (IBuffer::Probe(mBuffer))->SetPosition(oldPosition);
     (IBuffer::Probe(mBuffer))->SetLimit(oldLimit);
     return NOERROR;

@@ -58,8 +58,9 @@ ECode CSimpleTimeZone::constructor(
     /* [in] */ Int32 endDayOfWeek,
     /* [in] */ Int32 endTime)
 {
-    return this->constructor(offset, name, startMonth, startDay, startDayOfWeek,
-                startTime, endMonth, endDay, endDayOfWeek, endTime, 360000);
+    return this->constructor(offset, name, startMonth,
+        startDay, startDayOfWeek, startTime,
+        endMonth, endDay, endDayOfWeek, endTime, 360000);
 }
 
 ECode CSimpleTimeZone::constructor(
@@ -111,8 +112,9 @@ ECode CSimpleTimeZone::constructor(
     /* [in] */ Int32 endTimeMode,
     /* [in] */ Int32 daylightSavings)
 {
-    FAIL_RETURN(this->constructor(offset, name, startMonth, startDay, startDayOfWeek, startTime,
-            endMonth, endDay, endDayOfWeek, endTime, daylightSavings));
+    FAIL_RETURN(this->constructor(offset, name, startMonth,
+        startDay, startDayOfWeek, startTime,
+        endMonth, endDay, endDayOfWeek, endTime, daylightSavings));
     mStartMode = startTimeMode;
     mEndMode = endTimeMode;
     return NOERROR;
@@ -124,12 +126,52 @@ ECode CSimpleTimeZone::Clone(
     VALIDATE_NOT_NULL(newObj);
 
     AutoPtr<CSimpleTimeZone> st;
-    FAIL_RETURN(CSimpleTimeZone::NewByFriend(mRawOffset, mID,
-            mStartMonth, mStartDay, mStartDayOfWeek, mStartTime, mStartMode,
-            mEndMonth, mEndDay, mEndDayOfWeek, mEndTime, mEndMode, mDstSavings,
-            (CSimpleTimeZone**)&st));
+    FAIL_RETURN(CSimpleTimeZone::NewByFriend(mRawOffset, mID, (CSimpleTimeZone**)&st));
+
+    CloneImpl((ISimpleTimeZone*)st.Get());
+
     *newObj = (ITimeZone*) st->Probe(EIID_ITimeZone);
     REFCOUNT_ADD(*newObj);
+    return NOERROR;
+}
+
+ECode CSimpleTimeZone::Clone(
+    /* [out] */ IInterface** newObj)
+{
+    VALIDATE_NOT_NULL(newObj);
+
+    AutoPtr<CSimpleTimeZone> st;
+    FAIL_RETURN(CSimpleTimeZone::NewByFriend(mRawOffset, mID, (CSimpleTimeZone**)&st));
+
+    CloneImpl((ISimpleTimeZone*)st.Get());
+
+    *newObj = TO_IINTERFACE(st);
+    REFCOUNT_ADD(*newObj);
+    return NOERROR;
+}
+
+ECode CSimpleTimeZone::CloneImpl(
+        /* [in] */ ISimpleTimeZone* newObj)
+{
+    CSimpleTimeZone* st = (CSimpleTimeZone*)newObj;
+
+    TimeZone::CloneImpl((ITimeZone*) st->Probe(EIID_ITimeZone));
+
+    st->mRawOffset = mRawOffset;
+    st->mStartYear = mStartYear;
+    st->mStartMonth = mStartMonth;
+    st->mStartDay = mStartDay;
+    st->mStartDayOfWeek = mStartDayOfWeek;
+    st->mStartTime = mStartTime;
+    st->mEndMonth = mEndMonth;
+    st->mEndDay = mEndDay;
+    st->mEndDayOfWeek = mEndDayOfWeek;
+    st->mEndTime = mEndTime;
+    st->mStartMode = mStartMode;
+    st->mEndMode = mEndMode;
+    st->mDstSavings = mDstSavings;
+    st->mUseDaylight = mUseDaylight;
+
     return NOERROR;
 }
 
@@ -155,14 +197,14 @@ ECode CSimpleTimeZone::Equals(
     *isEqual = mID == tz->mID && mRawOffset == tz->mRawOffset
             && mUseDaylight == tz->mUseDaylight
             && (!mUseDaylight || (mStartYear == tz->mStartYear
-                    && mStartMonth == tz->mStartMonth
-                    && mStartDay == tz->mStartDay && mStartMode == tz->mStartMode
-                    && mStartDayOfWeek == tz->mStartDayOfWeek
-                    && mStartTime == tz->mStartTime && mEndMonth == tz->mEndMonth
-                    && mEndDay == tz->mEndDay
-                    && mEndDayOfWeek == tz->mEndDayOfWeek
-                    && mEndTime == tz->mEndTime && mEndMode == tz->mEndMode
-                    && mDstSavings == tz->mDstSavings));
+                && mStartMonth == tz->mStartMonth
+                && mStartDay == tz->mStartDay && mStartMode == tz->mStartMode
+                && mStartDayOfWeek == tz->mStartDayOfWeek
+                && mStartTime == tz->mStartTime && mEndMonth == tz->mEndMonth
+                && mEndDay == tz->mEndDay
+                && mEndDayOfWeek == tz->mEndDayOfWeek
+                && mEndTime == tz->mEndTime && mEndMode == tz->mEndMode
+                && mDstSavings == tz->mDstSavings));
     return NOERROR;
 }
 
@@ -370,8 +412,8 @@ ECode CSimpleTimeZone::GetHashCode(
     *hashCode = id.GetHashCode() + mRawOffset;
     if (mUseDaylight) {
         *hashCode += mStartYear + mStartMonth + mStartDay + mStartDayOfWeek
-                + mStartTime + mStartMode + mEndMonth + mEndDay + mEndDayOfWeek
-                + mEndTime + mEndMode + mDstSavings;
+            + mStartTime + mStartMode + mEndMonth + mEndDay + mEndDayOfWeek
+            + mEndTime + mEndMode + mDstSavings;
     }
     return NOERROR;
 }
@@ -691,17 +733,6 @@ ECode CSimpleTimeZone::ToString(
     sb += mEndTime;
     sb += "]";
     *str = sb.ToString();
-    return NOERROR;
-}
-
-ECode CSimpleTimeZone::Clone(
-    /* [out] */ IInterface** newObj)
-{
-    VALIDATE_NOT_NULL(newObj)
-    AutoPtr<ITimeZone> timeZone;
-    FAIL_RETURN(Clone((ITimeZone**)&timeZone));
-    *newObj = timeZone->Probe(EIID_IInterface);
-    REFCOUNT_ADD(*newObj)
     return NOERROR;
 }
 

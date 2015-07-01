@@ -3,7 +3,6 @@
 
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Utility {
 

@@ -78,6 +78,66 @@
 #endif
 
 
+#ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
+#define __UUNM_Elastos_CoreLibrary_DEFINED__
+#define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
+#endif // __UUNM_Elastos_CoreLibrary_DEFINED__
+
+#ifndef __SAME_CLASS_NAME_OF_JNI__
+#define __SAME_CLASS_NAME_OF_JNI__
+// for jni class has same name with car implement class
+#define NATIVE(x) ::x
+#endif // __SAME_CLASS_NAME_OF_JNI__
+
+// defines for ETL hash functions
+//
+#ifndef __ETL_HASH_FUN_H__
+#include <elastos/utility/etl/etl_hash_fun.h>
+#endif
+
+#ifndef __ETL_FUNCTION_H__
+#include <elastos/utility/etl/etl_function.h>
+#endif
+
+#ifndef DEFINE_OBJECT_HASH_FUNC_FOR
+#define DEFINE_OBJECT_HASH_FUNC_FOR(TypeName)                                           \
+namespace Elastos { namespace Utility { namespace Etl {                                 \
+template<> struct Hash<TypeName>                                                        \
+{                                                                                       \
+    size_t operator()(TypeName * s) const                                               \
+    {                                                                                   \
+        return (size_t)Object::GetHashCode(s);                                          \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct Hash<AutoPtr<TypeName> >                                              \
+{                                                                                       \
+    size_t operator()(const AutoPtr<TypeName> & s) const                                \
+    {                                                                                   \
+        return (size_t)Object::GetHashCode(s.Get());                                    \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct EqualTo<TypeName *>                                                   \
+{                                                                                       \
+    size_t operator()(TypeName * x, TypeName * y) const                                 \
+    {                                                                                   \
+        return (size_t)Object::Equals(x, y);                                            \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct EqualTo<AutoPtr<TypeName> >                                           \
+{                                                                                       \
+    size_t operator()(const AutoPtr<TypeName> & x, const AutoPtr<TypeName> & y) const   \
+    {                                                                                   \
+        return (size_t)Object::Equals(x, y);                                            \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+} } } // Elastos::Utility::Etl
+#endif // DEFINE_OBJECT_HASH_FUNC_FOR
+
+
 // Car interface decls and impls
 //
 #ifndef CAR_INTERFACE_DECL
@@ -858,15 +918,5 @@ public:                                                                         
     CAR_SINGLETON_METHODS_IMPL(ClassName)
 #endif
 
-#ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
-#define __UUNM_Elastos_CoreLibrary_DEFINED__
-#define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
-#endif // __UUNM_Elastos_CoreLibrary_DEFINED__
 
 #endif //__ELASTOS_CORE_DEF_H__
-
-#ifndef __SAME_CLASS_NAME_OF_JNI__
-#define __SAME_CLASS_NAME_OF_JNI__
-// for jni class has same name with car implement class
-#define NATIVE(x) ::x
-#endif // __SAME_CLASS_NAME_OF_JNI__

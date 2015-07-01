@@ -1,12 +1,15 @@
 
 #include "TimeZone.h"
-//#include "CSimpleTimeZone.h"
-//#include "ZoneInfoDB.h"
+#include "CSimpleTimeZone.h"
+#include "CZoneInfoDB.h"
 #include "StringUtils.h"
 #include "CStringWrapper.h"
-//#include "CPatternHelper.h"
+#include "Pattern.h"
 #include "CLocaleHelper.h"
-//#include "CTimeZones.h"
+#include "AutoLock.h"
+#include "TimeZoneGetter.h"
+#include "IoUtils.h"
+#include "TimeZoneNames.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::IArrayOf;
@@ -14,14 +17,15 @@ using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
-using Elastos::Utility::Regex::IPatternHelper;
-//using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::Pattern;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IMatchResult;
-//using Libcore::ICU::ILocaleHelper;
-//using Libcore::ICU::CLocaleHelper;
-//using Libcore::ICU::ITimeZones;
-//using Libcore::ICU::CTimeZones;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Libcore::Utility::CZoneInfoDB;
+using Libcore::IO::IoUtils;
+using Libcore::Utility::IZoneInfo;
+using Libcore::ICU::TimeZoneNames;
 
 namespace Elastos {
 namespace Utility {
@@ -30,52 +34,80 @@ static AutoPtr<ITimeZone> CreateSimpleTimeZone(
     /* [in] */ Int32 offset,
     /* [in] */ const char* name)
 {
-    // AutoPtr<CSimpleTimeZone> ctz;
-    // CSimpleTimeZone::NewByFriend(offset, String(name), (CSimpleTimeZone**)&ctz);
-    // assert(ctz != NULL && " Failed to CreateSimpleTimeZone");
-    AutoPtr<ITimeZone> tz;// = (ITimeZone*)ctz;
+    AutoPtr<CSimpleTimeZone> ctz;
+    CSimpleTimeZone::NewByFriend(offset, String(name), (CSimpleTimeZone**)&ctz);
+    assert(ctz != NULL && " Failed to CreateSimpleTimeZone");
+    AutoPtr<ITimeZone> tz = (ITimeZone*)ctz;
     return tz;
 }
 
 static AutoPtr<IPattern> CreatePattern(
    /* [in] */ const char* name)
 {
-   // AutoPtr<CPatternHelper> patternHelper;
-   // CPatternHelper::AcquireSingletonByFriend((CPatternHelper**)&patternHelper);
-
-   AutoPtr<IPattern> pattern;
-//   patternHelper->Compile(String(name), (IPattern**)&pattern);
-   return pattern;
+    AutoPtr<IPattern> pattern;
+    Pattern::Compile(String(name), (IPattern**)&pattern);
+    return pattern;
 }
 
 AutoPtr<ITimeZone> TimeZone::sGMT = CreateSimpleTimeZone(0, "GMT");
 AutoPtr<ITimeZone> TimeZone::sUTC = CreateSimpleTimeZone(0, "UTC");
 AutoPtr<ITimeZone> TimeZone::sCHINA = CreateSimpleTimeZone(8, "UTC");
 AutoPtr<ITimeZone> TimeZone::sDefaultTimeZone = NULL;
-AutoPtr<IPattern> TimeZone::sCustomZoneIDPattern = CreatePattern("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$");
+AutoPtr<IPattern> TimeZone::CUSTOM_ZONE_ID_PATTERN = CreatePattern("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$");
+Object TimeZone::sLock;
 
 CAR_INTERFACE_IMPL_3(TimeZone, Object, ITimeZone, ISerializable, ICloneable)
 
+ECode TimeZone::CloneImpl(
+    /* [out] */ ITimeZone * other)
+{
+    VALIDATE_NOT_NULL(other)
+
+    TimeZone* tz = (TimeZone*)other;
+    tz->mID = mID;
+    return NOERROR;
+}
+
 AutoPtr<ArrayOf<String> > TimeZone::GetAvailableIDs()
 {
-    AutoPtr<ArrayOf<String> > array;// = ZoneInfoDB::GetAvailableIDs();
+    AutoLock lock(sLock);
+    AutoPtr<ArrayOf<String> > array = CZoneInfoDB::GetInstance()->GetAvailableIDs();
     return array;
 }
 
 AutoPtr<ArrayOf<String> > TimeZone::GetAvailableIDs(
     /* [in] */ Int32 offsetMillis)
 {
-    AutoPtr<ArrayOf<String> > array;// = ZoneInfoDB::GetAvailableIDs(offsetMillis);
+    AutoLock lock(sLock);
+    AutoPtr<ArrayOf<String> > array = CZoneInfoDB::GetInstance()->GetAvailableIDs(offsetMillis);
     return array;
 }
 
 AutoPtr<ITimeZone> TimeZone::GetDefault()
 {
     if (sDefaultTimeZone == NULL) {
-        sDefaultTimeZone;// = ZoneInfoDB::GetSystemDefault();
+        AutoPtr<ITimeZoneGetter> tzGetter = TimeZoneGetter::GetInstance();
+        String zoneName;
+        if (tzGetter != NULL) {
+            tzGetter->GetId(&zoneName);
+        }
+        if (!zoneName.IsNull()) {
+            zoneName = zoneName.Trim();
+        }
+        if (!zoneName.IsNull() || zoneName.IsEmpty()) {
+            // try {
+                // On the host, we can find the configured timezone here.
+            ECode ec = IoUtils::ReadFileAsString(String("/etc/timezone"), &zoneName);
+            // } catch (IOException ex) {
+                // "vogar --mode device" can end up here.
+                // TODO: give libcore access to Android system properties and read "persist.sys.timezone".
+            if (FAILED(ec)) {
+                zoneName = String("GMT");
+            }
+            // }
+        }
+        TimeZone::GetTimeZone(zoneName, (ITimeZone**)&sDefaultTimeZone);
     }
-
-    assert(sDefaultTimeZone != NULL && "DefaultTimeZone can not be null!");
 
     AutoPtr<ITimeZone> tz;
     sDefaultTimeZone->Clone((ITimeZone**)&tz);
@@ -98,7 +130,6 @@ ECode TimeZone::GetDisplayName(
     /* [in] */ ILocale* locale,
     /* [out] */ String* name)
 {
-    VALIDATE_NOT_NULL(name);
     return GetDisplayName(FALSE, ITimeZone::LONG, locale, name);
 }
 
@@ -123,6 +154,7 @@ ECode TimeZone::GetDisplayName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
+    *name = String(NULL);
 
     if (style != ITimeZone::SHORT && style != ITimeZone::LONG) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -134,39 +166,63 @@ ECode TimeZone::GetDisplayName(
     Boolean useDaylight = daylightTime && isUsed;
 
     AutoPtr< ArrayOf<IArrayOf*> > zoneStrings;
-//    AutoPtr<ITimeZones> tzs;
-//    CTimeZones::AcquireSingleton((ITimeZones** )&tzs);
-//    tzs->GetZoneStrings(locale, (ArrayOf<IArrayOf*>**)&zoneStrings);
+    FAIL_RETURN(TimeZoneNames::GetZoneStrings(locale, (ArrayOf<IArrayOf*>**)&zoneStrings))
     String result;
-//    tzs->GetDisplayName(zoneStrings, mID, daylightTime, style, &result);
+    FAIL_RETURN(TimeZoneNames::GetDisplayName(zoneStrings, mID, daylightTime, style, &result))
     if (!result.IsNull()) {
         *name = result;
         return NOERROR;
     }
 
-    Int32 offset;
-    GetRawOffset(&offset);
-    if (useDaylight && this->Probe(EIID_ISimpleTimeZone) != NULL) {
+    // If we get here, it's because icu4c has nothing for us. Most commonly, this is in the
+    // case of short names. For Pacific/Fiji, for example, icu4c has nothing better to offer
+    // than "GMT+12:00". Why do we re-do this work ourselves? Because we have up-to-date
+    // time zone transition data, which icu4c _doesn't_ use --- it uses its own baked-in copy,
+    // which only gets updated when we update icu4c. http://b/7955614 and http://b/8026776.
+
+    // TODO: should we generate these once, in TimeZoneNames.getDisplayName? Revisit when we
+    // upgrade to icu4c 50 and rewrite the underlying native code. See also the
+    // "element[j] != null" check in SimpleDateFormat.parseTimeZone, and the extra work in
+    // DateFormatSymbols.getZoneStrings.
+    Int32 offsetMillis;
+    GetRawOffset(&offsetMillis);
+    if (daylightTime) {
         Int32 savings;
         GetDSTSavings(&savings);
-        offset += savings;
+        offsetMillis += savings;
     }
 
-    offset /= 60000;
+    *name = CreateGmtOffsetString(
+        TRUE /* includeGmt */,
+        TRUE /* includeMinuteSeparator */,
+        offsetMillis);
+    return NOERROR;
+}
+
+String TimeZone::CreateGmtOffsetString(
+    /* [in] */ Boolean includeGmt,
+    /* [in] */ Boolean includeMinuteSeparator,
+    /* [in] */ Int32 offsetMillis)
+{
+    Int32 offsetMinutes = offsetMillis / 60000;
 
     Char32 sign = '+';
-    if (offset < 0) {
+    if (offsetMinutes < 0) {
         sign = '-';
-        offset = -offset;
+        offsetMinutes = -offsetMinutes;
     }
 
     StringBuffer builder(9);
-    builder.Append("GMT");
+    if (includeGmt) {
+        builder.Append("GMT");
+    }
     builder.AppendChar(sign);
-    AppendNumber(&builder, 2, offset / 60);
-    builder.AppendChar(':');
-    AppendNumber(&builder, 2, offset % 60);
-    return builder.ToString(name);
+    AppendNumber(&builder, 2, offsetMinutes / 60);
+    if (includeMinuteSeparator) {
+        builder.AppendChar(':');
+    }
+    AppendNumber(&builder, 2, offsetMinutes % 60);
+    return builder.ToString();
 }
 
 void TimeZone::AppendNumber(
@@ -235,6 +291,8 @@ ECode TimeZone::GetTimeZone(
         return E_NULL_POINTER_EXCEPTION;
     }
 
+    AutoLock lock(sLock);
+
     // Special cases? These can clone an existing instance.
     // TODO: should we just add a cache to ZoneInfoDB instead?
     if (id.GetLength() == 3) {
@@ -247,7 +305,9 @@ ECode TimeZone::GetTimeZone(
     }
 
     // In the database?
-    AutoPtr<ITimeZone> zone;// = ZoneInfoDB::MakeTimeZone(id);
+    AutoPtr<IZoneInfo> zi;
+    FAIL_RETURN(CZoneInfoDB::GetInstance()->MakeTimeZone(id, (IZoneInfo**)&zi))
+    ITimeZone * zone = ITimeZone::Probe(zi);
     // Custom time zone?
     if (zone == NULL && id.GetLength() > 3 && id.StartWith("GMT")) {
         zone = GetCustomTimeZone(id);
@@ -267,14 +327,12 @@ AutoPtr<ITimeZone> TimeZone::GetCustomTimeZone(
     /* [in] */ const String& id)
 {
     AutoPtr<IMatcher> m;
-    sCustomZoneIDPattern->Matcher(id, (IMatcher**)&m);
+    CUSTOM_ZONE_ID_PATTERN->Matcher(id, (IMatcher**)&m);
     Boolean isMatches = FALSE;
     m->Matches(&isMatches);
     if (!isMatches) {
         return NULL;
     }
-
-    AutoPtr<ITimeZone> tz;
 
     Int32 hour = 0;
     Int32 minute = 0;
@@ -297,7 +355,8 @@ AutoPtr<ITimeZone> TimeZone::GetCustomTimeZone(
 
     String cleanId("");
     cleanId.AppendFormat("GMT%c%02d:%02d", sign, hour, minute);
-//    CSimpleTimeZone::New(raw, cleanId , (ISimpleTimeZone **)&tz);
+    AutoPtr<ITimeZone> tz;
+    CSimpleTimeZone::New(raw, cleanId , (ITimeZone **)&tz);
     return tz;
 }
 
@@ -305,8 +364,9 @@ ECode TimeZone::HasSameRules(
     /* [in] */ ITimeZone* timezone,
     /* [out] */ Boolean* hasRules)
 {
-    VALIDATE_NOT_NULL(timezone);
     VALIDATE_NOT_NULL(hasRules);
+    *hasRules = FALSE;
+    VALIDATE_NOT_NULL(timezone);
 
     Int32 offset, toffset;
     GetRawOffset(&offset);
@@ -318,6 +378,8 @@ ECode TimeZone::HasSameRules(
 ECode TimeZone::SetDefault(
     /* [in] */ ITimeZone* timeZone)
 {
+    AutoLock lock(sLock);
+
     sDefaultTimeZone = NULL;
     if (timeZone != NULL) {
         timeZone->Clone((ITimeZone**)&sDefaultTimeZone);

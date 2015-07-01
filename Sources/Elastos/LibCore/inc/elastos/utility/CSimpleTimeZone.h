@@ -376,6 +376,12 @@ public:
     CARAPI Clone(
             /* [out] */ ITimeZone** newObj);
 
+    CARAPI Clone(
+            /* [out] */ IInterface** newObj);
+
+    CARAPI CloneImpl(
+            /* [in] */ ISimpleTimeZone* newObj);
+
     CARAPI Equals(
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* isEqual);
@@ -418,9 +424,6 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
-
-    CARAPI Clone(
-        /* [out] */ IInterface** newObj);
 
 private:
     CARAPI CheckRange(

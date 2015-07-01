@@ -2,8 +2,8 @@
 #include "ResourceBundle.h"
 #include "CArrayList.h"
 #include "CStringWrapper.h"
-//#include "CCollections.h"
-//#include "CWeakHashMap.h"
+#include "Collections.h"
+#include "CWeakHashMap.h"
 #include "CLocale.h"
 #include "CFile.h"
 #include "CHashSet.h"
@@ -24,6 +24,7 @@ using Elastos::IO::CFile;
 using Elastos::Net::IURL;
 using Elastos::Net::IURLConnection;
 using Elastos::Utility::CLocale;
+using Elastos::Utility::Collections;
 
 namespace Elastos {
 namespace Utility {

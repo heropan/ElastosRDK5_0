@@ -143,6 +143,7 @@ ECode CLocaleHelper::GetCANADA_FRENCH(
 ECode CLocaleHelper::GetCHINA(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::CHINA;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -153,6 +154,7 @@ ECode CLocaleHelper::GetCHINA(
 ECode CLocaleHelper::GetCHINESE(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::CHINESE;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -163,6 +165,7 @@ ECode CLocaleHelper::GetCHINESE(
 ECode CLocaleHelper::GetENGLISH(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::ENGLISH;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -173,6 +176,7 @@ ECode CLocaleHelper::GetENGLISH(
 ECode CLocaleHelper::GetFRANCE(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::FRANCE;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -183,6 +187,7 @@ ECode CLocaleHelper::GetFRANCE(
 ECode CLocaleHelper::GetFRENCH(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::FRENCH;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -193,6 +198,7 @@ ECode CLocaleHelper::GetFRENCH(
 ECode CLocaleHelper::GetGERMAN(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::GERMAN;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -203,6 +209,7 @@ ECode CLocaleHelper::GetGERMAN(
 ECode CLocaleHelper::GetGERMANY(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::GERMANY;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -213,6 +220,7 @@ ECode CLocaleHelper::GetGERMANY(
 ECode CLocaleHelper::GetITALIAN(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::ITALIAN;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -223,6 +231,7 @@ ECode CLocaleHelper::GetITALIAN(
 ECode CLocaleHelper::GetITALY(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::ITALY;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -233,6 +242,7 @@ ECode CLocaleHelper::GetITALY(
 ECode CLocaleHelper::GetJAPAN(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::JAPAN;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -243,6 +253,7 @@ ECode CLocaleHelper::GetJAPAN(
 ECode CLocaleHelper::GetJAPANESE(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::JAPANESE;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -253,6 +264,7 @@ ECode CLocaleHelper::GetJAPANESE(
 ECode CLocaleHelper::GetKOREA(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::KOREA;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -263,6 +275,7 @@ ECode CLocaleHelper::GetKOREA(
 ECode CLocaleHelper::GetKOREAN(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::KOREAN;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -273,6 +286,7 @@ ECode CLocaleHelper::GetKOREAN(
 ECode CLocaleHelper::GetPRC(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::PRC;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -286,6 +300,7 @@ ECode CLocaleHelper::GetPRC(
 ECode CLocaleHelper::GetROOT(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::ROOT;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -296,6 +311,7 @@ ECode CLocaleHelper::GetROOT(
 ECode CLocaleHelper::GetSIMPLIFIED_CHINESE(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::SIMPLIFIED_CHINESE;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -306,6 +322,7 @@ ECode CLocaleHelper::GetSIMPLIFIED_CHINESE(
 ECode CLocaleHelper::GetTAIWAN(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::TAIWAN;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -316,6 +333,7 @@ ECode CLocaleHelper::GetTAIWAN(
 ECode CLocaleHelper::GetTRADITIONAL_CHINESE(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::TRADITIONAL_CHINESE;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -326,6 +344,7 @@ ECode CLocaleHelper::GetTRADITIONAL_CHINESE(
 ECode CLocaleHelper::GetUK(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::UK;
     REFCOUNT_ADD(*locale);
     return NOERROR;
@@ -336,6 +355,7 @@ ECode CLocaleHelper::GetUK(
 ECode CLocaleHelper::GetUS(
     /* [out] */ ILocale** locale)
 {
+    VALIDATE_NOT_NULL(locale)
     *locale = CLocale::US;
     REFCOUNT_ADD(*locale);
     return NOERROR;

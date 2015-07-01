@@ -3,8 +3,8 @@
 #define __ELASTOS_UTILITY_CSCANNER_H__
 
 #include "_Elastos_Utility_CScanner.h"
-#include <StringBuilder.h>
-#include <elastos/core/Object.h>
+#include "StringBuilder.h"
+#include "Object.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
@@ -1030,7 +1030,8 @@ private:
     /*
      * Initialize some components.
      */
-    CARAPI Initialization();
+    CARAPI Initialization(
+        /* [in] */ IReadable* reader);
 
     /*
      * Check the {@code Scanner}'s state, if it is closed, IllegalStateException will be
@@ -1141,7 +1142,6 @@ private:
     // Expand the size of internal buffer.
     CARAPI ExpandBuffer();
 
-    static CARAPI_(Boolean) StaticInit();
 private:
     static Boolean sStaticflag;
 
