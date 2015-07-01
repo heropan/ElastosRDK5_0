@@ -51,6 +51,7 @@ SOURCES += CSystem.cpp
 SOURCES += Math.cpp
 SOURCES += StrictMath.cpp
 SOURCES += cbigint.cpp
+SOURCES += CoreUtils.cpp
 SOURCES += StringUtils.cpp
 SOURCES += HexStringParser.cpp
 SOURCES += StringToIntegral.cpp

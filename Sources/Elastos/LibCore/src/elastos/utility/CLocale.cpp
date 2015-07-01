@@ -11,6 +11,7 @@
 #include "StringUtils.h"
 #include "CChar32.h"
 #include "CArrayList.h"
+#include "CoreUtils.h"
 
 using Elastos::Core::IChar32;
 using Elastos::Core::CChar32;
@@ -1333,9 +1334,8 @@ void CLocale::ParseUnicodeExtension(
             c->GetSize(&size);
             if (size > 0) {
                 String jbs = JoinBcp47Subtags(subtagsForKeyword);
-                AutoPtr<ICharSequence> c1, c2;
-                CStringWrapper::New(lastKeyword, (ICharSequence**)&c1);
-                CStringWrapper::New(jbs, (ICharSequence**)&c2);
+                AutoPtr<ICharSequence> c1 = CoreUtils::Convert(lastKeyword);
+                AutoPtr<ICharSequence> c2 = CoreUtils::Convert(jbs);
                 keywords->Put(TO_IINTERFACE(c1), TO_IINTERFACE(c2));
                 c->Clear();
             }
@@ -1343,8 +1343,7 @@ void CLocale::ParseUnicodeExtension(
             lastKeyword = subtag;
         }
         else if (subtag.GetLength() > 2) {
-            AutoPtr<ICharSequence> c1;
-            CStringWrapper::New(subtag, (ICharSequence**)&c1);
+            AutoPtr<ICharSequence> c1 = CoreUtils::Convert(subtag);
             if (lastKeyword.IsNull()) {
                 a->Add(c1);
             }
@@ -1357,15 +1356,13 @@ void CLocale::ParseUnicodeExtension(
     c->GetSize(&size);
     if (size > 0) {
         String jbs = JoinBcp47Subtags(subtagsForKeyword);
-        AutoPtr<ICharSequence> c1, c2;
-        CStringWrapper::New(lastKeyword, (ICharSequence**)&c1);
-        CStringWrapper::New(jbs, (ICharSequence**)&c2);
+        AutoPtr<ICharSequence> c1 = CoreUtils::Convert(lastKeyword);
+        AutoPtr<ICharSequence> c2 = CoreUtils::Convert(jbs);
         keywords->Put(TO_IINTERFACE(c1), TO_IINTERFACE(c2));
     }
     else if (!lastKeyword.IsNull()) {
-        AutoPtr<ICharSequence> c1, c2;
-        CStringWrapper::New(lastKeyword, (ICharSequence**)&c1);
-        CStringWrapper::New(String(""), (ICharSequence**)&c2);
+        AutoPtr<ICharSequence> c1 = CoreUtils::Convert(lastKeyword);
+        AutoPtr<ICharSequence> c2 = CoreUtils::Convert(String(""));
         keywords->Put(TO_IINTERFACE(c1), TO_IINTERFACE(c2));
     }
 }
@@ -1373,44 +1370,53 @@ void CLocale::ParseUnicodeExtension(
 String CLocale::JoinBcp47Subtags(
     /* [in] */ IList* strings)
 {
-    assert(0 && "TODO");
-    // Int32 size = strings.size();
+    assert(strings);
+    Int32 size;
+    ICollection::Probe(strings)->GetSize(&size);
 
-    // StringBuilder sb = new StringBuilder(strings.get(0).length());
-    // for (Int32 i = 0; i < size; ++i) {
-    //     sb.Append(strings.get(i));
-    //     if (i != size - 1) {
-    //         sb.Append('-');
-    //     }
-    // }
+    AutoPtr<IInterface> obj;
+    strings->Get(0, (IInterface**)&obj);
+    String info = Object::ToString(obj);
+    StringBuilder sb(info.GetByteLength());
+    for (Int32 i = 0; i < size; ++i) {
+        obj = NULL;
+        strings->Get(i, (IInterface**)&obj);
+        String info = Object::ToString(obj);
 
-    // return sb.toString();
+        sb.Append(info);
+        if (i != size - 1) {
+            sb.AppendChar('-');
+        }
+    }
+
+    return sb.ToString();
 }
 
 String CLocale::AdjustLanguageCode(
     /* [in] */ const String& languageCode)
 {
-    assert(0 && "TODO");
-    // String adjusted = languageCode.toLowerCase(Locale.US);
-    // // Map new language codes to the obsolete language
-    // // codes so the correct resource bundles will be used.
-    // if (languageCode.equals("he")) {
-    //     adjusted = "iw";
-    // } else if (languageCode.equals("id")) {
-    //     adjusted = "in";
-    // } else if (languageCode.equals("yi")) {
-    //     adjusted = "ji";
-    // }
+    String adjusted = languageCode.ToLowerCase(/*Locale.US*/);
+    // Map new language codes to the obsolete language
+    // codes so the correct resource bundles will be used.
+    if (languageCode.Equals("he")) {
+        adjusted = String("iw");
+    } else if (languageCode.Equals("id")) {
+        adjusted = String("in");
+    } else if (languageCode.Equals("yi")) {
+        adjusted = String("ji");
+    }
 
-    // return adjusted;
+    return adjusted;
 }
 
 String CLocale::ConvertGrandfatheredTag(
     /* [in] */ const String& original)
 {
-    assert(0 && "TODO");
-    // String converted = GRANDFATHERED_LOCALES.get(original);
-    // return converted != null ? converted : original;
+    StringMapIterator it = GRANDFATHERED_LOCALES->Find(original);
+    if (it != GRANDFATHERED_LOCALES->End()) {
+        return it->mSecond;
+    }
+    return original;
 }
 
 void CLocale::ExtractVariantSubtags(
@@ -1419,16 +1425,17 @@ void CLocale::ExtractVariantSubtags(
     /* [in] */ Int32 endIndex,
     /* [in] */ IList* normalizedVariants)
 {
-    assert(0 && "TODO");
-    // for (Int32 i = startIndex; i < endIndex; i++) {
-    //     String subtag = subtags[i];
+    for (Int32 i = startIndex; i < endIndex; i++) {
+        String subtag = (*subtags)[i];
 
-    //     if (Builder.isValidVariantSubtag(subtag)) {
-    //         normalizedVariants.Add(subtag);
-    //     } else {
-    //         break;
-    //     }
-    // }
+        if (CLocaleBuilder::IsValidVariantSubtag(subtag)) {
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(subtag);
+            normalizedVariants->Add(csq);
+        }
+        else {
+            break;
+        }
+    }
 }
 
 Int32 CLocale::ExtractExtensions(
@@ -1437,75 +1444,80 @@ Int32 CLocale::ExtractExtensions(
     /* [in] */ Int32 endIndex,
     /* [in] */ IMap* extensions)
 {
-    assert(0 && "TODO");
-    // Int32 privateUseExtensionIndex = -1;
-    // Int32 extensionKeyIndex = -1;
+    Int32 privateUseExtensionIndex = -1;
+    Int32 extensionKeyIndex = -1;
 
-    // Int32 i = startIndex;
-    // for (; i < endIndex; i++) {
-    //     String subtag = subtags[i];
+    Boolean contains;
+    Int32 i = startIndex;
+    for (; i < endIndex; i++) {
+        String subtag = (*subtags)[i];
 
-    //     boolean parsingPrivateUse = (privateUseExtensionIndex != -1) &&
-    //             (extensionKeyIndex == privateUseExtensionIndex);
+        Boolean parsingPrivateUse = (privateUseExtensionIndex != -1) &&
+                (extensionKeyIndex == privateUseExtensionIndex);
 
-    //     // Note that private use extensions allow subtags of length 1.
-    //     // Private use extensions *must* come last, so there's no ambiguity
-    //     // in that case.
-    //     if (subtag.length() == 1 && !parsingPrivateUse) {
-    //         // Emit the last extension we encountered if any. First check
-    //         // whether we encountered two keys in a row (which is an error).
-    //         // Also checks if we already have an extension with the same key,
-    //         // which is again an error.
-    //         if (extensionKeyIndex != -1) {
-    //             if ((i - 1) == extensionKeyIndex) {
-    //                 return extensionKeyIndex;
-    //             }
+        // Note that private use extensions allow subtags of length 1.
+        // Private use extensions *must* come last, so there's no ambiguity
+        // in that case.
+        if (subtag.GetLength() == 1 && !parsingPrivateUse) {
+            // Emit the last extension we encountered if any. First check
+            // whether we encountered two keys in a row (which is an error).
+            // Also checks if we already have an extension with the same key,
+            // which is again an error.
+            if (extensionKeyIndex != -1) {
+                if ((i - 1) == extensionKeyIndex) {
+                    return extensionKeyIndex;
+                }
 
-    //             String key = subtags[extensionKeyIndex];
-    //             if (extensions.containsKey(key.charAt(0))) {
-    //                 return extensionKeyIndex;
-    //             }
+                String key = (*subtags)[extensionKeyIndex];
+                AutoPtr<IChar32> ch = CoreUtils::ConvertChar32(key.GetChar(0));
+                if (extensions->ContainsKey(TO_IINTERFACE(ch), &contains), contains) {
+                    return extensionKeyIndex;
+                }
 
-    //             String value = concatenateRange(subtags, extensionKeyIndex + 1, i);
-    //             extensions.put(key.charAt(0), value.toLowerCase(Locale.ROOT));
-    //         }
+                String value = ConcatenateRange(subtags, extensionKeyIndex + 1, i);
+                AutoPtr<ICharSequence> csq = CoreUtils::Convert(value.ToLowerCase(/*Locale.ROOT*/));
+                extensions->Put(TO_IINTERFACE(ch), TO_IINTERFACE(csq));
+            }
 
-    //         // Mark the start of the next extension. Also keep track of whether this
-    //         // is a private use extension, and throw an error if it doesn't come last.
-    //         extensionKeyIndex = i;
-    //         if ("x".equals(subtag)) {
-    //             privateUseExtensionIndex = i;
-    //         } else if (privateUseExtensionIndex != -1) {
-    //             // The private use extension must come last.
-    //             return privateUseExtensionIndex;
-    //         }
-    //     } else if (extensionKeyIndex != -1) {
-    //         // We must have encountered a valid key in order to start parsing
-    //         // its subtags.
-    //         if (!isValidBcp47Alphanum(subtag, parsingPrivateUse ? 1 : 2, 8)) {
-    //             return i;
-    //         }
-    //     } else {
-    //         // Encountered a value without a preceding key.
-    //         return i;
-    //     }
-    // }
+            // Mark the start of the next extension. Also keep track of whether this
+            // is a private use extension, and throw an error if it doesn't come last.
+            extensionKeyIndex = i;
+            if (subtag.Equals("x")) {
+                privateUseExtensionIndex = i;
+            }
+            else if (privateUseExtensionIndex != -1) {
+                // The private use extension must come last.
+                return privateUseExtensionIndex;
+            }
+        } else if (extensionKeyIndex != -1) {
+            // We must have encountered a valid key in order to start parsing
+            // its subtags.
+            if (!IsValidBcp47Alphanum(subtag, parsingPrivateUse ? 1 : 2, 8)) {
+                return i;
+            }
+        } else {
+            // Encountered a value without a preceding key.
+            return i;
+        }
+    }
 
-    // if (extensionKeyIndex != -1) {
-    //     if ((i - 1) == extensionKeyIndex) {
-    //         return extensionKeyIndex;
-    //     }
+    if (extensionKeyIndex != -1) {
+        if ((i - 1) == extensionKeyIndex) {
+            return extensionKeyIndex;
+        }
 
-    //     String key = subtags[extensionKeyIndex];
-    //     if (extensions.containsKey(key.charAt(0))) {
-    //         return extensionKeyIndex;
-    //     }
+        String key = (*subtags)[extensionKeyIndex];
+        AutoPtr<IChar32> ch = CoreUtils::ConvertChar32(key.GetChar(0));
+        if (extensions->ContainsKey(TO_IINTERFACE(ch), &contains), contains) {
+            return extensionKeyIndex;
+        }
 
-    //     String value = concatenateRange(subtags, extensionKeyIndex + 1, i);
-    //     extensions.put(key.charAt(0), value.toLowerCase(Locale.ROOT));
-    // }
+        String value = ConcatenateRange(subtags, extensionKeyIndex + 1, i);
+        AutoPtr<ICharSequence> csq = CoreUtils::Convert(value.ToLowerCase(/*Locale.ROOT*/));
+        extensions->Put(TO_IINTERFACE(ch), TO_IINTERFACE(csq));
+    }
 
-    // return i;
+    return i;
 }
 
 ECode CLocale::ForLanguageTag(
@@ -1513,86 +1525,118 @@ ECode CLocale::ForLanguageTag(
     /* [in] */ Boolean strict,
     /* [out] */ ILocale** locale)
 {
-    assert(0 && "TODO");
-    // String converted = convertGrandfatheredTag(tag);
-    // String[] subtags = converted.split("-");
+    VALIDATE_NOT_NULL(locale)
+    *locale = NULL;
 
-    // Int32 lastSubtag = subtags.length;
-    // for (Int32 i = 0; i < subtags.length; ++i) {
-    //     String subtag = subtags[i];
-    //     if (subtag.IsEmpty() || subtag.length() > 8) {
-    //         if (strict) {
-    //             throw new IllformedLocaleException("Invalid subtag at index: " + i
-    //                     + " in tag: " + tag);
-    //         } else {
-    //             lastSubtag = (i - 1);
-    //         }
+    if (tag.IsNull()) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    //         break;
-    //     }
-    // }
+    String converted = ConvertGrandfatheredTag(tag);
+    AutoPtr<ArrayOf<String> > subtags;
+    StringUtils::Split(converted, "-", (ArrayOf<String>**)&subtags);
 
-    // String languageCode = Builder.normalizeAndValidateLanguage(subtags[0], strict);
-    // String scriptCode = "";
-    // Int32 nextSubtag = 1;
-    // if (lastSubtag > nextSubtag) {
-    //     scriptCode = Builder.normalizeAndValidateScript(subtags[nextSubtag], false /* strict */);
-    //     if (!scriptCode.IsEmpty()) {
-    //         nextSubtag++;
-    //     }
-    // }
+    Int32 lastSubtag = subtags->GetLength();
+    for (Int32 i = 0; i < subtags->GetLength(); ++i) {
+        String subtag = (*subtags)[i];
+        if (subtag.IsEmpty() || subtag.GetLength() > 8) {
+            if (strict) {
+                // throw new IllformedLocaleException("Invalid subtag at index: " + i
+                //         + " in tag: " + tag);
+                return E_ILLFORMED_LOCALE_EXCEPTION;
+            } else {
+                lastSubtag = (i - 1);
+            }
 
-    // String regionCode = "";
-    // if (lastSubtag > nextSubtag) {
-    //     regionCode = Builder.normalizeAndValidateRegion(subtags[nextSubtag], false /* strict */);
-    //     if (!regionCode.IsEmpty()) {
-    //         nextSubtag++;
-    //     }
-    // }
+            break;
+        }
+    }
 
-    // List<String> variants = null;
-    // if (lastSubtag > nextSubtag) {
-    //     variants = new ArrayList<String>();
-    //     extractVariantSubtags(subtags, nextSubtag, lastSubtag, variants);
-    //     nextSubtag += variants.size();
-    // }
+    String languageCode;
+    FAIL_RETURN(CLocaleBuilder::NormalizeAndValidateLanguage(
+        (*subtags)[0], strict, &languageCode))
+    String scriptCode("");
+    Int32 nextSubtag = 1;
+    if (lastSubtag > nextSubtag) {
+        FAIL_RETURN(CLocaleBuilder::NormalizeAndValidateScript(
+            (*subtags)[nextSubtag], FALSE /* strict */, &scriptCode))
+        if (!scriptCode.IsEmpty()) {
+            nextSubtag++;
+        }
+    }
 
-    // Map<Character, String> extensions = Collections::EMPTY_MAP;
-    // if (lastSubtag > nextSubtag) {
-    //     extensions = new TreeMap<Character, String>();
-    //     nextSubtag = extractExtensions(subtags, nextSubtag, lastSubtag, extensions);
-    // }
+    String regionCode("");
+    if (lastSubtag > nextSubtag) {
+        FAIL_RETURN(CLocaleBuilder::NormalizeAndValidateRegion(
+            (*subtags)[nextSubtag], FALSE /* strict */, &regionCode))
+        if (!regionCode.IsEmpty()) {
+            nextSubtag++;
+        }
+    }
 
-    // if (nextSubtag != lastSubtag) {
-    //     if (strict) {
-    //         throw new IllformedLocaleException("Unparseable subtag: " + subtags[nextSubtag]
-    //                 + " from language tag: " + tag);
-    //     }
-    // }
+    AutoPtr<IList> variants;
+    if (lastSubtag > nextSubtag) {
+        CArrayList::New((IList**)&variants);
+        ExtractVariantSubtags(subtags, nextSubtag, lastSubtag, variants);
+        Int32 size;
+        ICollection::Probe(variants)->GetSize(&size);
+        nextSubtag += size;
+    }
 
-    // Set<String> unicodeKeywords = Collections::EMPTY_SET;
-    // Map<String, String> unicodeAttributes = Collections::EMPTY_MAP;
-    // if (extensions.containsKey(UNICODE_LOCALE_EXTENSION)) {
-    //     unicodeKeywords = new TreeSet<String>();
-    //     unicodeAttributes = new TreeMap<String, String>();
-    //     parseUnicodeExtension(extensions.get(UNICODE_LOCALE_EXTENSION).split("-"),
-    //             unicodeAttributes, unicodeKeywords);
-    // }
+    AutoPtr<IMap> extensions = Collections::EMPTY_MAP;
+    if (lastSubtag > nextSubtag) {
+        extensions = NULL;
+        CTreeMap::New((IMap**)&extensions);
+        nextSubtag = ExtractExtensions(subtags, nextSubtag, lastSubtag, extensions);
+    }
 
-    // String variantCode = "";
-    // if (variants != null && !variants.IsEmpty()) {
-    //     StringBuilder variantsBuilder = new StringBuilder(variants.size() * 8);
-    //     for (Int32 i = 0; i < variants.size(); ++i) {
-    //         if (i != 0) {
-    //             variantsBuilder.Append('_');
-    //         }
-    //         variantsBuilder.Append(variants.get(i));
-    //     }
-    //     variantCode = variantsBuilder.toString();
-    // }
+    if (nextSubtag != lastSubtag) {
+        if (strict) {
+            // throw new IllformedLocaleException("Unparseable subtag: " + subtags[nextSubtag]
+            //         + " from language tag: " + tag);
+            return E_ILLFORMED_LOCALE_EXCEPTION;
+        }
+    }
 
-    // return new Locale(languageCode, regionCode, variantCode, scriptCode,
-    //         unicodeKeywords, unicodeAttributes, extensions, true /* has validated fields */);
+    Boolean contains;
+    AutoPtr<IChar32> ch = CoreUtils::ConvertChar32(ILocale::UNICODE_LOCALE_EXTENSION);
+    AutoPtr<ISet> unicodeKeywords = Collections::EMPTY_SET;
+    AutoPtr<IMap> unicodeAttributes = Collections::EMPTY_MAP;
+    if (extensions->ContainsKey(TO_IINTERFACE(ch), &contains), contains) {
+        unicodeKeywords = NULL;
+        unicodeAttributes = NULL;
+        CTreeSet::New((ISet**)&unicodeKeywords);
+        CTreeMap::New((IMap**)&unicodeAttributes);
+        AutoPtr<IInterface> obj;
+        extensions->Get(TO_IINTERFACE(ch), (IInterface**)&obj);
+        String str = Object::ToString(obj);
+        AutoPtr<ArrayOf<String> > strs;
+        StringUtils::Split(str, "-", (ArrayOf<String> **)&strs);
+        ParseUnicodeExtension(strs, unicodeAttributes, unicodeKeywords);
+    }
+
+    String variantCode("");
+    if (variants != NULL && (ICollection::Probe(variants)->IsEmpty(&contains), !contains)) {
+        Int32 size;
+        ICollection::Probe(variants)->GetSize(&size);
+        StringBuilder variantsBuilder(size * 8);
+        for (Int32 i = 0; i < size; ++i) {
+            if (i != 0) {
+                variantsBuilder.AppendChar('_');
+            }
+            AutoPtr<IInterface> obj;
+            variants->Get(i, (IInterface**)&obj);
+            variantsBuilder.Append(Object::ToString(obj));
+        }
+        variantCode = variantsBuilder.ToString();
+    }
+
+    AutoPtr<CLocale> l;
+    CLocale::NewByFriend((CLocale**)&l);
+    l->constructor(languageCode, regionCode, variantCode, scriptCode,
+            unicodeKeywords, unicodeAttributes, extensions, TRUE /* has validated fields */);
+    *locale = (ILocale*)l.Get();
+    REFCOUNT_ADD(*locale)
     return NOERROR;
 }
 

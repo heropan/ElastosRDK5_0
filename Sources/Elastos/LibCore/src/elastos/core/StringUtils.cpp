@@ -8,10 +8,13 @@
 #include "CStringWrapper.h"
 #include "CPatternHelper.h"
 #include "CSplitter.h"
+#include "Math.h"
+#include "StringBuilder.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Character;
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::ISplitter;
@@ -31,7 +34,7 @@ Int16 StringUtils::ParseInt16(
     ECode ec = StringToIntegral::Parse(input, radix, &value);
     if (FAILED(ec)) {
 #ifdef DEBUG
-        printf("Warnning: StringUtils::ParseInt16 NumberFormatException, input [%s]\n", input.string());
+        prInt32f("Warnning: StringUtils::ParseInt16 NumberFormatException, input [%s]\n", input.string());
 #endif
         return defValue;
     }
@@ -48,7 +51,7 @@ Int32 StringUtils::ParseInt32(
     ECode ec = StringToIntegral::Parse(input, radix, &value);
     if (FAILED(ec)) {
 #ifdef DEBUG
-        printf("Warnning: StringUtils::ParseInt32 NumberFormatException, input [%s]\n", input.string());
+        prInt32f("Warnning: StringUtils::ParseInt32 NumberFormatException, input [%s]\n", input.string());
 #endif
         return defValue;
     }
@@ -65,7 +68,7 @@ Int64 StringUtils::ParseInt64(
     ECode ec = StringToIntegral::Parse(input, radix, &value);
     if (FAILED(ec)) {
 #ifdef DEBUG
-        printf("Warnning: StringUtils::ParseInt64 NumberFormatException, input [%s]\n", input.string());
+        prInt32f("Warnning: StringUtils::ParseInt64 NumberFormatException, input [%s]\n", input.string());
 #endif
         return defValue;
     }
@@ -81,7 +84,7 @@ Float StringUtils::ParseFloat(
     ECode ec = StringToReal::Parse(input, &value);
     if (FAILED(ec)) {
 #ifdef DEBUG
-        printf("Warnning: StringUtils::ParseFloat NumberFormatException, input [%s]\n", input.string());
+        prInt32f("Warnning: StringUtils::ParseFloat NumberFormatException, input [%s]\n", input.string());
 #endif
         return defValue;
     }
@@ -97,7 +100,7 @@ Double StringUtils::ParseDouble(
     ECode ec = StringToReal::Parse(input, &value);
     if (FAILED(ec)) {
 #ifdef DEBUG
-        printf("Warnning: StringUtils::ParseDouble NumberFormatException, input [%s]\n", input.string());
+        prInt32f("Warnning: StringUtils::ParseDouble NumberFormatException, input [%s]\n", input.string());
 #endif
         return defValue;
     }
@@ -232,177 +235,185 @@ String StringUtils::ToHexString(
 }
 
 String StringUtils::ToHexString(
-    /* [in] */ Float v)
+    /* [in] */ Float f)
 {
-    // /*
-    //  * Reference: http://en.wikipedia.org/wiki/IEEE_754-1985
-    //  */
-    // if (f != f) {
-    //     return "NaN";
-    // }
-    // if (f == POSITIVE_INFINITY) {
-    //     return "Infinity";
-    // }
-    // if (f == NEGATIVE_INFINITY) {
-    //     return "-Infinity";
-    // }
+    using Elastos::Core::Math;
 
-    // int bitValue = floatToIntBits(f);
+    /*
+     * Reference: http://en.wikipedia.org/wiki/IEEE_754-1985
+     */
+    if (f != f) {
+        return String("NaN");
+    }
+    if (f == Math::FLOAT_POSITIVE_INFINITY) {
+        return String("Infinity");
+    }
+    if (f == Math::FLOAT_NEGATIVE_INFINITY) {
+        return String("-Infinity");
+    }
 
-    // boolean negative = (bitValue & 0x80000000) != 0;
-    // // mask exponent bits and shift down
-    // int exponent = (bitValue & 0x7f800000) >>> 23;
-    // // mask significand bits and shift up
-    // // significand is 23-bits, so we shift to treat it like 24-bits
-    // int significand = (bitValue & 0x007FFFFF) << 1;
+    Int32 bitValue = Math::FloatToInt32Bits(f);
 
-    // if (exponent == 0 && significand == 0) {
-    //     return (negative ? "-0x0.0p0" : "0x0.0p0");
-    // }
+    Boolean negative = (bitValue & 0x80000000) != 0;
+    // mask exponent bits and shift down
+    Int32 exponent = ((Int64)bitValue & 0x7f800000) >> 23;
+    // mask significand bits and shift up
+    // significand is 23-bits, so we shift to treat it like 24-bits
+    Int32 significand = (bitValue & 0x007FFFFF) << 1;
 
-    // StringBuilder hexString = new StringBuilder(10);
-    // if (negative) {
-    //     hexString.append("-0x");
-    // } else {
-    //     hexString.append("0x");
-    // }
+    if (exponent == 0 && significand == 0) {
+        return (negative ? String("-0x0.0p0") : String("0x0.0p0"));
+    }
 
-    // if (exponent == 0) { // denormal (subnormal) value
-    //     hexString.append("0.");
-    //     // significand is 23-bits, so there can be 6 hex digits
-    //     int fractionDigits = 6;
-    //     // remove trailing hex zeros, so Integer.toHexString() won't print
-    //     // them
-    //     while ((significand != 0) && ((significand & 0xF) == 0)) {
-    //         significand >>>= 4;
-    //         fractionDigits--;
-    //     }
-    //     // this assumes Integer.toHexString() returns lowercase characters
-    //     String hexSignificand = Integer.toHexString(significand);
+    StringBuilder hexString(10);
+    if (negative) {
+        hexString.Append("-0x");
+    } else {
+        hexString.Append("0x");
+    }
 
-    //     // if there are digits left, then insert some '0' chars first
-    //     if (significand != 0 && fractionDigits > hexSignificand.length()) {
-    //         int digitDiff = fractionDigits - hexSignificand.length();
-    //         while (digitDiff-- != 0) {
-    //             hexString.append('0');
-    //         }
-    //     }
-    //     hexString.append(hexSignificand);
-    //     hexString.append("p-126");
-    // } else { // normal value
-    //     hexString.append("1.");
-    //     // significand is 23-bits, so there can be 6 hex digits
-    //     int fractionDigits = 6;
-    //     // remove trailing hex zeros, so Integer.toHexString() won't print
-    //     // them
-    //     while ((significand != 0) && ((significand & 0xF) == 0)) {
-    //         significand >>>= 4;
-    //         fractionDigits--;
-    //     }
-    //     // this assumes Integer.toHexString() returns lowercase characters
-    //     String hexSignificand = Integer.toHexString(significand);
+    if (exponent == 0) { // denormal (subnormal) value
+        hexString.Append("0.");
+        // significand is 23-bits, so there can be 6 hex digits
+        Int32 fractionDigits = 6;
+        // remove trailing hex zeros, so Integer.toHexString() won't prInt32
+        // them
+        while ((significand != 0) && ((significand & 0xF) == 0)) {
+            significand = ((Int64)significand >> 4);
+            fractionDigits--;
+        }
+        // this assumes Integer.toHexString() returns lowercase characters
+        String hexSignificand;
+        StringUtils::ToHexString(significand, &hexSignificand);
 
-    //     // if there are digits left, then insert some '0' chars first
-    //     if (significand != 0 && fractionDigits > hexSignificand.length()) {
-    //         int digitDiff = fractionDigits - hexSignificand.length();
-    //         while (digitDiff-- != 0) {
-    //             hexString.append('0');
-    //         }
-    //     }
-    //     hexString.append(hexSignificand);
-    //     hexString.append('p');
-    //     // remove exponent's 'bias' and convert to a string
-    //     hexString.append(exponent - 127);
-    // }
-    // return hexString.toString();
-    return String("");
+        // if there are digits left, then insert some '0' chars first
+        if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
+            Int32 digitDiff = fractionDigits - hexSignificand.GetLength();
+            while (digitDiff-- != 0) {
+                hexString.AppendChar('0');
+            }
+        }
+        hexString.Append(hexSignificand);
+        hexString.Append("p-126");
+    }
+    else { // normal value
+        hexString.Append("1.");
+        // significand is 23-bits, so there can be 6 hex digits
+        Int32 fractionDigits = 6;
+        // remove trailing hex zeros, so Integer.toHexString() won't prInt32
+        // them
+        while ((significand != 0) && ((significand & 0xF) == 0)) {
+            significand = ((Int64)significand >> 4);
+            fractionDigits--;
+        }
+        // this assumes Integer.toHexString() returns lowercase characters
+        String hexSignificand;
+        StringUtils::ToHexString(significand, &hexSignificand);
+
+        // if there are digits left, then insert some '0' chars first
+        if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
+            Int32 digitDiff = fractionDigits - hexSignificand.GetLength();
+            while (digitDiff-- != 0) {
+                hexString.AppendChar('0');
+            }
+        }
+        hexString.Append(hexSignificand);
+        hexString.AppendChar('p');
+        // remove exponent's 'bias' and convert to a string
+        hexString.Append(exponent - 127);
+    }
+    return hexString.ToString();
 }
 
 String StringUtils::ToHexString(
-    /* [in] */ Double v)
+    /* [in] */ Double d)
 {
-    // /*
-    //  * Reference: http://en.wikipedia.org/wiki/IEEE_754-1985
-    //  */
-    // if (d != d) {
-    //     return "NaN";
-    // }
-    // if (d == POSITIVE_INFINITY) {
-    //     return "Infinity";
-    // }
-    // if (d == NEGATIVE_INFINITY) {
-    //     return "-Infinity";
-    // }
+    using Elastos::Core::Math;
 
-    // long bitValue = doubleToLongBits(d);
+    /*
+     * Reference: http://en.wikipedia.org/wiki/IEEE_754-1985
+     */
+    if (d != d) {
+        return String("NaN");
+    }
+    if (d == Math::DOUBLE_POSITIVE_INFINITY) {
+        return String("Infinity");
+    }
+    if (d == Math::DOUBLE_NEGATIVE_INFINITY) {
+        return String("-Infinity");
+    }
 
-    // boolean negative = (bitValue & 0x8000000000000000L) != 0;
-    // // mask exponent bits and shift down
-    // long exponent = (bitValue & 0x7FF0000000000000L) >>> 52;
-    // // mask significand bits and shift up
-    // long significand = bitValue & 0x000FFFFFFFFFFFFFL;
+    Int64 bitValue = Math::DoubleToInt64Bits(d);
 
-    // if (exponent == 0 && significand == 0) {
-    //     return (negative ? "-0x0.0p0" : "0x0.0p0");
-    // }
+    Boolean negative = (bitValue & 0x8000000000000000L) != 0;
+    // mask exponent bits and shift down
+    Int64 exponent = ((Int64)bitValue & 0x7FF0000000000000L) >> 52;
+    // mask significand bits and shift up
+    Int64 significand = bitValue & 0x000FFFFFFFFFFFFFL;
 
-    // StringBuilder hexString = new StringBuilder(10);
-    // if (negative) {
-    //     hexString.append("-0x");
-    // } else {
-    //     hexString.append("0x");
-    // }
+    if (exponent == 0 && significand == 0) {
+        return (negative ? String("-0x0.0p0") : String("0x0.0p0"));
+    }
 
-    // if (exponent == 0) { // denormal (subnormal) value
-    //     hexString.append("0.");
-    //     // significand is 52-bits, so there can be 13 hex digits
-    //     int fractionDigits = 13;
-    //     // remove trailing hex zeros, so Integer.toHexString() won't print
-    //     // them
-    //     while ((significand != 0) && ((significand & 0xF) == 0)) {
-    //         significand >>>= 4;
-    //         fractionDigits--;
-    //     }
-    //     // this assumes Integer.toHexString() returns lowercase characters
-    //     String hexSignificand = Long.toHexString(significand);
+    StringBuilder hexString(10);
+    if (negative) {
+        hexString.Append("-0x");
+    } else {
+        hexString.Append("0x");
+    }
 
-    //     // if there are digits left, then insert some '0' chars first
-    //     if (significand != 0 && fractionDigits > hexSignificand.length()) {
-    //         int digitDiff = fractionDigits - hexSignificand.length();
-    //         while (digitDiff-- != 0) {
-    //             hexString.append('0');
-    //         }
-    //     }
-    //     hexString.append(hexSignificand);
-    //     hexString.append("p-1022");
-    // } else { // normal value
-    //     hexString.append("1.");
-    //     // significand is 52-bits, so there can be 13 hex digits
-    //     int fractionDigits = 13;
-    //     // remove trailing hex zeros, so Integer.toHexString() won't print
-    //     // them
-    //     while ((significand != 0) && ((significand & 0xF) == 0)) {
-    //         significand >>>= 4;
-    //         fractionDigits--;
-    //     }
-    //     // this assumes Integer.toHexString() returns lowercase characters
-    //     String hexSignificand = Long.toHexString(significand);
+    if (exponent == 0) { // denormal (subnormal) value
+        hexString.Append("0.");
+        // significand is 52-bits, so there can be 13 hex digits
+        Int32 fractionDigits = 13;
+        // remove trailing hex zeros, so Integer.toHexString() won't prInt32
+        // them
+        while ((significand != 0) && ((significand & 0xF) == 0)) {
+            significand >>= (Int64)significand >> 4;
+            fractionDigits--;
+        }
+        // this assumes Integer.toHexString() returns lowercase characters
+        String hexSignificand;
+        ToHexString(significand, &hexSignificand);
 
-    //     // if there are digits left, then insert some '0' chars first
-    //     if (significand != 0 && fractionDigits > hexSignificand.length()) {
-    //         int digitDiff = fractionDigits - hexSignificand.length();
-    //         while (digitDiff-- != 0) {
-    //             hexString.append('0');
-    //         }
-    //     }
+        // if there are digits left, then insert some '0' chars first
+        if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
+            Int32 digitDiff = fractionDigits - hexSignificand.GetLength();
+            while (digitDiff-- != 0) {
+                hexString.AppendChar('0');
+            }
+        }
+        hexString.Append(hexSignificand);
+        hexString.Append("p-1022");
+    } else { // normal value
+        hexString.Append("1.");
+        // significand is 52-bits, so there can be 13 hex digits
+        Int32 fractionDigits = 13;
+        // remove trailing hex zeros, so Integer.toHexString() won't prInt32
+        // them
+        while ((significand != 0) && ((significand & 0xF) == 0)) {
+            significand >>= (Int64)significand >> 4;
+            fractionDigits--;
+        }
+        // this assumes Integer.toHexString() returns lowercase characters
+        String hexSignificand;
+        ToHexString(significand, &hexSignificand);
 
-    //     hexString.append(hexSignificand);
-    //     hexString.append('p');
-    //     // remove exponent's 'bias' and convert to a string
-    //     hexString.append(Long.toString(exponent - 1023));
-    // }
-    // return hexString.toString();
-    return String("");
+        // if there are digits left, then insert some '0' chars first
+        if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
+            Int32 digitDiff = fractionDigits - hexSignificand.GetLength();
+            while (digitDiff-- != 0) {
+                hexString.AppendChar('0');
+            }
+        }
+
+        hexString.Append(hexSignificand);
+        hexString.Append('p');
+        // remove exponent's 'bias' and convert to a string
+        String str = ToString(exponent - 1023);
+        hexString.Append(str);
+    }
+    return hexString.ToString();
 }
 
 String StringUtils::ToOctalString(

@@ -17,6 +17,7 @@ namespace Utility {
 class CLocaleBuilder;
 
 typedef Elastos::Utility::Etl::HashMap<String, String> StringMap;
+typedef typename StringMap::Iterator StringMapIterator;
 
 CarClass(CLocale)
     , public Object
