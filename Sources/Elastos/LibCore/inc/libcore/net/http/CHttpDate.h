@@ -7,6 +7,7 @@
 #include <pthread.h>
 
 using Elastos::Utility::IDate;
+using Elastos::Text::IDateFormat;
 
 namespace Libcore {
 namespace Net {
@@ -40,6 +41,7 @@ public:
 
 private:
     static CARAPI_(Boolean) InitTLS();
+    static CARAPI_(AutoPtr<IDateFormat>) InitDateFormatValue();
 
 private:
     /**

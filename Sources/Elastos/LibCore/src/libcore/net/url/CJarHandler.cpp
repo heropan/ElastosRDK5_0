@@ -3,6 +3,7 @@
 #include "UrlUtils.h"
 #include "CURL.h"
 #include "StringBuilder.h"
+#include "CJarURLConnectionImpl.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Net::CURL;
@@ -28,9 +29,7 @@ ECode CJarHandler::OpenConnection(
 {
     VALIDATE_NOT_NULL(urlConnection)
 
-    assert(0 && "TODO");
-    // return new JarURLConnectionImpl(u);
-    return NOERROR;
+    return CJarURLConnectionImpl::New(u, urlConnection);
 }
 
 ECode CJarHandler::ParseURL(

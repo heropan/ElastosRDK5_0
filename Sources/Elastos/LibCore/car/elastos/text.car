@@ -227,6 +227,10 @@ module
             [in] ILocale* locale);
 
         interface ISimpleDateFormat;
+        interface IDateFormat;
+        interface IFormat;
+        interface ISerializable;
+        interface ICloneable;
     }
 
     singleton class CNormalizerHelper {

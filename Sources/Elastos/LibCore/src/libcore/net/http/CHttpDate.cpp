@@ -2,8 +2,10 @@
 #include "CHttpDate.h"
 #include "CSimpleDateFormat.h"
 #include "CLocale.h"
+#include "TimeZone.h"
 
 using Elastos::Utility::CLocale;
+using Elastos::Utility::TimeZone;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::IDateFormat;
@@ -49,6 +51,16 @@ Boolean CHttpDate::InitTLS()
     return TRUE;
 }
 
+AutoPtr<IDateFormat> CHttpDate::InitDateFormatValue()
+{
+    AutoPtr<IDateFormat> rfc1123;
+    CSimpleDateFormat::New(String("EEE, dd MMM yyyy HH:mm:ss zzz"), CLocale::US, (IDateFormat**)&rfc1123);
+    AutoPtr<ITimeZone> tz;
+    TimeZone::GetTimeZone(String("UTC"), (ITimeZone**)&tz);
+    rfc1123->SetTimeZone(tz);
+    return rfc1123;
+}
+
 CAR_INTERFACE_IMPL(CHttpDate, Singleton, IHttpDate)
 
 CAR_SINGLETON_IMPL(CHttpDate)
@@ -73,7 +85,15 @@ ECode CHttpDate::_Parse(
 {
     VALIDATE_NOT_NULL(adate)
 
-    assert(0 && "TODO");
+    AutoPtr<IDateFormat> df = (IDateFormat*)pthread_getspecific(key_tls);
+    if (df == NULL) {
+        df = InitDateFormatValue();
+        ASSERT_TRUE(pthread_setspecific(key_tls, df.Get()) == 0);
+        df->AddRef();
+    }
+    if (!FAILED(df->Parse(value, adate))) {
+        return NOERROR;
+    }
     // try {
     //     return STANDARD_DATE_FORMAT.get().parse(value);
     // } catch (ParseException ignore) {
@@ -103,9 +123,13 @@ ECode CHttpDate::_Format(
 {
     VALIDATE_NOT_NULL(str)
 
-    assert(0 && "TODO");
-    // return STANDARD_DATE_FORMAT.get().format(value);
-    return NOERROR;
+    AutoPtr<IDateFormat> df = (IDateFormat*)pthread_getspecific(key_tls);
+    if (df == NULL) {
+        df = InitDateFormatValue();
+        ASSERT_TRUE(pthread_setspecific(key_tls, df.Get()) == 0);
+        df->AddRef();
+    }
+    return df->Format(value, str);
 }
 
 } // namespace Http

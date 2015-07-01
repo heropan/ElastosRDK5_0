@@ -337,9 +337,7 @@ ECode FtpURLConnection::ConnectInternal()
         AutoPtr<IInputStream> datainput;
         mDataSocket->GetInputStream((IInputStream**)&datainput);
         AutoPtr<IBufferedInputStream> bis;
-        //TODO
-        assert(0);
-        // CBufferedInputStream::New(datainput, (IBufferedInputStream**)&bis);
+        CBufferedInputStream::New(datainput, (IBufferedInputStream**)&bis);
         mInputStream = NULL;
         CFtpURLInputStream::New(IInputStream::Probe(bis), mControlSocket, (IFtpURLInputStream**)&mInputStream);
     }
