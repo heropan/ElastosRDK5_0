@@ -2,7 +2,6 @@
 #define __ELASTOS_IO_MAPPEDBYTEBUFFER_H__
 
 #include "ByteBuffer.h"
-#include "DirectByteBuffer.h"
 #include "MemoryBlock.h"
 
 using Elastos::IO::Channels::FileChannelMapMode;
@@ -30,14 +29,13 @@ class MappedByteBuffer
     : public ByteBuffer
 {
 public:
-    MappedByteBuffer(
-        /* [in] */ IByteBuffer* directBuffer);
+    MappedByteBuffer();
 
     MappedByteBuffer(
         /* [in] */ MemoryBlock* block,
         /* [in] */ Int32 capacity,
-        /* [in] */ Int32 offset,
-        /* [in] */ FileChannelMapMode mapMode);
+        /* [in] */ FileChannelMapMode mapMode,
+        /* [in] */ Int64 effectiveDirectAddress);
 
     /**
      * Returns true if there is a high probability that every page of this buffer is currently
@@ -64,7 +62,7 @@ public:
     CARAPI Force();
 
 public:
-    AutoPtr<DirectByteBuffer> mWrapped;
+    AutoPtr<MemoryBlock> mBlock;
 
 private:
     FileChannelMapMode mMapMode;

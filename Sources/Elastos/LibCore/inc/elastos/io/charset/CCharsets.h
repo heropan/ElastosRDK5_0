@@ -2,13 +2,16 @@
 #ifndef __ELASTOS_IO_CCHARSETS_H__
 #define __ELASTOS_IO_CCHARSETS_H__
 
-#include "_Elastos_IO_CCharsets.h"
+#include "_Elastos_IO_Charset_CCharsets.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
 CarClass(CCharsets)
+    , public Singleton
+    , public ICharsets
 {
 private:
     /**
@@ -49,6 +52,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * A cheap and type-safe constant for the ISO-8859-1 Charset.
      */
@@ -144,7 +151,7 @@ private:
         /* [in] */ const ArrayOf<Char32>& chars,
         /* [in] */ const Int32 offset,
         /* [in] */ const Int32 length,
-        /* [in] */ const Char8 maxValidChar,
+        /* [in] */ const Byte maxValidChar,
         /* [out, callee] */ ArrayOf<Byte>** bytes);
 
 public:

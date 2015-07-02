@@ -12,7 +12,7 @@ namespace IO {
 extern "C" const InterfaceID EIID_ByteBuffer =
     { 0xaad41a09, 0x77d1, 0x491c, { 0xa2, 0xa0, 0xc, 0x7d, 0xb0, 0xb3, 0x79, 0xe6 } };
 
-CAR_INTERFACE_IMPL(ByteBuffer, Object, IByteBuffer)
+CAR_INTERFACE_IMPL(ByteBuffer, Buffer, IByteBuffer)
 
 ECode ByteBuffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -91,8 +91,8 @@ ByteBuffer::ByteBuffer()
 
 ByteBuffer::ByteBuffer(
     /* [in] */ Int32 capacity,
-    /* [in] */ MemoryBlock* block)
-    : Buffer(0, capacity, block)
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(0, capacity, effectiveDirectAddress)
     , mOrder(ByteOrder_BIG_ENDIAN)
 {}
 

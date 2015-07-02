@@ -165,6 +165,7 @@ ECode CharsetEncoderICU::ImplFlush(
     (*mData)[INVALID_CHARS] = 0; // Make sure we don't see earlier errors.
 
     Int32 error;
+    assert(0 && "TODO");
     // NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {

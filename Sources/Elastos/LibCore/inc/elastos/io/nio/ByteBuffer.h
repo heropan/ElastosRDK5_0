@@ -981,7 +981,7 @@ protected:
      */
     ByteBuffer(
         /* [in] */ Int32 capacity,
-        /* [in] */ MemoryBlock* block);
+        /* [in] */ Int64 effectiveDirectAddress);
 
 public:
     /**

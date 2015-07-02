@@ -6,9 +6,13 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
+CAR_INTERFACE_IMPL(CModifiedUtf8, Singleton, IModifiedUtf8)
+
+CAR_SINGLETON_IMPL(CModifiedUtf8)
+
 ECode CModifiedUtf8::Decode(
     /* [in] */ ArrayOf<Byte>* inBytes,
-    /* [in] */ ArrayOf<Char8>* outChars,
+    /* [in] */ ArrayOf<Char32>* outChars,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 utfSize,
     /* [out] */ String* string)
@@ -24,7 +28,7 @@ ECode CModifiedUtf8::Decode(
     Int32 a;
 
     Byte*  inPtr    = inBytes->GetPayload();
-    Char8* outPtr   = outChars->GetPayload();
+    Char32* outPtr   = outChars->GetPayload();
     while (count < utfSize) {
         if ((outPtr[s] = inPtr[offset + count++]) < 128) {
             s++;

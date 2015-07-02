@@ -19,14 +19,13 @@ Buffer::Buffer()
 Buffer::Buffer(
     /* [in] */ Int32 elementSizeShift,
     /* [in] */ Int32 capacity,
-    /* [in] */ MemoryBlock* block)
+    /* [in] */ Int64 effectiveDirectAddress)
     : mCapacity(capacity)
     , mLimit(capacity)
     , mMark(IBuffer::UNSET_MARK)
     , mPosition(0)
     , mElementSizeShift(elementSizeShift)
-    , mEffectiveDirectAddress(0)
-    , mBlock(block)
+    , mEffectiveDirectAddress(effectiveDirectAddress)
 {
     if (capacity < 0) {
         // throw new IllegalArgumentException("capacity < 0: " + capacity);

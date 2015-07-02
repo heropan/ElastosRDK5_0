@@ -1,7 +1,6 @@
 #include "FileChannelImpl.h"
 #include "Math.h"
 #include "MemoryBlock.h"
-#include "MappedByteBufferAdapter.h"
 #include "NioUtils.h"
 // #include "CLibcore.h"
 #include "OsConstants.h"
@@ -16,7 +15,6 @@ using Elastos::IO::MemoryBlock;
 using Elastos::IO::Channels::EIID_IFileLock;
 using Elastos::IO::Channels::IChannel;
 using Elastos::IO::Channels::EIID_IFileChannel;
-using Elastos::IO::MappedByteBufferAdapter;
 using Elastos::Droid::System::IStructStat;
 
 namespace Elastos {
@@ -461,9 +459,9 @@ ECode FileChannelImpl::Map(
     AutoPtr<MemoryBlock> block;
     MemoryBlock::Mmap(mFd.Get(), alignment, size + offset, mode, (MemoryBlock**)&block);
 
-    AutoPtr<IMappedByteBuffer> mbb = new MappedByteBufferAdapter(block, (Int32)size, offset, mode);
-    *buffer = mbb;
-    REFCOUNT_ADD(*buffer);
+    // AutoPtr<IMappedByteBuffer> mbb = new MappedByteBufferAdapter(block, (Int32)size, offset, mode);
+    // *buffer = mbb;
+    // REFCOUNT_ADD(*buffer);
 
     return NOERROR;
 }

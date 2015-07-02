@@ -7,7 +7,9 @@
 #include "CPlainDatagramSocketImpl.h"
 #include "CDatagramPacket.h"
 #include "InetAddress.h"
+#include "AutoLock.h"
 
+using Elastos::Core::AutoLock;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
 using Libcore::IO::ILibcore;
@@ -33,14 +35,31 @@ DatagramChannelImpl::DatagramSocketAdapter::DatagramSocketAdapter(
     /* [in] */ DatagramChannelImpl* channelimpl)
     : mChannelImpl(channelimpl)
 {
-    DatagramSocket::Init(socketimpl);
+    assert(0 && "TODO");
+    // DatagramSocket::constructor(socketimpl);
+    // Sync state socket state with the channel it is being created from
+    if (mChannelImpl->mIsBound) {
+        OnBind(mChannelImpl->mLocalAddress, mChannelImpl->mLocalPort);
+    }
+    if (mChannelImpl->mConnected) {
+        AutoPtr<IInetAddress> addr;
+        Int32 numport;
+        mChannelImpl->mConnectAddress->GetAddress((IInetAddress**)&addr);
+        mChannelImpl->mConnectAddress->GetPort(&numport);
+        OnConnect(addr, numport);
+    }
+    else {
+        OnDisconnect();
+    }
+    Boolean isflag = FALSE;
+    if (mChannelImpl->IsOpen(&isflag), !isflag) {
+        OnClose();
+    }
 }
-
-CAR_INTERFACE_IMPL(DatagramChannelImpl::DatagramSocketAdapter, IDatagramSocket);
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Close()
 {
-    Mutex::AutoLock lock(GetSelfLock());
+    AutoLock lock(GetSelfLock());
     Boolean isflag = FALSE;
     if (mChannelImpl->IsOpen(&isflag), isflag) {
         // try {
@@ -133,7 +152,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Receive(
     /* [in] */ IDatagramPacket* pack)
 {
     Boolean isflag = FALSE;
-    if (!mChannelImpl->IsBlocking(&isflag), isflag) {
+    if (mChannelImpl->IsBlocking(&isflag), !isflag) {
         // throw new IllegalBlockingModeException();
         return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     }
@@ -144,7 +163,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Send(
     /* [in] */ IDatagramPacket* pack)
 {
     Boolean isflag = FALSE;
-    if (!mChannelImpl->IsBlocking(&isflag), isflag) {
+    if (mChannelImpl->IsBlocking(&isflag), !isflag) {
         // throw new IllegalBlockingModeException();
         return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     }
@@ -276,7 +295,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::GetFileDescriptor(
     return DatagramSocket::GetFileDescriptor(fd);
 }
 
-Mutex* DatagramChannelImpl::DatagramSocketAdapter::GetSelfLock()
+Object* DatagramChannelImpl::DatagramSocketAdapter::GetSelfLock()
 {
     return &mMlock;
 }
@@ -284,21 +303,17 @@ Mutex* DatagramChannelImpl::DatagramSocketAdapter::GetSelfLock()
 //==========================================================
 //       DatagramChannelImpl
 //==========================================================
+CAR_INTERFACE_IMPL(DatagramChannelImpl, DatagramChannel, IFileDescriptorChannel)
 
 DatagramChannelImpl::DatagramChannelImpl(
     /* [in] */ ISelectorProvider* provider)
     : DatagramChannel(provider)
 {
-    AutoPtr<IIoBridge> ioBridge;
-    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    Int32 value = 0;
-    ioBridge->Socket(FALSE, &value);
-    CFileDescriptor::New((IFileDescriptor**)&mFd);
-    mFd->SetDescriptor(value);
+    CIoBridge::_Socket(FALSE, (IFileDescriptor**)&mFd);
 }
 
 DatagramChannelImpl::DatagramChannelImpl()
-    : DatagramChannel((SelectorProvider::Provider((ISelectorProvider**)&mSelprovider), mSelprovider))
+    : DatagramChannel((SelectorProvider::GetProvider((ISelectorProvider**)&mSelprovider), mSelprovider))
 {
     CFileDescriptor::New((IFileDescriptor**)&mFd);
     CInetSocketAddress::New(0, (IInetSocketAddress**)&mConnectAddress);
@@ -324,7 +339,7 @@ ECode DatagramChannelImpl::GetSocket(
     if(NULL == mSocket) {
         AutoPtr<IPlainDatagramSocketImpl> res;
         FAIL_RETURN(CPlainDatagramSocketImpl::New(mFd, mLocalPort, (IPlainDatagramSocketImpl**)&res));
-        mSocket = (IDatagramSocket*) new DatagramSocketAdapter(res, this);
+        mSocket = (IDatagramSocket*) new DatagramSocketAdapter(IDatagramSocketImpl::Probe(res), this);
     }
 
     (*socket) = mSocket;
@@ -335,13 +350,7 @@ ECode DatagramChannelImpl::GetSocket(
 ECode DatagramChannelImpl::GetLocalAddress(
     /* [out] */ IInetAddress** addr)
 {
-    VALIDATE_NOT_NULL(addr)
-
-    AutoPtr<IIoBridge> ioBridge;
-    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    Int32 fd;
-    mFd->GetDescriptor(&fd);
-    return ioBridge->GetSocketLocalAddress(fd, addr);
+    return CIoBridge::_GetSocketLocalAddress(mFd, addr);
 }
 
 Boolean DatagramChannelImpl::IsConnected()
@@ -391,7 +400,7 @@ ECode DatagramChannelImpl::Receive(
     VALIDATE_NOT_NULL(address)
 
     Boolean bRet;
-    target->IsReadOnly(&bRet);
+    IBuffer::Probe(target)->IsReadOnly(&bRet);
     if(bRet)
     {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -408,13 +417,12 @@ ECode DatagramChannelImpl::Receive(
 
     Begin();
 
-    // receive real data packet, (not peek)
-    mReadLock->Lock();
+    mReadLock.Lock();
     Boolean loop;
     IsBlocking(&loop);
 
     Boolean bDirect;
-    target->IsDirect(&bDirect);
+    IBuffer::Probe(target)->IsDirect(&bDirect);
     if(!target)
     {
         ecRet = ReceiveImpl(target, loop, address);
@@ -445,23 +453,23 @@ ECode DatagramChannelImpl::ReceiveImpl(
     AutoPtr<ISocketAddress> retAddr;
     AutoPtr<IDatagramPacket> receivePacket;
     Int32 oldPosition;
-    target->GetPosition(&oldPosition);
+    IBuffer::Probe(target)->GetPosition(&oldPosition);
     Int32 received = 0;
 
     // TODO: disallow mapped buffers and lose this conditional?
     Boolean isflag = FALSE;
-    if (target->HasArray(&isflag), isflag) {
+    if (IBuffer::Probe(target)->HasArray(&isflag), isflag) {
         AutoPtr< ArrayOf<Byte> > bytearr;
         target->GetArray((ArrayOf<Byte>**)&bytearr);
         Int32 offset = 0;
         Int32 remain = 0;
-        target->GetArrayOffset(&offset);
-        target->GetRemaining(&remain);
+        IBuffer::Probe(target)->GetArrayOffset(&offset);
+        IBuffer::Probe(target)->GetRemaining(&remain);
         FAIL_RETURN(CDatagramPacket::New(bytearr, oldPosition + offset, remain, (IDatagramPacket**)&receivePacket));
     }
     else {
         Int32 remain = 0;
-        target->GetRemaining(&remain);
+        IBuffer::Probe(target)->GetRemaining(&remain);
         AutoPtr< ArrayOf<Byte> > bytearr = ArrayOf<Byte>::Alloc(remain);
         FAIL_RETURN(CDatagramPacket::New(bytearr, remain, (IDatagramPacket**)&receivePacket));
     }
@@ -477,12 +485,12 @@ ECode DatagramChannelImpl::ReceiveImpl(
         receivePacket->GetAddress((IInetAddress**)&outnet);
         if (receivePacket != NULL && outnet != NULL) {
             if (received > 0) {
-                if (target->HasArray(&isflag), isflag) {
-                    target->SetPosition(oldPosition + received);
+                if (IBuffer::Probe(target)->HasArray(&isflag), isflag) {
+                    IBuffer::Probe(target)->SetPosition(oldPosition + received);
                 }
                 else {
                     // copy the data of received packet
-                    target->PutBytes(*bytearr, 0, received);
+                    target->Put(bytearr, 0, received);
                 }
             }
             receivePacket->GetSocketAddress((ISocketAddress**)&retAddr);

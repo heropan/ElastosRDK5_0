@@ -72,10 +72,8 @@ ECode MemoryBlock::Mmap(
     AutoPtr<ILibcore> libcore; // = (ILibcore*)lcObj.Get();
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    Int32 _fd;
-    fd->GetDescriptor(&_fd);
     Int64 result;
-    os->Mmap(0LL, size, prot, flags, _fd, offset, &result);
+    os->Mmap(0LL, size, prot, flags, fd, offset, &result);
     Int32 address = (Int32)result;
     *mb = new MemoryMappedBlock(address, size);
     REFCOUNT_ADD(*mb);
