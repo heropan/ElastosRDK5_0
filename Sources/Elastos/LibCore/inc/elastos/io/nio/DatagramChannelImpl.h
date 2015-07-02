@@ -3,6 +3,7 @@
 
 #include "DatagramChannel.h"
 #include "DatagramSocket.h"
+#include "Object.h"
 
 using Elastos::IO::Channels::DatagramChannel;
 using Elastos::IO::IFileDescriptorChannel;
@@ -23,17 +24,12 @@ class DatagramChannelImpl
     , public IFileDescriptorChannel
 {
 private:
-    class DatagramSocketAdapter
-        : public DatagramSocket
-        , public IDatagramSocket
-        , public ElRefBase
+    class DatagramSocketAdapter : public DatagramSocket
     {
     public:
         DatagramSocketAdapter(
             /* [in] */ IDatagramSocketImpl* socketimpl,
             /* [in] */ DatagramChannelImpl* channelimpl);
-
-        CAR_INTERFACE_DECL();
 
         /**
          * Closes this UDP datagram socket and all possibly associated channels.
@@ -368,14 +364,16 @@ private:
             /* [out] */ IFileDescriptor** fd);
 
     protected:
-        CARAPI_(Mutex*) GetSelfLock();
+        CARAPI_(Object*) GetSelfLock();
 
     private:
-        DatagramChannelImpl* mChannelImpl;
-        Mutex mMlock;
+        AutoPtr<DatagramChannelImpl> mChannelImpl;
+        Object mMlock;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI IsOpen(
         /* [out] */ Boolean* value);
 
@@ -435,10 +433,12 @@ protected:
     AutoPtr<IInetSocketAddress> mConnectAddress;
 
     // At first, uninitialized.
-    Boolean mConnected /* = FALSE */;
+    Boolean mConnected;
 
     // whether the socket is bound
-    Boolean mIsBound /* = FALSE */;
+    Boolean mIsBound;
+
+    AutoPtr<IInetAddress> mLocalAddress;
 
 private:
     // The fd to interact with native code
@@ -450,8 +450,8 @@ private:
     // local port
     Int32 mLocalPort;
 
-    Object* mReadLock;
-    Object* mWriteLock;
+    Object mReadLock;
+    Object mWriteLock;
     AutoPtr<ISelectorProvider> mSelprovider;
 };
 

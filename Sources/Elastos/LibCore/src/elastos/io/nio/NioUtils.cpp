@@ -2,7 +2,6 @@
 #include "NioUtils.h"
 #include "DirectByteBuffer.h"
 #include "MappedByteBuffer.h"
-#include "MappedByteBufferAdapter.h"
 #include "FileChannelImpl.h"
 #include "CByteArrayBuffer.h"
 
@@ -12,23 +11,11 @@ namespace IO {
 ECode NioUtils::FreeDirectBuffer(
     /* [in] */ IByteBuffer* buffer)
 {
-    if (NULL == buffer)
-        return NOERROR;
-
-    AutoPtr<DirectByteBuffer> directBuf;
-    AutoPtr<MappedByteBuffer> mappedBuf;
-    if ((directBuf = reinterpret_cast<DirectByteBuffer*>(buffer->Probe(EIID_DirectByteBuffer))) != NULL) {
-        directBuf->Free();
-        return NOERROR;
-    }
-    else if ((mappedBuf = reinterpret_cast<MappedByteBuffer*>(buffer->Probe(EIID_MappedByteBuffer))) != NULL) {
-        (reinterpret_cast<MappedByteBufferAdapter*>(mappedBuf.Get()))->Free();
-        return NOERROR;
-    }
-    else {
-        // assert(0 != 0);
-        return E_ASSERTION_ERROR;
-    }
+    assert(0 && "TODO");
+    // if (buffer == null) {
+    //     return;
+    // }
+    // ((DirectByteBuffer) buffer).free();
 }
 
 AutoPtr<IFileDescriptor> NioUtils::GetFD(

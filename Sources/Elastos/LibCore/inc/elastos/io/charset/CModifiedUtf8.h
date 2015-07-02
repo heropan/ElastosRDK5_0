@@ -1,15 +1,21 @@
 #ifndef __ELASTOS_IO_CHARSET_CMODIFIEDUTF8_H__
 #define __ELASTOS_IO_CHARSET_CMODIFIEDUTF8_H__
 
-#include "_Elastos_IO_CModifiedUtf8.h"
+#include "_Elastos_IO_Charset_CModifiedUtf8.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
 CarClass(CModifiedUtf8)
+    , public Singleton
+    , public IModifiedUtf8
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /*
      * Decodes a byte array containing modified UTF-8 bytes into
@@ -19,7 +25,7 @@ public:
      */
     CARAPI Decode(
         /* [in] */ ArrayOf<Byte>*   bytes,
-        /* [in] */ ArrayOf<Char8>*  chars,
+        /* [in] */ ArrayOf<Char32>*   chars,
         /* [in] */ Int32            offset,
         /* [in] */ Int32            utfSize,
         /* [out] */ String*         string);

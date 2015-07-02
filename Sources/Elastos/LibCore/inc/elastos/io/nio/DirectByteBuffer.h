@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_DIRECTBYTEBUFFER_H__
 #define __ELASTOS_IO_DIRECTBYTEBUFFER_H__
 
-#include "BaseByteBuffer.h"
+#include "MappedByteBuffer.h"
 #include "MemoryBlock.h"
 
 namespace Elastos {
@@ -22,7 +22,7 @@ extern "C" const InterfaceID EIID_DirectByteBuffer;
  *
  */
 class DirectByteBuffer
-    : public BaseByteBuffer
+    : public MappedByteBuffer
 {
     friend class ReadWriteDirectByteBuffer;
     friend class ReadOnlyDirectByteBuffer;
@@ -128,9 +128,15 @@ public:
 
 protected:
     DirectByteBuffer(
+        /* [in] */ Int64 address,
+        /* [in] */ Int32 capacity);
+
+    DirectByteBuffer(
         /* [in] */ MemoryBlock* block,
         /* [in] */ Int32 capacity,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean isReadOnly,
+        /* [in] */ FileChannelMapMode mapMode);
 
 protected:
     // This is the offset into {@code Buffer.block} at which this buffer logically starts.

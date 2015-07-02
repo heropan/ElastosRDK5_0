@@ -18,5 +18,5 @@ SOURCES += AbstractInterruptibleChannel.cpp
 SOURCES += AbstractSelectableChannel.cpp
 SOURCES += AbstractSelectionKey.cpp
 SOURCES += SelectorProvider.cpp
-#SOURCES += CSelectorProviderHelper.cpp
+SOURCES += CSelectorProviderHelper.cpp
 SOURCES += AbstractSelector.cpp

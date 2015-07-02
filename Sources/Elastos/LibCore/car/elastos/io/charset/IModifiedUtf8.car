@@ -41,7 +41,7 @@ module
             [in] String*        s);
     }
 
-    }
-    }
-    }
+    } // namespace Charset
+    } // namespace IO
+    } // namespace Elastos
 }

@@ -235,7 +235,7 @@ protected:
     Buffer(
         /* [in] */ Int32 elementSizeShift,
         /* [in] */ Int32 capacity,
-        /* [in] */ MemoryBlock* block);
+        /* [in] */ Int64 effectiveDirectAddress);
 
     virtual ~Buffer();
 
@@ -317,16 +317,9 @@ public:
     Int32 mElementSizeShift;
 
     /**
-     * For direct buffers, the effective address of the data; zero otherwise.
-     * This is set in the constructor.
-     * TODO: make this final at the cost of loads of extra constructors? [how many?]
-     */
-    Int32 mEffectiveDirectAddress;
-
-    /**
      * For direct buffers, the underlying MemoryBlock; null otherwise.
      */
-    AutoPtr<MemoryBlock> mBlock;
+    Int64 mEffectiveDirectAddress;
 };
 
 } // namespace IO

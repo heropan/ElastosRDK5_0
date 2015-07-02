@@ -20,26 +20,14 @@ namespace IO {
 extern "C" const InterfaceID EIID_MappedByteBuffer =
     { 0xe6ffb679, 0x4b6d, 0xe9d8, { 0x66, 0x8a, 0xc9, 0x3b, 0x2e, 0x08, 0x19, 0xa8 } };
 
-MappedByteBuffer::MappedByteBuffer(
-    /* [in] */ IByteBuffer* directBuffer)
-    : ByteBuffer(((ByteBuffer*)directBuffer)->mCapacity, ((ByteBuffer*)directBuffer)->mBlock)
-{
-    Boolean isDirect = FALSE;
-    IBuffer::Probe(directBuffer)->IsDirect(&isDirect);
-    // if (!isDirect) {
-    //     throw new IllegalArgumentException();
-    // }
-    assert(isDirect);
-
-    mWrapped = (DirectByteBuffer*)(ByteBuffer*)directBuffer;
-//    mMapMode = null;
-}
+MappedByteBuffer::MappedByteBuffer()
+{}
 
 MappedByteBuffer::MappedByteBuffer(
     /* [in] */ MemoryBlock* block,
     /* [in] */ Int32 capacity,
-    /* [in] */ Int32 offset,
-    /* [in] */ FileChannelMapMode mapMode)
+    /* [in] */ FileChannelMapMode mapMode,
+    /* [in] */ Int64 effectiveDirectAddress)
     : ByteBuffer(capacity, block)
     , mMapMode(mapMode)
 {
@@ -59,8 +47,8 @@ ECode MappedByteBuffer::IsLoaded(
     /* [out] */ Boolean* isLoaded)
 {
     VALIDATE_NOT_NULL(isLoaded)
-    Int64 address = Buffer::mBlock->ToInt32();
-    Int64 size = Buffer::mBlock->GetSize();
+    Int64 address = mBlock->ToInt32();
+    Int64 size = mBlock->GetSize();
     if (size == 0) {
         *isLoaded = TRUE;
         return NOERROR;
@@ -110,8 +98,8 @@ ECode MappedByteBuffer::Load()
     assert(0 && "TODO");
     // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
     libcore->GetOs((IOs**)&os);
-    ASSERT_SUCCEEDED(os->Mlock(Buffer::mBlock->ToInt32(), Buffer::mBlock->GetSize()))
-    ASSERT_SUCCEEDED(os->Munlock(Buffer::mBlock->ToInt32(), Buffer::mBlock->GetSize()))
+    ASSERT_SUCCEEDED(os->Mlock(mBlock->ToInt32(), mBlock->GetSize()))
+    ASSERT_SUCCEEDED(os->Munlock(mBlock->ToInt32(), mBlock->GetSize()))
     // } catch (ErrnoException ignored) {
     // }
     return NOERROR;
@@ -132,7 +120,7 @@ ECode MappedByteBuffer::Force()
         Int32 MS_SYNC = 0;
         assert(0 && "TODO");
         // FAIL_RETURN(osConstans->GetOsConstant(String("MS_SYNC"), &MS_SYNC))
-        FAIL_RETURN(os->Msync(Buffer::mBlock->ToInt32(), Buffer::mBlock->GetSize(), MS_SYNC))
+        FAIL_RETURN(os->Msync(mBlock->ToInt32(), mBlock->GetSize(), MS_SYNC))
     //     } catch (ErrnoException errnoException) {
     //         // The RI doesn't throw, presumably on the assumption that you can't get into
     //         // a state where msync(2) could return an error.

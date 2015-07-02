@@ -4,7 +4,6 @@
 #include "_Elastos_IO_Charset_CCharsetHelper.h"
 #include "Singleton.h"
 
-
 namespace Elastos {
 namespace IO {
 namespace Charset {

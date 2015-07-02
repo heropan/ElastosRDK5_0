@@ -13,19 +13,31 @@ extern "C" const InterfaceID EIID_DirectByteBuffer =
     { 0xa2a31377, 0x84a4, 0x30b4, { 0x30, 0xd9, 0x55, 0xf3, 0x36, 0x9d, 0xd5, 0x0f } };
 
 DirectByteBuffer::DirectByteBuffer(
+    /* [in] */ Int64 address,
+    /* [in] */ Int32 capacity)
+{
+    // this(MemoryBlock.wrapFromJni(address, capacity), capacity, 0, false, null);
+}
+
+DirectByteBuffer::DirectByteBuffer(
     /* [in] */ MemoryBlock* block,
     /* [in] */ Int32 capacity,
-    /* [in] */ Int32 offset)
-    : BaseByteBuffer(capacity, block)
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean isReadOnly,
+    /* [in] */ FileChannelMapMode mapMode)
 {
-    Int64 baseSize = block->GetSize();
-    if (baseSize >= 0 && (capacity + offset) > baseSize) {
-        // throw new IllegalArgumentException("capacity + offset > baseSize");
-        assert(0);
-    }
+    // super(block, capacity, mapMode, block.toLong() + offset);
 
-    mOffset = offset;
-    mEffectiveDirectAddress = block->ToInt32() + offset;
+    // long baseSize = block.getSize();
+    // // We're throwing this exception after we passed a bogus value
+    // // to the superclass constructor, but it doesn't make any
+    // // difference in this case.
+    // if (baseSize >= 0 && (capacity + offset) > baseSize) {
+    //   throw new IllegalArgumentException("capacity + offset > baseSize");
+    // }
+
+    // this.offset = offset;
+    // this.isReadOnly = isReadOnly;
 }
 
 ECode DirectByteBuffer::Get(

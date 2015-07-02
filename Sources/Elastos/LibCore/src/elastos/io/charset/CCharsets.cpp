@@ -27,6 +27,10 @@ const AutoPtr<ICharset> CCharsets::ISO_8859_1 = CreateCharSet(String("ISO-8859-1
 const AutoPtr<ICharset> CCharsets::US_ASCII = CreateCharSet(String("US-ASCII"));
 const AutoPtr<ICharset> CCharsets::UTF_8 = CreateCharSet(String("UTF-8"));
 
+//==========================================================
+//       CCharsets::NativeUnsafeByteSequence
+//==========================================================
+
 CCharsets::NativeUnsafeByteSequence::NativeUnsafeByteSequence()
     : mSize(-1), mOffset(0)
 {}
@@ -72,6 +76,14 @@ AutoPtr<ArrayOf<Byte> > CCharsets::NativeUnsafeByteSequence::ToByteArray() {
     Boolean okay = Resize(mOffset);
     return okay ? mRawArray : NULL;
 }
+
+//==========================================================
+//       CCharsets
+//==========================================================
+
+CAR_INTERFACE_IMPL(CCharsets, Singleton, ICharsets)
+
+CAR_SINGLETON_IMPL(CCharsets)
 
 ECode CCharsets::GetISO_8859_1(
     /* [out] */ ICharset** charset)
@@ -265,7 +277,7 @@ ECode CCharsets::CharsToBytes(
     /* [in] */ const ArrayOf<Char32>& chars,
     /* [in] */ const Int32 offset,
     /* [in] */ const Int32 length,
-    /* [in] */ const Char8 maxValidChar,
+    /* [in] */ const Byte maxValidChar,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
     VALIDATE_NOT_NULL(bytes);

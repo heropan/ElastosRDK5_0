@@ -105,6 +105,7 @@ module
     merge("io/charset/ICodingErrorAction.car");
     merge("io/charset/ICharsets.car");
     merge("io/charset/IModifiedUtf8.car");
+    merge("io/charset/IStandardCharsets.car");
 
     merge("io/charset/spi/ICharsetProvider.car");
 
@@ -691,6 +692,16 @@ module
 
     } // namespace Channels
 
+    namespace Channels {
+    namespace Spi {
+
+        singleton class CSelectorProviderHelper {
+            interface ISelectorProviderHelper;
+        }
+
+    } // namespace Spi
+    } // namespace Channels
+
     namespace Charset {
 
         class CCodingErrorAction {
@@ -703,6 +714,10 @@ module
             interface ICharsetHelper;
         }
 
+        singleton class CCharsets {
+            interface ICharsets;
+        }
+
         class CCoderResult {
             constructor();
 
@@ -711,6 +726,14 @@ module
 
         singleton class CCoderResultHelper {
             interface ICoderResultHelper;
+        }
+
+        singleton class CModifiedUtf8 {
+            interface IModifiedUtf8;
+        }
+
+        singleton class CStandardCharsets {
+            interface IStandardCharsets;
         }
 
     } // namespace Charset

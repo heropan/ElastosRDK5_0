@@ -2,6 +2,7 @@
 #define __ELASTOS_IO_CSELECTORPROVIDERHELPER_H__
 
 #include "_Elastos_IO_Channels_Spi_CSelectorProviderHelper.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace IO {
@@ -9,8 +10,13 @@ namespace Channels {
 namespace Spi {
 
 CarClass(CSelectorProviderHelper)
+    , public Singleton
+    , public ISelectorProviderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * Gets a provider instance by executing the following steps when called for
@@ -30,7 +36,6 @@ public:
      */
     CARAPI GetProvider(
         /* [out] */ ISelectorProvider** provider);
-
 };
 
 } // namespace Spi
