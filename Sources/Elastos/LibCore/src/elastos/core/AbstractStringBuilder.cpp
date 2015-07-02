@@ -154,7 +154,7 @@ Int32 AbstractStringBuilder::GetLength()
 {
     if (!mIsCounted) {
         mIsCounted = TRUE;
-        ArrayOf<Byte> bytes(mString, mByteCount);
+        ArrayOf<Byte> bytes((Byte *)mString, mByteCount);
         Character::GetCharCount(bytes, 0, mByteCount, &mCharCount);
     }
 

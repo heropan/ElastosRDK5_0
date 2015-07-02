@@ -2,13 +2,22 @@
 #define __ELASTOS_IO_CFILEHELPER_H__
 
 #include "_Elastos_IO_CFileHelper.h"
+#include "Singleton.h"
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace IO {
 
 CarClass(CFileHelper)
+    , public Singleton
+    , public IFileHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Creates an empty temporary file using the given prefix and suffix as part
      * of the file name. If {@code suffix} is null, {@code .tmp} is used. This

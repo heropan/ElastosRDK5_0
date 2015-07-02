@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_IO_CHANNELS_SELECTABLECHANNEL_H__
 #define __ELASTOS_IO_CHANNELS_SELECTABLECHANNEL_H__
 
-#include <Elastos.CoreLibrary_server.h>
 #include <elastos/core/Thread.h>
 #include "AbstractInterruptibleChannel.h"
 #include "SelectorProvider.h"

@@ -44,6 +44,7 @@ SOURCES += PushbackInputStream.cpp
 SOURCES += DataOutputStream.cpp
 SOURCES += CFileDescriptor.cpp
 SOURCES += File.cpp
+SOURCES += CFileHelper.cpp
 SOURCES += FilterReader.cpp
 SOURCES += FilterWriter.cpp
 SOURCES += InputStreamReader.cpp

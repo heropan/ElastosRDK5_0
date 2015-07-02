@@ -1,8 +1,6 @@
 #ifndef __ELASTOS_TEXT_BIDI_H__
 #define __ELASTOS_TEXT_BIDI_H__
 
-#include <Elastos.CoreLibrary_server.h>
-// #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Text::IAttributedCharacterIterator;;

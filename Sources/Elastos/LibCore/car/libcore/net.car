@@ -1,7 +1,7 @@
 module
 {
     merge("net/IMimeUtils.car");
-    merge("net/IUriCodecHelper.car");
+    merge("net/IUriCodec.car");
 
     merge("net/http/IHttpDate.car");
 

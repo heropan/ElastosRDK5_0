@@ -1,7 +1,6 @@
 #ifndef __ELASTOS_IO_CHANNELS_SOURCECHANNEL_H__
 #define __ELASTOS_IO_CHANNELS_SOURCECHANNEL_H__
 
-#include <Elastos.CoreLibrary_server.h>
 #include "AbstractSelectableChannel.h"
 
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;

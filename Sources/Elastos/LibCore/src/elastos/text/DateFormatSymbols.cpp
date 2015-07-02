@@ -3,6 +3,7 @@
 #include "CDateFormatSymbols.h"
 #include "CStringWrapper.h"
 #include "CLocaleHelper.h"
+#include "Arrays.h"
 // #include "CLocaleDataHelper.h"
 // #include "ICUUtil.h"
 // #include "TimeZones.h"
@@ -11,6 +12,7 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::IArrayOf;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
@@ -144,7 +146,7 @@ ECode DateFormatSymbols::Equals(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res)
-    if (this->Probe(EIID_IDateFormatSymbols) == IDateFormatSymbols::Probe(object)) {
+    if (THIS_PROBE(IDateFormatSymbols) == IDateFormatSymbols::Probe(object)) {
         *res = TRUE;
         return NOERROR;
     }
@@ -170,13 +172,13 @@ ECode DateFormatSymbols::Equals(
     rhs->GetWeekdays((ArrayOf<String>**)&weekdays);
 
     *res = mLocalPatternChars.Equals(lpc) &&
-                mAmpms->Equals(ampms) &&
-                mEras->Equals(eras) &&
-                mMonths->Equals(months) &&
-                mShortMonths->Equals(shortMonths) &&
-                mShortWeekdays->Equals(shortWeekdays) &&
-                mWeekdays->Equals(weekdays) &&
-                TimeZoneStringsEqual(this->Probe(EIID_IDateFormatSymbols), rhs);
+                Arrays::Equals(ampms, ampms) &&
+                Arrays::Equals(eras, eras) &&
+                Arrays::Equals(months, months) &&
+                Arrays::Equals(shortMonths, shortMonths) &&
+                Arrays::Equals(shortWeekdays, shortWeekdays) &&
+                Arrays::Equals(weekdays, weekdays) &&
+                TimeZoneStringsEqual(THIS_PROBE(IDateFormatSymbols), rhs);
     return NOERROR;
 }
 

@@ -29,20 +29,18 @@ public:
         /* [in] */ const String& s,
         /* [out] */ String* rev);
 
-private:
     static CARAPI_(Int64) Create(
-        const String& id);
+        /* [in] */ const String& id);
 
     static CARAPI_(void) Destroy(
-        Int64 peer);
+        /* [in] */ Int64 peer);
 
     static CARAPI_(String) Transliterate(
-        Int64 peer,
-        const String& s);
+        /* [in] */ Int64 peer,
+        /* [in] */ const String& s);
 
 private:
     Int64 mPeer;
-
 };
 
 } // ICU

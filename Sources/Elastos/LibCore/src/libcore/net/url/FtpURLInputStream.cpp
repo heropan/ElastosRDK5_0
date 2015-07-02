@@ -54,7 +54,7 @@ ECode FtpURLInputStream::Read(
 }
 
 ECode FtpURLInputStream::ReadBytes(
-    /* [out] */ ArrayOf<Byte>* buffer,
+    /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)

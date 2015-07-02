@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_IO_CHARSETPROVIDER_H__
 #define __ELASTOS_IO_CHARSETPROVIDER_H__
 
-#include <Elastos.CoreLibrary_server.h>
+
 #include <elastos/core/Object.h>
 
 

@@ -12,10 +12,6 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-// 6b5a0016-9e17-4dc5-80d7-397ff4118c2f
-extern "C" const InterfaceID EIID_JarHandler =
-    { 0x6b5a0016, 0x9e17, 0x4dc5, { 0x80, 0xd7, 0x39, 0x7f, 0xf4, 0x11, 0x8c, 0x2f } };
-
 CAR_INTERFACE_IMPL(CJarHandler, URLStreamHandler, IJarHandler)
 
 ECode CJarHandler::constructor()

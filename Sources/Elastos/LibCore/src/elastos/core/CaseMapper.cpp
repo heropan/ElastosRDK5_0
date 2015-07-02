@@ -1,8 +1,10 @@
 #include "CaseMapper.h"
-//#include "ICUUtil.h"
+#include "ICUUtil.h"
 #include "Character.h"
+#include "CTransliterator.h"
 
-//using Libcore::ICU::ICUUtil;
+using Libcore::ICU::ICUUtil;
+using Libcore::ICU::CTransliterator;
 
 namespace Elastos {
 namespace Core {
@@ -82,37 +84,37 @@ const Char32 CaseMapper::GREEK_SMALL_FINAL_SIGMA = 0x03c2;  //'\u03c2';
 
 // static final ThreadLocal<Transliterator> EL_UPPER
 
-pthread_key_t CaseMapper::sKey;
-pthread_once_t CaseMapper::sKeyOnce = PTHREAD_ONCE_INIT;
+pthread_key_t CaseMapper::sTlsKey;
+pthread_once_t CaseMapper::sTlsKeyOnce = PTHREAD_ONCE_INIT;
 
 static void TransliteratorDestructor(void* st)
 {
-    // Transliterator* obj = static_cast<Transliterator*>(st);
-    // if (obj) {
-    //     obj->Release();
-    // }
+    ITransliterator* obj = static_cast<ITransliterator*>(st);
+    if (obj) {
+        obj->Release();
+    }
 }
 
 static void MakeKey()
 {
-    ASSERT_TRUE(pthread_key_create(&CaseMapper::sKey, TransliteratorDestructor) == 0);
+    ASSERT_TRUE(pthread_key_create(&CaseMapper::sTlsKey, TransliteratorDestructor) == 0);
 }
 
-// AutoPtr<Transliterator> CaseMapper::GetEL_UPPER()
-// {
-//     pthread_once(&sKeyOnce, MakeKey);
+AutoPtr<ITransliterator> CaseMapper::GetEL_UPPER()
+{
+    pthread_once(&sTlsKeyOnce, MakeKey);
 
-//     AutoPtr<Transliterator> tl = (Transliterator*)pthread_getspecific(sTlsKey);
-//     if (tl == NULL) {
-//         tl = new Transliterator();
+    AutoPtr<ITransliterator> tl = (ITransliterator*)pthread_getspecific(sTlsKey);
+    if (tl == NULL) {
+        CTransliterator::New(String("el-Upper"), (ITransliterator**)&tl);
 
-//         ASSERT_TRUE(pthread_setspecific(sKey, tl.Get()) == 0);
-//         tl->AddRef();
-//         tl = (Transliterator*)pthread_getspecific(sKey);
-//     }
-//     assert(tl.Get() != NULL && "check Transliterator failed!");
-//     return tl;
-// }
+        ASSERT_TRUE(pthread_setspecific(sTlsKey, tl.Get()) == 0);
+        tl->AddRef();
+        tl = (ITransliterator*)pthread_getspecific(sTlsKey);
+    }
+    assert(tl.Get() != NULL && "check Transliterator failed!");
+    return tl;
+}
 
 String CaseMapper::ToLowerCase(
     /* [in] */ ILocale* locale,
@@ -129,7 +131,8 @@ String CaseMapper::ToLowerCase(
     String languageCode;
     locale->GetLanguage(&languageCode);
     if (languageCode.Equals("tr") || languageCode.Equals("az") || languageCode.Equals("lt")) {
-        //return ICUUtil::ToLowerCase(s, locale);
+        assert(0);
+        // return ICUUtil::ToLowerCase(s, locale);
     }
 
     AutoPtr<ArrayOf<Char32> > newValue;
@@ -140,6 +143,7 @@ String CaseMapper::ToLowerCase(
         Char32 newCh;
         if (ch == LATIN_CAPITAL_I_WITH_DOT || Character::IsHighSurrogate(ch)) {
             // Punt these hard cases.
+            assert(0);
             // return ICUUtil::ToLowerCase(s, locale);
         }
         else if (ch == GREEK_CAPITAL_SIGMA && IsFinalSigma(value, offset, count, i)) {
@@ -170,17 +174,20 @@ String CaseMapper::ToUpperCase(
     assert(locale);
     assert(value);
 
-    pthread_once(&sKeyOnce, MakeKey);
-    pthread_setspecific(sKey, NULL);
+    pthread_once(&sTlsKeyOnce, MakeKey);
+    pthread_setspecific(sTlsKey, NULL);
 
     String languageCode;
     locale->GetLanguage(&languageCode);
     if (languageCode.Equals("tr") || languageCode.Equals("az") || languageCode.Equals("lt")) {
-        // return ICUUtil::ToUpperCase(s, locale);
+        assert(0);
+        //return ICUUtil::ToUpperCase(s, locale);
     }
     if (languageCode.Equals("el")) {
-        // AutoPtr<Transliterator> tl = GetEL_UPPER();
-        // return tl->Transliterate(s);
+        AutoPtr<ITransliterator> tl = GetEL_UPPER();
+        String upper;
+        tl->Transliterate(s, &upper);
+        return upper;
     }
 
     AutoPtr<ArrayOf<Char32> > output;
@@ -189,7 +196,8 @@ String CaseMapper::ToUpperCase(
     for (Int32 o = offset, end = offset + count; o < end; o++) {
         ch = (*value)[o];
         if (Character::IsHighSurrogate(ch)) {
-            // return ICUUtil::ToUpperCase(s, locale);
+            assert(0);
+            //return ICUUtil::ToUpperCase(s, locale);
         }
 
         Int32 index = UpperIndex(ch);

@@ -13,7 +13,7 @@ ECode CUriCodecHelper::ValidateSimple(
     /* [in] */ const String& s,
     /* [in] */ const String& legal)
 {
-	return UriCodec::ValidateSimple(s,legal);
+    return UriCodec::ValidateSimple(s,legal);
 }
 
 ECode CUriCodecHelper::Decode(
@@ -30,7 +30,7 @@ ECode CUriCodecHelper::Decode(
     /* [in] */ Boolean throwOnFailure,
     /* [out] */ String* decodedString)
 {
-	return UriCodec::Decode(s,convertPlus,charset,throwOnFailure,decodedString);
+    return UriCodec::Decode(s,convertPlus,charset,throwOnFailure,decodedString);
 }
 
 } // namespace Net

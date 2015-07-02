@@ -5,6 +5,7 @@
 #include "StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
+using Elastos::Core::IStringBuilder;
 using Elastos::IO::Charset::ICharset;
 
 namespace Libcore {
@@ -43,6 +44,14 @@ public :
         /* [in] */ const String& s,
         /* [in] */ ICharset* charset,
         /* [out] */ String* result);
+
+    CARAPI AppendEncoded(
+        /* [in] */ IStringBuilder* builder,
+        /* [in] */ const String& s);
+
+    CARAPI AppendPartiallyEncoded(
+        /* [in] */ IStringBuilder* builder,
+        /* [in] */ const String& s);
 
     CARAPI AppendEncoded(
         /* [in] */ StringBuilder& builder,
@@ -86,6 +95,12 @@ private:
         /* [in] */ ICharset* charset,
         /* [in] */ Boolean isPartiallyEncoded);
 
+    CARAPI AppendEncoded(
+        /* [in] */ IStringBuilder * builder,
+        /* [in] */ const String& s,
+        /* [in] */ ICharset* charset,
+        /* [in] */ Boolean isPartiallyEncoded);
+
     static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetBytes(
         /* [in] */ const char* cPtr,
         /* [in] */ ICharset* charSet);
@@ -106,6 +121,14 @@ private:
         /* [in] */ const String& s,
         /* [in] */ ICharset* charset);
 
+    static CARAPI AppendHex(
+        /* [in] */ IStringBuilder * builder,
+        /* [in] */ Byte b);
+
+    static CARAPI AppendHex(
+        /* [in] */ IStringBuilder * builder,
+        /* [in] */ const String& s,
+        /* [in] */ ICharset* charset);
 protected:
     /**
      * Returns true if {@code c} does not need to be escaped.

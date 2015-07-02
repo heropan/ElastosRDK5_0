@@ -1,17 +1,12 @@
 
 #include <BigInt.h>
 #include <NativeBN.h>
-#include <elastos/core/Character.h>
-#include <Elastos.CoreLibrary_server.h>
+#include "Character.h"
 
 using Elastos::Core::Character;
 
 namespace Elastos {
 namespace Math {
-
-// 606ef7c8-001c-4b7a-8dfe-dab2d691e261
-extern "C" const InterfaceID EIID_BigInt =
-    { 0x606ef7c8, 0x001c, 0x4b7a, { 0x8d, 0xfe, 0xda, 0xb2, 0xd6, 0x91, 0xe2, 0x61 } };
 
 BigInt::BigInt()
     : mBignum(0)
@@ -26,21 +21,11 @@ BigInt::~BigInt()
     }
 }
 
-ECode BigInt::GetClassID(
-    /* [out] */ ClassID* clsid)
-{
-    VALIDATE_NOT_NULL(clsid);
-
-    //*clsid = EIID_BigInt;
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode BigInt::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-
-    result->AppendFormat("Class Name: [%s]\n", "BigInt");
+    *result = DecString();
     return NOERROR;
 }
 

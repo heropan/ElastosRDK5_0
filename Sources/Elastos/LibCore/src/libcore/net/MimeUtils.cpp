@@ -1,7 +1,7 @@
 
 #include "MimeUtils.h"
 #include "CFile.h"
-// #include "CFileHelper.h"
+#include "CFileHelper.h"
 #include "CFileInputStream.h"
 #include "CBufferedReader.h"
 #include "CInputStreamReader.h"
@@ -14,7 +14,7 @@ using Elastos::IO::CFile;
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::IFileHelper;
-// using Elastos::IO::CFileHelper;
+using Elastos::IO::CFileHelper;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::CBufferedReader;
@@ -510,10 +510,10 @@ ECode MimeUtils::Load(
     const Int32 NONE = 0, SLASH = 1, UNICODE = 2, CONTINUE = 3,
                 KEY_DONE = 4, IGNORE = 5;
 
-    AutoPtr<IInputStreamReader> sr;
-    // CInputStreamReader::New(stream, (IInputStreamReader**)&sr);
+    AutoPtr<IReader> sr;
+    CInputStreamReader::New(stream, (IReader**)&sr);
     AutoPtr<IBufferedReader> br;
-    // CBufferedReader::New(sr, (IBufferedReader**)&br);
+    CBufferedReader::New(sr, (IBufferedReader**)&br);
 
     Int32 mode = NONE, unicode = 0, count = 0;
     Byte nextChar;
@@ -690,7 +690,7 @@ ECode MimeUtils::GetContentTypesPropertiesStream(
         Boolean exist;
         // CFile::New(userTable, (IFile**)&f);
         if (f->Exists(&exist), exist) {
-            // FAIL_RETURN(CFileInputStream::New(f, (IFileInputStream**)result));
+            FAIL_RETURN(CFileInputStream::New(f, (IFileInputStream**)result));
             return NOERROR;
         }
     }
@@ -698,7 +698,7 @@ ECode MimeUtils::GetContentTypesPropertiesStream(
     AutoPtr<IFile> f;
     String separator;
     AutoPtr<IFileHelper> fHelper;
-    // CFileHelper::AcquireSingleton((IFileHelper**)&fHelper);
+    CFileHelper::AcquireSingleton((IFileHelper**)&fHelper);
     fHelper->GetSeparator(&separator);
     String env;
     system->GetEnv(String("java.home"), &env);
@@ -707,10 +707,10 @@ ECode MimeUtils::GetContentTypesPropertiesStream(
     sb += "lib";
     sb += separator;
     sb += "content-types.properties";
-    // CFile::New(sb.ToString(), (IFile**)&f);
+    CFile::New(sb.ToString(), (IFile**)&f);
     Boolean exist;
     if(f->Exists(&exist), exist) {
-        // FAIL_RETURN(CFileInputStream::New(f, (IFileInputStream**)result));
+        FAIL_RETURN(CFileInputStream::New(f, (IFileInputStream**)result));
         return NOERROR;
     }
 

@@ -1,7 +1,7 @@
 
-#include <elastos/core/Character.h>
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuilder.h>
+#include "Character.h"
+#include "Math.h"
+#include "StringBuilder.h"
 
 
 DEFINE_CONVERSION_FOR(Elastos::Core::Character::UnicodeBlock, IInterface)
@@ -498,7 +498,7 @@ ECode Character::GetCharAt(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    *c = (Char32)GetCharAt(seq.GetPayload(), seq.GetLength(), index, nextIndex);
+    *c = (Char32)GetCharAt((const char*)seq.GetPayload(), seq.GetLength(), index, nextIndex);
     return NOERROR;
 }
 

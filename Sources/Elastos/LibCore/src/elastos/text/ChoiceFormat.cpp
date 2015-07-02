@@ -147,7 +147,7 @@ ECode ChoiceFormat::Clone(
 {
     VALIDATE_NOT_NULL(outface);
     AutoPtr<IChoiceFormat> clone ;// = (ChoiceFormat) super.clone();
-    FAIL_RETURN(CChoiceFormat::New(*mChoiceLimits,*mChoiceFormats,(IChoiceFormat **)&clone));
+    FAIL_RETURN(CChoiceFormat::New(mChoiceLimits, mChoiceFormats,(IChoiceFormat **)&clone));
 
     *outface = clone;
     REFCOUNT_ADD(*outface);

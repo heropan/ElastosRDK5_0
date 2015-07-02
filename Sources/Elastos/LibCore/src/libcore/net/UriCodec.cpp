@@ -2,8 +2,8 @@
 #include "Character.h"
 #include "IntegralToString.h"
 #include "Math.h"
-//#include "CCharBufferHelper.h"
-//#include "CByteArrayOutputStream.h"
+#include "CharBuffer.h"
+#include "CByteArrayOutputStream.h"
 //#include "CCharsets.h"
 
 using Elastos::Core::Character;
@@ -13,11 +13,10 @@ using Elastos::IO::IBuffer;
 using Elastos::IO::ICharBuffer;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IByteArrayOutputStream;
-// using Elastos::IO::CCharBufferHelper;
-using Elastos::IO::ICharBufferHelper;
-// using Elastos::IO::CByteArrayOutputStream;
+using Elastos::IO::CharBuffer;
+using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::Charset::ICharsets;
-// using Elastos::IO::Charset::CCharsets;
+//using Elastos::IO::Charset::CCharsets;
 using Elastos::IO::IOutputStream;
 
 namespace Libcore {
@@ -79,8 +78,8 @@ ECode UriCodec::ValidateSimple(
     return NOERROR;
 }
 
-ECode UriCodec:: AppendEncoded(
-    /* [in] */ StringBuilder& builder,
+ECode UriCodec::AppendEncoded(
+    /* [in] */ IStringBuilder * builder,
     /* [in] */ const String& s)
 {
     AutoPtr<ICharset> charset = GetDefaultCharset();
@@ -88,7 +87,7 @@ ECode UriCodec:: AppendEncoded(
 }
 
 ECode UriCodec::AppendEncoded(
-    /* [in] */ StringBuilder& builder,
+    /* [in] */ IStringBuilder * builder,
     /* [in] */ const String& s,
     /* [in] */ ICharset* charset,
     /* [in] */ Boolean isPartiallyEncoded)
@@ -111,6 +110,59 @@ ECode UriCodec::AppendEncoded(
             }
 
             if (c =='%' && isPartiallyEncoded){
+                builder->Append(s.Substring(i, Elastos::Core::Math::Min(i + 3, s.GetLength())));
+                i += 2;
+            }
+            else if (c == ' '){
+                builder->AppendChar('+');
+            }
+            else{
+                builder->AppendChar(c);
+            }
+        }
+        else if(escapeStart == -1) {
+            escapeStart = i;
+        }
+    }
+
+    if (escapeStart != -1) {
+        AppendHex(builder, s.Substring(escapeStart, s.GetLength()), charset);
+    }
+    return NOERROR;
+}
+
+ECode UriCodec::AppendEncoded(
+    /* [in] */ StringBuilder & builder,
+    /* [in] */ const String& s)
+{
+    AutoPtr<ICharset> charset = GetDefaultCharset();
+    return AppendEncoded(builder, s, charset, FALSE);
+}
+
+ECode UriCodec::AppendEncoded(
+    /* [in] */ StringBuilder & builder,
+    /* [in] */ const String& s,
+    /* [in] */ ICharset* charset,
+    /* [in] */ Boolean isPartiallyEncoded)
+{
+    if (s.IsNull())
+        return E_NULL_POINTER_EXCEPTION;
+
+    Int32 escapeStart = -1;
+    AutoPtr<ArrayOf<Char32> > char32Array = s.GetChars();
+    for(Int32 i = 0; i < s.GetLength(); i++) {
+        Char32 c = (*char32Array)[i];
+        if ((c >= 'a' && c <= 'z')
+                || (c >= 'A' && c <= 'Z')
+                || (c >= '0' && c <= '9')
+                || IsRetained(c)
+                || (c == '%' && isPartiallyEncoded)) {
+            if (escapeStart != -1) {
+                AppendHex(builder, s.Substring(escapeStart, i), charset);
+                escapeStart = -1;
+            }
+
+            if (c == '%' && isPartiallyEncoded){
                 builder.Append(s.Substring(i, Elastos::Core::Math::Min(i + 3, s.GetLength())));
                 i += 2;
             }
@@ -145,7 +197,16 @@ ECode UriCodec::Encode(
 }
 
 ECode UriCodec::AppendPartiallyEncoded(
-    /* [in] */ StringBuilder& builder,
+    /* [in] */ StringBuilder & builder,
+    /* [in] */ const String& s)
+{
+    AutoPtr<ICharset> charset = GetDefaultCharset();
+    AppendEncoded(builder, s, charset, TRUE);
+    return NOERROR;
+}
+
+ECode UriCodec::AppendPartiallyEncoded(
+    /* [in] */ IStringBuilder * builder,
     /* [in] */ const String& s)
 {
     AutoPtr<ICharset> charset = GetDefaultCharset();
@@ -169,7 +230,7 @@ AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
     String buf(cPtr);
     AutoPtr<ArrayOf<Char32> > char32Array = buf.GetChars();
     AutoPtr<ICharsets> charSets;
-    // CCharsets::AcquireSingleton((ICharsets**)&charSets);
+    //CCharsets::AcquireSingleton((ICharsets**)&charSets);
     AutoPtr<ArrayOf<Byte> > byteArray;
     String canonicalCharsetName;
     charSet->GetName(&canonicalCharsetName);
@@ -186,13 +247,11 @@ AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
             (ArrayOf<Byte>**)&byteArray);
     }
     else{
-        AutoPtr<ICharBufferHelper> charBufferHelper;
-        // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&charBufferHelper);
         AutoPtr<ICharBuffer> chars;
         AutoPtr<ICharBuffer> charsBuf;
         AutoPtr<IByteBuffer> byteBuffer;
 
-        charBufferHelper->Wrap(char32Array, (ICharBuffer**)&chars);
+        CharBuffer::Wrap(char32Array, (ICharBuffer**)&chars);
         chars->AsReadOnlyBuffer((ICharBuffer**)&charsBuf);
         charSet->Encode(charsBuf, (IByteBuffer**)&byteBuffer);
         Int32 len;
@@ -218,7 +277,7 @@ ECode UriCodec::Decode(
 
     StringBuilder result(s.GetByteLength());
     AutoPtr<IByteArrayOutputStream> out;
-    // CByteArrayOutputStream::New((IByteArrayOutputStream**)&out);
+    CByteArrayOutputStream::New((IByteArrayOutputStream**)&out);
     IOutputStream* os = IOutputStream::Probe(out);
     AutoPtr<ArrayOf<Char32> > char32Array = s.GetChars();
     for (Int32 i = 0; i < s.GetLength();) {
@@ -285,6 +344,29 @@ ECode UriCodec::AppendHex(
 
 ECode UriCodec::AppendHex(
     /* [in] */ StringBuilder& builder,
+    /* [in] */ const String& s,
+    /* [in] */ ICharset* charset)
+{
+    AutoPtr<ArrayOf<Byte> > bytes;
+    bytes = GetBytes(s.string(), charset);
+    assert(bytes != NULL);
+    for (Int32 i = 0; i < bytes->GetLength(); ++i) {
+        AppendHex(builder, (*bytes)[i]);
+    }
+    return NOERROR;
+}
+
+ECode UriCodec::AppendHex(
+    /* [in] */ IStringBuilder * builder,
+    /* [in] */ Byte b)
+{
+    builder->AppendChar('%');
+    builder->Append(IntegralToString::ToHexString(b, TRUE));
+    return NOERROR;
+}
+
+ECode UriCodec::AppendHex(
+    /* [in] */ IStringBuilder * builder,
     /* [in] */ const String& s,
     /* [in] */ ICharset* charset)
 {

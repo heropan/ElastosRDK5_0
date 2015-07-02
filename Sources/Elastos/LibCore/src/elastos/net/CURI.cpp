@@ -53,23 +53,22 @@ ECode CURI::constructor(
     /* [in] */ const String& schemeSpecificPart,
     /* [in] */ const String& fragment)
 {
-    StringBuilder uri;
+    AutoPtr<IStringBuilder> uri = new StringBuilder();
     if (!scheme.IsNull()) {
-        uri += scheme;
-        uri += ':';
+        uri->Append(scheme);
+        uri->AppendChar(':');
     }
     if (!schemeSpecificPart.IsNull()) {
         // QUOTE ILLEGAL CHARACTERS
         FAIL_RETURN(ALL_LEGAL_ENCODER->AppendEncoded(uri, schemeSpecificPart));
     }
     if (!fragment.IsNull()) {
-        uri += '#';
+        uri->AppendChar('#');
         // QUOTE ILLEGAL CHARACTERS
         FAIL_RETURN(ALL_LEGAL_ENCODER->AppendEncoded(uri, fragment));
     }
 
-    String uriStr;
-    uri.ToString(&uriStr);
+    String uriStr = Object::ToString(uri);
     return ParseURI(uriStr, FALSE);
 }
 
@@ -94,20 +93,20 @@ ECode CURI::constructor(
         return E_URI_SYNTAX_EXCEPTION;
     }
 
-    StringBuilder uri;
+    AutoPtr<IStringBuilder> uri = new StringBuilder();
     if (!scheme.IsNull()) {
-        uri += scheme;
-        uri += ':';
+        uri->Append(scheme);
+        uri->AppendChar(':');
     }
 
     if (!userInfo.IsNull() || !host.IsNull() || port != -1) {
-        uri += "//";
+        uri->Append(String("//"));
     }
 
     if (!userInfo.IsNull()) {
         // QUOTE ILLEGAL CHARACTERS in userInfo
         FAIL_RETURN(USER_INFO_ENCODER->AppendEncoded(uri, userInfo));
-        uri += '@';
+        uri->AppendChar('@');
     }
 
     if (!host.IsNull()) {
@@ -119,12 +118,12 @@ ECode CURI::constructor(
 //            host = "[" + host + "]";
             temp = String("[") + host + String("]");
         }
-        uri += temp;
+        uri->Append(temp);
     }
 
     if (port != -1) {
-        uri += ':';
-        uri += port;
+        uri->AppendChar(':');
+        uri->Append(port);
     }
 
     if (!path.IsNull()) {
@@ -133,19 +132,18 @@ ECode CURI::constructor(
     }
 
     if (!query.IsNull()) {
-        uri += '?';
+        uri->AppendChar('?');
         // QUOTE ILLEGAL CHARS
         FAIL_RETURN(ALL_LEGAL_ENCODER->AppendEncoded(uri, query));
     }
 
     if (!fragment.IsNull()) {
         // QUOTE ILLEGAL CHARS
-        uri += '#';
+        uri->AppendChar('#');
         FAIL_RETURN(ALL_LEGAL_ENCODER->AppendEncoded(uri, fragment));
     }
 
-    String uriStr;
-    uri.ToString(&uriStr);
+    String uriStr = Object::ToString(uri);
     return ParseURI(uriStr, TRUE);
 }
 
@@ -171,13 +169,13 @@ ECode CURI::constructor(
         return E_URI_SYNTAX_EXCEPTION;
     }
 
-    StringBuilder uri;
+    AutoPtr<IStringBuilder> uri = new StringBuilder();
     if (!scheme.IsNull()) {
-        uri += scheme;
-        uri += ":";
+        uri->Append(scheme);
+        uri->AppendChar(':');
     }
     if (!authority.IsNull()) {
-        uri += "//";
+        uri->Append(String("//"));
         // QUOTE ILLEGAL CHARS
         FAIL_RETURN(AUTHORITY_ENCODER->AppendEncoded(uri, authority));
     }
@@ -188,16 +186,16 @@ ECode CURI::constructor(
     }
     if (!query.IsNull()) {
         // QUOTE ILLEGAL CHARS
-        uri += "?";
+        uri->AppendChar('?');
         FAIL_RETURN(ALL_LEGAL_ENCODER->AppendEncoded(uri, query));
     }
     if (!fragment.IsNull()) {
         // QUOTE ILLEGAL CHARS
-        uri += "#";
+        uri->AppendChar('#');
         FAIL_RETURN(ALL_LEGAL_ENCODER->AppendEncoded(uri, fragment));
     }
-    String uriStr;
-    uri.ToString(&uriStr);
+
+    String uriStr = Object::ToString(uri);
     return ParseURI(uriStr, FALSE);
 }
 
@@ -1231,11 +1229,11 @@ ECode CURI::ToASCIIString(
 {
     VALIDATE_NOT_NULL(str);
 
-    StringBuilder result;
+    AutoPtr<IStringBuilder> result = new StringBuilder;
     String toString;
     ToString(&toString);
     FAIL_RETURN(ASCII_ONLY->AppendEncoded(result, toString));
-    result.ToString(str);
+    *str = Object::ToString(result);
     return NOERROR;
 }
 
@@ -1249,36 +1247,36 @@ ECode CURI::ToString(
         return NOERROR;
     }
 
-    StringBuilder result;
+    AutoPtr<IStringBuilder> result = new StringBuilder();
     if (!mScheme.IsNull()) {
-        result += mScheme;
-        result += ':';
+        result->Append(mScheme);
+        result->AppendChar(':');
     }
     if (mOpaque) {
-        result += mSchemeSpecificPart;
+        result->Append(mSchemeSpecificPart);
     }
     else {
         if (!mAuthority.IsNull()) {
-            result += "//";
-            result += mAuthority;
+            result->AppendChar('//');
+            result->Append(mAuthority);
         }
 
         if (!mPath.IsNull()) {
-            result += mPath;
+            result->Append(mPath);
         }
 
         if (!mQuery.IsNull()) {
-            result += '?';
-            result += mQuery;
+            result->AppendChar('?');
+            result->Append(mQuery);
         }
     }
 
     if (!mFragment.IsNull()) {
-        result += '#';
-        result += mFragment;
+        result->AppendChar('#');
+        result->Append(mFragment);
     }
 
-    result.ToString(&mString);
+    mString = Object::ToString(result);
     *s = mString;
     return NOERROR;
 }
@@ -1288,43 +1286,45 @@ String CURI::GetHashString()
     StringBuilder result;
     if (!mScheme.IsNull()) {
         String temp = mScheme.ToLowerCase();
-        result += temp;
-        result += ':';
+        result.Append(temp);
+        result.AppendChar(':');
     }
     if (mOpaque) {
-        result += mSchemeSpecificPart;
+        result.Append(mSchemeSpecificPart);
     }
     else {
         if (!mAuthority.IsNull()) {
-            result += "//";
+            result.AppendChar('//');
             if (mHost.IsNull()) {
-                result += mAuthority;
+                result.Append(mAuthority);
             }
             else {
                 if (!mUserInfo.IsNull()) {
-                    result += mUserInfo + "@";
+                    result.Append(mUserInfo);
+                    result.AppendChar('@');
                 }
                 String temp = mHost.ToLowerCase();
-                result += temp;
+                result.Append(temp);
                 if (mPort != -1) {
-                    result += ":" + mPort;
+                    result.AppendChar(':');
+                    result.Append(mPort);
                 }
             }
         }
 
         if (!mPath.IsNull()) {
-            result += mPath;
+            result.Append(mPath);
         }
 
         if (!mQuery.IsNull()) {
-            result += '?';
-            result += mQuery;
+            result.AppendChar('?');
+            result.Append(mQuery);
         }
     }
 
     if (!mFragment.IsNull()) {
-        result += '#';
-        result += mFragment;
+        result.AppendChar('#');
+        result.Append(mFragment);
     }
 
     String resultTemp;

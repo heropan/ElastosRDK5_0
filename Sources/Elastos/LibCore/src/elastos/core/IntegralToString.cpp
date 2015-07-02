@@ -1,6 +1,6 @@
 #include "IntegralToString.h"
-#include <elastos/core/Character.h>
-#include <elastos/core/StringBuilder.h>
+#include "Character.h"
+#include "StringBuilder.h"
 #include <stdlib.h>
 
 namespace Elastos {
@@ -100,7 +100,7 @@ String IntegralToString::ToString(
         (*buf)[--cursor] = '-';
     }
 
-    String str(buf->GetPayload() + cursor, bufLen - cursor);
+    String str((const char*)buf->GetPayload() + cursor, bufLen - cursor);
     return str;
 }
 
@@ -196,7 +196,7 @@ String IntegralToString::ConvertInt32(
         (*buf)[--cursor] = '-';
     }
 
-    quickResult = String(buf->GetPayload() + cursor, bufLen - cursor);
+    quickResult = String((const char*)buf->GetPayload() + cursor, bufLen - cursor);
     return quickResult;
 }
 
@@ -244,7 +244,7 @@ String IntegralToString::ToString(
         (*buf)[--cursor] = '-';
     }
 
-    return String(buf->GetPayload() + cursor, bufLen - cursor);
+    return String((const char*)buf->GetPayload() + cursor, bufLen - cursor);
 }
 
 String IntegralToString::ConvertInt64(
@@ -324,7 +324,7 @@ String IntegralToString::ConvertInt64(
         (*buf)[--cursor] = '-';
     }
 
-    String str = String(buf->GetPayload() + cursor, bufLen - cursor);
+    String str = String((const char*)buf->GetPayload() + cursor, bufLen - cursor);
     return str;
 }
 
@@ -373,7 +373,7 @@ String IntegralToString::ToBinaryString(
         (*buf)[--cursor] = DIGITS[idx & 1];
     }  while ((idx >>= 1) != 0);
 
-    String str = String(buf->GetPayload() + cursor, bufLen - cursor);
+    String str = String((const char*)buf->GetPayload() + cursor, bufLen - cursor);
     return str;
 }
 
@@ -394,7 +394,7 @@ String IntegralToString::ToBinaryString(
         (*buf)[--cursor] = DIGITS[((Int32) uv) & 1];
     } while ((uv >>= 1) != 0);
 
-    String str = String(buf->GetPayload() + cursor, bufLen - cursor);
+    String str = String((const char*)buf->GetPayload() + cursor, bufLen - cursor);
     return str;
 }
 

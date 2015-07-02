@@ -41,6 +41,7 @@ namespace Net {
 namespace Url {
 
 CAR_INTERFACE_IMPL(FileURLConnection::Comparator, Object, IComparator);
+
 ECode FileURLConnection::Comparator::Compare(
     /* [in] */ IInterface* a,
     /* [in] */ IInterface* b,
@@ -58,9 +59,8 @@ ECode FileURLConnection::Comparator::Compare(
         return NOERROR;
     }
 
-    String as, bs;
-    IObject::Probe(a)->ToString(&as);
-    IObject::Probe(b)->ToString(&bs);
+    String as = Object::ToString(a);
+    String bs = Object::ToString(b);
     *result = as.CompareIgnoreCase(bs);
     return NOERROR;
 }

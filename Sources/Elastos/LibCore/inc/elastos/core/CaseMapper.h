@@ -6,7 +6,7 @@
 #include <pthread.h>
 
 using Elastos::Utility::ILocale;
-//using Libcore::ICU::Transliterator;
+using Libcore::ICU::ITransliterator;
 
 namespace Elastos {
 namespace Core {
@@ -57,17 +57,17 @@ private:
     static CARAPI_(Int32) UpperIndex(
         /* [in] */ Int32 ch);
 
-    // static AutoPtr<Transliterator> GetEL_UPPER();
+    static AutoPtr<ITransliterator> GetEL_UPPER();
 
 private:
     CaseMapper();
     CaseMapper(const CaseMapper&);
 
 public:
-    static pthread_key_t sKey;
+    static pthread_key_t sTlsKey;
 
 private:
-    static pthread_once_t sKeyOnce;
+    static pthread_once_t sTlsKeyOnce;
     // static final ThreadLocal<Transliterator> EL_UPPER
 
     static const Char32 sUpperValues[306];

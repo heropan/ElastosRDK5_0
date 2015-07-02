@@ -283,8 +283,7 @@ String StringUtils::ToHexString(
             fractionDigits--;
         }
         // this assumes Integer.toHexString() returns lowercase characters
-        String hexSignificand;
-        StringUtils::ToHexString(significand, &hexSignificand);
+        String hexSignificand = StringUtils::ToHexString(significand);
 
         // if there are digits left, then insert some '0' chars first
         if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
@@ -307,8 +306,7 @@ String StringUtils::ToHexString(
             fractionDigits--;
         }
         // this assumes Integer.toHexString() returns lowercase characters
-        String hexSignificand;
-        StringUtils::ToHexString(significand, &hexSignificand);
+        String hexSignificand = StringUtils::ToHexString(significand);
 
         // if there are digits left, then insert some '0' chars first
         if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
@@ -373,8 +371,7 @@ String StringUtils::ToHexString(
             fractionDigits--;
         }
         // this assumes Integer.toHexString() returns lowercase characters
-        String hexSignificand;
-        ToHexString(significand, &hexSignificand);
+        String hexSignificand = StringUtils::ToHexString(significand);
 
         // if there are digits left, then insert some '0' chars first
         if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {
@@ -396,8 +393,7 @@ String StringUtils::ToHexString(
             fractionDigits--;
         }
         // this assumes Integer.toHexString() returns lowercase characters
-        String hexSignificand;
-        ToHexString(significand, &hexSignificand);
+        String hexSignificand = StringUtils::ToHexString(significand);
 
         // if there are digits left, then insert some '0' chars first
         if (significand != 0 && fractionDigits > hexSignificand.GetLength()) {

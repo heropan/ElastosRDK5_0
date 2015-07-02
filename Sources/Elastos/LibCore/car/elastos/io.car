@@ -242,6 +242,7 @@ module
         interface IBufferedReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
     }
 
     class CBufferedWriter {
@@ -393,6 +394,10 @@ module
         interface IFile;
         interface IComparable;
         interface ISerializable;
+    }
+
+    singleton class CFileHelper {
+        interface IFileHelper;
     }
 
     class CInputStreamReader {

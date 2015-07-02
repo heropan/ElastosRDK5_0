@@ -1,9 +1,8 @@
 
-#ifndef __KEYSTOREBUILDER_H__
-#define __KEYSTOREBUILDER_H__
+#ifndef __ELASTOS_SECURITY_KEYSTOREBUILDER_H__
+#define __ELASTOS_SECURITY_KEYSTOREBUILDER_H__
 
-#include <Elastos.CoreLibrary_server.h>
-#include <elastos/Object.h>
+#include "Object.h"
 
 using Elastos::IO::IFile;
 
@@ -136,4 +135,4 @@ private:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __KEYSTOREBUILDER_H__
+#endif // __ELASTOS_SECURITY_KEYSTOREBUILDER_H__

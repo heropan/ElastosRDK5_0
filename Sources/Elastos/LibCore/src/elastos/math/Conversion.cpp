@@ -3,8 +3,8 @@
 #include "BigInt.h"
 #include "Division.h"
 #include "Math.h"
-#include <elastos/core/Character.h>
-#include <elastos/core/IntegralToString.h>
+#include "Character.h"
+#include "IntegralToString.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
 

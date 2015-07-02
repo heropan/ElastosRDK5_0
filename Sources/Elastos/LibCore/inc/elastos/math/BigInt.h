@@ -18,15 +18,13 @@ extern "C" const InterfaceID EIID_BigInt;
  * Any Bit-Operations, including Shifting, solely regard the unsigned magnitude.
  * Moreover BigInt objects are mutable and offer efficient in-place-operations.
  */
-class BigInt : public Object
+class BigInt
+    : public Object
 {
 public:
     BigInt();
 
     ~BigInt();
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID* clsid);
 
     CARAPI ToString(
         /* [out] */ String* result);

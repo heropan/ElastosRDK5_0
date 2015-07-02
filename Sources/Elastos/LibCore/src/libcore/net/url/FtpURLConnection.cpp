@@ -1,8 +1,7 @@
 
 #include "FtpURLConnection.h"
 #include "ProxySelector.h"
-#include "elastos/utility/etl/List.h"
-#include "elastos/core/StringBuilder.h"
+#include "StringBuilder.h"
 #include "CProxy.h"
 #include "CSocket.h"
 #include "CInetSocketAddress.h"
@@ -11,6 +10,7 @@
 #include "StringUtils.h"
 #include "CFtpURLInputStream.h"
 #include "CSocketPermission.h"
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
@@ -55,10 +55,6 @@ const Int32 FtpURLConnection::FTP_FILEOK = 250;
 const Int32 FtpURLConnection::FTP_PASWD = 331;
 
 const Int32 FtpURLConnection::FTP_NOTFOUND = 550;
-
-// 7bc5a59e-e18b-4ba7-918b-2a2935e5d208
-extern "C" const InterfaceID EIID_FtpURLConnection =
-    { 0x7bc5a59e, 0xe18b, 0x4ba7, { 0x91, 0x8b, 0x2a, 0x29, 0x35, 0xe5, 0xd2, 0x08 } };
 
 CAR_INTERFACE_IMPL(FtpURLConnection, URLConnection, IFtpURLConnection)
 

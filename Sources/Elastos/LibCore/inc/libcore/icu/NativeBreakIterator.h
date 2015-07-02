@@ -3,10 +3,6 @@
 #define __LIBCORE_ICU_NATIVEBREAKITERATOR_H__
 
 #include <Object.h>
-#include <elastos.h>
-#include <eltypes.h>
-
-#include <Elastos.CoreLibrary_server.h>
 
 using Elastos::Utility::ILocale;
 using Libcore::ICU::INativeBreakIterator;

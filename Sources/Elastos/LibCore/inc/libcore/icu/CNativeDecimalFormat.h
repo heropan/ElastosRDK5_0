@@ -2,9 +2,8 @@
 #ifndef __CNATIVEDECIMALFORMAT_H__
 #define __CNATIVEDECIMALFORMAT_H__
 
-#include "_CNativeDecimalFormat.h"
-#include <Elastos.CoreLibrary_server.h>
-#include <elastos/StringBuffer.h>
+#include "_Libcore_ICU_CNativeDecimalFormat.h"
+#include "StringBuffer.h"
 
 using Elastos::Math::IBigDecimal;
 using Elastos::Math::IBigInteger;
