@@ -13,7 +13,7 @@ class CCppVectorInfo
 {
 public:
     CCppVectorInfo(
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
+        /* [in] */ IDataTypeInfo* elementTypeInfo,
         /* [in] */ Int32 length);
 
     CARAPI_(PInterface) Probe(
@@ -24,31 +24,31 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetSize(
-        /* [out] */ MemorySize * pSize);
+        /* [out] */ MemorySize* size);
 
     CARAPI GetDataType(
-        /* [out] */ CarDataType * pDataType);
+        /* [out] */ CarDataType* dataType);
 
     CARAPI GetElementTypeInfo(
-        /* [out] */ IDataTypeInfo ** ppElementTypeInfo);
+        /* [out] */ IDataTypeInfo** elementTypeInfo);
 
     CARAPI GetLength(
-        /* [out] */ Int32 * pLength);
+        /* [out] */ Int32* length);
 
     CARAPI GetMaxAlignSize(
-        /* [out] */ MemorySize * pAlignSize);
+        /* [out] */ MemorySize* alignSize);
 
 private:
-    AutoPtr<IDataTypeInfo>  m_pElementTypeInfo;
-    Int32          m_iLength;
-    Int32          m_iSize;
+    AutoPtr<IDataTypeInfo>  mElementTypeInfo;
+    Int32                   mLength;
+    Int32                   mSize;
 };
 
 #endif // __CCPPVECTORINFO_H__

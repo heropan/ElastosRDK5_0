@@ -130,11 +130,11 @@ ECode CDelegateProxy::EventHander(
         return ec;
     }
 
-    memcpy(pCBArgumentList->m_pParamBuf, pParamBuf,
-        pCBArgumentList->m_uParamBufSize);
+    memcpy(pCBArgumentList->mParamBuf, pParamBuf,
+        pCBArgumentList->mParamBufSize);
 
     if (pParamBufSize) {
-        *pParamBufSize = pCBArgumentList->m_uParamBufSize - 4;
+        *pParamBufSize = pCBArgumentList->mParamBufSize - 4;
     }
 
     m_pCallbackInvocation->Invoke(m_pTargetObject, m_pTargetMethod,

@@ -21,7 +21,7 @@ CEntryList::CEntryList(
     /* [in] */ CClassInfo *pClsInfo)
 {
     m_pCClsModule = pCClsModule;
-    m_pClsMod = m_pCClsModule->m_pClsMod;
+    m_pClsMod = m_pCClsModule->mClsMod;
 
     m_type = type;
     m_pDesc = pDesc;
@@ -32,7 +32,7 @@ CEntryList::CEntryList(
     m_uListCount = uListCount;
     m_pClsInfo = pClsInfo;
 
-    m_nBase = m_pCClsModule->m_nBase;
+    m_nBase = m_pCClsModule->mBase;
 }
 
 CEntryList::~CEntryList()
@@ -354,15 +354,15 @@ ECode CEntryList::AcquireObjByIndex(
             ec = g_objInfoList.AcquireConstructorInfo(m_pCClsModule,
                 (MethodDescriptor *)m_pObjElement[uIndex].pDesc,
                 m_pObjElement[uIndex].uIndex,
-                &m_pClsInfo->m_clsId,
+                &m_pClsInfo->mClsId,
                 &m_pObjElement[uIndex].pObj);
             break;
 
         case EntryType_CBMethod:
             ec = g_objInfoList.AcquireCBMethodInfoInfo(m_pCClsModule,
-                m_pClsInfo->m_pCBMethodDesc[uIndex].uEventNum,
-                m_pClsInfo->m_pCBMethodDesc[uIndex].pDesc,
-                m_pClsInfo->m_pCBMethodDesc[uIndex].uIndex,
+                m_pClsInfo->mCBMethodDesc[uIndex].mEventNum,
+                m_pClsInfo->mCBMethodDesc[uIndex].mDesc,
+                m_pClsInfo->mCBMethodDesc[uIndex].mIndex,
                 &m_pObjElement[uIndex].pObj);
             break;
 

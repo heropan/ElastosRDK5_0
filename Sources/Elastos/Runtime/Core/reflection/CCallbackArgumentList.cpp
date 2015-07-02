@@ -5,15 +5,15 @@
 #include "CCallbackArgumentList.h"
 
 CCallbackArgumentList::CCallbackArgumentList()
-    : m_pParamBuf(NULL)
-    , m_uParamBufSize(0)
-    , m_pParamElem(NULL)
-    , m_uParamCount(0)
+    : mParamBuf(NULL)
+    , mParamBufSize(0)
+    , mParamElem(NULL)
+    , mParamCount(0)
 {}
 
 CCallbackArgumentList::~CCallbackArgumentList()
 {
-    if (m_pParamBuf) free(m_pParamBuf);
+    if (mParamBuf) free(mParamBuf);
 }
 
 UInt32 CCallbackArgumentList::AddRef()
@@ -41,76 +41,76 @@ PInterface  CCallbackArgumentList::Probe(
 }
 
 ECode CCallbackArgumentList::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackArgumentList::Init(
-    /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
-    /* [in] */ ParmElement *pParamElem,
-    /* [in] */ UInt32 uParamCount,
-    /* [in] */ UInt32 uParamBufSize)
+    /* [in] */ ICallbackMethodInfo* callbackMethodInfo,
+    /* [in] */ ParmElement* paramElem,
+    /* [in] */ UInt32 paramCount,
+    /* [in] */ UInt32 paramBufSize)
 {
-    m_pParamBuf = (PByte)malloc(uParamBufSize);
-    if (m_pParamBuf == NULL) {
+    mParamBuf = (PByte)malloc(paramBufSize);
+    if (mParamBuf == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
-    m_pParamElem = pParamElem;
-    m_uParamCount = uParamCount;
-    memset(m_pParamBuf, 0, uParamBufSize);
-    m_uParamBufSize = uParamBufSize;
-    m_pCallbackMethodInfo = pCallbackMethodInfo;
+    mParamElem = paramElem;
+    mParamCount = paramCount;
+    memset(mParamBuf, 0, paramBufSize);
+    mParamBufSize = paramBufSize;
+    mCallbackMethodInfo = callbackMethodInfo;
 
     return NOERROR;
 }
 
 ECode CCallbackArgumentList::GetCallbackMethodInfo(
-    /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo)
+    /* [out] */ ICallbackMethodInfo** callbackMethodInfo)
 {
-    if (!ppCallbackMethodInfo) {
+    if (!callbackMethodInfo) {
         return E_INVALID_ARGUMENT;
     }
-    *ppCallbackMethodInfo = m_pCallbackMethodInfo;
-    (*ppCallbackMethodInfo)->AddRef();
+    *callbackMethodInfo = mCallbackMethodInfo;
+    (*callbackMethodInfo)->AddRef();
 
     return NOERROR;
 }
 
 ECode CCallbackArgumentList::GetParamValue(
     /* [in] */ Int32 index,
-    /* [in] */ PVoid pParam,
+    /* [in] */ PVoid param,
     /* [in] */ CarDataType type)
 {
     if (type == CarDataType_CarArray
-        && m_pParamElem[index].type == CarDataType_ArrayOf) {
-        type = m_pParamElem[index].type;
+        && mParamElem[index].type == CarDataType_ArrayOf) {
+        type = mParamElem[index].type;
     }
 
-    if (index < 0 || index >= (Int32)m_uParamCount || !pParam
-        || type != m_pParamElem[index].type) {
+    if (index < 0 || index >= (Int32)mParamCount || !param
+        || type != mParamElem[index].type) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pParamBuf) {
+    if (!mParamBuf) {
         return E_INVALID_OPERATION;
     }
 
-    UInt32 *pParamValue = (UInt32 *)(m_pParamBuf + m_pParamElem[index].pos);
+    UInt32* paramValue = (UInt32 *)(mParamBuf + mParamElem[index].pos);
 
-    if (m_pParamElem[index].size == 1) {
-        *(Byte *)pParam = (Byte)*pParamValue;
+    if (mParamElem[index].size == 1) {
+        *(Byte *)param = (Byte)*paramValue;
     }
-    else if (m_pParamElem[index].size == 2) {
-        *(UInt16 *)pParam = (UInt16)*pParamValue;
+    else if (mParamElem[index].size == 2) {
+        *(UInt16 *)param = (UInt16)*paramValue;
     }
-    else if (m_pParamElem[index].size == 4) {
-        *(UInt32 *)pParam = (UInt32)*pParamValue;
+    else if (mParamElem[index].size == 4) {
+        *(UInt32 *)param = (UInt32)*paramValue;
     }
-    else if (m_pParamElem[index].size == 8) {
-        *(UInt64 *)pParam = *(UInt64 *)pParamValue;
+    else if (mParamElem[index].size == 8) {
+        *(UInt64 *)param = *(UInt64 *)paramValue;
     }
     else {
         return E_INVALID_OPERATION;
@@ -120,70 +120,63 @@ ECode CCallbackArgumentList::GetParamValue(
 }
 
 ECode CCallbackArgumentList::GetServerPtrArgument(
-    /* [out] */ PInterface * pServer)
+    /* [out] */ PInterface* server)
 {
-    if (!pServer) {
+    if (!server) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pServer = *(PInterface *)m_pParamBuf;
+    *server = *(PInterface *)mParamBuf;
     return NOERROR;
 }
 
 ECode CCallbackArgumentList::GetInt16Argument(
     /* [in] */ Int32 index,
-    /* [out] */ Int16 * pValue)
+    /* [out] */ Int16* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Int16);
+    return GetParamValue(index, value, CarDataType_Int16);
 }
 
 ECode CCallbackArgumentList::GetInt32Argument(
     /* [in] */ Int32 index,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Int32);
+    return GetParamValue(index, value, CarDataType_Int32);
 }
 
 ECode CCallbackArgumentList::GetInt64Argument(
     /* [in] */ Int32 index,
-    /* [out] */ Int64 * pValue)
+    /* [out] */ Int64* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Int64);
+    return GetParamValue(index, value, CarDataType_Int64);
 }
 
 ECode CCallbackArgumentList::GetByteArgument(
     /* [in] */ Int32 index,
-    /* [out] */ Byte * pValue)
+    /* [out] */ Byte* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Byte);
+    return GetParamValue(index, value, CarDataType_Byte);
 }
 
 ECode CCallbackArgumentList::GetFloatArgument(
     /* [in] */ Int32 index,
-    /* [out] */ Float * pValue)
+    /* [out] */ Float* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Float);
+    return GetParamValue(index, value, CarDataType_Float);
 }
 
 ECode CCallbackArgumentList::GetDoubleArgument(
     /* [in] */ Int32 index,
-    /* [out] */ Double * pValue)
+    /* [out] */ Double* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Double);
+    return GetParamValue(index, value, CarDataType_Double);
 }
 
-ECode CCallbackArgumentList::GetChar16Argument(
+ECode CCallbackArgumentList::GetCharArgument(
     /* [in] */ Int32 index,
-    /* [out] */ Char16 * pValue)
+    /* [out] */ Char32* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Char16);
-}
-
-ECode CCallbackArgumentList::GetChar32Argument(
-    /* [in] */ Int32 index,
-    /* [out] */ Char32 * pValue)
-{
-    return GetParamValue(index, pValue, CarDataType_Char32);
+    return GetParamValue(index, value, CarDataType_Char32);
 }
 
 ECode CCallbackArgumentList::GetStringArgument(
@@ -195,63 +188,63 @@ ECode CCallbackArgumentList::GetStringArgument(
 
 ECode CCallbackArgumentList::GetBooleanArgument(
     /* [in] */ Int32 index,
-    /* [out] */ Boolean * pValue)
+    /* [out] */ Boolean* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Boolean);
+    return GetParamValue(index, value, CarDataType_Boolean);
 }
 
 ECode CCallbackArgumentList::GetEMuidArgument(
     /* [in] */ Int32 index,
-    /* [out] */ EMuid ** ppValue)
+    /* [out] */ EMuid** value)
 {
-    return GetParamValue(index, ppValue, CarDataType_EMuid);
+    return GetParamValue(index, value, CarDataType_EMuid);
 }
 
 ECode CCallbackArgumentList::GetEGuidArgument(
     /* [in] */ Int32 index,
-    /* [out] */ EGuid ** ppValue)
+    /* [out] */ EGuid** value)
 {
-    return GetParamValue(index, ppValue, CarDataType_EGuid);
+    return GetParamValue(index, value, CarDataType_EGuid);
 }
 
 ECode CCallbackArgumentList::GetECodeArgument(
     /* [in] */ Int32 index,
-    /* [out] */ ECode * pValue)
+    /* [out] */ ECode* value)
 {
-    return GetParamValue(index, pValue, CarDataType_ECode);
+    return GetParamValue(index, value, CarDataType_ECode);
 }
 
 ECode CCallbackArgumentList::GetLocalPtrArgument(
     /* [in] */ Int32 index,
-    /* [out] */ LocalPtr * pValue)
+    /* [out] */ LocalPtr* value)
 {
-    return GetParamValue(index, pValue, CarDataType_LocalPtr);
+    return GetParamValue(index, value, CarDataType_LocalPtr);
 }
 
 ECode CCallbackArgumentList::GetEnumArgument(
     /* [in] */ Int32 index,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Enum);
+    return GetParamValue(index, value, CarDataType_Enum);
 }
 
 ECode CCallbackArgumentList::GetCarArrayArgument(
     /* [in] */ Int32 index,
-    /* [out] */ PCarQuintet * pValue)
+    /* [out] */ PCarQuintet* value)
 {
-    return GetParamValue(index, pValue, CarDataType_CarArray);
+    return GetParamValue(index, value, CarDataType_CarArray);
 }
 
 ECode CCallbackArgumentList::GetStructPtrArgument(
     /* [in] */ Int32 index,
-    /* [out] */ PVoid * pValue)
+    /* [out] */ PVoid* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Struct);
+    return GetParamValue(index, value, CarDataType_Struct);
 }
 
 ECode CCallbackArgumentList::GetObjectPtrArgument(
     /* [in] */ Int32 index,
-    /* [out] */ PInterface * pValue)
+    /* [out] */ PInterface* value)
 {
-    return GetParamValue(index, pValue, CarDataType_Interface);
+    return GetParamValue(index, value, CarDataType_Interface);
 }

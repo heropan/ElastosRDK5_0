@@ -5,10 +5,10 @@
 #include "CConstantInfo.h"
 
 CConstantInfo::CConstantInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ ConstDirEntry *pConstDirEntry)
-    : m_pCClsModule(pCClsModule)
-    , m_pConstDirEntry(pConstDirEntry)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ ConstDirEntry* constDirEntry)
+    : mClsModule(clsModule)
+    , mConstDirEntry(constDirEntry)
 {}
 
 UInt32 CConstantInfo::AddRef()
@@ -36,39 +36,39 @@ PInterface CConstantInfo::Probe(
 }
 
 ECode CConstantInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CConstantInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_pCClsModule->m_nBase, m_pConstDirEntry->pszName);
+    *name = adjustNameAddr(mClsModule->mBase, mConstDirEntry->pszName);
     return NOERROR;
 }
 
 ECode CConstantInfo::GetValue(
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    if (!pValue) {
+    if (!value) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_pConstDirEntry->type == TYPE_INTEGER32) {
-        *pValue = m_pConstDirEntry->v.intValue.nValue;
+    if (mConstDirEntry->type == TYPE_INTEGER32) {
+        *value = mConstDirEntry->v.intValue.nValue;
         return NOERROR;
     }
     else return E_INVALID_OPERATION;
 }
 
 ECode CConstantInfo::GetModuleInfo(
-    /* [out] */ IModuleInfo ** ppModuleInfo)
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    return m_pCClsModule->GetModuleInfo(ppModuleInfo);
+    return mClsModule->GetModuleInfo(moduleInfo);
 }

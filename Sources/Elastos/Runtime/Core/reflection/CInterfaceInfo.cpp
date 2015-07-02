@@ -9,8 +9,8 @@ CInterfaceInfo::CInterfaceInfo(
     /* [in] */ UInt32 uIndex)
 {
     m_pCClsModule = pCClsModule;
-    m_pClsMod = m_pCClsModule->m_pClsMod;
-    m_nBase =  m_pCClsModule->m_nBase;
+    m_pClsMod = m_pCClsModule->mClsMod;
+    m_nBase =  m_pCClsModule->mBase;
     m_pInterfaceDirEntry =
             getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
     m_pDesc = adjustInterfaceDescAddr(m_nBase, m_pInterfaceDirEntry->pDesc);

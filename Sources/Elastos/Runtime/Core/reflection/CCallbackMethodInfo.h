@@ -22,31 +22,31 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ UInt32 uEventNum,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ UInt32 eventNum,
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetParamCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllParamInfos(
-        /* [out] */ ArrayOf<IParamInfo *> * pParamInfos);
+        /* [out] */ ArrayOf<IParamInfo *>* paramInfos);
 
     CARAPI GetParamInfoByIndex(
         /* [in] */ Int32 index,
-        /* [out] */ IParamInfo ** ppParamInfo);
+        /* [out] */ IParamInfo** paramInfo);
 
     CARAPI GetParamInfoByName(
         /* [in] */ const String& name,
-        /* [out] */ IParamInfo ** ppParamInfo);
+        /* [out] */ IParamInfo** paramInfo);
 
     CARAPI AddCallback(
         /* [in] */ PInterface server,
@@ -59,16 +59,16 @@ public:
     CARAPI CreateDelegateProxy(
         /* [in] */ PVoid targetObject,
         /* [in] */ PVoid targetMethod,
-        /* [in] */ ICallbackInvocation * pCallbackInvocation,
-        /* [out] */ IDelegateProxy ** ppDelegateProxy);
+        /* [in] */ ICallbackInvocation* callbackInvocation,
+        /* [out] */ IDelegateProxy** delegateProxy);
 
     CARAPI CreateCBArgumentList(
-        /* [out] */ ICallbackArgumentList ** ppCBArgumentList);
+        /* [out] */ ICallbackArgumentList** cbArgumentList);
 
 private:
-    AutoPtr<CMethodInfo> m_pMethodInfo;
-    UInt32               m_uEventNum;
-    MethodDescriptor    *m_pMethodDescriptor;
+    AutoPtr<CMethodInfo>    mMethodInfo;
+    UInt32                  mEventNum;
+    MethodDescriptor*       mMethodDescriptor;
 };
 
 #endif // __CCALLBACKMETHODINFO_H__

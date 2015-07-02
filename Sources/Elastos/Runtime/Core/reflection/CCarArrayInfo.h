@@ -14,7 +14,7 @@ class CCarArrayInfo
 public:
     CCarArrayInfo(
         /* [in] */ CarDataType quintetType,
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
+        /* [in] */ IDataTypeInfo* elementTypeInfo,
         /* [in] */ CarDataType dataType = CarDataType_Struct);
 
     CARAPI_(PInterface) Probe(
@@ -25,38 +25,36 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetSize(
-        /* [out] */ MemorySize * pSize);
+        /* [out] */ MemorySize* size);
 
     CARAPI GetDataType(
-        /* [out] */ CarDataType * pDataType);
+        /* [out] */ CarDataType* dataType);
 
     CARAPI GetElementTypeInfo(
-        /* [out] */ IDataTypeInfo ** ppElementTypeInfo);
+        /* [out] */ IDataTypeInfo** elementTypeInfo);
 
     CARAPI CreateVariable(
         /* [in] */ Int32 capacity,
-        /* [out] */ IVariableOfCarArray ** ppVariable);
+        /* [out] */ IVariableOfCarArray** variable);
 
     CARAPI CreateVariableBox(
         /* [in] */ PCarQuintet variableDescriptor,
-        /* [out] */ IVariableOfCarArray ** ppVariable);
+        /* [out] */ IVariableOfCarArray** variable);
 
     CARAPI GetMaxAlignSize(
-        /* [out] */ MemorySize * pAlignSize);
+        /* [out] */ MemorySize* alignSize);
 
 private:
-    CarQuintetFlag         m_carQuintetFlag;
-
-    AutoPtr<IDataTypeInfo> m_pElementTypeInfo;
-    CarDataType            m_elementDataType;
-    CarDataType            m_quintetType;
+    AutoPtr<IDataTypeInfo>  mElementTypeInfo;
+    CarDataType             mElementDataType;
+    CarDataType             mQuintetType;
 };
 
 #endif // __CCARARRAYINFO_H__

@@ -107,8 +107,8 @@ CarDataType GetCarDataType(CARDataType type)
 
 Boolean IsSysAlaisType(const CClsModule *pCClsModule, UInt32 uIndex)
 {
-    Int32 nBase = pCClsModule->m_nBase;
-    CLSModule *pModule = pCClsModule->m_pClsMod;
+    Int32 nBase = pCClsModule->mBase;
+    CLSModule *pModule = pCClsModule->mClsMod;
     AliasDirEntry* pAliasDir = getAliasDirAddr(nBase, pModule->ppAliasDir, uIndex);
     char* pszNameSpace = adjustNameAddr(nBase, pAliasDir->pszNameSpace);
     return (pszNameSpace) && !strcmp(pszNameSpace, "systypes");
@@ -122,8 +122,8 @@ void _GetOriginalType(const CClsModule *pCClsModule,
 
     AliasDirEntry* pAliasDir = NULL;
     while (pSrc->type == Type_alias) {
-        pAliasDir = getAliasDirAddr(pCClsModule->m_nBase,
-            pCClsModule->m_pClsMod->ppAliasDir, pSrc->sIndex);
+        pAliasDir = getAliasDirAddr(pCClsModule->mBase,
+            pCClsModule->mClsMod->ppAliasDir, pSrc->sIndex);
         pSrc = &pAliasDir->type;
         pDest->nPointer += pSrc->nPointer;
         pDest->bUnsigned |= pSrc->bUnsigned;
@@ -138,7 +138,7 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
 {
     UInt32 uSize = 0;
 
-    CLSModule *pModule = pCClsModule->m_pClsMod;
+    CLSModule *pModule = pCClsModule->mClsMod;
     if (pTypeDesc->type == Type_alias) {
         TypeDescriptor pOrgTypeDesc;
         _GetOriginalType(pCClsModule, pTypeDesc, &pOrgTypeDesc);
@@ -151,7 +151,7 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
 
     ArrayDirEntry* pArrayDir = NULL;
     StructDirEntry* pStructDir = NULL;
-    Int32 nBase = pCClsModule->m_nBase;
+    Int32 nBase = pCClsModule->mBase;
     switch (pTypeDesc->type) {
         case Type_Char16:
             uSize = sizeof(Char16);

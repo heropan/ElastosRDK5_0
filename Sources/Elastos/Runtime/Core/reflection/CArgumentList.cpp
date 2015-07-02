@@ -7,16 +7,16 @@
 #include "CConstructorInfo.h"
 
 CArgumentList::CArgumentList()
-    : m_pParamBuf(NULL)
-    , m_pParamElem(NULL)
-    , m_uParamCount(0)
-    , m_uParamBufSize(0)
-    , m_bMethodInfo(FALSE)
+    : mParamBuf(NULL)
+    , mParamElem(NULL)
+    , mParamCount(0)
+    , mParamBufSize(0)
+    , mIsMethodInfo(FALSE)
 {}
 
 CArgumentList::~CArgumentList()
 {
-    if (m_pParamBuf) free(m_pParamBuf);
+    if (mParamBuf) free(mParamBuf);
 }
 
 UInt32 CArgumentList::AddRef()
@@ -57,19 +57,19 @@ ECode CArgumentList::Init(
     /* [in] */ UInt32 uParamBufSize,
     /* [in] */ Boolean bMethodInfo)
 {
-    m_pParamElem = pParamElem;
-    m_uParamCount = uParamCount;
+    mParamElem = pParamElem;
+    mParamCount = uParamCount;
 
-    m_pParamBuf = (PByte)malloc(uParamBufSize);
-    if (m_pParamBuf == NULL) {
+    mParamBuf = (PByte)malloc(uParamBufSize);
+    if (mParamBuf == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
-    m_uParamBufSize = uParamBufSize;
-    memset(m_pParamBuf, 0, uParamBufSize);
-    m_pFunctionInfo = pFunctionInfo;
+    mParamBufSize = uParamBufSize;
+    memset(mParamBuf, 0, uParamBufSize);
+    mFunctionInfo = pFunctionInfo;
 
-    m_bMethodInfo = bMethodInfo;
+    mIsMethodInfo = bMethodInfo;
 
     return NOERROR;
 }
@@ -80,7 +80,7 @@ ECode CArgumentList::GetFunctionInfo(
     if (!ppFunctionInfo) {
         return E_INVALID_ARGUMENT;
     }
-    *ppFunctionInfo = m_pFunctionInfo;
+    *ppFunctionInfo = mFunctionInfo;
     (*ppFunctionInfo)->AddRef();
     return NOERROR;
 }
@@ -93,39 +93,39 @@ ECode CArgumentList::SetParamValue(
     /* [in] */ Int32 iPointer)
 {
     if (type == CarDataType_CarArray
-        && m_pParamElem[index].type == CarDataType_ArrayOf) {
-        type = m_pParamElem[index].type;
+        && mParamElem[index].type == CarDataType_ArrayOf) {
+        type = mParamElem[index].type;
     }
 
-    if (index < 0 || index >= (Int32)m_uParamCount
-        || (m_pParamElem[index].attrib != attrib)
-        || (type != m_pParamElem[index].type)
+    if (index < 0 || index >= (Int32)mParamCount
+        || (mParamElem[index].attrib != attrib)
+        || (type != mParamElem[index].type)
         || (type != CarDataType_LocalPtr
-        && m_pParamElem[index].pointer != iPointer)) {
+        && mParamElem[index].pointer != iPointer)) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pParamBuf || m_pParamElem[index].pos
-        + m_pParamElem[index].size > m_uParamBufSize) {
+    if (!mParamBuf || mParamElem[index].pos
+        + mParamElem[index].size > mParamBufSize) {
         return E_INVALID_OPERATION;
     }
 
-    if (m_pParamElem[index].size == 1) {
-        *(Byte *)(m_pParamBuf + m_pParamElem[index].pos) = *(Byte *)pParam;
+    if (mParamElem[index].size == 1) {
+        *(Byte *)(mParamBuf + mParamElem[index].pos) = *(Byte *)pParam;
     }
-    else if (m_pParamElem[index].size == 2) {
-        *(UInt16 *)(m_pParamBuf + m_pParamElem[index].pos) = *(UInt16 *)pParam;
+    else if (mParamElem[index].size == 2) {
+        *(UInt16 *)(mParamBuf + mParamElem[index].pos) = *(UInt16 *)pParam;
     }
-    else if (m_pParamElem[index].size == 4) {
+    else if (mParamElem[index].size == 4) {
         if (type == CarDataType_String) {
-            *(String **)(m_pParamBuf + m_pParamElem[index].pos) = (String *)pParam;
+            *(String **)(mParamBuf + mParamElem[index].pos) = (String *)pParam;
         }
         else {
-            *(UInt32 *)(m_pParamBuf + m_pParamElem[index].pos) = *(UInt32 *)pParam;
+            *(UInt32 *)(mParamBuf + mParamElem[index].pos) = *(UInt32 *)pParam;
         }
     }
-    else if (m_pParamElem[index].size == 8) {
-        *(UInt64 *)(m_pParamBuf + m_pParamElem[index].pos) = *(UInt64 *)pParam;
+    else if (mParamElem[index].size == 8) {
+        *(UInt64 *)(mParamBuf + mParamElem[index].pos) = *(UInt64 *)pParam;
     }
     else {
         return E_INVALID_OPERATION;
@@ -178,15 +178,7 @@ ECode CArgumentList::SetInputArgumentOfDouble(
     return SetParamValue(index, &value, CarDataType_Double, ParamIOAttribute_In);
 }
 
-ECode CArgumentList::SetInputArgumentOfChar16(
-    /* [in] */ Int32 index,
-    /* [in] */ Char16 value)
-{
-    UInt32 nParam = value;
-    return SetParamValue(index, &nParam, CarDataType_Char16, ParamIOAttribute_In);
-}
-
-ECode CArgumentList::SetInputArgumentOfChar32(
+ECode CArgumentList::SetInputArgumentOfChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -273,21 +265,21 @@ ECode CArgumentList::SetInputArgumentOfObjectPtr(
     /* [in] */ Int32 index,
     /* [in] */ PInterface value)
 {
-    if (CarDataType_Interface != m_pParamElem[index].type) {
+    if (CarDataType_Interface != mParamElem[index].type) {
         return E_INVALID_ARGUMENT;
     }
 
     if (value) {
         CMethodInfo *pMethodInfo = NULL;
         ECode ec = NOERROR;
-        if (m_bMethodInfo) {
-            pMethodInfo = (CMethodInfo *)m_pFunctionInfo.Get();
+        if (mIsMethodInfo) {
+            pMethodInfo = (CMethodInfo *)mFunctionInfo.Get();
         }
         else {
-            pMethodInfo = ((CConstructorInfo *)m_pFunctionInfo.Get())->m_pMethodInfo;
+            pMethodInfo = ((CConstructorInfo *)mFunctionInfo.Get())->mMethodInfo;
         }
 
-        Int32 nBase = pMethodInfo->m_pCClsModule->m_nBase;
+        Int32 nBase = pMethodInfo->m_pCClsModule->mBase;
         TypeDescriptor *pTypeDesc = &(getParamDescAddr(nBase,
                 pMethodInfo->m_pMethodDescriptor->ppParams, index)->type);
         if (pTypeDesc->type == Type_alias) {
@@ -354,15 +346,7 @@ ECode CArgumentList::SetOutputArgumentOfDoublePtr(
         ParamIOAttribute_CallerAllocOut, 1);
 }
 
-ECode CArgumentList::SetOutputArgumentOfChar16Ptr(
-    /* [in] */ Int32 index,
-    /* [out] */ Char16 * pValue)
-{
-    return SetParamValue(index, &pValue, CarDataType_Char16,
-        ParamIOAttribute_CallerAllocOut, 1);
-}
-
-ECode CArgumentList::SetOutputArgumentOfChar32Ptr(
+ECode CArgumentList::SetOutputArgumentOfCharPtr(
     /* [in] */ Int32 index,
     /* [out] */ Char32 * pValue)
 {

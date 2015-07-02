@@ -6,8 +6,8 @@
 #include "CDelegateProxy.h"
 
 CCallbackMethodInfo::CCallbackMethodInfo()
-    : m_uEventNum(0)
-    , m_pMethodDescriptor(NULL)
+    : mEventNum(0)
+    , mMethodDescriptor(NULL)
 {}
 
 UInt32 CCallbackMethodInfo::AddRef()
@@ -38,62 +38,62 @@ PInterface  CCallbackMethodInfo::Probe(
 }
 
 ECode CCallbackMethodInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCallbackMethodInfo::Init(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ UInt32 uEventNum,
-    /* [in] */ MethodDescriptor *pMethodDescriptor,
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ UInt32 eventNum,
+    /* [in] */ MethodDescriptor* methodDescriptor,
     /* [in] */ UInt32 uIndex)
 {
-    m_pMethodDescriptor = pMethodDescriptor;
-    m_uEventNum = uEventNum;
+    mMethodDescriptor = methodDescriptor;
+    mEventNum = eventNum;
 
-    m_pMethodInfo = NULL;
-    return g_objInfoList.AcquireMethodInfo(pCClsModule, pMethodDescriptor,
-        uIndex, (IInterface **)&m_pMethodInfo);
+    mMethodInfo = NULL;
+    return g_objInfoList.AcquireMethodInfo(clsModule, methodDescriptor,
+            uIndex, (IInterface **)&mMethodInfo);
 }
 
 ECode CCallbackMethodInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_pMethodInfo->m_pCClsModule->m_nBase,
-                    m_pMethodDescriptor->pszName);
+    *name = adjustNameAddr(mMethodInfo->m_pCClsModule->mBase,
+            mMethodDescriptor->pszName);
     return NOERROR;
 }
 
 ECode CCallbackMethodInfo::GetParamCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    return m_pMethodInfo->GetParamCount(pCount);
+    return mMethodInfo->GetParamCount(count);
 }
 
 ECode CCallbackMethodInfo::GetAllParamInfos(
-    /* [out] */ ArrayOf<IParamInfo *> * pParamInfos)
+    /* [out] */ ArrayOf<IParamInfo *>* paramInfos)
 {
-    return m_pMethodInfo->GetAllParamInfos(pParamInfos);
+    return mMethodInfo->GetAllParamInfos(paramInfos);
 }
 
 ECode CCallbackMethodInfo::GetParamInfoByIndex(
     /* [in] */ Int32 index,
-    /* [out] */ IParamInfo ** ppParamInfo)
+    /* [out] */ IParamInfo** paramInfo)
 {
-    return m_pMethodInfo->GetParamInfoByIndex(index, ppParamInfo);
+    return mMethodInfo->GetParamInfoByIndex(index, paramInfo);
 }
 
 ECode CCallbackMethodInfo::GetParamInfoByName(
     /* [in] */ const String& name,
-    /* [out] */ IParamInfo ** ppParamInfo)
+    /* [out] */ IParamInfo** paramInfo)
 {
-    return m_pMethodInfo->GetParamInfoByName(name, ppParamInfo);
+    return mMethodInfo->GetParamInfoByName(name, paramInfo);
 }
 
 ECode CCallbackMethodInfo::AddCallback(
@@ -104,10 +104,10 @@ ECode CCallbackMethodInfo::AddCallback(
         return E_INVALID_ARGUMENT;
     }
 
-    AutoPtr<ICallbackSink> pSink;
-    ECode ec = _CObject_AcquireCallbackSink(server, (ICallbackSink**)&pSink);
+    AutoPtr<ICallbackSink> sink;
+    ECode ec = _CObject_AcquireCallbackSink(server, (ICallbackSink**)&sink);
     if (FAILED(ec)) return ec;
-    return pSink->AddCallback(m_uEventNum, handler);
+    return sink->AddCallback(mEventNum, handler);
 }
 
 ECode CCallbackMethodInfo::RemoveCallback(
@@ -118,35 +118,35 @@ ECode CCallbackMethodInfo::RemoveCallback(
         return E_INVALID_ARGUMENT;
     }
 
-    AutoPtr<ICallbackSink> pSink;
-    ECode ec = _CObject_AcquireCallbackSink(server, (ICallbackSink**)&pSink);
+    AutoPtr<ICallbackSink> sink;
+    ECode ec = _CObject_AcquireCallbackSink(server, (ICallbackSink**)&sink);
     if (FAILED(ec)) return ec;
-    return pSink->RemoveCallback(m_uEventNum, handler);
+    return sink->RemoveCallback(mEventNum, handler);
 }
 
 ECode CCallbackMethodInfo::CreateCBArgumentList(
-    /* [out] */ ICallbackArgumentList ** ppCBArgumentList)
+    /* [out] */ ICallbackArgumentList** cbArgumentList)
 {
-    return m_pMethodInfo->CreateCBArgumentList(this, ppCBArgumentList);
+    return mMethodInfo->CreateCBArgumentList(this, cbArgumentList);
 }
 
 ECode CCallbackMethodInfo::CreateDelegateProxy(
     /* [in] */ PVoid targetObject,
     /* [in] */ PVoid targetMethod,
-    /* [in] */ ICallbackInvocation * pCallbackInvocation,
-    /* [out] */ IDelegateProxy ** ppDelegateProxy)
+    /* [in] */ ICallbackInvocation* callbackInvocation,
+    /* [out] */ IDelegateProxy** delegateProxy)
 {
-    if (!pCallbackInvocation || !ppDelegateProxy) {
+    if (!callbackInvocation || !delegateProxy) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppDelegateProxy = new CDelegateProxy(this, pCallbackInvocation,
-        targetObject, targetMethod);
-    if (!*ppDelegateProxy) {
+    *delegateProxy = new CDelegateProxy(this, callbackInvocation,
+            targetObject, targetMethod);
+    if (!*delegateProxy) {
         return E_OUT_OF_MEMORY;
     }
 
-    (*ppDelegateProxy)->AddRef();
+    (*delegateProxy)->AddRef();
 
     return NOERROR;
 }

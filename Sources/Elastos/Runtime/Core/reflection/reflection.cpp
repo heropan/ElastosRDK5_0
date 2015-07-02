@@ -111,7 +111,7 @@ ELAPI _CObject_ReflectClassInfo(
 
     ClassDirEntry* pClassDir = NULL;
     ClassDescriptor *pClsDesc = NULL;
-    Int32 nBase = pModuleInfo->m_pCClsModule->m_nBase;
+    Int32 nBase = pModuleInfo->m_pCClsModule->mBase;
 
     *ppClassInfo = NULL;
     for (int i = 0; i < pModuleInfo->m_pClsMod->cClasses; i++) {
@@ -161,7 +161,7 @@ ELAPI _CObject_ReflectInterfaceInfo(
     InterfaceDirEntry* pIFDir = NULL;
     InterfaceDescriptor *pIFDesc = NULL;
     unsigned short   sIndex = 0;
-    Int32 nBase = pModuleInfo->m_pCClsModule->m_nBase;
+    Int32 nBase = pModuleInfo->m_pCClsModule->mBase;
 
     *ppInterfaceInfo = NULL;
     for (int i = 0; i < pModuleInfo->m_pClsMod->cClasses; i++) {

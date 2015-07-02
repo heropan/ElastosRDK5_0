@@ -32,139 +32,139 @@ PInterface CConstructorInfo::Probe(
 }
 
 ECode CConstructorInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CConstructorInfo::Init(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ MethodDescriptor *pMethodDescriptor,
-    /* [in] */ UInt32 uIndex,
-    /* [in] */ ClassID *pClsId)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ MethodDescriptor* methodDescriptor,
+    /* [in] */ UInt32 index,
+    /* [in] */ ClassID* clsId)
 {
-    m_nOutParamIndex = pMethodDescriptor->cParams - 1;
+    mOutParamIndex = methodDescriptor->cParams - 1;
 
-    m_instClsId.pUunm = m_szUrn2;
-    m_clsId.pUunm = m_szUrn;
+    mInstClsId.pUunm = mUrn2;
+    mClsId.pUunm = mUrn;
 
-    m_clsId.clsid =  pClsId->clsid;
-    strcpy(m_clsId.pUunm, pClsId->pUunm);
+    mClsId.clsid =  clsId->clsid;
+    strcpy(mClsId.pUunm, clsId->pUunm);
 
-    m_pMethodInfo = NULL;
-    return g_objInfoList.AcquireMethodInfo(pCClsModule, pMethodDescriptor,
-                                          uIndex, (IInterface **)&m_pMethodInfo);
+    mMethodInfo = NULL;
+    return g_objInfoList.AcquireMethodInfo(clsModule, methodDescriptor,
+            index, (IInterface **)&mMethodInfo);
 }
 
 ECode CConstructorInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    return m_pMethodInfo->GetName(pName);
+    return mMethodInfo->GetName(name);
 }
 
 ECode CConstructorInfo::GetParamCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    ECode ec = m_pMethodInfo->GetParamCount(pCount);
-    if (ec == NOERROR && *pCount) {
-        *pCount -= 1;
+    ECode ec = mMethodInfo->GetParamCount(count);
+    if (ec == NOERROR && *count) {
+        *count -= 1;
     }
     return ec;
 }
 
 ECode CConstructorInfo::GetAllParamInfos(
-    /* [out] */ ArrayOf<IParamInfo *> * pParamInfos)
+    /* [out] */ ArrayOf<IParamInfo *>* paramInfos)
 {
-    return m_pMethodInfo->GetAllParamInfos(pParamInfos);
+    return mMethodInfo->GetAllParamInfos(paramInfos);
 }
 
 ECode CConstructorInfo::GetParamInfoByIndex(
     /* [in] */ Int32 index,
-    /* [out] */ IParamInfo ** ppParamInfo)
+    /* [out] */ IParamInfo** paramInfo)
 {
-    if (!ppParamInfo || index < 0) {
+    if (!paramInfo || index < 0) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (index >= m_nOutParamIndex) {
+    if (index >= mOutParamIndex) {
         return E_DOES_NOT_EXIST;
     }
 
-    return m_pMethodInfo->GetParamInfoByIndex(index, ppParamInfo);
+    return mMethodInfo->GetParamInfoByIndex(index, paramInfo);
 }
 
 ECode CConstructorInfo::GetParamInfoByName(
     /* [in] */ const String& name,
-    /* [out] */ IParamInfo ** ppParamInfo)
+    /* [out] */ IParamInfo** paramInfo)
 {
-    return m_pMethodInfo->GetParamInfoByName(name, ppParamInfo);
+    return mMethodInfo->GetParamInfoByName(name, paramInfo);
 }
 
 ECode CConstructorInfo::CreateArgumentList(
-    /* [out] */ IArgumentList ** ppArgumentList)
+    /* [out] */ IArgumentList** argumentList)
 {
-    Int32 iCount = 0;
-    ECode ec = GetParamCount(&iCount);
+    Int32 count = 0;
+    ECode ec = GetParamCount(&count);
     if (FAILED(ec)) return ec;
 
-    if (!iCount) {
+    if (!count) {
         return E_INVALID_OPERATION;
     }
 
-    return m_pMethodInfo->CreateFunctionArgumentList(this, FALSE, ppArgumentList);
+    return mMethodInfo->CreateFunctionArgumentList(this, FALSE, argumentList);
 }
 
 ECode CConstructorInfo::CreateObjInRgm(
     /* [in] */ PRegime rgm,
-    /* [in] */ IArgumentList * pArgumentList,
-    /* [out] */ PInterface * pObject)
+    /* [in] */ IArgumentList* inArgumentList,
+    /* [out] */ PInterface* object)
 {
-    AutoPtr<IInterface> pClsObject;
-    Int32 iCount = 0;
-    ECode ec = GetParamCount(&iCount);
+    AutoPtr<IInterface> clsObject;
+    Int32 count = 0;
+    ECode ec = GetParamCount(&count);
     if (FAILED(ec)) return ec;
 
-    AutoPtr<IArgumentList> argumentList = pArgumentList;
+    AutoPtr<IArgumentList> argumentList = inArgumentList;
     if (argumentList == NULL) {
-        if (iCount) {
+        if (count) {
             return E_INVALID_ARGUMENT;
         }
         else {
-            ec = m_pMethodInfo->CreateFunctionArgumentList(this, FALSE, (IArgumentList**)&argumentList);
+            ec = mMethodInfo->CreateFunctionArgumentList(this, FALSE, (IArgumentList**)&argumentList);
             if (FAILED(ec)) return ec;
         }
     }
 
-    ec = _CObject_AcquireClassFactory(m_instClsId, rgm, EIID_IClassObject, (IInterface**)&pClsObject);
+    ec = _CObject_AcquireClassFactory(mInstClsId, rgm, EIID_IClassObject, (IInterface**)&clsObject);
     if (FAILED(ec)) return ec;
-    ec = argumentList->SetOutputArgumentOfObjectPtrPtr(m_nOutParamIndex, pObject);
+    ec = argumentList->SetOutputArgumentOfObjectPtrPtr(mOutParamIndex, object);
     if (SUCCEEDED(ec)) {
-        ec = m_pMethodInfo->Invoke(pClsObject, argumentList);
+        ec = mMethodInfo->Invoke(clsObject, argumentList);
     }
 
     return ec;
 }
 
 ECode CConstructorInfo::CreateObject(
-    /* [in] */ IArgumentList * pArgumentList,
-    /* [out] */ PInterface * pObject)
+    /* [in] */ IArgumentList* argumentList,
+    /* [out] */ PInterface* object)
 {
-    if (!pObject) {
+    if (!object) {
         return E_INVALID_ARGUMENT;
     }
 
-    return CreateObjInRgm(RGM_SAME_DOMAIN, pArgumentList, pObject);
+    return CreateObjInRgm(RGM_SAME_DOMAIN, argumentList, object);
 }
 
 ECode CConstructorInfo::CreateObjectInRegime(
     /* [in] */ PRegime rgm,
-    /* [in] */ IArgumentList * pArgumentList,
-    /* [out] */ PInterface * pObject)
+    /* [in] */ IArgumentList* argumentList,
+    /* [out] */ PInterface* object)
 {
-    if (IS_INVALID_REGIME(rgm) || !pObject) {
+    if (IS_INVALID_REGIME(rgm) || !object) {
         return E_INVALID_ARGUMENT;
     }
 
-    return CreateObjInRgm(rgm, pArgumentList, pObject);
+    return CreateObjInRgm(rgm, argumentList, object);
 }

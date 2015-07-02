@@ -11,10 +11,10 @@ class CClsModule : public ElLightRefBase
 {
 public:
     CClsModule(
-        /* [in] */ CLSModule *pClsMod,
-        /* [in] */ Boolean bAllocedClsMod,
+        /* [in] */ CLSModule* clsMod,
+        /* [in] */ Boolean allocedClsMod,
         /* [in] */ const String& path,
-        /* [in] */ Void *pIModule);
+        /* [in] */ Void* module);
 
     ~CClsModule();
 
@@ -23,23 +23,23 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI InitOrgType();
 
     CARAPI AliasToOriginal(
-        /* [in] */ TypeDescriptor *pTypeDype,
-        /* [out] */ TypeDescriptor **ppOrgTypeDesc);
+        /* [in] */ TypeDescriptor* typeDype,
+        /* [out] */ TypeDescriptor** orgTypeDesc);
 
 public:
-    CLSModule*      m_pClsMod;
-    Boolean         m_bAllocedClsMode;
-    Int32           m_nBase;
+    CLSModule*      mClsMod;
+    Boolean         mAllocedClsMode;
+    Int32           mBase;
 
 private:
-    TypeAliasDesc  *m_pTypeAliasList;
-    String          m_sbPath;
-    Void           *m_pIModule;
+    TypeAliasDesc*  mTypeAliasList;
+    String          mPath;
+    Void*           mModule;
 };
 
 #endif // __CCLSMODULE_H__

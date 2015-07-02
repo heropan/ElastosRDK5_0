@@ -24,57 +24,53 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init(
-        /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
-        /* [in] */ ParmElement *pParamElem,
-        /* [in] */ UInt32 uParamCount,
-        /* [in] */ UInt32 uParamBufSize);
+        /* [in] */ ICallbackMethodInfo* callbackMethodInfo,
+        /* [in] */ ParmElement* paramElem,
+        /* [in] */ UInt32 paramCount,
+        /* [in] */ UInt32 paramBufSize);
 
     CARAPI GetCallbackMethodInfo(
-        /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo);
+        /* [out] */ ICallbackMethodInfo** callbackMethodInfo);
 
     CARAPI GetServerPtrArgument(
-        /* [out] */ PInterface * pServer);
+        /* [out] */ PInterface* server);
 
     CARAPI GetParamValue(
         /* [in] */ Int32 index,
-        /* [in] */ PVoid pParam,
+        /* [in] */ PVoid param,
         /* [in] */ CarDataType type);
 
     CARAPI GetInt16Argument(
         /* [in] */ Int32 index,
-        /* [out] */ Int16 * pValue);
+        /* [out] */ Int16* value);
 
     CARAPI GetInt32Argument(
         /* [in] */ Int32 index,
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
     CARAPI GetInt64Argument(
         /* [in] */ Int32 index,
-        /* [out] */ Int64 * pValue);
+        /* [out] */ Int64* value);
 
     CARAPI GetByteArgument(
         /* [in] */ Int32 index,
-        /* [out] */ Byte * pValue);
+        /* [out] */ Byte* value);
 
     CARAPI GetFloatArgument(
         /* [in] */ Int32 index,
-        /* [out] */ Float * pValue);
+        /* [out] */ Float* value);
 
     CARAPI GetDoubleArgument(
         /* [in] */ Int32 index,
-        /* [out] */ Double * pValue);
+        /* [out] */ Double* value);
 
-    CARAPI GetChar16Argument(
+    CARAPI GetCharArgument(
         /* [in] */ Int32 index,
-        /* [out] */ Char16 * pValue);
-
-    CARAPI GetChar32Argument(
-        /* [in] */ Int32 index,
-        /* [out] */ Char32 * pValue);
+        /* [out] */ Char32* value);
 
     CARAPI GetStringArgument(
         /* [in] */ Int32 index,
@@ -82,48 +78,48 @@ public:
 
     CARAPI GetBooleanArgument(
         /* [in] */ Int32 index,
-        /* [out] */ Boolean * pValue);
+        /* [out] */ Boolean* value);
 
     CARAPI GetEMuidArgument(
         /* [in] */ Int32 index,
-        /* [out] */ EMuid ** ppValue);
+        /* [out] */ EMuid** value);
 
     CARAPI GetEGuidArgument(
         /* [in] */ Int32 index,
-        /* [out] */ EGuid ** ppValue);
+        /* [out] */ EGuid** value);
 
     CARAPI GetECodeArgument(
         /* [in] */ Int32 index,
-        /* [out] */ ECode * pValue);
+        /* [out] */ ECode* value);
 
     CARAPI GetLocalPtrArgument(
         /* [in] */ Int32 index,
-        /* [out] */ LocalPtr * pValue);
+        /* [out] */ LocalPtr* value);
 
     CARAPI GetEnumArgument(
         /* [in] */ Int32 index,
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
     CARAPI GetCarArrayArgument(
         /* [in] */ Int32 index,
-        /* [out] */ PCarQuintet * pValue);
+        /* [out] */ PCarQuintet* value);
 
     CARAPI GetStructPtrArgument(
         /* [in] */ Int32 index,
-        /* [out] */ PVoid * pValue);
+        /* [out] */ PVoid* value);
 
     CARAPI GetObjectPtrArgument(
         /* [in] */ Int32 index,
-        /* [out] */ PInterface * pValue);
+        /* [out] */ PInterface* value);
 
 public:
-    Byte  *m_pParamBuf;
-    UInt32 m_uParamBufSize;
+    Byte*                           mParamBuf;
+    UInt32                          mParamBufSize;
 
 private:
-    ParmElement                  *m_pParamElem;
-    UInt32                        m_uParamCount;
-    AutoPtr<ICallbackMethodInfo>  m_pCallbackMethodInfo;
+    ParmElement*                    mParamElem;
+    UInt32                          mParamCount;
+    AutoPtr<ICallbackMethodInfo>    mCallbackMethodInfo;
 };
 
 #endif // __CCALLBACKARGLIST_H__

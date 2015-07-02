@@ -320,11 +320,7 @@ library
             [in] Int32 index,
             [in] Double value);
 
-        SetInputArgumentOfChar16(
-            [in] Int32 index,
-            [in] Char16 value);
-
-        SetInputArgumentOfChar32(
+        SetInputArgumentOfChar(
             [in] Int32 index,
             [in] Char32 value);
 
@@ -396,11 +392,7 @@ library
             [in] Int32 index,
             [out] Double* value);
 
-        SetOutputArgumentOfChar16Ptr(
-            [in] Int32 index,
-            [out] Char16* value);
-
-        SetOutputArgumentOfChar32Ptr(
+        SetOutputArgumentOfCharPtr(
             [in] Int32 index,
             [out] Char32* value);
 
@@ -1256,11 +1248,7 @@ library
             [in] Int32 index,
             [out] Double* value);
 
-        GetChar16Argument(
-            [in] Int32 index,
-            [out] Char16* value);
-
-        GetChar32Argument(
+        GetCharArgument(
             [in] Int32 index,
             [out] Char32* value);
 

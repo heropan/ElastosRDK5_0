@@ -803,9 +803,9 @@ ECode CObjInfoList::AcquireInterfaceInfo(
         return NOERROR;
     }
 
-    InterfaceDirEntry* pIFDir = getInterfaceDirAddr(pCClsModule->m_nBase,
-            pCClsModule->m_pClsMod->ppInterfaceDir, uIndex);
-    EIID iid = adjustInterfaceDescAddr(pCClsModule->m_nBase, pIFDir->pDesc)->iid;
+    InterfaceDirEntry* pIFDir = getInterfaceDirAddr(pCClsModule->mBase,
+            pCClsModule->mClsMod->ppInterfaceDir, uIndex);
+    EIID iid = adjustInterfaceDescAddr(pCClsModule->mBase, pIFDir->pDesc)->iid;
 
     IInterface **ppObj = m_hIFInfos.Get(&iid);
     if (!ppObj) {
@@ -924,7 +924,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     }
 
     ECode ec = NOERROR;
-    CLSModule *pClsMod = pCClsModule->m_pClsMod;
+    CLSModule *pClsMod = pCClsModule->mClsMod;
     Int32 pointer = pTypeDesc->nPointer;
     if (pTypeDesc->type == Type_alias) {
         ec = pCClsModule->AliasToOriginal(pTypeDesc, &pTypeDesc);
@@ -958,8 +958,8 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     }
     //StructInfo
     else if (type == CarDataType_Struct) {
-        StructDirEntry* pStructDir = getStructDirAddr(pCClsModule->m_nBase,
-                pCClsModule->m_pClsMod->ppStructDir, pTypeDesc->sIndex);
+        StructDirEntry* pStructDir = getStructDirAddr(pCClsModule->mBase,
+                pCClsModule->mClsMod->ppStructDir, pTypeDesc->sIndex);
         ec = AcquireStaticStructInfo(pCClsModule,
                 pStructDir,
                 (IInterface **)ppDataTypeInfo);
@@ -972,7 +972,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     }
     //EnumInfo
     else if (type == CarDataType_Enum) {
-        EnumDirEntry* pEnumDir = getEnumDirAddr(pCClsModule->m_nBase,
+        EnumDirEntry* pEnumDir = getEnumDirAddr(pCClsModule->mBase,
                 pClsMod->ppEnumDir, pTypeDesc->sIndex);
         ec = AcquireStaticEnumInfo(pCClsModule,
                 pEnumDir,
@@ -981,7 +981,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     //CppVectorInfo
     else if (type == CarDataType_CppVector) {
         AutoPtr<IDataTypeInfo> pElemInfo;
-        ArrayDirEntry* pArrayDir = getArrayDirAddr(pCClsModule->m_nBase,
+        ArrayDirEntry* pArrayDir = getArrayDirAddr(pCClsModule->mBase,
                 pClsMod->ppArrayDir, pTypeDesc->sIndex);
         Int32 length = pArrayDir->nElements;
         TypeDescriptor *pType = &pArrayDir->type;
@@ -1187,7 +1187,7 @@ ECode CObjInfoList::AcquireCarArrayElementTypeInfo(
     switch (pTypeDesc->type) {
         case Type_ArrayOf:
             return AcquireDataTypeInfo(pCClsModule,
-                adjustNestedTypeAddr(pCClsModule->m_nBase, pTypeDesc->pNestedType),
+                adjustNestedTypeAddr(pCClsModule->mBase, pTypeDesc->pNestedType),
                 ppElementTypeInfo);
         default:
             return E_INVALID_OPERATION;

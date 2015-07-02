@@ -29,10 +29,10 @@ CMethodInfo::CMethodInfo(
     m_pMethodDescriptor = pMethodDescriptor;
     mIndex = uIndex;
     m_pCClsModule = pCClsModule;
-    m_pClsMod = m_pCClsModule->m_pClsMod;
+    m_pClsMod = m_pCClsModule->mClsMod;
     m_pParamElem = NULL;
     m_pParameterInfos = NULL;
-    m_nBase = m_pCClsModule->m_nBase;
+    m_nBase = m_pCClsModule->mBase;
 }
 
 CMethodInfo::~CMethodInfo()
@@ -415,7 +415,7 @@ ECode CMethodInfo::Invoke(
         m_uParamBufSize = 4;
     }
     else {
-        pParamBuf = (int *)((CArgumentList *)pArgumentList)->m_pParamBuf;
+        pParamBuf = (int *)((CArgumentList *)pArgumentList)->mParamBuf;
     }
 
     InterfaceDirEntry* pIFDir = getInterfaceDirAddr(m_nBase,

@@ -9,9 +9,9 @@
 
 struct CBMethodDesc
 {
-    MethodDescriptor *pDesc;
-    UInt32 uIndex;
-    UInt32 uEventNum;
+    MethodDescriptor* mDesc;
+    UInt32 mIndex;
+    UInt32 mEventNum;
 };
 
 class CClassInfo
@@ -20,8 +20,8 @@ class CClassInfo
 {
 public:
     CClassInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ ClassDirEntry *pClsDirEntry);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ ClassDirEntry* clsDirEntry);
 
     virtual ~CClassInfo();
 
@@ -33,149 +33,149 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init();
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetNamespace(
-        /* [out] */ String * pNamespace);
+        /* [out] */ String* ns);
 
     CARAPI GetId(
-        /* [out] */ ClassID * pclsid);
+        /* [out] */ ClassID* clsid);
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI IsSingleton(
-        /* [out] */ Boolean * pIsSingleton);
+        /* [out] */ Boolean* isSingleton);
 
     CARAPI GetThreadingModel(
-        /* [out] */ ThreadingModel *pThreadingModel);
+        /* [out] */ ThreadingModel* threadingModel);
 
     CARAPI IsPrivate(
-        /* [out] */ Boolean * pIsPrivate);
+        /* [out] */ Boolean* isPrivate);
 
     CARAPI IsReturnValue(
-        /* [out] */ Boolean * pIsReturnValue);
+        /* [out] */ Boolean* isReturnValue);
 
     CARAPI IsBaseClass(
-        /* [out] */ Boolean * pIsBaseClass);
+        /* [out] */ Boolean* isBaseClass);
 
     CARAPI HasBaseClass(
-        /* [out] */ Boolean * pHasBaseClass);
+        /* [out] */ Boolean* hasBaseClass);
 
     CARAPI GetBaseClassInfo(
-        /* [out] */ IClassInfo ** ppBaseClassInfo);
+        /* [out] */ IClassInfo** baseClassInfo);
 
     CARAPI IsGeneric(
-        /* [out] */ Boolean * pIsGeneric);
+        /* [out] */ Boolean* isGeneric);
 
     CARAPI HasGeneric(
-        /* [out] */ Boolean * pHasGeneric);
+        /* [out] */ Boolean* hasGeneric);
 
     CARAPI GetGenericInfo(
-        /* [out] */ IClassInfo ** ppGenericInfo);
+        /* [out] */ IClassInfo** genericInfo);
 
     CARAPI IsRegime(
-        /* [out] */ Boolean * pIsRegime);
+        /* [out] */ Boolean* isRegime);
 
     CARAPI GetAspectCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllAspectInfos(
-        /* [out] */ ArrayOf<IClassInfo *> * pAspectInfos);
+        /* [out] */ ArrayOf<IClassInfo *>* aspectInfos);
 
     CARAPI GetAspectInfo(
         /* [in] */ const String& name,
-        /* [out] */ IClassInfo ** ppAspectInfo);
+        /* [out] */ IClassInfo** aspectInfo);
 
     CARAPI IsAspect(
-        /* [out] */ Boolean * pIsAspect);
+        /* [out] */ Boolean* isAspect);
 
     CARAPI GetAggregateeCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllAggregateeInfos(
-        /* [out] */ ArrayOf<IClassInfo *> * pAggregateeInfos);
+        /* [out] */ ArrayOf<IClassInfo *>* aggregateeInfos);
 
     CARAPI GetAggregateeInfo(
         /* [in] */ const String& name,
-        /* [out] */ IClassInfo ** ppAggregateeInfo);
+        /* [out] */ IClassInfo** aggregateeInfo);
 
     CARAPI GetConstructorCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllConstructorInfos(
-        /* [out] */ ArrayOf<IConstructorInfo *> * pConstructorInfos);
+        /* [out] */ ArrayOf<IConstructorInfo *>* constructorInfos);
 
     CARAPI GetConstructorInfoByParamNames(
         /* [in] */ const String& name,
-        /* [out] */ IConstructorInfo **ppConstructorInfo);
+        /* [out] */ IConstructorInfo** constructorInfo);
 
     CARAPI GetConstructorInfoByParamCount(
         /* [in] */ Int32 count,
-        /* [out] */ IConstructorInfo **ppConstructorInfo);
+        /* [out] */ IConstructorInfo** constructorInfo);
 
     CARAPI GetInterfaceCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllInterfaceInfos(
-        /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos);
+        /* [out] */ ArrayOf<IInterfaceInfo *>* interfaceInfos);
 
     CARAPI GetInterfaceInfo(
         /* [in] */ const String& fullName,
-        /* [out] */ IInterfaceInfo ** ppInterfaceInfo);
+        /* [out] */ IInterfaceInfo** interfaceInfo);
 
     CARAPI GetCallbackInterfaceCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllCallbackInterfaceInfos(
-        /* [out] */ ArrayOf<IInterfaceInfo *> * pCallbackInterfaceInfos);
+        /* [out] */ ArrayOf<IInterfaceInfo *>* callbackInterfaceInfos);
 
     CARAPI GetCallbackInterfaceInfo(
         /* [in] */ const String& name,
-        /* [out] */ IInterfaceInfo ** ppCallbackInterfaceInfo);
+        /* [out] */ IInterfaceInfo** callbackInterfaceInfo);
 
     CARAPI GetMethodCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllMethodInfos(
-        /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos);
+        /* [out] */ ArrayOf<IMethodInfo *>* methodInfos);
 
     CARAPI GetMethodInfo(
         /* [in] */ const String& name,
         /* [in] */ const String& signature,
-        /* [out] */ IMethodInfo ** ppMethodInfo);
+        /* [out] */ IMethodInfo** methodInfo);
 
     CARAPI GetCallbackMethodCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllCallbackMethodInfos(
-        /* [out] */ ArrayOf<ICallbackMethodInfo *> * pCallbackMethodInfos);
+        /* [out] */ ArrayOf<ICallbackMethodInfo *>* callbackMethodInfos);
 
     CARAPI GetCallbackMethodInfo(
         /* [in] */ const String& name,
-        /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo);
+        /* [out] */ ICallbackMethodInfo** callbackMethodInfo);
 
     CARAPI RemoveAllCallbackHandlers(
         /* [in] */ PInterface server);
 
     CARAPI CreateObject(
-        /* [out] */ PInterface * pObject);
+        /* [out] */ PInterface* object);
 
     CARAPI CreateObjectInRegime(
         /* [in] */ PRegime rgm,
-        /* [out] */ PInterface * pObject);
+        /* [out] */ PInterface* object);
 
     CARAPI CreateIFList();
 
     CARAPI AcquireSpecialMethodList(
         /* [in] */ EntryType type,
-        /* [out] */ CEntryList ** ppEntryList);
+        /* [out] */ CEntryList** entryList);
 
     CARAPI AcquireAggregateeList();
 
@@ -193,41 +193,41 @@ public:
 
     CARAPI CreateObjInRgm(
         /* [in] */ PRegime rgm,
-        /* [out] */ PInterface * pObject);
+        /* [out] */ PInterface* object);
 
 public:
-    ClassDirEntry   *m_pClassDirEntry;
-    ClassID          m_clsId;
+    ClassDirEntry*  mClassDirEntry;
+    ClassID         mClsId;
 
-    IFIndexEntry    *m_pCBIFList;
-    IFIndexEntry    *m_pIFList;
-    CBMethodDesc    *m_pCBMethodDesc;
+    IFIndexEntry*   mCBIFList;
+    IFIndexEntry*   mIFList;
+    CBMethodDesc*   mCBMethodDesc;
 
-    UInt32           m_uIFCount;
-    UInt32           m_uCBIFCount;
+    UInt32          mIFCount;
+    UInt32          mCBIFCount;
 
 private:
-    AutoPtr<CClsModule>  m_pCClsModule;
-    CLSModule           *m_pClsMod;
-    ClassDescriptor     *m_pDesc;
-    Int32                m_nBase;
+    AutoPtr<CClsModule> mClsModule;
+    CLSModule*          mClsMod;
+    ClassDescriptor*    mDesc;
+    Int32               mBase;
 
-    char   m_szUrn[_MAX_PATH];
+    char   mUrn[_MAX_PATH];
 
-    UInt32 m_uMethodCount;
-    UInt32 m_uCBMethodCount;
-    UInt32 m_uCtorCount;
+    UInt32 mMethodCount;
+    UInt32 mCBMethodCount;
+    UInt32 mCtorCount;
 
-    AutoPtr<CEntryList> m_pAspectList;
-    AutoPtr<CEntryList> m_pAggregateeList;
-    AutoPtr<CEntryList> m_pMethodList;
-    AutoPtr<CEntryList> m_pCBInterfaceList;
-    AutoPtr<CEntryList> m_pInterfaceList;
-    AutoPtr<CEntryList> m_pCtorList;
-    AutoPtr<CEntryList> m_pCBMethodList;
+    AutoPtr<CEntryList> mAspectList;
+    AutoPtr<CEntryList> mAggregateeList;
+    AutoPtr<CEntryList> mMethodList;
+    AutoPtr<CEntryList> mCBInterfaceList;
+    AutoPtr<CEntryList> mInterfaceList;
+    AutoPtr<CEntryList> mCtorList;
+    AutoPtr<CEntryList> mCBMethodList;
 
-    AutoPtr<CClassInfo> m_pCtorClassInfo;
-    AutoPtr<IClassInfo> m_pGenericInfo;
+    AutoPtr<CClassInfo> mCtorClassInfo;
+    AutoPtr<IClassInfo> mGenericInfo;
 };
 
 #endif // __CCLASSINFO_H__

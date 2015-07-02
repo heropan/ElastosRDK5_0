@@ -24,18 +24,18 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init(
-        /* [in] */ IFunctionInfo * pFunctionInfo,
-        /* [in] */ ParmElement * pParamElem,
-        /* [in] */ UInt32 uParamCount,
-        /* [in] */ UInt32 uParamBufSize,
-        /* [in] */ Boolean bMethodInfo);
+        /* [in] */ IFunctionInfo* functionInfo,
+        /* [in] */ ParmElement* paramElem,
+        /* [in] */ UInt32 paramCount,
+        /* [in] */ UInt32 paramBufSize,
+        /* [in] */ Boolean methodInfo);
 
     CARAPI GetFunctionInfo(
-        /* [out] */ IFunctionInfo ** ppFunctionInfo);
+        /* [out] */ IFunctionInfo** functionInfo);
 
     CARAPI SetInputArgumentOfInt16(
         /* [in] */ Int32 index,
@@ -61,11 +61,7 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Double value);
 
-    CARAPI SetInputArgumentOfChar16(
-        /* [in] */ Int32 index,
-        /* [in] */ Char16 value);
-
-    CARAPI SetInputArgumentOfChar32(
+    CARAPI SetInputArgumentOfChar(
         /* [in] */ Int32 index,
         /* [in] */ Char32 value);
 
@@ -79,11 +75,11 @@ public:
 
     CARAPI SetInputArgumentOfEMuid(
         /* [in] */ Int32 index,
-        /* [in] */ EMuid * pValue);
+        /* [in] */ EMuid* value);
 
     CARAPI SetInputArgumentOfEGuid(
         /* [in] */ Int32 index,
-        /* [in] */ EGuid * pValue);
+        /* [in] */ EGuid* value);
 
     CARAPI SetInputArgumentOfECode(
         /* [in] */ Int32 index,
@@ -115,59 +111,55 @@ public:
 
     CARAPI SetOutputArgumentOfInt16Ptr(
         /* [in] */ Int32 index,
-        /* [out] */ Int16 * pValue);
+        /* [out] */ Int16* value);
 
     CARAPI SetOutputArgumentOfInt32Ptr(
         /* [in] */ Int32 index,
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
     CARAPI SetOutputArgumentOfInt64Ptr(
         /* [in] */ Int32 index,
-        /* [out] */ Int64 * pValue);
+        /* [out] */ Int64* value);
 
     CARAPI SetOutputArgumentOfBytePtr(
         /* [in] */ Int32 index,
-        /* [out] */ Byte * pValue);
+        /* [out] */ Byte* value);
 
     CARAPI SetOutputArgumentOfFloatPtr(
         /* [in] */ Int32 index,
-        /* [out] */ Float * pValue);
+        /* [out] */ Float* value);
 
     CARAPI SetOutputArgumentOfDoublePtr(
         /* [in] */ Int32 index,
-        /* [out] */ Double * pValue);
+        /* [out] */ Double* value);
 
-    CARAPI SetOutputArgumentOfChar16Ptr(
+    CARAPI SetOutputArgumentOfCharPtr(
         /* [in] */ Int32 index,
-        /* [out] */ Char16 * pValue);
-
-    CARAPI SetOutputArgumentOfChar32Ptr(
-        /* [in] */ Int32 index,
-        /* [out] */ Char32 * pValue);
+        /* [out] */ Char32* value);
 
     CARAPI SetOutputArgumentOfStringPtr(
         /* [in] */ Int32 index,
-        /* [out] */ String * pValue);
+        /* [out] */ String* value);
 
     CARAPI SetOutputArgumentOfBooleanPtr(
         /* [in] */ Int32 index,
-        /* [out] */ Boolean * pValue);
+        /* [out] */ Boolean* value);
 
     CARAPI SetOutputArgumentOfEMuidPtr(
         /* [in] */ Int32 index,
-        /* [out] */ EMuid * pValue);
+        /* [out] */ EMuid* value);
 
     CARAPI SetOutputArgumentOfEGuidPtr(
         /* [in] */ Int32 index,
-        /* [out] */ EGuid * pValue);
+        /* [out] */ EGuid* value);
 
     CARAPI SetOutputArgumentOfECodePtr(
         /* [in] */ Int32 index,
-        /* [out] */ ECode * pValue);
+        /* [out] */ ECode* value);
 
     CARAPI SetOutputArgumentOfLocalPtrPtr(
         /* [in] */ Int32 index,
-        /* [out] */ LocalPtr * pValue);
+        /* [out] */ LocalPtr* value);
 
     CARAPI SetOutputArgumentOfLocalTypePtr(
         /* [in] */ Int32 index,
@@ -175,7 +167,7 @@ public:
 
     CARAPI SetOutputArgumentOfEnumPtr(
         /* [in] */ Int32 index,
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
     CARAPI SetOutputArgumentOfCarArrayPtr(
         /* [in] */ Int32 index,
@@ -183,7 +175,7 @@ public:
 
     CARAPI SetOutputArgumentOfCarArrayPtrPtr(
         /* [in] */ Int32 index,
-        /* [out] */ PCarQuintet * pValue);
+        /* [out] */ PCarQuintet* value);
 
     CARAPI SetOutputArgumentOfStructPtr(
         /* [in] */ Int32 index,
@@ -191,28 +183,28 @@ public:
 
     CARAPI SetOutputArgumentOfStructPtrPtr(
         /* [in] */ Int32 index,
-        /* [out] */ PVoid * pValue);
+        /* [out] */ PVoid* value);
 
     CARAPI SetOutputArgumentOfObjectPtrPtr(
         /* [in] */ Int32 index,
-        /* [out] */ PInterface * pValue);
+        /* [out] */ PInterface* value);
 
     CARAPI SetParamValue(
         /* [in] */ Int32 index,
-        /* [in] */ PVoid pParam,
+        /* [in] */ PVoid param,
         /* [in] */ CarDataType type,
         /* [in] */ ParamIOAttribute attrib,
-        /* [in] */ Int32 iPointer = 0);
+        /* [in] */ Int32 pointer = 0);
 
 public:
-    Byte           *m_pParamBuf;
+    Byte*           mParamBuf;
 
 private:
-    ParmElement    *m_pParamElem;
-    UInt32          m_uParamCount;
-    UInt32          m_uParamBufSize;
-    AutoPtr<IFunctionInfo>  m_pFunctionInfo;
-    Boolean         m_bMethodInfo;
+    ParmElement*    mParamElem;
+    UInt32          mParamCount;
+    UInt32          mParamBufSize;
+    AutoPtr<IFunctionInfo>  mFunctionInfo;
+    Boolean         mIsMethodInfo;
 };
 
 #endif // __CARGLIST_H__

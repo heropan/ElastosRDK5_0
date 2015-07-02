@@ -9,7 +9,7 @@ CModuleInfo::CModuleInfo(
     /* [in] */ const String& path)
 {
     m_pCClsModule = pCClsModule;
-    m_pClsMod = pCClsModule->m_pClsMod;
+    m_pClsMod = pCClsModule->mClsMod;
     m_sbPath = path;
 
     m_iAliasCount = 0;
@@ -438,7 +438,7 @@ ECode CModuleInfo::GetAllImportModuleInfos(
     Int32 nCount = nCapacity < nTotalCount ? nCapacity : nTotalCount;
     ECode ec = NOERROR;
     for (Int32 i = 0; i < nCount; i++) {
-        String libNames(getLibNameAddr(m_pCClsModule->m_nBase, m_pClsMod->ppLibNames, i));
+        String libNames(getLibNameAddr(m_pCClsModule->mBase, m_pClsMod->ppLibNames, i));
         AutoPtr<IModuleInfo> pObject;
         ec = g_objInfoList.AcquireModuleInfo(libNames, (IModuleInfo**)&pObject);
         if (FAILED(ec)) return ec;

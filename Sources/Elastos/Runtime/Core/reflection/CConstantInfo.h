@@ -13,8 +13,8 @@ class CConstantInfo
 {
 public:
     CConstantInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ ConstDirEntry * pConstDirEntry);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ ConstDirEntry* constDirEntry);
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
@@ -24,21 +24,21 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetValue(
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
 private:
-    AutoPtr<CClsModule>  m_pCClsModule;
-    ConstDirEntry       *m_pConstDirEntry;
+    AutoPtr<CClsModule> mClsModule;
+    ConstDirEntry*      mConstDirEntry;
 };
 
 #endif // __CCONSTANTINFO_H__

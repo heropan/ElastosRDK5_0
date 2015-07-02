@@ -20,62 +20,62 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex,
-        /* [in] */ ClassID *pClsId);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index,
+        /* [in] */ ClassID* clsId);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetParamCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllParamInfos(
-        /* [out] */ ArrayOf<IParamInfo *> * pParamInfos);
+        /* [out] */ ArrayOf<IParamInfo *>* paramInfos);
 
     CARAPI GetParamInfoByIndex(
         /* [in] */ Int32 index,
-        /* [out] */ IParamInfo ** ppParamInfo);
+        /* [out] */ IParamInfo** paramInfo);
 
     CARAPI GetParamInfoByName(
         /* [in] */ const String& name,
-        /* [out] */ IParamInfo ** ppParamInfo);
+        /* [out] */ IParamInfo** paramInfo);
 
     CARAPI CreateArgumentList(
-        /* [out] */ IArgumentList ** ppArgumentList);
+        /* [out] */ IArgumentList** argumentList);
 
     CARAPI CreateObject(
-        /* [in] */ IArgumentList * pArgumentList,
-        /* [out] */ PInterface * pObject);
+        /* [in] */ IArgumentList* argumentList,
+        /* [out] */ PInterface* object);
 
     CARAPI CreateObjectInRegime(
         /* [in] */ PRegime rgm,
-        /* [in] */ IArgumentList * pArgumentList,
-        /* [out] */ PInterface * pObject);
+        /* [in] */ IArgumentList* argumentList,
+        /* [out] */ PInterface* object);
 
     CARAPI AcquireParamList();
 
     CARAPI CreateObjInRgm(
         /* [in] */ PRegime rgm,
-        /* [in] */ IArgumentList * pArgumentList,
-        /* [out] */ PInterface * pObject);
+        /* [in] */ IArgumentList* argumentList,
+        /* [out] */ PInterface* object);
 
 public:
-    AutoPtr<CMethodInfo> m_pMethodInfo;
+    AutoPtr<CMethodInfo>    mMethodInfo;
 
-    char                 m_szUrn2[_MAX_PATH];
-    ClassID              m_instClsId;
+    char                    mUrn2[_MAX_PATH];
+    ClassID                 mInstClsId;
 
 private:
-    Int32                m_nOutParamIndex;
+    Int32                   mOutParamIndex;
 
-    char                 m_szUrn[_MAX_PATH];
-    ClassID              m_clsId;
+    char                    mUrn[_MAX_PATH];
+    ClassID                 mClsId;
 };
 
 #endif // __CCONSTRUCTORINFO_H__

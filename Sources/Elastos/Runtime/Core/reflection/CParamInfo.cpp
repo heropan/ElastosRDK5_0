@@ -72,7 +72,7 @@ ECode CParamInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_pCClsModule->m_nBase, m_pParamDescriptor->pszName);
+    *pName = adjustNameAddr(m_pCClsModule->mBase, m_pParamDescriptor->pszName);
     return NOERROR;
 }
 
@@ -179,7 +179,7 @@ ECode CParamInfo::GetUsedTypeAliasInfo(
 
     *ppUsedTypeAliasInfo = NULL;
     return g_objInfoList.AcquireTypeAliasInfo(m_pCClsModule,
-                getAliasDirAddr(m_pCClsModule->m_nBase,
-                        m_pCClsModule->m_pClsMod->ppAliasDir, uIndex),
+                getAliasDirAddr(m_pCClsModule->mBase,
+                        m_pCClsModule->mClsMod->ppAliasDir, uIndex),
                 (IInterface **)ppUsedTypeAliasInfo);
 }

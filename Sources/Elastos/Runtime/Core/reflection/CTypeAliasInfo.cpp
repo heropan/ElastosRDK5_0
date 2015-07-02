@@ -60,7 +60,7 @@ ECode CTypeAliasInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_pCClsModule->m_nBase, m_pAliasDirEntry->pszName);
+    *pName = adjustNameAddr(m_pCClsModule->mBase, m_pAliasDirEntry->pszName);
     return NOERROR;
 }
 

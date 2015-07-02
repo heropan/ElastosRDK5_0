@@ -9,11 +9,11 @@
 
 CCarArrayInfo::CCarArrayInfo(
     /* [in] */ CarDataType quintetType,
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ IDataTypeInfo* elementTypeInfo,
     /* [in] */ CarDataType dataType)
-    : m_pElementTypeInfo(pElementTypeInfo)
-    , m_elementDataType(dataType)
-    , m_quintetType(quintetType)
+    : mElementTypeInfo(elementTypeInfo)
+    , mElementDataType(dataType)
+    , mQuintetType(quintetType)
 {}
 
 UInt32 CCarArrayInfo::AddRef()
@@ -24,15 +24,15 @@ UInt32 CCarArrayInfo::AddRef()
 UInt32 CCarArrayInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_DataType);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
+    if (0 == ref) {
         g_objInfoList.DetachCarArrayInfo(this);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_DataType);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CCarArrayInfo::Probe(
@@ -53,154 +53,154 @@ PInterface CCarArrayInfo::Probe(
 }
 
 ECode CCarArrayInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCarArrayInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-//    if (m_elementDataType == CarDataType_LocalType) {
-//        pName->Copy(g_cDataTypeList[CarDataType_LocalType].name);
+//    if (mElementDataType == CarDataType_LocalType) {
+//        name->Copy(g_cDataTypeList[CarDataType_LocalType].name);
 //    }
 
-    *pName = g_cDataTypeList[m_quintetType].name;
+    *name = g_cDataTypeList[mQuintetType].name;
 
     String elementName;
-    ECode ec = m_pElementTypeInfo->GetName(&elementName);
+    ECode ec = mElementTypeInfo->GetName(&elementName);
     if (FAILED(ec)) return ec;
 
-    pName->Append("<");
-    pName->Append(elementName);
-    if (m_elementDataType == CarDataType_Interface) {
-        pName->Append("*");
+    name->Append("<");
+    name->Append(elementName);
+    if (mElementDataType == CarDataType_Interface) {
+        name->Append("*");
     }
-    pName->Append(">");
+    name->Append(">");
 
     return NOERROR;
 }
 
 ECode CCarArrayInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
     return E_INVALID_OPERATION;
 }
 
 ECode CCarArrayInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = m_quintetType;
+    *dataType = mQuintetType;
     return NOERROR;
 }
 
 ECode CCarArrayInfo::GetElementTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppElementTypeInfo)
+    /* [out] */ IDataTypeInfo** elementTypeInfo)
 {
-    if (!ppElementTypeInfo) {
+    if (!elementTypeInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppElementTypeInfo = m_pElementTypeInfo;
-    (*ppElementTypeInfo)->AddRef();
+    *elementTypeInfo = mElementTypeInfo;
+    (*elementTypeInfo)->AddRef();
     return NOERROR;
 }
 
 ECode CCarArrayInfo::CreateVariable(
     /* [in] */ Int32 capacity,
-    /* [out] */ IVariableOfCarArray ** ppVariable)
+    /* [out] */ IVariableOfCarArray** variable)
 {
-    if (capacity <= 0 || !ppVariable) {
+    if (capacity <= 0 || !variable) {
         return E_INVALID_ARGUMENT;
     }
 
     Int32 size = 0;
-    ECode ec = m_pElementTypeInfo->GetSize(&size);
+    ECode ec = mElementTypeInfo->GetSize(&size);
     if (FAILED(ec)) return ec;
 
     Int32 bufSize = capacity * size;
-    PCarQuintet pCarQuintet =
-        (PCarQuintet)calloc(sizeof(CarQuintet) + bufSize, sizeof(Byte));
-    if (!pCarQuintet) {
+    PCarQuintet carQuintet =
+            (PCarQuintet)calloc(sizeof(CarQuintet) + bufSize, sizeof(Byte));
+    if (!carQuintet) {
         return E_OUT_OF_MEMORY;
     }
 
-    pCarQuintet->m_flags = DataTypeToFlag(m_elementDataType);
-    if (m_quintetType == CarDataType_ArrayOf) {
-        pCarQuintet->m_used = bufSize;
+    carQuintet->m_flags = DataTypeToFlag(mElementDataType);
+    if (mQuintetType == CarDataType_ArrayOf) {
+        carQuintet->m_used = bufSize;
     }
 
-    pCarQuintet->m_size = bufSize;
-    pCarQuintet->m_pBuf = (Byte *)pCarQuintet + sizeof(CarQuintet);
+    carQuintet->m_size = bufSize;
+    carQuintet->m_pBuf = (Byte *)carQuintet + sizeof(CarQuintet);
 
-    CVariableOfCarArray *pCarArrayBox = new CVariableOfCarArray(this,
-        pCarQuintet, TRUE);
-    if (pCarArrayBox == NULL) {
-        free(pCarQuintet);
+    CVariableOfCarArray* carArrayBox = new CVariableOfCarArray(this,
+            carQuintet, TRUE);
+    if (carArrayBox == NULL) {
+        free(carQuintet);
         return E_OUT_OF_MEMORY;
     }
 
-    *ppVariable = (IVariableOfCarArray *)pCarArrayBox;
-    (*ppVariable)->AddRef();
+    *variable = (IVariableOfCarArray *)carArrayBox;
+    (*variable)->AddRef();
 
     return NOERROR;
 }
 
 ECode CCarArrayInfo::CreateVariableBox(
     /* [in] */ PCarQuintet variableDescriptor,
-    /* [out] */ IVariableOfCarArray ** ppVariable)
+    /* [out] */ IVariableOfCarArray** variable)
 {
-    if (!variableDescriptor || !ppVariable) {
+    if (!variableDescriptor || !variable) {
         return E_INVALID_ARGUMENT;
     }
 
     Int32 size = 0;
-    ECode ec = m_pElementTypeInfo->GetSize(&size);
+    ECode ec = mElementTypeInfo->GetSize(&size);
     if (FAILED(ec)) return ec;
     if (variableDescriptor->m_size < size) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(variableDescriptor->m_flags & DataTypeToFlag(m_elementDataType))) {
+    if (!(variableDescriptor->m_flags & DataTypeToFlag(mElementDataType))) {
         return E_INVALID_ARGUMENT;
     }
 
-    CVariableOfCarArray *pCarArrayBox = new CVariableOfCarArray(this,
-        variableDescriptor, FALSE);
-    if (pCarArrayBox == NULL) {
+    CVariableOfCarArray* carArrayBox = new CVariableOfCarArray(this,
+            variableDescriptor, FALSE);
+    if (carArrayBox == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
-    *ppVariable = (IVariableOfCarArray *)pCarArrayBox;
-    (*ppVariable)->AddRef();
+    *variable = (IVariableOfCarArray *)carArrayBox;
+    (*variable)->AddRef();
 
     return NOERROR;
 }
 
 ECode CCarArrayInfo::GetMaxAlignSize(
-    /* [out] */ MemorySize * pAlignSize)
+    /* [out] */ MemorySize* alignSize)
 {
     Int32 size = 1;
 
-    if (m_elementDataType == CarDataType_Struct) {
-        ((CStructInfo *)m_pElementTypeInfo.Get())->GetMaxAlignSize(&size);
+    if (mElementDataType == CarDataType_Struct) {
+        ((CStructInfo *)mElementTypeInfo.Get())->GetMaxAlignSize(&size);
     }
     else {
-        m_pElementTypeInfo->GetSize(&size);
+        mElementTypeInfo->GetSize(&size);
     }
 
     if (size > ALIGN_BOUND) size = ALIGN_BOUND;
 
-    *pAlignSize = size;
+    *alignSize = size;
 
     return NOERROR;
 }

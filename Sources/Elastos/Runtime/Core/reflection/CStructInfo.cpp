@@ -83,7 +83,7 @@ ECode CStructInfo::InitStatic(
 {
     m_pCClsModule = pCClsModule;
 
-	Int32 nBase = m_pCClsModule->m_nBase;
+	Int32 nBase = m_pCClsModule->mBase;
     m_pStructDirEntry = pStructDirEntry;
     m_pName = adjustNameAddr(nBase, m_pStructDirEntry->pszName);
 	StructDescriptor *pDesc = adjustStructDescAddr(nBase, pStructDirEntry->pDesc);

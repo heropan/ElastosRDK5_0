@@ -7,44 +7,44 @@
 #include <dlfcn.h>
 
 CClsModule::CClsModule(
-    /* [in] */ CLSModule *pClsMod,
-    /* [in] */ Boolean bAllocedClsMod,
+    /* [in] */ CLSModule* clsMod,
+    /* [in] */ Boolean allocedClsMod,
     /* [in] */ const String& path,
-    /* [in] */ Void *pIModule)
+    /* [in] */ Void* module)
 {
-    m_pClsMod = pClsMod;
-    m_bAllocedClsMode = bAllocedClsMod;
-    m_sbPath = path;
-    m_pTypeAliasList = NULL;
-    m_pIModule = NULL;
-    if (!m_bAllocedClsMode && pIModule) {
-        m_pIModule = pIModule;
+    mClsMod = clsMod;
+    mAllocedClsMode = allocedClsMod;
+    mPath = path;
+    mTypeAliasList = NULL;
+    mModule = NULL;
+    if (!mAllocedClsMode && module) {
+        mModule = module;
     }
 
-    if (bAllocedClsMod) {
-        m_nBase = 0;
+    if (allocedClsMod) {
+        mBase = 0;
     }
     else {
-        m_nBase = Int32(pClsMod);
+        mBase = Int32(clsMod);
     }
 }
 
 CClsModule::~CClsModule()
 {
-    if (m_pTypeAliasList) {
-        for (int i = 0; i < m_pClsMod->cAliases; i++) {
-            if (m_pTypeAliasList[i].pOrgTypeDesc) {
-                delete m_pTypeAliasList[i].pOrgTypeDesc;
+    if (mTypeAliasList) {
+        for (Int32 i = 0; i < mClsMod->cAliases; i++) {
+            if (mTypeAliasList[i].pOrgTypeDesc) {
+                delete mTypeAliasList[i].pOrgTypeDesc;
             }
         }
-        delete[] m_pTypeAliasList;
+        delete[] mTypeAliasList;
     }
 
-    if (m_bAllocedClsMode) {
-        if (m_pClsMod) DisposeFlattedCLS(m_pClsMod);
+    if (mAllocedClsMode) {
+        if (mClsMod) DisposeFlattedCLS(mClsMod);
     }
     else {
-        if (m_pIModule) dlclose(m_pIModule);
+        if (mModule) dlclose(mModule);
     }
 }
 
@@ -56,93 +56,94 @@ UInt32 CClsModule::AddRef()
 UInt32 CClsModule::Release()
 {
     g_objInfoList.LockHashTable(EntryType_ClsModule);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        g_objInfoList.RemoveClsModule(m_sbPath);
+    if (0 == ref) {
+        g_objInfoList.RemoveClsModule(mPath);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_ClsModule);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 ECode CClsModule::GetModuleInfo(
-    /* [out] */ IModuleInfo ** ppModuleInfo)
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    if (!ppModuleInfo) {
+    if (!moduleInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    return _CReflector_AcquireModuleInfo(String(adjustNameAddr(this->m_nBase, m_pClsMod->pszUunm)), ppModuleInfo);
+    return _CReflector_AcquireModuleInfo(
+            String(adjustNameAddr(mBase, mClsMod->pszUunm)), moduleInfo);
 }
 
 ECode CClsModule::InitOrgType()
 {
-    if (!m_pClsMod->cAliases) {
+    if (!mClsMod->cAliases) {
         return NOERROR;
     }
 
     Int32 i = 0;
-    m_pTypeAliasList = new TypeAliasDesc[m_pClsMod->cAliases];
-    if (!m_pTypeAliasList) {
+    mTypeAliasList = new TypeAliasDesc[mClsMod->cAliases];
+    if (!mTypeAliasList) {
         return E_OUT_OF_MEMORY;
     }
 
-    memset(m_pTypeAliasList, 0, sizeof(TypeAliasDesc) * m_pClsMod->cAliases);
+    memset(mTypeAliasList, 0, sizeof(TypeAliasDesc) * mClsMod->cAliases);
 
-    for (i = 0; i < m_pClsMod->cAliases; i++) {
-        m_pTypeAliasList[i].pOrgTypeDesc = new TypeDescriptor;
-        if (!m_pTypeAliasList[i].pOrgTypeDesc) goto EExit;
-        m_pTypeAliasList[i].pTypeDesc = &(getAliasDirAddr(this->m_nBase,
-                m_pClsMod->ppAliasDir, i)->type);
-        _GetOriginalType(this, m_pTypeAliasList[i].pTypeDesc,
-                m_pTypeAliasList[i].pOrgTypeDesc);
+    for (i = 0; i < mClsMod->cAliases; i++) {
+        mTypeAliasList[i].pOrgTypeDesc = new TypeDescriptor;
+        if (!mTypeAliasList[i].pOrgTypeDesc) goto EExit;
+        mTypeAliasList[i].pTypeDesc = &(getAliasDirAddr(mBase,
+                mClsMod->ppAliasDir, i)->type);
+        _GetOriginalType(this, mTypeAliasList[i].pTypeDesc,
+                mTypeAliasList[i].pOrgTypeDesc);
     }
 
     return NOERROR;
 
 EExit:
-    for (i = 0; i < m_pClsMod->cAliases; i++) {
-        if (m_pTypeAliasList[i].pOrgTypeDesc) {
-            delete m_pTypeAliasList[i].pOrgTypeDesc;
+    for (i = 0; i < mClsMod->cAliases; i++) {
+        if (mTypeAliasList[i].pOrgTypeDesc) {
+            delete mTypeAliasList[i].pOrgTypeDesc;
         }
     }
 
-    delete[] m_pTypeAliasList;
-    m_pTypeAliasList = NULL;
+    delete[] mTypeAliasList;
+    mTypeAliasList = NULL;
 
     return E_OUT_OF_MEMORY;
 }
 
 ECode CClsModule::AliasToOriginal(
-    /* [in] */ TypeDescriptor *pTypeDype,
-    /* [out] */ TypeDescriptor **ppOrgTypeDesc)
+    /* [in] */ TypeDescriptor* typeDype,
+    /* [out] */ TypeDescriptor** orgTypeDesc)
 {
-    if (!m_pClsMod->cAliases) {
+    if (!mClsMod->cAliases) {
         return E_INVALID_OPERATION;
     }
 
-    if (pTypeDype->type != Type_alias) {
+    if (typeDype->type != Type_alias) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pTypeAliasList) {
+    if (!mTypeAliasList) {
         ECode ec = InitOrgType();
         if (FAILED(ec)) {
             return ec;
         }
     }
 
-//    while (pTypeDype->type == Type_alias) {
-//        pTypeDype = &m_pClsMod->ppAliasDir[pTypeDype->sIndex]->type;
+//    while (typeDype->type == Type_alias) {
+//        typeDype = &mClsMod->ppAliasDir[typeDype->sIndex]->type;
 //    }
 
-    if (pTypeDype->sIndex >= m_pClsMod->cAliases) {
+    if (typeDype->sIndex >= mClsMod->cAliases) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppOrgTypeDesc = m_pTypeAliasList[pTypeDype->sIndex].pOrgTypeDesc;
+    *orgTypeDesc = mTypeAliasList[typeDype->sIndex].pOrgTypeDesc;
 
     return NOERROR;
 }

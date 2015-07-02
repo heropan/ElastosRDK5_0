@@ -7,13 +7,13 @@
 #include "CStructInfo.h"
 
 CCppVectorInfo::CCppVectorInfo(
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ IDataTypeInfo* elementTypeInfo,
     /* [in] */ Int32 length)
 {
-    m_pElementTypeInfo = pElementTypeInfo;
-    pElementTypeInfo->GetSize(&m_iSize);
-    m_iLength = length;
-    m_iSize *= m_iLength;
+    mElementTypeInfo = elementTypeInfo;
+    elementTypeInfo->GetSize(&mSize);
+    mLength = length;
+    mSize *= mLength;
 }
 
 UInt32 CCppVectorInfo::AddRef()
@@ -24,15 +24,15 @@ UInt32 CCppVectorInfo::AddRef()
 UInt32 CCppVectorInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_DataType);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
+    if (0 == ref) {
         g_objInfoList.DetachCppVectorInfo(this);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_DataType);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CCppVectorInfo::Probe(
@@ -53,88 +53,88 @@ PInterface CCppVectorInfo::Probe(
 }
 
 ECode CCppVectorInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CCppVectorInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    ECode ec = m_pElementTypeInfo->GetName(pName);
+    ECode ec = mElementTypeInfo->GetName(name);
     if (FAILED(ec)) return ec;
 
-    pName->Append("Vector");
+    name->Append("Vector");
 
     return NOERROR;
 }
 
 ECode CCppVectorInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
-    if (!pSize) {
+    if (!size) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pSize = m_iSize;
+    *size = mSize;
 
     return NOERROR;
 }
 
 ECode CCppVectorInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = CarDataType_CppVector;
+    *dataType = CarDataType_CppVector;
 
     return NOERROR;
 }
 
 ECode CCppVectorInfo::GetElementTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppElementTypeInfo)
+    /* [out] */ IDataTypeInfo** elementTypeInfo)
 {
-    *ppElementTypeInfo = m_pElementTypeInfo;
-    (*ppElementTypeInfo)->AddRef();
+    *elementTypeInfo = mElementTypeInfo;
+    (*elementTypeInfo)->AddRef();
 
     return NOERROR;
 }
 
 ECode CCppVectorInfo::GetLength(
-    /* [out] */ Int32 * pLength)
+    /* [out] */ Int32* length)
 {
-    if (!pLength) {
+    if (!length) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pLength = m_iLength;
+    *length = mLength;
 
     return NOERROR;
 }
 
 ECode CCppVectorInfo::GetMaxAlignSize(
-    /* [out] */ MemorySize * pAlignSize)
+    /* [out] */ MemorySize* alignSize)
 {
     Int32 size = 1;
     CarDataType dataType;
-    m_pElementTypeInfo->GetDataType(&dataType);
+    mElementTypeInfo->GetDataType(&dataType);
     if (dataType == CarDataType_Struct) {
-        ((CStructInfo *)m_pElementTypeInfo.Get())->GetMaxAlignSize(&size);
+        ((CStructInfo *)mElementTypeInfo.Get())->GetMaxAlignSize(&size);
     }
     else {
-        m_pElementTypeInfo->GetSize(&size);
+        mElementTypeInfo->GetSize(&size);
     }
 
     if (size > ALIGN_BOUND) size = ALIGN_BOUND;
 
-    *pAlignSize = size;
+    *alignSize = size;
 
     return NOERROR;
 }
