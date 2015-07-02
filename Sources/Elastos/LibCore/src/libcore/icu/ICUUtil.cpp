@@ -591,7 +591,15 @@ ECode ICUUtil::GetAvailableNumberFormatLocalesNative(
     return getAvailableLocales(unum_countAvailable, unum_getAvailable, locales);
 }
 
-static ECode maybeThrowIcuException(UErrorCode errorCode)
+/**
+* Checks if an error has occurred, throwing a suitable exception if so.
+* @param env JNI environment
+* @param errorCode code to determine if it is an error
+* @return 0 if errorCode is not an error, 1 if errorCode is an error, but the
+*         creation of the exception to be thrown fails
+ * @exception thrown if errorCode represents an error
+*/
+ECode maybeThrowIcuException(UErrorCode errorCode)
 {
     if (errorCode <= U_ZERO_ERROR || errorCode >= U_ERROR_LIMIT) {
         return NOERROR;

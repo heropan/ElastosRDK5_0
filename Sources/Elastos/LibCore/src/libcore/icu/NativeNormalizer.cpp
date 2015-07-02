@@ -45,24 +45,7 @@ Int32 NativeNormalizer::ToUNormalizationMode(
     return -1;
 }
 
-static ECode maybeThrowIcuException(UErrorCode errorCode)
-{
-    if (errorCode <= U_ZERO_ERROR || errorCode >= U_ERROR_LIMIT) {
-        return NOERROR;
-    }
-
-    switch (errorCode) {
-    case U_ILLEGAL_ARGUMENT_ERROR:
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    case U_INDEX_OUTOFBOUNDS_ERROR:
-    case U_BUFFER_OVERFLOW_ERROR:
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    case U_UNSUPPORTED_ERROR:
-        return E_UNSUPPORTED_OPERATION_EXCEPTION;
-    default:
-        return E_RUNTIME_EXCEPTION;
-    }
-}
+extern ECode maybeThrowIcuException(UErrorCode errorCode);
 
 ECode NativeNormalizer::NormalizeImpl(
     /* [in] */ const String& src,

@@ -17,6 +17,7 @@ module
     merge("icu/IAlphabeticIndex.car");
     merge("icu/IDateIntervalFormat.car");
     merge("icu/ITransliterator.car");
+    merge("icu/INativeConverterHelper.car");
 
     interface Elastos.Core.IComparable;
     interface Elastos.Text.ICollationKey;
@@ -111,6 +112,10 @@ module
 
     singleton class CICUHelper {
         interface IICUHelper;
+    }
+
+    singleton class CNativeConverterHelper {
+        interface INativeConverterHelper;
     }
 
     } // namespace ICU
