@@ -7,7 +7,7 @@ module
     namespace ICU {
 
     [deprecated, local]
-    interface IICUHelper {
+    interface IICUUtil {
         // --- Errors.
 
         // Just the subset of error codes needed by CharsetDecoderICU/CharsetEncoderICU.
@@ -97,18 +97,8 @@ module
 
         ToLowerCase(
             [in] String s,
-            [in] String languageTag,
-            [out] String* ls);
-
-        ToLowerCase(
-            [in] String s,
             [in] ILocale* locale,
             [out] String* ls);
-
-        ToUpperCase(
-            [in] String s,
-            [in] String languageTag,
-            [out] String* us);
 
         ToUpperCase(
             [in] String s,

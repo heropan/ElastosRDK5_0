@@ -1,15 +1,15 @@
 
-#include "CICUHelper.h"
+#include "CICUUtil.h"
 #include "ICUUtil.h"
 
 namespace Libcore {
 namespace ICU {
 
-CAR_SINGLETON_IMPL(CICUHelper)
+CAR_SINGLETON_IMPL(CICUUtil)
 
-CAR_INTERFACE_IMPL(CICUHelper, Singleton, IICUHelper)
+CAR_INTERFACE_IMPL(CICUUtil, Singleton, IICUUtil)
 
-ECode CICUHelper::GetISOLanguages(
+ECode CICUUtil::GetISOLanguages(
     /* [out, callee] */ ArrayOf<String>** languages)
 {
     VALIDATE_NOT_NULL(languages);
@@ -17,7 +17,7 @@ ECode CICUHelper::GetISOLanguages(
     return ICUUtil::GetISOLanguages(languages);
 }
 
-ECode CICUHelper::GetISOCountries(
+ECode CICUUtil::GetISOCountries(
     /* [out, callee] */ ArrayOf<String>** countries)
 {
     VALIDATE_NOT_NULL(countries);
@@ -25,7 +25,7 @@ ECode CICUHelper::GetISOCountries(
     return ICUUtil::GetISOCountries(countries);
 }
 
-ECode CICUHelper::LocaleFromIcuLocaleId(
+ECode CICUUtil::LocaleFromIcuLocaleId(
     /* [in] */ const String& localeId,
     /* [out] */ ILocale** locale)
 {
@@ -34,7 +34,7 @@ ECode CICUHelper::LocaleFromIcuLocaleId(
     return ICUUtil::LocaleFromIcuLocaleId(localeId, locale);
 }
 
-ECode CICUHelper::GetAvailableLocales(
+ECode CICUUtil::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -42,7 +42,7 @@ ECode CICUHelper::GetAvailableLocales(
     return ICUUtil::GetAvailableLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableBreakIteratorLocales(
+ECode CICUUtil::GetAvailableBreakIteratorLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -50,7 +50,7 @@ ECode CICUHelper::GetAvailableBreakIteratorLocales(
     return ICUUtil::GetAvailableBreakIteratorLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableCalendarLocales(
+ECode CICUUtil::GetAvailableCalendarLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -58,7 +58,7 @@ ECode CICUHelper::GetAvailableCalendarLocales(
     return ICUUtil::GetAvailableCalendarLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableCollatorLocales(
+ECode CICUUtil::GetAvailableCollatorLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -66,7 +66,7 @@ ECode CICUHelper::GetAvailableCollatorLocales(
     return ICUUtil::GetAvailableCollatorLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableDateFormatLocales(
+ECode CICUUtil::GetAvailableDateFormatLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -74,7 +74,7 @@ ECode CICUHelper::GetAvailableDateFormatLocales(
     return ICUUtil::GetAvailableDateFormatLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableDateFormatSymbolsLocales(
+ECode CICUUtil::GetAvailableDateFormatSymbolsLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -82,7 +82,7 @@ ECode CICUHelper::GetAvailableDateFormatSymbolsLocales(
     return ICUUtil::GetAvailableDateFormatSymbolsLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableDecimalFormatSymbolsLocales(
+ECode CICUUtil::GetAvailableDecimalFormatSymbolsLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -90,7 +90,7 @@ ECode CICUHelper::GetAvailableDecimalFormatSymbolsLocales(
     return ICUUtil::GetAvailableDateFormatSymbolsLocales(locales);
 }
 
-ECode CICUHelper::GetAvailableNumberFormatLocales(
+ECode CICUUtil::GetAvailableNumberFormatLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
@@ -98,7 +98,7 @@ ECode CICUHelper::GetAvailableNumberFormatLocales(
     return ICUUtil::GetAvailableNumberFormatLocales(locales);
 }
 
-ECode CICUHelper::GetBestDateTimePattern(
+ECode CICUUtil::GetBestDateTimePattern(
     /* [in] */ const String& skeleton,
     /* [in] */ ILocale* locale,
     /* [out] */ String* rst)
@@ -109,7 +109,7 @@ ECode CICUHelper::GetBestDateTimePattern(
     return ICUUtil::GetBestDateTimePattern(skeleton, locale, rst);
 }
 
-ECode CICUHelper::GetIcuVersion(
+ECode CICUUtil::GetIcuVersion(
     /* [out] */ String* icuVersion)
 {
     VALIDATE_NOT_NULL(icuVersion);
@@ -117,7 +117,7 @@ ECode CICUHelper::GetIcuVersion(
     return NOERROR;
 }
 
-ECode CICUHelper::GetUnicodeVersion(
+ECode CICUUtil::GetUnicodeVersion(
     /* [out] */ String* unicodeVersion)
 {
     VALIDATE_NOT_NULL(unicodeVersion);
@@ -125,36 +125,14 @@ ECode CICUHelper::GetUnicodeVersion(
     return NOERROR;
 }
 
-ECode CICUHelper::ToLowerCase(
-    /* [in] */ const String& s,
-    /* [in] */ const String& languageTag,
-    /* [out] */ String* ls)
-{
-    VALIDATE_NOT_NULL(ls);
-
-    *ls = ICUUtil::ToLowerCase(s, languageTag);
-    return NOERROR;
-}
-
-ECode CICUHelper::ToUpperCase(
-    /* [in] */ const String& s,
-    /* [in] */ const String& languageTag,
-    /* [out] */ String* us)
-{
-    VALIDATE_NOT_NULL(us);
-
-    *us = ICUUtil::ToUpperCase(s, languageTag);
-    return NOERROR;
-}
-
-ECode CICUHelper::GetAvailableCurrencyCodes(
+ECode CICUUtil::GetAvailableCurrencyCodes(
     /* [out] */ ArrayOf<String>** codes)
 {
     VALIDATE_NOT_NULL(codes);
     return ICUUtil::GetAvailableCurrencyCodes(codes);
 }
 
-ECode CICUHelper::GetCurrencyCode(
+ECode CICUUtil::GetCurrencyCode(
     /* [in] */ const String& locale,
     /* [out] */ String* currencyCode)
 {
@@ -164,18 +142,18 @@ ECode CICUHelper::GetCurrencyCode(
     return NOERROR;
 }
 
-ECode CICUHelper::GetCurrencyDisplayName(
+ECode CICUUtil::GetCurrencyDisplayName(
     /* [in] */ ILocale* locale,
     /* [in] */ const String& currencyCode,
     /* [out] */ String* displayName)
 {
     VALIDATE_NOT_NULL(locale);
     VALIDATE_NOT_NULL(displayName);
-    
+
     return ICUUtil::GetCurrencyDisplayName(locale, currencyCode, displayName);
 }
 
-ECode CICUHelper::GetCurrencyFractionDigits(
+ECode CICUUtil::GetCurrencyFractionDigits(
     /* [in] */ const String& currencyCode,
     /* [out] */ Int32* currencyFractionDigits)
 {
@@ -185,7 +163,7 @@ ECode CICUHelper::GetCurrencyFractionDigits(
     return NOERROR;
 }
 
-ECode CICUHelper::GetCurrencySymbol(
+ECode CICUUtil::GetCurrencySymbol(
         /* [in] */ ILocale* locale,
         /* [in] */ const String& currencyCode,
         /* [out] */ String* currencySymbol)
@@ -196,7 +174,7 @@ ECode CICUHelper::GetCurrencySymbol(
     return ICUUtil::GetCurrencySymbol(locale, currencyCode, currencySymbol);
 }
 
-ECode CICUHelper::GetDisplayCountry(
+ECode CICUUtil::GetDisplayCountry(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale,
         /* [out] */ String* displayCountry)
@@ -208,7 +186,7 @@ ECode CICUHelper::GetDisplayCountry(
     return ICUUtil::GetDisplayCountry(targetLocale, locale, displayCountry);
 }
 
-ECode CICUHelper::GetDisplayLanguage(
+ECode CICUUtil::GetDisplayLanguage(
         /* [in] */ ILocale* targetLocale,
         /* [in] */ ILocale* locale,
         /* [out] */ String* displayLanguage)
@@ -220,7 +198,7 @@ ECode CICUHelper::GetDisplayLanguage(
     return ICUUtil::GetDisplayLanguage(targetLocale, locale, displayLanguage);
 }
 
-ECode CICUHelper::GetDisplayVariant(
+ECode CICUUtil::GetDisplayVariant(
     /* [in] */ ILocale* variant,
     /* [in] */ ILocale* locale,
     /* [out] */ String* displayVariant)
@@ -233,7 +211,7 @@ ECode CICUHelper::GetDisplayVariant(
     return NOERROR;
 }
 
-ECode CICUHelper::GetDisplayScript(
+ECode CICUUtil::GetDisplayScript(
     /* [in] */ ILocale* targetLocale,
     /* [in] */ ILocale* locale,
     /* [out] */ String* script)
@@ -246,7 +224,7 @@ ECode CICUHelper::GetDisplayScript(
     return NOERROR;
 }
 
-ECode CICUHelper::GetISO3Country(
+ECode CICUUtil::GetISO3Country(
     /* [in] */ const String& languageTag,
     /* [out] */ String* ISO3country)
 {
@@ -256,7 +234,7 @@ ECode CICUHelper::GetISO3Country(
     return NOERROR;
 }
 
-ECode CICUHelper::GetISO3Language(
+ECode CICUUtil::GetISO3Language(
     /* [in] */ const String& languageTag,
     /* [out] */ String* ISO3Language)
 {
@@ -266,16 +244,17 @@ ECode CICUHelper::GetISO3Language(
     return NOERROR;
 }
 
-ECode CICUHelper::AddLikelySubtags(
+ECode CICUUtil::AddLikelySubtags(
     /* [in] */ const String& locale,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
 
     *result = ICUUtil::AddLikelySubtags(locale);
+    return NOERROR;
 }
 
-ECode CICUHelper::AddLikelySubtags(
+ECode CICUUtil::AddLikelySubtags(
     /* [in] */ ILocale* locale,
     /* [out] */ ILocale** target)
 {
@@ -286,7 +265,7 @@ ECode CICUHelper::AddLikelySubtags(
     return NOERROR;
 }
 
-ECode CICUHelper::GetDateFormatOrder(
+ECode CICUUtil::GetDateFormatOrder(
     /* [in] */ const String& pattern,
     /* [out, callee] */ ArrayOf<Char32>** locales)
 {
@@ -294,14 +273,14 @@ ECode CICUHelper::GetDateFormatOrder(
     return ICUUtil::GetDateFormatOrder(pattern, locales);
 }
 
-ECode CICUHelper::GetCldrVersion(
+ECode CICUUtil::GetCldrVersion(
     /* [out] */ String* cldrVersion)
 {
     VALIDATE_NOT_NULL(cldrVersion);
     return ICUUtil::GetCldrVersion(cldrVersion);
 }
 
-ECode CICUHelper::ToLowerCase(
+ECode CICUUtil::ToLowerCase(
         /* [in] */ const String& s,
         /* [in] */ ILocale* locale,
         /* [out] */ String* ls)
@@ -309,12 +288,10 @@ ECode CICUHelper::ToLowerCase(
     VALIDATE_NOT_NULL(locale);
     VALIDATE_NOT_NULL(ls);
 
-    String languageTag;
-    locale->ToLanguageTag(&languageTag);
-    return ToLowerCase(s, languageTag, ls);
+    return ToLowerCase(s, locale, ls);
 }
 
-ECode CICUHelper::ToUpperCase(
+ECode CICUUtil::ToUpperCase(
     /* [in] */ const String& s,
     /* [in] */ ILocale* locale,
     /* [out] */ String* us)
@@ -322,12 +299,10 @@ ECode CICUHelper::ToUpperCase(
     VALIDATE_NOT_NULL(locale);
     VALIDATE_NOT_NULL(us);
 
-    String languageTag;
-    locale->ToLanguageTag(&languageTag);
-    return ToUpperCase(s, languageTag, us);
+    return ToUpperCase(s, locale, us);
 }
 
-ECode CICUHelper::GetCurrencyNumericCode(
+ECode CICUUtil::GetCurrencyNumericCode(
     /* [in] */ const String& currencyCode,
     /* [out] */ Int32* currencyFractionDigits)
 {
@@ -336,7 +311,7 @@ ECode CICUHelper::GetCurrencyNumericCode(
     return GetCurrencyNumericCode(currencyCode, currencyFractionDigits);
 }
 
-ECode CICUHelper::GetScript(
+ECode CICUUtil::GetScript(
     /* [in] */ const String& locale,
     /* [out] */ String* script)
 {
@@ -345,13 +320,13 @@ ECode CICUHelper::GetScript(
     return NOERROR;
 }
 
-ECode CICUHelper::SetDefaultLocale(
+ECode CICUUtil::SetDefaultLocale(
     /* [in] */ const String& languageTag)
 {
     return ICUUtil::SetDefaultLocale(languageTag);
 }
 
-ECode CICUHelper::GetDefaultLocale(
+ECode CICUUtil::GetDefaultLocale(
     /* [out] */ String* defaultLocale)
 {
     VALIDATE_NOT_NULL(defaultLocale)
@@ -359,7 +334,7 @@ ECode CICUHelper::GetDefaultLocale(
     return ICUUtil::GetDefaultLocale(defaultLocale);
 }
 
-ECode CICUHelper::LocalesFromStrings(
+ECode CICUUtil::LocalesFromStrings(
     /* [in] */ ArrayOf<String>* localeNames,
     /* [out, callee] */ ArrayOf<ILocale*>** locales)
 {

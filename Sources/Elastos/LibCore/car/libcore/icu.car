@@ -4,7 +4,7 @@ module
     merge("icu/Exceptions.car");
     merge("icu/ICollationKeyICU.car");
     merge("icu/ILocaleData.car");
-    merge("icu/IICUHelper.car");
+    merge("icu/IICUUtil.car");
     merge("icu/IRuleBasedCollatorICU.car");
     merge("icu/ITimeZoneNames.car");
     merge("icu/ICollationElementIteratorICU.car");
@@ -110,8 +110,8 @@ module
         interface ITransliterator;
     }
 
-    singleton class CICUHelper {
-        interface IICUHelper;
+    singleton class CICUUtil {
+        interface IICUUtil;
     }
 
     singleton class CNativeConverterHelper {

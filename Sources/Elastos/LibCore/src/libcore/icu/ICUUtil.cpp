@@ -7,7 +7,7 @@
 #include <UniquePtr.h>
 #include "CBasicLruCache.h"
 #include "AutoLock.h"
-// #include "CCollections.h"
+#include "utility/Collections.h"
 #include "Set.h"
 #include "CHashMap.h"
 #include "CHashSet.h"
@@ -42,7 +42,7 @@
 
 using Elastos::Core::UniquePtr;
 using Libcore::Utility::CBasicLruCache;
-using Elastos::Utility::ICollections;
+using Elastos::Utility::Collections;
 using Elastos::Utility::ISet;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CHashSet;
@@ -165,8 +165,8 @@ ECode ICUUtil::GetISOCountries(
 }
 
 void ICUUtil::ParseLangScriptRegionAndVariants(
-    const String& string,
-    AutoPtr<ArrayOf<String> > outputArray)
+    /* [in] */ const String& string,
+    /* [in] */ ArrayOf<String>* outputArray)
 {
     const Int32 first = string.IndexOf('_');
     const Int32 second = string.IndexOf('_', first + 1);
@@ -253,18 +253,12 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
     // @ == ULOC_KEYWORD_SEPARATOR_UNICODE (uloc.h).
     const Int32 extensionsIndex = localeId.IndexOf('@');
 
-    AutoPtr<ICollections> pCollections;
-#if 0 // TODO: Waiting for class CCollections
-    CCollections::AcquireSingleton((ICollections**)&pCollections);
-#else
-    assert(0);
-#endif
     AutoPtr<IMap> pExtensionsMap;
-    pCollections->GetEmptyMap((IMap**)&pExtensionsMap);
+    Collections::GetEmptyMap((IMap**)&pExtensionsMap);
     AutoPtr<IMap> pUnicodeKeywordsMap;
-    pCollections->GetEmptyMap((IMap**)&pUnicodeKeywordsMap);
+    Collections::GetEmptyMap((IMap**)&pUnicodeKeywordsMap);
     AutoPtr<ISet> pUnicodeAttributeSet;
-    pCollections->GetEmptySet((ISet**)&pUnicodeAttributeSet);
+    Collections::GetEmptySet((ISet**)&pUnicodeAttributeSet);
 
     if (extensionsIndex != -1) {
         CHashMap::New((IMap**)&pExtensionsMap);
@@ -335,7 +329,6 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
         ParseLangScriptRegionAndVariants(localeId.Substring(0, extensionsIndex), pOutputArray);
     }
 
-#if 0 // TODO: Waiting for CLocale
     CLocale::New((*pOutputArray)[IDX_LANGUAGE],
         (*pOutputArray)[IDX_REGION],
         (*pOutputArray)[IDX_VARIANT],
@@ -345,9 +338,6 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
         (IMap*)pExtensionsMap,
         TRUE,
         locale);
-#else
-    assert(0);
-#endif
     return NOERROR;
 }
 
@@ -359,7 +349,9 @@ ECode ICUUtil::LocalesFromStrings(
 
     AutoPtr<ArrayOf<ILocale*> > temp = ArrayOf<ILocale*>::Alloc(localeNames.GetLength());
     for (Int32 i = 0; i < localeNames.GetLength(); ++i) {
-        FAIL_RETURN(LocaleFromIcuLocaleId(localeNames[i], &(*temp)[i]));
+        AutoPtr<ILocale> locale;
+        FAIL_RETURN(LocaleFromIcuLocaleId(localeNames[i], (ILocale**)&locale));
+        temp->Set(i, locale);
     }
     *locales = temp;
     REFCOUNT_ADD(*locales)
@@ -377,19 +369,17 @@ ECode ICUUtil::GetBestDateTimePattern(
     AutoPtr<ICharSequence> key_cs;
     CStringWrapper::New(key, (ICharSequence**)&key_cs);
     synchronized(CACHED_PATTERNS) {
-        String pattern;
         AutoPtr<ICharSequence> pattern_cs;
         CACHED_PATTERNS->Get(key_cs, (IInterface**)(ICharSequence**)&pattern_cs);
-        pattern_cs->ToString(&pattern);
-        if (pattern.IsNull()) {
-            ECode ec = GetBestDateTimePatternNative(skeleton, languageTag, &pattern);
-            if (NOERROR != ec) {
-                return ec;
-            }
-            AutoPtr<ICharSequence> old;
-            CACHED_PATTERNS->Put(key_cs, pattern_cs, (IInterface**)(ICharSequence**)&old);
+        if (pattern_cs == NULL) {
+            String pattern;
+            FAIL_RETURN(GetBestDateTimePatternNative(skeleton, languageTag, &pattern))
+            CStringWrapper::New(pattern, (ICharSequence**)&pattern_cs);
+            AutoPtr<IInterface> old;
+            CACHED_PATTERNS->Put(key_cs, pattern_cs, (IInterface**)&old);
+        } else {
+            pattern_cs->ToString(rst);
         }
-        *rst = pattern;
     }
 
     return NOERROR;
@@ -402,13 +392,11 @@ ECode ICUUtil::GetAvailableLocales(
 
     if (sAvailableLocalesCache == NULL) {
         AutoPtr<ArrayOf<String> > _locales;
-        FAIL_RETURN(GetAvailableLocalesNative((ArrayOf<String>**)&_locales));
-        FAIL_RETURN(LocalesFromStrings(*_locales, (ArrayOf<ILocale*>**)&sAvailableLocalesCache));
+        FAIL_RETURN(GetAvailableLocalesNative((ArrayOf<String>**)&_locales))
+        FAIL_RETURN(LocalesFromStrings(*_locales, (ArrayOf<ILocale*>**)&sAvailableLocalesCache))
     }
-    AutoPtr<ArrayOf<ILocale*> > temp = ArrayOf<ILocale*>::Alloc(sAvailableLocalesCache->GetLength());
-    for (Int32 i = 0; i < sAvailableLocalesCache->GetLength(); i++) {
-        temp->Set(i, (*sAvailableLocalesCache)[i]);
-    }
+    AutoPtr<ArrayOf<ILocale*> > temp = sAvailableLocalesCache->Clone();
+
     *locales = temp;
     REFCOUNT_ADD(*locales)
     return NOERROR;
@@ -502,12 +490,31 @@ String ICUUtil::GetUnicodeVersion()
 
 String ICUUtil::ToLowerCase(
     /* [in] */ const String& s,
+    /* [in] */ ILocale* locale)
+{
+    String localeStr;
+    locale->ToLanguageTag(&localeStr);
+    return ToLowerCase(s, localeStr);
+}
+
+String ICUUtil::ToUpperCase(
+    /* [in] */ const String& s,
+    /* [in] */ ILocale* locale)
+{
+    String localeStr;
+    locale->ToLanguageTag(&localeStr);
+    return ToUpperCase(s, localeStr);
+}
+
+String ICUUtil::ToLowerCase(
+    /* [in] */ const String& s,
     /* [in] */ const String& languageTag)
 {
     if (s.IsNull()) {
         return String(NULL);
     }
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
@@ -526,6 +533,7 @@ String ICUUtil::ToUpperCase(
         return String(NULL);
     }
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
@@ -767,11 +775,13 @@ String ICUUtil::GetDisplayCountryNative(
     /* [in] */ const String& languageTag)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
     }
     NATIVE(Locale) icuTargetLocale;
+    icuTargetLocale.setToBogus();
     icuTargetLocale = NATIVE(Locale)::createFromName(targetLanguageTag);
     if (icuTargetLocale.isBogus()) {
         return String(NULL);
@@ -786,11 +796,13 @@ String ICUUtil::GetDisplayLanguageNative(
     /* [in] */ const String& languageTag)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
     }
     NATIVE(Locale) icuTargetLocale;
+    icuTargetLocale.setToBogus();
     icuTargetLocale = NATIVE(Locale)::createFromName(targetLanguageTag);
     if (icuTargetLocale.isBogus()) {
         return String(NULL);
@@ -817,11 +829,13 @@ String ICUUtil::GetDisplayVariantNative(
     /* [in] */ const String& languageTag)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
     }
     NATIVE(Locale) icuTargetLocale;
+    icuTargetLocale.setToBogus();
     icuTargetLocale = NATIVE(Locale)::createFromName(targetLanguageTag);
     if (icuTargetLocale.isBogus()) {
         return String(NULL);
@@ -835,6 +849,7 @@ String ICUUtil::GetISO3Country(
     /* [in] */ const String& languageTag)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
@@ -846,6 +861,7 @@ String ICUUtil::GetISO3Language(
     /* [in] */ const String& languageTag)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
@@ -882,11 +898,13 @@ String ICUUtil::GetDisplayScriptNative(
     const String& languageTag)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return String(NULL);
     }
     NATIVE(Locale) icuTargetLocale;
+    icuTargetLocale.setToBogus();
     icuTargetLocale = NATIVE(Locale)::createFromName(targetLanguageTag);
     if (icuTargetLocale.isBogus()) {
         return String(NULL);
@@ -900,6 +918,7 @@ String ICUUtil::GetScript(
     /* [in] */ const String& locale)
 {
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus())
         return String(NULL);
@@ -1191,6 +1210,7 @@ Boolean ICUUtil::InitLocaleDataNative(
     }
 
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return NOERROR;
@@ -1356,7 +1376,9 @@ ECode ICUUtil::GetBestDateTimePatternNative(
         const String& languageTag,
         String* rev)
 {
-    NATIVE(Locale) icuLocale = NATIVE(Locale)::createFromName(languageTag);
+    NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
+    icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         *rev = String(NULL);
         return NOERROR;
@@ -1522,7 +1544,9 @@ ILocale* ICUUtil::AddLikelySubtags(
 ECode ICUUtil::SetDefaultLocale(
     /* [in] */ const String& languageTag)
 {
-    NATIVE(Locale) icuLocale = NATIVE(Locale)::createFromName(languageTag);
+    NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
+    icuLocale = NATIVE(Locale)::createFromName(languageTag);
     if (icuLocale.isBogus()) {
         return NOERROR;
     }

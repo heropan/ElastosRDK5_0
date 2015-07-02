@@ -1,9 +1,9 @@
 
-#ifndef __LIBCORE_ICU_CICUHELPER_H__
-#define __LIBCORE_ICU_CICUHELPER_H__
+#ifndef __LIBCORE_ICU_CICUUTIL_H__
+#define __LIBCORE_ICU_CICUUTIL_H__
 
 #include "Singleton.h"
-#include "_Libcore_ICU_CICUHelper.h"
+#include "_Libcore_ICU_CICUUtil.h"
 
 using Elastos::Core::Singleton;
 using Elastos::Utility::ILocale;
@@ -11,9 +11,9 @@ using Elastos::Utility::ILocale;
 namespace Libcore {
 namespace ICU {
 
-CarClass(CICUHelper)
+CarClass(CICUUtil)
     , public Singleton
-    , public IICUHelper
+    , public IICUUtil
 {
 public:
     CAR_SINGLETON_DECL()
@@ -78,19 +78,9 @@ public:
         /* [in] */ ILocale* locale,
         /* [out] */ String* ls);
 
-    CARAPI ToLowerCase(
-        /* [in] */ const String& s,
-        /* [in] */ const String& languageTag,
-        /* [out] */ String* ls);
-
     CARAPI ToUpperCase(
         /* [in] */ const String& s,
         /* [in] */ ILocale* locale,
-        /* [out] */ String* us);
-
-    CARAPI ToUpperCase(
-        /* [in] */ const String& s,
-        /* [in] */ const String& languageTag,
         /* [out] */ String* us);
 
     CARAPI GetAvailableCurrencyCodes(
@@ -178,4 +168,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif // __LIBCORE_ICU_CICUHELPER_H__
+#endif // __LIBCORE_ICU_CICUUTILHELPER_H__

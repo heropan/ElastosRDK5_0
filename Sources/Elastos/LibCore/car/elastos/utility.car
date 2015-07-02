@@ -918,6 +918,16 @@ module
                 [in] String country,
                 [in] String variant);
 
+            constructor(
+                [in] String language,
+                [in] String country,
+                [in] String variant,
+                [in] String scriptCode,
+                [in] ISet* unicodeAttributes,
+                [in] IMap* unicodeKeywords,
+                [in] IMap* extensions,
+                [in] Boolean hasValidatedFields);
+
             interface ILocale;
             interface ICloneable;
             interface ISerializable;

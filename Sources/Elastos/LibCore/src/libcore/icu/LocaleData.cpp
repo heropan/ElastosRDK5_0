@@ -17,19 +17,15 @@ CAR_INTERFACE_IMPL(LocaleData, Object, ILocaleData)
 HashMap< String, AutoPtr<ILocaleData> > LocaleData::sLocaleDataCache;
 Object LocaleData::sLocaleDataCacheLock;
 
-Boolean LocaleData::sIsInited = FALSE; //Init();
+Boolean LocaleData::sIsInited = Init();
 
 Boolean LocaleData::Init()
 {
-    if (!sIsInited) {
-        sIsInited = TRUE;
+    Get(CLocale::ROOT);
+    Get(CLocale::US);
+    Get(CLocale::GetDefault());
 
-        Get(CLocale::ROOT);
-        Get(CLocale::US);
-        Get(CLocale::GetDefault());
-    }
-
-    return sIsInited;
+    return TRUE;
 }
 
 LocaleData::LocaleData()
@@ -48,8 +44,8 @@ LocaleData::LocaleData()
     , mShortStandAloneWeekdayNames(NULL)
     , mTinyStandAloneWeekdayNames(NULL)
 {
-    Init();
 }
+
 AutoPtr<ILocale> LocaleData::MapInvalidAndNullLocales(
         /* [in] */ ILocale* locale)
 {

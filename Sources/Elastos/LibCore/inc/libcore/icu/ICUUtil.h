@@ -85,11 +85,11 @@ public:
 
     static CARAPI_(String) ToLowerCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& languageTag);
+        /* [in] */ ILocale* locale);
 
     static CARAPI_(String) ToUpperCase(
         /* [in] */ const String& s,
-        /* [in] */ const String& languageTag);
+        /* [in] */ ILocale* locale);
 
     static CARAPI GetAvailableCurrencyCodes(
         /* [out, callee] */ ArrayOf<String>** codes);
@@ -152,8 +152,8 @@ public:
         /* [in] */ ILocale* locale);
 
     static CARAPI_(String) GetDisplayScriptNative(
-        const String& targetLanguageTag,
-        const String& languageTag);
+        /* [in] */ const String& targetLanguageTag,
+        /* [in] */ const String& languageTag);
 
     static CARAPI_(String) GetISO3Country(
         /* [in] */ const String& languageTag);
@@ -182,6 +182,14 @@ public:
         /* [out] */ String* defaultLocale);
 
 private:
+    static CARAPI_(String) ToLowerCase(
+        /* [in] */ const String& s,
+        /* [in] */ const String& languageTag);
+
+    static CARAPI_(String) ToUpperCase(
+        /* [in] */ const String& s,
+        /* [in] */ const String& languageTag);
+
     static CARAPI GetAvailableBreakIteratorLocalesNative(
         /* [out, callee] */ ArrayOf<String>** locales);
 
@@ -215,8 +223,8 @@ private:
      * below.
      */
     static CARAPI_(void) ParseLangScriptRegionAndVariants(
-        const String& string,
-        AutoPtr<ArrayOf<String> > outputArray);
+        /* [in] */ const String& string,
+        /* [in] */ ArrayOf<String>* outputArray);
 
 public:
     static CARAPI GetBestDateTimePattern(
@@ -226,9 +234,9 @@ public:
 
 private:
     static CARAPI GetBestDateTimePatternNative(
-        const String& skeleton,
-        const String& languageTag,
-        String* rev);
+        /* [in] */ const String& skeleton,
+        /* [in] */ const String& languageTag,
+        /* [in] */ String* rev);
 
 public:
     static CARAPI GetDateFormatOrder(
@@ -248,7 +256,6 @@ private:
     static AutoPtr<ArrayOf<ILocale *> > sAvailableLocalesCache;
 
     static const Int32 IDX_LANGUAGE;
-
     static const Int32 IDX_SCRIPT;
     static const Int32 IDX_REGION;
     static const Int32 IDX_VARIANT;

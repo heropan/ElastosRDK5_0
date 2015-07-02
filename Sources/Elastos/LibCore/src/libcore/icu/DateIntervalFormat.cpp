@@ -217,7 +217,7 @@ String DateIntervalFormat::ToSkeleton(
     return s;
 }
 
-static inline Int32 getField(
+static inline Int32 GetField(
     /* [in] */ ICalendar* c,
     /* [in] */ Int32 field)
 {
@@ -229,39 +229,39 @@ static inline Int32 getField(
 Boolean DateIntervalFormat::IsMidnight(
     /* [in] */ ICalendar* c)
 {
-    return getField(c, ICalendar::HOUR_OF_DAY) ==0 &&
-        getField(c, ICalendar::MINUTE) == 0 &&
-        getField(c, ICalendar::SECOND) == 0 &&
-        getField(c, ICalendar::MILLISECOND);
+    return GetField(c, ICalendar::HOUR_OF_DAY) ==0 &&
+        GetField(c, ICalendar::MINUTE) == 0 &&
+        GetField(c, ICalendar::SECOND) == 0 &&
+        GetField(c, ICalendar::MILLISECOND);
 }
 
 Boolean DateIntervalFormat::OnTheHour(
     /* [in] */ ICalendar* c)
 {
-    return getField(c, ICalendar::MINUTE) == 0 && getField(c, ICalendar::SECOND) == 0;
+    return GetField(c, ICalendar::MINUTE) == 0 && GetField(c, ICalendar::SECOND) == 0;
 }
 
 Boolean DateIntervalFormat::FallOnDifferentDates(
     /* [in] */ ICalendar* c1,
     /* [in] */ ICalendar* c2)
 {
-    return getField(c1, ICalendar::YEAR) != getField(c2, ICalendar::YEAR) ||
-        getField(c1, ICalendar::MONTH) != getField(c2, ICalendar::MONTH) ||
-        getField(c1, ICalendar::DAY_OF_MONTH) != getField(c2, ICalendar::DAY_OF_MONTH);
+    return GetField(c1, ICalendar::YEAR) != GetField(c2, ICalendar::YEAR) ||
+        GetField(c1, ICalendar::MONTH) != GetField(c2, ICalendar::MONTH) ||
+        GetField(c1, ICalendar::DAY_OF_MONTH) != GetField(c2, ICalendar::DAY_OF_MONTH);
 }
 
 Boolean DateIntervalFormat::FallInSameMonth(
     /* [in] */ ICalendar* c1,
     /* [in] */ ICalendar* c2)
 {
-    return getField(c1, ICalendar::MONTH) == getField(c2, ICalendar::MONTH);
+    return GetField(c1, ICalendar::MONTH) == GetField(c2, ICalendar::MONTH);
 }
 
 Boolean DateIntervalFormat::FallInSameYear(
     /* [in] */ ICalendar* c1,
     /* [in] */ ICalendar* c2)
 {
-    return getField(c1, ICalendar::YEAR) == getField(c2, ICalendar::YEAR);
+    return GetField(c1, ICalendar::YEAR) == GetField(c2, ICalendar::YEAR);
 }
 
 Boolean DateIntervalFormat::IsThisYear(
@@ -273,7 +273,7 @@ Boolean DateIntervalFormat::IsThisYear(
     AutoPtr<ICalendarHelper> calendarHelper;
     CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     calendarHelper->GetInstance(timeZone, (ICalendar**)&now);
-    return getField(c, ICalendar::YEAR) == getField(now, ICalendar::YEAR);
+    return GetField(c, ICalendar::YEAR) == GetField(now, ICalendar::YEAR);
 }
 
 Int32 DateIntervalFormat::DayDistance(
@@ -288,8 +288,8 @@ Int32 DateIntervalFormat::JulianDay(
 {
     Int64 utcMs;
     c->GetTimeInMillis(&utcMs);
-    utcMs += getField(c, ICalendar::ZONE_OFFSET);
-    utcMs += getField(c, ICalendar::DST_OFFSET);
+    utcMs += GetField(c, ICalendar::ZONE_OFFSET);
+    utcMs += GetField(c, ICalendar::DST_OFFSET);
     return (Int32) (utcMs / DateIntervalFormat::DAY_IN_MS) + DateIntervalFormat::EPOCH_JULIAN_DAY;
 }
 
@@ -298,7 +298,11 @@ Int64 DateIntervalFormat::CreateDateIntervalFormat(
     /* [in] */ const String& localeName,
     /* [in] */ const String& tzName)
 {
+    if (localeName == NULL){
+        return 0;
+    }
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(localeName);
     if (icuLocale.isBogus()) {
         return 0;
@@ -309,17 +313,17 @@ Int64 DateIntervalFormat::CreateDateIntervalFormat(
     }
 
     UErrorCode status = U_ZERO_ERROR;
-      NATIVE(DateIntervalFormat)* formatter(NATIVE(DateIntervalFormat)::createInstance(UnicodeString::fromUTF8(skeleton.string()), icuLocale, status));
-      if (!U_SUCCESS(status)) {
-        return 0;
-      }
+    NATIVE(DateIntervalFormat)* formatter(NATIVE(DateIntervalFormat)::createInstance(UnicodeString::fromUTF8(skeleton.string()), icuLocale, status));
+    if (!U_SUCCESS(status)) {
+    return 0;
+    }
 
-      if (tzName.IsNull()) {
-          return 0;
-      }
+    if (tzName.IsNull()) {
+      return 0;
+    }
     formatter->adoptTimeZone(NATIVE(TimeZone)::createTimeZone(UnicodeString::fromUTF8(tzName.string())));
 
-      return reinterpret_cast<uintptr_t>(formatter);
+    return reinterpret_cast<uintptr_t>(formatter);
 }
 
 void DateIntervalFormat::DestroyDateIntervalFormat(
