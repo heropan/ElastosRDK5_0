@@ -50,7 +50,7 @@ module
          *             if the certificate is not yet valid.
          * @see #checkValidity()
          */
-        CheckValidityEx(
+        CheckValidity(
             [in] IDate* date);
 
         /**
@@ -211,7 +211,7 @@ module
          * @throws CertificateException
          *             if the certificate cannot be created or initialized.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] ArrayOf<Byte> certData,
             [out] IX509Certificate** cert);
     }

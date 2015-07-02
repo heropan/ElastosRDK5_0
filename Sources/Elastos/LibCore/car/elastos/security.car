@@ -142,10 +142,7 @@ module
     merge("../elastosx/security/cert/ICertificate.car");
     merge("../elastosx/security/cert/IX509Certificate.car");
     merge("../elastosx/security/auth/x500/IX500Principal.car");
-    merge("../elastosx/crypto/ISecretKey.car");
     merge("../elastosx/security/auth/callback/ICallback.car");
     merge("../elastosx/security/auth/callback/ICallbackHandler.car");
     merge("../elastosx/security/auth/IDestroyable.car");
-    merge("../elastosx/crypto/spec/IIvParameterSpec.car");
-    merge("../elastosx/crypto/ICipherSpi.car");
 }

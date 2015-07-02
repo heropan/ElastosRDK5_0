@@ -29,7 +29,7 @@ public:
     virtual CARAPI Verify(
         /* [in] */ IPublicKey* key) = 0;
 
-    virtual CARAPI VerifyEx(
+    virtual CARAPI Verify(
         /* [in] */ IPublicKey* key,
         /* [in] */ const String& sigProvider) = 0;
 

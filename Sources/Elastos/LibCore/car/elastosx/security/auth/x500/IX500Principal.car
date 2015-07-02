@@ -40,12 +40,12 @@ module
             GetEncoded(
                 [out, callee] ArrayOf<Byte>* encodedName);
 
-            GetNameEx(
+            GetName(
                 [in] String format,
                 [out] String* name);
 
             //IMap<String, String>
-            GetNameEx2(
+            GetName(
                 [in] String format,
                 [in] IMap* oidMap,
                 [out] String* name);

@@ -1434,7 +1434,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
         mFormatToken->SetPrecision(FormatToken::DEFAULT_PRECISION);
     }
 
-    AutoPtr<StringBuilder> result = new StringBuilder;
+    AutoPtr<StringBuilder> result = new StringBuilder();
     switch (mConversionType) {
         case 'a': case 'A':
             TransformA(result);
@@ -1457,9 +1457,9 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
     mFormatToken->SetPrecision(FormatToken::UNSET);
 
     Int32 startIndex = 0;
-    Char32 minusSign;
-//    mLocaleData->GetMinusSign(&minusSign);
-    if (result->GetCharAt(0) == minusSign) {
+    String minusSign;
+    mLocaleData->GetMinusSign(&minusSign);
+    if (StartsWithMinusSign(result->ToString(), minusSign)) {
         if (mFormatToken->mFlagParenthesis) {
             return WrapParentheses(result);
         }
@@ -1476,7 +1476,8 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
     }
 
     Char32 firstChar = result->GetCharAt(0);
-    if (mFormatToken->mFlagZero && (firstChar == '+' || firstChar == minusSign)) {
+    if (mFormatToken->mFlagZero && (firstChar == '+'
+        || StartsWithMinusSign(result->ToString(), minusSign))) {
         startIndex = 1;
     }
 
@@ -1484,6 +1485,26 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
         startIndex += 2;
     }
     return Padding(result, startIndex);
+}
+
+Boolean CFormatter::StartsWithMinusSign(
+    /* [in] */ const String& cs,
+    /* [in] */ const String& minusSign)
+{
+    if (cs.GetByteLength() < minusSign.GetByteLength()) {
+        return FALSE;
+    }
+
+    AutoPtr<ArrayOf<Char32> > lc = cs.GetChars();
+    AutoPtr<ArrayOf<Char32> > rc = minusSign.GetChars();
+
+    for (Int32 i = 0; i < lc->GetLength(); ++i) {
+        if ((*lc)[i] != (*rc)[i]) {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
 
 void CFormatter::TransformE(

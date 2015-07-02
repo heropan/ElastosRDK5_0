@@ -1,0 +1,40 @@
+
+module
+{
+    merge("crypto/ICipher.car");
+    merge("crypto/ICipherInputStream.car");
+    merge("crypto/ICipherOutputStream.car");
+    merge("crypto/ICipherSpi.car");
+    merge("crypto/IEncryptedPrivateKeyInfo.car");
+    merge("crypto/IExemptionMechanism.car");
+    merge("crypto/IExemptionMechanismSpi.car");
+    merge("crypto/ISecretKey.car");
+    merge("crypto/IKeyAgreement.car");
+
+    merge("crypto/interfaces/IDHKey.car");
+    merge("crypto/interfaces/IDHPrivateKey.car");
+    merge("crypto/interfaces/IDHPublicKey.car");
+    merge("crypto/interfaces/IPBEKey.car");
+
+    merge("crypto/spec/IDESKeySpec.car");
+    merge("crypto/spec/IDESedeKeySpec.car");
+    merge("crypto/spec/IDHGenParameterSpec.car");
+    merge("crypto/spec/IDHParameterSpec.car");
+    merge("crypto/spec/IDHPrivateKeySpec.car");
+    merge("crypto/spec/IDHPublicKeySpec.car");
+    merge("crypto/spec/IGCMParameterSpec.car");
+    merge("crypto/spec/IIvParameterSpec.car");
+    merge("crypto/spec/IOAEPParameterSpec.car");
+    merge("crypto/spec/IPBEKeySpec.car");
+    merge("crypto/spec/IPBEParameterSpec.car");
+    merge("crypto/spec/IPSource.car");
+    merge("crypto/spec/IRC2ParameterSpec.car");
+    merge("crypto/spec/IRC5ParameterSpec.car");
+    merge("crypto/spec/ISecretKeySpec.car");
+
+//    namespace Elastosx {
+//    namespace Crypto {
+
+//    } // namespace Xml
+//    } // namespace Elastosx
+}

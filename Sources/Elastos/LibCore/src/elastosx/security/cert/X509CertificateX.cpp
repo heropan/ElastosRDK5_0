@@ -19,7 +19,7 @@ CARAPI X509Certificate::GetInstance(
     return E_NOT_IMPLEMENTED;
 }
 
-CARAPI X509Certificate::GetInstanceEx(
+CARAPI X509Certificate::GetInstance(
     /* [in] */ ArrayOf<Byte>* certData,
     /* [out] */ IX509Certificate** cert)
 {

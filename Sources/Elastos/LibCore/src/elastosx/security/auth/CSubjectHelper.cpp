@@ -24,21 +24,21 @@ ECode CSubjectHelper::DoAsPrivileged(
     return CSubject::DoAsPrivileged(subject, action, context, obj);
 }
 
-ECode CSubjectHelper::DoAsEx(
+ECode CSubjectHelper::DoAs(
     /* [in] */ ISubject *subject,
     /* [in] */ IPrivilegedExceptionAction *action,
     /* [out] */ IInterface **obj)
 {
-    return CSubject::DoAsEx(subject, action, obj);
+    return CSubject::DoAs(subject, action, obj);
 }
 
-ECode CSubjectHelper::DoAsPrivilegedEx(
+ECode CSubjectHelper::DoAsPrivileged(
     /* [in] */ ISubject *subject,
     /* [in] */ IPrivilegedExceptionAction *action,
     /* [in] */ IAccessControlContext *context,
     /* [out] */ IInterface **obj)
 {
-    return CSubject::DoAsPrivilegedEx(subject, action, context, obj);
+    return CSubject::DoAsPrivileged(subject, action, context, obj);
 }
 
 ECode CSubjectHelper::GetSubject(

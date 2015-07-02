@@ -42,12 +42,12 @@ public:
         /* [in] */ IAccessControlContext *context,
         /* [out] */ IInterface **obj);
 
-    static CARAPI DoAsEx(
+    static CARAPI DoAs(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
         /* [out] */ IInterface **obj);
 
-    static CARAPI DoAsPrivilegedEx(
+    static CARAPI DoAsPrivileged(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
         /* [in] */ IAccessControlContext *context,
@@ -64,21 +64,21 @@ public:
     CARAPI GetPrincipals(
         /* [out] */ ISet **principals);
 
-    CARAPI GetPrincipalsEx(
+    CARAPI GetPrincipals(
         /* [in] */ IInterface *pC,
         /* [out] */ ISet **principals);
 
     CARAPI GetPrivateCredentials(
         /* [out] */ ISet **credentials);
 
-    CARAPI GetPrivateCredentialsEx(
+    CARAPI GetPrivateCredentials(
         /* [in] */ const ClassID& id,
         /* [out] */ ISet **credentials);
 
     CARAPI GetPublicCredentials(
         /* [out] */ ISet **credentials);
 
-    CARAPI GetPublicCredentialsEx(
+    CARAPI GetPublicCredentials(
         /* [in] */ const ClassID& id,
         /* [out] */ ISet **credentials);
 
@@ -161,7 +161,7 @@ private:
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** array);
 
-        CARAPI ToArrayEx(
+        CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* contents,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
@@ -221,7 +221,7 @@ private:
             : public SecureIterator
         {
         public:
-            SecureIteratorEx(
+            SecureIterator(
                 /* [in] */ IIterator *iterator,
                 /* [in] */ Handle32 host)
                 : SecureIterator(iterator, host)
@@ -351,7 +351,7 @@ private:
         : public PrivilegedAction
     {
     public:
-        PrivilegedActionEx(
+        PrivilegedAction(
             /* [in] */ IAccessControlContext *context,
             /* [in] */ ISubjectDomainCombiner *combiner)
             : PrivilegedAction(context)

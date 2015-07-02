@@ -160,11 +160,6 @@ ECode TimeZone::GetDisplayName(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Boolean isUsed;
-    UseDaylightTime(&isUsed);
-
-    Boolean useDaylight = daylightTime && isUsed;
-
     AutoPtr< ArrayOf<IArrayOf*> > zoneStrings;
     FAIL_RETURN(TimeZoneNames::GetZoneStrings(locale, (ArrayOf<IArrayOf*>**)&zoneStrings))
     String result;

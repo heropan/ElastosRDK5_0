@@ -42,7 +42,7 @@ module
          *             if the specified host is unknown or the IP address could not
          *             be resolved.
          */
-        CreateSocketEx(
+        CreateSocket(
             [in] String host,
             [in] Int32 port,
             [out] ISocket** sock);
@@ -70,7 +70,7 @@ module
          *             if the specified host is unknown or the IP address could not
          *             be resolved.
          */
-         CreateSocketEx2(
+         CreateSocket(
             [in] String host,
             [in] Int32 port,
             [in] IInetAddress* localHost,
@@ -91,7 +91,7 @@ module
          * @throws IOException
          *             if an error occurs while creating a new socket.
          */
-        CreateSocketEx3(
+        CreateSocket(
             [in] IInetAddress* host,
             [in] Int32 port,
             [out] ISocket** sock);
@@ -116,7 +116,7 @@ module
          * @throws IOException
          *             if an error occurs while creating a new socket.
          */
-        CreateSocketEx4(
+        CreateSocket(
             [in] IInetAddress* address,
             [in] Int32 port,
             [in] IInetAddress* localAddress,

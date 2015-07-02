@@ -13,11 +13,11 @@ ECode CX509CertificateHelper::GetInstance(
     return X509Certificate::GetInstance(inStream, cert);
 }
 
-ECode CX509CertificateHelper::GetInstanceEx(
+ECode CX509CertificateHelper::GetInstance(
     /* [in] */ const ArrayOf<Byte>& certData,
     /* [out] */ IX509Certificate **cert)
 {
-    return X509Certificate::GetInstanceEx(certData, cert);
+    return X509Certificate::GetInstance(certData, cert);
 }
 
 }

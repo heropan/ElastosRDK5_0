@@ -45,7 +45,7 @@ module
          *         returned set of {@code Principal}s do not affect this {@code
          *         Subject}'s set.
          */
-        GetPrincipalsEx(
+        GetPrincipals(
             [in] IInterface* c,
             [out] ISet** principals);
 
@@ -68,7 +68,7 @@ module
          *         returned set of credentials do not affect this {@code Subject}'s
          *         credentials.
          */
-        GetPrivateCredentialsEx(
+        GetPrivateCredentials(
             [in] ClassID id,
             [out] ISet** credentials);
 
@@ -91,7 +91,7 @@ module
          *         returned set of credentials do not affect this {@code Subject}'s
          *         credentials.
          */
-        GetPublicCredentialsEx(
+        GetPublicCredentials(
             [in] ClassID id,
             [out] ISet** credentials);
 
@@ -181,7 +181,7 @@ module
          *             if running the {@code action} throws an exception.
          */
         //@SuppressWarnings("unchecked")
-        DoAsEx(
+        DoAs(
             [in] ISubject* subject,
             [in] IPrivilegedExceptionAction * action,
             [out] IInterface** obj);
@@ -204,7 +204,7 @@ module
          *             if running the {@code action} throws an exception.
          */
         //@SuppressWarnings("unchecked")
-        DoAsPrivilegedEx(
+        DoAsPrivileged(
         [in] ISubject* subject,
         [in] IPrivilegedExceptionAction* action,
         [in] IAccessControlContext* context,

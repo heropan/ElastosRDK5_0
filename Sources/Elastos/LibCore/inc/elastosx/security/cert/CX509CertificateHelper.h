@@ -16,7 +16,7 @@ public:
         /* [in] */ IInputStream *inStream,
         /* [out] */ IX509Certificate **cert);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ const ArrayOf<Byte>& certData,
         /* [out] */ IX509Certificate **cert);
 };

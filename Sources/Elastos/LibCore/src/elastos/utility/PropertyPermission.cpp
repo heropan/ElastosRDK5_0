@@ -36,7 +36,7 @@ ECode PropertyPermission::Implies(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = NULL;
+    *result = FALSE;
     return NOERROR;
 }
 

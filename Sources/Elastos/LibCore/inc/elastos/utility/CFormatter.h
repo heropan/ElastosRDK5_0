@@ -671,6 +671,10 @@ private:
 
     CARAPI_(AutoPtr<ICharSequence>) TransformFromFloat();
 
+    CARAPI_(Boolean) StartsWithMinusSign(
+        /* [in] */ const String& cs,
+        /* [in] */ const String& minusSign);
+
     CARAPI_(void) TransformE(
         /* [in] */ StringBuilder* result);
 

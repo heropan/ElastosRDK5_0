@@ -32,7 +32,7 @@ public:
         /* [in] */ IInputStream* inStream,
         /* [out] */ IX509Certificate** cert);
 
-    static CARAPI GetInstanceEx(
+    static CARAPI GetInstance(
         /* [in] */ ArrayOf<Byte>* certData,
         /* [out] */ IX509Certificate** cert);
 
@@ -43,7 +43,7 @@ public:
 
     virtual CARAPI CheckValidity() = 0;
 
-    virtual CARAPI CheckValidityEx(
+    virtual CARAPI CheckValidity(
         /* [in] */ IDate* date) = 0;
 
     virtual CARAPI GetVersion(

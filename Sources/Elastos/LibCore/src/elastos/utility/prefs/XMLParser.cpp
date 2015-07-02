@@ -392,7 +392,7 @@ ECode XMLParser::ImportPrefs(
     //TODO
     assert(0);
     // FAIL_GOTO2(CInputSource::New(in, (IInputSource**)&is), Failed);
-    FAIL_GOTO2(sBuilder->ParseEx4(is, (IDocument**)&doc), Failed);
+    FAIL_GOTO2(sBuilder->Parse(is, (IDocument**)&doc), Failed);
 
     // check preferences' export version
     FAIL_GOTO2(doc->GetDocumentElement((IElement**)&preferences), Failed);
@@ -571,7 +571,7 @@ ECode XMLParser::ReadXmlPreferences(
         //TODO
         assert(0);
         // FAIL_GOTO(CInputSource::New(reader, (IInputSource**)&is), finally);
-        sBuilder->ParseEx4(is, (IDocument**)&document);
+        sBuilder->Parse(is, (IDocument**)&document);
 
         FAIL_GOTO(document->GetDocumentElement((IElement**)&el), finally);
         entries = SelectNodeList(el, String("entry"));

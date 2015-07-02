@@ -2,10 +2,13 @@
 #include "CBitSet.h"
 #include "Math.h"
 #include "StringBuilder.h"
+#include "ByteBuffer.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IBuffer;
+using Elastos::IO::ByteBuffer;
+using Elastos::IO::IByteBuffer;
 using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
@@ -805,13 +808,10 @@ ECode CBitSet::ValueOf(
     /* [in] */ ArrayOf<Byte>* byteArr,
     /* [out] */ IBitSet** bs)
 {
-    /*VALIDATE_NOT_NULL(bs);
-
-    AutoPtr<IByteBufferHelper> helper;
-    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
+    VALIDATE_NOT_NULL(bs);
     AutoPtr<IByteBuffer> byteBuffer;
-    helper->WrapArray((ArrayOf<Byte>*)&byteArr, (IByteBuffer**)&byteBuffer);
-    return ValueOf(byteBuffer, bs);*/
+    ByteBuffer::Wrap(byteArr, (IByteBuffer**)&byteBuffer);
+    return ValueOf(byteBuffer, bs);
 }
 
 /**

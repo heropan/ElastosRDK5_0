@@ -101,7 +101,7 @@ ECode CSubject::DoAsPrivileged(
     return DoAs_PrivilegedAction(subject, action, context, obj);
 }
 
-ECode CSubject::DoAsEx(
+ECode CSubject::DoAs(
     /* [in] */ ISubject *subject,
     /* [in] */ IPrivilegedExceptionAction *action,
     /* [out] */ IInterface **obj)
@@ -113,7 +113,7 @@ ECode CSubject::DoAsEx(
     return DoAs_PrivilegedExceptionAction(subject, action, acc, obj);
 }
 
-ECode CSubject::DoAsPrivilegedEx(
+ECode CSubject::DoAsPrivileged(
     /* [in] */ ISubject *subject,
     /* [in] */ IPrivilegedExceptionAction *action,
     /* [in] */ IAccessControlContext *context,
@@ -189,7 +189,7 @@ ECode CSubject::GetPrincipals(
     return NOERROR;
 }
 
-ECode CSubject::GetPrincipalsEx(
+ECode CSubject::GetPrincipals(
     /* [in] */ IInterface *c,
     /* [out] */ ISet **principals)
 {
@@ -207,7 +207,7 @@ ECode CSubject::GetPrivateCredentials(
     return NOERROR;
 }
 
-ECode CSubject::GetPrivateCredentialsEx(
+ECode CSubject::GetPrivateCredentials(
     /* [in] */ const ClassID& id,
     /* [out] */ ISet **credentials)
 {
@@ -272,7 +272,7 @@ ECode CSubject::GetPublicCredentials(
     return NOERROR;
 }
 
-ECode CSubject::GetPublicCredentialsEx(
+ECode CSubject::GetPublicCredentials(
     /* [in] */ const ClassID& id,
     /* [out] */ ISet **credentials)
 {
@@ -398,13 +398,13 @@ ECode CSubject::DoAs_PrivilegedAction(
         CSubjectDomainCombiner::New(subject, (ISubjectDomainCombiner**)&combiner);
     }
 
-    AutoPtr<IPrivilegedAction> dccAction = new PrivilegedActionEx(context, combiner);
+    AutoPtr<IPrivilegedAction> dccAction = new PrivilegedAction(context, combiner);
     AutoPtr<IAccessController> ac;
     CAccessController::AcquireSingleton((IAccessController**)&ac);
     AutoPtr<IInterface> priv;
     ac->DoPrivileged(dccAction, (IInterface**)&priv);
     newContext = IAccessControlContext::Probe(priv);
-    return ac->DoPrivilegedEx(action, newContext, ret);
+    return ac->DoPrivileged(action, newContext, ret);
 }
 
 ECode CSubject::DoAs_PrivilegedExceptionAction(
@@ -424,13 +424,13 @@ ECode CSubject::DoAs_PrivilegedExceptionAction(
         CSubjectDomainCombiner::New(subject, (ISubjectDomainCombiner**)&combiner);
     }
 
-    AutoPtr<IPrivilegedAction> dccAction = new PrivilegedActionEx(context, combiner);
+    AutoPtr<IPrivilegedAction> dccAction = new PrivilegedAction(context, combiner);
     AutoPtr<IAccessController> ac;
     CAccessController::AcquireSingleton((IAccessController**)&ac);
     AutoPtr<IInterface> priv;
     ac->DoPrivileged(dccAction, (IInterface**)&priv);
     newContext = IAccessControlContext::Probe(priv);
-    return ac->DoPrivilegedEx3(action, newContext, ret);
+    return ac->DoPrivileged(action, newContext, ret);
 }
 
 ECode CSubject::CheckState()
@@ -533,7 +533,7 @@ ECode CSubject::SecureSet::GetIterator(
         */
         AutoPtr<IIterator> iter;
         mElements->GetIterator((IIterator**)&iter);
-        *it = new SecureIteratorEx(iter, mHost);
+        *it = new SecureIterator(iter, mHost);
         REFCOUNT_ADD(*it)
         return NOERROR;
     }
@@ -567,11 +567,11 @@ ECode CSubject::SecureSet::ToArray(
     return AbstractSet::ToArray(array);
 }
 
-ECode CSubject::SecureSet::ToArrayEx(
+ECode CSubject::SecureSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* contents,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    return AbstractSet::ToArrayEx(contents, outArray);
+    return AbstractSet::ToArray(contents, outArray);
 }
 
 CSubject::SecureSet::SecureSet(

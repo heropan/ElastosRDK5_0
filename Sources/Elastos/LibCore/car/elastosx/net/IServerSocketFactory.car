@@ -33,7 +33,7 @@ module
          * @throws IOException
          *             if an error occurs while creating a new server socket.
          */
-        CreateServerSocketEx(
+        CreateServerSocket(
             [in] Int32 port,
             [out] IServerSocket** sock);
 
@@ -47,7 +47,7 @@ module
          * @return the created bound server socket.
          * @throws IOException if an error occurs while creating a new server socket.
          */
-        CreateServerSocketEx2(
+        CreateServerSocket(
             [in] Int32 port,
             [in] Int32 backlog,
             [out] IServerSocket** sock);
@@ -64,7 +64,7 @@ module
          * @return the created bound server socket.
          * @throws IOException if an error occurs while creating a new server socket.
          */
-        CreateServerSocketEx3(
+        CreateServerSocket(
             [in] Int32 port,
             [in] Int32 backlog,
             [in] IInetAddress* iAddress,

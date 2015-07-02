@@ -105,7 +105,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler version of this method instead.
          */
-        ParseEx(
+        Parse(
             [in] IInputStream* is,
             [in] IDocumentHandler* hb,
             [in] String systemId);
@@ -124,7 +124,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx2(
+        Parse(
             [in] IInputStream* is,
             [in] IDTDHandler* dh);
 
@@ -143,7 +143,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler version of this method instead.
          */
-        ParseEx3(
+        Parse(
             [in] IInputStream* is,
             [in] IDTDHandler* dh,
             [in] String systemId);
@@ -164,7 +164,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx4(
+        Parse(
             [in] String uri,
             [in] IDocumentHandler* hb);
 
@@ -182,7 +182,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx5(
+        Parse(
             [in] String uri,
             [in] IDTDHandler* dh);
 
@@ -201,7 +201,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx6(
+        Parse(
             [in] IFile* f,
             [in] IDocumentHandler* hb);
 
@@ -218,7 +218,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx7(
+        Parse(
             [in] IFile* f,
             [in] IDTDHandler* dh);
 
@@ -239,7 +239,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx8(
+        Parse(
             [in] IInputSource* is,
             [in] IDocumentHandler* hb);
 
@@ -258,7 +258,7 @@ module
          *
          * @see org.xml.sax.DocumentHandler
          */
-        ParseEx9(
+        Parse(
             [in] IInputSource* is,
             [in] IDTDHandler* dh);
 

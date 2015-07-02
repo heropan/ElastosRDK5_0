@@ -9,6 +9,7 @@ module
 
     namespace Elastosx {
     namespace Crypto {
+
     /**
      * This class defines the <i>Service Provider Interface</i> (<b>SPI</b>) for
      * cryptographic ciphers.
@@ -203,7 +204,7 @@ module
          *             it the specified parameters are inappropriate for this
          *             cipher.
          */
-        EngineInitEx(
+        EngineInit(
             [in] Int32 opmode,
             [in] IKey* key,
             [in] IAlgorithmParameterSpec* params,
@@ -243,7 +244,7 @@ module
          *             if the specified parameters are inappropriate for this
          *             cipher.
          */
-        EngineInitEx2(
+        EngineInit(
             [in] Int32 opmode,
             [in] IKey* key,
             [in] IAlgorithmParameters* params,
@@ -297,7 +298,7 @@ module
          * @throws ShortBufferException
          *             if the size of the {@code output} buffer is too small.
          */
-        EngineUpdateEx(
+        EngineUpdate(
             [in] ArrayOf<Byte>* input,
             [in] Int32 inputOffset,
             [in] Int32 inputLen,
@@ -323,7 +324,7 @@ module
          * @throws ShortBufferException
          *             if the size of the {@code output} buffer is too small.
          */
-        EngineUpdateEx2(
+        EngineUpdate(
             [in] IByteBuffer* input,
             [in] IByteBuffer* output,
             [out] Int32* number);
@@ -380,7 +381,7 @@ module
          * @throws BadPaddingException
          *             if the padding of the data does not match the padding scheme.
         */
-        EngineDoFinalEx(
+        EngineDoFinal(
             [in] ArrayOf<Byte>* input,
             [in] Int32 inputOffset,
             [in] Int32 inputLen,
@@ -415,7 +416,7 @@ module
          *             if this cipher instance is not initialized for encryption or
          *             decryption.
          */
-        EngineDoFinalEx2(
+        EngineDoFinal(
             [in] IByteBuffer* input,
             [in] IByteBuffer* output,
             [out] Int32* number);

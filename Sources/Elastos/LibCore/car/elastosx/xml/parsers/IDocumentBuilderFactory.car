@@ -402,7 +402,7 @@ module
          *     instantiated.
          * @since 1.6
          */
-         NewInstanceEx(
+         NewInstance(
             [in] String factoryClassName,
             [in] IClassLoader* classLoader,
             [out] IDocumentBuilderFactory** instance);

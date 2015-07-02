@@ -668,20 +668,20 @@ ECode CPosix::Execve(
     }
 
     Int32 argvLength = argv->GetLength();
-    char const** argvArray_ = new char const*[argvLength + 1];
-    argvArray_[argvLength] = NULL;
+    char const* argvArray[argvLength + 1];
+    argvArray[argvLength] = NULL;
     for (Int32 i = 0; i < argvLength; i++) {
-        argvArray_[i] = (*argv)[i];
+        argvArray[i] = (*argv)[i].string();
     }
 
     Int32 envpLength = envp->GetLength();
-    char const** envpArray_ = new char const*[envpLength + 1];
-    envpArray_[envpLength] = NULL;
+    char const* envpArray[envpLength + 1];
+    envpArray[envpLength] = NULL;
     for (Int32 i = 0; i < envpLength; i++) {
-        envpArray_[i] = (*envp)[i];
+        envpArray[i] = (*envp)[i].string();
     }
 
-    execve(filename, argvArray_, envpArray_);
+    execve(filename, argvArray, envpArray);
 
     ALOGE("execve returned errno = %d", errno);
     return E_ERRNO_EXCEPTION;

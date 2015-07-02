@@ -41,7 +41,7 @@ module
          * @throws InvalidAlgorithmParameterException
          *             if an error occurs.
          */
-        EngineInitEx(
+        EngineInit(
             [in] IManagerFactoryParameters* spec);
 
         /**

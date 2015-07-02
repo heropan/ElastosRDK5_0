@@ -370,7 +370,7 @@ module
          *             if the engine does not have all the needed settings (e.g.
          *             client/server mode not set).
          */
-         UnwrapEx(
+         Unwrap(
             [in] IByteBuffer* src,
             [in] IByteBuffer* dst,
             [out] ISSLEngineResult** result);
@@ -396,7 +396,7 @@ module
          *             if the engine does not have all the needed settings (e.g.
          *             client/server mode not set).
          */
-        UnwrapEx2(
+        Unwrap(
             [in] IByteBuffer* src,
             [in] ArrayOf<IByteBuffer*>* dsts,
             [out] ISSLEngineResult** result);
@@ -421,7 +421,7 @@ module
          *             if the engine does not have all the needed settings (e.g.
          *             client/server mode not set).
          */
-        WrapEx(
+        Wrap(
             [in] ArrayOf<IByteBuffer*>* srcs,
             [in] IByteBuffer* dst,
             [out] ISSLEngineResult** result);
@@ -446,7 +446,7 @@ module
          *             if the engine does not have all the needed settings (e.g.
          *             client/server mode not set).
          */
-        WrapEx2(
+        Wrap(
             [in] IByteBuffer* src,
             [in] IByteBuffer* dst,
             [out] ISSLEngineResult** result);

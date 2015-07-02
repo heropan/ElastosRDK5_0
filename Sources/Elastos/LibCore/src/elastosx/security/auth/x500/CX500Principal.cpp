@@ -25,7 +25,7 @@ ECode CX500Principal::GetEncoded(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CX500Principal::GetNameEx(
+ECode CX500Principal::GetName(
     /* [in] */ const String& format,
     /* [out] */ String *name)
 {
@@ -39,7 +39,7 @@ ECode CX500Principal::GetNameEx(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CX500Principal::GetNameEx2(
+ECode CX500Principal::GetName(
     /* [in] */ const String& format,
     /* [in] */ IMap *oidMap,
     /* [out] */ String * pName)
@@ -276,11 +276,11 @@ ECode CX500Principal::SubstituteNameFromMap(
     Int32 equalIndex;
     String tmpName;
     Int32 tmpIndex;
-    while (-1 != (equalIndex = (sbName.LastIndexOfEx(String("="), fromIndex, &tmpIndex), tmpIndex))) {
+    while (-1 != (equalIndex = (sbName.LastIndexOf(String("="), fromIndex, &tmpIndex), tmpIndex))) {
         Int32 commaIndex;
-        sbName.LastIndexOfEx(String(","), equalIndex, &commaIndex);
+        sbName.LastIndexOf(String(","), equalIndex, &commaIndex);
         String subName;
-        subName = (sbName.SubstringEx(commaIndex + 1, equalIndex, &subName), subName).Trim();
+        subName = (sbName.Substring(commaIndex + 1, equalIndex, &subName), subName).Trim();
         AutoPtr<ICharSequence> key;
         CStringWrapper::New(subName, (ICharSequence**)&key);
         Boolean isContained;

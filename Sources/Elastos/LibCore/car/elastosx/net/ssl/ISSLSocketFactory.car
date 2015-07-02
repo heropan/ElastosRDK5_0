@@ -54,7 +54,7 @@ module
          * @throws java.net.UnknownHostException
          *             if the host is unknown.
          */
-        CreateSocketEx5(
+        CreateSocket(
             [in] ISocket* s,
             [in] String host,
             [in] Int32 port,

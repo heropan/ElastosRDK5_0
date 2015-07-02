@@ -73,7 +73,7 @@ module
          * @throws UnsupportedOperationException
          *             if the provider does not support the operation.
          */
-        EngineCreateSSLEngineEx(
+        EngineCreateSSLEngine(
             [out] ISSLEngine** engine);
 
         /**

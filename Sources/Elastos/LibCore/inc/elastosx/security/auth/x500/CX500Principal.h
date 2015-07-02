@@ -46,11 +46,11 @@ public:
      *             if the {@code format} argument is not one of the three
      *             mentioned above
      */
-    CARAPI GetNameEx(
+    CARAPI GetName(
         /* [in] */ const String& format,
         /* [out] */ String *name);
 
-    CARAPI GetNameEx2(
+    CARAPI GetName(
         /* [in] */ const String& format,
         /* [in] */ IMap *oidMap,
         /* [out] */ String *name);

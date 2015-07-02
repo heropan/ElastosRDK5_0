@@ -27,12 +27,12 @@ public:
         /* [in] */ IAccessControlContext *context,
         /* [out] */ IInterface **obj);
 
-    CARAPI DoAsEx(
+    CARAPI DoAs(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
         /* [out] */ IInterface **obj);
 
-    CARAPI DoAsPrivilegedEx(
+    CARAPI DoAsPrivileged(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
         /* [in] */ IAccessControlContext *context,
