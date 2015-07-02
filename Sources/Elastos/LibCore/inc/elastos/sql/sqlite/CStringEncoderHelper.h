@@ -1,6 +1,6 @@
 
-#ifndef __CSTRINGENCODERHELPER_H__
-#define __CSTRINGENCODERHELPER_H__
+#ifndef __ELASTOS_SQL_SQLITE_CSTRINGENCODERHELPER_H__
+#define __ELASTOS_SQL_SQLITE_CSTRINGENCODERHELPER_H__
 
 #include "_Elastos_Sql_SQLite_CStringEncoderHelper.h"
 #include "Singleton.h"
@@ -35,4 +35,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSTRINGENCODERHELPER_H__
+#endif // __ELASTOS_SQL_SQLITE_CSTRINGENCODERHELPER_H__

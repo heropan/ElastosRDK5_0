@@ -1,10 +1,9 @@
 
-#ifndef __CSTMT_H__
-#define __CSTMT_H__
+#ifndef __ELASTOS_SQL_SQLITE_CSTMT_H__
+#define __ELASTOS_SQL_SQLITE_CSTMT_H__
 
 #include "_Elastos_Sql_SQLite_CStmt.h"
-#include <elastos/core/Object.h>
-
+#include "Object.h"
 
 namespace Elastos {
 namespace Sql {
@@ -125,12 +124,6 @@ public:
 
     CStmt();
 
-private:
-    static CARAPI_(Boolean) Internal_init();
-
-private:
-    static Boolean isinit;
-
 public:
     Int32 mError_code;
     Int64 mHandle;
@@ -140,4 +133,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSTMT_H__
+#endif // __ELASTOS_SQL_SQLITE_CSTMT_H__

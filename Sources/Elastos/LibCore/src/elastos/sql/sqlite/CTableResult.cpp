@@ -1,6 +1,6 @@
 
 #include "CTableResult.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 
 using Elastos::Core::StringBuffer;
 
@@ -9,7 +9,6 @@ namespace Sql {
 namespace SQLite {
 
 CAR_OBJECT_IMPL(CTableResult);
-
 
 } // namespace SQLite
 } // namespace Sql

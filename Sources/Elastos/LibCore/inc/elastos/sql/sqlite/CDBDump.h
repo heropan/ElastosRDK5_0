@@ -34,7 +34,7 @@ public:
         /* [in] */ ArrayOf<String> * tables);
 
 private:
-    AutoPtr<CShell> s;
+    AutoPtr<CShell> mShell;
 };
 
 } // namespace SQLite

@@ -1,6 +1,6 @@
 
-#ifndef __STRINGENCODER_H__
-#define __STRINGENCODER_H__
+#ifndef __ELASTOS_SQL_SQLITE_STRINGENCODER_H__
+#define __ELASTOS_SQL_SQLITE_STRINGENCODER_H__
 
 #include <elastos.h>
 
@@ -40,4 +40,4 @@ protected:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __STRINGENCODER_H__
+#endif // __ELASTOS_SQL_SQLITE_STRINGENCODER_H__

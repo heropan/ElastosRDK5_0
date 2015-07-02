@@ -16,6 +16,17 @@ using Elastos::Utility::Etl::List;
 namespace Elastos {
 namespace Sql {
 
+/**
+ * Provides facilities for managing JDBC drivers. The <code>android.database</code> and
+ * <code>android.database.sqlite</code> packages offer a higher-performance alternative for new
+ * code.
+ *
+ * <p>Note that Android does not include any JDBC drivers by default; you must provide your own.
+ *
+ * <p>The {@code DriverManager} class loads JDBC drivers during its initialization,
+ * from the list of drivers referenced by the system property {@code
+ * "jdbc.drivers"}.
+ */
 CarClass(CDriverManager)
     , public Singleton
     , public IDriverManager

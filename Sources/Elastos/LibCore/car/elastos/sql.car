@@ -316,47 +316,6 @@ module
             interface IStringEncoderHelper;
         }
 
-        class CSinFunc {
-            constructor();
-
-            interface IFunction;
-        }
-
-        class CTestTrace {
-            constructor();
-
-            interface ITrace;
-            interface ICallback;
-        }
-
-        class CAuthorizerCallback {
-            constructor();
-
-            interface IAuthorizer;
-            interface ICallback;
-        }
-
-        class CTestBusyHandler {
-            constructor();
-
-            interface IBusyHandler;
-            interface ICallback;
-        }
-
-        class CTestProgressHandler {
-            constructor();
-
-            interface IProgressHandler;
-            interface ICallback;
-        }
-
-        class CMockFunction {
-            constructor();
-
-            interface IMockFunction;
-            interface IFunction;
-        }
-
     } //SQLite
     } //Sql
     } //Elastos

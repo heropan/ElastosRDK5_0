@@ -1,6 +1,6 @@
 
-#ifndef __CTIMESTAMP_H__
-#define __CTIMESTAMP_H__
+#ifndef __ELASTOS_SQL_CTIMESTAMP_H__
+#define __ELASTOS_SQL_CTIMESTAMP_H__
 
 #include "_Elastos_Sql_CTimestamp.h"
 #include "Date.h"
@@ -101,4 +101,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CTIMESTAMP_H__
+#endif // __ELASTOS_SQL_CTIMESTAMP_H__

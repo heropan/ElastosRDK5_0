@@ -15,18 +15,18 @@ CAR_OBJECT_IMPL(CShell);
 CAR_INTERFACE_IMPL_2(CShell, Object, IShell, ICallback);
 
 CShell::CShell()
-    : echo(FALSE)
-    , count(0)
-    , mode(0)
-    , showHeader(FALSE)
+    : mEcho(FALSE)
+    , mCount(0)
+    , mMode(0)
+    , mShowHeader(FALSE)
 {}
 
 CARAPI CShell::constructor(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ IPrintWriter* err)
 {
-    pw = pw;
-    err = err;
+    mPw = pw;
+    mErr = err;
     return NOERROR;
 }
 
@@ -36,29 +36,29 @@ CARAPI CShell::constructor(
 {
     //TODO
     assert(0);
-    // FAIL_RETURN(CPrintWriter::New(ps,(IPrintWriter **)&pw));
-    // FAIL_RETURN(CPrintWriter::New(errs,(IPrintWriter **)&err));
+    // FAIL_RETURN(CPrintWriter::New(ps,(IPrintWriter **)&mPw));
+    // FAIL_RETURN(CPrintWriter::New(errs,(IPrintWriter **)&mErr));
     return NOERROR;
 }
 void CShell::Clone(
     /* [out] */ CShell& s)
 {
-    s.db = db;
-    s.echo = echo;
-    s.mode = mode;
-    s.count = 0;
-    s.showHeader = showHeader;
-    s.tableName = tableName;
-    s.sep = sep;
-    s.colwidth = colwidth;
+    s.mDb = mDb;
+    s.mEcho = mEcho;
+    s.mMode = mMode;
+    s.mCount = 0;
+    s.mShowHeader = mShowHeader;
+    s.mTableName = mTableName;
+    s.mSep = mSep;
+    s.mColwidth = mColwidth;
 }
 
 ECode CShell::Columns(
     /* [in] */ ArrayOf<String> * args)
 {
-    cols = NULL;
+    mCols = NULL;
     if (args) {
-        cols = args->Clone();
+        mCols = args->Clone();
     }
     return NOERROR;
 }
@@ -76,17 +76,17 @@ ECode CShell::Newrow(
 {
     Int32 i = 0;
     String tname(NULL);
-    switch (mode) {
+    switch (mMode) {
     case MODE_Line:
         {
             if (args == NULL || args->GetLength() == 0) {
                 break;
             }
-            if (count++ > 0) {
-                pw->Print(String(""));
+            if (mCount++ > 0) {
+                mPw->Print(String(""));
             }
             for (i = 0; i < args->GetLength(); i++) {
-                pw->Print((*cols)[i] + String(" = ") + ((*args)[i] == NULL ? String("NULL") : (*args)[i]));
+                mPw->Print((*mCols)[i] + String(" = ") + ((*args)[i] == NULL ? String("NULL") : (*args)[i]));
             }
             break;
         }
@@ -94,22 +94,22 @@ ECode CShell::Newrow(
     case MODE_Column:
         {
             String csep(NULL);
-            if (count++ == 0) {
-                colwidth = ArrayOf<Int32>::Alloc(args->GetLength());
+            if (mCount++ == 0) {
+                mColwidth = ArrayOf<Int32>::Alloc(args->GetLength());
                 for (i = 0; i < args->GetLength(); i++) {
                     Int32 w = 0 ;
-                    w = ((*cols)[i]).GetLength();
+                    w = ((*mCols)[i]).GetLength();
                     if (w < 10) {
                         w = 10;
                     }
-                    (*colwidth)[i] = w;
-                    if (showHeader) {
-                        pw->Print(csep + (*cols)[i]);
+                    (*mColwidth)[i] = w;
+                    if (mShowHeader) {
+                        mPw->Print(csep + (*mCols)[i]);
                         csep = String(" ");
                     }
                 }
-                if (showHeader) {
-                    pw->Print(String(""));
+                if (mShowHeader) {
+                    mPw->Print(String(""));
                 }
             }
             if (args->GetLength() == 0) {
@@ -117,54 +117,54 @@ ECode CShell::Newrow(
             }
             csep = String("");
             for (i = 0; i < args->GetLength(); i++) {
-                pw->Print(csep + ((*args)[i] == NULL ? "NULL" : (*args)[i]));
+                mPw->Print(csep + ((*args)[i] == NULL ? "NULL" : (*args)[i]));
                 csep = String(" ");
             }
-            pw->Print(String(""));
+            mPw->Print(String(""));
             break;
         }
 
     case MODE_Semi:
     case MODE_List:
         {
-            if (count++ == 0 && showHeader) {
+            if (mCount++ == 0 && mShowHeader) {
             for (i = 0; i < args->GetLength(); i++) {
-                pw->Print((*cols)[i] +
-                     (i == args->GetLength() - 1 ? "\n" : sep));
+                mPw->Print((*mCols)[i] +
+                     (i == args->GetLength() - 1 ? "\n" : mSep));
             }
             }
             if (args->GetLength() == 0) {
             break;
             }
             for (i = 0; i < args->GetLength(); i++) {
-            pw->Print((*args)[i] == NULL ? String("NULL") : (*args)[i]);
-            if (mode == MODE_Semi) {
-            pw->Print(String(";"));
+            mPw->Print((*args)[i] == NULL ? String("NULL") : (*args)[i]);
+            if (mMode == MODE_Semi) {
+            mPw->Print(String(";"));
             } else if (i < args->GetLength() - 1) {
-                pw->Print(sep);
+                mPw->Print(mSep);
             }
             }
-            pw->Print(String(""));
+            mPw->Print(String(""));
             break;
         }
 
     case MODE_Html:
         {
-            if (count++ == 0 && showHeader) {
-                pw->Print(String("<TR>"));
+            if (mCount++ == 0 && mShowHeader) {
+                mPw->Print(String("<TR>"));
                 for (i = 0; i < args->GetLength(); i++) {
-                    pw->Print(String("<TH>") + HtmlQuote((*cols)[i]) + String("</TH>"));
+                    mPw->Print(String("<TH>") + HtmlQuote((*mCols)[i]) + String("</TH>"));
             }
-            pw->Print(String("</TR>"));
+            mPw->Print(String("</TR>"));
             }
             if (args->GetLength() == 0) {
             break;
             }
-            pw->Print(String("<TR>"));
+            mPw->Print(String("<TR>"));
             for (i = 0; i < args->GetLength(); i++) {
-                pw->Print(String("<TD>") + HtmlQuote((*args)[i]) + String("</TD>"));
+                mPw->Print(String("<TD>") + HtmlQuote((*args)[i]) + String("</TD>"));
             }
-            pw->Print(String("</TR>"));
+            mPw->Print(String("</TR>"));
             break;
         }
     case MODE_Insert:
@@ -172,24 +172,24 @@ ECode CShell::Newrow(
             if (args->GetLength() == 0) {
             break;
             }
-            tname = tableName;
-            if (destTable != NULL) {
-                tname = destTable;
+            tname = mTableName;
+            if (mDestTable != NULL) {
+                tname = mDestTable;
             }
-            pw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
+            mPw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
             for (i = 0; i < args->GetLength(); i++) {
                 String tsep = i > 0 ? String(",") : String("");
             if ((*args)[i] == NULL) {
-                pw->Print(tsep + String("NULL"));
+                mPw->Print(tsep + String("NULL"));
             }
             else if (IsNumeric((*args)[i])) {
-                 pw->Print(tsep + (*args)[i]);
+                 mPw->Print(tsep + (*args)[i]);
             }
             else {
-                pw->Print(tsep + SqlQuote((*args)[i]));
+                mPw->Print(tsep + SqlQuote((*args)[i]));
             }
             }
-            pw->Print(String(");"));
+            mPw->Print(String(");"));
             break;
         }
 
@@ -198,16 +198,16 @@ ECode CShell::Newrow(
             if (args->GetLength() == 0) {
             break;
             }
-            tname = tableName;
-            if (destTable != NULL) {
-                tname = destTable;
+            tname = mTableName;
+            if (mDestTable != NULL) {
+                tname = mDestTable;
             }
-            pw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
+            mPw->Print(String("INSERT Int32O ") + tname + String(" VALUES("));
             for (i = 0; i < args->GetLength(); i++) {
                 String tsep = i > 0 ? String(",") : String("");
-            pw->Print(tsep + (*args)[i]);
+            mPw->Print(tsep + (*args)[i]);
             }
-            pw->Print(String(");"));
+            mPw->Print(String(");"));
             break;
         }
     }
@@ -340,15 +340,15 @@ void CShell::SetTableName(
     /* [out] */ String str)
 {
     if (str == NULL) {
-        tableName = String("");
+        mTableName = String("");
         return;
     }
     Boolean isflag = FALSE;
-    db->Is3(&isflag);
+    mDb->Is3(&isflag);
     if (isflag) {
-        tableName = SqlQuoteDbl(str);
+        mTableName = SqlQuoteDbl(str);
     } else {
-        tableName = SqlQuote(str);
+        mTableName = SqlQuote(str);
     }
 }
 

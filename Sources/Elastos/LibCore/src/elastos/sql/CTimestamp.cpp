@@ -2,15 +2,14 @@
 #include "CTimestamp.h"
 #include "StringUtils.h"
 #include "Pattern.h"
-#include "CLocaleHelper.h"
+#include "CLocale.h"
 #include "CSimpleDateFormat.h"
 #include "CParsePosition.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::IDate;
 using Elastos::Utility::ILocale;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CLocale;
 using Elastos::Utility::Regex::Pattern;
 using Elastos::Text::IDateFormat;
 using Elastos::Text::ISimpleDateFormat;
@@ -300,13 +299,8 @@ ECode CTimestamp::ValueOf(
         return BadTimestampString(s);;
     }
 
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> us;
-    localeHelper->GetUS((ILocale**)&us);
-
     AutoPtr<ISimpleDateFormat> df;
-    CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), us, (ISimpleDateFormat **)&df);
+    CSimpleDateFormat::New(String("yyyy-MM-dd HH:mm:ss"), CLocale::US, (ISimpleDateFormat **)&df);
     AutoPtr<IParsePosition> pp;
     CParsePosition::New(0, (IParsePosition **)&pp);
 

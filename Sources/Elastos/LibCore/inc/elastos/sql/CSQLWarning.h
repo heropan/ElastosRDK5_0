@@ -1,10 +1,9 @@
 
-#ifndef __CSQLWARNING_H__
-#define __CSQLWARNING_H__
+#ifndef __ELASTOS_SQL_CSQLWARNING_H__
+#define __ELASTOS_SQL_CSQLWARNING_H__
 
 #include "_Elastos_Sql_CSQLWarning.h"
 #include "Object.h"
-
 
 namespace Elastos {
 namespace Sql {
@@ -60,4 +59,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSQLWARNING_H__
+#endif // __ELASTOS_SQL_CSQLWARNING_H__

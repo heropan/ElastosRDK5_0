@@ -79,7 +79,7 @@ module
          * @throws SQLException
          *             if a database error occurs.
          * @deprecated Use {@link #getBigDecimal(int)} or
-         *             {@link #getBigDecimal(String)}
+         *             {@link #getBigDecimal(String)} instead
          */
         //@Deprecated
         GetBigDecimal(

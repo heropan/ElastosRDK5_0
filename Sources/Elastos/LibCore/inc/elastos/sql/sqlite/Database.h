@@ -4,7 +4,6 @@
 #include "sqlitejni.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Sql {
 namespace SQLite {

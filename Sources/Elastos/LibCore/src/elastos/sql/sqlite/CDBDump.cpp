@@ -1,8 +1,8 @@
 
 #include "CDBDump.h"
 #include "CTableResult.h"
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/StringUtils.h>
+#include "StringBuffer.h"
+#include "StringUtils.h"
 
 using Elastos::IO::IFlushable;
 using Elastos::IO::EIID_IFlushable;
@@ -14,7 +14,6 @@ namespace Sql {
 namespace SQLite {
 
 CAR_OBJECT_IMPL(CDBDump);
-
 CAR_INTERFACE_IMPL_2(CDBDump, Object, IDBDump, ICallback);
 
 ECode CDBDump::Columns(
@@ -40,20 +39,20 @@ ECode CDBDump::Newrow(
     if (args->GetLength() != 3) {
         *value = TRUE;
     }
-    s->pw->Print((*args)[2] + String(";"));
+    mShell->mPw->Print((*args)[2] + String(";"));
     if ((*args)[1].Equals("table") == 0) {
         CShell s2 ;
-        s->Clone(s2);
-        s2.mode = CShell::MODE_Insert;
+        mShell->Clone(s2);
+        s2.mMode = CShell::MODE_Insert;
         s2.SetTableName((*args)[0]);
         AutoPtr<ArrayOf<String> > qargs = ArrayOf<String>::Alloc(1);
         (*qargs)[0] = (*args)[0];
         Boolean isflag = FALSE;
-        s2.db->Is3(&isflag);
+        s2.mDb->Is3(&isflag);
         ECode ec = NOERROR;
         if (isflag) {
             AutoPtr<ITableResult> t ;
-            s2.db->GetTable(String("PRAGMA table_info('%q')")  , qargs,(ITableResult **)&t);
+            s2.mDb->GetTable(String("PRAGMA table_info('%q')")  , qargs,(ITableResult **)&t);
             String query;
             if (t != NULL) {
                 StringBuffer sb;
@@ -67,19 +66,19 @@ ECode CDBDump::Newrow(
                 }
                 sb.Append(" from '%q'");
                 query = sb.ToString();
-                s2.mode = CShell::MODE_Insert2;
+                s2.mMode = CShell::MODE_Insert2;
             }
             else {
                 query = String("SELECT * from '%q'");
             }
-            ec = s2.db->Exec(query, &s2, qargs);
+            ec = s2.mDb->Exec(query, &s2, qargs);
         }
         else {
-            ec = s2.db->Exec(String("SELECT * from '%q'"), &s2, qargs);
+            ec = s2.mDb->Exec(String("SELECT * from '%q'"), &s2, qargs);
         }
         if (ec != NOERROR) {
-            s->err->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
-            AutoPtr<IFlushable> iflush = (IFlushable*)s->err->Probe(EIID_IFlushable);
+            mShell->mErr->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
+            AutoPtr<IFlushable> iflush = (IFlushable*)mShell->mErr->Probe(EIID_IFlushable);
             iflush->Flush();
             *value = TRUE;
         }
@@ -92,34 +91,34 @@ ECode CDBDump::constructor(
     /* [in] */ IShell * ms,
     /* [in] */ ArrayOf<String> * tables)
 {
-    s = (CShell *)ms;
-    s->pw->Print(String("BEGIN TRANSACTION;"));
-    AutoPtr<IFlushable> iflush = (IFlushable*)s->err->Probe(EIID_IFlushable);
+    mShell = (CShell *)ms;
+    mShell->mPw->Print(String("BEGIN TRANSACTION;"));
+    AutoPtr<IFlushable> iflush = (IFlushable*)mShell->mErr->Probe(EIID_IFlushable);
     if (tables == NULL || tables->GetLength() == 0) {
-        ECode  ec = s->db->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
+        ECode  ec = mShell->mDb->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
                         String("WHERE type!='meta' AND sql NOT NULL ") +
                         String("ORDER BY substr(type,2,1), name"), (ICallback *)this);
         if (ec != NOERROR)
         {
-            s->err->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
+            mShell->mErr->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
             iflush->Flush();
         }
     } else {
         AutoPtr<ArrayOf<String> > arg = ArrayOf<String>::Alloc(1);
         for (Int32 i = 0; i < tables->GetLength(); i++) {
             (*arg)[0] = (*tables)[i];
-            ECode ec = s->db->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
+            ECode ec = mShell->mDb->Exec(String("SELECT name, type, sql FROM sqlite_master ") +
                                    String("WHERE tbl_name LIKE '%q' AND type!='meta' ") +
                                    String(" AND sql NOT NULL ") +
                                    String(" ORDER BY substr(type,2,1), name"),
                                    (ICallback *)this, arg);
          if(ec != NOERROR) {
-            s->err->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
+            mShell->mErr->Print(String("SQL Error: ")+StringUtils::ToString(ec,16));
             iflush->Flush();
         }
         }
     }
-    s->pw->Print(String("COMMIT;"));
+    mShell->mPw->Print(String("COMMIT;"));
     return NOERROR;
 }
 

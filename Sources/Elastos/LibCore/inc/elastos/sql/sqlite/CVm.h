@@ -1,6 +1,6 @@
 
-#ifndef __CVM_H__
-#define __CVM_H__
+#ifndef __ELASTOS_SQL_SQLITE_CVM_H__
+#define __ELASTOS_SQL_SQLITE_CVM_H__
 
 #include "_Elastos_Sql_SQLite_CVm.h"
 #include "Object.h"
@@ -47,4 +47,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CVM_H__
+#endif // __ELASTOS_SQL_SQLITE_CVM_H__

@@ -1,10 +1,9 @@
 
-#ifndef __CFUNCTIONCONTEXT_H__
-#define __CFUNCTIONCONTEXT_H__
+#ifndef __ELASTOS_SQL_SQLITE_CFUNCTIONCONTEXT_H__
+#define __ELASTOS_SQL_SQLITE_CFUNCTIONCONTEXT_H__
 
 #include "_Elastos_Sql_SQLite_CFunctionContext.h"
 #include "Object.h"
-
 
 namespace Elastos {
 namespace Sql {
@@ -41,12 +40,6 @@ public:
         /* [out] */ Int32* count);
     CFunctionContext();
 
-private:
-    static CARAPI_(Boolean) Internal_init();
-
-private:
-    static Boolean isinit;
-
 public:
     Int64 mHandle;
 };
@@ -55,4 +48,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CFUNCTIONCONTEXT_H__
+#endif // __ELASTOS_SQL_SQLITE_CFUNCTIONCONTEXT_H__

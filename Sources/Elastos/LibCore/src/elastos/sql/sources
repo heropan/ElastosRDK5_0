@@ -22,6 +22,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/sql/sqlite/jdbc
 
 VPATH := $(MAKEDIR)/sqlite:$(MAKEDIR)/sqlite/jdbc
 
+#sql/sqlite/jdbc
 SOURCES += CDatabaseX.cpp
 SOURCES += CJDBCConnection.cpp
 SOURCES += CJDBCDatabaseMetaData.cpp
@@ -32,17 +33,15 @@ SOURCES += CJDBCStatement.cpp
 SOURCES += CTableResultX.cpp
 SOURCES += JDBCStatement.cpp
 
+#sql/sqlite
 SOURCES += CDBDump.cpp
-SOURCES += CTestProgressHandler.cpp
 SOURCES += CStmt.cpp
 SOURCES += CStringEncoderHelper.cpp
 SOURCES += CShell.cpp
 SOURCES += CBackup.cpp
 SOURCES += CTableResult.cpp
 SOURCES += CDatabase.cpp
-SOURCES += CSinFunc.cpp
 SOURCES += Database.cpp
-SOURCES += CTestBusyHandler.cpp
 SOURCES += CFunctionContext.cpp
 SOURCES += CVm.cpp
 SOURCES += CDatabaseHelper.cpp
@@ -50,11 +49,8 @@ SOURCES += CBlobW.cpp
 SOURCES += CBlob.cpp
 SOURCES += TableResult.cpp
 SOURCES += CBlobR.cpp
-SOURCES += CTestTrace.cpp
 SOURCES += CJDBCDriver.cpp
-SOURCES += CMockFunction.cpp
 SOURCES += StringEncoder.cpp
-SOURCES += CAuthorizerCallback.cpp
 
 SOURCES += CDriverPropertyInfo.cpp
 SOURCES += CSqlDate.cpp

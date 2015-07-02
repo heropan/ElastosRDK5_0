@@ -1,10 +1,10 @@
 
-#ifndef __CBLOBR_H__
-#define __CBLOBR_H__
+#ifndef __ELASTOS_SQL_SQLLITE_CBLOBR_H__
+#define __ELASTOS_SQL_SQLLITE_CBLOBR_H__
 
 #include "_Elastos_Sql_SQLite_CBlobR.h"
 #include "CBlob.h"
-#include <InputStream.h>
+#include "InputStream.h"
 
 using Elastos::IO::InputStream;
 
@@ -53,11 +53,11 @@ public:
 
 private:
     AutoPtr<CBlob> mBlob;
-    Int32 pos;
+    Int32 mPos;
 };
 
 } // namespace SQLite
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CBLOBR_H__
+#endif // __ELASTOS_SQL_SQLLITE_CBLOBR_H__

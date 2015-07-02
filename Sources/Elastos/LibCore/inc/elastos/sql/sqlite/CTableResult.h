@@ -1,6 +1,6 @@
 
-#ifndef __CTABLERESULT_H__
-#define __CTABLERESULT_H__
+#ifndef __ELASTOS_SQL_SQLITE_CTABLERESULT_H__
+#define __ELASTOS_SQL_SQLITE_CTABLERESULT_H__
 
 #include "_Elastos_Sql_SQLite_CTableResult.h"
 #include "TableResult.h"
@@ -20,4 +20,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CTABLERESULT_H__
+#endif // __ELASTOS_SQL_SQLITE_CTABLERESULT_H__

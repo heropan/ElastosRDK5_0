@@ -7,24 +7,12 @@ namespace Sql {
 namespace SQLite {
 
 CAR_OBJECT_IMPL(CFunctionContext);
-
 CAR_INTERFACE_IMPL(CFunctionContext, Object, IFunctionContext);
 
 CFunctionContext::CFunctionContext()
+    : mHandle(0)
 {
-    mHandle = 0;
-    isinit = FALSE;
 }
-
-Boolean CFunctionContext::Internal_init()
-{
-    if (!isinit) {
-        isinit = TRUE;
-    }
-    return isinit;
-}
-
-Boolean CFunctionContext::isinit = Internal_init();
 
 ECode CFunctionContext::SetResult(
     /* [in] */ const String& ret)

@@ -1,3 +1,4 @@
+
 #include "CBlobR.h"
 
 namespace Elastos {
@@ -5,21 +6,20 @@ namespace Sql {
 namespace SQLite {
 
 CAR_OBJECT_IMPL(CBlobR);
-
 CAR_INTERFACE_IMPL(CBlobR, InputStream, IBlobR);
 
 ECode CBlobR::constructor(
     /* [in] */ Elastos::Sql::SQLite::IBlob* blob)
 {
     mBlob = (CBlob *)blob;
-    pos = 0;
+    mPos = 0;
     return NOERROR;
 }
 
 ECode CBlobR::Available(
     /* [out] */ Int32* number)
 {
-    Int32 ret = mBlob->size - pos;
+    Int32 ret = mBlob->mSize - mPos;
     *number = (ret < 0) ? 0 : ret;
     return NOERROR;
 }
@@ -38,9 +38,9 @@ ECode CBlobR::Read(
 
     AutoPtr<ArrayOf<Byte> > b = ArrayOf<Byte>::Alloc(1);
     Int32 n;
-    FAIL_RETURN(mBlob->Read(b, 0, pos, b->GetLength(), &n))
+    FAIL_RETURN(mBlob->Read(b, 0, mPos, b->GetLength(), &n))
     if (n > 0) {
-        pos += n;
+        mPos += n;
         *value = (*b)[0];
     }
     *value = -1;
@@ -56,9 +56,9 @@ ECode CBlobR::ReadBytes(
     VALIDATE_NOT_NULL(buffer)
 
     Int32 n;
-    FAIL_RETURN(mBlob->Read(buffer, 0, pos, buffer->GetLength(), &n))
+    FAIL_RETURN(mBlob->Read(buffer, 0, mPos, buffer->GetLength(), &n))
     if (n > 0) {
-        pos += n;
+        mPos += n;
         *number = n;
     }
     *number = -1;
@@ -85,9 +85,9 @@ ECode CBlobR::ReadBytes(
         *number = 0;
     }
     Int32 n;
-    FAIL_RETURN(mBlob->Read(b, off, pos, len, &n))
+    FAIL_RETURN(mBlob->Read(b, off, mPos, len, &n))
     if (n > 0) {
-        pos += n;
+        mPos += n;
         *number = n;
     }
     *number = -1;
@@ -103,7 +103,7 @@ ECode CBlobR::Close()
 {
     mBlob->Close();
     mBlob = NULL;
-    pos = 0;
+    mPos = 0;
     return NOERROR;
 }
 
@@ -111,15 +111,15 @@ ECode CBlobR::Skip(
     /* [in] */ Int64 n,
     /* [out] */ Int64* number)
 {
-    Int64 ret = pos + n;
+    Int64 ret = mPos + n;
     if (ret < 0) {
         ret = 0;
-        pos = 0;
-    } else if (ret > mBlob->size) {
-        ret = mBlob->size;
-        pos = mBlob->size;
+        mPos = 0;
+    } else if (ret > mBlob->mSize) {
+        ret = mBlob->mSize;
+        mPos = mBlob->mSize;
     } else {
-        pos = (Int32) ret;
+        mPos = (Int32) ret;
     }
     *number = ret;
     return NOERROR;

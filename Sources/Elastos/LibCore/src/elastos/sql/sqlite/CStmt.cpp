@@ -7,29 +7,18 @@ namespace Sql {
 namespace SQLite {
 
 CAR_OBJECT_IMPL(CStmt);
-
 CAR_INTERFACE_IMPL(CStmt, Object, IStmt);
 
 CStmt::CStmt()
+    : mHandle(0)
+    , mError_code(0)
 {
-    mHandle = 0;
-    isinit = FALSE;
-    mError_code = 0;
 }
-
-Boolean CStmt::Internal_init()
-{
-    if (!isinit) {
-        isinit = TRUE;
-    }
-    return isinit;
-}
-
-Boolean CStmt::isinit = Internal_init();
 
 ECode CStmt::Prepare(
     /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
 #if HAVE_SQLITE3
     hvm *v = (hvm *)mHandle;
     void *svm = 0;
@@ -88,6 +77,7 @@ ECode CStmt::Prepare(
 ECode CStmt::Step(
     /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -395,6 +385,7 @@ ECode CStmt::BindZeroblob(
 ECode CStmt::BindParameterCount(
     /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -413,6 +404,7 @@ ECode CStmt::BindParameterName(
     /* [in] */ Int32 pos,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
 #if HAVE_SQLITE3 && HAVE_SQLITE3_BIND_PARAMETER_NAME
     hvm *v = (hvm *)mHandle;
 
@@ -441,6 +433,7 @@ ECode CStmt::BindParameterIndex(
     /* [in] */ const String& name,
     /* [out] */ Int32* index)
 {
+    VALIDATE_NOT_NULL(index);
 #if HAVE_SQLITE3 && HAVE_SQLITE3_BIND_PARAMETER_INDEX
     hvm *v = (hvm *)mHandle;
 
@@ -463,6 +456,7 @@ ECode CStmt::ColumnInt(
     /* [in] */ Int32 col,
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -486,6 +480,7 @@ ECode CStmt::ColumnLong(
     /* [in] */ Int32 col,
     /* [out] */ Int64* value)
 {
+    VALIDATE_NOT_NULL(value);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -509,6 +504,7 @@ ECode CStmt::ColumnDouble(
     /* [in] */ Int32 col,
     /* [out] */ Double* value)
 {
+    VALIDATE_NOT_NULL(value);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -533,6 +529,7 @@ ECode CStmt::ColumnBytes(
     /* [in] */ Int32 col,
     /* [out, callee] */ ArrayOf<unsigned char>** array)
 {
+    VALIDATE_NOT_NULL(array);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -568,6 +565,7 @@ ECode CStmt::ColumnString(
     /* [in] */ Int32 col,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -600,6 +598,7 @@ ECode CStmt::ColumnType(
     /* [in] */ Int32 col,
     /* [out] */ Int32* type)
 {
+    VALIDATE_NOT_NULL(type);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -623,6 +622,7 @@ ECode CStmt::ColumnType(
 ECode CStmt::ColumnCount(
     /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -641,6 +641,7 @@ ECode CStmt::Column(
     /* [in] */ Int32 col,
     /* [out] */ IInterface** obj)
 {
+    VALIDATE_NOT_NULL(obj);
     Int32  type = 0;
     ColumnType(col,&type);
     switch (type) {
@@ -681,6 +682,7 @@ ECode CStmt::ColumnTableName(
     /* [in] */ Int32 col,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
 #if HAVE_SQLITE3 && HAVE_SQLITE3_COLUMN_TABLE_NAME16
     hvm *v = (hvm *)mHandle;
 
@@ -709,6 +711,7 @@ ECode CStmt::ColumnDatabaseName(
     /* [in] */ Int32 col,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
 #if HAVE_SQLITE3 && HAVE_SQLITE3_COLUMN_DATABASE_NAME16
     hvm *v = (hvm *)mHandle;
 
@@ -737,6 +740,7 @@ ECode CStmt::ColumnDecltype(
     /* [in] */ Int32 col,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
 #if HAVE_SQLITE3 && HAVE_SQLITE_COMPILE
     hvm *v = (hvm *)mHandle;
 
@@ -765,6 +769,7 @@ ECode CStmt::ColumnOriginName(
     /* [in] */ Int32 col,
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
 #if HAVE_SQLITE3 && HAVE_SQLITE3_COLUMN_ORIGIN_NAME16
     hvm *v = (hvm *)mHandle;
 
@@ -794,6 +799,7 @@ ECode CStmt::Status(
     /* [in] */ Boolean flg,
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value);
     Int32 count = 0;
 #if HAVE_SQLITE3 && HAVE_SQLITE3_STMT_STATUS
     hvm *v = (hvm *)mHandle;

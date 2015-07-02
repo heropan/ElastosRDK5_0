@@ -1,6 +1,6 @@
 
-#ifndef __CSQLPERMISSION_H__
-#define __CSQLPERMISSION_H__
+#ifndef __ELASTOS_SQL_CSQLPERMISSION_H__
+#define __ELASTOS_SQL_CSQLPERMISSION_H__
 
 #include "_Elastos_Sql_CSQLPermission.h"
 #include "Object.h"
@@ -40,10 +40,9 @@ public:
     CARAPI Implies(
         /* [in] */ IPermission* permission,
         /* [out] */ Boolean * value);
-
 };
 
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSQLPERMISSION_H__
+#endif // __ELASTOS_SQL_CSQLPERMISSION_H__

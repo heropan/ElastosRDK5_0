@@ -1,11 +1,9 @@
 
-#ifndef __CBACKUP_H__
-#define __CBACKUP_H__
+#ifndef __ELASTOS_SQL_SQLLITE_CBACKUP_H__
+#define __ELASTOS_SQL_SQLLITE_CBACKUP_H__
 
 #include "_Elastos_Sql_SQLite_CBackup.h"
-#include <elastos/core/Object.h>
-
-
+#include "Object.h"
 
 namespace Elastos {
 namespace Sql {
@@ -40,9 +38,6 @@ public:
 
     CBackup();
 
-protected:
-    Int64 mHandle;
-
 private:
     CARAPI _Step(
         /* [in] */ Int32 n,
@@ -52,14 +47,12 @@ private:
 
     CARAPI_(Int32) _Pagecount();
 
-    static CARAPI_(Boolean) Internal_init();
-
-private:
-    static Boolean isinit;
+protected:
+    Int64 mHandle;
 };
 
 } // namespace SQLite
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CBACKUP_H__
+#endif // __ELASTOS_SQL_SQLLITE_CBACKUP_H__

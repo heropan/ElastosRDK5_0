@@ -1,6 +1,6 @@
 
-#ifndef __CJDBCDRIVER_H__
-#define __CJDBCDRIVER_H__
+#ifndef __ELASTOS_SQL_SQLITE_CJDBCDRIVER_H__
+#define __ELASTOS_SQL_SQLITE_CJDBCDRIVER_H__
 
 #include "_Elastos_Sql_SQLite_CJDBCDriver.h"
 #include "Object.h"
@@ -49,20 +49,20 @@ public:
 
 public:
     const static Int32 MAJORVERSION;
-    static Boolean sharedCache;
-    static String vfs;
-    AutoPtr<IConnection> conn;
+    static Boolean sSharedCache;
+    static String mVfs;
+    AutoPtr<IConnection> mConn;
 
 private:
     //static java.lang.reflect.Constructor makeConn = null;
-    static CARAPI_(Boolean) init();
+    static CARAPI_(Boolean) Init();
 
 private:
-    static Boolean isinit;
+    static Boolean sIsinit;
 };
 
 } // namespace SQLite
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CJDBCDRIVER_H__
+#endif // __ELASTOS_SQL_SQLITE_CJDBCDRIVER_H__

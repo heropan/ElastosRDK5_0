@@ -12,23 +12,10 @@ CAR_OBJECT_IMPL(CBlob);
 CAR_INTERFACE_IMPL(CBlob, Object, IBlob);
 
 CBlob::CBlob()
+    : mHandle(0)
+    , mSize(0)
 {
-    mHandle = 0;
-    size = 0;
-    is_init = FALSE;
 }
-
-Boolean CBlob::Internal_init()
-{
-    if(!is_init)
-    {
-        is_init = TRUE;
-    }
-
-    return is_init;
-}
-
-Boolean CBlob::is_init = Internal_init();
 
 ECode CBlob::GetInputStream(
     /* [out] */ IInputStream** instream)
@@ -77,7 +64,7 @@ ECode CBlob::Close()
     bl->blob = 0;
     free(bl);
     mHandle = 0;
-    size = 0;
+    mSize = 0;
     }
 #endif
     return NOERROR;

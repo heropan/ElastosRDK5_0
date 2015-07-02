@@ -1,6 +1,6 @@
 
-#ifndef __TABLERESULT_H__
-#define __TABLERESULT_H__
+#ifndef __ELASTOS_SQL_SQLITE_TABLERESULT_H__
+#define __ELASTOS_SQL_SQLITE_TABLERESULT_H__
 
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/Vector.h>
@@ -58,4 +58,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __TABLERESULT_H__
+#endif // __ELASTOS_SQL_SQLITE_TABLERESULT_H__

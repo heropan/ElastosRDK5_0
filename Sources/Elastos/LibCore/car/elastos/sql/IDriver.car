@@ -6,6 +6,17 @@ module
     namespace Elastos {
     namespace Sql {
 
+    /**
+     * An interface to a JDBC driver. Instances are returned by {@link DriverManager}.
+     *
+     * <p>The JDBC driver uses URLs to specify the location of specific data. URL
+     * format typically takes the form " {@code xxxx:yyyy:SpecificData}", where "
+     * {@code xxxx:yyyy}" is referred to as the <i>subprotocol</i> and is normally
+     * the same for all of a particular driver. " {@code SpecificData}" is a string
+     * which identifies the particular data source that the driver should use.
+     *
+     * @see DriverManager
+     */
     interface IDriver {
         /* Returns whether the driver thinks that it can open a connection to the
          * given URL.

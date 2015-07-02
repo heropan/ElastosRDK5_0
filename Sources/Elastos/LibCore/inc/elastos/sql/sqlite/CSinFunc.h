@@ -1,6 +1,6 @@
 
-#ifndef __CSINFUNC_H__
-#define __CSINFUNC_H__
+#ifndef __ELASTOS_SQL_SQLITE_CSINFUNC_H__
+#define __ELASTOS_SQL_SQLITE_CSINFUNC_H__
 
 #include "_Elastos_Sql_SQLite_CSinFunc.h"
 #include <elastos/core/Object.h>
@@ -33,7 +33,7 @@ public:
     CARAPI constructor();
 
 public:
-    Double testDouble;
+    Double mTestDouble;
     Boolean functionCalled;
 };
 
@@ -41,4 +41,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSINFUNC_H__
+#endif // __ELASTOS_SQL_SQLITE_CSINFUNC_H__

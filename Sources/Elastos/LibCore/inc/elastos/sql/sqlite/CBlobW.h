@@ -1,6 +1,6 @@
 
-#ifndef __CBLOBW_H__
-#define __CBLOBW_H__
+#ifndef __ELASTOS_SQL_SQLLITE_CBLOBW_H__
+#define __ELASTOS_SQL_SQLLITE_CBLOBW_H__
 
 #include "_Elastos_Sql_SQLite_CBlobW.h"
 #include "CBlob.h"
@@ -50,4 +50,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CBLOBW_H__
+#endif // __ELASTOS_SQL_SQLLITE_CBLOBW_H__

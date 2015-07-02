@@ -1,6 +1,6 @@
 
-#ifndef __CSHELL_H__
-#define __CSHELL_H__
+#ifndef __ELASTOS_SQL_SQLITE_CSHELL_H__
+#define __ELASTOS_SQL_SQLITE_CSHELL_H__
 
 #include "_Elastos_Sql_SQLite_CShell.h"
 #include "CDatabase.h"
@@ -62,18 +62,18 @@ public:
         /* [in] */ const String& str);
 
 public:
-    AutoPtr<CDatabase> db;
-    Boolean echo;
-    Int32 count;
-    Int32 mode;
-    Boolean showHeader;
-    String tableName;
-    String sep;
-    AutoPtr<ArrayOf<String> > cols;
-    AutoPtr<ArrayOf<Int32> > colwidth;
-    String destTable;
-    AutoPtr<IPrintWriter> pw;
-    AutoPtr<IPrintWriter> err;
+    AutoPtr<CDatabase> mDb;
+    Boolean mEcho;
+    Int32 mCount;
+    Int32 mMode;
+    Boolean mShowHeader;
+    String mTableName;
+    String mSep;
+    AutoPtr<ArrayOf<String> > mCols;
+    AutoPtr<ArrayOf<Int32> > mColwidth;
+    String mDestTable;
+    AutoPtr<IPrintWriter> mPw;
+    AutoPtr<IPrintWriter> mErr;
 
     const static Int32 MODE_Line = 0;
     const static Int32 MODE_Column = 1;
@@ -88,4 +88,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CSHELL_H__
+#endif // __ELASTOS_SQL_SQLITE_CSHELL_H__

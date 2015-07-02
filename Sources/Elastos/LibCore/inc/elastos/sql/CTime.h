@@ -1,6 +1,6 @@
 
-#ifndef __CTIME_H__
-#define __CTIME_H__
+#ifndef __ELASTOS_SQL_CTIME_H__
+#define __ELASTOS_SQL_CTIME_H__
 
 #include "_Elastos_Sql_CTime.h"
 #include "Date.h"
@@ -72,4 +72,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CTIME_H__
+#endif // __ELASTOS_SQL_CTIME_H__

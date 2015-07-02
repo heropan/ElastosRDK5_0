@@ -11,21 +11,9 @@ CAR_OBJECT_IMPL(CBackup);
 CAR_INTERFACE_IMPL(CBackup, Object, IBackup);
 
 CBackup::CBackup()
+    : mHandle(0)
 {
-    mHandle = 0;
-    isinit = FALSE;
 }
-
-Boolean CBackup::Internal_init()
-{
-    if (!isinit)
-    {
-        isinit = TRUE;
-    }
-    return isinit;
-}
-
-Boolean CBackup::isinit = Internal_init();
 
 ECode CBackup::Finish()
 {

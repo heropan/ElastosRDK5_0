@@ -1,6 +1,6 @@
 
-#ifndef __CDATABASEHELPER_H__
-#define __CDATABASEHELPER_H__
+#ifndef __ELASTOS_SQL_SQLITE_CDATABASEHELPER_H__
+#define __ELASTOS_SQL_SQLITE_CDATABASEHELPER_H__
 
 #include "_Elastos_Sql_SQLite_CDatabaseHelper.h"
 #include "Singleton.h"
@@ -52,4 +52,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDATABASEHELPER_H__
+#endif // __ELASTOS_SQL_SQLITE_CDATABASEHELPER_H__
