@@ -25,33 +25,7 @@ static UCollationElements* toCollationElements(
    return reinterpret_cast<UCollationElements*>(static_cast<uintptr_t>(address));
 }
 
-/**
-* Checks if an error has occurred, throwing a suitable exception if so.
-* @param env JNI environment
-* @param errorCode code to determine if it is an error
-* @return 0 if errorCode is not an error, 1 if errorCode is an error, but the
-*         creation of the exception to be thrown fails
- * @exception thrown if errorCode represents an error
-*/
-static ECode maybeThrowIcuException(
-    /* [in] */ UErrorCode errorCode)
-{
-    if (errorCode <= U_ZERO_ERROR) {
-        return NOERROR;
-    }
-
-    switch (errorCode) {
-        case U_ILLEGAL_ARGUMENT_ERROR:
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        case U_INDEX_OUTOFBOUNDS_ERROR:
-        case U_BUFFER_OVERFLOW_ERROR:
-            return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-        case U_UNSUPPORTED_ERROR:
-            return E_UNSUPPORTED_OPERATION_EXCEPTION;
-        default:
-            return E_RUNTIME_EXCEPTION;
-    }
-}
+extern ECode maybeThrowIcuException(/* [in] */ UErrorCode errorCode);
 
 NativeCollation::NativeCollation()
 {}
