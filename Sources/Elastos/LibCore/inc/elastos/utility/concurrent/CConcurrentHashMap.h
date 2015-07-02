@@ -897,7 +897,7 @@ public:
      */
     // @SuppressWarnings("unchecked")
     static CARAPI_(AutoPtr<Segment>) SegmentAt(
-        /* [in] */ ArrayOf< AutoPtr<Segment> >* ss,
+        /* [in] */ ArrayOf< Segment* >* ss,
         /* [in] */ Int32 j);
 
     /**
@@ -1057,7 +1057,7 @@ public:
     /**
      * The segments, each of which is a specialized hash table.
      */
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > mSegments;
+    AutoPtr< ArrayOf< Segment* > > mSegments;
 
     AutoPtr<ISet> mKeySet;
     AutoPtr<ISet> mEntrySet;
@@ -1076,16 +1076,10 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Utility::Concurrent::CConcurrentHashMap::HashEntry*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
 
-template <>
-struct Conversion<AutoPtr<Elastos::Utility::Concurrent::CConcurrentHashMap::Segment>, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::CConcurrentHashMap::HashEntry, IInterface)
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::CConcurrentHashMap::Segment, IInterface)
+
 
 #endif //__ELASTOS_UTILITY_CCONCURRENTHASHMAP_H__

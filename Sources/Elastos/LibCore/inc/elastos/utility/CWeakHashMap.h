@@ -545,10 +545,8 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Utility::CWeakHashMap::Entry*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::CWeakHashMap::Entry, IInterface)
+
 
 #endif // __ELASTOS_UTILITY__CWEAKHASHMAP_H__

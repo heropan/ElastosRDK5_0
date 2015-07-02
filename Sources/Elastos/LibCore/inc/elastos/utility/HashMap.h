@@ -807,11 +807,7 @@ private:
 } // namespace Elastos
 
 
-template <>
-struct Conversion<Elastos::Utility::HashMap::HashMapEntry*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+DEFINE_CONVERSION_FOR(Elastos::Utility::HashMap::HashMapEntry, IInterface)
 
 
 #endif // __ELASTOS_UTILITY_HashMap_H__

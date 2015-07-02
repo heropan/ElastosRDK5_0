@@ -233,6 +233,7 @@ struct ConversionHelper
     static Small Test(U);
     static T & MakeT();
 };
+
 // class template Conversion
 // Figures out the conversion relationships between two types
 // Invocations (T and U are types):
@@ -272,6 +273,15 @@ struct Conversion<void, CCarObject>
 #ifndef SUPERSUBCLASS_EX
 #define SUPERSUBCLASS_EX(Super, Sub) \
     (Conversion<Sub, Super>::exists && !Conversion<Super, void*>::sameType)
+#endif
+
+#ifndef DEFINE_CONVERSION_FOR
+#define DEFINE_CONVERSION_FOR(DerivedT, BaseT)                              \
+template <>                                                                 \
+struct Conversion<DerivedT*, BaseT*>                                        \
+{                                                                           \
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };           \
+};
 #endif
 
 #endif // __ELAOBJ_H__

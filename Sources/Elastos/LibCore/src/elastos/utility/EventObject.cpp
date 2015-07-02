@@ -18,11 +18,12 @@ EventObject::~EventObject()
 {
 }
 
-EventObject::constructor(
+ECode EventObject::constructor(
     /* [in] */ IObject* source)
 {
     VALIDATE_NOT_NULL(source)
     mSource = source;
+    return NOERROR;
 }
 
 ECode EventObject::GetSource(
@@ -39,8 +40,10 @@ ECode EventObject::ToString(
 {
     // return getClass().getName() + "[source=" + source + ']';
     VALIDATE_NOT_NULL(str);
-    *str = String("this is:") + StringUtils::ToHexString((Int32)this)
-            + "[source=" + StringUtils::ToHexString((Int32)mSource.Get()) + ']';
+    *str = String("EventObject:");
+    *str += "[source=";
+    *str += Object::ToString(mSource);
+    *str += ']';
     return NOERROR;
 }
 

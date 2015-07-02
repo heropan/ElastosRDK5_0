@@ -307,10 +307,8 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Utility::Concurrent::CExchanger::Slot*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::CExchanger::Slot, IInterface)
+
 
 #endif //__ELASTOS_UTILITY_CEXCHANGER_H__

@@ -1080,10 +1080,8 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Utility::Concurrent::CConcurrentSkipListMap::Index*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::CConcurrentSkipListMap::Index, IInterface)
+
 
 #endif //__ELASTOS_UTILITY_CCONCURRENTSKIPLISTMAP_H__

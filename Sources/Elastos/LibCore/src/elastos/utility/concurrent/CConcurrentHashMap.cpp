@@ -800,7 +800,7 @@ ECode CConcurrentHashMap::constructor(
     AutoPtr< ArrayOf<HashEntry*> > outentry = ArrayOf<HashEntry*>::Alloc(cap);
     AutoPtr<Segment> s0 =
         new Segment(mLoadFactor, (Int32)(cap * mLoadFactor), outentry);
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > ss = ArrayOf< AutoPtr<Segment> >::Alloc(ssize);
+    AutoPtr< ArrayOf< Segment* > > ss = ArrayOf< Segment* >::Alloc(ssize);
     assert(0 && "TODO");
     // UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of mSegments[0]
     mSegments = ss;
@@ -911,7 +911,7 @@ ECode CConcurrentHashMap::Replace(
 
 ECode CConcurrentHashMap::Clear()
 {
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > segments = mSegments;
+    AutoPtr< ArrayOf< Segment* > > segments = mSegments;
     for (Int32 j = 0; j < segments->GetLength(); ++j) {
         AutoPtr<Segment> s = SegmentAt(segments, j);
         if (s != NULL)
@@ -956,7 +956,7 @@ ECode CConcurrentHashMap::ContainsValue(
         // throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > segments = mSegments;
+    AutoPtr< ArrayOf< Segment* > > segments = mSegments;
     Int64 previousSum = 0L;
     Int32 lockCount = 0;
     // try {
@@ -1072,7 +1072,7 @@ ECode CConcurrentHashMap::IsEmpty(
      * constructions for stability checks.
      */
     Int64 sum = 0L;
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > segments = mSegments;
+    AutoPtr< ArrayOf< Segment* > > segments = mSegments;
     for (Int32 j = 0; j < segments->GetLength(); ++j) {
         AutoPtr<Segment> seg = SegmentAt(segments, j);
         if (seg != NULL) {
@@ -1187,7 +1187,7 @@ ECode CConcurrentHashMap::GetSize(
 
     // Try a few times to get accurate mCount. On failure due to
     // continuous async changes in table, resort to locking.
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > segments = mSegments;
+    AutoPtr< ArrayOf< Segment* > > segments = mSegments;
     Int32 segmentCount = segments->GetLength();
 
     Int64 previousSum = 0L;
@@ -1275,7 +1275,7 @@ void CConcurrentHashMap::SetEntryAt(
 }
 
 AutoPtr<CConcurrentHashMap::Segment> CConcurrentHashMap::SegmentAt(
-    /* [in] */ ArrayOf< AutoPtr<Segment> >* ss,
+    /* [in] */ ArrayOf< Segment* >* ss,
     /* [in] */ Int32 j)
 {
     Int64 u = (j << SSHIFT) + SBASE;
@@ -1300,7 +1300,7 @@ AutoPtr<CConcurrentHashMap::HashEntry> CConcurrentHashMap::EntryForHash(
 AutoPtr<CConcurrentHashMap::Segment> CConcurrentHashMap::EnsureSegment(
     /* [in] */ Int32 k)
 {
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > ss = mSegments;
+    AutoPtr< ArrayOf< Segment* > > ss = mSegments;
     Int64 u = (k << SSHIFT) + SBASE; // raw offset
     AutoPtr<Segment> seg;
     assert(0 && "TODO");
@@ -1355,7 +1355,7 @@ ECode CConcurrentHashMap::WriteObject(
     }
     s->DefaultWriteObject();
 
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > segments = mSegments;
+    AutoPtr< ArrayOf< Segment* > > segments = mSegments;
     for (Int32 k = 0; k < segments->GetLength(); ++k) {
         AutoPtr<Segment> seg = SegmentAt(segments, k);
         seg->Lock();
@@ -1386,7 +1386,7 @@ ECode CConcurrentHashMap::ReadObject(
 
     // Re-initialize segments to be minimally sized, and let grow.
     Int32 cap = MIN_SEGMENT_TABLE_CAPACITY;
-    AutoPtr< ArrayOf< AutoPtr<Segment> > > segments = mSegments;
+    AutoPtr< ArrayOf< Segment* > > segments = mSegments;
     for (Int32 k = 0; k < segments->GetLength(); ++k) {
         AutoPtr<Segment> seg = (*segments)[k];
         if (seg != NULL) {

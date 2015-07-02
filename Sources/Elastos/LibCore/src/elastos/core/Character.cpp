@@ -3,11 +3,9 @@
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 
-template <>
-struct Conversion<Elastos::Core::Character::UnicodeBlock*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+
+DEFINE_CONVERSION_FOR(Elastos::Core::Character::UnicodeBlock, IInterface)
+
 
 namespace Elastos {
 namespace Core {

@@ -16,11 +16,9 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringUtils;
 
-template <>
-struct Conversion<Elastos::Utility::Prefs::AbstractPreferences*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::Prefs::AbstractPreferences, IInterface)
+
 
 namespace Elastos {
 namespace Utility {

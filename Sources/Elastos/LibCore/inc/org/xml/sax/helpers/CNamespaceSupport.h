@@ -221,10 +221,8 @@ public:
 } // namespace Xml
 } // namespace Org
 
-template <>
-struct Conversion<Org::Xml::Sax::Helpers::CNamespaceSupport::Context*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+
+DEFINE_CONVERSION_FOR(Org::Xml::Sax::Helpers::CNamespaceSupport::Context, IInterface)
+
 
 #endif // __ORG_XML_SAX_HELPERS_CNAMESPACESUPPORT_H__
