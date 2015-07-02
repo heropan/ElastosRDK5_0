@@ -38,8 +38,8 @@ typedef _ELASTOS ECode (CARAPICALLTYPE *_CreateObjectFn)(
         PInterface *ppObject);
 
 class _CBaseClassObject :
-	public IObject,
-	public IClassObject
+    public IObject,
+    public IClassObject
 {
 public:
     CARAPI_(PInterface) Probe(

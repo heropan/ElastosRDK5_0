@@ -30,10 +30,10 @@ typedef struct EzMultiQI EzMultiQI, *PMULTIQI;
 #define RGM_MAX_NUMBER              ((PRegime)0xFFFF)
 #define IS_INVALID_REGIME(dw)      ((dw == RGM_INVALID_DOMAIN))
 #define IS_RGM_NUMBER(dw)           ((!IS_INVALID_REGIME(dw)) && \
-	                                 ((dw == RGM_SAME_DOMAIN) || \
-	                                  (dw == RGM_DIFF_DOMAIN) || \
-	                                  (dw == RGM_DEFAULT) || \
-	                                  (dw == RGM_DIFF_MACHINE)))
+                                     ((dw == RGM_SAME_DOMAIN) || \
+                                      (dw == RGM_DIFF_DOMAIN) || \
+                                      (dw == RGM_DEFAULT) || \
+                                      (dw == RGM_DIFF_MACHINE)))
 
 ELAPI _CObject_CreateInstance(
     /* [in] */ _ELASTOS RClassID rclsid,

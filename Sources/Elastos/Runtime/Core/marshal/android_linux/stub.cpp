@@ -733,7 +733,7 @@ ECode CObjectStub::S_CreateObject(
     iObj = (IObject*)object->Probe(EIID_IObject);
     if (!iObj) {
         // DUMP_ITFID(object);
-	    MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
+        MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE(
                 "Create stub: interface do not support EIID_IObject QI.\n"));
         ec = E_INVALID_ARGUMENT;
         goto ErrorExit;

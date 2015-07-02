@@ -8,7 +8,7 @@ int atomic_cmpxchg(int old, int _new, volatile int *ptr)
 #ifdef _android
     return android_atomic_cmpxchg(old, _new, ptr);
 #else
-	return __sync_val_compare_and_swap(ptr, old, _new) != old;
+    return __sync_val_compare_and_swap(ptr, old, _new) != old;
 #endif
 }
 

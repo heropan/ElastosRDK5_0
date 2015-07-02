@@ -232,8 +232,8 @@ ECode CClassInfo::GetBaseClassInfo(
 
     *baseClassInfo = NULL;
     return g_objInfoList.AcquireClassInfo(mClsModule,
-    	getClassDirAddr(mBase, mClsMod->ppClassDir, mDesc->sParentIndex),
-        (IInterface **)baseClassInfo);
+            getClassDirAddr(mBase, mClsMod->ppClassDir, mDesc->sParentIndex),
+            (IInterface **)baseClassInfo);
 }
 
 ECode CClassInfo::IsGeneric(

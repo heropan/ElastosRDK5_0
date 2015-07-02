@@ -11,8 +11,8 @@ __declspec(naked)
 int invokeCallback(CallbackEventFlags cFlags, void* pSender, void* pThis, void* pFunc, void* pParam, int nSize)
 {
     __asm {
-		push    ebp
-	    mov     ebp, esp
+        push    ebp
+        mov     ebp, esp
 
         mov     ecx, nSize
         mov     eax, pParam

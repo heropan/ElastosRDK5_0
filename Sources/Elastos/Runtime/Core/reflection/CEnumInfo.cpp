@@ -77,7 +77,7 @@ ECode CEnumInfo::InitStatic(
 {
     m_pCClsModule = pCClsModule;
 
-	Int32 nBase = m_pCClsModule->mBase;
+    Int32 nBase = m_pCClsModule->mBase;
     m_pEnumDirEntry = pEnumDirEntry;
     m_pName = adjustNameAddr(nBase, m_pEnumDirEntry->pszName);
     m_pNamespace = adjustNameAddr(nBase, m_pEnumDirEntry->pszNameSpace);

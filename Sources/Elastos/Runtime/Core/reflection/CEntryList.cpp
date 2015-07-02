@@ -137,11 +137,11 @@ ECode CEntryList::InitElemList()
         return NOERROR;
     }
 
-	ClassDirEntry*      pClassDir = NULL;
-	InterfaceDirEntry*  pIFDir = NULL;
-	StructDirEntry*     pStructDir = NULL;
-	EnumDirEntry*       pEnumDir = NULL;
-	ConstDirEntry*      pConstDir = NULL;
+    ClassDirEntry*      pClassDir = NULL;
+    InterfaceDirEntry*  pIFDir = NULL;
+    StructDirEntry*     pStructDir = NULL;
+    EnumDirEntry*       pEnumDir = NULL;
+    ConstDirEntry*      pConstDir = NULL;
     //No EntryType_TypeAliase
     for (i = 0; i < m_uTotalCount; i++) {
         m_pObjElement[i].uIndex = i;

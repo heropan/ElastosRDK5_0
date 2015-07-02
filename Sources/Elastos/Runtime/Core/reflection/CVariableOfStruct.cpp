@@ -198,8 +198,8 @@ ECode CVariableOfStruct::SetFieldValueByName(
     /* [in] */ void *pParam,
     /* [in] */ CarDataType type)
 {
-	if(name.IsNull() || !pParam) {
-    	return E_INVALID_ARGUMENT;
+    if(name.IsNull() || !pParam) {
+        return E_INVALID_ARGUMENT;
     }
 
     if (!m_pVarBuf) {
@@ -383,7 +383,7 @@ ECode CVariableOfStruct::GetFieldValueByName(
     /* [in] */ CarDataType type)
 {
     if(name.IsNull() || !pParam) {
-    	return E_INVALID_ARGUMENT;
+        return E_INVALID_ARGUMENT;
     }
 
     if (!m_pVarBuf) {

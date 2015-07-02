@@ -44,9 +44,9 @@ CCallbackParcel::~CCallbackParcel()
     for (Int32 i = 0; i < mElemCount; i++) {
         switch(mElemTypes[i]) {
             case Type_InterfacePtr:
-				if (*(IInterface**)mElemPtr != NULL) {
-					(*(IInterface**)mElemPtr)->Release();
-				}
+                if (*(IInterface**)mElemPtr != NULL) {
+                    (*(IInterface**)mElemPtr)->Release();
+                }
                 mElemPtr += 4;
                 break;
 
@@ -55,8 +55,8 @@ CCallbackParcel::~CCallbackParcel()
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
                 mElemPtr = (Byte*)ROUND8((Int32)mElemPtr);
 #endif
-				mElemPtr += 8;
-				break;
+                mElemPtr += 8;
+                break;
 
             case Type_String: {
                 String* p = *(String**)mElemPtr;
@@ -157,11 +157,11 @@ ECode CCallbackParcel::GrowDataBuffer(
     orgDataBuf = mDataBuf;
     elemPtr = mElemBuf;
     offset1 = mDataPtr - mDataBuf;
-	if(minSize < 128) {
-		minSize = 128;
+    if(minSize < 128) {
+        minSize = 128;
     }
-	else {
-		minSize += 128;
+    else {
+        minSize += 128;
     }
     mDataBufCapacity += minSize;
     mDataBuf = (Byte*)malloc(mDataBufCapacity);
@@ -187,7 +187,7 @@ ECode CCallbackParcel::GrowDataBuffer(
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
                 elemPtr = (Byte*)ROUND8((Int32)elemPtr);
 #endif
-				elemPtr += 8;
+                elemPtr += 8;
                 break;
 
             case Type_String:
@@ -355,7 +355,7 @@ ECode CCallbackParcel::WriteValue(
             *(EGuid**)(mElemPtr) = (EGuid*)mDataPtr;
             mElemPtr += 4;
             memcpy(mDataPtr, value, sizeof(EGuid));
-			((EGuid*)mDataPtr)->pUunm = (char*)(mDataPtr + sizeof(EGuid));
+            ((EGuid*)mDataPtr)->pUunm = (char*)(mDataPtr + sizeof(EGuid));
             strcpy(((EGuid*)mDataPtr)->pUunm, ((EGuid*)value)->pUunm);
             mDataPtr += ROUND4(size);
             break;
@@ -415,7 +415,7 @@ ECode CCallbackParcel::WriteValue(
             assert(0);
             break;
     }
-	mElemCount += 1;
+    mElemCount += 1;
 
     return NOERROR;
 }
