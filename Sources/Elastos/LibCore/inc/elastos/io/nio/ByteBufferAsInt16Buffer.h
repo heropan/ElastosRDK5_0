@@ -41,8 +41,7 @@ public:
         /* [out] */ IInt16Buffer** buffer);
 
     // @Override
-    CARAPI Compact(
-        /* [out] */ IInt16Buffer** outbuf);
+    CARAPI Compact();
 
     // @Override
     CARAPI Duplicate(

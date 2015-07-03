@@ -128,6 +128,12 @@ Pattern::Pattern(
     // if ((flags & CANON_EQ) != 0) {
     //     throw new UnsupportedOperationException("CANON_EQ flag not supported");
     // }
+    Int32 supportedFlags = CASE_INSENSITIVE | COMMENTS | DOTALL
+        | LITERAL | MULTILINE | UNICODE_CASE | UNIX_LINES;
+    if ((flags & ~supportedFlags) != 0) {
+        //throw new IllegalArgumentException("Unsupported flags: " + (flags & ~supportedFlags));
+        assert(0 && "Unsupported flags");
+    }
     ASSERT_SUCCEEDED(Compile());
 }
 

@@ -14,7 +14,8 @@ CAR_INTERFACE_IMPL_2(CRandom, Object, IRandom, ISerializable)
 
 CAR_OBJECT_IMPL(CRandom)
 
-const Int64 CRandom::sMultiplier;
+const Int64 CRandom::sMultiplier = 0x5deece66dLL;
+volatile Int64 CRandom::mSeedBase = 0;
 
 CRandom::CRandom()
     : mHaveNextNextGaussian(FALSE)
@@ -24,15 +25,14 @@ CRandom::CRandom()
 
 ECode CRandom::constructor()
 {
+    // Note: Don't use identityHashCode(this) since that causes the monitor to
+    // get inflated when we synchronize.
     AutoPtr<Elastos::Core::CSystem> system;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&system);
 
-    // Note: Using identityHashCode() to be hermetic wrt subclasses.
     Int64 tm;
     system->GetCurrentTimeMillis(&tm);
-    Int32 hash;
-    system->IdentityHashCode(this->Probe(EIID_IInterface), &hash);
-    return SetSeed(tm + hash);
+    return SetSeed(tm + (mSeedBase++));
 }
 
 ECode CRandom::constructor(
@@ -165,21 +165,23 @@ ECode CRandom::NextInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    if (n > 0) {
-        if ((n & -n) == n) {
-            *value = (Int32)((n * (Int64)Next(31)) >> 31);
-            return NOERROR;
-        }
-        Int32 bits, val;
-        do {
-            bits = Next(31);
-            val = bits % n;
-        } while (bits - val + (n - 1) < 0);
-        *value = val;
+    *value = -1;
+    if (n <= 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if ((n & -n) == n) {
+        *value = (Int32)((n * (Int64)Next(31)) >> 31);
         return NOERROR;
     }
-    // throw new IllegalArgumentException();
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+
+    Int32 bits, val;
+    do {
+        bits = Next(31);
+        val = bits % n;
+    } while (bits - val + (n - 1) < 0);
+    *value = val;
+    return NOERROR;
 }
 
 /**

@@ -37,8 +37,7 @@ ECode ByteBufferAsFloatBuffer::AsReadOnlyBuffer(
     return NOERROR;
 }
 
-ECode ByteBufferAsFloatBuffer::Compact(
-    /* [out] */ IFloatBuffer** outbuf)
+ECode ByteBufferAsFloatBuffer::Compact()
 {
     // if (byteBuffer.isReadOnly()) {
     //     throw new ReadOnlyBufferException();

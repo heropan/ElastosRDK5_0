@@ -3,9 +3,11 @@
 #include "CMatcher.h"
 #include "CStringWrapper.h"
 #include "Math.h"
+#include "EmptyArray.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::Math;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Utility {
@@ -58,17 +60,45 @@ ECode CSplitter::FastSplit(
         return NOERROR;
     }
 
-    // Collect text preceding each occurrence of the separator, while there's enough space.
-    List<String> list;
-
-    UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
-    Int32 begin = 0, end = 0;
-    while ((end = input.IndexOf(ch, begin)) != -1 && list.GetSize() + 1 < maxSize) {
-        String subStr = input.Substring(begin, end);
-        list.PushBack(subStr);
+    // Count separators
+    Int32 separatorCount = 0;
+    Int32 begin = 0;
+    Int32 end;
+    while (separatorCount + 1 != limit && (end = input.IndexOf(ch, begin)) != -1) {
+        ++separatorCount;
         begin = end + 1;
     }
-    return FinishSplit(list, input, begin, maxSize, limit, array);
+    Int32 lastPartEnd = input.GetLength();
+    if (limit == 0 && begin == lastPartEnd) {
+        // Last part is empty for limit == 0, remove all trailing empty matches.
+        if (separatorCount == lastPartEnd) {
+            // Input contains only separators.
+            *array = EmptyArray::STRING;
+            REFCOUNT_ADD(*array)
+            return NOERROR;
+        }
+
+        AutoPtr<ArrayOf<Char32> > chars = input.GetChars();
+        // Find the beginning of trailing separators.
+        do {
+            --begin;
+        } while ((*chars)[begin - 1] == ch);
+        // Reduce separatorCount and fix lastPartEnd.
+        separatorCount -= input.GetLength() - begin;
+        lastPartEnd = begin;
+    }
+
+    // Collect the result parts.
+    AutoPtr<ArrayOf<String> > result = ArrayOf<String>::Alloc(separatorCount + 1);
+    begin = 0;
+    for (Int32 i = 0; i != separatorCount; ++i) {
+        end = input.IndexOf(ch, begin);
+        result->Set(i, input.Substring(begin, end));
+        begin = end + 1;
+    }
+    // Add last part.
+    result->Set(separatorCount, input.Substring(begin, lastPartEnd));
+    return result;
 }
 
 ECode CSplitter::Split(
@@ -101,7 +131,6 @@ ECode CSplitter::Split(
     // Collect text preceding each occurrence of the separator, while there's enough space.
     List<String> list;
 
-    UInt32 maxSize = limit <= 0 ? Elastos::Core::Math::INT32_MAX_VALUE : limit;
     AutoPtr<CMatcher> matcher;
     AutoPtr<ICharSequence> inputSeq;
     FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
@@ -110,22 +139,20 @@ ECode CSplitter::Split(
     Int32 begin = 0, end, size = 0;
     Boolean result;
     String subStr;
-    while ((matcher->Find(&result), result) && size + 1 < maxSize) {
+
+    while (list.GetSize() + 1 != limit && (matcher->Find(&result), result)) {
         matcher->Start(&end);
         subStr = input.Substring(begin, end);
         list.PushBack(subStr);
         matcher->End(&begin);
-        ++size;
     }
-
-   return FinishSplit(list, input, begin, maxSize, limit, array);
+    return FinishSplit(list, input, begin, limit, array);
 }
 
 ECode CSplitter::FinishSplit(
     /* [in] */ List<String>& list,
     /* [in] */ const String& input,
     /* [in] */ Int32 begin,
-    /* [in] */ Int32 maxSize,
     /* [in] */ Int32 limit,
     /* [out, callee] */ ArrayOf<String>** array)
 {
@@ -136,12 +163,11 @@ ECode CSplitter::FinishSplit(
     if ((UInt32)begin < input.GetLength()) {
         list.PushBack(input.Substring(begin));
     }
-    else if (limit != 0) { // No point adding the empty string if limit == 0, just to remove it below.
+    else if (limit != 0) {
         list.PushBack(String(""));
     }
-
-    // Remove all trailing empty matches in the limit == 0 case.
-    if (limit == 0) {
+    else {
+        // Remove all trailing empty matches in the limit == 0 case.
         List<String>::ReverseIterator rit = list.RBegin();
         while (rit != list.REnd()) {
             if ((*rit).IsNullOrEmpty()) {

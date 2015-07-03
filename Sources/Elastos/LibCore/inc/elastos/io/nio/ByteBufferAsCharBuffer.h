@@ -41,8 +41,7 @@ public:
         /* [out] */ ICharBuffer** buffer);
 
     // @Override
-    CARAPI Compact(
-        /* [out] */ ICharBuffer** outbuf);
+    CARAPI Compact();
 
     // @Override
     CARAPI Duplicate(

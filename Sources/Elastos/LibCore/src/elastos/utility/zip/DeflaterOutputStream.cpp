@@ -168,7 +168,7 @@ ECode DeflaterOutputStream::Write(
 
 ECode DeflaterOutputStream::Flush()
 {
-    if (mSyncFlush) {
+    if (mSyncFlush && !mDone) {
         Int32 byteCount;
         while (mDef->Deflate(mBuf, 0, mBuf->GetLength(),
             CDeflater::SYNC_FLUSH, &byteCount), byteCount != 0) {

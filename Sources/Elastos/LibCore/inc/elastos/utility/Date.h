@@ -498,7 +498,7 @@ private:
 
 private:
     // Used by parse()
-    static Int32 sCreationYear;
+    static Int32 CREATION_YEAR;
 
     Int64 mMilliseconds;
 };

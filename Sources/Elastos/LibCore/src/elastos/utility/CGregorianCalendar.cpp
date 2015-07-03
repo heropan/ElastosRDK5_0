@@ -14,15 +14,19 @@ namespace Utility{
 
 const Int64 CGregorianCalendar::sDefaultGregorianCutover = -12219292800000ll;
 
-const Int32 CGregorianCalendar::sDaysInYear[12] = { 0, 31, 59, 90, 120, 151, 181,212, 243, 273, 304, 334 };
+const Int32 CGregorianCalendar::sDaysInYear[12] =
+    { 0, 31, 59, 90, 120, 151, 181,212, 243, 273, 304, 334 };
 
-const Int32 CGregorianCalendar::sMaximums[17] = { 1, 292278994, 11, 53, 6, 31, 366, 7, 6, 1, 11, 23, 59,
-                                            59, 999, 14 * 3600 * 1000, 7200000 };
+const Int32 CGregorianCalendar::sMaximums[17] =
+    { 1, 292278994, 11, 53, 6, 31, 366, 7, 6, 1, 11, 23,
+        59, 59, 999, 14 * 3600 * 1000, 7200000 };
 
-const Int32 CGregorianCalendar::sMinimums[17] = { 0, 1, 0, 1, 0, 1, 1, 1, 1, 0,0, 0, 0, 0, 0, -13 * 3600 * 1000, 0 };
+const Int32 CGregorianCalendar::sMinimums[17] =
+    { 0, 1, 0, 1, 0, 1, 1, 1, 1, 0,0, 0, 0, 0, 0, -13 * 3600 * 1000, 0 };
 
-const Int32 CGregorianCalendar::sLeastMaximums[17] = { 1, 292269054, 11, 50, 3, 28, 355, 7, 3, 1, 11, 23, 59,
-                                                    59, 999, 50400000, 1200000 };
+const Int32 CGregorianCalendar::sLeastMaximums[17] =
+    { 1, 292269054, 11, 50, 3, 28, 355, 7, 3, 1, 11, 23,
+        59, 59, 999, 50400000, 1200000 };
 
 static AutoPtr<ArrayOf<Byte> > InitDaysInMonth()
 {
@@ -274,18 +278,18 @@ ECode CGregorianCalendar::Add(
     return NOERROR;
 }
 
-void CGregorianCalendar::FullFieldsCalc(
-    /* [in] */ Int64 timeVal,
-    /* [in] */ Int32 zoneOffset)
+void CGregorianCalendar::FullFieldsCalc()
 {
     Int32 millis = (Int32) (mTime % 86400000);
-    Int64 days = timeVal / 86400000;
+    Int64 days = mTime / 86400000;
     if (millis < 0) {
         millis += 86400000;
         days--;
     }
-    // Cannot add ZONE_OFFSET to time as it might overflow
-    millis += zoneOffset;
+
+    // Adding fields[ZONE_OFFSET] to time might make it overflow, so we add
+    // it to millis (the number of milliseconds in the current day) instead.
+    millis += (*mFields)[ICalendar::ZONE_OFFSET];
     while (millis < 0) {
         millis += 86400000;
         days--;
@@ -295,11 +299,12 @@ void CGregorianCalendar::FullFieldsCalc(
         days++;
     }
 
-    Int32 dayOfYear = ComputeYearAndDay(days, timeVal + zoneOffset);
+    Int32 dayOfYear = ComputeYearAndDay(days, mTime + (*mFields)[ICalendar::ZONE_OFFSET]);
     (*mFields)[DAY_OF_YEAR] = dayOfYear;
-    if((*mFields)[YEAR] == mChangeYear && mGregorianCutover <= timeVal + zoneOffset){
+    if ((*mFields)[YEAR] == mChangeYear && mGregorianCutover <= mTime + (*mFields)[ICalendar::ZONE_OFFSET]){
         dayOfYear += mCurrentYearSkew;
     }
+
     Int32 month = dayOfYear / 32;
     Boolean leapYear = IsLeapYear((*mFields)[YEAR]);
     Int32 date = dayOfYear - DaysInYear(leapYear, month);
@@ -319,7 +324,7 @@ void CGregorianCalendar::FullFieldsCalc(
                 (*mFields)[DAY_OF_WEEK], millis, &dstOffset);
     }
     if ((*mFields)[YEAR] > 0) {
-        dstOffset -= zoneOffset;
+        dstOffset -= (*mFields)[ICalendar::ZONE_OFFSET];
     }
     (*mFields)[DST_OFFSET] = dstOffset;
     if (dstOffset != 0) {
@@ -334,10 +339,11 @@ void CGregorianCalendar::FullFieldsCalc(
             days++;
         }
         if (oldDays != days) {
-            dayOfYear = ComputeYearAndDay(days, timeVal - zoneOffset
+            dayOfYear = ComputeYearAndDay(days, mTime - (*mFields)[ICalendar::ZONE_OFFSET]
                     + dstOffset);
             (*mFields)[DAY_OF_YEAR] = dayOfYear;
-            if((*mFields)[YEAR] == mChangeYear && mGregorianCutover <= timeVal - zoneOffset + dstOffset){
+            if((*mFields)[YEAR] == mChangeYear
+             && mGregorianCutover <= mTime - (*mFields)[ICalendar::ZONE_OFFSET] + dstOffset){
                 dayOfYear += mCurrentYearSkew;
             }
             month = dayOfYear / 32;
@@ -409,9 +415,26 @@ ECode CGregorianCalendar::ComputeFields()
     Int32 dstOffset =  isInDaylightTime ? savings : 0;
     Int32 zoneOffset = 0;
     timeZone->GetRawOffset(&zoneOffset);
+
+
+    // We unconditionally overwrite DST_OFFSET and ZONE_OFFSET with
+    // values from the timezone that's currently in use. This gives us
+    // much more consistent behavior, and matches ICU4J behavior (though
+    // it is inconsistent with the RI).
+    //
+    // Anything callers can do with ZONE_OFFSET they can do by constructing
+    // a SimpleTimeZone with the required offset.
+    //
+    // DST_OFFSET is a bit of a WTF, given that it's dependent on the rest
+    // of the fields. There's no sensible reason we'd want to allow it to
+    // be set, nor can we implement consistent full-fields calculation after
+    // this field is set without maintaining a large deal of additional state.
+    //
+    // At the very least, we will need isSet to differentiate between fields
+    // set by the user and fields set by our internal field calculation.
     (*mFields)[DST_OFFSET] = dstOffset;
     (*mFields)[ZONE_OFFSET] = zoneOffset;
-    FullFieldsCalc(mTime, zoneOffset);
+    FullFieldsCalc();
 
     for (Int32 i = 0; i < FIELD_COUNT; i++) {
         (*mIsSet)[i] = TRUE;
@@ -518,8 +541,16 @@ ECode CGregorianCalendar::ComputeTime()
     if (useMonth
             && (mLastDateFieldSet == DAY_OF_WEEK || mLastDateFieldSet == WEEK_OF_YEAR)) {
         if ((*mIsSet)[WEEK_OF_YEAR] && (*mIsSet)[DAY_OF_WEEK]) {
-            useMonth = mLastDateFieldSet != WEEK_OF_YEAR && weekMonthSet
-                    && (*mIsSet)[DAY_OF_WEEK];
+            if (mLastDateFieldSet == WEEK_OF_YEAR) {
+                useMonth = FALSE;
+            } else if (mLastDateFieldSet == DAY_OF_WEEK) {
+                // DAY_OF_WEEK belongs to both the Month + Week + Day and the
+                // WeekOfYear + Day combinations. We're supposed to use the most
+                // recent combination, as specified by the single set field. We can't
+                // know for sure in this case, so we always prefer the week-month-day
+                // combination if week-month is already set.
+                useMonth = weekMonthSet;
+            }
         }
         else if ((*mIsSet)[DAY_OF_YEAR]) {
             useMonth = (*mIsSet)[DATE] && (*mIsSet)[MONTH];

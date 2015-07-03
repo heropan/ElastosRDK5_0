@@ -48,7 +48,6 @@ private:
         /* [in] */ List<String>& list,
         /* [in] */ const String& input,
         /* [in] */ Int32 begin,
-        /* [in] */ Int32 maxSize,
         /* [in] */ Int32 limit,
         /* [out, callee] */ ArrayOf<String>** array);
 

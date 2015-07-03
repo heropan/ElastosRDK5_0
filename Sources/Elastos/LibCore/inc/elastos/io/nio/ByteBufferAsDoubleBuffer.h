@@ -41,8 +41,7 @@ public:
         /* [out] */ IDoubleBuffer** buffer);
 
     // @Override
-    CARAPI Compact(
-        /* [out] */ IDoubleBuffer** outbuf);
+    CARAPI Compact();
 
     // @Override
     CARAPI Duplicate(

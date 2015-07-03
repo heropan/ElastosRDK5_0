@@ -1,6 +1,5 @@
 
 #include "CFormatter.h"
-//#include "CNativeDecimalFormat.h"
 #include "CLocale.h"
 #include "LocaleData.h"
 #include "CFile.h"
@@ -22,6 +21,7 @@
 #include "Math.h"
 #include "CSystem.h"
 #include "CDate.h"
+//#include "CNativeDecimalFormat.h"
 
 //using Libcore::ICU::CNativeDecimalFormat;
 using Libcore::ICU::LocaleData;
@@ -1478,7 +1478,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromFloat()
     Char32 firstChar = result->GetCharAt(0);
     if (mFormatToken->mFlagZero && (firstChar == '+'
         || StartsWithMinusSign(result->ToString(), minusSign))) {
-        startIndex = 1;
+        startIndex = minusSign.GetLength();
     }
 
     if (mConversionType == 'a' || mConversionType == 'A') {

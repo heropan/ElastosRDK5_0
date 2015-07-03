@@ -173,8 +173,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI Compact(
-        /* [out] */ ICharBuffer** outbuf) = 0;
+    virtual CARAPI Compact() = 0;
 
     /**
      * Compare the remaining chars of this buffer to another char

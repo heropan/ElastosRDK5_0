@@ -103,7 +103,7 @@ Boolean BufferedWriter::IsClosed()
 
 ECode BufferedWriter::NewLine()
 {
-    return Write(mLineSeparator);
+    return Write(mLineSeparator, 0, mLineSeparator.GetLength());
 }
 
 ECode BufferedWriter::Write(

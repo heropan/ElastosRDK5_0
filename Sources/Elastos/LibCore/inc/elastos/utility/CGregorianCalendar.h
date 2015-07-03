@@ -306,9 +306,7 @@ protected:
     CARAPI ComputeTime();
 
 private:
-    CARAPI_(void) FullFieldsCalc(
-        /* [in] */ Int64 timeVal,
-        /* [in] */ Int32 zoneOffset);
+    CARAPI_(void) FullFieldsCalc();
 
     CARAPI_(Int32) ComputeYearAndDay(
         /* [in] */ Int64 dayCount,

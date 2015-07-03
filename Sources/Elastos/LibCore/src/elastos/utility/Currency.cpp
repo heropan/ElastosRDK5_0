@@ -68,6 +68,7 @@ ECode Currency::GetInstance(
 {
     VALIDATE_NOT_NULL(instance)
     *instance = NULL;
+    VALIDATE_NOT_NULL(l)
 
     AutoLock lock(sLocalesLock);
 
@@ -158,6 +159,8 @@ ECode Currency::GetSymbol(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
+    VALIDATE_NOT_NULL(locale)
 
     String coustr;
     locale->GetCountry(&coustr);

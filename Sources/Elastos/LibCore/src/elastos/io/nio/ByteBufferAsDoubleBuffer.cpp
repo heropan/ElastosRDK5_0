@@ -35,8 +35,7 @@ ECode ByteBufferAsDoubleBuffer::AsReadOnlyBuffer(
     return NOERROR;
 }
 
-ECode ByteBufferAsDoubleBuffer::Compact(
-    /* [out] */ IDoubleBuffer** outbuf)
+ECode ByteBufferAsDoubleBuffer::Compact()
 {
     // if (byteBuffer.isReadOnly()) {
     //     throw new ReadOnlyBufferException();

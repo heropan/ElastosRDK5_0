@@ -1393,6 +1393,8 @@ module
                 [in] String charsetName);
 
             interface IScanner;
+            interface IIterator;
+            interface ICloseable;
         }
 
         class CSimpleTimeZone {

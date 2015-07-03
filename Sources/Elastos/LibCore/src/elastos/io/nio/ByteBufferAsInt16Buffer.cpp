@@ -37,8 +37,7 @@ ECode ByteBufferAsInt16Buffer::AsReadOnlyBuffer(
     return NOERROR;
 }
 
-ECode ByteBufferAsInt16Buffer::Compact(
-    /* [out] */ IInt16Buffer** outbuf)
+ECode ByteBufferAsInt16Buffer::Compact()
 {
     // if (byteBuffer.isReadOnly()) {
     //     throw new ReadOnlyBufferException();

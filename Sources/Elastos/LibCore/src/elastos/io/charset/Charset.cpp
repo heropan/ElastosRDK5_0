@@ -259,8 +259,9 @@ ECode Charset::CompareTo(
     /* [in] */ IInterface* charset,
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(charset);
     VALIDATE_NOT_NULL(result);
+    *result = -1;
+    VALIDATE_NOT_NULL(charset);
     AutoPtr<ICharset> charsetInterface = ICharset::Probe(charset);
     *result = mCanonicalName.CompareIgnoreCase(((Charset *)charsetInterface.Get())->mCanonicalName);
     return NOERROR;
@@ -270,10 +271,11 @@ ECode Charset::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 compare;
-    CompareTo(other, compare);
-    if (compare == 0)
-    {
+    CompareTo(other, &compare);
+    if (compare == 0) {
         *result = TRUE;
     } else {
         *result = FALSE;

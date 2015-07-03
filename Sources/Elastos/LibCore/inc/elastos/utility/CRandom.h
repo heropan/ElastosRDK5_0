@@ -105,7 +105,7 @@ protected:
         /* [in] */ Int32 bits);
 
 private:
-    static const Int64 sMultiplier = 0x5deece66dLL;
+    static const Int64 sMultiplier;
 
     /**
      * The boolean value indicating if the second Gaussian number is available.
@@ -125,6 +125,11 @@ private:
      * @serial
      */
     Double mNextNextGaussian;
+
+    /**
+      * Used to generate initial seeds.
+      */
+    static volatile Int64 mSeedBase;// = 0;
 };
 
 } // namespace Utility

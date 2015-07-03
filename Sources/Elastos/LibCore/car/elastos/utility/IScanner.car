@@ -883,8 +883,7 @@ module
          * @return this scanner
          * @since 1.6
          */
-        Reset(
-            [out] IScanner** outscan);
+        Reset();
     }
 
     } // namespace Utility

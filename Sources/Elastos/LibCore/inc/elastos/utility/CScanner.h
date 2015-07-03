@@ -7,6 +7,7 @@
 #include "Object.h"
 
 using Elastos::Core::StringBuilder;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReadable;
@@ -27,6 +28,7 @@ CarClass(CScanner)
     , public Object
     , public IScanner
     , public IIterator
+    , public ICloseable
 {
 private:
     enum DataType {
@@ -1020,8 +1022,7 @@ public:
      * @return this scanner
      * @since 1.6
      */
-    CARAPI Reset(
-        /* [out] */ IScanner** outscan);
+    CARAPI Reset();
 
 private:
     CARAPI CheckRadix(
@@ -1037,13 +1038,13 @@ private:
      * Check the {@code Scanner}'s state, if it is closed, IllegalStateException will be
      * thrown.
      */
-    CARAPI CheckClosed();
+    CARAPI CheckOpen();
 
     /*
      * Check the inputed pattern. If it is null, then a NullPointerException
      * will be thrown out.
      */
-    CARAPI CheckNull(
+    CARAPI CheckNotNull(
         /* [in] */ IPattern* pattern);
 
     /*
@@ -1054,7 +1055,7 @@ private:
     /*
      * Save the matcher's last find position
      */
-    CARAPI SaveCurrentStatus();
+    CARAPI PrepareForScan();
 
     /*
      * Change the matcher's status to last find position
@@ -1130,7 +1131,7 @@ private:
     /*
      * Find postfix delimiter
      */
-    CARAPI_(Int32) FindPostDelimiter();
+    CARAPI_(Int32) FindDelimiterAfter();
 
     /*
      * Read more data from underlying Readable. If nothing is available or I/O
@@ -1141,6 +1142,9 @@ private:
 
     // Expand the size of internal buffer.
     CARAPI ExpandBuffer();
+
+    void SetLocale(
+        /* [in] */ ILocale* locale);
 
 private:
     static Boolean sStaticflag;
@@ -1163,7 +1167,7 @@ private:
     // The pattern matches anything.
     static const AutoPtr<IPattern> ANY_PATTERN;
 
-    static const Int32 DIPLOID = 2;
+//    static const Int32 DIPLOID = 2;
 
     // Default radix.
     static const Int32 DEFAULT_RADIX = 10;
@@ -1179,7 +1183,7 @@ private:
 
     AutoPtr<IMatcher> mMatcher;
 
-    Int32 mIntegerRadix;
+    Int32 mCurrentRadix;
 
     AutoPtr<ILocale> mLocale;
 
@@ -1205,9 +1209,14 @@ private:
     // Records whether the underlying readable has more input.
     Boolean mInputExhausted;
 
-    AutoPtr<IInterface> mCacheHasNextValue;
+    AutoPtr<IInterface> mCachedNextValue;
 
-    Int32 mCachehasNextIndex;
+    Int32 mCachedNextIndex;
+
+    AutoPtr<IPattern> mCachedFloatPattern;
+
+    Int32 mCachedIntegerPatternRadix;// = -1;
+    AutoPtr<IPattern> mCachedIntegerPattern;
 };
 
 } // namespace Utility

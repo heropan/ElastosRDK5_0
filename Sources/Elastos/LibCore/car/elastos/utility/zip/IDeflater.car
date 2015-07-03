@@ -5,55 +5,41 @@ module
     namespace Utility {
     namespace Zip {
 
-
     /**
-     * This class compresses data using the DEFLATE algorithm (see specification).
+     * This class compresses data using the <i>DEFLATE</i> algorithm (see <a
+     * href="http://www.gzip.org/algorithm.txt">specification</a>).
      *
-     * @sa specification
-     * <p>
-     * It is usually more convenient to use DeflaterOutputStream.
+     * <p>It is usually more convenient to use {@link DeflaterOutputStream}.
      *
-     * @sa DeflaterOutputStream
-     * <p>
-     * To compress an in-memory byte[] to another in-memory byte[] manually:
+     * <p>To compress an in-memory {@code byte[]} to another in-memory {@code byte[]} manually:
      * <pre>
-     * byte[] originalBytes = ...
-     *  Deflater deflater = new Deflater();
-     *  deflater.setInput(originalBytes);
-     *  deflater.finish();
-     *  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-     *  byte[] buf = new byte[8192];
-     * while (!deflater.finished()) {
-     *    int byteCount = deflater.deflate(buf);
-     *    baos.write(buf, 0, byteCount);
-     *      }
-     *    deflater.end();
+     *     byte[] originalBytes = ...
      *
-     *  byte[] compressedBytes = baos.toByteArray();
+     *     Deflater deflater = new Deflater();
+     *     deflater.setInput(originalBytes);
+     *     deflater.finish();
+     *
+     *     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     *     byte[] buf = new byte[8192];
+     *     while (!deflater.finished()) {
+     *         int byteCount = deflater.deflate(buf);
+     *         baos.write(buf, 0, byteCount);
+     *     }
+     *     deflater.end();
+     *
+     *     byte[] compressedBytes = baos.toByteArray();
      * </pre>
-     * <p>
-     * In situations where you don't have all the input in one array
-     * (or have so much input that you want to feed it to the deflater in
-     * chunks), it's possible to call setInput repeatedly, but you're much
-     * better off using DeflaterOutputStream to handle all this for you.
-     * DeflaterOutputStream also helps minimize memory requirements — the
-     * sample code above is very expensive.
+     * <p>In situations where you don't have all the input in one array (or have so much
+     * input that you want to feed it to the deflater in chunks), it's possible to call
+     * {@link #setInput setInput} repeatedly, but you're much better off using
+     * {@link DeflaterOutputStream} to handle all this for you. {@link DeflaterOutputStream} also helps
+     * minimize memory requirements&nbsp;&mdash; the sample code above is very expensive.
      *
-     * @sa setInput
-     * @sa DeflaterOutputStream
-     * <p>
-     * <strong>Compression levels</strong>
-     * <p>
-     * A compression level must be DEFAULT_COMPRESSION to compromise between speed
-     * and compression (currently equivalent to level 6), or between 0
-     * (NO_COMPRESSION, where the input is simply copied) and 9 (BEST_COMPRESSION).
-     * Level 1 (BEST_SPEED) performs some compression, but with minimal speed overhead.
-     *
-     * @sa DEFAULT_COMPRESSION
-     * @sa NO_COMPRESSION
-     * @sa BEST_COMPRESSION
-     * @sa BEST_SPEED
-     *
+     * <a name="compression_level"><h3>Compression levels</h3></a>
+     * <p>A compression level must be {@link #DEFAULT_COMPRESSION} to compromise between speed and
+     * compression (currently equivalent to level 6), or between 0 ({@link #NO_COMPRESSION}, where
+     * the input is simply copied) and 9 ({@link #BEST_COMPRESSION}). Level 1 ({@link #BEST_SPEED})
+     * performs some compression, but with minimal speed overhead.
      */
     [deprecated]
     interface IDeflater {
@@ -91,11 +77,6 @@ module
          * Possible value for compression strategy.
          */
         const Int32 HUFFMAN_ONLY = 2;
-
-        /**
-         * Possible value for compression level.
-         */
-        const Int32 NO_COMPRESSION = 0;
 
         /**
          * Use buffering for best compression.

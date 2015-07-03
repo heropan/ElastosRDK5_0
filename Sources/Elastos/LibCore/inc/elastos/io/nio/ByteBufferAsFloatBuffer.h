@@ -41,8 +41,7 @@ public:
         /* [out] */ IFloatBuffer** buffer);
 
     // @Override
-    CARAPI Compact(
-        /* [out] */ IFloatBuffer** outbuf);
+    CARAPI Compact();
 
     // @Override
     CARAPI Duplicate(

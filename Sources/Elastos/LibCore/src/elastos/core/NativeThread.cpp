@@ -1564,7 +1564,7 @@ NativeThread* NativeGetThreadFromThreadObject(
     // Int32 vmData;
 
     // vmData = dvmGetFieldInt(vmThreadObj, gDvm.offJavaLangVMThread_vmData);
-    assert(threadObj != NULL);
+    assert(threadObj != 0);
     NativeThread* thread = reinterpret_cast<Thread*>(threadObj)->mNativeThread;
     if (FALSE) {
         thread = gCore.mThreadList;

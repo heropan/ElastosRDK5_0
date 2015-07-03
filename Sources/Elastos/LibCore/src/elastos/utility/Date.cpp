@@ -37,18 +37,18 @@ using Libcore::ICU::CLocaleDataHelper;
 namespace Elastos{
 namespace Utility{
 
-Int32 Date::sCreationYear = -1;
+Int32 Date::CREATION_YEAR = -1;
 
 CAR_INTERFACE_IMPL_4(Date, Object, IDate, ISerializable, ICloneable, IComparable)
 
 Int32 Date::GetCreationYear()
 {
-    if (sCreationYear == -1) {
+    if (CREATION_YEAR == -1) {
         AutoPtr<Date> d = new Date();
-        d->GetYear(&sCreationYear);
+        d->GetYear(&CREATION_YEAR);
     }
 
-    return sCreationYear;
+    return CREATION_YEAR;
 }
 
 Date::Date()

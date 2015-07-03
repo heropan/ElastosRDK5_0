@@ -37,8 +37,7 @@ ECode ByteBufferAsCharBuffer::AsReadOnlyBuffer(
     return NOERROR;
 }
 
-ECode ByteBufferAsCharBuffer::Compact(
-    /* [out] */ ICharBuffer** outbuf)
+ECode ByteBufferAsCharBuffer::Compact()
 {
     // if (byteBuffer.isReadOnly()) {
     //     throw new ReadOnlyBufferException();

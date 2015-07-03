@@ -168,37 +168,22 @@ ECode CUUID::FromString(
     if (name.IsNull())
         return E_NULL_POINTER_EXCEPTION;
 
-    const Int32 POSITION_LENGTH = 5;
-    Int32 position[POSITION_LENGTH];
-    Int32 lastPosition = 1;
-    Int32 startPosition = 0;
+    AutoPtr<ArrayOf<String> > parts;
+    StringUtils::Split(name, "-", (ArrayOf<String> **)&parts);
 
-    Int32 i = 0;
-    for (; i < POSITION_LENGTH && lastPosition > 0; i++) {
-        position[i] = name.IndexOf('-', startPosition);
-        lastPosition = position[i];
-        startPosition = position[i] + 1;
-    }
-
-    // should have and only can have four "-" in UUID
-    if (i != POSITION_LENGTH || lastPosition != -1) {
-        // throw new IllegalArgumentException("Invalid UUID: " + name);
+    if (parts == NULL || parts->GetLength() != 5) {
+        // throw new IllegalArgumentException("Invalid UUID: " + uuid);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     Int64 m1, m2, m3;
-    String s1 = name.Substring(0, position[0]);
-    String s2 = name.Substring(position[0] + 1, position[1]);
-    String s3 = name.Substring(position[1] + 1, position[2]);
-    FAIL_RETURN(StringUtils::Parse(s1, 16, &m1));
-    FAIL_RETURN(StringUtils::Parse(s2, 16, &m2));
-    FAIL_RETURN(StringUtils::Parse(s3, 16, &m3));
+    StringUtils::ParsePositiveInt64((*parts)[0], 16, &m1);
+    StringUtils::ParsePositiveInt64((*parts)[1], 16, &m2);
+    StringUtils::ParsePositiveInt64((*parts)[2], 16, &m3);
 
-    String ls1 = name.Substring(position[2] + 1, position[3]);
-    String ls2 = name.Substring(position[3] + 1);
     Int64 lsb1, lsb2;
-    FAIL_RETURN(StringUtils::Parse(ls1, 16, &lsb1));
-    FAIL_RETURN(StringUtils::Parse(ls2, 16, &lsb2));
+    StringUtils::ParsePositiveInt64((*parts)[3], 16, &lsb1);
+    StringUtils::ParsePositiveInt64((*parts)[4], 16, &lsb2);
 
     Int64 msb = (m1 << 32) | (m2 << 16) | m3;
     Int64 lsb = (lsb1 << 48) | lsb2;

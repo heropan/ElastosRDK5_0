@@ -90,12 +90,15 @@ ECode Calendar::constructor(
 
 ECode Calendar::constructor(
     /* [in] */ ITimeZone* timezone,
-    /* [in] */ ILocale* locale)
+    /* [in] */ ILocale* l)
 {
     FAIL_RETURN(constructor(timezone));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
     CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper);
+
+    AutoPtr<ILocale> locale;
+    localeDataHelper->MapInvalidAndNullLocales(l, (ILocale**)&locale);
 
     AutoPtr<ILocaleData> localeData;
     localeDataHelper->Get(locale, (ILocaleData**)&localeData);
