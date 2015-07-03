@@ -5,22 +5,21 @@
 #include "CInterfaceInfo.h"
 
 CInterfaceInfo::CInterfaceInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ UInt32 uIndex)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ UInt32 index)
 {
-    m_pCClsModule = pCClsModule;
-    m_pClsMod = m_pCClsModule->mClsMod;
-    m_nBase =  m_pCClsModule->mBase;
-    m_pInterfaceDirEntry =
-            getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
-    m_pDesc = adjustInterfaceDescAddr(m_nBase, m_pInterfaceDirEntry->pDesc);
-    mIndex = uIndex;
-    m_pIFList = NULL;
+    mClsModule = clsModule;
+    mClsMod = mClsModule->mClsMod;
+    mBase = mClsModule->mBase;
+    mInterfaceDirEntry = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+    mDesc = adjustInterfaceDescAddr(mBase, mInterfaceDirEntry->pDesc);
+    mIndex = index;
+    mIFList = NULL;
 }
 
 CInterfaceInfo::~CInterfaceInfo()
 {
-    if (m_pIFList) delete[] m_pIFList;
+    if (mIFList) delete[] mIFList;
 }
 
 UInt32 CInterfaceInfo::AddRef()
@@ -31,15 +30,15 @@ UInt32 CInterfaceInfo::AddRef()
 UInt32 CInterfaceInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Interface);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        g_objInfoList.RemoveInterfaceInfo(m_pDesc->iid);
+    if (0 == ref) {
+        g_objInfoList.RemoveInterfaceInfo(mDesc->iid);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Interface);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CInterfaceInfo::Probe(
@@ -60,8 +59,8 @@ PInterface CInterfaceInfo::Probe(
 }
 
 ECode CInterfaceInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -72,129 +71,128 @@ ECode CInterfaceInfo::Init()
 }
 
 ECode CInterfaceInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
-    if (!pSize) {
+    if (!size) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pSize = sizeof(IInterface *);
+    *size = sizeof(IInterface *);
     return NOERROR;
 }
 
 ECode CInterfaceInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = CarDataType_Interface;
+    *dataType = CarDataType_Interface;
     return NOERROR;
 }
 
 ECode CInterfaceInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_nBase, m_pInterfaceDirEntry->pszName);
+    *name = adjustNameAddr(mBase, mInterfaceDirEntry->pszName);
     return NOERROR;
 }
 
 ECode CInterfaceInfo::GetNamespace(
-    /* [out] */ String * pNamespace)
+    /* [out] */ String* ns)
 {
-    if (pNamespace == NULL) {
+    if (ns == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pNamespace = adjustNameAddr(m_nBase, m_pInterfaceDirEntry->pszNameSpace);
+    *ns = adjustNameAddr(mBase, mInterfaceDirEntry->pszNameSpace);
     return NOERROR;
 }
 
 ECode CInterfaceInfo::GetId(
-    /* [out] */ InterfaceID * pId)
+    /* [out] */ InterfaceID* id)
 {
-    if (!pId) {
+    if (!id) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pId = m_pDesc->iid;
+    *id = mDesc->iid;
     return NOERROR;
 }
 
 ECode CInterfaceInfo::GetModuleInfo(
-    /* [out] */ IModuleInfo ** ppModuleInfo)
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    return m_pCClsModule->GetModuleInfo(ppModuleInfo);
+    return mClsModule->GetModuleInfo(moduleInfo);
 }
 
 ECode CInterfaceInfo::IsLocal(
-    /* [out] */ Boolean * pLocal)
+    /* [out] */ Boolean* local)
 {
-    if (!pLocal) {
+    if (!local) {
         return E_INVALID_ARGUMENT;
     }
 
-
-    if (m_pDesc->dwAttribs & InterfaceAttrib_local) {
-        *pLocal = TRUE;
+    if (mDesc->dwAttribs & InterfaceAttrib_local) {
+        *local = TRUE;
     }
     else {
-        *pLocal = FALSE;
+        *local = FALSE;
     }
 
     return NOERROR;
 }
 
 ECode CInterfaceInfo::HasBase(
-    /* [out] */ Boolean * pHasBase)
+    /* [out] */ Boolean* hasBase)
 {
-    if (!pHasBase) {
+    if (!hasBase) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (mIndex != m_pDesc->sParentIndex) {
-        *pHasBase = TRUE;
+    if (mIndex != mDesc->sParentIndex) {
+        *hasBase = TRUE;
     }
     else {
-        *pHasBase = FALSE;
+        *hasBase = FALSE;
     }
 
     return NOERROR;
 }
 
 ECode CInterfaceInfo::GetBaseInfo(
-    /* [out] */ IInterfaceInfo ** ppBaseInfo)
+    /* [out] */ IInterfaceInfo** baseInfo)
 {
-    if (!ppBaseInfo) {
+    if (!baseInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppBaseInfo = NULL;
-    UInt32 uIndex = m_pDesc->sParentIndex;
-    return g_objInfoList.AcquireInterfaceInfo(m_pCClsModule, uIndex,
-                        (IInterface**)ppBaseInfo);
+    *baseInfo = NULL;
+    UInt32 index = mDesc->sParentIndex;
+    return g_objInfoList.AcquireInterfaceInfo(mClsModule, index,
+            (IInterface**)baseInfo);
 }
 
 ECode CInterfaceInfo::GetMethodCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pIFList) {
+    if (!mIFList) {
         ECode ec = CreateIFList();
         if (FAILED(ec)) return ec;
     }
 
-    *pCount = 0;
-    for (UInt32 i = 0; i < m_uIFCount; i++) {
-        *pCount += m_pIFList[i].pDesc->cMethods;
+    *count = 0;
+    for (UInt32 i = 0; i < mIFCount; i++) {
+        *count += mIFList[i].mDesc->cMethods;
     }
 
     return NOERROR;
@@ -204,10 +202,10 @@ ECode CInterfaceInfo::AcquireMethodList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_Method);
-    if (!m_pMethodList) {
-        m_pMethodList = new CEntryList(EntryType_Method,
-            m_pDesc, m_uMethodCount, m_pCClsModule, m_pIFList, m_uIFCount);
-        if (!m_pMethodList) {
+    if (!mMethodList) {
+        mMethodList = new CEntryList(EntryType_Method,
+            mDesc, mMethodCount, mClsModule, mIFList, mIFCount);
+        if (!mMethodList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -219,77 +217,77 @@ ECode CInterfaceInfo::AcquireMethodList()
 }
 
 ECode CInterfaceInfo::GetAllMethodInfos(
-    /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos)
+    /* [out] */ ArrayOf<IMethodInfo *>* methodInfos)
 {
     ECode ec = AcquireMethodList();
     if (FAILED(ec)) return ec;
 
-    return m_pMethodList->GetAllObjInfos((PTypeInfos)pMethodInfos);
+    return mMethodList->GetAllObjInfos((PTypeInfos)methodInfos);
 }
 
 ECode CInterfaceInfo::GetMethodInfo(
     /* [in] */ const String& name,
     /* [in] */ const String& signature,
-    /* [out] */ IMethodInfo ** ppMethodInfo)
+    /* [out] */ IMethodInfo** methodInfo)
 {
-    if (name.IsNull() || signature.IsNull() || !ppMethodInfo) {
+    if (name.IsNull() || signature.IsNull() || !methodInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    assert(m_uMethodCount);
+    assert(mMethodCount);
 
     ECode ec = AcquireMethodList();
     if (FAILED(ec)) return ec;
 
     String strName = name + signature;
-    return m_pMethodList->AcquireObjByName(strName, (IInterface **)ppMethodInfo);
+    return mMethodList->AcquireObjByName(strName, (IInterface **)methodInfo);
 }
 
 ECode CInterfaceInfo::CreateIFList()
 {
-    if (m_pIFList) {
+    if (mIFList) {
         return NOERROR;
     }
 
-    UInt32 *pIndexList = (UInt32 *)alloca(
-        m_pClsMod->cInterfaces * sizeof(UInt32));
-    if (pIndexList == NULL) {
+    UInt32* indexList = (UInt32 *)alloca(
+            mClsMod->cInterfaces * sizeof(UInt32));
+    if (indexList == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
-    int i, j = 0;
-    m_uIFCount = 0;
-    UInt32 uIndex = mIndex;
-    InterfaceDirEntry* pIFDir = NULL;
-    while (uIndex != 0) {
-        pIndexList[m_uIFCount++] = uIndex;
-        pIFDir = getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
-        uIndex = adjustInterfaceDescAddr(m_nBase, pIFDir->pDesc)->sParentIndex;
+    Int32 i, j = 0;
+    mIFCount = 0;
+    UInt32 index = mIndex;
+    InterfaceDirEntry* ifDir = NULL;
+    while (index != 0) {
+        indexList[mIFCount++] = index;
+        ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+        index = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->sParentIndex;
     }
 
-    pIndexList[m_uIFCount] = 0;
-    m_uIFCount++;
+    indexList[mIFCount] = 0;
+    mIFCount++;
 
-    UInt32 uBeginNo = METHOD_START_NO;
-    m_pIFList = new IFIndexEntry[m_uIFCount];
-    if (m_pIFList == NULL) {
+    UInt32 beginNo = METHOD_START_NO;
+    mIFList = new IFIndexEntry[mIFCount];
+    if (mIFList == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
-    for (i = m_uIFCount - 1, j = 0; i >= 0; i--, j++) {
-        uIndex = pIndexList[i];
-        m_pIFList[j].uIndex = uIndex;
-        m_pIFList[j].uBeginNo = uBeginNo;
-        pIFDir = getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, uIndex);
-        m_pIFList[j].pszName = adjustNameAddr(m_nBase, pIFDir->pszName);
-        m_pIFList[j].pszNameSpace = adjustNameAddr(m_nBase, pIFDir->pszNameSpace);
-        m_pIFList[j].pDesc = adjustInterfaceDescAddr(m_nBase, pIFDir->pDesc);
-        uBeginNo += m_pIFList[j].pDesc->cMethods;
+    for (i = mIFCount - 1, j = 0; i >= 0; i--, j++) {
+        index = indexList[i];
+        mIFList[j].mIndex = index;
+        mIFList[j].mBeginNo = beginNo;
+        ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+        mIFList[j].mName = adjustNameAddr(mBase, ifDir->pszName);
+        mIFList[j].mNameSpace = adjustNameAddr(mBase, ifDir->pszNameSpace);
+        mIFList[j].mDesc = adjustInterfaceDescAddr(mBase, ifDir->pDesc);
+        beginNo += mIFList[j].mDesc->cMethods;
     }
 
-    m_uMethodCount = 0;
-    for (i = 0; i < (int)m_uIFCount; i++) {
-        m_uMethodCount += m_pIFList[i].pDesc->cMethods;
+    mMethodCount = 0;
+    for (i = 0; i < (int)mIFCount; i++) {
+        mMethodCount += mIFList[i].mDesc->cMethods;
     }
 
     return NOERROR;

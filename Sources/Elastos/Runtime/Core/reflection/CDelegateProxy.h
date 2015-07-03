@@ -13,8 +13,8 @@ class CDelegateProxy
 {
 public:
     CDelegateProxy(
-        /* [in] */ ICallbackMethodInfo * pCallbackMethodInfo,
-        /* [in] */ ICallbackInvocation * pCallbackInvocation,
+        /* [in] */ ICallbackMethodInfo* callbackMethodInfo,
+        /* [in] */ ICallbackInvocation* callbackInvocation,
         /* [in] */ PVoid targetObject,
         /* [in] */ PVoid targetMethod);
 
@@ -26,41 +26,41 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetCallbackMethodInfo(
-        /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo);
+        /* [out] */ ICallbackMethodInfo** callbackMethodInfo);
 
     CARAPI GetTargetObject(
-        /* [out] */ PVoid * pTargetObject);
+        /* [out] */ PVoid* targetObject);
 
     CARAPI GetTargetMethod(
-        /* [out] */ PVoid * pTargetMethod);
+        /* [out] */ PVoid* targetMethod);
 
     CARAPI GetCallbackInvocation(
-        /* [out] */ ICallbackInvocation ** ppCallbackInvocation);
+        /* [out] */ ICallbackInvocation** callbackInvocation);
 
 #ifndef _arm
     CARAPI OnEvent(
-        /* [in] */ PInterface pServer);
+        /* [in] */ PInterface server);
 #else
     CARAPI OnEvent(
-        /* [in] */ PInterface pServer, ...);
+        /* [in] */ PInterface server, ...);
 #endif
 
     CARAPI EventHander(
-        /* [in] */ PVoid pParamBuf,
-        /* [out] */ UInt32 *pParamBufSize);
+        /* [in] */ PVoid paramBuf,
+        /* [out] */ UInt32* paramBufSize);
 
     CARAPI GetDelegate(
-        /* [out] */ EventHandler * pHandler);
+        /* [out] */ EventHandler* handler);
 
 private:
-    AutoPtr<ICallbackMethodInfo> m_pCallbackMethodInfo;
-    AutoPtr<ICallbackInvocation> m_pCallbackInvocation;
-    PVoid                        m_pTargetObject;
-    PVoid                        m_pTargetMethod;
+    AutoPtr<ICallbackMethodInfo>    mCallbackMethodInfo;
+    AutoPtr<ICallbackInvocation>    mCallbackInvocation;
+    PVoid                           mTargetObject;
+    PVoid                           mTargetMethod;
 };
 
 #endif // __CDELEGATEPROXY_H__

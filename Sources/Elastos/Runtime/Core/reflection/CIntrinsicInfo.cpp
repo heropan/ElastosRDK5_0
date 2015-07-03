@@ -8,10 +8,10 @@
 
 CIntrinsicInfo::CIntrinsicInfo(
     /* [in] */ CarDataType dataType,
-    /* [in] */ UInt32 uSize)
+    /* [in] */ UInt32 size)
 {
-    m_dataType = dataType;
-    m_uSize = uSize;
+    mDataType = dataType;
+    mSize = size;
 }
 
 UInt32 CIntrinsicInfo::AddRef()
@@ -39,45 +39,45 @@ PInterface CIntrinsicInfo::Probe(
 }
 
 ECode CIntrinsicInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CIntrinsicInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = g_cDataTypeList[m_dataType].name;
+    *name = g_cDataTypeList[mDataType].name;
     return NOERROR;
 }
 
 ECode CIntrinsicInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
-    if (!m_uSize) {
+    if (!mSize) {
         return E_INVALID_OPERATION;
     }
 
-    if (!pSize) {
+    if (!size) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pSize = m_uSize;
+    *size = mSize;
     return NOERROR;
 }
 
 ECode CIntrinsicInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = m_dataType;
+    *dataType = mDataType;
     return NOERROR;
 }

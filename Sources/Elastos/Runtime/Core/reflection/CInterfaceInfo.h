@@ -13,8 +13,8 @@ class CInterfaceInfo
 {
 public:
     CInterfaceInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ UInt32 uIndex);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ UInt32 index);
 
     virtual ~CInterfaceInfo();
 
@@ -26,65 +26,65 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init();
 
     CARAPI GetSize(
-        /* [out] */ MemorySize * pSize);
+        /* [out] */ MemorySize* size);
 
     CARAPI GetDataType(
-        /* [out] */ CarDataType * pDataType);
+        /* [out] */ CarDataType* dataType);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetNamespace(
-        /* [out] */ String * pNamespace);
+        /* [out] */ String* ns);
 
     CARAPI GetId(
-        /* [out] */ InterfaceID * pId);
+        /* [out] */ InterfaceID* id);
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI IsLocal(
-        /* [out] */ Boolean * pLocal);
+        /* [out] */ Boolean* local);
 
     CARAPI HasBase(
-        /* [out] */ Boolean * pHasBase);
+        /* [out] */ Boolean* hasBase);
 
     CARAPI GetBaseInfo(
-        /* [out] */ IInterfaceInfo ** ppBaseInfo);
+        /* [out] */ IInterfaceInfo** baseInfo);
 
     CARAPI GetMethodCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllMethodInfos(
-        /* [out] */ ArrayOf<IMethodInfo *> * pMethodInfos);
+        /* [out] */ ArrayOf<IMethodInfo *>* methodInfos);
 
     CARAPI GetMethodInfo(
         /* [in] */ const String& name,
         /* [in] */ const String& signature,
-        /* [out] */ IMethodInfo ** ppMethodInfo);
+        /* [out] */ IMethodInfo** methodInfo);
 
     CARAPI CreateIFList();
 
     CARAPI AcquireMethodList();
 
 private:
-    AutoPtr<CClsModule>  m_pCClsModule;
-    CLSModule           *m_pClsMod;
-    AutoPtr<CEntryList>  m_pMethodList;
-    InterfaceDirEntry   *m_pInterfaceDirEntry;
-    InterfaceDescriptor *m_pDesc;
-    IFIndexEntry        *m_pIFList;
+    AutoPtr<CClsModule>     mClsModule;
+    CLSModule*              mClsMod;
+    AutoPtr<CEntryList>     mMethodList;
+    InterfaceDirEntry*      mInterfaceDirEntry;
+    InterfaceDescriptor*    mDesc;
+    IFIndexEntry*           mIFList;
 
     UInt32  mIndex;
-    UInt32  m_uIFCount;
-    UInt32  m_uMethodCount;
-    Int32   m_nBase;
+    UInt32  mIFCount;
+    UInt32  mMethodCount;
+    Int32   mBase;
 };
 
 #endif // __CINTERFACEINFO_H__

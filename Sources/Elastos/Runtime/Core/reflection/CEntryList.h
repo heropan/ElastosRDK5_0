@@ -10,27 +10,27 @@
 
 struct ObjElement
 {
-    UInt32   uIndex;
-    void    *pDesc;
-    char    *pszName;
-    char    *pszNamespaceOrSignature;
-    IInterface *pObj;
+    UInt32  mIndex;
+    void*   mDesc;
+    char*   mName;
+    char*   mNamespaceOrSignature;
+    IInterface* mObject;
 };
 
 typedef enum IFAttrib
 {
-    IFAttrib_normal           = 0x01,
-    IFAttrib_callback         = 0x02,
+    IFAttrib_normal         = 0x01,
+    IFAttrib_callback       = 0x02,
 }IFAttrib;
 
 struct IFIndexEntry
 {
-    UInt32               uIndex;
-    UInt32               uBeginNo;
-    char                *pszName;
-    char                *pszNameSpace;
-    InterfaceDescriptor *pDesc;
-    UInt32               attribs;
+    UInt32                  mIndex;
+    UInt32                  mBeginNo;
+    char*                   mName;
+    char*                   mNameSpace;
+    InterfaceDescriptor*    mDesc;
+    UInt32                  mAttribs;
 };
 
 typedef ArrayOf<IInterface *>*  PTypeInfos;
@@ -42,12 +42,12 @@ class CEntryList : public ElLightRefBase
 public:
     CEntryList(
         /* [in] */ EntryType type,
-        /* [in] */ void *pDesc,
-        /* [in] */ UInt32 uTotalCount,
-        /* [in] */ CClsModule *pCClsModule,
-        /* [in] */ IFIndexEntry *pIFList = NULL,
-        /* [in] */ UInt32 uListCount = 0,
-        /* [in] */ CClassInfo *pClsInfo = NULL);
+        /* [in] */ void* desc,
+        /* [in] */ UInt32 totalCount,
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ IFIndexEntry* ifList = NULL,
+        /* [in] */ UInt32 listCount = 0,
+        /* [in] */ CClassInfo* clsInfo = NULL);
 
     ~CEntryList();
 
@@ -59,31 +59,31 @@ public:
 
     CARAPI AcquireObjByName(
         /* [in] */ const String& name,
-        /* [out] */ IInterface ** ppObject);
+        /* [out] */ IInterface** object);
 
     CARAPI AcquireObjByIndex(
-        /* [in] */ UInt32 uIndex,
-        /* [out] */ IInterface ** ppObject);
+        /* [in] */ UInt32 index,
+        /* [out] */ IInterface** object);
 
     CARAPI GetAllObjInfos(
-        /* [out] */ ArrayOf<IInterface *>* pObjInfos);
+        /* [out] */ ArrayOf<IInterface *>* objInfos);
 
 public:
-    AutoPtr<CClsModule> m_pCClsModule;
-    UInt32              m_uTotalCount;
+    AutoPtr<CClsModule> mClsModule;
+    UInt32              mTotalCount;
 
 private:
-    CLSModule          *m_pClsMod;
-    void               *m_pDesc;
-    EntryType           m_type;
-    CClassInfo         *m_pClsInfo;
-    ObjElement         *m_pObjElement;
-    Int32               m_nBase;
+    CLSModule*          mClsMod;
+    void*               mDesc;
+    EntryType           mType;
+    CClassInfo*         mClsInfo;
+    ObjElement*         mObjElement;
+    Int32               mBase;
 
-    IFIndexEntry       *m_pIFList;
-    UInt32              m_uListCount;
+    IFIndexEntry*       mIFList;
+    UInt32              mListCount;
 
-    HashTable<UInt32, Type_String> m_pHTIndexs;
+    HashTable<UInt32, Type_String> mHTIndexs;
 };
 
 #endif // __CENTRYLIST_H__

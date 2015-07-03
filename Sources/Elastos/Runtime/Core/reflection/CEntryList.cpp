@@ -13,37 +13,37 @@
 
 CEntryList::CEntryList(
     /* [in] */ EntryType type,
-    /* [in] */ void *pDesc,
-    /* [in] */ UInt32 uTotalCount,
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ IFIndexEntry *pIFList,
-    /* [in] */ UInt32 uListCount,
-    /* [in] */ CClassInfo *pClsInfo)
+    /* [in] */ void* desc,
+    /* [in] */ UInt32 totalCount,
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ IFIndexEntry* ifList,
+    /* [in] */ UInt32 listCount,
+    /* [in] */ CClassInfo* clsInfo)
 {
-    m_pCClsModule = pCClsModule;
-    m_pClsMod = m_pCClsModule->mClsMod;
+    mClsModule = clsModule;
+    mClsMod = mClsModule->mClsMod;
 
-    m_type = type;
-    m_pDesc = pDesc;
-    m_uTotalCount = uTotalCount;
+    mType = type;
+    mDesc = desc;
+    mTotalCount = totalCount;
 
-    m_pObjElement = NULL;
-    m_pIFList = pIFList;
-    m_uListCount = uListCount;
-    m_pClsInfo = pClsInfo;
+    mObjElement = NULL;
+    mIFList = ifList;
+    mListCount = listCount;
+    mClsInfo = clsInfo;
 
-    m_nBase = m_pCClsModule->mBase;
+    mBase = mClsModule->mBase;
 }
 
 CEntryList::~CEntryList()
 {
-    if (m_pObjElement) {
-        for (UInt32 i = 0; i < m_uTotalCount; i++) {
-            if (m_pObjElement[i].pObj) {
-                m_pObjElement[i].pObj->Release();
+    if (mObjElement) {
+        for (UInt32 i = 0; i < mTotalCount; i++) {
+            if (mObjElement[i].mObject) {
+                mObjElement[i].mObject->Release();
             }
         }
-        delete[] m_pObjElement;
+        delete[] mObjElement;
     }
 }
 
@@ -59,30 +59,30 @@ UInt32 CEntryList::Release()
 
 ECode CEntryList::InitElemList()
 {
-    if (m_uTotalCount == 0) {
+    if (mTotalCount == 0) {
         return E_DOES_NOT_EXIST;
     }
 
-    if (m_pObjElement) {
+    if (mObjElement) {
         return NOERROR;
     }
 
-    m_pObjElement = new ObjElement[m_uTotalCount];
-    if (m_pObjElement == NULL) {
+    mObjElement = new ObjElement[mTotalCount];
+    if (mObjElement == NULL) {
         return E_OUT_OF_MEMORY;
     }
-    memset(m_pObjElement, 0, sizeof(ObjElement) * m_uTotalCount);
+    memset(mObjElement, 0, sizeof(ObjElement) * mTotalCount);
 
-    UInt32 uIndex = 0, i = 0, j = 0, n = 0;
-    if (m_type == EntryType_TypeAliase) {
-        AliasDirEntry* pAliasDir = NULL;
-        m_pObjElement[i].uIndex = 0;
-        for (i = 0; i < m_pClsMod->cAliases; i++) {
-            if (!IsSysAlaisType(m_pCClsModule, i)) {
-                pAliasDir = getAliasDirAddr(m_nBase, m_pClsMod->ppAliasDir, i);
-                m_pObjElement[j].uIndex = i;
-                m_pObjElement[j].pszName = adjustNameAddr(m_nBase, pAliasDir->pszName);
-                if (!m_pHTIndexs.Put(m_pObjElement[j].pszName, j)) {
+    UInt32 index = 0, i = 0, j = 0, n = 0;
+    if (mType == EntryType_TypeAliase) {
+        AliasDirEntry* aliasDir = NULL;
+        mObjElement[i].mIndex = 0;
+        for (i = 0; i < mClsMod->cAliases; i++) {
+            if (!IsSysAlaisType(mClsModule, i)) {
+                aliasDir = getAliasDirAddr(mBase, mClsMod->ppAliasDir, i);
+                mObjElement[j].mIndex = i;
+                mObjElement[j].mName = adjustNameAddr(mBase, aliasDir->pszName);
+                if (!mHTIndexs.Put(mObjElement[j].mName, j)) {
                     return E_OUT_OF_MEMORY;
                 }
                 j++;
@@ -90,46 +90,46 @@ ECode CEntryList::InitElemList()
         }
         return NOERROR;
     }
-    else if (m_type == EntryType_ClassInterface) {
-        for (i = 0; i < m_uListCount; i++) {
-            m_pObjElement[i].uIndex = m_pIFList[i].uIndex;
-            m_pObjElement[i].pObj = NULL;
-            m_pObjElement[i].pDesc = NULL;
-            m_pObjElement[i].pszName = m_pIFList[i].pszName;
-            m_pObjElement[i].pszNamespaceOrSignature = m_pIFList[i].pszNameSpace;
+    else if (mType == EntryType_ClassInterface) {
+        for (i = 0; i < mListCount; i++) {
+            mObjElement[i].mIndex = mIFList[i].mIndex;
+            mObjElement[i].mObject = NULL;
+            mObjElement[i].mDesc = NULL;
+            mObjElement[i].mName = mIFList[i].mName;
+            mObjElement[i].mNamespaceOrSignature = mIFList[i].mNameSpace;
             String strKey;
-            if (m_pObjElement[i].pszNamespaceOrSignature != NULL &&
-                m_pObjElement[i].pszNamespaceOrSignature[0] != '\0') {
-                strKey = String(m_pObjElement[i].pszNamespaceOrSignature) + String(".") + String(m_pObjElement[i].pszName);
+            if (mObjElement[i].mNamespaceOrSignature != NULL &&
+                mObjElement[i].mNamespaceOrSignature[0] != '\0') {
+                strKey = String(mObjElement[i].mNamespaceOrSignature) + String(".") + String(mObjElement[i].mName);
             }
             else {
-                strKey = m_pObjElement[i].pszName;
+                strKey = mObjElement[i].mName;
             }
-            if (!m_pHTIndexs.Put(const_cast<char*>(strKey.string()), i)) {
+            if (!mHTIndexs.Put(const_cast<char*>(strKey.string()), i)) {
                 return E_OUT_OF_MEMORY;
             }
         }
         return NOERROR;
     }
-    else if (m_type == EntryType_Method || m_type == EntryType_Constructor
-            || m_type == EntryType_CBMethod) {
+    else if (mType == EntryType_Method || mType == EntryType_Constructor
+            || mType == EntryType_CBMethod) {
 
         n = 0;
-        for (i = 0; i < m_uListCount; i++) {
-            for (j = 0; j < m_pIFList[i].pDesc->cMethods; j++, n++) {
-                if (n == m_uTotalCount) return E_INVALID_ARGUMENT;
+        for (i = 0; i < mListCount; i++) {
+            for (j = 0; j < mIFList[i].mDesc->cMethods; j++, n++) {
+                if (n == mTotalCount) return E_INVALID_ARGUMENT;
 
-                m_pObjElement[n].uIndex = MK_METHOD_INDEX(m_pIFList[i].uIndex,
-                        m_pIFList[i].uBeginNo + j);
-                m_pObjElement[n].pObj = NULL;
-                m_pObjElement[n].pDesc = getMethodDescAddr(m_nBase,
-                        m_pIFList[i].pDesc->ppMethods, j);
-                m_pObjElement[n].pszName = adjustNameAddr(m_nBase,
-                        ((MethodDescriptor *)m_pObjElement[n].pDesc)->pszName);
-                m_pObjElement[n].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
-                        ((MethodDescriptor *)m_pObjElement[n].pDesc)->pszSignature);
-                String strKey = String(m_pObjElement[n].pszName) + String(m_pObjElement[n].pszNamespaceOrSignature);
-                if (!m_pHTIndexs.Put(const_cast<char*>(strKey.string()), n)) {
+                mObjElement[n].mIndex = MK_METHOD_INDEX(mIFList[i].mIndex,
+                        mIFList[i].mBeginNo + j);
+                mObjElement[n].mObject = NULL;
+                mObjElement[n].mDesc = getMethodDescAddr(mBase,
+                        mIFList[i].mDesc->ppMethods, j);
+                mObjElement[n].mName = adjustNameAddr(mBase,
+                        ((MethodDescriptor *)mObjElement[n].mDesc)->pszName);
+                mObjElement[n].mNamespaceOrSignature = adjustNameAddr(mBase,
+                        ((MethodDescriptor *)mObjElement[n].mDesc)->pszSignature);
+                String strKey = String(mObjElement[n].mName) + String(mObjElement[n].mNamespaceOrSignature);
+                if (!mHTIndexs.Put(const_cast<char*>(strKey.string()), n)) {
                     return E_OUT_OF_MEMORY;
                 }
             }
@@ -137,88 +137,88 @@ ECode CEntryList::InitElemList()
         return NOERROR;
     }
 
-    ClassDirEntry*      pClassDir = NULL;
-    InterfaceDirEntry*  pIFDir = NULL;
-    StructDirEntry*     pStructDir = NULL;
-    EnumDirEntry*       pEnumDir = NULL;
-    ConstDirEntry*      pConstDir = NULL;
+    ClassDirEntry*      classDir = NULL;
+    InterfaceDirEntry*  ifDir = NULL;
+    StructDirEntry*     structDir = NULL;
+    EnumDirEntry*       enumDir = NULL;
+    ConstDirEntry*      constDir = NULL;
     //No EntryType_TypeAliase
-    for (i = 0; i < m_uTotalCount; i++) {
-        m_pObjElement[i].uIndex = i;
-        m_pObjElement[i].pObj = NULL;
-        m_pObjElement[i].pDesc = NULL;
+    for (i = 0; i < mTotalCount; i++) {
+        mObjElement[i].mIndex = i;
+        mObjElement[i].mObject = NULL;
+        mObjElement[i].mDesc = NULL;
 
-        switch (m_type) {
+        switch (mType) {
             case EntryType_Aspect:
-                uIndex = adjustIndexsAddr(m_nBase,
-                        ((ClassDescriptor *)m_pDesc)->pAspectIndexs)[i];
-                pClassDir = getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, uIndex);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pClassDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = NULL;
+                index = adjustIndexsAddr(mBase,
+                        ((ClassDescriptor *)mDesc)->pAspectIndexs)[i];
+                classDir = getClassDirAddr(mBase, mClsMod->ppClassDir, index);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        classDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = NULL;
                 break;
             case EntryType_Aggregatee:
-                uIndex =  adjustIndexsAddr(m_nBase,
-                        ((ClassDescriptor *)m_pDesc)->pAggrIndexs)[i];
-                pClassDir = getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, uIndex);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pClassDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = NULL;
+                index = adjustIndexsAddr(mBase,
+                        ((ClassDescriptor *)mDesc)->pAggrIndexs)[i];
+                classDir = getClassDirAddr(mBase, mClsMod->ppClassDir, index);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        classDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = NULL;
                 break;
             case EntryType_Class:
-                pClassDir = getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, i);
-                m_pObjElement[i].pszName  = adjustNameAddr(m_nBase,
-                        pClassDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
-                        pClassDir->pszNameSpace);
+                classDir = getClassDirAddr(mBase, mClsMod->ppClassDir, i);
+                mObjElement[i].mName  = adjustNameAddr(mBase,
+                        classDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
+                        classDir->pszNameSpace);
                 break;
             case EntryType_ClassInterface:
-                uIndex = m_pObjElement[i].uIndex;
-                pIFDir = getInterfaceDirAddr(m_nBase,
-                        m_pClsMod->ppInterfaceDir, uIndex);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pIFDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
-                        pIFDir->pszNameSpace);
+                index = mObjElement[i].mIndex;
+                ifDir = getInterfaceDirAddr(mBase,
+                        mClsMod->ppInterfaceDir, index);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        ifDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
+                        ifDir->pszNameSpace);
                 break;
             case EntryType_Interface:
-                pIFDir = getInterfaceDirAddr(m_nBase, m_pClsMod->ppInterfaceDir, i);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pIFDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
-                        pIFDir->pszNameSpace);
+                ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, i);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        ifDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
+                        ifDir->pszNameSpace);
                 break;
             case EntryType_Struct:
-                pStructDir = getStructDirAddr(m_nBase, m_pClsMod->ppStructDir, i);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pStructDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = NULL;
+                structDir = getStructDirAddr(mBase, mClsMod->ppStructDir, i);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        structDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = NULL;
                 break;
             case EntryType_Enum:
-                pEnumDir = getEnumDirAddr(m_nBase, m_pClsMod->ppEnumDir, i);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pEnumDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = adjustNameAddr(m_nBase,
-                        pEnumDir->pszNameSpace);
+                enumDir = getEnumDirAddr(mBase, mClsMod->ppEnumDir, i);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        enumDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
+                        enumDir->pszNameSpace);
                 break;
             case EntryType_Constant:
-                pConstDir = getConstDirAddr(m_nBase, m_pClsMod->ppConstDir, i);
-                m_pObjElement[i].pszName = adjustNameAddr(m_nBase,
-                        pConstDir->pszName);
-                m_pObjElement[i].pszNamespaceOrSignature = NULL;
+                constDir = getConstDirAddr(mBase, mClsMod->ppConstDir, i);
+                mObjElement[i].mName = adjustNameAddr(mBase,
+                        constDir->pszName);
+                mObjElement[i].mNamespaceOrSignature = NULL;
                 break;
             default:
                 return E_INVALID_OPERATION;
         }
 
         String strKey;
-        if (m_pObjElement[i].pszNamespaceOrSignature != NULL) {
-            strKey = String(m_pObjElement[i].pszNamespaceOrSignature) + String(".") + String(m_pObjElement[i].pszName);
+        if (mObjElement[i].mNamespaceOrSignature != NULL) {
+            strKey = String(mObjElement[i].mNamespaceOrSignature) + String(".") + String(mObjElement[i].mName);
         }
         else {
-            strKey = m_pObjElement[i].pszName;
+            strKey = mObjElement[i].mName;
         }
-        if (!m_pHTIndexs.Put(const_cast<char*>(strKey.string()), i)) {
+        if (!mHTIndexs.Put(const_cast<char*>(strKey.string()), i)) {
             return E_OUT_OF_MEMORY;
         }
     }
@@ -227,143 +227,143 @@ ECode CEntryList::InitElemList()
 
 ECode CEntryList::AcquireObjByName(
     /* [in] */ const String& name,
-    /* [out] */ IInterface ** ppObject)
+    /* [out] */ IInterface** object)
 {
-    if (!ppObject || name.IsNull()) {
+    if (!object || name.IsNull()) {
         return E_INVALID_ARGUMENT;
     }
 
-    g_objInfoList.LockHashTable(m_type);
+    g_objInfoList.LockHashTable(mType);
     ECode ec = InitElemList();
-    g_objInfoList.UnlockHashTable(m_type);
+    g_objInfoList.UnlockHashTable(mType);
     if (FAILED(ec)) {
         return ec;
     }
 
-    UInt32 *pIndex = m_pHTIndexs.Get((PVoid)name.string());
-    if (pIndex == NULL) {
+    UInt32* index = mHTIndexs.Get((PVoid)name.string());
+    if (index == NULL) {
         return E_DOES_NOT_EXIST;
     }
     else {
-        return AcquireObjByIndex(*pIndex, ppObject);
+        return AcquireObjByIndex(*index, object);
     }
 }
 
 ECode CEntryList::AcquireObjByIndex(
-    /* [in] */ UInt32 uIndex,
-    /* [out] */ IInterface ** ppObject)
+    /* [in] */ UInt32 index,
+    /* [out] */ IInterface ** object)
 {
-    if (!ppObject) {
+    if (!object) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_uTotalCount || (uIndex & 0x0000FFFF) >= m_uTotalCount) {
+    if (!mTotalCount || (index & 0x0000FFFF) >= mTotalCount) {
         return E_DOES_NOT_EXIST;
     }
 
-    g_objInfoList.LockHashTable(m_type);
+    g_objInfoList.LockHashTable(mType);
     ECode ec = InitElemList();
-    g_objInfoList.UnlockHashTable(m_type);
+    g_objInfoList.UnlockHashTable(mType);
     if (FAILED(ec)) {
         return ec;
     }
 
     UInt32 i = 0;
-    if ((m_type == EntryType_Method || m_type == EntryType_Constructor
-            || m_type == EntryType_CBMethod) && (uIndex & 0xFFFF0000)) {
+    if ((mType == EntryType_Method || mType == EntryType_Constructor
+            || mType == EntryType_CBMethod) && (index & 0xFFFF0000)) {
         //Method's Index
         //Change to the array's index
-        for (i = 0; i < m_uTotalCount; i++) {
-            if (m_pObjElement[i].uIndex == uIndex) {
-                uIndex = i;
+        for (i = 0; i < mTotalCount; i++) {
+            if (mObjElement[i].mIndex == index) {
+                index = i;
                 break;
             }
         }
-        if (uIndex != i) return E_INVALID_ARGUMENT;
+        if (index != i) return E_INVALID_ARGUMENT;
     }
 
     UInt32 sIndex = 0;
 
-    switch (m_type) {
+    switch (mType) {
         case EntryType_Aspect:
-            sIndex = adjustIndexsAddr(m_nBase,
-                ((ClassDescriptor *)m_pDesc)->pAspectIndexs)[uIndex];
-            ec = g_objInfoList.AcquireClassInfo(m_pCClsModule,
-                getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, sIndex),
-                &m_pObjElement[uIndex].pObj);
+            sIndex = adjustIndexsAddr(mBase,
+                    ((ClassDescriptor *)mDesc)->pAspectIndexs)[index];
+            ec = g_objInfoList.AcquireClassInfo(mClsModule,
+                    getClassDirAddr(mBase, mClsMod->ppClassDir, sIndex),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Aggregatee:
-            sIndex =  adjustIndexsAddr(m_nBase,
-                ((ClassDescriptor *)m_pDesc)->pAggrIndexs)[uIndex];
-            ec = g_objInfoList.AcquireClassInfo(m_pCClsModule,
-                getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, sIndex),
-                &m_pObjElement[uIndex].pObj);
+            sIndex = adjustIndexsAddr(mBase,
+                    ((ClassDescriptor *)mDesc)->pAggrIndexs)[index];
+            ec = g_objInfoList.AcquireClassInfo(mClsModule,
+                    getClassDirAddr(mBase, mClsMod->ppClassDir, sIndex),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Class:
-            ec = g_objInfoList.AcquireClassInfo(m_pCClsModule,
-                getClassDirAddr(m_nBase, m_pClsMod->ppClassDir, uIndex),
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireClassInfo(mClsModule,
+                    getClassDirAddr(mBase, mClsMod->ppClassDir, index),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_ClassInterface:
-            sIndex =  m_pObjElement[uIndex].uIndex;
-            ec = g_objInfoList.AcquireInterfaceInfo(m_pCClsModule, sIndex,
-                &m_pObjElement[uIndex].pObj);
+            sIndex = mObjElement[index].mIndex;
+            ec = g_objInfoList.AcquireInterfaceInfo(mClsModule, sIndex,
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Interface:
-            ec = g_objInfoList.AcquireInterfaceInfo(m_pCClsModule, uIndex,
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireInterfaceInfo(mClsModule, index,
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Struct:
-            ec = g_objInfoList.AcquireStaticStructInfo(m_pCClsModule,
-                getStructDirAddr(m_nBase, m_pClsMod->ppStructDir, uIndex),
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireStaticStructInfo(mClsModule,
+                    getStructDirAddr(mBase, mClsMod->ppStructDir, index),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Enum:
-            ec = g_objInfoList.AcquireStaticEnumInfo(m_pCClsModule,
-                getEnumDirAddr(m_nBase, m_pClsMod->ppEnumDir, uIndex),
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireStaticEnumInfo(mClsModule,
+                    getEnumDirAddr(mBase, mClsMod->ppEnumDir, index),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_TypeAliase:
-            sIndex =  m_pObjElement[uIndex].uIndex;
-            ec = g_objInfoList.AcquireTypeAliasInfo(m_pCClsModule,
-                getAliasDirAddr(m_nBase, m_pClsMod->ppAliasDir, sIndex),
-                &m_pObjElement[uIndex].pObj);
+            sIndex = mObjElement[index].mIndex;
+            ec = g_objInfoList.AcquireTypeAliasInfo(mClsModule,
+                    getAliasDirAddr(mBase, mClsMod->ppAliasDir, sIndex),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Constant:
-            ec = g_objInfoList.AcquireConstantInfo(m_pCClsModule,
-                getConstDirAddr(m_nBase, m_pClsMod->ppConstDir, uIndex),
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireConstantInfo(mClsModule,
+                    getConstDirAddr(mBase, mClsMod->ppConstDir, index),
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Method:
-            ec = g_objInfoList.AcquireMethodInfo(m_pCClsModule,
-                (MethodDescriptor *)m_pObjElement[uIndex].pDesc,
-                m_pObjElement[uIndex].uIndex,
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireMethodInfo(mClsModule,
+                    (MethodDescriptor *)mObjElement[index].mDesc,
+                    mObjElement[index].mIndex,
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_Constructor:
-            ec = g_objInfoList.AcquireConstructorInfo(m_pCClsModule,
-                (MethodDescriptor *)m_pObjElement[uIndex].pDesc,
-                m_pObjElement[uIndex].uIndex,
-                &m_pClsInfo->mClsId,
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireConstructorInfo(mClsModule,
+                    (MethodDescriptor *)mObjElement[index].mDesc,
+                    mObjElement[index].mIndex,
+                    &mClsInfo->mClsId,
+                    &mObjElement[index].mObject);
             break;
 
         case EntryType_CBMethod:
-            ec = g_objInfoList.AcquireCBMethodInfoInfo(m_pCClsModule,
-                m_pClsInfo->mCBMethodDesc[uIndex].mEventNum,
-                m_pClsInfo->mCBMethodDesc[uIndex].mDesc,
-                m_pClsInfo->mCBMethodDesc[uIndex].mIndex,
-                &m_pObjElement[uIndex].pObj);
+            ec = g_objInfoList.AcquireCBMethodInfoInfo(mClsModule,
+                    mClsInfo->mCBMethodDesc[index].mEventNum,
+                    mClsInfo->mCBMethodDesc[index].mDesc,
+                    mClsInfo->mCBMethodDesc[index].mIndex,
+                    &mObjElement[index].mObject);
             break;
 
         default:
@@ -374,34 +374,34 @@ ECode CEntryList::AcquireObjByIndex(
         return ec;
     }
 
-    *ppObject = m_pObjElement[uIndex].pObj;
-    (*ppObject)->AddRef();
+    *object = mObjElement[index].mObject;
+    (*object)->AddRef();
     return NOERROR;
 }
 
 ECode CEntryList::GetAllObjInfos(
-    /* [out] */ ArrayOf<IInterface *> * pObjInfos)
+    /* [out] */ ArrayOf<IInterface *>* objInfos)
 {
-    if (!pObjInfos) {
+    if (!objInfos) {
         return E_INVALID_ARGUMENT;
     }
 
-    Int32 nCapacity = pObjInfos->GetLength();
-    if (nCapacity == 0) {
+    Int32 capacity = objInfos->GetLength();
+    if (capacity == 0) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_uTotalCount) {
+    if (!mTotalCount) {
         return NOERROR;
     }
 
-    Int32 nCount = nCapacity < (int)m_uTotalCount ? nCapacity : m_uTotalCount;
+    Int32 count = capacity < (int)mTotalCount ? capacity : mTotalCount;
     ECode ec = NOERROR;
-    for (Int32 i = 0; i < nCount; i++) {
-        AutoPtr<IInterface> pObject;
-        ec = AcquireObjByIndex(i, (IInterface**)&pObject);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> object;
+        ec = AcquireObjByIndex(i, (IInterface**)&object);
         if (FAILED(ec)) return ec;
-        pObjInfos->Set(i, pObject);
+        objInfos->Set(i, object);
     }
 
     return NOERROR;

@@ -6,22 +6,22 @@
 #include "CEnumInfo.h"
 
 CEnumItemInfo::CEnumItemInfo(
-    /* [in] */ IEnumInfo * pEnumInfo,
+    /* [in] */ IEnumInfo* enumInfo,
     /* [in] */ const String& name,
     /* [in] */ Int32 value)
-    : m_pEnumInfo(pEnumInfo)
-    , m_sName(name)
-    , m_iValue(value)
+    : mEnumInfo(enumInfo)
+    , mName(name)
+    , mValue(value)
 {}
 
 UInt32 CEnumItemInfo::AddRef()
 {
-    return m_pEnumInfo->AddRef();
+    return mEnumInfo->AddRef();
 }
 
 UInt32 CEnumItemInfo::Release()
 {
-    return m_pEnumInfo->Release();
+    return mEnumInfo->Release();
 }
 
 PInterface CEnumItemInfo::Probe(
@@ -39,42 +39,42 @@ PInterface CEnumItemInfo::Probe(
 }
 
 ECode CEnumItemInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CEnumItemInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = m_sName;
+    *name = mName;
     return NOERROR;
 }
 
 ECode CEnumItemInfo::GetEnumInfo(
-    /* [out] */ IEnumInfo ** ppEnumInfo)
+    /* [out] */ IEnumInfo** enumInfo)
 {
-    if (!ppEnumInfo) {
+    if (!enumInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppEnumInfo = m_pEnumInfo;
-    (*ppEnumInfo)->AddRef();
+    *enumInfo = mEnumInfo;
+    (*enumInfo)->AddRef();
     return NOERROR;
 }
 
 ECode CEnumItemInfo::GetValue(
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    if (!pValue) {
+    if (!value) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pValue = m_iValue;
+    *value = mValue;
     return NOERROR;
 }

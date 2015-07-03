@@ -11,7 +11,7 @@ class CEnumItemInfo : public IEnumItemInfo
 {
 public:
     CEnumItemInfo(
-        /* [in] */ IEnumInfo * pEnumInfo,
+        /* [in] */ IEnumInfo* enumInfo,
         /* [in] */ const String& name,
         /* [in] */ Int32 value);
 
@@ -23,22 +23,22 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetEnumInfo(
-        /* [out] */ IEnumInfo ** ppEnumInfo);
+        /* [out] */ IEnumInfo** enumInfo);
 
     CARAPI GetValue(
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
 private:
-    IEnumInfo *m_pEnumInfo;
-    String     m_sName;
-    Int32      m_iValue;
+    IEnumInfo*  mEnumInfo;
+    String      mName;
+    Int32       mValue;
 };
 
 #endif // __CENUMITEMINFO_H__

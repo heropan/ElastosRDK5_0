@@ -680,8 +680,8 @@ ECode CObjInfoList::AcquireDynamicEnumInfo(
                 }
             }
 
-            pItemNames = pEnumInfo->m_pItemNames;
-            pItemValues = pEnumInfo->m_pItemValues;
+            pItemNames = pEnumInfo->mItemNames;
+            pItemValues = pEnumInfo->mItemValues;
             for (i = 0; i < count; i++) {
                 if (!(*itemNames)[i].Equals((*pItemNames)[i])) {
                     if (!name.IsEmpty()) {
