@@ -1,18 +1,18 @@
 
-#include "CFencesHelper.h"
+#include "CFences.h"
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
-Int32 CFencesHelper::sTheVolatile = 0;
+Int32 CFences::sTheVolatile = 0;
 
-CAR_INTERFACE_IMPL(CFencesHelper, Singleton, IFencesHelper)
+CAR_INTERFACE_IMPL(CFences, Singleton, IFences)
 
-CAR_SINGLETON_IMPL(CFencesHelper)
+CAR_SINGLETON_IMPL(CFences)
 
-ECode CFencesHelper::OrderReads(
+ECode CFences::OrderReads(
     /* [in] */ IInterface* ref,
     /* [out] */ IInterface** outface)
 {
@@ -24,7 +24,7 @@ ECode CFencesHelper::OrderReads(
     return NOERROR;
 }
 
-ECode CFencesHelper::OrderWrites(
+ECode CFences::OrderWrites(
     /* [in] */ IInterface* ref,
     /* [out] */ IInterface** outface)
 {
@@ -36,7 +36,7 @@ ECode CFencesHelper::OrderWrites(
     return NOERROR;
 }
 
-ECode CFencesHelper::OrderAccesses(
+ECode CFences::OrderAccesses(
     /* [in] */ IInterface* ref,
     /* [out] */ IInterface** outface)
 {
@@ -48,7 +48,7 @@ ECode CFencesHelper::OrderAccesses(
     return NOERROR;
 }
 
-ECode CFencesHelper::ReachabilityFence(
+ECode CFences::ReachabilityFence(
     /* [in] */ IInterface* ref)
 {
     if (ref != NULL) {

@@ -180,6 +180,19 @@ public:
         /* [out] */ Double* value);
 
 private:
+    static Int64 mSerialVersionUID;// = 6214790243416807050L;
+
+    // setup to use Unsafe.compareAndSwapInt for updates
+//    private static final Unsafe unsafe = Unsafe.getUnsafe();
+    static Int64 mValueOffset;
+
+    // static {
+    //     try {
+    //         valueOffset = unsafe.objectFieldOffset
+    //             (AtomicInteger.class.getDeclaredField("value"));
+    //     } catch (Exception ex) { throw new Error(ex); }
+    // }
+
     volatile Int32 mValue;
 };
 

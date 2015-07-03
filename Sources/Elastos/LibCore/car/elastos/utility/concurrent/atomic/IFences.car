@@ -457,7 +457,7 @@ module
      * @hide
      * @author Doug Lea
      */
-    interface IFencesHelper {
+    interface IFences {
         /**
          * Informally: Ensures that a read of the given reference prior to
          * the invocation of this method occurs before a subsequent use of

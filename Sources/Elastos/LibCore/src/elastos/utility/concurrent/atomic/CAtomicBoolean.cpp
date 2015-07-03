@@ -10,6 +10,10 @@ namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
+Int64 CAtomicBoolean::mSerialVersionUID = 4654671469794556979L;
+
+Int64 CAtomicBoolean::mValueOffset = 0;
+
 CAR_INTERFACE_IMPL_2(CAtomicBoolean, Object, IAtomicBoolean, ISerializable)
 
 CAR_OBJECT_IMPL(CAtomicBoolean)
@@ -69,10 +73,8 @@ ECode CAtomicBoolean::Set(
 ECode CAtomicBoolean::LazySet(
     /* [in] */ Boolean newValue)
 {
-    volatile Int32* address = &mValue;
-
-    ANDROID_MEMBAR_STORE();
-    *address = newValue ? 1 : 0;
+    Int32 v = newValue ? 1 : 0;
+//    unsafe.putOrderedInt(this, valueOffset, v);
     return NOERROR;
 }
 
@@ -122,6 +124,10 @@ ECode CAtomicBoolean::CompareAndSet(
 
     *result = (ret == 0);
     return NOERROR;
+
+    // int e = expect ? 1 : 0;
+    // int u = update ? 1 : 0;
+    // return unsafe.compareAndSwapInt(this, valueOffset, e, u);
 }
 
 /**
@@ -149,6 +155,20 @@ ECode CAtomicBoolean::WeakCompareAndSet(
     int ret = android_atomic_release_cas(e, u, address);
 
     *result = (ret == 0);
+    return NOERROR;
+
+    // int e = expect ? 1 : 0;
+    // int u = update ? 1 : 0;
+    // return unsafe.compareAndSwapInt(this, valueOffset, e, u);
+}
+
+ECode CAtomicBoolean::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    assert(0 && "TODO");
+    // return String.valueOf(get());
     return NOERROR;
 }
 
