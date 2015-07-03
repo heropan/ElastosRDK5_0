@@ -17,25 +17,6 @@ namespace Utility {
 namespace Concurrent {
 
 //====================================================================
-// CExchanger::Node::
-//====================================================================
-CExchanger::Node::Node(
-    /* [in] */ IInterface* item)
-{
-    mItem = item;
-}
-
-//====================================================================
-// CExchanger::Slot::
-//====================================================================
-CExchanger::Slot::Slot()
-    : mQ0(0), mQ1(0), mQ2(0), mQ3(0)
-    , mQ4(0), mQ5(0), mQ6(0), mQ7(0)
-    , mQ8(0), mQ9(0), mQa(0), mQb(0)
-    , mQc(0), mQd(0), mQe(0)
-{}
-
-//====================================================================
 // CExchanger::
 //====================================================================
 CAR_INTERFACE_IMPL(CExchanger, Object, IExchanger)
@@ -43,215 +24,179 @@ CAR_INTERFACE_IMPL(CExchanger, Object, IExchanger)
 CAR_OBJECT_IMPL(CExchanger);
 
 const Int32 CExchanger::sNCPU = 4;//= Runtime.getRuntime().availableProcessors();
-const Int32 CExchanger::sCAPACITY = 32;
-Int32 CExchanger::sFULL = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(sCAPACITY, sNCPU / 2) - 1);
-Int32 CExchanger::sSPINS = (sNCPU == 1) ? 0 : 2000;
-Int32 CExchanger::sTIMED_SPINS = sSPINS / 20;
+const Int32 CExchanger::sASHIFT = 7;
+const Int32 CExchanger::sMMASK = 0xff;
+const Int32 CExchanger::sSEQ = sMMASK + 1;
+const Int32 CExchanger::sFULL = (sNCPU >= (sMMASK << 1)) ? sMMASK : sNCPU >> 1;
+const Int32 CExchanger::sSPINS = 1 << 10;
 
-AutoPtr<IInterface> CExchanger::sCANCEL = (IInterface*)(IObject*)new CDummyObject();
 AutoPtr<IInterface> CExchanger::sNULL_ITEM = (IInterface*)(IObject*)new CDummyObject();
+AutoPtr<IInterface> CExchanger::sTIMED_OUT = (IInterface*)(IObject*)new CDummyObject();
 
-AutoPtr<IInterface> CExchanger::DoExchange(
+AutoPtr<IInterface> CExchanger::ArenaExchange(
     /* [in] */ IInterface* item,
     /* [in] */ Boolean timed,
-    /* [in] */ Int64 nanos)
+    /* [in] */ Int64 ns)
 {
-    AutoPtr<Node> me = new Node(item);                 // Create in case occupying
-    Int32 index = HashIndex();                  // Index of current slot
-    Int32 fails = 0;                            // Number of CAS failures
-    Boolean b = FALSE;
-
-    for (;;) {
-        AutoPtr<IInterface> y;                             // Contents of current slot
-        AutoPtr<Slot> slot = (*mArena)[index];
-        if (slot == NULL)                     // Lazily initialize slots
-            CreateSlot(index);                // Continue loop to reread
-        else if ((slot->Get((IInterface**)&y), y) != NULL &&  // Try to fulfill
-                (slot->CompareAndSet(y, NULL, &b), b)) {
-            AutoPtr<Node> you = (Node*)(IAtomicReference*)y->Probe(EIID_IAtomicReference);               // Transfer item
-            Boolean a = FALSE;
-            if ((you->CompareAndSet(NULL, item, &a), a)) {
-                LockSupport::Unpark(you->mWaiter);
-                return you->mItem;
-            }                                 // Else cancelled; continue
-        }
-        else if (y == NULL &&                 // Try to occupy
-                (slot->CompareAndSet(NULL, me->Probe(EIID_IInterface), &b), b)) {
-            if (index == 0)                   // Blocking wait for slot 0
-                return timed ?
-                    AwaitNanos(me, slot, nanos) :
-                    Await(me, slot);
-            AutoPtr<IInterface> v = SpinWait(me, slot);    // Spin wait for non-0
-            if (!Object::Equals(v, sCANCEL))
-                return v;
-            me = new Node(item);              // Throw away cancelled node
-            Int32 m;
-            mMax->Get(&m);
-            if (m > (index >>= 1)) {           // Decrease index
-                Boolean c = FALSE;
-                mMax->CompareAndSet(m, m - 1, &c);  // Maybe shrink table
-            }
-        }
-        else if (++fails > 1) {               // Allow 2 fails on 1st slot
-            Int32 m;
-            mMax->Get(&m);
-            Boolean d = FALSE;
-            if (fails > 3 && m < sFULL && mMax->CompareAndSet(m, m + 1, &d))
-                index = m + 1;                // Grow on 3rd failed slot
-            else if (--index < 0)
-                index = m;                    // Circularly traverse
-        }
-    }
+    assert(0 && "TODO");
+    return NULL;
+    // Node[] a = arena;
+    // Node p = participant.get();
+    // for (int i = p.index;;) {                      // access slot at i
+    //     int b, m, c; long j;                       // j is raw array offset
+    //     Node q = (Node)U.getObjectVolatile(a, j = (i << ASHIFT) + ABASE);
+    //     if (q != null && U.compareAndSwapObject(a, j, q, null)) {
+    //         Object v = q.item;                     // release
+    //         q.match = item;
+    //         Thread w = q.parked;
+    //         if (w != null)
+    //             U.unpark(w);
+    //         return v;
+    //     }
+    //     else if (i <= (m = (b = bound) & MMASK) && q == null) {
+    //         p.item = item;                         // offer
+    //         if (U.compareAndSwapObject(a, j, null, p)) {
+    //             long end = (timed && m == 0) ? System.nanoTime() + ns : 0L;
+    //             Thread t = Thread.currentThread(); // wait
+    //             for (int h = p.hash, spins = SPINS;;) {
+    //                 Object v = p.match;
+    //                 if (v != null) {
+    //                     U.putOrderedObject(p, MATCH, null);
+    //                     p.item = null;             // clear for next use
+    //                     p.hash = h;
+    //                     return v;
+    //                 }
+    //                 else if (spins > 0) {
+    //                     h ^= h << 1; h ^= h >>> 3; h ^= h << 10; // xorshift
+    //                     if (h == 0)                // initialize hash
+    //                         h = SPINS | (int)t.getId();
+    //                     else if (h < 0 &&          // approx 50% true
+    //                              (--spins & ((SPINS >>> 1) - 1)) == 0)
+    //                         Thread.yield();        // two yields per wait
+    //                 }
+    //                 else if (U.getObjectVolatile(a, j) != p)
+    //                     spins = SPINS;       // releaser hasn't set match yet
+    //                 else if (!t.isInterrupted() && m == 0 &&
+    //                          (!timed ||
+    //                           (ns = end - System.nanoTime()) > 0L)) {
+    //                     U.putObject(t, BLOCKER, this); // emulate LockSupport
+    //                     p.parked = t;              // minimize window
+    //                     if (U.getObjectVolatile(a, j) == p)
+    //                         U.park(false, ns);
+    //                     p.parked = null;
+    //                     U.putObject(t, BLOCKER, null);
+    //                 }
+    //                 else if (U.getObjectVolatile(a, j) == p &&
+    //                          U.compareAndSwapObject(a, j, p, null)) {
+    //                     if (m != 0)                // try to shrink
+    //                         U.compareAndSwapInt(this, BOUND, b, b + SEQ - 1);
+    //                     p.item = null;
+    //                     p.hash = h;
+    //                     i = p.index >>>= 1;        // descend
+    //                     if (Thread.interrupted())
+    //                         return null;
+    //                     if (timed && m == 0 && ns <= 0L)
+    //                         return TIMED_OUT;
+    //                     break;                     // expired; restart
+    //                 }
+    //             }
+    //         }
+    //         else
+    //             p.item = null;                     // clear offer
+    //     }
+    //     else {
+    //         if (p.bound != b) {                    // stale; reset
+    //             p.bound = b;
+    //             p.collides = 0;
+    //             i = (i != m || m == 0) ? m : m - 1;
+    //         }
+    //         else if ((c = p.collides) < m || m == FULL ||
+    //                  !U.compareAndSwapInt(this, BOUND, b, b + SEQ + 1)) {
+    //             p.collides = c + 1;
+    //             i = (i == 0) ? m : i - 1;          // cyclically traverse
+    //         }
+    //         else
+    //             i = m + 1;                         // grow
+    //         p.index = i;
+    //     }
+    // }
 }
 
-Int32 CExchanger::HashIndex()
+AutoPtr<IInterface> CExchanger::SlotExchange(
+    /* [in] */ IInterface* item,
+    /* [in] */ Boolean timed,
+    /* [in] */ Int64 ns)
 {
-    Int64 id = 0;
-    Thread::GetCurrentThread()->GetId(&id);
-    Int32 hash = (((Int32)(id ^ (id >> 32))) ^ 0x811c9dc5) * 0x01000193;
+    assert(0 && "TODO");
+    return NULL;
+    // Node p = participant.get();
+    // Thread t = Thread.currentThread();
+    // if (t.isInterrupted()) // preserve interrupt status so caller can recheck
+    //     return null;
 
-    Int32 m;
-    mMax->Get(&m);
-    Int32 nbits = (((0xfffffc00  >> m) & 4) | // Compute ceil(log2(m+1))
-                 ((0x000001f8 >> m) & 2) | // The constants hold
-                 ((0xffff00f2 >> m) & 1)); // a lookup table
-    Int32 index;
-    while ((index = hash & ((1 << nbits) - 1)) > m)       // May retry on
-        hash = (hash >> nbits) | (hash << (33 - nbits)); // non-power-2 m
-    return index;
-}
+    // for (Node q;;) {
+    //     if ((q = slot) != null) {
+    //         if (U.compareAndSwapObject(this, SLOT, q, null)) {
+    //             Object v = q.item;
+    //             q.match = item;
+    //             Thread w = q.parked;
+    //             if (w != null)
+    //                 U.unpark(w);
+    //             return v;
+    //         }
+    //         // create arena on contention, but continue until slot null
+    //         if (NCPU > 1 && bound == 0 &&
+    //             U.compareAndSwapInt(this, BOUND, 0, SEQ))
+    //             arena = new Node[(FULL + 2) << ASHIFT];
+    //     }
+    //     else if (arena != null)
+    //         return null; // caller must reroute to arenaExchange
+    //     else {
+    //         p.item = item;
+    //         if (U.compareAndSwapObject(this, SLOT, null, p))
+    //             break;
+    //         p.item = null;
+    //     }
+    // }
 
-void CExchanger::CreateSlot(
-    /* [in] */ Int32 index)
-{
-    // Create slot outside of lock to narrow sync region
-    AutoPtr<Slot> newSlot = new Slot();
-    AutoPtr<ArrayOf<Slot*> > a = mArena;
-    {
-        AutoLock lock(this);
-        if ((*a)[index] == NULL)
-            a->Set(index, newSlot);
-    }
-}
-
-Boolean CExchanger::TryCancel(
-    /* [in] */ Node* node,
-    /* [in] */ Slot* slot)
-{
-    Boolean b = FALSE;
-    if (!(node->CompareAndSet(NULL, sCANCEL, &b), b))
-        return FALSE;
-    AutoPtr<IInterface> s;
-    slot->Get((IInterface**)&s);
-    if (Object::Equals(s, node->Probe(EIID_IInterface))) { // pre-check to minimize contention
-        Boolean a = FALSE;
-        slot->CompareAndSet(node->Probe(EIID_IInterface), NULL, &a);
-    }
-    return TRUE;
-}
-
-AutoPtr<IInterface> CExchanger::SpinWait(
-    /* [in] */ Node* node,
-    /* [in] */ Slot* slot)
-{
-    Int32 spins = sSPINS;
-    for (;;) {
-        AutoPtr<IInterface> v;
-        node->Get((IInterface**)&v);
-        if (v != NULL)
-            return v;
-        else if (spins > 0)
-            --spins;
-        else
-            TryCancel(node, slot);
-    }
-}
-
-AutoPtr<IInterface> CExchanger::Await(
-    /* [in] */ Node* node,
-    /* [in] */ Slot* slot)
-{
-    AutoPtr<IThread> w = Thread::GetCurrentThread();
-    Int32 spins = sSPINS;
-    for (;;) {
-        AutoPtr<IInterface> v;
-        node->Get((IInterface**)&v);
-        Boolean b = FALSE;
-        if (v != NULL)
-            return v;
-        else if (spins > 0)                 // Spin-wait phase
-            --spins;
-        else if (node->mWaiter == NULL)       // Set up to block next
-            node->mWaiter = w;
-        else if ((w->IsInterrupted(&b), b))         // Abort on interrupt
-            TryCancel(node, slot);
-        else                                // Block
-            LockSupport::Park(node->Probe(EIID_IInterface));
-    }
-}
-
-AutoPtr<IInterface> CExchanger::AwaitNanos(
-    /* [in] */ Node* node,
-    /* [in] */ Slot* slot,
-    /* [in] */ Int64 nanos)
-{
-    Int32 spins = sTIMED_SPINS;
-    Int64 lastTime = 0;
-    AutoPtr<IThread> w = NULL;
-    for (;;) {
-        AutoPtr<IInterface> v;
-        node->Get((IInterface**)&v);
-        if (v != NULL)
-            return v;
-        Int64 now;// = System.nanoTime();
-        if (w == NULL)
-            w = Thread::GetCurrentThread();
-        else
-            nanos -= now - lastTime;
-        lastTime = now;
-        Boolean b = FALSE;
-        if (nanos > 0) {
-            if (spins > 0)
-                --spins;
-            else if (node->mWaiter == NULL)
-                node->mWaiter = w;
-            else if ((w->IsInterrupted(&b), b))
-                TryCancel(node, slot);
-            else
-                LockSupport::ParkNanos(node->Probe(EIID_IInterface), nanos);
-        }
-        else if (TryCancel(node, slot) && !(w->IsInterrupted(&b), b))
-            return ScanOnTimeout(node);
-    }
-}
-
-AutoPtr<IInterface> CExchanger::ScanOnTimeout(
-    /* [in] */ Node* node)
-{
-    AutoPtr<IInterface> y;
-    for (Int32 j = mArena->GetLength() - 1; j >= 0; --j) {
-        AutoPtr<Slot> slot = (*mArena)[j];
-        if (slot != NULL) {
-            while ((slot->Get((IInterface**)&y), y) != NULL) {
-                Boolean a = FALSE;
-                if ((slot->CompareAndSet(y, NULL, &a), a)) {
-                    AutoPtr<Node> you = (Node*)(IAtomicReference*)y->Probe(EIID_IAtomicReference);
-                    Boolean b = FALSE;
-                    if ((you->CompareAndSet(NULL, node->mItem, &b), b)) {
-                        LockSupport::Unpark(you->mWaiter);
-                        return you->mItem;
-                    }
-                }
-            }
-        }
-    }
-    return sCANCEL;
+    // // await release
+    // int h = p.hash;
+    // long end = timed ? System.nanoTime() + ns : 0L;
+    // int spins = (NCPU > 1) ? SPINS : 1;
+    // Object v;
+    // while ((v = p.match) == null) {
+    //     if (spins > 0) {
+    //         h ^= h << 1; h ^= h >>> 3; h ^= h << 10;
+    //         if (h == 0)
+    //             h = SPINS | (int)t.getId();
+    //         else if (h < 0 && (--spins & ((SPINS >>> 1) - 1)) == 0)
+    //             Thread.yield();
+    //     }
+    //     else if (slot != p)
+    //         spins = SPINS;
+    //     else if (!t.isInterrupted() && arena == null &&
+    //              (!timed || (ns = end - System.nanoTime()) > 0L)) {
+    //         U.putObject(t, BLOCKER, this);
+    //         p.parked = t;
+    //         if (slot == p)
+    //             U.park(false, ns);
+    //         p.parked = null;
+    //         U.putObject(t, BLOCKER, null);
+    //     }
+    //     else if (U.compareAndSwapObject(this, SLOT, p, null)) {
+    //         v = timed && ns <= 0L && !t.isInterrupted() ? TIMED_OUT : null;
+    //         break;
+    //     }
+    // }
+    // U.putOrderedObject(p, MATCH, null);
+    // p.item = null;
+    // p.hash = h;
+    // return v;
 }
 
 ECode CExchanger::constructor()
 {
-    mArena = ArrayOf<Slot*>::Alloc(sCAPACITY);
-    CAtomicInteger32::New((IAtomicInteger32**)&mMax);
+    mParticipant = new Participant();
     return NOERROR;
 }
 
@@ -259,21 +204,18 @@ ECode CExchanger::Exchange(
     /* [in] */ IInterface* x,
     /* [out] */ IInterface** outface)
 {
-    VALIDATE_NOT_NULL(outface);
-    if (!Thread::Interrupted()) {
-        AutoPtr<IInterface> v = DoExchange((x == NULL) ? sNULL_ITEM.Get() : x, FALSE, 0);
-        if (Object::Equals(v, sNULL_ITEM->Probe(EIID_IInterface))) {
-            *outface = NULL;
-            return NOERROR;
-        }
-        if (!Object::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
-            *outface = v;
-            REFCOUNT_ADD(*outface);
-            return NOERROR;
-        }
-        Thread::Interrupted(); // Clear interrupt status on IE throw
-    }
-    return E_INTERRUPTED_EXCEPTION;
+    VALIDATE_NOT_NULL(outface)
+
+    AutoPtr<IInterface> v;
+    AutoPtr<IInterface> item = (x == NULL) ? sNULL_ITEM.Get() : x; // translate null args
+    if ((mArena != NULL ||
+         (v = SlotExchange(item, FALSE, 0L)) == NULL) &&
+        ((Thread::Interrupted() || // disambiguates null return
+          (v = ArenaExchange(item, FALSE, 0L)) == NULL)))
+        return E_INTERRUPTED_EXCEPTION;
+    *outface = (Object::Equals(v, sNULL_ITEM)) ? NULL : v;
+    REFCOUNT_ADD(*outface)
+    return NOERROR;
 }
 
 ECode CExchanger::Exchange(
@@ -283,24 +225,21 @@ ECode CExchanger::Exchange(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    *outface = NULL;
 
-    if (!Thread::Interrupted()) {
-        Int64 nanos;
-        AutoPtr<IInterface> v = DoExchange((x == NULL) ? sNULL_ITEM.Get() : x,
-                              TRUE, (unit->ToNanos(timeout, &nanos), nanos));
-        if (Object::Equals(v, sNULL_ITEM->Probe(EIID_IInterface))) {
-            return NOERROR;
-        }
-        if (!Object::Equals(v, sCANCEL->Probe(EIID_IInterface))) {
-            *outface = v;
-            REFCOUNT_ADD(*outface);
-            return NOERROR;
-        }
-        if (!Thread::Interrupted())
-            return E_TIMEOUT_EXCEPTION;
-    }
-    return E_INTERRUPTED_EXCEPTION;
+    AutoPtr<IInterface> v;
+    AutoPtr<IInterface> item = (x == NULL) ? sNULL_ITEM.Get() : x;
+    Int64 ns;
+    unit->ToNanos(timeout, &ns);
+    if ((mArena != NULL ||
+         (v = SlotExchange(item, TRUE, ns)) == NULL) &&
+        ((Thread::Interrupted() ||
+          (v = ArenaExchange(item, TRUE, ns)) == NULL)))
+        return E_INTERRUPTED_EXCEPTION;
+    if (Object::Equals(v, sTIMED_OUT))
+        return E_TIMEOUT_EXCEPTION;
+    *outface = (Object::Equals(v, sNULL_ITEM)) ? NULL : v;
+    REFCOUNT_ADD(*outface)
+    return NOERROR;
 }
 
 } // namespace Concurrent
