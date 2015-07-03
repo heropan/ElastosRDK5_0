@@ -24,12 +24,12 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI InitStatic(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ EnumDirEntry *pEnumDirEntry);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ EnumDirEntry* enumDirEntry);
 
     CARAPI InitDynamic(
         /* [in] */ const String& fullName,
@@ -37,43 +37,43 @@ public:
         /* [in] */ ArrayOf<Int32>* itemValues);
 
     CARAPI GetSize(
-        /* [out] */ MemorySize * pSize);
+        /* [out] */ MemorySize* size);
 
     CARAPI GetDataType(
-        /* [out] */ CarDataType * pDataType);
+        /* [out] */ CarDataType* dataType);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetNamespace(
-        /* [out] */ String * pNamespace);
+        /* [out] */ String* ns);
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI GetItemCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllItemInfos(
-        /* [out] */ ArrayOf<IEnumItemInfo *> * pItemInfos);
+        /* [out] */ ArrayOf<IEnumItemInfo *>* itemInfos);
 
     CARAPI GetItemInfo(
         /* [in] */ const String& name,
-        /* [out] */ IEnumItemInfo ** ppEnumItemInfo);
+        /* [out] */ IEnumItemInfo** enumItemInfo);
 
     CARAPI InitItemInfos();
 
 public:
-    AutoPtr< ArrayOf<String> > m_pItemNames;
-    AutoPtr< ArrayOf<Int32> >  m_pItemValues;
+    AutoPtr< ArrayOf<String> >  mItemNames;
+    AutoPtr< ArrayOf<Int32> >   mItemValues;
 
 private:
-    AutoPtr<CClsModule>        m_pCClsModule;
-    EnumDirEntry              *m_pEnumDirEntry;
-    ArrayOf<IEnumItemInfo *>  *m_pItemInfos;
+    AutoPtr<CClsModule>         mClsModule;
+    EnumDirEntry*               mEnumDirEntry;
+    ArrayOf<IEnumItemInfo *>*   mItemInfos;
 
-    String                     m_pName;
-    String                     m_pNamespace;
+    String                      mName;
+    String                      mNamespace;
 };
 
 #endif // __CENUMINFO_H__

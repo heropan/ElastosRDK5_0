@@ -6,20 +6,20 @@
 #include "CEnumItemInfo.h"
 
 CEnumInfo::CEnumInfo()
-    : m_pEnumDirEntry(NULL)
-    , m_pItemInfos(NULL)
+    : mEnumDirEntry(NULL)
+    , mItemInfos(NULL)
 {}
 
 CEnumInfo::~CEnumInfo()
 {
-    if (m_pItemInfos) {
-        for (Int32 i = 0; i < m_pItemInfos->GetLength(); i++) {
-            if ((*m_pItemInfos)[i]) {
-                delete (*m_pItemInfos)[i];
-                (*m_pItemInfos)[i] = NULL;
+    if (mItemInfos) {
+        for (Int32 i = 0; i < mItemInfos->GetLength(); i++) {
+            if ((*mItemInfos)[i]) {
+                delete (*mItemInfos)[i];
+                (*mItemInfos)[i] = NULL;
             }
         }
-        ArrayOf<IEnumItemInfo *>::Free(m_pItemInfos);
+        ArrayOf<IEnumItemInfo *>::Free(mItemInfos);
     }
 }
 
@@ -31,20 +31,20 @@ UInt32 CEnumInfo::AddRef()
 UInt32 CEnumInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Enum);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        if (!m_pCClsModule) {
+    if (0 == ref) {
+        if (!mClsModule) {
             g_objInfoList.DetachEnumInfo(this);
         }
         else {
-            g_objInfoList.RemoveEnumInfo(m_pEnumDirEntry);
+            g_objInfoList.RemoveEnumInfo(mEnumDirEntry);
         }
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Enum);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CEnumInfo::Probe(
@@ -65,46 +65,46 @@ PInterface CEnumInfo::Probe(
 }
 
 ECode CEnumInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CEnumInfo::InitStatic(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ EnumDirEntry *pEnumDirEntry)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ EnumDirEntry* enumDirEntry)
 {
-    m_pCClsModule = pCClsModule;
+    mClsModule = clsModule;
 
-    Int32 nBase = m_pCClsModule->mBase;
-    m_pEnumDirEntry = pEnumDirEntry;
-    m_pName = adjustNameAddr(nBase, m_pEnumDirEntry->pszName);
-    m_pNamespace = adjustNameAddr(nBase, m_pEnumDirEntry->pszNameSpace);
-    EnumDescriptor* pDesc = adjustEnumDescAddr(nBase, pEnumDirEntry->pDesc);
+    Int32 base = mClsModule->mBase;
+    mEnumDirEntry = enumDirEntry;
+    mName = adjustNameAddr(base, mEnumDirEntry->pszName);
+    mNamespace = adjustNameAddr(base, mEnumDirEntry->pszNameSpace);
+    EnumDescriptor* desc = adjustEnumDescAddr(base, enumDirEntry->pDesc);
 
-    m_pItemValues = ArrayOf<Int32>::Alloc(pDesc->cElems);
-    if (!m_pItemValues) {
+    mItemValues = ArrayOf<Int32>::Alloc(desc->cElems);
+    if (!mItemValues) {
         return E_OUT_OF_MEMORY;
     }
 
-    m_pItemNames = ArrayOf<String>::Alloc(pDesc->cElems);
-    if (!m_pItemNames) {
-        m_pItemValues = NULL;
+    mItemNames = ArrayOf<String>::Alloc(desc->cElems);
+    if (!mItemNames) {
+        mItemValues = NULL;
         return E_OUT_OF_MEMORY;
     }
 
-    EnumElement* pElem = NULL;
-    for (Int32 i = 0; i < pDesc->cElems; i++) {
-        pElem = getEnumElementAddr(nBase, pDesc->ppElems, i);
-        (*m_pItemValues)[i] = pElem->nValue;
-        (*m_pItemNames)[i] = adjustNameAddr(nBase, pElem->pszName);
+    EnumElement* elem = NULL;
+    for (Int32 i = 0; i < desc->cElems; i++) {
+        elem = getEnumElementAddr(base, desc->ppElems, i);
+        (*mItemValues)[i] = elem->nValue;
+        (*mItemNames)[i] = adjustNameAddr(base, elem->pszName);
     }
 
     ECode ec = InitItemInfos();
     if (FAILED(ec)) {
-        m_pItemNames = NULL;
-        m_pItemValues = NULL;
+        mItemNames = NULL;
+        mItemValues = NULL;
     }
 
     return NOERROR;
@@ -120,15 +120,15 @@ ECode CEnumInfo::InitDynamic(
     }
 
     Int32 index = fullName.LastIndexOf('.');
-    m_pName = index > 0 ? fullName.Substring(index + 1) : fullName;
-    m_pNamespace = index > 0 ? fullName.Substring(0, index - 1) : String("");
-    m_pItemNames = itemNames;
-    m_pItemValues = itemValues;
+    mName = index > 0 ? fullName.Substring(index + 1) : fullName;
+    mNamespace = index > 0 ? fullName.Substring(0, index - 1) : String("");
+    mItemNames = itemNames;
+    mItemValues = itemValues;
 
     ECode ec = InitItemInfos();
     if (FAILED(ec)) {
-        m_pItemNames = NULL;
-        m_pItemValues = NULL;
+        mItemNames = NULL;
+        mItemValues = NULL;
         return ec;
     }
 
@@ -136,54 +136,54 @@ ECode CEnumInfo::InitDynamic(
 }
 
 ECode CEnumInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
-    if (!pSize) {
+    if (!size) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pSize = sizeof(Int32);
+    *size = sizeof(Int32);
     return NOERROR;
 }
 
 ECode CEnumInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = CarDataType_Enum;
+    *dataType = CarDataType_Enum;
     return NOERROR;
 }
 
 ECode CEnumInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = m_pName;
+    *name = mName;
     return NOERROR;
 }
 
 ECode CEnumInfo::GetNamespace(
-    /* [out] */ String* pNamespace)
+    /* [out] */ String* ns)
 {
-    if (pNamespace == NULL) {
+    if (ns == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pNamespace = m_pNamespace;
+    *ns = mNamespace;
     return NOERROR;
 }
 
 ECode CEnumInfo::GetModuleInfo(
-    /* [out] */ IModuleInfo ** ppModuleInfo)
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    if (m_pCClsModule) {
-        return m_pCClsModule->GetModuleInfo(ppModuleInfo);
+    if (mClsModule) {
+        return mClsModule->GetModuleInfo(moduleInfo);
     }
     else {
         return E_INVALID_OPERATION;
@@ -191,71 +191,71 @@ ECode CEnumInfo::GetModuleInfo(
 }
 
 ECode CEnumInfo::GetItemCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pItemValues->GetLength();
+    *count = mItemValues->GetLength();
     return NOERROR;
 }
 
 ECode CEnumInfo::InitItemInfos()
 {
-    Int32 count = m_pItemValues->GetLength();
-    m_pItemInfos = ArrayOf<IEnumItemInfo *>::Alloc(count);
-    if (m_pItemInfos == NULL) {
+    Int32 count = mItemValues->GetLength();
+    mItemInfos = ArrayOf<IEnumItemInfo *>::Alloc(count);
+    if (mItemInfos == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
     for (Int32 i = 0; i < count; i++) {
-        // do not use m_pItemInfos->Set(i, xxx), because it will
+        // do not use mItemInfos->Set(i, xxx), because it will
         // call xxx->AddRef();
-        (*m_pItemInfos)[i] = new CEnumItemInfo(this,
-                (*m_pItemNames)[i], (*m_pItemValues)[i]);
-        if (!(*m_pItemInfos)[i]) goto EExit;
+        (*mItemInfos)[i] = new CEnumItemInfo(this,
+                (*mItemNames)[i], (*mItemValues)[i]);
+        if (!(*mItemInfos)[i]) goto EExit;
     }
 
     return NOERROR;
 
 EExit:
     for (Int32 i = 0; i < count; i++) {
-        if ((*m_pItemInfos)[i]) {
-            delete (*m_pItemInfos)[i];
-            (*m_pItemInfos)[i] = NULL;
+        if ((*mItemInfos)[i]) {
+            delete (*mItemInfos)[i];
+            (*mItemInfos)[i] = NULL;
         }
     }
-    ArrayOf<IEnumItemInfo *>::Free(m_pItemInfos);
-    m_pItemInfos = NULL;
+    ArrayOf<IEnumItemInfo *>::Free(mItemInfos);
+    mItemInfos = NULL;
 
     return NOERROR;
 }
 
 ECode CEnumInfo::GetAllItemInfos(
-    /* [out] */ ArrayOf<IEnumItemInfo *> * pItemInfos)
+    /* [out] */ ArrayOf<IEnumItemInfo *>* itemInfos)
 {
-    if (!pItemInfos) {
+    if (!itemInfos) {
         return E_INVALID_ARGUMENT;
     }
 
-    pItemInfos->Copy(m_pItemInfos);
+    itemInfos->Copy(mItemInfos);
 
     return NOERROR;
 }
 
 ECode CEnumInfo::GetItemInfo(
     /* [in] */ const String& name,
-    /* [out] */ IEnumItemInfo ** ppEnumItemInfo)
+    /* [out] */ IEnumItemInfo** enumItemInfo)
 {
-    if (name.IsNull() || !ppEnumItemInfo) {
+    if (name.IsNull() || !enumItemInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    for (Int32 i = 0; i < m_pItemInfos->GetLength(); i++) {
-        if (name.Equals((*m_pItemNames)[i].string())) {
-            *ppEnumItemInfo = (IEnumItemInfo *)(*m_pItemInfos)[i];
-            (*ppEnumItemInfo)->AddRef();
+    for (Int32 i = 0; i < mItemInfos->GetLength(); i++) {
+        if (name.Equals((*mItemNames)[i].string())) {
+            *enumItemInfo = (IEnumItemInfo *)(*mItemInfos)[i];
+            (*enumItemInfo)->AddRef();
             return NOERROR;
         }
     }

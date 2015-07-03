@@ -11,14 +11,14 @@
 #endif
 
 CDelegateProxy::CDelegateProxy(
-    /* [in] */ ICallbackMethodInfo * pCallbackMethodInfo,
-    /* [in] */ ICallbackInvocation * pCallbackInvocation,
+    /* [in] */ ICallbackMethodInfo* callbackMethodInfo,
+    /* [in] */ ICallbackInvocation* callbackInvocation,
     /* [in] */ PVoid targetObject,
     /* [in] */ PVoid targetMethod)
-    : m_pCallbackMethodInfo(pCallbackMethodInfo)
-    , m_pCallbackInvocation(pCallbackInvocation)
-    , m_pTargetObject(targetObject)
-    , m_pTargetMethod(targetMethod)
+    : mCallbackMethodInfo(callbackMethodInfo)
+    , mCallbackInvocation(callbackInvocation)
+    , mTargetObject(targetObject)
+    , mTargetMethod(targetMethod)
 {}
 
 UInt32 CDelegateProxy::AddRef()
@@ -46,116 +46,114 @@ PInterface CDelegateProxy::Probe(
 }
 
 ECode CDelegateProxy::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CDelegateProxy::GetCallbackMethodInfo(
-    /* [out] */ ICallbackMethodInfo ** ppCallbackMethodInfo)
+    /* [out] */ ICallbackMethodInfo** callbackMethodInfo)
 {
-    if (!ppCallbackMethodInfo) {
+    if (!callbackMethodInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppCallbackMethodInfo = m_pCallbackMethodInfo;
-    (*ppCallbackMethodInfo)->AddRef();
+    *callbackMethodInfo = mCallbackMethodInfo;
+    (*callbackMethodInfo)->AddRef();
     return NOERROR;
 }
 
 ECode CDelegateProxy::GetTargetObject(
-    /* [out] */ PVoid * pTargetObject)
+    /* [out] */ PVoid* targetObject)
 {
-    if (!pTargetObject) {
+    if (!targetObject) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pTargetObject = m_pTargetObject;
+    *targetObject = mTargetObject;
     return NOERROR;
 }
 
 ECode CDelegateProxy::GetTargetMethod(
-    /* [out] */ PVoid * pTargetMethod)
+    /* [out] */ PVoid* targetMethod)
 {
-    if (!pTargetMethod) {
+    if (!targetMethod) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pTargetMethod = m_pTargetMethod;
+    *targetMethod = mTargetMethod;
     return NOERROR;
 }
 
 ECode CDelegateProxy::GetCallbackInvocation(
-    /* [out] */ ICallbackInvocation ** ppCallbackInvocation)
+    /* [out] */ ICallbackInvocation** callbackInvocation)
 {
-    if (!ppCallbackInvocation) {
+    if (!callbackInvocation) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppCallbackInvocation = m_pCallbackInvocation;
-    (*ppCallbackInvocation)->AddRef();
+    *callbackInvocation = mCallbackInvocation;
+    (*callbackInvocation)->AddRef();
     return NOERROR;
 }
 
 ECode CDelegateProxy::GetDelegate(
-    /* [out] */ EventHandler * pHandler)
+    /* [out] */ EventHandler* handler)
 {
-    if (!pHandler) {
+    if (!handler) {
         return E_INVALID_ARGUMENT;
     }
 
 #ifndef _arm
-    ECode (__stdcall CDelegateProxy::*pFunc)(PInterface) =
+    ECode (__stdcall CDelegateProxy::*CBFunc)(PInterface) =
         &CDelegateProxy::OnEvent;
 #else
-    ECode (__stdcall CDelegateProxy::*pFunc)(PInterface, ...) =
+    ECode (__stdcall CDelegateProxy::*CBFunc)(PInterface, ...) =
         &CDelegateProxy::OnEvent;
 #endif
 
-    *pHandler = EventHandler::Make((void *)this, *(void**)&pFunc);
+    *handler = EventHandler::Make((void *)this, *(void**)&CBFunc);
 
     return NOERROR;
 }
 
 ECode CDelegateProxy::EventHander(
-    /* [in] */ PVoid pParamBuf,
-    /* [out] */ UInt32 *pParamBufSize)
+    /* [in] */ PVoid paramBuf,
+    /* [out] */ UInt32* paramBufSize)
 {
-    AutoPtr<CCallbackArgumentList> pCBArgumentList;
+    AutoPtr<CCallbackArgumentList> cbArgumentList;
 
-    ECode ec = ((CCallbackMethodInfo *)m_pCallbackMethodInfo.Get())
-        ->CreateCBArgumentList((ICallbackArgumentList **)&pCBArgumentList);
+    ECode ec = ((CCallbackMethodInfo *)mCallbackMethodInfo.Get())->CreateCBArgumentList(
+            (ICallbackArgumentList **)&cbArgumentList);
     if (FAILED(ec)) {
         return ec;
     }
 
-    memcpy(pCBArgumentList->mParamBuf, pParamBuf,
-        pCBArgumentList->mParamBufSize);
+    memcpy(cbArgumentList->mParamBuf, paramBuf, cbArgumentList->mParamBufSize);
 
-    if (pParamBufSize) {
-        *pParamBufSize = pCBArgumentList->mParamBufSize - 4;
+    if (paramBufSize) {
+        *paramBufSize = cbArgumentList->mParamBufSize - 4;
     }
 
-    m_pCallbackInvocation->Invoke(m_pTargetObject, m_pTargetMethod,
-        pCBArgumentList);
+    mCallbackInvocation->Invoke(mTargetObject, mTargetMethod, cbArgumentList);
 
     return NOERROR;
 }
 
 #ifdef _mips
-ECode CDelegateProxy::OnEvent(PInterface pServer)
+ECode CDelegateProxy::OnEvent(PInterface server)
 {
     ASM("break 0;");
     return NOERROR;
 }
 #elif _x86
-ECode CDelegateProxy::OnEvent(PInterface pServer)
+ECode CDelegateProxy::OnEvent(PInterface server)
 {
-    UInt32 uMoveSize;
-    ECode ec = EventHander(&pServer, &uMoveSize);
+    UInt32 moveSize;
+    ECode ec = EventHander(&server, &moveSize);
 
-    if (uMoveSize) {
+    if (moveSize) {
 #if _GNUC
         __asm__(
             "pushl  %%ecx\n"
@@ -187,7 +185,7 @@ ECode CDelegateProxy::OnEvent(PInterface pServer)
             "popl   %%edx\n"
             "popl   %%ecx\n"
             :
-            : "m"(uMoveSize)
+            : "m"(moveSize)
         );
 #else //_MSC_VER
         __asm {
@@ -196,7 +194,7 @@ ECode CDelegateProxy::OnEvent(PInterface pServer)
             push  esi
             push  edi
 
-            mov   edx, uMoveSize
+            mov   edx, moveSize
 
             mov   ecx, ebp
             sub   ecx, esp
@@ -226,8 +224,8 @@ ECode CDelegateProxy::OnEvent(PInterface pServer)
     return ec;
 }
 #elif _arm
-ECode CDelegateProxy::OnEvent(PInterface pServer,...)
+ECode CDelegateProxy::OnEvent(PInterface server,...)
 {
-    return EventHander(&pServer, NULL);
+    return EventHander(&server, NULL);
 }
 #endif

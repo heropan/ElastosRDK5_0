@@ -6,22 +6,22 @@
 #include "CObjInfoList.h"
 
 CFieldInfo::CFieldInfo(
-    /* [in] */ IStructInfo * pStructInfo,
+    /* [in] */ IStructInfo* structInfo,
     /* [in] */ const String& name,
-    /* [in] */ IDataTypeInfo *pTypeInfo)
-    : m_pStructInfo(pStructInfo)
-    , m_sName(name)
-    , m_pTypeInfo(pTypeInfo)
+    /* [in] */ IDataTypeInfo* typeInfo)
+    : mStructInfo(structInfo)
+    , mName(name)
+    , mTypeInfo(typeInfo)
 {}
 
 UInt32 CFieldInfo::AddRef()
 {
-    return m_pStructInfo->AddRef();
+    return mStructInfo->AddRef();
 }
 
 UInt32 CFieldInfo::Release()
 {
-    return m_pStructInfo->Release();
+    return mStructInfo->Release();
 }
 
 PInterface CFieldInfo::Probe(
@@ -39,31 +39,31 @@ PInterface CFieldInfo::Probe(
 }
 
 ECode CFieldInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CFieldInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = m_sName;
+    *name = mName;
     return NOERROR;
 }
 
 ECode CFieldInfo::GetTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppTypeInfo)
+    /* [out] */ IDataTypeInfo** typeInfo)
 {
-    if (!ppTypeInfo) {
+    if (!typeInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppTypeInfo = m_pTypeInfo;
-    (*ppTypeInfo)->AddRef();
+    *typeInfo = mTypeInfo;
+    (*typeInfo)->AddRef();
     return NOERROR;
 }

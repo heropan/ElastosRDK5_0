@@ -497,7 +497,7 @@ ECode CClassInfo::GetConstructorCount(
         ECode ec = AcquireConstructorList();
         if (FAILED(ec)) return ec;
 
-        *count = mCtorList->m_uTotalCount;
+        *count = mCtorList->mTotalCount;
     }
 
     return NOERROR;
@@ -581,7 +581,7 @@ ECode CClassInfo::GetConstructorInfoByParamCount(
     AutoPtr<IConstructorInfo> constructorInfo;
 
     Int32 iCount = 0;
-    for (UInt32 i = 0; i < mCtorList->m_uTotalCount; i++) {
+    for (UInt32 i = 0; i < mCtorList->mTotalCount; i++) {
         constructorInfo = NULL;
         ec = mCtorList->AcquireObjByIndex(i, (IInterface **)&constructorInfo);
         if (FAILED(ec)) return ec;
@@ -757,10 +757,10 @@ ECode CClassInfo::AcquireSpecialMethodList(
         UInt32 methodCount = mMethodCount;
         if (type == EntryType_Constructor) {
             //delete functions of IInterface
-            methodCount -= mIFList[0].pDesc->cMethods;
+            methodCount -= mIFList[0].mDesc->cMethods;
 
             //delete functions of IClassObject
-            methodCount -= mIFList[1].pDesc->cMethods;
+            methodCount -= mIFList[1].mDesc->cMethods;
         }
 
         IFIndexEntry* ifList = NULL;
@@ -967,19 +967,19 @@ ECode CClassInfo::CreateIFList()
             if (listCount != 0) {
                 //If the same inteface in list, continue
                 for (k = 0; k < listCount; k++) {
-                    if (allIFList[k].uIndex == index) {
-                        beginNo = allIFList[k].uBeginNo
-                                + allIFList[k].pDesc->cMethods;
+                    if (allIFList[k].mIndex == index) {
+                        beginNo = allIFList[k].mBeginNo
+                                + allIFList[k].mDesc->cMethods;
                         if (!isCallBack) {
-                            if (!(allIFList[k].attribs & IFAttrib_normal)) {
+                            if (!(allIFList[k].mAttribs & IFAttrib_normal)) {
                                 mIFCount++;
-                                allIFList[k].attribs |= IFAttrib_normal;
+                                allIFList[k].mAttribs |= IFAttrib_normal;
                             }
                         }
                         else {
-                            if (!(allIFList[k].attribs & IFAttrib_callback)) {
+                            if (!(allIFList[k].mAttribs & IFAttrib_callback)) {
                                 mCBIFCount++;
-                                allIFList[k].attribs |= IFAttrib_callback;
+                                allIFList[k].mAttribs |= IFAttrib_callback;
                             }
                         }
 
@@ -992,22 +992,22 @@ ECode CClassInfo::CreateIFList()
                 }
             }
 
-            allIFList[listCount].uIndex = index;
-            allIFList[listCount].uBeginNo = beginNo;
+            allIFList[listCount].mIndex = index;
+            allIFList[listCount].mBeginNo = beginNo;
             ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
-            allIFList[listCount].pszName = adjustNameAddr(mBase, ifDir->pszName);
-            allIFList[listCount].pszNameSpace = adjustNameAddr(mBase, ifDir->pszNameSpace);
-            allIFList[listCount].pDesc = adjustInterfaceDescAddr(mBase, ifDir->pDesc);
+            allIFList[listCount].mName = adjustNameAddr(mBase, ifDir->pszName);
+            allIFList[listCount].mNameSpace = adjustNameAddr(mBase, ifDir->pszNameSpace);
+            allIFList[listCount].mDesc = adjustInterfaceDescAddr(mBase, ifDir->pDesc);
 
             if (!isCallBack) {
                 mIFCount++;
-                allIFList[listCount].attribs = IFAttrib_normal;
+                allIFList[listCount].mAttribs = IFAttrib_normal;
             }
             else {
                 mCBIFCount++;
-                allIFList[listCount].attribs = IFAttrib_callback;
+                allIFList[listCount].mAttribs = IFAttrib_callback;
             }
-            beginNo +=  allIFList[listCount].pDesc->cMethods;
+            beginNo +=  allIFList[listCount].mDesc->cMethods;
 
             listCount++;
         }
@@ -1027,14 +1027,14 @@ ECode CClassInfo::CreateIFList()
     j = 0;
     k = 0;
     for (i = 0; i < listCount; i++) {
-        if (allIFList[i].attribs & IFAttrib_normal) {
+        if (allIFList[i].mAttribs & IFAttrib_normal) {
             memcpy(&mIFList[j], &allIFList[i], sizeof(IFIndexEntry));
-            mMethodCount += allIFList[i].pDesc->cMethods;
+            mMethodCount += allIFList[i].mDesc->cMethods;
             j++;
         }
-        if (i && mCBIFCount && (allIFList[i].attribs & IFAttrib_callback)) {
+        if (i && mCBIFCount && (allIFList[i].mAttribs & IFAttrib_callback)) {
             memcpy(&mCBIFList[k], &allIFList[i], sizeof(IFIndexEntry));
-            mCBMethodCount += allIFList[i].pDesc->cMethods;
+            mCBMethodCount += allIFList[i].mDesc->cMethods;
             k++;
         }
     }
@@ -1045,11 +1045,11 @@ ECode CClassInfo::CreateIFList()
     memset(mCBMethodDesc, 0, mCBMethodCount * sizeof(CBMethodDesc));
 
     for (i = 0; i < k; i++) {
-        for (j = 0; j < mCBIFList[i].pDesc->cMethods; j++) {
+        for (j = 0; j < mCBIFList[i].mDesc->cMethods; j++) {
             mCBMethodDesc[n].mDesc = getMethodDescAddr(mBase,
-                    mCBIFList[i].pDesc->ppMethods, j);
-            mCBMethodDesc[n].mIndex = MK_METHOD_INDEX(mCBIFList[i].uIndex,
-                    mCBIFList[i].uBeginNo + j);
+                    mCBIFList[i].mDesc->ppMethods, j);
+            mCBMethodDesc[n].mIndex = MK_METHOD_INDEX(mCBIFList[i].mIndex,
+                    mCBIFList[i].mBeginNo + j);
             mCBMethodDesc[n].mEventNum = eventNum;
             eventNum++;
             n++;
