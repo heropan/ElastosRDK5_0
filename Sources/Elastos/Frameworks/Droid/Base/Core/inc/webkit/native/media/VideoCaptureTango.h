@@ -1,0 +1,95 @@
+
+#ifndef __VIDEOCAPTURETANGO_H__
+#define __VIDEOCAPTURETANGO_H__
+
+// import android.content.Context;
+// import android.graphics.ImageFormat;
+// import android.hardware.Camera;
+// import android.util.Log;
+
+// import java.nio.ByteBuffer;
+// import java.util.ArrayList;
+// import java.util.Arrays;
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Media {
+
+/**
+ * This class extends the VideoCapture base class for manipulating a Tango
+ * device's cameras, namely the associated Depth (z-Buffer), Fisheye and back-
+ * facing 4MP video capture devices. These devices are differentiated via the
+ * |id| passed on constructor, according to the index correspondence in
+ * |s_CAM_PARAMS|; all devices |id| are index 0 towards the parent VideoCapture.
+ **/
+class VideoCaptureTango
+    : public VideoCapture
+{
+public:
+    VideoCaptureTango(
+      /* [in] */ IContext* context,
+      /* [in] */ Int32 id,
+      /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
+
+    static CARAPI_(Int32) NumberOfCameras();
+
+    static CARAPI_(AutoPtr<VideoCaptureFactory::CamParams>) GetCamParams(
+      /* [in] */ Int32 index);
+
+    static CARAPI_(AutoPtr< ArrayOf<CaptureFormat> >) GetDeviceSupportedFormats(
+      /* [in] */ Int32 id);
+
+    //@Override
+    CARAPI_(void) OnPreviewFrame(
+      /* [in] */ ArrayOf<Byte>* data,
+      /* [in] */ ICamera* camera);
+
+protected:
+    //@Override
+    CARAPI_(void) SetCaptureParameters(
+      /* [in] */ Int32 width,
+      /* [in] */ Int32 height,
+      /* [in] */ Int32 frameRate,
+      /* [in] */ IParameters* cameraParameters);
+
+    //@Override
+    CARAPI_(void) AllocateBuffers();
+
+    //@Override
+    CARAPI_(void) SetPreviewCallback(
+      /* [in] */ IPreviewCallback* cb);
+
+private:
+    AutoPtr<IByteBuffer> mFrameBuffer;
+    const Int32 mTangoCameraId;
+
+    // The indexes must coincide with the s_CAM_PARAMS used below.
+    static const Int32 DEPTH_CAMERA_ID = 0;
+    static const Int32 FISHEYE_CAMERA_ID = 1;
+    static const Int32 FOURMP_CAMERA_ID = 2;
+    static const AutoPtr< ArrayOf<VideoCaptureFactory::CamParams> > s_CAM_PARAMS;
+
+    // SuperFrame size definitions. Note that total size is the amount of lines
+    // multiplied by 3/2 due to Chroma components following.
+    static const Int32 SF_WIDTH = 1280;
+    static const Int32 SF_HEIGHT = 1168;
+    static const Int32 SF_FULL_HEIGHT = SF_HEIGHT * 3 / 2;
+    static const Int32 SF_LINES_HEADER = 16;
+    static const Int32 SF_LINES_FISHEYE = 240;
+    static const Int32 SF_LINES_RESERVED = 80;  // Spec says 96.
+    static const Int32 SF_LINES_DEPTH = 60;
+    static const Int32 SF_LINES_DEPTH_PADDED = 112;  // Spec says 96.
+    static const Int32 SF_LINES_BIGIMAGE = 720;
+    static const Int32 SF_OFFSET_4MP_CHROMA = 112;
+
+    static const Byte CHROMA_ZERO_LEVEL;
+    static const String TAG;
+};
+
+} // namespace Media
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+#endif//__VIDEOCAPTURETANGO_H__
