@@ -61,6 +61,11 @@ public:
      */
     CARAPI Force();
 
+private:
+    // DirectByteBuffer is a subclass of MappedByteBuffer, but not all DirectByteBuffers
+    // actually correspond to an mmap(2)ed region.
+    CARAPI CheckIsMapped();
+
 public:
     AutoPtr<MemoryBlock> mBlock;
 

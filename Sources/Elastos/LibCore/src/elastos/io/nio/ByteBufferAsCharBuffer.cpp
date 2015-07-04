@@ -1,6 +1,8 @@
 
 #include "ByteBufferAsCharBuffer.h"
 
+using Libcore::IO::ISizeOf;
+
 namespace Elastos {
 namespace IO {
 
@@ -10,8 +12,10 @@ extern "C" const InterfaceID EIID_ByteBufferAsCharBuffer =
 
 ByteBufferAsCharBuffer::ByteBufferAsCharBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
+    : mCap(0)
+    , CharBuffer((byteBuffer->GetCapacity(&mCap), mCap) / ISizeOf::CHAR, byteBuffer->mEffectiveDirectAddress)
 {
-    // super(byteBuffer.capacity() / SizeOf.CHAR, byteBuffer.effectiveDirectAddress);
+    // super(byteBuffer.capacity() / ISizeOf::CHAR, byteBuffer.effectiveDirectAddress);
     // this.byteBuffer = byteBuffer;
     // this.byteBuffer.clear();
 }

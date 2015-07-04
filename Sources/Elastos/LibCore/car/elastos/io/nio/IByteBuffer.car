@@ -492,6 +492,28 @@ module
             [in] ByteOrder byteOrder);
 
         /**
+         * Indicates whether this buffer is still accessible.
+         *
+         * @return {@code true} if this buffer is accessible, {@code false} if the
+         *         buffer was made inaccessible (e.g. freed) and should not be used.
+         * @hide
+         */
+        IsAccessible(
+            [out] Boolean* value);
+
+        /**
+         * Sets buffer accessibility (only supported for direct byte buffers). If
+         * {@code accessible} is {@code false}, {@link #isAccessible} will return
+         * false, and any attempt to access the buffer will throw an exception. If
+         * {@code true}, the buffer will become useable again, unless it has been
+         * freed.
+         *
+         * @hide
+         */
+        SetAccessible(
+            [in] Boolean accessible);
+
+        /**
          * Writes the given byte to the current position and increases the position
          * by 1.
          *

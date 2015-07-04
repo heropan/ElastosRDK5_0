@@ -31,11 +31,10 @@ private:
     ByteBufferAsDoubleBuffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-protected:
+public:
     static CARAPI_(AutoPtr<IDoubleBuffer>) AsDoubleBuffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-public:
     // @Override
     CARAPI AsReadOnlyBuffer(
         /* [out] */ IDoubleBuffer** buffer);

@@ -94,6 +94,9 @@ public:
         /* [in] */ Int32 byteCount,
         /* [out] */ IByteBuffer** buf);
 
+    CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
+
     /**
      * Returns the byte array which this buffer is based on, if there is one.
      *
@@ -949,6 +952,12 @@ public:
 
     CARAPI HasArray(
         /* [out] */ Boolean* hasArray);
+
+    CARAPI IsAccessible(
+        /* [out] */ Boolean* hasArray);
+
+    CARAPI SetAccessible(
+        /* [in] */ Boolean accessible);
 
     /**
      * Checks whether this byte buffer is equal to another object.

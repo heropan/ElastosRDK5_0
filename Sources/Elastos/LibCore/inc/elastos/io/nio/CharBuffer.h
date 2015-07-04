@@ -123,6 +123,9 @@ public:
         /* [out] */ ICharBuffer** charBuf);
 
     CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
+
+    CARAPI GetArray(
         /*[out, callee] */ ArrayOf<Char32>** array);
 
     CARAPI GetArrayOffset(
@@ -411,7 +414,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutString(
+    CARAPI Put(
         /* [in] */ const String& str);
 
     /**
@@ -434,7 +437,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutString(
+    virtual CARAPI Put(
         /* [in] */ const String& str,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -564,7 +567,8 @@ protected:
      *            the capacity of the buffer.
      */
     CharBuffer(
-        /* [in] */ Int32 capacity);
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 
     /**
      * Child class implements this method to realize {@code array()}.

@@ -1,5 +1,10 @@
 
 #include "Int64Buffer.h"
+#include "CArrayOf.h"
+#include "CoreUtils.h"
+
+using Elastos::Core::CoreUtils;
+using Elastos::Core::CArrayOf;
 
 namespace Elastos {
 namespace IO {
@@ -12,8 +17,9 @@ Int64Buffer::Int64Buffer()
 {}
 
 Int64Buffer::Int64Buffer(
-    /* [in] */ Int32 capacity)
-    : Buffer(3, capacity, NULL)
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(3, capacity, effectiveDirectAddress)
 {}
 
 CAR_INTERFACE_IMPL_2(Int64Buffer, Object, IInt64Buffer, IBuffer)
@@ -53,6 +59,23 @@ ECode Int64Buffer::Wrap(
     // buf.position = start;
     // buf.limit = start + longCount;
     // return buf;
+    return NOERROR;
+}
+
+ECode Int64Buffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Int64> > res;
+    GetArray((ArrayOf<Int64>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (int i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::Convert((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 

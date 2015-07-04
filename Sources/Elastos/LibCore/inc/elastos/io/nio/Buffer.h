@@ -1,11 +1,9 @@
 #ifndef __ELASTOS_IO_BUFFER_H__
 #define __ELASTOS_IO_BUFFER_H__
 
-#include <elastos/core/Object.h>
-#include "MemoryBlock.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-
+using Elastos::Core::IArrayOf;
 
 namespace Elastos {
 namespace IO {
@@ -47,6 +45,8 @@ class Buffer
 public:
     CAR_INTERFACE_DECL()
 
+    virtual CARAPI GetArray(
+        /* [out] */ IArrayOf** array) = 0;
     /**
      * Returns the offset into the array returned by {@code array} of the first
      * element of the buffer (optional operation). The backing array (if there is one)

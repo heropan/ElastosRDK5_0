@@ -11,25 +11,20 @@ namespace IO {
 
 CharArrayBuffer::CharArrayBuffer(
     /* [in] */ ArrayOf<Char32>* array)
-    : CharBuffer(array->GetLength())
+    : CharBuffer(array->GetLength(), 0)
     , mBackingArray(array)
-    , mOffset(0)
-{}
-
-CharArrayBuffer::CharArrayBuffer(
-    /* [in] */ Int32 capacity)
-    : CharBuffer(capacity)
-    , mBackingArray(ArrayOf<Char32>::Alloc(capacity))
     , mOffset(0)
 {}
 
 CharArrayBuffer::CharArrayBuffer(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Char32>* backingArray,
-    /* [in] */ Int32 offset)
-    : CharBuffer(capacity)
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean isReadOnly)
+    : CharBuffer(capacity, 0)
     , mBackingArray(backingArray)
     , mOffset(0)
+    , mIsReadOnly(isReadOnly)
 {}
 
 ECode CharArrayBuffer::Get(
@@ -122,6 +117,69 @@ ECode CharArrayBuffer::ToString(
     }
 
     return sb.ToString(str);
+}
+
+ECode CharArrayBuffer::IsReadOnly(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    *value = mIsReadOnly;
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::AsReadOnlyBuffer(
+    /* [out] */ ICharBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::Compact()
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::Duplicate(
+    /* [out] */ ICharBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::Put(
+    /* [in] */ Char32 c)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::Put(
+    /* [in] */ Int32 index,
+    /* [in] */ Char32 c)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::Slice(
+    /* [out] */ ICharBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::ProtectedArray(
+    /* [out, callee] */ ArrayOf<Char32>** array)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::ProtectedArrayOffset(
+    /* [out] */ Int32* offset)
+{
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::ProtectedHasArray(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
 }
 
 } // namespace IO

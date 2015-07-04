@@ -2,10 +2,16 @@
 #include "CharBuffer.h"
 #include "Math.h"
 #include "StringBuilder.h"
-#include <CharSequenceAdapter.h>
-#include <ReadWriteCharArrayBuffer.h>
+#include "CharSequenceAdapter.h"
+#include "Arrays.h"
+#include "CharArrayBuffer.h"
+#include "CoreUtils.h"
+#include "CArrayOf.h"
 
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -26,9 +32,9 @@ ECode CharBuffer::Allocate(
         // throw new IllegalArgumentException("capacity < 0: " + capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    assert(0 && "TODO");
-    // *buf = (ICharBuffer*)new ReadWriteCharArrayBuffer(capacity);
+    AutoPtr< ArrayOf<Char32> > outchar = ArrayOf<Char32>::Alloc(capacity);
+    AutoPtr<CharArrayBuffer> res = new CharArrayBuffer(outchar);
+    *buf = (ICharBuffer*) res->Probe(EIID_ICharBuffer);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -48,17 +54,12 @@ ECode CharBuffer::Wrap(
 {
     VALIDATE_NOT_NULL(buf);
 
-    Int32 arrayLength = array->GetLength();
-    if ((start | charCount) < 0 || start > arrayLength || arrayLength - start < charCount) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    assert(0 && "TODO");
-    AutoPtr<ReadWriteCharArrayBuffer> buffer; // = new ReadWriteCharArrayBuffer(array);
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, charCount));
+
+    AutoPtr<CharArrayBuffer> buffer = new CharArrayBuffer(array);
     buffer->mPosition = start;
     buffer->mLimit = start + charCount;
-    *buf = (ICharBuffer*)buffer.Get();
+    *buf = (ICharBuffer*)buffer->Probe(EIID_ICharBuffer);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -102,9 +103,27 @@ CharBuffer::CharBuffer()
 {}
 
 CharBuffer::CharBuffer(
-    /* [in] */ Int32 capacity)
-    : Buffer(1, capacity, NULL)
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(1, capacity, effectiveDirectAddress)
 {}
+
+ECode CharBuffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Char32> > res;
+    GetArray((ArrayOf<Char32>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (int i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::ConvertChar32((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
+}
 
 ECode CharBuffer::GetArray(
     /* [out, callee] */ ArrayOf<Char32>** array)
@@ -266,13 +285,13 @@ ECode CharBuffer::Put(
     return Put(contents);
 }
 
-ECode CharBuffer::PutString(
+ECode CharBuffer::Put(
     /* [in] */ const String& str)
 {
-    return PutString(str, 0, str.GetLength());
+    return Put(str, 0, str.GetLength());
 }
 
-ECode CharBuffer::PutString(
+ECode CharBuffer::Put(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
@@ -322,9 +341,9 @@ ECode CharBuffer::Append(
     if (csq != NULL) {
         String str;
         csq->ToString(&str);
-        return PutString(str);
+        return Put(str);
     }
-    return PutString(String("null"));
+    return Put(String("null"));
 }
 
 ECode CharBuffer::Append(
@@ -343,7 +362,7 @@ ECode CharBuffer::Append(
     if (len > 0) {
         String str;
         cs->ToString(&str);
-        return PutString(str);
+        return Put(str);
     }
     return NOERROR;
 }

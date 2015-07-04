@@ -323,7 +323,7 @@ Int64 MemoryBlock::PeekInt64(
     // return Memory::PeekInt64(mAddress + offset, isflag);
 }
 
-Int32 MemoryBlock::ToInt32()
+Int64 MemoryBlock::ToInt64()
 {
     return mAddress;
 }

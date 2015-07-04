@@ -29,7 +29,8 @@ public:
     Int64Buffer();
 
     Int64Buffer(
-        /* [in] */ Int32 capacity);
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 
     CAR_INTERFACE_DECL()
 
@@ -83,6 +84,9 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 int64Count,
         /* [out] */ IInt64Buffer** buf);
+
+    CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
 
     CARAPI GetArray(
         /* [out, callee] */ ArrayOf<Int64>** array);

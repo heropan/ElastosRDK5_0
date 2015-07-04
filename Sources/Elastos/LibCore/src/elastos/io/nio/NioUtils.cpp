@@ -3,7 +3,7 @@
 #include "DirectByteBuffer.h"
 #include "MappedByteBuffer.h"
 #include "FileChannelImpl.h"
-#include "CByteArrayBuffer.h"
+#include "ByteArrayBuffer.h"
 
 namespace Elastos {
 namespace IO {
@@ -38,13 +38,13 @@ AutoPtr<IFileChannel> NioUtils::NewFileChannel(
 AutoPtr<ArrayOf<Byte> > NioUtils::GetUnsafeArray(
     /* [in] */ IByteBuffer* b)
 {
-    return ((CByteArrayBuffer*)b)->mBackingArray;
+    return ((ByteArrayBuffer*)b)->mBackingArray;
 }
 
 Int32 NioUtils::GetUnsafeArrayOffset(
     /* [in] */ IByteBuffer* b)
 {
-    return ((CByteArrayBuffer*)b)->mArrayOffset;
+    return ((ByteArrayBuffer*)b)->mArrayOffset;
 }
 
 } // namespace IO

@@ -7,25 +7,21 @@ namespace IO {
 
 Int64ArrayBuffer::Int64ArrayBuffer(
     /* [in] */ ArrayOf<Int64>* array)
-    : Int64Buffer(array->GetLength())
+    : Int64Buffer(array->GetLength(), 0)
     , mBackingArray(array)
     , mOffset(0)
-{}
-
-Int64ArrayBuffer::Int64ArrayBuffer(
-    /* [in] */ Int32 capacity)
-    : Int64Buffer(capacity)
-    , mBackingArray(ArrayOf<Int64>::Alloc(capacity))
-    , mOffset(0)
+    , mIsReadOnly(FALSE)
 {}
 
 Int64ArrayBuffer::Int64ArrayBuffer(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Int64>* backingArray,
-    /* [in] */ Int32 offset)
-    : Int64Buffer(capacity)
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean isReadOnly)
+    : Int64Buffer(capacity, 0)
     , mBackingArray(backingArray)
     , mOffset(offset)
+    , mIsReadOnly(isReadOnly)
 {}
 
 ECode Int64ArrayBuffer::GetInt64(
