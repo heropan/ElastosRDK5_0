@@ -29,7 +29,8 @@ const DateTypeDesc g_cDataTypeList[] = {
    {"Interface",     sizeof(IInterface *),},
 };
 
-CarDataType GetCarDataType(CARDataType type)
+CarDataType GetCarDataType(
+    /* [in] */ CARDataType type)
 {
     CarDataType dataType;
     switch (type) {
@@ -53,9 +54,6 @@ CarDataType GetCarDataType(CARDataType type)
             break;
         case Type_Double:
             dataType = CarDataType_Double;
-            break;
-        case Type_Char16:
-            dataType = CarDataType_Char16;
             break;
         case Type_Char32:
             dataType = CarDataType_Char32;
@@ -105,149 +103,154 @@ CarDataType GetCarDataType(CARDataType type)
     return dataType;
 }
 
-Boolean IsSysAlaisType(const CClsModule *pCClsModule, UInt32 uIndex)
+Boolean IsSysAlaisType(
+    /* [in] */ const CClsModule* clsModule,
+    /* [in] */ UInt32 index)
 {
-    Int32 nBase = pCClsModule->mBase;
-    CLSModule *pModule = pCClsModule->mClsMod;
-    AliasDirEntry* pAliasDir = getAliasDirAddr(nBase, pModule->ppAliasDir, uIndex);
-    char* pszNameSpace = adjustNameAddr(nBase, pAliasDir->pszNameSpace);
-    return (pszNameSpace) && !strcmp(pszNameSpace, "systypes");
+    Int32 base = clsModule->mBase;
+    CLSModule* module = clsModule->mClsMod;
+    AliasDirEntry* aliasDir = getAliasDirAddr(base, module->ppAliasDir, index);
+    char* nameSpace = adjustNameAddr(base, aliasDir->pszNameSpace);
+    return (nameSpace) && !strcmp(nameSpace, "systypes");
 }
 
-void _GetOriginalType(const CClsModule *pCClsModule,
-    const TypeDescriptor *pSrc, TypeDescriptor *pDest)
+void _GetOriginalType(
+    /* [in] */ const CClsModule* clsModule,
+    /* [in] */ const TypeDescriptor* src,
+    /* [in] */ TypeDescriptor* dest)
 {
-    pDest->nPointer = pSrc->nPointer;
-    pDest->bUnsigned = pSrc->bUnsigned;
+    dest->nPointer = src->nPointer;
+    dest->bUnsigned = src->bUnsigned;
 
-    AliasDirEntry* pAliasDir = NULL;
-    while (pSrc->type == Type_alias) {
-        pAliasDir = getAliasDirAddr(pCClsModule->mBase,
-            pCClsModule->mClsMod->ppAliasDir, pSrc->sIndex);
-        pSrc = &pAliasDir->type;
-        pDest->nPointer += pSrc->nPointer;
-        pDest->bUnsigned |= pSrc->bUnsigned;
+    AliasDirEntry* aliasDir = NULL;
+    while (src->type == Type_alias) {
+        aliasDir = getAliasDirAddr(clsModule->mBase,
+                clsModule->mClsMod->ppAliasDir, src->sIndex);
+        src = &aliasDir->type;
+        dest->nPointer += src->nPointer;
+        dest->bUnsigned |= src->bUnsigned;
     }
 
-    pDest->type = pSrc->type;
-    pDest->sIndex = pSrc->sIndex;
-    pDest->pNestedType = pSrc->pNestedType;
+    dest->type = src->type;
+    dest->sIndex = src->sIndex;
+    dest->pNestedType = src->pNestedType;
 }
 
-UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
+UInt32 GetDataTypeSize(
+    /* [in] */ const CClsModule* clsModule,
+    /* [in] */ TypeDescriptor* typeDesc)
 {
-    UInt32 uSize = 0;
+    UInt32 size = 0;
 
-    CLSModule *pModule = pCClsModule->mClsMod;
-    if (pTypeDesc->type == Type_alias) {
-        TypeDescriptor pOrgTypeDesc;
-        _GetOriginalType(pCClsModule, pTypeDesc, &pOrgTypeDesc);
-        pTypeDesc = &pOrgTypeDesc;
+    CLSModule* module = clsModule->mClsMod;
+    if (typeDesc->type == Type_alias) {
+        TypeDescriptor orgTypeDesc;
+        _GetOriginalType(clsModule, typeDesc, &orgTypeDesc);
+        typeDesc = &orgTypeDesc;
     }
 
-    if (pTypeDesc->nPointer) {
+    if (typeDesc->nPointer) {
         return sizeof(void *);
     }
 
-    ArrayDirEntry* pArrayDir = NULL;
-    StructDirEntry* pStructDir = NULL;
-    Int32 nBase = pCClsModule->mBase;
-    switch (pTypeDesc->type) {
+    ArrayDirEntry* arrayDir = NULL;
+    StructDirEntry* structDir = NULL;
+    Int32 base = clsModule->mBase;
+    switch (typeDesc->type) {
         case Type_Char16:
-            uSize = sizeof(Char16);
+            size = sizeof(Char16);
             break;
         case Type_Char32:
-            uSize = sizeof(Char32);
+            size = sizeof(Char32);
             break;
         case Type_Int8:
-            uSize = sizeof(Int8);
+            size = sizeof(Int8);
             break;
         case Type_Int16:
-            uSize = sizeof(Int16);
+            size = sizeof(Int16);
             break;
         case Type_Int32:
-            uSize = sizeof(Int32);
+            size = sizeof(Int32);
             break;
         case Type_Int64:
-            uSize = sizeof(Int64);
+            size = sizeof(Int64);
             break;
         case Type_UInt16:
-            uSize = sizeof(UInt16);
+            size = sizeof(UInt16);
             break;
         case Type_UInt32:
-            uSize = sizeof(UInt32);
+            size = sizeof(UInt32);
             break;
         case Type_UInt64:
-            uSize = sizeof(UInt64);
+            size = sizeof(UInt64);
             break;
         case Type_Byte:
-            uSize = sizeof(Byte);
+            size = sizeof(Byte);
             break;
         case Type_Boolean:
-            uSize = sizeof(Boolean);
+            size = sizeof(Boolean);
             break;
         case Type_EMuid:
-            uSize = sizeof(EMuid);
+            size = sizeof(EMuid);
             break;
         case Type_Float:
-            uSize = sizeof(float);
+            size = sizeof(float);
             break;
         case Type_Double:
-            uSize = sizeof(double);
+            size = sizeof(double);
             break;
         case Type_PVoid:
-            uSize = 4;
+            size = 4;
             break;
         case Type_ECode:
-            uSize = sizeof(ECode);
+            size = sizeof(ECode);
             break;
         case Type_EGuid:
-            uSize = sizeof(ClassID);
+            size = sizeof(ClassID);
             break;
         case Type_EventHandler:
-            uSize = sizeof(EventHandler);
+            size = sizeof(EventHandler);
             break;
         case Type_String:
             // [in] String (in car) --> /* [in] */ const String& (in c++), so should be sizeof(String*)
-            uSize = sizeof(String*);
+            size = sizeof(String*);
             break;
         case Type_interface:
-            uSize = sizeof(PInterface);
+            size = sizeof(PInterface);
             break;
         case Type_struct:
-            pStructDir = getStructDirAddr(nBase,
-                            pModule->ppStructDir, pTypeDesc->sIndex);
-            uSize = adjustStructDescAddr(nBase, pStructDir->pDesc)->nAlignSize;
+            structDir = getStructDirAddr(base,
+                    module->ppStructDir, typeDesc->sIndex);
+            size = adjustStructDescAddr(base, structDir->pDesc)->nAlignSize;
             break;
         case Type_Array:
-            pArrayDir = getArrayDirAddr(nBase,
-                            pModule->ppArrayDir, pTypeDesc->sIndex);
-            uSize = GetDataTypeSize(pCClsModule, &pArrayDir->type)
-                            * pArrayDir->nElements;
+            arrayDir = getArrayDirAddr(base,
+                    module->ppArrayDir, typeDesc->sIndex);
+            size = GetDataTypeSize(clsModule, &arrayDir->type) * arrayDir->nElements;
             break;
         case Type_enum:
-            uSize = sizeof(int);
+            size = sizeof(int);
             break;
         case Type_ArrayOf:
-            uSize = GetDataTypeSize(pCClsModule,
-                            adjustNestedTypeAddr(nBase, pTypeDesc->pNestedType));
+            size = GetDataTypeSize(clsModule,
+                    adjustNestedTypeAddr(base, typeDesc->pNestedType));
             break;
 //        case Type_EzEnum:
-//            uSize = sizeof(EzEnum);
+//            size = sizeof(EzEnum);
 //            break;
         case Type_alias:
         case Type_const:
         default:
-            uSize = 0;
+            size = 0;
     }
 
-    return uSize;
+    return size;
 }
 
-//CARDataType GetBasicType(TypeDescriptor *pTypeDesc)
+//CARDataType GetBasicType(TypeDescriptor *typeDesc)
 //{
 //    CARDataType type;
-//    switch (pTypeDesc->type) {
+//    switch (typeDesc->type) {
 //        case Type_Int16Array_:
 //            type = Type_Int16;
 //            break;
@@ -291,17 +294,18 @@ UInt32 GetDataTypeSize(const CClsModule *pCClsModule, TypeDescriptor *pTypeDesc)
 //            type = Type_ECode;
 //            break;
 //        case Type_ArrayOf:
-//            type = GetBasicType(pTypeDesc->pNestedType);
+//            type = GetBasicType(typeDesc->pNestedType);
 //            break;
 //        default:
-//            type = pTypeDesc->type;
+//            type = typeDesc->type;
 //            break;
 //   }
 //
 //   return type;
 //}
 
-CarQuintetFlag DataTypeToFlag(CarDataType type)
+CarQuintetFlag DataTypeToFlag(
+    /* [in] */ CarDataType type)
 {
     CarQuintetFlag flag;
     switch (type) {
@@ -325,9 +329,6 @@ CarQuintetFlag DataTypeToFlag(CarDataType type)
             break;
         case CarDataType_Double:
             flag = CarQuintetFlag_Type_Double;
-            break;
-        case CarDataType_Char16:
-            flag = CarQuintetFlag_Type_Char16;
             break;
         case CarDataType_Char32:
             flag = CarQuintetFlag_Type_Char32;

@@ -15,9 +15,9 @@ class CVariableOfCarArray
 {
 public:
     CVariableOfCarArray(
-        /* [in] */ ICarArrayInfo *pTypeInfo,
-        /* [in] */ PCarQuintet pVarPtr,
-        /* [in] */ Boolean bAlloc);
+        /* [in] */ ICarArrayInfo* typeInfo,
+        /* [in] */ PCarQuintet varPtr,
+        /* [in] */ Boolean isAlloc);
 
     virtual ~CVariableOfCarArray();
 
@@ -29,23 +29,23 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetTypeInfo(
-        /* [out] */ IDataTypeInfo ** ppTypeInfo);
+        /* [out] */ IDataTypeInfo** typeInfo);
 
     CARAPI GetPayload(
-        /* [out] */ PVoid * pPayload);
+        /* [out] */ PVoid* payload);
 
     CARAPI Rebox(
         /* [in] */ PVoid localVariablePtr);
 
     CARAPI GetSetter(
-        /* [out] */ ICarArraySetter ** ppSetter);
+        /* [out] */ ICarArraySetter** setter);
 
     CARAPI GetGetter(
-        /* [out] */ ICarArrayGetter ** ppGetter);
+        /* [out] */ ICarArrayGetter** getter);
 
     CARAPI SetUsed(
         /* [in] */ Int32 used);
@@ -78,11 +78,7 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Int32 value);
 
-    CARAPI SetChar16Element(
-        /* [in] */ Int32 index,
-        /* [in] */ Char16 value);
-
-    CARAPI SetChar32Element(
+    CARAPI SetCharElement(
         /* [in] */ Int32 index,
         /* [in] */ Char32 value);
 
@@ -96,11 +92,11 @@ public:
 
     CARAPI SetEMuidElement(
         /* [in] */ Int32 index,
-        /* [in] */ EMuid * pValue);
+        /* [in] */ EMuid* value);
 
     CARAPI SetEGuidElement(
         /* [in] */ Int32 index,
-        /* [in] */ EGuid * pValue);
+        /* [in] */ EGuid* value);
 
     CARAPI SetECodeElement(
         /* [in] */ Int32 index,
@@ -116,72 +112,68 @@ public:
 
     CARAPI GetStructElementSetter(
         /* [in] */ Int32 index,
-        /* [out] */ IStructSetter ** ppSetter);
+        /* [out] */ IStructSetter** setter);
 
     CARAPI GetCapacity(
-        /* [out] */ Int32 *pCapacity);
+        /* [out] */ Int32* capacity);
 
     CARAPI GetUsed(
-        /* [out] */ Int32 *pUsed);
+        /* [out] */ Int32* used);
 
     CARAPI IsEmpty(
-        /* [out] */ Boolean *pIsEmpty);
+        /* [out] */ Boolean* isEmpty);
 
     CARAPI GetInt16Element(
         /* [in] */ Int32 index,
-        /* [out] */ Int16 * pValue);
+        /* [out] */ Int16* value);
 
     CARAPI GetInt32Element(
         /* [in] */ Int32 index,
-        /* [out] */ Int32 * pValue);
+        /* [out] */ Int32* value);
 
     CARAPI GetInt64Element(
         /* [in] */ Int32 index,
-        /* [out] */ Int64 * pValue);
+        /* [out] */ Int64* value);
 
     CARAPI GetByteElement(
         /* [in] */ Int32 index,
-        /* [out] */ Byte * pValue);
+        /* [out] */ Byte* value);
 
     CARAPI GetFloatElement(
         /* [in] */ Int32 index,
-        /* [out] */ Float * pValue);
+        /* [out] */ Float* value);
 
     CARAPI GetDoubleElement(
         /* [in] */ Int32 index,
-        /* [out] */ Double * pValue);
+        /* [out] */ Double* value);
 
     CARAPI GetEnumElement(
         /* [in] */ Int32 index,
-        /* [out] */ Int32* pValue);
+        /* [out] */ Int32* value);
 
-    CARAPI GetChar16Element(
+    CARAPI GetCharElement(
         /* [in] */ Int32 index,
-        /* [out] */ Char16 * pValue);
-
-    CARAPI GetChar32Element(
-        /* [in] */ Int32 index,
-        /* [out] */ Char32 * pValue);
+        /* [out] */ Char32* value);
 
     CARAPI GetStringElement(
         /* [in] */ Int32 index,
-        /* [out] */ String* pValue);
+        /* [out] */ String* value);
 
     CARAPI GetBooleanElement(
         /* [in] */ Int32 index,
-        /* [out] */ Boolean * pValue);
+        /* [out] */ Boolean* value);
 
     CARAPI GetEMuidElement(
         /* [in] */ Int32 index,
-        /* [out] */ EMuid * pValue);
+        /* [out] */ EMuid* value);
 
     CARAPI GetEGuidElement(
         /* [in] */ Int32 index,
-        /* [out] */ EGuid * pValue);
+        /* [out] */ EGuid* value);
 
     CARAPI GetECodeElement(
         /* [in] */ Int32 index,
-        /* [out] */ ECode * pValue);
+        /* [out] */ ECode* value);
 
     CARAPI GetLocalTypeElement(
         /* [in] */ Int32 index,
@@ -189,30 +181,30 @@ public:
 
     CARAPI GetObjectPtrElement(
         /* [in] */ Int32 index,
-        /* [out] */ PInterface * pValue);
+        /* [out] */ PInterface* value);
 
     CARAPI GetStructElementGetter(
         /* [in] */ Int32 index,
-        /* [out] */ IStructGetter ** ppGetter);
+        /* [out] */ IStructGetter** getter);
 
     CARAPI SetElementValue(
         /* [in] */ Int32 index,
-        /* [in] */ void *pParam,
+        /* [in] */ void* param,
         /* [in] */ CarDataType type);
 
     CARAPI GetElementValue(
         /* [in] */ Int32 index,
-        /* [in] */ void *pParam,
+        /* [in] */ void* param,
         /* [in] */ CarDataType type);
 
 private:
-    AutoPtr<ICarArrayInfo> m_pCarArrayInfo;
-    PCarQuintet            m_pCq;
-    Boolean                m_bAlloc;
-    Int32                  m_iElementSize;
-    Int32                  m_iLength;
+    AutoPtr<ICarArrayInfo>  mCarArrayInfo;
+    PCarQuintet             mCq;
+    Boolean                 mIsAlloc;
+    Int32                   mElementSize;
+    Int32                   mLength;
 
-    CarDataType            m_dataType;
+    CarDataType             mDataType;
 };
 
 #endif // __CCARARRAYVARIABLE_H__

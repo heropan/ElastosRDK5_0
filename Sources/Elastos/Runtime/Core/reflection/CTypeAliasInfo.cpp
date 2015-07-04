@@ -6,11 +6,11 @@
 #include "CObjInfoList.h"
 
 CTypeAliasInfo::CTypeAliasInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ AliasDirEntry *pAliasDirEntry)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ AliasDirEntry* aliasDirEntry)
 {
-    m_pCClsModule = pCClsModule;
-    m_pAliasDirEntry = pAliasDirEntry;
+    mClsModule = clsModule;
+    mAliasDirEntry = aliasDirEntry;
 }
 
 UInt32 CTypeAliasInfo::AddRef()
@@ -21,15 +21,15 @@ UInt32 CTypeAliasInfo::AddRef()
 UInt32 CTypeAliasInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_TypeAliase);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        g_objInfoList.RemoveTypeAliasInfo(m_pAliasDirEntry);
+    if (0 == ref) {
+        g_objInfoList.RemoveTypeAliasInfo(mAliasDirEntry);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_TypeAliase);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CTypeAliasInfo::Probe(
@@ -47,54 +47,54 @@ PInterface CTypeAliasInfo::Probe(
 }
 
 ECode CTypeAliasInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CTypeAliasInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_pCClsModule->mBase, m_pAliasDirEntry->pszName);
+    *name = adjustNameAddr(mClsModule->mBase, mAliasDirEntry->pszName);
     return NOERROR;
 }
 
 ECode CTypeAliasInfo::GetTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppTypeInfo)
+    /* [out] */ IDataTypeInfo** typeInfo)
 {
-    return g_objInfoList.AcquireDataTypeInfo(m_pCClsModule,
-        &m_pAliasDirEntry->type, ppTypeInfo);
+    return g_objInfoList.AcquireDataTypeInfo(mClsModule,
+            &mAliasDirEntry->type, typeInfo);
 }
 
 ECode CTypeAliasInfo::GetModuleInfo(
-    /* [out] */ IModuleInfo ** ppModuleInfo)
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    return m_pCClsModule->GetModuleInfo(ppModuleInfo);
+    return mClsModule->GetModuleInfo(moduleInfo);
 }
 
 ECode CTypeAliasInfo::IsDummy(
-    /* [out] */ Boolean * pIsDummy)
+    /* [out] */ Boolean* isDummy)
 {
-    if (!pIsDummy) {
+    if (!isDummy) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pIsDummy = m_pAliasDirEntry->bDummyType;
+    *isDummy = mAliasDirEntry->bDummyType;
     return NOERROR;
 }
 
 ECode CTypeAliasInfo::GetPtrLevel(
-    /* [out] */ Int32 *pLevel)
+    /* [out] */ Int32* level)
 {
-    if (!pLevel) {
+    if (!level) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pLevel = m_pAliasDirEntry->type.nPointer;
+    *level = mAliasDirEntry->type.nPointer;
     return NOERROR;
 }

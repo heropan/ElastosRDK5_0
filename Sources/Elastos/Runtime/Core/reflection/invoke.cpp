@@ -8,20 +8,20 @@ extern "C" {
 
 #ifdef _mips
 __declspec(naked)
-int invoke(void* pFunc, int *pParam, int nSize)
+int invoke(void* func, int* param, int size)
 {
     ASM("break 0;");
 }
 #elif _MSC_VER
 __declspec(naked)
-int invoke(void* pFunc, int *pParam, int nSize)
+int invoke(void* func, int* param, int size)
 {
     __asm {
         push    ebp
         mov     ebp, esp
 
-        mov     ecx, nSize
-        mov     eax, pParam
+        mov     ecx, size
+        mov     eax, param
         add     eax, ecx
         sub     eax, 4
 push_param:
@@ -35,7 +35,7 @@ push_param:
         jmp     push_param
 
 do_call:
-        mov     ecx, pFunc              // function pointer
+        mov     ecx, func              // function pointer
         call    ecx
 
         mov     esp, ebp
@@ -44,7 +44,7 @@ do_call:
     }
 }
 #else // __GNUC__
-int invoke(void* pFunc, int *pParam, int nSize)
+int invoke(void* func, int* param, int size)
 {
     int rval;
     __asm__ (
@@ -66,9 +66,9 @@ int invoke(void* pFunc, int *pParam, int nSize)
         "movl   %%ebp, %%esp\n"
         "movl   %%eax, %0"
         : "=r" (rval)
-        : "m" (pFunc)
-        , "m" (pParam)
-        , "d" (nSize)
+        : "m" (func)
+        , "m" (param)
+        , "d" (size)
         : "eax"
         , "ecx"
     );

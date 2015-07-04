@@ -7,145 +7,192 @@
 
 _ELASTOS_NAMESPACE_USING
 
-inline ClassDirEntry* getClassDirAddr(Int32 nBase,
-                            ClassDirEntry** ppDir, Int32 index)
+inline ClassDirEntry* getClassDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ClassDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (ClassDirEntry**)((Int32)ppDir + nBase);
-    return (ClassDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (ClassDirEntry**)((Int32)dir + base);
+    return (ClassDirEntry*)((Int32)dir[index] + base);
 }
 
-inline InterfaceDirEntry* getInterfaceDirAddr(Int32 nBase,
-                            InterfaceDirEntry** ppDir, Int32 index)
+inline InterfaceDirEntry* getInterfaceDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ InterfaceDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (InterfaceDirEntry**)((Int32)ppDir + nBase);
-    return (InterfaceDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (InterfaceDirEntry**)((Int32)dir + base);
+    return (InterfaceDirEntry*)((Int32)dir[index] + base);
 }
 
-inline StructDirEntry* getStructDirAddr(Int32 nBase,
-                            StructDirEntry** ppDir, Int32 index)
+inline StructDirEntry* getStructDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ StructDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (StructDirEntry**)((Int32)ppDir + nBase);
-    return (StructDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (StructDirEntry**)((Int32)dir + base);
+    return (StructDirEntry*)((Int32)dir[index] + base);
 }
 
-inline EnumDirEntry* getEnumDirAddr(Int32 nBase,
-                            EnumDirEntry** ppDir, Int32 index)
+inline EnumDirEntry* getEnumDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ EnumDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (EnumDirEntry**)((Int32)ppDir + nBase);
-    return (EnumDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (EnumDirEntry**)((Int32)dir + base);
+    return (EnumDirEntry*)((Int32)dir[index] + base);
 }
 
-inline AliasDirEntry* getAliasDirAddr(Int32 nBase,
-                            AliasDirEntry** ppDir, Int32 index)
+inline AliasDirEntry* getAliasDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ AliasDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (AliasDirEntry**)((Int32)ppDir + nBase);
-    return (AliasDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (AliasDirEntry**)((Int32)dir + base);
+    return (AliasDirEntry*)((Int32)dir[index] + base);
 }
 
-inline ArrayDirEntry* getArrayDirAddr(Int32 nBase,
-                            ArrayDirEntry** ppDir, Int32 index)
+inline ArrayDirEntry* getArrayDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ArrayDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (ArrayDirEntry**)((Int32)ppDir + nBase);
-    return (ArrayDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (ArrayDirEntry**)((Int32)dir + base);
+    return (ArrayDirEntry*)((Int32)dir[index] + base);
 }
 
-inline ConstDirEntry* getConstDirAddr(Int32 nBase,
-                            ConstDirEntry** ppDir, Int32 index)
+inline ConstDirEntry* getConstDirAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ConstDirEntry** dir,
+    /* [in] */ Int32 index)
 {
-    ppDir = (ConstDirEntry**)((Int32)ppDir + nBase);
-    return (ConstDirEntry*)((Int32)ppDir[index] + nBase);
+    dir = (ConstDirEntry**)((Int32)dir + base);
+    return (ConstDirEntry*)((Int32)dir[index] + base);
 }
 
-inline MethodDescriptor* getMethodDescAddr(Int32 nBase,
-                            MethodDescriptor** ppDesc, Int32 index)
+inline MethodDescriptor* getMethodDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ MethodDescriptor** desc,
+    /* [in] */ Int32 index)
 {
-    ppDesc = (MethodDescriptor**)((Int32)ppDesc + nBase);
-    return (MethodDescriptor*)((Int32)ppDesc[index] + nBase);
+    desc = (MethodDescriptor**)((Int32)desc + base);
+    return (MethodDescriptor*)((Int32)desc[index] + base);
 }
 
-inline ParamDescriptor* getParamDescAddr(Int32 nBase,
-                            ParamDescriptor** ppDesc, Int32 index)
+inline ParamDescriptor* getParamDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ParamDescriptor** desc,
+    /* [in] */ Int32 index)
 {
-    ppDesc = (ParamDescriptor**)((Int32)ppDesc + nBase);
-    return (ParamDescriptor*)((Int32)ppDesc[index] + nBase);
+    desc = (ParamDescriptor**)((Int32)desc + base);
+    return (ParamDescriptor*)((Int32)desc[index] + base);
 }
 
-inline StructElement* getStructElementAddr(Int32 nBase,
-                            StructElement** ppElement, Int32 index)
+inline StructElement* getStructElementAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ StructElement** element,
+    /* [in] */ Int32 index)
 {
-    ppElement = (StructElement**)((Int32)ppElement + nBase);
-    return (StructElement*)((Int32)ppElement[index] + nBase);
+    element = (StructElement**)((Int32)element + base);
+    return (StructElement*)((Int32)element[index] + base);
 }
 
-inline EnumElement* getEnumElementAddr(Int32 nBase,
-                            EnumElement** ppElement, Int32 index)
+inline EnumElement* getEnumElementAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ EnumElement** element,
+    /* [in] */ Int32 index)
 {
-    ppElement = (EnumElement**)((Int32)ppElement + nBase);
-    return (EnumElement*)((Int32)ppElement[index] + nBase);
+    element = (EnumElement**)((Int32)element + base);
+    return (EnumElement*)((Int32)element[index] + base);
 }
 
-inline ClassInterface* getCIFAddr(Int32 nBase,
-                            ClassInterface** ppInterface, Int32 index)
+inline ClassInterface* getCIFAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ClassInterface** clsInterface,
+    /* [in] */ Int32 index)
 {
-    ppInterface = (ClassInterface**)((Int32)ppInterface + nBase);
-    return (ClassInterface*)((Int32)ppInterface[index] + nBase);
+    clsInterface = (ClassInterface**)((Int32)clsInterface + base);
+    return (ClassInterface*)((Int32)clsInterface[index] + base);
 }
 
-inline char* getLibNameAddr(Int32 nBase, char** ppLibName, Int32 index)
+inline char* getLibNameAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ char** libName,
+    /* [in] */ Int32 index)
 {
-    ppLibName = (char**)((Int32)ppLibName + nBase);
-    return (char*)((Int32)ppLibName[index] + nBase);
+    libName = (char**)((Int32)libName + base);
+    return (char*)((Int32)libName[index] + base);
 }
 
-inline char* adjustNameAddr(Int32 nBase, char* pszName)
+inline char* adjustNameAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ char* name)
 {
-    return pszName ? pszName + nBase : pszName;
+    return name ? name + base : name;
 }
 
-inline USHORT* adjustIndexsAddr(Int32 nBase, USHORT* pIndexs)
+inline USHORT* adjustIndexsAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ USHORT* indexs)
 {
-    return pIndexs ? (USHORT*)((PByte)pIndexs + nBase) : pIndexs;
+    return indexs ? (USHORT*)((PByte)indexs + base) : indexs;
 }
 
-inline ClassDescriptor* adjustClassDescAddr(Int32 nBase, ClassDescriptor* pDesc)
+inline ClassDescriptor* adjustClassDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ClassDescriptor* desc)
 {
-    return pDesc ? (ClassDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (ClassDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline InterfaceDescriptor* adjustInterfaceDescAddr(Int32 nBase, InterfaceDescriptor* pDesc)
+inline InterfaceDescriptor* adjustInterfaceDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ InterfaceDescriptor* desc)
 {
-    return pDesc ? (InterfaceDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (InterfaceDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline MethodDescriptor* adjustMethodDescAddr(Int32 nBase, MethodDescriptor* pDesc)
+inline MethodDescriptor* adjustMethodDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ MethodDescriptor* desc)
 {
-    return pDesc ? (MethodDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (MethodDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline ParamDescriptor* adjustParamDescAddr(Int32 nBase, ParamDescriptor* pDesc)
+inline ParamDescriptor* adjustParamDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ ParamDescriptor* desc)
 {
-    return pDesc ? (ParamDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (ParamDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline StructDescriptor* adjustStructDescAddr(Int32 nBase, StructDescriptor* pDesc)
+inline StructDescriptor* adjustStructDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ StructDescriptor* desc)
 {
-    return pDesc ? (StructDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (StructDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline EnumDescriptor* adjustEnumDescAddr(Int32 nBase, EnumDescriptor* pDesc)
+inline EnumDescriptor* adjustEnumDescAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ EnumDescriptor* desc)
 {
-    return pDesc ? (EnumDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (EnumDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline TypeDescriptor* adjustTypeAddr(Int32 nBase, TypeDescriptor* pDesc)
+inline TypeDescriptor* adjustTypeAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ TypeDescriptor* desc)
 {
-    return pDesc ? (TypeDescriptor*)((PByte)pDesc + nBase) : pDesc;
+    return desc ? (TypeDescriptor*)((PByte)desc + base) : desc;
 }
 
-inline TypeDescriptor* adjustNestedTypeAddr(Int32 nBase, TypeDescriptor* pNestedType)
+inline TypeDescriptor* adjustNestedTypeAddr(
+    /* [in] */ Int32 base,
+    /* [in] */ TypeDescriptor* nestedType)
 {
-    return pNestedType ?
-                (TypeDescriptor*)((PByte)pNestedType + nBase) : pNestedType;
+    return nestedType ?
+            (TypeDescriptor*)((PByte)nestedType + base) : nestedType;
 }
 
 #endif // __AJUSTADD_H__

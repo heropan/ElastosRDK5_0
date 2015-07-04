@@ -52,7 +52,7 @@ ECode CIntrinsicInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *name = g_cDataTypeList[mDataType].name;
+    *name = g_cDataTypeList[mDataType].mName;
     return NOERROR;
 }
 

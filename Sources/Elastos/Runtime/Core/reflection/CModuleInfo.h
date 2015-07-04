@@ -13,7 +13,7 @@ class CModuleInfo
 {
 public:
     CModuleInfo(
-        /* [in] */ CClsModule * pCClsModule,
+        /* [in] */ CClsModule* clsModule,
         /* [in] */ const String& path);
 
     CARAPI_(PInterface) Probe(
@@ -24,83 +24,83 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetPath(
-        /* [out] */ String * pPath);
+        /* [out] */ String* path);
 
     CARAPI GetVersion(
-        /* [out] */ Int32 * pMajor,
-        /* [out] */ Int32 * pMinor,
-        /* [out] */ Int32 * pBuild,
-        /* [out] */ Int32 * pRevision);
+        /* [out] */ Int32* major,
+        /* [out] */ Int32* minor,
+        /* [out] */ Int32* build,
+        /* [out] */ Int32* revision);
 
     CARAPI GetClassCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllClassInfos(
-        /* [out] */ ArrayOf<IClassInfo *> * pClassInfos);
+        /* [out] */ ArrayOf<IClassInfo *>* classInfos);
 
     CARAPI GetClassInfo(
         /* [in] */ const String& fullName,
-        /* [out] */ IClassInfo ** ppClassInfo);
+        /* [out] */ IClassInfo** classInfo);
 
     CARAPI GetInterfaceCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllInterfaceInfos(
-        /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos);
+        /* [out] */ ArrayOf<IInterfaceInfo *>* interfaceInfos);
 
     CARAPI GetInterfaceInfo(
         /* [in] */ const String& fullName,
-        /* [out] */ IInterfaceInfo ** ppInterfaceInfo);
+        /* [out] */ IInterfaceInfo** interfaceInfo);
 
     CARAPI GetStructCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllStructInfos(
-        /* [out] */ ArrayOf<IStructInfo *> * pStructInfos);
+        /* [out] */ ArrayOf<IStructInfo *>* structInfos);
 
     CARAPI GetStructInfo(
         /* [in] */ const String& name,
-        /* [out] */ IStructInfo ** ppStructInfo);
+        /* [out] */ IStructInfo** structInfo);
 
     CARAPI GetEnumCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllEnumInfos(
-        /* [out] */ ArrayOf<IEnumInfo *> * pEnumInfos);
+        /* [out] */ ArrayOf<IEnumInfo *>* enumInfos);
 
     CARAPI GetEnumInfo(
         /* [in] */ const String& fullName,
-        /* [out] */ IEnumInfo ** ppEnumInfo);
+        /* [out] */ IEnumInfo** enumInfo);
 
     CARAPI GetTypeAliasCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllTypeAliasInfos(
-        /* [out] */ ArrayOf<ITypeAliasInfo *> * pTypeAliasInfos);
+        /* [out] */ ArrayOf<ITypeAliasInfo *>* typeAliasInfos);
 
     CARAPI GetTypeAliasInfo(
         /* [in] */ const String& name,
-        /* [out] */ ITypeAliasInfo ** ppTypeAliasInfo);
+        /* [out] */ ITypeAliasInfo** typeAliasInfo);
 
     CARAPI GetConstantCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllConstantInfos(
-        /* [out] */ ArrayOf<IConstantInfo *> * pConstantInfos);
+        /* [out] */ ArrayOf<IConstantInfo *>* constantInfos);
 
     CARAPI GetConstantInfo(
         /* [in] */ const String& name,
-        /* [out] */ IConstantInfo ** ppConstantInfo);
+        /* [out] */ IConstantInfo** constantInfo);
 
     CARAPI GetImportModuleInfoCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllImportModuleInfos(
-        /* [out] */ ArrayOf<IModuleInfo *> * pModuleInfos);
+        /* [out] */ ArrayOf<IModuleInfo *>* moduleInfos);
 
     CARAPI AcquireClassList();
 
@@ -115,21 +115,21 @@ public:
     CARAPI AcquireConstantList();
 
 public:
-    AutoPtr<CClsModule>  m_pCClsModule;
-    CLSModule           *m_pClsMod;
+    AutoPtr<CClsModule> mClsModule;
+    CLSModule*          mClsMod;
 
 private:
-    AutoPtr<CEntryList>  m_pClassList;
-    AutoPtr<CEntryList>  m_pInterfaceList;
-    AutoPtr<CEntryList>  m_pStructList;
-    AutoPtr<CEntryList>  m_pEnumList;
-    AutoPtr<CEntryList>  m_pAliasList;
-    AutoPtr<CEntryList>  m_pConstantList;
+    AutoPtr<CEntryList> mClassList;
+    AutoPtr<CEntryList> mInterfaceList;
+    AutoPtr<CEntryList> mStructList;
+    AutoPtr<CEntryList> mEnumList;
+    AutoPtr<CEntryList> mAliasList;
+    AutoPtr<CEntryList> mConstantList;
 
-    String               m_sbPath;
-    Int32                m_iAliasCount;
+    String              mPath;
+    Int32               mAliasCount;
 
-    CRITICAL_SECTION     m_lockList;
+    CRITICAL_SECTION    mLockList;
 };
 
 #endif // __CMODULEINFO_H__

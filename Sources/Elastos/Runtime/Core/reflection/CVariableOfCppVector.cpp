@@ -7,29 +7,29 @@
 #include "CObjInfoList.h"
 
 CVariableOfCppVector::CVariableOfCppVector(
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ IDataTypeInfo* elementTypeInfo,
     /* [in] */ Int32 length,
-    /* [in] */ PVoid pVarPtr)
+    /* [in] */ PVoid varPtr)
 {
-    m_pElementTypeInfo = pElementTypeInfo;
+    mElementTypeInfo = elementTypeInfo;
 
-    m_pVarPtr = pVarPtr;
-    m_iElementSize = 0;
-    m_iLength = length;
-    m_pElementTypeInfo->GetDataType(&m_dataType);
-    m_pElementTypeInfo->GetSize(&m_iElementSize);
-    m_pCppVectorSGetters = NULL;
+    mVarPtr = varPtr;
+    mElementSize = 0;
+    mLength = length;
+    mElementTypeInfo->GetDataType(&mDataType);
+    mElementTypeInfo->GetSize(&mElementSize);
+    mCppVectorSGetters = NULL;
 
-    m_uSize = m_iLength * m_iElementSize;
+    mSize = mLength * mElementSize;
 }
 
 CVariableOfCppVector::~CVariableOfCppVector()
 {
-    if (m_pCppVectorSGetters) {
-        for (Int32 i = 0; i < m_iLength; i++) {
-            if (m_pCppVectorSGetters[i]) m_pCppVectorSGetters[i]->Release();
+    if (mCppVectorSGetters) {
+        for (Int32 i = 0; i < mLength; i++) {
+            if (mCppVectorSGetters[i]) mCppVectorSGetters[i]->Release();
         }
-        delete [] m_pCppVectorSGetters;
+        delete [] mCppVectorSGetters;
     }
 }
 
@@ -60,19 +60,19 @@ PInterface CVariableOfCppVector::Probe(
 }
 
 ECode CVariableOfCppVector::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CVariableOfCppVector::Init()
 {
-    m_pCppVectorSGetters = new PInterface[m_iLength];
-    if (!m_pCppVectorSGetters) {
+    mCppVectorSGetters = new PInterface[mLength];
+    if (!mCppVectorSGetters) {
         return E_OUT_OF_MEMORY;
     }
-    memset(m_pCppVectorSGetters, 0, m_iLength * sizeof(IInterface*));
+    memset(mCppVectorSGetters, 0, mLength * sizeof(IInterface*));
 
     return NOERROR;
 }
@@ -80,8 +80,8 @@ ECode CVariableOfCppVector::Init()
 
 ECode CVariableOfCppVector::ZeroAllElements()
 {
-    assert(m_pVarPtr);
-    memset(m_pVarPtr, 0, m_uSize);
+    assert(mVarPtr);
+    memset(mVarPtr, 0, mSize);
     return NOERROR;
 }
 
@@ -89,29 +89,29 @@ ECode CVariableOfCppVector::SetAllElements(
     /* [in] */ PVoid value,
     /* [in] */ MemorySize size)
 {
-    if (!value || size < (MemorySize)m_uSize) {
+    if (!value || size < (MemorySize)mSize) {
         return E_INVALID_ARGUMENT;
     }
 
-    assert(m_pVarPtr);
-    memcpy(m_pVarPtr, value, m_uSize);
+    assert(mVarPtr);
+    memcpy(mVarPtr, value, mSize);
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::SetElementValue(
     /* [in] */ Int32 index,
-    /* [in] */ void *pParam,
+    /* [in] */ void* param,
     /* [in] */ CarDataType type)
 {
-    if (index < 0 || index >= m_iLength || !pParam) {
+    if (index < 0 || index >= mLength || !param) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != type || !m_pVarPtr) {
+    if (mDataType != type || !mVarPtr) {
         return E_INVALID_OPERATION;
     }
 
-    memcpy((PByte)m_pVarPtr + m_iElementSize * index, pParam, m_iElementSize);
+    memcpy((PByte)mVarPtr + mElementSize * index, param, mElementSize);
 
     return NOERROR;
 }
@@ -158,14 +158,7 @@ ECode CVariableOfCppVector::SetDoubleElement(
     return SetElementValue(index, &value, CarDataType_Double);
 }
 
-ECode CVariableOfCppVector::SetChar16Element(
-    /* [in] */ Int32 index,
-    /* [in] */ Char16 value)
-{
-    return SetElementValue(index, &value, CarDataType_Char16);
-}
-
-ECode CVariableOfCppVector::SetChar32Element(
+ECode CVariableOfCppVector::SetCharElement(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -181,16 +174,16 @@ ECode CVariableOfCppVector::SetBooleanElement(
 
 ECode CVariableOfCppVector::SetEMuidElement(
     /* [in] */ Int32 index,
-    /* [in] */ EMuid * pValue)
+    /* [in] */ EMuid* value)
 {
-    return SetElementValue(index, (PVoid)pValue, CarDataType_EMuid);
+    return SetElementValue(index, (PVoid)value, CarDataType_EMuid);
 }
 
 ECode CVariableOfCppVector::SetEGuidElement(
     /* [in] */ Int32 index,
-    /* [in] */ EGuid * pValue)
+    /* [in] */ EGuid* value)
 {
-    return SetElementValue(index, (PVoid)pValue, CarDataType_EGuid);
+    return SetElementValue(index, (PVoid)value, CarDataType_EGuid);
 }
 
 ECode CVariableOfCppVector::SetECodeElement(
@@ -223,188 +216,181 @@ ECode CVariableOfCppVector::SetEnumElement(
 
 ECode CVariableOfCppVector::GetStructElementSetter(
     /* [in] */ Int32 index,
-    /* [out] */ IStructSetter ** ppSetter)
+    /* [out] */ IStructSetter** setter)
 {
-    if (index < 0 || index >= m_iLength || !ppSetter) {
+    if (index < 0 || index >= mLength || !setter) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != CarDataType_Struct || !m_pVarPtr) {
+    if (mDataType != CarDataType_Struct || !mVarPtr) {
         return E_INVALID_OPERATION;
     }
 
-    CStructInfo *pStructInfo = (CStructInfo *)m_pElementTypeInfo.Get();
+    CStructInfo* structInfo = (CStructInfo *)mElementTypeInfo.Get();
 
-    AutoPtr<IVariableOfStruct> pVariable;
-    ECode ec = pStructInfo->CreateVariableBox(
-        (PByte)m_pVarPtr + m_iElementSize * index, (IVariableOfStruct**)&pVariable);
+    AutoPtr<IVariableOfStruct> variable;
+    ECode ec = structInfo->CreateVariableBox(
+            (PByte)mVarPtr + mElementSize * index, (IVariableOfStruct**)&variable);
     if (FAILED(ec)) {
         return ec;
     }
 
-    return pVariable->GetSetter(ppSetter);
+    return variable->GetSetter(setter);
 }
 
 ECode CVariableOfCppVector::GetCppVectorElementSetter(
     /* [in] */ Int32 index,
-    /* [out] */ ICppVectorSetter ** ppSetter)
+    /* [out] */ ICppVectorSetter** setter)
 {
-    return AcquireCppVectorSGetter(index, TRUE, (IInterface**)ppSetter);
+    return AcquireCppVectorSGetter(index, TRUE, (IInterface**)setter);
 }
 
 //--------------Getter----------------------------------------------------------
 
 ECode CVariableOfCppVector::GetLength(
-    /* [out] */ Int32 *pLength)
+    /* [out] */ Int32* length)
 {
-    if (!pLength) {
+    if (!length) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pLength = m_iLength;
+    *length = mLength;
 
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::GetRank(
-    /* [out] */ Int32 *pRank)
+    /* [out] */ Int32* retRank)
 {
-    if (!pRank) {
+    if (!retRank) {
         return E_INVALID_ARGUMENT;
     }
 
     ECode ec = NOERROR;
     Int32 rank = 1;
-    CarDataType type = m_dataType;
-    AutoPtr<IDataTypeInfo> pElementTypeInfo;
-    AutoPtr<IDataTypeInfo> pPElementTypeInfo = m_pElementTypeInfo;
+    CarDataType type = mDataType;
+    AutoPtr<IDataTypeInfo> elementTypeInfo;
+    AutoPtr<IDataTypeInfo> elementTypeInfo2 = mElementTypeInfo;
 
     while (type == CarDataType_CppVector) {
         rank++;
-        pElementTypeInfo = NULL;
-        ec = ((ICppVectorInfo *)pPElementTypeInfo.Get())->GetElementTypeInfo(
-            (IDataTypeInfo **)&pElementTypeInfo);
+        elementTypeInfo = NULL;
+        ec = ((ICppVectorInfo *)elementTypeInfo2.Get())->GetElementTypeInfo(
+                (IDataTypeInfo **)&elementTypeInfo);
         if (FAILED(ec)) return ec;
 
-        ec = pElementTypeInfo->GetDataType(&type);
+        ec = elementTypeInfo->GetDataType(&type);
         if (FAILED(ec)) {
             return ec;
         }
-        pPElementTypeInfo = pElementTypeInfo;
+        elementTypeInfo2 = elementTypeInfo;
     }
 
-    *pRank = rank;
+    *retRank = rank;
 
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::GetElementValue(
     /* [in] */ Int32 index,
-    /* [in] */ void *pParam,
+    /* [in] */ void* param,
     /* [in] */ CarDataType type)
 {
-    if (index < 0 || index >= m_iLength || !pParam) {
+    if (index < 0 || index >= mLength || !param) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != type || !m_pVarPtr) {
+    if (mDataType != type || !mVarPtr) {
         return E_INVALID_OPERATION;
     }
 
-    memcpy(pParam, (PByte)m_pVarPtr + m_iElementSize * index, m_iElementSize);
+    memcpy(param, (PByte)mVarPtr + mElementSize * index, mElementSize);
 
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::GetInt16Element(
     /* [in] */ Int32 index,
-    /* [out] */ Int16 * pValue)
+    /* [out] */ Int16* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Int16);
+    return GetElementValue(index, value, CarDataType_Int16);
 }
 
 ECode CVariableOfCppVector::GetInt32Element(
     /* [in] */ Int32 index,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Int32);
+    return GetElementValue(index, value, CarDataType_Int32);
 }
 
 ECode CVariableOfCppVector::GetInt64Element(
     /* [in] */ Int32 index,
-    /* [out] */ Int64 * pValue)
+    /* [out] */ Int64* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Int64);
+    return GetElementValue(index, value, CarDataType_Int64);
 }
 
 ECode CVariableOfCppVector::GetByteElement(
     /* [in] */ Int32 index,
-    /* [out] */ Byte * pValue)
+    /* [out] */ Byte* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Byte);
+    return GetElementValue(index, value, CarDataType_Byte);
 }
 
 ECode CVariableOfCppVector::GetFloatElement(
     /* [in] */ Int32 index,
-    /* [out] */ Float * pValue)
+    /* [out] */ Float* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Float);
+    return GetElementValue(index, value, CarDataType_Float);
 }
 
 ECode CVariableOfCppVector::GetDoubleElement(
     /* [in] */ Int32 index,
-    /* [out] */ Double * pValue)
+    /* [out] */ Double* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Double);
+    return GetElementValue(index, value, CarDataType_Double);
 }
 
-ECode CVariableOfCppVector::GetChar16Element(
+ECode CVariableOfCppVector::GetCharElement(
     /* [in] */ Int32 index,
-    /* [out] */ Char16 * pValue)
+    /* [out] */ Char32* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Char16);
-}
-
-ECode CVariableOfCppVector::GetChar32Element(
-    /* [in] */ Int32 index,
-    /* [out] */ Char32 * pValue)
-{
-    return GetElementValue(index, pValue, CarDataType_Char32);
+    return GetElementValue(index, value, CarDataType_Char32);
 }
 
 ECode CVariableOfCppVector::GetBooleanElement(
     /* [in] */ Int32 index,
-    /* [out] */ Boolean * pValue)
+    /* [out] */ Boolean* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Boolean);
+    return GetElementValue(index, value, CarDataType_Boolean);
 }
 
 ECode CVariableOfCppVector::GetEMuidElement(
     /* [in] */ Int32 index,
-    /* [out] */ EMuid * pValue)
+    /* [out] */ EMuid* value)
 {
-    return GetElementValue(index, pValue, CarDataType_EMuid);
+    return GetElementValue(index, value, CarDataType_EMuid);
 }
 
 ECode CVariableOfCppVector::GetEGuidElement(
     /* [in] */ Int32 index,
-    /* [out] */ EGuid * pValue)
+    /* [out] */ EGuid* value)
 {
-    return GetElementValue(index, pValue, CarDataType_EGuid);
+    return GetElementValue(index, value, CarDataType_EGuid);
 }
 
 ECode CVariableOfCppVector::GetECodeElement(
     /* [in] */ Int32 index,
-    /* [out] */ ECode * pValue)
+    /* [out] */ ECode* value)
 {
-    return GetElementValue(index, pValue, CarDataType_ECode);
+    return GetElementValue(index, value, CarDataType_ECode);
 }
 
 ECode CVariableOfCppVector::GetLocalPtrElement(
     /* [in] */ Int32 index,
-    /* [out] */ LocalPtr * pValue)
+    /* [out] */ LocalPtr* value)
 {
-    return GetElementValue(index, pValue, CarDataType_LocalPtr);
+    return GetElementValue(index, value, CarDataType_LocalPtr);
 }
 
 ECode CVariableOfCppVector::GetLocalTypeElement(
@@ -416,135 +402,136 @@ ECode CVariableOfCppVector::GetLocalTypeElement(
 
 ECode CVariableOfCppVector::GetEnumElement(
     /* [in] */ Int32 index,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Enum);
+    return GetElementValue(index, value, CarDataType_Enum);
 }
 
 ECode CVariableOfCppVector::GetStructElementGetter(
     /* [in] */ Int32 index,
-    /* [out] */ IStructGetter ** ppGetter)
+    /* [out] */ IStructGetter** getter)
 {
-    if (index < 0 || index >= m_iLength || !ppGetter) {
+    if (index < 0 || index >= mLength || !getter) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != CarDataType_Struct || !m_pVarPtr) {
+    if (mDataType != CarDataType_Struct || !mVarPtr) {
         return E_INVALID_OPERATION;
     }
 
-    CStructInfo *pStructInfo = (CStructInfo *)m_pElementTypeInfo.Get();
+    CStructInfo* structInfo = (CStructInfo *)mElementTypeInfo.Get();
 
-    AutoPtr<IVariableOfStruct> pVariable;
-    ECode ec = pStructInfo->CreateVariableBox(
-        (PByte)m_pVarPtr + m_iElementSize * index, (IVariableOfStruct**)&pVariable);
+    AutoPtr<IVariableOfStruct> variable;
+    ECode ec = structInfo->CreateVariableBox(
+            (PByte)mVarPtr + mElementSize * index, (IVariableOfStruct**)&variable);
     if (FAILED(ec)) {
         return ec;
     }
 
-    return pVariable->GetGetter(ppGetter);
+    return variable->GetGetter(getter);
 }
 
 ECode CVariableOfCppVector::GetCppVectorElementGetter(
     /* [in] */ Int32 index,
-    /* [out] */ ICppVectorGetter ** ppGetter)
+    /* [out] */ ICppVectorGetter** getter)
 {
-    return AcquireCppVectorSGetter(index, FALSE, (IInterface**)ppGetter);
+    return AcquireCppVectorSGetter(index, FALSE, (IInterface**)getter);
 }
 
-ECode CVariableOfCppVector::Rebox(PVoid pVarPtr)
+ECode CVariableOfCppVector::Rebox(
+    /* [in] */ PVoid varPtr)
 {
-    if (!pVarPtr) {
+    if (!varPtr) {
         return E_INVALID_OPERATION;
     }
 
-    m_pVarPtr = pVarPtr;
+    mVarPtr = varPtr;
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::GetSetter(
-    /* [out] */ ICppVectorSetter ** ppSetter)
+    /* [out] */ ICppVectorSetter** setter)
 {
-    if (!ppSetter) {
+    if (!setter) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppSetter = (ICppVectorSetter *)this;
-    (*ppSetter)->AddRef();
+    *setter = (ICppVectorSetter *)this;
+    (*setter)->AddRef();
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::GetGetter(
-    /* [out] */ ICppVectorGetter ** ppGetter)
+    /* [out] */ ICppVectorGetter** getter)
 {
-    if (!ppGetter) {
+    if (!getter) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppGetter = (ICppVectorGetter *)this;
-    (*ppGetter)->AddRef();
+    *getter = (ICppVectorGetter *)this;
+    (*getter)->AddRef();
     return NOERROR;
 }
 
 ECode CVariableOfCppVector::AcquireCppVectorSGetter(
     /* [in] */ Int32 index,
-    /* [in] */ Boolean bSetter,
-    /* [out] */ IInterface ** ppSGetter)
+    /* [in] */ Boolean isSetter,
+    /* [out] */ IInterface** sGetter)
 {
-    if (index < 0 || index >= m_iLength || !ppSGetter) {
+    if (index < 0 || index >= mLength || !sGetter) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != CarDataType_CppVector || !m_pVarPtr) {
+    if (mDataType != CarDataType_CppVector || !mVarPtr) {
         return E_INVALID_OPERATION;
     }
 
-    assert(m_pCppVectorSGetters);
+    assert(mCppVectorSGetters);
 
     g_objInfoList.LockHashTable(EntryType_Struct);
 
-    if (!m_pCppVectorSGetters[index]) {
+    if (!mCppVectorSGetters[index]) {
         Int32 length = 0;
-        ECode ec = ((ICppVectorInfo *)m_pElementTypeInfo.Get())->GetLength(&length);
+        ECode ec = ((ICppVectorInfo *)mElementTypeInfo.Get())->GetLength(&length);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        AutoPtr<IDataTypeInfo> pElementTypeInfo;
-        ec = ((ICppVectorInfo *)m_pElementTypeInfo.Get())->GetElementTypeInfo(
-            (IDataTypeInfo **)&pElementTypeInfo);
+        AutoPtr<IDataTypeInfo> elementTypeInfo;
+        ec = ((ICppVectorInfo *)mElementTypeInfo.Get())->GetElementTypeInfo(
+                (IDataTypeInfo **)&elementTypeInfo);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        AutoPtr<CVariableOfCppVector> pSGetter = new CVariableOfCppVector(
-            pElementTypeInfo, length,
-            (PByte)m_pVarPtr  + m_iElementSize * index);
-        if (pSGetter == NULL) {
+        AutoPtr<CVariableOfCppVector> sGetterObj = new CVariableOfCppVector(
+                elementTypeInfo, length,
+                (PByte)mVarPtr  + mElementSize * index);
+        if (sGetterObj == NULL) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return E_OUT_OF_MEMORY;
         }
 
-        ec = pSGetter->Init();
+        ec = sGetterObj->Init();
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        if (bSetter) {
-            pSGetter->GetSetter(
-                (ICppVectorSetter**)&m_pCppVectorSGetters[index]);
+        if (isSetter) {
+            sGetterObj->GetSetter(
+                    (ICppVectorSetter**)&mCppVectorSGetters[index]);
         }
         else {
-            pSGetter->GetGetter(
-                (ICppVectorGetter**)&m_pCppVectorSGetters[index]);
+            sGetterObj->GetGetter(
+                    (ICppVectorGetter**)&mCppVectorSGetters[index]);
         }
     }
 
-    *ppSGetter = m_pCppVectorSGetters[index];
-    (*ppSGetter)->AddRef();
+    *sGetter = mCppVectorSGetters[index];
+    (*sGetter)->AddRef();
 
     g_objInfoList.UnlockHashTable(EntryType_Struct);
 

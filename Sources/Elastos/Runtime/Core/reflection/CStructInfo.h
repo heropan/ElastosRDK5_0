@@ -24,12 +24,12 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI InitStatic(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ StructDirEntry *pStructDirEntry);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ StructDirEntry* structDirEntry);
 
     CARAPI InitDynamic(
         /* [in] */ const String& name,
@@ -37,57 +37,57 @@ public:
         /* [in] */ ArrayOf<IDataTypeInfo*>* fieldTypeInfos);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetSize(
-        /* [out] */ MemorySize * pSize);
+        /* [out] */ MemorySize* size);
 
     CARAPI GetDataType(
-        /* [out] */ CarDataType * pDataType);
+        /* [out] */ CarDataType* dataType);
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI GetFieldCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllFieldInfos(
-        /* [out] */ ArrayOf<IFieldInfo *> * pFieldInfos);
+        /* [out] */ ArrayOf<IFieldInfo *>* fieldInfos);
 
     CARAPI GetFieldInfo(
         /* [in] */ const String& name,
-        /* [out] */ IFieldInfo ** ppFieldInfo);
+        /* [out] */ IFieldInfo** fieldInfo);
 
     CARAPI CreateVariable(
-        /* [out] */ IVariableOfStruct ** ppVariable);
+        /* [out] */ IVariableOfStruct** variable);
 
     CARAPI CreateVariableBox(
         /* [in] */ PVoid variableDescriptor,
-        /* [out] */ IVariableOfStruct ** ppVariable);
+        /* [out] */ IVariableOfStruct** variable);
 
     CARAPI InitFieldInfos();
 
     CARAPI InitFieldElement();
 
     CARAPI CreateVarBox(
-        /* [in] */ PVoid pVarPtr,
-        /* [out] */ IVariableOfStruct ** ppVariable);
+        /* [in] */ PVoid varPtr,
+        /* [out] */ IVariableOfStruct** variable);
 
     CARAPI GetMaxAlignSize(
-        /* [out] */ MemorySize * pAlignSize);
+        /* [out] */ MemorySize* alignSize);
 
 public:
-    AutoPtr< ArrayOf<String> >         m_pFieldNames;
-    AutoPtr< ArrayOf<IDataTypeInfo*> > m_pFieldTypeInfos;
-    StructFieldDesc                   *m_pStructFieldDesc;
-    UInt32                             m_uSize;
+    AutoPtr< ArrayOf<String> >          mFieldNames;
+    AutoPtr< ArrayOf<IDataTypeInfo*> >  mFieldTypeInfos;
+    StructFieldDesc*                    mStructFieldDesc;
+    UInt32                              mSize;
 
 private:
-    AutoPtr<CClsModule>                m_pCClsModule;
-    StructDirEntry                    *m_pStructDirEntry;
+    AutoPtr<CClsModule>                 mClsModule;
+    StructDirEntry*                     mStructDirEntry;
 
-    ArrayOf<IFieldInfo *>             *m_pFieldInfos;
-    String                             m_pName;
+    ArrayOf<IFieldInfo *>*              mFieldInfos;
+    String                              mName;
 };
 
 #endif // __CSTRUCTINFO_H__

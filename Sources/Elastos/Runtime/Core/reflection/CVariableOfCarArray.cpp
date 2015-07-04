@@ -7,30 +7,30 @@
 #include "CObjInfoList.h"
 
 CVariableOfCarArray::CVariableOfCarArray(
-    /* [in] */ ICarArrayInfo *pTypeInfo,
-    /* [in] */ PCarQuintet pCq,
-    /* [in] */ Boolean bAlloc)
+    /* [in] */ ICarArrayInfo* typeInfo,
+    /* [in] */ PCarQuintet cq,
+    /* [in] */ Boolean isAlloc)
 {
-    m_pCarArrayInfo = pTypeInfo;
+    mCarArrayInfo = typeInfo;
 
-    m_pCq = pCq;
-    m_bAlloc = bAlloc;
-    m_iElementSize = 0;
-    m_iLength = 0;
+    mCq = cq;
+    mIsAlloc = isAlloc;
+    mElementSize = 0;
+    mLength = 0;
 
-    AutoPtr<IDataTypeInfo> pElementTypeInfo;
-    m_pCarArrayInfo->GetElementTypeInfo((IDataTypeInfo**)&pElementTypeInfo);
-    assert(pElementTypeInfo);
-    pElementTypeInfo->GetDataType(&m_dataType);
-    pElementTypeInfo->GetSize(&m_iElementSize);
-    assert(m_iElementSize);
-    m_iLength = pCq->m_size / m_iElementSize;
+    AutoPtr<IDataTypeInfo> elementTypeInfo;
+    mCarArrayInfo->GetElementTypeInfo((IDataTypeInfo**)&elementTypeInfo);
+    assert(elementTypeInfo);
+    elementTypeInfo->GetDataType(&mDataType);
+    elementTypeInfo->GetSize(&mElementSize);
+    assert(mElementSize);
+    mLength = cq->m_size / mElementSize;
 }
 
 CVariableOfCarArray::~CVariableOfCarArray()
 {
-    if (m_bAlloc && m_pCq) {
-        free(m_pCq);
+    if (mIsAlloc && mCq) {
+        free(mCq);
     }
 }
 
@@ -65,75 +65,75 @@ PInterface CVariableOfCarArray::Probe(
 }
 
 ECode CVariableOfCarArray::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CVariableOfCarArray::GetTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppTypeInfo)
+    /* [out] */ IDataTypeInfo** typeInfo)
 {
-    if (!ppTypeInfo) {
+    if (!typeInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppTypeInfo = m_pCarArrayInfo;
-    REFCOUNT_ADD(*ppTypeInfo);
+    *typeInfo = mCarArrayInfo;
+    REFCOUNT_ADD(*typeInfo);
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::GetPayload(
-    /* [out] */ PVoid * pPayload)
+    /* [out] */ PVoid* payload)
 {
-    if (!pPayload) {
+    if (!payload) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pPayload = m_pCq;
+    *payload = mCq;
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::Rebox(
     /* [in] */ PVoid localVariablePtr)
 {
-    CarQuintetFlag flag = DataTypeToFlag(m_dataType);
-    PCarQuintet pCq = (PCarQuintet)localVariablePtr;
-    if (!pCq || !(pCq->m_flags & flag) || pCq->m_size < m_iElementSize) {
+    CarQuintetFlag flag = DataTypeToFlag(mDataType);
+    PCarQuintet cq = (PCarQuintet)localVariablePtr;
+    if (!cq || !(cq->m_flags & flag) || cq->m_size < mElementSize) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_bAlloc && m_pCq) {
-        free(m_pCq);
-        m_bAlloc = FALSE;
+    if (mIsAlloc && mCq) {
+        free(mCq);
+        mIsAlloc = FALSE;
     }
 
-    m_pCq = pCq;
+    mCq = cq;
 
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::GetSetter(
-    /* [out] */ ICarArraySetter ** ppSetter)
+    /* [out] */ ICarArraySetter** setter)
 {
-    if (!ppSetter) {
+    if (!setter) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppSetter = (ICarArraySetter *)this;
-    (*ppSetter)->AddRef();
+    *setter = (ICarArraySetter *)this;
+    (*setter)->AddRef();
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::GetGetter(
-    /* [out] */ ICarArrayGetter ** ppGetter)
+    /* [out] */ ICarArrayGetter** getter)
 {
-    if (!ppGetter) {
+    if (!getter) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppGetter = (ICarArrayGetter *)this;
-    (*ppGetter)->AddRef();
+    *getter = (ICarArrayGetter *)this;
+    (*getter)->AddRef();
     return NOERROR;
 }
 
@@ -142,35 +142,35 @@ ECode CVariableOfCarArray::GetGetter(
 ECode CVariableOfCarArray::SetUsed(
     /* [in] */ Int32 used)
 {
-    if (used < 0 || used > m_iLength) {
+    if (used < 0 || used > mLength) {
         return E_INVALID_ARGUMENT;
     }
 
-    m_pCq->m_used = used * m_iElementSize;
+    mCq->m_used = used * mElementSize;
 
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::SetElementValue(
     /* [in] */ Int32 index,
-    /* [in] */ void *pParam,
+    /* [in] */ void* param,
     /* [in] */ CarDataType type)
 {
-    if (!pParam) {
+    if (!param) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (index >= m_iLength
-            || index >= (Int32)(m_pCq->m_used / m_iElementSize)) {
+    if (index >= mLength
+            || index >= (Int32)(mCq->m_used / mElementSize)) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != type || !m_pCq->m_pBuf) {
+    if (mDataType != type || !mCq->m_pBuf) {
         return E_INVALID_OPERATION;
     }
 
-    memcpy((PByte)m_pCq->m_pBuf + m_iElementSize * index,
-        pParam, m_iElementSize);
+    memcpy((PByte)mCq->m_pBuf + mElementSize * index,
+            param, mElementSize);
 
     return NOERROR;
 }
@@ -224,14 +224,7 @@ ECode CVariableOfCarArray::SetEnumElement(
     return SetElementValue(index, &value, CarDataType_Enum);
 }
 
-ECode CVariableOfCarArray::SetChar16Element(
-    /* [in] */ Int32 index,
-    /* [in] */ Char16 value)
-{
-    return SetElementValue(index, &value, CarDataType_Char16);
-}
-
-ECode CVariableOfCarArray::SetChar32Element(
+ECode CVariableOfCarArray::SetCharElement(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
@@ -254,16 +247,16 @@ ECode CVariableOfCarArray::SetBooleanElement(
 
 ECode CVariableOfCarArray::SetEMuidElement(
     /* [in] */ Int32 index,
-    /* [in] */ EMuid * pValue)
+    /* [in] */ EMuid* value)
 {
-    return SetElementValue(index, &pValue, CarDataType_EMuid);
+    return SetElementValue(index, &value, CarDataType_EMuid);
 }
 
 ECode CVariableOfCarArray::SetEGuidElement(
     /* [in] */ Int32 index,
-    /* [in] */ EGuid * pValue)
+    /* [in] */ EGuid* value)
 {
-    return SetElementValue(index, &pValue, CarDataType_EGuid);
+    return SetElementValue(index, &value, CarDataType_EGuid);
 }
 
 ECode CVariableOfCarArray::SetECodeElement(
@@ -289,188 +282,181 @@ ECode CVariableOfCarArray::SetObjectPtrElement(
 
 ECode CVariableOfCarArray::GetStructElementSetter(
     /* [in] */ Int32 index,
-    /* [out] */ IStructSetter ** ppSetter)
+    /* [out] */ IStructSetter** setter)
 {
-    if (!ppSetter || m_dataType != CarDataType_Struct) {
+    if (!setter || mDataType != CarDataType_Struct) {
         return E_INVALID_ARGUMENT;
     }
 
-    AutoPtr<IDataTypeInfo> pElementTypeInfo;
-    ECode ec = m_pCarArrayInfo->GetElementTypeInfo((IDataTypeInfo **)&pElementTypeInfo);
+    AutoPtr<IDataTypeInfo> elementTypeInfo;
+    ECode ec = mCarArrayInfo->GetElementTypeInfo((IDataTypeInfo **)&elementTypeInfo);
     if (FAILED(ec)) {
         return ec;
     }
 
-    CStructInfo *pStructInfo = (CStructInfo *)pElementTypeInfo.Get();
+    CStructInfo* structInfo = (CStructInfo *)elementTypeInfo.Get();
 
-    AutoPtr<IVariableOfStruct> pVariable;
-    ec = pStructInfo->CreateVariableBox(
-        (PByte)m_pCq->m_pBuf + m_iElementSize * index, (IVariableOfStruct **)&pVariable);
+    AutoPtr<IVariableOfStruct> variable;
+    ec = structInfo->CreateVariableBox(
+            (PByte)mCq->m_pBuf + mElementSize * index, (IVariableOfStruct **)&variable);
     if (FAILED(ec)) {
         return ec;
     }
 
-    return pVariable->GetSetter(ppSetter);
+    return variable->GetSetter(setter);
 }
 
 //Getter
 
 ECode CVariableOfCarArray::GetCapacity(
-    /* [out] */ Int32 *pCapacity)
+    /* [out] */ Int32* capacity)
 {
-    if (!pCapacity) {
+    if (!capacity) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCapacity = m_iLength;
+    *capacity = mLength;
 
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::GetUsed(
-    /* [out] */ Int32 *pUsed)
+    /* [out] */ Int32* used)
 {
-    if (!pUsed) {
+    if (!used) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pUsed = m_pCq->m_used / m_iElementSize;
+    *used = mCq->m_used / mElementSize;
 
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::IsEmpty(
-    /* [out] */ Boolean *pIsEmpty)
+    /* [out] */ Boolean* isEmpty)
 {
-    if (!pIsEmpty) {
+    if (!isEmpty) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pIsEmpty = (m_pCq->m_pBuf == NULL);
+    *isEmpty = (mCq->m_pBuf == NULL);
 
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::GetElementValue(
     /* [in] */ Int32 index,
-    /* [in] */ void *pParam,
+    /* [in] */ void* param,
     /* [in] */ CarDataType type)
 {
-    if (!pParam) {
+    if (!param) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (index >= m_iLength
-            || index >= (Int32)(m_pCq->m_used / m_iElementSize)) {
+    if (index >= mLength
+            || index >= (Int32)(mCq->m_used / mElementSize)) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_dataType != type || !m_pCq->m_pBuf) {
+    if (mDataType != type || !mCq->m_pBuf) {
         return E_INVALID_OPERATION;
     }
 
-    memcpy(pParam, (PByte)m_pCq->m_pBuf + m_iElementSize * index,
-        m_iElementSize);
+    memcpy(param, (PByte)mCq->m_pBuf + mElementSize * index,
+            mElementSize);
 
     return NOERROR;
 }
 
 ECode CVariableOfCarArray::GetInt16Element(
     /* [in] */ Int32 index,
-    /* [out] */ Int16 * pValue)
+    /* [out] */ Int16* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Int16);
+    return GetElementValue(index, value, CarDataType_Int16);
 }
 
 ECode CVariableOfCarArray::GetInt32Element(
     /* [in] */ Int32 index,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Int32);
+    return GetElementValue(index, value, CarDataType_Int32);
 }
 
 ECode CVariableOfCarArray::GetInt64Element(
     /* [in] */ Int32 index,
-    /* [out] */ Int64 * pValue)
+    /* [out] */ Int64* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Int64);
+    return GetElementValue(index, value, CarDataType_Int64);
 }
 
 ECode CVariableOfCarArray::GetByteElement(
     /* [in] */ Int32 index,
-    /* [out] */ Byte * pValue)
+    /* [out] */ Byte* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Byte);
+    return GetElementValue(index, value, CarDataType_Byte);
 }
 
 ECode CVariableOfCarArray::GetFloatElement(
     /* [in] */ Int32 index,
-    /* [out] */ Float * pValue)
+    /* [out] */ Float* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Float);
+    return GetElementValue(index, value, CarDataType_Float);
 }
 
 ECode CVariableOfCarArray::GetDoubleElement(
     /* [in] */ Int32 index,
-    /* [out] */ Double * pValue)
+    /* [out] */ Double* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Double);
+    return GetElementValue(index, value, CarDataType_Double);
 }
 
 ECode CVariableOfCarArray::GetEnumElement(
     /* [in] */ Int32 index,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Enum);
+    return GetElementValue(index, value, CarDataType_Enum);
 }
 
-ECode CVariableOfCarArray::GetChar16Element(
+ECode CVariableOfCarArray::GetCharElement(
     /* [in] */ Int32 index,
-    /* [out] */ Char16 * pValue)
+    /* [out] */ Char32* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Char16);
-}
-
-ECode CVariableOfCarArray::GetChar32Element(
-    /* [in] */ Int32 index,
-    /* [out] */ Char32 * pValue)
-{
-    return GetElementValue(index, pValue, CarDataType_Char32);
+    return GetElementValue(index, value, CarDataType_Char32);
 }
 
 ECode CVariableOfCarArray::GetStringElement(
     /* [in] */ Int32 index,
-    /* [out] */ String* pValue)
+    /* [out] */ String* value)
 {
-    return GetElementValue(index, pValue, CarDataType_String);
+    return GetElementValue(index, value, CarDataType_String);
 }
 
 ECode CVariableOfCarArray::GetBooleanElement(
     /* [in] */ Int32 index,
-    /* [out] */ Boolean * pValue)
+    /* [out] */ Boolean* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Boolean);
+    return GetElementValue(index, value, CarDataType_Boolean);
 }
 
 ECode CVariableOfCarArray::GetEMuidElement(
     /* [in] */ Int32 index,
-    /* [out] */ EMuid * pValue)
+    /* [out] */ EMuid* value)
 {
-    return GetElementValue(index, pValue, CarDataType_EMuid);
+    return GetElementValue(index, value, CarDataType_EMuid);
 }
 
 ECode CVariableOfCarArray::GetEGuidElement(
     /* [in] */ Int32 index,
-    /* [out] */ EGuid * pValue)
+    /* [out] */ EGuid* value)
 {
-    return GetElementValue(index, pValue, CarDataType_EGuid);
+    return GetElementValue(index, value, CarDataType_EGuid);
 }
 
 ECode CVariableOfCarArray::GetECodeElement(
     /* [in] */ Int32 index,
-    /* [out] */ ECode * pValue)
+    /* [out] */ ECode* value)
 {
-    return GetElementValue(index, pValue, CarDataType_ECode);
+    return GetElementValue(index, value, CarDataType_ECode);
 }
 
 ECode CVariableOfCarArray::GetLocalTypeElement(
@@ -482,33 +468,33 @@ ECode CVariableOfCarArray::GetLocalTypeElement(
 
 ECode CVariableOfCarArray::GetObjectPtrElement(
     /* [in] */ Int32 index,
-    /* [out] */ PInterface * pValue)
+    /* [out] */ PInterface* value)
 {
-    return GetElementValue(index, pValue, CarDataType_Interface);
+    return GetElementValue(index, value, CarDataType_Interface);
 }
 
 ECode CVariableOfCarArray::GetStructElementGetter(
     /* [in] */ Int32 index,
-    /* [out] */ IStructGetter ** ppGetter)
+    /* [out] */ IStructGetter** getter)
 {
-    if (!ppGetter || m_dataType != CarDataType_Struct) {
+    if (!getter || mDataType != CarDataType_Struct) {
         return E_INVALID_ARGUMENT;
     }
 
-    AutoPtr<IDataTypeInfo> pElementTypeInfo;
-    ECode ec = m_pCarArrayInfo->GetElementTypeInfo((IDataTypeInfo **)&pElementTypeInfo);
+    AutoPtr<IDataTypeInfo> elementTypeInfo;
+    ECode ec = mCarArrayInfo->GetElementTypeInfo((IDataTypeInfo **)&elementTypeInfo);
     if (FAILED(ec)) {
         return ec;
     }
 
-    CStructInfo *pStructInfo = (CStructInfo *)pElementTypeInfo.Get();
+    CStructInfo* structInfo = (CStructInfo *)elementTypeInfo.Get();
 
-    AutoPtr<IVariableOfStruct> pVariable;
-    ec = pStructInfo->CreateVariableBox(
-        (PByte)m_pCq->m_pBuf + m_iElementSize * index, (IVariableOfStruct **)&pVariable);
+    AutoPtr<IVariableOfStruct> variable;
+    ec = structInfo->CreateVariableBox(
+            (PByte)mCq->m_pBuf + mElementSize * index, (IVariableOfStruct **)&variable);
     if (FAILED(ec)) {
         return ec;
     }
 
-    return pVariable->GetGetter(ppGetter);
+    return variable->GetGetter(getter);
 }

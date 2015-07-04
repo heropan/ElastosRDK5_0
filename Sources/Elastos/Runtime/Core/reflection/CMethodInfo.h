@@ -14,9 +14,9 @@ class CMethodInfo
 {
 public:
     CMethodInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index);
 
     virtual ~CMethodInfo();
 
@@ -28,63 +28,63 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI Init();
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetParamCount(
-        /* [out] */ Int32 * pCount);
+        /* [out] */ Int32* count);
 
     CARAPI GetAllParamInfos(
-        /* [out] */ ArrayOf<IParamInfo *> * pParamInfos);
+        /* [out] */ ArrayOf<IParamInfo *>* paramInfos);
 
     CARAPI GetParamInfoByIndex(
         /* [in] */ Int32 index,
-        /* [out] */ IParamInfo ** ppParamInfo);
+        /* [out] */ IParamInfo** paramInfo);
 
     CARAPI GetParamInfoByName(
         /* [in] */ const String& name,
-        /* [out] */ IParamInfo ** ppParamInfo);
+        /* [out] */ IParamInfo** paramInfo);
 
     CARAPI CreateArgumentList(
-        /* [out] */ IArgumentList ** ppArgumentList);
+        /* [out] */ IArgumentList** argumentList);
 
     CARAPI Invoke(
         /* [in] */ PInterface target,
-        /* [in] */ IArgumentList * pArgumentList);
+        /* [in] */ IArgumentList* argumentList);
 
     CARAPI SetParamElem(
-        /* [in] */ ParamDescriptor *pParamDescriptor,
-        /* [in] */ ParmElement *pParmElement);
+        /* [in] */ ParamDescriptor* paramDescriptor,
+        /* [in] */ ParmElement* parmElement);
 
     CARAPI InitParmElement();
 
     CARAPI InitParamInfos();
 
     CARAPI CreateFunctionArgumentList(
-        /* [in] */ IFunctionInfo *pFunctionInfo,
-        /* [in] */ Boolean bMethodInfo,
-        /* [out] */ IArgumentList ** ppArgumentList);
+        /* [in] */ IFunctionInfo* functionInfo,
+        /* [in] */ Boolean isMethodInfo,
+        /* [out] */ IArgumentList** argumentList);
 
     CARAPI CreateCBArgumentList(
-        /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
-        /* [out] */ ICallbackArgumentList ** ppCBArgumentList);
+        /* [in] */ ICallbackMethodInfo* callbackMethodInfo,
+        /* [out] */ ICallbackArgumentList** cbArgumentList);
 
 public:
-    MethodDescriptor   *m_pMethodDescriptor;
+    MethodDescriptor*   mMethodDescriptor;
     UInt32              mIndex;
-    CLSModule          *m_pClsMod;
-    AutoPtr<CClsModule> m_pCClsModule;
+    CLSModule*          mClsMod;
+    AutoPtr<CClsModule> mClsModule;
 
 private:
-    ArrayOf<IParamInfo *> *m_pParameterInfos;
-    ParmElement    *m_pParamElem;
-    UInt32          m_uParamBufSize;
-    Int32           m_nBase;
+    ArrayOf<IParamInfo *>*  mParameterInfos;
+    ParmElement*            mParamElem;
+    UInt32                  mParamBufSize;
+    Int32                   mBase;
 };
 
 #endif // __CMETHODINFO_H__
