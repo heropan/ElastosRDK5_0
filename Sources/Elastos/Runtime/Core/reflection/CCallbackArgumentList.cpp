@@ -85,12 +85,12 @@ ECode CCallbackArgumentList::GetParamValue(
     /* [in] */ CarDataType type)
 {
     if (type == CarDataType_CarArray
-        && mParamElem[index].type == CarDataType_ArrayOf) {
-        type = mParamElem[index].type;
+        && mParamElem[index].mType == CarDataType_ArrayOf) {
+        type = mParamElem[index].mType;
     }
 
     if (index < 0 || index >= (Int32)mParamCount || !param
-        || type != mParamElem[index].type) {
+        || type != mParamElem[index].mType) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -98,18 +98,18 @@ ECode CCallbackArgumentList::GetParamValue(
         return E_INVALID_OPERATION;
     }
 
-    UInt32* paramValue = (UInt32 *)(mParamBuf + mParamElem[index].pos);
+    UInt32* paramValue = (UInt32 *)(mParamBuf + mParamElem[index].mPos);
 
-    if (mParamElem[index].size == 1) {
+    if (mParamElem[index].mSize == 1) {
         *(Byte *)param = (Byte)*paramValue;
     }
-    else if (mParamElem[index].size == 2) {
+    else if (mParamElem[index].mSize == 2) {
         *(UInt16 *)param = (UInt16)*paramValue;
     }
-    else if (mParamElem[index].size == 4) {
+    else if (mParamElem[index].mSize == 4) {
         *(UInt32 *)param = (UInt32)*paramValue;
     }
-    else if (mParamElem[index].size == 8) {
+    else if (mParamElem[index].mSize == 8) {
         *(UInt64 *)param = *(UInt64 *)paramValue;
     }
     else {

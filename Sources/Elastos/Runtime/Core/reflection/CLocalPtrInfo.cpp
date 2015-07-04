@@ -6,13 +6,13 @@
 #include "CObjInfoList.h"
 
 CLocalPtrInfo::CLocalPtrInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ TypeDescriptor *pTypeDescriptor,
-    /* [in] */ Int32 iPointer)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ TypeDescriptor* typeDescriptor,
+    /* [in] */ Int32 pointer)
 {
-    m_pCClsModule = pCClsModule;
-    m_pTypeDescriptor = pTypeDescriptor;
-    m_iPointer = iPointer;
+    mClsModule = clsModule;
+    mTypeDescriptor = typeDescriptor;
+    mPointer = pointer;
 }
 
 UInt32 CLocalPtrInfo::AddRef()
@@ -23,15 +23,15 @@ UInt32 CLocalPtrInfo::AddRef()
 UInt32 CLocalPtrInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Local);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        g_objInfoList.RemoveLocalPtrInfo(m_pTypeDescriptor, m_iPointer);
+    if (0 == ref) {
+        g_objInfoList.RemoveLocalPtrInfo(mTypeDescriptor, mPointer);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Local);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CLocalPtrInfo::Probe(
@@ -52,63 +52,62 @@ PInterface CLocalPtrInfo::Probe(
 }
 
 ECode CLocalPtrInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CLocalPtrInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = g_cDataTypeList[CarDataType_LocalPtr].name;
+    *name = g_cDataTypeList[CarDataType_LocalPtr].mName;
     return NOERROR;
 }
 
 ECode CLocalPtrInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
-    if (!pSize) {
+    if (!size) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pSize = sizeof(PVoid);
+    *size = sizeof(PVoid);
 
     return NOERROR;
 }
 
 ECode CLocalPtrInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = CarDataType_LocalPtr;
+    *dataType = CarDataType_LocalPtr;
 
     return NOERROR;
 }
 
 ECode CLocalPtrInfo::GetTargetTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppDateTypeInfo)
+    /* [out] */ IDataTypeInfo** dateTypeInfo)
 {
-    return g_objInfoList.AcquireDataTypeInfo(m_pCClsModule,
-                                             m_pTypeDescriptor,
-                                             ppDateTypeInfo);
+    return g_objInfoList.AcquireDataTypeInfo(mClsModule,
+            mTypeDescriptor, dateTypeInfo);
 }
 
 ECode CLocalPtrInfo::GetPtrLevel(
-    /* [out] */ Int32 *pLevel)
+    /* [out] */ Int32* level)
 {
-    if (!pLevel) {
+    if (!level) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pLevel = m_iPointer;
+    *level = mPointer;
 
     return NOERROR;
 }

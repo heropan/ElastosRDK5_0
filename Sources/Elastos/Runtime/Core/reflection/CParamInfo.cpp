@@ -8,27 +8,27 @@
 #include "CLocalTypeInfo.h"
 
 CParamInfo::CParamInfo(
-    /* [in] */ CClsModule *pCClsModule,
-    /* [in] */ IMethodInfo *pMethodInfo,
-    /* [in] */ ParmElement *pParmElement,
-    /* [in] */ ParamDescriptor *pParamDescriptor,
-    /* [in] */ Int32 iIndex)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ IMethodInfo* methodInfo,
+    /* [in] */ ParmElement* parmElement,
+    /* [in] */ ParamDescriptor* paramDescriptor,
+    /* [in] */ Int32 index)
 {
-    m_pCClsModule = pCClsModule;
-    m_pMethodInfo = pMethodInfo;
-    m_pParmElement = pParmElement;
-    m_pParamDescriptor = pParamDescriptor;
-    m_iIndex = iIndex;
+    mClsModule = clsModule;
+    mMethodInfo = methodInfo;
+    mParmElement = parmElement;
+    mParamDescriptor = paramDescriptor;
+    mIndex = index;
 }
 
 UInt32 CParamInfo::AddRef()
 {
-    return m_pMethodInfo->AddRef();
+    return mMethodInfo->AddRef();
 }
 
 UInt32 CParamInfo::Release()
 {
-    return m_pMethodInfo->Release();
+    return mMethodInfo->Release();
 }
 
 PInterface CParamInfo::Probe(
@@ -46,140 +46,140 @@ PInterface CParamInfo::Probe(
 }
 
 ECode CParamInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CParamInfo::GetMethodInfo(
-    /* [out] */ IMethodInfo ** ppMethodInfo)
+    /* [out] */ IMethodInfo** methodInfo)
 {
-    if (!ppMethodInfo) {
+    if (!methodInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppMethodInfo = m_pMethodInfo;
-    (*ppMethodInfo)->AddRef();
+    *methodInfo = mMethodInfo;
+    (*methodInfo)->AddRef();
 
     return NOERROR;
 }
 
 ECode CParamInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_pCClsModule->mBase, m_pParamDescriptor->pszName);
+    *name = adjustNameAddr(mClsModule->mBase, mParamDescriptor->pszName);
     return NOERROR;
 }
 
 ECode CParamInfo::GetIndex(
-    /* [out] */ Int32 * pIndex)
+    /* [out] */ Int32* index)
 {
-    if (!pIndex) {
+    if (!index) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pIndex = m_iIndex;
+    *index = mIndex;
     return NOERROR;
 }
 
 ECode CParamInfo::GetIOAttribute(
-    /* [out] */ ParamIOAttribute * pIOAttrib)
+    /* [out] */ ParamIOAttribute* ioAttrib)
 {
-    if (!pIOAttrib) {
+    if (!ioAttrib) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pIOAttrib = m_pParmElement->attrib;
+    *ioAttrib = mParmElement->mAttrib;
 
     return NOERROR;
 }
 
 ECode CParamInfo::IsReturnValue(
-    /* [out] */ Boolean * pReturnValue)
+    /* [out] */ Boolean* returnValue)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CParamInfo::GetTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppTypeInfo)
+    /* [out] */ IDataTypeInfo** typeInfo)
 {
-    if (!ppTypeInfo) {
+    if (!typeInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_pParmElement->type == CarDataType_LocalPtr) {
-        return g_objInfoList.AcquireLocalPtrInfo(m_pCClsModule,
-                        &m_pParamDescriptor->type,
-                        m_pParmElement->pointer, (ILocalPtrInfo **)ppTypeInfo);
+    if (mParmElement->mType == CarDataType_LocalPtr) {
+        return g_objInfoList.AcquireLocalPtrInfo(mClsModule,
+                &mParamDescriptor->type,
+                mParmElement->mPointer, (ILocalPtrInfo **)typeInfo);
     }
     else {
-        return g_objInfoList.AcquireDataTypeInfo(m_pCClsModule,
-                        &m_pParamDescriptor->type, ppTypeInfo);
+        return g_objInfoList.AcquireDataTypeInfo(mClsModule,
+                &mParamDescriptor->type, typeInfo);
     }
 }
 
 ECode CParamInfo::GetAdvisedCapacity(
-    /* [out] */ Int32 * pAdvisedCapacity)
+    /* [out] */ Int32* advisedCapacity)
 {
-    if (!pAdvisedCapacity) {
+    if (!advisedCapacity) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (m_pParmElement->type != CarDataType_ArrayOf) {
+    if (mParmElement->mType != CarDataType_ArrayOf) {
         return E_INVALID_OPERATION;
     }
 
-    if (m_pParamDescriptor->type.nSize <= 0) {
+    if (mParamDescriptor->type.nSize <= 0) {
         //if the size of carquient isn't assigned, then it's -1;
         return E_INVALID_OPERATION;
     }
 
-    *pAdvisedCapacity = m_pParamDescriptor->type.nSize;
+    *advisedCapacity = mParamDescriptor->type.nSize;
 
     return NOERROR;
 }
 
 ECode CParamInfo::IsUsingTypeAlias(
-    /* [out] */ Boolean * pUsingTypeAlias)
+    /* [out] */ Boolean* usingTypeAlias)
 {
-    if (!pUsingTypeAlias) {
+    if (!usingTypeAlias) {
         return E_INVALID_ARGUMENT;
     }
 
-    UInt32 uIndex = m_pParamDescriptor->type.sIndex;
-    if ((m_pParamDescriptor->type.type == Type_alias)
-        && !IsSysAlaisType(m_pCClsModule, uIndex)) {
-        *pUsingTypeAlias = TRUE;
+    UInt32 index = mParamDescriptor->type.sIndex;
+    if ((mParamDescriptor->type.type == Type_alias)
+        && !IsSysAlaisType(mClsModule, index)) {
+        *usingTypeAlias = TRUE;
     }
     else {
-        *pUsingTypeAlias = FALSE;
+        *usingTypeAlias = FALSE;
     }
 
     return NOERROR;
 }
 
 ECode CParamInfo::GetUsedTypeAliasInfo(
-    /* [out] */ ITypeAliasInfo ** ppUsedTypeAliasInfo)
+    /* [out] */ ITypeAliasInfo** usedTypeAliasInfo)
 {
-    if (!ppUsedTypeAliasInfo) {
+    if (!usedTypeAliasInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    UInt32 uIndex = m_pParamDescriptor->type.sIndex;
-    if ((m_pParamDescriptor->type.type != Type_alias) ||
-        IsSysAlaisType(m_pCClsModule, uIndex)) {
+    UInt32 index = mParamDescriptor->type.sIndex;
+    if ((mParamDescriptor->type.type != Type_alias) ||
+        IsSysAlaisType(mClsModule, index)) {
         return E_DOES_NOT_EXIST;
     }
 
-    *ppUsedTypeAliasInfo = NULL;
-    return g_objInfoList.AcquireTypeAliasInfo(m_pCClsModule,
-                getAliasDirAddr(m_pCClsModule->mBase,
-                        m_pCClsModule->mClsMod->ppAliasDir, uIndex),
-                (IInterface **)ppUsedTypeAliasInfo);
+    *usedTypeAliasInfo = NULL;
+    return g_objInfoList.AcquireTypeAliasInfo(mClsModule,
+            getAliasDirAddr(mClsModule->mBase,
+                    mClsModule->mClsMod->ppAliasDir, index),
+            (IInterface **)usedTypeAliasInfo);
 }

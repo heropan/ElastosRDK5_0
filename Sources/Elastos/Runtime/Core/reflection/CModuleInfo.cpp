@@ -5,14 +5,13 @@
 #include "_pubcrt.h"
 
 CModuleInfo::CModuleInfo(
-    /* [in] */ CClsModule * pCClsModule,
+    /* [in] */ CClsModule* clsModule,
     /* [in] */ const String& path)
 {
-    m_pCClsModule = pCClsModule;
-    m_pClsMod = pCClsModule->mClsMod;
-    m_sbPath = path;
-
-    m_iAliasCount = 0;
+    mClsModule = clsModule;
+    mClsMod = clsModule->mClsMod;
+    mPath = path;
+    mAliasCount = 0;
 }
 
 UInt32 CModuleInfo::AddRef()
@@ -23,15 +22,15 @@ UInt32 CModuleInfo::AddRef()
 UInt32 CModuleInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Module);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        g_objInfoList.RemoveModuleInfo(m_sbPath);
+    if (0 == ref) {
+        g_objInfoList.RemoveModuleInfo(mPath);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Module);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CModuleInfo::Probe(
@@ -49,38 +48,38 @@ PInterface CModuleInfo::Probe(
 }
 
 ECode CModuleInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CModuleInfo::GetPath(
-    /* [out] */ String * pPath)
+    /* [out] */ String* path)
 {
-    *pPath = m_sbPath;
+    *path = mPath;
     return NOERROR;
 }
 
 ECode CModuleInfo::GetVersion(
-    /* [out] */ Int32 * pMajor,
-    /* [out] */ Int32 * pMinor,
-    /* [out] */ Int32 * pBuild,
-    /* [out] */ Int32 * pRevision)
+    /* [out] */ Int32* major,
+    /* [out] */ Int32* minor,
+    /* [out] */ Int32* build,
+    /* [out] */ Int32* revision)
 {
-    *pMajor = m_pClsMod->cMajorVersion;
-    *pMinor = m_pClsMod->cMinorVersion;
+    *major = mClsMod->cMajorVersion;
+    *minor = mClsMod->cMinorVersion;
     return NOERROR;
 }
 
 ECode CModuleInfo::GetClassCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pClsMod->cClasses;
+    *count = mClsMod->cClasses;
     return NOERROR;
 }
 
@@ -88,10 +87,10 @@ ECode CModuleInfo::AcquireClassList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_Class);
-    if (!m_pClassList) {
-        m_pClassList = new CEntryList(EntryType_Class,
-            m_pClsMod, m_pClsMod->cClasses, m_pCClsModule);
-        if (!m_pClassList) {
+    if (!mClassList) {
+        mClassList = new CEntryList(EntryType_Class,
+                mClsMod, mClsMod->cClasses, mClsModule);
+        if (!mClassList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -101,19 +100,19 @@ ECode CModuleInfo::AcquireClassList()
 }
 
 ECode CModuleInfo::GetAllClassInfos(
-    /* [out] */ ArrayOf<IClassInfo *> * pClassInfos)
+    /* [out] */ ArrayOf<IClassInfo *>* classInfos)
 {
     ECode ec = AcquireClassList();
     if (FAILED(ec)) return ec;
 
-    return m_pClassList->GetAllObjInfos((PTypeInfos)pClassInfos);
+    return mClassList->GetAllObjInfos((PTypeInfos)classInfos);
 }
 
 ECode CModuleInfo::GetClassInfo(
     /* [in] */ const String& fullName,
-    /* [out] */ IClassInfo ** ppClassInfo)
+    /* [out] */ IClassInfo** classInfo)
 {
-    if (fullName.IsNull() || NULL == ppClassInfo) {
+    if (fullName.IsNull() || NULL == classInfo) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -123,17 +122,17 @@ ECode CModuleInfo::GetClassInfo(
     Int32 start = fullName.IndexOf('L');
     Int32 end = fullName.IndexOf(';');
     String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
-    return m_pClassList->AcquireObjByName(strName, (IInterface **)ppClassInfo);
+    return mClassList->AcquireObjByName(strName, (IInterface **)classInfo);
 }
 
 ECode CModuleInfo::GetInterfaceCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pClsMod->cInterfaces;
+    *count = mClsMod->cInterfaces;
     return NOERROR;
 }
 
@@ -141,10 +140,10 @@ ECode CModuleInfo::AcquireInterfaceList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_Interface);
-    if (!m_pInterfaceList) {
-        m_pInterfaceList = new CEntryList(EntryType_Interface,
-            m_pClsMod, m_pClsMod->cInterfaces, m_pCClsModule);
-        if (!m_pInterfaceList) {
+    if (!mInterfaceList) {
+        mInterfaceList = new CEntryList(EntryType_Interface,
+                mClsMod, mClsMod->cInterfaces, mClsModule);
+        if (!mInterfaceList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -154,19 +153,19 @@ ECode CModuleInfo::AcquireInterfaceList()
 }
 
 ECode CModuleInfo::GetAllInterfaceInfos(
-    /* [out] */ ArrayOf<IInterfaceInfo *> * pInterfaceInfos)
+    /* [out] */ ArrayOf<IInterfaceInfo *>* interfaceInfos)
 {
     ECode ec = AcquireInterfaceList();
     if (FAILED(ec)) return ec;
 
-    return m_pInterfaceList->GetAllObjInfos((PTypeInfos)pInterfaceInfos);
+    return mInterfaceList->GetAllObjInfos((PTypeInfos)interfaceInfos);
 }
 
 ECode CModuleInfo::GetInterfaceInfo(
     /* [in] */ const String& fullName,
-    /* [out] */ IInterfaceInfo ** ppInterfaceInfo)
+    /* [out] */ IInterfaceInfo** interfaceInfo)
 {
-    if (fullName.IsNull() || NULL == ppInterfaceInfo) {
+    if (fullName.IsNull() || NULL == interfaceInfo) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -176,18 +175,17 @@ ECode CModuleInfo::GetInterfaceInfo(
     Int32 start = fullName.IndexOf('L');
     Int32 end = fullName.IndexOf(';');
     String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
-    return m_pInterfaceList->AcquireObjByName(
-        strName, (IInterface **)ppInterfaceInfo);
+    return mInterfaceList->AcquireObjByName(strName, (IInterface **)interfaceInfo);
 }
 
 ECode CModuleInfo::GetStructCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pClsMod->cStructs;
+    *count = mClsMod->cStructs;
     return NOERROR;
 }
 
@@ -195,10 +193,10 @@ ECode CModuleInfo::AcquireStructList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_Struct);
-    if (!m_pStructList) {
-        m_pStructList = new CEntryList(EntryType_Struct,
-            m_pClsMod, m_pClsMod->cStructs, m_pCClsModule);
-        if (!m_pStructList) {
+    if (!mStructList) {
+        mStructList = new CEntryList(EntryType_Struct,
+                mClsMod, mClsMod->cStructs, mClsModule);
+        if (!mStructList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -208,40 +206,40 @@ ECode CModuleInfo::AcquireStructList()
 }
 
 ECode CModuleInfo::GetAllStructInfos(
-    /* [out] */ ArrayOf<IStructInfo *> * pStructInfos)
+    /* [out] */ ArrayOf<IStructInfo *>* structInfos)
 {
     ECode ec = AcquireStructList();
     if (FAILED(ec)) return ec;
 
-    return m_pStructList->GetAllObjInfos((PTypeInfos)pStructInfos);
+    return mStructList->GetAllObjInfos((PTypeInfos)structInfos);
 }
 
 ECode CModuleInfo::GetStructInfo(
     /* [in] */ const String& name,
-    /* [out] */ IStructInfo ** ppStructInfo)
+    /* [out] */ IStructInfo** structInfo)
 {
-    if (name.IsNull() || !ppStructInfo) {
+    if (name.IsNull() || !structInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pClsMod->cStructs) {
+    if (!mClsMod->cStructs) {
         return E_DOES_NOT_EXIST;
     }
 
     ECode ec = AcquireStructList();
     if (FAILED(ec)) return ec;
 
-    return m_pStructList->AcquireObjByName(name, (IInterface **)ppStructInfo);
+    return mStructList->AcquireObjByName(name, (IInterface **)structInfo);
 }
 
 ECode CModuleInfo::GetEnumCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pClsMod->cEnums;
+    *count = mClsMod->cEnums;
     return NOERROR;
 }
 
@@ -249,10 +247,10 @@ ECode CModuleInfo::AcquireEnumList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_Enum);
-    if (!m_pEnumList) {
-        m_pEnumList = new CEntryList(EntryType_Enum,
-            m_pClsMod, m_pClsMod->cEnums, m_pCClsModule);
-        if (!m_pEnumList) {
+    if (!mEnumList) {
+        mEnumList = new CEntryList(EntryType_Enum,
+                mClsMod, mClsMod->cEnums, mClsModule);
+        if (!mEnumList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -262,23 +260,23 @@ ECode CModuleInfo::AcquireEnumList()
 }
 
 ECode CModuleInfo::GetAllEnumInfos(
-    /* [out] */ ArrayOf<IEnumInfo *> * pEnumInfos)
+    /* [out] */ ArrayOf<IEnumInfo *>* enumInfos)
 {
     ECode ec = AcquireEnumList();
     if (FAILED(ec)) return ec;
 
-    return m_pEnumList->GetAllObjInfos((PTypeInfos)pEnumInfos);
+    return mEnumList->GetAllObjInfos((PTypeInfos)enumInfos);
 }
 
 ECode CModuleInfo::GetEnumInfo(
     /* [in] */ const String& fullName,
-    /* [out] */ IEnumInfo ** ppEnumInfo)
+    /* [out] */ IEnumInfo** enumInfo)
 {
-    if (fullName.IsNull() || !ppEnumInfo) {
+    if (fullName.IsNull() || !enumInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pClsMod->cEnums) {
+    if (!mClsMod->cEnums) {
         return E_DOES_NOT_EXIST;
     }
 
@@ -288,20 +286,20 @@ ECode CModuleInfo::GetEnumInfo(
     Int32 start = fullName.IndexOf('L');
     Int32 end = fullName.IndexOf(';');
     String strName = fullName.Substring(start >= 0 ? start + 1 : 0, end > 0 ? end : fullName.GetLength()).Replace('/', '.');
-    return m_pEnumList->AcquireObjByName(strName, (IInterface **)ppEnumInfo);
+    return mEnumList->AcquireObjByName(strName, (IInterface **)enumInfo);
 }
 
 ECode CModuleInfo::GetTypeAliasCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
     ECode ec = AcquireAliasList();
     if (FAILED(ec)) return ec;
 
-    *pCount = m_iAliasCount;
+    *count = mAliasCount;
     return NOERROR;
 }
 
@@ -309,15 +307,15 @@ ECode CModuleInfo::AcquireAliasList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_TypeAliase);
-    if (!m_pAliasList) {
-        m_iAliasCount = 0;
-        for (Int32 i = 0; i < m_pClsMod->cAliases; i++) {
-            if (!IsSysAlaisType(m_pCClsModule, i)) m_iAliasCount++;
+    if (!mAliasList) {
+        mAliasCount = 0;
+        for (Int32 i = 0; i < mClsMod->cAliases; i++) {
+            if (!IsSysAlaisType(mClsModule, i)) mAliasCount++;
         }
 
-        m_pAliasList = new CEntryList(EntryType_TypeAliase,
-            m_pClsMod, m_iAliasCount, m_pCClsModule);
-        if (!m_pAliasList) {
+        mAliasList = new CEntryList(EntryType_TypeAliase,
+                mClsMod, mAliasCount, mClsModule);
+        if (!mAliasList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -327,40 +325,40 @@ ECode CModuleInfo::AcquireAliasList()
 }
 
 ECode CModuleInfo::GetAllTypeAliasInfos(
-    /* [out] */ ArrayOf<ITypeAliasInfo *> * pTypeAliasInfos)
+    /* [out] */ ArrayOf<ITypeAliasInfo *>* typeAliasInfos)
 {
     ECode ec = AcquireAliasList();
     if (FAILED(ec)) return ec;
 
-    return m_pAliasList->GetAllObjInfos((PTypeInfos)pTypeAliasInfos);
+    return mAliasList->GetAllObjInfos((PTypeInfos)typeAliasInfos);
 }
 
 ECode CModuleInfo::GetTypeAliasInfo(
     /* [in] */ const String& name,
-    /* [out] */ ITypeAliasInfo ** ppTypeAliasInfo)
+    /* [out] */ ITypeAliasInfo** typeAliasInfo)
 {
-    if (name.IsNull() || !ppTypeAliasInfo) {
+    if (name.IsNull() || !typeAliasInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pClsMod->cAliases) {
+    if (!mClsMod->cAliases) {
         return E_DOES_NOT_EXIST;
     }
 
     ECode ec = AcquireAliasList();
     if (FAILED(ec)) return ec;
 
-    return m_pAliasList->AcquireObjByName(name, (IInterface **)ppTypeAliasInfo);
+    return mAliasList->AcquireObjByName(name, (IInterface **)typeAliasInfo);
 }
 
 ECode CModuleInfo::GetConstantCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pClsMod->cConsts;
+    *count = mClsMod->cConsts;
     return NOERROR;
 }
 
@@ -368,10 +366,10 @@ ECode CModuleInfo::AcquireConstantList()
 {
     ECode ec = NOERROR;
     g_objInfoList.LockHashTable(EntryType_Constant);
-    if (!m_pConstantList) {
-        m_pConstantList = new CEntryList(EntryType_Constant,
-            m_pClsMod, m_pClsMod->cConsts, m_pCClsModule);
-        if (!m_pConstantList) {
+    if (!mConstantList) {
+        mConstantList = new CEntryList(EntryType_Constant,
+                mClsMod, mClsMod->cConsts, mClsModule);
+        if (!mConstantList) {
             ec = E_OUT_OF_MEMORY;
         }
     }
@@ -381,68 +379,68 @@ ECode CModuleInfo::AcquireConstantList()
 }
 
 ECode CModuleInfo::GetAllConstantInfos(
-    /* [out] */ ArrayOf<IConstantInfo *> * pConstantInfos)
+    /* [out] */ ArrayOf<IConstantInfo *>* constantInfos)
 {
     ECode ec = AcquireConstantList();
     if (FAILED(ec)) return ec;
 
-    return m_pConstantList->GetAllObjInfos((PTypeInfos)pConstantInfos);
+    return mConstantList->GetAllObjInfos((PTypeInfos)constantInfos);
 }
 
 ECode CModuleInfo::GetConstantInfo(
     /* [in] */ const String& name,
-    /* [out] */ IConstantInfo ** ppConstantInfo)
+    /* [out] */ IConstantInfo** constantInfo)
 {
-    if (name.IsNull() || !ppConstantInfo) {
+    if (name.IsNull() || !constantInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pClsMod->cConsts) {
+    if (!mClsMod->cConsts) {
         return E_DOES_NOT_EXIST;
     }
 
     ECode ec = AcquireConstantList();
     if (FAILED(ec)) return ec;
 
-    return m_pConstantList->AcquireObjByName(name, (IInterface **)ppConstantInfo);
+    return mConstantList->AcquireObjByName(name, (IInterface **)constantInfo);
 }
 
 ECode CModuleInfo::GetImportModuleInfoCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pClsMod->cLibraries;
+    *count = mClsMod->cLibraries;
     return NOERROR;
 }
 
 ECode CModuleInfo::GetAllImportModuleInfos(
-    /* [out] */ ArrayOf<IModuleInfo *> * pModuleInfos)
+    /* [out] */ ArrayOf<IModuleInfo *>* moduleInfos)
 {
-    if (!pModuleInfos) {
+    if (!moduleInfos) {
         return E_INVALID_ARGUMENT;
     }
 
-    Int32 nCapacity = pModuleInfos->GetLength();
-    if (!nCapacity) {
+    Int32 capacity = moduleInfos->GetLength();
+    if (!capacity) {
         return E_INVALID_ARGUMENT;
     }
 
-    Int32 nTotalCount = m_pClsMod->cLibraries;
-    if (!nTotalCount) {
+    Int32 totalCount = mClsMod->cLibraries;
+    if (!totalCount) {
         return NOERROR;
     }
 
-    Int32 nCount = nCapacity < nTotalCount ? nCapacity : nTotalCount;
+    Int32 count = capacity < totalCount ? capacity : totalCount;
     ECode ec = NOERROR;
-    for (Int32 i = 0; i < nCount; i++) {
-        String libNames(getLibNameAddr(m_pCClsModule->mBase, m_pClsMod->ppLibNames, i));
-        AutoPtr<IModuleInfo> pObject;
-        ec = g_objInfoList.AcquireModuleInfo(libNames, (IModuleInfo**)&pObject);
+    for (Int32 i = 0; i < count; i++) {
+        String libNames(getLibNameAddr(mClsModule->mBase, mClsMod->ppLibNames, i));
+        AutoPtr<IModuleInfo> object;
+        ec = g_objInfoList.AcquireModuleInfo(libNames, (IModuleInfo**)&object);
         if (FAILED(ec)) return ec;
-        pModuleInfos->Set(i, pObject);
+        moduleInfos->Set(i, object);
     }
 
     return NOERROR;

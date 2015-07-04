@@ -8,21 +8,21 @@
 
 CVariableOfStruct::CVariableOfStruct()
 {
-    m_pVarBuf = NULL;
-    m_bAlloc = FALSE;
-    m_uVarSize = 0;
-    m_iCount = 0;
-    m_pCppVectorSGetters = NULL;
+    mVarBuf = NULL;
+    mIsAlloc = FALSE;
+    mVarSize = 0;
+    mCount = 0;
+    mCppVectorSGetters = NULL;
 }
 
 CVariableOfStruct::~CVariableOfStruct()
 {
-    if (m_bAlloc && m_pVarBuf) free(m_pVarBuf);
-    if (m_pCppVectorSGetters) {
-        for (Int32 i = 0; i < m_iCount; i++) {
-            if (m_pCppVectorSGetters[i]) m_pCppVectorSGetters[i]->Release();
+    if (mIsAlloc && mVarBuf) free(mVarBuf);
+    if (mCppVectorSGetters) {
+        for (Int32 i = 0; i < mCount; i++) {
+            if (mCppVectorSGetters[i]) mCppVectorSGetters[i]->Release();
         }
-        delete [] m_pCppVectorSGetters;
+        delete [] mCppVectorSGetters;
     }
 }
 
@@ -55,67 +55,67 @@ PInterface CVariableOfStruct::Probe(
 }
 
 ECode CVariableOfStruct::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CVariableOfStruct::Init(
-    /* [in] */ IStructInfo *pStructInfo,
-    /* [in] */ PVoid pVarBuf)
+    /* [in] */ IStructInfo* structInfo,
+    /* [in] */ PVoid varBuf)
 {
-    ECode ec = pStructInfo->GetFieldCount(&m_iCount);
+    ECode ec = structInfo->GetFieldCount(&mCount);
     if (FAILED(ec)) return ec;
 
-    m_pStructInfo = pStructInfo;
-    m_pStructFieldDesc = ((CStructInfo *)m_pStructInfo.Get())->m_pStructFieldDesc;
-    m_uVarSize = ((CStructInfo *)m_pStructInfo.Get())->m_uSize;
-    if (!pVarBuf) {
-        m_pVarBuf = (PByte)malloc(m_uVarSize);
-        if (m_pVarBuf == NULL) {
+    mStructInfo = structInfo;
+    mStructFieldDesc = ((CStructInfo *)mStructInfo.Get())->mStructFieldDesc;
+    mVarSize = ((CStructInfo *)mStructInfo.Get())->mSize;
+    if (!varBuf) {
+        mVarBuf = (PByte)malloc(mVarSize);
+        if (mVarBuf == NULL) {
             return E_OUT_OF_MEMORY;
         }
 
-        m_bAlloc = TRUE;
+        mIsAlloc = TRUE;
     }
     else {
-        m_pVarBuf = (PByte)pVarBuf;
-        m_bAlloc = FALSE;
+        mVarBuf = (PByte)varBuf;
+        mIsAlloc = FALSE;
     }
 
     //Get CppVector fields Info
-    m_pCppVectorSGetters = new PInterface[m_iCount];
-    if (!m_pCppVectorSGetters) {
-        delete m_pVarBuf;
-        m_pVarBuf = NULL;
+    mCppVectorSGetters = new PInterface[mCount];
+    if (!mCppVectorSGetters) {
+        delete mVarBuf;
+        mVarBuf = NULL;
         return E_OUT_OF_MEMORY;
     }
-    memset(m_pCppVectorSGetters, 0, m_iCount * sizeof(IInterface*));
+    memset(mCppVectorSGetters, 0, mCount * sizeof(IInterface*));
 
     return NOERROR;
 }
 
 ECode CVariableOfStruct::GetTypeInfo(
-    /* [out] */ IDataTypeInfo ** ppTypeInfo)
+    /* [out] */ IDataTypeInfo** typeInfo)
 {
-    if (!ppTypeInfo) {
+    if (!typeInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppTypeInfo = m_pStructInfo;
-    (*ppTypeInfo)->AddRef();
+    *typeInfo = mStructInfo;
+    (*typeInfo)->AddRef();
     return NOERROR;
 }
 
 ECode CVariableOfStruct::GetPayload(
-    /* [out] */ PVoid * pPayload)
+    /* [out] */ PVoid* payload)
 {
-    if (!pPayload) {
+    if (!payload) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pPayload = m_pVarBuf;
+    *payload = mVarBuf;
 
     return NOERROR;
 }
@@ -127,19 +127,18 @@ ECode CVariableOfStruct::Rebox(
         return E_INVALID_OPERATION;
     }
 
-    if (m_bAlloc && m_pVarBuf) {
-        free(m_pVarBuf);
-        m_bAlloc = FALSE;
+    if (mIsAlloc && mVarBuf) {
+        free(mVarBuf);
+        mIsAlloc = FALSE;
     }
 
-    m_pVarBuf = (PByte)localVariablePtr;
+    mVarBuf = (PByte)localVariablePtr;
 
-    if (m_pCppVectorSGetters) {
-        for (Int32 i = 0; i < m_iCount; i++) {
-            if (m_pCppVectorSGetters[i]) {
-                ((CVariableOfCppVector *)(ICppVectorSetter *) \
-                    m_pCppVectorSGetters[i])->Rebox(
-                    m_pVarBuf + m_pStructFieldDesc[i].pos);
+    if (mCppVectorSGetters) {
+        for (Int32 i = 0; i < mCount; i++) {
+            if (mCppVectorSGetters[i]) {
+                ((CVariableOfCppVector *)(ICppVectorSetter *)mCppVectorSGetters[i])->Rebox(
+                        mVarBuf + mStructFieldDesc[i].mPos);
             }
         }
     }
@@ -148,27 +147,27 @@ ECode CVariableOfStruct::Rebox(
 }
 
 ECode CVariableOfStruct::GetSetter(
-    /* [out] */ IStructSetter ** ppSetter)
+    /* [out] */ IStructSetter** setter)
 {
-    if (!ppSetter) {
+    if (!setter) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppSetter = (IStructSetter *)this;
-    (*ppSetter)->AddRef();
+    *setter = (IStructSetter *)this;
+    (*setter)->AddRef();
 
     return NOERROR;
 }
 
 ECode CVariableOfStruct::GetGetter(
-    /* [out] */ IStructGetter ** ppGetter)
+    /* [out] */ IStructGetter** getter)
 {
-    if (!ppGetter) {
+    if (!getter) {
         return E_INVALID_ARGUMENT;
     }
 
-    *ppGetter = (IStructGetter *)this;
-    (*ppGetter)->AddRef();
+    *getter = (IStructGetter *)this;
+    (*getter)->AddRef();
 
     return NOERROR;
 }
@@ -177,15 +176,15 @@ ECode CVariableOfStruct::GetGetter(
 
 ECode CVariableOfStruct::GetIndexByName(
     /* [in] */ const String& name,
-    /* [out] */ Int32 *pIndex)
+    /* [out] */ Int32* index)
 {
     Int32 count = 0;
-    ECode ec = m_pStructInfo->GetFieldCount(&count);
+    ECode ec = mStructInfo->GetFieldCount(&count);
     if (FAILED(ec)) return ec;
 
     for (Int32 i = 0; i < count; i++) {
-        if (name.Equals(m_pStructFieldDesc[i].pszName)) {
-            *pIndex = i;
+        if (name.Equals(mStructFieldDesc[i].mName)) {
+            *index = i;
             return NOERROR;
         }
     }
@@ -195,14 +194,14 @@ ECode CVariableOfStruct::GetIndexByName(
 
 ECode CVariableOfStruct::SetFieldValueByName(
     /* [in] */ const String& name,
-    /* [in] */ void *pParam,
+    /* [in] */ void* param,
     /* [in] */ CarDataType type)
 {
-    if(name.IsNull() || !pParam) {
+    if(name.IsNull() || !param) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pVarBuf) {
+    if (!mVarBuf) {
         return E_INVALID_OPERATION;
     }
 
@@ -210,23 +209,23 @@ ECode CVariableOfStruct::SetFieldValueByName(
     ECode ec = GetIndexByName(name, &index);
     if (FAILED(ec)) return ec;
 
-    if (type != m_pStructFieldDesc[index].type) {
+    if (type != mStructFieldDesc[index].mType) {
         return E_INVALID_ARGUMENT;
     }
 
-    memcpy(m_pVarBuf + m_pStructFieldDesc[index].pos, pParam,
-            m_pStructFieldDesc[index].size);
+    memcpy(mVarBuf + mStructFieldDesc[index].mPos, param,
+            mStructFieldDesc[index].mSize);
 
     return NOERROR;
 }
 
 ECode CVariableOfStruct::ZeroAllFields()
 {
-    if (!m_pVarBuf) {
+    if (!mVarBuf) {
         return E_INVALID_OPERATION;
     }
     else {
-        memset(m_pVarBuf, 0, m_uVarSize);
+        memset(mVarBuf, 0, mVarSize);
         return NOERROR;
     }
 }
@@ -273,14 +272,7 @@ ECode CVariableOfStruct::SetDoubleField(
     return SetFieldValueByName(name, &value, CarDataType_Double);
 }
 
-ECode CVariableOfStruct::SetChar16Field(
-    /* [in] */ const String& name,
-    /* [in] */ Char16 value)
-{
-    return SetFieldValueByName(name, &value, CarDataType_Char16);
-}
-
-ECode CVariableOfStruct::SetChar32Field(
+ECode CVariableOfStruct::SetCharField(
     /* [in] */ const String& name,
     /* [in] */ Char32 value)
 {
@@ -296,16 +288,16 @@ ECode CVariableOfStruct::SetBooleanField(
 
 ECode CVariableOfStruct::SetEMuidField(
     /* [in] */ const String& name,
-    /* [in] */ EMuid * pValue)
+    /* [in] */ EMuid* value)
 {
-    return SetFieldValueByName(name, &pValue, CarDataType_EMuid);
+    return SetFieldValueByName(name, &value, CarDataType_EMuid);
 }
 
 ECode CVariableOfStruct::SetEGuidField(
     /* [in] */ const String& name,
-    /* [in] */ EGuid * pValue)
+    /* [in] */ EGuid* value)
 {
-    return SetFieldValueByName(name, &pValue, CarDataType_EGuid);
+    return SetFieldValueByName(name, &value, CarDataType_EGuid);
 }
 
 ECode CVariableOfStruct::SetECodeField(
@@ -338,9 +330,9 @@ ECode CVariableOfStruct::SetEnumField(
 
 ECode CVariableOfStruct::GetStructFieldSetter(
     /* [in] */ const String& name,
-    /* [out] */ IStructSetter ** ppSetter)
+    /* [out] */ IStructSetter** setter)
 {
-    if (name.IsNull() || !ppSetter) {
+    if (name.IsNull() || !setter) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -348,45 +340,45 @@ ECode CVariableOfStruct::GetStructFieldSetter(
     ECode ec = GetIndexByName(name, &index);
     if (FAILED(ec)) return ec;
 
-    if (m_pStructFieldDesc[index].type != CarDataType_Struct) {
+    if (mStructFieldDesc[index].mType != CarDataType_Struct) {
         return E_INVALID_ARGUMENT;
     }
 
-    AutoPtr<IFieldInfo> pFieldInfo;
-    AutoPtr<IStructInfo> pStructInfo;
-    ec = m_pStructInfo->GetFieldInfo(name, (IFieldInfo**)&pFieldInfo);
+    AutoPtr<IFieldInfo> fieldInfo;
+    AutoPtr<IStructInfo> structInfo;
+    ec = mStructInfo->GetFieldInfo(name, (IFieldInfo**)&fieldInfo);
     if (FAILED(ec)) return ec;
 
-    ec = pFieldInfo->GetTypeInfo((IDataTypeInfo **)&pStructInfo);
+    ec = fieldInfo->GetTypeInfo((IDataTypeInfo **)&structInfo);
     if (FAILED(ec)) return ec;
 
-    AutoPtr<IVariableOfStruct> pVariable;
-    ec = pStructInfo->CreateVariableBox(
-        m_pVarBuf + m_pStructFieldDesc[index].pos, (IVariableOfStruct**)&pVariable);
+    AutoPtr<IVariableOfStruct> variable;
+    ec = structInfo->CreateVariableBox(
+            mVarBuf + mStructFieldDesc[index].mPos, (IVariableOfStruct**)&variable);
     if (FAILED(ec)) return ec;
 
-    return pVariable->GetSetter(ppSetter);
+    return variable->GetSetter(setter);
 }
 
 ECode CVariableOfStruct::GetCppVectorFieldSetter(
     /* [in] */ const String& name,
-    /* [out] */ ICppVectorSetter ** ppSetter)
+    /* [out] */ ICppVectorSetter** setter)
 {
-    return AcquireCppVectorFieldSGetter(name, TRUE, (IInterface**)ppSetter);
+    return AcquireCppVectorFieldSGetter(name, TRUE, (IInterface**)setter);
 }
 
 //--------------Getter----------------------------------------------------------
 
 ECode CVariableOfStruct::GetFieldValueByName(
     /* [in] */ const String& name,
-    /* [in] */ void *pParam,
+    /* [in] */ void* param,
     /* [in] */ CarDataType type)
 {
-    if(name.IsNull() || !pParam) {
+    if(name.IsNull() || !param) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pVarBuf) {
+    if (!mVarBuf) {
         return E_INVALID_OPERATION;
     }
 
@@ -394,105 +386,98 @@ ECode CVariableOfStruct::GetFieldValueByName(
     ECode ec = GetIndexByName(name, &index);
     if (FAILED(ec)) return ec;
 
-    if (type != m_pStructFieldDesc[index].type) {
+    if (type != mStructFieldDesc[index].mType) {
         return E_INVALID_ARGUMENT;
     }
 
-    memcpy(pParam, m_pVarBuf + m_pStructFieldDesc[index].pos,
-            m_pStructFieldDesc[index].size);
+    memcpy(param, mVarBuf + mStructFieldDesc[index].mPos,
+            mStructFieldDesc[index].mSize);
 
     return NOERROR;
 }
 
 ECode CVariableOfStruct::GetInt16Field(
     /* [in] */ const String& name,
-    /* [out] */ Int16 * pValue)
+    /* [out] */ Int16* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Int16);
+    return GetFieldValueByName(name, value, CarDataType_Int16);
 }
 
 ECode CVariableOfStruct::GetInt32Field(
     /* [in] */ const String& name,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Int32);
+    return GetFieldValueByName(name, value, CarDataType_Int32);
 }
 
 ECode CVariableOfStruct::GetInt64Field(
     /* [in] */ const String& name,
-    /* [out] */ Int64 * pValue)
+    /* [out] */ Int64* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Int64);
+    return GetFieldValueByName(name, value, CarDataType_Int64);
 }
 
 ECode CVariableOfStruct::GetByteField(
     /* [in] */ const String& name,
-    /* [out] */ Byte * pValue)
+    /* [out] */ Byte* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Byte);
+    return GetFieldValueByName(name, value, CarDataType_Byte);
 }
 
 ECode CVariableOfStruct::GetFloatField(
     /* [in] */ const String& name,
-    /* [out] */ Float * pValue)
+    /* [out] */ Float* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Float);
+    return GetFieldValueByName(name, value, CarDataType_Float);
 }
 
 ECode CVariableOfStruct::GetDoubleField(
     /* [in] */ const String& name,
-    /* [out] */ Double * pValue)
+    /* [out] */ Double* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Double);
+    return GetFieldValueByName(name, value, CarDataType_Double);
 }
 
-ECode CVariableOfStruct::GetChar16Field(
+ECode CVariableOfStruct::GetCharField(
     /* [in] */ const String& name,
-    /* [out] */ Char16 * pValue)
+    /* [out] */ Char32* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Char16);
-}
-
-ECode CVariableOfStruct::GetChar32Field(
-    /* [in] */ const String& name,
-    /* [out] */ Char32 * pValue)
-{
-    return GetFieldValueByName(name, pValue, CarDataType_Char32);
+    return GetFieldValueByName(name, value, CarDataType_Char32);
 }
 
 ECode CVariableOfStruct::GetBooleanField(
     /* [in] */ const String& name,
-    /* [out] */ Boolean * pValue)
+    /* [out] */ Boolean* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Boolean);
+    return GetFieldValueByName(name, value, CarDataType_Boolean);
 }
 
 ECode CVariableOfStruct::GetEMuidField(
     /* [in] */ const String& name,
-    /* [out] */ EMuid * pValue)
+    /* [out] */ EMuid* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_EMuid);
+    return GetFieldValueByName(name, value, CarDataType_EMuid);
 }
 
 ECode CVariableOfStruct::GetEGuidField(
     /* [in] */ const String& name,
-    /* [out] */ EGuid * pValue)
+    /* [out] */ EGuid* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_EGuid);
+    return GetFieldValueByName(name, value, CarDataType_EGuid);
 }
 
 ECode CVariableOfStruct::GetECodeField(
     /* [in] */ const String& name,
-    /* [out] */ ECode * pValue)
+    /* [out] */ ECode* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_ECode);
+    return GetFieldValueByName(name, value, CarDataType_ECode);
 }
 
 ECode CVariableOfStruct::GetLocalPtrField(
     /* [in] */ const String& name,
-    /* [out] */ LocalPtr * pValue)
+    /* [out] */ LocalPtr* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_LocalPtr);
+    return GetFieldValueByName(name, value, CarDataType_LocalPtr);
 }
 
 ECode CVariableOfStruct::GetLocalTypeField(
@@ -504,16 +489,16 @@ ECode CVariableOfStruct::GetLocalTypeField(
 
 ECode CVariableOfStruct::GetEnumField(
     /* [in] */ const String& name,
-    /* [out] */ Int32 * pValue)
+    /* [out] */ Int32* value)
 {
-    return GetFieldValueByName(name, pValue, CarDataType_Enum);
+    return GetFieldValueByName(name, value, CarDataType_Enum);
 }
 
 ECode CVariableOfStruct::GetStructFieldGetter(
     /* [in] */ const String& name,
-    /* [out] */ IStructGetter ** ppGetter)
+    /* [out] */ IStructGetter** getter)
 {
-    if (name.IsNull() || !ppGetter) {
+    if (name.IsNull() || !getter) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -521,39 +506,39 @@ ECode CVariableOfStruct::GetStructFieldGetter(
     ECode ec = GetIndexByName(name, &index);
     if (FAILED(ec)) return ec;
 
-    if (m_pStructFieldDesc[index].type != CarDataType_Struct) {
+    if (mStructFieldDesc[index].mType != CarDataType_Struct) {
         return E_INVALID_ARGUMENT;
     }
 
-    AutoPtr<IFieldInfo> pFieldInfo;
-    AutoPtr<IStructInfo> pStructInfo;
-    ec = m_pStructInfo->GetFieldInfo(name, (IFieldInfo **)&pFieldInfo);
+    AutoPtr<IFieldInfo> fieldInfo;
+    AutoPtr<IStructInfo> structInfo;
+    ec = mStructInfo->GetFieldInfo(name, (IFieldInfo **)&fieldInfo);
     if (FAILED(ec)) return ec;
 
-    ec = pFieldInfo->GetTypeInfo((IDataTypeInfo **)&pStructInfo);
+    ec = fieldInfo->GetTypeInfo((IDataTypeInfo **)&structInfo);
     if (FAILED(ec)) return ec;
 
-    AutoPtr<IVariableOfStruct> pVariable;
-    ec = pStructInfo->CreateVariableBox(
-        m_pVarBuf + m_pStructFieldDesc[index].pos, (IVariableOfStruct **)&pVariable);
+    AutoPtr<IVariableOfStruct> variable;
+    ec = structInfo->CreateVariableBox(
+            mVarBuf + mStructFieldDesc[index].mPos, (IVariableOfStruct **)&variable);
     if (FAILED(ec)) return ec;
 
-    return pVariable->GetGetter(ppGetter);
+    return variable->GetGetter(getter);
 }
 
 ECode CVariableOfStruct::GetCppVectorFieldGetter(
     /* [in] */ const String& name,
-    /* [out] */ ICppVectorGetter ** ppGetter)
+    /* [out] */ ICppVectorGetter** getter)
 {
-    return AcquireCppVectorFieldSGetter(name, FALSE, (IInterface**)ppGetter);
+    return AcquireCppVectorFieldSGetter(name, FALSE, (IInterface**)getter);
 }
 
 ECode CVariableOfStruct::AcquireCppVectorFieldSGetter(
     /* [in] */ const String& name,
-    /* [in] */ Boolean bSetter,
-    /* [out] */ IInterface ** ppSGetter)
+    /* [in] */ Boolean isSetter,
+    /* [out] */ IInterface** sGetter)
 {
-    if (name.IsNull() || !ppSGetter) {
+    if (name.IsNull() || !sGetter) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -561,69 +546,69 @@ ECode CVariableOfStruct::AcquireCppVectorFieldSGetter(
     ECode ec = GetIndexByName(name, &index);
     if (FAILED(ec)) return ec;
 
-    if (m_pStructFieldDesc[index].type != CarDataType_CppVector) {
+    if (mStructFieldDesc[index].mType != CarDataType_CppVector) {
         return E_INVALID_ARGUMENT;
     }
 
-    assert(m_pCppVectorSGetters);
+    assert(mCppVectorSGetters);
 
     g_objInfoList.LockHashTable(EntryType_Struct);
 
-    CVariableOfCppVector *pSGetter = (CVariableOfCppVector *)
-                        (IVariableOfCarArray *)m_pCppVectorSGetters[index];
-    if (!pSGetter) {
-        AutoPtr<IFieldInfo> pFieldInfo;
-        ec = m_pStructInfo->GetFieldInfo(name, (IFieldInfo**)&pFieldInfo);
+    CVariableOfCppVector* sGetterObj = (CVariableOfCppVector *)
+            (IVariableOfCarArray *)mCppVectorSGetters[index];
+    if (!sGetterObj) {
+        AutoPtr<IFieldInfo> fieldInfo;
+        ec = mStructInfo->GetFieldInfo(name, (IFieldInfo**)&fieldInfo);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        AutoPtr<ICppVectorInfo> pTypeInfo;
-        pFieldInfo->GetTypeInfo((IDataTypeInfo**)&pTypeInfo);
+        AutoPtr<ICppVectorInfo> typeInfo;
+        fieldInfo->GetTypeInfo((IDataTypeInfo**)&typeInfo);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
         Int32 length = 0;
-        ec = pTypeInfo->GetLength(&length);
+        ec = typeInfo->GetLength(&length);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        AutoPtr<IDataTypeInfo> pElementTypeInfo;
-        ec = pTypeInfo->GetElementTypeInfo((IDataTypeInfo**)&pElementTypeInfo);
+        AutoPtr<IDataTypeInfo> elementTypeInfo;
+        ec = typeInfo->GetElementTypeInfo((IDataTypeInfo**)&elementTypeInfo);
         if (FAILED(ec)) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        pSGetter = new CVariableOfCppVector(
-                                    pElementTypeInfo, length,
-                                    m_pVarBuf + m_pStructFieldDesc[index].pos);
-        if (pSGetter == NULL) {
+        sGetterObj = new CVariableOfCppVector(
+                elementTypeInfo, length,
+                mVarBuf + mStructFieldDesc[index].mPos);
+        if (sGetterObj == NULL) {
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return E_OUT_OF_MEMORY;
         }
 
-        ec = pSGetter->Init();
+        ec = sGetterObj->Init();
         if (FAILED(ec)) {
-            delete pSGetter;
+            delete sGetterObj;
             g_objInfoList.UnlockHashTable(EntryType_Struct);
             return ec;
         }
 
-        pSGetter->AddRef();
-        m_pCppVectorSGetters[index] = (IVariableOfCarArray *)pSGetter;
+        sGetterObj->AddRef();
+        mCppVectorSGetters[index] = (IVariableOfCarArray *)sGetterObj;
     }
 
-    if (bSetter) {
-        pSGetter->GetSetter((ICppVectorSetter**)ppSGetter);
+    if (isSetter) {
+        sGetterObj->GetSetter((ICppVectorSetter**)sGetter);
     }
     else {
-        pSGetter->GetGetter((ICppVectorGetter**)ppSGetter);
+        sGetterObj->GetGetter((ICppVectorGetter**)sGetter);
     }
 
     g_objInfoList.UnlockHashTable(EntryType_Struct);

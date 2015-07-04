@@ -13,9 +13,9 @@ class CLocalPtrInfo
 {
 public:
     CLocalPtrInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ TypeDescriptor *pTypeDescriptor,
-        /* [in] */ Int32 iPointer);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ TypeDescriptor* typeDescriptor,
+        /* [in] */ Int32 pointer);
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
@@ -25,28 +25,28 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetSize(
-        /* [out] */ MemorySize * pSize);
+        /* [out] */ MemorySize* size);
 
     CARAPI GetDataType(
-        /* [out] */ CarDataType * pDataType);
+        /* [out] */ CarDataType* dataType);
 
     CARAPI GetTargetTypeInfo(
-        /* [out] */ IDataTypeInfo ** ppDateTypeInfo);
+        /* [out] */ IDataTypeInfo** dateTypeInfo);
 
     CARAPI GetPtrLevel(
-        /* [out] */ Int32 *pLevel);
+        /* [out] */ Int32* level);
 
 private:
-    AutoPtr<CClsModule> m_pCClsModule;
-    TypeDescriptor     *m_pTypeDescriptor;
-    Int32               m_iPointer;
+    AutoPtr<CClsModule> mClsModule;
+    TypeDescriptor*     mTypeDescriptor;
+    Int32               mPointer;
 };
 
 #endif // __CLOCALPTRINFO_H__

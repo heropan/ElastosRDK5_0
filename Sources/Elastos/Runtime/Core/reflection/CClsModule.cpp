@@ -33,8 +33,8 @@ CClsModule::~CClsModule()
 {
     if (mTypeAliasList) {
         for (Int32 i = 0; i < mClsMod->cAliases; i++) {
-            if (mTypeAliasList[i].pOrgTypeDesc) {
-                delete mTypeAliasList[i].pOrgTypeDesc;
+            if (mTypeAliasList[i].mOrgTypeDesc) {
+                delete mTypeAliasList[i].mOrgTypeDesc;
             }
         }
         delete[] mTypeAliasList;
@@ -93,20 +93,20 @@ ECode CClsModule::InitOrgType()
     memset(mTypeAliasList, 0, sizeof(TypeAliasDesc) * mClsMod->cAliases);
 
     for (i = 0; i < mClsMod->cAliases; i++) {
-        mTypeAliasList[i].pOrgTypeDesc = new TypeDescriptor;
-        if (!mTypeAliasList[i].pOrgTypeDesc) goto EExit;
-        mTypeAliasList[i].pTypeDesc = &(getAliasDirAddr(mBase,
+        mTypeAliasList[i].mOrgTypeDesc = new TypeDescriptor;
+        if (!mTypeAliasList[i].mOrgTypeDesc) goto EExit;
+        mTypeAliasList[i].mTypeDesc = &(getAliasDirAddr(mBase,
                 mClsMod->ppAliasDir, i)->type);
-        _GetOriginalType(this, mTypeAliasList[i].pTypeDesc,
-                mTypeAliasList[i].pOrgTypeDesc);
+        _GetOriginalType(this, mTypeAliasList[i].mTypeDesc,
+                mTypeAliasList[i].mOrgTypeDesc);
     }
 
     return NOERROR;
 
 EExit:
     for (i = 0; i < mClsMod->cAliases; i++) {
-        if (mTypeAliasList[i].pOrgTypeDesc) {
-            delete mTypeAliasList[i].pOrgTypeDesc;
+        if (mTypeAliasList[i].mOrgTypeDesc) {
+            delete mTypeAliasList[i].mOrgTypeDesc;
         }
     }
 
@@ -143,7 +143,7 @@ ECode CClsModule::AliasToOriginal(
         return E_INVALID_ARGUMENT;
     }
 
-    *orgTypeDesc = mTypeAliasList[typeDype->sIndex].pOrgTypeDesc;
+    *orgTypeDesc = mTypeAliasList[typeDype->sIndex].mOrgTypeDesc;
 
     return NOERROR;
 }

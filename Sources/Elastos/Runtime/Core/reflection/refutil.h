@@ -31,31 +31,31 @@ _ELASTOS_NAMESPACE_USING
 
 struct DateTypeDesc
 {
-    const char * name;
-    size_t size;
+    const char* mName;
+    size_t mSize;
 };
 
 struct ParmElement
 {
-    UInt32         pos;
-    UInt32         size;
-    CarDataType    type;
-    ParamIOAttribute  attrib;
-    Int32          pointer;
+    UInt32         mPos;
+    UInt32         mSize;
+    CarDataType    mType;
+    ParamIOAttribute mAttrib;
+    Int32          mPointer;
 };
 
 struct StructFieldDesc
 {
-    char *      pszName;
-    UInt32      pos;
-    UInt32      size;
-    CarDataType type;
+    char*       mName;
+    UInt32      mPos;
+    UInt32      mSize;
+    CarDataType mType;
 };
 
 struct TypeAliasDesc
 {
-    TypeDescriptor *pTypeDesc;
-    TypeDescriptor *pOrgTypeDesc;
+    TypeDescriptor* mTypeDesc;
+    TypeDescriptor* mOrgTypeDesc;
 };
 
 typedef enum EntryType {
@@ -82,8 +82,8 @@ typedef enum EntryType {
 
 struct InfoLinkNode
 {
-    PVoid pInfo;
-    InfoLinkNode *pNext;
+    PVoid mInfo;
+    InfoLinkNode* mNext;
 };
 
 inline int StringAlignSize(const char *s)
@@ -93,17 +93,27 @@ inline int StringAlignSize(const char *s)
 
 class CClsModule;
 
-extern Boolean IsSysAlaisType(const CClsModule *pCClsModule, UInt32 uIndex);
+extern Boolean IsSysAlaisType(
+    /* [in] */ const CClsModule* clsModule,
+    /* [in] */ UInt32 index);
 
-extern void _GetOriginalType(const CClsModule *pCClsModule,
-    const TypeDescriptor *pSrc, TypeDescriptor *pDest);
+extern void _GetOriginalType(
+    /* [in] */ const CClsModule* clsModule,
+    /* [in] */ const TypeDescriptor* src,
+    /* [in] */ TypeDescriptor* dest);
 
 extern const DateTypeDesc g_cDataTypeList[];
 
-extern CarDataType GetCarDataType(CARDataType type);
-extern UInt32 GetDataTypeSize(const CClsModule *pCClsModule,
-     TypeDescriptor *pTypeDesc);
-extern CarQuintetFlag DataTypeToFlag(CarDataType type);
+extern CarDataType GetCarDataType(
+    /* [in] */ CARDataType type);
+
+extern UInt32 GetDataTypeSize(
+    /* [in] */ const CClsModule* clsModule,
+    /* [in] */ TypeDescriptor* typeDesc);
+
+extern CarQuintetFlag DataTypeToFlag(
+    /* [in] */ CarDataType type);
+
 //extern CARDataType GetBasicType(TypeDescriptor *pTypeDesc);
 //extern UInt32 GetStructSize(const CLSModule *pModule,
 //    StructDescriptor *pStructDesc);

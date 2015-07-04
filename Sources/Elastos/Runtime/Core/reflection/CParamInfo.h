@@ -11,11 +11,11 @@ class CParamInfo : public IParamInfo
 {
 public:
     CParamInfo(
-        /* [in] */ CClsModule *pCClsModule,
-        /* [in] */ IMethodInfo *pMethodInfo,
-        /* [in] */ ParmElement *pParmElement,
-        /* [in] */ ParamDescriptor *pParamDescriptor,
-        /* [in] */ Int32 iIndex);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ IMethodInfo* methodInfo,
+        /* [in] */ ParmElement* parmElement,
+        /* [in] */ ParamDescriptor* paramDescriptor,
+        /* [in] */ Int32 index);
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
@@ -25,48 +25,48 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetMethodInfo(
-        /* [out] */ IMethodInfo ** ppMethodInfo);
+        /* [out] */ IMethodInfo** methodInfo);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetIndex(
-        /* [out] */ Int32 * pIndex);
+        /* [out] */ Int32* index);
 
     CARAPI GetIOAttribute(
-        /* [out] */ ParamIOAttribute * pIOAttrib);
+        /* [out] */ ParamIOAttribute* ioAttrib);
 
     CARAPI IsReturnValue(
-        /* [out] */ Boolean * pReturnValue);
+        /* [out] */ Boolean* returnValue);
 
     CARAPI GetTypeInfo(
-        /* [out] */ IDataTypeInfo ** ppTypeInfo);
+        /* [out] */ IDataTypeInfo** typeInfo);
 
     CARAPI GetAdvisedCapacity(
-        /* [out] */ Int32 * pAdvisedCapacity);
+        /* [out] */ Int32* advisedCapacity);
 
     CARAPI IsUsingTypeAlias(
-        /* [out] */ Boolean * pUsingTypeAlias);
+        /* [out] */ Boolean* usingTypeAlias);
 
     CARAPI GetUsedTypeAliasInfo(
-        /* [out] */ ITypeAliasInfo ** ppUsedTypeAliasInfo);
+        /* [out] */ ITypeAliasInfo** usedTypeAliasInfo);
 
 private:
-    CClsModule       *m_pCClsModule;
-    ParamDescriptor  *m_pParamDescriptor;
-    TypeDescriptor   *m_pTypeDescriptor;
+    CClsModule*         mClsModule;
+    ParamDescriptor*    mParamDescriptor;
+    TypeDescriptor*     mTypeDescriptor;
 
-    MethodDescriptor *m_pMethodDescriptor;
+    MethodDescriptor*   mMethodDescriptor;
 
-    IMethodInfo      *m_pMethodInfo;
-    ParmElement      *m_pParmElement;
+    IMethodInfo*        mMethodInfo;
+    ParmElement*        mParmElement;
 
-    Int32             m_iIndex;
-    UInt32            m_uPointer;
+    Int32               mIndex;
+    UInt32              mPointer;
 };
 
 #endif // __CPARAMINFO_H__

@@ -9,117 +9,111 @@ CObjInfoList g_objInfoList;
 
 ELAPI _CReflector_AcquireModuleInfo(
     /* [in] */ const String& name,
-    /* [out] */ IModuleInfo **ppModuleInfo)
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    return g_objInfoList.AcquireModuleInfo(name, ppModuleInfo);
+    return g_objInfoList.AcquireModuleInfo(name, moduleInfo);
 }
 
 ELAPI _CReflector_AcquireIntrinsicTypeInfo(
     /* [in] */ CarDataType intrinsicType,
-    /* [out] */ IDataTypeInfo **ppIntrinsicTypeInfo)
+    /* [out] */ IDataTypeInfo** intrinsicTypeInfo)
 {
-    return g_objInfoList.AcquireIntrinsicInfo(intrinsicType, ppIntrinsicTypeInfo);
+    return g_objInfoList.AcquireIntrinsicInfo(intrinsicType, intrinsicTypeInfo);
 }
 
 ELAPI _CReflector_AcquireEnumInfo(
     /* [in] */ const String& name,
-    /* [in] */ ArrayOf<String>* pItemNames,
-    /* [in] */ ArrayOf<Int32>* pItemValues,
-    /* [out] */ IEnumInfo **ppEnumInfo)
+    /* [in] */ ArrayOf<String>* itemNames,
+    /* [in] */ ArrayOf<Int32>* itemValues,
+    /* [out] */ IEnumInfo** enumInfo)
 {
-    return g_objInfoList.AcquireDynamicEnumInfo(name, pItemNames,
-                                                pItemValues, ppEnumInfo);
+    return g_objInfoList.AcquireDynamicEnumInfo(name, itemNames,
+            itemValues, enumInfo);
 }
 
 ELAPI _CReflector_AcquireCppVectorInfo(
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
+    /* [in] */ IDataTypeInfo* elementTypeInfo,
     /* [in] */ Int32 length,
-    /* [out] */ ICppVectorInfo **ppCppVectorInfo)
+    /* [out] */ ICppVectorInfo** cppVectorInfo)
 {
-    return g_objInfoList.AcquireCppVectorInfo(pElementTypeInfo,
-                                              length, ppCppVectorInfo);
+    return g_objInfoList.AcquireCppVectorInfo(elementTypeInfo,
+            length, cppVectorInfo);
 }
 
 ELAPI _CReflector_AcquireStructInfo(
     /* [in] */ const String& name,
-    /* [in] */ ArrayOf<String> * pFieldNames,
-    /* [in] */ ArrayOf<IDataTypeInfo *> * pFieldTypeInfos,
-    /* [out] */ IStructInfo **ppStructInfo)
+    /* [in] */ ArrayOf<String>* fieldNames,
+    /* [in] */ ArrayOf<IDataTypeInfo *>* fieldTypeInfos,
+    /* [out] */ IStructInfo** structInfo)
 {
-    return g_objInfoList.AcquireDynamicStructInfo(name, pFieldNames,
-                                                pFieldTypeInfos, ppStructInfo);
+    return g_objInfoList.AcquireDynamicStructInfo(name, fieldNames,
+            fieldTypeInfos, structInfo);
 }
 
 ELAPI _CReflector_AcquireCarArrayInfo(
     /* [in] */ CarDataType quintetType,
-    /* [in] */ IDataTypeInfo *pElementTypeInfo,
-    /* [out] */ ICarArrayInfo **ppCarArrayInfo)
+    /* [in] */ IDataTypeInfo* elementTypeInfo,
+    /* [out] */ ICarArrayInfo** carArrayInfo)
 {
-    return g_objInfoList.AcquireCarArrayInfo(quintetType, pElementTypeInfo,
-                                                ppCarArrayInfo);
+    return g_objInfoList.AcquireCarArrayInfo(quintetType, elementTypeInfo,
+            carArrayInfo);
 }
 
 ELAPI _CObject_ReflectModuleInfo(
-    /* [in] */ PInterface pObj,
-    /* [out] */ IModuleInfo **ppModuleInfo)
+    /* [in] */ PInterface object,
+    /* [out] */ IModuleInfo** moduleInfo)
 {
-    if (!pObj || !ppModuleInfo) {
+    if (!object || !moduleInfo) {
         return E_INVALID_ARGUMENT;
     }
 
+    IObject* iObject = (IObject*)object->Probe(EIID_IObject);
+    if (iObject == NULL) return E_NO_INTERFACE;
+
     ClassID clsid;
-    IObject *pObject;
-    ECode ec;
-
-    pObject = (IObject*)pObj->Probe(EIID_IObject);
-    if (pObject == NULL) return E_NO_INTERFACE;
-
-    ec = pObject->GetClassID(&clsid);
+    ECode ec = iObject->GetClassID(&clsid);
     if (FAILED(ec)) {
         return E_NO_INTERFACE;
     }
 
-    return _CReflector_AcquireModuleInfo(String(clsid.pUunm), ppModuleInfo);
+    return _CReflector_AcquireModuleInfo(String(clsid.pUunm), moduleInfo);
 }
 
 ELAPI _CObject_ReflectClassInfo(
-    /* [in] */ PInterface pObj,
-    /* [out] */ IClassInfo **ppClassInfo)
+    /* [in] */ PInterface object,
+    /* [out] */ IClassInfo** classInfo)
 {
-    if (!pObj || !ppClassInfo) {
+    if (!object || !classInfo) {
         return E_INVALID_ARGUMENT;
     }
 
+    IObject* iObject = (IObject*)object->Probe(EIID_IObject);
+    if (iObject == NULL) return E_NO_INTERFACE;
+
     ClassID clsid;
-    IObject *pObject;
-    ECode ec;
-
-    pObject = (IObject*)pObj->Probe(EIID_IObject);
-    if (pObject == NULL) return E_NO_INTERFACE;
-
-    ec = pObject->GetClassID(&clsid);
+    ECode ec = iObject->GetClassID(&clsid);
     if (FAILED(ec)) {
         return E_NO_INTERFACE;
     }
 
-    AutoPtr<CModuleInfo> pModuleInfo;
+    AutoPtr<CModuleInfo> moduleInfo;
     ec = g_objInfoList.AcquireModuleInfo(String(clsid.pUunm),
-                                         (IModuleInfo **)&pModuleInfo);
+            (IModuleInfo **)&moduleInfo);
     if (FAILED(ec)) {
         return ec;
     }
 
-    ClassDirEntry* pClassDir = NULL;
-    ClassDescriptor *pClsDesc = NULL;
-    Int32 nBase = pModuleInfo->m_pCClsModule->mBase;
+    ClassDirEntry* classDir = NULL;
+    ClassDescriptor* clsDesc = NULL;
+    Int32 base = moduleInfo->mClsModule->mBase;
 
-    *ppClassInfo = NULL;
-    for (int i = 0; i < pModuleInfo->m_pClsMod->cClasses; i++) {
-        pClassDir = getClassDirAddr(nBase, pModuleInfo->m_pClsMod->ppClassDir, i);
-        pClsDesc = adjustClassDescAddr(nBase, pClassDir->pDesc);
-        if (pClsDesc->clsid == clsid.clsid) {
-            ec = g_objInfoList.AcquireClassInfo(pModuleInfo->m_pCClsModule,
-                                      pClassDir, (IInterface **)ppClassInfo);
+    *classInfo = NULL;
+    for (Int32 i = 0; i < moduleInfo->mClsMod->cClasses; i++) {
+        classDir = getClassDirAddr(base, moduleInfo->mClsMod->ppClassDir, i);
+        clsDesc = adjustClassDescAddr(base, classDir->pDesc);
+        if (clsDesc->clsid == clsid.clsid) {
+            ec = g_objInfoList.AcquireClassInfo(moduleInfo->mClsModule,
+                    classDir, (IInterface **)classInfo);
             return ec;
         }
     }
@@ -128,59 +122,54 @@ ELAPI _CObject_ReflectClassInfo(
 }
 
 ELAPI _CObject_ReflectInterfaceInfo(
-    /* [in] */ PInterface pObj,
-    /* [out] */ IInterfaceInfo **ppInterfaceInfo)
+    /* [in] */ PInterface object,
+    /* [out] */ IInterfaceInfo** interfaceInfo)
 {
-    if (!pObj || !ppInterfaceInfo) {
+    if (!object || !interfaceInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    ClassID clsid;
     EIID iid;
-    IObject *pObject;
-    ECode ec;
-
-    ec = pObj->GetInterfaceID(pObj, &iid);
+    ECode ec = object->GetInterfaceID(object, &iid);
     if (FAILED(ec)) return E_INVALID_ARGUMENT;
 
-    pObject = (IObject*)pObj->Probe(EIID_IObject);
-    if (pObject == NULL) return E_NO_INTERFACE;
+    IObject* iObject = (IObject*)object->Probe(EIID_IObject);
+    if (iObject == NULL) return E_NO_INTERFACE;
 
-    ec = pObject->GetClassID(&clsid);
+    ClassID clsid;
+    ec = iObject->GetClassID(&clsid);
     if (FAILED(ec)) return E_INVALID_ARGUMENT;
 
-    AutoPtr<CModuleInfo> pModuleInfo;
-    ec = _CReflector_AcquireModuleInfo(String(clsid.pUunm), (IModuleInfo **)&pModuleInfo);
+    AutoPtr<CModuleInfo> moduleInfo;
+    ec = _CReflector_AcquireModuleInfo(String(clsid.pUunm), (IModuleInfo **)&moduleInfo);
     if (FAILED(ec)) {
         return ec;
     }
 
-    ClassDirEntry* pClassDir = NULL;
-    ClassDescriptor *pClsDesc = NULL;
-    ClassInterface* pCIFDir = NULL;
-    InterfaceDirEntry* pIFDir = NULL;
-    InterfaceDescriptor *pIFDesc = NULL;
-    unsigned short   sIndex = 0;
-    Int32 nBase = pModuleInfo->m_pCClsModule->mBase;
+    ClassDirEntry* classDir = NULL;
+    ClassDescriptor* clsDesc = NULL;
+    ClassInterface* cifDir = NULL;
+    InterfaceDirEntry* ifDir = NULL;
+    InterfaceDescriptor* ifDesc = NULL;
+    UInt16 index = 0;
+    Int32 base = moduleInfo->mClsModule->mBase;
 
-    *ppInterfaceInfo = NULL;
-    for (int i = 0; i < pModuleInfo->m_pClsMod->cClasses; i++) {
-        pClassDir = getClassDirAddr(nBase, pModuleInfo->m_pClsMod->ppClassDir, i);
-        pClsDesc = adjustClassDescAddr(nBase, pClassDir->pDesc);
+    *interfaceInfo = NULL;
+    for (Int32 i = 0; i < moduleInfo->mClsMod->cClasses; i++) {
+        classDir = getClassDirAddr(base, moduleInfo->mClsMod->ppClassDir, i);
+        clsDesc = adjustClassDescAddr(base, classDir->pDesc);
         //find the class
-        if (pClsDesc->clsid == clsid.clsid) {
-            for (int j = 0; j < pClsDesc->cInterfaces; j++) {
-                pCIFDir = getCIFAddr(nBase, pClsDesc->ppInterfaces, j);
-                sIndex = pCIFDir->sIndex;
-                pIFDir = getInterfaceDirAddr(nBase,
-                                pModuleInfo->m_pClsMod->ppInterfaceDir, sIndex);
-                pIFDesc = adjustInterfaceDescAddr(nBase, pIFDir->pDesc);
+        if (clsDesc->clsid == clsid.clsid) {
+            for (Int32 j = 0; j < clsDesc->cInterfaces; j++) {
+                cifDir = getCIFAddr(base, clsDesc->ppInterfaces, j);
+                index = cifDir->sIndex;
+                ifDir = getInterfaceDirAddr(base,
+                        moduleInfo->mClsMod->ppInterfaceDir, index);
+                ifDesc = adjustInterfaceDescAddr(base, ifDir->pDesc);
                 //find the interface
-                if (pIFDesc->iid == iid) {
+                if (ifDesc->iid == iid) {
                     ec = g_objInfoList.AcquireInterfaceInfo(
-                                pModuleInfo->m_pCClsModule,
-                                sIndex,
-                                (IInterface **)ppInterfaceInfo);
+                            moduleInfo->mClsModule, index, (IInterface **)interfaceInfo);
                     return ec;
                 }
             }

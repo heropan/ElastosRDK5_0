@@ -70,7 +70,7 @@ ECode CCarArrayInfo::GetName(
 //        name->Copy(g_cDataTypeList[CarDataType_LocalType].name);
 //    }
 
-    *name = g_cDataTypeList[mQuintetType].name;
+    *name = g_cDataTypeList[mQuintetType].mName;
 
     String elementName;
     ECode ec = mElementTypeInfo->GetName(&elementName);

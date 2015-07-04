@@ -9,47 +9,47 @@
 
 #define INVALID_PARAM_COUNT 0xFFFFFFFF
 
-EXTERN_C int invoke(void* pFunc, int *pParam, int nSize);
+EXTERN_C int invoke(void* func, int* param, int nSize);
 
 struct VTable
 {
-    void* methods[1];
+    void* mMethods[1];
 };
 
 struct VObject
 {
-    VTable* vtab;
+    VTable* mVtab;
 };
 
 CMethodInfo::CMethodInfo(
-    /* [in] */ CClsModule * pCClsModule,
-    /* [in] */ MethodDescriptor *pMethodDescriptor,
-    /* [in] */ UInt32 uIndex)
+    /* [in] */ CClsModule* clsModule,
+    /* [in] */ MethodDescriptor* methodDescriptor,
+    /* [in] */ UInt32 index)
 {
-    m_pMethodDescriptor = pMethodDescriptor;
-    mIndex = uIndex;
-    m_pCClsModule = pCClsModule;
-    m_pClsMod = m_pCClsModule->mClsMod;
-    m_pParamElem = NULL;
-    m_pParameterInfos = NULL;
-    m_nBase = m_pCClsModule->mBase;
+    mMethodDescriptor = methodDescriptor;
+    mIndex = index;
+    mClsModule = clsModule;
+    mClsMod = mClsModule->mClsMod;
+    mParamElem = NULL;
+    mParameterInfos = NULL;
+    mBase = mClsModule->mBase;
 }
 
 CMethodInfo::~CMethodInfo()
 {
-    Int32 count = m_pMethodDescriptor->cParams;
-    if (m_pParameterInfos) {
+    Int32 count = mMethodDescriptor->cParams;
+    if (mParameterInfos) {
         for (Int32 i = 0; i < count; i++) {
-            if ((*m_pParameterInfos)[i]) {
-                delete (*m_pParameterInfos)[i];
-                (*m_pParameterInfos)[i] = NULL;
+            if ((*mParameterInfos)[i]) {
+                delete (*mParameterInfos)[i];
+                (*mParameterInfos)[i] = NULL;
             }
         }
-        ArrayOf<IParamInfo *>::Free(m_pParameterInfos);
+        ArrayOf<IParamInfo *>::Free(mParameterInfos);
     }
 
-    if (m_pParamElem) {
-        delete [] m_pParamElem;
+    if (mParamElem) {
+        delete [] mParamElem;
     }
 }
 
@@ -61,15 +61,15 @@ UInt32 CMethodInfo::AddRef()
 UInt32 CMethodInfo::Release()
 {
     g_objInfoList.LockHashTable(EntryType_Method);
-    Int32 nRef = atomic_dec(&mRef);
+    Int32 ref = atomic_dec(&mRef);
 
-    if (0 == nRef) {
-        g_objInfoList.RemoveMethodInfo(m_pMethodDescriptor, mIndex);
+    if (0 == ref) {
+        g_objInfoList.RemoveMethodInfo(mMethodDescriptor, mIndex);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Method);
-    assert(nRef >= 0);
-    return nRef;
+    assert(ref >= 0);
+    return ref;
 }
 
 PInterface CMethodInfo::Probe(
@@ -90,8 +90,8 @@ PInterface CMethodInfo::Probe(
 }
 
 ECode CMethodInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
@@ -105,75 +105,74 @@ ECode CMethodInfo::Init()
 }
 
 ECode CMethodInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = adjustNameAddr(m_nBase, m_pMethodDescriptor->pszName);
-
+    *name = adjustNameAddr(mBase, mMethodDescriptor->pszName);
     return NOERROR;
 }
 
 ECode CMethodInfo::GetParamCount(
-    /* [out] */ Int32 * pCount)
+    /* [out] */ Int32* count)
 {
-    if (!pCount) {
+    if (!count) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pCount = m_pMethodDescriptor->cParams;
+    *count = mMethodDescriptor->cParams;
     return NOERROR;
 }
 
 ECode CMethodInfo::GetAllParamInfos(
-    /* [out] */ ArrayOf<IParamInfo *> * pParamInfos)
+    /* [out] */ ArrayOf<IParamInfo *>* paramInfos)
 {
-    if (!pParamInfos || !pParamInfos->GetLength()) {
+    if (!paramInfos || !paramInfos->GetLength()) {
         return E_INVALID_ARGUMENT;
     }
 
-    pParamInfos->Copy(m_pParameterInfos);
+    paramInfos->Copy(mParameterInfos);
 
     return NOERROR;
 }
 
 ECode CMethodInfo::GetParamInfoByIndex(
     /* [in] */ Int32 index,
-    /* [out] */ IParamInfo ** ppParamInfo)
+    /* [out] */ IParamInfo** paramInfo)
 {
-    if (!ppParamInfo || index < 0) {
+    if (!paramInfo || index < 0) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (index >= m_pParameterInfos->GetLength()) {
+    if (index >= mParameterInfos->GetLength()) {
         return E_DOES_NOT_EXIST;
     }
 
-    *ppParamInfo = (IParamInfo *)(*m_pParameterInfos)[index];
-    (*ppParamInfo)->AddRef();
+    *paramInfo = (IParamInfo *)(*mParameterInfos)[index];
+    (*paramInfo)->AddRef();
 
     return NOERROR;
 }
 
 ECode CMethodInfo::GetParamInfoByName(
     /* [in] */ const String& name,
-    /* [out] */ IParamInfo ** ppParamInfo)
+    /* [out] */ IParamInfo** paramInfo)
 {
-    if (name.IsNull() || !ppParamInfo) {
+    if (name.IsNull() || !paramInfo) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pMethodDescriptor->cParams) {
+    if (!mMethodDescriptor->cParams) {
         return E_DOES_NOT_EXIST;
     }
 
-    ParamDescriptor* pParam = NULL;
-    for (Int32 i = 0; i < m_pMethodDescriptor->cParams; i++) {
-        pParam = getParamDescAddr(m_nBase, m_pMethodDescriptor->ppParams, i);
-        if (name.Equals(adjustNameAddr(m_nBase, pParam->pszName))) {
-            return GetParamInfoByIndex(i, ppParamInfo);
+    ParamDescriptor* param = NULL;
+    for (Int32 i = 0; i < mMethodDescriptor->cParams; i++) {
+        param = getParamDescAddr(mBase, mMethodDescriptor->ppParams, i);
+        if (name.Equals(adjustNameAddr(mBase, param->pszName))) {
+            return GetParamInfoByIndex(i, paramInfo);
         }
     }
 
@@ -181,183 +180,182 @@ ECode CMethodInfo::GetParamInfoByName(
 }
 
 ECode CMethodInfo::SetParamElem(
-    /* [in] */ ParamDescriptor *pParamDescriptor,
-    /* [in] */ ParmElement *pParmElement)
+    /* [in] */ ParamDescriptor* paramDescriptor,
+    /* [in] */ ParmElement* parmElement)
 {
-    TypeDescriptor *pTypeDesc = &pParamDescriptor->type;
-    pParmElement->pointer = pTypeDesc->nPointer;
+    TypeDescriptor* typeDesc = &paramDescriptor->type;
+    parmElement->mPointer = typeDesc->nPointer;
 
     ECode ec = NOERROR;
-    if (pTypeDesc->type == Type_alias) {
-        ec = m_pCClsModule->AliasToOriginal(pTypeDesc, &pTypeDesc);
+    if (typeDesc->type == Type_alias) {
+        ec = mClsModule->AliasToOriginal(typeDesc, &typeDesc);
         if (FAILED(ec)) {
             return ec;
         }
-        pParmElement->pointer += pTypeDesc->nPointer;
+        parmElement->mPointer += typeDesc->nPointer;
     }
 
-    CarDataType type = GetCarDataType(pTypeDesc->type);
+    CarDataType type = GetCarDataType(typeDesc->type);
     //Set type and IO attrib
-    if (pParamDescriptor->dwAttribs & ParamAttrib_in) {
+    if (paramDescriptor->dwAttribs & ParamAttrib_in) {
         if (type == CarDataType_Interface) {
-            if (pParmElement->pointer > 1) {
+            if (parmElement->mPointer > 1) {
                 type = CarDataType_LocalPtr;
             }
         }
-        else if (pParmElement->pointer > 0) {
+        else if (parmElement->mPointer > 0) {
             type = CarDataType_LocalPtr;
         }
-        pParmElement->attrib = ParamIOAttribute_In;
+        parmElement->mAttrib = ParamIOAttribute_In;
     }
     else {
-        pParmElement->attrib = ParamIOAttribute_CallerAllocOut;
+        parmElement->mAttrib = ParamIOAttribute_CallerAllocOut;
 
-        if (pParmElement->pointer > 2) {
+        if (parmElement->mPointer > 2) {
             type = CarDataType_LocalPtr;
-            pParmElement->pointer -= 1;
+            parmElement->mPointer -= 1;
         }
-        else if (pParmElement->pointer == 2 && type != CarDataType_Interface) {
+        else if (parmElement->mPointer == 2 && type != CarDataType_Interface) {
             if (type == CarDataType_String) {
-                pParmElement->attrib = ParamIOAttribute_CalleeAllocOut;
+                parmElement->mAttrib = ParamIOAttribute_CalleeAllocOut;
             }
             else {
                 type = CarDataType_LocalPtr;
-                pParmElement->pointer = 1;
+                parmElement->mPointer = 1;
             }
         }
-        else if (pParamDescriptor->dwAttribs & ParamAttrib_callee) {
-            pParmElement->attrib = ParamIOAttribute_CalleeAllocOut;
-            pParmElement->pointer = 2;
+        else if (paramDescriptor->dwAttribs & ParamAttrib_callee) {
+            parmElement->mAttrib = ParamIOAttribute_CalleeAllocOut;
+            parmElement->mPointer = 2;
         }
     }
-    pParmElement->type = type;
+    parmElement->mType = type;
 
     //Set size
-    if (pTypeDesc->type == Type_struct
-        || pTypeDesc->type == Type_EMuid
-        || pTypeDesc->type == Type_EGuid
-        || pTypeDesc->type == Type_ArrayOf
-        || pTypeDesc->type == Type_Array) {
-        pParmElement->size = sizeof(PVoid);
+    if (typeDesc->type == Type_struct
+        || typeDesc->type == Type_EMuid
+        || typeDesc->type == Type_EGuid
+        || typeDesc->type == Type_ArrayOf
+        || typeDesc->type == Type_Array) {
+        parmElement->mSize = sizeof(PVoid);
     }
     else {
-        pParmElement->size = GetDataTypeSize(m_pCClsModule, pTypeDesc);
+        parmElement->mSize = GetDataTypeSize(mClsModule, typeDesc);
     }
 
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-    if ((pTypeDesc->type == Type_Double || pTypeDesc->type == Type_Int64)
-        && pParmElement->attrib != ParamIOAttribute_CallerAllocOut) {
-        m_uParamBufSize = ROUND8(m_uParamBufSize);
+    if ((typeDesc->type == Type_Double || typeDesc->type == Type_Int64)
+        && parmElement->mAttrib != ParamIOAttribute_CallerAllocOut) {
+        mParamBufSize = ROUND8(mParamBufSize);
     }
 #endif
 
-    pParmElement->pos = m_uParamBufSize;
-    m_uParamBufSize += ROUND4(pParmElement->size);
+    parmElement->mPos = mParamBufSize;
+    mParamBufSize += ROUND4(parmElement->mSize);
 
     return NOERROR;
 }
 
 ECode CMethodInfo::InitParmElement()
 {
-    Int32 count = m_pMethodDescriptor->cParams;
-    m_pParamElem = new ParmElement[count];
-    if (!m_pParamElem) {
+    Int32 count = mMethodDescriptor->cParams;
+    mParamElem = new ParmElement[count];
+    if (!mParamElem) {
         return E_OUT_OF_MEMORY;
     }
-    memset(m_pParamElem, 0, sizeof(m_pParamElem) * count);
+    memset(mParamElem, 0, sizeof(mParamElem) * count);
 
-    m_uParamBufSize = 4; //For this pointer
+    mParamBufSize = 4; //For this pointer
     ECode ec = NOERROR;
-    Int32 i = 0;
-    for (i = 0; i < count; i++) {
+    for (Int32 i = 0; i < count; i++) {
         ec = SetParamElem(
-                getParamDescAddr(m_nBase, m_pMethodDescriptor->ppParams, i),
-                &m_pParamElem[i]);
+                getParamDescAddr(mBase, mMethodDescriptor->ppParams, i),
+                &mParamElem[i]);
         if (FAILED(ec)) goto EExit;
     }
 
     return NOERROR;
 
 EExit:
-    delete [] m_pParamElem;
-    m_pParamElem = NULL;
+    delete [] mParamElem;
+    mParamElem = NULL;
 
     return ec;
 }
 
 ECode CMethodInfo::InitParamInfos()
 {
-    Int32 i = 0, count = m_pMethodDescriptor->cParams;
-    m_pParameterInfos = ArrayOf<IParamInfo *>::Alloc(count);
-    if (m_pParameterInfos == NULL) {
+    Int32 i = 0, count = mMethodDescriptor->cParams;
+    mParameterInfos = ArrayOf<IParamInfo *>::Alloc(count);
+    if (mParameterInfos == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
     for (i = 0; i < count; i++) {
-        // do not use m_pParameterInfos->Set(i, xxx), because it will
+        // do not use mParameterInfos->Set(i, xxx), because it will
         // call xxx->AddRef()
-        (*m_pParameterInfos)[i] = new CParamInfo(m_pCClsModule, this,
-                &m_pParamElem[i],
-                getParamDescAddr(m_nBase, m_pMethodDescriptor->ppParams, i),
+        (*mParameterInfos)[i] = new CParamInfo(mClsModule, this,
+                &mParamElem[i],
+                getParamDescAddr(mBase, mMethodDescriptor->ppParams, i),
                 i);
-        if (!(*m_pParameterInfos)[i]) goto EExit;
+        if (!(*mParameterInfos)[i]) goto EExit;
     }
 
     return NOERROR;
 
 EExit:
     for (i = 0; i < count; i++) {
-        if ((*m_pParameterInfos)[i]) {
-            delete (*m_pParameterInfos)[i];
-            (*m_pParameterInfos)[i] = NULL;
+        if ((*mParameterInfos)[i]) {
+            delete (*mParameterInfos)[i];
+            (*mParameterInfos)[i] = NULL;
         }
     }
-    ArrayOf<IParamInfo *>::Free(m_pParameterInfos);
-    m_pParameterInfos = NULL;
+    ArrayOf<IParamInfo *>::Free(mParameterInfos);
+    mParameterInfos = NULL;
 
     return NOERROR;
 }
 
 ECode CMethodInfo::CreateFunctionArgumentList(
-        /* [in] */ IFunctionInfo *pFunctionInfo,
-        /* [in] */ Boolean bMethodInfo,
-        /* [out] */ IArgumentList ** ppArgumentList)
+    /* [in] */ IFunctionInfo* functionInfo,
+    /* [in] */ Boolean isMethodInfo,
+    /* [out] */ IArgumentList** argumentList)
 {
-    if (!ppArgumentList) {
+    if (!argumentList) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!m_pMethodDescriptor->cParams) {
+    if (!mMethodDescriptor->cParams) {
         return E_INVALID_OPERATION;
     }
 
-    AutoPtr<CArgumentList> pArgumentList = new CArgumentList();
-    if (pArgumentList == NULL) {
+    AutoPtr<CArgumentList> argumentListObj = new CArgumentList();
+    if (argumentListObj == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-    m_uParamBufSize = ROUND8(m_uParamBufSize);
+    mParamBufSize = ROUND8(mParamBufSize);
 #endif
 
-    ECode ec = pArgumentList->Init(pFunctionInfo, m_pParamElem,
-                    m_pMethodDescriptor->cParams, m_uParamBufSize, bMethodInfo);
+    ECode ec = argumentListObj->Init(functionInfo, mParamElem,
+            mMethodDescriptor->cParams, mParamBufSize, isMethodInfo);
     if FAILED(ec) {
         return ec;
     }
 
-    *ppArgumentList = pArgumentList;
-    (*ppArgumentList)->AddRef();
+    *argumentList = argumentListObj;
+    (*argumentList)->AddRef();
 
     return NOERROR;
 }
 
 ECode CMethodInfo::CreateCBArgumentList(
-    /* [in] */ ICallbackMethodInfo *pCallbackMethodInfo,
-    /* [out] */ ICallbackArgumentList ** ppCBArgumentList)
+    /* [in] */ ICallbackMethodInfo* callbackMethodInfo,
+    /* [out] */ ICallbackArgumentList** cbArgumentList)
 {
-    AutoPtr<CCallbackArgumentList> pCBArgumentList = new CCallbackArgumentList();
-    if (pCBArgumentList == NULL) {
+    AutoPtr<CCallbackArgumentList> cbArgumentListObj = new CCallbackArgumentList();
+    if (cbArgumentListObj == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
@@ -366,71 +364,70 @@ The GCC4 is 64-bit types (like long long) alignment and m_pHandlerThis(4-Byte)
  is picked out when creating ParamBuf, so we must recompute the position.
 */
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-    int position = 4;
-    for (int i = 0; i < m_pMethodDescriptor->cParams; i++) {
-        if (m_pParamElem[i].type == CarDataType_Double ||
-                m_pParamElem[i].type == CarDataType_Int64) {
-            m_pParamElem[i].pos = ROUND8(position + 4) - 4;
+    Int32 position = 4;
+    for (Int32 i = 0; i < mMethodDescriptor->cParams; i++) {
+        if (mParamElem[i].mType == CarDataType_Double ||
+                mParamElem[i].mType == CarDataType_Int64) {
+            mParamElem[i].mPos = ROUND8(position + 4) - 4;
         }
         else {
             position = ROUND4(position);
-            m_pParamElem[i].pos = position;
+            mParamElem[i].mPos = position;
         }
 
-        position += m_pParamElem[i].size;
+        position += mParamElem[i].mSize;
     }
 #endif
 
-    ECode ec = pCBArgumentList->Init(pCallbackMethodInfo, m_pParamElem,
-                        m_pMethodDescriptor->cParams, m_uParamBufSize);
+    ECode ec = cbArgumentListObj->Init(callbackMethodInfo, mParamElem,
+            mMethodDescriptor->cParams, mParamBufSize);
     if FAILED(ec) {
         return ec;
     }
 
-    *ppCBArgumentList = pCBArgumentList;
-    (*ppCBArgumentList)->AddRef();
+    *cbArgumentList = cbArgumentListObj;
+    (*cbArgumentList)->AddRef();
 
     return NOERROR;
 }
 
 ECode CMethodInfo::CreateArgumentList(
-    /* [out] */ IArgumentList ** ppArgumentList)
+    /* [out] */ IArgumentList** argumentList)
 {
-    return CreateFunctionArgumentList(this, TRUE, ppArgumentList);
+    return CreateFunctionArgumentList(this, TRUE, argumentList);
 }
 
 ECode CMethodInfo::Invoke(
     /* [in] */ PInterface target,
-    /* [in] */ IArgumentList * pArgumentList)
+    /* [in] */ IArgumentList* argumentList)
 {
     if (!target) {
         return E_INVALID_ARGUMENT;
     }
 
-    int *pParamBuf = NULL;
-    if (!pArgumentList) {
-        if (m_pMethodDescriptor->cParams) return E_INVALID_ARGUMENT;
-        pParamBuf = (int *)alloca(4);
-        if (!pParamBuf) return E_OUT_OF_MEMORY;
-        m_uParamBufSize = 4;
+    Int32* paramBuf = NULL;
+    if (!argumentList) {
+        if (mMethodDescriptor->cParams) return E_INVALID_ARGUMENT;
+        paramBuf = (Int32 *)alloca(4);
+        if (!paramBuf) return E_OUT_OF_MEMORY;
+        mParamBufSize = 4;
     }
     else {
-        pParamBuf = (int *)((CArgumentList *)pArgumentList)->mParamBuf;
+        paramBuf = (Int32 *)((CArgumentList *)argumentList)->mParamBuf;
     }
 
-    InterfaceDirEntry* pIFDir = getInterfaceDirAddr(m_nBase,
-            m_pClsMod->ppInterfaceDir, INTERFACE_INDEX(mIndex));
-    EIID iid = adjustInterfaceDescAddr(m_nBase, pIFDir->pDesc)->iid;
-    PInterface pVObject;
-    pVObject = target->Probe(iid);
-    if (!pVObject) {
+    InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
+            mClsMod->ppInterfaceDir, INTERFACE_INDEX(mIndex));
+    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->iid;
+    PInterface object = target->Probe(iid);
+    if (!object) {
         return E_NO_INTERFACE;
     }
 
     //push this pointer to buf
-    *(PInterface *)pParamBuf = pVObject;
+    *(PInterface *)paramBuf = object;
 
-    VObject* vobj = reinterpret_cast<VObject*>(pVObject);
-    void* pMethodAddr = vobj->vtab->methods[METHOD_INDEX(mIndex)];
-    return (ECode)invoke(pMethodAddr, pParamBuf,  m_uParamBufSize);
+    VObject* vobj = reinterpret_cast<VObject*>(object);
+    void* methodAddr = vobj->mVtab->mMethods[METHOD_INDEX(mIndex)];
+    return (ECode)invoke(methodAddr, paramBuf,  mParamBufSize);
 }

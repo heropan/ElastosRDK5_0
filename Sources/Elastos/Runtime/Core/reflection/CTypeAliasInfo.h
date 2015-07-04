@@ -13,8 +13,8 @@ class CTypeAliasInfo
 {
 public:
     CTypeAliasInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ AliasDirEntry *pAliasDirEntry);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ AliasDirEntry* aliasDirEntry);
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
@@ -24,27 +24,27 @@ public:
     CARAPI_(UInt32) Release();
 
     CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ InterfaceID* iid);
 
     CARAPI GetName(
-        /* [out] */ String * pName);
+        /* [out] */ String* name);
 
     CARAPI GetTypeInfo(
-        /* [out] */ IDataTypeInfo ** ppTypeInfo);
+        /* [out] */ IDataTypeInfo** typeInfo);
 
     CARAPI GetModuleInfo(
-        /* [out] */ IModuleInfo ** ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI IsDummy(
-        /* [out] */ Boolean * pIsDummy);
+        /* [out] */ Boolean* isDummy);
 
     CARAPI GetPtrLevel(
-        /* [out] */ Int32 *pLevel);
+        /* [out] */ Int32* level);
 
 private:
-    AutoPtr<CClsModule>  m_pCClsModule;
-    AliasDirEntry       *m_pAliasDirEntry;
+    AutoPtr<CClsModule> mClsModule;
+    AliasDirEntry*      mAliasDirEntry;
 };
 
 #endif // __CTYPEALIASINFO_H__

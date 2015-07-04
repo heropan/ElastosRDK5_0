@@ -6,7 +6,7 @@
 
 CLocalTypeInfo::CLocalTypeInfo(
     /* [in] */ MemorySize size)
-    : m_size(size)
+    : mSize(size)
 {}
 
 UInt32 CLocalTypeInfo::AddRef()
@@ -34,43 +34,43 @@ PInterface CLocalTypeInfo::Probe(
 }
 
 ECode CLocalTypeInfo::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
 {
     return E_NOT_IMPLEMENTED;
 }
 
 ECode CLocalTypeInfo::GetName(
-    /* [out] */ String * pName)
+    /* [out] */ String* name)
 {
-    if (pName == NULL) {
+    if (name == NULL) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pName = g_cDataTypeList[CarDataType_LocalType].name;
+    *name = g_cDataTypeList[CarDataType_LocalType].mName;
     return NOERROR;
 }
 
 ECode CLocalTypeInfo::GetSize(
-    /* [out] */ MemorySize * pSize)
+    /* [out] */ MemorySize* size)
 {
-    if (!pSize) {
+    if (!size) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pSize = m_size;
+    *size = mSize;
 
     return NOERROR;
 }
 
 ECode CLocalTypeInfo::GetDataType(
-    /* [out] */ CarDataType * pDataType)
+    /* [out] */ CarDataType* dataType)
 {
-    if (!pDataType) {
+    if (!dataType) {
         return E_INVALID_ARGUMENT;
     }
 
-    *pDataType = CarDataType_LocalType;
+    *dataType = CarDataType_LocalType;
 
     return NOERROR;
 }

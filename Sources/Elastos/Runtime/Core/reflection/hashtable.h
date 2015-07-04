@@ -17,111 +17,122 @@ template <class T, CARDataType type = Type_UInt32>
 class HashTable
 {
 public:
-    HashTable(int nInitialCapacity = 11,
-              float fLoadFactor = 0.75f);
+    HashTable(
+        /* [in] */ Int32 initialCapacity = 11,
+        /* [in] */ Float loadFactor = 0.75f);
 
     ~HashTable();
 
-    inline int Size();
+    inline Int32 Size();
 
-    inline bool IsEmpty();
+    inline Boolean IsEmpty();
 
-    T* Get(PVoid pKey);
+    T* Get(PVoid key);
 
-    T* operator[](PVoid pKey);
+    T* operator[](PVoid key);
 
-    bool Put(PVoid pKey, T* pValue);
+    Boolean Put(PVoid key, T* value);
 
-    bool Put(PVoid pKey, T& value);
+    Boolean Put(PVoid key, T& value);
 
-    bool Remove(PVoid pKey);
+    Boolean Remove(PVoid key);
 
-    bool Contains(PVoid pKey);
+    Boolean Contains(PVoid key);
 
     void Clear();
 
 private:
     struct HashEntry
     {
-        int nHash;
-        T value;
-        HashEntry *pNext;
-        Byte key[1];
+        Int32 mHash;
+        T mValue;
+        HashEntry* mNext;
+        Byte mKey[1];
     };
 
-    bool Rehash();
+    Boolean Rehash();
 
-    unsigned int Hash(PVoid pKey);
+    UInt32 Hash(PVoid key);
 
-    bool keycmp(HashEntry *e, PVoid pKey);
+    Boolean keycmp(HashEntry* e, PVoid key);
 
-    void keycpy(HashEntry *e, PVoid pKey);
+    void keycpy(HashEntry* e, PVoid key);
 
-    int keylen(PVoid pKey);
+    Int32 keylen(PVoid key);
 
 private:
-    struct HashEntry **m_pTable;
-    int m_nCapacity;
-    int m_nCount;
-    int m_nThreshold;
-    float m_fLoadFactor;
-    int m_nModCount;
+    struct HashEntry** mTable;
+    Int32 mCapacity;
+    Int32 mCount;
+    Int32 mThreshold;
+    Float mLoadFactor;
+    Int32 mModCount;
 };
 
 template <class T, CARDataType type>
-HashTable<T, type>::HashTable(int nInitialCapacity, float fLoadFactor) :
-    m_pTable(NULL), m_nCapacity(0), m_nCount(0), m_nThreshold(0),
-    m_fLoadFactor(0), m_nModCount(0)
+HashTable<T, type>::HashTable(
+    /* [in] */ Int32 initialCapacity,
+    /* [in] */ Float loadFactor)
+    : mTable(NULL)
+    , mCapacity(0)
+    , mCount(0)
+    , mThreshold(0)
+    ,mLoadFactor(0)
+    , mModCount(0)
 {
-    if (nInitialCapacity <= 0)
-        nInitialCapacity = 10;
+    if (initialCapacity <= 0) {
+        initialCapacity = 10;
+    }
 
 #ifndef _arm
-    if (fLoadFactor <= 0)
-        fLoadFactor = 0.75f;
+    if (loadFactor <= 0) {
+        loadFactor = 0.75f;
+    }
 #endif
 
-    m_nCapacity = nInitialCapacity;
-    m_fLoadFactor = fLoadFactor;
+    mCapacity = initialCapacity;
+    mLoadFactor = loadFactor;
 #ifndef _arm
-    m_nThreshold = (int)(nInitialCapacity * fLoadFactor);
+    mThreshold = (Int32)(initialCapacity * loadFactor);
 #else
-    m_nThreshold = MUL_LOADFACTOR(nInitialCapacity);
+    mThreshold = MUL_LOADFACTOR(initialCapacity);
 #endif
 }
 
 template <class T, CARDataType type>
 HashTable<T, type>::~HashTable()
 {
-    if (m_pTable) {
+    if (mTable) {
         Clear();
-        free(m_pTable);
+        free(mTable);
     }
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::keycmp(HashEntry *e, PVoid pKey)
+Boolean HashTable<T, type>::keycmp(
+    /* [in] */ HashEntry* e,
+    /* [in] */ PVoid key)
 {
-    int nRet = 0;
+    Int32 ret = 0;
     switch (type) {
         case Type_UInt32:
-            nRet = memcmp(e->key, pKey, sizeof(int));
+            ret = memcmp(e->mKey, key, sizeof(Int32));
             break;
         case Type_UInt64:
-            nRet = memcmp(e->key, pKey, sizeof(UInt64));
+            ret = memcmp(e->mKey, key, sizeof(UInt64));
             break;
         case Type_String:
-            nRet = strcmp((char *)e->key, (char*)pKey);
+            ret = strcmp((char *)e->mKey, (char*)key);
             break;
         case Type_EMuid:
-            nRet = memcmp(e->key, pKey, sizeof(EMuid));
+            ret = memcmp(e->mKey, key, sizeof(EMuid));
             break;
         default:
-            nRet = 1;
+            ret = 1;
             break;
     }
 
-    if (!nRet) {
+    if (!ret) {
         return TRUE;
     }
     else {
@@ -130,20 +141,22 @@ bool HashTable<T, type>::keycmp(HashEntry *e, PVoid pKey)
 }
 
 template <class T, CARDataType type>
-void HashTable<T, type>::keycpy(HashEntry *e, PVoid pKey)
+void HashTable<T, type>::keycpy(
+    /* [in] */ HashEntry* e,
+    /* [in] */ PVoid key)
 {
     switch (type) {
         case Type_UInt32:
-            *(UInt32 *)e->key = *(UInt32 *)pKey;
+            *(UInt32 *)e->mKey = *(UInt32 *)key;
             break;
         case Type_UInt64:
-            *(UInt64 *)e->key = *(UInt64 *)pKey;
+            *(UInt64 *)e->mKey = *(UInt64 *)key;
             break;
         case Type_String:
-            strcpy((char *)e->key, (char*)pKey);
+            strcpy((char *)e->mKey, (char*)key);
             break;
         case Type_EMuid:
-            memcpy(e->key, pKey, sizeof(EMuid));
+            memcpy(e->mKey, key, sizeof(EMuid));
             break;
         default:
             break;
@@ -152,18 +165,19 @@ void HashTable<T, type>::keycpy(HashEntry *e, PVoid pKey)
 }
 
 template <class T, CARDataType type>
-int HashTable<T, type>::keylen(PVoid pKey)
+Int32 HashTable<T, type>::keylen(
+    /* [in] */ PVoid key)
 {
-    int len = 0;
+    Int32 len = 0;
     switch (type) {
         case Type_UInt32:
-            len = sizeof(int);
+            len = sizeof(Int32);
             break;
         case Type_UInt64:
             len = sizeof(UInt64);
             break;
         case Type_String:
-            len  = strlen((char*)pKey) + 1;
+            len  = strlen((char*)key) + 1;
             break;
         case Type_EMuid:
             len = sizeof(EMuid);
@@ -175,31 +189,32 @@ int HashTable<T, type>::keylen(PVoid pKey)
 }
 
 template <class T, CARDataType type>
-int HashTable<T, type>::Size()
+Int32 HashTable<T, type>::Size()
 {
-    return m_nCount;
+    return mCount;
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::IsEmpty()
+Boolean HashTable<T, type>::IsEmpty()
 {
-    return m_nCount == 0;
+    return mCount == 0;
 }
 
 template <class T, CARDataType type>
-T* HashTable<T, type>::Get(PVoid pKey)
+T* HashTable<T, type>::Get(
+    /* [in] */ PVoid key)
 {
-    assert(pKey  && "NULL or empty key name!");
+    assert(key  && "NULL or empty key name!");
 
-    if (!pKey || !m_pTable) {
+    if (!key || !mTable) {
         return NULL;
     }
 
-    int nHash = Hash(pKey);
-    int nIndex = (nHash & 0x7FFFFFFF) % m_nCapacity;
-    for (struct HashEntry *e = m_pTable[nIndex]; e != NULL ; e = e->pNext) {
-        if ((e->nHash == nHash) && keycmp(e, pKey)) {
-            return &e->value;
+    Int32 hash = Hash(key);
+    Int32 index = (hash & 0x7FFFFFFF) % mCapacity;
+    for (struct HashEntry *e = mTable[index]; e != NULL ; e = e->mNext) {
+        if ((e->mHash == hash) && keycmp(e, key)) {
+            return &e->mValue;
         }
     }
 
@@ -207,199 +222,214 @@ T* HashTable<T, type>::Get(PVoid pKey)
 }
 
 template <class T, CARDataType type>
-T* HashTable<T, type>::operator[](PVoid pKey)
+T* HashTable<T, type>::operator[](
+    /* [in] */ PVoid key)
 {
-    return Get(pKey);
+    return Get(key);
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::Rehash()
+Boolean HashTable<T, type>::Rehash()
 {
-    int nOldCapacity = m_nCapacity;
-    struct HashEntry **pOldTable = m_pTable;
+    Int32 oldCapacity = mCapacity;
+    struct HashEntry** oldTable = mTable;
 
-    int nNewCapacity = nOldCapacity * 2 + 1;
-    struct HashEntry **pNewTable = (struct HashEntry **)malloc(
-            sizeof(struct HashEntry **) * nNewCapacity);
-    if (!pNewTable)
-        return false;
+    Int32 newCapacity = oldCapacity * 2 + 1;
+    struct HashEntry** newTable = (struct HashEntry **)malloc(
+            sizeof(struct HashEntry **) * newCapacity);
+    if (!newTable) {
+        return FALSE;
+    }
 
-    memset(pNewTable, 0, sizeof(struct HashEntry **) * nNewCapacity);
+    memset(newTable, 0, sizeof(struct HashEntry **) * newCapacity);
 
-    m_nModCount++;
+    mModCount++;
 #ifndef _arm
-    m_nThreshold = (int)(nNewCapacity * m_fLoadFactor);
+    mThreshold = (Int32)(newCapacity * mLoadFactor);
 #else
-    m_nThreshold = MUL_LOADFACTOR(nNewCapacity);
+    mThreshold = MUL_LOADFACTOR(newCapacity);
 #endif
-    m_nCapacity = nNewCapacity;
-    m_pTable = pNewTable;
+    mCapacity = newCapacity;
+    mTable = newTable;
 
-    for (int i = nOldCapacity ; i--> 0 ;) {
-        for (struct HashEntry *p = pOldTable[i]; p != NULL ;) {
-            struct HashEntry *e = p;
-            p = p->pNext;
+    for (Int32 i = oldCapacity ; i--> 0 ;) {
+        for (struct HashEntry* p = oldTable[i]; p != NULL ;) {
+            struct HashEntry* e = p;
+            p = p->mNext;
 
-            int nIndex = (e->nHash & 0x7FFFFFFF) % nNewCapacity;
-            e->pNext = pNewTable[nIndex];
-            pNewTable[nIndex] = e;
+            Int32 index = (e->mHash & 0x7FFFFFFF) % newCapacity;
+            e->mNext = newTable[index];
+            newTable[index] = e;
         }
     }
 
-    free(pOldTable);
+    free(oldTable);
 
-    return true;
+    return TRUE;
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::Put(PVoid pKey, T* pValue)
+Boolean HashTable<T, type>::Put(
+    /* [in] */ PVoid key,
+    /* [in] */ T* value)
 {
-    assert(pKey && "NULL or empty key name!");
-    assert(pValue && "Can not put NULL value to Hashtable!");
+    assert(key && "NULL or empty key name!");
+    assert(value && "Can not put NULL value to Hashtable!");
 
-    if (!pKey || !pValue)
-        return false;
+    if (!key || !value) {
+        return FALSE;
+    }
 
-    if (!m_pTable) {
-        m_pTable = (struct HashEntry **)malloc(sizeof(struct HashEntry **)
-                    * m_nCapacity);
+    if (!mTable) {
+        mTable = (struct HashEntry **)malloc(sizeof(struct HashEntry **) * mCapacity);
 
-        if (!m_pTable)
-            return false;
+        if (!mTable) {
+            return FALSE;
+        }
 
-        memset(m_pTable, 0, sizeof(struct HashEntry **) * m_nCapacity);
+        memset(mTable, 0, sizeof(struct HashEntry **) * mCapacity);
     }
 
     // Makes sure the key is not already in the hashtable.
-    int nHash = Hash(pKey);
-    int nIndex = (nHash & 0x7FFFFFFF) % m_nCapacity;
+    Int32 hash = Hash(key);
+    Int32 index = (hash & 0x7FFFFFFF) % mCapacity;
     struct HashEntry *e;
-    for (e = m_pTable[nIndex] ; e != NULL ; e = e->pNext) {
-        if ((e->nHash == nHash) && keycmp(e, pKey)) {
-            memcpy(&(e->value), pValue, sizeof(T));
-            return true;
+    for (e = mTable[index] ; e != NULL ; e = e->mNext) {
+        if ((e->mHash == hash) && keycmp(e, key)) {
+            memcpy(&(e->mValue), value, sizeof(T));
+            return TRUE;
         }
     }
 
-    m_nModCount++;
-    if (m_nCount >= m_nThreshold) {
+    mModCount++;
+    if (mCount >= mThreshold) {
         // Rehash the table if the threshold is exceeded
-        if (!Rehash())
-            return false;
+        if (!Rehash()) {
+            return FALSE;
+        }
 
-        nIndex = (nHash & 0x7FFFFFFF) % m_nCapacity;
+        index = (hash & 0x7FFFFFFF) % mCapacity;
     }
 
     // Creates the new entry.
-    int size = keylen(pKey);
+    Int32 size = keylen(key);
 
-    e = (struct HashEntry *)malloc(
-            sizeof(struct HashEntry) + size);
-    if (!e)
-        return false;
+    e = (struct HashEntry *)malloc(sizeof(struct HashEntry) + size);
+    if (!e) {
+        return FALSE;
+    }
 
-    e->nHash = nHash;
-    e->pNext = m_pTable[nIndex];
-    memcpy(&(e->value), pValue, sizeof(T));
-    keycpy(e, pKey);
+    e->mHash = hash;
+    e->mNext = mTable[index];
+    memcpy(&(e->mValue), value, sizeof(T));
+    keycpy(e, key);
 
-    m_pTable[nIndex] = e;
-    m_nCount++;
+    mTable[index] = e;
+    mCount++;
 
-    return true;
+    return TRUE;
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::Put(PVoid pKey, T& value)
+Boolean HashTable<T, type>::Put(
+    /* [in] */ PVoid key,
+    /* [in] */ T& value)
 {
-    return Put(pKey, &value);
+    return Put(key, &value);
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::Remove(PVoid pKey)
+Boolean HashTable<T, type>::Remove(
+    /* [in] */ PVoid key)
 {
-    assert(pKey && "NULL or empty key name!");
+    assert(key && "NULL or empty key name!");
 
-    if (!pKey || !m_pTable)
-        return false;
+    if (!key || !mTable) {
+        return FALSE;
+    }
 
-    int nHash = Hash(pKey);
-    int nIndex = (nHash & 0x7FFFFFFF) % m_nCapacity;
-    for (struct HashEntry *e = m_pTable[nIndex], *prev = NULL ; e != NULL ;
-        prev = e, e = e->pNext) {
-        if ((e->nHash == nHash) && keycmp(e, pKey)) {
-            m_nModCount++;
+    Int32 hash = Hash(key);
+    Int32 index = (hash & 0x7FFFFFFF) % mCapacity;
+    for (struct HashEntry* e = mTable[index], *prev = NULL ; e != NULL ;
+        prev = e, e = e->mNext) {
+        if ((e->mHash == hash) && keycmp(e, key)) {
+            mModCount++;
             if (prev != NULL) {
-                prev->pNext = e->pNext;
+                prev->mNext = e->mNext;
             }
             else {
-                m_pTable[nIndex] = e->pNext;
+                mTable[index] = e->mNext;
             }
 
-            m_nCount--;
+            mCount--;
 
             free(e);
-            return true;
+            return TRUE;
         }
     }
 
-    return false;
+    return FALSE;
 }
 
 template <class T, CARDataType type>
-bool HashTable<T, type>::Contains(PVoid pKey)
+Boolean HashTable<T, type>::Contains(
+    /* [in] */ PVoid key)
 {
-    assert(pKey  && "NULL or empty key name!");
+    assert(key  && "NULL or empty key name!");
 
-    if (!pKey || !m_pTable)
-        return false;
-
-    int nHash = Hash(pKey);
-    int nIndex = (nHash & 0x7FFFFFFF) % m_nCapacity;
-    for (struct HashEntry *e = m_pTable[nIndex] ; e != NULL ; e = e->pNext) {
-        if ((e->nHash == nHash) && keycmp(e, pKey))
-            return true;
+    if (!key || !mTable) {
+        return FALSE;
     }
 
-    return false;
+    Int32 hash = Hash(key);
+    Int32 index = (hash & 0x7FFFFFFF) % mCapacity;
+    for (struct HashEntry* e = mTable[index] ; e != NULL ; e = e->mNext) {
+        if ((e->mHash == hash) && keycmp(e, key)) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }
 
 template <class T, CARDataType type>
 void HashTable<T, type>::Clear()
 {
-    if (!m_pTable)
+    if (!mTable) {
         return;
+    }
 
-    m_nModCount++;
+    mModCount++;
 
-    for (int nIndex = m_nCapacity;--nIndex >= 0;) {
-        for (struct HashEntry *e = m_pTable[nIndex]; e != NULL;) {
-            struct HashEntry *p = e;
-            e = e->pNext;
+    for (Int32 index = mCapacity;--index >= 0;) {
+        for (struct HashEntry* e = mTable[index]; e != NULL;) {
+            struct HashEntry* p = e;
+            e = e->mNext;
             free(p);
         }
 
-        m_pTable[nIndex] = NULL;
+        mTable[index] = NULL;
     }
 
-    m_nCount = 0;
+    mCount = 0;
 }
 
 template <class T, CARDataType type>
-unsigned int HashTable<T, type>::Hash(PVoid pKey)
+UInt32 HashTable<T, type>::Hash(
+    /* [in] */ PVoid key)
 {
-    unsigned int value = 0L;
-    char ch = '\0', *str = (char *)pKey;
-    unsigned long *pValue = (unsigned long *)pKey;
-    int len = sizeof(EMuid) / sizeof(unsigned long);
-    int i = 0;
+    UInt32 value = 0;
+    char ch = '\0', *str = (char *)key;
+    unsigned long* lvalue = (unsigned long *)key;
+    Int32 len = sizeof(EMuid) / sizeof(unsigned long);
+    Int32 i = 0;
     switch (type) {
         case Type_UInt32:
-            value = value ^ ((value << 5) + (value >> 3) + *pValue);
+            value = value ^ ((value << 5) + (value >> 3) + *lvalue);
             break;
         case Type_UInt64:
-            value = value ^ ((value << 5) + (value >> 3) + pValue[0]);
-            value = value ^ ((value << 5) + (value >> 3) + pValue[1]);
+            value = value ^ ((value << 5) + (value >> 3) + lvalue[0]);
+            value = value ^ ((value << 5) + (value >> 3) + lvalue[1]);
             break;
         case Type_String:
             if (str != NULL) {
@@ -412,7 +442,7 @@ unsigned int HashTable<T, type>::Hash(PVoid pKey)
             break;
         case Type_EMuid:
             for (i = 0; i < len; i++) {
-                value = value ^ ((value << 5) + (value >> 3) + pValue[i]);
+                value = value ^ ((value << 5) + (value >> 3) + lvalue[i]);
             }
             break;
         default:

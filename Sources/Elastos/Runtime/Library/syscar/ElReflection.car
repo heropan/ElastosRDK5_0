@@ -45,20 +45,19 @@ library
         CarDataType_Byte        = 4,
         CarDataType_Float       = 5,
         CarDataType_Double      = 6,
-        CarDataType_Char16      = 7,
-        CarDataType_Char32      = 8,
-        CarDataType_String      = 9,
-        CarDataType_Boolean     = 10,
-        CarDataType_EMuid       = 11,
-        CarDataType_EGuid       = 12,
-        CarDataType_ECode       = 13,
-        CarDataType_LocalPtr    = 14,
-        CarDataType_LocalType   = 15,
-        CarDataType_Enum        = 16,
-        CarDataType_ArrayOf     = 17,
-        CarDataType_CppVector   = 18,
-        CarDataType_Struct      = 29,
-        CarDataType_Interface   = 20
+        CarDataType_Char32      = 7,
+        CarDataType_String      = 8,
+        CarDataType_Boolean     = 9,
+        CarDataType_EMuid       = 10,
+        CarDataType_EGuid       = 11,
+        CarDataType_ECode       = 12,
+        CarDataType_LocalPtr    = 13,
+        CarDataType_LocalType   = 14,
+        CarDataType_Enum        = 15,
+        CarDataType_ArrayOf     = 16,
+        CarDataType_CppVector   = 17,
+        CarDataType_Struct      = 18,
+        CarDataType_Interface   = 19
     }
 
     enum ParamIOAttribute {
@@ -516,11 +515,7 @@ library
             [in] Int32 index,
             [in] Int32 value);
 
-        SetChar16Element(
-            [in] Int32 index,
-            [in] Char16 value);
-
-        SetChar32Element(
+        SetCharElement(
             [in] Int32 index,
             [in] Char32 value);
 
@@ -593,11 +588,7 @@ library
             [in] Int32 index,
             [out] Int32* value);
 
-        GetChar16Element(
-            [in] Int32 index,
-            [out] Char16* value);
-
-        GetChar32Element(
+        GetCharElement(
             [in] Int32 index,
             [out] Char32* value);
 
@@ -662,11 +653,7 @@ library
             [in] String name,
             [in] Double value);
 
-        SetChar16Field(
-            [in] String name,
-            [in] Char16 value);
-
-        SetChar32Field(
+        SetCharField(
             [in] String name,
             [in] Char32 value);
 
@@ -733,11 +720,7 @@ library
             [in] String name,
             [out] Double* value);
 
-        GetChar16Field(
-            [in] String name,
-            [out] Char16* value);
-
-        GetChar32Field(
+        GetCharField(
             [in] String name,
             [out] Char32* value);
 
@@ -810,11 +793,7 @@ library
             [in] Int32 index,
             [in] Double value);
 
-        SetChar16Element(
-            [in] Int32 index,
-            [in] Char16 value);
-
-        SetChar32Element(
+        SetCharElement(
             [in] Int32 index,
             [in] Char32 value);
 
@@ -887,11 +866,7 @@ library
             [in] Int32 index,
             [out] Double* value);
 
-        GetChar16Element(
-            [in] Int32 index,
-            [out] Char16* value);
-
-        GetChar32Element(
+        GetCharElement(
             [in] Int32 index,
             [out] Char32* value);
 

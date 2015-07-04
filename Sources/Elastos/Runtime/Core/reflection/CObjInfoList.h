@@ -25,152 +25,152 @@ public:
 
     CARAPI AcquireModuleInfo(
         /* [in] */ const String& name,
-        /* [out] */ IModuleInfo **ppModuleInfo);
+        /* [out] */ IModuleInfo** moduleInfo);
 
     CARAPI RemoveModuleInfo(
         /* [in] */ const String& path);
 
     CARAPI AcquireClassInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ ClassDirEntry *pClsDirEntry,
-        /* [[in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ ClassDirEntry* clsDirEntry,
+        /* [[in, out] */ IInterface** object);
 
     CARAPI RemoveClassInfo(
-        /* [in] */ ClassDirEntry *pClsDirEntry);
+        /* [in] */ ClassDirEntry* clsDirEntry);
 
     CARAPI AcquireStaticStructInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ StructDirEntry *pStructDirEntry,
-        /* [out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ StructDirEntry* structDirEntry,
+        /* [out] */ IInterface** object);
 
     CARAPI AcquireDynamicStructInfo(
         /* [in] */ const String& name,
         /* [in] */ ArrayOf<String>* fieldNames,
         /* [in] */ ArrayOf<IDataTypeInfo*>* fieldTypeInfos,
-        /* [out] */ IStructInfo **ppStructInfo);
+        /* [out] */ IStructInfo** structInfo);
 
     CARAPI RemoveStructInfo(
-        /* [in] */ StructDirEntry *pStructDirEntry);
+        /* [in] */ StructDirEntry* structDirEntry);
 
     CARAPI AcquireStaticEnumInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ EnumDirEntry *pEnumDirEntry,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ EnumDirEntry* enumDirEntry,
+        /* [in, out] */ IInterface** object);
 
     CARAPI RemoveEnumInfo(
-        /* [in] */ EnumDirEntry *pEnumDirEntry);
+        /* [in] */ EnumDirEntry* enumDirEntry);
 
     CARAPI AcquireDynamicEnumInfo(
         /* [in] */ const String& fullName,
         /* [in] */ ArrayOf<String>* itemNames,
         /* [in] */ ArrayOf<Int32>* itemValues,
-        /* [out] */  IEnumInfo **ppEnumInfo);
+        /* [out] */  IEnumInfo** enumInfo);
 
     CARAPI DetachEnumInfo(
-        /* [in] */ IEnumInfo *pEnumInfo);
+        /* [in] */ IEnumInfo* enumInfo);
 
     CARAPI AcquireTypeAliasInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ AliasDirEntry *pAliasDirEntry,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ AliasDirEntry* aliasDirEntry,
+        /* [in, out] */ IInterface** object);
 
     CARAPI RemoveTypeAliasInfo(
-        /* [in] */ AliasDirEntry *pAliasDirEntry);
+        /* [in] */ AliasDirEntry* aliasDirEntry);
 
     CARAPI AcquireInterfaceInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ UInt32 uIndex,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ UInt32 index,
+        /* [in, out] */ IInterface** object);
 
     CARAPI RemoveInterfaceInfo(
         /* [in] */ EIID iid);
 
     CARAPI AcquireMethodInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index,
+        /* [in, out] */ IInterface** object);
 
     CARAPI RemoveMethodInfo(
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex);
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index);
 
     CARAPI AcquireDataTypeInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ TypeDescriptor *pTypeDesc,
-        /* [out] */ IDataTypeInfo ** ppDataTypeInfo,
-        /* [in] */ Boolean bCheckLocalPtr = FALSE);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ TypeDescriptor* typeDesc,
+        /* [out] */ IDataTypeInfo** dataTypeInfo,
+        /* [in] */ Boolean checkLocalPtr = FALSE);
 
     CARAPI AcquireIntrinsicInfo(
         /* [in] */ CarDataType dataType,
-        /* [out] */ IDataTypeInfo ** ppDataTypeInfo,
-        /* [in] */ UInt32 uSize = 0);
+        /* [out] */ IDataTypeInfo** dataTypeInfo,
+        /* [in] */ UInt32 size = 0);
 
     CARAPI AcquireLocalPtrInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ TypeDescriptor *pTypeDescriptor,
-        /* [in] */ Int32 iPointer,
-        /* [out] */ ILocalPtrInfo ** ppLocalPtrInfo);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ TypeDescriptor* typeDescriptor,
+        /* [in] */ Int32 pointer,
+        /* [out] */ ILocalPtrInfo** localPtrInfo);
 
     CARAPI RemoveLocalPtrInfo(
-        /* [in] */ TypeDescriptor *pTypeDescriptor,
-        /* [in] */ Int32 iPointer);
+        /* [in] */ TypeDescriptor* typeDescriptor,
+        /* [in] */ Int32 pointer);
 
     CARAPI AcquireLocalTypeInfo(
         /* [in] */ CARDataType type,
         /* [in] */ MemorySize size,
-        /* [out] */ IDataTypeInfo ** ppDataTypeInfo);
+        /* [out] */ IDataTypeInfo** dataTypeInfo);
 
     CARAPI AcquireCppVectorInfo(
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
+        /* [in] */ IDataTypeInfo* elementTypeInfo,
         /* [in] */ Int32 length,
-        /* [out] */ ICppVectorInfo **ppCppVectorInfo);
+        /* [out] */ ICppVectorInfo** cppVectorInfo);
 
     CARAPI DetachCppVectorInfo(
-        /* [in] */ ICppVectorInfo *pCppVectorInfo);
+        /* [in] */ ICppVectorInfo* cppVectorInfo);
 
     CARAPI DetachStructInfo(
-        /* [in] */ IStructInfo *pStructInfo);
+        /* [in] */ IStructInfo* structInfo);
 
     CARAPI AcquireCarArrayElementTypeInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ TypeDescriptor *pTypeDesc,
-        /* [out] */ IDataTypeInfo ** ppElementTypeInfo);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ TypeDescriptor* typeDesc,
+        /* [out] */ IDataTypeInfo** elementTypeInfo);
 
     CARAPI AcquireCarArrayInfo(
         /* [in] */ CarDataType quintetType,
-        /* [in] */ IDataTypeInfo *pElementTypeInfo,
-        /* [out] */ ICarArrayInfo **ppCarArrayInfo);
+        /* [in] */ IDataTypeInfo* elementTypeInfo,
+        /* [out] */ ICarArrayInfo** carArrayInfo);
 
     CARAPI AcquireConstantInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ ConstDirEntry *pConstDirEntry,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ ConstDirEntry* constDirEntry,
+        /* [in, out] */ IInterface** object);
 
     CARAPI AcquireConstructorInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex,
-        /* [in] */ ClassID *pClsId,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index,
+        /* [in] */ ClassID* clsId,
+        /* [in, out] */ IInterface** object);
 
     CARAPI AcquireCBMethodInfoInfo(
-        /* [in] */ CClsModule * pCClsModule,
-        /* [in] */ UInt32 uEventNum,
-        /* [in] */ MethodDescriptor *pMethodDescriptor,
-        /* [in] */ UInt32 uIndex,
-        /* [in, out] */ IInterface ** ppObject);
+        /* [in] */ CClsModule* clsModule,
+        /* [in] */ UInt32 eventNum,
+        /* [in] */ MethodDescriptor* methodDescriptor,
+        /* [in] */ UInt32 index,
+        /* [in, out] */ IInterface** object);
 
     CARAPI DetachCarArrayInfo(
-        /* [in] */ ICarArrayInfo *pCarArrayInfo);
+        /* [in] */ ICarArrayInfo* carArrayInfo);
 
     CARAPI AddInfoNode(
-        /* [in] */ IDataTypeInfo *pInfo,
-        /* [out] */ InfoLinkNode **ppLinkHead);
+        /* [in] */ IDataTypeInfo* info,
+        /* [out] */ InfoLinkNode** linkHead);
 
     CARAPI DeleteInfoNode(
-        /* [in] */ IDataTypeInfo *pInfo,
-        /* [out] */ InfoLinkNode **ppLinkHead);
+        /* [in] */ IDataTypeInfo* info,
+        /* [out] */ InfoLinkNode** linkHead);
 
     CARAPI LockHashTable(
         /* [in] */ EntryType type);
@@ -182,46 +182,46 @@ public:
         /* [in] */ const String& path);
 
 private:
-    HashTable<IInterface *> m_hTypeAliasInfos;
-    HashTable<IInterface *> m_hEnumInfos;
-    HashTable<IInterface *> m_hClassInfos;
-    HashTable<IInterface *> m_hStructInfos;
-    HashTable<IInterface *, Type_EMuid> m_hIFInfos;
-    HashTable<IInterface *, Type_UInt64> m_hMethodInfos;
-    HashTable<IInterface *, Type_UInt64> m_hLocalPtrInfos;
-    HashTable<IModuleInfo *, Type_String> m_hModInfos;
-    HashTable<CClsModule *, Type_String> m_hClsModule;
+    HashTable<IInterface *> mTypeAliasInfos;
+    HashTable<IInterface *> mEnumInfos;
+    HashTable<IInterface *> mClassInfos;
+    HashTable<IInterface *> mStructInfos;
+    HashTable<IInterface *, Type_EMuid> mIFInfos;
+    HashTable<IInterface *, Type_UInt64> mMethodInfos;
+    HashTable<IInterface *, Type_UInt64> mLocalPtrInfos;
+    HashTable<IModuleInfo *, Type_String> mModInfos;
+    HashTable<CClsModule *, Type_String> mClsModule;
 
-    pthread_mutex_t     m_lockTypeAlias;
-    pthread_mutex_t     m_lockEnum;
-    pthread_mutex_t     m_lockClass;
-    pthread_mutex_t     m_lockStruct;
-    pthread_mutex_t     m_lockMethod;
-    pthread_mutex_t     m_lockInterface;
-    pthread_mutex_t     m_lockModule;
-    pthread_mutex_t     m_lockDataType;
-    pthread_mutex_t     m_lockLocal;
-    pthread_mutex_t     m_lockClsModule;
+    pthread_mutex_t     mLockTypeAlias;
+    pthread_mutex_t     mLockEnum;
+    pthread_mutex_t     mLockClass;
+    pthread_mutex_t     mLockStruct;
+    pthread_mutex_t     mLockMethod;
+    pthread_mutex_t     mLockInterface;
+    pthread_mutex_t     mLockModule;
+    pthread_mutex_t     mLockDataType;
+    pthread_mutex_t     mLockLocal;
+    pthread_mutex_t     mLockClsModule;
 
-    Boolean     m_bLockTypeAlias;
-    Boolean     m_bLockEnum;
-    Boolean     m_bLockClass;
-    Boolean     m_bLockStruct;
-    Boolean     m_bLockMethod;
-    Boolean     m_bLockInterface;
-    Boolean     m_bLockModule;
-    Boolean     m_bLockDataType;
-    Boolean     m_bLockLocal;
-    Boolean     m_bLockClsModule;
+    Boolean     mIsLockTypeAlias;
+    Boolean     mIsLockEnum;
+    Boolean     mIsLockClass;
+    Boolean     mIsLockStruct;
+    Boolean     mIsLockMethod;
+    Boolean     mIsLockInterface;
+    Boolean     mIsLockModule;
+    Boolean     mIsLockDataType;
+    Boolean     mIsLockLocal;
+    Boolean     mIsLockClsModule;
 
-    IDataTypeInfo      *m_pDataTypeInfos[MAX_ITEM_COUNT];
-    IDataTypeInfo      *m_pLocalTypeInfos[MAX_ITEM_COUNT];
-    ICarArrayInfo      *m_pCarArrayInfos[MAX_ITEM_COUNT];
+    IDataTypeInfo*      mDataTypeInfos[MAX_ITEM_COUNT];
+    IDataTypeInfo*      mLocalTypeInfos[MAX_ITEM_COUNT];
+    ICarArrayInfo*      mCarArrayInfos[MAX_ITEM_COUNT];
 
-    InfoLinkNode       *m_pEnumInfoHead;
-    InfoLinkNode       *m_pCCppVectorHead;
-    InfoLinkNode       *m_pStructInfoHead;
-    InfoLinkNode       *m_pCarArrayInfoHead;
+    InfoLinkNode*       mEnumInfoHead;
+    InfoLinkNode*       mCCppVectorHead;
+    InfoLinkNode*       mStructInfoHead;
+    InfoLinkNode*       mCarArrayInfoHead;
 };
 
 #endif // __COBJINFOLIST_H__
