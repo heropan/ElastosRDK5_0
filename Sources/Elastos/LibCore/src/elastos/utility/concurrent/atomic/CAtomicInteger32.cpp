@@ -10,6 +10,10 @@ namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
+Int64 CAtomicInteger32::mSerialVersionUID = 6214790243416807050L;
+
+Int64 CAtomicInteger32::mValueOffset = 0;
+
 CAR_INTERFACE_IMPL_2(CAtomicInteger32, Object, IAtomicInteger32, ISerializable)
 
 CAR_OBJECT_IMPL(CAtomicInteger32)
@@ -73,6 +77,8 @@ ECode CAtomicInteger32::LazySet(
     ANDROID_MEMBAR_STORE();
     *address = newValue;
     return NOERROR;
+
+//    unsafe.putOrderedInt(this, valueOffset, newValue);
 }
 
 /**
@@ -96,6 +102,12 @@ ECode CAtomicInteger32::GetAndSet(
             return NOERROR;
         }
     }
+
+    // for (;;) {
+    //     int current = get();
+    //     if (compareAndSet(current, newValue))
+    //         return current;
+    // }
 }
 
 /**
@@ -119,6 +131,7 @@ ECode CAtomicInteger32::CompareAndSet(
 
     *result = (ret == 0);
     return NOERROR;
+//  return unsafe.compareAndSwapInt(this, valueOffset, expect, update);
 }
 
 /**
@@ -145,6 +158,7 @@ ECode CAtomicInteger32::WeakCompareAndSet(
 
     *result = (ret == 0);
     return NOERROR;
+//  return unsafe.compareAndSwapInt(this, valueOffset, expect, update);
 }
 
 /**

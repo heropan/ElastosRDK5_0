@@ -2303,8 +2303,8 @@ module
         interface IAtomicStampedReference;
     }
 
-    singleton class CFencesHelper {
-        interface IFencesHelper;
+    singleton class CFences {
+        interface IFences;
     }
 
     } // namespace Atomic

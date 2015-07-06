@@ -100,7 +100,26 @@ public:
         /* [in] */ Boolean update,
         /* [out] */ Boolean* result);
 
+    /**
+     * Returns the String representation of the current value.
+     * @return the String representation of the current value
+     */
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
+    static Int64 mSerialVersionUID;// = 4654671469794556979L;
+    // setup to use Unsafe.compareAndSwapInt for updates
+//    static Unsafe unsafe = Unsafe.getUnsafe();
+    static Int64 mValueOffset;
+
+    // static {
+    //     try {
+    //         valueOffset = unsafe.objectFieldOffset
+    //             (AtomicBoolean.class.getDeclaredField("value"));
+    //     } catch (Exception ex) { throw new Error(ex); }
+    // }
+
     volatile Int32 mValue;
 };
 

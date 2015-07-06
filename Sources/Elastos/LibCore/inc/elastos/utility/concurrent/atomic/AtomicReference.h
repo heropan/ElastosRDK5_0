@@ -117,7 +117,7 @@ private:
     //     } catch (Exception ex) { throw new Error(ex); }
     // }
 
-    /* volatile */ AutoPtr<IInterface> mValue;
+    volatile AutoPtr<IInterface> mValue;
 };
 
 } // namespace Atomic

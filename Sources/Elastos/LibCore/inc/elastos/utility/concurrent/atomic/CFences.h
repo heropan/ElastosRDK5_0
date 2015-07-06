@@ -2,18 +2,17 @@
 #ifndef __ELASTOS_UTILITY_CFENCES_H__
 #define __ELASTOS_UTILITY_CFENCES_H__
 
-#include "_Elastos_Utility_Concurrent_Atomic_CFencesHelper.h"
+#include "_Elastos_Utility_Concurrent_Atomic_CFences.h"
 #include "Singleton.h"
-
 
 namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 namespace Atomic {
 
-CarClass(CFencesHelper)
+CarClass(CFences)
     , public Singleton
-    , public IFencesHelper
+    , public IFences
 {
 public:
     CAR_INTERFACE_DECL()
