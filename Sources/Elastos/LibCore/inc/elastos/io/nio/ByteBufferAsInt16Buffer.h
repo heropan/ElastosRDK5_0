@@ -31,11 +31,10 @@ private:
     ByteBufferAsInt16Buffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-protected:
+public:
     static CARAPI_(AutoPtr<IInt16Buffer>) AsInt16Buffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-public:
     // @Override
     CARAPI AsReadOnlyBuffer(
         /* [out] */ IInt16Buffer** buffer);

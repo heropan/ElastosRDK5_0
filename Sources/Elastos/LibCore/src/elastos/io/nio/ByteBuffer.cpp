@@ -1,9 +1,17 @@
 
 #include "ByteBuffer.h"
-#include "CByteArrayBuffer.h"
-//#include "DirectByteBuffer.h"
+#include "ByteArrayBuffer.h"
+#include "DirectByteBuffer.h"
 #include "NioUtils.h"
-//#include "Memory.h"
+#include "CArrayOf.h"
+#include "CoreUtils.h"
+#include "Arrays.h"
+#include "Memory.h"
+
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::Arrays;
+using Libcore::IO::Memory;
 
 namespace Elastos {
 namespace IO {
@@ -27,8 +35,7 @@ ECode ByteBuffer::Allocate(
     }
 
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(capacity);
-    AutoPtr<CByteArrayBuffer> bb;
-    CByteArrayBuffer::NewByFriend(bytes, (CByteArrayBuffer**)&bb);
+    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer(bytes);
     *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);
     REFCOUNT_ADD(*buf);
     return NOERROR;
@@ -43,9 +50,13 @@ ECode ByteBuffer::AllocateDirect(
         // throw new IllegalArgumentException("capacity < 0: " + capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // AutoPtr<DirectByteBuffer> bufObj = new DirectByteBuffer(capacity);
-    // *buf = bufObj->Probe(EIID_IByteBuffer);
-    // REFCOUNT_ADD(*buf);
+    // Ensure alignment by 8.
+    AutoPtr<MemoryBlock> memoryBlock = MemoryBlock::Allocate(capacity + 7);
+    Int64 address = memoryBlock->ToInt64();
+    Int64 alignedAddress = (address + 7) & ~(Int64)7;
+    AutoPtr<DirectByteBuffer> bufObj = new DirectByteBuffer(memoryBlock, capacity, (Int32)(alignedAddress - address), FALSE, NULL);
+    *buf = (IByteBuffer*) bufObj->Probe(EIID_IByteBuffer);
+    REFCOUNT_ADD(*buf);
     return NOERROR;
 }
 
@@ -54,8 +65,7 @@ ECode ByteBuffer::Wrap(
     /* [out] */ IByteBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    AutoPtr<CByteArrayBuffer> bb;
-    CByteArrayBuffer::NewByFriend(array, (CByteArrayBuffer**)&bb);
+    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer(array);
     *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);
     REFCOUNT_ADD(*buf);
     return NOERROR;
@@ -70,14 +80,8 @@ ECode ByteBuffer::Wrap(
     VALIDATE_NOT_NULL(buf)
     VALIDATE_NOT_NULL(array)
 
-    Int32 arrayLength = array->GetLength();
-    if ((start | byteCount) < 0 || start > arrayLength || arrayLength - start < byteCount) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    AutoPtr<CByteArrayBuffer> bb;
-    CByteArrayBuffer::NewByFriend(array, (CByteArrayBuffer**)&bb);
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, byteCount))
+    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer(array);
     bb->mPosition = start;
     bb->mLimit = start + byteCount;
     *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);;
@@ -95,6 +99,23 @@ ByteBuffer::ByteBuffer(
     : Buffer(0, capacity, effectiveDirectAddress)
     , mOrder(ByteOrder_BIG_ENDIAN)
 {}
+
+ECode ByteBuffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Byte> > res;
+    GetArray((ArrayOf<Byte>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (int i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::ConvertByte((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
+}
 
 ECode ByteBuffer::GetArray(
     /* [out, callee] */ ArrayOf<Byte>** array)
@@ -196,12 +217,8 @@ ECode ByteBuffer::Get(
     /* [in] */ Int32 byteCount)
 {
     VALIDATE_NOT_NULL(dst)
-    Int32 arrayLength = dst->GetLength();
-    if ((dstOffset | byteCount) < 0 || dstOffset > arrayLength || arrayLength - dstOffset < byteCount) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(dst->GetLength(), dstOffset, byteCount))
     Int32 srcRemaining = 0;
     GetRemaining(&srcRemaining);
     if (byteCount > srcRemaining) {
@@ -264,12 +281,7 @@ ECode ByteBuffer::Put(
 {
     VALIDATE_NOT_NULL(src)
 
-    Int32 arrayLength = src->GetLength();
-    if ((srcOffset | byteCount) < 0 || srcOffset > arrayLength || arrayLength - srcOffset < byteCount) {
-        // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
-        //         count);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(src->GetLength(), srcOffset, byteCount))
     Int32 remaining = 0;
     GetRemaining(&remaining);
     if (byteCount > remaining) {
@@ -286,9 +298,23 @@ ECode ByteBuffer::Put(
 {
     VALIDATE_NOT_NULL(src)
 
+    Boolean isflag = FALSE;
+    if (IsAccessible(&isflag), !isflag) {
+        // throw new IllegalStateException("buffer is inaccessible");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    if (IsReadOnly(&isflag), isflag) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+
     if (src == THIS_PROBE(IByteBuffer)) {
         // throw new IllegalArgumentException("src == this");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (src->IsAccessible(&isflag), isflag) {
+        // throw new IllegalStateException("src buffer is inaccessible");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
 
     Int32 thisByteCount = 0;
@@ -308,9 +334,8 @@ ECode ByteBuffer::Put(
         FAIL_RETURN(src->GetArray((ArrayOf<Byte>**)&srcObject))
     }
     else {
-        //AutoPtr<HeapByteBuffer> heapBuffer = reinterpret_cast<HeapByteBuffer*>(src->Probe(EIID_HeapByteBuffer));
-        //TODO upgrade srcObject = NioUtils::GetUnsafeArray(heapBuffer);
-        // srcOffset += NioUtils::GetUnsafeArrayOffset(heapBuffer);
+        srcObject = NioUtils::GetUnsafeArray(src);
+        srcOffset += NioUtils::GetUnsafeArrayOffset(src);
     }
 
     AutoPtr< ArrayOf<Byte> > dstObject;
@@ -321,17 +346,32 @@ ECode ByteBuffer::Put(
         FAIL_RETURN(GetArray((ArrayOf<Byte>**)&dstObject))
     }
     else {
-        //HeapByteBuffer* heapBuffer = reinterpret_cast<HeapByteBuffer*>(this->Probe(EIID_HeapByteBuffer));
-        //TODO upgrade dstObject = NioUtils::GetUnsafeArray(heapBuffer);
-        // dstOffset += NioUtils::GetUnsafeArrayOffset(heapBuffer);
+        dstObject = NioUtils::GetUnsafeArray(this);
+        dstOffset += NioUtils::GetUnsafeArrayOffset(this);
     }
 
-    //TODO upgrade FAIL_RETURN(Memory::Memmove(dstObject, dstOffset, *srcObject, srcOffset, srcByteCount))
+    FAIL_RETURN(Memory::Memmove(dstObject, dstOffset, srcObject, srcOffset, srcByteCount))
     Int32 limit = 0;
     IBuffer::Probe(src)->GetLimit(&limit);
     IBuffer::Probe(src)->SetPosition(limit);
     SetPosition(dstOffset + srcByteCount);
     return NOERROR;
+}
+
+ECode ByteBuffer::IsAccessible(
+    /* [out] */ Boolean* hasArray)
+{
+    VALIDATE_NOT_NULL(hasArray)
+
+    *hasArray = TRUE;
+    return NOERROR;
+}
+
+ECode ByteBuffer::SetAccessible(
+    /* [in] */ Boolean accessible)
+{
+    // throw new UnsupportedOperationException();
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 } // namespace IO

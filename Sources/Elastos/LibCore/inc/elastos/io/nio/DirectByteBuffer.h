@@ -126,7 +126,96 @@ public:
     CARAPI ProtectedHasArray(
         /* [out] */ Boolean* hasArray);
 
-protected:
+    CARAPI IsReadOnly(
+        /* [out] */ Boolean* value);
+
+    virtual CARAPI Put(
+        /* [in] */ Byte b);
+
+    virtual CARAPI Put(
+        /* [in] */ Int32 index,
+        /* [in] */ Byte b);
+
+    virtual CARAPI Put(
+        /* [in] */ ArrayOf<Byte>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 byteCount);
+
+    virtual CARAPI Put(
+        /* [in] */ IByteBuffer* src);
+
+    virtual CARAPI PutChar(
+        /* [in] */ Char32 value);
+
+    virtual CARAPI PutChar(
+        /* [in] */ Int32 index,
+        /* [in] */ Char32 value);
+
+    virtual CARAPI PutDouble(
+        /* [in] */ Double value);
+
+    virtual CARAPI PutDouble(
+        /* [in] */ Int32 index,
+        /* [in] */ Double value);
+
+    virtual CARAPI PutFloat(
+        /* [in] */ Float value);
+
+    virtual CARAPI PutFloat(
+        /* [in] */ Int32 index,
+        /* [in] */ Float value);
+
+    virtual CARAPI PutInt16(
+        /* [in] */ Int16 value);
+
+    virtual CARAPI PutInt16(
+        /* [in] */ Int32 index,
+        /* [in] */ Int16 value);
+
+    virtual CARAPI PutInt32(
+        /* [in] */ Int32 value);
+
+    virtual CARAPI PutInt32(
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 value);
+
+    virtual CARAPI PutInt64(
+        /* [in] */ Int64 value);
+
+    virtual CARAPI PutInt64(
+        /* [in] */ Int32 index,
+        /* [in] */ Int64 value);
+
+    virtual CARAPI Slice(
+        /* [out] */ IByteBuffer** buffer);
+
+    virtual CARAPI AsCharBuffer(
+        /* [out] */ ICharBuffer** buffer);
+
+    virtual CARAPI AsDoubleBuffer(
+        /* [out] */ IDoubleBuffer** buffer);
+
+    virtual CARAPI AsFloatBuffer(
+        /* [out] */ IFloatBuffer** buffer);
+
+    virtual CARAPI AsInt16Buffer(
+        /* [out] */ IInt16Buffer** buffer);
+
+    virtual CARAPI AsInt32Buffer(
+        /* [out] */ IInt32Buffer** buffer);
+
+    virtual CARAPI AsInt64Buffer(
+        /* [out] */ IInt64Buffer** buffer);
+
+    virtual CARAPI AsReadOnlyBuffer(
+        /* [out] */ IByteBuffer** buffer);
+
+    virtual CARAPI Compact();
+
+    virtual CARAPI Duplicate(
+        /* [out] */ IByteBuffer** buffer);
+
+public:
     DirectByteBuffer(
         /* [in] */ Int64 address,
         /* [in] */ Int32 capacity);
@@ -142,6 +231,9 @@ protected:
     // This is the offset into {@code Buffer.block} at which this buffer logically starts.
     // TODO: rewrite this so we set 'block' to an OffsetMemoryBlock?
     Int32 mOffset;
+
+private:
+    Boolean mIsReadOnly;
 };
 
 } // namespace IO

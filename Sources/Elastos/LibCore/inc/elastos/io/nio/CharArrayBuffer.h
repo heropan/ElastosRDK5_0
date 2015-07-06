@@ -26,12 +26,10 @@ public:
         /* [in] */ ArrayOf<Char32>* array);
 
     CharArrayBuffer(
-        /* [in] */ Int32 capacity);
-
-    CharArrayBuffer(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Char32>* backingArray,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean isReadOnly);
 
     CARAPI Get(
         /* [out] */ Char32* value);
@@ -62,10 +60,43 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
+    CARAPI IsReadOnly(
+        /* [out] */ Boolean* value);
+
+    CARAPI AsReadOnlyBuffer(
+        /* [out] */ ICharBuffer** buffer);
+
+    CARAPI Compact();
+
+    CARAPI Duplicate(
+        /* [out] */ ICharBuffer** buffer);
+
+    CARAPI Put(
+        /* [in] */ Char32 c);
+
+    CARAPI Put(
+        /* [in] */ Int32 index,
+        /* [in] */ Char32 c);
+
+    CARAPI Slice(
+        /* [out] */ ICharBuffer** buffer);
+
+protected:
+    CARAPI ProtectedArray(
+        /* [out, callee] */ ArrayOf<Char32>** array);
+
+    CARAPI ProtectedArrayOffset(
+        /* [out] */ Int32* offset);
+
+    CARAPI ProtectedHasArray(
+        /* [out] */ Boolean* result);
+
 public:
     AutoPtr< ArrayOf<Char32> > mBackingArray;
 
     Int32 mOffset;
+
+    Boolean mIsReadOnly;
 };
 
 } // namespace IO

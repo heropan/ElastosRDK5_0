@@ -163,7 +163,7 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ ByteOrder order);
 
-    CARAPI_(Int32) ToInt32();
+    CARAPI_(Int64) ToInt64();
 
     CARAPI_(String) ToString();
 

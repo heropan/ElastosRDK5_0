@@ -10,7 +10,7 @@ namespace IO {
 CharSequenceAdapter::CharSequenceAdapter(
     /* [in] */ Int32 capacity,
     /* [in] */ ICharSequence* chseq)
-    : CharBuffer(capacity)
+    : CharBuffer(capacity, 0)
     , mSequence(chseq)
 {}
 
@@ -18,6 +18,7 @@ AutoPtr<CharSequenceAdapter> CharSequenceAdapter::Copy(
     /* [in] */ CharSequenceAdapter* other)
 {
     VALIDATE_NOT_NULL(other);
+
     Int32 len = 0;
     other->mSequence->GetLength(&len);
     assert(0 && "TODO");
@@ -279,13 +280,13 @@ ECode CharSequenceAdapter::Put(
     return CharBuffer::Put(src);
 }
 
-ECode CharSequenceAdapter::PutString(
+ECode CharSequenceAdapter::Put(
     /* [in] */ const String& str)
 {
-    return CharBuffer::PutString(str);
+    return CharBuffer::Put(str);
 }
 
-ECode CharSequenceAdapter::PutString(
+ECode CharSequenceAdapter::Put(
     /* [in] */ const String& str,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)

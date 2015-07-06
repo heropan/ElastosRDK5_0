@@ -28,26 +28,17 @@ MappedByteBuffer::MappedByteBuffer(
     /* [in] */ Int32 capacity,
     /* [in] */ FileChannelMapMode mapMode,
     /* [in] */ Int64 effectiveDirectAddress)
-    : ByteBuffer(capacity, block)
+    : ByteBuffer(capacity, effectiveDirectAddress)
+    , mBlock(block)
     , mMapMode(mapMode)
 {
-    if (mMapMode == FileChannelMapMode_READ_ONLY) {
-        // AutoPtr<ReadOnlyDirectByteBuffer> tmpReadOnly = new ReadOnlyDirectByteBuffer(block, capacity, offset);
-        // assert(tmpReadOnly != NULL);
-        // mWrapped = (DirectByteBuffer*)tmpReadOnly;
-    }
-    else {
-        // AutoPtr<ReadWriteDirectByteBuffer> tmpReadWrite = new ReadWriteDirectByteBuffer(block, capacity, offset);
-        // assert(tmpReadWrite != NULL);
-        // mWrapped = (DirectByteBuffer*)tmpReadWrite;
-    }
 }
 
 ECode MappedByteBuffer::IsLoaded(
     /* [out] */ Boolean* isLoaded)
 {
     VALIDATE_NOT_NULL(isLoaded)
-    Int64 address = mBlock->ToInt32();
+    Int64 address = mBlock->ToInt64();
     Int64 size = mBlock->GetSize();
     if (size == 0) {
         *isLoaded = TRUE;
@@ -98,8 +89,8 @@ ECode MappedByteBuffer::Load()
     assert(0 && "TODO");
     // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
     libcore->GetOs((IOs**)&os);
-    ASSERT_SUCCEEDED(os->Mlock(mBlock->ToInt32(), mBlock->GetSize()))
-    ASSERT_SUCCEEDED(os->Munlock(mBlock->ToInt32(), mBlock->GetSize()))
+    ASSERT_SUCCEEDED(os->Mlock(mBlock->ToInt64(), mBlock->GetSize()))
+    ASSERT_SUCCEEDED(os->Munlock(mBlock->ToInt64(), mBlock->GetSize()))
     // } catch (ErrnoException ignored) {
     // }
     return NOERROR;
@@ -120,12 +111,21 @@ ECode MappedByteBuffer::Force()
         Int32 MS_SYNC = 0;
         assert(0 && "TODO");
         // FAIL_RETURN(osConstans->GetOsConstant(String("MS_SYNC"), &MS_SYNC))
-        FAIL_RETURN(os->Msync(mBlock->ToInt32(), mBlock->GetSize(), MS_SYNC))
+        FAIL_RETURN(os->Msync(mBlock->ToInt64(), mBlock->GetSize(), MS_SYNC))
     //     } catch (ErrnoException errnoException) {
     //         // The RI doesn't throw, presumably on the assumption that you can't get into
     //         // a state where msync(2) could return an error.
     //         throw new AssertionError(errnoException);
     //     }
+    }
+    return NOERROR;
+}
+
+ECode MappedByteBuffer::CheckIsMapped()
+{
+    if (mMapMode == NULL) {
+        // throw new UnsupportedOperationException();
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }
     return NOERROR;
 }

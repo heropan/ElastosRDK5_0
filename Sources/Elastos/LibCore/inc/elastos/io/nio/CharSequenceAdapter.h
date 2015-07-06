@@ -111,10 +111,10 @@ public:
     CARAPI Put(
         /* [in] */ ICharBuffer* src);
 
-    CARAPI PutString(
+    CARAPI Put(
         /* [in] */ const String& str);
 
-    CARAPI PutString(
+    CARAPI Put(
         /* [in] */ const String& str,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);

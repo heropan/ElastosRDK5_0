@@ -1,25 +1,19 @@
 
-#ifndef __ELASTOS_IO_CBYTEARRAYBUFFER_H__
-#define __ELASTOS_IO_CBYTEARRAYBUFFER_H__
+#ifndef __ELASTOS_IO_BYTEARRAYBUFFER_H__
+#define __ELASTOS_IO_BYTEARRAYBUFFER_H__
 
-#include "_Elastos_IO_CByteArrayBuffer.h"
 #include "ByteBuffer.h"
 
 namespace Elastos {
 namespace IO {
 
-CarClass(CByteArrayBuffer)
-    , public ByteBuffer
+class ByteArrayBuffer : public ByteBuffer
 {
 public:
-    CAR_OBJECT_DECL()
-
-    CByteArrayBuffer();
-
-    CARAPI constructor(
+    ByteArrayBuffer(
         /* [in] */ ArrayOf<Byte>* backingArray);
 
-    CARAPI constructor(
+    ByteArrayBuffer(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Byte>* backingArray,
         /* [in] */ Int32 arrayOffset,
@@ -54,9 +48,6 @@ public:
     CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Byte* value);
-
-    CARAPI Get(
-        /* [in] */ ArrayOf<Byte>* dst);
 
     CARAPI Get(
         /* [in] */ ArrayOf<Byte>* dst,
@@ -210,6 +201,35 @@ public:
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 shortCount);
 
+    CARAPI PutChars(
+        /* [in] */ ArrayOf<Char32>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 charCount);
+
+    CARAPI PutDoubles(
+        /* [in] */ ArrayOf<Double>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 doubleCount);
+
+    CARAPI PutFloats(
+        /* [in] */ ArrayOf<Float>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 floatCount);
+
+    CARAPI PutInt32s(
+        /* [in] */ ArrayOf<Int32>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 intCount);
+
+    CARAPI PutInt64s(
+        /* [in] */ ArrayOf<Int64>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 longCount);
+
+    CARAPI PutInt16s(
+        /* [in] */ ArrayOf<Int16>* dst,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ Int32 shortCount);
 public:
     /**
      * These fields are non-private for NioUtils.unsafeArray.
@@ -218,8 +238,8 @@ public:
 
     Int32 mArrayOffset;
 private:
-    static AutoPtr<IByteBuffer> Copy(
-        /* [in] */ IByteBuffer* other,
+    static AutoPtr<ByteArrayBuffer> Copy(
+        /* [in] */ ByteArrayBuffer* other,
         /* [in] */ Int32 markOfOther,
         /* [in] */ Boolean isReadOnly);
 
@@ -229,4 +249,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CBYTEARRAYBUFFER_H__
+#endif // __ELASTOS_IO_BYTEARRAYBUFFER_H__

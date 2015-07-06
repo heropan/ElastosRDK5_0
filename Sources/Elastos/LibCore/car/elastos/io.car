@@ -355,22 +355,6 @@ module
         interface ICloseable;
     }
 
-    [deprecated]
-    class CByteArrayBuffer {
-        constructor(
-            [in] ArrayOf<Byte>* backingArray);
-
-        constructor(
-            [in] Int32 capacity,
-            [in] ArrayOf<Byte>* backingArray,
-            [in] Int32 arrayOffset,
-            [in] Boolean isReadOnly);
-
-        interface IByteBuffer;
-        interface IBuffer;
-        interface IComparable;
-    }
-
     class CFileDescriptor {
         constructor();
 

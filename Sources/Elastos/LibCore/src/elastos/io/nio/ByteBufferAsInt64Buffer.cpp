@@ -1,7 +1,9 @@
 
 #include "ByteBufferAsInt64Buffer.h"
 #include "DirectByteBuffer.h"
-#include "CByteArrayBuffer.h"
+#include "ByteArrayBuffer.h"
+
+using Libcore::IO::ISizeOf;
 
 namespace Elastos {
 namespace IO {
@@ -13,7 +15,7 @@ extern "C" const InterfaceID EIID_ByteBufferAsInt64Buffer =
 ByteBufferAsInt64Buffer::ByteBufferAsInt64Buffer(
     /* [in] */ IByteBuffer* byteBuffer)
 {
-    // super(mByteBuffer->capacity() / sizeof(Int64), mByteBuffer->effectiveDirectAddress);
+    // super(mByteBuffer->capacity() / ISizeOf::LONG, mByteBuffer->effectiveDirectAddress);
     mByteBuffer = byteBuffer;
     IBuffer::Probe(mByteBuffer)->Clear();
 }
@@ -55,8 +57,8 @@ ECode ByteBufferAsInt64Buffer::Compact()
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int64));
-    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int64));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * ISizeOf::LONG);
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * ISizeOf::LONG);
     mByteBuffer->Compact();
     IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
@@ -93,7 +95,7 @@ ECode ByteBufferAsInt64Buffer::Get(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    return mByteBuffer->GetInt64(mPosition++ * sizeof(Int64), value);
+    return mByteBuffer->GetInt64(mPosition++ * ISizeOf::LONG, value);
 }
 
 ECode ByteBufferAsInt64Buffer::Get(
@@ -103,7 +105,7 @@ ECode ByteBufferAsInt64Buffer::Get(
     VALIDATE_NOT_NULL(value)
 
     FAIL_RETURN(CheckIndex(index));
-    return mByteBuffer->GetInt64(index * sizeof(Int64), value);
+    return mByteBuffer->GetInt64(index * ISizeOf::LONG, value);
 }
 
 ECode ByteBufferAsInt64Buffer::Get(
@@ -113,14 +115,14 @@ ECode ByteBufferAsInt64Buffer::Get(
 {
     VALIDATE_NOT_NULL(dst)
 
-    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * sizeof(Int64));
-    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * sizeof(Int64));
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * ISizeOf::LONG);
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * ISizeOf::LONG);
     AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
     if (res) {
         res->GetInt64s(dst, dstOffset, charCount);
     }
     else {
-        ((CByteArrayBuffer*) mByteBuffer.Get())->GetInt64s(dst, dstOffset, charCount);
+        ((ByteArrayBuffer*) mByteBuffer.Get())->GetInt64s(dst, dstOffset, charCount);
     }
     mPosition += charCount;
     return NOERROR;
@@ -153,7 +155,7 @@ ECode ByteBufferAsInt64Buffer::Put(
     // if (mPosition == mLimit) {
     //     throw new BufferOverflowException();
     // }
-    // mByteBuffer->putLong(mPosition++ * sizeof(Int64), c);
+    // mByteBuffer->putLong(mPosition++ * ISizeOf::LONG, c);
     // return this;
     return NOERROR;
 }
@@ -163,7 +165,7 @@ ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int64 c)
 {
     // checkIndex(index);
-    // mByteBuffer->putLong(index * sizeof(Int64), c);
+    // mByteBuffer->putLong(index * ISizeOf::LONG, c);
     // return this;
     return NOERROR;
 }
@@ -173,8 +175,8 @@ ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    // mByteBuffer->mLimit(mLimit * sizeof(Int64));
-    // mByteBuffer->mPosition(mPosition * sizeof(Int64));
+    // mByteBuffer->mLimit(mLimit * ISizeOf::LONG);
+    // mByteBuffer->mPosition(mPosition * ISizeOf::LONG);
     // if (byteBuffer instanceof DirectByteBuffer) {
     //     ((DirectByteBuffer) byteBuffer).put(src, srcOffset, longCount);
     // } else {
@@ -188,8 +190,8 @@ ECode ByteBufferAsInt64Buffer::Put(
 ECode ByteBufferAsInt64Buffer::Slice(
     /* [out] */ IInt64Buffer** buffer)
 {
-    // mByteBuffer->mLimit(mLimit * sizeof(Int64));
-    // mByteBuffer->mPosition(mPosition * sizeof(Int64));
+    // mByteBuffer->mLimit(mLimit * ISizeOf::LONG);
+    // mByteBuffer->mPosition(mPosition * ISizeOf::LONG);
     // ByteBuffer bb = mByteBuffer->slice().order(mByteBuffer->order());
     // LongBuffer result = new ByteBufferAsInt64Buffer(bb);
     // mByteBuffer->clear();

@@ -4,6 +4,7 @@
 #include "Math.h"
 
 using Elastos::Core::Math;
+using Libcore::IO::ISizeOf;
 
 namespace Elastos {
 namespace IO {
@@ -128,7 +129,7 @@ ECode DirectByteBuffer::GetInt64s(
 {
     VALIDATE_NOT_NULL(dst);
     Int32 byteCount = 0;
-    FAIL_RETURN(CheckGetBounds(sizeof(Int64), dst->GetLength(), dstOffset, int64Count, &byteCount))
+    FAIL_RETURN(CheckGetBounds(ISizeOf::LONG, dst->GetLength(), dstOffset, int64Count, &byteCount))
     AutoPtr<IByteOrderHelper> helper;
     ASSERT_SUCCEEDED(CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper))
     Boolean needsSwap = FALSE;
@@ -276,7 +277,7 @@ ECode DirectByteBuffer::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    Int32 newPosition = mPosition + sizeof(Int64);
+    Int32 newPosition = mPosition + ISizeOf::LONG;
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
@@ -291,7 +292,7 @@ ECode DirectByteBuffer::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    FAIL_RETURN(CheckIndex(index, sizeof(Int64)))
+    FAIL_RETURN(CheckIndex(index, ISizeOf::LONG))
     *value = mBlock->PeekInt64(mOffset + index, mOrder);
     return NOERROR;
 }
@@ -363,6 +364,176 @@ ECode DirectByteBuffer::ProtectedHasArray(
 {
     VALIDATE_NOT_NULL(hasArray);
     *hasArray = mBlock->GetArray() != NULL;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Put(
+    /* [in] */ Byte b)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Put(
+    /* [in] */ Int32 index,
+    /* [in] */ Byte b)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Put(
+    /* [in] */ ArrayOf<Byte>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 byteCount)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Put(
+    /* [in] */ IByteBuffer* src)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutChar(
+    /* [in] */ Char32 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutChar(
+    /* [in] */ Int32 index,
+    /* [in] */ Char32 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutDouble(
+    /* [in] */ Double value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutDouble(
+    /* [in] */ Int32 index,
+    /* [in] */ Double value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutFloat(
+    /* [in] */ Float value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutFloat(
+    /* [in] */ Int32 index,
+    /* [in] */ Float value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt16(
+    /* [in] */ Int16 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt16(
+    /* [in] */ Int32 index,
+    /* [in] */ Int16 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt32(
+    /* [in] */ Int32 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt32(
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt64(
+    /* [in] */ Int64 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt64(
+    /* [in] */ Int32 index,
+    /* [in] */ Int64 value)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Slice(
+    /* [out] */ IByteBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsCharBuffer(
+    /* [out] */ ICharBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsDoubleBuffer(
+    /* [out] */ IDoubleBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsFloatBuffer(
+    /* [out] */ IFloatBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsInt16Buffer(
+    /* [out] */ IInt16Buffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsInt32Buffer(
+    /* [out] */ IInt32Buffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsInt64Buffer(
+    /* [out] */ IInt64Buffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::AsReadOnlyBuffer(
+    /* [out] */ IByteBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Compact()
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::Duplicate(
+    /* [out] */ IByteBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::IsReadOnly(
+    /* [out] */ Boolean* value)
+{
     return NOERROR;
 }
 

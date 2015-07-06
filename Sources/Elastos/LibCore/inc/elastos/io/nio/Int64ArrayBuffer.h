@@ -26,12 +26,10 @@ public:
         /* [in] */ ArrayOf<Int64>* array);
 
     Int64ArrayBuffer(
-        /* [in] */ Int32 capacity);
-
-    Int64ArrayBuffer(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Int64>* backingArray,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean isReadOnly);
 
     CARAPI GetInt64(
         /* [out] */ Int64* value);
@@ -55,6 +53,8 @@ public:
     AutoPtr< ArrayOf<Int64> > mBackingArray;
 
     Int32 mOffset;
+
+    Boolean mIsReadOnly;
 };
 
 } // namespace IO

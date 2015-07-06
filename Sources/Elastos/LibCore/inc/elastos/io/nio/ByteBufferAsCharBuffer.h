@@ -31,11 +31,10 @@ private:
     ByteBufferAsCharBuffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-protected:
+public:
     static CARAPI_(AutoPtr<ICharBuffer>) AsCharBuffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-public:
     // @Override
     CARAPI AsReadOnlyBuffer(
         /* [out] */ ICharBuffer** buffer);
@@ -117,6 +116,7 @@ protected:
 
 private:
     AutoPtr<ByteBuffer> mByteBuffer;
+    Int32 mCap;
 };
 
 } // namespace IO

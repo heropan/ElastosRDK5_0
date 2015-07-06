@@ -31,11 +31,10 @@ private:
     ByteBufferAsFloatBuffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-protected:
+public:
     static CARAPI_(AutoPtr<IFloatBuffer>) AsFloatBuffer(
         /* [in] */ ByteBuffer* byteBuffer);
 
-public:
     // @Override
     CARAPI AsReadOnlyBuffer(
         /* [out] */ IFloatBuffer** buffer);
