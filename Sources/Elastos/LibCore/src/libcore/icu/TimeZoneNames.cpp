@@ -309,7 +309,8 @@ ECode TimeZoneNames::GetZoneStrings(
         lh->GetDefault((ILocale **)&locale);
     }
 
-    AutoPtr<IInterface> cache = sCachedZoneStrings->Create(locale);
+    AutoPtr<IInterface> cache;
+    sCachedZoneStrings->Get(locale, (IInterface**)&cache);
     AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > > result = InterfaceToArray(IArrayOf::Probe(cache));
     Int32 length = result->GetLength();
     AutoPtr< ArrayOf<IArrayOf*> > resarr = ArrayOf<IArrayOf*>::Alloc(length);
@@ -368,8 +369,7 @@ ECode TimeZoneNames::ForLocale(
     AutoPtr<ArrayOf<String> > res = ArrayOf<String>::Alloc(ids.GetSize());
     Int32 count = 0;
     for (List<String>::Iterator it = ids.Begin(); it != ids.End(); ++it) {
-        (*res)[count] = *it;
-        ++count;
+        (*res)[count++] = *it;
     }
     *outarray = res;
     REFCOUNT_ADD(*outarray);
@@ -391,6 +391,7 @@ ECode TimeZoneNames::GetExemplarLocation(
         return E_NULL_POINTER_EXCEPTION;
 
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus()) {
         return NOERROR;
