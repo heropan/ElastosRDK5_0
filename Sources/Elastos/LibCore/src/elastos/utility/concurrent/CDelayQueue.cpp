@@ -128,7 +128,8 @@ ECode CDelayQueue::Take(
                 (ILock::Probe(lock))->UnLock();
                 return ec;
             }
-            else if (mLeader != NULL)
+            first = NULL;
+            if (mLeader != NULL)
                 mAvailable->Await();
             else {
                 AutoPtr<IThread> thisThread = Thread::GetCurrentThread();
@@ -188,6 +189,7 @@ ECode CDelayQueue::Poll(
                 (ILock::Probe(lock))->UnLock();
                 return NOERROR;
             }
+            first = NULL; // don't retain ref while waiting
             if (nanos < delay || mLeader != NULL) {
                 Int64 val;
                 mAvailable->AwaitNanos(nanos, &val);
