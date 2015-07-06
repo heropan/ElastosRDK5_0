@@ -37,9 +37,9 @@ NativeBreakIterator::NativeBreakIterator(
     : mAddress(address)
     , mType(type)
 {
-    AutoPtr<CStringCharacterIterator> stringCharIter;
-    ASSERT_SUCCEEDED(CStringCharacterIterator::NewByFriend(String(""),
-            (CStringCharacterIterator**)&stringCharIter));
+    AutoPtr<IStringCharacterIterator> stringCharIter;
+    ASSERT_SUCCEEDED(CStringCharacterIterator::New(String(""),
+            (IStringCharacterIterator**)&stringCharIter));
     mCharIterator = (ICharacterIterator*)stringCharIter->Probe(EIID_ICharacterIterator);
 }
 
@@ -59,7 +59,7 @@ ECode NativeBreakIterator::Clone(
     clone->mString = mString;
     // The RI doesn't clone the CharacterIterator.
     clone->mCharIterator = mCharIterator;
-    *outiter = clone->Probe(EIID_INativeBreakIterator);
+    *outiter = clone->Probe(EIID_IInterface);
     REFCOUNT_ADD(*outiter);
 
     return NOERROR;
@@ -76,14 +76,31 @@ ECode NativeBreakIterator::Equals(
         *value = TRUE;
         return NOERROR;
     }
-    AutoPtr<INativeBreakIterator> rhs = (INativeBreakIterator*)object->Probe(EIID_INativeBreakIterator);
+    AutoPtr<INativeBreakIterator> rhs = INativeBreakIterator::Probe(object);
     if (!rhs) {
         *value = FALSE;
         return NOERROR;
     }
     // TODO: is this sufficient? shouldn't we be checking the underlying rules?
-    assert(0 && "TODO");
-    // *value = mType == ((NativeBreakIterator*)rhs.Get())->mType && mCharIterator.equals(rhs.charIter);
+    NativeBreakIterator* rv = (NativeBreakIterator*)rhs.Get();
+    Boolean typeEqual = mType == rv->mType;
+    if (typeEqual == FALSE) {
+        *value = FALSE;
+        return NOERROR;
+    }
+    if (mCharIterator == NULL && rv->mCharIterator == NULL) {
+        *value = TRUE;
+        return NOERROR;
+    }
+    if (mCharIterator == NULL || rv->mCharIterator == NULL) {
+        *value = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<IObject> obj = IObject::Probe(mCharIterator);
+    Boolean itEqual;
+    obj->Equals(rv->mCharIterator ,&itEqual);
+    if (itEqual)
+        *value = TRUE;
     return NOERROR;
 }
 

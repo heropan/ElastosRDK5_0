@@ -2,7 +2,7 @@
 #include "LocaleData.h"
 #include "CLocaleData.h"
 #include "CLocale.h"
-// #include "ICUUtil.h"
+#include "ICUUtil.h"
 #include "StringUtils.h"
 #include "AutoLock.h"
 
@@ -459,15 +459,14 @@ AutoPtr<ILocaleData> LocaleData::InitLocaleData(
     LocaleData* localeData = (LocaleData*)localeObj.Get();
     String localeLanguageTag;
     locale->ToLanguageTag(&localeLanguageTag);
-#if 0   // for compiling
+
     if (!ICUUtil::InitLocaleDataNative(localeLanguageTag, localeData)) {
         return NULL;
     }
 
     // Get the "h:mm a" and "HH:mm" 12- and 24-hour time format strings.
-    ICUUtil::GetBestDateTimePattern("hm", locale, &localeData->mTimeFormat12);
-    ICUUtil::GetBestDateTimePattern("Hm", locale, &localeData->mTimeFormat24);
-#endif // #if 0
+    ICUUtil::GetBestDateTimePattern(String("hm"), locale, &localeData->mTimeFormat12);
+    ICUUtil::GetBestDateTimePattern(String("Hm"), locale, &localeData->mTimeFormat24);
 
     // Fix up a couple of patterns.
     if (!localeData->mFullTimeFormat.IsNull()) {

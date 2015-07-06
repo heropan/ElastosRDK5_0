@@ -122,10 +122,10 @@ private:
     DISALLOW_COPY_AND_ASSIGN(ScopedResourceBundle);
 };
 
-IBasicLruCache* createCache()
+AutoPtr<IBasicLruCache> createCache()
 {
-    IBasicLruCache* tmp;
-    CBasicLruCache::New(8, &tmp);
+    AutoPtr<IBasicLruCache> tmp;
+    CBasicLruCache::New(8, (IBasicLruCache**)&tmp);
     return tmp;
 }
 
@@ -261,6 +261,9 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
     Collections::GetEmptySet((ISet**)&pUnicodeAttributeSet);
 
     if (extensionsIndex != -1) {
+        pExtensionsMap = NULL;
+        pUnicodeKeywordsMap = NULL;
+        pUnicodeAttributeSet = NULL;
         CHashMap::New((IMap**)&pExtensionsMap);
         CHashMap::New((IMap**)&pUnicodeKeywordsMap);
         CHashSet::New((ISet**)&pUnicodeAttributeSet);
@@ -333,9 +336,9 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
         (*pOutputArray)[IDX_REGION],
         (*pOutputArray)[IDX_VARIANT],
         (*pOutputArray)[IDX_SCRIPT],
-        (ISet*)pUnicodeAttributeSet,
-        (IMap*)pUnicodeKeywordsMap,
-        (IMap*)pExtensionsMap,
+        pUnicodeAttributeSet,
+        pUnicodeKeywordsMap,
+        pExtensionsMap,
         TRUE,
         locale);
     return NOERROR;
@@ -369,8 +372,9 @@ ECode ICUUtil::GetBestDateTimePattern(
     AutoPtr<ICharSequence> key_cs;
     CStringWrapper::New(key, (ICharSequence**)&key_cs);
     synchronized(CACHED_PATTERNS) {
-        AutoPtr<ICharSequence> pattern_cs;
-        CACHED_PATTERNS->Get(key_cs, (IInterface**)(ICharSequence**)&pattern_cs);
+        AutoPtr<IInterface> tmp;
+        CACHED_PATTERNS->Get(key_cs, (IInterface**)&tmp);
+        AutoPtr<ICharSequence> pattern_cs = ICharSequence::Probe(tmp);
         if (pattern_cs == NULL) {
             String pattern;
             FAIL_RETURN(GetBestDateTimePatternNative(skeleton, languageTag, &pattern))
@@ -470,7 +474,7 @@ static String versionString(
     /* [in] */ const UVersionInfo& version)
 {
     char versionString[U_MAX_VERSION_STRING_LENGTH];
-    u_versionToString(const_cast<UVersionInfo&>(version), &versionString[0]);
+    u_versionToString(const_cast<UVersionInfo&>(version), versionString);
     return String(versionString);
 }
 
@@ -651,10 +655,10 @@ public:
 };
 
 ECode fromStringEnumeration(
-    UErrorCode& status,
-    const char* provider,
-    StringEnumeration* se,
-    ArrayOf<String>** codes)
+    /* [in] */ UErrorCode& status,
+    /* [in] */ const char* provider,
+    /* [in] */ StringEnumeration* se,
+    /* [out] */ ArrayOf<String>** codes)
 {
     if(!U_SUCCESS(status)) {
         *codes = NULL;
