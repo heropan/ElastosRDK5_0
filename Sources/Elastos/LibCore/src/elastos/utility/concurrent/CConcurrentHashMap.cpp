@@ -2083,6 +2083,57 @@ ECode CConcurrentHashMap::KeySetView::RetainAll(
     return CollectionView::RetainAll(collection, &b);
 }
 
+ECode CConcurrentHashMap::KeySetView::Clear()
+{
+    return CollectionView::Clear();
+}
+
+ECode CConcurrentHashMap::KeySetView::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::ContainsAll(collection, result);
+}
+
+ECode CConcurrentHashMap::KeySetView::IsEmpty(
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::IsEmpty(result);
+}
+
+ECode CConcurrentHashMap::KeySetView::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::RemoveAll(collection, result);
+}
+
+ECode CConcurrentHashMap::KeySetView::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::RetainAll(collection, result);
+}
+
+ECode CConcurrentHashMap::KeySetView::GetSize(
+    /* [in] */ Int32* size)
+{
+    return CollectionView::GetSize(size);
+}
+
+ECode CConcurrentHashMap::KeySetView::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** result)
+{
+    return CollectionView::ToArray(result);
+}
+
+ECode CConcurrentHashMap::KeySetView::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* array,
+    /* [out, callee] */ ArrayOf<IInterface*>** result)
+{
+    return CollectionView::ToArray(array, result);
+}
+
 //===============================================================================
 // CConcurrentHashMap::ValuesView::
 //===============================================================================
@@ -2364,6 +2415,57 @@ ECode CConcurrentHashMap::EntrySetView::RetainAll(
 {
     Boolean b;
     return CollectionView::RetainAll(collection, &b);
+}
+
+ECode CConcurrentHashMap::EntrySetView::Clear()
+{
+    return CollectionView::Clear();
+}
+
+ECode CConcurrentHashMap::EntrySetView::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::ContainsAll(collection, result);
+}
+
+ECode CConcurrentHashMap::EntrySetView::IsEmpty(
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::IsEmpty(result);
+}
+
+ECode CConcurrentHashMap::EntrySetView::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::RemoveAll(collection, result);
+}
+
+ECode CConcurrentHashMap::EntrySetView::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return CollectionView::RetainAll(collection, result);
+}
+
+ECode CConcurrentHashMap::EntrySetView::GetSize(
+    /* [in] */ Int32* size)
+{
+    return CollectionView::GetSize(size);
+}
+
+ECode CConcurrentHashMap::EntrySetView::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** result)
+{
+    return CollectionView::ToArray(result);
+}
+
+ECode CConcurrentHashMap::EntrySetView::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* array,
+    /* [out, callee] */ ArrayOf<IInterface*>** result)
+{
+    return CollectionView::ToArray(array, result);
 }
 
 //===============================================================================

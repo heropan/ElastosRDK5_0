@@ -329,6 +329,9 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
     /**
      * Removes all elements from this {@code Collection}, leaving it empty (optional).
      *
@@ -442,6 +445,9 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
     /**
      * Removes all occurrences in this {@code Collection} of each object in the
      * specified {@code Collection} (optional). After this method returns none of the
@@ -468,6 +474,9 @@ public:
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
 
     /**
      * Removes all objects from this {@code Collection} that are not also found in the

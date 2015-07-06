@@ -305,6 +305,21 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
 protected:
     CARAPI_(AutoPtr<IMap>) CreateBackingMap(
         /* [in] */ Int32 capacity,

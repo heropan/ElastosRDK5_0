@@ -37,6 +37,7 @@ class AbstractQueue
 public:
 
     CAR_INTERFACE_DECL()
+
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
@@ -169,6 +170,61 @@ public:
      */
     virtual CARAPI Peek(
         /* [out] */ IInterface** obj) = 0;
+
+    CARAPI GetIterator(
+        /* [out] */ IIterator** it);
+
+    CARAPI Add(
+        /* [in] */  IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */  ICollection* collection);
+
+    CARAPI Contains(
+        /* [in] */  IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI ContainsAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    CARAPI Equals(
+        /* [in] */  IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
+    CARAPI IsEmpty(
+        /* [out] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */  IInterface* object,
+        /* [out] */ Boolean* modified);
+
+    CARAPI RemoveAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI RemoveAll(
+        /* [in] */  ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI RetainAll(
+        /* [in] */  ICollection* collection);
+
+    CARAPI GetSize(
+        /* [out] */ Int32* size);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */  ArrayOf<IInterface*>* inArray,
+        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
 protected:
     /**

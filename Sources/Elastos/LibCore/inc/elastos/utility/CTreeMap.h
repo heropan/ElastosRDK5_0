@@ -380,6 +380,21 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI Remove(
+            /* [in] */ IInterface* object);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
+
     private:
         AutoPtr<CTreeMap> mHost;
     };
@@ -721,9 +736,26 @@ public:
             CARAPI GetHashCode(
                 /* [out] */ Int32* hashCode);
 
+            CARAPI Add(
+                /* [in] */ IInterface* object);
+
+            CARAPI AddAll(
+                /* [in] */ ICollection* collection);
+
+            CARAPI Remove(
+                /* [in] */ IInterface* object);
+
+            CARAPI RemoveAll(
+                /* [in] */ ICollection* collection);
+
+            CARAPI RetainAll(
+                /* [in] */ ICollection* collection);
+
         private:
             AutoPtr<BoundedMap> mHost;
         };
+
+    public:
 
         BoundedMap(
             /* [in] */ Boolean ascending,
@@ -770,12 +802,19 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI PutAll(
             /* [in] */ IMap* map);
 
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -1328,6 +1367,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -1360,6 +1403,9 @@ public:
     CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ PInterface key);
 
     /**
      * Returns the number of mappings in this {@code Map}.

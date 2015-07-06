@@ -36,7 +36,7 @@ ECode CConcurrentSkipListSet::constructor(
 {
     CConcurrentSkipListMap::New((INavigableMap**)&mM);
     Boolean b;
-    return AddAll(c, &b);
+    return AbstractSet::AddAll(c, &b);
 }
 
 ECode CConcurrentSkipListSet::constructor(
@@ -46,7 +46,7 @@ ECode CConcurrentSkipListSet::constructor(
     s->GetComparator((IComparator**)&comp);
     CConcurrentSkipListMap::New(comp, (INavigableMap**)&mM);
     Boolean b;
-    return AddAll(ICollection::Probe(s), &b);
+    return AbstractSet::AddAll(ICollection::Probe(s), &b);
 }
 
 ECode CConcurrentSkipListSet::constructor(
@@ -69,6 +69,76 @@ ECode CConcurrentSkipListSet::Clone(
     *res = p->Probe(EIID_IInterface);
     REFCOUNT_ADD(*res);
     return NOERROR;
+}
+
+ECode CConcurrentSkipListSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Add(object);
+}
+
+ECode CConcurrentSkipListSet::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::AddAll(collection, result);
+}
+
+ECode CConcurrentSkipListSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode CConcurrentSkipListSet::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::ContainsAll(collection, result);
+}
+
+ECode CConcurrentSkipListSet::GetHashCode(
+    /* [in] */ Int32* hash)
+{
+    return AbstractSet::GetHashCode(hash);
+}
+
+ECode CConcurrentSkipListSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Remove(object);
+}
+
+ECode CConcurrentSkipListSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode CConcurrentSkipListSet::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::RetainAll(collection, result);
+}
+
+ECode CConcurrentSkipListSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
+
+ECode CConcurrentSkipListSet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return AbstractSet::ToArray(array);
+}
+
+ECode CConcurrentSkipListSet::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* inarray,
+    /* [out, callee] */ ArrayOf<IInterface*>** result)
+{
+    return AbstractSet::ToArray(inarray, result);
 }
 
 /* ---------------- Set operations -------------- */
@@ -161,7 +231,7 @@ ECode CConcurrentSkipListSet::Equals(
     }
     AutoPtr<ICollection> c = (ICollection*) object->Probe(EIID_ICollection);
     Boolean a = FALSE, b = FALSE;
-    ContainsAll(c, &a);
+    AbstractSet::ContainsAll(c, &a);
     c->ContainsAll(this, &b);
     *result = a && b;
     return NOERROR;

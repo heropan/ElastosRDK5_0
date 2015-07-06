@@ -962,6 +962,14 @@ ECode CWeakHashMap::Put(
     return NOERROR;
 }
 
+ECode CWeakHashMap::Put(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    AutoPtr<IInterface> obj;
+    return Put(key, value, (IInterface**)&obj);
+}
+
 void CWeakHashMap::Rehash()
 {
     Int32 length = mElementData->GetLength() * 2;
@@ -1033,6 +1041,13 @@ ECode CWeakHashMap::Remove(
     }
     *value = NULL;
     return NOERROR;
+}
+
+ECode CWeakHashMap::Remove(
+    /* [in] */ IInterface* key)
+{
+    AutoPtr<IInterface> obj;
+    return Remove(key, (IInterface**)&obj);
 }
 
 ECode CWeakHashMap::GetSize(

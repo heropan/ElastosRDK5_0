@@ -182,6 +182,43 @@ public:
     CARAPI GetDescendingSet(
         /* [out] */ INavigableSet** outnav);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [in] */ Int32* hash);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ ArrayOf<IInterface*>* inarray,
+        /* [out, callee] */ ArrayOf<IInterface*>** result);
+
 private:
     // Support for resetting map in clone
     CARAPI_(void) SetMap(

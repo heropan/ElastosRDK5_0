@@ -138,8 +138,6 @@ public:
     virtual CARAPI Add(
         /* [in] */ IInterface* object);
 
-    // using AbstractCollection::Add;
-
     /**
      * Inserts the objects in the specified Collection at the specified location
      * in this List. The objects are added in the order they are returned from
@@ -168,33 +166,6 @@ public:
         /* [in] */ Int32 location,
         /* [in] */ ICollection* collection);
 
-    using AbstractCollection::AddAll;
-
-    /**
-     * Removes all elements from this list, leaving it empty.
-     *
-     * @throws UnsupportedOperationException
-     *             if removing from this list is not supported.
-     * @see List#isEmpty
-     * @see List#size
-     */
-    virtual CARAPI Clear();
-
-    /**
-     * Compares the specified object to this list and return true if they are
-     * equal. Two lists are equal when they both contain the same objects in the
-     * same order.
-     *
-     * @param object
-     *            the object to compare to this object.
-     * @return {@code true} if the specified object is equal to this list,
-     *         {@code false} otherwise.
-     * @see #hashCode
-     */
-    virtual CARAPI Equals(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
     /**
      * Returns the element at the specified location in this list.
      *
@@ -209,17 +180,6 @@ public:
         /* [out] */ IInterface** object) = 0;
 
     /**
-     * Returns the hash code of this list. The hash code is calculated by taking
-     * each element's hashcode into account.
-     *
-     * @return the hash code.
-     * @see #equals
-     * @see List#hashCode()
-     */
-    virtual CARAPI GetHashCode(
-        /* [out] */ Int32* result);
-
-    /**
      * Searches this list for the specified object and returns the index of the
      * first occurrence.
      *
@@ -231,16 +191,6 @@ public:
     virtual CARAPI IndexOf(
         /* [in] */ IInterface* object,
         /* [out] */ Int32* result);
-
-    /**
-     * Returns an iterator on the elements of this list. The elements are
-     * iterated in the same order as they occur in the list.
-     *
-     * @return an iterator on the elements of this list.
-     * @see Iterator
-     */
-    virtual CARAPI GetIterator(
-        /* [out] */ IIterator** it);
 
     /**
      * Searches this list for the specified object and returns the index of the
@@ -299,8 +249,6 @@ public:
     virtual CARAPI Remove(
         /* [in] */ Int32 location);
 
-    using AbstractCollection::Remove;
-
     /**
      * Replaces the element at the specified location in this list with the
      * specified object.
@@ -322,6 +270,11 @@ public:
     virtual CARAPI Set(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
+
+    virtual CARAPI Set(
+        /* [in] */ Int32 location,
+        /* [in] */ IInterface* object,
+        /* [out] */ IInterface** prevObject);
 
     /**
      * Returns a part of consecutive elements of this list as a view. The
@@ -373,6 +326,103 @@ public:
         /* [out] */ IList** list);
 
     /**
+     * Returns an iterator on the elements of this list. The elements are
+     * iterated in the same order as they occur in the list.
+     *
+     * @return an iterator on the elements of this list.
+     * @see Iterator
+     */
+    virtual CARAPI GetIterator(
+        /* [out] */ IIterator** it);
+
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    /**
+     * Removes all elements from this list, leaving it empty.
+     *
+     * @throws UnsupportedOperationException
+     *             if removing from this list is not supported.
+     * @see List#isEmpty
+     * @see List#size
+     */
+    virtual CARAPI Clear();
+
+
+    CARAPI Contains(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Compares the specified object to this list and return true if they are
+     * equal. Two lists are equal when they both contain the same objects in the
+     * same order.
+     *
+     * @param object
+     *            the object to compare to this object.
+     * @return {@code true} if the specified object is equal to this list,
+     *         {@code false} otherwise.
+     * @see #hashCode
+     */
+    virtual CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns the hash code of this list. The hash code is calculated by taking
+     * each element's hashcode into account.
+     *
+     * @return the hash code.
+     * @see #equals
+     * @see List#hashCode()
+     */
+    virtual CARAPI GetHashCode(
+        /* [out] */ Int32* result);
+
+    CARAPI IsEmpty(
+        /* [out] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI GetSize(
+            /* [out] */ Int32* size);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ ArrayOf<IInterface*>* contents,
+        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
+
+    /**
      * Removes the objects in the specified range from the start to the end
      * index minus one.
      *
@@ -389,10 +439,6 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual CARAPI Set(
-        /* [in] */ Int32 location,
-        /* [in] */ IInterface* object,
-        /* [out] */ IInterface** prevObject);
 
 protected:
     /**
@@ -511,68 +557,6 @@ public:
     CARAPI RemoveRange(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
-
-    CARAPI Contains(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI IsEmpty(
-        /* [out] */ Boolean* result);
-
-    CARAPI Remove(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI  RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI ToArray(
-        /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-    CARAPI ToArray(
-        /* [in] */ ArrayOf<IInterface*>* contents,
-        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
-
-    CARAPI ToString(
-        /* [out] */ String* result);
-
-    CARAPI Add(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* modified);
-
-    CARAPI Clear();
-
-    CARAPI Equals(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hashCode);
-
-    CARAPI IndexOf(
-        /* [in] */ IInterface* object,
-        /* [out] */ Int32* index);
-
-    CARAPI LastIndexOf(
-        /* [in] */ IInterface* object,
-        /* [out] */ Int32* index);
-
-    CARAPI GetListIterator(
-        /* [out] */ IListIterator** it);
-
-    CARAPI GetSubList(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [out] */ IList** subList);
 
 private:
     const AutoPtr<AbstractList> mFulllist;

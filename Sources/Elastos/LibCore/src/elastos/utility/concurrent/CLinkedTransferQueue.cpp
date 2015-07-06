@@ -856,7 +856,6 @@ ECode CLinkedTransferQueue::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return AbstractQueue::ContainsAll(collection, result);
 }
 
@@ -864,7 +863,6 @@ ECode CLinkedTransferQueue::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return AbstractQueue::RemoveAll(collection, modified);
 }
 
@@ -872,14 +870,12 @@ ECode CLinkedTransferQueue::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return AbstractQueue::RetainAll(collection, modified);
 }
 
 ECode CLinkedTransferQueue::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** array)
 {
-    VALIDATE_NOT_NULL(array);
     return AbstractQueue::ToArray(array);
 }
 
@@ -887,7 +883,6 @@ ECode CLinkedTransferQueue::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inArray,
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
-    VALIDATE_NOT_NULL(outArray);
     return AbstractQueue::ToArray(inArray, outArray);
 }
 

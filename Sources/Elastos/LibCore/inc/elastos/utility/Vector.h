@@ -45,6 +45,13 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
+    using AbstractList::Add;
+    using AbstractList::AddAll;
+    using AbstractList::RetainAll;
+    using AbstractList::Remove;
+    using AbstractList::RemoveAll;
+    using AbstractList::Set;
+
     CARAPI Add(
         /* [in] */ Int32 location,
         /* [in] */ IInterface* object);
@@ -65,7 +72,7 @@ public:
     CARAPI AddElement(
         /* [in] */ IInterface* object);
 
-    CARAPI Capacity(
+    CARAPI GetCapacity(
         /* [out] */ Int32* value);
 
     CARAPI Clear();
@@ -141,6 +148,9 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
@@ -150,6 +160,9 @@ public:
     CARAPI RemoveElement(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* value);
+
+    CARAPI RemoveElement(
+        /* [in] */ IInterface* object);
 
     CARAPI RemoveElementAt(
         /* [in] */ Int32 location);

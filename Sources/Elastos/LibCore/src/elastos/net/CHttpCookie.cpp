@@ -173,7 +173,7 @@ void CHttpCookie::CookieParser::SetAttribute(
     }
     else if (name.Equals("max-age") && cookie->mMaxAge == -1ll) {
         Int64 maxAge;
-        ECode ec = StringUtils::ParseInt64(value, &maxAge);
+        ECode ec = StringUtils::Parse(value, &maxAge);
         if (FAILED(ec)) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
@@ -193,7 +193,12 @@ void CHttpCookie::CookieParser::SetAttribute(
         cookie->mHttpOnly = TRUE;
     }
     else if (name.Equals("version") && !mHasVersion) {
-        cookie->mVersion = StringUtils::ParseInt32(value);
+        Int32 version;
+        ECode ec = StringUtils::Parse(value, &version);
+        if (FAILED(ec)) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        cookie->mVersion = version;
     }
 }
 

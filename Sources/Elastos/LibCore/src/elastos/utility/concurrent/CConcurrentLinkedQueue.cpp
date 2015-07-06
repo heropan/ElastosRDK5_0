@@ -425,44 +425,6 @@ ECode CConcurrentLinkedQueue::GetIterator(
     return NOERROR;
 }
 
-ECode CConcurrentLinkedQueue::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractQueue::ContainsAll(collection, result);
-}
-
-ECode CConcurrentLinkedQueue::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::RemoveAll(collection, modified);
-}
-
-ECode CConcurrentLinkedQueue::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::RetainAll(collection, modified);
-}
-
-ECode CConcurrentLinkedQueue::Clear()
-{
-    return AbstractQueue::Clear();
-}
-
-ECode CConcurrentLinkedQueue::Remove(
-    /* [out] */ IInterface** e)
-{
-    return AbstractQueue::Remove(e);
-}
-
-ECode CConcurrentLinkedQueue::GetElement(
-    /* [out] */ IInterface** e)
-{
-    return AbstractQueue::GetElement(e);
-}
-
 void CConcurrentLinkedQueue::WriteObject(
     /* [in] */ IObjectOutputStream* s)
 {

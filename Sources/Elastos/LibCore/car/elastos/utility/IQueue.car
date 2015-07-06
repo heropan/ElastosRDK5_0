@@ -111,6 +111,7 @@ module
      * interface IIterable;
      * interface ICollection;
      */
+    [deprecated]
     interface IQueue {
         /**
          * Inserts the specified element into this queue if it is possible to do
@@ -172,6 +173,76 @@ module
          */
         Peek(
             [out] IInterface** e);
+
+
+        /**
+         * interfaces from ICollection
+         *
+         */
+        GetIterator(
+            [out] IIterator** it);
+
+        Add(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Add(
+            [in] IInterface* object);
+
+        AddAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        AddAll(
+            [in] ICollection* collection);
+
+        Clear();
+
+        Contains(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        ContainsAll(
+            [in] ICollection* collection,
+            [out] Boolean* result);
+
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        Remove(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection);
+
+        RetainAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RetainAll(
+            [in] ICollection* collection);
+
+        GetSize(
+            [out] Int32* size);
+
+        ToArray(
+            [out, callee] ArrayOf<IInterface*>* array);
+
+        ToArray(
+            [in] ArrayOf<IInterface*>* inArray,
+            [out, callee] ArrayOf<IInterface*>* outArray);
     }
 
     } // namespace Utility

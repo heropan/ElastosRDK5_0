@@ -657,7 +657,6 @@ ECode CArrayList::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return AbstractList::ContainsAll(collection, result);
 }
 
@@ -665,7 +664,6 @@ ECode CArrayList::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return AbstractList::RemoveAll(collection, modified);
 }
 
@@ -673,14 +671,12 @@ ECode CArrayList::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return AbstractList::RetainAll(collection, modified);
 }
 
 ECode CArrayList::GetListIterator(
     /* [out] */ IListIterator** it)
 {
-    VALIDATE_NOT_NULL(it);
     return AbstractList::GetListIterator(it);
 }
 
@@ -688,7 +684,6 @@ ECode CArrayList::GetListIterator(
     /* [in] */ Int32 location,
     /* [out] */ IListIterator** it)
 {
-    VALIDATE_NOT_NULL(it);
     return AbstractList::GetListIterator(location, it);
 }
 
@@ -697,9 +692,59 @@ ECode CArrayList::GetSubList(
     /* [in] */ Int32 end,
     /* [out] */ IList** subList)
 {
-    VALIDATE_NOT_NULL(subList);
     return AbstractList::GetSubList(start, end, subList);
 }
+
+ECode CArrayList::Add(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractList::Add(obj);
+}
+
+ECode CArrayList::AddAll(
+    /* [in] */ Int32 value,
+    /* [in] */ ICollection* collection)
+{
+    return AbstractList::AddAll(value, collection);
+}
+
+ECode CArrayList::Remove(
+    /* [in] */ Int32 value)
+{
+    return AbstractList::Remove(value);
+}
+
+ECode CArrayList::Set(
+    /* [in] */ Int32 value,
+    /* [in] */ IInterface* obj)
+{
+    return AbstractList::Set(value, obj);
+}
+
+ECode CArrayList::AddAll(
+    /* [in] */ /* [in] */ ICollection* collection)
+{
+    return AbstractList::AddAll(collection);
+}
+
+ECode CArrayList::Remove(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractList::Remove(obj);
+}
+
+ECode CArrayList::RemoveAll(
+    /* [in] */ /* [in] */ ICollection* collection)
+{
+    return AbstractList::RemoveAll(collection);
+}
+
+ECode CArrayList::RetainAll(
+    /* [in] */ /* [in] */ ICollection* collection)
+{
+    return AbstractList::RetainAll(collection);
+}
+
 
 } // namespace Utility
 } // namespace Elastos

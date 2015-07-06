@@ -1,6 +1,7 @@
 
 module
 {
+    interface Elastos.Utility.IIterator;
     interface Elastos.Utility.IListIterator;
 
     namespace Elastos {
@@ -17,7 +18,9 @@ module
      * interface IIterable;
      * interface ICollection;
      */
+    [deprecated]
     interface IList {
+
         /**
          * Inserts the specified object into this {@code List} at the specified location.
          * The object is inserted before the current element at the specified
@@ -225,6 +228,72 @@ module
             [in] Int32 start,
             [in] Int32 end,
             [out] IList** subList);
+
+
+        /**
+         * interfaces from ICollection
+         *
+         */
+        GetIterator(
+            [out] IIterator** it);
+
+        AddAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        AddAll(
+            [in] ICollection* collection);
+
+        Clear();
+
+        Contains(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        ContainsAll(
+            [in] ICollection* collection,
+            [out] Boolean* result);
+
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        Remove(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Remove(
+            [in] IInterface* object);
+
+        RemoveAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection);
+
+        RetainAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RetainAll(
+            [in] ICollection* collection);
+
+        GetSize(
+            [out] Int32* size);
+
+        ToArray(
+            [out, callee] ArrayOf<IInterface *> * array);
+
+        ToArray(
+            [in] ArrayOf<IInterface* > * inArray,
+            [out, callee] ArrayOf<IInterface *> * outArray);
     }
 
     } // namespace Utility

@@ -229,7 +229,6 @@ private:
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* result);
 
-
         CARAPI Equals(
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* result);
@@ -482,6 +481,10 @@ public:
         /* [in] */ IInterface* value,
         /* [out] */ IInterface** oldValue);
 
+    CARAPI Put(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value);
+
     /**
      * Copies all the mappings in the given map to this map. These mappings will
      * replace all mappings that this map had for any of the keys currently in
@@ -506,6 +509,9 @@ public:
     CARAPI Remove(
         /* [in] */ IInterface* key,
         /* [out] */ IInterface** value);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* key);
 
     /**
      * Returns the number of elements in this map.

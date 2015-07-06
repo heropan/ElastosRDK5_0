@@ -204,6 +204,13 @@ ECode HashMap::GetSize(
     return NOERROR;
 }
 
+ECode HashMap::Equals(
+    /* [in] */  IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return AbstractMap::Equals(object, result);
+}
+
 ECode HashMap::Get(
     /* [in] */ PInterface key,
     /* [out] */ PInterface* value)
@@ -233,6 +240,12 @@ ECode HashMap::Get(
     }
     *value = NULL;
     return NOERROR;
+}
+
+ECode HashMap::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return AbstractMap::GetHashCode(hashCode);
 }
 
 ECode HashMap::ContainsKey(

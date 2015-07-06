@@ -181,7 +181,7 @@ ECode Vector::AddElement(
     return NOERROR;
 }
 
-ECode Vector::Capacity(
+ECode Vector::GetCapacity(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
@@ -333,7 +333,6 @@ ECode Vector::Get(
     /* [in] */ Int32 location,
     /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object)
     return ElementAt(location, object);
 }
 
@@ -556,10 +555,16 @@ ECode Vector::Remove(
 }
 
 ECode Vector::Remove(
+    /* [in] */ IInterface* object)
+{
+    Boolean result;
+    return Remove(object, &result);
+}
+
+ECode Vector::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified)
     return RemoveElement(object, modified);
 }
 
@@ -602,6 +607,14 @@ ECode Vector::RemoveElement(
         *value = TRUE;
     }
     return NOERROR;
+}
+
+
+ECode Vector::RemoveElement(
+    /* [in] */ IInterface* object)
+{
+    Boolean bval;
+    return RemoveElement(object, &bval);
 }
 
 ECode Vector::RemoveElementAt(

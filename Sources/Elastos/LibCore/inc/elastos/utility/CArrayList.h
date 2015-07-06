@@ -175,6 +175,32 @@ public:
         /* [in] */ Int32 end,
         /* [out] */ IList** subList);
 
+    CARAPI Add(
+        /* [in] */ IInterface* obj);
+
+    CARAPI AddAll(
+        /* [in] */ Int32 value,
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ Int32 value);
+
+    CARAPI Set(
+        /* [in] */ Int32 value,
+        /* [in] */ IInterface* obj);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* obj);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
 protected:
     CARAPI RemoveRange(
         /* [in] */ Int32 fromIndex,

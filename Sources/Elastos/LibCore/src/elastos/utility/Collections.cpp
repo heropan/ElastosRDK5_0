@@ -2019,6 +2019,12 @@ ECode Collections::_SynchronizedList::AddAll(
     return _SynchronizedCollection::AddAll(collection, modified);
 }
 
+ECode Collections::_SynchronizedList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedCollection::AddAll(collection);
+}
+
 ECode Collections::_SynchronizedList::Clear()
 {
     return _SynchronizedCollection::Clear();
@@ -2057,6 +2063,12 @@ ECode Collections::_SynchronizedList::Remove(
     return _SynchronizedCollection::Remove(object, modified);
 }
 
+ECode Collections::_SynchronizedList::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _SynchronizedCollection::Remove(object);
+}
+
 ECode Collections::_SynchronizedList::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -2064,11 +2076,23 @@ ECode Collections::_SynchronizedList::RemoveAll(
     return _SynchronizedCollection::RemoveAll(collection, modified);
 }
 
+ECode Collections::_SynchronizedList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedCollection::RemoveAll(collection);
+}
+
 ECode Collections::_SynchronizedList::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
     return _SynchronizedCollection::RetainAll(collection, modified);
+}
+
+ECode Collections::_SynchronizedList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedCollection::RetainAll(collection);
 }
 
 ECode Collections::_SynchronizedList::GetSize(
@@ -2453,6 +2477,36 @@ ECode Collections::_SynchronizedSet::WriteObject(
         stream->DefaultWriteObject();
     }
     return NOERROR;
+}
+
+ECode Collections::_SynchronizedSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return _SynchronizedCollection::Add(object);
+}
+
+ECode Collections::_SynchronizedSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedCollection::AddAll(collection);
+}
+
+ECode Collections::_SynchronizedSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _SynchronizedCollection::Remove(object);
+}
+
+ECode Collections::_SynchronizedSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedCollection::RemoveAll(collection);
+}
+
+ECode Collections::_SynchronizedSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedCollection::RetainAll(collection);
 }
 
 //====================================================================
@@ -2865,6 +2919,36 @@ ECode Collections::_SynchronizedSortedSet::WriteObject(
         stream->DefaultWriteObject();
     }
     return NOERROR;
+}
+
+ECode Collections::_SynchronizedSortedSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return _SynchronizedSet::Add(object);
+}
+
+ECode Collections::_SynchronizedSortedSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedSet::AddAll(collection);
+}
+
+ECode Collections::_SynchronizedSortedSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _SynchronizedSet::Remove(object);
+}
+
+ECode Collections::_SynchronizedSortedSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedSet::RemoveAll(collection);
+}
+
+ECode Collections::_SynchronizedSortedSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _SynchronizedSet::RetainAll(collection);
 }
 
 //====================================================================
@@ -3400,6 +3484,30 @@ AutoPtr<IInterface> Collections::_UnmodifiableList::ReadResolve()
     return this->Probe(EIID_IInterface);
 }
 
+ECode Collections::_UnmodifiableList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableCollection::AddAll(collection);
+}
+
+ECode Collections::_UnmodifiableList::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableCollection::Remove(object);
+}
+
+ECode Collections::_UnmodifiableList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableCollection::RemoveAll(collection);
+}
+
+ECode Collections::_UnmodifiableList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableCollection::RetainAll(collection);
+}
+
 //====================================================================
 // Collections::_UnmodifiableMap::UnmodifiableEntrySet::UnmodifiableMapEntry::
 //====================================================================
@@ -3719,6 +3827,31 @@ ECode Collections::_UnmodifiableMap::ToString(
     return NOERROR;
 }
 
+
+ECode Collections::_UnmodifiableMap::Add(
+    /* [in] */ IInterface* object)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::_UnmodifiableMap::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::_UnmodifiableMap::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::_UnmodifiableMap::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
 //====================================================================
 // Collections::_UnmodifiableSet::
 //====================================================================
@@ -3828,6 +3961,36 @@ ECode Collections::_UnmodifiableSet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     return _UnmodifiableCollection::ToArray(inArray, outArray);
+}
+
+ECode Collections::_UnmodifiableSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableCollection::Add(object);
+}
+
+ECode Collections::_UnmodifiableSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableCollection::AddAll(collection);
+}
+
+ECode Collections::_UnmodifiableSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableCollection::Remove(object);
+}
+
+ECode Collections::_UnmodifiableSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableCollection::RemoveAll(collection);
+}
+
+ECode Collections::_UnmodifiableSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableCollection::RetainAll(collection);
 }
 
 //====================================================================
@@ -3953,6 +4116,13 @@ ECode Collections::_UnmodifiableSortedMap::Put(
     return _UnmodifiableMap::Put(key, value, oldValue);
 }
 
+ECode Collections::_UnmodifiableSortedMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    return _UnmodifiableMap::Put(key, value);
+}
+
 ECode Collections::_UnmodifiableSortedMap::PutAll(
     /* [in] */ IMap* map)
 {
@@ -3976,6 +4146,36 @@ ECode Collections::_UnmodifiableSortedMap::GetValues(
     /* [out] */ ICollection** value)
 {
     return _UnmodifiableMap::GetValues(value);
+}
+
+ECode Collections::_UnmodifiableSortedMap::Add(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableMap::Add(object);
+}
+
+ECode Collections::_UnmodifiableSortedMap::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableMap::AddAll(collection);
+}
+
+ECode Collections::_UnmodifiableSortedMap::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableMap::Remove(object);
+}
+
+ECode Collections::_UnmodifiableSortedMap::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableMap::RemoveAll(collection);
+}
+
+ECode Collections::_UnmodifiableSortedMap::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableMap::RetainAll(collection);
 }
 
 //====================================================================
@@ -4132,6 +4332,36 @@ ECode Collections::_UnmodifiableSortedSet::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     return _UnmodifiableSet::GetHashCode(hashCode);
+}
+
+ECode Collections::_UnmodifiableSortedSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableSet::Add(object);
+}
+
+ECode Collections::_UnmodifiableSortedSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableSet::AddAll(collection);
+}
+
+ECode Collections::_UnmodifiableSortedSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _UnmodifiableSet::Remove(object);
+}
+
+ECode Collections::_UnmodifiableSortedSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableSet::RemoveAll(collection);
+}
+
+ECode Collections::_UnmodifiableSortedSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _UnmodifiableSet::RetainAll(collection);
 }
 
 //====================================================================
@@ -6139,6 +6369,29 @@ ECode Collections::_CheckedList::ToArray(
     return _CheckedCollection::ToArray(inArray, outArray);
 }
 
+ECode Collections::_CheckedList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedCollection::AddAll(collection);
+}
+
+ECode Collections::_CheckedList::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _CheckedCollection::Remove(object);
+}
+
+ECode Collections::_CheckedList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedCollection::RemoveAll(collection);
+}
+
+ECode Collections::_CheckedList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedCollection::RetainAll(collection);
+}
 
 //====================================================================
 // Collections::CheckedRandomAccessList::
@@ -6262,6 +6515,36 @@ ECode Collections::_CheckedSet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** outArray)
 {
     return _CheckedCollection::ToArray(inArray, outArray);
+}
+
+ECode Collections::_CheckedSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return _CheckedCollection::Add(object);
+}
+
+ECode Collections::_CheckedSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedCollection::AddAll(collection);
+}
+
+ECode Collections::_CheckedSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _CheckedCollection::Remove(object);
+}
+
+ECode Collections::_CheckedSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedCollection::RemoveAll(collection);
+}
+
+ECode Collections::_CheckedSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedCollection::RetainAll(collection);
 }
 
 //====================================================================
@@ -6440,7 +6723,6 @@ ECode Collections::_CheckedMap::CheckedEntrySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return (ICollection::Probe(mS))->RetainAll(collection, modified);
 }
 
@@ -6448,7 +6730,6 @@ ECode Collections::_CheckedMap::CheckedEntrySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return (ICollection::Probe(mS))->RemoveAll(collection, modified);
 }
 
@@ -6456,7 +6737,6 @@ ECode Collections::_CheckedMap::CheckedEntrySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return (ICollection::Probe(mS))->ContainsAll(collection, result);
 }
 
@@ -6472,7 +6752,6 @@ ECode Collections::_CheckedMap::CheckedEntrySet::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    VALIDATE_NOT_NULL(modified);
     return (ICollection::Probe(mS))->Remove(object, modified);
 }
 
@@ -6480,7 +6759,6 @@ ECode Collections::_CheckedMap::CheckedEntrySet::Contains(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return (ICollection::Probe(mS))->Contains(object, result);
 }
 
@@ -6495,7 +6773,6 @@ ECode Collections::_CheckedMap::CheckedEntrySet::Add(
 ECode Collections::_CheckedMap::CheckedEntrySet::IsEmpty(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return (ICollection::Probe(mS))->IsEmpty(result);
 }
 
@@ -6507,14 +6784,12 @@ ECode Collections::_CheckedMap::CheckedEntrySet::Clear()
 ECode Collections::_CheckedMap::CheckedEntrySet::GetSize(
     /* [out] */ Int32* size)
 {
-    VALIDATE_NOT_NULL(size);
     return (ICollection::Probe(mS))->GetSize(size);
 }
 
 ECode Collections::_CheckedMap::CheckedEntrySet::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
-    VALIDATE_NOT_NULL(hashCode);
     return (ICollection::Probe(mS))->GetHashCode(hashCode);
 }
 
@@ -6522,8 +6797,37 @@ ECode Collections::_CheckedMap::CheckedEntrySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
     return (ICollection::Probe(mS))->Equals(object, result);
+}
+
+ECode Collections::_CheckedMap::CheckedEntrySet::Add(
+    /* [in] */ IInterface* object)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::_CheckedMap::CheckedEntrySet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
+}
+
+ECode Collections::_CheckedMap::CheckedEntrySet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return (ICollection::Probe(mS))->Remove(object);
+}
+
+ECode Collections::_CheckedMap::CheckedEntrySet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return (ICollection::Probe(mS))->RemoveAll(collection);
+}
+
+ECode Collections::_CheckedMap::CheckedEntrySet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return (ICollection::Probe(mS))->RetainAll(collection);
 }
 
 //====================================================================
@@ -6882,6 +7186,37 @@ ECode Collections::_CheckedSortedSet::Equals(
     return _CheckedSet::Equals(object, result);
 }
 
+ECode Collections::_CheckedSortedSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return _CheckedSet::Add(object);
+}
+
+ECode Collections::_CheckedSortedSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedSet::AddAll(collection);
+}
+
+ECode Collections::_CheckedSortedSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return _CheckedSet::Remove(object);
+}
+
+ECode Collections::_CheckedSortedSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedSet::RemoveAll(collection);
+}
+
+ECode Collections::_CheckedSortedSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return _CheckedSet::RetainAll(collection);
+}
+
+
 //====================================================================
 // Collections::_CheckedSortedMap::
 //====================================================================
@@ -6998,11 +7333,24 @@ ECode Collections::_CheckedSortedMap::Put(
     return _CheckedMap::Put(key, value, oldValue);
 }
 
+ECode Collections::_CheckedSortedMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    return _CheckedMap::Put(key, value);
+}
+
 ECode Collections::_CheckedSortedMap::Remove(
     /* [in] */ PInterface key,
     /* [out] */ PInterface* value)
 {
     return _CheckedMap::Remove(key, value);
+}
+
+ECode Collections::_CheckedSortedMap::Remove(
+    /* [in] */ PInterface key)
+{
+    return _CheckedMap::Remove(key);
 }
 
 ECode Collections::_CheckedSortedMap::PutAll(

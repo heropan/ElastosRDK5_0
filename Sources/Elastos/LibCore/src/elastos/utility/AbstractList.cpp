@@ -509,119 +509,6 @@ ECode SubAbstractList::SizeChanged(
     return NOERROR;
 }
 
-ECode SubAbstractList::Contains(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::Contains(object, result);
-}
-
-ECode SubAbstractList::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::ContainsAll(collection, result);
-}
-
-ECode SubAbstractList::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::IsEmpty(result);
-}
-
-ECode SubAbstractList::Remove(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::Remove(object, result);
-}
-
-ECode SubAbstractList::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::RemoveAll(collection, result);
-}
-
-ECode SubAbstractList::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::RetainAll(collection, result);
-}
-
-ECode SubAbstractList::ToArray(
-    /* [out, callee] */ ArrayOf<IInterface*>** array)
-{
-    return AbstractList::ToArray(array);
-}
-
-ECode SubAbstractList::ToArray(
-    /* [in] */ ArrayOf<IInterface*>* contents,
-    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
-{
-    return AbstractList::ToArray(contents, outArray);
-}
-
-ECode SubAbstractList::ToString(
-    /* [out] */ String* result)
-{
-    return AbstractList::ToString(result);
-}
-
-ECode SubAbstractList::Add(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractList::Add(object, modified);
-}
-
-ECode SubAbstractList::Clear()
-{
-    return AbstractList::Clear();
-}
-
-ECode SubAbstractList::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractList::Equals(object, result);
-}
-
-ECode SubAbstractList::GetHashCode(
-    /* [out] */ Int32* hashCode)
-{
-    return AbstractList::GetHashCode(hashCode);
-}
-
-ECode SubAbstractList::IndexOf(
-    /* [in] */ IInterface* object,
-    /* [out] */ Int32* index)
-{
-    return AbstractList::IndexOf(object, index);
-}
-
-ECode SubAbstractList::LastIndexOf(
-    /* [in] */ IInterface* object,
-    /* [out] */ Int32* index)
-{
-    return AbstractList::LastIndexOf(object, index);
-}
-
-ECode SubAbstractList::GetListIterator(
-    /* [out] */ IListIterator** it)
-{
-    return AbstractList::GetListIterator(it);
-}
-
-ECode SubAbstractList::GetSubList(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [out] */ IList** subList)
-{
-    return AbstractList::GetSubList(start, end, subList);
-}
-
 ////////////////////////////////////////////
 //              AbstractList
 ////////////////////////////////////////////
@@ -629,6 +516,7 @@ ECode SubAbstractList::GetSubList(
 ECode AbstractList::constructor()
 {
     mModCount = 0;
+    return NOERROR;
 }
 
 ECode AbstractList::Add(
@@ -684,7 +572,20 @@ ECode AbstractList::AddAll(
     /* [in] */ ICollection* collection)
 {
     Boolean result;
-    return AddAll(location, collection, result);
+    return AddAll(location, collection, &result);
+}
+
+ECode AbstractList::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractCollection::AddAll(collection, modified);
+}
+
+ECode AbstractList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::AddAll(collection);
 }
 
 ECode AbstractList::Clear()
@@ -890,6 +791,45 @@ ECode AbstractList::RemoveRange(
     return NOERROR;
 }
 
+ECode AbstractList::Remove(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::Remove(object, result);
+}
+
+ECode AbstractList::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractCollection::Remove(object);
+}
+
+ECode AbstractList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::Remove(collection);
+}
+
+ECode AbstractList::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::Remove(collection, result);
+}
+
+ECode AbstractList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::RetainAll(collection);
+}
+
+ECode AbstractList::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::RetainAll(collection, result);
+}
+
 ECode AbstractList::Set(
     /* [in] */ Int32 location,
     /* [in] */ IInterface* object,
@@ -929,6 +869,46 @@ ECode AbstractList::GetSubList(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+}
+
+ECode AbstractList::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return AbstractCollection::ToArray(array);
+}
+
+ECode AbstractList::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* contents,
+    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
+{
+    return AbstractCollection::ToArray(contents, outArray);
+}
+
+ECode AbstractList::GetSize(
+        /* [out] */ Int32* size)
+{
+    assert(0);
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode AbstractList::Contains(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::Contains(object, result);
+}
+
+ECode AbstractList::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::ContainsAll(collection, result);
+}
+
+ECode AbstractList::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::IsEmpty(result);
 }
 
 ////////////////////////////////////////////

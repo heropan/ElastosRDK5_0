@@ -47,10 +47,10 @@ ECode CStack::AddElement(
     return Vector::AddElement(object);
 }
 
-ECode CStack::Capacity(
+ECode CStack::GetCapacity(
     /* [out] */ Int32* value)
 {
-    return Vector::Capacity(value);
+    return Vector::GetCapacity(value);
 }
 
 ECode CStack::Clear()
@@ -378,6 +378,57 @@ ECode CStack::Search(
     }
     return NOERROR;
 }
+
+ECode CStack::Add(
+    /* [in] */ IInterface* object)
+{
+    return Vector::Add(object);
+}
+
+ECode CStack::AddAll(
+    /* [in] */ Int32 index,
+    /* [in] */ ICollection* collection)
+{
+    return Vector::AddAll(index, collection);
+}
+
+ECode CStack::Remove(
+    /* [in] */ Int32 index)
+{
+    return Vector::Remove(index);
+}
+
+ECode CStack::Set(
+    /* [in] */ Int32 index,
+    /* [in] */ IInterface* object)
+{
+    return Vector::Set(index, object);
+}
+
+ECode CStack::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return Vector::AddAll(collection);
+}
+
+ECode CStack::Remove(
+    /* [in] */ IInterface* object)
+{
+    return Vector::Remove(object);
+}
+
+ECode CStack::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return Vector::RemoveAll(collection);
+}
+
+ECode CStack::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return Vector::RetainAll(collection);
+}
+
 
 } // namespace Utility
 } // namespace Elastos

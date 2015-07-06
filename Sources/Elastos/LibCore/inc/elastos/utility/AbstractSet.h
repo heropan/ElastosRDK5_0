@@ -66,6 +66,63 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* value);
 
+    CARAPI GetIterator(
+        /* [out] */ IIterator** it);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* modified);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Clear();
+
+    CARAPI Contains(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsEmpty(
+        /* [out] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* modified);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI GetSize(
+        /* [out] */ Int32* size);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ ArrayOf<IInterface*>* inArray,
+        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
+
 protected:
     /**
      * Constructs a new instance of this AbstractSet.

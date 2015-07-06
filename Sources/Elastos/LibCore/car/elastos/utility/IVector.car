@@ -22,9 +22,11 @@ module
      * interface IIterable;
      * interface ICollection;
      * interface IList;
+     * interface ICloneable;
      */
     [deprecated]
     interface IVector {
+
         /**
          * Adds the specified object at the end of this vector.
          *
@@ -41,7 +43,7 @@ module
          * @see #ensureCapacity
          * @see #size
          */
-        Capacity(
+        GetCapacity(
             [out] Int32* value);
 
         /**
@@ -56,7 +58,7 @@ module
          * @see #clone
          */
         CopyInto(
-            [in] ArrayOf<IInterface*>* elements);
+            [in] ArrayOf<IInterface *> * elements);
 
         /**
          * Returns the element at the specified location in this vector.
@@ -215,6 +217,9 @@ module
             [in] IInterface* object,
             [out] Boolean* value);
 
+        RemoveElement(
+            [in] IInterface* object);
+
         /**
          * Removes the element found at index position {@code location} from
          * this {@code Vector}. All elements with an index bigger than
@@ -268,6 +273,138 @@ module
          * @see #size
          */
         TrimToSize();
+
+
+
+        /**
+         * interfaces from IList
+         *
+         */
+        Add(
+            [in] Int32 location,
+            [in] IInterface* object);
+
+        Add(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Add(
+            [in] IInterface* object);
+
+        AddAll(
+            [in] Int32 location,
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        AddAll(
+            [in] Int32 location,
+            [in] ICollection* collection);
+
+        Get(
+            [in] Int32 location,
+            [out] IInterface** object);
+
+        IndexOf(
+            [in] IInterface* object,
+            [out] Int32* index);
+
+        LastIndexOf(
+            [in] IInterface* object,
+            [out] Int32* index);
+
+        GetListIterator(
+            [out] IListIterator** it);
+
+        GetListIterator(
+            [in] Int32 location,
+            [out] IListIterator** it);
+
+        Remove(
+            [in] Int32 location,
+            [out] IInterface** object);
+
+        Remove(
+            [in] Int32 location);
+
+        Set(
+            [in] Int32 location,
+            [in] IInterface* object,
+            [out] IInterface** prevObject);
+
+        Set(
+            [in] Int32 location,
+            [in] IInterface* object);
+
+        GetSubList(
+            [in] Int32 start,
+            [in] Int32 end,
+            [out] IList** subList);
+
+
+        /**
+         * interfaces from ICollection
+         *
+         */
+        GetIterator(
+            [out] IIterator** it);
+
+        AddAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        AddAll(
+            [in] ICollection* collection);
+
+        Clear();
+
+        Contains(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        ContainsAll(
+            [in] ICollection* collection,
+            [out] Boolean* result);
+
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        Remove(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Remove(
+            [in] IInterface* object);
+
+        RemoveAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection);
+
+        RetainAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RetainAll(
+            [in] ICollection* collection);
+
+        GetSize(
+            [out] Int32* size);
+
+        ToArray(
+            [out, callee] ArrayOf<IInterface *> * array);
+
+        ToArray(
+            [in] ArrayOf<IInterface* > * inArray,
+            [out, callee] ArrayOf<IInterface *> * outArray);
     }
 
     } // namespace Utility

@@ -241,6 +241,20 @@ public:
         /* [in] */ ICollection* collection,
         /* [out] */ Boolean* modified);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
 private:
     CARAPI_(void) AllocateElements(
         /* [in] */ Int32 numElements);

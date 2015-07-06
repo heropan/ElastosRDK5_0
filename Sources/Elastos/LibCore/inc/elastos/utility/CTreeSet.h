@@ -161,6 +161,21 @@ public:
     CARAPI Clone(
         /* [out] */ IInterface** object);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
 private:
     CARAPI_(void) WriteObject(
         /* [in] */ IObjectOutputStream* stream);

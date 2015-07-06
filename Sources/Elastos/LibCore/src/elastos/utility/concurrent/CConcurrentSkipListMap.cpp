@@ -1643,6 +1643,25 @@ ECode CConcurrentSkipListMap::PollLastEntry(
     return NOERROR;
 }
 
+ECode CConcurrentSkipListMap::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    return AbstractMap::GetHashCode(hash);
+}
+
+ECode CConcurrentSkipListMap::Put(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    return AbstractMap::Put(key, value);
+}
+
+ECode CConcurrentSkipListMap::Remove(
+    /* [in] */ IInterface* key)
+{
+    return AbstractMap::Remove(key);
+}
+
 //====================================================================
 // CConcurrentSkipListMap::Iter::
 //====================================================================
@@ -2106,6 +2125,77 @@ ECode CConcurrentSkipListMap::_KeySet::GetDescendingSet(
     return NOERROR;
 }
 
+ECode CConcurrentSkipListMap::_KeySet::Add(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::Add(obj, result);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::Add(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractSet::Add(obj);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::AddAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::ContainsAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::GetHashCode(
+    /* [in] */ Int32* result)
+{
+    return AbstractSet::GetHashCode(result);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::Remove(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractSet::Remove(obj);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::RemoveAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::RetainAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_KeySet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
+
 //====================================================================
 // CConcurrentSkipListMap::_Values::
 //====================================================================
@@ -2307,6 +2397,78 @@ ECode CConcurrentSkipListMap::_EntrySet::ToArray(
 {
     VALIDATE_NOT_NULL(outArray);
     return ICollection::Probe(ToList(this))->ToArray(inArray, outArray);
+}
+
+
+ECode CConcurrentSkipListMap::_EntrySet::Add(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::Add(obj, result);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::Add(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractSet::Add(obj);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::AddAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::ContainsAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::GetHashCode(
+    /* [in] */ Int32* result)
+{
+    return AbstractSet::GetHashCode(result);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::Remove(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractSet::Remove(obj);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::RemoveAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSet::RetainAll(collection, result);
+}
+
+ECode CConcurrentSkipListMap::_EntrySet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
 }
 
 //====================================================================
@@ -3094,6 +3256,38 @@ AutoPtr<IIterator> CConcurrentSkipListMap::_SubMap::EntryIterator()
 {
     AutoPtr<SubMapEntryIterator> p = new SubMapEntryIterator(this);
     return (IIterator*)p->Probe(EIID_IIterator);
+}
+
+ECode CConcurrentSkipListMap::_SubMap::Equals(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean* result)
+{
+    return AbstractMap::Equals(obj, result);
+}
+
+ECode CConcurrentSkipListMap::_SubMap::GetHashCode(
+    /* [in] */ Int32* hash)
+{
+    return AbstractMap::GetHashCode(hash);
+}
+
+ECode CConcurrentSkipListMap::_SubMap::Put(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    return AbstractMap::Put(key, value);
+}
+
+ECode CConcurrentSkipListMap::_SubMap::PutAll(
+    /* [in] */ IMap* map)
+{
+    return AbstractMap::PutAll(map);
+}
+
+ECode CConcurrentSkipListMap::_SubMap::Remove(
+    /* [in] */ IInterface* obj)
+{
+    return AbstractMap::Remove(obj);
 }
 
 //====================================================================

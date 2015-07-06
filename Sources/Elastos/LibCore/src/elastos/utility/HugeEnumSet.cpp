@@ -472,5 +472,42 @@ ECode HugeEnumSet::GetBits(
     return NOERROR;
 }
 
+ECode HugeEnumSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return EnumSet::Add(object);
+}
+
+ECode HugeEnumSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return EnumSet::AddAll(collection);
+}
+
+ECode HugeEnumSet::GetHashCode(
+    /* [in] */ Int32* result)
+{
+    return EnumSet::GetHashCode(result);
+}
+
+ECode HugeEnumSet::IsEmpty(
+    /* [in] */ Boolean* result)
+{
+    return EnumSet::IsEmpty(result);
+}
+
+ECode HugeEnumSet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return EnumSet::ToArray(array);
+}
+
+ECode HugeEnumSet::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* inarray,
+    /* [out, callee] */ ArrayOf<IInterface*>** outarray)
+{
+    return EnumSet::ToArray(inarray, outarray);
+}
+
 } // namespace Utility
 } // namespace Elastos

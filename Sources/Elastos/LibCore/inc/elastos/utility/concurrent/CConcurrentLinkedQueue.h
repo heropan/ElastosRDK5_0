@@ -148,26 +148,6 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** iterator);
 
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
-
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
-
-    CARAPI Clear();
-
-    CARAPI Remove(
-        /* [out] */ IInterface** e);
-
-    CARAPI GetElement(
-        /* [out] */ IInterface** e);
-
     CARAPI Equals(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);

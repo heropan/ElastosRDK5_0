@@ -165,5 +165,36 @@ AutoPtr<IMap> CLinkedHashSet::CreateBackingMap(
     return res;
 }
 
+ECode CLinkedHashSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return HashSet::Add(object);
+}
+
+ECode CLinkedHashSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return HashSet::AddAll(collection);
+}
+
+ECode CLinkedHashSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return HashSet::Remove(object);
+}
+
+ECode CLinkedHashSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return HashSet::RemoveAll(collection);
+}
+
+ECode CLinkedHashSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return HashSet::RetainAll(collection);
+}
+
+
 } // namespace Utility
 } // namespace Elastos

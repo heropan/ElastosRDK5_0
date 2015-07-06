@@ -39,6 +39,111 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ IInterface** prevObject);
 
+    CARAPI Add(
+        /* [in] */ Int32 index,
+        /* [in] */ IInterface* object);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ Int32 index,
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI AddAll(
+        /* [in] */ Int32 index,
+        /* [in] */ ICollection* collection);
+
+    CARAPI IndexOf(
+        /* [in] */ IInterface* object,
+        /* [in] */ Int32* index);
+
+    CARAPI LastIndexOf(
+        /* [in] */ IInterface* object,
+        /* [in] */ Int32* index);
+
+    CARAPI GetListIterator(
+        /* [in] */ IListIterator** it);
+
+    CARAPI GetListIterator(
+        /* [in] */ Int32 index,
+        /* [in] */ IListIterator** it);
+
+    CARAPI Remove(
+        /* [in] */ Int32 index,
+        /* [in] */ IInterface** object);
+
+    CARAPI Remove(
+        /* [in] */ Int32 index);
+
+    CARAPI Set(
+        /* [in] */ Int32 index,
+        /* [in] */ IInterface* object);
+
+    CARAPI GetSubList(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ IList** list);
+
+    CARAPI GetIterator(
+        /* [in] */ IIterator** it);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Clear();
+
+    CARAPI Contains(
+        /* [in] */ IInterface* object,
+        /* [in] */ Boolean* result);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [in] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [in] */ Int32* index);
+
+    CARAPI IsEmpty(
+        /* [in] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object,
+        /* [in] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ Elastos::ArrayOf<IInterface*>* array,
+        /* [out, callee] */ ArrayOf<IInterface*>** outarray);
+
 protected:
     UnsafeArrayList();
 

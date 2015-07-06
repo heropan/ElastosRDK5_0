@@ -312,6 +312,8 @@ public:
         AutoPtr<IIterator> mSetIterator;
     };
 
+public:
+    AbstractMap();
 
     virtual CARAPI Clear();
 
@@ -511,8 +513,6 @@ public:
      */
     virtual CARAPI ToString(
         /* [out] */ String* str);
-
-    AbstractMap();
 
     // @SuppressWarnings("unchecked")
     CARAPI Clone(

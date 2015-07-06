@@ -780,5 +780,40 @@ ECode CArrayDeque::ReadObject(
     return NOERROR;
 }
 
+ECode CArrayDeque::Add(
+    /* [in] */ IInterface* object)
+{
+    Boolean bval;
+    return Add(object, &bval);
+}
+
+ECode CArrayDeque::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean bval;
+    return AddAll(collection, &bval);
+}
+
+ECode CArrayDeque::Remove(
+    /* [in] */ IInterface* object)
+{
+    Boolean bval;
+    return Remove(object, &bval);
+}
+
+ECode CArrayDeque::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean bval;
+    return RemoveAll(collection, &bval);
+}
+
+ECode CArrayDeque::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean bval;
+    return RetainAll(collection, &bval);
+}
+
 } // namespace Utility
 } // namespace Elastos

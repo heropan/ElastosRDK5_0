@@ -164,7 +164,9 @@ module
      * interface ICollection;
      * interface IQueue;
      */
+    [deprecated]
     interface IDeque {
+
         /**
          * Inserts the specified element at the front of this deque if it is
          * possible to do so immediately without violating capacity restrictions.
@@ -411,6 +413,98 @@ module
          */
         GetDescendingIterator(
             [out] IIterator** iterator);
+
+
+        /**
+         * interfaces from IQueue
+         */
+        Offer(
+            [in] IInterface* e,
+            [out] Boolean* result);
+
+        Remove(
+            [out] IInterface** e);
+
+        Poll(
+            [out] IInterface** e);
+
+        GetElement(
+            [out] IInterface** e);
+
+        Peek(
+            [out] IInterface** e);
+
+        /**
+         * interfaces from ICollection
+         *
+         */
+        GetIterator(
+            [out] IIterator** it);
+
+        Add(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Add(
+            [in] IInterface* object);
+
+        AddAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        AddAll(
+            [in] ICollection* collection);
+
+        Clear();
+
+        Contains(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        ContainsAll(
+            [in] ICollection* collection,
+            [out] Boolean* result);
+
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        Remove(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Remove(
+            [in] IInterface* object);
+
+        RemoveAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection);
+
+        RetainAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RetainAll(
+            [in] ICollection* collection);
+
+        GetSize(
+            [out] Int32* size);
+
+        ToArray(
+            [out, callee] ArrayOf<IInterface*>* array);
+
+        ToArray(
+            [in] ArrayOf<IInterface*>* inArray,
+            [out, callee] ArrayOf<IInterface*>* outArray);
     }
 
     } // namespace Utility

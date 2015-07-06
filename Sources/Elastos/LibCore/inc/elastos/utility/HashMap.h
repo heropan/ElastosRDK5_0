@@ -429,6 +429,10 @@ public:
     virtual CARAPI GetEntrySet(
         /* [out] */ ISet** entries);
 
+    CARAPI Equals(
+        /* [in] */  IInterface* object,
+        /* [out] */ Boolean* result);
+
     /**
      * Returns the value of the mapping with the specified key.
      *
@@ -440,6 +444,9 @@ public:
     virtual CARAPI Get(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
 
     /**
      * Returns whether this map is empty.

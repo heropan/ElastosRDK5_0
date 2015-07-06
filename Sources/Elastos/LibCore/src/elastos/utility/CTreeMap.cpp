@@ -196,6 +196,14 @@ ECode CTreeMap::Put(
     return NOERROR;
 }
 
+ECode CTreeMap::Put(
+    /* [in] */ IInterface* key,
+    /* [in] */ IInterface* value)
+{
+    AutoPtr<IInterface> obj;
+    return Put(key, value, (IInterface**)&obj);
+}
+
 ECode CTreeMap::Clear()
 {
     mRoot = NULL;
@@ -214,6 +222,13 @@ ECode CTreeMap::Remove(
     *value = node != NULL ? node->mValue : NULL;
     REFCOUNT_ADD(*value)
     return NOERROR;
+}
+
+ECode CTreeMap::Remove(
+    /* [in] */ IInterface* key)
+{
+    AutoPtr<IInterface> obj;
+    return Remove(key, (IInterface**)&obj);
 }
 
 AutoPtr<IInterface> CTreeMap::PutInternal(
@@ -1639,6 +1654,35 @@ ECode CTreeMap::_KeySet::ToArray(
     return AbstractSet::ToArray(inArray, outArray);
 }
 
+ECode CTreeMap::_KeySet::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Add(object);
+}
+
+ECode CTreeMap::_KeySet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode CTreeMap::_KeySet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Remove(object);
+}
+
+ECode CTreeMap::_KeySet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode CTreeMap::_KeySet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
 
 //==========================================================
 //       CTreeMap::BoundedMap::BoundedIterator
@@ -2133,6 +2177,35 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetHashCode(
     return AbstractSet::GetHashCode(hashCode);
 }
 
+ECode CTreeMap::BoundedMap::BoundedKeySet::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Add(object);
+}
+
+ECode CTreeMap::BoundedMap::BoundedKeySet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode CTreeMap::BoundedMap::BoundedKeySet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Remove(object);
+}
+
+ECode CTreeMap::BoundedMap::BoundedKeySet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode CTreeMap::BoundedMap::BoundedKeySet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
 
 //==========================================================
 //       CTreeMap::BoundedMap
@@ -2241,6 +2314,14 @@ ECode CTreeMap::BoundedMap::Put(
     return NOERROR;
 }
 
+ECode CTreeMap::BoundedMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    AutoPtr<IInterface> obj;
+    return Put(key, value, (IInterface**)&obj);
+}
+
 ECode CTreeMap::BoundedMap::Remove(
     /* [in] */ PInterface key,
     /* [out] */ PInterface* value)
@@ -2251,6 +2332,13 @@ ECode CTreeMap::BoundedMap::Remove(
     *value = IsInBounds(key) ? (mHost->Remove(key, (IInterface**)&res), res) : NULL;
     REFCOUNT_ADD(*value)
     return NOERROR;
+}
+
+ECode CTreeMap::BoundedMap::Remove(
+    /* [in] */ PInterface key)
+{
+    AutoPtr<IInterface> obj;
+    return Remove(key, (IInterface**)&obj);
 }
 
 Boolean CTreeMap::BoundedMap::IsInBounds(

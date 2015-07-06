@@ -119,6 +119,21 @@ public:
     CARAPI GetBits(
         /*[out, callee]*/ ArrayOf<Int64>** arrays);
 
+    CARAPI Add(/* [in] */ IInterface* object);
+
+    CARAPI AddAll(/* [in] */ ICollection* collection);
+
+    CARAPI GetHashCode(/* [in] */ Int32* result);
+
+    CARAPI IsEmpty(/* [in] */ Boolean* result);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ ArrayOf<IInterface*>* inarray,
+        /* [out, callee] */ ArrayOf<IInterface*>** outarray);
+
 private:
     static const Int32 BIT_IN_LONG;// = 64;
 

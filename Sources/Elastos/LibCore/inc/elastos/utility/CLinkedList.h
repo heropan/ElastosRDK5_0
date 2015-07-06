@@ -277,6 +277,64 @@ public:
     CARAPI Element(
         /* [out] */ IInterface** e);
 
+    CARAPI GetIterator(
+        /* [in] */ IIterator** it);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [in] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [in] */ Int32* result);
+
+    CARAPI IsEmpty(
+        /* [in] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI AddAll(
+        /* [in] */ Int32 index,
+        /* [in] */ ICollection* collection);
+
+    CARAPI GetListIterator(
+        /* [in] */ IListIterator** it);
+
+    CARAPI Remove(
+        /* [in] */ Int32 index);
+
+    CARAPI Set(
+        /* [in] */ Int32 index,
+        /* [in] */ IInterface* object);
+
+    CARAPI GetSubList(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ IList** list);
 private:
     CARAPI AddLastImpl(
         /* [in] */ IInterface* object,

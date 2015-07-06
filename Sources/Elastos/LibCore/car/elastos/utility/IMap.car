@@ -62,6 +62,7 @@ module
             [out] IInterface** valueReplacee);
     }
 
+    [deprecated]
     interface IMap {
         /**
          * Removes all elements from this {@code Map}, leaving it empty.

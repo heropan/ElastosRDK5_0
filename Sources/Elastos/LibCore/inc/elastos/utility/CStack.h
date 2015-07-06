@@ -36,7 +36,7 @@ public:
     CARAPI AddElement(
         /* [in] */ IInterface* object);
 
-    CARAPI Capacity(
+    CARAPI GetCapacity(
         /* [out] */ Int32* value);
 
     CARAPI Clear();
@@ -232,6 +232,31 @@ public:
         /* [in] */ IInterface* o,
         /* [out] */ Int32* value);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ Int32 index,
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ Int32 index);
+
+    CARAPI Set(
+        /* [in] */ Int32 index,
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
 };
 
 } // namespace Utility

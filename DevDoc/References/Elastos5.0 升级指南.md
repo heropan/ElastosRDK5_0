@@ -179,6 +179,42 @@ interface IActivity {
     }
 ```
 
+## 导出
+5.0 不再以 lib 形式导出，而是导出符号表。参考示例：<code>Elastos.CoreLibrary.def</code>。导出步骤如下：
+
+### 编译
+生成与目标 eco 同名的 def 文件，如 <code>Elastos.CoreLibrary.eco</code> 对应的 def 文件为：<code>Elastos.CoreLibrary.def</code>，并放置在同一目录下，该 def 文件头示例如下：
+
+``` cpp
+;;==========================================================================
+;; Copyright (c) 2000-2015,  Elastos, Inc.  All Rights Reserved.
+;;==========================================================================
+
+LIBRARY Elastos.CoreLibrary.eco
+
+EXPORTS
+    ;;elastos/core/Object
+    _ZN7Elastos4Core6Object10GetClassIDEPNS_6_EGuidE
+    _ZN7Elastos4Core6Object11GetHashCodeEPi
+    .....
+```
+
+编译要导出符号所对应的文件。
+
+### 确定要导出的符号
+编译完成后，使用 <code>pd m</code> 进入 mirror 目录，然后进入到目标文件所在 mirror 目录。如 Object 类对应目录为：<code>ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/mirror/Elastos/LibCore/src/elastos/core</code>
+
+使用 ls 查看是否生成了相应的目标文件，如示例： Object.o 是否存在。若存在，使用如下命令查看其符号表:
+
+``` shell
+arm-linux-androideabi-nm Object.o
+```
+
+确定那一些符号需要导出，通常前缀为 T(成员函数)，B，或 R（常量） 的 public 符号都需要导出。
+
+### 写入导出的符号
+将需要导出的符号去除前缀后拷贝到 def 文件中。示例如上 <code>Elastos.CoreLibrary.def</code>。
+
 
 ## 其它
 ---

@@ -181,5 +181,90 @@ AutoPtr<IMap> HashSet::CreateBackingMap(
     return outmap;
 }
 
+ECode HashSet::Add(
+    /* [in] */  IInterface* object)
+{
+    return AbstractSet::Add(object);
+}
+
+ECode HashSet::AddAll(
+    /* [in] */  ICollection* collection,
+    /* [out] */  Boolean* modified)
+{
+    return AbstractSet::AddAll(collection, modified);
+}
+
+ECode HashSet::AddAll(
+    /* [in] */  ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode HashSet::ContainsAll(
+    /* [in] */  ICollection* collection,
+    /* [out] */  Boolean* result)
+{
+    return AbstractSet::ContainsAll(collection, result);
+}
+
+ECode HashSet::Equals(
+    /* [in] */  IInterface* object,
+    /* [out] */  Boolean* result)
+{
+    return AbstractSet::Equals(object, result);
+}
+
+ECode HashSet::GetHashCode(
+    /* [out] */  Int32* hashCode)
+{
+    return AbstractSet::GetHashCode(hashCode);
+}
+
+ECode HashSet::Remove(
+    /* [in] */  IInterface* object)
+{
+    return AbstractSet::Remove(object);
+}
+
+ECode HashSet::RemoveAll(
+    /* [in] */  ICollection* collection,
+    /* [out] */  Boolean* modified)
+{
+    return AbstractSet::RemoveAll(collection, modified);
+}
+
+ECode HashSet::RemoveAll(
+    /* [in] */  ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode HashSet::RetainAll(
+    /* [in] */  ICollection* collection,
+    /* [out] */  Boolean* modified)
+{
+    return AbstractSet::RetainAll(collection, modified);
+}
+
+ECode HashSet::RetainAll(
+    /* [in] */  ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
+
+ECode HashSet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return AbstractSet::ToArray(array);
+}
+
+ECode HashSet::ToArray(
+    /* [in] */  ArrayOf<IInterface*>* inArray,
+    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
+{
+    return AbstractSet::ToArray(inArray, outArray);
+}
+
+
 } // namespace Utility
 } // namespace Elastos

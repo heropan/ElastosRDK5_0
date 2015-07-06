@@ -1235,9 +1235,36 @@ interface IActivity {
     }
 </code></pre>
 
-<h2 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>其它</h2>
+<h2 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>导出</h2>
+<p>5.0 不再以 lib 形式导出，而是导出符号表。参考示例：<code>Elastos.CoreLibrary.def</code>。导出步骤如下：</p>
+<h3 id="_5"><a name="user-content-_5" href="#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>编译</h3>
+<p>生成与目标 eco 同名的 def 文件，如 <code>Elastos.CoreLibrary.eco</code> 对应的 def 文件为：<code>Elastos.CoreLibrary.def</code>，并放置在同一目录下，该 def 文件头示例如下：</p>
+<pre><code class="cpp">;;==========================================================================
+;; Copyright (c) 2000-2015,  Elastos, Inc.  All Rights Reserved.
+;;==========================================================================
+
+LIBRARY Elastos.CoreLibrary.eco
+
+EXPORTS
+    ;;elastos/core/Object
+    _ZN7Elastos4Core6Object10GetClassIDEPNS_6_EGuidE
+    _ZN7Elastos4Core6Object11GetHashCodeEPi
+    .....
+</code></pre>
+
+<p>编译要导出符号所对应的文件。</p>
+<h3 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>确定要导出的符号</h3>
+<p>编译完成后，使用 <code>pd m</code> 进入 mirror 目录，然后进入到目标文件所在 mirror 目录。如 Object 类对应目录为：<code>ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/mirror/Elastos/LibCore/src/elastos/core</code></p>
+<p>使用 ls 查看是否生成了相应的目标文件，如示例： Object.o 是否存在。若存在，使用如下命令查看其符号表:</p>
+<pre><code class="shell">arm-linux-androideabi-nm Object.o
+</code></pre>
+
+<p>确定那一些符号需要导出，通常前缀为 T(成员函数)，B，或 R（常量） 的 public 符号都需要导出。</p>
+<h3 id="_7"><a name="user-content-_7" href="#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>写入导出的符号</h3>
+<p>将需要导出的符号去除前缀后拷贝到 def 文件中。示例如上 <code>Elastos.CoreLibrary.def</code>。</p>
+<h2 id="_8"><a name="user-content-_8" href="#_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>其它</h2>
 <hr />
-<h3 id="_5"><a name="user-content-_5" href="#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>一些宏</h3>
+<h3 id="_9"><a name="user-content-_9" href="#_9" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>一些宏</h3>
 <ul>
 <li>
 <p>宏<code>INTERFACE_ADDREF/ARRAYOF_ADDREF</code>改名为<code>REFCOUNT_ADD</code>；宏<code>INTERFACE_RELEASE/ARRAYOF_RELEASE</code>改名为<code>REFCOUNT_RELEASE</code>，定义在elrefbase.h中</p>
@@ -1249,9 +1276,9 @@ interface IActivity {
 <li>所有在头文件中继承 CAR 接口的类（ C++ 类或 CAR 类）都需要使用 <code>CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL</code></li>
 <li>请参考下面的范例 <code>HelloCar</code> 了解如何使用这些宏。</li>
 </ul>
-<h3 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>夹壁墙类文件名包含命名空间前缀</h3>
+<h3 id="_10"><a name="user-content-_10" href="#_10" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>夹壁墙类文件名包含命名空间前缀</h3>
 <p>后台生成的夹壁墙类文件名包含命名空间前缀，如 CBoolean 类对应的夹壁墙类文件名为：<code>_Elastos_Core_CBoolean.h</code></p>
-<h2 id="_7"><a name="user-content-_7" href="#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>范例</h2>
+<h2 id="_11"><a name="user-content-_11" href="#_11" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>范例</h2>
 <hr />
 <h3 id="hellocar"><a name="user-content-hellocar" href="#hellocar" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>HelloCar</h3>
 <p>HelloCar 演示了如何编写带有继承结构的 CAR 类以及如何编写单例类，其代码路径在：<br />

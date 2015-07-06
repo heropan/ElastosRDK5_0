@@ -98,5 +98,116 @@ AbstractSet::AbstractSet()
 {
 }
 
+
+AbstractSet::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    assert(0);
+    return E_NOT_IMPLEMENTED;
+}
+
+AbstractSet::Add(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractCollection::Add(object, modified);
+}
+
+AbstractSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractCollection::Add(object);
+}
+
+AbstractSet::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractCollection::AddAll(collection, modified);
+}
+
+AbstractSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::AddAll(collection);
+}
+
+AbstractSet::Clear()
+{
+    return AbstractCollection::Clear();
+}
+
+AbstractSet::Contains(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::Contains(object, result);
+}
+
+AbstractSet::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::ContainsAll(collection, result);
+}
+
+AbstractSet::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    return AbstractCollection::IsEmpty(result);
+}
+
+AbstractSet::Remove(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractCollection::Remove(object, modified);
+}
+
+AbstractSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractCollection::Remove(object);
+}
+
+AbstractSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::RemoveAll(collection);
+}
+
+AbstractSet::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractCollection::RetainAll(collection, modified);
+}
+
+AbstractSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::RetainAll(collection);
+}
+
+AbstractSet::GetSize(
+    /* [out] */ Int32* size)
+{
+    assert(0);
+    return E_NOT_IMPLEMENTED;
+}
+
+AbstractSet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return AbstractCollection::ToArray(array);
+}
+
+AbstractSet::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* inArray,
+    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
+{
+    return AbstractCollection::ToArray(inArray, outArray);
+}
+
 } // namespace Utility
 } // namespace Elastos

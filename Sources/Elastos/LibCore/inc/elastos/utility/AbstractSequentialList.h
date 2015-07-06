@@ -39,6 +39,12 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ IInterface** prevObject);
 
+    using AbstractList::Add;
+    using AbstractList::AddAll;
+    using AbstractList::Remove;
+    using AbstractList::Set;
+    using AbstractList::GetListIterator;
+
 protected:
     /**
       * Constructs a new instance of this AbstractSequentialList.

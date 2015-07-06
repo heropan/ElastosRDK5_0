@@ -1051,6 +1051,57 @@ ECode CConcurrentLinkedDeque::GetHashCode(
     return E_NO_SUCH_METHOD_EXCEPTION;
 }
 
+ECode CConcurrentLinkedDeque::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractCollection::Add(object);
+}
+
+ECode CConcurrentLinkedDeque::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::AddAll(collection);
+}
+
+ECode CConcurrentLinkedDeque::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractCollection::ContainsAll(collection, result);
+}
+
+ECode CConcurrentLinkedDeque::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractCollection::RemoveAll(collection, result);
+}
+
+ECode CConcurrentLinkedDeque::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::RemoveAll(collection);
+}
+
+ECode CConcurrentLinkedDeque::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractCollection::RetainAll(collection, result);
+}
+
+ECode CConcurrentLinkedDeque::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractCollection::RetainAll(collection);
+}
+
+ECode CConcurrentLinkedDeque::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractCollection::Remove(object);
+}
+
 //====================================================================
 // CConcurrentLinkedDeque::AbstractItr::
 //====================================================================

@@ -478,5 +478,36 @@ ECode CTreeSet::ToArray(
     return AbstractSet::ToArray(inArray, outArray);
 }
 
+ECode CTreeSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Add(object);
+}
+
+ECode CTreeSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode CTreeSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Remove(object);
+}
+
+ECode CTreeSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode CTreeSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
+
+
 } // namespace Utility
 } // namespace Elastos

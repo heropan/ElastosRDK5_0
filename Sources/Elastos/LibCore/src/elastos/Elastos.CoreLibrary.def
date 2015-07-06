@@ -1,11 +1,11 @@
 ;;==========================================================================
-;; Copyright (c) 2000-20013,  Elastos, Inc.  All Rights Reserved.
+;; Copyright (c) 2000-2015,  Elastos, Inc.  All Rights Reserved.
 ;;==========================================================================
 
 LIBRARY Elastos.CoreLibrary.eco
 
 EXPORTS
-    ;;Object
+    ;;elastos/core/Object
     _ZN7Elastos4Core6Object10GetClassIDEPNS_6_EGuidE
     _ZN7Elastos4Core6Object11GetHashCodeEPi
     _ZN7Elastos4Core6Object14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
@@ -56,7 +56,7 @@ EXPORTS
     _ZThn8_N7Elastos4Core6Object9AggregateE13AggregateTypeP10IInterface
     _ZThn8_N7Elastos4Core6Object9GetDomainEPP10IInterface
 
-    ;;Singleton
+    ;;elastos/core/Singleton
     _ZN7Elastos4Core9SingletonC1Ev
     _ZN7Elastos4Core9SingletonC2Ev
     _ZN7Elastos4Core9SingletonD0Ev
@@ -71,7 +71,7 @@ EXPORTS
     _ZThn8_N7Elastos4Core9Singleton6AddRefEv
     _ZThn8_N7Elastos4Core9Singleton7ReleaseEv
 
-    ;;Thread
+    ;;elastos/core/Thread
     _ZN7Elastos4Core6Thread11CheckAccessEv
     _ZN7Elastos4Core6Thread11GetPriorityEPi
     _ZN7Elastos4Core6Thread11InterruptedEv
@@ -217,7 +217,7 @@ EXPORTS
     sKeyInstance
 #endif
 
-    ;;Math
+    ;;elastos/core/Math
     _ZN7Elastos4Core4Math10FLOAT_ZEROE
     _ZN7Elastos4Core4Math10IsInfiniteEd
     _ZN7Elastos4Core4Math10IsInfiniteEf
@@ -341,7 +341,7 @@ EXPORTS
     _ZN7Elastos4Core4Math9ToDegreesEd
     _ZN7Elastos4Core4Math9ToRadiansEd
 
-    ;;StrictMath
+    ;;elastos/core/StrictMath
     _ZN7Elastos4Core10StrictMath11GetExponentEd
     _ZN7Elastos4Core10StrictMath11GetExponentEf
     _ZN7Elastos4Core10StrictMath13IEEEremainderEdd
@@ -399,7 +399,7 @@ EXPORTS
     _ZN7Elastos4Core10StrictMath9ToDegreesEd
     _ZN7Elastos4Core10StrictMath9ToRadiansEd
 
-    ;;Character
+    ;;elastos/core/Character
     _ZN7Elastos4Core9Character10IsMirroredEj
     _ZN7Elastos4Core9Character10UNASSIGNEDE
     _ZN7Elastos4Core9Character11ForNameImplERKNS_6StringE
@@ -674,7 +674,7 @@ EXPORTS
     _ZN7Elastos4Core9Character9SURROGATEE
     _ZN7Elastos4Core9Character9ToChar32sERKNS_6StringEiiPNS_7ArrayOfIjEEi
 
-    ;; CaseMapper
+    ;;elastos/core/CaseMapper
     _ZN7Elastos4Core10CaseMapper11ToLowerCaseEPNS_7Utility7ILocaleERKNS_6StringEPNS_7ArrayOfIjEEii
     _ZN7Elastos4Core10CaseMapper11ToUpperCaseEPNS_7Utility7ILocaleERKNS_6StringEPNS_7ArrayOfIjEEii
 
@@ -682,7 +682,7 @@ EXPORTS
     _ZN7Elastos4Core15HexStringParser5ParseERKNS_6StringEPd
     _ZN7Elastos4Core15HexStringParser5ParseERKNS_6StringEPf
 
-    ;;StrintToReal
+    ;;elastos/core/StrintToReal
     _ZN7Elastos4Core12StringToReal12InitialParseERKNS_6StringEihPPNS1_18StringExponentPairE
     _ZN7Elastos4Core12StringToReal12ParseDblImplERKNS_6StringEi
     _ZN7Elastos4Core12StringToReal12ParseFltImplERKNS_6StringEi
@@ -690,14 +690,14 @@ EXPORTS
     _ZN7Elastos4Core12StringToReal5ParseERKNS_6StringEPf
     _ZN7Elastos4Core12StringToReal9ParseNameERKNS_6StringEhPf
 
-    ;;RealToString
+    ;;elastos/core/RealToString
     _ZN7Elastos4Core12RealToString11GetInstanceEv
     _ZN7Elastos4Core12RealToString7ConvertEd
     _ZN7Elastos4Core12RealToString7ConvertEf
     _ZN7Elastos4Core12RealToString8ToStringEd
     _ZN7Elastos4Core12RealToString8ToStringEf
 
-    ;;StringToIntegral
+    ;;elastos/core/StringToIntegral
     _ZN7Elastos4Core16StringToIntegral5ParseERKNS_6StringEPi
     _ZN7Elastos4Core16StringToIntegral5ParseERKNS_6StringEPs
     _ZN7Elastos4Core16StringToIntegral5ParseERKNS_6StringEPx
@@ -709,7 +709,7 @@ EXPORTS
     _ZN7Elastos4Core16StringToIntegral6DecodeERKNS_6StringEPs
     _ZN7Elastos4Core16StringToIntegral6DecodeERKNS_6StringEPx
 
-    ;;IntegralToString
+    ;;elastos/core/IntegralToString
     _ZN7Elastos4Core16IntegralToString11ToHexStringERNS_7ArrayOfIhEEh
     _ZN7Elastos4Core16IntegralToString11ToHexStringEhh
     _ZN7Elastos4Core16IntegralToString11ToHexStringEihi
@@ -722,7 +722,7 @@ EXPORTS
     _ZN7Elastos4Core16IntegralToString8ToStringEii
     _ZN7Elastos4Core16IntegralToString8ToStringExi
 
-    ;;StringUtils
+    ;;elastos/core/StringUtils
     _ZN7Elastos4Core11StringUtils10ParseFloatERKNS_6StringEf
     _ZN7Elastos4Core11StringUtils10ParseInt16ERKNS_6StringEis
     _ZN7Elastos4Core11StringUtils10ParseInt32ERKNS_6StringEii
@@ -764,12 +764,12 @@ EXPORTS
     _ZN7Elastos4Core11StringUtils8ToStringEii
     _ZN7Elastos4Core11StringUtils8ToStringExi
 
-    ;;AbstractStringBuilder
+    ;;elastos/core/AbstractStringBuilder
     _ZN7Elastos4Core21AbstractStringBuilder9GetLengthEv
     _ZN7Elastos4Core21AbstractStringBuilder12GetByteCountEv
     _ZN7Elastos4Core21AbstractStringBuilder11GetCapacityEv
 
-    ;;StringBuilder
+    ;;elastos/core/StringBuilder
     _ZN7Elastos4Core13StringBuilder10AppendCharEj
     _ZN7Elastos4Core13StringBuilder10AppendNULLEv
     _ZN7Elastos4Core13StringBuilder10InsertCharEij
@@ -939,7 +939,7 @@ EXPORTS
     _ZThn8_N7Elastos4Core13StringBuilder7ReleaseEv
     _ZThn8_N7Elastos4Core13StringBuilder8ToStringEPNS_6StringE
 
-    ;;StringBuffer
+    ;;elastos/core/StringBuffer
     _ZN7Elastos4Core12StringBuffer10AppendCharEj
     _ZN7Elastos4Core12StringBuffer10AppendNULLEv
     _ZN7Elastos4Core12StringBuffer10InsertCharEij
@@ -1109,7 +1109,7 @@ EXPORTS
     _ZThn8_N7Elastos4Core12StringBuffer7ReleaseEv
     _ZThn8_N7Elastos4Core12StringBuffer8ToStringEPNS_6StringE
 
-    ;;CoreUtils
+    ;;elastos/core/CoreUtils
     _ZN7Elastos4Core9CoreUtils11ConvertByteEh
     _ZN7Elastos4Core9CoreUtils13ConvertChar32Ej
     _ZN7Elastos4Core9CoreUtils7ConvertERKNS_6StringE
@@ -1120,7 +1120,7 @@ EXPORTS
     _ZN7Elastos4Core9CoreUtils7ConvertEs
     _ZN7Elastos4Core9CoreUtils7ConvertEx
 
-    ;;Logger
+    ;;elastos/utility/logging/Logger
     _ZN7Elastos7Utility7Logging6Logger10IsLoggableEPKci
     _ZN7Elastos7Utility7Logging6Logger11LOG_ID_MAINE
     _ZN7Elastos7Utility7Logging6Logger11PrintlnImplEiiPKcS4_z
@@ -1140,7 +1140,7 @@ EXPORTS
     _ZN7Elastos7Utility7Logging6Logger7VERBOSEE
     _ZN7Elastos7Utility7Logging6Logger8___DEBUGE
 
-    ;;Slogger
+    ;;elastos/utility/logging/Slogger
     _ZN7Elastos7Utility7Logging7Slogger1DEPKcS4_z
     _ZN7Elastos7Utility7Logging7Slogger1EEPKcS4_z
     _ZN7Elastos7Utility7Logging7Slogger1IEPKcS4_z
@@ -1148,7 +1148,7 @@ EXPORTS
     _ZN7Elastos7Utility7Logging7Slogger1WEPKcS4_z
     _ZN7Elastos7Utility7Logging7Slogger7PrintlnEiPKcS4_z
 
-    ;;Arrays
+    ;;elastos/utility/Arrays
     _ZN7Elastos7Utility6Arrays10DeepEqualsEP10IInterfaceS3_
     _ZN7Elastos7Utility6Arrays10DeepEqualsEPNS_7ArrayOfIP10IInterfaceEES6_
     _ZN7Elastos7Utility6Arrays11GetHashCodeEPNS_7ArrayOfIP10IInterfaceEE
@@ -1200,7 +1200,7 @@ EXPORTS
     _ZN7Elastos7Utility6Arrays6EqualsERNS_7AutoPtrINS_7ArrayOfIP10IInterfaceEEEES8_
     _ZN7Elastos7Utility6Arrays8ToStringEPNS_7ArrayOfIjEE
 
-    ;;DualPivotQuicksort
+    ;;elastos/utility/DualPivotQuicksort
     ;;_ZN7Elastos7Utility18DualPivotQuicksort11FindAnyZeroEPNS_7ArrayOfIdEEii
     ;;_ZN7Elastos7Utility18DualPivotQuicksort11FindAnyZeroEPNS_7ArrayOfIfEEii
     ;;_ZN7Elastos7Utility18DualPivotQuicksort15NUM_BYTE_VALUESE
@@ -1240,7 +1240,7 @@ EXPORTS
     ;;_ZN7Elastos7Utility18DualPivotQuicksort6DoSortEPNS_7ArrayOfIsEEii
     ;;_ZN7Elastos7Utility18DualPivotQuicksort6DoSortEPNS_7ArrayOfIxEEii
 
-    ;;EmptyArray
+    ;;libcore/utility/EmptyArray
     _ZN7Libcore7Utility10EmptyArray4BYTEE
     _ZN7Libcore7Utility10EmptyArray5FLOATE
     _ZN7Libcore7Utility10EmptyArray5INT32E
@@ -1252,7 +1252,7 @@ EXPORTS
     _ZN7Libcore7Utility10EmptyArray7BOOLEANE
     _ZN7Libcore7Utility10EmptyArray9THROWABLEE
 
-    ;;InputStream
+    ;;elastos/io/InputStream
     _ZN7Elastos2IO11InputStream14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
     _ZN7Elastos2IO11InputStream15IsMarkSupportedEPh
     _ZN7Elastos2IO11InputStream4MarkEi
@@ -1300,7 +1300,7 @@ EXPORTS
     _ZThn8_N7Elastos2IO11InputStream6AddRefEv
     _ZThn8_N7Elastos2IO11InputStream7ReleaseEv
 
-    ;;OutputStream
+    ;;elastos/io/OutputStream
     _ZN7Elastos2IO12OutputStream10CheckErrorEPh
     _ZN7Elastos2IO12OutputStream14GetInterfaceIDEP10IInterfacePNS_6_EMuidE
     _ZN7Elastos2IO12OutputStream5CloseEv

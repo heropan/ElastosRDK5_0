@@ -35,6 +35,10 @@ module
      */
     [deprecated]
     interface ICollection {
+
+        GetIterator(
+            [out] IIterator** it);
+
         /**
          * Attempts to add {@code object} to the contents of this
          * {@code Collection} (optional).

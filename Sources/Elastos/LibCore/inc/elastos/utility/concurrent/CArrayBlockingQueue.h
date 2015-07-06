@@ -374,9 +374,9 @@ public:
      * @throws IllegalStateException if this queue is full
      * @throws NullPointerException if the specified element is null
      */
-    CARAPI Add(
-        /* [in] */ IInterface* e,
-        /* [out] */ Boolean* modified);
+    // CARAPI Add(
+    //     /* [in] */ IInterface* e,
+    //     /* [out] */ Boolean* modified);
 
     /**
      * Inserts the specified element at the tail of this queue if it is
@@ -478,9 +478,9 @@ public:
      * @throws NullPointerException
      *                if {@code collection} is {@code null}.
      */
-    CARAPI ContainsAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* result);
+    // CARAPI ContainsAll(
+    //     /* [in] */ ICollection* collection,
+    //     /* [out] */ Boolean* result);
 
     /**
      * Compares the argument to the receiver, and returns true if they represent
@@ -515,8 +515,8 @@ public:
      *
      * @see #size
      */
-    CARAPI IsEmpty(
-        /* [out] */ Boolean* result);
+    // CARAPI IsEmpty(
+    //      /* [out] */ Boolean* result);
 
     /**
      * Removes a single instance of the specified element from this queue,
@@ -539,8 +539,8 @@ public:
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* modified);
 
-    CARAPI Remove(
-        /* [out] */ IInterface** e);
+    // CARAPI Remove(
+    //     /* [out] */ IInterface** e);
 
     /**
      * Removes all occurrences in this {@code Collection} of each object in the
@@ -565,9 +565,9 @@ public:
      * @throws NullPointerException
      *                if {@code collection} is {@code null}.
      */
-    CARAPI RemoveAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
+    // CARAPI RemoveAll(
+    //     /* [in] */ ICollection* collection,
+    //     /* [out] */ Boolean* modified);
 
     /**
      * Removes all objects from this {@code Collection} that are not also found in the
@@ -591,9 +591,9 @@ public:
      * @throws NullPointerException
      *                if {@code collection} is {@code null}.
      */
-    CARAPI RetainAll(
-        /* [in] */ ICollection* collection,
-        /* [out] */ Boolean* modified);
+    // CARAPI RetainAll(
+    //     /* [in] */ ICollection* collection,
+    //     /* [out] */ Boolean* modified);
 
     /**
      * Returns {@code true} if this queue contains the specified element.

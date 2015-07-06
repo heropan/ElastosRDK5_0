@@ -1073,5 +1073,118 @@ ECode CLinkedList::Element(
     return GetFirstImpl(e);
 }
 
+
+ECode CLinkedList::GetIterator(
+    /* [in] */ IIterator** it)
+{
+    return AbstractSequentialList::GetIterator(it);
+}
+
+ECode CLinkedList::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSequentialList::Add(object);
+}
+
+ECode CLinkedList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSequentialList::AddAll(collection);
+}
+
+ECode CLinkedList::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSequentialList::ContainsAll(collection, result);
+}
+
+ECode CLinkedList::Equals(
+    /* [in] */ IInterface* object,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSequentialList::Equals(object, result);
+}
+
+ECode CLinkedList::GetHashCode(
+    /* [in] */ Int32* result)
+{
+    return AbstractSequentialList::GetHashCode(result);
+}
+
+ECode CLinkedList::IsEmpty(
+    /* [in] */ Boolean* result)
+{
+    return AbstractSequentialList::IsEmpty(result);
+}
+
+ECode CLinkedList::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSequentialList::Remove(object);
+}
+
+ECode CLinkedList::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSequentialList::RemoveAll(collection, result);
+}
+
+ECode CLinkedList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSequentialList::RemoveAll(collection);
+}
+
+ECode CLinkedList::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractSequentialList::RetainAll(collection, result);
+}
+
+ECode CLinkedList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSequentialList::RetainAll(collection);
+}
+
+ECode CLinkedList::AddAll(
+    /* [in] */ Int32 index,
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSequentialList::AddAll(index, collection);
+}
+
+ECode CLinkedList::GetListIterator(
+    /* [in] */ IListIterator** it)
+{
+    return AbstractSequentialList::GetListIterator(it);
+}
+
+ECode CLinkedList::Remove(
+    /* [in] */ Int32 index)
+{
+    return AbstractSequentialList::Remove(index);
+}
+
+ECode CLinkedList::Set(
+    /* [in] */ Int32 index,
+    /* [in] */ IInterface* object)
+{
+    return AbstractSequentialList::Set(index, object);
+}
+
+ECode CLinkedList::GetSubList(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ IList** list)
+{
+    return AbstractSequentialList::GetSubList(start, end, list);
+}
+
+
+
 } // Utility
 } // Elastos

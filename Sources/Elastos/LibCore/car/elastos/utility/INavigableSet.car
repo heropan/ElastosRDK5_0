@@ -2,6 +2,7 @@ module
 {
     namespace Elastos {
     namespace Utility {
+
     // BEGIN android-note
     // removed link to collections framework docs
     // END android-note
@@ -58,6 +59,7 @@ module
      * interface ISet;
      * interface ISortedSet;
      */
+    [deprecated]
     interface INavigableSet {
         /**
          * Returns the greatest element in this set strictly less than the
@@ -273,6 +275,78 @@ module
             [in] IInterface* fromElement,
             [in] Boolean inclusive,
             [out] INavigableSet** outnav);
+
+        /**
+         * interfaces from ICollection
+         *
+         */
+        GetIterator(
+            [out] IIterator** it);
+
+        Add(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Add(
+            [in] IInterface* object);
+
+        AddAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        AddAll(
+            [in] ICollection* collection);
+
+        Clear();
+
+        Contains(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        ContainsAll(
+            [in] ICollection* collection,
+            [out] Boolean* result);
+
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        Remove(
+            [in] IInterface* object,
+            [out] Boolean* modified);
+
+        Remove(
+            [in] IInterface* object);
+
+        RemoveAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RemoveAll(
+            [in] ICollection* collection);
+
+        RetainAll(
+            [in] ICollection* collection,
+            [out] Boolean* modified);
+
+        RetainAll(
+            [in] ICollection* collection);
+
+        GetSize(
+            [out] Int32* size);
+
+        ToArray(
+            [out, callee] ArrayOf<IInterface*>* array);
+
+        ToArray(
+            [in] ArrayOf<IInterface*>* inArray,
+            [out, callee] ArrayOf<IInterface*>* outArray);
     }
 
     } // namespace Utility

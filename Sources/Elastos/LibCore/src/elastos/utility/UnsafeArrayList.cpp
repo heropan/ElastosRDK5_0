@@ -98,5 +98,197 @@ ECode UnsafeArrayList::Set(
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
+ECode UnsafeArrayList::Add(
+    /* [in] */ Int32 index,
+    /* [in] */ IInterface* object)
+{
+    return AbstractList::Add(index, object);
+}
+
+ECode UnsafeArrayList::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractList::Add(object);
+}
+
+ECode UnsafeArrayList::AddAll(
+    /* [in] */ Int32 index,
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::AddAll(index, collection, result);
+}
+
+ECode UnsafeArrayList::AddAll(
+    /* [in] */ Int32 index,
+    /* [in] */ ICollection* collection)
+{
+    return AbstractList::AddAll(index, collection);
+}
+
+ECode UnsafeArrayList::IndexOf(
+    /* [in] */ IInterface* object,
+    /* [in] */ Int32* index)
+{
+    return AbstractList::IndexOf(object, index);
+}
+
+ECode UnsafeArrayList::LastIndexOf(
+    /* [in] */ IInterface* object,
+    /* [in] */ Int32* index)
+{
+    return AbstractList::LastIndexOf(object, index);
+}
+
+ECode UnsafeArrayList::GetListIterator(
+    /* [in] */ IListIterator** it)
+{
+    return AbstractList::GetListIterator(it);
+}
+
+ECode UnsafeArrayList::GetListIterator(
+    /* [in] */ Int32 index,
+    /* [in] */ IListIterator** it)
+{
+    return AbstractList::GetListIterator(index, it);
+}
+
+ECode UnsafeArrayList::Remove(
+    /* [in] */ Int32 index,
+    /* [in] */ IInterface** object)
+{
+    return AbstractList::Remove(index, object);
+}
+
+ECode UnsafeArrayList::Remove(
+    /* [in] */ Int32 index)
+{
+    return AbstractList::Remove(index);
+}
+
+ECode UnsafeArrayList::Set(
+    /* [in] */ Int32 index,
+    /* [in] */ IInterface* object)
+{
+    return AbstractList::Set(index, object);
+}
+
+ECode UnsafeArrayList::GetSubList(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ IList** list)
+{
+    return AbstractList::GetSubList(start, end, list);
+}
+
+ECode UnsafeArrayList::GetIterator(
+    /* [in] */ IIterator** it)
+{
+    return AbstractList::GetIterator(it);
+}
+
+ECode UnsafeArrayList::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::AddAll(collection, result);
+}
+
+ECode UnsafeArrayList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractList::AddAll(collection);
+}
+
+ECode UnsafeArrayList::Clear()
+{
+    return AbstractList::Clear();
+}
+
+ECode UnsafeArrayList::Contains(
+    /* [in] */ IInterface* object,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::Contains(object, result);
+}
+
+ECode UnsafeArrayList::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::ContainsAll(collection, result);
+}
+
+ECode UnsafeArrayList::Equals(
+    /* [in] */ IInterface* object,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::Equals(object, result);
+}
+
+ECode UnsafeArrayList::GetHashCode(
+    /* [in] */ Int32* index)
+{
+    return AbstractList::GetHashCode(index);
+}
+
+ECode UnsafeArrayList::IsEmpty(
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::IsEmpty(result);
+}
+
+ECode UnsafeArrayList::Remove(
+    /* [in] */ IInterface* object,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::Remove(object, result);
+}
+
+ECode UnsafeArrayList::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractList::Remove(object);
+}
+
+ECode UnsafeArrayList::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::RemoveAll(collection, result);
+}
+
+ECode UnsafeArrayList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractList::RemoveAll(collection);
+}
+
+ECode UnsafeArrayList::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [in] */ Boolean* result)
+{
+    return AbstractList::RetainAll(collection, result);
+}
+
+ECode UnsafeArrayList::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractList::RetainAll(collection);
+}
+
+ECode UnsafeArrayList::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return AbstractList::ToArray(array);
+}
+
+ECode UnsafeArrayList::ToArray(
+    /* [in] */ Elastos::ArrayOf<IInterface*>* array,
+    /* [out, callee] */ ArrayOf<IInterface*>** outarray)
+{
+    return AbstractList::ToArray(array, outarray);
+}
+
 } // namespace Utility
 } // namespace Elastos

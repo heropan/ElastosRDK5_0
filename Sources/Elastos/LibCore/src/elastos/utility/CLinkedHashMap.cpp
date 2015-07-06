@@ -324,6 +324,13 @@ ECode CLinkedHashMap::Put(
     return HashMap::Put(key, value, oldValue);
 }
 
+ECode CLinkedHashMap::Put(
+    /* [in] */ PInterface key,
+    /* [in] */ PInterface value)
+{
+    return HashMap::Put(key, value);
+}
+
 ECode CLinkedHashMap::PutAll(
     /* [in] */ IMap* map)
 {
@@ -335,6 +342,12 @@ ECode CLinkedHashMap::Remove(
     /* [out] */ PInterface* value)
 {
     return HashMap::Remove(key, value);
+}
+
+ECode CLinkedHashMap::Remove(
+    /* [in] */ PInterface key)
+{
+    return HashMap::Remove(key);
 }
 
 ECode CLinkedHashMap::GetSize(

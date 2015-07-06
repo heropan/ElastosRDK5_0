@@ -288,6 +288,33 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32* hashCode);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection,
+        /* [in] */ Boolean* result);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
 protected:
     CARAPI_(AutoPtr<Node>) PrevTerminator();
 

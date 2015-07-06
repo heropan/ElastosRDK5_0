@@ -74,7 +74,7 @@ AbstractPreferences::AbstractPreferences(
     /* [in] */ AbstractPreferences* parent,
     /* [in] */ const String& name)
 {
-    if ((parent == NULL ^ name.GetLength() == 0) || name.IndexOf("/") >= 0) {
+    if ((parent == NULL || name.GetLength() == 0) || name.IndexOf("/") >= 0) {
         // throw new IllegalArgumentException();
         assert(0);
     }
@@ -131,9 +131,8 @@ ECode AbstractPreferences::GetChild(
 
 Boolean AbstractPreferences::IsRemoved()
 {
-    synchronized (mLock) {
-        return mIsRemoved;
-    }
+    AutoLock lock(mLock);
+    return mIsRemoved;
 }
 
 ECode AbstractPreferences::AbsolutePath(

@@ -341,6 +341,44 @@ public:
         CARAPI GetDescendingSet(
             /* [out] */ INavigableSet** outnav);
 
+        CARAPI Add(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Boolean* result);
+
+        CARAPI Add(
+            /* [in] */ IInterface* obj);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI ContainsAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI GetHashCode(
+            /* [in] */ Int32* result);
+
+        CARAPI Remove(
+            /* [in] */ IInterface* obj);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
+
     private:
         AutoPtr<INavigableMap> mM;
     };
@@ -415,6 +453,43 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
+        CARAPI Add(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Boolean*);
+
+        CARAPI Add(
+            /* [in] */ IInterface* obj);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI ContainsAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI GetHashCode(
+            /* [in] */ Int32* result);
+
+        CARAPI Remove(
+            /* [in] */ IInterface* obj);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
     private:
         AutoPtr<INavigableMap> mM;
     };
@@ -665,6 +740,24 @@ public:
         AutoPtr<IIterator> ValueIterator();
 
         AutoPtr<IIterator> EntryIterator();
+
+        CARAPI Equals(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Boolean* result);
+
+        CARAPI GetHashCode(
+            /* [in] */ Int32* hash);
+
+        CARAPI Put(
+            /* [in] */ IInterface* key,
+            /* [in] */ IInterface* obj);
+
+        CARAPI PutAll(
+            /* [in] */ IMap* map);
+
+        CARAPI Remove(
+            /* [in] */ IInterface* obj);
+
 
     private:
         /* ----------------  Utilities -------------- */
@@ -985,6 +1078,16 @@ public:
 
     CARAPI PutAll(
         /* [in] */ IMap* map);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
+
+    CARAPI Put(
+        /* [in] */ IInterface* key,
+        /* [in] */ IInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* key);
 
 private:
     Boolean CasHead(

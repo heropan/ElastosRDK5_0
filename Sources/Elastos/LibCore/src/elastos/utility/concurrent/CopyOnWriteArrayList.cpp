@@ -62,6 +62,13 @@ ECode CopyOnWriteArrayList::AddAll(
     return AddAll(mElements->GetLength(), collection, modified);
 }
 
+ECode CopyOnWriteArrayList::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean bval;
+    return AddAll(collection, &bval);
+}
+
 ECode CopyOnWriteArrayList::Clear()
 {
     mElements = sEmptyArray;
@@ -161,6 +168,14 @@ ECode CopyOnWriteArrayList::Remove(
     return NOERROR;
 }
 
+
+ECode CopyOnWriteArrayList::Remove(
+    /* [in] */ IInterface* object)
+{
+    Boolean bval;
+    return Remove(object, &bval);
+}
+
 ECode CopyOnWriteArrayList::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* modified)
@@ -170,6 +185,14 @@ ECode CopyOnWriteArrayList::RemoveAll(
     AutoLock lock(this);
     *modified = RemoveOrRetain(collection, FALSE, 0, mElements->GetLength()) != 0;
     return NOERROR;
+}
+
+
+ECode CopyOnWriteArrayList::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean bval;
+    return RemoveAll(collection, &bval);
 }
 
 ECode CopyOnWriteArrayList::RetainAll(
@@ -186,8 +209,8 @@ ECode CopyOnWriteArrayList::RetainAll(
 ECode CopyOnWriteArrayList::RetainAll(
     /* [in] */ ICollection* collection)
 {
-    Boolean result;
-    return RetainAll(collection, &result);
+    Boolean bval;
+    return RetainAll(collection, &bval);
 }
 
 ECode CopyOnWriteArrayList::GetSize(

@@ -100,12 +100,12 @@ _Exit_:
     return ec;
 }
 
-ECode CArrayBlockingQueue::Add(
-    /* [in] */ IInterface* e,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::Add(e, modified);
-}
+// ECode CArrayBlockingQueue::Add(
+//     /* [in] */ IInterface* e,
+//     /* [out] */ Boolean* modified)
+// {
+//     return AbstractQueue::Add(e, modified);
+// }
 
 ECode CArrayBlockingQueue::Offer(
     /* [in] */ IInterface* e,
@@ -312,12 +312,12 @@ ECode CArrayBlockingQueue::RemainingCapacity(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractQueue::ContainsAll(collection, result);
-}
+// ECode CArrayBlockingQueue::ContainsAll(
+//     /* [in] */ ICollection* collection,
+//      [out]  Boolean* result)
+// {
+//     return AbstractQueue::ContainsAll(collection, result);
+// }
 
 ECode CArrayBlockingQueue::Equals(
     /* [in] */ IInterface* object,
@@ -336,11 +336,11 @@ ECode CArrayBlockingQueue::GetHashCode(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    return AbstractQueue::IsEmpty(result);
-}
+// ECode CArrayBlockingQueue::IsEmpty(
+//     /* [out] */ Boolean* result)
+// {
+//     return AbstractQueue::IsEmpty(result);
+// }
 
 ECode CArrayBlockingQueue::Remove(
     /* [in] */ IInterface* o,
@@ -374,25 +374,25 @@ ECode CArrayBlockingQueue::Remove(
     return NOERROR;
 }
 
-ECode CArrayBlockingQueue::Remove(
-    /* [out] */ IInterface** e)
-{
-    return AbstractQueue::Remove(e);
-}
+// ECode CArrayBlockingQueue::Remove(
+//     /* [out] */ IInterface** e)
+// {
+//     return AbstractQueue::Remove(e);
+// }
 
-ECode CArrayBlockingQueue::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::RemoveAll(collection, modified);
-}
+// ECode CArrayBlockingQueue::RemoveAll(
+//     /* [in] */ ICollection* collection,
+//     /* [out] */ Boolean* modified)
+// {
+//     return AbstractQueue::RemoveAll(collection, modified);
+// }
 
-ECode CArrayBlockingQueue::RetainAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractQueue::RetainAll(collection, modified);
-}
+// ECode CArrayBlockingQueue::RetainAll(
+//     /* [in] */ ICollection* collection,
+//     /* [out] */ Boolean* modified)
+// {
+//     return AbstractQueue::RetainAll(collection, modified);
+// }
 
 ECode CArrayBlockingQueue::Contains(
     /* [in] */ IInterface* o,

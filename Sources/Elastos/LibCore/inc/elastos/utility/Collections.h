@@ -203,6 +203,9 @@ public:
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
+
         CARAPI Clear();
 
         CARAPI Contains(
@@ -223,13 +226,22 @@ public:
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* modified);
 
+        CARAPI Remove(
+            /* [in] */ IInterface* object);
+
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
 
         CARAPI GetSize(
             /* [out] */ Int32* size);
@@ -341,6 +353,20 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
+        CARAPI Add(
+            /* [in] */ IInterface* object);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI Remove(
+            /* [in] */ IInterface* object);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection);
     private:
         CARAPI WriteObject(
             /* [in] */ IObjectOutputStream* stream);
@@ -616,6 +642,21 @@ public:
         CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
 
     private:
         CARAPI WriteObject(
@@ -1703,6 +1744,18 @@ public:
             /* [in] */ ICollection* collection,
             /* [out] */ Boolean* modified);
 
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
+
     private:
         CARAPI_(AutoPtr<IInterface>) ReadResolve();
 
@@ -1791,6 +1844,21 @@ public:
         CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
     };
 
     class _UnmodifiableMap
@@ -1940,6 +2008,19 @@ public:
 
         CARAPI ToString(
             /* [out] */ String* str);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
+
         AutoPtr<IMap> mM;
     };
 
@@ -2010,6 +2091,10 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI PutAll(
             /* [in] */ IMap* map);
 
@@ -2022,6 +2107,22 @@ public:
 
         CARAPI GetValues(
             /* [out] */ ICollection** value);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
+
         AutoPtr<ISortedMap> mSm;
     };
 
@@ -2109,6 +2210,22 @@ public:
 
         CARAPI GetHashCode(
             /* [out] */ Int32* hashCode);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
+
         AutoPtr<ISortedSet> mSs;
     };
 
@@ -2520,6 +2637,18 @@ public:
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
+
     public:
         AutoPtr<IList> mL;
     };
@@ -2605,6 +2734,21 @@ public:
         CARAPI ToArray(
             /* [in] */ ArrayOf<IInterface*>* inArray,
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
     };
 
     /**
@@ -2685,6 +2829,7 @@ public:
                 AutoPtr<IIterator> mI;
                 InterfaceID mValueType;
             };
+
         public:
             CheckedEntrySet(
                 /* [in] */ ISet* s,
@@ -2744,6 +2889,22 @@ public:
             CARAPI Equals(
                 /* [in] */ IInterface* object,
                 /* [out] */ Boolean* result);
+
+            CARAPI Add(
+                /* [in] */ IInterface*);
+
+            CARAPI AddAll(
+                /* [in] */ ICollection*);
+
+            CARAPI Remove(
+                /* [in] */ IInterface*);
+
+            CARAPI RemoveAll(
+                /* [in] */ ICollection*);
+
+            CARAPI RetainAll(
+                /* [in] */ ICollection*);
+
         public:
             AutoPtr<ISet> mS;
             InterfaceID mValueType;
@@ -2909,6 +3070,22 @@ public:
         CARAPI Equals(
             /* [in] */ IInterface* object,
             /* [out] */ Boolean* result);
+
+        CARAPI Add(
+            /* [in] */ IInterface*);
+
+        CARAPI AddAll(
+            /* [in] */ ICollection*);
+
+        CARAPI Remove(
+            /* [in] */ IInterface*);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection*);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection*);
+
         AutoPtr<ISortedSet> mSs;
     };
 
@@ -2972,9 +3149,16 @@ public:
             /* [in] */ PInterface value,
             /* [out] */ PInterface* oldValue);
 
+        CARAPI Put(
+            /* [in] */ PInterface key,
+            /* [in] */ PInterface value);
+
         CARAPI Remove(
             /* [in] */ PInterface key,
             /* [out] */ PInterface* value);
+
+        CARAPI Remove(
+            /* [in] */ PInterface key);
 
         CARAPI PutAll(
             /* [in] */ IMap* map);

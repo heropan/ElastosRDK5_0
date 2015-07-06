@@ -116,6 +116,21 @@ public:
     CARAPI RetainAll(
         /* [in] */ ICollection* collection);
 
+    CARAPI Add(/* [in] */ IInterface* object);
+
+    CARAPI AddAll(/* [in] */ ICollection* collection);
+
+    CARAPI GetHashCode(/* [in] */ Int32* result);
+
+    CARAPI IsEmpty(/* [in] */ Boolean* result);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ ArrayOf<IInterface*>* inarray,
+        /* [out, callee] */ ArrayOf<IInterface*>** outarray);
+
 private:
     static const Int32 MAX_ELEMENTS;// = 64;
 

@@ -663,6 +663,33 @@ public:
         CARAPI RetainAll(
             /* [in] */ ICollection* collection);
 
+        CARAPI Clear();
+
+        CARAPI ContainsAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI IsEmpty(
+        /* [in] */ Boolean* result);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI GetSize(
+            /* [in] */ Int32* size);
+
+        CARAPI ToArray(
+            /* [out, callee] */ ArrayOf<IInterface*>** result);
+
+        CARAPI ToArray(
+            /* [in] */ ArrayOf<IInterface*>* array,
+            /* [out, callee] */ ArrayOf<IInterface*>** result);
+
     private:
         static Int64 mSerialVersionUID;// = 7249069246763182397L;
         AutoPtr<IInterface> mValue;
@@ -781,6 +808,32 @@ public:
         CARAPI RetainAll(
             /* [in] */ ICollection* collection);
 
+        CARAPI Clear();
+
+        CARAPI ContainsAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI IsEmpty(
+        /* [in] */ Boolean* result);
+
+        CARAPI RemoveAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI RetainAll(
+            /* [in] */ ICollection* collection,
+            /* [in] */ Boolean* result);
+
+        CARAPI GetSize(
+            /* [in] */ Int32* size);
+
+        CARAPI ToArray(
+            /* [out, callee] */ ArrayOf<IInterface*>** result);
+
+        CARAPI ToArray(
+            /* [in] */ ArrayOf<IInterface*>* array,
+            /* [out, callee] */ ArrayOf<IInterface*>** result);
     private:
         static Int64 mSerialVersionUID;// = 2249069246763182397L;
     };

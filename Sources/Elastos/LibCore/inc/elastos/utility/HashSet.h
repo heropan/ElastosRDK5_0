@@ -33,8 +33,6 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* modified);
 
-    using AbstractCollection::Add;
-
     /**
      * Removes all elements from this {@code Collection}, leaving it empty (optional).
      *
@@ -107,6 +105,51 @@ public:
      */
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
+
+    CARAPI Add(
+        /* [in] */  IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */  Boolean* modified);
+
+    CARAPI AddAll(
+        /* [in] */  ICollection* collection);
+
+    CARAPI ContainsAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */  Boolean* result);
+
+    CARAPI Equals(
+        /* [in] */  IInterface* object,
+        /* [out] */  Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */  Int32* hashCode);
+
+    CARAPI Remove(
+        /* [in] */  IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */  Boolean* modified);
+
+    CARAPI RemoveAll(
+        /* [in] */  ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */  ICollection* collection,
+        /* [out] */  Boolean* modified);
+
+    CARAPI RetainAll(
+        /* [in] */  ICollection* collection);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */  ArrayOf<IInterface*>* inArray,
+        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
 protected:
     HashSet() {}

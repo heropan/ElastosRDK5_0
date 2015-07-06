@@ -295,6 +295,10 @@ public:
         /* [in] */ PInterface value,
         /* [out] */ PInterface* oldValue);
 
+    CARAPI Put(
+        /* [in] */ PInterface key,
+        /* [in] */ PInterface value);
+
     /**
      * Copies every mapping in the specified {@code Map} to this {@code Map}.
      *
@@ -327,6 +331,9 @@ public:
     CARAPI Remove(
         /* [in] */ PInterface key,
         /* [out] */ PInterface* value);
+
+    CARAPI Remove(
+        /* [in] */ PInterface key);
 
     /**
      * Returns the number of mappings in this {@code Map}.

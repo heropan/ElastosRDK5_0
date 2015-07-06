@@ -1384,7 +1384,7 @@ ECode CScanner::Initialization(
 
     mDelimiter->Matcher(String(""), (IMatcher**)&mMatcher);
     mMatcher->UseTransparentBounds(true);
-    mMatcher->UseAnchoringBounds(false);
+    return mMatcher->UseAnchoringBounds(false);
 }
 
 ECode CScanner::CheckOpen()
