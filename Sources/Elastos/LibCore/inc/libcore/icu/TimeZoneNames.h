@@ -4,10 +4,12 @@
 
 #include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
+#include "BasicLruCache.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::ILocale;
+using Libcore::Utility::BasicLruCache;
 
 namespace Libcore {
 namespace ICU {
@@ -16,16 +18,16 @@ class TimeZoneNames
 {
 public:
     class ZoneStringsCache
-        : public Object
-        // , public BasicLruCache
+        : public BasicLruCache
     {
     public:
         ZoneStringsCache();
 
         ~ZoneStringsCache();
 
-        CARAPI_(AutoPtr< ArrayOf< AutoPtr< ArrayOf<String> > > >) Create(
-            /* [in] */ ILocale* locale);
+    protected:
+        virtual CARAPI_(AutoPtr<IInterface>) Create(
+            /* [in] */ IInterface* key);
 
     private:
         // De-duplicate the strings (http://b/2672057).
@@ -36,7 +38,7 @@ public:
         // public int compare(String[] lhs, String[] rhs) {
         //     return lhs[OLSON_NAME].compareTo(rhs[OLSON_NAME]);
         // }
-
+        friend class TimeZoneNames;
     };
 
 public:
@@ -71,6 +73,11 @@ private:
         /* [in] */ const String& locale,
         /* [in] */ ArrayOf<StringArray >* result);
 
+    static CARAPI_(AutoPtr<IInterface>) ArrayOfToInterface(
+            /* [in] */ ArrayOf< AutoPtr< ArrayOf<String> > >* array);
+
+    static CARAPI_(AutoPtr<ArrayOf< AutoPtr< ArrayOf<String> > > >) InterfaceToArray(
+            /* [in] */ IArrayOf* iArray);
 private:
     static AutoPtr<ArrayOf<String> > sAvailableTimeZoneIds;
     static AutoPtr<ZoneStringsCache> sCachedZoneStrings;
