@@ -1,16 +1,23 @@
 
-#ifndef __CSSLPARAMETERS_H__
-#define __CSSLPARAMETERS_H__
+#ifndef __ELASTOSX_NET_SSL_CSSLPARAMETERS_H__
+#define __ELASTOSX_NET_SSL_CSSLPARAMETERS_H__
 
-#include "_CSSLParameters.h"
+#include "_Elastosx_Net_Ssl_CSSLParameters.h"
+#include <elastos/core/Object.h>
 
 namespace Elastosx {
 namespace Net {
 namespace Ssl {
 
 CarClass(CSSLParameters)
+    , public Object
+    , public ISSLParameters
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetCipherSuites(
         /* [out, callee] */ ArrayOf<String>** suites);
 
@@ -55,4 +62,4 @@ private:
 } // namespace Net
 } // namespace Elastosx
 
-#endif // __CSSLPARAMETERS_H__
+#endif // __ELASTOSX_NET_SSL_CSSLPARAMETERS_H__

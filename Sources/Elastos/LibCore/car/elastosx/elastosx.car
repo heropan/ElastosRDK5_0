@@ -3,7 +3,7 @@ module
     merge("Exceptions.car");
 
     merge("crypto.car");
-    //merge("net.car");
+    merge("net.car");
     //merge("security.car");
     //merge("sql");
     merge("xml.car");

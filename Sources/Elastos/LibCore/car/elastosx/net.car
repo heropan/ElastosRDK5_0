@@ -1,0 +1,72 @@
+
+module
+{
+    merge("../elastosx/net/ISocketFactory.car");
+    merge("../elastosx/net/IServerSocketFactory.car");
+
+    merge("../elastosx/net/ssl/IKeyManager.car");
+    merge("../elastosx/net/ssl/IManagerFactoryParameters.car");
+    merge("../elastosx/net/ssl/ITrustManager.car");
+    merge("../elastosx/net/ssl/ISSLSession.car");
+    merge("../elastosx/net/ssl/ISSLSessionContext.car");
+    merge("../elastosx/net/ssl/ISSLEngineResult.car");
+    merge("../elastosx/net/ssl/ISSLEngine.car");
+    merge("../elastosx/net/ssl/ISSLParameters.car");
+    merge("../elastosx/net/ssl/IHandshakeCompletedListener.car");
+    merge("../elastosx/net/ssl/IHandshakeCompletedEvent.car");
+    merge("../elastosx/net/ssl/ISSLSocket.car");
+    merge("../elastosx/net/ssl/IX509TrustManager.car");
+    merge("../elastosx/net/ssl/ISSLContextSpi.car");
+    merge("../elastosx/net/ssl/ISSLSocketFactory.car");
+    merge("../elastosx/net/ssl/ISSLServerSocketFactory.car");
+    merge("../elastosx/net/ssl/IX509KeyManager.car");
+    merge("../elastosx/net/ssl/IX509ExtendedKeyManager.car");
+    merge("../elastosx/net/ssl/IKeyManagerFactorySpi.car");
+    merge("../elastosx/net/ssl/ISSLServerSocket.car");
+    merge("../elastosx/net/ssl/ITrustManagerFactorySpi.car");
+
+    namespace Elastosx {
+    namespace Net {
+
+    namespace Ssl {
+        [deprecated]
+        class CSSLParameters {
+            /**
+             * The default SSLParameters constructor. Cipher suites and
+             * protocols are initialized to null and client authentication
+             * options are initialized to false.
+             */
+            constructor();
+
+            /**
+             * A SSLParameters constructor that allows the values for the
+             * initial cipher suites array to be provided. Other values
+             * default as specified in {@link #SSLParameters()}.
+             *
+             * @param cipherSuites An array of cipherSuites that is cloned for
+             * use within the SSLParameters, or null.
+             */
+            constructor(
+                [in] ArrayOf<String>* cipherSuites);
+
+            /**
+             * A SSLParameters constructor that allows the values for initial
+             * cipher suites and protocols arrays to be provided. Other values
+             * default as specified in {@link #SSLParameters()}.
+             *
+             * @param cipherSuites An array of cipher names that is cloned for
+             * use within the SSLParameters, or null.
+             * @param protocols An array of protocol names that is cloned for
+             * use within the SSLParameters, or null.
+             */
+            constructor(
+                [in] ArrayOf<String>* cipherSuites,
+                [in] ArrayOf<String>* protocols);
+
+            interface ISSLParameters;
+        }
+    } // Ssl
+
+    } // Net
+    } // Elastos
+}

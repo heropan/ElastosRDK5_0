@@ -5,6 +5,10 @@ namespace Elastosx {
 namespace Net {
 namespace Ssl {
 
+CAR_INTERFACE_IMPL(CSSLParameters, Object, ISSLParameters)
+
+CAR_OBJECT_IMPL(CSSLParameters)
+
 ECode CSSLParameters::GetCipherSuites(
     /* [out, callee] */ ArrayOf<String>** suites)
 {

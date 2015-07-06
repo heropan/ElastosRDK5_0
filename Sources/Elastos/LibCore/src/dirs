@@ -1,4 +1,5 @@
 
 DIRS = elastos
+DIRS += elastosx
 DIRS += org
 DIRS += libcore

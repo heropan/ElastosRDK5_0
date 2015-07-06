@@ -1,0 +1,12 @@
+TARGET_NAME= ssl
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += ../../../elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/net/ssl
+INCLUDES += $(MAKEDIR)/../../../../inc/src/elastos
+
+SOURCES = CSSLParameters.cpp
