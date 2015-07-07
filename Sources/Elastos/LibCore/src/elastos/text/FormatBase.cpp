@@ -43,9 +43,8 @@ ECode FormatBase::Format(
     AutoPtr<IFieldPosition> field;
     FAIL_RETURN(CFieldPosition::New(0, (IFieldPosition**)&field));
     AutoPtr<IStringBuffer> sb = new StringBuffer();
-    AutoPtr<IStringBuffer> outsb;
-    Format(object, sb, field, (IStringBuffer **)&outsb);
-    return ICharSequence::Probe(outsb)->ToString(value);
+    Format(object, sb, field);
+    return ICharSequence::Probe(sb)->ToString(value);
 }
 
 ECode FormatBase::FormatToCharacterIterator(

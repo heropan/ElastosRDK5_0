@@ -10,7 +10,9 @@
 #include "CLocaleHelper.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
+#include "CoreUtils.h"
 
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::StringBuffer;
@@ -143,15 +145,25 @@ ECode ChoiceFormat::ApplyPattern(
 }
 
 ECode ChoiceFormat::Clone(
-    /* [out] */ IInterface ** outface)
+    /* [out] */ IInterface ** object)
 {
-    VALIDATE_NOT_NULL(outface);
-    AutoPtr<IChoiceFormat> clone ;// = (ChoiceFormat) super.clone();
+    VALIDATE_NOT_NULL(object);
+
+    AutoPtr<IChoiceFormat> clone;
     FAIL_RETURN(CChoiceFormat::New(mChoiceLimits, mChoiceFormats,(IChoiceFormat **)&clone));
 
-    *outface = clone;
-    REFCOUNT_ADD(*outface);
+    CloneImpl(clone);
+
+    *object = clone;
+    REFCOUNT_ADD(*object);
     return NOERROR;
+}
+
+ECode ChoiceFormat::CloneImpl(
+    /* [in] */ IChoiceFormat * object)
+{
+    assert(object);
+    return NumberFormat::CloneImpl(INumberFormat::Probe(object));
 }
 
 ECode ChoiceFormat::Equals(
@@ -159,56 +171,52 @@ ECode ChoiceFormat::Equals(
     /* [out] */ Boolean * result)
 {
     VALIDATE_NOT_NULL(result)
-    if (this->Probe(EIID_IChoiceFormat) == IChoiceFormat::Probe(object)) {
+
+    IChoiceFormat* cf = IChoiceFormat::Probe(object);
+    if (THIS_PROBE(IChoiceFormat) == cf) {
         *result = TRUE;
         return NOERROR;
     }
-    if (object->Probe(EIID_IChoiceFormat) == NULL) {
+    if (cf == NULL) {
         *result = FALSE;
         return NOERROR;
     }
-    AutoPtr<IChoiceFormat> choice = (IChoiceFormat*) object;
+
     AutoPtr<ArrayOf<Double> > limits;
-    choice->GetLimits((ArrayOf<Double>**)&limits);
+    cf->GetLimits((ArrayOf<Double>**)&limits);
     AutoPtr<ArrayOf<String> > formats;
-    choice->GetFormats((ArrayOf<String>**)&formats);
-    return mChoiceLimits->Equals(limits)
-            && mChoiceFormats->Equals(formats);
+    cf->GetFormats((ArrayOf<String>**)&formats);
+    return mChoiceLimits->Equals(limits) && mChoiceFormats->Equals(formats);
 }
 
 ECode ChoiceFormat::Format(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * inbuffer,
-    /* [in] */ IFieldPosition * field,
-    /* [out] */ IStringBuffer ** outbuffer)
+    /* [in] */ IFieldPosition * field)
 {
     VALIDATE_NOT_NULL(inbuffer);
     VALIDATE_NOT_NULL(field);
-    VALIDATE_NOT_NULL(outbuffer);
+
     for (Int32 i = mChoiceLimits->GetLength() - 1; i >= 0; i--) {
         if ((*mChoiceLimits)[i] <= value) {
             inbuffer->Append((*mChoiceFormats)[i]);
-            *outbuffer = inbuffer;
-            REFCOUNT_ADD(*outbuffer);
             return NOERROR;
         }
     }
-    if (mChoiceFormats->GetLength())
-    {
+
+    if (mChoiceFormats->GetLength() > 0) {
         inbuffer->Append((*mChoiceFormats)[0]);
     }
-    *outbuffer = inbuffer;
-    REFCOUNT_ADD(*outbuffer);
+
     return NOERROR;
 }
 
 ECode ChoiceFormat::Format(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * inbuffer,
-    /* [in] */ IFieldPosition * field ,
-    /* [out] */ IStringBuffer ** outbuffer)
+    /* [in] */ IFieldPosition * field)
 {
-    return Format((Double)value,inbuffer,field,outbuffer);
+    return Format((Double)value, inbuffer, field);
 }
 
 ECode ChoiceFormat::GetHashCode(
@@ -230,8 +238,7 @@ ECode ChoiceFormat::GetFormats(
     VALIDATE_NOT_NULL(arrayOfFormattedString);
     AutoPtr<ArrayOf<IInterface*> > temp = ArrayOf<IInterface*>::Alloc(mChoiceFormats->GetLength());
     for (Int32 i = 0; i < mChoiceFormats->GetLength(); ++i) {
-        AutoPtr<ICharSequence> cs;
-        CStringWrapper::New((*mChoiceFormats)[i], (ICharSequence**)&cs);
+        AutoPtr<ICharSequence> cs = CoreUtils::Convert((*mChoiceFormats)[i]);
         temp->Set(i , (IInterface*)cs.Get());
     }
     *arrayOfFormattedString = temp;
@@ -243,12 +250,7 @@ ECode ChoiceFormat::GetFormats(
     /* [out, callee] */ ArrayOf<String>** arrayOfFormattedString)
 {
     VALIDATE_NOT_NULL(arrayOfFormattedString);
-    AutoPtr<ArrayOf<String> > temp = ArrayOf<String>::Alloc(mChoiceFormats->GetLength());
-    for (Int32 i = 0; i < mChoiceFormats->GetLength(); ++i) {
-        temp->Set(i , (*mChoiceFormats)[i]);
-    }
-
-    *arrayOfFormattedString = temp;
+    *arrayOfFormattedString = mChoiceFormats;
     REFCOUNT_ADD(*arrayOfFormattedString)
     return NOERROR;
 }
@@ -274,7 +276,8 @@ ECode ChoiceFormat::GetLimits(
 Double ChoiceFormat::NextDouble(
     /* [in] */ Double value)
 {
-    if (value == Elastos::Core::Math::DOUBLE_POSITIVE_INFINITY) {
+    using Elastos::Core::Math;
+    if (value == Math::DOUBLE_POSITIVE_INFINITY) {
         return value;
     }
     Int64 bits;
@@ -283,10 +286,10 @@ Double ChoiceFormat::NextDouble(
         bits = 0;
     }
     else {
-        bits = Elastos::Core::Math::DoubleToInt64Bits(value);
+        bits = Math::DoubleToInt64Bits(value);
     }
 
-    return Elastos::Core::Math::Int64BitsToDouble(value < 0 ? bits - 1 : bits + 1);
+    return Math::Int64BitsToDouble(value < 0 ? bits - 1 : bits + 1);
 }
 
 Double ChoiceFormat::NextDouble(
@@ -305,21 +308,17 @@ ECode ChoiceFormat::Parse(
 
     Int32 offset = 0;
     position->GetIndex(&offset);
-    String str;
     for (Int32 i = 0; i < mChoiceFormats->GetLength(); i++) {
-        str = string.Substring(offset, (*mChoiceFormats)[i].GetLength());
-        if (str.StartWith((*mChoiceFormats)[i])) {
+        if (string.StartWith((*mChoiceFormats)[i]), offset) {
             position->SetIndex(offset + (*mChoiceFormats)[i].GetLength());
-            AutoPtr<IDouble> outdouble;
-            FAIL_RETURN(CDouble::New((*mChoiceLimits)[i],(IDouble **)&outdouble))
+            AutoPtr<IDouble> outdouble = CoreUtils::Convert((*mChoiceLimits)[i]);
             *value = INumber::Probe(outdouble);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
     }
     position->SetErrorIndex(offset);
-    AutoPtr<IDouble> outdouble;
-    FAIL_RETURN(CDouble::New(Elastos::Core::Math::DOUBLE_NAN,(IDouble **)&outdouble))
+    AutoPtr<IDouble> outdouble = CoreUtils::Convert(Elastos::Core::Math::DOUBLE_NAN);
     *value = INumber::Probe(outdouble);
     REFCOUNT_ADD(*value);
     return NOERROR;
@@ -328,18 +327,20 @@ ECode ChoiceFormat::Parse(
 Double ChoiceFormat::PreviousDouble(
     /* [in] */ Double value)
 {
-    if (value == Elastos::Core::Math::DOUBLE_NEGATIVE_INFINITY) {
+    using Elastos::Core::Math;
+    if (value == Math::DOUBLE_NEGATIVE_INFINITY) {
         return value;
     }
+
     Int64 bits;
     // Handle 0.0
     if (value == 0) {
         bits = 0x8000000000000000ll;
     }
     else {
-        bits = Elastos::Core::Math::DoubleToInt64Bits(value);
+        bits = Math::DoubleToInt64Bits(value);
     }
-    return Elastos::Core::Math::Int64BitsToDouble(value <= 0 ? bits + 1 : bits - 1);
+    return Math::Int64BitsToDouble(value <= 0 ? bits + 1 : bits - 1);
 }
 
 ECode ChoiceFormat::SetChoices(

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_TEXT_BIDI_H__
 #define __ELASTOS_TEXT_BIDI_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Text::IAttributedCharacterIterator;;
 

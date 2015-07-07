@@ -56,8 +56,7 @@ public:
     virtual CARAPI Format(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * inbuffer,
-        /* [in] */ IFieldPosition * field,
-        /* [out] */ IStringBuffer ** outbuffer) = 0;
+        /* [in] */ IFieldPosition * field) = 0;
 
     CARAPI Format(
         /* [in] */ Int64 value,
@@ -66,15 +65,13 @@ public:
     virtual CARAPI Format(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * inbuffer,
-        /* [in] */ IFieldPosition * field ,
-        /* [out] */ IStringBuffer ** outbuffer) = 0;
+        /* [in] */ IFieldPosition * field) = 0;
 
     //@Override
     CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** value);
+        /* [in] */ IFieldPosition* field);
 
     static CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** locales);

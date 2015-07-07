@@ -6,6 +6,7 @@
 #include "ICUUtil.h"
 #include "CNativeBreakIteratorHelper.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
@@ -18,8 +19,10 @@ using Libcore::ICU::CNativeBreakIteratorHelper;
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL_2(BreakIterator, Object, IBreakIterator, ICloneable)
+
 BreakIterator::BreakIterator()
-{ }
+{}
 
 BreakIterator::BreakIterator(
     /* [in] */ INativeBreakIterator* iterator)
@@ -27,16 +30,29 @@ BreakIterator::BreakIterator(
 {
 }
 
+ECode BreakIterator::CloneImpl(
+    /* [in] */ IBreakIterator* object)
+{
+    assert(object);
+    BreakIterator* bi = (BreakIterator*)object;
+
+    AutoPtr<IInterface> temp;
+    ICloneable::Probe(mWrapped)->Clone((IInterface**)&temp);
+    bi->mWrapped = INativeBreakIterator::Probe(temp);
+    return NOERROR;
+}
+
 ECode BreakIterator::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    VALIDATE_NOT_NULL(locales);
     return ICUUtil::GetAvailableBreakIteratorLocales(locales);
 }
 
 ECode BreakIterator::GetCharacterInstance(
     /* [out] */ IBreakIterator** instance)
 {
+    VALIDATE_NOT_NULL(instance)
+
     AutoPtr<ILocaleHelper> localeHelper;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
@@ -48,8 +64,9 @@ ECode BreakIterator::GetCharacterInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
-    VALIDATE_NOT_NULL(where);
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
+    VALIDATE_NOT_NULL(where);
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;
@@ -108,8 +125,9 @@ ECode BreakIterator::GetSentenceInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
-    VALIDATE_NOT_NULL(where);
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
+    VALIDATE_NOT_NULL(where);
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;

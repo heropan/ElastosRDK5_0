@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_TEXT_ATTRIBUTEDSTRING_H__
 #define __ELASTOS_TEXT_ATTRIBUTEDSTRING_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>

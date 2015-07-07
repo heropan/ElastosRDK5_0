@@ -4,6 +4,8 @@
 #include "ICUUtil.h"
 #include "CRuleBasedCollatorICU.h"
 
+using Elastos::Core::EIID_ICloneable;
+using Elastos::Core::EIID_IComparator;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ICUUtil;
@@ -13,6 +15,22 @@ using Elastos::Core::EIID_ICharSequence;
 
 namespace Elastos {
 namespace Text {
+
+CAR_INTERFACE_IMPL_3(Collator, Object, ICollator, IComparator, ICloneable)
+
+ECode Collator::CloneImpl(
+    /* [in] */ ICollator* object)
+{
+    assert(object);
+    VALIDATE_NOT_NULL(object)
+
+    Collator* ck = (Collator*)object;
+
+    AutoPtr<IInterface> obj;
+    ICloneable::Probe(mICUColl)->Clone((IInterface**)&obj);
+    ck->mICUColl = IRuleBasedCollatorICU::Probe(obj);
+    return NOERROR;
+}
 
 ECode Collator::constructor()
 {

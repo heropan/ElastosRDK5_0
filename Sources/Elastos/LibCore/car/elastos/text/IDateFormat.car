@@ -302,8 +302,7 @@ module
         Format(
             [in] IDate* date,
             [in] IStringBuffer * buffer,
-            [in] IFieldPosition* field,
-            [out] IStringBuffer ** result);
+            [in] IFieldPosition* field);
 
         /**
          * Returns the calendar used by this {DateFormat}.

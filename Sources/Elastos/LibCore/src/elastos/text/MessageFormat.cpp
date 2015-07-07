@@ -10,7 +10,6 @@
 #include "CDouble.h"
 #include "CInteger64.h"
 #include "CDecimalFormatSymbols.h"
-// #include "CNativeDecimalFormat.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CLocaleHelper.h"
@@ -178,8 +177,7 @@ ECode MessageFormat::FormatToCharacterIterator(
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(1);
     arr->Set(0, object);
-    AutoPtr<IStringBuffer > sb;
-    FormatImpl(arr, &buffer, position, &fields, (IStringBuffer **)&sb);
+    FormatImpl(arr, &buffer, position, &fields);
 
     // create an AttributedString with the formatted buffer
     AutoPtr<IAttributedString> as;
@@ -200,21 +198,17 @@ ECode MessageFormat::FormatToCharacterIterator(
 ECode MessageFormat::Format(
     /* [in] */ ArrayOf< IInterface* >* objects,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
+    /* [in] */ IFieldPosition* field)
 {
-    return FormatImpl(objects, buffer, field, NULL, value);
+    return FormatImpl(objects, buffer, field, NULL);
 }
 
 ECode MessageFormat::FormatImpl(
     /* [in] */ ArrayOf< IInterface* >* objects,
     /* [in] */ IStringBuffer* inbuffer,
     /* [in] */ IFieldPosition* position,
-    /* [in] */ List<AutoPtr<FieldContainer> >* fields,
-    /* [out] */ IStringBuffer ** value)
+    /* [in] */ List<AutoPtr<FieldContainer> >* fields)
 {
-    VALIDATE_NOT_NULL(value);
-    *value = NULL;
     VALIDATE_NOT_NULL(inbuffer);
 
     StringBuffer * buffer = (StringBuffer *)inbuffer;
@@ -261,14 +255,12 @@ ECode MessageFormat::FormatImpl(
             AutoPtr<IMessageFormat> mf;
             CMessageFormat::New(result, (IMessageFormat**)&mf);
             mf->SetLocale(mLocale);
-            AutoPtr<IStringBuffer > outres;
-            mf->Format(objects, buffer , passedField, (IStringBuffer **)&outres);
+            mf->Format(objects, buffer , passedField);
             HandleArgumentField(begin, buffer->GetLength(), (*mArgumentNumbers)[i], position, fields);
             HandleFormat(format, arg, begin, fields);
         }
         else {
-            AutoPtr<IStringBuffer> outres;
-            format->Format(arg, buffer, passedField, (IStringBuffer **)&outres);
+            format->Format(arg, buffer, passedField);
             HandleArgumentField(begin, buffer->GetLength(), (*mArgumentNumbers)[i], position, fields);
             HandleFormat(format, arg, begin, fields);
         }
@@ -277,8 +269,6 @@ ECode MessageFormat::FormatImpl(
         (*buffer) += (*mStrings)[mMaxOffset + 1];
     }
 
-    *value = buffer;
-    REFCOUNT_ADD(*value);
     return NOERROR;
 }
 
@@ -357,12 +347,11 @@ ECode MessageFormat::HandleFormat(
 ECode MessageFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
+    /* [in] */ IFieldPosition* field)
 {
     AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(1);
     arr->Set(0, object);
-    return Format(arr, buffer, field, value);
+    return Format(arr, buffer, field);
 }
 
 ECode MessageFormat::GetFormats(

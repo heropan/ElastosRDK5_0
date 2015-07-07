@@ -99,8 +99,7 @@ module
         Format(
             [in] Double value,
             [in] IStringBuffer * inbuffer,
-            [in] IFieldPosition * field,
-            [out] IStringBuffer ** outbuffer);
+            [in] IFieldPosition * field);
 
         /**
          * Formats the specified long using the rules of this number format.
@@ -121,8 +120,7 @@ module
         Format(
             [in] Int64 value,
             [in] IStringBuffer * inbuffer,
-            [in] IFieldPosition * field ,
-            [out] IStringBuffer ** outbuffer);
+            [in] IFieldPosition * field);
 
         /**
          * Returns the currency used by this number format.

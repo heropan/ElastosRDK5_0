@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_TEXT_DECIMALFORMATSYMBOLS_H__
 #define __ELASTOS_TEXT_DECIMALFORMATSYMBOLS_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::Utility::ILocale;

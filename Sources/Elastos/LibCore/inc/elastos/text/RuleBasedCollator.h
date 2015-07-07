@@ -10,14 +10,21 @@ using Elastos::Text::ICollationKey;
 namespace Elastos {
 namespace Text {
 
-class RuleBasedCollator : public Collator
+class RuleBasedCollator
+    : public Collator
+    , public IRuleBasedCollator
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ IRuleBasedCollatorICU* wrapper);
 
     CARAPI constructor(
         /* [in] */ const String& rules);
+
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
 
     virtual CARAPI GetCollationElementIterator(
         /* [in] */ ICharacterIterator* source,

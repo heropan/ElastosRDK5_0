@@ -1,10 +1,11 @@
 #ifndef __ELASTOS_TEXT_FORMATBASE_H_
 #define __ELASTOS_TEXT_FORMATBASE_H_
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 #include "StringBuffer.h"
 #include "AttributedCharacterIteratorAttribute.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Text::IAttributedCharacterIterator;;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
@@ -42,13 +43,13 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     virtual CARAPI Clone(
         /* [out] */ IInterface** outobj) = 0;
 
     CARAPI CloneImpl(
         /* [in] */ IFormat* format);
-
-    CAR_INTERFACE_DECL()
 
     virtual ~FormatBase();
 
@@ -59,8 +60,7 @@ public:
     virtual CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** value) = 0;
+        /* [in] */ IFieldPosition* field) = 0;
 
     virtual CARAPI FormatToCharacterIterator(
         /* [in] */ IInterface* object,
@@ -74,10 +74,6 @@ public:
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object) = 0;
-
-    virtual CARAPI Equals(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result) = 0;
 
 protected:
     FormatBase();

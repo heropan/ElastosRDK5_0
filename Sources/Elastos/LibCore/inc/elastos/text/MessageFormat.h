@@ -91,15 +91,13 @@ public:
     CARAPI Format(
         /* [in] */ ArrayOf< IInterface* >* objects,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** value);
+        /* [in] */ IFieldPosition* field);
 
     //@Override
     CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** value);
+        /* [in] */ IFieldPosition* field);
 
 //    public static String format(String format, Object... args);
 
@@ -165,8 +163,7 @@ private:
         /* [in] */ ArrayOf< IInterface* >* objects,
         /* [in] */ IStringBuffer* inbuffer,
         /* [in] */ IFieldPosition* field,
-        /* [in] */ List<AutoPtr<FieldContainer> >* fields,
-        /* [out] */ IStringBuffer ** value);
+        /* [in] */ List<AutoPtr<FieldContainer> >* fields);
 
     CARAPI HandleArgumentField(
         /* [in] */ Int32 begin,

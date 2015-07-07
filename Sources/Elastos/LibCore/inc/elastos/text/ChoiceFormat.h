@@ -32,7 +32,10 @@ public:
         /* [in] */ const String& tem);
 
     CARAPI Clone(
-        /* [out] */ IInterface ** outface);
+        /* [out] */ IInterface ** object);
+
+    CARAPI CloneImpl(
+        /* [in] */ IChoiceFormat * object);
 
     CARAPI Equals(
         /* [in] */ IInterface * object,
@@ -41,14 +44,12 @@ public:
     CARAPI Format(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * inbuffer,
-        /* [in] */ IFieldPosition * field,
-        /* [out] */ IStringBuffer ** outbuffer);
+        /* [in] */ IFieldPosition * field);
 
     CARAPI Format(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * inbuffer,
-        /* [in] */ IFieldPosition * field ,
-        /* [out] */ IStringBuffer ** outbuffer);
+        /* [in] */ IFieldPosition * field);
 
     CARAPI GetHashCode(
         /* [out] */ Int32 * value);

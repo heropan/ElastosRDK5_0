@@ -89,9 +89,8 @@ ECode NumberFormat::Format(
     AutoPtr<IFieldPosition> position;
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
-    AutoPtr<IStringBuffer> outsb;
-    Format(value, sb, position, (IStringBuffer **)&outsb);
-    return ICharSequence::Probe(outsb)->ToString(result);
+    Format(value, sb, position);
+    return ICharSequence::Probe(sb)->ToString(result);
 }
 
 ECode NumberFormat::Format(
@@ -103,20 +102,15 @@ ECode NumberFormat::Format(
     AutoPtr<IFieldPosition> position;
     CFieldPosition::New(0, (IFieldPosition**)&position);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
-    AutoPtr<IStringBuffer> outsb;
-    Format(value, sb, position, (IStringBuffer **)&outsb);
-    return ICharSequence::Probe(outsb)->ToString(result);
+    Format(value, sb, position);
+    return ICharSequence::Probe(sb)->ToString(result);
 }
 
 ECode NumberFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
+    /* [in] */ IFieldPosition* field)
 {
-    VALIDATE_NOT_NULL(value);
-    *value = NULL;
-
     Int32 bitlen(0);
     AutoPtr<IBigInteger> outint = IBigInteger::Probe(object);;
     if (outint) {
@@ -131,12 +125,12 @@ ECode NumberFormat::Format(
         || (outint != NULL && bitlen < 64)) {
         Int64 lv(0);
         INumber::Probe(object)->Int64Value(&lv);
-        return Format(lv, buffer, field, value);
+        return Format(lv, buffer, field);
     }
     else if (INumber::Probe(object) != NULL) {
         Double dv(0);
         INumber::Probe(object)->DoubleValue(&dv);
-        return Format(dv, buffer, field, value);
+        return Format(dv, buffer, field);
     }
 
     return E_ILLEGAL_ARGUMENT_EXCEPTION;

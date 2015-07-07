@@ -8,6 +8,15 @@ using Libcore::ICU::CRuleBasedCollatorICU;
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL(RuleBasedCollator, Collator, IRuleBasedCollator)
+
+ECode RuleBasedCollator::Clone(
+    /* [out] */ IInterface** object)
+{
+    assert(0);
+    return NOERROR;
+}
+
 ECode RuleBasedCollator::constructor(
     /* [in] */ IRuleBasedCollatorICU* wrapper)
 {

@@ -1,17 +1,31 @@
 #ifndef __ELASTOS_TEXT_COLLATOR_H__
 #define __ELASTOS_TEXT_COLLATOR_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
+using Elastos::Core::IComparator;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::ILocale;
 using Libcore::ICU::IRuleBasedCollatorICU;
 
 namespace Elastos {
 namespace Text {
 
-class Collator : public Object
+class Collator
+    : public Object
+    , public ICollator
+    , public IComparator
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CARAPI CloneImpl(
+        /* [in] */ ICollator* object);
+
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** object) = 0;
+
     virtual CARAPI Compare(
         /* [in] */ IInterface* object1,
         /* [in] */ IInterface* object2,

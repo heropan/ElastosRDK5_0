@@ -6,7 +6,7 @@
 #include "CDouble.h"
 #include "CInteger64.h"
 #include "CDecimalFormatSymbols.h"
-//#include "CNativeDecimalFormat.h"
+#include "CNativeDecimalFormat.h"
 #include "CBigDecimal.h"
 #include "Currency.h"
 #include "CLocaleHelper.h"
@@ -14,7 +14,6 @@
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CDecimalFormat.h"
-//#include "CNativeDecimalFormat.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
@@ -39,7 +38,7 @@ using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
-//using Libcore::ICU::CNativeDecimalFormat;
+using Libcore::ICU::CNativeDecimalFormat;
 
 namespace Elastos {
 namespace Text {
@@ -110,7 +109,7 @@ ECode DecimalFormat::InitNative(
     /* [in] */ const String& pattern)
 {
     //try {
-    //FAIL_RETURN(CNativeDecimalFormat::New(pattern, mSymbols, (INativeDecimalFormat**)&mNdf));
+    FAIL_RETURN(CNativeDecimalFormat::New(pattern, mSymbols, (INativeDecimalFormat**)&mNdf));
     //} catch (IllegalArgumentException ex) {
     //    throw new IllegalArgumentException(pattern);
     //}
@@ -169,11 +168,8 @@ ECode DecimalFormat::CheckBufferAndFieldPosition(
 ECode DecimalFormat::Format(
     /* [in] */ Double value,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** result)
+    /* [in] */ IFieldPosition* field)
 {
-    VALIDATE_NOT_NULL(result)
-
     FAIL_RETURN(CheckBufferAndFieldPosition(buffer, field));
     // All float/double/Float/Double formatting ends up here...
     if (mRoundingMode == Elastos::Math::RoundingMode_UNNECESSARY) {
@@ -183,17 +179,16 @@ ECode DecimalFormat::Format(
         AutoPtr<IFieldPosition> fp;
         CFieldPosition::New(0, (IFieldPosition**)&fp);
         AutoPtr<IStringBuffer> sb = new StringBuffer();
-        AutoPtr<IStringBuffer> outsb;
-        Format(value, sb, fp, (IStringBuffer **)&outsb);
+        Format(value, sb, fp);
         String upResult;
-        ICharSequence::Probe(outsb)->ToString(&upResult);
+        ICharSequence::Probe(sb)->ToString(&upResult);
 
         SetRoundingMode(Elastos::Math::RoundingMode_DOWN);
         AutoPtr<IFieldPosition> fpx;
         CFieldPosition::New(0, (IFieldPosition**)&fpx);
         String downResult;
-        Format(value, sb, fp, (IStringBuffer **)&outsb);
-        ICharSequence::Probe(outsb)->ToString(&downResult);
+        Format(value, sb, fp);
+        ICharSequence::Probe(sb)->ToString(&downResult);
         if (!upResult.Equals(downResult)) {
             //throw new ArithmeticException("rounding mode UNNECESSARY but rounding required");
             SetRoundingMode(Elastos::Math::RoundingMode_UNNECESSARY);
@@ -208,18 +203,15 @@ ECode DecimalFormat::Format(
     for (Int32 i = 0; i < v->GetLength(); ++i) {
         buffer->AppendChar((*v.Get())[i]);
     }
-    *result = buffer;
-    REFCOUNT_ADD(*result);
+
     return NOERROR;
 }
 
 ECode DecimalFormat::Format(
     /* [in] */ Int64 value,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** result)
+    /* [in] */ IFieldPosition* field)
 {
-    VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckBufferAndFieldPosition(buffer, field));
 
     AutoPtr< ArrayOf<Char32> > v;
@@ -231,19 +223,14 @@ ECode DecimalFormat::Format(
         }
     }
 
-    *result = buffer;
-    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
 ECode DecimalFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
+    /* [in] */ IFieldPosition* field)
 {
-    VALIDATE_NOT_NULL(value)
-    *value = NULL;
     VALIDATE_NOT_NULL(object)
 
     FAIL_RETURN(CheckBufferAndFieldPosition(buffer, field));
@@ -263,21 +250,21 @@ ECode DecimalFormat::Format(
         for (Int32 i = 0; i < chars->GetLength(); ++i) {
             buffer->AppendChar((*chars.Get())[i]);
         }
-        *value = buffer;
-        REFCOUNT_ADD(*value);
+
         return NOERROR;
-    } else if (object->Probe(EIID_IBigDecimal)) {
+    }
+    else if (object->Probe(EIID_IBigDecimal)) {
         AutoPtr<ArrayOf<Char32> > chars;
         AutoPtr<IBigDecimal> ibd = (IBigDecimal *)object->Probe(EIID_IBigDecimal);
         mNdf->FormatBigDecimal(ibd, field ,(ArrayOf<Char32> **)&chars);
         for (Int32 i = 0; i < chars->GetLength(); ++i) {
             buffer->AppendChar((*chars.Get())[i]);
         }
-        *value = buffer;
-        REFCOUNT_ADD(*value);
+
         return NOERROR;
     }
-    return NumberFormat::Format(object, buffer, field ,value);
+
+    return NumberFormat::Format(object, buffer, field);
 }
 
 ECode DecimalFormat::GetDecimalFormatSymbols(

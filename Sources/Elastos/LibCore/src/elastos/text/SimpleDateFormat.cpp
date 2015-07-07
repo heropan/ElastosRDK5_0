@@ -266,9 +266,8 @@ ECode SimpleDateFormat::FormatToCharacterIteratorImpl(
     StringBuffer buffer;
     List<AutoPtr<IFieldPosition> > fields;
 
-    StringBuffer formattedDate;
     // format the date, and find fields
-    FormatImpl(date, &buffer, NULL, &fields, &formattedDate);
+    FormatImpl(date, &buffer, NULL, &fields);
 
     // create and AttributedString with the formatted buffer
     AutoPtr<IAttributedString> as;
@@ -297,12 +296,10 @@ ECode SimpleDateFormat::FormatToCharacterIteratorImpl(
 
 ECode SimpleDateFormat::FormatImpl(
     /* [in] */ IDate* date,
-    /* [in] */ StringBuffer* buffer,
+    /* [in] */ IStringBuffer* buffer,
     /* [in] */ IFieldPosition* field,
-    /* [in] */ List< AutoPtr<IFieldPosition> >* fields,
-    /* [out] */ StringBuffer* formattedDate)
+    /* [in] */ List< AutoPtr<IFieldPosition> >* fields)
 {
-    VALIDATE_NOT_NULL(formattedDate);
     VALIDATE_NOT_NULL(buffer);
 
     Boolean quote = FALSE;
@@ -322,7 +319,7 @@ ECode SimpleDateFormat::FormatImpl(
                 count = 0;
             }
             if (last == next) {
-                (*buffer) += '\'';
+                buffer->AppendChar('\'');
                 last = -1;
             } else {
                 last = next;
@@ -346,24 +343,26 @@ ECode SimpleDateFormat::FormatImpl(
                 count = 0;
             }
             last = -1;
-            (*buffer) += (Char32)next;
+            buffer->AppendChar(next);
         }
     }
     if (count > 0) {
         Append(buffer, field, fields, (Char32) last, count);
     }
-    formattedDate->Reset();
-    formattedDate->Append( buffer->ToString());
+
     return NOERROR;
 }
 
 ECode SimpleDateFormat::Append(
-    /* [in] */ StringBuffer* buffer,
+    /* [in] */ IStringBuffer* buf,
     /* [in] */ IFieldPosition* position,
     /* [in] */ List< AutoPtr<IFieldPosition> >* fields,
     /* [in] */ Char32 format,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(buf)
+
+    StringBuffer* buffer = (StringBuffer*)buf;
     Int32 field = -1;
     Int32 index = PATTERN_CHARS.IndexOf(format);
     if (index == -1) {
@@ -660,9 +659,8 @@ ECode SimpleDateFormat::AppendNumber(
     AutoPtr<IFieldPosition> fp;
     CFieldPosition::New(0, (IFieldPosition**)&fp);
     String result("");
-    AutoPtr<IStringBuffer> outsb;
-    FAIL_RETURN(mNumberFormat->Format((Int64)value, (IStringBuffer*)buffer, fp, (IStringBuffer **)&outsb));
-    ICharSequence::Probe(outsb)->ToString(&result);
+    FAIL_RETURN(mNumberFormat->Format((Int64)value, (IStringBuffer*)buffer, fp));
+    ICharSequence::Probe(buffer)->ToString(&result);
     mNumberFormat->SetMinimumIntegerDigits(minimumIntegerDigits);
     buffer->Reset();
     buffer->Append(result);
@@ -686,21 +684,18 @@ ECode SimpleDateFormat::Error(
 ECode SimpleDateFormat::Format(
     /* [in] */ IDate* date,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* fieldPos,
-    /* [out] */ IStringBuffer ** formatString)
+    /* [in] */ IFieldPosition* fieldPos)
 {
-    VALIDATE_NOT_NULL(formatString)
-    *formatString = NULL;
     VALIDATE_NOT_NULL(buffer)
 
-    // Harmony delegates to ICU's SimpleDateFormat, we implement it directly
-    StringBuffer result;
-    FormatImpl(date, (StringBuffer *)buffer, fieldPos, NULL, &result);
-    String str;
-    result.ToString(&str);
-    AutoPtr<IStringBuffer> outsb = new StringBuffer(str);
-    *formatString = outsb;
-    REFCOUNT_ADD(*formatString);
+    // // Harmony delegates to ICU's SimpleDateFormat, we implement it directly
+    // StringBuffer result;
+    // FormatImpl(date, (StringBuffer *)buffer, fieldPos, NULL, &result);
+    // String str;
+    // result.ToString(&str);
+    // AutoPtr<IStringBuffer> outsb = new StringBuffer(str);
+    // *formatString = outsb;
+    // REFCOUNT_ADD(*formatString);
     return NOERROR;
 }
 
@@ -1272,7 +1267,7 @@ ECode SimpleDateFormat::Set2DigitYearStart(
     assert(0 && "TODO");
     // CGregorianCalendar::New((IGregorianCalendar**)&cal);
     cal->SetTime((IDate*)mDefaultCenturyStart);
-    mCreationYear = NULL;
+    mCreationYear = 0;
     cal->Get(ICalendar::YEAR, &mCreationYear);
     return NOERROR;
 }
@@ -1281,7 +1276,10 @@ ECode SimpleDateFormat::SetDateFormatSymbols(
     /* [in] */ IDateFormatSymbols* value)
 {
     mFormatData = NULL;
-    return ICloneable::Probe(value)->Clone((IDateFormatSymbols **)&mFormatData);
+    AutoPtr<IInterface> object;
+    ICloneable::Probe(value)->Clone((IInterface **)&object);
+    mFormatData = IDateFormatSymbols::Probe(object);
+    return NOERROR;
 }
 
 ECode SimpleDateFormat::ToLocalizedPattern(

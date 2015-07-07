@@ -136,18 +136,15 @@ DateFormat::DateFormat()
 ECode DateFormat::Format(
     /* [in] */ IInterface* object,
     /* [in] */ IStringBuffer * buffer,
-    /* [in] */ IFieldPosition* field,
-    /* [out] */ IStringBuffer ** value)
+    /* [in] */ IFieldPosition* field)
 {
-    VALIDATE_NOT_NULL(value)
-    *value = NULL;
     VALIDATE_NOT_NULL(object)
     VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(field)
 
     IDate* date = IDate::Probe(object);
     if (date != NULL) {
-        return Format(date, buffer, field, value);
+        return Format(date, buffer, field);
     }
 
     INumber* number = INumber::Probe(object) ;
@@ -156,7 +153,7 @@ ECode DateFormat::Format(
         number->Int64Value(&v);
         AutoPtr<IDate> dateObj;
         CDate::New(v, (IDate**)&dateObj);
-        return Format(dateObj, buffer, field, value);
+        return Format(dateObj, buffer, field);
     }
 
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -171,9 +168,8 @@ ECode DateFormat::Format(
     AutoPtr<IFieldPosition> field;
     CFieldPosition::New(0, (IFieldPosition**)&field);
     AutoPtr<IStringBuffer> sb = new StringBuffer();
-    AutoPtr<IStringBuffer> outsb;
-    Format(date, sb, field, (IStringBuffer **)&outsb);
-    return ICharSequence::Probe(outsb)->ToString(value);
+    Format(date, sb, field);
+    return ICharSequence::Probe(sb)->ToString(value);
 }
 
 ECode DateFormat::GetAvailableLocales(

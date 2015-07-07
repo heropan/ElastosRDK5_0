@@ -84,8 +84,7 @@ module
         Format(
             [in] ArrayOf<IInterface*>* objects,
             [in] IStringBuffer * buffer,
-            [in] IFieldPosition* field,
-            [out] IStringBuffer ** value);
+            [in] IFieldPosition* field);
 
         /**
          * Returns the {Format} instances used by this message format.

@@ -1,17 +1,23 @@
 #ifndef __ELASTOS_TEXT_BREAKITERATOR_H__
 #define __ELASTOS_TEXT_BREAKITERATOR_H__
 
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Libcore::ICU::INativeBreakIterator;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::ILocale;
 using Elastos::Text::ICharacterIterator;
+using Libcore::ICU::INativeBreakIterator;
 
 namespace Elastos {
 namespace Text {
 
-class BreakIterator : public Object {
+class BreakIterator
+    : public Object
+    , public IBreakIterator
+    , public ICloneable
+{
 public:
+    CAR_INTERFACE_DECL()
 
     static CARAPI GetAvailableLocales(
         /* [out] */ ArrayOf<ILocale*>** locales);
@@ -83,6 +89,12 @@ public:
 
     virtual CARAPI SetText(
         /* [in] */ ICharacterIterator* newText) = 0;
+
+    virtual CARAPI Clone(
+        /* [out] */ IInterface ** object) = 0;
+
+    virtual CARAPI CloneImpl(
+        /* [in] */ IBreakIterator* object);
 
 protected:
     BreakIterator();

@@ -3,7 +3,7 @@
 #define __ELASTOS_TEXT_CCOLLATIONELEMENTITERATOR_H__
 
 #include "_Elastos_Text_CCollationElementIterator.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Libcore::ICU::ICollationElementIteratorICU;
 using Elastos::Text::ICharacterIterator;

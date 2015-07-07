@@ -3,7 +3,7 @@
 #define __ELASTOS_TEXT_CFIELDPOSITION_H__
 
 #include "_Elastos_Text_CFieldPosition.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 
 namespace Elastos {

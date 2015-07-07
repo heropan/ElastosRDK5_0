@@ -96,8 +96,7 @@ public:
     CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** value);
+        /* [in] */ IFieldPosition* field);
 
     CARAPI Format(
         /* [in] */ IDate* date,
@@ -106,8 +105,7 @@ public:
     virtual CARAPI Format(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** result) = 0;
+        /* [in] */ IFieldPosition* field) = 0;
 
     static CARAPI GetAvailableLocales(
         /* [out] */ ArrayOf<ILocale*>** locales);

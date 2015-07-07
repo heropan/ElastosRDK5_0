@@ -59,8 +59,7 @@ public:
     CARAPI Format(
         /* [in] */ IDate* date,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* fieldPos,
-        /* [out] */ IStringBuffer ** formatString);
+        /* [in] */ IFieldPosition* fieldPos);
 
     virtual CARAPI Get2DigitYearStart(
         /* [out] */ IDate** start);
@@ -109,13 +108,12 @@ private:
 
     CARAPI FormatImpl(
         /* [in] */ IDate* date,
-        /* [in] */ StringBuffer* buffer,
+        /* [in] */ IStringBuffer* buffer,
         /* [in] */ IFieldPosition* field,
-        /* [in] */ List< AutoPtr<IFieldPosition> >* fields,
-        /* [out] */ StringBuffer* formattedDate);
+        /* [in] */ List< AutoPtr<IFieldPosition> >* fields);
 
     CARAPI Append(
-        /* [in] */ StringBuffer* buffer,
+        /* [in] */ IStringBuffer* buffer,
         /* [in] */ IFieldPosition* position,
         /* [in] */ List< AutoPtr<IFieldPosition> >* fields,
         /* [in] */ Char32 format,

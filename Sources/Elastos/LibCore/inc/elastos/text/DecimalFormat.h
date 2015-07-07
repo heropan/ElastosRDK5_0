@@ -49,22 +49,19 @@ public:
     CARAPI Format(
         /* [in] */ Double value,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** result);
+        /* [in] */ IFieldPosition* field);
 
     //@Override
     CARAPI Format(
         /* [in] */ Int64 value,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** result);
+        /* [in] */ IFieldPosition* field);
 
     //@Override
     CARAPI Format(
         /* [in] */ IInterface* object,
         /* [in] */ IStringBuffer * buffer,
-        /* [in] */ IFieldPosition* field,
-        /* [out] */ IStringBuffer ** value);
+        /* [in] */ IFieldPosition* field);
 
     virtual CARAPI GetDecimalFormatSymbols(
         /* [out] */ IDecimalFormatSymbols** symbols);
