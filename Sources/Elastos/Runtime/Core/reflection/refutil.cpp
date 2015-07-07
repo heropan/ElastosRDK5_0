@@ -13,7 +13,6 @@ const DateTypeDesc g_cDataTypeList[] = {
    {"Byte",          sizeof(Byte),     },
    {"Float",         sizeof(Float),    },
    {"Double",        sizeof(Double),   },
-   {"Char16",        sizeof(Char16),   },
    {"Char32",        sizeof(Char32),   },
    {"String",        sizeof(String),   },
    {"Boolean",       sizeof(Boolean),  },
