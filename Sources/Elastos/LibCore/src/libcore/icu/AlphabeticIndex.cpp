@@ -173,6 +173,7 @@ void AlphabeticIndex::AddLabels(
 {
     NATIVE(AlphabeticIndex)* ai = fromPeer(peer);
     NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
     icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus()) {
         return;

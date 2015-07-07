@@ -421,7 +421,9 @@ ECode TimeZoneNames::FillZoneStrings(
     if (locale.IsNull())
         return E_NULL_POINTER_EXCEPTION;
 
-    NATIVE(Locale) icuLocale = NATIVE(Locale)::createFromName(locale);
+    NATIVE(Locale) icuLocale;
+    icuLocale.setToBogus();
+    icuLocale = NATIVE(Locale)::createFromName(locale);
     if (icuLocale.isBogus()) {
         return NOERROR;
     }
