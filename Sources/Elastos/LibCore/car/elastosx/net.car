@@ -28,7 +28,33 @@ module
     namespace Elastosx {
     namespace Net {
 
+    class CDefaultServerSocketFactory {
+        interface IServerSocketFactory;
+    }
+
+    /**
+     * Default implementation of {@link javax.net.SocketFactory}
+     */
+    class CDefaultSocketFactory {
+        constructor();
+
+        interface ISocketFactory;
+    }
+
+    singleton class CServerSocketFactoryHelper {
+        interface IServerSocketFactoryHelper;
+    }
+
+    singleton class CSocketFactoryHelper {
+        interface ISocketFactoryHelper;
+    }
+
     namespace Ssl {
+        /**
+         * SSL handshake parameters that include protocols, cipher suites, and
+         * client authentication requirements.
+         * @since 1.6
+         */
         [deprecated]
         class CSSLParameters {
             /**

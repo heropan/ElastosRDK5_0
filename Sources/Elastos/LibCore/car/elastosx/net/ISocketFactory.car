@@ -70,7 +70,7 @@ module
          *             if the specified host is unknown or the IP address could not
          *             be resolved.
          */
-         CreateSocket(
+        CreateSocket(
             [in] String host,
             [in] Int32 port,
             [in] IInetAddress* localHost,
