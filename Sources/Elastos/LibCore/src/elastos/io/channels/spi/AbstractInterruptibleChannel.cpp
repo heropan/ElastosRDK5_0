@@ -81,7 +81,7 @@ Boolean AbstractInterruptibleChannel::IsOpen()
 }
 
 ECode AbstractInterruptibleChannel::IsOpen(
-    /* [in] */ Boolean* isOpen)
+    /* [out] */ Boolean* isOpen)
 {
     VALIDATE_NOT_NULL(isOpen);
     *isOpen = IsOpen();

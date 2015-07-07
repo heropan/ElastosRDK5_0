@@ -1450,19 +1450,19 @@ ECode CTreeMap::_KeySet::Clear()
     return mHost->Clear();
 }
 
-ECode CTreeMap::_KeySet::Comparator(
+ECode CTreeMap::_KeySet::GetComparator(
     /* [out] */ IComparator** outcom)
 {
     return mHost->GetComparator(outcom);
 }
 
-ECode CTreeMap::_KeySet::First(
+ECode CTreeMap::_KeySet::GetFirst(
     /* [out] */ IInterface** outface)
 {
     return mHost->GetFirstKey(outface);
 }
 
-ECode CTreeMap::_KeySet::Last(
+ECode CTreeMap::_KeySet::GetLast(
     /* [out] */ IInterface** outface)
 {
     return mHost->GetLastKey(outface);
@@ -1532,7 +1532,7 @@ ECode CTreeMap::_KeySet::GetSubSet(
     return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::_KeySet::SubSet(
+ECode CTreeMap::_KeySet::GetSubSet(
     /* [in] */ IInterface* start,
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
@@ -1552,7 +1552,7 @@ ECode CTreeMap::_KeySet::GetHeadSet(
     return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::_KeySet::HeadSet(
+ECode CTreeMap::_KeySet::GetHeadSet(
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
@@ -1571,7 +1571,7 @@ ECode CTreeMap::_KeySet::GetTailSet(
     return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::_KeySet::TailSet(
+ECode CTreeMap::_KeySet::GetTailSet(
     /* [in] */ IInterface* start,
     /* [out] */ ISortedSet** outsort)
 {
@@ -1970,10 +1970,10 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::Remove(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::First(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetFirst(
     /* [out] */ IInterface** outface)
 {
-    return mHost->FirstKey(outface);
+    return mHost->GetFirstKey(outface);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::PollFirst(
@@ -1989,10 +1989,10 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::PollFirst(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::Last(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetLast(
     /* [out] */ IInterface** outface)
 {
-    return mHost->LastKey(outface);
+    return mHost->GetLastKey(outface);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::PollLast(
@@ -2036,10 +2036,10 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetHigher(
     return mHost->GetHigherKey(e, outface);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::Comparator(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetComparator(
     /* [out] */ IComparator** outcom)
 {
-    return mHost->Comparator(outcom);
+    return mHost->GetComparator(outcom);
 }
 
 ECode CTreeMap::BoundedMap::BoundedKeySet::GetSubSet(
@@ -2054,7 +2054,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetSubSet(
     return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::SubSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetSubSet(
     /* [in] */ IInterface* start,
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
@@ -2074,7 +2074,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetHeadSet(
     return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::HeadSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetHeadSet(
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
@@ -2093,7 +2093,7 @@ ECode CTreeMap::BoundedMap::BoundedKeySet::GetTailSet(
     return res->GetNavigableKeySet(outnav);
 }
 
-ECode CTreeMap::BoundedMap::BoundedKeySet::TailSet(
+ECode CTreeMap::BoundedMap::BoundedKeySet::GetTailSet(
     /* [in] */ IInterface* start,
     /* [out] */ ISortedSet** outsort)
 {
@@ -2413,7 +2413,7 @@ ECode CTreeMap::BoundedMap::PollFirstEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::FirstKey(
+ECode CTreeMap::BoundedMap::GetFirstKey(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -2453,7 +2453,7 @@ ECode CTreeMap::BoundedMap::PollLastEntry(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::LastKey(
+ECode CTreeMap::BoundedMap::GetLastKey(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
@@ -2652,7 +2652,7 @@ ECode CTreeMap::BoundedMap::GetHigherKey(
     return NOERROR;
 }
 
-ECode CTreeMap::BoundedMap::Comparator(
+ECode CTreeMap::BoundedMap::GetComparator(
     /* [out] */ IComparator** comp)
 {
     VALIDATE_NOT_NULL(comp)

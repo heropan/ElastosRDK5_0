@@ -1,5 +1,11 @@
 module
 {
+    interface Elastos.Core.IComparator;
+    interface Elastos.Utility.INavigableMap;
+    interface Elastos.Utility.INavigableSet;
+    interface Elastos.Utility.IIterator;
+    interface Elastos.Utility.ISortedSet;
+
     namespace Elastos {
     namespace Utility {
 
@@ -14,6 +20,83 @@ module
      */
     [deprecated]
     interface ITreeSet {
+
+        /**
+         * interfaces from INavigableSet
+         *
+         */
+        GetLower(
+            [in] IInterface* e,
+            [out] IInterface** outface);
+        GetFloor(
+            [in] IInterface* e,
+            [out] IInterface** outface);
+
+        GetCeiling(
+            [in] IInterface* e,
+            [out] IInterface** outface);
+
+        GetHigher(
+            [in] IInterface* e,
+            [out] IInterface** outface);
+
+        PollFirst(
+            [out] IInterface** outface);
+
+        PollLast(
+            [out] IInterface** outface);
+
+        GetDescendingSet(
+            [out] INavigableSet** outnav);
+
+        GetDescendingIterator(
+            [out] IIterator** outiter);
+
+        GetSubSet(
+            [in] IInterface* fromElement,
+            [in] Boolean fromInclusive,
+            [in] IInterface* toElement,
+            [in] Boolean toInclusive,
+            [out] INavigableSet** outnav);
+
+        GetHeadSet(
+            [in] IInterface* toElement,
+            [in] Boolean inclusive,
+            [out] INavigableSet** outnav);
+
+        GetTailSet(
+            [in] IInterface* fromElement,
+            [in] Boolean inclusive,
+            [out] INavigableSet** outnav);
+
+
+        /**
+         * interfaces from ISortedSet
+         *
+         */
+        GetComparator(
+            [out] IComparator** outcom);
+
+        GetFirst(
+            [out] IInterface** outface);
+
+        GetHeadSet(
+            [in] IInterface* end,
+            [out] ISortedSet** outsort);
+
+        GetLast(
+            [out] IInterface** outface);
+
+        GetSubSet(
+            [in] IInterface* start,
+            [in] IInterface* end,
+            [out] ISortedSet** outsort);
+
+        GetTailSet(
+            [in] IInterface* start,
+            [out] ISortedSet** outsort);
+
+
         /**
          * interfaces from ICollection
          *

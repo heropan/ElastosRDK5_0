@@ -119,7 +119,7 @@ ECode CTreeSet::Clone(
     return NOERROR;
 }
 
-ECode CTreeSet::Comparator(
+ECode CTreeSet::GetComparator(
     /* [out] */ IComparator** outcom)
 {
     return (ISortedMap::Probe(mBackingMap))->GetComparator(outcom);
@@ -180,13 +180,13 @@ ECode CTreeSet::GetSize(
     return (IMap::Probe(mBackingMap))->GetSize(size);
 }
 
-ECode CTreeSet::First(
+ECode CTreeSet::GetFirst(
     /* [out] */ IInterface** outface)
 {
     return (ISortedMap::Probe(mBackingMap))->GetFirstKey(outface);
 }
 
-ECode CTreeSet::Last(
+ECode CTreeSet::GetLast(
     /* [out] */ IInterface** outface)
 {
     return (ISortedMap::Probe(mBackingMap))->GetLastKey(outface);
@@ -358,7 +358,7 @@ ECode CTreeSet::GetTailSet(
     return NOERROR;
 }
 
-ECode CTreeSet::SubSet(
+ECode CTreeSet::GetSubSet(
     /* [in] */ IInterface* start,
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
@@ -366,14 +366,14 @@ ECode CTreeSet::SubSet(
     return GetSubSet(start, TRUE, end, FALSE, (INavigableSet**)outsort);
 }
 
-ECode CTreeSet::HeadSet(
+ECode CTreeSet::GetHeadSet(
     /* [in] */ IInterface* end,
     /* [out] */ ISortedSet** outsort)
 {
     return GetHeadSet(end, FALSE, (INavigableSet**)outsort);
 }
 
-ECode CTreeSet::TailSet(
+ECode CTreeSet::GetTailSet(
     /* [in] */ IInterface* start,
     /* [out] */ ISortedSet** outsort)
 {

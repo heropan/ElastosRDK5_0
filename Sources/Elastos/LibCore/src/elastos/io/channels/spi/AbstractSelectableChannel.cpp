@@ -36,7 +36,7 @@ ECode AbstractSelectableChannel::GetProvider(
 }
 
 ECode AbstractSelectableChannel::IsRegistered(
-    /* [in] */ Boolean* isRegister)
+    /* [out] */ Boolean* isRegister)
 {
     VALIDATE_NOT_NULL(isRegister);
     AutoLock lock(mBlockingLock);

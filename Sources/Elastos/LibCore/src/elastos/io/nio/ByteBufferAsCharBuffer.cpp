@@ -12,8 +12,7 @@ extern "C" const InterfaceID EIID_ByteBufferAsCharBuffer =
 
 ByteBufferAsCharBuffer::ByteBufferAsCharBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
-    : mCap(0)
-    , CharBuffer((byteBuffer->GetCapacity(&mCap), mCap) / ISizeOf::CHAR, byteBuffer->mEffectiveDirectAddress)
+    : CharBuffer((byteBuffer->GetCapacity(&mCap), mCap) / ISizeOf::CHAR, byteBuffer->mEffectiveDirectAddress)
 {
     // super(byteBuffer.capacity() / ISizeOf::CHAR, byteBuffer.effectiveDirectAddress);
     // this.byteBuffer = byteBuffer;

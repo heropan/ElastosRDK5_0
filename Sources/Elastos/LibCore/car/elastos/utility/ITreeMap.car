@@ -1,6 +1,12 @@
 
 module
 {
+    interface Elastos.Core.IComparator;
+    interface Elastos.Utility.IMapEntry;
+    interface Elastos.Utility.INavigableMap;
+    interface Elastos.Utility.INavigableSet;
+    interface Elastos.Utility.ISortedMap;
+
     namespace Elastos {
     namespace Utility {
 
@@ -13,6 +19,106 @@ module
      * interface ISerializable;
      */
     interface ITreeMap {
+
+        /**
+         * interfaces from INavigableMap
+         */
+        GetLowerEntry(
+            [in] IInterface* key,
+            [out] IMapEntry** outent);
+
+        GetLowerKey(
+            [in] IInterface* key,
+            [out] IInterface** outface);
+
+        GetFloorEntry(
+            [in] IInterface* key,
+            [out] IMapEntry** outent);
+
+        GetFloorKey(
+            [in] IInterface* key,
+            [out] IInterface** outface);
+
+        GetCeilingEntry(
+            [in] IInterface* key,
+            [out] IMapEntry** outent);
+
+        GetCeilingKey(
+            [in] IInterface* key,
+            [out] IInterface** outface);
+
+        GetHigherEntry(
+            [in] IInterface* key,
+            [out] IMapEntry** outent);
+
+        GetHigherKey(
+            [in] IInterface* key,
+            [out] IInterface** outface);
+
+        GetFirstEntry(
+            [out] IMapEntry** outent);
+
+        GetLastEntry(
+            [out] IMapEntry** outent);
+
+        PollFirstEntry(
+            [out] IMapEntry** outent);
+
+        PollLastEntry(
+            [out] IMapEntry** outent);
+
+        GetDescendingMap(
+            [out] INavigableMap** outnav);
+
+        GetNavigableKeySet(
+            [out] INavigableSet** outnav);
+
+        GetDescendingKeySet(
+            [out] INavigableSet** outnav);
+
+        GetSubMap(
+            [in] IInterface* fromKey,
+            [in] Boolean fromInclusive,
+            [in] IInterface* toKey,
+            [in] Boolean toInclusive,
+            [out] INavigableMap** outnav);
+
+        GetHeadMap(
+            [in] IInterface* toKey,
+            [in] Boolean inclusive,
+            [out] INavigableMap** outnav);
+
+        GetTailMap(
+            [in] IInterface* fromKey,
+            [in] Boolean inclusive,
+            [out] INavigableMap** outnav);
+
+        GetSubMap(
+            [in] IInterface* fromKey,
+            [in] IInterface* toKey,
+            [out] ISortedMap** res);
+
+        GetHeadMap(
+            [in] IInterface* toKey,
+            [out] ISortedMap** res);
+
+        GetTailMap(
+            [in] IInterface* fromKey,
+            [out] ISortedMap** res);
+
+
+        /**
+         * interfaces from ISortedMap
+         */
+        GetComparator(
+            [out] IComparator** comp);
+
+        GetFirstKey(
+            [out] IInterface** outface);
+
+        GetLastKey(
+            [out] IInterface** outface);
+
 
         /**
          * interfaces from IMap

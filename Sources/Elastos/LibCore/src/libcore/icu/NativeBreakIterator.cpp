@@ -113,7 +113,7 @@ ECode NativeBreakIterator::GetHashCode(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Current(
+ECode NativeBreakIterator::GetCurrent(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
@@ -122,7 +122,7 @@ ECode NativeBreakIterator::Current(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::First(
+ECode NativeBreakIterator::GetFirst(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
@@ -131,7 +131,7 @@ ECode NativeBreakIterator::First(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Following(
+ECode NativeBreakIterator::GetFollowing(
     /* [in] */ Int32 offset,
     /* [out] */ Int32 * value)
 {
@@ -155,7 +155,7 @@ ECode NativeBreakIterator::GetText(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Last(
+ECode NativeBreakIterator::GetLast(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
@@ -164,7 +164,7 @@ ECode NativeBreakIterator::Last(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Next(
+ECode NativeBreakIterator::GetNext(
     /* [in] */ Int32 n,
     /* [out] */ Int32 * value)
 {
@@ -174,7 +174,7 @@ ECode NativeBreakIterator::Next(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Next(
+ECode NativeBreakIterator::GetNext(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
@@ -183,7 +183,7 @@ ECode NativeBreakIterator::Next(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Previous(
+ECode NativeBreakIterator::GetPrevious(
     /* [out] */ Int32 * value)
 {
     VALIDATE_NOT_NULL(value)
@@ -239,7 +239,7 @@ ECode NativeBreakIterator::IsBoundary(
     return NOERROR;
 }
 
-ECode NativeBreakIterator::Preceding(
+ECode NativeBreakIterator::GetPreceding(
     /* [in] */ Int32 offset,
     /* [out] */ Int32 * value)
 {

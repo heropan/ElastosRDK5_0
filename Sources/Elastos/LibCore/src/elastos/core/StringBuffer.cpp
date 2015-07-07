@@ -66,7 +66,7 @@ ECode StringBuffer::GetLength(
 }
 
 ECode StringBuffer::GetByteCount(
-    /* [in] */ Int32* byteLength)
+    /* [out] */ Int32* byteLength)
 {
     AutoLock lock(this);
     VALIDATE_NOT_NULL(byteLength);

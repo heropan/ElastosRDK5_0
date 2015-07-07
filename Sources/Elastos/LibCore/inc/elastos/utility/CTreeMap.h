@@ -260,25 +260,25 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** outcom);
 
-        CARAPI First(
+        CARAPI GetFirst(
             /* [out] */ IInterface** outface);
 
-        CARAPI HeadSet(
+        CARAPI GetHeadSet(
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI Last(
+        CARAPI GetLast(
             /* [out] */ IInterface** outface);
 
-        CARAPI SubSet(
+        CARAPI GetSubSet(
             /* [in] */ IInterface* start,
             /* [in] */ IInterface* end,
             /* [out] */ ISortedSet** outsort);
 
-        CARAPI TailSet(
+        CARAPI GetTailSet(
             /* [in] */ IInterface* start,
             /* [out] */ ISortedSet** outsort);
 
@@ -616,25 +616,25 @@ public:
 
             CAR_INTERFACE_DECL()
 
-            CARAPI Comparator(
+            CARAPI GetComparator(
                 /* [out] */ IComparator** outcom);
 
-            CARAPI First(
+            CARAPI GetFirst(
                 /* [out] */ IInterface** outface);
 
-            CARAPI HeadSet(
+            CARAPI GetHeadSet(
                 /* [in] */ IInterface* end,
                 /* [out] */ ISortedSet** outsort);
 
-            CARAPI Last(
+            CARAPI GetLast(
                 /* [out] */ IInterface** outface);
 
-            CARAPI SubSet(
+            CARAPI GetSubSet(
                 /* [in] */ IInterface* start,
                 /* [in] */ IInterface* end,
                 /* [out] */ ISortedSet** outsort);
 
-            CARAPI TailSet(
+            CARAPI GetTailSet(
                 /* [in] */ IInterface* start,
                 /* [out] */ ISortedSet** outsort);
 
@@ -822,17 +822,17 @@ public:
         CARAPI GetValues(
             /* [out] */ ICollection** value);
 
-        CARAPI Comparator(
+        CARAPI GetComparator(
             /* [out] */ IComparator** comp);
 
-        CARAPI FirstKey(
+        CARAPI GetFirstKey(
             /* [out] */ IInterface** outface);
 
         CARAPI GetHeadMap(
             /* [in] */ IInterface* endKey,
             /* [out] */ ISortedMap** sortmap);
 
-        CARAPI LastKey(
+        CARAPI GetLastKey(
             /* [out] */ IInterface** outface);
 
         CARAPI GetSubMap(

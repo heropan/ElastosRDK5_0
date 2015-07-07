@@ -49,7 +49,7 @@ public:
     CARAPI AddAll(
         /* [in] */ Int32 index,
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI AddAll(
         /* [in] */ Int32 index,
@@ -57,11 +57,11 @@ public:
 
     CARAPI IndexOf(
         /* [in] */ IInterface* object,
-        /* [in] */ Int32* index);
+        /* [out] */ Int32* index);
 
     CARAPI LastIndexOf(
         /* [in] */ IInterface* object,
-        /* [in] */ Int32* index);
+        /* [out] */ Int32* index);
 
     CARAPI GetListIterator(
         /* [in] */ IListIterator** it);
@@ -91,7 +91,7 @@ public:
 
     CARAPI AddAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI AddAll(
         /* [in] */ ICollection* collection);
@@ -100,39 +100,39 @@ public:
 
     CARAPI Contains(
         /* [in] */ IInterface* object,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI ContainsAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI GetHashCode(
-        /* [in] */ Int32* index);
+        /* [out] */ Int32* index);
 
     CARAPI IsEmpty(
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI Remove(
         /* [in] */ IInterface* object,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI Remove(
         /* [in] */ IInterface* object);
 
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection);
 
     CARAPI RetainAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RetainAll(
         /* [in] */ ICollection* collection);

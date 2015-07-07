@@ -271,7 +271,7 @@ public:
 
 private:
     CARAPI AdjustNsp(
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI_(AutoPtr< ArrayOf<String> >) EnsureCapacity(
         /* [in] */ ArrayOf<String>* arr,

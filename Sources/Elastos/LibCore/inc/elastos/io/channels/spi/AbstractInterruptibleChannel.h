@@ -36,7 +36,7 @@ public:
     Boolean IsOpen();
 
     CARAPI IsOpen(
-        /* [in] */ Boolean* isOpen);
+        /* [out] */ Boolean* isOpen);
 
     /**
      * Closes an open channel. If the channel is already closed then this method

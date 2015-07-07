@@ -420,13 +420,13 @@ ECode MiniEnumSet::AddAll(
 }
 
 ECode MiniEnumSet::GetHashCode(
-    /* [in] */ Int32* result)
+    /* [out] */ Int32* result)
 {
     return EnumSet::GetHashCode(result);
 }
 
 ECode MiniEnumSet::IsEmpty(
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return EnumSet::IsEmpty(result);
 }

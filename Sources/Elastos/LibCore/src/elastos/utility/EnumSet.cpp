@@ -76,7 +76,7 @@ ECode EnumSet::NoneOf(
     return NOERROR;
 }
 
-IEnumSet* EnumSet::AllOf(
+AutoPtr<IEnumSet> EnumSet::AllOf(
     /* [in] */ const InterfaceID& type)
 {
     AutoPtr<IEnumSet> set;
@@ -85,7 +85,7 @@ IEnumSet* EnumSet::AllOf(
     return set;
 }
 
-IEnumSet* EnumSet::CopyOf(
+AutoPtr<IEnumSet> EnumSet::CopyOf(
     /* [in] */ IEnumSet* s)
 {
     AutoPtr<IEnumSet> set;
@@ -125,7 +125,7 @@ ECode EnumSet::CopyOf(
     return NOERROR;
 }
 
-IEnumSet* EnumSet::ComplementOf(
+AutoPtr<IEnumSet> EnumSet::ComplementOf(
     /* [in] */ IEnumSet* s)
 {
     AutoPtr<IEnumSet> set;
@@ -135,7 +135,7 @@ IEnumSet* EnumSet::ComplementOf(
     return set;
 }
 
-IEnumSet* EnumSet::Of(
+AutoPtr<IEnumSet> EnumSet::Of(
     /* [in] */ IInterface* i)
 {
     AutoPtr<IEnumSet> set;
@@ -144,7 +144,7 @@ IEnumSet* EnumSet::Of(
     return set;
 }
 
-IEnumSet* EnumSet::Of(
+AutoPtr<IEnumSet> EnumSet::Of(
     /* [in] */ IInterface* i1,
     /* [in] */ IInterface* i2)
 {
@@ -153,7 +153,7 @@ IEnumSet* EnumSet::Of(
     return set;
 }
 
-IEnumSet* EnumSet::Of(
+AutoPtr<IEnumSet> EnumSet::Of(
     /* [in] */ IInterface* i1,
     /* [in] */ IInterface* i2,
     /* [in] */ IInterface* i3)
@@ -163,7 +163,7 @@ IEnumSet* EnumSet::Of(
     return set;
 }
 
-IEnumSet* EnumSet::Of(
+AutoPtr<IEnumSet> EnumSet::Of(
     /* [in] */ IInterface* i1,
     /* [in] */ IInterface* i2,
     /* [in] */ IInterface* i3,
@@ -174,7 +174,7 @@ IEnumSet* EnumSet::Of(
     return set;
 }
 
-IEnumSet* EnumSet::Of(
+AutoPtr<IEnumSet> EnumSet::Of(
     /* [in] */ IInterface* i1,
     /* [in] */ IInterface* i2,
     /* [in] */ IInterface* i3,
@@ -186,7 +186,7 @@ IEnumSet* EnumSet::Of(
     return set;
 }
 
-IEnumSet* EnumSet::Of(
+AutoPtr<IEnumSet> EnumSet::Of(
     /* [in] */ ArrayOf<IInterface*>* array)
 {
     AutoPtr<IEnumSet> set = EnumSet::Of((*array)[0]);
@@ -213,7 +213,7 @@ ECode EnumSet::Range(
     return NOERROR;
 }
 
-IEnumSet* EnumSet::Clone()
+AutoPtr<IEnumSet> EnumSet::Clone()
 {
     return NULL;
 }
@@ -224,12 +224,140 @@ Boolean EnumSet::IsValidType(
     return cls == mElementClass;// || cls.getSuperclass() == elementClass;
 }
 
-IInterface* EnumSet::WriteReplace()
+AutoPtr<IInterface> EnumSet::WriteReplace()
 {
     AutoPtr<SerializationProxy> proxy = new SerializationProxy();
     proxy->mElements = NULL;//toArray(new Enum[0]);
     proxy->mElementType = mElementClass;
     return (ISerializable*)proxy;
+}
+
+ECode EnumSet::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    return AbstractSet::GetIterator(it);
+}
+
+ECode EnumSet::Add(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractSet::Add(object, modified);
+}
+
+ECode EnumSet::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Add(object);
+}
+
+ECode EnumSet::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractSet::AddAll(collection, modified);
+}
+
+ECode EnumSet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::AddAll(collection);
+}
+
+ECode EnumSet::Clear()
+{
+    return AbstractSet::Clear();
+}
+
+ECode EnumSet::Contains(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::Contains(object, result);
+}
+
+ECode EnumSet::ContainsAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::ContainsAll(collection, result);
+}
+
+ECode EnumSet::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::Equals(object, result);
+}
+
+ECode EnumSet::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    return AbstractSet::GetHashCode(hashCode);
+}
+
+ECode EnumSet::IsEmpty(
+    /* [out] */ Boolean* result)
+{
+    return AbstractSet::IsEmpty(result);
+}
+
+ECode EnumSet::Remove(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractSet::Remove(object, modified);
+}
+
+ECode EnumSet::Remove(
+    /* [in] */ IInterface* object)
+{
+    return AbstractSet::Remove(object);
+}
+
+ECode EnumSet::RemoveAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractSet::RemoveAll(collection, modified);
+}
+
+ECode EnumSet::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RemoveAll(collection);
+}
+
+ECode EnumSet::RetainAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* modified)
+{
+    return AbstractSet::RetainAll(collection, modified);
+}
+
+ECode EnumSet::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractSet::RetainAll(collection);
+}
+
+ECode EnumSet::GetSize(
+    /* [out] */ Int32* size)
+{
+    return AbstractSet::GetSize(size);
+}
+
+ECode EnumSet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    return AbstractSet::ToArray(array);
+}
+
+ECode EnumSet::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* inArray,
+    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
+{
+    return AbstractSet::ToArray(inArray, outArray);
 }
 
 } // namespace Utility

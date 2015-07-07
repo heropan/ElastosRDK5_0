@@ -2868,7 +2868,7 @@ Int32 CBigDecimal::ApproxPrecision()
 
 ECode CBigDecimal::SafeLongToInt(
     /* [in] */ Int64 longValue,
-    /* [in] */ Int32* result)
+    /* [out] */ Int32* result)
 {
     using Elastos::Core::Math;
     if (longValue < Math::INT32_MIN_VALUE || longValue > Math::INT32_MAX_VALUE) {

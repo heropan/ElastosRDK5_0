@@ -19,15 +19,15 @@ public:
     ~RuleBasedBreakIterator();
 
     //@Override
-    CARAPI Current(
+    CARAPI GetCurrent(
         /* [out] */ Int32* currentValue);
 
     //@Override
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ Int32* firstValue);
 
     //@Override
-    CARAPI Following(
+    CARAPI GetFollowing(
         /* [in] */ Int32 offset,
         /* [out] */ Int32* followingValue);
 
@@ -36,7 +36,7 @@ public:
         /* [out] */ ICharacterIterator** text);
 
     //@Override
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ Int32* lastValue);
 
     //@Override
@@ -49,7 +49,7 @@ public:
         /* [out] */ Int32* nextValue);
 
     //@Override
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Int32* previousValue);
 
     CARAPI SetText(
@@ -65,9 +65,10 @@ public:
         /* [out] */ Boolean* isBoundary);
 
     //@Override
-    CARAPI Preceding(
+    CARAPI GetPreceding(
         /* [in] */ Int32 offset,
         /* [out] */ Int32* precedingValue);
+
     //@Override
     CARAPI Clone(
         /* [out] */ IInterface ** outface);

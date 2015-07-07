@@ -136,25 +136,25 @@ public:
         /* [in] */ Boolean inclusive,
         /* [out] */ INavigableSet** outnav);
 
-    CARAPI Comparator(
+    CARAPI GetComparator(
         /* [out] */ IComparator** outcom);
 
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ IInterface** outface);
 
-    CARAPI HeadSet(
+    CARAPI GetHeadSet(
         /* [in] */ IInterface* end,
         /* [out] */ ISortedSet** outsort);
 
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ IInterface** outface);
 
-    CARAPI SubSet(
+    CARAPI GetSubSet(
         /* [in] */ IInterface* start,
         /* [in] */ IInterface* end,
         /* [out] */ ISortedSet** outsort);
 
-    CARAPI TailSet(
+    CARAPI GetTailSet(
         /* [in] */ IInterface* start,
         /* [out] */ ISortedSet** outsort);
 

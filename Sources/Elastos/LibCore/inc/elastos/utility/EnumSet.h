@@ -50,45 +50,45 @@ public:
         /* [in] */ const InterfaceID& type,
         /* [out] */ IEnumSet** res);
 
-    static CARAPI_(IEnumSet*) AllOf(
+    static CARAPI_(AutoPtr<IEnumSet>) AllOf(
         /* [in] */ const InterfaceID& type);
 
-    static CARAPI_(IEnumSet*) CopyOf(
+    static CARAPI_(AutoPtr<IEnumSet>) CopyOf(
         /* [in] */ IEnumSet* s);
 
     static CARAPI CopyOf(
         /* [in] */ ICollection* c,
         /* [out] */ IEnumSet** set);
 
-    static CARAPI_(IEnumSet*) ComplementOf(
+    static CARAPI_(AutoPtr<IEnumSet>) ComplementOf(
         /* [in] */ IEnumSet* s);
 
-    static CARAPI_(IEnumSet*) Of(
+    static CARAPI_(AutoPtr<IEnumSet>) Of(
         /* [in] */ IInterface* i);
 
-    static CARAPI_(IEnumSet*) Of(
+    static CARAPI_(AutoPtr<IEnumSet>) Of(
         /* [in] */ IInterface* i1,
         /* [in] */ IInterface* i2);
 
-    static CARAPI_(IEnumSet*) Of(
+    static CARAPI_(AutoPtr<IEnumSet>) Of(
         /* [in] */ IInterface* i1,
         /* [in] */ IInterface* i2,
         /* [in] */ IInterface* i3);
 
-    static CARAPI_(IEnumSet*) Of(
+    static CARAPI_(AutoPtr<IEnumSet>) Of(
         /* [in] */ IInterface* i1,
         /* [in] */ IInterface* i2,
         /* [in] */ IInterface* i3,
         /* [in] */ IInterface* i4);
 
-    static CARAPI_(IEnumSet*) Of(
+    static CARAPI_(AutoPtr<IEnumSet>) Of(
         /* [in] */ IInterface* i1,
         /* [in] */ IInterface* i2,
         /* [in] */ IInterface* i3,
         /* [in] */ IInterface* i4,
         /* [in] */ IInterface* i5);
 
-    static CARAPI_(IEnumSet*) Of(
+    static CARAPI_(AutoPtr<IEnumSet>) Of(
         /* [in] */ ArrayOf<IInterface*>* array);
 
     static CARAPI Range(
@@ -102,13 +102,80 @@ public:
         /* [in] */ IInterface* start,
         /* [in] */ IInterface* end) = 0;
 
-    virtual CARAPI_(IEnumSet*) Clone();
+    virtual CARAPI_(AutoPtr<IEnumSet>) Clone();
 
     virtual CARAPI_(Boolean) IsValidType(
         /* [in] */ const InterfaceID& cls);
 
-    virtual CARAPI_(IInterface*) WriteReplace();
+    virtual CARAPI_(AutoPtr<IInterface>) WriteReplace();
 
+    CARAPI GetIterator(
+        /* [out] */ IIterator** it);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* modified);
+
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI Clear();
+
+    CARAPI Contains(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI ContainsAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* result);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
+    CARAPI IsEmpty(
+        /* [out] */ Boolean* result);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* modified);
+
+    CARAPI Remove(
+        /* [in] */ IInterface* object);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection,
+        /* [out] */ Boolean* modified);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI GetSize(
+        /* [out] */ Int32* size);
+
+    CARAPI ToArray(
+        /* [out, callee] */ ArrayOf<IInterface*>** array);
+
+    CARAPI ToArray(
+        /* [in] */ ArrayOf<IInterface*>* inArray,
+        /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 private:
     static const Int64 mSerialVersionUID;//=1009687484059888093L
 

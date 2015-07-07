@@ -1,12 +1,12 @@
 
 module
 {
-    namespace Elastos{
-    namespace Utility{
+    namespace Elastos {
+    namespace Utility {
+
     /**
      * An {@code Map} specialized for use with {@code Enum} types as keys.
      */
-
     /**
      * @Involve
      * interface IMap;

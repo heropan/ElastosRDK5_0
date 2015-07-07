@@ -15,11 +15,22 @@ module
      */
     [deprecated]
     interface IMiniEnumSet {
+
         GetEnums(
             [out, callee] ArrayOf<IInterface*>* arrays);
 
         GetBits(
             [out] Int64* bits);
+
+        /**
+         * interfaces from IEnumSet
+         *
+         */
+        Complement();
+
+        SetRange(
+            [in] IInterface* start,
+            [in] IInterface* end);
 
         /**
          * interfaces from ICollection

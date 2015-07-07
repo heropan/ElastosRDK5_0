@@ -114,7 +114,7 @@ ECode UnsafeArrayList::Add(
 ECode UnsafeArrayList::AddAll(
     /* [in] */ Int32 index,
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::AddAll(index, collection, result);
 }
@@ -128,14 +128,14 @@ ECode UnsafeArrayList::AddAll(
 
 ECode UnsafeArrayList::IndexOf(
     /* [in] */ IInterface* object,
-    /* [in] */ Int32* index)
+    /* [out] */ Int32* index)
 {
     return AbstractList::IndexOf(object, index);
 }
 
 ECode UnsafeArrayList::LastIndexOf(
     /* [in] */ IInterface* object,
-    /* [in] */ Int32* index)
+    /* [out] */ Int32* index)
 {
     return AbstractList::LastIndexOf(object, index);
 }
@@ -189,7 +189,7 @@ ECode UnsafeArrayList::GetIterator(
 
 ECode UnsafeArrayList::AddAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::AddAll(collection, result);
 }
@@ -207,40 +207,40 @@ ECode UnsafeArrayList::Clear()
 
 ECode UnsafeArrayList::Contains(
     /* [in] */ IInterface* object,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::Contains(object, result);
 }
 
 ECode UnsafeArrayList::ContainsAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::ContainsAll(collection, result);
 }
 
 ECode UnsafeArrayList::Equals(
     /* [in] */ IInterface* object,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::Equals(object, result);
 }
 
 ECode UnsafeArrayList::GetHashCode(
-    /* [in] */ Int32* index)
+    /* [out] */ Int32* index)
 {
     return AbstractList::GetHashCode(index);
 }
 
 ECode UnsafeArrayList::IsEmpty(
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::IsEmpty(result);
 }
 
 ECode UnsafeArrayList::Remove(
     /* [in] */ IInterface* object,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::Remove(object, result);
 }
@@ -253,7 +253,7 @@ ECode UnsafeArrayList::Remove(
 
 ECode UnsafeArrayList::RemoveAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::RemoveAll(collection, result);
 }
@@ -266,7 +266,7 @@ ECode UnsafeArrayList::RemoveAll(
 
 ECode UnsafeArrayList::RetainAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractList::RetainAll(collection, result);
 }

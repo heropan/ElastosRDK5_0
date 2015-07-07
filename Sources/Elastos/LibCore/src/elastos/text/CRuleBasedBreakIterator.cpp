@@ -3,23 +3,23 @@
 namespace Elastos {
 namespace Text {
 
-ECode CRuleBasedBreakIterator::First(
+ECode CRuleBasedBreakIterator::GetFirst(
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::First(postion);
+    return RuleBasedBreakIterator::GetFirst(postion);
 }
 
-ECode CRuleBasedBreakIterator::Following(
+ECode CRuleBasedBreakIterator::GetFollowing(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::Following(offset,postion);
+    return RuleBasedBreakIterator::GetFollowing(offset,postion);
 }
 
-ECode CRuleBasedBreakIterator::Last(
+ECode CRuleBasedBreakIterator::GetLast(
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::Last(postion);
+    return RuleBasedBreakIterator::GetLast(postion);
 }
 
 ECode CRuleBasedBreakIterator::GetNext(
@@ -35,17 +35,17 @@ ECode CRuleBasedBreakIterator::GetNext(
     return RuleBasedBreakIterator::GetNext(n,postion);
 }
 
-ECode CRuleBasedBreakIterator::Preceding(
+ECode CRuleBasedBreakIterator::GetPreceding(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::Preceding(offset,postion);
+    return RuleBasedBreakIterator::GetPreceding(offset,postion);
 }
 
-ECode CRuleBasedBreakIterator::Previous(
+ECode CRuleBasedBreakIterator::GetPrevious(
     /* [out] */ Int32* postion)
 {
-    return RuleBasedBreakIterator::Previous(postion);
+    return RuleBasedBreakIterator::GetPrevious(postion);
 }
 
 ECode CRuleBasedBreakIterator::GetText(
@@ -73,10 +73,10 @@ ECode CRuleBasedBreakIterator::SetText(
     return RuleBasedBreakIterator::SetText(newText);
 }
 
-ECode CRuleBasedBreakIterator::Current(
+ECode CRuleBasedBreakIterator::GetCurrent(
     /* [out] */ Int32 * value)
 {
-    return RuleBasedBreakIterator::Current(value);
+    return RuleBasedBreakIterator::GetCurrent(value);
 }
 
 ECode CRuleBasedBreakIterator::Clone(

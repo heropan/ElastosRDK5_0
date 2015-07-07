@@ -13,7 +13,6 @@ module
     [deprecated]
     interface IHashMap {
 
-
         /**
          * interfaces from IMap
          */

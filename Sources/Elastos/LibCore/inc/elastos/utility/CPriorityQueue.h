@@ -483,6 +483,18 @@ public:
     CARAPI GetIterator(
         /* [out] */ IIterator** it);
 
+    CARAPI Add(
+        /* [in] */ IInterface* object);
+
+    CARAPI AddAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RemoveAll(
+        /* [in] */ ICollection* collection);
+
+    CARAPI RetainAll(
+        /* [in] */ ICollection* collection);
+
 private:
     // @SuppressWarnings("unchecked")
     CARAPI ReadObject(

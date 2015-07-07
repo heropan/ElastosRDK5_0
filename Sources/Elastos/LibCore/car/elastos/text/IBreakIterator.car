@@ -204,7 +204,7 @@ module
          * sets the current position to the returned value, or {DONE} if the
          * given offset specifies the starting position.
          */
-        Preceding(
+        GetPreceding(
             [in] Int32 offset,
             [out] Int32* postion);
 
@@ -221,14 +221,14 @@ module
          *
          * @return this iterator's current position.
          */
-        Current(
+        GetCurrent(
             [out] Int32 * value);
 
         /**
          * Sets this iterator's current position to the first boundary and returns
          * that position.
          */
-        First(
+        GetFirst(
             [out] Int32* postion);
 
         /**
@@ -236,7 +236,7 @@ module
          * offset and returns this position. Returns {DONE} if there is no
          * boundary after the given offset.
          */
-        Following(
+        GetFollowing(
             [in] Int32 offset,
             [out] Int32* postion);
 
@@ -254,7 +254,7 @@ module
          * Sets this iterator's current position to the last boundary and returns
          * that position.
          */
-        Last(
+        GetLast(
             [out] Int32* postion);
 
         /**
@@ -264,7 +264,7 @@ module
          *
          * @return the position of last boundary.
          */
-        Next(
+        GetNext(
             [out] Int32* postion);
 
         /**
@@ -272,7 +272,7 @@ module
          * given position, and returns that position. Returns {DONE} if no
          * boundary was found after the given position.
          */
-        Next(
+        GetNext(
             [in] Int32 n,
             [out] Int32* postion);
 
@@ -283,7 +283,7 @@ module
          *
          * @return the position of last boundary.
          */
-        Previous(
+        GetPrevious(
             [out] Int32* postion);
 
         /**

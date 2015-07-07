@@ -38,30 +38,30 @@ public:
     CARAPI GetHashCode(
         /* [out] */ Int32 * value);
 
-    CARAPI Current(
+    CARAPI GetCurrent(
         /* [out] */ Int32 * value);
 
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ Int32 * value);
 
-    CARAPI Following(
+    CARAPI GetFollowing(
         /* [in] */ Int32 offset,
         /* [out] */ Int32 * value);
 
     CARAPI GetText(
         /* [out] */ ICharacterIterator ** outiter);
 
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ Int32 * value);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [in] */ Int32 n,
         /* [out] */ Int32 * value);
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Int32 * value);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Int32 * value);
 
     CARAPI SetText(
@@ -77,7 +77,7 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Boolean * value);
 
-    CARAPI Preceding(
+    CARAPI GetPreceding(
         /* [in] */ Int32 offset,
         /* [out] */ Int32 * value);
 

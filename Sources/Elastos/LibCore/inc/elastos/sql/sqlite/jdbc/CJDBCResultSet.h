@@ -54,7 +54,7 @@ public:
     CARAPI FindColumn(
         /* [in] */ const String& colName);
 
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ Boolean *value);
 
     CARAPI GetAsciiStream(
@@ -284,17 +284,17 @@ public:
     CARAPI IsLast(
         /* [out] */ Boolean * value);
 
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ Boolean * value);
 
     CARAPI MoveToCurrentRow();
 
     CARAPI MoveToInsertRow();
 
-    CARAPI Next(
+    CARAPI GetNext(
         /* [out] */ Boolean * value);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Boolean * value);
 
     CARAPI RefreshRow();

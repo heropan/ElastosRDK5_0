@@ -16,14 +16,14 @@ CarClass(CRuleBasedBreakIterator) , public RuleBasedBreakIterator
 {
 public:
 
-    CARAPI First(
+    CARAPI GetFirst(
         /* [out] */ Int32* postion);
 
-    CARAPI Following(
+    CARAPI GetFollowing(
         /* [in] */ Int32 offset,
         /* [out] */ Int32* postion);
 
-    CARAPI Last(
+    CARAPI GetLast(
         /* [out] */ Int32* postion);
 
     CARAPI GetNext(
@@ -33,11 +33,11 @@ public:
         /* [in] */ Int32 n,
         /* [out] */ Int32* postion);
 
-    CARAPI Preceding(
+    CARAPI GetPreceding(
         /* [in] */ Int32 offset,
         /* [out] */ Int32* postion);
 
-    CARAPI Previous(
+    CARAPI GetPrevious(
         /* [out] */ Int32* postion);
 
     CARAPI GetText(
@@ -53,7 +53,7 @@ public:
     CARAPI SetText(
         /* [in] */ ICharacterIterator* newText);
 
-    CARAPI Current(
+    CARAPI GetCurrent(
         /* [out] */ Int32 * value);
 
     CARAPI Clone(

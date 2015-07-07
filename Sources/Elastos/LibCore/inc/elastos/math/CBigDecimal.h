@@ -1275,7 +1275,7 @@ private:
 
     static CARAPI SafeLongToInt(
         /* [in] */ Int64 longValue,
-        /* [in] */ Int32* result);
+        /* [out] */ Int32* result);
 
     /**
      * It does all rounding work of the public method

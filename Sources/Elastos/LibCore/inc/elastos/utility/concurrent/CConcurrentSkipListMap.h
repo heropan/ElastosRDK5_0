@@ -343,38 +343,38 @@ public:
 
         CARAPI Add(
             /* [in] */ IInterface* obj,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI Add(
             /* [in] */ IInterface* obj);
 
         CARAPI AddAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI AddAll(
             /* [in] */ ICollection* collection);
 
         CARAPI ContainsAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI GetHashCode(
-            /* [in] */ Int32* result);
+            /* [out] */ Int32* result);
 
         CARAPI Remove(
             /* [in] */ IInterface* obj);
 
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection);
 
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI RetainAll(
             /* [in] */ ICollection* collection);
@@ -455,38 +455,38 @@ public:
 
         CARAPI Add(
             /* [in] */ IInterface* obj,
-            /* [in] */ Boolean*);
+            /* [out] */ Boolean*);
 
         CARAPI Add(
             /* [in] */ IInterface* obj);
 
         CARAPI AddAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI AddAll(
             /* [in] */ ICollection* collection);
 
         CARAPI ContainsAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI GetHashCode(
-            /* [in] */ Int32* result);
+            /* [out] */ Int32* result);
 
         CARAPI Remove(
             /* [in] */ IInterface* obj);
 
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection);
 
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI RetainAll(
             /* [in] */ ICollection* collection);
@@ -743,10 +743,10 @@ public:
 
         CARAPI Equals(
             /* [in] */ IInterface* obj,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI GetHashCode(
-            /* [in] */ Int32* hash);
+            /* [out] */ Int32* hash);
 
         CARAPI Put(
             /* [in] */ IInterface* key,

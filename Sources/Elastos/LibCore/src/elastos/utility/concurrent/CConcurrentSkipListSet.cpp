@@ -98,7 +98,7 @@ ECode CConcurrentSkipListSet::ContainsAll(
 }
 
 ECode CConcurrentSkipListSet::GetHashCode(
-    /* [in] */ Int32* hash)
+    /* [out] */ Int32* hash)
 {
     return AbstractSet::GetHashCode(hash);
 }

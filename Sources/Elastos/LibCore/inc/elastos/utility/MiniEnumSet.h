@@ -120,9 +120,9 @@ public:
 
     CARAPI AddAll(/* [in] */ ICollection* collection);
 
-    CARAPI GetHashCode(/* [in] */ Int32* result);
+    CARAPI GetHashCode(/* [out] */ Int32* result);
 
-    CARAPI IsEmpty(/* [in] */ Boolean* result);
+    CARAPI IsEmpty(/* [out] */ Boolean* result);
 
     CARAPI ToArray(
         /* [out, callee] */ ArrayOf<IInterface*>** array);

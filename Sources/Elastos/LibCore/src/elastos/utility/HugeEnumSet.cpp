@@ -485,13 +485,13 @@ ECode HugeEnumSet::AddAll(
 }
 
 ECode HugeEnumSet::GetHashCode(
-    /* [in] */ Int32* result)
+    /* [out] */ Int32* result)
 {
     return EnumSet::GetHashCode(result);
 }
 
 ECode HugeEnumSet::IsEmpty(
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return EnumSet::IsEmpty(result);
 }

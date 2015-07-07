@@ -1174,7 +1174,7 @@ ECode CNativeDecimalFormat::Open(
     /* [in] */ Char32 percent,
     /* [in] */ Char32 perMill,
     /* [in] */ Char32 zeroDigit,
-    /* [in] */ Int32* result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
     if (pattern.IsNull()) {

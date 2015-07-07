@@ -288,31 +288,31 @@ public:
 
     CARAPI ContainsAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI GetHashCode(
-        /* [in] */ Int32* result);
+        /* [out] */ Int32* result);
 
     CARAPI IsEmpty(
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI Remove(
         /* [in] */ IInterface* object);
 
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection);
 
     CARAPI RetainAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RetainAll(
         /* [in] */ ICollection* collection);

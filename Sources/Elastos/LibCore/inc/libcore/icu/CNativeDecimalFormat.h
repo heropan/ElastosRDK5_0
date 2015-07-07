@@ -312,7 +312,7 @@ private:
         /* [in] */ Char32 percent,
         /* [in] */ Char32 perMill,
         /* [in] */ Char32 zeroDigit,
-        /* [in] */ Int32* result);
+        /* [out] */ Int32* result);
 
     static CARAPI_(AutoPtr<INumber>) Parse(
         /* [in] */ Int32 addr,

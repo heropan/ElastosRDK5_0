@@ -1065,14 +1065,14 @@ ECode CConcurrentLinkedDeque::AddAll(
 
 ECode CConcurrentLinkedDeque::ContainsAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractCollection::ContainsAll(collection, result);
 }
 
 ECode CConcurrentLinkedDeque::RemoveAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractCollection::RemoveAll(collection, result);
 }
@@ -1085,7 +1085,7 @@ ECode CConcurrentLinkedDeque::RemoveAll(
 
 ECode CConcurrentLinkedDeque::RetainAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractCollection::RetainAll(collection, result);
 }

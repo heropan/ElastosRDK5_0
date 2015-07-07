@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Core.IComparator;
     interface Elastos.Utility.INavigableSet;
 
     namespace Elastos {
@@ -383,6 +384,19 @@ module
         GetTailMap(
             [in] IInterface* fromKey,
             [out] ISortedMap** res);
+
+
+        /**
+         * interfaces from ISortedMap
+         */
+        GetComparator(
+            [out] IComparator** comp);
+
+        GetFirstKey(
+            [out] IInterface** outface);
+
+        GetLastKey(
+            [out] IInterface** outface);
 
 
         /**

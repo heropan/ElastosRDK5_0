@@ -2,12 +2,12 @@ module
 {
     namespace Elastos {
     namespace Utility {
+
     /**
      * {@code Stack} is a Last-In/First-Out(LIFO) data structure which represents a
      * stack of objects. It enables users to pop to and push from the stack,
      * including null objects. There is no limit to the size of the stack.
      */
-
     /**
      * @Involve
      * interface IIterable;

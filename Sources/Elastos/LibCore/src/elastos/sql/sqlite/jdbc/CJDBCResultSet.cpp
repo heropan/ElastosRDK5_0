@@ -143,7 +143,7 @@ ECode CJDBCResultSet::FindColumn(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::First(
+ECode CJDBCResultSet::GetFirst(
     /* [out] */ Boolean *value)
 {
     if (tr == NULL || tr->mNrows <= 0) {
@@ -765,7 +765,7 @@ ECode CJDBCResultSet::InsertRow()
     tr->Newrow(rowbuf, &isupdate);
     rowbuf = NULL;
     oninsrow = FALSE;
-    Last(&isupdate);
+    GetLast(&isupdate);
     return NOERROR;
 }
 
@@ -809,7 +809,7 @@ ECode CJDBCResultSet::IsLast(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::Last(
+ECode CJDBCResultSet::GetLast(
     /* [out] */ Boolean * value)
 {
     if (tr == NULL || tr->mNrows <= 0) {
@@ -840,7 +840,7 @@ ECode CJDBCResultSet::MoveToInsertRow()
     return NOERROR;
 }
 
-ECode CJDBCResultSet::Next(
+ECode CJDBCResultSet::GetNext(
     /* [out] */ Boolean * value)
 {
     if (tr == NULL) {
@@ -851,7 +851,7 @@ ECode CJDBCResultSet::Next(
     return NOERROR;
 }
 
-ECode CJDBCResultSet::Previous(
+ECode CJDBCResultSet::GetPrevious(
     /* [out] */ Boolean * value)
 {
     if (tr == NULL) {

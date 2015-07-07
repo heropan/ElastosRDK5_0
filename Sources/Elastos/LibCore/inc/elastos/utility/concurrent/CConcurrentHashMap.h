@@ -667,21 +667,21 @@ public:
 
         CARAPI ContainsAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI IsEmpty(
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI GetSize(
-            /* [in] */ Int32* size);
+            /* [out] */ Int32* size);
 
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** result);
@@ -812,21 +812,21 @@ public:
 
         CARAPI ContainsAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI IsEmpty(
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
         CARAPI RemoveAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI RetainAll(
             /* [in] */ ICollection* collection,
-            /* [in] */ Boolean* result);
+            /* [out] */ Boolean* result);
 
         CARAPI GetSize(
-            /* [in] */ Int32* size);
+            /* [out] */ Int32* size);
 
         CARAPI ToArray(
             /* [out, callee] */ ArrayOf<IInterface*>** result);

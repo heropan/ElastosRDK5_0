@@ -28,7 +28,7 @@ using Elastos::Net::IInet6Address;
 // of port number, *port will be set to the port number.
 CARAPI_(AutoPtr<IInetAddress>) SockaddrToInetAddress(
     /* [in] */ const sockaddr_storage& ss,
-    /* [in] */ Int32* port);
+    /* [out] */ Int32* port);
 
 // Convert from InetAddress to sockaddr_storage. An InetUnixAddress will be converted to
 // an AF_UNIX sockaddr_un. An Inet6Address will be converted to an AF_INET6 sockaddr_in6.

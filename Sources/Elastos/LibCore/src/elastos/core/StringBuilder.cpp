@@ -58,7 +58,7 @@ ECode StringBuilder::GetLength(
 }
 
 ECode StringBuilder::GetByteCount(
-    /* [in] */ Int32* byteLength)
+    /* [out] */ Int32* byteLength)
 {
     VALIDATE_NOT_NULL(byteLength);
     *byteLength = AbstractStringBuilder::GetByteCount();

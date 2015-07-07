@@ -296,18 +296,18 @@ public:
 
     CARAPI ContainsAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RemoveAll(
         /* [in] */ ICollection* collection);
 
     CARAPI RetainAll(
         /* [in] */ ICollection* collection,
-        /* [in] */ Boolean* result);
+        /* [out] */ Boolean* result);
 
     CARAPI RetainAll(
         /* [in] */ ICollection* collection);

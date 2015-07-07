@@ -115,7 +115,7 @@ module
          *
          * @return the current thread's {@code ThreadLocalRandom}
          */
-        Current(
+        GetCurrent(
             [out] IThreadLocalRandom** threadloc);
     }
 

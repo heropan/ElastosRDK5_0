@@ -1094,26 +1094,26 @@ ECode CLinkedList::AddAll(
 
 ECode CLinkedList::ContainsAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractSequentialList::ContainsAll(collection, result);
 }
 
 ECode CLinkedList::Equals(
     /* [in] */ IInterface* object,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractSequentialList::Equals(object, result);
 }
 
 ECode CLinkedList::GetHashCode(
-    /* [in] */ Int32* result)
+    /* [out] */ Int32* result)
 {
     return AbstractSequentialList::GetHashCode(result);
 }
 
 ECode CLinkedList::IsEmpty(
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractSequentialList::IsEmpty(result);
 }
@@ -1126,7 +1126,7 @@ ECode CLinkedList::Remove(
 
 ECode CLinkedList::RemoveAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractSequentialList::RemoveAll(collection, result);
 }
@@ -1139,7 +1139,7 @@ ECode CLinkedList::RemoveAll(
 
 ECode CLinkedList::RetainAll(
     /* [in] */ ICollection* collection,
-    /* [in] */ Boolean* result)
+    /* [out] */ Boolean* result)
 {
     return AbstractSequentialList::RetainAll(collection, result);
 }

@@ -18,27 +18,25 @@ ECode RuleBasedBreakIterator::Init(
     return NOERROR;
 }
 
-ECode RuleBasedBreakIterator::Current(
+ECode RuleBasedBreakIterator::GetCurrent(
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
-    return mWrapped->Current(position);
+    return mWrapped->GetCurrent(position);
 }
 
-ECode RuleBasedBreakIterator::First(
+ECode RuleBasedBreakIterator::GetFirst(
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
-    return mWrapped->First(position);
+    return mWrapped->GetFirst(position);
 }
 
-ECode RuleBasedBreakIterator::Following(
+ECode RuleBasedBreakIterator::GetFollowing(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
     FAIL_RETURN(ValidateOffset(offset));
-    return mWrapped->Following(offset,position);
+    return mWrapped->GetFollowing(offset, position);
 }
 
 ECode RuleBasedBreakIterator::ValidateOffset(
@@ -69,22 +67,19 @@ ECode RuleBasedBreakIterator::ValidateOffset(
 ECode RuleBasedBreakIterator::GetText(
     /* [out] */ ICharacterIterator** text)
 {
-    VALIDATE_NOT_NULL(text);
-    return mWrapped->GetText((ICharacterIterator **)&text);
+    return mWrapped->GetText(text);
 }
 
-ECode RuleBasedBreakIterator::Last(
+ECode RuleBasedBreakIterator::GetLast(
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
-    return mWrapped->Last(position);
+    return mWrapped->GetLast(position);
 }
 
 ECode RuleBasedBreakIterator::GetNext(
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
-    return mWrapped->Next(position);
+    return mWrapped->GetNext(position);
 }
 
 ECode RuleBasedBreakIterator::GetNext(
@@ -92,14 +87,13 @@ ECode RuleBasedBreakIterator::GetNext(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    return mWrapped->Next(n,position);
+    return mWrapped->GetNext(n,position);
 }
 
-ECode RuleBasedBreakIterator::Previous(
+ECode RuleBasedBreakIterator::GetPrevious(
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
-    return mWrapped->Previous(position);
+    return mWrapped->GetPrevious(position);
 }
 
 ECode RuleBasedBreakIterator::SetText(
@@ -132,20 +126,20 @@ ECode RuleBasedBreakIterator::IsBoundary(
  * @see java.text.BreakIterator#preceding(int)
  */
 //@Override
-ECode RuleBasedBreakIterator::Preceding(
+ECode RuleBasedBreakIterator::GetPreceding(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
     FAIL_RETURN(ValidateOffset(offset));
-    return mWrapped->Preceding(offset,position);
+    return mWrapped->GetPreceding(offset, position);
 }
 
 //@Override
 ECode RuleBasedBreakIterator::Clone(
     /* [out] */ IInterface ** outface)
 {
-    return ICloneable::Probe(mWrapped)->Clone((INativeBreakIterator **)outface);
+    return ICloneable::Probe(mWrapped)->Clone(outface);
 }
 
 } // namespace Text

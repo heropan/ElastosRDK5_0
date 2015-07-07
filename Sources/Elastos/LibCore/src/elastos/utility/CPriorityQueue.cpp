@@ -482,5 +482,29 @@ ECode CPriorityQueue::GrowToSize(
     return NOERROR;
 }
 
+ECode CPriorityQueue::Add(
+    /* [in] */ IInterface* object)
+{
+    return AbstractQueue::Add(object);
+}
+
+ECode CPriorityQueue::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractQueue::AddAll(collection);
+}
+
+ECode CPriorityQueue::RemoveAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractQueue::RemoveAll(collection);
+}
+
+ECode CPriorityQueue::RetainAll(
+    /* [in] */ ICollection* collection)
+{
+    return AbstractQueue::RetainAll(collection);
+}
+
 } // namespace Utility
 } // namespace Elastos

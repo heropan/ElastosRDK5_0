@@ -15,11 +15,23 @@ module
      */
     [deprecated]
     interface IHugeEnumSet {
+
         GetEnums(
             [out, callee] ArrayOf<IInterface*>* arrays);
 
         GetBits(
             [out, callee] ArrayOf<Int64>* arrays);
+
+
+        /**
+         * interfaces from IEnumSet
+         *
+         */
+        Complement();
+
+        SetRange(
+            [in] IInterface* start,
+            [in] IInterface* end);
 
 
         /**

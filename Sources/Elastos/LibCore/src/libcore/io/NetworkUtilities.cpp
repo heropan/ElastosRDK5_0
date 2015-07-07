@@ -14,7 +14,7 @@ using Elastos::Net::InetUnixAddress;
 
 AutoPtr<IInetAddress> SockaddrToInetAddress(
     /* [in] */ const sockaddr_storage& ss,
-    /* [in] */ Int32* port)
+    /* [out] */ Int32* port)
 {
     // Convert IPv4-mapped IPv6 addresses to IPv4 addresses.
     // The RI states "Java will never return an IPv4-mapped address".

@@ -48,27 +48,27 @@ public:
         /* [in] */ Int32 offset,
         /* [out] */ Boolean* isBoundary);
 
-    virtual CARAPI Preceding(
+    virtual CARAPI GetPreceding(
         /* [in] */ Int32 offset,
         /* [out] */ Int32* position);
 
     virtual CARAPI SetText(
         /* [in] */ const String& newText);
 
-    virtual CARAPI Current(
+    virtual CARAPI GetCurrent(
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI First(
+    virtual CARAPI GetFirst(
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI Following(
+    virtual CARAPI GetFollowing(
         /* [in] */ Int32 offset,
         /* [out] */ Int32* position) = 0;
 
     virtual CARAPI GetText(
         /* [out] */ ICharacterIterator** text) = 0;
 
-    virtual CARAPI Last(
+    virtual CARAPI GetLast(
         /* [out] */ Int32* position) = 0;
 
     virtual CARAPI GetNext(
@@ -78,7 +78,7 @@ public:
         /* [in] */ Int32 n,
         /* [out] */ Int32* position) = 0;
 
-    virtual CARAPI Previous(
+    virtual CARAPI GetPrevious(
         /* [out] */ Int32* position) = 0;
 
     virtual CARAPI SetText(

@@ -139,8 +139,9 @@ ECode BreakIterator::GetWordInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
-    VALIDATE_NOT_NULL(where);
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
+    VALIDATE_NOT_NULL(where);
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;
@@ -158,16 +159,14 @@ ECode BreakIterator::IsBoundary(
     /* [in] */ Int32 offset,
     /* [out] */ Boolean* isBoundary)
 {
-    VALIDATE_NOT_NULL(isBoundary);
     return mWrapped->IsBoundary(offset,isBoundary);
 }
 
-ECode BreakIterator::Preceding(
+ECode BreakIterator::GetPreceding(
     /* [in] */ Int32 offset,
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
-    return mWrapped->Preceding(offset,position);
+    return mWrapped->GetPreceding(offset,position);
 }
 
 ECode BreakIterator::SetText(

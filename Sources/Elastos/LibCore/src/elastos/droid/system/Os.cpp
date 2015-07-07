@@ -353,7 +353,7 @@ ECode Os::IoctlInetAddress(
 ECode Os::IoctlInt(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 cmd,
-    /* [in] */ Int32* arg,
+    /* [out] */ Int32* arg,
     /* [out] */ Int32* result)
 {
     return CLibcore::sOs->IoctlInt(fd, cmd, arg, result);

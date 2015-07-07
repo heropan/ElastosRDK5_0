@@ -197,7 +197,7 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI GetHashCode(
-        /* [in] */ Int32* hash);
+        /* [out] */ Int32* hash);
 
     CARAPI Remove(
         /* [in] */ IInterface* object);

@@ -4,6 +4,7 @@ module
 
     namespace Elastos {
     namespace Utility {
+
     /**
      * A map that has its keys ordered. The sorting is according to either the
      * natural ordering of its keys or the ordering given by a specified comparator.
