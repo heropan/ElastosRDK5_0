@@ -1,9 +1,10 @@
 
-#ifndef __CNATIVEDECIMALFORMAT_H__
-#define __CNATIVEDECIMALFORMAT_H__
+#ifndef __LIBCORE_ICU_CNATIVEDECIMALFORMAT_H__
+#define __LIBCORE_ICU_CNATIVEDECIMALFORMAT_H__
 
 #include "_Libcore_ICU_CNativeDecimalFormat.h"
 #include "StringBuffer.h"
+#include "elastos/utility/etl/Vector.h"
 
 using Elastos::Math::IBigDecimal;
 using Elastos::Math::IBigInteger;
@@ -16,17 +17,31 @@ using Elastos::Text::IDecimalFormatSymbols;
 using Elastos::Text::IAttributedCharacterIterator;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;
 using Elastos::Utility::ICurrency;
+using Elastos::Core::ICloneable;
+using Elastos::Utility::Etl::Vector;
+using Elastos::Text::INumberFormatField;
+
 
 namespace Libcore {
 namespace ICU {
 
 CarClass(CNativeDecimalFormat)
+    , public Object
+    , public INativeDecimalFormat
+    , public ICloneable
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     // Utility to get information about field positions from native (ICU) code.
     class FieldPositionIterator : public Object
     {
-        friend class NativeDecimalFormat;
+        friend class CNativeDecimalFormat;
+
+    private:
+        FieldPositionIterator();
 
     public:
         static CARAPI_(AutoPtr<FieldPositionIterator>) ForFieldPosition(
@@ -51,23 +66,9 @@ public:
         CARAPI_(void) SetData(
             /* [in] */ ArrayOf<Int32>* data);
 
-    public:
-        FieldPositionIterator();
-
-        static CARAPI_(Int32) GetNativeFieldPositionId(
-            /* [in] */ IFieldPosition* fp);
-
-    public:
-        static CARAPI SetFieldPosition(
-            /* [in] */ FieldPositionIterator* fpi,
-            /* [in] */ IFieldPosition* fp);
-
-        CARAPI CheckValid();
-
     private:
         AutoPtr< ArrayOf<Int32> > mData;
         Int32 mPos; // so first call to next() leaves pos at 0
-        static AutoPtr< ArrayOf<IAttributedCharacterIteratorAttribute *> > sFields;
     };
 
 public:
@@ -175,7 +176,9 @@ public:
         /* [in] */ Boolean value);
 
     CARAPI SetCurrency(
-        /* [in] */ ICurrency* currency);
+        /* [in] */ const String& currencySymbol,
+        /* [in] */ const String& currencyCode);
+
 
     CARAPI SetGroupingSize(
         /* [in] */ Int32 value);
@@ -251,48 +254,61 @@ public:
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* result);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** rev);
+
+    CARAPI ToString(
+        /* [out] */ String* rev);
+
 private:
+    CARAPI UpdateFieldPosition(
+        /* [in] */ IFieldPosition* fp,
+        /* [in] */ FieldPositionIterator* fpi);
+
     CARAPI_(Int32) MakeScalePositive(
         /* [in] */ Int32 scale,
         /* [in] */ StringBuffer& val);
 
     static CARAPI ApplyPattern(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Boolean localized,
         /* [in] */ const String& pattern);
 
     static CARAPI ApplyPatternImpl(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Boolean localized,
         /* [in] */ const String& pattern);
 
-    static CARAPI_(Int32) CloneImpl(
-        /* [in] */ Int32 addr);
+    static CARAPI_(Int64) CloneImpl(
+        /* [in] */ Int64 addr);
 
     static CARAPI_(void) Close(
-        /* [in] */ Int32 addr);
+        /* [in] */ Int64 addr);
 
-    static CARAPI_(AutoPtr<ArrayOf<Char32> >) FormatInt64(
-        /* [in] */ Int32 addr,
+    static CARAPI FormatInt64(
+        /* [in] */ Int64 addr,
         /* [in] */ Int64 value,
-        /* [in] */ FieldPositionIterator* iter);
+        /* [in] */ FieldPositionIterator* javaFieldPositionIterator,
+        /* [out] */ ArrayOf<Char32>** rev);
 
-    static CARAPI_(AutoPtr<ArrayOf<Char32> >) FormatDouble(
-        /* [in] */ Int32 addr,
+    static CARAPI FormatDouble(
+        /* [in] */ Int64 addr,
         /* [in] */ Double value,
-        /* [in] */ FieldPositionIterator* iter);
+        /* [in] */ FieldPositionIterator* javaFieldPositionIterator,
+        /* [out] */ ArrayOf<Char32>** rev);
 
-    static CARAPI_(AutoPtr<ArrayOf<Char32> >) FormatDigitList(
-        /* [in] */ Int32 addr,
+    static CARAPI FormatDigitList(
+        /* [in] */ Int64 addr,
         /* [in] */ const String& value,
-        /* [in] */ FieldPositionIterator* iter);
+        /* [in] */ FieldPositionIterator* javaFieldPositionIterator,
+        /* [out] */ ArrayOf<Char32>** rev);
 
     static CARAPI_(Int32) GetAttribute(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Int32 symbol);
 
     static CARAPI GetTextAttribute(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Int32 symbol,
         /* [out] */ String* _attr);
 
@@ -305,23 +321,23 @@ private:
         /* [in] */ Char32 groupingSeparator,
         /* [in] */ const String& infinity,
         /* [in] */ const String& internationalCurrencySymbol,
-        /* [in] */ Char32 minusSign,
+        /* [in] */ String minusSign,
         /* [in] */ Char32 monetaryDecimalSeparator,
         /* [in] */ const String& nan,
         /* [in] */ Char32 patternSeparator,
         /* [in] */ Char32 percent,
         /* [in] */ Char32 perMill,
         /* [in] */ Char32 zeroDigit,
-        /* [out] */ Int32* result);
+        /* [out] */ Int64* result);
 
     static CARAPI_(AutoPtr<INumber>) Parse(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [in] */ Boolean parseBigDecimal);
 
     static CARAPI_(void) SetDecimalFormatSymbols(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ const String& currencySymbol,
         /* [in] */ Char32 decimalSeparator,
         /* [in] */ Char32 digit,
@@ -329,7 +345,7 @@ private:
         /* [in] */ Char32 groupingSeparator,
         /* [in] */ const String& infinity,
         /* [in] */ const String& internationalCurrencySymbol,
-        /* [in] */ Char32 minusSign,
+        /* [in] */ String minusSign,
         /* [in] */ Char32 monetaryDecimalSeparator,
         /* [in] */ const String& nan,
         /* [in] */ Char32 patternSeparator,
@@ -338,28 +354,32 @@ private:
         /* [in] */ Char32 zeroDigit);
 
     static CARAPI SetSymbol(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Int32 symbol,
         /* [in] */ const String& str);
 
     static CARAPI_(void) SetAttribute(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Int32 symbol,
         /* [in] */ Int32 i);
 
     static CARAPI_(void) SetRoundingMode(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Int32 roundingMode,
         /* [in] */ Double roundingIncrement);
 
     static CARAPI SetTextAttribute(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Int32 symbol,
         /* [in] */ const String& str);
 
     static CARAPI_(String) ToPatternImpl(
-        /* [in] */ Int32 addr,
+        /* [in] */ Int64 addr,
         /* [in] */ Boolean localized);
+
+    static CARAPI TranslateFieldId(
+        /* [in] */ IFieldPosition* fp,
+        /* [out] */ Int32* rev);
 
 private:
     /**
@@ -424,9 +444,15 @@ private:
     const static Int32 UNUM_PUBLIC_RULESETS;
 
     /**
+     * A table for translating between NumberFormat.Field instances
+     * and icu4c UNUM_x_FIELD constants.
+     */
+    const static Vector<AutoPtr<INumberFormatField> > ICU4C_FIELD_IDS;
+
+    /**
      * The address of the ICU DecimalFormat* on the native heap.
      */
-    Int32 mAddress;
+    Int64 mAddress;
 
     /**
      * The last pattern we gave to ICU, so we can make repeated applications cheap.
@@ -441,16 +467,9 @@ private:
     Boolean mPosPrefNull;
     Boolean mPosSuffNull;
     Boolean mParseBigDecimal;
-
-    /**
-     * Cache the BigDecimal form of the multiplier. This is null until we've
-     * formatted a BigDecimal (with a multiplier that is not 1), or the user has
-     * explicitly called {@link #setMultiplier(int)} with any multiplier.
-     */
-    AutoPtr<IBigDecimal> mMultiplierBigDecimal;
 };
 
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__CNATIVEDECIMALFORMAT_H__
+#endif //__LIBCORE_ICU_CNATIVEDECIMALFORMAT_H__
