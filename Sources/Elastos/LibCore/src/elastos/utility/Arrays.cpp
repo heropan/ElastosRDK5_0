@@ -480,7 +480,7 @@ ECode Arrays::BinarySearch(
 }
 
 ECode Arrays::BinarySearch(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
     /* [in] */ IInterface * value,
@@ -503,7 +503,7 @@ ECode Arrays::BinarySearch(
 }
 
 ECode Arrays::BinarySearch(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ IInterface * value,
     /* [out] */ Int32* index)
 {
@@ -557,7 +557,7 @@ ECode Arrays::BinarySearch(
 }
 
 ECode Arrays::BinarySearch(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
     /* [in] */ IInterface* value,
@@ -582,7 +582,7 @@ ECode Arrays::BinarySearch(
 }
 
 ECode Arrays::BinarySearch(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ IInterface* value,
     /* [in] */ IComparator* comparator,
     /* [out] */ Int32* index)
@@ -686,7 +686,7 @@ Int32 Arrays::GetHashCode(
 }
 
 Int32 Arrays::GetHashCode(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array)
 {
     return GetHashCode(array.Get());
 }
@@ -797,7 +797,7 @@ Boolean Arrays::Equals(
 }
 
 Boolean Arrays::Equals(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array1,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array1,
     /* [in] */ ArrayOf<IInterface *> * array2)
 {
     return Equals(array1.Get(), array2);
@@ -805,36 +805,36 @@ Boolean Arrays::Equals(
 
 Boolean Arrays::Equals(
     /* [in] */ ArrayOf<IInterface *> * array1,
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array2)
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array2)
 {
     return Equals(array1, array2.Get());
 }
 
 Boolean Arrays::Equals(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array1,
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array2)
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array1,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array2)
 {
     return Equals(array1.Get(), array2.Get());
 }
 
-Boolean Arrays::DeepEquals(
-    /* [in] */ ArrayOf<IInterface *> * array1,
-    /* [in] */ ArrayOf<IInterface *> * array2)
-{
-    if (array1 == array2) {
-        return TRUE;
-    }
-    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
-        return FALSE;
-    }
+// Boolean Arrays::DeepEquals(
+//     /* [in] */ ArrayOf<IInterface *> * array1,
+//     /* [in] */ ArrayOf<IInterface *> * array2)
+// {
+//     if (array1 == array2) {
+//         return TRUE;
+//     }
+//     if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+//         return FALSE;
+//     }
 
-    for (Int32 i = 0; i < array1->GetLength(); i++) {
-        if (!DeepEquals((*array1)[i], (*array2)[i])) {
-            return FALSE;
-        }
-    }
-    return TRUE;
-}
+//     for (Int32 i = 0; i < array1->GetLength(); i++) {
+//         if (!DeepEquals((*array1)[i], (*array2)[i])) {
+//             return FALSE;
+//         }
+//     }
+//     return TRUE;
+// }
 
 Boolean Arrays::DeepEquals(
     /* [in] */ IInterface* e1,
@@ -889,7 +889,7 @@ ECode Arrays::Sort(
 }
 
 ECode Arrays::Sort(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array)
 {
     return ComparableTimSort::Sort(array.Get());
 }
@@ -903,7 +903,7 @@ ECode Arrays::Sort(
 }
 
 ECode Arrays::Sort(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
@@ -920,7 +920,7 @@ ECode Arrays::Sort(
 }
 
 ECode Arrays::Sort(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ IComparator* comparator)
@@ -936,7 +936,7 @@ ECode Arrays::Sort(
 }
 
 ECode Arrays::Sort(
-    /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ IComparator* comparator)
 {
     return TimSort::Sort(array.Get(), comparator);

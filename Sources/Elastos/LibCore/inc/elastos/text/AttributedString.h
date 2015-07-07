@@ -46,10 +46,10 @@ public:
     };
 
     class AttributedIterator
-            : public Object
-            , public IAttributedCharacterIterator
-            , public ICharacterIterator
-            , public ICloneable
+        : public Object
+        , public IAttributedCharacterIterator
+        , public ICharacterIterator
+        , public ICloneable
     {
     public:
         CAR_INTERFACE_DECL()

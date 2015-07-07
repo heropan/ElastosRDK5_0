@@ -42,8 +42,12 @@ public:
     };
 
 public:
-    //@Override
-    //public Object clone();
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** outobj) = 0;
+
+    CARAPI CloneImpl(
+        /* [in] */ IFormat* format);
+
     CAR_INTERFACE_DECL()
 
     virtual ~FormatBase();

@@ -3,8 +3,8 @@ module
     interface Elastos.Utility.ILocale;
     interface Elastos.Utility.IDate;
 
-    namespace Elastos{
-    namespace Utility{
+    namespace Elastos {
+    namespace Utility {
 
 
     /**

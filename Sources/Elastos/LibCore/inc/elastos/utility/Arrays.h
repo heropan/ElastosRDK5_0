@@ -191,7 +191,7 @@ public:
         /* [out] */ Int32* index);
 
     static CARAPI BinarySearch(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
         /* [in] */ IInterface * value,
@@ -216,7 +216,7 @@ public:
         /* [out] */ Int32* index);
 
     static CARAPI BinarySearch(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ IInterface * value,
         /* [out] */ Int32* index);
 
@@ -250,7 +250,7 @@ public:
         /* [out] */ Int32* index);
 
     static CARAPI BinarySearch(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
         /* [in] */ IInterface * value,
@@ -279,7 +279,7 @@ public:
         /* [out] */ Int32* index);
 
     static CARAPI BinarySearch(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ IInterface * value,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
@@ -372,7 +372,7 @@ public:
         /* [in] */ ArrayOf<IInterface *> * array);
 
     static CARAPI_(Int32) GetHashCode(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array);
 
     static CARAPI_(Int32) DeepGetHashCode(
         /* [in] */ ArrayOf<IInterface *> * array);
@@ -414,20 +414,26 @@ public:
         /* [in] */ ArrayOf<IInterface *> * array2);
 
     static CARAPI_(Boolean) Equals(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array1,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array1,
         /* [in] */ ArrayOf<IInterface *> * array2);
 
     static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<IInterface *> * array1,
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array2);
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array2);
 
     static CARAPI_(Boolean) Equals(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array1,
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array2);
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array1,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array2);
 
+    template<typename T>
     static CARAPI_(Boolean) DeepEquals(
-        /* [in] */ ArrayOf<IInterface *> * array1,
-        /* [in] */ ArrayOf<IInterface *> * array2);
+        /* [in] */ ArrayOf<T> * array1,
+        /* [in] */ ArrayOf<T> * array2);
+
+    template<typename T>
+    static CARAPI_(Boolean) DeepEquals(
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array1,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array2);
 
     static CARAPI_(Boolean) DeepEquals(
         /* [in] */ IInterface * e1,
@@ -457,7 +463,7 @@ public:
         /* [in] */ ArrayOf<IInterface *> * array);
 
     static CARAPI Sort(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array);
 
     static CARAPI Sort(
         /* [in] */ ArrayOf<IInterface *> * array,
@@ -465,7 +471,7 @@ public:
         /* [in] */ Int32 end);
 
     static CARAPI Sort(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
@@ -476,7 +482,7 @@ public:
         /* [in] */ IComparator* comparator);
 
     static CARAPI Sort(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ IComparator* comparator);
@@ -486,7 +492,7 @@ public:
         /* [in] */ IComparator* comparator);
 
     static CARAPI Sort(
-        /* [in] */ AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
         /* [in] */ IComparator* comparator);
 
     template<typename T>
@@ -805,6 +811,34 @@ Boolean Arrays::Equals(
     /* [in] */ const AutoPtr<ArrayOf<T> >& array2)
 {
     return Equals(array1.Get(), array2.Get());
+}
+
+template<typename T>
+Boolean Arrays::DeepEquals(
+    /* [in] */ ArrayOf<T> * array1,
+    /* [in] */ ArrayOf<T> * array2)
+{
+    if (array1 == array2) {
+        return TRUE;
+    }
+    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+        return FALSE;
+    }
+
+    for (Int32 i = 0; i < array1->GetLength(); i++) {
+        if (!DeepEquals(TO_IINTERFACE((*array1)[i]), TO_IINTERFACE((*array2)[i]))) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+template<typename T>
+Boolean Arrays::DeepEquals(
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array1,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array2)
+{
+    return DeepEquals(array1.Get(), array2.Get());
 }
 
 template<typename T>

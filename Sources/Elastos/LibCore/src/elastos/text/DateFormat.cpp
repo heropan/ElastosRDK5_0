@@ -3,13 +3,13 @@
 #include "StringBuffer.h"
 #include "AttributedCharacterIteratorAttribute.h"
 #include "CSimpleDateFormat.h"
-// #include "CDate.h"
+#include "CDate.h"
 #include "ICUUtil.h"
 #include "CLocaleHelper.h"
 #include "CStringWrapper.h"
 #include "CDouble.h"
-// #include "CLocaleDataHelper.h"
-// #include "CLocaleData.h"
+#include "CLocaleDataHelper.h"
+#include "CLocaleData.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CDateFormatField.h"
@@ -20,13 +20,13 @@ using Elastos::Core::ICharSequence;
 using Elastos::Text::CFieldPosition;
 using Elastos::Text::CParsePosition;
 using Elastos::Utility::EIID_IDate;
-// using Elastos::Utility::CDate;
+using Elastos::Utility::CDate;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
-// using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-// using Libcore::ICU::CLocaleData;
+using Libcore::ICU::CLocaleData;
 using Libcore::ICU::ICUUtil;
 
 namespace Elastos {
@@ -155,8 +155,7 @@ ECode DateFormat::Format(
         Int64 v;
         number->Int64Value(&v);
         AutoPtr<IDate> dateObj;
-        assert(0 && "TODO");
-        // CDate::New(v, (IDate**)&dateObj);
+        CDate::New(v, (IDate**)&dateObj);
         return Format(dateObj, buffer, field, value);
     }
 
@@ -203,6 +202,7 @@ ECode DateFormat::GetDateInstance(
     /* [out] */ IDateFormat** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     FAIL_RETURN(CheckDateStyle(style));
 
@@ -220,12 +220,12 @@ ECode DateFormat::GetDateInstance(
     /* [out] */ IDateFormat** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     FAIL_RETURN(CheckDateStyle(style));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
     String format;
@@ -250,6 +250,7 @@ ECode DateFormat::GetDateTimeInstance(
     /* [out] */ IDateFormat** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     FAIL_RETURN(CheckTimeStyle(timeStyle));
     FAIL_RETURN(CheckDateStyle(dateStyle));
@@ -269,13 +270,13 @@ ECode DateFormat::GetDateTimeInstance(
     /* [out] */ IDateFormat** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     FAIL_RETURN(CheckTimeStyle(timeStyle));
     FAIL_RETURN(CheckDateStyle(dateStyle));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
     String dateFormat;
@@ -317,6 +318,7 @@ ECode DateFormat::GetTimeInstance(
     /* [out] */ IDateFormat** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     FAIL_RETURN(CheckTimeStyle(style));
     AutoPtr<ILocaleHelper> localeHelper;
@@ -333,12 +335,12 @@ ECode DateFormat::GetTimeInstance(
     /* [out] */ IDateFormat** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
 
     FAIL_RETURN(CheckTimeStyle(style));
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
     String timeFormat;
@@ -368,6 +370,7 @@ ECode DateFormat::Parse(
     /* [out] */ IDate** date)
 {
     VALIDATE_NOT_NULL(date);
+    *date = NULL;
 
     AutoPtr<IParsePosition> position;
     CParsePosition::New(0, (IParsePosition**)&position);

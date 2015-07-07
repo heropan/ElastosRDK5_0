@@ -46,6 +46,9 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI CloneImpl(
+        /* [in] */ INumberFormat* format);
+
     CARAPI Format(
         /* [in] */ Double value,
         /* [out] */ String* result);

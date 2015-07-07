@@ -55,6 +55,22 @@ ECode NumberFormat::Field::constructor(
 
 CAR_INTERFACE_IMPL(NumberFormat, FormatBase, INumberFormat)
 
+ECode NumberFormat::CloneImpl(
+    /* [in] */ INumberFormat* format)
+{
+    assert(format);
+    FormatBase::CloneImpl(IFormat::Probe(format));
+
+    NumberFormat* nf = (NumberFormat*)format;
+    nf->mGroupingUsed = mGroupingUsed;
+    nf->mParseIntegerOnly = mParseIntegerOnly;
+    nf->mMaximumIntegerDigits = mMaximumIntegerDigits;
+    nf->mMinimumIntegerDigits = mMinimumIntegerDigits;
+    nf->mMaximumFractionDigits = mMaximumFractionDigits;
+    nf->mMinimumFractionDigits = mMinimumFractionDigits;
+    return NOERROR;
+}
+
 NumberFormat::NumberFormat()
     : mGroupingUsed(TRUE)
     , mParseIntegerOnly(FALSE)

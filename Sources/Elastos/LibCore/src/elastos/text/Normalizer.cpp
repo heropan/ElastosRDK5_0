@@ -1,8 +1,8 @@
 
 #include "Normalizer.h"
-// #include "NativeNormalizer.h"
+#include "NativeNormalizer.h"
 
-// using Libcore::ICU::NativeNormalizer;
+using Libcore::ICU::NativeNormalizer;
 
 namespace Elastos {
 namespace Text {
@@ -13,10 +13,8 @@ Boolean Normalizer::IsNormalized(
 {
     assert(src);
 
-    String str("");
-    src->ToString(&str);
     Boolean result;
-    // NativeNormalizer::IsNormalized(str, form, &result);
+    NativeNormalizer::IsNormalized(src, form, &result);
     return result;
 }
 
@@ -26,10 +24,8 @@ String Normalizer::Normalize(
 {
     assert(src);
 
-    String str("");
-    src->ToString(&str);
     String result;
-    // NativeNormalizer::Normalize(str, form, &result);
+    NativeNormalizer::Normalize(src, form, &result);
     return result;
 }
 

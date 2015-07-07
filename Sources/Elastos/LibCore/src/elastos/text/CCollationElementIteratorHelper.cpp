@@ -1,9 +1,9 @@
 
 #include "CCollationElementIteratorHelper.h"
-// #include "CCollationElementIteratorICUHelper.h"
+#include "CCollationElementIteratorICUHelper.h"
 
 using Libcore::ICU::ICollationElementIteratorICUHelper;
-// using Libcore::ICU::CCollationElementIteratorICUHelper;
+using Libcore::ICU::CCollationElementIteratorICUHelper;
 
 namespace Elastos {
 namespace Text {
@@ -18,8 +18,7 @@ ECode CCollationElementIteratorHelper::PrimaryOrder(
 {
     VALIDATE_NOT_NULL(primaryOrder);
     AutoPtr<ICollationElementIteratorICUHelper> icuhelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CCollationElementIteratorICUHelper::AcquireSingleton((ICollationElementIteratorICUHelper **)&icuhelper));
+    FAIL_RETURN(CCollationElementIteratorICUHelper::AcquireSingleton((ICollationElementIteratorICUHelper **)&icuhelper));
     return icuhelper->PrimaryOrder(order,primaryOrder);
 }
 
@@ -29,8 +28,7 @@ ECode CCollationElementIteratorHelper::SecondaryOrder(
 {
     VALIDATE_NOT_NULL(secondaryOrder);
     AutoPtr<ICollationElementIteratorICUHelper> icuhelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CCollationElementIteratorICUHelper::AcquireSingleton((ICollationElementIteratorICUHelper **)&icuhelper));
+    FAIL_RETURN(CCollationElementIteratorICUHelper::AcquireSingleton((ICollationElementIteratorICUHelper **)&icuhelper));
     Int32 value(0);
     icuhelper->SecondaryOrder(order,&value);
     *secondaryOrder = (Int16)value;
@@ -44,8 +42,7 @@ ECode CCollationElementIteratorHelper::TertiaryOrder(
 {
     VALIDATE_NOT_NULL(tertiaryOrder);
     AutoPtr<ICollationElementIteratorICUHelper> icuhelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CCollationElementIteratorICUHelper::AcquireSingleton((ICollationElementIteratorICUHelper **)&icuhelper));
+    FAIL_RETURN(CCollationElementIteratorICUHelper::AcquireSingleton((ICollationElementIteratorICUHelper **)&icuhelper));
     Int32 value(0);
     icuhelper->TertiaryOrder(order,&value);
     *tertiaryOrder = (Int16)value;

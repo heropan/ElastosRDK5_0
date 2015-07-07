@@ -20,10 +20,10 @@ Bidi::BidiRun::BidiRun(
     /* [in] */ Int32 start,
     /* [in] */ Int32 limit,
     /* [in] */ Int32 level)
+    : mStart(start)
+    , mLimit(limit)
+    , mLevel(level)
 {
-    mStart = start;
-    mLimit = limit;
-    mLevel = level;
 }
 
 Int32 Bidi::BidiRun::GetLevel()
@@ -46,12 +46,8 @@ Int32 Bidi::BidiRun::GetStart()
 //===================================================
 CAR_INTERFACE_IMPL(Bidi, Object, IBidi)
 
-// const Int32 Bidi::UBIDI_LEVEL_OVERRIDE = 0x80;
-
 const Int32 Bidi::UBiDiDirection_UBIDI_LTR = 0;
-
 const Int32 Bidi::UBiDiDirection_UBIDI_RTL = 1;
-
 const Int32 Bidi::UBiDiDirection_UBIDI_MIXED = 2;
 
 Bidi::Bidi()

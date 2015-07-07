@@ -3,21 +3,24 @@
 #include "CDecimalFormatSymbols.h"
 #include "CLocaleHelper.h"
 #include "StringBuilder.h"
-// #include "CLocaleDataHelper.h"
-// #include "ICUUtil.h"
-// #include "Currency.h"
+#include "CLocaleDataHelper.h"
+#include "ICUUtil.h"
+#include "Currency.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
-//using Libcore::ICU::ICUUtil;
+using Libcore::ICU::ICUUtil;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
-// using Libcore::ICU::CLocaleDataHelper;
-// using Elastos::Utility::Currency;
+using Libcore::ICU::CLocaleDataHelper;
+using Elastos::Utility::Currency;
 
 namespace Elastos {
 namespace Text {
+
+CAR_INTERFACE_IMPL_2(DecimalFormatSymbols, Object, IDecimalFormatSymbols, ICloneable)
 
 ECode DecimalFormatSymbols::constructor()
 {
@@ -32,8 +35,7 @@ ECode DecimalFormatSymbols::constructor(
     /* [in] */ ILocale* locale)
 {
     AutoPtr<ILocaleDataHelper> helper;
-    assert(0 && "TODO");
-    // CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
     localeData->GetZeroDigit(&mZeroDigit);
@@ -49,15 +51,13 @@ ECode DecimalFormatSymbols::constructor(
     localeData->GetNaN(&mNaN);
     localeData->GetExponentSeparator(&mExponentSeparator);
     mLocale = locale;
-    assert(0 && "TODO");
-    ECode ec; // = Currency::GetInstance(locale, (ICurrency**)&mCurrency);
+    ECode ec = Currency::GetInstance(locale, (ICurrency**)&mCurrency);
     if (SUCCEEDED(ec)) {
         mCurrency->GetSymbol(locale, &mCurrencySymbol);
         mCurrency->GetCurrencyCode(&mIntlCurrencySymbol);
     }
     else {
-        assert(0 && "TODO");
-        // mCurrency = Currency::GetInstance(String("XXX"));
+        mCurrency = Currency::GetInstance(String("XXX"));
         localeData->GetCurrencySymbol(&mCurrencySymbol);
         localeData->GetInternationalCurrencySymbol(&mIntlCurrencySymbol);
     }
@@ -92,39 +92,44 @@ ECode DecimalFormatSymbols::GetInstance(
 ECode DecimalFormatSymbols::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
-    // return ICUUtil::GetAvailableDecimalFormatSymbolsLocales(locales);
+    return ICUUtil::GetAvailableDecimalFormatSymbolsLocales(locales);
 }
 
 ECode DecimalFormatSymbols::Clone(
-    /* [out] */ IDecimalFormatSymbols** object)
+    /* [out] */ IInterface** object)
 {
-    VALIDATE_NOT_NULL(object);
-    assert(0);
-    // try {
-    //     return super.clone();
-    // } catch (CloneNotSupportedException e) {
-    //     throw new AssertionError(e);
-    // }
-    AutoPtr<ILocale> locale = mLocale;
+    VALIDATE_NOT_NULL(object)
+
     AutoPtr<IDecimalFormatSymbols> outdec ;
-    FAIL_RETURN(CDecimalFormatSymbols::New(locale, (IDecimalFormatSymbols **)&outdec));
-    outdec->SetExponentSeparator(mExponentSeparator);
-    outdec->SetCurrency(mCurrency);
-    outdec->SetInternationalCurrencySymbol(mIntlCurrencySymbol);
-    outdec->SetCurrencySymbol(mCurrencySymbol);
-    outdec->SetDecimalSeparator(mDecimalSeparator);
-    outdec->SetDigit(mDigit);
-    outdec->SetGroupingSeparator(mGroupingSeparator);
-    outdec->SetInfinity(mInfinity);
-    // outdec->SetMinusSign(mMinusSign);
-    outdec->SetMonetaryDecimalSeparator(mMonetarySeparator);
-    outdec->SetNaN(mNaN);
-    outdec->SetPatternSeparator(mPatternSeparator);
-    outdec->SetPercent(mPercent);
-    outdec->SetPerMill(mPerMill);
-    outdec->SetZeroDigit(mZeroDigit);
+    FAIL_RETURN(CDecimalFormatSymbols::New(mLocale, (IDecimalFormatSymbols **)&outdec));
+
+    CloneImpl(outdec);
+
     *object = outdec;
-    REFCOUNT_ADD(*object);
+    REFCOUNT_ADD(*object)
+    return NOERROR;
+}
+
+ECode DecimalFormatSymbols::CloneImpl(
+    /* [in] */ IDecimalFormatSymbols* object)
+{
+    assert(object);
+
+    object->SetExponentSeparator(mExponentSeparator);
+    object->SetCurrency(mCurrency);
+    object->SetInternationalCurrencySymbol(mIntlCurrencySymbol);
+    object->SetCurrencySymbol(mCurrencySymbol);
+    object->SetDecimalSeparator(mDecimalSeparator);
+    object->SetDigit(mDigit);
+    object->SetGroupingSeparator(mGroupingSeparator);
+    object->SetInfinity(mInfinity);
+    // object->SetMinusSign(mMinusSign);
+    object->SetMonetaryDecimalSeparator(mMonetarySeparator);
+    object->SetNaN(mNaN);
+    object->SetPatternSeparator(mPatternSeparator);
+    object->SetPercent(mPercent);
+    object->SetPerMill(mPerMill);
+    object->SetZeroDigit(mZeroDigit);
 
     return NOERROR;
 }
@@ -132,6 +137,7 @@ ECode DecimalFormatSymbols::Clone(
 ECode DecimalFormatSymbols::GetCurrency(
     /* [out] */ ICurrency** currency)
 {
+    VALIDATE_NOT_NULL(currency)
     *currency = mCurrency;
     REFCOUNT_ADD(*currency);
     return NOERROR;
@@ -140,6 +146,7 @@ ECode DecimalFormatSymbols::GetCurrency(
 ECode DecimalFormatSymbols::GetInternationalCurrencySymbol(
     /* [out] */ String* symbol)
 {
+    VALIDATE_NOT_NULL(symbol)
     *symbol = mIntlCurrencySymbol;
     return NOERROR;
 }
@@ -147,6 +154,7 @@ ECode DecimalFormatSymbols::GetInternationalCurrencySymbol(
 ECode DecimalFormatSymbols::GetCurrencySymbol(
     /* [out] */ String* symbol)
 {
+    VALIDATE_NOT_NULL(symbol)
     *symbol = mCurrencySymbol;
     return NOERROR;
 }
@@ -154,6 +162,7 @@ ECode DecimalFormatSymbols::GetCurrencySymbol(
 ECode DecimalFormatSymbols::GetDecimalSeparator(
     /* [out] */ Char32* separator)
 {
+    VALIDATE_NOT_NULL(separator)
     *separator = mDecimalSeparator;
     return NOERROR;
 }
@@ -161,6 +170,7 @@ ECode DecimalFormatSymbols::GetDecimalSeparator(
 ECode DecimalFormatSymbols::GetDigit(
     /* [out] */ Char32* digit)
 {
+    VALIDATE_NOT_NULL(digit)
     *digit = mDigit;
     return NOERROR;
 }
@@ -168,6 +178,7 @@ ECode DecimalFormatSymbols::GetDigit(
 ECode DecimalFormatSymbols::GetGroupingSeparator(
     /* [out] */ Char32* separator)
 {
+    VALIDATE_NOT_NULL(separator)
     *separator = mGroupingSeparator;
     return NOERROR;
 }
@@ -175,6 +186,7 @@ ECode DecimalFormatSymbols::GetGroupingSeparator(
 ECode DecimalFormatSymbols::GetInfinity(
     /* [out] */ String* infinity)
 {
+    VALIDATE_NOT_NULL(infinity)
     *infinity = mInfinity;
     return NOERROR;
 }
@@ -197,6 +209,7 @@ ECode DecimalFormatSymbols::GetMinusSign(
 ECode DecimalFormatSymbols::GetMonetaryDecimalSeparator(
     /* [out] */ Char32* separator)
 {
+    VALIDATE_NOT_NULL(separator)
     *separator = mMonetarySeparator;
     return NOERROR;
 }
@@ -204,6 +217,7 @@ ECode DecimalFormatSymbols::GetMonetaryDecimalSeparator(
 ECode DecimalFormatSymbols::GetNaN(
     /* [out] */ String* infinity)
 {
+    VALIDATE_NOT_NULL(infinity)
     *infinity = mNaN;
     return NOERROR;
 }
@@ -211,6 +225,7 @@ ECode DecimalFormatSymbols::GetNaN(
 ECode DecimalFormatSymbols::GetPatternSeparator(
     /* [out] */ Char32* separator)
 {
+    VALIDATE_NOT_NULL(separator)
     *separator = mPatternSeparator;
     return NOERROR;
 }
@@ -218,6 +233,7 @@ ECode DecimalFormatSymbols::GetPatternSeparator(
 ECode DecimalFormatSymbols::GetPercent(
     /* [out] */ Char32* percent)
 {
+    VALIDATE_NOT_NULL(percent)
     *percent = mPercent;
     return NOERROR;
 }
@@ -225,6 +241,7 @@ ECode DecimalFormatSymbols::GetPercent(
 ECode DecimalFormatSymbols::GetPerMill(
     /* [out] */ Char32* perMill)
 {
+    VALIDATE_NOT_NULL(perMill)
     *perMill = mPerMill;
     return NOERROR;
 }
@@ -232,6 +249,7 @@ ECode DecimalFormatSymbols::GetPerMill(
 ECode DecimalFormatSymbols::GetZeroDigit(
     /* [out] */ Char32* zeroDigit)
 {
+    VALIDATE_NOT_NULL(zeroDigit)
     *zeroDigit = mZeroDigit;
     return NOERROR;
 }
@@ -239,6 +257,7 @@ ECode DecimalFormatSymbols::GetZeroDigit(
 ECode DecimalFormatSymbols::GetExponentSeparator(
     /* [out] */ String* separator)
 {
+    VALIDATE_NOT_NULL(separator)
     *separator = mExponentSeparator;
     return NOERROR;
 }
@@ -272,8 +291,7 @@ ECode DecimalFormatSymbols::SetInternationalCurrencySymbol(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // mCurrency = Currency::GetInstance(value);
+    mCurrency = Currency::GetInstance(value);
     ECode ec = mCurrency->GetSymbol(mLocale, &mCurrencySymbol);
     if (FAILED(ec)) {
         mCurrency = NULL;
@@ -366,7 +384,6 @@ ECode DecimalFormatSymbols::SetZeroDigit(
     mZeroDigit = value;
     return NOERROR;
 }
-
 
 ECode DecimalFormatSymbols::SetExponentSeparator(
     /* [in] */ const String& value)

@@ -3,15 +3,23 @@
 
 #include "Object.h"
 
-using Elastos::Utility::ILocale;
+using Elastos::Core::ICloneable;
 using Elastos::Core::IArrayOf;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ITimeZone;
+using Libcore::ICU::ILocaleData;
 
 namespace Elastos {
 namespace Text {
 
-class DateFormatSymbols : public Object
+class DateFormatSymbols
+    : public Object
+    , public IDateFormatSymbols
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DateFormatSymbols();
 
     virtual ~DateFormatSymbols();
@@ -20,8 +28,6 @@ public:
 
     CARAPI constructor(
         /* [in] */ ILocale* locale);
-
-    CARAPI_(AutoPtr<ArrayOf<IArrayOf*> >) InternalZoneStrings();
 
     static CARAPI GetInstance(
         /* [out] */ IDateFormatSymbols** instance);
@@ -33,86 +39,81 @@ public:
     static CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** arrayOfLocales);
 
-    // @Override
     CARAPI Clone(
-        /* [out] */ IDateFormatSymbols** instance);
+        /* [out] */ IInterface** instance);
 
-//    @Override
+    CARAPI CloneImpl(
+        /* [out] */ IDateFormatSymbols* instance);
+
     CARAPI Equals(
         /* [in] */ IInterface* object,
         /* [out] */ Boolean* res);
 
-//    @Override
-//    public String toString();
+    CARAPI ToString(
+        /* [out] */ String* str);
 
-    virtual CARAPI GetLongStandAloneMonths(
-        /* [out, callee] */ ArrayOf<String>** longStandAloneMonths);
-
-    virtual CARAPI GetShortStandAloneMonths(
-        /* [out, callee] */ ArrayOf<String>** shortStandAloneMonths);
-
-    virtual CARAPI GetLongStandAloneWeekdays(
-        /* [out, callee] */ ArrayOf<String>** longStandAloneWeekdays);
-
-    virtual CARAPI GetShortStandAloneWeekdays(
-        /* [out, callee] */ ArrayOf<String>** shortStandAloneWeekdays);
-
-    virtual CARAPI GetCustomZoneStrings(
-        /* [out] */ Boolean* customZoneStrings);
-
-    virtual CARAPI GetLocale(
+    CARAPI GetLocale(
         /* [out] */ ILocale** locale);
 
-    virtual CARAPI GetAmPmStrings(
+    CARAPI GetAmPmStrings(
         /* [out, callee] */ ArrayOf<String> ** arrayOfStrings);
 
-    virtual CARAPI GetEras(
+    CARAPI GetEras(
         /* [out, callee] */ ArrayOf<String> ** arrayOfStrings);
 
-    virtual CARAPI GetLocalPatternChars(
+    CARAPI GetLocalPatternChars(
         /* [out] */ String* string);
 
-    virtual CARAPI GetMonths(
+    CARAPI GetMonths(
         /* [out, callee] */ ArrayOf<String>** arrayOfStrings);
 
-    virtual CARAPI GetShortMonths(
+    CARAPI GetShortMonths(
         /* [out, callee] */ ArrayOf<String>** arrayOfStrings);
 
-    virtual CARAPI GetShortWeekdays(
+    CARAPI GetShortWeekdays(
         /* [out, callee] */ ArrayOf<String>** arrayOfStrings);
 
-    virtual CARAPI GetWeekdays(
+    CARAPI GetWeekdays(
         /* [out, callee] */ ArrayOf<String>** arrayOfStrings);
 
-    virtual CARAPI GetZoneStrings(
+    CARAPI GetZoneStrings(
         /* [out, callee] */ ArrayOf<IArrayOf*> ** zoneStrings);
 
 //    @Override
-//    public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32 hash);
 
-    virtual CARAPI SetAmPmStrings(
-        /* [in] */ const ArrayOf<String>& data);
+    CARAPI SetAmPmStrings(
+        /* [in] */ ArrayOf<String> * data);
 
-    virtual CARAPI SetEras(
-        /* [in] */ const ArrayOf<String>& data);
+    CARAPI SetEras(
+        /* [in] */ ArrayOf<String> * data);
 
-    virtual CARAPI SetLocalPatternChars(
+    CARAPI SetLocalPatternChars(
         /* [in] */ const String& data);
 
-    virtual CARAPI SetMonths(
-        /* [in] */ const ArrayOf<String>& data);
+    CARAPI SetMonths(
+        /* [in] */ ArrayOf<String> * data);
 
-    virtual CARAPI SetShortMonths(
-        /* [in] */ const ArrayOf<String>& data);
+    CARAPI SetShortMonths(
+        /* [in] */ ArrayOf<String> * data);
 
-    virtual CARAPI SetShortWeekdays(
-        /* [in] */ const ArrayOf<String>& data);
+    CARAPI SetShortWeekdays(
+        /* [in] */ ArrayOf<String> * data);
 
-    virtual CARAPI SetWeekdays(
-        /* [in] */ const ArrayOf<String>& data);
+    CARAPI SetWeekdays(
+        /* [in] */ ArrayOf<String> * data);
 
-    virtual CARAPI SetZoneStrings(
+    CARAPI SetZoneStrings(
         /* [in] */ ArrayOf<IArrayOf*>* zoneStrings);
+
+    CARAPI_(AutoPtr<ArrayOf<IArrayOf*> >) InternalZoneStrings();
+
+    CARAPI GetTimeZoneDisplayName(
+        /* [in] */ ITimeZone* tz,
+        /* [in] */ Boolean daylight,
+        /* [in] */ Int32 style,
+        /* [out] */ String* result);
 
 private:
 //    private void readObject(ObjectInputStream ois);
@@ -123,31 +124,23 @@ private:
         /* [in] */ IDateFormatSymbols* lhs,
         /* [in] */ IDateFormatSymbols* rhs);
 
-    // CARAPI Clone2dStringArray(
-    //     /* [in] */ ArrayOf<IObjectContainer*>* array,
-    //     /* [out, callee] */ ArrayOf<IObjectContainer*>** stringArray);
+    AutoPtr<ArrayOf<IArrayOf*> > Clone2dStringArray(
+        /* [in] */ ArrayOf<IArrayOf*>* array);
 
 public:
+    String mLocalPatternChars;
+
     AutoPtr<ArrayOf<String> > mAmpms, mEras, mMonths, mShortMonths, mShortWeekdays, mWeekdays;
 
-    AutoPtr<ArrayOf<String> > mLongStandAloneMonths;
+    // This is used to implement parts of Unicode UTS #35 not historically supported.
+    /*transient*/ AutoPtr<ILocaleData> mLocaleData;
 
-    AutoPtr<ArrayOf<String> > mShortStandAloneMonths;
-
-    AutoPtr<ArrayOf<String> > mLongStandAloneWeekdays;
-
-    AutoPtr<ArrayOf<String> > mShortStandAloneWeekdays;
-
+    // Localized display names.
     AutoPtr<ArrayOf<IArrayOf*> > mZoneStrings;// String[][]
-
-    Boolean mCustomZoneStrings;
 
     AutoPtr<ILocale> mLocale;
 
     Object mLock;
-
-private:
-    String mLocalPatternChars;
 };
 
 } // namespace Text

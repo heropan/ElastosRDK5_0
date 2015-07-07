@@ -3,15 +3,21 @@
 
 #include <elastos/core/Object.h>
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ICurrency;
 
 namespace Elastos {
 namespace Text {
 
-class DecimalFormatSymbols : public Object
+class DecimalFormatSymbols
+    : public Object
+    , public IDecimalFormatSymbols
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -27,9 +33,11 @@ public:
     static CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** locales);
 
-    //@Override
-    virtual CARAPI Clone(
-        /* [out] */ IDecimalFormatSymbols** object);
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
+
+    CARAPI CloneImpl(
+        /* [out] */ IDecimalFormatSymbols* object);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,

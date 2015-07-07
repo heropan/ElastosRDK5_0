@@ -1,6 +1,8 @@
 
 #include "AttributedString.h"
 #include "StringBuffer.h"
+#include "CHashSet.h"
+#include "CHashMap.h"
 #include <utils/Log.h>
 
 using Elastos::Core::StringBuffer;
@@ -10,6 +12,8 @@ using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::CHashMap;
 
 namespace Elastos {
 namespace Text {
@@ -83,18 +87,22 @@ AttributedString::AttributedIterator::~AttributedIterator()
 ECode AttributedString::AttributedIterator::Clone(
     /* [out] */ IInterface** copy)
 {
-    assert(0 && "TODO");
+    VALIDATE_NOT_NULL(copy)
+
     // try {
-    //     AttributedIterator clone = (AttributedIterator) super.clone();
-    //     if (attributesAllowed != null) {
-    //         clone.attributesAllowed = (HashSet<Attribute>) attributesAllowed
-    //                 .clone();
-    //     }
-    //     return clone;
+    AutoPtr<AttributedIterator> clone = new AttributedIterator(mAttrString);
+    clone->mBegin = mBegin;
+    clone->mEnd = mEnd;
+    clone->mOffset = mOffset;
+
+    if (!mAttributesAllowed.IsEmpty()) {
+        clone->mAttributesAllowed = mAttributesAllowed;
+    }
+    *copy = TO_IINTERFACE(clone);
+    return NOERROR;
     // } catch (CloneNotSupportedException e) {
     //     throw new AssertionError(e);
     // }
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode AttributedString::AttributedIterator::GetCurrent(
@@ -180,7 +188,7 @@ ECode AttributedString::AttributedIterator::GetAllAttributeKeys(
     VALIDATE_NOT_NULL(allAttributedKeys);
 
     AutoPtr<ISet> result;
-    //TODO CHashSet::New((ISet**)&result);
+    CHashSet::New((ISet**)&result);
     ICollection* ci = ICollection::Probe(result);
 
     *allAttributedKeys = result;
@@ -251,7 +259,7 @@ ECode AttributedString::AttributedIterator::GetAttributes(
 
     Int32 size = (mAttrString->mAttributeMap.GetSize() * 4 / 3) + 1;
     AutoPtr<IMap> result;
-    //TODO CHashMap::New(size, (IMap**)&result);
+    CHashMap::New(size, (IMap**)&result);
     *attributes = result;
     REFCOUNT_ADD(*attributes);
 
@@ -651,8 +659,7 @@ ECode AttributedString::constructor(
     /* [in] */ ArrayOf<IAttributedCharacterIteratorAttribute*>* attributes)
 {
     AutoPtr<ISet> container;
-    assert(0 && "TODO");
-    // CSet::New((ISet**)&container);
+    CHashSet::New((ISet**)&container);
     if (attributes != NULL) {
         Boolean modified;
         ICollection* collection = ICollection::Probe(container);

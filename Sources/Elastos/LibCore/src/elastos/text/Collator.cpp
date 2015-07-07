@@ -2,12 +2,12 @@
 #include "CRuleBasedCollator.h"
 #include "CLocaleHelper.h"
 #include "ICUUtil.h"
-// #include "CRuleBasedCollatorICU.h"
+#include "CRuleBasedCollatorICU.h"
 
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ICUUtil;
-// using Libcore::ICU::CRuleBasedCollatorICU;
+using Libcore::ICU::CRuleBasedCollatorICU;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::EIID_ICharSequence;
 
@@ -20,8 +20,7 @@ ECode Collator::constructor()
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
-    assert(0 && "TODO");
-    // CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&mICUColl);
+    CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&mICUColl);
     return NOERROR;
 }
 
@@ -56,22 +55,17 @@ ECode Collator::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (ICollator::Probe(object) == NULL) {
+    *result = FALSE;
+
+    ICollator* c = ICollator::Probe(object);
+    if (c == NULL) {
         *result = FALSE;
         return NOERROR;
     }
 
-    AutoPtr<ICollator> collator = ICollator::Probe(object);
-    AutoPtr<IRuleBasedCollatorICU> icuCollator;
-    assert(0 && "TODO");
-    // collator->GetICUCollator((IRuleBasedCollatorICU**)&icuCollator);
-    if (mICUColl == NULL) {
-        *result = icuCollator == NULL;
-        return NOERROR;
-    }
-    else {
-        return IObject::Probe(mICUColl)->Equals(icuCollator->Probe(EIID_IInterface), result);
-    }
+    Collator* collator = (Collator*)c;
+    *result = Object::Equals(mICUColl, collator->mICUColl);
+    return NOERROR;
 }
 
 ECode Collator::Equals(
@@ -122,8 +116,7 @@ ECode Collator::GetInstance(
     }
     AutoPtr<IRuleBasedCollator> rbc;
     AutoPtr<IRuleBasedCollatorICU> icuCollator;
-    assert(0 && "TODO");
-    // CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&icuCollator);
+    CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&icuCollator);
     FAIL_RETURN(CRuleBasedCollator::New(icuCollator, (IRuleBasedCollator**)&rbc));
     *instance = (ICollator*)rbc->Probe(EIID_ICollator);
     REFCOUNT_ADD(*instance);

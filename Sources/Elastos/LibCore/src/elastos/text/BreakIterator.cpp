@@ -2,18 +2,18 @@
 #include "BreakIterator.h"
 #include "CRuleBasedBreakIterator.h"
 #include "CLocaleHelper.h"
-// #include "CLocaleDataHelper.h"
-// #include "ICUUtil.h"
-// #include "CNativeBreakIteratorHelper.h"
+#include "CLocaleDataHelper.h"
+#include "ICUUtil.h"
+#include "CNativeBreakIteratorHelper.h"
 
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
-// using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-//using Libcore::ICU::ICUUtil;
+using Libcore::ICU::ICUUtil;
 using Libcore::ICU::INativeBreakIteratorHelper;
-// using Libcore::ICU::CNativeBreakIteratorHelper;
+using Libcore::ICU::CNativeBreakIteratorHelper;
 
 namespace Elastos {
 namespace Text {
@@ -31,7 +31,7 @@ ECode BreakIterator::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
     VALIDATE_NOT_NULL(locales);
-    // return ICUUtil::GetAvailableBreakIteratorLocales(locales);
+    return ICUUtil::GetAvailableBreakIteratorLocales(locales);
 }
 
 ECode BreakIterator::GetCharacterInstance(
@@ -53,8 +53,7 @@ ECode BreakIterator::GetCharacterInstance(
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;
-    assert(0 && "TODO");
-    // CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
+    CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
     iterhelper->GetCharacterInstance(where,(INativeBreakIterator **)&iter);
     AutoPtr<IBreakIterator> rbbi;
     CRuleBasedBreakIterator::New(iter,(IBreakIterator **)&rbbi);
@@ -79,13 +78,13 @@ ECode BreakIterator::GetLineInstance(
     /* [in] */ ILocale* where,
     /* [out] */ IBreakIterator** instance)
 {
-    VALIDATE_NOT_NULL(where);
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
+    VALIDATE_NOT_NULL(where);
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;
-    assert(0 && "TODO");
-    // CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
+    CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
     iterhelper->GetLineInstance(where,(INativeBreakIterator **)&iter);
     AutoPtr<IBreakIterator> rbbi;
     CRuleBasedBreakIterator::New(iter,(IBreakIterator **)&rbbi);
@@ -114,8 +113,7 @@ ECode BreakIterator::GetSentenceInstance(
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;
-    assert(0 && "TODO");
-    // CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
+    CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
     iterhelper->GetSentenceInstance(where,(INativeBreakIterator **)&iter);
     AutoPtr<IBreakIterator> rbbi;
     CRuleBasedBreakIterator::New(iter,(IBreakIterator **)&rbbi);
@@ -145,8 +143,7 @@ ECode BreakIterator::GetWordInstance(
 
     AutoPtr<INativeBreakIterator> iter;
     AutoPtr<INativeBreakIteratorHelper> iterhelper;
-    assert(0 && "TODO");
-    // CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
+    CNativeBreakIteratorHelper::AcquireSingleton((INativeBreakIteratorHelper **)&iterhelper);
     iterhelper->GetWordInstance(where,(INativeBreakIterator **)&iter);
     AutoPtr<IBreakIterator> rbbi;
     FAIL_RETURN(CRuleBasedBreakIterator::New(iter,(IBreakIterator **)&rbbi));

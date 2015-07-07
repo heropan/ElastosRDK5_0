@@ -24,6 +24,14 @@ FormatBase::FormatBase()
 FormatBase::~FormatBase()
 {}
 
+
+ECode FormatBase::CloneImpl(
+    /* [in] */ IFormat* format)
+{
+    assert(format);
+    return NOERROR;
+}
+
 ECode FormatBase::Format(
     /* [in] */ IInterface* object,
     /* [out] */ String* value)

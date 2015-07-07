@@ -1,7 +1,6 @@
 
 #include "CBidiHelper.h"
 #include "Bidi.h"
-// #include "NativeBidi.h"
 #include "CBidi.h"
 
 namespace Elastos {

@@ -4,28 +4,38 @@
 #include "CStringWrapper.h"
 #include "CLocaleHelper.h"
 #include "Arrays.h"
-// #include "CLocaleDataHelper.h"
-// #include "ICUUtil.h"
-// #include "TimeZones.h"
+#include "CLocaleDataHelper.h"
+#include "ICUUtil.h"
+#include "TimeZoneNames.h"
 #include "AutoLock.h"
+#include "StringBuilder.h"
+#include "CoreUtils.h"
+#include "TimeZone.h"
+#include "CArrayOf.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::TimeZone;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
-// using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
-// using Libcore::ICU::ICUUtil;
-// using Libcore::ICU::TimeZones;
+using Libcore::ICU::ICUUtil;
+using Libcore::ICU::TimeZoneNames;
 
 namespace Elastos {
 namespace Text {
 
+CAR_INTERFACE_IMPL_2(DateFormatSymbols, Object, IDateFormatSymbols, ICloneable)
+
 DateFormatSymbols::DateFormatSymbols()
-    : mCustomZoneStrings(FALSE)
 {
 }
 
@@ -36,28 +46,9 @@ DateFormatSymbols::~DateFormatSymbols()
 AutoPtr<ArrayOf<IArrayOf*> > DateFormatSymbols::InternalZoneStrings()
 {
     AutoLock lock(mLock);
-    // if (mZoneStrings == NULL) {
-    //     AutoPtr< ArrayOf<IArrayOf*> > result;
-    //     assert(0 && "TODO");
-    //     // TimeZones::GetZoneStrings(mLocale, (ArrayOf<IArrayOf*>**)&result);
-    //     Int32 length = result->GetLength();
-    //     mZoneStrings = ArrayOf<IObjectContainer*>::Alloc(length);
-    //     for (Int32 i = 0; i < length; ++i) {
-    //         AutoPtr<IArrayOf> arrstr = (*result)[i];
-    //         AutoPtr<IObjectContainer> newBc;
-    //         assert(0 && "TODO");
-    //         // CObjectContainer::New((IObjectContainer**)&newBc);
-    //         Int32 arrlen = 0;
-    //         arrstr->GetLength(&arrlen);
-    //         for (Int32 j = 0; j < arrlen; ++j) {
-    //             AutoPtr<IInterface> newSeq;
-    //             arrstr->Get(j, (IInterface**)&newSeq);
-    //             newBc->Add(newSeq);
-    //         }
-    //         mZoneStrings->Set(i, newBc);
-    //     }
-    // }
-
+    if (mZoneStrings == NULL) {
+        TimeZoneNames::GetZoneStrings(mLocale, (ArrayOf<IArrayOf*>**)&mZoneStrings);
+    }
     return mZoneStrings;
 }
 
@@ -75,24 +66,19 @@ ECode DateFormatSymbols::constructor(
 {
     mLocale = locale;
     mLocalPatternChars = ISimpleDateFormat_PATTERN_CHARS;
+
     AutoPtr<ILocaleDataHelper> localeDataHelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
     FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
 
+    mLocaleData = localeData;
     localeData->GetAmPm((ArrayOf<String>**)&mAmpms);
     localeData->GetEras((ArrayOf<String>**)&mEras);
     localeData->GetLongMonthNames((ArrayOf<String>**)&mMonths);
     localeData->GetShortMonthNames((ArrayOf<String>**)&mShortMonths);
     localeData->GetLongWeekdayNames((ArrayOf<String>**)&mWeekdays);
     localeData->GetShortWeekdayNames((ArrayOf<String>**)&mShortWeekdays);
-
-    // ICU/Android extensions.
-    localeData->GetLongStandAloneMonthNames((ArrayOf<String>**)&mLongStandAloneMonths);
-    localeData->GetShortStandAloneMonthNames((ArrayOf<String>**)&mShortStandAloneMonths);
-    localeData->GetLongStandAloneWeekdayNames((ArrayOf<String>**)&mLongStandAloneWeekdays);
-    localeData->GetShortStandAloneWeekdayNames((ArrayOf<String>**)&mShortStandAloneWeekdays);
 
     return NOERROR;
 }
@@ -111,190 +97,161 @@ ECode DateFormatSymbols::GetInstance(
     /* [in] */ ILocale* locale,
     /* [out] */ IDateFormatSymbols** instance)
 {
-    VALIDATE_NOT_NULL(locale);
     VALIDATE_NOT_NULL(instance)
+    *instance = NULL;
+    VALIDATE_NOT_NULL(locale);
 
     return CDateFormatSymbols::New(locale, instance);
-}
-
-ECode DateFormatSymbols::Clone(
-    /* [out] */ IDateFormatSymbols** instance)
-{
-    VALIDATE_NOT_NULL(instance)
-
-    AutoPtr<IDateFormatSymbols> outfs;
-    if (mLocale) {
-        FAIL_RETURN(CDateFormatSymbols::New(mLocale, (IDateFormatSymbols **)&outfs));
-    } else {
-        FAIL_RETURN(CDateFormatSymbols::New((IDateFormatSymbols **)&outfs));
-    }
-    outfs->SetAmPmStrings(*mAmpms);
-    outfs->SetEras(*mEras);
-    outfs->SetLocalPatternChars(mLocalPatternChars);
-    outfs->SetMonths(*mMonths);
-    outfs->SetShortMonths(*mShortMonths);
-    outfs->SetShortWeekdays(*mShortWeekdays);
-    outfs->SetWeekdays(*mWeekdays);
-    // outfs->SetZoneStrings(mZoneStrings);
-    *instance = outfs;
-    REFCOUNT_ADD(*instance);
-    return NOERROR;
-}
-
-ECode DateFormatSymbols::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res)
-    if (THIS_PROBE(IDateFormatSymbols) == IDateFormatSymbols::Probe(object)) {
-        *res = TRUE;
-        return NOERROR;
-    }
-    if (object->Probe(EIID_IDateFormatSymbols) == NULL) {
-        *res = FALSE;
-        return NOERROR;
-    }
-
-    AutoPtr<IDateFormatSymbols> rhs = (IDateFormatSymbols*) object;
-    String lpc;
-    rhs->GetLocalPatternChars(&lpc);
-    AutoPtr<ArrayOf<String> > ampms;
-    rhs->GetAmPmStrings((ArrayOf<String>**)&ampms);
-    AutoPtr<ArrayOf<String> > eras;
-    rhs->GetEras((ArrayOf<String>**)&eras);
-    AutoPtr<ArrayOf<String> > months;
-    rhs->GetMonths((ArrayOf<String>**)&months);
-    AutoPtr<ArrayOf<String> > shortMonths;
-    rhs->GetShortMonths((ArrayOf<String>**)&shortMonths);
-    AutoPtr<ArrayOf<String> > shortWeekdays;
-    rhs->GetShortWeekdays((ArrayOf<String>**)&shortWeekdays);
-    AutoPtr<ArrayOf<String> > weekdays;
-    rhs->GetWeekdays((ArrayOf<String>**)&weekdays);
-
-    *res = mLocalPatternChars.Equals(lpc) &&
-                Arrays::Equals(ampms, ampms) &&
-                Arrays::Equals(eras, eras) &&
-                Arrays::Equals(months, months) &&
-                Arrays::Equals(shortMonths, shortMonths) &&
-                Arrays::Equals(shortWeekdays, shortWeekdays) &&
-                Arrays::Equals(weekdays, weekdays) &&
-                TimeZoneStringsEqual(THIS_PROBE(IDateFormatSymbols), rhs);
-    return NOERROR;
 }
 
 ECode DateFormatSymbols::GetAvailableLocales(
     /* [out, callee] */ ArrayOf<ILocale*>** arrayOfLocales)
 {
-    // return ICUUtil::GetAvailableDateFormatSymbolsLocales(arrayOfLocales);
+    return ICUUtil::GetAvailableDateFormatSymbolsLocales(arrayOfLocales);
+}
+
+// private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+//     ois.defaultReadObject();
+
+//     Locale locale = this.locale;
+//     if (locale == null) {
+//         // Before the L release Android did not serialize the locale. Handle its absence.
+//         locale = Locale.getDefault();
+//     }
+//     this.localeData = LocaleData.get(locale);
+// }
+
+// private void writeObject(ObjectOutputStream oos) throws IOException {
+//     internalZoneStrings();
+//     oos.defaultWriteObject();
+// }
+
+ECode DateFormatSymbols::Clone(
+    /* [out] */ IInterface** instance)
+{
+    VALIDATE_NOT_NULL(instance)
+    *instance = NULL;
+
+    AutoPtr<IDateFormatSymbols> outfs;
+    if (mLocale) {
+        FAIL_RETURN(CDateFormatSymbols::New(mLocale, (IDateFormatSymbols **)&outfs));
+    }
+    else {
+        FAIL_RETURN(CDateFormatSymbols::New((IDateFormatSymbols **)&outfs));
+    }
+
+    CloneImpl(outfs);
+
+    *instance = outfs;
+    REFCOUNT_ADD(*instance);
+    return NOERROR;
+}
+
+ECode DateFormatSymbols::CloneImpl(
+    /* [in] */ IDateFormatSymbols* instance)
+{
+    assert(instance);
+    instance->SetAmPmStrings(mAmpms);
+    instance->SetEras(mEras);
+    instance->SetLocalPatternChars(mLocalPatternChars);
+    instance->SetMonths(mMonths);
+    instance->SetShortMonths(mShortMonths);
+    instance->SetShortWeekdays(mShortWeekdays);
+    instance->SetWeekdays(mWeekdays);
+
+    //DateFormatSymbols* ds = (DateFormatSymbols*)instance;
+    instance->SetZoneStrings(mZoneStrings);
+    return NOERROR;
+}
+
+ECode DateFormatSymbols::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    IDateFormatSymbols * other = IDateFormatSymbols::Probe(object);
+    if (THIS_PROBE(IDateFormatSymbols) == other) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    if (other == NULL) {
+        return NOERROR;
+    }
+
+    DateFormatSymbols * rhs = (DateFormatSymbols*)other;
+    *result = mLocalPatternChars.Equals(rhs->mLocalPatternChars) &&
+            Arrays::Equals(mAmpms, rhs->mAmpms) &&
+            Arrays::Equals(mEras, rhs->mEras) &&
+            Arrays::Equals(mMonths, rhs->mMonths) &&
+            Arrays::Equals(mShortMonths, rhs->mShortMonths) &&
+            Arrays::Equals(mShortWeekdays, rhs->mShortWeekdays) &&
+            Arrays::Equals(mWeekdays, rhs->mWeekdays) &&
+            TimeZoneStringsEqual(THIS_PROBE(IDateFormatSymbols), rhs);
+    return NOERROR;
 }
 
 Boolean DateFormatSymbols::TimeZoneStringsEqual(
     /* [in] */ IDateFormatSymbols *lhs,
     /* [in] */ IDateFormatSymbols *rhs)
 {
+    if (lhs == rhs) {
+        return TRUE;
+    }
+    if (lhs == NULL || rhs == NULL) {
+        return FALSE;
+    }
+
+    DateFormatSymbols* l = (DateFormatSymbols*)lhs;
+    DateFormatSymbols* r = (DateFormatSymbols*)rhs;
     // Quick check that may keep us from having to load the zone strings.
     // Note that different locales may have the same strings, so the opposite check isn't valid.
-    // Boolean loflag;
-    // ((CDateFormatSymbols *)lhs)->mLocale->Equals(((CDateFormatSymbols *)rhs)->mLocale, &loflag);
-    // if (loflag && ((CDateFormatSymbols *)lhs)->mZoneStrings == NULL &&
-    //     ((CDateFormatSymbols *)rhs)->mZoneStrings == NULL) {
-    //     return TRUE;
-    // }
+    AutoPtr<ArrayOf<IArrayOf*> > lzs, rzs;
+    lhs->GetZoneStrings((ArrayOf<IArrayOf*>**)&lzs);
+    rhs->GetZoneStrings((ArrayOf<IArrayOf*>**)&rzs);
 
-    // // Make sure zone strings are loaded, then check.
-    // AutoPtr<ArrayOf<IObjectContainer*> > arrays1 = ((CDateFormatSymbols *)lhs)->InternalZoneStrings();
-    // AutoPtr<ArrayOf<IObjectContainer*> > arrays2 = ((CDateFormatSymbols *)rhs)->InternalZoneStrings();
-    // if (arrays1 != NULL || arrays2 != NULL || arrays1->GetLength() != arrays2->GetLength()) {
-    //     return FALSE;
-    // }
+    if (lzs == NULL && rzs == NULL && Object::Equals(l->mLocale, r->mLocale)) {
+        return TRUE;
+    }
 
-    // Int32 n1, n2;
-    // String str1, str2;
-    // Boolean hasNext1, hasNext2;
-    // for (Int32 i = 0; i < arrays1->GetLength(); ++i) {
-    //     AutoPtr<IObjectContainer> arr1 = (*arrays1)[i];
-    //     AutoPtr<IObjectContainer> arr2 = (*arrays2)[i];
-
-    //     if (arr1.Get() == arr2.Get())
-    //         continue;
-
-    //     if (arr1 == NULL || arr2 == NULL) return FALSE;
-
-    //     arr1->GetObjectCount(&n1);
-    //     arr2->GetObjectCount(&n2);
-    //     if (n1 != n2) return FALSE;
-
-    //     AutoPtr<IObjectEnumerator> e1, e2;
-    //     arr1->GetObjectEnumerator((IObjectEnumerator**)&e1);
-    //     arr2->GetObjectEnumerator((IObjectEnumerator**)&e2);
-
-    //     for (Int32 i = 0; i < n1; ++i) {
-    //         e1->MoveNext(&hasNext1);
-    //         e2->MoveNext(&hasNext2);
-    //         if (hasNext1 != hasNext2) return FALSE;
-    //         if (!hasNext1) break;
-
-    //         AutoPtr<ICharSequence> seq1, seq2;
-    //         e1->Current((IInterface**)&seq1);
-    //         e2->Current((IInterface**)&seq2);
-    //         if (seq1 == seq2) continue;
-    //         if (seq1 == NULL) continue;
-
-    //         seq1->ToString(&str1);
-    //         seq2->ToString(&str2);
-    //         if (!str1.Equals(str2)) return FALSE;
-    //     }
-    // }
-
-    return TRUE;
+    // Make sure zone strings are loaded, then check.
+    lzs = l->InternalZoneStrings();
+    rzs = r->InternalZoneStrings();
+    return Arrays::DeepEquals(lzs, rzs);
 }
 
-ECode DateFormatSymbols::GetLongStandAloneMonths(
-    /* [out, callee] */ ArrayOf<String>** longStandAloneMonths)
+ECode DateFormatSymbols::ToString(
+    /* [out] */ String* str)
 {
-    VALIDATE_NOT_NULL(longStandAloneMonths)
+    VALIDATE_NOT_NULL(str)
 
-    *longStandAloneMonths = mLongStandAloneMonths->Clone();
-    REFCOUNT_ADD(*longStandAloneMonths)
-    return NOERROR;
-}
+    // 'locale' isn't part of the externally-visible state.
+    // 'zoneStrings' is so large, we just print a representative value.
 
-ECode DateFormatSymbols::GetShortStandAloneMonths(
-    /* [out, callee] */ ArrayOf<String>** shortStandAloneMonths)
-{
-    VALIDATE_NOT_NULL(shortStandAloneMonths)
+    StringBuilder sb;
+    sb.Append("DateFormatSymbols");
+    sb.Append("[amPmStrings=");
+    sb.Append(Arrays::ToString(mAmpms));
+    sb.Append(",eras=");
+    sb.Append(Arrays::ToString(mEras));
+    sb.Append(",localPatternChars=");
+    sb.Append(mLocalPatternChars);
+    sb.Append(",months=");
+    sb.Append(Arrays::ToString(mMonths));
+    sb.Append(",shortMonths=");
+    sb.Append(Arrays::ToString(mShortMonths));
+    sb.Append(",shortWeekdays=");
+    sb.Append(Arrays::ToString(mShortWeekdays));
+    sb.Append(",weekdays=");
+    sb.Append(Arrays::ToString(mWeekdays));
+    sb.Append(",zoneStrings=[");
+    AutoPtr<ArrayOf<IArrayOf*> > lzs = InternalZoneStrings();
+    sb.Append(Object::ToString((*lzs)[0]));
+    sb.Append("...]]");
 
-    *shortStandAloneMonths = mShortStandAloneMonths->Clone();
-    REFCOUNT_ADD(*shortStandAloneMonths)
-    return NOERROR;
-}
-
-ECode DateFormatSymbols::GetLongStandAloneWeekdays(
-    /* [out, callee] */ ArrayOf<String>** longStandAloneWeekdays)
-{
-    VALIDATE_NOT_NULL(longStandAloneWeekdays)
-
-    *longStandAloneWeekdays = mLongStandAloneWeekdays->Clone();
-    REFCOUNT_ADD(*longStandAloneWeekdays)
-    return NOERROR;
-}
-
-ECode DateFormatSymbols::GetShortStandAloneWeekdays(
-    /* [out, callee] */ ArrayOf<String>** shortStandAloneWeekdays)
-{
-    VALIDATE_NOT_NULL(shortStandAloneWeekdays)
-
-    *shortStandAloneWeekdays = mShortStandAloneWeekdays->Clone();
-    REFCOUNT_ADD(*shortStandAloneWeekdays)
-    return NOERROR;
-}
-
-ECode DateFormatSymbols::GetCustomZoneStrings(
-    /* [out] */ Boolean* customZoneStrings)
-{
-    VALIDATE_NOT_NULL(customZoneStrings);
-
-    *customZoneStrings = mCustomZoneStrings;
+    *str = sb.ToString();
     return NOERROR;
 }
 
@@ -303,7 +260,7 @@ ECode DateFormatSymbols::GetLocale(
 {
     VALIDATE_NOT_NULL(locale)
 
-    *locale = (ILocale*)mLocale;
+    *locale = mLocale;
     REFCOUNT_ADD(*locale)
     return NOERROR;
 }
@@ -313,8 +270,8 @@ ECode DateFormatSymbols::GetAmPmStrings(
 {
     VALIDATE_NOT_NULL(arrayOfStrings)
 
-    AutoPtr<ArrayOf<String> > ans = mAmpms->Clone();
-    *arrayOfStrings = ans;
+    AutoPtr<ArrayOf<String> > temp = mAmpms->Clone();
+    *arrayOfStrings = temp;
     REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
@@ -324,7 +281,8 @@ ECode DateFormatSymbols::GetEras(
 {
     VALIDATE_NOT_NULL(arrayOfStrings)
 
-    *arrayOfStrings = mEras->Clone();
+    AutoPtr<ArrayOf<String> > temp = mEras->Clone();
+    *arrayOfStrings = temp;
     REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
@@ -343,7 +301,8 @@ ECode DateFormatSymbols::GetMonths(
 {
     VALIDATE_NOT_NULL(arrayOfStrings)
 
-    *arrayOfStrings = mMonths->Clone();
+    AutoPtr<ArrayOf<String> > temp = mMonths->Clone();
+    *arrayOfStrings = temp;
     REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
@@ -353,7 +312,8 @@ ECode DateFormatSymbols::GetShortMonths(
 {
     VALIDATE_NOT_NULL(arrayOfStrings)
 
-    *arrayOfStrings = mShortMonths->Clone();
+    AutoPtr<ArrayOf<String> > temp = mShortMonths->Clone();
+    *arrayOfStrings = temp;
     REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
@@ -363,7 +323,8 @@ ECode DateFormatSymbols::GetShortWeekdays(
 {
     VALIDATE_NOT_NULL(arrayOfStrings)
 
-    *arrayOfStrings = mShortWeekdays->Clone();
+    AutoPtr<ArrayOf<String> > temp = mShortWeekdays->Clone();
+    *arrayOfStrings = temp;
     REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
@@ -373,71 +334,118 @@ ECode DateFormatSymbols::GetWeekdays(
 {
     VALIDATE_NOT_NULL(arrayOfStrings)
 
-    *arrayOfStrings = mWeekdays->Clone();
+    AutoPtr<ArrayOf<String> > temp = mWeekdays->Clone();
+    *arrayOfStrings = temp;
     REFCOUNT_ADD(*arrayOfStrings)
     return NOERROR;
 }
 
 ECode DateFormatSymbols::GetZoneStrings(
-    /* [out, callee] */ ArrayOf<IArrayOf*>** zoneStrings)
+    /* [out, callee] */ ArrayOf<IArrayOf*>** result)
 {
-    VALIDATE_NOT_NULL(zoneStrings)
+    VALIDATE_NOT_NULL(result)
     AutoPtr<ArrayOf<IArrayOf*> > strings = InternalZoneStrings();
-    // return Clone2dStringArray(strings, zoneStrings);
+    AutoPtr<ArrayOf<IArrayOf*> > copy = Clone2dStringArray(strings);
+
+    // If icu4c doesn't have a name, our array contains a null. TimeZone.getDisplayName
+    // knows how to format GMT offsets (and, unlike icu4c, has accurate data). http://b/8128460.
+    Int32 size = copy->GetLength();
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IArrayOf> zone = (*copy)[i];
+        AutoPtr<IInterface> obj;
+        zone->Get(0, (IInterface**)&obj);
+
+        String id = Object::ToString(obj);
+        AutoPtr<ITimeZone> tz;
+        TimeZone::GetTimeZone(id, (ITimeZone**)&tz);
+
+        obj = NULL;
+        zone->Get(1, (IInterface**)&obj);
+        if (obj == NULL) {
+            String name;
+            tz->GetDisplayName(FALSE, ITimeZone::LONG, mLocale, &name);
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(name);
+            zone->Set(1, csq);
+        }
+
+        obj = NULL;
+        zone->Get(2, (IInterface**)&obj);
+        if (obj == NULL) {
+            String name;
+            tz->GetDisplayName(FALSE, ITimeZone::SHORT, mLocale, &name);
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(name);
+            zone->Set(2, csq);
+        }
+
+        obj = NULL;
+        zone->Get(3, (IInterface**)&obj);
+        if (obj == NULL) {
+            String name;
+            tz->GetDisplayName(TRUE, ITimeZone::LONG, mLocale, &name);
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(name);
+            zone->Set(3, csq);
+        }
+
+
+        obj = NULL;
+        zone->Get(4, (IInterface**)&obj);
+        if (obj == NULL) {
+            String name;
+            tz->GetDisplayName(TRUE, ITimeZone::SHORT, mLocale, &name);
+            AutoPtr<ICharSequence> csq = CoreUtils::Convert(name);
+            zone->Set(4, csq);
+        }
+    }
+
+    *result = copy;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-// ECode DateFormatSymbols::Clone2dStringArray(
-//     /* [in] */ ArrayOf<IObjectContainer*>* inArray,
-//     /* [out, callee] */ ArrayOf<IObjectContainer*>** outArray)
-// {
-//     VALIDATE_NOT_NULL(inArray)
-//     VALIDATE_NOT_NULL(outArray)
+AutoPtr<ArrayOf<IArrayOf*> > DateFormatSymbols::Clone2dStringArray(
+    /* [in] */ ArrayOf<IArrayOf*>* inArray)
+{
+    assert(inArray);
 
-//     String string;
-//     AutoPtr<ArrayOf<IObjectContainer*> > result = ArrayOf<IObjectContainer*>::Alloc(inArray->GetLength());
-//     for (Int32 i = 0; i < inArray->GetLength(); ++i) {
-//         AutoPtr<IObjectContainer> bc = (*inArray)[i];
-//         if (bc == NULL) {
-//             result->Set(i, NULL);
-//             continue;
-//         }
+    Int32 size = inArray->GetLength();
+    String string;
+    AutoPtr<ArrayOf<IArrayOf*> > result = ArrayOf<IArrayOf*>::Alloc(size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IArrayOf> bc = (*inArray)[i];
+        if (bc == NULL) {
+            result->Set(i, NULL);
+            continue;
+        }
 
-//         AutoPtr<IObjectContainer> newBc;
-//         assert(0 && "TODO");
-//         // CObjectContainer::New((IObjectContainer**)&newBc);
+        Int32 subSize;
+        bc->GetLength(&subSize);
+        AutoPtr<IArrayOf> newBc;
+        CArrayOf::New(subSize, (IArrayOf**)&newBc);
 
-//         AutoPtr<IObjectEnumerator> enumerator;
-//         bc->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-//         Boolean hasNext = FALSE;
-//         while (enumerator->MoveNext(&hasNext), hasNext) {
-//             AutoPtr<ICharSequence> seq;
-//             enumerator->Current((IInterface**)&seq);
-//             seq->ToString(&string);
+        for (Int32 j = 0; j < subSize; ++j) {
+            AutoPtr<IInterface> obj;
+            bc->Get(j, (IInterface**)&obj);
+            newBc->Set(j, obj);
+        }
 
-//             AutoPtr<ICharSequence> newSeq;
-//             CStringWrapper::New(string, (ICharSequence**)&newSeq);
-//             newBc->Add(newSeq->Probe(EIID_IInterface));
-//         };
-
-//         result->Set(i, newBc);
-//     }
-
-//     *outArray = result;
-//     REFCOUNT_ADD(*outArray)
-//     return NOERROR;
-// }
+        result->Set(i, newBc);
+    }
+    return result;
+}
 
 ECode DateFormatSymbols::SetAmPmStrings(
-    /* [in] */ const ArrayOf<String>& data)
+    /* [in] */ ArrayOf<String> * data)
 {
-    mAmpms = data.Clone();
+    VALIDATE_NOT_NULL(data)
+    mAmpms = data->Clone();
     return NOERROR;
 }
 
 ECode DateFormatSymbols::SetEras(
-    /* [in] */ const ArrayOf<String>& data)
+    /* [in] */ ArrayOf<String> * data)
 {
-    mEras = data.Clone();
+    VALIDATE_NOT_NULL(data)
+    mEras = data->Clone();
     return NOERROR;
 }
 
@@ -452,30 +460,34 @@ ECode DateFormatSymbols::SetLocalPatternChars(
 }
 
 ECode DateFormatSymbols::SetMonths(
-    /* [in] */ const ArrayOf<String>& data)
+    /* [in] */ ArrayOf<String> * data)
 {
-    mMonths = data.Clone();
+    VALIDATE_NOT_NULL(data)
+    mMonths = data->Clone();
     return NOERROR;
 }
 
 ECode DateFormatSymbols::SetShortMonths(
-    /* [in] */ const ArrayOf<String>& data)
+    /* [in] */ ArrayOf<String> * data)
 {
-    mShortMonths = data.Clone();
+    VALIDATE_NOT_NULL(data)
+    mShortMonths = data->Clone();
     return NOERROR;
 }
 
 ECode DateFormatSymbols::SetShortWeekdays(
-    /* [in] */ const ArrayOf<String>& data)
+    /* [in] */ ArrayOf<String> * data)
 {
-    mShortWeekdays = data.Clone();
+    VALIDATE_NOT_NULL(data)
+    mShortWeekdays = data->Clone();
     return NOERROR;
 }
 
 ECode DateFormatSymbols::SetWeekdays(
-    /* [in] */ const ArrayOf<String>& data)
+    /* [in] */ ArrayOf<String> * data)
 {
-    mWeekdays = data.Clone();
+    VALIDATE_NOT_NULL(data)
+    mWeekdays = data->Clone();
     return NOERROR;
 }
 
@@ -487,20 +499,39 @@ ECode DateFormatSymbols::SetZoneStrings(
     }
 
     Int32 length;
-    // for (Int32 i = 0; i < zoneStrings->GetLength(); i++) {
-    //     AutoPtr<IObjectContainer> bc = (*zoneStrings)[i];
-    //     if (bc == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    for (Int32 i = 0; i < zoneStrings->GetLength(); i++) {
+        AutoPtr<IArrayOf> bc = (*zoneStrings)[i];
+        if (bc == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    //     bc->GetObjectCount(&length);
-    //     if (length < 5) {
-    //         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    //     }
-    // }
+        bc->GetLength(&length);
+        if (length < 5) {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+    }
 
-    // mZoneStrings = NULL;
-    // Clone2dStringArray(zoneStrings, (ArrayOf<IObjectContainer*>**)&mZoneStrings);
-    // mCustomZoneStrings = TRUE;
+    mZoneStrings = Clone2dStringArray(zoneStrings);
     return NOERROR;
+}
+
+ECode DateFormatSymbols::GetTimeZoneDisplayName(
+    /* [in] */ ITimeZone* tz,
+    /* [in] */ Boolean daylight,
+    /* [in] */ Int32 style,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    if (style != ITimeZone::SHORT && style != ITimeZone::LONG) {
+        //throw new IllegalArgumentException("Bad style: " + style);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    // If custom zone strings have been set with setZoneStrings() we use those. Otherwise we
+    // use the ones from LocaleData.
+    String id;
+    tz->GetID(&id);
+    AutoPtr<ArrayOf<IArrayOf*> > zoneStrings = InternalZoneStrings();
+    return TimeZoneNames::GetDisplayName(zoneStrings,id, daylight, style, result);
 }
 
 } // namespace Text

@@ -1,6 +1,6 @@
 module
 {
-    interface Elastos.Utility.IVector;
+    interface Elastos.Core.IArrayOf;
     interface Elastos.Utility.ILocale;
 
     namespace Elastos {
@@ -116,7 +116,7 @@ module
          * </ul>
          */
         GetZoneStrings(
-            [out, callee] ArrayOf<IVector*>* outarray);
+            [out, callee] ArrayOf<IArrayOf*>* outarray);
 
         /**
          * Sets the array of strings which represent AM and PM. Use the
@@ -126,7 +126,7 @@ module
          * @sa java.util.Calendar
          */
         SetAmPmStrings(
-            [in] ArrayOf<String> data);
+            [in] ArrayOf<String>* data);
 
         /**
          * Sets the array of Strings which represent BC and AD. Use the
@@ -136,7 +136,7 @@ module
          * @sa java.util.Calendar
          */
         SetEras(
-            [in] ArrayOf<String> data);
+            [in] ArrayOf<String>* data);
 
         /**
          * Sets the pattern characters used by SimpleDateFormat to specify
@@ -155,7 +155,7 @@ module
          * @sa java.util.Calendar
          */
         SetMonths(
-            [in] ArrayOf<String> data);
+            [in] ArrayOf<String>* data);
 
         /**
          * Sets the array of strings containing the abbreviated names of the months.
@@ -165,7 +165,7 @@ module
          * @sa java.util.Calendar
          */
         SetShortMonths(
-            [in] ArrayOf<String> data);
+            [in] ArrayOf<String>* data);
 
         /**
          * Sets the array of strings containing the abbreviated names of the days of
@@ -175,7 +175,7 @@ module
          * @sa java.util.Calendar
          */
         SetShortWeekdays(
-            [in] ArrayOf<String> data);
+            [in] ArrayOf<String>* data);
 
         /**
          * Sets the array of strings containing the full names of the days of the
@@ -185,7 +185,7 @@ module
          * @sa java.util.Calendar
          */
         SetWeekdays(
-            [in] ArrayOf<String> data);
+            [in] ArrayOf<String>* data);
 
         /**
          * Sets the two-dimensional array of strings containing localized names for time zones.
@@ -199,7 +199,7 @@ module
          * NullPointerException | if {zoneStrings == null}.
          */
         SetZoneStrings(
-            [in] ArrayOf<IVector*>* zoneStrings);
+            [in] ArrayOf<IArrayOf*>* zoneStrings);
     }
 
     interface IDateFormatSymbolsHelper

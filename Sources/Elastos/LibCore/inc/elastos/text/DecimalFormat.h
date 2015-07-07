@@ -14,9 +14,13 @@ using Elastos::Core::IDouble;
 namespace Elastos {
 namespace Text {
 
-class DecimalFormat : public NumberFormat
+class DecimalFormat
+    : public NumberFormat
+    , public IDecimalFormat
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DecimalFormat();
 
     virtual CARAPI ApplyLocalizedPattern(
@@ -28,6 +32,9 @@ public:
     //@Override
     CARAPI Clone(
         /* [out] */ IInterface** outobj);
+
+    CARAPI CloneImpl(
+        /* [in] */ IDecimalFormat* outobj);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,

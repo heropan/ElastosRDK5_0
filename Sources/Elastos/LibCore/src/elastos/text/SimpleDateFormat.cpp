@@ -1,30 +1,30 @@
 #include "SimpleDateFormat.h"
 #include "CDateFormatSymbols.h"
 #include "NumberFormat.h"
-// #include "CGregorianCalendar.h"
-// #include "CDate.h"
-// #include "CSimpleTimeZone.h"
-// #include "CTimeZoneHelper.h"
+#include "CGregorianCalendar.h"
+#include "CDate.h"
+#include "CSimpleTimeZone.h"
+#include "CTimeZoneHelper.h"
 #include "CInteger64.h"
 #include "CInteger32.h"
 #include "CAttributedString.h"
-// #include "CLocaleData.h"
+#include "CLocaleData.h"
 #include "CLocale.h"
-// #include "TimeZones.h"
 #include "CArrayOf.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CLocaleHelper.h"
+#include "CLocaleDataHelper.h"
 
-// using Elastos::Utility::CGregorianCalendar;
+using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::IGregorianCalendar;
 using Elastos::Utility::EIID_IDate;
 using Elastos::Utility::IDate;
-// using Elastos::Utility::CDate;
+using Elastos::Utility::CDate;
 using Elastos::Utility::ISimpleTimeZone;
-// using Elastos::Utility::CSimpleTimeZone;
+using Elastos::Utility::CSimpleTimeZone;
 using Elastos::Utility::ITimeZoneHelper;
-// using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Elastos::Core::EIID_INumber;
@@ -41,15 +41,14 @@ using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Text::IDecimalFormatSymbols;
 using Libcore::ICU::ILocaleData;
-// using Libcore::ICU::CLocaleData;
+using Libcore::ICU::CLocaleData;
 using Libcore::ICU::ILocaleDataHelper;
-// using Libcore::ICU::CLocaleDataHelper;
+using Libcore::ICU::CLocaleDataHelper;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::CLocale;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ITimeZoneNames;
-// using Libcore::ICU::TimeZones;
 
 namespace Elastos {
 namespace Text {
@@ -504,7 +503,7 @@ ECode SimpleDateFormat::Append(
     }
     if (fields != NULL) {
         AutoPtr<IFieldPosition> newPosition;
-        CFieldPosition::New(dateFormatField, (IFieldPosition**)&newPosition);
+        //CFieldPosition::New(dateFormatField, (IFieldPosition**)&newPosition);
         newPosition->SetBeginIndex(beginPosition);
         newPosition->SetEndIndex(buffer->GetLength());
         fields->PushBack(newPosition);
@@ -570,13 +569,11 @@ ECode SimpleDateFormat::AppendTimeZone(
         Boolean daylight = (pValue != 0) ? TRUE : FALSE;
         Int32 style = (count < 4) ? 0 : 1;
         Boolean customZoneStrings;
-        assert(0 && "TODO");
-        // mFormatData->GetCustomZoneStrings(&customZoneStrings);
+        //mFormatData->GetCustomZoneStrings(&customZoneStrings);
         if (!customZoneStrings) {
             String name;
             AutoPtr<ILocale> locale;
-            assert(0 && "TODO");
-            // mFormatData->GetLocale((ILocale**)&locale);
+            //mFormatData->GetLocale((ILocale**)&locale);
             tz->GetDisplayName(daylight, style, (ILocale*)locale, &name);
             (*buffer) += name;
             return NOERROR;

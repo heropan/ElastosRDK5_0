@@ -11,8 +11,10 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 
 SOURCES = CAnnotation.cpp
 SOURCES += AttributedCharacterIteratorAttribute.cpp

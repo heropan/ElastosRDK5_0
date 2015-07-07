@@ -1,9 +1,9 @@
 
 #include "RuleBasedCollator.h"
 #include "CCollationElementIterator.h"
-// #include "CRuleBasedCollatorICU.h"
+#include "CRuleBasedCollatorICU.h"
 
-// using Libcore::ICU::CRuleBasedCollatorICU;
+using Libcore::ICU::CRuleBasedCollatorICU;
 
 namespace Elastos {
 namespace Text {
@@ -24,8 +24,7 @@ ECode RuleBasedCollator::constructor(
         return E_PARSE_EXCEPTION;;
     }
     //try {
-    assert(0 && "TODO");
-    // FAIL_RETURN(CRuleBasedCollatorICU::New(rules, (IRuleBasedCollatorICU**)&mICUColl));
+    FAIL_RETURN(CRuleBasedCollatorICU::New(rules, (IRuleBasedCollatorICU**)&mICUColl));
     //} catch (Exception e) {
     //    if (e instanceof ParseException) {
     //        throw (ParseException) e;
