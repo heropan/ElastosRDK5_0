@@ -165,6 +165,10 @@ ECode NumberFormat::GetCurrencyInstance(
     VALIDATE_NOT_NULL(instance);
     *instance = NULL;
 
+    if (locale == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
     AutoPtr<ILocaleDataHelper> helper;
     CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
@@ -190,6 +194,10 @@ ECode NumberFormat::GetIntegerInstance(
 {
     VALIDATE_NOT_NULL(instance);
     *instance = NULL;
+
+    if (locale == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
     AutoPtr<INumberFormat> result;
     AutoPtr<ILocaleDataHelper> datahelper;
@@ -286,6 +294,10 @@ ECode NumberFormat::GetNumberInstance(
     VALIDATE_NOT_NULL(instance);
     *instance = NULL;
 
+    if (locale == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
     AutoPtr<ILocaleDataHelper> helper;
     CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
@@ -311,6 +323,10 @@ ECode NumberFormat::GetPercentInstance(
 {
     VALIDATE_NOT_NULL(instance);
     *instance = NULL;
+
+    if (locale == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
 
     AutoPtr<ILocaleDataHelper> helper;
     CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);

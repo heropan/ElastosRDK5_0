@@ -29,9 +29,7 @@ ECode RuleBasedCollator::constructor(
     if (rules.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (rules.IsEmpty()) {
-        return E_PARSE_EXCEPTION;;
-    }
+
     //try {
     FAIL_RETURN(CRuleBasedCollatorICU::New(rules, (IRuleBasedCollatorICU**)&mICUColl));
     //} catch (Exception e) {

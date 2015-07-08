@@ -194,6 +194,9 @@ ECode BreakIterator::GetPreceding(
 ECode BreakIterator::SetText(
     /* [in] */ const String& newText)
 {
+    if (newText.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
     return mWrapped->SetText(newText);
 }
 

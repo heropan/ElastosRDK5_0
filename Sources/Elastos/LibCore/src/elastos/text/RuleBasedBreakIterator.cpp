@@ -34,13 +34,19 @@ ECode RuleBasedBreakIterator::GetFollowing(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    FAIL_RETURN(ValidateOffset(offset));
+    FAIL_RETURN(CheckOffset(offset));
     return mWrapped->GetFollowing(offset, position);
 }
 
-ECode RuleBasedBreakIterator::ValidateOffset(
+ECode RuleBasedBreakIterator::CheckOffset(
     /* [in] */ Int32 offset)
 {
+    Boolean hasNext;
+    mWrapped->HasText(&hasNext);
+    if (!hasNext) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     AutoPtr<ICharacterIterator> it;
     mWrapped->GetText((ICharacterIterator **)&it);
     Int32 beginIndex, endIndex;
@@ -85,7 +91,6 @@ ECode RuleBasedBreakIterator::GetNext(
     /* [in] */ Int32 n,
     /* [out] */ Int32* position)
 {
-    VALIDATE_NOT_NULL(position);
     return mWrapped->GetNext(n,position);
 }
 
@@ -98,6 +103,9 @@ ECode RuleBasedBreakIterator::GetPrevious(
 ECode RuleBasedBreakIterator::SetText(
     /* [in] */ const String& newText)
 {
+    if (newText.IsNull()) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
     return BreakIterator::SetText(newText);
 }
 
@@ -115,7 +123,7 @@ ECode RuleBasedBreakIterator::IsBoundary(
     /* [out] */ Boolean* isBoundary)
 {
     VALIDATE_NOT_NULL(isBoundary);
-    FAIL_RETURN(ValidateOffset(offset));
+    FAIL_RETURN(CheckOffset(offset));
     return mWrapped->IsBoundary(offset,isBoundary);
 }
 
@@ -130,7 +138,7 @@ ECode RuleBasedBreakIterator::GetPreceding(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
-    FAIL_RETURN(ValidateOffset(offset));
+    FAIL_RETURN(CheckOffset(offset));
     return mWrapped->GetPreceding(offset, position);
 }
 

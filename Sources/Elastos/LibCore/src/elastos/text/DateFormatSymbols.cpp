@@ -12,6 +12,7 @@
 #include "CoreUtils.h"
 #include "TimeZone.h"
 #include "CArrayOf.h"
+#include "LocaleData.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_ICloneable;
@@ -28,6 +29,7 @@ using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleData;
+using Libcore::ICU::LocaleData;
 using Libcore::ICU::ICUUtil;
 using Libcore::ICU::TimeZoneNames;
 
@@ -65,7 +67,7 @@ ECode DateFormatSymbols::constructor()
 ECode DateFormatSymbols::constructor(
     /* [in] */ ILocale* locale)
 {
-    mLocale = locale;
+    mLocale = LocaleData::MapInvalidAndNullLocales(locale);;
     mLocalPatternChars = ISimpleDateFormat_PATTERN_CHARS;
 
     AutoPtr<ILocaleDataHelper> localeDataHelper;

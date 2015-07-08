@@ -9,6 +9,7 @@
 #include "CInteger32.h"
 #include "CAttributedString.h"
 #include "CLocaleData.h"
+#include "LocaleData.h"
 #include "CLocale.h"
 #include "CArrayOf.h"
 #include "CFieldPosition.h"
@@ -16,6 +17,8 @@
 #include "CLocaleHelper.h"
 #include "CLocaleDataHelper.h"
 #include "CSimpleDateFormat.h"
+#include "TimeZone.h"
+#include "Math.h"
 
 using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::IGregorianCalendar;
@@ -28,6 +31,7 @@ using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::TimeZone;
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
@@ -41,6 +45,7 @@ using Elastos::Core::ICloneable;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Text::IDecimalFormatSymbols;
+using Libcore::ICU::LocaleData;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::CLocaleData;
 using Libcore::ICU::ILocaleDataHelper;
@@ -84,7 +89,7 @@ ECode SimpleDateFormat::constructor(
     return NOERROR;
 }
 
-ECode SimpleDateFormat::ValidateFormat(
+ECode SimpleDateFormat::ValidatePatternCharacter(
     /* [in] */ Char32 format)
 {
     Int32 index = PATTERN_CHARS.IndexOf(format);
@@ -106,7 +111,7 @@ ECode SimpleDateFormat::ValidatePattern(
         next = (*charArray)[i];
         if (next == '\'') {
             if (count > 0) {
-                ValidateFormat((Char32) last);
+                ValidatePatternCharacter((Char32) last);
                 count = 0;
             }
             if (last == next) {
@@ -123,21 +128,21 @@ ECode SimpleDateFormat::ValidatePattern(
                 count++;
             } else {
                 if (count > 0) {
-                    ValidateFormat((Char32) last);
+                    ValidatePatternCharacter((Char32) last);
                 }
                 last = next;
                 count = 1;
             }
         } else {
             if (count > 0) {
-                ValidateFormat((Char32) last);
+                ValidatePatternCharacter((Char32) last);
                 count = 0;
             }
             last = -1;
         }
     }
     if (count > 0) {
-        ValidateFormat((Char32) last);
+        ValidatePatternCharacter((Char32) last);
     }
 
     if (quote) {
@@ -304,7 +309,8 @@ ECode SimpleDateFormat::FormatImpl(
     Int32 next = 0, last = -1, count = 0;
     mCalendar->SetTime(date);
     if (field != NULL) {
-        field->Clear();
+        field->SetBeginIndex(0);
+        field->SetEndIndex(0);
     }
 
     AutoPtr<ArrayOf<Char32> > charArray = mPattern.GetChars();
@@ -428,7 +434,7 @@ ECode SimpleDateFormat::Append(
             dateFormatField = DateFormat::Field::MILLISECOND;
             Int32 value;
             mCalendar->Get(ICalendar::MILLISECOND, &value);
-            AppendNumber(buffer, count, value);
+            AppendMilliseconds(buffer, count, value);
             break;
         case STAND_ALONE_DAY_OF_WEEK_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_WEEK;
@@ -479,7 +485,7 @@ ECode SimpleDateFormat::Append(
             break;
         case RFC_822_TIMEZONE_FIELD: // Z
             dateFormatField = DateFormat::Field::TIME_ZONE;
-            AppendNumericTimeZone(buffer, FALSE);
+            AppendNumericTimeZone(buffer, count, FALSE);
             break;
     }
 
@@ -519,8 +525,36 @@ ECode SimpleDateFormat::AppendDayOfWeek(
 {
     Int32 pValue;
     mCalendar->Get(ICalendar::DAY_OF_WEEK, &pValue);
-    // Boolean isLong = (count > 3);
-    // (*buffer) += isLong ? (*longs)[pValue] : (*shorts)[pValue];
+
+    AutoPtr<ILocaleData> ld = ((DateFormatSymbols*)mFormatData.Get())->mLocaleData;
+    AutoPtr<ArrayOf<String> > days;
+    if (count == 4) {
+        if (standAlone) {
+            ld->GetLongStandAloneWeekdayNames((ArrayOf<String>**)&days);
+        }
+        else {
+            mFormatData->GetWeekdays((ArrayOf<String>**)&days);
+        }
+    }
+    else if (count == 5) {
+        if (standAlone) {
+            ld->GetTinyStandAloneWeekdayNames((ArrayOf<String>**)&days);
+        }
+        else {
+            ld->GetTinyWeekdayNames((ArrayOf<String>**)&days);
+        }
+    }
+    else {
+        if (standAlone) {
+            ld->GetShortStandAloneWeekdayNames((ArrayOf<String>**)&days);
+        }
+        else {
+            mFormatData->GetShortWeekdays((ArrayOf<String>**)&days);
+        }
+    }
+
+    buffer->Append((*days)[pValue]);
+
     return NOERROR;
 }
 
@@ -591,11 +625,12 @@ ECode SimpleDateFormat::AppendTimeZone(
     }
 
     // We didn't find what we were looking for, so default to a numeric time zone.
-    return AppendNumericTimeZone(buffer, generalTimeZone);
+    return AppendNumericTimeZone(buffer, count, generalTimeZone);
 }
 
 ECode SimpleDateFormat::AppendNumericTimeZone(
     /* [in] */ StringBuffer* buffer,
+    /* [in] */ Int32 count,
     /* [in] */ Boolean generalTimeZone)
 {
     assert(buffer != NULL);
@@ -603,21 +638,38 @@ ECode SimpleDateFormat::AppendNumericTimeZone(
     Int32 pValue1, pValue2;
     mCalendar->Get(ICalendar::ZONE_OFFSET, &pValue1);
     mCalendar->Get(ICalendar::DST_OFFSET, &pValue2);
-    Int32 offset = pValue1 + pValue2;
-    Char32 sign = '+';
-    if (offset < 0) {
-        sign = '-';
-        offset = -offset;
+    Int32 offsetMillis = pValue1 + pValue2;
+    Boolean includeGmt = generalTimeZone || count == 4;
+    Boolean includeMinuteSeparator = generalTimeZone || count >= 4;
+
+    buffer->Append(TimeZone::CreateGmtOffsetString(includeGmt,  includeMinuteSeparator,
+            offsetMillis));
+    return NOERROR;
+}
+
+ECode SimpleDateFormat::AppendMilliseconds(
+    /* [in] */ StringBuffer* buffer,
+    /* [in] */ Int32 count,
+    /* [in] */ Int32 value)
+{
+    // Unlike other fields, milliseconds are truncated by count. So 361 formatted SS is "36".
+    mNumberFormat->SetMinimumIntegerDigits((count > 3) ? 3 : count);
+    mNumberFormat->SetMaximumIntegerDigits(10);
+    // We need to left-justify.
+    if (count == 1) {
+        value /= 100;
     }
-    if (generalTimeZone) {
-        (*buffer) += "GMT";
+    else if (count == 2) {
+        value /= 10;
     }
-    (*buffer) += sign;
-    AppendNumber(buffer, 2, offset / 3600000);
-    if (generalTimeZone) {
-        (*buffer) += ':';
+
+    AutoPtr<IFieldPosition> fp;
+    CFieldPosition::New(0, (IFieldPosition**)&fp);
+    mNumberFormat->Format((Int64)value, (IStringBuffer*)buffer, fp);
+    if (count > 3) {
+        mNumberFormat->SetMinimumIntegerDigits(count - 3);
+        mNumberFormat->Format((Int64)0, (IStringBuffer*)buffer, fp);
     }
-    AppendNumber(buffer, 2, (offset % 3600000) / 60000);
     return NOERROR;
 }
 
@@ -774,8 +826,7 @@ ECode SimpleDateFormat::Parse(
             field = ICalendar::SECOND;
             break;
         case IDateFormat::MILLISECOND_FIELD:
-            field = ICalendar::MILLISECOND;
-            break;
+            return ParseFractionalSeconds(string, offset, absolute, value);
         case STAND_ALONE_DAY_OF_WEEK_FIELD:
             return ParseDayOfWeek(string, offset, TRUE, value);
         case IDateFormat::DAY_OF_WEEK_FIELD:
@@ -824,6 +875,42 @@ ECode SimpleDateFormat::Parse(
     }
     *value = offset;
     return NOERROR;
+}
+
+
+ECode SimpleDateFormat::ParseFractionalSeconds(
+    /* [in] */ const String& string,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 count,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<IParsePosition> parsePosition;
+    CParsePosition::New(offset, (IParsePosition**)&parsePosition);
+
+    AutoPtr<INumber> fractionalSeconds;
+    FAIL_RETURN(ParseNumber(count, string, parsePosition, (INumber**)&fractionalSeconds))
+    if (fractionalSeconds == NULL) {
+        Int32 ival;
+        parsePosition->GetErrorIndex(&ival);
+        *result = -ival - 1;
+        return NOERROR;
+    }
+
+    // NOTE: We could've done this using two parses instead. The first parse
+    // looking at |count| digits (to verify the date matched the format), and
+    // then a second parse that consumed just the first three digits. That
+    // would've avoided the floating point arithmetic, but would've demanded
+    // that we round values ourselves.
+    Double dval;
+    fractionalSeconds->DoubleValue(&dval);
+    Int32 numDigitsParsed;
+    parsePosition->GetIndex(&numDigitsParsed);
+    numDigitsParsed -= offset;
+    Double divisor = Elastos::Core::Math::Pow(10, numDigitsParsed);
+
+    mCalendar->Set(ICalendar::MILLISECOND, (Int32) ((dval / divisor) * 1000));
+    return parsePosition->GetIndex(result);
 }
 
 ECode SimpleDateFormat::ParseDayOfWeek(
@@ -1010,40 +1097,7 @@ ECode SimpleDateFormat::ParseNumber(
     }
     if (max == 0) {
         position->SetIndex(index);
-        AutoPtr<INumber> n;
-        mNumberFormat->Parse(string, position, (INumber **)&n);
-
-        // In RTL locales, NumberFormat might have parsed "2012-" in an ISO date as the
-        // negative number -2012.
-        // Ideally, we wouldn't have this broken API that exposes a NumberFormat and expects
-        // us to use it. The next best thing would be a way to ask the NumberFormat to parse
-        // positive numbers only, but icu4c supports negative (BCE) years. The best we can do
-        // is try to recognize when icu4c has done this, and undo it.
-        Int64 val = 0;
-        if (n != NULL && (n->Int64Value(&val) ,val < 0)) {
-            if (mNumberFormat->Probe(EIID_IDecimalFormat) != NULL) {
-                AutoPtr<IDecimalFormat> df = (IDecimalFormat *) mNumberFormat->Probe(EIID_IDecimalFormat);
-                Int32 indnum = 0;
-                position->GetIndex(&indnum);
-                Char32 lastChar = string.GetChar(indnum - 1);
-                AutoPtr<IDecimalFormatSymbols> structdf;
-                df->GetDecimalFormatSymbols((IDecimalFormatSymbols **)&structdf);
-                Char32 minusSign = 0;
-                structdf->GetMinusSign(&minusSign);
-                if (lastChar == minusSign) {
-                    Int64 lvalue = 0;
-                    n->Int64Value(&lvalue);
-                    lvalue = -lvalue;
-                    n = NULL;
-                    CInteger64::New(lvalue,(IInteger64 **)&n);
-                    // n = Long.valueOf(-n.longValue()); // Make the value positive.
-                    position->SetIndex(indnum - 1); // Spit out the negative sign.
-                }
-            }
-        }
-        *number = n;
-        REFCOUNT_ADD(*number);
-        return NOERROR;
+        return mNumberFormat->Parse(string, position, number);
     }
 
     result = 0;
@@ -1097,30 +1151,44 @@ ECode SimpleDateFormat::ParseNumber(
 ECode SimpleDateFormat::ParseText(
     /* [in] */ const String& string,
     /* [in] */ Int32 offset,
-    /* [in] */ ArrayOf<String>* text,
+    /* [in] */ ArrayOf<String>* options,
     /* [in] */ Int32 field,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
 
-    Int32 found = -1;
-    for (Int32 i = 0; i < text->GetLength(); i++) {
-        if ((*text)[i].IsEmpty()) {
+    // We search for the longest match, in case some entries are substrings of others.
+    Int32 bestIndex = -1;
+    Int32 bestLength = -1;
+    for (Int32 i = 0; i < options->GetLength(); ++i) {
+        String option = (*options)[i];
+        Int32 optionLength = option.GetLength();
+        if (optionLength == 0) {
             continue;
         }
-        if ( string.Substring( offset, (*text)[i].GetLength() + offset )
-                .EqualsIgnoreCase( (*text)[i].Substring(0, (*text)[i].GetLength() ) ) ) {
-            // Search for the longest match, in case some fields are subsets
-            if (found == -1 || (*text)[i].GetLength() > (*text)[found].GetLength()) {
-                found = i;
+        if (string.RegionMatchesIgnoreCase(offset, option, 0, optionLength)) {
+            if (bestIndex == -1 || optionLength > bestLength) {
+                bestIndex = i;
+                bestLength = optionLength;
+            }
+        }
+        else if (option.GetChar(optionLength - 1) == '.') {
+            // If CLDR has abbreviated forms like "Aug.", we should accept "Aug" too.
+            // https://code.google.com/p/android/issues/detail?id=59383
+            if (string.RegionMatchesIgnoreCase(offset, option, 0, optionLength - 1)) {
+                if (bestIndex == -1 || optionLength - 1 > bestLength) {
+                    bestIndex = i;
+                    bestLength = optionLength - 1;
+                }
             }
         }
     }
-    if (found != -1) {
-        mCalendar->Set(field, found);
-        *value = offset + (*text)[found].GetLength();
+    if (bestIndex != -1) {
+        mCalendar->Set(field, bestIndex);
+        *value = offset + bestLength;
         return NOERROR;
     }
+
     *value = -offset - 1;
     return NOERROR;
 }
@@ -1219,7 +1287,6 @@ ECode SimpleDateFormat::ParseTimeZone(
                 // above, so we can just ignore these cases. http://b/8128460.
                 continue;
             }
-
 
             if (string.RegionMatchesIgnoreCase(offset, zoneStr, 0, zoneStr.GetLength())) {
                 AutoPtr<ITimeZone> zone;

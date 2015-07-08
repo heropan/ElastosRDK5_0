@@ -140,7 +140,7 @@ public:
     CARAPI SetExponentSeparator(
         /* [in] */ const String& value);
 
-    virtual CARAPI GetMinusSignString(
+    CARAPI GetMinusSignString(
         /* [out] */ String* rst);
 
 /*    private static ObjectStreamField[] serialPersistentFields = {

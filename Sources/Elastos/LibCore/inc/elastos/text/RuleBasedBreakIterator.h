@@ -76,7 +76,7 @@ public:
 
 private:
 
-    CARAPI ValidateOffset(
+    CARAPI CheckOffset(
         /* [in] */ Int32 offset);
 };
 

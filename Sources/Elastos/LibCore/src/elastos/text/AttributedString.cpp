@@ -736,7 +736,7 @@ ECode AttributedString::AddAttribute(
         //throw new NullPointerException("attribute == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (mText.GetByteLength() == 0) {
+    if (mText.IsEmpty()) {
         //throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

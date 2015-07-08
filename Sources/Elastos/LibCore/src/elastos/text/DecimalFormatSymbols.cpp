@@ -6,15 +6,17 @@
 #include "CLocaleDataHelper.h"
 #include "ICUUtil.h"
 #include "Currency.h"
+#include "LocaleData.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
 using Libcore::ICU::ICUUtil;
 using Elastos::Utility::CLocale;
+using Elastos::Utility::Currency;
+using Libcore::ICU::LocaleData;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
-using Elastos::Utility::Currency;
 
 namespace Elastos {
 namespace Text {
@@ -49,7 +51,7 @@ ECode DecimalFormatSymbols::constructor(
     localeData->GetInfinity(&mInfinity);
     localeData->GetNaN(&mNaN);
     localeData->GetExponentSeparator(&mExponentSeparator);
-    mLocale = locale;
+    mLocale = LocaleData::MapInvalidAndNullLocales(locale);
     ECode ec = Currency::GetInstance(locale, (ICurrency**)&mCurrency);
     if (SUCCEEDED(ec)) {
         mCurrency->GetSymbol(locale, &mCurrencySymbol);

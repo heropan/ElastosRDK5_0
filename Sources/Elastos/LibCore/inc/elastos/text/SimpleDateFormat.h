@@ -96,7 +96,7 @@ public:
         /* [in] */ ISimpleDateFormat* object);
 
 private:
-    CARAPI ValidateFormat(
+    CARAPI ValidatePatternCharacter(
         /* [in] */ Char32 format);
 
     CARAPI ValidatePattern(
@@ -139,7 +139,13 @@ private:
 
     CARAPI AppendNumericTimeZone(
         /* [in] */ StringBuffer* buffer,
+        /* [in] */ Int32 count,
         /* [in] */ Boolean generalTimeZone);
+
+    CARAPI AppendMilliseconds(
+        /* [in] */ StringBuffer* buffer,
+        /* [in] */ Int32 count,
+        /* [in] */ Int32 value);
 
     CARAPI AppendNumber(
         /* [in] */ StringBuffer* buffer,
@@ -198,6 +204,12 @@ private:
         /* [in] */ const String& string,
         /* [in] */ Int32 offset,
         /* [out] */ Int32* value);
+
+    CARAPI ParseFractionalSeconds(
+        /* [in] */ const String& buffer,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 count,
+        /* [out] */ Int32* result);
 
     static CARAPI ConvertPattern(
         /* [in] */ const String& tem,
