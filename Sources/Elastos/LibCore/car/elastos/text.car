@@ -26,18 +26,12 @@ module
     merge("text/ISimpleDateFormat.car");
     merge("text/IStringCharacterIterator.car");
 
-    merge("text/spi/IBreakIteratorProvider.car");
-    merge("text/spi/ICollatorProvider.car");
-    merge("text/spi/IDateFormatProvider.car");
-    merge("text/spi/IDateFormatSymbolsProvider.car");
-    merge("text/spi/IDecimalFormatSymbolsProvider.car");
-    merge("text/spi/INumberFormatProvider.car");
-
     interface Elastos.Core.ICloneable;
     interface Elastos.Core.IComparator;
     interface Elastos.Text.IAnnotation;
     interface Elastos.Text.IAttributedCharacterIteratorAttribute;
     interface Elastos.IO.ISerializable;
+    interface Elastos.Utility.ILocale;
     interface Libcore.ICU.INativeBreakIterator;
     interface Libcore.ICU.ICollationElementIteratorICU;
     interface Libcore.ICU.IRuleBasedCollatorICU;
