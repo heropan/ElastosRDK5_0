@@ -139,6 +139,9 @@ public:
     virtual CARAPI SetExponentSeparator(
         /* [in] */ const String& value);
 
+    virtual CARAPI GetMinusSignString(
+        /* [out] */ String* rst);
+
 /*    private static ObjectStreamField[] serialPersistentFields = {
         new ObjectStreamField("currencySymbol", String.class),
         new ObjectStreamField("decimalSeparator", char.class),

@@ -69,8 +69,8 @@ String DateIntervalFormat::FormatDateRange(
     /* [in] */ Int64 endMs,
     /* [in] */ Int32 flags)
 {
-    AutoPtr<ICalendarHelper> calendarHelper = NULL;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    AutoPtr<CCalendarHelper> calendarHelper = NULL;
+    CCalendarHelper::AcquireSingletonByFriend((CCalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> startCallendar = NULL;
     calendarHelper->GetInstance(tz, (ICalendar**)&startCallendar);
     startCallendar->SetTimeInMillis(startMs);
@@ -270,8 +270,8 @@ Boolean DateIntervalFormat::IsThisYear(
     AutoPtr<ITimeZone> timeZone;
     c->GetTimeZone((ITimeZone**)&timeZone);
     AutoPtr<ICalendar> now;
-    AutoPtr<ICalendarHelper> calendarHelper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    AutoPtr<CCalendarHelper> calendarHelper;
+    CCalendarHelper::AcquireSingletonByFriend((CCalendarHelper**)&calendarHelper);
     calendarHelper->GetInstance(timeZone, (ICalendar**)&now);
     return GetField(c, ICalendar::YEAR) == GetField(now, ICalendar::YEAR);
 }

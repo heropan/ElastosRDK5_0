@@ -3,13 +3,13 @@
 #include "CStringWrapper.h"
 #include "AutoLock.h"
 #include "CFile.h"
-// #include "utility/CCollections.h"
+#include "utility/Collections.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Utility::IList;
 using Elastos::Utility::ICollections;
-// using Elastos::Utility::CCollections;
+using Elastos::Utility::Collections;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 
@@ -56,10 +56,8 @@ DeleteOnExit::DeleteOnExit()
 
 ECode DeleteOnExit::Run()
 {
-    AutoPtr<ICollections> col;
-    // CCollections::AcquireSingleton((ICollections**)&col);
     AutoPtr<IList> list = IList::Probe(mFiles);
-    col->Sort(list);
+    Collections::Sort(list);
     Int32 size;
     AutoPtr<ICollection> collection = ICollection::Probe(mFiles);
     collection->GetSize(&size);

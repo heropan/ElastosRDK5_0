@@ -170,12 +170,12 @@ ECode CIoBridge::ConnectErrno(
     //      waiting, or whether we've seen a permanent failure and should give up,
     //   4. set the socket back to blocking.
 
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+    AutoPtr<CSystem> system;
+    Elastos::Core::CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     // 1. set the socket to non-blocking.
-    AutoPtr<IIoUtils> utils;
-    CIoUtils::AcquireSingleton((IIoUtils**)&utils);
+    AutoPtr<CIoUtils> utils;
+    CIoUtils::AcquireSingletonByFriend((CIoUtils**)&utils);
     utils->SetBlocking(fd, FALSE); // TODO::
 
     // 2. call connect(2) non-blocking.
@@ -221,8 +221,8 @@ ECode CIoBridge::_CloseAndSignalBlockedThreads(
         // Socket.close doesn't throw if you try to close an already-closed socket.
         return NOERROR;
     }
-    AutoPtr<IAsynchronousCloseMonitor> monitor;
-    CAsynchronousCloseMonitor::AcquireSingleton((IAsynchronousCloseMonitor**)&monitor);
+    AutoPtr<CAsynchronousCloseMonitor> monitor;
+    CAsynchronousCloseMonitor::AcquireSingletonByFriend((CAsynchronousCloseMonitor**)&monitor);
     monitor->SignalBlockedThreads(fd);
     // try {
     return CLibcore::sOs->Close(fd);
@@ -740,8 +740,8 @@ ECode CIoBridge::_Open(
 
 FILE_NOT_FOUND:
     if (*fd != NULL) {
-        AutoPtr<IIoUtils> utils;
-        CIoUtils::AcquireSingleton((IIoUtils**)&utils);
+        AutoPtr<CIoUtils> utils;
+        CIoUtils::AcquireSingletonByFriend((CIoUtils**)&utils);
         utils->Close(*fd); //TODO::
     }
     return E_LIBCORE_FILE_NOT_FOUND_EXCEPTION;

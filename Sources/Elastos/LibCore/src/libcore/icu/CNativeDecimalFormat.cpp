@@ -8,13 +8,11 @@
 #include "AutoLock.h"
 #include "CLocaleData.h"
 #include "CDouble.h"
-#if 0 // for compiling
-#include "CObjectContainer.h"
-#endif
 #include "CInteger64.h"
 #include "CBigDecimalHelper.h"
 #include "CBigDecimal.h"
 #include "CNumberFormatField.h"
+#include "DecimalFormatSymbols.h"
 
 using Elastos::Core::EIID_INumber;
 using Elastos::Core::EIID_IDouble;
@@ -28,12 +26,12 @@ using Elastos::Math::EIID_IBigDecimal;
 using Elastos::Math::IBigDecimalHelper;
 using Elastos::Math::CBigDecimalHelper;
 using Elastos::Math::CBigDecimal;
-// using Elastos::Math::RoundingMode;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Text::CNumberFormatField;
 using Elastos::Text::IFormatField;
+using Elastos::Text::DecimalFormatSymbols;
 
 namespace Libcore {
 namespace ICU {
@@ -220,11 +218,7 @@ ECode CNativeDecimalFormat::constructor(
     String internationalCurrencySymbol;
     dfs->GetInternationalCurrencySymbol(&internationalCurrencySymbol);
     String minusSign;
-#if 0 // TODO: Waiting for IDecimalFormatSymbols
-    dfs->GetMinusSignString(&minusSign);
-#else
-    assert(0);
-#endif
+    ((Elastos::Text::DecimalFormatSymbols*)dfs)->GetMinusSignString(&minusSign);
     Char32 monetaryDecimalSeparator;
     dfs->GetMonetaryDecimalSeparator(&monetaryDecimalSeparator);
     String naN;
@@ -320,11 +314,7 @@ ECode CNativeDecimalFormat::SetDecimalFormatSymbols(
     String internationalCurrencySymbol;
     dfs->GetInternationalCurrencySymbol(&internationalCurrencySymbol);
     String minusSign;
-#if 0 // TODO: Waiting for IDecimalFormatSymbols
-    dfs->GetMinusSignString(&minusSign);
-#else
-    assert(0);
-#endif
+    ((Elastos::Text::DecimalFormatSymbols*)dfs)->GetMinusSignString(&minusSign);
     Char32 monetaryDecimalSeparator;
     dfs->GetMonetaryDecimalSeparator(&monetaryDecimalSeparator);
     String NaN;

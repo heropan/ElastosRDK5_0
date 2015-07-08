@@ -29,6 +29,7 @@ using Elastos::Text::IDateFormat;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::IFormatter;
 using Elastos::Utility::CFormatter;
+using Elastos::Core::CSystem;
 
 CAR_INTERFACE_IMPL(ZoneInfo::OffsetInterval, Object, IOffsetInterval)
 
@@ -208,8 +209,8 @@ ZoneInfo::ZoneInfo(
     // no future plans (and thus no future schedule info) will report "true" from
     // useDaylightTime at the start of 2009 but "false" at the end. This seems appropriate.
 
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+    AutoPtr<CSystem> system;
+    Elastos::Core::CSystem::AcquireSingletonByFriend((CSystem**)&system);
 
     Boolean usesDst = FALSE;
     Int64 currentUnixTime;

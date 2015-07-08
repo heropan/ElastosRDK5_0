@@ -459,5 +459,12 @@ ECode DecimalFormatSymbols::Equals(
     return NOERROR;
 }
 
+ECode DecimalFormatSymbols::GetMinusSignString(
+    /* [out] */ String* rst)
+{
+    *rst = mMinusSign;
+    return NOERROR;
+}
+
 } // namespace Text
 } // namespace Elastos
