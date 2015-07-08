@@ -1,13 +1,12 @@
 #include "Collator.h"
 #include "CRuleBasedCollator.h"
-#include "CLocaleHelper.h"
+#include "CLocale.h"
 #include "ICUUtil.h"
 #include "CRuleBasedCollatorICU.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::EIID_IComparator;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CLocale;
 using Libcore::ICU::ICUUtil;
 using Libcore::ICU::CRuleBasedCollatorICU;
 using Elastos::Core::ICharSequence;
@@ -34,10 +33,8 @@ ECode Collator::CloneImpl(
 
 ECode Collator::constructor()
 {
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    localeHelper->GetDefault((ILocale**)&locale);
+
+    AutoPtr<ILocale> locale = CLocale::GetDefault();
     CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&mICUColl);
     return NOERROR;
 }
@@ -55,16 +52,9 @@ ECode Collator::Compare(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoPtr<ICharSequence> cs;
-    String s1(NULL), s2(NULL);
-    if (object1 != NULL && object1->Probe(EIID_ICharSequence) != NULL) {
-        cs = (ICharSequence*)object1->Probe(EIID_ICharSequence);
-        cs->ToString(&s1);
-    }
-    if (object2 != NULL && object2->Probe(EIID_ICharSequence) != NULL) {
-        cs = (ICharSequence*)object2->Probe(EIID_ICharSequence);
-        cs->ToString(&s2);
-    }
+
+    String s1 = Object::ToString(object1);
+    String s2 = Object::ToString(object2);
     return Compare(s1, s2, result);
 }
 
@@ -77,7 +67,6 @@ ECode Collator::Equals(
 
     ICollator* c = ICollator::Probe(object);
     if (c == NULL) {
-        *result = FALSE;
         return NOERROR;
     }
 
@@ -117,10 +106,8 @@ ECode Collator::GetInstance(
     /* [out] */ ICollator** instance)
 {
     VALIDATE_NOT_NULL(instance);
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    localeHelper->GetDefault((ILocale**)&locale);
+
+    AutoPtr<ILocale> locale = CLocale::GetDefault();
     return GetInstance(locale, instance);
 }
 
@@ -129,12 +116,15 @@ ECode Collator::GetInstance(
     /* [out] */ ICollator** instance)
 {
     VALIDATE_NOT_NULL(instance);
+    *instance = NULL;
+
     if (locale == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<IRuleBasedCollator> rbc;
+
     AutoPtr<IRuleBasedCollatorICU> icuCollator;
     CRuleBasedCollatorICU::New(locale, (IRuleBasedCollatorICU**)&icuCollator);
+    AutoPtr<IRuleBasedCollator> rbc;
     FAIL_RETURN(CRuleBasedCollator::New(icuCollator, (IRuleBasedCollator**)&rbc));
     *instance = (ICollator*)rbc->Probe(EIID_ICollator);
     REFCOUNT_ADD(*instance);
@@ -170,6 +160,8 @@ ECode Collator::DecompositionMode_Java_ICU(
     /* [in] */ Int32 mode,
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = -1;
     switch (mode) {
         case ICollator::CANONICAL_DECOMPOSITION:
             *value = IRuleBasedCollatorICU::VALUE_ON;
@@ -185,6 +177,7 @@ ECode Collator::DecompositionMode_ICU_Java(
     /* [in] */ Int32 mode,
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
     Int32 javaMode = mode;
     switch (mode) {
         case IRuleBasedCollatorICU::VALUE_OFF:
@@ -202,6 +195,8 @@ ECode Collator::Strength_Java_ICU(
     /* [in] */ Int32 value,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
     switch (value) {
         case ICollator::PRIMARY:
             *result = IRuleBasedCollatorICU::VALUE_PRIMARY;
@@ -223,6 +218,7 @@ ECode Collator::Strength_ICU_Java(
     /* [in] */ Int32 value,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     switch (value) {
         case IRuleBasedCollatorICU::VALUE_PRIMARY:
             *result = ICollator::PRIMARY;
@@ -237,6 +233,7 @@ ECode Collator::Strength_ICU_Java(
             *result = ICollator::IDENTICAL;
             break;
     }
+    *result = -1;
     return NOERROR;
 }
 

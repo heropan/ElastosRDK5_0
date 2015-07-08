@@ -13,6 +13,7 @@
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CDateFormatField.h"
+#include "CDecimalFormatSymbols.h"
 
 using Elastos::Core::INumber;
 using Elastos::Core::EIID_INumber;
@@ -96,13 +97,6 @@ DateFormat::Field::constructor(
     }
     return NOERROR;
 }
-
-// ECode DateFormat::Field::GetName(
-//     /* [out] */ String* name)
-// {
-//     return FormatBase::Field::GetName(name);
-// }
-
 ECode DateFormat::Field::GetCalendarField(
     /* [out] */ Int32* value)
 {
@@ -132,6 +126,67 @@ CAR_INTERFACE_IMPL(DateFormat, FormatBase, IDateFormat)
 
 DateFormat::DateFormat()
 {}
+
+ECode DateFormat::CloneImpl(
+    /* [in] */ IDateFormat* object)
+{
+    VALIDATE_NOT_NULL(object)
+
+    FormatBase::CloneImpl(IFormat::Probe(object));
+
+    DateFormat* df = (DateFormat*)object;
+    AutoPtr<IInterface> temp;
+    ICloneable::Probe(mCalendar)->Clone((IInterface**)&temp);
+    df->mCalendar = ICalendar::Probe(temp);
+    temp = NULL;
+    ICloneable::Probe(mNumberFormat)->Clone((IInterface**)&temp);
+    df->mNumberFormat = INumberFormat::Probe(temp);
+    return NOERROR;
+}
+
+ECode DateFormat::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean * result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    IDateFormat* df = IDateFormat::Probe(object);
+    if (df == NULL) {
+        return NOERROR;
+    }
+
+    DateFormat* other = (DateFormat*)df;
+    if (other == this) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    Boolean value = Object::Equals(mNumberFormat, other->mNumberFormat);
+    if (!value) return NOERROR;
+
+    AutoPtr<ITimeZone> ltz, rtz;
+    mCalendar->GetTimeZone((ITimeZone**)&ltz);
+    other->mCalendar->GetTimeZone((ITimeZone**)&rtz);
+    value = Object::Equals(ltz, other->mNumberFormat);
+    if (!value) return NOERROR;
+
+    Int32 li, ri;
+    mCalendar->GetFirstDayOfWeek(&li);
+    other->mCalendar->GetFirstDayOfWeek(&ri);
+    value = li == ri;
+    if (!value) return NOERROR;
+
+    mCalendar->GetMinimalDaysInFirstWeek(&li);
+    other->mCalendar->GetMinimalDaysInFirstWeek(&ri);
+    value = li == ri;
+    if (!value) return NOERROR;
+
+    Boolean lb, rb;
+    mCalendar->IsLenient(&lb);
+    other->mCalendar->IsLenient(&rb);
+    return lb == rb;
+}
 
 ECode DateFormat::Format(
     /* [in] */ IInterface* object,
@@ -220,6 +275,9 @@ ECode DateFormat::GetDateInstance(
 
     FAIL_RETURN(CheckDateStyle(style));
 
+    if (locale == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+
     AutoPtr<ILocaleDataHelper> localeDataHelper;
     FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
@@ -271,6 +329,10 @@ ECode DateFormat::GetDateTimeInstance(
     FAIL_RETURN(CheckTimeStyle(timeStyle));
     FAIL_RETURN(CheckDateStyle(dateStyle));
 
+    if (locale == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
     AutoPtr<ILocaleDataHelper> localeDataHelper;
     FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
@@ -292,6 +354,12 @@ ECode DateFormat::GetInstance(
     /* [out] */ IDateFormat** instance)
 {
     return GetDateTimeInstance(IDateFormat::SHORT, IDateFormat::SHORT, instance);
+}
+
+ECode DateFormat::Set24HourTimePref(
+        /* [in] */ Boolean is24Hour)
+{
+    return NOERROR;
 }
 
 ECode DateFormat::GetNumberFormat(
@@ -335,6 +403,10 @@ ECode DateFormat::GetTimeInstance(
 
     FAIL_RETURN(CheckTimeStyle(style));
 
+    if (locale == NULL) {
+        return E_NULL_POINTER_EXCEPTION;
+    }
+
     AutoPtr<ILocaleDataHelper> localeDataHelper;
     FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
@@ -355,6 +427,32 @@ ECode DateFormat::GetTimeZone(
     return mCalendar->GetTimeZone(tz);
 }
 
+ECode DateFormat::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+
+    Int32 value = 0, temp;
+    mCalendar->GetFirstDayOfWeek(&temp);
+    value += temp;
+
+    mCalendar->GetMinimalDaysInFirstWeek(&temp);
+    value += temp;
+
+    AutoPtr<ITimeZone> tz;
+    mCalendar->GetTimeZone((ITimeZone**)&tz);
+    value += Object::GetHashCode(tz);
+
+    Boolean bval;
+    mCalendar->IsLenient(&bval);
+    value += bval ? 1231 : 1237;
+
+    value += Object::GetHashCode(mNumberFormat);
+
+    *hash = value;
+    return NOERROR;
+}
+
 ECode DateFormat::IsLenient(
     /* [out] */ Boolean* isLenient)
 {
@@ -370,14 +468,17 @@ ECode DateFormat::Parse(
 
     AutoPtr<IParsePosition> position;
     CParsePosition::New(0, (IParsePosition**)&position);
-    FAIL_RETURN(Parse(string, position, date));
-    REFCOUNT_ADD(*date);
+    AutoPtr<IDate> d;
+    FAIL_RETURN(Parse(string, position, (IDate**)&d));
+
     Int32 index;
     position->GetIndex(&index);
     if (index == 0) {
         return E_PARSE_EXCEPTION;
     }
 
+    *date = d;
+    REFCOUNT_ADD(*date);
     return NOERROR;
 }
 
@@ -386,7 +487,14 @@ ECode DateFormat::ParseObject(
     /* [in] */ IParsePosition* position,
     /* [out] */ IInterface** object)
 {
-    return Parse(string, position, (IDate**)object);
+    VALIDATE_NOT_NULL(object)
+    *object = NULL;
+
+    AutoPtr<IDate> date;
+    FAIL_RETURN(Parse(string, position, (IDate**)&date))
+    *object = date;
+    REFCOUNT_ADD(*object)
+    return NOERROR;
 }
 
 ECode DateFormat::SetCalendar(
@@ -438,52 +546,6 @@ ECode DateFormat::CheckTimeStyle(
             || style == IDateFormat::DEFAULT)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return NOERROR;
-}
-
-ECode DateFormat::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-
-    if (this->Probe(EIID_IDateFormat) == IDateFormat::Probe(object)) {
-        *result = TRUE;
-        return NOERROR;
-    }
-    if (object->Probe(EIID_IDateFormat) == NULL) {
-        *result = FALSE;
-        return NOERROR;
-    }
-
-    AutoPtr<IDateFormat> dateFormat = (IDateFormat*)object;
-    Boolean res1 = FALSE, res2 = FALSE;
-    AutoPtr<INumberFormat> nf;
-    dateFormat->GetNumberFormat((INumberFormat**)&nf);
-    IObject::Probe(mNumberFormat)->Equals((INumberFormat*)nf, &res1);
-
-    AutoPtr<ITimeZone> timezone1, timezone2;
-    mCalendar->GetTimeZone((ITimeZone**)&timezone1);
-
-    AutoPtr<ICalendar> cal;
-    dateFormat->GetCalendar((ICalendar**)&cal);
-
-    cal->GetTimeZone((ITimeZone**)&timezone2);
-    timezone1->Equals(timezone2, &res2);
-
-    Int32 fdw1, fdw2;
-    mCalendar->GetFirstDayOfWeek(&fdw1);
-    cal->GetFirstDayOfWeek(&fdw2);
-
-    Int32 mdfw1, mdfw2;
-    mCalendar->GetMinimalDaysInFirstWeek(&mdfw1);
-    cal->GetMinimalDaysInFirstWeek(&mdfw2);
-
-    Boolean l1, l2;
-    mCalendar->IsLenient(&l1);
-    cal->IsLenient(&l2);
-
-    *result = res1 && res2 && fdw1 == fdw2 && mdfw1 == mdfw2 && l1 == l2;
     return NOERROR;
 }
 

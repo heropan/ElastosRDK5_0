@@ -58,12 +58,11 @@ module
             [in] String tem);
 
         /**
-         * Returns the strings associated with the ranges of this {
+         * Returns the strings associated with the ranges of this {@code
          * ChoiceFormat}.
+         *
+         * @return an array of format strings.
          */
-        GetFormats(
-            [out, callee] ArrayOf<IInterface*>* formats);
-
         GetFormats(
             [out, callee] ArrayOf<String>* formats);
 

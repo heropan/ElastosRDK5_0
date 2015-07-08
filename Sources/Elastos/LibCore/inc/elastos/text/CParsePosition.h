@@ -5,20 +5,24 @@
 #include "_Elastos_Text_CParsePosition.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Text {
 
-CarClass(CParsePosition), public Object
+CarClass(CParsePosition)
+    , public Object
+    , public IParsePosition
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CParsePosition();
 
     CARAPI constructor(
         /* [in] */ Int32 index);
 
-//    @Override
-//    public boolean equals(Object object);
+    CARAPI Equals(
+        /* [in] */ IInterface * object,
+        /* [out] */ Boolean * result);
 
     CARAPI GetErrorIndex(
         /* [out] */ Int32* index);
@@ -26,8 +30,8 @@ public:
     CARAPI GetIndex(
         /* [out] */ Int32* index);
 
-//    @Override
-//    public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32 * hash);
 
     CARAPI SetErrorIndex(
         /* [in] */ Int32 index);
@@ -35,8 +39,8 @@ public:
     CARAPI SetIndex(
         /* [in] */ Int32 index);
 
-//    @Override
-//    public String toString();
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     Int32 mCurrentPosition;

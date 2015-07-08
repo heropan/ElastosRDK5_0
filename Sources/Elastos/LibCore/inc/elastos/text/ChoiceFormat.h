@@ -57,12 +57,6 @@ public:
     CARAPI GetFormats(
         /* [out, callee] */ ArrayOf<String>** arrayOfFormattedString);
 
-    CARAPI GetFormats(
-        /* [out, callee] */ ArrayOf<IInterface*>** arrayOfFormattedString);
-
-    CARAPI GetChoiceFormats(
-        /* [out, callee] */ ArrayOf<String>** formats);
-
     virtual CARAPI GetLimits(
         /* [out, callee] */ ArrayOf<Double>** arrayOfDoubles);
 

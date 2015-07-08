@@ -1,7 +1,6 @@
 
 #include "DecimalFormat.h"
 #include "Math.h"
-#include <unistd.h>
 #include "Character.h"
 #include "CDouble.h"
 #include "CInteger64.h"
@@ -9,11 +8,12 @@
 #include "CNativeDecimalFormat.h"
 #include "CBigDecimal.h"
 #include "Currency.h"
-#include "CLocaleHelper.h"
+#include "CLocale.h"
 #include "CLocaleDataHelper.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CDecimalFormat.h"
+#include <unistd.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
@@ -33,8 +33,7 @@ using Elastos::Math::IBigDecimal;
 using Elastos::Math::EIID_IBigDecimal;
 using Elastos::Math::CBigDecimal;
 using Elastos::Utility::Currency;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CLocale;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
@@ -60,28 +59,22 @@ DecimalFormat::DecimalFormat()
 
 ECode DecimalFormat::constructor()
 {
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
+    AutoPtr<ILocale> locale = CLocale::GetDefault();
     CDecimalFormatSymbols::New(locale, (IDecimalFormatSymbols**)&mSymbols);
-    AutoPtr<ILocaleDataHelper> helper;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
+
+    AutoPtr<ILocaleDataHelper> localeDataHelper;
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localeDataHelper));
     AutoPtr<ILocaleData> localeData;
-    FAIL_RETURN(helper->Get(locale, (ILocaleData**)&localeData));
-    String numberPattern;
-    localeData->GetNumberPattern(&numberPattern);
-    InitNative(numberPattern);
-    return NOERROR;
+    FAIL_RETURN(localeDataHelper->Get(locale, (ILocaleData**)&localeData));
+    String pattern;
+    localeData->GetNumberPattern(&pattern);
+    return InitNative(pattern);
 }
 
 ECode DecimalFormat::constructor(
     /* [in] */ const String& pattern)
 {
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
+    AutoPtr<ILocale> locale = CLocale::GetDefault();
     return constructor(pattern, locale);
 }
 
@@ -101,7 +94,9 @@ ECode DecimalFormat::constructor(
     /* [in] */ const String& pattern,
     /* [in] */ ILocale* locale)
 {
-    FAIL_RETURN(CDecimalFormatSymbols::New(locale, (IDecimalFormatSymbols**)&mSymbols));
+    AutoPtr<IDecimalFormatSymbols> obj;
+    CDecimalFormatSymbols::New(locale, (IDecimalFormatSymbols**)&obj);
+    mSymbols = obj;
     return InitNative(pattern);
 }
 
@@ -131,13 +126,98 @@ ECode DecimalFormat::InitNative(
 ECode DecimalFormat::ApplyLocalizedPattern(
     /* [in] */ const String& pattern)
 {
-   return mNdf->ApplyLocalizedPattern(pattern);
+    mNdf->ApplyLocalizedPattern(pattern);
+    UpdateFieldsFromNative();
+    return NOERROR;
 }
 
 ECode DecimalFormat::ApplyPattern(
     /* [in] */ const String& pattern)
 {
-    return mNdf->ApplyPattern(pattern);
+    mNdf->ApplyPattern(pattern);
+    UpdateFieldsFromNative();
+    return NOERROR;
+}
+
+ECode DecimalFormat::UpdateFieldsFromNative()
+{
+    Int32 maxFractionDigits(0);
+    Int32 maxIntegerDigits(0);
+    Int32 minFractionDigits(0);
+    Int32 minIntegerDigits(0);
+    mNdf->GetMaximumFractionDigits(&maxFractionDigits);
+    mNdf->GetMaximumIntegerDigits(&maxIntegerDigits);
+    mNdf->GetMinimumFractionDigits(&minFractionDigits);
+    mNdf->GetMinimumIntegerDigits(&minIntegerDigits);
+    mMaximumIntegerDigits = maxIntegerDigits;
+    mMinimumIntegerDigits = minIntegerDigits;
+    mMaximumFractionDigits = maxFractionDigits;
+    mMinimumFractionDigits = minFractionDigits;
+    return NOERROR;
+}
+
+ECode DecimalFormat::Clone(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object)
+
+    AutoPtr<IDecimalFormat> df;
+    CDecimalFormat::New((IDecimalFormat**)&df);
+
+    CloneImpl(df);
+
+    *object = df;
+    REFCOUNT_ADD(*object)
+    return NOERROR;
+}
+
+ECode DecimalFormat::CloneImpl(
+    /* [in] */ IDecimalFormat* object)
+{
+    NumberFormat::CloneImpl(INumberFormat::Probe(object));
+
+    DecimalFormat* df = (DecimalFormat*)object;
+    df->mRoundingMode = mRoundingMode;
+
+    AutoPtr<IInterface> symbols, ndf;
+    ICloneable::Probe(mSymbols)->Clone((IInterface**)&symbols);
+    ICloneable::Probe(mNdf)->Clone((IInterface**)&ndf);
+
+    df->mSymbols = IDecimalFormatSymbols::Probe(symbols);
+    df->mNdf = INativeDecimalFormat::Probe(ndf);
+
+    return NOERROR;
+}
+
+ECode DecimalFormat::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    IDecimalFormat* df = IDecimalFormat::Probe(object);
+    if (df == NULL) {
+        return NOERROR;
+    }
+
+    DecimalFormat* other = (DecimalFormat*)df;
+    if (other == this) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    AutoPtr<INativeDecimalFormat> ndf;
+    other->GetNdf((INativeDecimalFormat**)&ndf);
+
+    Boolean bval = Object::Equals(mNdf, ndf);
+    if (!bval) return NOERROR;
+
+    AutoPtr<IDecimalFormatSymbols> dfs1, dfs2;
+    GetDecimalFormatSymbols((IDecimalFormatSymbols**)&dfs1);
+    other->GetDecimalFormatSymbols((IDecimalFormatSymbols**)&dfs2);
+
+    return Object::Equals(dfs1, dfs2);
 }
 
 ECode DecimalFormat::FormatToCharacterIterator(
@@ -155,8 +235,7 @@ ECode DecimalFormat::CheckBufferAndFieldPosition(
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* position)
 {
-    if (buffer == NULL)
-    {
+    if (buffer == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
     if (position == NULL) {
@@ -171,37 +250,11 @@ ECode DecimalFormat::Format(
     /* [in] */ IFieldPosition* field)
 {
     FAIL_RETURN(CheckBufferAndFieldPosition(buffer, field));
-    // All float/double/Float/Double formatting ends up here...
-    if (mRoundingMode == Elastos::Math::RoundingMode_UNNECESSARY) {
-        // ICU4C doesn't support this rounding mode, so we have to fake it.
-        //try {
-        SetRoundingMode(Elastos::Math::RoundingMode_UP);
-        AutoPtr<IFieldPosition> fp;
-        CFieldPosition::New(0, (IFieldPosition**)&fp);
-        AutoPtr<IStringBuffer> sb = new StringBuffer();
-        Format(value, sb, fp);
-        String upResult;
-        ICharSequence::Probe(sb)->ToString(&upResult);
 
-        SetRoundingMode(Elastos::Math::RoundingMode_DOWN);
-        AutoPtr<IFieldPosition> fpx;
-        CFieldPosition::New(0, (IFieldPosition**)&fpx);
-        String downResult;
-        Format(value, sb, fp);
-        ICharSequence::Probe(sb)->ToString(&downResult);
-        if (!upResult.Equals(downResult)) {
-            //throw new ArithmeticException("rounding mode UNNECESSARY but rounding required");
-            SetRoundingMode(Elastos::Math::RoundingMode_UNNECESSARY);
-            return E_ARITHMETIC_EXCEPTION;
-        }
-        //} finally {
-        SetRoundingMode(Elastos::Math::RoundingMode_UNNECESSARY);
-        //}
-    }
     AutoPtr< ArrayOf<Char32> > v;
     FAIL_RETURN(mNdf->FormatDouble(value, field, (ArrayOf<Char32>**)&v));
-    for (Int32 i = 0; i < v->GetLength(); ++i) {
-        buffer->AppendChar((*v.Get())[i]);
+    if (v) {
+        buffer->Append(*v);
     }
 
     return NOERROR;
@@ -218,9 +271,7 @@ ECode DecimalFormat::Format(
     FAIL_RETURN(mNdf->FormatInt64(value, field, (ArrayOf<Char32>**)&v));
 
     if (v) {
-        for (Int32 i = 0; i < v->GetLength(); ++i) {
-            buffer->AppendChar((*v)[i]);
-        }
+        buffer->Append(*v);
     }
 
     return NOERROR;
@@ -234,31 +285,31 @@ ECode DecimalFormat::Format(
     VALIDATE_NOT_NULL(object)
 
     FAIL_RETURN(CheckBufferAndFieldPosition(buffer, field));
-    AutoPtr<IBigInteger> bigInteger = (IBigInteger *) object->Probe(EIID_IBigInteger);
+    AutoPtr<IBigInteger> bigInteger = IBigInteger::Probe(object);
     if (bigInteger) {
-        AutoPtr<ArrayOf<Char32> > chars = NULL;
-        Int32 bitlen(0);
+        AutoPtr<ArrayOf<Char32> > chars;
+        Int32 bitlen;
         bigInteger->BitLength(&bitlen);
-        if (bitlen < 64)
-        {
-            Int64 result(0);
+        if (bitlen < 64) {
+            Int64 result;
             INumber::Probe(bigInteger)->Int64Value(&result);
             mNdf->FormatInt64(result, field , (ArrayOf<Char32> **)&chars);
-        } else {
+        }
+        else {
             mNdf->FormatBigInteger(bigInteger, field ,(ArrayOf<Char32> **)&chars);
         }
-        for (Int32 i = 0; i < chars->GetLength(); ++i) {
-            buffer->AppendChar((*chars.Get())[i]);
-        }
 
+        if (chars) {
+            buffer->Append(*chars);
+        }
         return NOERROR;
     }
     else if (object->Probe(EIID_IBigDecimal)) {
         AutoPtr<ArrayOf<Char32> > chars;
         AutoPtr<IBigDecimal> ibd = (IBigDecimal *)object->Probe(EIID_IBigDecimal);
         mNdf->FormatBigDecimal(ibd, field ,(ArrayOf<Char32> **)&chars);
-        for (Int32 i = 0; i < chars->GetLength(); ++i) {
-            buffer->AppendChar((*chars.Get())[i]);
+        if (chars) {
+            buffer->Append(*chars);
         }
 
         return NOERROR;
@@ -319,6 +370,16 @@ ECode DecimalFormat::GetPositiveSuffix(
     return mNdf->GetPositiveSuffix(suffix);
 }
 
+ECode DecimalFormat::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+    String prefix;
+    mNdf->GetPositivePrefix(&prefix);
+    *hash = prefix.GetHashCode();
+    return NOERROR;
+}
+
 ECode DecimalFormat::IsDecimalSeparatorAlwaysShown(
     /* [out] */ Boolean* isAlwaysShown)
 {
@@ -337,6 +398,7 @@ ECode DecimalFormat::SetParseIntegerOnly(
     // In this implementation, NativeDecimalFormat is wrapped to
     // fulfill most of the format and parse feature. And this method is
     // delegated to the wrapped instance of NativeDecimalFormat.
+    NumberFormat::SetParseIntegerOnly(value);
     return mNdf->SetParseIntegerOnly(value);
 }
 
@@ -351,75 +413,75 @@ ECode DecimalFormat::Parse(
     /* [in] */ IParsePosition* position,
     /* [out] */ INumber** value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = NULL;
+
     AutoPtr<INumber> number;
     FAIL_RETURN(mNdf->Parse(string, position, (INumber**)&number));
     if (number == NULL) {
-        *value = NULL;
         return NOERROR;
     }
-    Boolean isParseBigDecimal = FALSE;
 
-    if (IsParseBigDecimal(&isParseBigDecimal), isParseBigDecimal) {
-        if (number->Probe(EIID_IInteger64))
-        {
+    Boolean isParseBigDecimal = FALSE;
+    IsParseBigDecimal(&isParseBigDecimal);
+    if (isParseBigDecimal) {
+        if (number->Probe(EIID_IInteger64)) {
             Int64 lnum(0);
             number->Int64Value(&lnum);
-            AutoPtr<IBigDecimal> Inum;
-            FAIL_RETURN(CBigDecimal::New(lnum,(IBigDecimal **)&Inum));
-            *value = (INumber *)Inum->Probe(EIID_INumber);
+            AutoPtr<IBigDecimal> bd;
+            FAIL_RETURN(CBigDecimal::New(lnum,(IBigDecimal **)&bd));
+            *value = INumber::Probe(bd);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
-        AutoPtr<IDouble> Idou = (IDouble *)number->Probe(EIID_IDouble);
+
+        AutoPtr<IDouble> dobj = (IDouble *)number->Probe(EIID_IDouble);
         Boolean flagdouble = FALSE;
-        if (Idou && (Idou->IsInfinite(&flagdouble) , !flagdouble) && (Idou->IsNaN(&flagdouble), !flagdouble)) {
-            String str;
-            IObject::Probe(number)->ToString(&str);
-            AutoPtr<IBigDecimal> Inum;
-            FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
-            *value = (INumber *)Inum->Probe(EIID_INumber);
+        if (dobj && (dobj->IsInfinite(&flagdouble), !flagdouble) && (dobj->IsNaN(&flagdouble), !flagdouble)) {
+            String str = Object::ToString(number);
+            AutoPtr<IBigDecimal> bd;
+            FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&bd));
+            *value = INumber::Probe(bd);
             REFCOUNT_ADD(*value);
             return NOERROR;
 
         }
-        if (number->Probe(EIID_IBigInteger))
-        {
-            String str;
-            IObject::Probe(number)->ToString(&str);
-            AutoPtr<IBigDecimal> Inum;
-            FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&Inum));
-            *value = (INumber *)Inum->Probe(EIID_INumber);
+
+        if (number->Probe(EIID_IBigInteger)) {
+            String str = Object::ToString(number);
+            AutoPtr<IBigDecimal> bd;
+            FAIL_RETURN(CBigDecimal::New(str,(IBigDecimal **)&bd));
+            *value = INumber::Probe(bd);
             REFCOUNT_ADD(*value);
             return NOERROR;
         }
+
         *value = number;
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
-    if (number->Probe(EIID_IBigDecimal) || number->Probe(EIID_IBigInteger))
-    {
+
+    if (number->Probe(EIID_IBigDecimal) || number->Probe(EIID_IBigInteger)) {
         Double lnum(0);
         number->DoubleValue(&lnum);
-        AutoPtr<IDouble> Inum;
-        FAIL_RETURN(CDouble::New(lnum,(IDouble **)&Inum));
+        AutoPtr<IDouble> bd;
+        FAIL_RETURN(CDouble::New(lnum,(IDouble **)&bd));
+        *value = INumber::Probe(bd);
+        REFCOUNT_ADD(*value);
+        return NOERROR;
+    }
+
+    Boolean isParseIntegerOnly = FALSE;
+    IsParseIntegerOnly(&isParseIntegerOnly);
+
+    if (isParseIntegerOnly && Object::Equals(number, NEGATIVE_ZERO_DOUBLE)) {
+        AutoPtr<IInteger64> Inum;
+        FAIL_RETURN(CInteger64::New(0L,(IInteger64 **)&Inum));
         *value = INumber::Probe(Inum);
         REFCOUNT_ADD(*value);
         return NOERROR;
     }
 
-    Boolean isParseIntegerOnly = FALSE , nagflag = FALSE;
-    this->IsParseIntegerOnly(&isParseIntegerOnly);
-
-    if (isParseIntegerOnly && number->Probe(EIID_IDouble) ) {
-        if (IObject::Probe(number)->Equals(NEGATIVE_ZERO_DOUBLE ,&nagflag) , nagflag)
-        {
-            AutoPtr<IInteger64> Inum;
-            FAIL_RETURN(CInteger64::New(0L,(IInteger64 **)&Inum));
-            *value = INumber::Probe(Inum);
-            REFCOUNT_ADD(*value);
-            return NOERROR;
-        }
-    }
     *value = number;
     REFCOUNT_ADD(*value);
     return NOERROR;
@@ -432,8 +494,6 @@ ECode DecimalFormat::SetDecimalFormatSymbols(
         AutoPtr<IInterface> object;
         ICloneable::Probe(value)->Clone((IInterface**)&object);
         mSymbols = IDecimalFormatSymbols::Probe(object);
-        String exponentSeparator;
-        mSymbols->GetExponentSeparator(&exponentSeparator);
         mNdf->SetDecimalFormatSymbols(mSymbols);
     }
     return NOERROR;
@@ -442,11 +502,14 @@ ECode DecimalFormat::SetDecimalFormatSymbols(
 ECode DecimalFormat::SetCurrency(
     /* [in] */ ICurrency* currency)
 {
-    // String currencyCode;
-    // currency->GetCurrencyCode(&currencyCode);
-    // AutoPtr<ICurrency> autoCurrency = Currency::GetInstance(currencyCode);
-    // FAIL_RETURN(mNdf->SetCurrency(autoCurrency));
-    // return mSymbols->SetCurrency(currency);
+    String currencySymbol, currencyCode;
+    currency->GetCurrencyCode(&currencyCode);
+    AutoPtr<IDecimalFormatSymbols> symbols;
+    mSymbols->GetCurrencySymbol(&currencySymbol);
+
+    AutoPtr<ICurrency> instance = Currency::GetInstance(currencyCode);
+    FAIL_RETURN(mSymbols->SetCurrency(instance));
+    return mNdf->SetCurrency(currencySymbol, currencyCode);
 }
 
 ECode DecimalFormat::SetDecimalSeparatorAlwaysShown(
@@ -566,6 +629,7 @@ ECode DecimalFormat::ToPattern(
 ECode DecimalFormat::GetRoundingMode(
     /* [out] */ RoundingMode* mode)
 {
+    VALIDATE_NOT_NULL(mode)
     *mode = mRoundingMode;
     return NOERROR;
 }
@@ -574,45 +638,12 @@ ECode DecimalFormat::SetRoundingMode(
     /* [in] */ RoundingMode mode)
 {
     mRoundingMode = mode;
-    if (mRoundingMode != Elastos::Math::RoundingMode_UNNECESSARY) { // ICU4C doesn't support UNNECESSARY.
-        Int32 maxFractionDigits;
-        GetMaximumFractionDigits(&maxFractionDigits);
-        Double roundingIncrement = 1.0 / Elastos::Core::Math::Pow(10, Elastos::Core::Math::Max(0, maxFractionDigits));
-        mNdf->SetRoundingMode(mode, roundingIncrement);
-    }
-    return NOERROR;
-}
 
-ECode DecimalFormat::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    if (this->Probe(EIID_IDecimalFormat) == IDecimalFormat::Probe(object)) {
-        *result = TRUE;
-        return NOERROR;
-    }
-    if (object->Probe(EIID_IDecimalFormat) == NULL) {
-        *result = FALSE;
-        return NOERROR;
-    }
-
-    AutoPtr<IDecimalFormat> other = (IDecimalFormat*) object;
-    AutoPtr<INativeDecimalFormat> ndf;
-    other->GetNdf((INativeDecimalFormat**)&ndf);
-
-    Boolean res1= FALSE, res2 = FALSE;
-    mNdf->Equals(ndf, &res1);
-
-    AutoPtr<IDecimalFormatSymbols> dfs1, dfs2;
-    GetDecimalFormatSymbols((IDecimalFormatSymbols**)&dfs1);
-    other->GetDecimalFormatSymbols((IDecimalFormatSymbols**)&dfs2);
-
-    IObject::Probe(dfs1)->Equals(dfs2, &res2);
-
-    *result = (mNdf == NULL ? ndf == NULL : res1) && res2;
-
-    return NOERROR;
+    // DecimalFormat does not allow specification of a rounding increment.  If anything other
+    // than 0.0 is used here the resulting DecimalFormat cannot be deserialized because the
+    // serialization format does not include rounding increment information.
+    Double roundingIncrement = 0.0;
+    return mNdf->SetRoundingMode(mRoundingMode, roundingIncrement);
 }
 
 ECode DecimalFormat::GetNdf(
@@ -624,36 +655,11 @@ ECode DecimalFormat::GetNdf(
     return NOERROR;
 }
 
-ECode DecimalFormat::Clone(
-    /* [out] */ IInterface** object)
+ECode DecimalFormat::ToString(
+    /* [out] */ String* str)
 {
-    VALIDATE_NOT_NULL(object)
-
-    AutoPtr<IDecimalFormat> df;
-    CDecimalFormat::New((IDecimalFormat**)&df);
-
-    CloneImpl(df);
-
-    *object = df;
-    REFCOUNT_ADD(*object)
-    return NOERROR;
-}
-
-ECode DecimalFormat::CloneImpl(
-    /* [in] */ IDecimalFormat* object)
-{
-    NumberFormat::CloneImpl(INumberFormat::Probe(object));
-
-    DecimalFormat* df = (DecimalFormat*)object;
-    df->mRoundingMode = mRoundingMode;
-
-    AutoPtr<IInterface> symbols, ndf;
-    ICloneable::Probe(mSymbols)->Clone((IInterface**)&symbols);
-    ICloneable::Probe(mNdf)->Clone((IInterface**)&ndf);
-
-    df->mSymbols = IDecimalFormatSymbols::Probe(symbols);
-    df->mNdf = INativeDecimalFormat::Probe(ndf);
-
+    VALIDATE_NOT_NULL(str)
+    *str = Object::ToString(mNdf);
     return NOERROR;
 }
 

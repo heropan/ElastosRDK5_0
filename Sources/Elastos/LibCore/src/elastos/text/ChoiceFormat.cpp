@@ -11,6 +11,7 @@
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
 #include "CoreUtils.h"
+#include "EmptyArray.h"
 
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
@@ -27,6 +28,7 @@ using Elastos::Utility::CLocaleHelper;
 using Elastos::Text::IChoiceFormat;
 using Elastos::Text::EIID_IChoiceFormat;
 using Elastos::Text::CParsePosition;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Text {
@@ -102,16 +104,14 @@ ECode ChoiceFormat::ApplyPattern(
         position->GetErrorIndex(&errorIndex);
         if (errorIndex != -1 || index >= length) {
             // Fix Harmony 540
-            mChoiceLimits = ArrayOf<Double>::Alloc(0);
-            mChoiceFormats = ArrayOf<String>::Alloc(0);
+            mChoiceLimits = EmptyArray::DOUBLE;
+            mChoiceFormats = EmptyArray::STRING;
             return NOERROR;
         }
         ch = (*charArray)[index++];
         if (limitCount == limits->GetLength()) {
             AutoPtr<ArrayOf<Double> > newLimits = ArrayOf<Double>::Alloc(limitCount * 2);
-            for (Int32 i = 0; i < limitCount; i++) {
-                (*newLimits)[i] = (*limits)[i];
-            }
+            newLimits->Copy(limits);
             limits = newLimits;
         }
         next = 0.0;
@@ -233,43 +233,20 @@ ECode ChoiceFormat::GetHashCode(
 }
 
 ECode ChoiceFormat::GetFormats(
-    /* [out, callee] */ ArrayOf<IInterface*>** arrayOfFormattedString)
+    /* [out, callee] */ ArrayOf<String>** array)
 {
-    VALIDATE_NOT_NULL(arrayOfFormattedString);
-    AutoPtr<ArrayOf<IInterface*> > temp = ArrayOf<IInterface*>::Alloc(mChoiceFormats->GetLength());
-    for (Int32 i = 0; i < mChoiceFormats->GetLength(); ++i) {
-        AutoPtr<ICharSequence> cs = CoreUtils::Convert((*mChoiceFormats)[i]);
-        temp->Set(i , (IInterface*)cs.Get());
-    }
-    *arrayOfFormattedString = temp;
-    REFCOUNT_ADD(*arrayOfFormattedString)
-    return NOERROR;
-}
-
-ECode ChoiceFormat::GetFormats(
-    /* [out, callee] */ ArrayOf<String>** arrayOfFormattedString)
-{
-    VALIDATE_NOT_NULL(arrayOfFormattedString);
-    *arrayOfFormattedString = mChoiceFormats;
-    REFCOUNT_ADD(*arrayOfFormattedString)
-    return NOERROR;
-}
-
-ECode ChoiceFormat::GetChoiceFormats(
-    /* [out, callee] */ ArrayOf<String>** formats)
-{
-    VALIDATE_NOT_NULL(formats)
-    *formats = mChoiceFormats;
-    REFCOUNT_ADD(*formats)
+    VALIDATE_NOT_NULL(array);
+    *array = mChoiceFormats;
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
 ECode ChoiceFormat::GetLimits(
-    /* [out, callee] */ ArrayOf<Double>** arrayOfDoubles)
+    /* [out, callee] */ ArrayOf<Double>** array)
 {
-    VALIDATE_NOT_NULL(arrayOfDoubles);
-    *arrayOfDoubles = mChoiceLimits;
-    REFCOUNT_ADD(*arrayOfDoubles)
+    VALIDATE_NOT_NULL(array);
+    *array = mChoiceLimits;
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -347,11 +324,13 @@ ECode ChoiceFormat::SetChoices(
     /* [in] */ ArrayOf<Double>* limits,
     /* [in] */ ArrayOf<String>* formats)
 {
-    if (limits == NULL || formats == NULL || limits->GetLength() != formats->GetLength()) {
+    if (limits == NULL || formats == NULL
+        || limits->GetLength() != formats->GetLength()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mChoiceLimits = limits->Clone();
-    mChoiceFormats = formats->Clone();
+
+    mChoiceLimits = limits;
+    mChoiceFormats = formats;
     return NOERROR;
 }
 

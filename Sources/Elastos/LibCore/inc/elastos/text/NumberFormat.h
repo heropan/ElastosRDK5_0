@@ -21,7 +21,7 @@ class NumberFormat
 public:
     class Field
         : public FormatBase::Field
-        , INumberFormatField
+        , public INumberFormatField
     {
     public:
         CAR_INTERFACE_DECL()
@@ -76,7 +76,7 @@ public:
     static CARAPI GetAvailableLocales(
         /* [out, callee] */ ArrayOf<ILocale*>** locales);
 
-    virtual CARAPI GetCurrency(
+    CARAPI GetCurrency(
         /* [out] */ ICurrency** currency);
 
     static CARAPI GetCurrencyInstance(
@@ -100,16 +100,16 @@ public:
         /* [in] */ ILocale* locale,
         /* [out] */ INumberFormat** instance);
 
-    virtual CARAPI GetMaximumFractionDigits(
+    CARAPI GetMaximumFractionDigits(
         /* [out] */ Int32* number);
 
-    virtual CARAPI GetMaximumIntegerDigits(
+    CARAPI GetMaximumIntegerDigits(
         /* [out] */ Int32* number);
 
-    virtual CARAPI GetMinimumFractionDigits(
+    CARAPI GetMinimumFractionDigits(
         /* [out] */ Int32* number);
 
-    virtual CARAPI GetMinimumIntegerDigits(
+    CARAPI GetMinimumIntegerDigits(
         /* [out] */ Int32* number);
 
     static CARAPI GetNumberInstance(
@@ -127,15 +127,16 @@ public:
         /* [out] */ INumberFormat** instance);
 
 //    @Override
-//    public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32 * hash);
 
-    virtual CARAPI IsGroupingUsed(
+    CARAPI IsGroupingUsed(
         /* [out] */ Boolean* isGroupingUsed);
 
-    virtual CARAPI IsParseIntegerOnly(
+    CARAPI IsParseIntegerOnly(
         /* [out] */ Boolean* isParseIntegerOnly);
 
-    virtual CARAPI Parse(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ INumber** value);
 
@@ -150,31 +151,31 @@ public:
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI SetCurrency(
+    CARAPI SetCurrency(
         /* [in] */ ICurrency* currency);
 
-    virtual CARAPI SetGroupingUsed(
+    CARAPI SetGroupingUsed(
         /* [in] */ Boolean value);
 
-    virtual CARAPI SetMaximumFractionDigits(
+    CARAPI SetMaximumFractionDigits(
         /* [in] */ Int32 value);
 
-    virtual CARAPI SetMaximumIntegerDigits(
+    CARAPI SetMaximumIntegerDigits(
         /* [in] */ Int32 value);
 
-    virtual CARAPI SetMinimumFractionDigits(
+    CARAPI SetMinimumFractionDigits(
         /* [in] */ Int32 value);
 
-    virtual CARAPI SetMinimumIntegerDigits(
+    CARAPI SetMinimumIntegerDigits(
         /* [in] */ Int32 value);
 
-    virtual CARAPI SetParseIntegerOnly(
+    CARAPI SetParseIntegerOnly(
         /* [in] */ Boolean value);
 
-    virtual CARAPI GetRoundingMode(
+    CARAPI GetRoundingMode(
         /* [out] */ RoundingMode* roundingMode);
 
-    virtual CARAPI SetRoundingMode(
+    CARAPI SetRoundingMode(
         /* [in] */ RoundingMode roundingMode);
 
     CARAPI Equals(
@@ -208,7 +209,7 @@ private:
 
 //    private void readObject(ObjectInputStream stream);
 
-private:
+protected:
     Boolean mGroupingUsed;
     Boolean mParseIntegerOnly;
 

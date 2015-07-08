@@ -34,9 +34,6 @@ public:
             /* [in] */ const String& fieldName,
             /* [in] */ Int32 calendarField);
 
-        // CARAPI GetName(
-        //     /* [out] */ String* name);
-
         CARAPI GetCalendarField(
             /* [out] */ Int32* field);
 
@@ -92,6 +89,15 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
+    DateFormat();
+
+    CARAPI CloneImpl(
+        /* [in] */ IDateFormat* object);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean * result);
+
     //@Override
     CARAPI Format(
         /* [in] */ IInterface* object,
@@ -110,7 +116,7 @@ public:
     static CARAPI GetAvailableLocales(
         /* [out] */ ArrayOf<ILocale*>** locales);
 
-    virtual CARAPI GetCalendar(
+    CARAPI GetCalendar(
         /* [out] */ ICalendar** calendar);
 
     static CARAPI GetDateInstance(
@@ -142,7 +148,7 @@ public:
     static CARAPI GetInstance(
         /* [out] */ IDateFormat** instance);
 
-    virtual CARAPI GetNumberFormat(
+    CARAPI GetNumberFormat(
         /* [out] */ INumberFormat** numberFormat);
 
     static CARAPI GetTimeInstance(
@@ -157,13 +163,16 @@ public:
         /* [in] */ ILocale* locale,
         /* [out] */ IDateFormat** instance);
 
-    virtual CARAPI GetTimeZone(
+    CARAPI GetTimeZone(
         /* [out] */ ITimeZone** timeZone);
 
-    virtual CARAPI IsLenient(
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
+
+    CARAPI IsLenient(
         /* [out] */ Boolean* isLenient);
 
-    virtual CARAPI Parse(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ IDate** date);
 
@@ -178,30 +187,23 @@ public:
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI SetCalendar(
+    CARAPI SetCalendar(
         /* [in] */ ICalendar* cal);
 
-    virtual CARAPI SetLenient(
+    CARAPI SetLenient(
         /* [in] */ Boolean value);
 
-    virtual CARAPI SetNumberFormat(
+    CARAPI SetNumberFormat(
        /* [in] */ INumberFormat* format);
 
-    virtual CARAPI SetTimeZone(
+    CARAPI SetTimeZone(
         /* [in] */ ITimeZone* timezone);
 
-    CARAPI Equals(
-        /* [in] */ IInterface* object,
-        /* [out] */ Boolean* result);
-
-protected:
-    DateFormat();
-
-    //@Override
-    //public boolean equals(Object object);
-
-    // virtual CARAPI_(PInterface) Probe(
-    //     /* [in] */ REIID riid) = 0;
+    /**
+     * @hide for internal use only.
+     */
+    CARAPI Set24HourTimePref(
+        /* [in] */ Boolean is24Hour);
 
 private:
     static CARAPI CheckDateStyle(
@@ -209,6 +211,9 @@ private:
 
     static CARAPI CheckTimeStyle(
         /* [in] */ Int32 style);
+
+    CARAPI InitNative(
+        /* [in] */ const String & patter);
 
 protected:
     AutoPtr<ICalendar> mCalendar;

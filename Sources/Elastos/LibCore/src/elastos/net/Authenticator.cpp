@@ -146,6 +146,7 @@ ECode Authenticator::RequestPasswordAuthentication(
         // Authenticator
         return sThisAuthenticator->GetPasswordAuthentication(passwordAuthentication);
     }
+    return NOERROR;
 }
 
 ECode Authenticator::GetRequestingHost(

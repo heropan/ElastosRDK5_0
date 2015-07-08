@@ -13,6 +13,7 @@
 #include "CDecimalFormatSymbols.h"
 #include "CStringCharacterIterator.h"
 #include "CAttributedString.h"
+#include "CRuleBasedBreakIterator.h"
 
 
 namespace Elastos {
@@ -45,6 +46,8 @@ CAR_OBJECT_IMPL(CSimpleDateFormat)
 CAR_OBJECT_IMPL(CDecimalFormatSymbols)
 
 CAR_OBJECT_IMPL(CStringCharacterIterator)
+
+CAR_OBJECT_IMPL(CRuleBasedBreakIterator)
 
 
 } // namespace Text

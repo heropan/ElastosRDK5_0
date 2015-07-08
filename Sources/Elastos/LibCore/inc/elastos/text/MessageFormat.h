@@ -66,18 +66,21 @@ public:
     virtual ~MessageFormat();
 
     CARAPI constructor(
-        /* [in] */ const String& tem,
+        /* [in] */ const String& templateName,
         /* [in] */ ILocale* locale);
 
     CARAPI constructor(
-        /* [in] */ const String& tem);
+        /* [in] */ const String& templateName);
 
-    virtual CARAPI ApplyPattern(
-        /* [in] */ const String& tem);
+    CARAPI ApplyPattern(
+        /* [in] */ const String& templateName);
 
     // @Override
     CARAPI Clone(
-        /* [out] */ IInterface** outface);
+        /* [out] */ IInterface** object);
+
+    CARAPI CloneImpl(
+        /* [in] */ IMessageFormat* format);
 
     CARAPI Equals(
         /* [in] */ IInterface* object,
@@ -101,30 +104,30 @@ public:
 
 //    public static String format(String format, Object... args);
 
-    virtual CARAPI GetFormats(
+    CARAPI GetFormats(
         /* [out] */ ArrayOf< IFormat* >** arrayOfInstances);
 
-    virtual CARAPI GetFormatsByArgumentIndex(
+    CARAPI GetFormatsByArgumentIndex(
         /* [out] */ ArrayOf< IFormat* >** arrayOfInstances);
 
-    virtual CARAPI SetFormatByArgumentIndex(
+    CARAPI SetFormatByArgumentIndex(
         /* [in] */ Int32 argIndex,
         /* [in] */ IFormat* format);
 
-    virtual CARAPI SetFormatsByArgumentIndex(
+    CARAPI SetFormatsByArgumentIndex(
         /* [in] */ ArrayOf< IFormat* >* formats);
 
-    virtual CARAPI GetLocale(
+    CARAPI GetLocale(
         /* [out] */ ILocale** locale);
 
-//    @Override
-//    public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* value);
 
-    virtual CARAPI Parse(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [out, callee] */ ArrayOf< IInterface* >** results);
 
-    virtual CARAPI Parse(
+    CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ IParsePosition* position,
         /* [out, callee] */ ArrayOf< IInterface* >** result);
@@ -135,17 +138,17 @@ public:
         /* [in] */ IParsePosition* position,
         /* [out] */ IInterface** arrayOfObjects);
 
-    virtual CARAPI SetFormat(
+    CARAPI SetFormat(
         /* [in] */ Int32 offset,
         /* [in] */ IFormat* format);
 
-    virtual CARAPI SetFormats(
+    CARAPI SetFormats(
         /* [in] */ ArrayOf< IFormat* >* formats);
 
-    virtual CARAPI SetLocale(
+    CARAPI SetLocale(
         /* [in] */ ILocale* locale);
 
-    virtual CARAPI ToPattern(
+    CARAPI ToPattern(
         /* [out] */ String* value);
 
     CARAPI GetMaxOffset(

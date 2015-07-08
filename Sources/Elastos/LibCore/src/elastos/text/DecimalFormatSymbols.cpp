@@ -1,7 +1,7 @@
 
 #include "DecimalFormatSymbols.h"
 #include "CDecimalFormatSymbols.h"
-#include "CLocaleHelper.h"
+#include "CLocale.h"
 #include "StringBuilder.h"
 #include "CLocaleDataHelper.h"
 #include "ICUUtil.h"
@@ -10,8 +10,7 @@
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
 using Libcore::ICU::ICUUtil;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CLocale;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;
@@ -24,16 +23,16 @@ CAR_INTERFACE_IMPL_2(DecimalFormatSymbols, Object, IDecimalFormatSymbols, IClone
 
 ECode DecimalFormatSymbols::constructor()
 {
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
+    AutoPtr<ILocale> locale = CLocale::GetDefault();
     return constructor(locale);
 }
 
 ECode DecimalFormatSymbols::constructor(
     /* [in] */ ILocale* locale)
 {
+    if (locale == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+
     AutoPtr<ILocaleDataHelper> helper;
     CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&helper);
     AutoPtr<ILocaleData> localeData;
@@ -69,10 +68,7 @@ ECode DecimalFormatSymbols::GetInstance(
 {
     VALIDATE_NOT_NULL(instance);
 
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    FAIL_RETURN(localeHelper->GetDefault((ILocale**)&locale));
+    AutoPtr<ILocale> locale = CLocale::GetDefault();
     return GetInstance(locale, instance);
 }
 
@@ -115,22 +111,101 @@ ECode DecimalFormatSymbols::CloneImpl(
 {
     assert(object);
 
-    object->SetExponentSeparator(mExponentSeparator);
-    object->SetCurrency(mCurrency);
-    object->SetInternationalCurrencySymbol(mIntlCurrencySymbol);
-    object->SetCurrencySymbol(mCurrencySymbol);
-    object->SetDecimalSeparator(mDecimalSeparator);
-    object->SetDigit(mDigit);
-    object->SetGroupingSeparator(mGroupingSeparator);
-    object->SetInfinity(mInfinity);
-    // object->SetMinusSign(mMinusSign);
-    object->SetMonetaryDecimalSeparator(mMonetarySeparator);
-    object->SetNaN(mNaN);
-    object->SetPatternSeparator(mPatternSeparator);
-    object->SetPercent(mPercent);
-    object->SetPerMill(mPerMill);
-    object->SetZeroDigit(mZeroDigit);
+    DecimalFormatSymbols* other = (DecimalFormatSymbols*)object;
+    other->mZeroDigit = mZeroDigit;
+    other->mDigit = mDigit;
+    other->mDecimalSeparator = mDecimalSeparator;
+    other->mGroupingSeparator = mGroupingSeparator;
+    other->mPatternSeparator = mPatternSeparator;
+    other->mPercent = mPercent;
+    other->mPerMill = mPerMill;
+    other->mMonetarySeparator = mMonetarySeparator;
+    other->mMinusSign = mMinusSign;
+    other->mInfinity = mInfinity;
+    other->mNaN = mNaN;
+    other->mCurrencySymbol = mCurrencySymbol;
+    other->mIntlCurrencySymbol = mIntlCurrencySymbol;
 
+    other->mCurrency = mCurrency;
+    other->mLocale = mLocale;
+    other->mExponentSeparator = mExponentSeparator;
+    return NOERROR;
+}
+
+ECode DecimalFormatSymbols::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+
+    IDecimalFormatSymbols* other = IDecimalFormatSymbols::Probe(object);
+    if (other == NULL) {
+        return NOERROR;
+    }
+
+    DecimalFormatSymbols* df = (DecimalFormatSymbols*)other;
+    if (df == this) {
+        *res = TRUE;
+        return NOERROR;
+    }
+
+    return Object::Equals(mCurrency, df->mCurrency) &&
+            mCurrencySymbol.Equals(df->mCurrencySymbol) &&
+            mDecimalSeparator == df->mDecimalSeparator &&
+            mDigit == df->mDigit &&
+            mExponentSeparator.Equals(df->mExponentSeparator) &&
+            mGroupingSeparator == df->mGroupingSeparator &&
+            mInfinity.Equals(df->mInfinity) &&
+            mIntlCurrencySymbol.Equals(df->mIntlCurrencySymbol) &&
+            mMinusSign.Equals(df->mMinusSign) &&
+            mMonetarySeparator == df->mMonetarySeparator &&
+            mNaN.Equals(df->mNaN) &&
+            mPatternSeparator == df->mPatternSeparator &&
+            mPerMill == df->mPerMill &&
+            mPercent == df->mPercent &&
+            mZeroDigit == df->mZeroDigit;
+}
+
+ECode DecimalFormatSymbols::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+
+    StringBuilder sb("DecimalFormatSymbols[currency=");
+    sb.Append(Object::ToString(mCurrency));
+    sb.Append(",currencySymbol=");
+    sb.Append(mCurrencySymbol);
+
+    sb.Append(",decimalSeparator=");
+    sb.AppendChar(mDecimalSeparator);
+    sb.Append(",digit=");
+    sb.AppendChar(mDigit);
+    sb.Append(",exponentSeparator=");
+    sb.Append(mExponentSeparator);
+    sb.Append(",groupingSeparator=");
+    sb.AppendChar(mGroupingSeparator);
+    sb.Append(",infinity=");
+    sb.Append(mInfinity);
+    sb.Append(",intlCurrencySymbol=");
+    sb.Append(mIntlCurrencySymbol);
+    sb.Append(",minusSign=");
+    sb.Append(mMinusSign);
+    sb.Append(",monetarySeparator=");
+    sb.AppendChar(mMonetarySeparator);
+    sb.Append(",NaN=");
+    sb.Append(mNaN);
+    sb.Append(",patternSeparator=");
+    sb.AppendChar(mPatternSeparator);
+    sb.Append(",perMill=");
+    sb.AppendChar(mPerMill);
+    sb.Append(",percent=");
+    sb.AppendChar(mPercent);
+    sb.Append(",zeroDigit=");
+    sb.AppendChar(mZeroDigit);
+    sb.Append("]");
+
+    *str = sb.ToString();
     return NOERROR;
 }
 
@@ -259,6 +334,30 @@ ECode DecimalFormatSymbols::GetExponentSeparator(
 {
     VALIDATE_NOT_NULL(separator)
     *separator = mExponentSeparator;
+    return NOERROR;
+}
+
+ECode DecimalFormatSymbols::GetHashCode(
+    /* [out] */ Int32* hash)
+{
+    VALIDATE_NOT_NULL(hash)
+
+    int result = 17;
+    result = 31*result + mZeroDigit;
+    result = 31*result + mDigit;
+    result = 31*result + mDecimalSeparator;
+    result = 31*result + mGroupingSeparator;
+    result = 31*result + mPatternSeparator;
+    result = 31*result + mPercent;
+    result = 31*result + mPerMill;
+    result = 31*result + mMonetarySeparator;
+    result = 31*result + mMinusSign.GetHashCode();
+    result = 31*result + mExponentSeparator.GetHashCode();
+    result = 31*result + mInfinity.GetHashCode();
+    result = 31*result + mNaN.GetHashCode();
+    result = 31*result + mCurrencySymbol.GetHashCode();
+    result = 31*result + mIntlCurrencySymbol.GetHashCode();
+    *hash = result;
     return NOERROR;
 }
 
@@ -396,72 +495,11 @@ ECode DecimalFormatSymbols::SetExponentSeparator(
     return NOERROR;
 }
 
-ECode DecimalFormatSymbols::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res)
-    if (this->Probe(EIID_IDecimalFormatSymbols) == IDecimalFormatSymbols::Probe(object)) {
-        *res = TRUE;
-        return NOERROR;
-    }
-    if (object->Probe(EIID_IDecimalFormatSymbols) == NULL) {
-        *res = FALSE;
-        return NOERROR;
-    }
-    AutoPtr<IDecimalFormatSymbols> obj = (IDecimalFormatSymbols*) object;
-
-    AutoPtr<ICurrency> currency;
-    obj->GetCurrency((ICurrency**)&currency);
-    String currencySymbol;
-    obj->GetCurrencySymbol(&currencySymbol);
-    Char32 decimalSeparator;
-    obj->GetDecimalSeparator(&decimalSeparator);
-    Char32 digit;
-    obj->GetDigit(&digit);
-    String exponentSeparator;
-    obj->GetExponentSeparator(&exponentSeparator);
-    Char32 groupingSeparator;
-    obj->GetGroupingSeparator(&groupingSeparator);
-    String infinity;
-    obj->GetInfinity(&infinity);
-    String intlCurrencySymbol;
-    obj->GetInternationalCurrencySymbol(&intlCurrencySymbol);
-    Char32 minusSign;
-    obj->GetMinusSign(&minusSign);
-    Char32 monetarySeparator;
-    obj->GetMonetaryDecimalSeparator(&monetarySeparator);
-    String NaN;
-    obj->GetNaN(&NaN);
-    Char32 patternSeparator;
-    obj->GetPatternSeparator(&patternSeparator);
-    Char32 perMill;
-    obj->GetPerMill(&perMill);
-    Char32 percent;
-    obj->GetPercent(&percent);
-    Char32 zeroDigit;
-    obj->GetZeroDigit(&zeroDigit);
-    *res = mCurrency == currency &&
-            mCurrencySymbol.Equals(currencySymbol) &&
-            mDecimalSeparator == decimalSeparator &&
-            mDigit == digit &&
-            mExponentSeparator.Equals(exponentSeparator) &&
-            mGroupingSeparator == groupingSeparator &&
-            mInfinity.Equals(infinity) &&
-            mIntlCurrencySymbol.Equals(intlCurrencySymbol) &&
-            mMinusSign.GetChar(0) == minusSign &&
-            mMonetarySeparator == monetarySeparator &&
-            mNaN.Equals(NaN) &&
-            mPatternSeparator == patternSeparator &&
-            mPerMill == perMill &&
-            mPercent == percent &&
-            mZeroDigit == zeroDigit;
-    return NOERROR;
-}
 
 ECode DecimalFormatSymbols::GetMinusSignString(
     /* [out] */ String* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     *rst = mMinusSign;
     return NOERROR;
 }

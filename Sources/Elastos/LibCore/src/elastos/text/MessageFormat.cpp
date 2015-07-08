@@ -12,8 +12,13 @@
 #include "CDecimalFormatSymbols.h"
 #include "CFieldPosition.h"
 #include "CParsePosition.h"
-#include "CLocaleHelper.h"
+#include "CLocale.h"
+#include "Arrays.h"
+#include "EmptyArray.h"
+#include "CArrayOf.h"
 
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
@@ -22,8 +27,11 @@ using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Utility::EIID_IDate;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
 using Elastos::Text::IAttributedString;
 using Elastos::Text::CAttributedString;
 using Elastos::Text::IDecimalFormatSymbols;
@@ -31,6 +39,7 @@ using Elastos::Text::CDecimalFormatSymbols;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::CFieldPosition;
 using Elastos::Text::CParsePosition;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Text {
@@ -70,10 +79,7 @@ ECode MessageFormat::constructor(
 ECode MessageFormat::constructor(
     /* [in] */ const String& tem)
 {
-    AutoPtr<ILocaleHelper> pLocaleHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&pLocaleHelper);
-    AutoPtr<ILocale> pLocale;
-    pLocaleHelper->GetDefault((ILocale**)&pLocale);
+    AutoPtr<ILocale> pLocale = CLocale::GetDefault();
     return constructor(tem, (ILocale*)pLocale);
 }
 
@@ -161,6 +167,38 @@ ECode MessageFormat::ApplyPattern(
     return NOERROR;
 }
 
+ECode MessageFormat::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean * result)
+{
+    VALIDATE_NOT_NULL(result)
+    result = FALSE;
+
+    IMessageFormat* mfobj = IMessageFormat::Probe(object);
+    if (mfobj == NULL) {
+        return NOERROR;
+    }
+
+    MessageFormat* format = (MessageFormat*)mfobj;
+    if (this == format) {
+        return NOERROR;
+    }
+
+    if (mMaxOffset != format->mMaxOffset) {
+        return NOERROR;
+    }
+    // Must use a loop since the lengths may be different due
+    // to serialization cross-loading
+    for (Int32 i = 0; i <= mMaxOffset; i++) {
+        if ((*mArgumentNumbers)[i] != (*(format->mArgumentNumbers))[i]) {
+            return NOERROR;
+        }
+    }
+    return Object::Equals(mLocale, format->mLocale)
+            && Arrays::Equals(mStrings, format->mStrings)
+            && Arrays::Equals(mFormats, format->mFormats);
+}
+
 ECode MessageFormat::FormatToCharacterIterator(
     /* [in] */ IInterface* object,
     /* [out] */ IAttributedCharacterIterator** characterIterator)
@@ -223,10 +261,11 @@ ECode MessageFormat::FormatImpl(
         AutoPtr<IInterface> arg;
         if (objects != NULL && (*mArgumentNumbers)[i] < objects->GetLength()) {
             arg = (*objects)[(*mArgumentNumbers)[i]];
-        } else {
-            *buffer += '{';
+        }
+        else {
+            buffer->AppendChar('{');
             *buffer += (*mArgumentNumbers)[i];
-            *buffer += '}';
+            buffer->AppendChar('}');
             HandleArgumentField(begin, buffer->GetLength(), (*mArgumentNumbers)[i],
                     position, fields);
             continue;
@@ -243,7 +282,7 @@ ECode MessageFormat::FormatImpl(
                 DateFormat::GetInstance((IDateFormat**)&format);
             }
             else {
-                *buffer += arg;
+                buffer->Append(Object::ToString(arg));
                 HandleArgumentField(begin, buffer->GetLength(),
                         (*mArgumentNumbers)[i], position, fields);
                 continue;
@@ -288,8 +327,8 @@ ECode MessageFormat::HandleArgumentField(
     else if (position != NULL) {
         Int32 endIndex;
         position->GetEndIndex(&endIndex);
-        AutoPtr<IFormatField> fa;
-        position->GetFieldAttribute((IFormatField**)&fa);
+        AutoPtr<IAttributedCharacterIteratorAttribute> fa;
+        position->GetFieldAttribute((IAttributedCharacterIteratorAttribute**)&fa);
         Boolean isflag = FALSE;
         if (IObject::Probe(fa)->Equals(MessageFormatField::ARGUMENT, &isflag), isflag && endIndex == 0) {
             position->SetBeginIndex(begin);
@@ -331,14 +370,25 @@ ECode MessageFormat::HandleFormat(
         iterator->GetRunStart(&start);
         iterator->GetRunLimit(&end);
 
-//            Iterator<?> it = iterator.getAttributes().keySet().iterator();
-//            while (it.hasNext()) {
-//                AttributedCharacterIterator.Attribute attribute = (AttributedCharacterIterator.Attribute) it
-//                        .next();
-//                Object value = iterator.getAttribute(attribute);
-//                fields.add(new FieldContainer(begin + start, begin + end,
-//                        attribute, value));
-//            }
+        AutoPtr<IMap> map;
+        iterator->GetAttributes((IMap**)&map);
+        AutoPtr<ISet> set;
+        map->GetKeySet((ISet**)&set);
+        AutoPtr<IIterator> it;
+        set->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        IAttributedCharacterIteratorAttribute* attribute;
+        while (it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            attribute = IAttributedCharacterIteratorAttribute::Probe(obj);
+            AutoPtr<IInterface> value;
+           iterator->GetAttribute(attribute, (IInterface**)&value);
+
+           AutoPtr<FieldContainer> fc = new FieldContainer(
+                begin + start, begin + end, attribute, value);
+           fields->PushBack(fc);
+        }
         ICharacterIterator::Probe(iterator)->SetIndex(end, &character);
     }
     return NOERROR;
@@ -445,7 +495,8 @@ ECode MessageFormat::Parse(
     *value = NULL;
 
     if (string.IsNull()) {
-        // *value = EmptyArray::OBJECT;
+        *value = EmptyArray::OBJECT;
+        REFCOUNT_ADD(*value)
         return NOERROR;
     }
 
@@ -526,19 +577,19 @@ ECode MessageFormat::ParseObject(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    // AutoPtr<ArrayOf<IInterface*> > objects;
-    // FAIL_RETURN(Parse(string, position, (ArrayOf<IInterface*>**)&objects));
-    // if (objects != NULL) {
-    //     AutoPtr<IObjectContainer> bc;
-    //     assert(0 && "TODO");
-    //     // CObjectContainer::New((IObjectContainer**)&bc);
-    //     for (Int32 i = 0; i < objects->GetLength(); ++i) {
-    //         bc->Add((*objects)[i]);
-    //     }
+    AutoPtr<ArrayOf<IInterface*> > objects;
+    FAIL_RETURN(Parse(string, position, (ArrayOf<IInterface*>**)&objects));
 
-    //     *result = bc->Probe(EIID_IInterface);
-    //     REFCOUNT_ADD(*result);
-    // }
+    if (objects != NULL) {
+        AutoPtr<IArrayOf> bc;
+        CArrayOf::New(objects->GetLength(), (IArrayOf**)&bc);
+        for (Int32 i = 0; i < objects->GetLength(); ++i) {
+            bc->Set(i, (*objects)[i]);
+        }
+
+        *result = bc->Probe(EIID_IInterface);
+        REFCOUNT_ADD(*result);
+    }
 
     return NOERROR;
 }
@@ -823,13 +874,13 @@ ECode MessageFormat::DecodeDecimalFormat(
     if (IObject::Probe(nff)->Equals(nfn, &result), result) {
         // Empty block
     } else if (IObject::Probe(nff)->Equals(nfi, &result), result) {
-        *buffer += ",integer";
+        buffer->Append(",integer");
     } else if (IObject::Probe(nff)->Equals(nfc, &result), result) {
-        *buffer += ",currency";
+        buffer->Append(",currency");
     } else if (IObject::Probe(nff)->Equals(nfp, &result), result) {
-        *buffer += ",percent";
+        buffer->Append(",percent");
     } else {
-        *buffer += ',';
+        buffer->AppendChar(',');
         IDecimalFormat* nfff = IDecimalFormat::Probe(format);
         nfff->ToPattern(value);
     }
@@ -972,12 +1023,12 @@ ECode MessageFormat::AppendQuoted(
     for (Int32 i = 0; i < length; i++) {
         ch = (*charArray)[i];
         if (ch == '{' || ch == '}') {
-            *buffer += '\'';
-            *buffer += ch;
-            *buffer += '\'';
+            buffer->AppendChar('\'');
+            buffer->AppendChar(ch);
+            buffer->AppendChar('\'');
         }
         else {
-            *buffer += ch;
+            buffer->AppendChar(ch);
         }
     }
     return NOERROR;
@@ -995,7 +1046,7 @@ ECode MessageFormat::GetArgumentNumbers(
     /* [out, callee] */ ArrayOf<Int32>** argumentNumbers)
 {
     VALIDATE_NOT_NULL(*argumentNumbers)
-    *argumentNumbers = mArgumentNumbers->Clone();
+    *argumentNumbers = mArgumentNumbers;
     REFCOUNT_ADD(*argumentNumbers);
     return NOERROR;
 }
@@ -1004,59 +1055,54 @@ ECode MessageFormat::GetStrings(
     /* [out, callee] */ ArrayOf<String>** strings)
 {
     VALIDATE_NOT_NULL(*strings)
-    *strings = mStrings->Clone();
+    *strings = mStrings;
     REFCOUNT_ADD(*strings);
-    return NOERROR;
-}
-
-ECode MessageFormat::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    if (this->Probe(EIID_IMessageFormat) == IMessageFormat::Probe(object)) {
-        *result = TRUE;
-        return NOERROR;
-    }
-    if (object->Probe(EIID_IMessageFormat) == NULL) {
-        *result = FALSE;
-        return NOERROR;
-    }
-    AutoPtr<IMessageFormat> format = (IMessageFormat*)object;
-    Int32 mo;
-    format->GetMaxOffset(&mo);
-    if (mMaxOffset != mo) {
-        *result = FALSE;
-        return NOERROR;
-    }
-    // Must use a loop since the lengths may be different due
-    // to serialization cross-loading
-    AutoPtr<ArrayOf<Int32> > an;
-    format->GetArgumentNumbers((ArrayOf<Int32>**)&an);
-    for (Int32 i = 0; i < mMaxOffset; i++) {
-        if ((*mArgumentNumbers)[i] != (*an)[i]) {
-            *result = FALSE;
-            return NOERROR;
-        }
-    }
-    AutoPtr<ILocale> locale;
-    format->GetLocale((ILocale**)&locale);
-    Boolean res1, res2, res3;
-    mLocale->Equals(locale, &res1);
-    AutoPtr<ArrayOf<String> > strings;
-    format->GetStrings((ArrayOf<String>**)&strings);
-    res2 = mStrings->Equals(strings);
-    AutoPtr<ArrayOf<IFormat*> > formats;
-    format->GetFormats((ArrayOf<IFormat*>**)&formats);
-    res3 = mFormats->Equals(formats);
-    *result = res1 && res2 && res3;
     return NOERROR;
 }
 
 ECode MessageFormat::Clone(
     /* [out] */ IInterface** outface)
 {
-    assert(0 && "TODO");
+    VALIDATE_NOT_NULL(outface)
+    AutoPtr<IMessageFormat> mf;
+    CMessageFormat::New(String(NULL), (IMessageFormat**)&mf);
+    CloneImpl(mf);
+
+    *outface = mf;
+    REFCOUNT_ADD(*outface)
+    return NOERROR;
+}
+
+ECode MessageFormat::CloneImpl(
+    /* [in] */ IMessageFormat* clone)
+{
+    VALIDATE_NOT_NULL(clone)
+
+    FormatBase::CloneImpl(IFormat::Probe(clone));
+
+    MessageFormat* other = (MessageFormat*)clone;
+    other->mLocale = mLocale;
+    other->mStrings = mStrings;
+    other->mArgumentNumbers = mArgumentNumbers;
+    other->mMaxOffset = mMaxOffset;
+    other->mMaxArgumentIndex = mMaxArgumentIndex;
+
+    AutoPtr<ArrayOf<IFormat*> > array = ArrayOf<IFormat*>::Alloc(mFormats->GetLength());
+    for (Int32 i = 0; i < mFormats->GetLength(); ++i) {
+        IFormat* f = (*mFormats)[i];
+        if (f != NULL) {
+            AutoPtr<IInterface> copy;
+            ICloneable::Probe(f)->Clone((IInterface**)&copy);
+            array->Set(i, IFormat::Probe(copy));
+        }
+    }
+    other->mFormats = array;
+    return NOERROR;
+}
+
+ECode MessageFormat::GetHashCode(
+    /* [out] */ Int32* value)
+{
     return NOERROR;
 }
 

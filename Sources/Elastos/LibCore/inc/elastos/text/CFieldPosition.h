@@ -5,13 +5,16 @@
 #include "_Elastos_Text_CFieldPosition.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Text {
 
-CarClass(CFieldPosition), public Object
+CarClass(CFieldPosition)
+    , public Object
+    , public IFieldPosition
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CFieldPosition();
 
     CARAPI constructor(

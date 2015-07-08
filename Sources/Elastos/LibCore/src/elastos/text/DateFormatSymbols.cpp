@@ -13,6 +13,7 @@
 #include "TimeZone.h"
 #include "CArrayOf.h"
 
+using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
@@ -33,7 +34,7 @@ using Libcore::ICU::TimeZoneNames;
 namespace Elastos {
 namespace Text {
 
-CAR_INTERFACE_IMPL_2(DateFormatSymbols, Object, IDateFormatSymbols, ICloneable)
+CAR_INTERFACE_IMPL_3(DateFormatSymbols, Object, IDateFormatSymbols, ICloneable, ISerializable)
 
 DateFormatSymbols::DateFormatSymbols()
 {

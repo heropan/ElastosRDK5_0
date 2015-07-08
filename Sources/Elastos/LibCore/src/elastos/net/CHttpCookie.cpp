@@ -141,7 +141,7 @@ ECode CHttpCookie::CookieParser::Parse(
     return NOERROR;
 }
 
-void CHttpCookie::CookieParser::SetAttribute(
+ECode CHttpCookie::CookieParser::SetAttribute(
     /* [in] */ CHttpCookie* cookie,
     /* [in] */ const String& name,
     /* [in] */ const String& value)
@@ -200,6 +200,8 @@ void CHttpCookie::CookieParser::SetAttribute(
         }
         cookie->mVersion = version;
     }
+
+    return NOERROR;
 }
 
 String CHttpCookie::CookieParser::ReadAttributeName(

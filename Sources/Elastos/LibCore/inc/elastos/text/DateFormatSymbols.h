@@ -5,6 +5,7 @@
 
 using Elastos::Core::ICloneable;
 using Elastos::Core::IArrayOf;
+using Elastos::IO::ISerializable;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ITimeZone;
 using Libcore::ICU::ILocaleData;
@@ -16,6 +17,7 @@ class DateFormatSymbols
     : public Object
     , public IDateFormatSymbols
     , public ICloneable
+    , public ISerializable
 {
 public:
     CAR_INTERFACE_DECL()

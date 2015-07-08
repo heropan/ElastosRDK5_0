@@ -44,7 +44,6 @@ SOURCES += NumberFormat.cpp
 SOURCES += CNumberFormatHelper.cpp
 SOURCES += CParsePosition.cpp
 SOURCES += RuleBasedBreakIterator.cpp
-SOURCES += CRuleBasedBreakIterator.cpp
 SOURCES += RuleBasedCollator.cpp
 SOURCES += SimpleDateFormat.cpp
 SOURCES += StringCharacterIterator.cpp

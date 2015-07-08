@@ -1529,12 +1529,12 @@ ECode CNativeDecimalFormat::TranslateFieldId(
         id = -1;
     }
     if (-1 == id) {
-        AutoPtr<IFormatField> attr;
-        fp->GetFieldAttribute((IFormatField**)&attr);
+        AutoPtr<IAttributedCharacterIteratorAttribute> attr;
+        fp->GetFieldAttribute((IAttributedCharacterIteratorAttribute**)&attr);
         if (attr != NULL) {
             for (UInt32 i = 0; i < ICU4C_FIELD_IDS.GetSize(); ++i) {
-                Boolean is_equal;
-                IAttributedCharacterIteratorAttribute::Probe(ICU4C_FIELD_IDS[i])->Equals(attr, &is_equal);
+                Boolean is_equal = Object::Equals(
+                    IAttributedCharacterIteratorAttribute::Probe(ICU4C_FIELD_IDS[i]), attr);
                 if (is_equal) {
                     id = i;
                     break;

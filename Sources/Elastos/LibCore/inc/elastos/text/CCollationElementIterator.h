@@ -13,6 +13,7 @@ namespace Text {
 
 CarClass(CCollationElementIterator)
     , public Object
+    , public ICollationElementIterator
 {
 public:
     CAR_INTERFACE_DECL()

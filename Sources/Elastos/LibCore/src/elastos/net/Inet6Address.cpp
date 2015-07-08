@@ -1,12 +1,14 @@
 #include "Inet6Address.h"
 #include "CInet6Address.h"
 #include "StringBuilder.h"
-//#include "NetworkInterface.h"
+#include "Arrays.h"
+#include "NetworkInterface.h"
 #include "droid/system/OsConstants.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::System::OsConstants;
 using Elastos::Utility::IEnumeration;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Net {
@@ -150,11 +152,10 @@ ECode Inet6Address::IsAnyLocalAddress(
     /* [out] */ Boolean* isAnyLocalAddress)
 {
     VALIDATE_NOT_NULL(isAnyLocalAddress);
-    // return Arrays.equals(ipaddress, Inet6Address.ANY.ipaddress);
-    // AutoPtr<ArrayOf<Byte> > anyIpaddress;
-    // ANY->GetAddress((ArrayOf<Byte>**)&anyIpaddress);
-    // *isAnyLocalAddress = mIpAddress->Equals(anyIpaddress);
-    // return NOERROR;
+    AutoPtr<ArrayOf<Byte> > anyIpaddress;
+    ANY->GetAddress((ArrayOf<Byte>**)&anyIpaddress);
+    *isAnyLocalAddress = Arrays::Equals(mIpAddress, anyIpaddress);
+    return NOERROR;
 }
 
 
@@ -284,7 +285,7 @@ ECode Inet6Address::GetScopedInterface(
 {
     VALIDATE_NOT_NULL(scopedInterface);
     if (mScopeIfnameSet && (mIfname.IsNull())) {
-        // NetworkInterface::GetByName(mIfname, scopedInterface);
+        NetworkInterface::GetByName(mIfname, scopedInterface);
     }
     else{
         scopedInterface = NULL;

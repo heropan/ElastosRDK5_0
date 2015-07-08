@@ -11,11 +11,10 @@ namespace Text {
 RuleBasedBreakIterator::~RuleBasedBreakIterator()
 {}
 
-ECode RuleBasedBreakIterator::Init(
+ECode RuleBasedBreakIterator::constructor(
     /* [in] */ INativeBreakIterator* iterator)
 {
-    mWrapped = iterator;
-    return NOERROR;
+    return BreakIterator::constructor(iterator);
 }
 
 ECode RuleBasedBreakIterator::GetCurrent(

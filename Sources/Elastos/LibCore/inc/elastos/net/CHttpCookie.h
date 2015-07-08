@@ -35,7 +35,7 @@ public:
             /* [out] */ IList** httpCookies);
 
     private:
-        CARAPI_(void) SetAttribute(
+        CARAPI SetAttribute(
             /* [in] */ CHttpCookie* cookie,
             /* [in] */ const String& name,
             /* [in] */ const String& value);

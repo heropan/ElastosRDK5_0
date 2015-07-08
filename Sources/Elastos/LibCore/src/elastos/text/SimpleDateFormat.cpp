@@ -15,6 +15,7 @@
 #include "CParsePosition.h"
 #include "CLocaleHelper.h"
 #include "CLocaleDataHelper.h"
+#include "CSimpleDateFormat.h"
 
 using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::IGregorianCalendar;
@@ -179,8 +180,7 @@ ECode SimpleDateFormat::constructor(
     FAIL_RETURN(NumberFormat::GetInstance(locale, (INumberFormat**)&mNumberFormat));
     mNumberFormat->SetParseIntegerOnly(TRUE);
     mNumberFormat->SetGroupingUsed(FALSE);
-    assert(0 && "TODO");
-    // CGregorianCalendar::New(locale, (IGregorianCalendar**)&mCalendar);
+    CGregorianCalendar::New(locale, (IGregorianCalendar**)&mCalendar);
     mCalendar->Add(ICalendar::YEAR, -80);
     mCalendar->Get(ICalendar::YEAR, &mCreationYear);
     mCalendar->GetTime((IDate**)&mDefaultCenturyStart);
@@ -220,8 +220,7 @@ ECode SimpleDateFormat::DefaultPattern(
     lochelper->GetDefault((ILocale **)&locdef);
     AutoPtr<ILocaleData> localeData;
     AutoPtr<ILocaleDataHelper> locdatahelper;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&locdatahelper));
+    FAIL_RETURN(CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper **)&locdatahelper));
     locdatahelper->Get(locdef,(ILocaleData **)&localeData);
     String datestr , timestr;
     localeData->GetDateFormat(Libcore::ICU::DateFormat_SHORT,&datestr);
@@ -249,8 +248,7 @@ ECode SimpleDateFormat::FormatToCharacterIterator(
         Int64 pValue;
         AutoPtr<INumber> pINumber = reinterpret_cast<INumber*>(object->Probe(EIID_INumber));
         pINumber->Int64Value(&pValue);
-        assert(0 && "TODO");
-        // CDate::New(pValue, (IDate**)&pIDate);
+        CDate::New(pValue, (IDate**)&pIDate);
         return FormatToCharacterIteratorImpl(pIDate, charactorIterator);
     }
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -282,12 +280,12 @@ ECode SimpleDateFormat::FormatToCharacterIteratorImpl(
     List<AutoPtr<IFieldPosition> >::Iterator iter;
     for (iter = fields.Begin(); iter != fields.End(); ++iter) {
         pos = *iter;
-        AutoPtr<IFormatField> attribute;
-        pos->GetFieldAttribute((IFormatField**)&attribute);
+        AutoPtr<IAttributedCharacterIteratorAttribute> attribute;
+        pos->GetFieldAttribute((IAttributedCharacterIteratorAttribute**)&attribute);
         object = attribute->Probe(EIID_IInterface);
         pos->GetBeginIndex(&bi);
         pos->GetEndIndex(&ei);
-        as->AddAttribute(IAttributedCharacterIteratorAttribute::Probe(attribute), object, bi, ei);
+        as->AddAttribute(attribute, object, bi, ei);
     }
 
     // return the CharacterIterator from AttributedString
@@ -398,16 +396,11 @@ ECode SimpleDateFormat::Append(
             break;
         case STAND_ALONE_MONTH_FIELD: // L
             dateFormatField = DateFormat::Field::MONTH;
-            assert(0 && "TODO");
-            // mFormatData->GetLongStandAloneMonths((ArrayOf<String>**)&arrayOfStrings1);
-            // mFormatData->GetShortStandAloneMonths((ArrayOf<String>**)&arrayOfStrings2);
-            AppendMonth(buffer, count, arrayOfStrings1, arrayOfStrings2);
+            AppendMonth(buffer, count, TRUE);
             break;
         case IDateFormat::MONTH_FIELD: // M
             dateFormatField = DateFormat::Field::MONTH;
-            mFormatData->GetMonths((ArrayOf<String>**)&arrayOfStrings1);
-            mFormatData->GetShortMonths((ArrayOf<String>**)&arrayOfStrings2);
-            AppendMonth(buffer, count, arrayOfStrings1, arrayOfStrings2);
+            AppendMonth(buffer, count, TRUE);
             break;
         case IDateFormat::DATE_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_MONTH;
@@ -439,16 +432,11 @@ ECode SimpleDateFormat::Append(
             break;
         case STAND_ALONE_DAY_OF_WEEK_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_WEEK;
-            assert(0 && "TODO");
-            // mFormatData->GetLongStandAloneWeekdays((ArrayOf<String>**)&arrayOfStrings1);
-            // mFormatData->GetShortStandAloneWeekdays((ArrayOf<String>**)&arrayOfStrings2);
-            AppendDayOfWeek(buffer, count, arrayOfStrings1, arrayOfStrings2);
+            AppendDayOfWeek(buffer, count, TRUE);
             break;
         case IDateFormat::DAY_OF_WEEK_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_WEEK;
-            mFormatData->GetWeekdays((ArrayOf<String>**)&arrayOfStrings1);
-            mFormatData->GetShortWeekdays((ArrayOf<String>**)&arrayOfStrings2);
-            AppendDayOfWeek(buffer, count, arrayOfStrings1, arrayOfStrings2);
+            AppendDayOfWeek(buffer, count, TRUE);
             break;
         case IDateFormat::DAY_OF_YEAR_FIELD:
             dateFormatField = DateFormat::Field::DAY_OF_YEAR;
@@ -502,14 +490,15 @@ ECode SimpleDateFormat::Append(
     }
     if (fields != NULL) {
         AutoPtr<IFieldPosition> newPosition;
-        //CFieldPosition::New(dateFormatField, (IFieldPosition**)&newPosition);
+        CFieldPosition::New(
+            IAttributedCharacterIteratorAttribute::Probe(dateFormatField), (IFieldPosition**)&newPosition);
         newPosition->SetBeginIndex(beginPosition);
         newPosition->SetEndIndex(buffer->GetLength());
         fields->PushBack(newPosition);
     } else {
         // Set to the first occurrence
-        AutoPtr<IFormatField> ff;
-        position->GetFieldAttribute((IFormatField**)&ff);
+        AutoPtr<IAttributedCharacterIteratorAttribute> ff;
+        position->GetFieldAttribute((IAttributedCharacterIteratorAttribute**)&ff);
         Int32 f, ei;
         position->GetField(&f);
         position->GetEndIndex(&ei);
@@ -526,21 +515,19 @@ ECode SimpleDateFormat::Append(
 ECode SimpleDateFormat::AppendDayOfWeek(
     /* [in] */ StringBuffer* buffer,
     /* [in] */ Int32 count,
-    /* [in] */ ArrayOf<String>* longs,
-    /* [in] */ ArrayOf<String>* shorts)
+    /* [in] */ Boolean standAlone)
 {
     Int32 pValue;
     mCalendar->Get(ICalendar::DAY_OF_WEEK, &pValue);
-    Boolean isLong = (count > 3);
-    (*buffer) += isLong ? (*longs)[pValue] : (*shorts)[pValue];
+    // Boolean isLong = (count > 3);
+    // (*buffer) += isLong ? (*longs)[pValue] : (*shorts)[pValue];
     return NOERROR;
 }
 
 ECode SimpleDateFormat::AppendMonth(
     /* [in] */ StringBuffer* buffer,
     /* [in] */ Int32 count,
-    /* [in] */ ArrayOf<String>* longs,
-    /* [in] */ ArrayOf<String>* shorts)
+    /* [in] */ Boolean standAlone)
 {
     Int32 month;
     mCalendar->Get(ICalendar::MONTH, &month);
@@ -548,8 +535,34 @@ ECode SimpleDateFormat::AppendMonth(
         return AppendNumber(buffer, count, month + 1);
     }
 
-    Boolean isLong = (count > 3);
-    (*buffer) += isLong ? (*longs)[month] : (*shorts)[month];
+    AutoPtr<ILocaleData> ld = ((DateFormatSymbols*)mFormatData.Get())->mLocaleData;
+    AutoPtr<ArrayOf<String> > months;
+    if (count == 4) {
+        if (standAlone) {
+            ld->GetLongStandAloneMonthNames((ArrayOf<String>**)&months);
+        }
+        else {
+            mFormatData->GetMonths((ArrayOf<String>**)&months);
+        }
+    }
+    else if (count == 5) {
+        if (standAlone) {
+            ld->GetTinyStandAloneMonthNames((ArrayOf<String>**)&months);
+        }
+        else {
+            ld->GetTinyMonthNames((ArrayOf<String>**)&months);
+        }
+    }
+    else {
+        if (standAlone) {
+            ld->GetShortStandAloneMonthNames((ArrayOf<String>**)&months);
+        }
+        else {
+            mFormatData->GetShortMonths((ArrayOf<String>**)&months);
+        }
+    }
+
+    buffer->Append((*months)[month]);
     return NOERROR;
 }
 
@@ -567,55 +580,18 @@ ECode SimpleDateFormat::AppendTimeZone(
         mCalendar->Get(ICalendar::DST_OFFSET, &pValue);
         Boolean daylight = (pValue != 0) ? TRUE : FALSE;
         Int32 style = (count < 4) ? 0 : 1;
-        Boolean customZoneStrings;
-        //mFormatData->GetCustomZoneStrings(&customZoneStrings);
-        if (!customZoneStrings) {
-            String name;
-            AutoPtr<ILocale> locale;
-            //mFormatData->GetLocale((ILocale**)&locale);
-            tz->GetDisplayName(daylight, style, (ILocale*)locale, &name);
-            (*buffer) += name;
+
+        String zoneString;
+        ((DateFormatSymbols*)mFormatData.Get())->GetTimeZoneDisplayName(
+            tz, daylight, style, &zoneString);
+        if (!zoneString.IsNull()) {
+            buffer->Append(zoneString);
             return NOERROR;
         }
-        // We can't call TimeZone.getDisplayName() because it would not use
-        // the custom DateFormatSymbols of this SimpleDateFormat.
-        String ID;
-        tz->GetID(&ID);
-        String custom;
-
-        // AutoPtr< ArrayOf<IObjectContainer*> > outarray;
-        // assert(0 && "TODO");
-        // // mFormatData->GetZoneStrings((ArrayOf<IObjectContainer*>**)&outarray);
-        // Int32 length = outarray->GetLength();
-        // AutoPtr< ArrayOf<IArrayOf*> > outresult = ArrayOf<IArrayOf*>::Alloc(length);
-        // for (Int32 i = 0; i < length; ++i) {
-        //     AutoPtr<IObjectContainer> newBc = (*outarray)[i];
-        //     Int32 objlen = 0;
-        //     newBc->GetObjectCount(&objlen);
-        //     AutoPtr<IArrayOf> arrstr;
-        //     CArrayOf::New(EIID_ICharSequence, objlen, (IArrayOf**)&arrstr);
-        //     AutoPtr<IObjectEnumerator> oenum;
-        //     newBc->GetObjectEnumerator((IObjectEnumerator**)&oenum);
-        //     Boolean isflag = FALSE;
-        //     Int32 j = 0;
-        //     while (oenum->MoveNext(&isflag), isflag) {
-        //         AutoPtr<IInterface> outface;
-        //         oenum->Current((IInterface**)&outface);
-        //         arrstr->Put(j, outface);
-        //         ++j;
-        //     }
-        //     outresult->Set(i, arrstr);
-        // }
-        assert(0 && "TODO");
-        // TimeZones::GetDisplayName(outresult, ID, daylight, style, &custom);
-        if (!custom.IsNull()) {
-           buffer->Append(custom);
-           return NOERROR;
-        }
     }
+
     // We didn't find what we were looking for, so default to a numeric time zone.
-    AppendNumericTimeZone(buffer, generalTimeZone);
-    return NOERROR;
+    return AppendNumericTimeZone(buffer, generalTimeZone);
 }
 
 ECode SimpleDateFormat::AppendNumericTimeZone(
@@ -686,17 +662,8 @@ ECode SimpleDateFormat::Format(
     /* [in] */ IStringBuffer * buffer,
     /* [in] */ IFieldPosition* fieldPos)
 {
-    VALIDATE_NOT_NULL(buffer)
-
-    // // Harmony delegates to ICU's SimpleDateFormat, we implement it directly
-    // StringBuffer result;
-    // FormatImpl(date, (StringBuffer *)buffer, fieldPos, NULL, &result);
-    // String str;
-    // result.ToString(&str);
-    // AutoPtr<IStringBuffer> outsb = new StringBuffer(str);
-    // *formatString = outsb;
-    // REFCOUNT_ADD(*formatString);
-    return NOERROR;
+    // Harmony delegates to ICU's SimpleDateFormat, we implement it directly
+    return FormatImpl(date, buffer, fieldPos, NULL);
 }
 
 ECode SimpleDateFormat::Get2DigitYearStart(
@@ -774,14 +741,9 @@ ECode SimpleDateFormat::Parse(
             }
             break;
         case STAND_ALONE_MONTH_FIELD:// L
-            assert(0 && "TODO");
-            // mFormatData->GetLongStandAloneMonths((ArrayOf<String>**)&array1);
-            // mFormatData->GetShortStandAloneMonths((ArrayOf<String>**)&array2);
-            return ParseMonth(string, offset, count, absolute, array1, array2, value);
+            return ParseMonth(string, offset, count, absolute, TRUE, value);
         case IDateFormat::MONTH_FIELD:// M
-            mFormatData->GetMonths((ArrayOf<String>**)&array1);
-            mFormatData->GetShortMonths((ArrayOf<String>**)&array2);
-            return ParseMonth(string, offset, count, absolute, array1, array2, value);
+            return ParseMonth(string, offset, count, absolute, FALSE, value);
         case IDateFormat::DATE_FIELD:
             field = ICalendar::DATE;
             break;
@@ -815,14 +777,9 @@ ECode SimpleDateFormat::Parse(
             field = ICalendar::MILLISECOND;
             break;
         case STAND_ALONE_DAY_OF_WEEK_FIELD:
-            assert(0 && "TODO");
-            // mFormatData->GetLongStandAloneWeekdays((ArrayOf<String>**)&array1);
-            // mFormatData->GetShortStandAloneWeekdays((ArrayOf<String>**)&array2);
-            return ParseDayOfWeek(string, offset, array1, array2, value);
+            return ParseDayOfWeek(string, offset, TRUE, value);
         case IDateFormat::DAY_OF_WEEK_FIELD:
-            mFormatData->GetWeekdays((ArrayOf<String>**)&array1);
-            mFormatData->GetShortWeekdays((ArrayOf<String>**)&array2);
-            return ParseDayOfWeek(string, offset, array1, array2, value);
+            return ParseDayOfWeek(string, offset, FALSE, value);
         case IDateFormat::DAY_OF_YEAR_FIELD:
             field = ICalendar::DAY_OF_YEAR;
             break;
@@ -872,15 +829,31 @@ ECode SimpleDateFormat::Parse(
 ECode SimpleDateFormat::ParseDayOfWeek(
     /* [in] */ const String& string,
     /* [in] */ Int32 offset,
-    /* [in] */ ArrayOf<String>* longs,
-    /* [in] */ ArrayOf<String>* shorts,
+    /* [in] */ Boolean standAlone,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+
+    AutoPtr<ILocaleData> ld = ((DateFormatSymbols*)mFormatData.Get())->mLocaleData;
+    AutoPtr<ArrayOf<String> > array;
+    if (standAlone) {
+        ld->GetLongStandAloneWeekdayNames((ArrayOf<String>**)&array);
+    }
+    else {
+        mFormatData->GetWeekdays((ArrayOf<String>**)&array);
+    }
+
     Int32 index;
-    ParseText(string, offset, longs, ICalendar::DAY_OF_WEEK, &index);
+    ParseText(string, offset, array, ICalendar::DAY_OF_WEEK, &index);
     if (index < 0) {
-        ParseText(string, offset, shorts, ICalendar::DAY_OF_WEEK, &index);
+        array = NULL;
+        if (standAlone) {
+            ld->GetShortStandAloneWeekdayNames((ArrayOf<String>**)&array);
+        }
+        else {
+            mFormatData->GetShortWeekdays((ArrayOf<String>**)&array);
+        }
+        ParseText(string, offset, array, ICalendar::DAY_OF_WEEK, &index);
     }
     *value = index;
     return NOERROR;
@@ -891,18 +864,34 @@ ECode SimpleDateFormat::ParseMonth(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count,
     /* [in] */ Int32 absolute,
-    /* [in] */ ArrayOf<String>* longs,
-    /* [in] */ ArrayOf<String>* shorts,
+    /* [in] */ Boolean standAlone,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
     if (count <= 2) {
         return ParseNumber(absolute, string, offset, ICalendar::MONTH, -1, value);
     }
+
+    AutoPtr<ILocaleData> ld = ((DateFormatSymbols*)mFormatData.Get())->mLocaleData;
+    AutoPtr<ArrayOf<String> > array;
+    if (standAlone) {
+        ld->GetLongStandAloneMonthNames((ArrayOf<String>**)&array);
+    }
+    else {
+        mFormatData->GetMonths((ArrayOf<String>**)&array);
+    }
+
     Int32 index = 0;
-    ParseText(string, offset, longs, ICalendar::MONTH, &index);
+    ParseText(string, offset, array, ICalendar::MONTH, &index);
     if (index < 0) {
-        ParseText(string, offset, shorts, ICalendar::MONTH, &index);
+        array = NULL;
+        if (standAlone) {
+            ld->GetShortStandAloneMonthNames((ArrayOf<String>**)&array);
+        }
+        else {
+            mFormatData->GetShortMonths((ArrayOf<String>**)&array);
+        }
+        ParseText(string, offset, array, ICalendar::MONTH, &index);
     }
     *value = index;
     return NOERROR;
@@ -1190,17 +1179,17 @@ ECode SimpleDateFormat::ParseTimeZone(
         if (sign == '-') {
             raw = -raw;
         }
-        AutoPtr<ISimpleTimeZone> stz;
-        assert(0 && "TODO");
-        // CSimpleTimeZone::New(raw, String(""), (ISimpleTimeZone**)&stz);
-        // mCalendar->SetTimeZone(stz);
+        AutoPtr<ITimeZone> stz;
+        CSimpleTimeZone::New(raw, String(""), (ITimeZone**)&stz);
+        mCalendar->SetTimeZone(stz);
         position->GetIndex(value);
         return NOERROR;
     }
+
+    // If there was "GMT" but no offset.
     if (foundGMT) {
         AutoPtr<ITimeZoneHelper> tzh;
-        assert(0 && "TODO");
-        // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
+        CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
         AutoPtr<ITimeZone> tz;
         tzh->GetTimeZone(String("GMT"), (ITimeZone**)&tz);
         mCalendar->SetTimeZone(tz);
@@ -1208,54 +1197,88 @@ ECode SimpleDateFormat::ParseTimeZone(
         return NOERROR;
     }
 
-    // AutoPtr<ArrayOf<IObjectContainer*> > zones = ((CDateFormatSymbols *)mFormatData.Get())->InternalZoneStrings();
-    // for (Int32 i = 0; i < zones->GetLength(); ++i) {
-    //     AutoPtr<IObjectContainer> bc = (*zones)[i];
-    //     if (!bc) continue;
+    AutoPtr<ITimeZoneHelper> tzh;
+    CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
 
-    //     AutoPtr<ArrayOf<String> > element = ObjectContainerToStringArray(bc);
-    //     for (Int32 j = ITimeZoneNames::LONG_NAME; j < ITimeZoneNames::NAME_COUNT; ++j) {
-    //         String zoneStr = (*element)[j];
-    //         if (string.RegionMatchesIgnoreCase(offset, zoneStr, 0, zoneStr.GetLength())) {
-    //             AutoPtr<ITimeZoneHelper> tzh;
-    //             assert(0 && "TODO");
-    //             // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
-    //             AutoPtr<ITimeZone> zone;
-    //             tzh->GetTimeZone((*element)[ITimeZoneNames::OLSON_NAME], (ITimeZone**)&zone);
-    //             if (zone == NULL) {
-    //                 *value = -offset - 1;
-    //                 return NOERROR;
-    //             }
-    //             Int32 raw;
-    //             zone->GetRawOffset(&raw);
-    //             Boolean isUsed;
-    //             zone->UseDaylightTime(&isUsed);
-    //             if (j == ITimeZoneNames::LONG_NAME_DST || j == ITimeZoneNames::SHORT_NAME_DST) {
-    //                 // Not all time zones use a one-hour difference, so we need to query
-    //                 // the TimeZone. (Australia/Lord_Howe is the usual example of this.)
-    //                 Int32 dstSavings;
-    //                 zone->GetDSTSavings(&dstSavings);
-    //                 // One problem with TimeZone.getDSTSavings is that it will return 0 if the
-    //                 // time zone has stopped using DST, even if we're parsing a date from
-    //                 // the past. In that case, assume the default.
-    //                 if (dstSavings == 0) {
-    //                     // TODO: we should change this to use TimeZone.getOffset(long),
-    //                     // but that requires the complete date to be parsed first.
-    //                     dstSavings = 3600000;
-    //                 }
-    //                 raw += dstSavings;
-    //             }
-    //             AutoPtr<ISimpleTimeZone> stz;
-    //             assert(0 && "TODO");
-    //             // CSimpleTimeZone::New(raw, String(""), (ISimpleTimeZone**)&stz);
-    //             // mCalendar->SetTimeZone(stz);
-    //             *value = offset + zoneStr.GetLength();
-    //             return NOERROR;
-    //         }
-    //     }
-    // }
+    Boolean isUsed;
+    Int32 raw, dstSavings;
+
+    // Exhaustively look for the string in this DateFormat's localized time zone strings.
+    DateFormatSymbols* dfs = (DateFormatSymbols*)mFormatData.Get();
+    AutoPtr<ArrayOf<IArrayOf*> > zones = dfs->InternalZoneStrings();
+    for (Int32 i = 0; i < zones->GetLength(); ++i) {
+        AutoPtr<IArrayOf> bc = (*zones)[i];
+        if (!bc) continue;
+
+        AutoPtr<ArrayOf<String> > row = IArrayofToStringArray(bc);
+        for (Int32 j = ITimeZoneNames::LONG_NAME; j < ITimeZoneNames::NAME_COUNT; ++j) {
+            String zoneStr = (*row)[j];
+            if (zoneStr.IsNull()) {
+                // If icu4c doesn't have a name, our array contains a null. Normally we'd
+                // work out the correct GMT offset, but we already handled parsing GMT offsets
+                // above, so we can just ignore these cases. http://b/8128460.
+                continue;
+            }
+
+
+            if (string.RegionMatchesIgnoreCase(offset, zoneStr, 0, zoneStr.GetLength())) {
+                AutoPtr<ITimeZone> zone;
+                tzh->GetTimeZone((*row)[ITimeZoneNames::OLSON_NAME], (ITimeZone**)&zone);
+                if (zone == NULL) {
+                    *value = -offset - 1;
+                    return NOERROR;
+                }
+
+                zone->GetRawOffset(&raw);
+                zone->UseDaylightTime(&isUsed);
+                if (j == ITimeZoneNames::LONG_NAME_DST || j == ITimeZoneNames::SHORT_NAME_DST) {
+                    // Not all time zones use a one-hour difference, so we need to query
+                    // the TimeZone. (Australia/Lord_Howe is the usual example of this.)
+                    zone->GetDSTSavings(&dstSavings);
+                    // One problem with TimeZone.getDSTSavings is that it will return 0 if the
+                    // time zone has stopped using DST, even if we're parsing a date from
+                    // the past. In that case, assume the default.
+                    if (dstSavings == 0) {
+                        // TODO: we should change this to use TimeZone.getOffset(long),
+                        // but that requires the complete date to be parsed first.
+                        dstSavings = 3600000;
+                    }
+                    raw += dstSavings;
+                }
+                AutoPtr<ITimeZone> stz;
+                CSimpleTimeZone::New(raw, String(""), (ITimeZone**)&stz);
+                mCalendar->SetTimeZone(stz);
+                *value = offset + zoneStr.GetLength();
+                return NOERROR;
+            }
+        }
+    }
     *value = -offset - 1;
     return NOERROR;
+}
+
+AutoPtr<ArrayOf<String> > SimpleDateFormat::IArrayofToStringArray(
+    /* [in] */ IArrayOf * arrayOf)
+{
+    AutoPtr<ArrayOf<String> > array;
+    if (arrayOf == NULL) {
+        array = ArrayOf<String>::Alloc(0);
+        return array;
+    }
+
+    Int32 size;
+    arrayOf->GetLength(&size);
+    array = ArrayOf<String>::Alloc(size);
+
+    for (Int32 i = 0;i < size; ++i) {
+        AutoPtr<IInterface> obj;
+        arrayOf->Get(i, (IInterface**)&obj);
+        String str;
+        ICharSequence::Probe(obj)->ToString(&str);
+        array->Set(i, str);
+    }
+
+    return array;
 }
 
 ECode SimpleDateFormat::Set2DigitYearStart(
@@ -1264,8 +1287,7 @@ ECode SimpleDateFormat::Set2DigitYearStart(
     mDefaultCenturyStart = NULL;
     FAIL_RETURN (ICloneable::Probe(date)->Clone((IInterface**)&mDefaultCenturyStart));
     AutoPtr<ICalendar> cal;
-    assert(0 && "TODO");
-    // CGregorianCalendar::New((IGregorianCalendar**)&cal);
+    CGregorianCalendar::New((IGregorianCalendar**)&cal);
     cal->SetTime((IDate*)mDefaultCenturyStart);
     mCreationYear = 0;
     cal->Get(ICalendar::YEAR, &mCreationYear);
@@ -1373,7 +1395,30 @@ ECode SimpleDateFormat::Equals(
 ECode SimpleDateFormat::Clone(
     /* [out] */ IInterface** outface)
 {
-    assert(0 && "TODO");
+    VALIDATE_NOT_NULL(outface)
+    AutoPtr<ISimpleDateFormat> format;
+    CSimpleDateFormat::New((ISimpleDateFormat**)&format);
+    *outface = format.Get();
+    REFCOUNT_ADD(*outface)
+    return NOERROR;
+}
+
+ECode SimpleDateFormat::CloneImpl(
+    /* [in] */ ISimpleDateFormat* object)
+{
+    DateFormat::CloneImpl(IDateFormat::Probe(object));
+
+    SimpleDateFormat* sdf = (SimpleDateFormat*)object;
+
+    sdf->mPattern = mPattern;
+
+    AutoPtr<IInterface> t1, t2;
+    ICloneable::Probe(mFormatData)->Clone((IInterface**)&t1);
+    ICloneable::Probe(mDefaultCenturyStart)->Clone((IInterface**)&t2);
+
+    sdf->mFormatData = IDateFormatSymbols::Probe(t1);
+    sdf->mCreationYear = mCreationYear;
+    sdf->mDefaultCenturyStart = IDate::Probe(mDefaultCenturyStart);
     return NOERROR;
 }
 

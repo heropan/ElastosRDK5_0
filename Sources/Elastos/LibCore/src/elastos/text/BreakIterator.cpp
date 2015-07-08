@@ -30,6 +30,13 @@ BreakIterator::BreakIterator(
 {
 }
 
+ECode BreakIterator::constructor(
+    /* [in] */ INativeBreakIterator* iterator)
+{
+    mWrapped = iterator;
+    return NOERROR;
+}
+
 ECode BreakIterator::CloneImpl(
     /* [in] */ IBreakIterator* object)
 {

@@ -96,6 +96,8 @@ public:
     virtual CARAPI CloneImpl(
         /* [in] */ IBreakIterator* object);
 
+    CARAPI constructor(
+        /* [in] */ INativeBreakIterator* iterator);
 protected:
     BreakIterator();
 

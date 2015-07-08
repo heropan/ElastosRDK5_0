@@ -6,6 +6,7 @@
 #include "StringBuffer.h"
 #include "Character.h"
 
+using Elastos::Core::IArrayOf;
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::Character;
@@ -14,7 +15,6 @@ using Elastos::Text::IAttributedCharacterIterator;;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
 
-extern "C" const InterfaceID EIID_SimpleDateFormat;
 
 namespace Elastos {
 namespace Text {
@@ -92,6 +92,9 @@ public:
     CARAPI Clone(
         /* [out] */ IInterface** outface);
 
+    CARAPI CloneImpl(
+        /* [in] */ ISimpleDateFormat* object);
+
 private:
     CARAPI ValidateFormat(
         /* [in] */ Char32 format);
@@ -122,14 +125,12 @@ private:
     CARAPI AppendDayOfWeek(
         /* [in] */ StringBuffer* buffer,
         /* [in] */ Int32 count,
-        /* [in] */ ArrayOf<String>* longs,
-        /* [in] */ ArrayOf<String>* shorts);
+        /* [in] */ Boolean standAlone);
 
     CARAPI AppendMonth(
         /* [in] */ StringBuffer* buffer,
         /* [in] */ Int32 count,
-        /* [in] */ ArrayOf<String>* longs,
-        /* [in] */ ArrayOf<String>* shorts);
+        /* [in] */ Boolean standAlone);
 
     CARAPI AppendTimeZone(
         /* [in] */ StringBuffer* buffer,
@@ -161,8 +162,7 @@ private:
     CARAPI ParseDayOfWeek(
         /* [in] */ const String& string,
         /* [in] */ Int32 offset,
-        /* [in] */ ArrayOf<String>* longs,
-        /* [in] */ ArrayOf<String>* shorts,
+        /* [in] */ Boolean standAlone,
         /* [out] */ Int32* value);
 
     CARAPI ParseMonth(
@@ -170,8 +170,7 @@ private:
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ Int32 absolute,
-        /* [in] */ ArrayOf<String>* longs,
-        /* [in] */ ArrayOf<String>* shorts,
+        /* [in] */ Boolean standAlone,
         /* [out] */ Int32* value);
 
     CARAPI ParseNumber(
@@ -210,6 +209,9 @@ private:
     //CARAPI WriteObject(ObjectOutputStream stream);
 
     //CARAPI ReadObject(ObjectInputStream stream);
+
+    static AutoPtr<ArrayOf<String> > IArrayofToStringArray(
+        /* [in] */ IArrayOf * arrayOf);
 
 protected:
     const static String PATTERN_CHARS;

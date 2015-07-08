@@ -44,99 +44,100 @@ public:
         /* [out] */ Boolean* res);
 
     //@Override
-    //public String toString();
+    CARAPI ToString(
+        /* [out] */ String* str);
 
-    virtual CARAPI GetCurrency(
+    CARAPI GetCurrency(
         /* [out] */ ICurrency** currency);
 
-    virtual CARAPI GetInternationalCurrencySymbol(
+    CARAPI GetInternationalCurrencySymbol(
         /* [out] */ String* symbol);
 
-    virtual CARAPI GetCurrencySymbol(
+    CARAPI GetCurrencySymbol(
         /* [out] */ String* symbol);
 
-    virtual CARAPI GetDecimalSeparator(
+    CARAPI GetDecimalSeparator(
         /* [out] */ Char32* separator);
 
-    virtual CARAPI GetDigit(
+    CARAPI GetDigit(
         /* [out] */ Char32* digit);
 
-    virtual CARAPI GetGroupingSeparator(
+    CARAPI GetGroupingSeparator(
         /* [out] */ Char32* separator);
 
-    virtual CARAPI GetInfinity(
+    CARAPI GetInfinity(
         /* [out] */ String* infinity);
 
-    virtual CARAPI GetMinusSign(
+    CARAPI GetMinusSign(
         /* [out] */ Char32* minusSign);
 
-    virtual CARAPI GetMonetaryDecimalSeparator(
+    CARAPI GetMonetaryDecimalSeparator(
         /* [out] */ Char32* separator);
 
-    virtual CARAPI GetNaN(
+    CARAPI GetNaN(
             /* [out] */ String* nan);
 
-    virtual CARAPI GetPatternSeparator(
+    CARAPI GetPatternSeparator(
         /* [out] */ Char32* separator);
 
-    virtual CARAPI GetPercent(
+    CARAPI GetPercent(
             /* [out] */ Char32* percent);
 
-    virtual CARAPI GetPerMill(
+    CARAPI GetPerMill(
         /* [out] */ Char32* perMill);
 
-    virtual CARAPI GetZeroDigit(
+    CARAPI GetZeroDigit(
         /* [out] */ Char32* zeroDigit);
 
-    virtual CARAPI GetExponentSeparator(
+    CARAPI GetExponentSeparator(
         /* [out] */ String* separator);
 
-    // @Override
-    // public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
-    virtual CARAPI SetCurrency(
+    CARAPI SetCurrency(
         /* [in] */ ICurrency* currency);
 
-    virtual CARAPI SetInternationalCurrencySymbol(
+    CARAPI SetInternationalCurrencySymbol(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetCurrencySymbol(
+    CARAPI SetCurrencySymbol(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetDecimalSeparator(
+    CARAPI SetDecimalSeparator(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetDigit(
+    CARAPI SetDigit(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetGroupingSeparator(
+    CARAPI SetGroupingSeparator(
             /* [in] */ Char32 value);
 
-    virtual CARAPI SetInfinity(
+    CARAPI SetInfinity(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetMinusSign(
+    CARAPI SetMinusSign(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetMonetaryDecimalSeparator(
+    CARAPI SetMonetaryDecimalSeparator(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetNaN(
+    CARAPI SetNaN(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetPatternSeparator(
+    CARAPI SetPatternSeparator(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetPercent(
+    CARAPI SetPercent(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetPerMill(
+    CARAPI SetPerMill(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetZeroDigit(
+    CARAPI SetZeroDigit(
         /* [in] */ Char32 value);
 
-    virtual CARAPI SetExponentSeparator(
+    CARAPI SetExponentSeparator(
         /* [in] */ const String& value);
 
     virtual CARAPI GetMinusSignString(
@@ -168,29 +169,18 @@ public:
 
 private:
     Char32 mZeroDigit;
-
     Char32 mDigit;
-
     Char32 mDecimalSeparator;
-
     Char32 mGroupingSeparator;
-
     Char32 mPatternSeparator;
-
     Char32 mPercent;
-
     Char32 mPerMill;
-
     Char32 mMonetarySeparator;
-
     String mMinusSign;
-
     String mInfinity, mNaN, mCurrencySymbol, mIntlCurrencySymbol;
 
     mutable AutoPtr<ICurrency> mCurrency;
-
     mutable AutoPtr<ILocale> mLocale;
-
     mutable String mExponentSeparator;
 };
 

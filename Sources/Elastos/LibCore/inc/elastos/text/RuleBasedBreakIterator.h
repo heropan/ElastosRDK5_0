@@ -9,14 +9,15 @@ using Elastos::Text::ICharacterIterator;
 namespace Elastos {
 namespace Text {
 
-class RuleBasedBreakIterator : public BreakIterator
+class RuleBasedBreakIterator
+    : public BreakIterator
 {
 public:
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ INativeBreakIterator* iterator);
 
-    ~RuleBasedBreakIterator();
+    virtual ~RuleBasedBreakIterator();
 
     //@Override
     CARAPI GetCurrent(

@@ -23,10 +23,23 @@ public:
 
     DecimalFormat();
 
-    virtual CARAPI ApplyLocalizedPattern(
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ const String& pattern);
 
-    virtual CARAPI ApplyPattern(
+    CARAPI constructor(
+        /* [in] */ const String& pattern,
+        /* [in] */ IDecimalFormatSymbols* value);
+
+    CARAPI constructor(
+        /* [in] */ const String& pattern,
+        /* [in] */ ILocale* locale);
+
+    CARAPI ApplyLocalizedPattern(
+        /* [in] */ const String& pattern);
+
+    CARAPI ApplyPattern(
         /* [in] */ const String& pattern);
 
     //@Override
@@ -63,39 +76,39 @@ public:
         /* [in] */ IStringBuffer * buffer,
         /* [in] */ IFieldPosition* field);
 
-    virtual CARAPI GetDecimalFormatSymbols(
+    CARAPI GetDecimalFormatSymbols(
         /* [out] */ IDecimalFormatSymbols** symbols);
 
     // @Override
-    virtual CARAPI GetCurrency(
+    CARAPI GetCurrency(
         /* [out] */ ICurrency** currency);
 
-    virtual CARAPI GetGroupingSize(
+    CARAPI GetGroupingSize(
         /* [out] */ Int32* size);
 
-    virtual CARAPI GetMultiplier(
+    CARAPI GetMultiplier(
         /* [out] */ Int32* multiplier);
 
-    virtual CARAPI GetNegativePrefix(
+    CARAPI GetNegativePrefix(
         /* [out] */ String* prefix);
 
-    virtual CARAPI GetNegativeSuffix(
+    CARAPI GetNegativeSuffix(
         /* [out] */ String* suffix);
 
-    virtual CARAPI GetPositivePrefix(
+    CARAPI GetPositivePrefix(
         /* [out] */ String* prefix);
 
-    virtual CARAPI GetPositiveSuffix(
+    CARAPI GetPositiveSuffix(
         /* [out] */ String* suffix);
 
-    //@Override
-    //public int hashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
-    virtual CARAPI IsDecimalSeparatorAlwaysShown(
-        /* [out] */ Boolean* alwaysShown);
-
-    virtual CARAPI IsParseBigDecimal(
+    CARAPI IsParseBigDecimal(
         /* [out] */ Boolean* isBigDecimal);
+
+    CARAPI IsDecimalSeparatorAlwaysShown(
+        /* [out] */ Boolean* alwaysShown);
 
     //@Override
     CARAPI SetParseIntegerOnly(
@@ -111,17 +124,17 @@ public:
         /* [in] */ IParsePosition* position,
         /* [out] */ INumber** value);
 
-    virtual CARAPI SetDecimalFormatSymbols(
+    CARAPI SetDecimalFormatSymbols(
         /* [in] */ IDecimalFormatSymbols* value);
 
     //@Override
     CARAPI SetCurrency(
         /* [in] */ ICurrency* currency);
 
-    virtual CARAPI SetDecimalSeparatorAlwaysShown(
+    CARAPI SetDecimalSeparatorAlwaysShown(
         /* [in] */ Boolean value);
 
-    virtual CARAPI SetGroupingSize(
+    CARAPI SetGroupingSize(
         /* [in] */ Int32 value);
 
     //@Override
@@ -148,28 +161,28 @@ public:
     CARAPI SetMinimumIntegerDigits(
         /* [in] */ Int32 value);
 
-    virtual CARAPI SetMultiplier(
+    CARAPI SetMultiplier(
         /* [in] */ Int32 value);
 
-    virtual CARAPI SetNegativePrefix(
+    CARAPI SetNegativePrefix(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetNegativeSuffix(
+    CARAPI SetNegativeSuffix(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetPositivePrefix(
+    CARAPI SetPositivePrefix(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetPositiveSuffix(
+    CARAPI SetPositiveSuffix(
         /* [in] */ const String& value);
 
-    virtual CARAPI SetParseBigDecimal(
+    CARAPI SetParseBigDecimal(
         /* [in] */ Boolean newValue);
 
-    virtual CARAPI ToLocalizedPattern(
+    CARAPI ToLocalizedPattern(
         /* [out] */ String* pattern);
 
-    virtual CARAPI ToPattern(
+    CARAPI ToPattern(
         /* [out] */ String* pattern);
 
     //override
@@ -183,22 +196,15 @@ public:
     CARAPI GetNdf(
         /* [out] */ INativeDecimalFormat** ndf);
 
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ const String& pattern);
-
-    CARAPI constructor(
-        /* [in] */ const String& pattern,
-        /* [in] */ IDecimalFormatSymbols* value);
-
-    CARAPI constructor(
-        /* [in] */ const String& pattern,
-        /* [in] */ ILocale* locale);
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
+
     CARAPI InitNative(
         /* [in] */ const String& pattern);
+
+    CARAPI UpdateFieldsFromNative();
 
     CARAPI CheckBufferAndFieldPosition(
         /* [in] */ IStringBuffer * buffer,
