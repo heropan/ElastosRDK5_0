@@ -39,6 +39,11 @@ public:
         /* [in] */ ByteOrder order,
         /* [out] */ Boolean* isNeedsSwap);
 
+    static CARAPI_(ByteOrder) _GetNativeOrder();
+
+    static CARAPI_(Boolean) _IsNeedsSwap(
+        /* [in] */ ByteOrder order);
+
 private:
     static void Init();
 

@@ -202,33 +202,33 @@ public:
         /* [in] */ Int32 shortCount);
 
     CARAPI PutChars(
-        /* [in] */ ArrayOf<Char32>* dst,
-        /* [in] */ Int32 dstOffset,
+        /* [in] */ ArrayOf<Char32>* src,
+        /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 charCount);
 
     CARAPI PutDoubles(
-        /* [in] */ ArrayOf<Double>* dst,
-        /* [in] */ Int32 dstOffset,
+        /* [in] */ ArrayOf<Double>* src,
+        /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 doubleCount);
 
     CARAPI PutFloats(
-        /* [in] */ ArrayOf<Float>* dst,
-        /* [in] */ Int32 dstOffset,
+        /* [in] */ ArrayOf<Float>* src,
+        /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 floatCount);
 
     CARAPI PutInt32s(
-        /* [in] */ ArrayOf<Int32>* dst,
-        /* [in] */ Int32 dstOffset,
+        /* [in] */ ArrayOf<Int32>* src,
+        /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 intCount);
 
     CARAPI PutInt64s(
-        /* [in] */ ArrayOf<Int64>* dst,
-        /* [in] */ Int32 dstOffset,
+        /* [in] */ ArrayOf<Int64>* src,
+        /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 longCount);
 
     CARAPI PutInt16s(
-        /* [in] */ ArrayOf<Int16>* dst,
-        /* [in] */ Int32 dstOffset,
+        /* [in] */ ArrayOf<Int16>* src,
+        /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 shortCount);
 public:
     /**

@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_IO_DATAGRAMCHANNEL_H__
 #define __ELASTOS_IO_DATAGRAMCHANNEL_H__
 
+#include <Elastos.CoreLibrary_server.h>
 #include "ByteBuffer.h"
 #include "SelectorProvider.h"
 #include "AbstractSelectableChannel.h"

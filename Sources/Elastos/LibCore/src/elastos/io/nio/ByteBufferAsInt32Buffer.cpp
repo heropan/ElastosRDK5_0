@@ -1,6 +1,8 @@
 
 #include "ByteBufferAsInt32Buffer.h"
 
+using Libcore::IO::ISizeOf;
+
 namespace Elastos {
 namespace IO {
 
@@ -11,7 +13,7 @@ extern "C" const InterfaceID EIID_ByteBufferAsInt32Buffer =
 ByteBufferAsInt32Buffer::ByteBufferAsInt32Buffer(
     /* [in] */ ByteBuffer* byteBuffer)
 {
-    // super(byteBuffer.capacity() / SizeOf.INT, byteBuffer.effectiveDirectAddress);
+    // super(byteBuffer.capacity() / ISizeOf::INT, byteBuffer.effectiveDirectAddress);
     // this.byteBuffer = byteBuffer;
     // this.byteBuffer.clear();
 }
@@ -42,8 +44,8 @@ ECode ByteBufferAsInt32Buffer::Compact()
     // if (byteBuffer.isReadOnly()) {
     //     throw new ReadOnlyBufferException();
     // }
-    // byteBuffer.limit(limit * SizeOf.INT);
-    // byteBuffer.position(position * SizeOf.INT);
+    // byteBuffer.limit(limit * ISizeOf::INT);
+    // byteBuffer.position(position * ISizeOf::INT);
     // byteBuffer.compact();
     // byteBuffer.clear();
     // position = limit - position;
@@ -71,7 +73,7 @@ ECode ByteBufferAsInt32Buffer::Get(
     // if (position == limit) {
     //     throw new BufferUnderflowException();
     // }
-    // return byteBuffer.getInt(position++ * SizeOf.INT);
+    // return byteBuffer.getInt(position++ * ISizeOf::INT);
     return NOERROR;
 }
 
@@ -80,7 +82,7 @@ ECode ByteBufferAsInt32Buffer::Get(
     /* [out] */ Int32* value)
 {
     // checkIndex(index);
-    // return byteBuffer.getInt(index * SizeOf.INT);
+    // return byteBuffer.getInt(index * ISizeOf::INT);
     return NOERROR;
 }
 
@@ -89,8 +91,8 @@ ECode ByteBufferAsInt32Buffer::Get(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
 {
-    // byteBuffer.limit(limit * SizeOf.INT);
-    // byteBuffer.position(position * SizeOf.INT);
+    // byteBuffer.limit(limit * ISizeOf::INT);
+    // byteBuffer.position(position * ISizeOf::INT);
     // if (byteBuffer instanceof DirectByteBuffer) {
     //     ((DirectByteBuffer) byteBuffer).get(dst, dstOffset, intCount);
     // } else {
@@ -128,7 +130,7 @@ ECode ByteBufferAsInt32Buffer::Put(
     // if (position == limit) {
     //     throw new BufferOverflowException();
     // }
-    // byteBuffer.putInt(position++ * SizeOf.INT, c);
+    // byteBuffer.putInt(position++ * ISizeOf::INT, c);
     // return this;
     return NOERROR;
 }
@@ -138,7 +140,7 @@ ECode ByteBufferAsInt32Buffer::Put(
     /* [in] */ Int32 c)
 {
     // checkIndex(index);
-    // byteBuffer.putInt(index * SizeOf.INT, c);
+    // byteBuffer.putInt(index * ISizeOf::INT, c);
     // return this;
     return NOERROR;
 }
@@ -148,8 +150,8 @@ ECode ByteBufferAsInt32Buffer::Put(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    // byteBuffer.limit(limit * SizeOf.INT);
-    // byteBuffer.position(position * SizeOf.INT);
+    // byteBuffer.limit(limit * ISizeOf::INT);
+    // byteBuffer.position(position * ISizeOf::INT);
     // if (byteBuffer instanceof DirectByteBuffer) {
     //     ((DirectByteBuffer) byteBuffer).put(src, srcOffset, intCount);
     // } else {
@@ -163,8 +165,8 @@ ECode ByteBufferAsInt32Buffer::Put(
 ECode ByteBufferAsInt32Buffer::Slice(
     /* [out] */ IInt32Buffer** buffer)
 {
-    // byteBuffer.limit(limit * SizeOf.INT);
-    // byteBuffer.position(position * SizeOf.INT);
+    // byteBuffer.limit(limit * ISizeOf::INT);
+    // byteBuffer.position(position * ISizeOf::INT);
     // ByteBuffer bb = byteBuffer.slice().order(byteBuffer.order());
     // IntBuffer result = new ByteBufferAsIntBuffer(bb);
     // byteBuffer.clear();

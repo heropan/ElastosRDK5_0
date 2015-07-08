@@ -1,5 +1,10 @@
 
 #include "DoubleBuffer.h"
+#include "CoreUtils.h"
+#include "CArrayOf.h"
+
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace IO {
@@ -12,8 +17,9 @@ DoubleBuffer::DoubleBuffer()
 {}
 
 DoubleBuffer::DoubleBuffer(
-    /* [in] */ Int32 capacity)
-    : Buffer(3, capacity, NULL)
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(3, capacity, effectiveDirectAddress)
 {}
 
 CAR_INTERFACE_IMPL_2(DoubleBuffer, Object, IDoubleBuffer, IBuffer)
@@ -89,7 +95,7 @@ ECode DoubleBuffer::CompareTo(
     IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Double thisDouble, otherDouble;
     while (compareRemaining > 0) {
-        GetDouble(thisPos, &thisDouble);
+        Get(thisPos, &thisDouble);
         otherBuffer->Get(otherPos, &otherDouble);
         if ((thisDouble != otherDouble)
                 && ((thisDouble == thisDouble) || (otherDouble == otherDouble))) {
@@ -134,8 +140,8 @@ ECode DoubleBuffer::Equals(
     Double thisValue = 0.0;
     Double otherValue = 0.0;
     while (equalSoFar && (mPosition < mLimit)) {
-        this->GetDouble(myPosition++, &thisValue);
-        otherObj->GetDouble(otherPosition++, &otherValue);
+        this->Get(myPosition++, &thisValue);
+        otherObj->Get(otherPosition++, &otherValue);
         equalSoFar = (thisValue == otherValue) ||
                      (thisValue != thisValue && otherValue != otherValue);
     }
@@ -144,13 +150,13 @@ ECode DoubleBuffer::Equals(
     return NOERROR;
 }
 
-ECode DoubleBuffer::GetDoubles(
+ECode DoubleBuffer::Get(
     /* [out] */ ArrayOf<Double>* dst)
 {
-    return GetDoubles(dst, 0, dst->GetLength());
+    return Get(dst, 0, dst->GetLength());
 }
 
-ECode DoubleBuffer::GetDoubles(
+ECode DoubleBuffer::Get(
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
@@ -170,7 +176,7 @@ ECode DoubleBuffer::GetDoubles(
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
     for (Int32 i = dstOffset; i < dstOffset + doubleCount; i++) {
-        GetDouble(&(*dst)[i]);
+        Get(&(*dst)[i]);
     }
 
     return NOERROR;
@@ -182,13 +188,13 @@ ECode DoubleBuffer::HasArray(
     return ProtectedHasArray(hasArray);
 }
 
-ECode DoubleBuffer::PutDoubles(
+ECode DoubleBuffer::Put(
     /* [in] */ const ArrayOf<Double>& src)
 {
-    return PutDoubles(src, 0, src.GetLength());
+    return Put(src, 0, src.GetLength());
 }
 
-ECode DoubleBuffer::PutDoubles(
+ECode DoubleBuffer::Put(
     /* [in] */ const ArrayOf<Double>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 doubleCount)
@@ -207,12 +213,12 @@ ECode DoubleBuffer::PutDoubles(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
     for (Int32 i = srcOffset; i < srcOffset + doubleCount; i++) {
-        PutDouble(src[i]);
+        Put(src[i]);
     }
     return NOERROR;
 }
 
-ECode DoubleBuffer::PutDoubleBuffer(
+ECode DoubleBuffer::Put(
     /* [in] */ IDoubleBuffer* src)
 {
     if (src == (IDoubleBuffer*)this->Probe(EIID_IDoubleBuffer)) {
@@ -230,7 +236,24 @@ ECode DoubleBuffer::PutDoubleBuffer(
 
     AutoPtr< ArrayOf<Double> > doubles = ArrayOf<Double>::Alloc(srcRemaining);
     FAIL_RETURN(src->Get(doubles))
-    return PutDoubles(*doubles);
+    return Put(*doubles);
+}
+
+ECode DoubleBuffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Double> > res;
+    GetArray((ArrayOf<Double>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (Int32 i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::Convert((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
 }
 
 } // namespace IO

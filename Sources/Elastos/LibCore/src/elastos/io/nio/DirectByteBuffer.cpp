@@ -370,6 +370,15 @@ ECode DirectByteBuffer::ProtectedHasArray(
 ECode DirectByteBuffer::Put(
     /* [in] */ Byte b)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // if (position == limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeByte(offset + position++, value);
+    // return this;
     return NOERROR;
 }
 
@@ -377,6 +386,13 @@ ECode DirectByteBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Byte b)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index);
+    // this.block.pokeByte(offset + index, value);
+    // return this;
     return NOERROR;
 }
 
@@ -385,6 +401,14 @@ ECode DirectByteBuffer::Put(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 byteCount)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkPutBounds(1, src.length, srcOffset, byteCount);
+    // this.block.pokeByteArray(offset + position, src, srcOffset, byteCount);
+    // position += byteCount;
+    // return this;
     return NOERROR;
 }
 
@@ -397,6 +421,17 @@ ECode DirectByteBuffer::Put(
 ECode DirectByteBuffer::PutChar(
     /* [in] */ Char32 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // int newPosition = position + ISizeOf::CHAR;
+    // if (newPosition > limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeShort(offset + position, (short) value, order);
+    // position = newPosition;
+    // return this;
     return NOERROR;
 }
 
@@ -404,12 +439,30 @@ ECode DirectByteBuffer::PutChar(
     /* [in] */ Int32 index,
     /* [in] */ Char32 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index, ISizeOf::CHAR);
+    // this.block.pokeShort(offset + index, (short) value, order);
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::PutDouble(
     /* [in] */ Double value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // int newPosition = position + ISizeOf::DOUBLE;
+    // if (newPosition > limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeLong(offset + position, Double.doubleToRawLongBits(value), order);
+    // position = newPosition;
+    // return this;
     return NOERROR;
 }
 
@@ -417,12 +470,30 @@ ECode DirectByteBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index, ISizeOf::DOUBLE);
+    // this.block.pokeLong(offset + index, Double.doubleToRawLongBits(value), order);
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::PutFloat(
     /* [in] */ Float value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // int newPosition = position + ISizeOf::FLOAT;
+    // if (newPosition > limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeInt(offset + position, Float.floatToRawIntBits(value), order);
+    // position = newPosition;
+    // return this;
     return NOERROR;
 }
 
@@ -430,12 +501,30 @@ ECode DirectByteBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index, ISizeOf::FLOAT);
+    // this.block.pokeInt(offset + index, Float.floatToRawIntBits(value), order);
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::PutInt16(
     /* [in] */ Int16 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // int newPosition = position + ISizeOf::SHORT;
+    // if (newPosition > limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeShort(offset + position, value, order);
+    // position = newPosition;
+    // return this;
     return NOERROR;
 }
 
@@ -443,12 +532,30 @@ ECode DirectByteBuffer::PutInt16(
     /* [in] */ Int32 index,
     /* [in] */ Int16 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index, ISizeOf::SHORT);
+    // this.block.pokeShort(offset + index, value, order);
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::PutInt32(
     /* [in] */ Int32 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // int newPosition = position + ISizeOf::INT;
+    // if (newPosition > limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeInt(offset + position, value, order);
+    // position = newPosition;
+    // return this;
     return NOERROR;
 }
 
@@ -456,12 +563,30 @@ ECode DirectByteBuffer::PutInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index, ISizeOf::INT);
+    // this.block.pokeInt(offset + index, value, order);
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::PutInt64(
     /* [in] */ Int64 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // int newPosition = position + ISizeOf::LONG;
+    // if (newPosition > limit) {
+    //   throw new BufferOverflowException();
+    // }
+    // this.block.pokeLong(offset + position, value, order);
+    // position = newPosition;
+    // return this;
     return NOERROR;
 }
 
@@ -469,71 +594,176 @@ ECode DirectByteBuffer::PutInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // checkIndex(index, ISizeOf::LONG);
+    // this.block.pokeLong(offset + index, value, order);
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::Slice(
     /* [out] */ IByteBuffer** buffer)
 {
+    // checkNotFreed();
+    // return new DirectByteBuffer(block, remaining(), offset + position, isReadOnly, mapMode);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsCharBuffer(
     /* [out] */ ICharBuffer** buffer)
 {
+    // checkNotFreed();
+    // return ByteBufferAsCharBuffer.asCharBuffer(this);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsDoubleBuffer(
     /* [out] */ IDoubleBuffer** buffer)
 {
+    // checkNotFreed();
+    // return ByteBufferAsDoubleBuffer.asDoubleBuffer(this);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsFloatBuffer(
     /* [out] */ IFloatBuffer** buffer)
 {
+    // checkNotFreed();
+    // return ByteBufferAsFloatBuffer.asFloatBuffer(this);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsInt16Buffer(
     /* [out] */ IInt16Buffer** buffer)
 {
+    // checkNotFreed();
+    // return ByteBufferAsShortBuffer.asShortBuffer(this);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsInt32Buffer(
     /* [out] */ IInt32Buffer** buffer)
 {
+    // checkNotFreed();
+    // return ByteBufferAsIntBuffer.asIntBuffer(this);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsInt64Buffer(
     /* [out] */ IInt64Buffer** buffer)
 {
+    // checkNotFreed();
+    // return ByteBufferAsLongBuffer.asLongBuffer(this);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::AsReadOnlyBuffer(
     /* [out] */ IByteBuffer** buffer)
 {
+    // return copy(this, mark, true);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::Compact()
 {
+    // checkIsAccessible();
+    // if (isReadOnly) {
+    //   throw new ReadOnlyBufferException();
+    // }
+    // Memory.memmove(this, 0, this, position, remaining());
+    // position = limit - position;
+    // limit = capacity;
+    // mark = UNSET_MARK;
+    // return this;
     return NOERROR;
 }
 
 ECode DirectByteBuffer::Duplicate(
     /* [out] */ IByteBuffer** buffer)
 {
+    // return copy(this, mark, isReadOnly);
     return NOERROR;
 }
 
 ECode DirectByteBuffer::IsReadOnly(
     /* [out] */ Boolean* value)
 {
+    // return isReadOnly;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutChars(
+    /* [in] */ ArrayOf<Char32>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 charCount)
+{
+    // checkIsAccessible();
+    // int byteCount = checkPutBounds(ISizeOf::CHAR, src.length, srcOffset, charCount);
+    // this.block.pokeCharArray(offset + position, src, srcOffset, charCount, order.needsSwap);
+    // position += byteCount;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutDoubles(
+    /* [in] */ ArrayOf<Double>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 doubleCount)
+{
+    // checkIsAccessible();
+    // int byteCount = checkPutBounds(ISizeOf::DOUBLE, src.length, srcOffset, doubleCount);
+    // this.block.pokeDoubleArray(offset + position, src, srcOffset, doubleCount, order.needsSwap);
+    // position += byteCount;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutFloats(
+    /* [in] */ ArrayOf<Float>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 floatCount)
+{
+    // checkIsAccessible();
+    // int byteCount = checkPutBounds(ISizeOf::FLOAT, src.length, srcOffset, floatCount);
+    // this.block.pokeFloatArray(offset + position, src, srcOffset, floatCount, order.needsSwap);
+    // position += byteCount;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt32s(
+    /* [in] */ ArrayOf<Int32>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 intCount)
+{
+    // checkIsAccessible();
+    // int byteCount = checkPutBounds(ISizeOf::INT, src.length, srcOffset, intCount);
+    // this.block.pokeIntArray(offset + position, src, srcOffset, intCount, order.needsSwap);
+    // position += byteCount;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt64s(
+    /* [in] */ ArrayOf<Int64>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 longCount)
+{
+    // checkIsAccessible();
+    // int byteCount = checkPutBounds(ISizeOf::LONG, src.length, srcOffset, longCount);
+    // this.block.pokeLongArray(offset + position, src, srcOffset, longCount, order.needsSwap);
+    // position += byteCount;
+    return NOERROR;
+}
+
+ECode DirectByteBuffer::PutInt16s(
+    /* [in] */ ArrayOf<Int16>* src,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 shortCount)
+{
+    // checkIsAccessible();
+    // int byteCount = checkPutBounds(ISizeOf::SHORT, src.length, srcOffset, shortCount);
+    // this.block.pokeShortArray(offset + position, src, srcOffset, shortCount, order.needsSwap);
+    // position += byteCount;
     return NOERROR;
 }
 

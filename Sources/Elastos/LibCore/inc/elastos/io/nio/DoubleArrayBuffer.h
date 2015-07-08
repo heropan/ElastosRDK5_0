@@ -26,12 +26,10 @@ public:
         /* [in] */ ArrayOf<Double>* array);
 
     DoubleArrayBuffer(
-        /* [in] */ Int32 capacity);
-
-    DoubleArrayBuffer(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Double>* backingArray,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean isReadOnly);
 
     CARAPI GetDouble(
         /* [out] */ Double* value);

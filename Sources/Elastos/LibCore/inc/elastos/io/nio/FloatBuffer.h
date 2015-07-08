@@ -29,7 +29,8 @@ public:
     FloatBuffer();
 
     FloatBuffer(
-        /* [in] */ Int32 capacity);
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 
     CAR_INTERFACE_DECL()
 
@@ -87,6 +88,9 @@ public:
         /* [out] */ IFloatBuffer** buf);
 
     CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
+
+    CARAPI GetArray(
         /* [out, callee] */ ArrayOf<Float>** array);
 
     CARAPI GetArrayOffset(
@@ -125,17 +129,17 @@ public:
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* rst);
 
-    virtual CARAPI GetFloat(
+    virtual CARAPI Get(
         /* [out] */ Float* value) = 0;
 
-    virtual CARAPI GetFloat(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Float* value) = 0;
 
-    virtual CARAPI GetFloats(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Float>* dst);
 
-    virtual CARAPI GetFloats(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount);
@@ -155,22 +159,22 @@ public:
     virtual CARAPI ProtectedHasArray(
         /* [out] */ Boolean* hasArray) = 0;
 
-    virtual CARAPI PutFloat(
+    virtual CARAPI Put(
         /* [in] */ Float d) = 0;
 
-    virtual CARAPI PutFloat(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Float d) = 0;
 
-    CARAPI PutFloats(
+    CARAPI Put(
         /* [in] */ const ArrayOf<Float>& src);
 
-    virtual CARAPI PutFloats(
+    virtual CARAPI Put(
         /* [in] */ const ArrayOf<Float>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 floatCount);
 
-    virtual CARAPI PutFloatBuffer(
+    virtual CARAPI Put(
         /* [in] */ IFloatBuffer* src);
 
     virtual CARAPI Slice(

@@ -37,9 +37,7 @@ ECode CByteOrderHelper::GetNativeOrder(
 {
     VALIDATE_NOT_NULL(nativeOrder);
 
-    Init();
-
-    *nativeOrder = sNativeOrder;
+    *nativeOrder = _GetNativeOrder();
 
     return NOERROR;
 }
@@ -50,17 +48,33 @@ ECode CByteOrderHelper::IsNeedsSwap(
 {
     VALIDATE_NOT_NULL(isNeedsSwap)
 
-    Init();
-
-    if (order == ByteOrder_BIG_ENDIAN) {
-        *isNeedsSwap = sIsLittleEndian;
-        return NOERROR;
-    }
-    else if (order == ByteOrder_LITTLE_ENDIAN) {
-        *isNeedsSwap = !sIsLittleEndian;
+    if (order == ByteOrder_BIG_ENDIAN || order == ByteOrder_LITTLE_ENDIAN) {
+        *isNeedsSwap = _IsNeedsSwap(order);
         return NOERROR;
     }
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
+}
+
+ByteOrder CByteOrderHelper::_GetNativeOrder()
+{
+    Init();
+    return sNativeOrder;
+}
+
+Boolean CByteOrderHelper::_IsNeedsSwap(
+    /* [in] */ ByteOrder order)
+{
+    Init();
+    if (order == ByteOrder_BIG_ENDIAN) {
+        return sIsLittleEndian;
+    }
+    else if (order == ByteOrder_LITTLE_ENDIAN) {
+        return !sIsLittleEndian;
+    }
+    else {
+        assert(0);
+        return FALSE;
+    }
 }
 
 } // namespace IO

@@ -6,6 +6,7 @@
 #include "ByteBufferAsInt16Buffer.h"
 #include "ByteBufferAsInt32Buffer.h"
 #include "ByteBufferAsInt64Buffer.h"
+#include "CByteOrderHelper.h"
 
 using Libcore::IO::ISizeOf;
 using Libcore::IO::Memory;
@@ -629,10 +630,10 @@ ECode ByteArrayBuffer::GetChars(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
 {
-    // Int32 byteCount = 0;
-    // FAIL_RETURN(CheckGetBounds(ISizeOf::CHAR, dst->GetLength(), dstOffset, charCount, &byteCount));
-    // Memory::UnsafeBulkGet(dst, dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::CHAR, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckGetBounds(ISizeOf::CHAR, dst->GetLength(), dstOffset, charCount, &byteCount));
+    Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), 0, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::CHAR, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
@@ -641,9 +642,10 @@ ECode ByteArrayBuffer::GetDoubles(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 doubleCount)
 {
-    // int byteCount = checkGetBounds(ISizeOf::DOUBLE, dst.length, dstOffset, doubleCount);
-    // Memory.unsafeBulkGet(dst, dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::DOUBLE, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckGetBounds(ISizeOf::DOUBLE, dst->GetLength(), dstOffset, doubleCount, &byteCount));
+    Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::DOUBLE, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
@@ -652,9 +654,10 @@ ECode ByteArrayBuffer::GetFloats(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
 {
-    // int byteCount = checkGetBounds(ISizeOf::FLOAT, dst.length, dstOffset, floatCount);
-    // Memory.unsafeBulkGet(dst, dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::FLOAT, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckGetBounds(ISizeOf::FLOAT, dst->GetLength(), dstOffset, floatCount, &byteCount));
+    Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::FLOAT, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
@@ -663,9 +666,10 @@ ECode ByteArrayBuffer::GetInt32s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 intCount)
 {
-    // int byteCount = checkGetBounds(ISizeOf::INT, dst.length, dstOffset, intCount);
-    // Memory.unsafeBulkGet(dst, dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::INT, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckGetBounds(ISizeOf::INT, dst->GetLength(), dstOffset, intCount, &byteCount));
+    Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::INT, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
@@ -674,9 +678,10 @@ ECode ByteArrayBuffer::GetInt64s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 longCount)
 {
-    // int byteCount = checkGetBounds(ISizeOf::LONG, dst.length, dstOffset, longCount);
-    // Memory.unsafeBulkGet(dst, dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::LONG, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckGetBounds(ISizeOf::LONG, dst->GetLength(), dstOffset, longCount, &byteCount));
+    Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::LONG, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
@@ -685,76 +690,82 @@ ECode ByteArrayBuffer::GetInt16s(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 shortCount)
 {
-    // int byteCount = checkGetBounds(ISizeOf::SHORT, dst.length, dstOffset, shortCount);
-    // Memory.unsafeBulkGet(dst, dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::SHORT, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckGetBounds(ISizeOf::SHORT, dst->GetLength(), dstOffset, shortCount, &byteCount));
+    Memory::UnsafeBulkGet((Byte*)dst->GetPayload(), dstOffset, byteCount, mBackingArray, mArrayOffset + mPosition, ISizeOf::SHORT, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
-
 ECode ByteArrayBuffer::PutChars(
-    /* [in] */ ArrayOf<Char32>* dst,
-    /* [in] */ Int32 dstOffset,
+    /* [in] */ ArrayOf<Char32>* src,
+    /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    // int byteCount = checkPutBounds(ISizeOf::CHAR, src.length, srcOffset, charCount);
-    // Memory.unsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, src, srcOffset, ISizeOf::CHAR, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckPutBounds(ISizeOf::CHAR, src->GetLength(), srcOffset, charCount, &byteCount));
+    Memory::UnsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, (Byte*)src->GetPayload(), srcOffset, ISizeOf::CHAR, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
 ECode ByteArrayBuffer::PutDoubles(
-    /* [in] */ ArrayOf<Double>* dst,
-    /* [in] */ Int32 dstOffset,
+    /* [in] */ ArrayOf<Double>* src,
+    /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 doubleCount)
 {
-    // int byteCount = checkPutBounds(ISizeOf::DOUBLE, src.length, srcOffset, doubleCount);
-    // Memory.unsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, src, srcOffset, ISizeOf::DOUBLE, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckPutBounds(ISizeOf::DOUBLE, src->GetLength(), srcOffset, doubleCount, &byteCount));
+    Memory::UnsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, (Byte*)src->GetPayload(), srcOffset, ISizeOf::DOUBLE, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
 ECode ByteArrayBuffer::PutFloats(
-    /* [in] */ ArrayOf<Float>* dst,
-    /* [in] */ Int32 dstOffset,
+    /* [in] */ ArrayOf<Float>* src,
+    /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 floatCount)
 {
-    // int byteCount = checkPutBounds(ISizeOf::FLOAT, src.length, srcOffset, floatCount);
-    // Memory.unsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, src, srcOffset, ISizeOf::FLOAT, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckPutBounds(ISizeOf::FLOAT, src->GetLength(), srcOffset, floatCount, &byteCount));
+    Memory::UnsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, (Byte*)src->GetPayload(), srcOffset, ISizeOf::FLOAT, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
 ECode ByteArrayBuffer::PutInt32s(
-    /* [in] */ ArrayOf<Int32>* dst,
-    /* [in] */ Int32 dstOffset,
+    /* [in] */ ArrayOf<Int32>* src,
+    /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 intCount)
 {
-    // int byteCount = checkPutBounds(ISizeOf::INT, src.length, srcOffset, intCount);
-    // Memory.unsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, src, srcOffset, ISizeOf::INT, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckPutBounds(ISizeOf::INT, src->GetLength(), srcOffset, intCount, &byteCount));
+    Memory::UnsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, (Byte*)src->GetPayload(), srcOffset, ISizeOf::INT, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
 ECode ByteArrayBuffer::PutInt64s(
-    /* [in] */ ArrayOf<Int64>* dst,
-    /* [in] */ Int32 dstOffset,
+    /* [in] */ ArrayOf<Int64>* src,
+    /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 longCount)
 {
-    // int byteCount = checkPutBounds(ISizeOf::LONG, src.length, srcOffset, longCount);
-    // Memory.unsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, src, srcOffset, ISizeOf::LONG, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckPutBounds(ISizeOf::LONG, src->GetLength(), srcOffset, longCount, &byteCount));
+    Memory::UnsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, (Byte*)src->GetPayload(), srcOffset, ISizeOf::LONG, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 
 ECode ByteArrayBuffer::PutInt16s(
-    /* [in] */ ArrayOf<Int16>* dst,
-    /* [in] */ Int32 dstOffset,
+    /* [in] */ ArrayOf<Int16>* src,
+    /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 shortCount)
 {
-    // int byteCount = checkPutBounds(ISizeOf::SHORT, src.length, srcOffset, shortCount);
-    // Memory.unsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, src, srcOffset, ISizeOf::SHORT, mOrder.needsSwap);
-    // mPosition += byteCount;
+    Int32 byteCount = 0;
+    FAIL_RETURN(CheckPutBounds(ISizeOf::SHORT, src->GetLength(), srcOffset, shortCount, &byteCount));
+    Memory::UnsafeBulkPut(mBackingArray, mArrayOffset + mPosition, byteCount, (Byte*)src->GetPayload(), srcOffset, ISizeOf::SHORT, CByteOrderHelper::_IsNeedsSwap(mOrder));
+    mPosition += byteCount;
     return NOERROR;
 }
 

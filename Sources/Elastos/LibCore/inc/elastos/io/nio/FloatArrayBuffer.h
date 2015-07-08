@@ -25,12 +25,10 @@ public:
         /* [in] */ ArrayOf<Float>* array);
 
     FloatArrayBuffer(
-        /* [in] */ Int32 capacity);
-
-    FloatArrayBuffer(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Float>* backingArray,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean isReadOnly);
 
     CARAPI GetFloat(
         /* [out] */ Float* value);
@@ -52,7 +50,7 @@ public:
 
 public:
     AutoPtr< ArrayOf<Float> > mBackingArray;
-
+    Boolean mIsReadOnly;
     Int32 mOffset;
 };
 } // namespace IO

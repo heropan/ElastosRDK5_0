@@ -215,6 +215,36 @@ public:
     virtual CARAPI Duplicate(
         /* [out] */ IByteBuffer** buffer);
 
+    CARAPI PutChars(
+        /* [in] */ ArrayOf<Char32>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 charCount);
+
+    CARAPI PutDoubles(
+        /* [in] */ ArrayOf<Double>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 doubleCount);
+
+    CARAPI PutFloats(
+        /* [in] */ ArrayOf<Float>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 floatCount);
+
+    CARAPI PutInt32s(
+        /* [in] */ ArrayOf<Int32>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 intCount);
+
+    CARAPI PutInt64s(
+        /* [in] */ ArrayOf<Int64>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 longCount);
+
+    CARAPI PutInt16s(
+        /* [in] */ ArrayOf<Int16>* src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 shortCount);
+
 public:
     DirectByteBuffer(
         /* [in] */ Int64 address,

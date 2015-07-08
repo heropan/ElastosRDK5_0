@@ -7,25 +7,21 @@ namespace IO {
 
 FloatArrayBuffer::FloatArrayBuffer(
     /* [in] */ ArrayOf<Float>* array)
-    : FloatBuffer(array->GetLength())
+    : FloatBuffer(array->GetLength(), 0)
     , mBackingArray(array)
     , mOffset(0)
-{}
-
-FloatArrayBuffer::FloatArrayBuffer(
-    /* [in] */ Int32 capacity)
-    : FloatBuffer(capacity)
-    , mBackingArray(ArrayOf<Float>::Alloc(capacity))
-    , mOffset(0)
+    , mIsReadOnly(FALSE)
 {}
 
 FloatArrayBuffer::FloatArrayBuffer(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Float>* backingArray,
-    /* [in] */ Int32 offset)
-    : FloatBuffer(capacity)
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean isReadOnly)
+    : FloatBuffer(capacity, 0)
     , mBackingArray(backingArray)
     , mOffset(offset)
+    , mIsReadOnly(isReadOnly)
 {}
 
 ECode FloatArrayBuffer::GetFloat(

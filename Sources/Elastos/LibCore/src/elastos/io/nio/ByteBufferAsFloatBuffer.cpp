@@ -1,5 +1,9 @@
 
 #include "ByteBufferAsFloatBuffer.h"
+#include "DirectByteBuffer.h"
+#include "ByteArrayBuffer.h"
+
+using Libcore::IO::ISizeOf;
 
 namespace Elastos {
 namespace IO {
@@ -10,165 +14,181 @@ extern "C" const InterfaceID EIID_ByteBufferAsFloatBuffer =
 
 ByteBufferAsFloatBuffer::ByteBufferAsFloatBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
+    : mCap(0)
+    , FloatBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress)
 {
-    // super(byteBuffer.capacity() / SizeOf.FLOAT, byteBuffer.effectiveDirectAddress);
-    // this.byteBuffer = byteBuffer;
-    // this.byteBuffer.clear();
+    mByteBuffer = byteBuffer;
+    mByteBuffer->Clear();
 }
 
 AutoPtr<IFloatBuffer> ByteBufferAsFloatBuffer::AsFloatBuffer(
-    /* [in] */ ByteBuffer* byteBuffer)
+    /* [in] */ ByteBuffer* mByteBuffer)
 {
-    // ByteBuffer slice = byteBuffer.slice();
-    // slice.order(byteBuffer.order());
-    // return new ByteBufferAsFloatBuffer(slice);
-    return NULL;
+    AutoPtr<IByteBuffer> slice;
+    mByteBuffer->Slice((IByteBuffer**)&slice);
+    ByteOrder midorder;
+    mByteBuffer->GetOrder(&midorder);
+    slice->SetOrder(midorder);
+    AutoPtr<IFloatBuffer> res = (IFloatBuffer*) new ByteBufferAsFloatBuffer((ByteBuffer*)slice.Get());
+    return res;
 }
 
 ECode ByteBufferAsFloatBuffer::AsReadOnlyBuffer(
     /* [out] */ IFloatBuffer** buffer)
 {
-    // ByteBufferAsFloatBuffer buf = new ByteBufferAsFloatBuffer(byteBuffer.asReadOnlyBuffer());
-    // buf.limit = limit;
-    // buf.position = position;
-    // buf.mark = mark;
-    // buf.byteBuffer.order = byteBuffer.order;
-    // return buf;
+    VALIDATE_NOT_NULL(buffer)
+
+    AutoPtr<IByteBuffer> resbb;
+    mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&resbb);
+    AutoPtr<ByteBufferAsFloatBuffer> buf = new ByteBufferAsFloatBuffer((ByteBuffer*)resbb.Get());
+    buf->mLimit = mLimit;
+    buf->mPosition = mPosition;
+    buf->mMark = mMark;
+    buf->mByteBuffer->mOrder = mByteBuffer->mOrder;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
 ECode ByteBufferAsFloatBuffer::Compact()
 {
-    // if (byteBuffer.isReadOnly()) {
-    //     throw new ReadOnlyBufferException();
-    // }
-    // byteBuffer.limit(limit * SizeOf.FLOAT);
-    // byteBuffer.position(position * SizeOf.FLOAT);
-    // byteBuffer.compact();
-    // byteBuffer.clear();
-    // position = limit - position;
-    // limit = capacity;
-    // mark = UNSET_MARK;
-    // return this;
+    Boolean isflag = FALSE;
+    if (mByteBuffer->IsReadOnly(&isflag), isflag) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+    mByteBuffer->SetLimit(mLimit * ISizeOf::FLOAT);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::FLOAT);
+    mByteBuffer->Compact();
+    mByteBuffer->Clear();
+    mPosition = mLimit - mPosition;
+    mLimit = mCapacity;
+    mMark = UNSET_MARK;
     return NOERROR;
 }
 
 ECode ByteBufferAsFloatBuffer::Duplicate(
     /* [out] */ IFloatBuffer** buffer)
 {
-    // ByteBuffer bb = byteBuffer.duplicate().order(byteBuffer.order());
-    // ByteBufferAsFloatBuffer buf = new ByteBufferAsFloatBuffer(bb);
-    // buf.limit = limit;
-    // buf.position = position;
-    // buf.mark = mark;
-    // return buf;
+    AutoPtr<IByteBuffer> bb;
+    mByteBuffer->Duplicate((IByteBuffer**)&bb);
+    ByteOrder midorder;
+    mByteBuffer->GetOrder(&midorder);
+    bb->SetOrder(midorder);
+    AutoPtr<ByteBufferAsFloatBuffer> buf = new ByteBufferAsFloatBuffer((ByteBuffer*)bb.Get());
+    buf->mLimit = mLimit;
+    buf->mPosition = mPosition;
+    buf->mMark = mMark;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
 ECode ByteBufferAsFloatBuffer::Get(
     /* [out] */ Float* value)
 {
-    // if (position == limit) {
-    //     throw new BufferUnderflowException();
-    // }
-    // return byteBuffer.getFloat(position++ * SizeOf.FLOAT);
-    return NOERROR;
+    if (mPosition == mLimit) {
+        // throw new BufferUnderflowException();
+        return E_BUFFER_UNDERFLOW_EXCEPTION;
+    }
+    return mByteBuffer->GetFloat(mPosition++ * ISizeOf::FLOAT, value);
 }
 
 ECode ByteBufferAsFloatBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Float* value)
 {
-    // checkIndex(index);
-    // return byteBuffer.getFloat(index * SizeOf.FLOAT);
-    return NOERROR;
+    FAIL_RETURN(CheckIndex(index));
+    return mByteBuffer->GetFloat(index * ISizeOf::FLOAT, value);
 }
 
 ECode ByteBufferAsFloatBuffer::Get(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
-    /* [in] */ Int32 charCount)
+    /* [in] */ Int32 floatCount)
 {
-    // byteBuffer.limit(limit * SizeOf.FLOAT);
-    // byteBuffer.position(position * SizeOf.FLOAT);
-    // if (byteBuffer instanceof DirectByteBuffer) {
-    //     ((DirectByteBuffer) byteBuffer).get(dst, dstOffset, floatCount);
-    // } else {
-    //     ((ByteArrayBuffer) byteBuffer).get(dst, dstOffset, floatCount);
-    // }
-    // this.position += floatCount;
-    // return this;
+    mByteBuffer->SetLimit(mLimit * ISizeOf::FLOAT);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::FLOAT);
+    AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
+    if (res) {
+        res->GetFloats(dst, dstOffset, floatCount);
+    }
+    else {
+        ((ByteArrayBuffer*) mByteBuffer.Get())->GetFloats(dst, dstOffset, floatCount);
+    }
+    mPosition += floatCount;
     return NOERROR;
 }
 
 ECode ByteBufferAsFloatBuffer::IsDirect(
     /* [out] */ Boolean* rst)
 {
-    // return byteBuffer.isDirect();
-    return NOERROR;
+    return mByteBuffer->IsDirect(rst);
 }
 
 ECode ByteBufferAsFloatBuffer::IsReadOnly(
     /* [out] */ Boolean* rst)
 {
-    // return byteBuffer.isReadOnly();
-    return NOERROR;
+    return mByteBuffer->IsReadOnly(rst);
 }
 
 ECode ByteBufferAsFloatBuffer::GetOrder(
     /* [out] */ ByteOrder* byteOrder)
 {
-    // return byteBuffer.order();
-    return NOERROR;
+    return mByteBuffer->GetOrder(byteOrder);
 }
 
 ECode ByteBufferAsFloatBuffer::Put(
     /* [in] */ Float c)
 {
-    // if (position == limit) {
-    //     throw new BufferOverflowException();
-    // }
-    // byteBuffer.putFloat(position++ * SizeOf.FLOAT, c);
-    // return this;
-    return NOERROR;
+    if (mPosition == mLimit) {
+        // throw new BufferOverflowException();
+        return E_BUFFER_UNDERFLOW_EXCEPTION;
+    }
+    return mByteBuffer->PutFloat(mPosition++ * ISizeOf::FLOAT, c);
 }
 
 ECode ByteBufferAsFloatBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Float c)
 {
-    // checkIndex(index);
-    // byteBuffer.putFloat(index * SizeOf.FLOAT, c);
-    // return this;
-    return NOERROR;
+    FAIL_RETURN(CheckIndex(index));
+    return mByteBuffer->PutFloat(index * ISizeOf::FLOAT, c);
 }
 
 ECode ByteBufferAsFloatBuffer::Put(
     /* [in] */ ArrayOf<Float>* src,
     /* [in] */ Int32 srcOffset,
-    /* [in] */ Int32 charCount)
+    /* [in] */ Int32 floatCount)
 {
-    // byteBuffer.limit(limit * SizeOf.FLOAT);
-    // byteBuffer.position(position * SizeOf.FLOAT);
-    // if (byteBuffer instanceof DirectByteBuffer) {
-    //     ((DirectByteBuffer) byteBuffer).put(src, srcOffset, floatCount);
-    // } else {
-    //     ((ByteArrayBuffer) byteBuffer).put(src, srcOffset, floatCount);
-    // }
-    // this.position += floatCount;
-    // return this;
+    mByteBuffer->SetLimit(mLimit * ISizeOf::FLOAT);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::FLOAT);
+    AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
+    if (res) {
+        res->PutFloats(src, srcOffset, floatCount);
+    } else {
+        ((ByteArrayBuffer*) mByteBuffer.Get())->PutFloats(src, srcOffset, floatCount);
+    }
+    mPosition += floatCount;
     return NOERROR;
 }
 
 ECode ByteBufferAsFloatBuffer::Slice(
     /* [out] */ IFloatBuffer** buffer)
 {
-    // byteBuffer.limit(limit * SizeOf.FLOAT);
-    // byteBuffer.position(position * SizeOf.FLOAT);
-    // ByteBuffer bb = byteBuffer.slice().order(byteBuffer.order());
-    // FloatBuffer result = new ByteBufferAsFloatBuffer(bb);
-    // byteBuffer.clear();
-    // return result;
+    VALIDATE_NOT_NULL(buffer)
+
+    mByteBuffer->SetLimit(mLimit * ISizeOf::FLOAT);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::FLOAT);
+    AutoPtr<IByteBuffer> bb;
+    mByteBuffer->Slice((IByteBuffer**)&bb);
+    ByteOrder midorder;
+    mByteBuffer->GetOrder(&midorder);
+    bb->SetOrder(midorder);
+    AutoPtr<IFloatBuffer> result = (IFloatBuffer*) new ByteBufferAsFloatBuffer((ByteBuffer*)bb.Get());
+    mByteBuffer->Clear();
+    *buffer = result;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -176,20 +196,20 @@ ECode ByteBufferAsFloatBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Float>** array)
 {
     // throw new UnsupportedOperationException();
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode ByteBufferAsFloatBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     // throw new UnsupportedOperationException();
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode ByteBufferAsFloatBuffer::ProtectedHasArray(
     /* [out] */ Boolean* result)
 {
-    // return false;
+    *result = FALSE;
     return NOERROR;
 }
 

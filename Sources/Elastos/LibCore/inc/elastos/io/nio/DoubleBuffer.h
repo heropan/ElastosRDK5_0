@@ -82,6 +82,9 @@ public:
         /* [out] */ IDoubleBuffer** buf);
 
     CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
+
+    CARAPI GetArray(
         /* [out, callee] */ ArrayOf<Double>** array);
 
     CARAPI GetArrayOffset(
@@ -177,7 +180,7 @@ public:
      * @exception BufferUnderflowException
      *                if the position is equal or greater than limit.
      */
-    virtual CARAPI GetDouble(
+    virtual CARAPI Get(
         /* [out] */ Double* value) = 0;
 
     /**
@@ -189,7 +192,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetDouble(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Double* value) = 0;
 
@@ -206,7 +209,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetDoubles(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Double>* dst);
 
     /**
@@ -228,7 +231,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code doubleCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetDoubles(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount);
@@ -295,7 +298,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDouble(
+    virtual CARAPI Put(
         /* [in] */ Double d) = 0;
 
     /**
@@ -312,7 +315,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDouble(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Double d) = 0;
 
@@ -331,7 +334,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutDoubles(
+    CARAPI Put(
         /* [in] */ const ArrayOf<Double>& src);
 
     /**
@@ -355,7 +358,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDoubles(
+    virtual CARAPI Put(
         /* [in] */ const ArrayOf<Double>& src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 doubleCount);
@@ -376,7 +379,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutDoubleBuffer(
+    virtual CARAPI Put(
         /* [in] */ IDoubleBuffer* src);
 
     /**
@@ -410,7 +413,8 @@ protected:
      *            the capacity of the buffer.
      */
     DoubleBuffer(
-        /* [in] */ Int32 capacity);
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 };
 
 } // namespace IO

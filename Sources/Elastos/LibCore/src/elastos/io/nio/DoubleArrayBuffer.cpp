@@ -7,23 +7,17 @@ namespace IO {
 
 DoubleArrayBuffer::DoubleArrayBuffer(
     /* [in] */ ArrayOf<Double>* array)
-    : DoubleBuffer(array->GetLength())
+    : DoubleBuffer(array->GetLength(), 0)
     , mBackingArray(array)
-    , mOffset(0)
-{}
-
-DoubleArrayBuffer::DoubleArrayBuffer(
-    /* [in] */ Int32 capacity)
-    : DoubleBuffer(capacity)
-    , mBackingArray(ArrayOf<Double>::Alloc(capacity))
     , mOffset(0)
 {}
 
 DoubleArrayBuffer::DoubleArrayBuffer(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Double>* backingArray,
-    /* [in] */ Int32 offset)
-    : DoubleBuffer(capacity)
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean isReadOnly)
+    : DoubleBuffer(capacity, 0)
     , mBackingArray(backingArray)
     , mOffset(offset)
 {}

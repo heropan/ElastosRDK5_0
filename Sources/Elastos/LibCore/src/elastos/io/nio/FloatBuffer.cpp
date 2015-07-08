@@ -1,5 +1,10 @@
 
 #include "FloatBuffer.h"
+#include "CoreUtils.h"
+#include "CArrayOf.h"
+
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace IO {
@@ -12,8 +17,9 @@ FloatBuffer::FloatBuffer()
 {}
 
 FloatBuffer::FloatBuffer(
-    /* [in] */ Int32 capacity)
-    : Buffer(2, capacity, NULL)
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(2, capacity, effectiveDirectAddress)
 {}
 
 CAR_INTERFACE_IMPL_2(FloatBuffer, Object, IFloatBuffer, IBuffer)
@@ -56,6 +62,23 @@ ECode FloatBuffer::Wrap(
 }
 
 ECode FloatBuffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Float> > res;
+    GetArray((ArrayOf<Float>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (Int32 i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::Convert((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
+}
+
+ECode FloatBuffer::GetArray(
     /* [out, callee] */ ArrayOf<Float>** array)
 {
     return ProtectedArray(array);
@@ -84,8 +107,8 @@ ECode FloatBuffer::CompareTo(
     Float thisFloat = 0.0f;
     Float otherFloat = 0.0f;
     while (compareRemaining > 0) {
-        GetFloat(thisPos, &thisFloat);
-        otherBuffer->GetFloat(otherPos, &otherFloat);
+        Get(thisPos, &thisFloat);
+        otherBuffer->Get(otherPos, &otherFloat);
         // checks for Float and NaN inequality
         if ((thisFloat != otherFloat)
                 && ((thisFloat == thisFloat) || (otherFloat == otherFloat))) {
@@ -128,21 +151,21 @@ ECode FloatBuffer::Equals(
     Float thisValue = 0.0f;
     Float otherValue = 0.0f;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetFloat(myPosition++, &thisValue))
-        FAIL_RETURN(otherBuffer->GetFloat(otherPosition++, &otherValue))
+        FAIL_RETURN(Get(myPosition++, &thisValue))
+        FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue || (thisValue != thisValue && otherValue != otherValue);
     }
     *rst = equalSoFar;
     return NOERROR;
 }
 
-ECode FloatBuffer::GetFloats(
+ECode FloatBuffer::Get(
     /* [out] */ ArrayOf<Float>* dst)
 {
-    return GetFloats(dst, 0, dst->GetLength());
+    return Get(dst, 0, dst->GetLength());
 }
 
-ECode FloatBuffer::GetFloats(
+ECode FloatBuffer::Get(
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 floatCount)
@@ -163,7 +186,7 @@ ECode FloatBuffer::GetFloats(
     }
 
     for (Int32 i = dstOffset; i < dstOffset + floatCount; ++i) {
-        GetFloat(&(*dst)[i]);
+        Get(&(*dst)[i]);
     }
     return NOERROR;
 }
@@ -174,13 +197,13 @@ ECode FloatBuffer::HasArray(
     return ProtectedHasArray(hasArray);
 }
 
-ECode FloatBuffer::PutFloats(
+ECode FloatBuffer::Put(
     /* [in] */ const ArrayOf<Float>& src)
 {
-    return PutFloats(src, 0, src.GetLength());
+    return Put(src, 0, src.GetLength());
 }
 
-ECode FloatBuffer::PutFloats(
+ECode FloatBuffer::Put(
     /* [in] */ const ArrayOf<Float>& src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 floatCount)
@@ -200,12 +223,12 @@ ECode FloatBuffer::PutFloats(
     }
 
     for (Int32 i = srcOffset; i < srcOffset + floatCount; ++i) {
-        PutFloat(src[i]);
+        Put(src[i]);
     }
     return NOERROR;
 }
 
-ECode FloatBuffer::PutFloatBuffer(
+ECode FloatBuffer::Put(
     /* [in] */ IFloatBuffer* src)
 {
     if (src == (IFloatBuffer*)this->Probe(EIID_IFloatBuffer)) {
@@ -222,8 +245,8 @@ ECode FloatBuffer::PutFloatBuffer(
     }
 
     AutoPtr< ArrayOf<Float> > contents = ArrayOf<Float>::Alloc(srcRemaining);
-    FAIL_RETURN(src->GetFloats(contents))
-    return PutFloats(*contents);
+    FAIL_RETURN(src->Get(contents))
+    return Put(*contents);
 }
 
 } // namespace IO

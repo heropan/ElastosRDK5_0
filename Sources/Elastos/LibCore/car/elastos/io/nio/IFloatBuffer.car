@@ -65,7 +65,7 @@ module
          * @exception BufferUnderflowException
          *                if the position is equal or greater than limit.
          */
-        GetFloat(
+        Get(
             [out] Float* value);
 
         /**
@@ -77,7 +77,7 @@ module
          * @exception IndexOutOfBoundsException
          *                if index is invalid.
          */
-        GetFloat(
+        Get(
             [in] Int32 index,
             [out] Float* value);
 
@@ -94,7 +94,7 @@ module
          * @exception BufferUnderflowException
          *                if {dst.length} is greater than {remaining()}.
          */
-        GetFloats(
+        Get(
             [out] ArrayOf<Float> dst);
 
         /**
@@ -116,7 +116,7 @@ module
          * @exception BufferUnderflowException
          *                if {len} is greater than {remaining()}.
          */
-        GetFloats(
+        Get(
             [out] ArrayOf<Float> dst,
             [in] Int32 dstOffset,
             [in] Int32 floatCount);
@@ -146,7 +146,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloat(
+        Put(
             [in] Float f);
 
         /**
@@ -163,7 +163,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloat(
+        Put(
             [in] Int32 index,
             [in] Float f);
 
@@ -182,7 +182,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloats(
+        Put(
             [in] ArrayOf<Float> src);
 
         /**
@@ -206,7 +206,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloats(
+        Put(
             [in] ArrayOf<Float> src,
             [in] Int32 srcOffset,
             [in] Int32 floatCount);
@@ -227,7 +227,7 @@ module
          * @exception ReadOnlyBufferException
          *                if no changes may be made to the contents of this buffer.
          */
-        PutFloatBuffer(
+        Put(
             [in] IFloatBuffer* src);
 
         /**
