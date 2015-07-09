@@ -36,7 +36,7 @@ module
     merge("sql/IDataTruncation.car");
     merge("sql/IDriverPropertyInfo.car");
 
-    merge("sql/sqlite/IStringEncoderHelper.car");
+    merge("sql/sqlite/IStringEncoder.car");
     merge("sql/sqlite/IAuthorizer.car");
     merge("sql/sqlite/IBlob.car");
     merge("sql/sqlite/ICallback.car");
@@ -70,6 +70,7 @@ module
     interface Elastos.Core.ICloneable;
     interface Elastos.Utility.IDate;
     interface Elastos.IO.ICloseable;
+    interface Elastos.IO.IFlushable;
     interface Elastos.IO.IPrintWriter;
     interface Elastos.IO.ISerializable;
     interface Elastos.IO.IInputStream;
@@ -268,22 +269,27 @@ module
             interface IVm;
         }
 
-        class CBlob{
+        class CBlob {
             interface IBlob;
         }
 
         class CBlobR {
             constructor(
                 [in] IBlob* blob);
+
             interface IBlobR;
             interface IInputStream;
+            interface ICloseable;
         }
 
-        class CBlobW{
+        class CBlobW {
             constructor(
                 [in] IBlob* blob);
+
             interface IBlobW;
             interface IOutputStream;
+            interface ICloseable;
+            interface IFlushable;
         }
 
         class CDatabase {

@@ -19,7 +19,7 @@ public:
     CAR_SINGLETON_DECL();
 
     CARAPI Encode(
-        /* [in] */ const ArrayOf<Byte>& a,
+        /* [in] */ ArrayOf<Byte> * a,
         /* [out] */ String * str);
 
     CARAPI Decode(
@@ -27,7 +27,7 @@ public:
         /* [out, callee] */ ArrayOf<Byte> ** outarray);
 
     CARAPI EncodeX(
-        /* [in] */ const ArrayOf<Byte>& a,
+        /* [in] */ ArrayOf<Byte> * a,
         /* [out] */ String * str);
 };
 

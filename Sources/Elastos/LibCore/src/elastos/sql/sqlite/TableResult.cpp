@@ -1,6 +1,6 @@
 
 #include "TableResult.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 
 using Elastos::Core::StringBuffer;
 

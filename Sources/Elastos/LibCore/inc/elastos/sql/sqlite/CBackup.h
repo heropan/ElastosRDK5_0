@@ -22,7 +22,7 @@ public:
 
     CARAPI Finalize();
 
-    CARAPI _Finalize();
+    CARAPI NativeFinalize();
 
     CARAPI Step(
         /* [in] */ Int32 n,
@@ -38,14 +38,16 @@ public:
 
     CBackup();
 
+    virtual ~CBackup();
+
 private:
-    CARAPI _Step(
+    CARAPI NativeStep(
         /* [in] */ Int32 n,
         /* [out] */ Boolean* state);
 
-    CARAPI_(Int32) _Remaining();
+    CARAPI_(Int32) NativeRemaining();
 
-    CARAPI_(Int32) _Pagecount();
+    CARAPI_(Int32) NativePagecount();
 
 protected:
     Int64 mHandle;

@@ -4,6 +4,7 @@ module
     namespace Sql {
     namespace SQLite {
 
+    [deprecated]
     interface IStringEncoderHelper {
         /**
          * Encodes the given byte array into a string that can be used by
@@ -24,7 +25,7 @@ module
          *     a string of size 1 will return an empty byte array.
          */
         Encode(
-            [in] ArrayOf<Byte> a,
+            [in] ArrayOf<Byte> * a,
             [out] String * str);
 
         /**
@@ -47,7 +48,7 @@ module
          * @return the encoded bytes as a string.
          */
         EncodeX(
-            [in] ArrayOf<Byte> a,
+            [in] ArrayOf<Byte> * a,
             [out] String * str);
     }
 

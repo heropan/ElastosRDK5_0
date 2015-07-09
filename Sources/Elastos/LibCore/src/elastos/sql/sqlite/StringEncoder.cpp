@@ -1,6 +1,6 @@
 
 #include "StringEncoder.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 
 using Elastos::Core::StringBuffer;
 
@@ -37,10 +37,10 @@ String StringEncoder::Encode(
     /* [in] */ ArrayOf<Byte> * a)
 {
     // check input
-    if (*a == NULL || a->GetLength() ==0)
-    {
+    if (a == NULL || a->GetLength() ==0) {
         return String("x");
     }
+
     // determine count
     AutoPtr<ArrayOf<Int32> > cnt = ArrayOf<Int32>::Alloc(256);
     for (Int32 i = 0; i < a->GetLength(); ++i)
@@ -92,9 +92,10 @@ String StringEncoder::EncodeX(
     /* [in] */ ArrayOf<Byte> * a)
 {
     // check input
-    if (*a == NULL || a->GetLength() ==0) {
+    if (a == NULL || a->GetLength() ==0) {
         return String("X''");
     }
+
     Int32 outLen = a->GetLength() * 2 + 3;
     StringBuffer out(outLen);
     out.AppendChar('X');

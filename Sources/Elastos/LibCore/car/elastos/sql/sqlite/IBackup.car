@@ -11,12 +11,6 @@ module
         Finish();
 
         /**
-         * Destructor for object.
-         */
-        Finalize();
-
-        _Finalize();
-        /**
          * Perform a backup step.
          *
          * @param n number of pages to backup

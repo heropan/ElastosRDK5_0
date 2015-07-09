@@ -124,6 +124,8 @@ public:
 
     CStmt();
 
+    ~CStmt();
+
 public:
     Int32 mError_code;
     Int64 mHandle;

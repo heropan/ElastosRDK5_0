@@ -34,24 +34,26 @@ SOURCES += CTableResultX.cpp
 SOURCES += JDBCStatement.cpp
 
 #sql/sqlite
+SOURCES += CBackup.cpp
+SOURCES += CBlob.cpp
+SOURCES += CBlobR.cpp
+SOURCES += CBlobW.cpp
+SOURCES += Constants.cpp
+SOURCES += Database.cpp
+SOURCES += CDatabase.cpp
+SOURCES += CDatabaseHelper.cpp
+SOURCES += CFunctionContext.cpp
+SOURCES += CJDBCDriver.cpp
+SOURCES += CShell.cpp
 SOURCES += CDBDump.cpp
 SOURCES += CStmt.cpp
-SOURCES += CStringEncoderHelper.cpp
-SOURCES += CShell.cpp
-SOURCES += CBackup.cpp
-SOURCES += CTableResult.cpp
-SOURCES += CDatabase.cpp
-SOURCES += Database.cpp
-SOURCES += CFunctionContext.cpp
-SOURCES += CVm.cpp
-SOURCES += CDatabaseHelper.cpp
-SOURCES += CBlobW.cpp
-SOURCES += CBlob.cpp
-SOURCES += TableResult.cpp
-SOURCES += CBlobR.cpp
-SOURCES += CJDBCDriver.cpp
 SOURCES += StringEncoder.cpp
+SOURCES += CStringEncoderHelper.cpp
+SOURCES += TableResult.cpp
+SOURCES += CTableResult.cpp
+SOURCES += CVm.cpp
 
+#sql
 SOURCES += CDriverPropertyInfo.cpp
 SOURCES += CSqlDate.cpp
 SOURCES += CTimestamp.cpp

@@ -5,7 +5,7 @@
 #include "CDatabaseX.h"
 #include "StringEncoder.h"
 #include "Database.h"
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuffer;

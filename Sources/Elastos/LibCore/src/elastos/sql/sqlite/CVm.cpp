@@ -11,22 +11,15 @@ CAR_OBJECT_IMPL(CVm);
 CAR_INTERFACE_IMPL(CVm, Object, IVm);
 
 CVm::CVm()
+    : mHandle(0)
+    , mError_code(0)
 {
-    mHandle = 0;
-    isinit = FALSE;
-    mError_code = 0;
 }
 
-Boolean CVm::Internal_init()
+CVm::~CVm()
 {
-    if (!isinit)
-    {
-        isinit = TRUE;
-    }
-    return isinit;
+    Finalize();
 }
-
-Boolean CVm::isinit = Internal_init();
 
 #if HAVE_SQLITE_COMPILE
 #if HAVE_SQLITE3

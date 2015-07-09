@@ -16,6 +16,7 @@ public:
     CAR_INTERFACE_DECL();
 
     Database();
+    ~Database();
 
     CARAPI Open(
         /* [in] */ const String& filename,
