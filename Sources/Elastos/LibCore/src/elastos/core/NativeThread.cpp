@@ -686,7 +686,7 @@ Boolean NativeCreateThread(
     NativeThread* self = NULL;
     NativeThread* newThread = NULL;
     Int32 stackSize;
-    NativeThreadStatus oldStatus;
+    // NativeThreadStatus oldStatus;
     Int32 cc;
 
     assert(threadObj != 0);
@@ -984,7 +984,7 @@ static void* ThreadEntry(void* arg)
     // LOGV("threadid=%d: calling run()\n", self->threadId);
     // assert(strcmp(run->name, "run") == 0);
     // dvmCallMethod(self, run, self->threadObj, &unused);
-    ECode ec = threadObj->Run();
+    /*ECode ec = */threadObj->Run();
     // LOGV("threadid=%d: exiting\n", self->threadId);
 
     /*
@@ -1011,7 +1011,7 @@ ECode NativeAttachCurrentThread(
     // Object* vmThreadObj = NULL;
     String threadNameStr;
     // Method* init;
-    Boolean ok, ret;
+    Boolean ok;
     ECode ec = NOERROR;
 
     /* allocate thread struct, and establish a basic sense of self */
@@ -1686,8 +1686,8 @@ static void LockMonitor(
     /* [in] */ Monitor* mon)
 {
     NativeThreadStatus oldStatus;
-    UInt32 waitThreshold, samplePercent;
-    UInt64 waitStart, waitEnd, waitMs;
+    // UInt32 waitThreshold, samplePercent;
+    // UInt64 waitStart, waitEnd, waitMs;
 
     if (mon->mOwner == self) {
         mon->mLockCount++;

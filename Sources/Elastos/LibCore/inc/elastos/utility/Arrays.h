@@ -136,7 +136,7 @@ public:
 
     template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
         /* [in] */ T value,
@@ -160,7 +160,7 @@ public:
 
     template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array,
         /* [in] */ T value,
         /* [out] */ Int32* index);
 
@@ -183,18 +183,20 @@ public:
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ ArrayOf<T *> * array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
-        /* [in] */ IInterface * value,
+        /* [in] */ T * value,
         /* [out] */ Int32* index);
 
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
-        /* [in] */ IInterface * value,
+        /* [in] */ T * value,
         /* [out] */ Int32* index);
 
     /**
@@ -210,14 +212,16 @@ public:
      *         if an element in the array or the search element does not
      *         implement {@code Comparable}, or cannot be compared to each other.
      */
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ ArrayOf<IInterface *> * array,
-        /* [in] */ IInterface * value,
+        /* [in] */ ArrayOf<T *> * array,
+        /* [in] */ T * value,
         /* [out] */ Int32* index);
 
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
-        /* [in] */ IInterface * value,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
+        /* [in] */ T * value,
         /* [out] */ Int32* index);
 
     /**
@@ -241,19 +245,21 @@ public:
      * @throws ArrayIndexOutOfBoundsException if {@code startIndex < 0 || endIndex > array.length}
      * @since 1.6
      */
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ ArrayOf<T *> * array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
-        /* [in] */ IInterface * value,
+        /* [in] */ T * value,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
-        /* [in] */ IInterface * value,
+        /* [in] */ T * value,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
@@ -272,15 +278,17 @@ public:
      *         if an element in the array or the search element does not
      *         implement {@code Comparable}, or cannot be compared to each other.
      */
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ ArrayOf<IInterface *> * array,
-        /* [in] */ IInterface * value,
+        /* [in] */ ArrayOf<T *> * array,
+        /* [in] */ T * value,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
+    template<typename T>
     static CARAPI BinarySearch(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
-        /* [in] */ IInterface * value,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
+        /* [in] */ T * value,
         /* [in] */ IComparator* comparator,
         /* [out] */ Int32* index);
 
@@ -299,7 +307,7 @@ public:
 
     template<typename T>
     static CARAPI Fill(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array,
         /* [in] */ T value);
 
     /**
@@ -327,7 +335,7 @@ public:
 
     template<typename T>
     static CARAPI Fill(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ T value);
@@ -354,7 +362,7 @@ public:
 
     template<typename T>
     static CARAPI_(Int32) GetHashCode(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array);
 
     static CARAPI_(Int32) GetHashCode(
         /* [in] */ ArrayOf<Boolean>* array);
@@ -368,17 +376,25 @@ public:
     static CARAPI_(Int32) GetHashCode(
         /* [in] */ ArrayOf<Double>* array);
 
+    template<typename T>
     static CARAPI_(Int32) GetHashCode(
-        /* [in] */ ArrayOf<IInterface *> * array);
+        /* [in] */ ArrayOf<T *> * array);
 
+    template<typename T>
     static CARAPI_(Int32) GetHashCode(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array);
 
+    template<typename T>
     static CARAPI_(Int32) DeepGetHashCode(
-        /* [in] */ ArrayOf<IInterface *> * array);
+        /* [in] */ ArrayOf<T *> * array);
 
+    template<typename T>
     static CARAPI_(Int32) DeepGetHashCode(
-        /* [in] */ IInterface * element);
+        /* [in] */ T * element);
+
+    template<typename T>
+    static CARAPI_(Int32) DeepGetHashCode(
+        /* [in] */ const AutoPtr<T> & element);
 
     /**
      * Compares the two arrays.
@@ -398,8 +414,8 @@ public:
 
     template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array1,
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array2);
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array1,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array2);
 
     static CARAPI_(Boolean) Equals(
         /* [in] */ ArrayOf<Float>* array1,
@@ -409,21 +425,25 @@ public:
         /* [in] */ ArrayOf<Double>* array1,
         /* [in] */ ArrayOf<Double>* array2);
 
+    template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ ArrayOf<IInterface *> * array1,
-        /* [in] */ ArrayOf<IInterface *> * array2);
+        /* [in] */ ArrayOf<T *> * array1,
+        /* [in] */ ArrayOf<T *> * array2);
 
+    template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array1,
-        /* [in] */ ArrayOf<IInterface *> * array2);
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array1,
+        /* [in] */ ArrayOf<T *> * array2);
 
+    template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ ArrayOf<IInterface *> * array1,
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array2);
+        /* [in] */ ArrayOf<T *> * array1,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array2);
 
+    template<typename T>
     static CARAPI_(Boolean) Equals(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array1,
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array2);
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array1,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array2);
 
     template<typename T>
     static CARAPI_(Boolean) DeepEquals(
@@ -435,9 +455,25 @@ public:
         /* [in] */ const AutoPtr<ArrayOf<T> > & array1,
         /* [in] */ const AutoPtr<ArrayOf<T> > & array2);
 
+    template<typename T>
     static CARAPI_(Boolean) DeepEquals(
-        /* [in] */ IInterface * e1,
-        /* [in] */ IInterface * e2);
+        /* [in] */ T * e1,
+        /* [in] */ T * e2);
+
+    template<typename T>
+    static CARAPI_(Boolean) DeepEquals(
+        /* [in] */ const AutoPtr<T> & e1,
+        /* [in] */ T * e2);
+
+    template<typename T>
+    static CARAPI_(Boolean) DeepEquals(
+        /* [in] */ T * e1,
+        /* [in] */ const AutoPtr<T> & e2);
+
+    template<typename T>
+    static CARAPI_(Boolean) DeepEquals(
+        /* [in] */ const AutoPtr<T> & e1,
+        /* [in] */ const AutoPtr<T> & e2);
 
     template<typename T>
     static CARAPI Sort(
@@ -445,7 +481,7 @@ public:
 
     template<typename T>
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array);
 
     template<typename T>
     static CARAPI Sort(
@@ -455,7 +491,7 @@ public:
 
     template<typename T>
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
@@ -463,7 +499,7 @@ public:
         /* [in] */ ArrayOf<IInterface *> * array);
 
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array);
 
     static CARAPI Sort(
         /* [in] */ ArrayOf<IInterface *> * array,
@@ -471,7 +507,7 @@ public:
         /* [in] */ Int32 end);
 
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
@@ -482,7 +518,7 @@ public:
         /* [in] */ IComparator* comparator);
 
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ IComparator* comparator);
@@ -492,7 +528,7 @@ public:
         /* [in] */ IComparator* comparator);
 
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
+        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array,
         /* [in] */ IComparator* comparator);
 
     template<typename T>
@@ -501,13 +537,18 @@ public:
 
     template<typename T>
     static CARAPI_(String) ToString(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& array);
+        /* [in] */ const AutoPtr<ArrayOf<T> > & array);
 
     static CARAPI_(String) ToString(
         /* [in] */ ArrayOf<Char32> * array);
 
+    template<typename T>
     static CARAPI_(String) DeepToString(
-        /* [in] */ ArrayOf<IInterface *> * array);
+        /* [in] */ ArrayOf<T *> * array);
+
+    template<typename T>
+    static CARAPI_(String) DeepToString(
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array);
 
     template<typename T>
     static CARAPI CopyOf(
@@ -517,7 +558,7 @@ public:
 
     template<typename T>
     static CARAPI CopyOf(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & original,
         /* [in] */ Int32 newLength,
         /* [out, callee] */ ArrayOf<T> ** result);
 
@@ -530,7 +571,7 @@ public:
 
     template<typename T>
     static CARAPI CopyOfRange(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & original,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<T> ** result);
@@ -543,7 +584,7 @@ public:
 
     template<typename T, typename U>
     static CARAPI CopyOf(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & original,
         /* [in] */ Int32 newLength,
         /* [out, callee] */ ArrayOf<U> ** result);
 
@@ -556,7 +597,7 @@ public:
 
     template<typename T, typename U>
     static CARAPI CopyOfRange(
-        /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+        /* [in] */ const AutoPtr<ArrayOf<T> > & original,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [out, callee] */ ArrayOf<U> ** result);
@@ -581,18 +622,31 @@ private:
         /* [in] */ Int32 endIndex,
         /* [in] */ Int32 length);
 
+    template<typename T>
     static CARAPI DeepToString(
-        /* [in] */ IInterface * obj,
-        /* [in] */ ArrayOf<IInterface*> * origArrays,
+        /* [in] */ T * obj,
+        /* [in] */ ArrayOf<T*> * origArrays,
         /* [in] */ StringBuilder& sb);
 
+    template<typename T>
     static CARAPI_(Boolean) DeepToStringContains(
-        /* [in] */ ArrayOf<IInterface *> * origArray,
-        /* [in] */ IInterface * obj);
+        /* [in] */ ArrayOf<T *> * origArray,
+        /* [in] */ T * obj);
+
+    template<typename T>
+    static CARAPI DeepToString(
+        /* [in] */ T * obj,
+        /* [in] */ IArrayOf * origArrays,
+        /* [in] */ StringBuilder& sb);
+
+    template<typename T>
+    static CARAPI_(Boolean) DeepToStringContains(
+        /* [in] */ IArrayOf * origArray,
+        /* [in] */ T * obj);
 
     static CARAPI DeepToString(
         /* [in] */ IInterface * obj,
-        /* [in] */ IArrayOf * origArrays,
+        /* [in] */ IArrayOf * origArray,
         /* [in] */ StringBuilder& sb);
 
     static CARAPI_(Boolean) DeepToStringContains(
@@ -694,7 +748,7 @@ ECode Arrays::BinarySearch(
 
 template<typename T>
 ECode Arrays::BinarySearch(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array,
     /* [in] */ Int32 startIndex,
     /* [in] */ Int32 endIndex,
     /* [in] */ T value,
@@ -705,11 +759,182 @@ ECode Arrays::BinarySearch(
 
 template<typename T>
 ECode Arrays::BinarySearch(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array,
     /* [in] */ T value,
     /* [out] */ Int32* index)
 {
     return BinarySearch(array.Get(), value, index);
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ T * value,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    ECode ec = CheckBinarySearchBounds(startIndex, endIndex, array->GetLength());
+    if (FAILED(ec)) {
+        ALOGE("Arrays::BinarySearch: error %08x, startIndex: %d, endIndex: %d, array length: %d",
+            ec, startIndex, endIndex, array->GetLength());
+        return ec;
+    }
+
+    Int32 lo = startIndex;
+    Int32 hi = endIndex - 1;
+    Int32 mid, midValCmp;
+    IComparable* comp;
+    while (lo <= hi) {
+        mid = (UInt32(lo + hi)) >> 1;
+        comp = IComparable::Probe((*array)[mid]);
+        if (comp == NULL) {
+            ALOGE("Arrays::BinarySearch: object at %d does not implement IComparable.", mid);
+        }
+        assert(comp != NULL);
+        comp->CompareTo(TO_IINERFACE(value), &midValCmp);
+
+        if (midValCmp < 0) {
+            lo = mid + 1;
+        }
+        else if (midValCmp > 0) {
+            hi = mid - 1;
+        }
+        else {
+            *index = mid;  // value found
+            return NOERROR;
+        }
+    }
+    *index = ~lo;  // value not present
+    return NOERROR;
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ T * value,
+    /* [out] */ Int32* index)
+{
+    return BinarySearch(array.Get(), startIndex, endIndex, value, index);
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ T * value,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    return BinarySearch(array, 0, array->GetLength(), value, index);
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
+    /* [in] */ T * value,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    return BinarySearch(array.Get(), 0, array->GetLength(), value, index);
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ T* value,
+    /* [in] */ IComparator* comparator,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    if (comparator == NULL) {
+        return BinarySearch(array, startIndex, endIndex, value, index);
+    }
+
+    FAIL_RETURN(CheckBinarySearchBounds(startIndex, endIndex, array->GetLength()));
+    Int32 lo = startIndex;
+    Int32 hi = endIndex - 1;
+    Int32 mid, midValCmp;
+
+    while (lo <= hi) {
+        mid = (UInt32(lo + hi)) >> 1;
+        comparator->Compare(TO_IINTERFACE((*array)[mid]), value, &midValCmp);
+
+        if (midValCmp < 0) {
+            lo = mid + 1;
+        }
+        else if (midValCmp > 0) {
+            hi = mid - 1;
+        }
+        else {
+            *index = mid;  // value found
+            return NOERROR;
+        }
+    }
+    *index = ~lo;  // value not present
+    return NOERROR;
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
+    /* [in] */ Int32 startIndex,
+    /* [in] */ Int32 endIndex,
+    /* [in] */ T* value,
+    /* [in] */ IComparator* comparator,
+    /* [out] */ Int32* index)
+{
+    return BinarySearch(array.Get(), startIndex, endIndex, value, comparator, index);
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ T* value,
+    /* [in] */ IComparator* comparator,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    return BinarySearch(array, 0, array->GetLength(), value, comparator, index);
+}
+
+template<typename T>
+ECode Arrays::BinarySearch(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
+    /* [in] */ T* value,
+    /* [in] */ IComparator* comparator,
+    /* [out] */ Int32* index)
+{
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+    assert(array != NULL);
+    VALIDATE_NOT_NULL(array)
+
+    return BinarySearch(array.Get(), 0, array->GetLength(), value, comparator, index);
 }
 
 template<typename T>
@@ -745,7 +970,7 @@ ECode Arrays::Fill(
 
 template<typename T>
 ECode Arrays::Fill(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ T value)
@@ -755,7 +980,7 @@ ECode Arrays::Fill(
 
 template<typename T>
 ECode Arrays::Fill(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array,
     /* [in] */ T value)
 {
     return Fill(array.Get(), value);
@@ -778,9 +1003,85 @@ Int32 Arrays::GetHashCode(
 
 template<typename T>
 Int32 Arrays::GetHashCode(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array)
 {
     return GetHashCode(array.Get());
+}
+
+template<typename T>
+Int32 Arrays::GetHashCode(
+    /* [in] */ ArrayOf<T *> * array)
+{
+    if (array == NULL) {
+        return 0;
+    }
+
+    Int32 hashCode = 1;
+    T* element;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        element = (*array)[i];
+        hashCode = 31 * hashCode + Object::GetHashCode(element);
+    }
+    return hashCode;
+}
+
+template<typename T>
+Int32 Arrays::GetHashCode(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array)
+{
+    return GetHashCode(array.Get());
+}
+
+template<typename T>
+Int32 Arrays::DeepGetHashCode(
+    /* [in] */ ArrayOf<T *> * array)
+{
+    if (array == NULL) {
+        return 0;
+    }
+
+    Int32 hashCode = 1, elementHashCode;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        elementHashCode = DeepGetHashCode((*array)[i]);
+        hashCode = 31 * hashCode + elementHashCode;
+    }
+    return hashCode;
+}
+
+template<typename T>
+Int32 Arrays::DeepGetHashCode(
+    /* [in] */ T* element)
+{
+    if (element == NULL) {
+        return 0;
+    }
+
+    if (IArrayOf::Probe(element) == NULL) {
+        return Object::GetHashCode(element);
+    }
+
+    /*
+     * element is an array
+     */
+    Int32 length;
+    AutoPtr<IArrayOf> array = IArrayOf::Probe(element);
+    array->GetLength(&length);
+
+    Int32 hashCode = 1, elementHashCode;
+    for (Int32 i = 0; i < length; ++i) {
+        AutoPtr<IInterface> object;
+        array->Get(i, (IInterface**)&object);
+        elementHashCode = DeepGetHashCode(object.Get());
+        hashCode = 31 * hashCode + elementHashCode;
+    }
+    return hashCode;
+}
+
+template<typename T>
+Int32 Arrays::DeepGetHashCode(
+    /* [in] */ const AutoPtr<T> & element)
+{
+    return DeepGetHashCode(element.Get());
 }
 
 template<typename T>
@@ -807,8 +1108,8 @@ Boolean Arrays::Equals(
 
 template<typename T>
 Boolean Arrays::Equals(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array1,
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array2)
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array1,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array2)
 {
     return Equals(array1.Get(), array2.Get());
 }
@@ -842,6 +1143,125 @@ Boolean Arrays::DeepEquals(
 }
 
 template<typename T>
+Boolean Arrays::Equals(
+    /* [in] */ ArrayOf<T *> * array1,
+    /* [in] */ ArrayOf<T *> * array2)
+{
+    if (array1 == array2) {
+        return TRUE;
+    }
+    if (array1 == NULL || array2 == NULL || array1->GetLength() != array2->GetLength()) {
+        return FALSE;
+    }
+
+    T *e1, *e2;
+    for (Int32 i = 0; i < array1->GetLength(); i++) {
+        e1 = (*array1)[i];
+        e2 = (*array2)[i];
+        if (!(e1 == NULL ? e2 == NULL : Object::Equals(e1, e2))) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+template<typename T>
+Boolean Arrays::Equals(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array1,
+    /* [in] */ ArrayOf<T *> * array2)
+{
+    return Equals(array1.Get(), array2);
+}
+
+template<typename T>
+Boolean Arrays::Equals(
+    /* [in] */ ArrayOf<T *> * array1,
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array2)
+{
+    return Equals(array1, array2.Get());
+}
+
+template<typename T>
+Boolean Arrays::Equals(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array1,
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array2)
+{
+    return Equals(array1.Get(), array2.Get());
+}
+
+
+template<typename T>
+Boolean Arrays::DeepEquals(
+    /* [in] */ T* e1,
+    /* [in] */ T* e2)
+{
+    if (e1 == NULL && e2 == NULL) {
+        return TRUE;
+    }
+
+    if (e1 == NULL || e2 == NULL) {
+        return FALSE;
+    }
+
+    if (e1->Probe(EIID_IInterface) == e2->Probe(EIID_IInterface)) {
+        return TRUE;
+    }
+
+    if (IArrayOf::Probe(e1) == NULL || IArrayOf::Probe(e2) == NULL) {
+        return Object::Equals(e1, e2);
+    }
+
+    /*
+     * compare as arrays
+     */
+    AutoPtr<IArrayOf> a1 = IArrayOf::Probe(e1);
+    AutoPtr<IArrayOf> a2 = IArrayOf::Probe(e2);
+
+    Int32 len1, len2;
+    a1->GetLength(&len1);
+    a2->GetLength(&len2);
+    if (len1 != len2) {
+        return FALSE;
+    }
+
+    for (Int32 i = 0; i < len1; ++i) {
+        AutoPtr<IInterface> o1, o2;
+        a1->Get(i, (IInterface**)&o1);
+        a2->Get(i, (IInterface**)&o2);
+
+        if (DeepEquals(o1, o2) == FALSE) {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+template<typename T>
+Boolean Arrays::DeepEquals(
+    /* [in] */ const AutoPtr<T> & e1,
+    /* [in] */ T* e2)
+{
+    return Arrays::DeepEquals(e1.Get(), e2);
+}
+
+template<typename T>
+Boolean Arrays::DeepEquals(
+    /* [in] */ T* e1,
+    /* [in] */ const AutoPtr<T> & e2)
+{
+    return Arrays::DeepEquals(e1, e2.Get());
+}
+
+template<typename T>
+Boolean Arrays::DeepEquals(
+    /* [in] */ const AutoPtr<T> & e1,
+    /* [in] */ const AutoPtr<T> & e2)
+{
+    return Arrays::DeepEquals(e1.Get(), e2.Get());
+}
+
+template<typename T>
 ECode Arrays::Sort(
     /* [in] */ ArrayOf<T> * array)
 {
@@ -850,7 +1270,7 @@ ECode Arrays::Sort(
 
 template<typename T>
 ECode Arrays::Sort(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array)
 {
     return DualPivotQuicksort::Sort(array.Get());
 }
@@ -866,7 +1286,7 @@ ECode Arrays::Sort(
 
 template<typename T>
 ECode Arrays::Sort(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
@@ -898,9 +1318,137 @@ String Arrays::ToString(
 
 template<typename T>
 String Arrays::ToString(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& array)
+    /* [in] */ const AutoPtr<ArrayOf<T> > & array)
 {
     return ToString(array.Get());
+}
+
+template<typename T>
+Boolean Arrays::DeepToStringContains(
+    /* [in] */ IArrayOf * origArray,
+    /* [in] */ T * obj)
+{
+    if (origArray == NULL) {
+        return FALSE;
+    }
+
+    IInterface * object = TO_IINTERFACE(obj);
+    Int32 length;
+    origArray->GetLength(&length);
+    for (Int32 i = 0; i < length; ++i) {
+        AutoPtr<IInterface> element;
+        origArray->Get(i, (IInterface**)&element);
+        if (element.Get() == object) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+template<typename T>
+ECode Arrays::DeepToString(
+    /* [in] */ T * obj,
+    /* [in] */ IArrayOf * origArray,
+    /* [in] */ StringBuilder& sb)
+{
+    IArrayOf* array = IArrayOf::Probe(obj);
+    if (array == NULL) {
+        String info = Object::ToString(obj);
+        sb.Append(info);
+        return NOERROR;
+    }
+
+    if (DeepToStringContains(origArray, obj)) {
+        sb.Append("[...]");
+    }
+    else {
+        sb.AppendChar('[');
+        Int32 length;
+        array->GetLength(&length);
+        for (Int32 i = 0; i < length; ++i) {
+            AutoPtr<IInterface> element;
+            array->Get(i, (IInterface**)&element);
+            DeepToString(element.Get(), origArray, sb);
+        }
+        sb.AppendChar(']');
+    }
+
+    return NOERROR;
+}
+
+template<typename T>
+Boolean Arrays::DeepToStringContains(
+    /* [in] */ ArrayOf<T *> * origArray,
+    /* [in] */ T* array)
+{
+    if (origArray == NULL || origArray->GetLength() == 0) {
+        return FALSE;
+    }
+
+    for (Int32 i = 0; i < origArray->GetLength(); ++i) {
+        if (TO_IINTERFACE((*origArray)[i]) == array) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+template<typename T>
+ECode Arrays::DeepToString(
+    /* [in] */ T * obj,
+    /* [in] */ ArrayOf<T*> * origArray,
+    /* [in] */ StringBuilder& sb)
+{
+    IArrayOf* array = IArrayOf::Probe(obj);
+    if (array == NULL) {
+        String info = Object::ToString(obj);
+        sb.Append(info);
+        return NOERROR;
+    }
+
+    if (DeepToStringContains(origArray, obj)) {
+        sb.Append("[...]");
+    }
+    else {
+        sb.AppendChar('[');
+        Int32 length;
+        array->GetLength(&length);
+        for (Int32 i = 0; i < length; ++i) {
+            AutoPtr<IInterface> element;
+            array->Get(i, (IInterface**)&element);
+            DeepToString(element.Get(), origArray, sb);
+        }
+        sb.AppendChar(']');
+    }
+
+    return NOERROR;
+}
+
+template<typename T>
+String Arrays::DeepToString(
+    /* [in] */ ArrayOf<T *> * array)
+{
+    // Special case null to prevent NPE
+    if (array == NULL) {
+        return String("NULL");
+    }
+
+    // delegate this to the recursive method
+    StringBuilder sb(array->GetLength() * 9);
+    sb.AppendChar('[');
+    for (Int32 i = 0; i < array->GetLength(); ++i) {
+        DeepToString((*array)[i], array, sb);
+    }
+    sb.AppendChar(']');
+    return sb.ToString();
+}
+
+template<typename T>
+String Arrays::DeepToString(
+    /* [in] */ const AutoPtr<ArrayOf<T *> > & array)
+{
+    return DeepToString(array.Get());
 }
 
 template<typename T>
@@ -952,7 +1500,7 @@ ECode Arrays::CopyOf(
 
 template<typename T>
 ECode Arrays::CopyOfRange(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out, callee] */ ArrayOf<T> ** result)
@@ -962,7 +1510,7 @@ ECode Arrays::CopyOfRange(
 
 template<typename T>
 ECode Arrays::CopyOf(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<T> ** result)
 {
@@ -1021,7 +1569,7 @@ ECode Arrays::CopyOf(
 
 template<typename T, typename U>
 ECode Arrays::CopyOfRange(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & original,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out, callee] */ ArrayOf<U> ** result)
@@ -1031,7 +1579,7 @@ ECode Arrays::CopyOfRange(
 
 template<typename T, typename U>
 ECode Arrays::CopyOf(
-    /* [in] */ const AutoPtr<ArrayOf<T> >& original,
+    /* [in] */ const AutoPtr<ArrayOf<T> > & original,
     /* [in] */ Int32 newLength,
     /* [out, callee] */ ArrayOf<U> ** result)
 {

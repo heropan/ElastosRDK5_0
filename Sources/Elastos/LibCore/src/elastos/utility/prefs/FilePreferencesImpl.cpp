@@ -15,12 +15,8 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-extern "C" const InterfaceID EIID_FilePreferencesImpl =
-        { 0x41993109, 0xfb1f, 0x40e9, { 0xb3, 0x58, 0xcf, 0xac, 0xe7, 0xb4, 0x44, 0x16 } };
-
-
-
 CAR_INTERFACE_IMPL(FilePreferencesImpl::FilenameFilter, Object, IFilenameFilter);
+
 FilePreferencesImpl::FilenameFilter::FilenameFilter(
     /* [in] */ FilePreferencesImpl* host)
     : mHost(host)
@@ -38,10 +34,10 @@ ECode FilePreferencesImpl::FilenameFilter::Accept(
     return file->IsDirectory(succeeded);
 }
 
-
 CAR_INTERFACE_IMPL_2(FilePreferencesImpl, Object, IAbstractPreferences, IPreferences);
 
-const String FilePreferencesImpl::PREFS_FILE_NAME = String("prefs.xml");
+const String FilePreferencesImpl::PREFS_FILE_NAME("prefs.xml");
+
 FilePreferencesImpl::FilePreferencesImpl(
     /* [in] */ const String& path,
     /* [in] */ Boolean isUserNode)
@@ -221,7 +217,7 @@ ECode FilePreferencesImpl::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
-    *info = String("Elastos.Utility.Prefs.EIID_FilePreferencesImpl");
+    *info = String("Elastos.Utility.Prefs.FilePreferencesImpl");
     return NOERROR;
 }
 
