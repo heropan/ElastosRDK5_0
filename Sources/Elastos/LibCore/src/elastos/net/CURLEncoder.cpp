@@ -1,8 +1,10 @@
 
 #include "CURLEncoder.h"
 #include "charset/CCharsetHelper.h"
+#include "charset/StandardCharsets.h"
 #include "Character.h"
 
+using Elastos::IO::Charset::StandardCharsets;
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::CCharsetHelper;
 
@@ -30,7 +32,7 @@ ECode CURLEncoder::Encode(
     /* [out] */ String* result)
 {
     AutoPtr<ICharsetHelper> helper;
-    AutoPtr<ICharset> charset;
+    AutoPtr<ICharset> charset = StandardCharsets::UTF_8;
     CCharsetHelper::AcquireSingleton((ICharsetHelper**)&helper);
     helper->ForName(charsetName, (ICharset**)&charset);
     return ENCODER.Encode(s, charset, result);

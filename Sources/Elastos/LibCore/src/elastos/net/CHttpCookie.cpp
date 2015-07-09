@@ -172,6 +172,12 @@ ECode CHttpCookie::CookieParser::SetAttribute(
         }
     }
     else if (name.Equals("max-age") && cookie->mMaxAge == -1ll) {
+        // RFCs 2109 and 2965 suggests a zero max-age as a way of deleting a cookie.
+        // RFC 6265 specifies the value must be > 0 but also describes what to do if the
+        // value is negative, zero or non-numeric in section 5.2.2. The RI does none of this
+        // and accepts negative, positive values and throws an IllegalArgumentException
+        // if the value is non-numeric.
+
         Int64 maxAge;
         ECode ec = StringUtils::Parse(value, &maxAge);
         if (FAILED(ec)) {

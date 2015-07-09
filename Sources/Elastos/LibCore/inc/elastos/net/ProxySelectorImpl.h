@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Net {
 
 class ProxySelectorImpl
-    : ProxySelector
+    : public ProxySelector
 {
 public:
 

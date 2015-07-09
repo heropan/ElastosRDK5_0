@@ -13,12 +13,11 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::ICloneable;
-using Elastos::Core::EIID_ICloneable;
 using Elastos::Net::CInet4Address;
 using Elastos::Net::CPlainSocketImpl;
 using Elastos::Net::CInetSocketAddress;
 using Libcore::IO::CIoBridge;
+using Elastos::IO::EIID_ICloseable;
 
 namespace Elastos {
 namespace Net {
@@ -26,7 +25,7 @@ namespace Net {
 AutoPtr<ISocketImplFactory> Socket::sFactory;
 Object Socket::sLock;
 
-CAR_INTERFACE_IMPL_2(Socket, Object, ISocket, ICloneable)
+CAR_INTERFACE_IMPL_2(Socket, Object, ISocket, ICloseable)
 
 Socket::Socket()
     : mIsCreated(FALSE)
@@ -503,6 +502,7 @@ ECode Socket::StartupSocket(
     }
 
     mIsBound = TRUE;
+    CacheLocalAddress();
     ec = mImpl->Connect(dstAddress, dstPort);
     if (FAILED(ec)) {
         mImpl->Close();

@@ -37,10 +37,6 @@ public:
 
 private:
     static AutoPtr<IProxySelector> sDefaultSelector;
-
-    static AutoPtr<INetPermission> sGetProxySelectorPermission;
-
-    static AutoPtr<INetPermission> sSetProxySelectorPermission;
 };
 
 } // namespace Net

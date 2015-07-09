@@ -48,6 +48,11 @@ PlainSocketImpl::PlainSocketImpl()
     mGuard = CCloseGuard::Get();
 }
 
+PlainSocketImpl::~PlainSocketImpl()
+{
+    Finalize();
+}
+
 ECode PlainSocketImpl::constructor(
     /* [in] */ IFileDescriptor* fd)
 {
@@ -108,29 +113,35 @@ ECode PlainSocketImpl::Accept(
         }
     }
 
+    PlainSocketImpl* p;
+    AutoPtr<IInteger32> val;
+
     AutoPtr<IInetSocketAddress> peerAddress;
     CInetSocketAddress::New((IInetSocketAddress**)&peerAddress);
     AutoPtr<IFileDescriptor> clientFd;
-    CLibcore::sOs->Accept(mFd, peerAddress, (IFileDescriptor**)&clientFd);
+    ECode ec = CLibcore::sOs->Accept(mFd, peerAddress, (IFileDescriptor**)&clientFd);
+    FAIL_GOTO(ec, _Exit_)
 
     // TODO: we can't just set newImpl.fd to clientFd because a nio SocketChannel may
     // be sharing the FileDescriptor. http://b//4452981.
-
-    PlainSocketImpl* p = (PlainSocketImpl*)IPlainSocketImpl::Probe(newImpl);
+    p = (PlainSocketImpl*)IPlainSocketImpl::Probe(newImpl);
     if (p == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     p->mFd = clientFd;
 
+    p->mAddress = NULL;
     peerAddress->GetAddress((IInetAddress**)&(p->mAddress));
     peerAddress->GetPort(&(p->mPort));
 
     // Reset the client's inherited read timeout to the Java-specified default of 0.
-    AutoPtr<IInteger32> val;
     CInteger32::New(0, (IInteger32**)&val);
     ISocketOptions::Probe(newImpl)->SetOption(ISocketOptions::_SO_TIMEOUT, val);
     CIoBridge::_GetSocketLocalPort(p->mFd, &(p->mLocalport));
     return NOERROR;
+
+_Exit_:
+    return E_SOCKET_EXCEPTION;
 }
 
 Boolean PlainSocketImpl::UsingSocks()
@@ -143,22 +154,6 @@ Boolean PlainSocketImpl::UsingSocks()
         }
     }
     return FALSE;
-}
-
-ECode PlainSocketImpl::InitLocalPort(
-    /* [in] */ Int32 localPort)
-{
-    mLocalport = localPort;
-    return NOERROR;
-}
-
-ECode PlainSocketImpl::InitRemoteAddressAndPort(
-    /* [in] */ IInetAddress* remoteAddress,
-    /* [in] */ Int32 remotePort)
-{
-    mAddress = remoteAddress;
-    mPort = remotePort;
-    return NOERROR;
 }
 
 ECode PlainSocketImpl::CheckNotClosed()
@@ -192,7 +187,7 @@ ECode PlainSocketImpl::Bind(
     /* [in] */ Int32 port)
 {
     FAIL_RETURN(CIoBridge::_Bind(mFd, address, port));
-    mAddress = address;
+
     if (port != 0) {
         mLocalport = port;
         return NOERROR;
@@ -202,10 +197,23 @@ ECode PlainSocketImpl::Bind(
     }
 }
 
+ECode PlainSocketImpl::OnBind(
+    /* [in] */ IInetAddress* address,
+    /* [in] */ Int32 port)
+{
+    mLocalport = port;
+    return NOERROR;
+}
+
 ECode PlainSocketImpl::Close()
 {
     mGuard->Close();
     return CIoBridge::_CloseAndSignalBlockedThreads(mFd);
+}
+
+ECode PlainSocketImpl::OnClose()
+{
+    return mGuard->Close();
 }
 
 ECode PlainSocketImpl::Connect(
@@ -254,6 +262,15 @@ ECode PlainSocketImpl::Connect(
     mAddress = normalAddr;
     mPort = aPort;
     return ec;
+}
+
+ECode PlainSocketImpl::OnConnect(
+    /* [in] */ IInetAddress* remoteAddress,
+    /* [in] */ Int32 remotePort)
+{
+    mAddress = remoteAddress;
+    mPort = remotePort;
+    return NOERROR;
 }
 
 ECode PlainSocketImpl::Create(

@@ -1,8 +1,7 @@
 
 #include "CSocketPermission.h"
-//#include "SocketPermissionCollection.h"
 #include "InetAddress.h"
-#include <StringBuffer.h>
+#include "StringBuffer.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::StringBuffer;

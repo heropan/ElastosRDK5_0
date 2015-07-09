@@ -8,7 +8,6 @@
 #include "Math.h"
 #include "url/UrlUtils.h"
 
-
 namespace Elastos {
 namespace Net {
 
@@ -92,9 +91,14 @@ ECode URLStreamHandler::ParseURL(
         host = spec.Substring(hostStart, hostEnd);
         Int32 portStart = hostEnd + 1;
         if (portStart < fileStart) {
-            port = StringUtils::ParseInt32(spec.Substring(portStart, fileStart));
-            if (port < 0) {
+
+            Char32 firstPortChar = spec.GetChar(portStart);
+            if (firstPortChar >= '0' && firstPortChar <= '9') {
+                port = StringUtils::ParseInt32(spec.Substring(portStart, fileStart));
+            }
+            else {
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
+                // throw new IllegalArgumentException("invalid port: " + port);
             }
         }
         path = NULL;
