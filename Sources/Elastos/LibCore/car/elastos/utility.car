@@ -182,6 +182,7 @@ module
     merge("utility/concurrent/IConcurrentHashMap.car");
     merge("utility/concurrent/IConcurrentNavigableMap.car");
     merge("utility/concurrent/IExecutorCompletionService.car");
+    merge("utility/concurrent/IScheduledExecutorService.car");
 
     //======================================================
     // Elastos.Utility.Zip

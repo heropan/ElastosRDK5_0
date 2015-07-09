@@ -181,8 +181,8 @@ module
          * guaranteed not to be reconfigurable to use additional threads.
          * @return the newly created scheduled executor
          */
-        //NewSingleThreadScheduledExecutor(
-        //    [out] IScheduledExecutorService** result);
+        NewSingleThreadScheduledExecutor(
+            [out] IScheduledExecutorService** result);
 
         /**
          * Creates a single-threaded executor that can schedule commands
@@ -200,9 +200,9 @@ module
          * @return a newly created scheduled executor
          * @throws NullPointerException if threadFactory is null
          */
-        //NewSingleThreadScheduledExecutor(
-        //    [in] IThreadFactory* threadFactory,
-        //    [out] IScheduledExecutorService** result);
+        NewSingleThreadScheduledExecutor(
+            [in] IThreadFactory* threadFactory,
+            [out] IScheduledExecutorService** result);
 
         /**
          * Creates a thread pool that can schedule commands to run after a
@@ -212,9 +212,9 @@ module
          * @return a newly created scheduled thread pool
          * @throws IllegalArgumentException if {@code corePoolSize < 0}
          */
-        //NewScheduledThreadPool(
-        //    [in] Int32 corePoolSize,
-        //    [out] IScheduledExecutorService** result);
+        NewScheduledThreadPool(
+            [in] Int32 corePoolSize,
+            [out] IScheduledExecutorService** result);
 
         /**
          * Creates a thread pool that can schedule commands to run after a
@@ -227,10 +227,10 @@ module
          * @throws IllegalArgumentException if {@code corePoolSize < 0}
          * @throws NullPointerException if threadFactory is null
          */
-        //NewScheduledThreadPool(
-        //    [in] Int32 corePoolSize,
-        //    [in] IThreadFactory* threadFactory,
-        //    [out] IScheduledExecutorService** result);
+        NewScheduledThreadPool(
+            [in] Int32 corePoolSize,
+            [in] IThreadFactory* threadFactory,
+            [out] IScheduledExecutorService** result);
 
         /**
          * Returns an object that delegates all defined {@link
@@ -256,9 +256,9 @@ module
          * @return a {@code ScheduledExecutorService} instance
          * @throws NullPointerException if executor null
          */
-        //UnconfigurableScheduledExecutorService(
-        //    [in] IScheduledExecutorService* executor,
-        //    [out] IScheduledExecutorService** result);
+        UnconfigurableScheduledExecutorService(
+            [in] IScheduledExecutorService* executor,
+            [out] IScheduledExecutorService** result);
 
         /**
          * Legacy security code; do not use.

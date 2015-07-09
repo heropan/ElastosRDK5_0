@@ -73,12 +73,14 @@ public:
     /**
      * A callable that runs under established access control settings
      */
-    class PrivilegedCallable
-        : public ICallable
-        , public Object
+    class _PrivilegedCallable
+        : public Object
+        , public ICallable
     {
     public:
-        PrivilegedCallable(
+        CAR_INTERFACE_DECL()
+
+        _PrivilegedCallable(
             /* [in] */ ICallable* task);
 
         CARAPI Call(
@@ -93,11 +95,14 @@ public:
      * A callable that runs under established access control settings and
      * current ClassLoader
      */
-    class PrivilegedCallableUsingCurrentClassLoader
-        : public ICallable
+    class _PrivilegedCallableUsingCurrentClassLoader
+        : public Object
+        , public ICallable
     {
     public:
-        PrivilegedCallableUsingCurrentClassLoader(
+        CAR_INTERFACE_DECL()
+
+        _PrivilegedCallableUsingCurrentClassLoader(
             /* [in] */ ICallable* task);
 
         CARAPI Call(
@@ -112,11 +117,11 @@ public:
     /**
      * Thread factory capturing access control context and class loader
      */
-    class PrivilegedThreadFactory
+    class _PrivilegedThreadFactory
         : public DefaultThreadFactory
     {
     public:
-        PrivilegedThreadFactory();
+        _PrivilegedThreadFactory();
 
         CARAPI NewThread(
             /* [in] */ IRunnable* r,
@@ -206,40 +211,76 @@ public:
      */
     class DelegatedScheduledExecutorService
         : public DelegatedExecutorService
-//        , public IScheduledExecutorService
+        , public IScheduledExecutorService
     {
     public:
-        // DelegatedScheduledExecutorService(
-        //     /* [in] */ IScheduledExecutorService* executor);
+        CAR_INTERFACE_DECL()
 
-        // CARAPI Schedule(
-        //     /* [in] */ IRunnable* command,
-        //     /* [in] */ Int64 delay,
-        //     /* [in] */ ITimeUnit* unit,
-        //     /* [out] */ IScheduledFuture** result);
+        DelegatedScheduledExecutorService(
+            /* [in] */ IScheduledExecutorService* executor);
 
-        // CARAPI Schedule(
-        //     /* [in] */ ICallable* callable,
-        //     /* [in] */ Int64 delay,
-        //     /* [in] */ ITimeUnit* unit,
-        //     /* [out] */ IScheduledFuture** result);
+        CARAPI Schedule(
+            /* [in] */ IRunnable* command,
+            /* [in] */ Int64 delay,
+            /* [in] */ ITimeUnit* unit,
+            /* [out] */ IFuture** result);
 
-        // CARAPI ScheduleAtFixedRate(
-        //      [in]  IRunnable* command,
-        //     /* [in] */ Int64 initialDelay,
-        //     /* [in] */ Int64 period,
-        //     /* [in] */ ITimeUnit* unit,
-        //     /* [out] */ IScheduledFuture** result);
+        CARAPI Schedule(
+            /* [in] */ ICallable* callable,
+            /* [in] */ Int64 delay,
+            /* [in] */ ITimeUnit* unit,
+            /* [out] */ IFuture** result);
 
-        // CARAPI ScheduleWithFixedDelay(
-        //     /* [in] */ IRunnable* command,
-        //     /* [in] */ Int64 initialDelay,
-        //     /* [in] */ Int64 delay,
-        //     /* [in] */ ITimeUnit* unit,
-        //     /* [out] */ IScheduledFuture** result);
+        CARAPI ScheduleAtFixedRate(
+            /* [in] */  IRunnable* command,
+            /* [in] */ Int64 initialDelay,
+            /* [in] */ Int64 period,
+            /* [in] */ ITimeUnit* unit,
+            /* [out] */ IFuture** result);
+
+        CARAPI ScheduleWithFixedDelay(
+            /* [in] */ IRunnable* command,
+            /* [in] */ Int64 initialDelay,
+            /* [in] */ Int64 delay,
+            /* [in] */ ITimeUnit* unit,
+            /* [out] */ IFuture** result);
 
     private:
-//        AutoPtr<IScheduledExecutorService> mE;
+        AutoPtr<IScheduledExecutorService> mE;
+    };
+
+    class CallableObject_1
+        : public Object
+        , public ICallable
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CallableObject_1(
+            /* [in] */ IPrivilegedAction* act);
+
+        CARAPI Call(
+            /* [out] */ IInterface** result);
+
+    public:
+        AutoPtr<IPrivilegedAction> mAction;
+    };
+
+    class CallableObject_2
+        : public Object
+        , public ICallable
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CallableObject_2(
+            /* [in] */ IPrivilegedExceptionAction* act);
+
+        CARAPI Call(
+            /* [out] */ IInterface** result);
+
+    public:
+        AutoPtr<IPrivilegedExceptionAction> mAction;
     };
 
 public:
@@ -303,29 +344,29 @@ public:
         /* [in] */ IThreadFactory* threadFactory,
         /* [out] */ IExecutorService** result);
 
-    // static CARAPI NewSingleThreadScheduledExecutor(
-    //     /* [out] */ IScheduledExecutorService** result);
+    static CARAPI NewSingleThreadScheduledExecutor(
+        /* [out] */ IScheduledExecutorService** result);
 
-    // static CARAPI NewSingleThreadScheduledExecutor(
-    //     /* [in] */ IThreadFactory* threadFactory,
-    //     /* [out] */ IScheduledExecutorService** result);
+    static CARAPI NewSingleThreadScheduledExecutor(
+        /* [in] */ IThreadFactory* threadFactory,
+        /* [out] */ IScheduledExecutorService** result);
 
-    // static CARAPI NewScheduledThreadPool(
-    //     /* [in] */ Int32 corePoolSize,
-    //     /* [out] */ IScheduledExecutorService** result);
+    static CARAPI NewScheduledThreadPool(
+        /* [in] */ Int32 corePoolSize,
+        /* [out] */ IScheduledExecutorService** result);
 
-    // static CARAPI NewScheduledThreadPool(
-    //     /* [in] */ Int32 corePoolSize,
-    //     /* [in] */ IThreadFactory* threadFactory,
-    //     /* [out] */ IScheduledExecutorService** result);
+    static CARAPI NewScheduledThreadPool(
+        /* [in] */ Int32 corePoolSize,
+        /* [in] */ IThreadFactory* threadFactory,
+        /* [out] */ IScheduledExecutorService** result);
 
     static CARAPI UnconfigurableExecutorService(
         /* [in] */ IExecutorService* executor,
         /* [out] */ IExecutorService** result);
 
-    // static CARAPI UnconfigurableScheduledExecutorService(
-    //     /* [in] */ IScheduledExecutorService* executor,
-    //     /* [out] */ IScheduledExecutorService** result);
+    static CARAPI UnconfigurableScheduledExecutorService(
+        /* [in] */ IScheduledExecutorService* executor,
+        /* [out] */ IScheduledExecutorService** result);
 
     static CARAPI PrivilegedThreadFactory(
         /* [out] */ IThreadFactory** result);

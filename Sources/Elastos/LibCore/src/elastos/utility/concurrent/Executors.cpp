@@ -1,15 +1,22 @@
 
 #include "Executors.h"
-#include <Thread.h>
-#include <StringBuilder.h>
-#include <StringUtils.h>
+#include "Thread.h"
+#include "StringBuilder.h"
+#include "StringUtils.h"
 #include "CThread.h"
 #include "CAtomicInteger32.h"
+#include "CForkJoinPool.h"
+#include "CLinkedBlockingQueue.h"
+#include "CThreadPoolExecutor.h"
+#include "TimeUnit.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CThread;
 using Elastos::Core::Thread;
+using Elastos::Utility::Concurrent::CForkJoinPool;
+using Elastos::Utility::Concurrent::CLinkedBlockingQueue;
+using Elastos::Utility::Concurrent::CThreadPoolExecutor;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 
 namespace Elastos {
@@ -30,7 +37,6 @@ ECode Executors::RunnableAdapter::Call(
     REFCOUNT_ADD(*result);
     return ec;
 }
-
 
 //==============================================
 //    Executors::DefaultThreadFactory
@@ -83,18 +89,22 @@ ECode Executors::DefaultThreadFactory::NewThread(
 }
 
 //==============================================
-//    Executors::PrivilegedCallable
+//    Executors::_PrivilegedCallable
 //===============================================
-Executors::PrivilegedCallable::PrivilegedCallable(
+CAR_INTERFACE_IMPL(Executors::_PrivilegedCallable, Object, ICallable)
+
+Executors::_PrivilegedCallable::_PrivilegedCallable(
     /* [in] */ ICallable* task)
 {
     mTask = task;
 //    this.acc = AccessController.getContext();
 }
 
-ECode Executors::PrivilegedCallable::Call(
+ECode Executors::_PrivilegedCallable::Call(
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+    assert(0 && "TODO");
     // try {
     //     return AccessController.doPrivileged(
     //         new PrivilegedExceptionAction<T>() {
@@ -109,11 +119,14 @@ ECode Executors::PrivilegedCallable::Call(
 }
 
 //==============================================
-//    Executors::PrivilegedCallableUsingCurrentClassLoader::
+//    Executors::_PrivilegedCallableUsingCurrentClassLoader::
 //===============================================
-Executors::PrivilegedCallableUsingCurrentClassLoader::PrivilegedCallableUsingCurrentClassLoader(
+CAR_INTERFACE_IMPL(Executors::_PrivilegedCallableUsingCurrentClassLoader, Object, ICallable)
+
+Executors::_PrivilegedCallableUsingCurrentClassLoader::_PrivilegedCallableUsingCurrentClassLoader(
     /* [in] */ ICallable* task)
 {
+    assert(0 && "TODO");
     // BEGIN android-removed
     // SecurityManager sm = System.getSecurityManager();
     // if (sm != null) {
@@ -129,12 +142,15 @@ Executors::PrivilegedCallableUsingCurrentClassLoader::PrivilegedCallableUsingCur
     // END android-removed
     mTask = task;
 //    this.acc = AccessController.getContext();
-//    this.ccl = Thread.currentThread().getContextClassLoader();
+    Thread::GetCurrentThread()->GetContextClassLoader((IClassLoader**)&mCcl);
 }
 
-ECode Executors::PrivilegedCallableUsingCurrentClassLoader::Call(
+ECode Executors::_PrivilegedCallableUsingCurrentClassLoader::Call(
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
+    assert(0 && "TODO");
     // try {
     //     return AccessController.doPrivileged(
     //         new PrivilegedExceptionAction<T>() {
@@ -160,10 +176,11 @@ ECode Executors::PrivilegedCallableUsingCurrentClassLoader::Call(
 }
 
 //==============================================
-//    Executors::PrivilegedThreadFactory::
+//    Executors::_PrivilegedThreadFactory::
 //===============================================
-Executors::PrivilegedThreadFactory::PrivilegedThreadFactory()
+Executors::_PrivilegedThreadFactory::_PrivilegedThreadFactory()
 {
+    assert(0 && "TODO");
     // BEGIN android-removed
     // SecurityManager sm = System.getSecurityManager();
     // if (sm != null) {
@@ -177,13 +194,16 @@ Executors::PrivilegedThreadFactory::PrivilegedThreadFactory()
     // }
     // END android-removed
 //    this.acc = AccessController.getContext();
-//    this.ccl = Thread.currentThread().getContextClassLoader();
+    Thread::GetCurrentThread()->GetContextClassLoader((IClassLoader**)&mCcl);
 }
 
-ECode Executors::PrivilegedThreadFactory::NewThread(
+ECode Executors::_PrivilegedThreadFactory::NewThread(
     /* [in] */ IRunnable* r,
     /* [out] */ IThread** thread)
 {
+    VALIDATE_NOT_NULL(thread)
+
+    assert(0 && "TODO");
     // return super.newThread(new Runnable() {
     //     public void run() {
     //         AccessController.doPrivileged(new PrivilegedAction<Void>() {
@@ -252,6 +272,8 @@ ECode Executors::DelegatedExecutorService::Submit(
     /* [in] */ IRunnable* task,
     /* [out] */ IFuture** future)
 {
+    VALIDATE_NOT_NULL(future)
+
     return mE->Submit(task, future);
 }
 
@@ -259,6 +281,8 @@ ECode Executors::DelegatedExecutorService::Submit(
     /* [in] */ ICallable* task,
     /* [out] */ IFuture** future)
 {
+    VALIDATE_NOT_NULL(future)
+
     return mE->Submit(task, future);
 }
 
@@ -267,6 +291,8 @@ ECode Executors::DelegatedExecutorService::Submit(
     /* [in] */ IInterface* result,
     /* [out] */ IFuture** future)
 {
+    VALIDATE_NOT_NULL(future)
+
     return mE->Submit(task, result, future);
 }
 
@@ -274,6 +300,8 @@ ECode Executors::DelegatedExecutorService::InvokeAll(
     /* [in] */ ICollection* tasks,
     /* [out] */ IList** futures)
 {
+    VALIDATE_NOT_NULL(futures)
+
     return mE->InvokeAll(tasks, futures);
 }
 
@@ -283,6 +311,8 @@ ECode Executors::DelegatedExecutorService::InvokeAll(
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IList** futures)
 {
+    VALIDATE_NOT_NULL(futures)
+
     return mE->InvokeAll(tasks, timeout, unit, futures);
 }
 
@@ -290,6 +320,8 @@ ECode Executors::DelegatedExecutorService::InvokeAny(
     /* [in] */ ICollection* tasks,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return mE->InvokeAny(tasks, result);
 }
 
@@ -299,6 +331,8 @@ ECode Executors::DelegatedExecutorService::InvokeAny(
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return mE->InvokeAny(tasks, timeout, unit, result);
 }
 
@@ -318,58 +352,97 @@ void Executors::FinalizableDelegatedExecutorService::Finalize()
 //==============================================
 //    Executors::DelegatedScheduledExecutorService::
 //===============================================
+CAR_INTERFACE_IMPL(Executors::DelegatedScheduledExecutorService, DelegatedExecutorService, IScheduledExecutorService)
 
-// Executors::DelegatedScheduledExecutorService::DelegatedScheduledExecutorService(
-//      [in]  IScheduledExecutorService* executor)
-// {
-//     super(executor);
-//     mE = executor;
-// }
+Executors::DelegatedScheduledExecutorService::DelegatedScheduledExecutorService(
+    /* [in] */ IScheduledExecutorService* executor) : DelegatedExecutorService(IExecutorService::Probe(executor))
+{
+    mE = executor;
+}
 
-// ECode Executors::DelegatedScheduledExecutorService::Schedule(
-//     /* [in] */ IRunnable* command,
-//     /* [in] */ Int64 delay,
-//     /* [in] */ ITimeUnit* unit,
-//     /* [out] */ IScheduledFuture** result)
-// {
-//     return mE->Schedule(command, delay, unit);
-// }
+ECode Executors::DelegatedScheduledExecutorService::Schedule(
+    /* [in] */ IRunnable* command,
+    /* [in] */ Int64 delay,
+    /* [in] */ ITimeUnit* unit,
+    /* [out] */ IFuture** result)
+{
+    return mE->Schedule(command, delay, unit, result);
+}
 
-// ECode Executors::DelegatedScheduledExecutorService::Schedule(
-//     /* [in] */ ICallable* callable,
-//     /* [in] */ Int64 delay,
-//     /* [in] */ ITimeUnit* unit,
-//     /* [out] */ IScheduledFuture** result)
-// {
-//     return mE->Schedule(callable, delay, unit);
-// }
+ECode Executors::DelegatedScheduledExecutorService::Schedule(
+    /* [in] */ ICallable* callable,
+    /* [in] */ Int64 delay,
+    /* [in] */ ITimeUnit* unit,
+    /* [out] */ IFuture** result)
+{
+    return mE->Schedule(callable, delay, unit, result);
+}
 
-// ECode Executors::DelegatedScheduledExecutorService::ScheduleAtFixedRate(
-//     /* [in] */ IRunnable* command,
-//     /* [in] */ Int64 initialDelay,
-//     /* [in] */ Int64 period,
-//     /* [in] */ ITimeUnit* unit,
-//     /* [out] */ IScheduledFuture** result)
-// {
-//     return mE->ScheduleAtFixedRate(command, initialDelay, period, unit);
-// }
+ECode Executors::DelegatedScheduledExecutorService::ScheduleAtFixedRate(
+    /* [in] */ IRunnable* command,
+    /* [in] */ Int64 initialDelay,
+    /* [in] */ Int64 period,
+    /* [in] */ ITimeUnit* unit,
+    /* [out] */ IFuture** result)
+{
+    return mE->ScheduleAtFixedRate(command, initialDelay, period, unit, result);
+}
 
-// ECode Executors::DelegatedScheduledExecutorService::ScheduleWithFixedDelay(
-//     /* [in] */ IRunnable* command,
-//     /* [in] */ Int64 initialDelay,
-//     /* [in] */ Int64 delay,
-//     /* [in] */ ITimeUnit* unit,
-//     /* [out] */ IScheduledFuture** result)
-// {
-//     return mE->ScheduleWithFixedDelay(command, initialDelay, delay, unit);
-// }
+ECode Executors::DelegatedScheduledExecutorService::ScheduleWithFixedDelay(
+    /* [in] */ IRunnable* command,
+    /* [in] */ Int64 initialDelay,
+    /* [in] */ Int64 delay,
+    /* [in] */ ITimeUnit* unit,
+    /* [out] */ IFuture** result)
+{
+    return mE->ScheduleWithFixedDelay(command, initialDelay, delay, unit, result);
+}
+
+//==============================================
+//    Executors::CallableObject_1::
+//===============================================
+CAR_INTERFACE_IMPL(Executors::CallableObject_1, Object, ICallable)
+
+Executors::CallableObject_1::CallableObject_1(
+    /* [in] */ IPrivilegedAction* act)
+{
+    mAction = act;
+}
+
+ECode Executors::CallableObject_1::Call(
+    /* [out] */ IInterface** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    return mAction->Run(result);
+}
+
+//==============================================
+//    Executors::CallableObject_2::
+//===============================================
+CAR_INTERFACE_IMPL(Executors::CallableObject_2, Object, ICallable)
+
+Executors::CallableObject_2::CallableObject_2(
+    /* [in] */ IPrivilegedExceptionAction* act)
+{
+    mAction = act;
+}
+
+ECode Executors::CallableObject_2::Call(
+    /* [out] */ IInterface** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    return mAction->Run(result);
+}
 
 //==============================================
 //    Executors::
 //===============================================
 AutoPtr<IThreadFactory> Executors::GetDefaultThreadFactory()
 {
-    return new DefaultThreadFactory();
+    AutoPtr<DefaultThreadFactory> p = new DefaultThreadFactory();
+    return IThreadFactory::Probe(p);
 }
 
 ECode Executors::Callable(
@@ -377,8 +450,11 @@ ECode Executors::Callable(
     /* [in] */ IInterface* result,
     /* [out] */ ICallable** object)
 {
+    VALIDATE_NOT_NULL(object)
+
     if (task == NULL) return E_NULL_POINTER_EXCEPTION;
-    *object = new RunnableAdapter(task, result);
+    AutoPtr<RunnableAdapter> p = new RunnableAdapter(task, result);
+    *object = ICallable::Probe(p);
     REFCOUNT_ADD(*object);
     return NOERROR;
 }
@@ -387,9 +463,16 @@ ECode Executors::NewFixedThreadPool(
     /* [in] */ Int32 nThreads,
     /* [out] */ IExecutorService** result)
 {
-    // return new ThreadPoolExecutor(nThreads, nThreads,
-    //                               0L, TimeUnit.MILLISECONDS,
-    //                               new LinkedBlockingQueue<Runnable>());
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IBlockingQueue> q;
+    CLinkedBlockingQueue::New((IBlockingQueue**)&q);
+    AutoPtr<IThreadPoolExecutor> p;
+    CThreadPoolExecutor::New(nThreads, nThreads,
+                             0L, TimeUnit::GetMILLISECONDS(),
+                             q, (IThreadPoolExecutor**)&p);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -397,20 +480,33 @@ ECode Executors::NewWorkStealingPool(
     /* [in] */ Int32 parallelism,
     /* [out] */ IExecutorService** result)
 {
-    // return new ForkJoinPool
-    //     (parallelism,
-    //      ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-    //      null, true);
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IForkJoinPool> p;
+    CForkJoinPool::New(parallelism,
+         CForkJoinPool::mDefaultForkJoinWorkerThreadFactory,
+         NULL, TRUE, (IForkJoinPool**)&p);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Executors::NewWorkStealingPool(
     /* [out] */ IExecutorService** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     // return new ForkJoinPool
     //     (Runtime.getRuntime().availableProcessors(),
     //      ForkJoinPool.defaultForkJoinWorkerThreadFactory,
     //      null, true);
+
+    AutoPtr<IForkJoinPool> p;
+    CForkJoinPool::New(4,
+         CForkJoinPool::mDefaultForkJoinWorkerThreadFactory,
+         NULL, TRUE, (IForkJoinPool**)&p);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -419,20 +515,36 @@ ECode Executors::NewFixedThreadPool(
     /* [in] */ IThreadFactory* threadFactory,
     /* [out] */ IExecutorService** result)
 {
-    // return new ThreadPoolExecutor(nThreads, nThreads,
-    //                               0L, TimeUnit.MILLISECONDS,
-    //                               new LinkedBlockingQueue<Runnable>(),
-    //                               threadFactory);
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IBlockingQueue> q;
+    CLinkedBlockingQueue::New((IBlockingQueue**)&q);
+    AutoPtr<IThreadPoolExecutor> tpe;
+    CThreadPoolExecutor::New(nThreads, nThreads,
+                             0L, TimeUnit::GetMILLISECONDS(),
+                             q, threadFactory, (IThreadPoolExecutor**)&tpe);
+    AutoPtr<IExecutorService> es = (IExecutorService*)(tpe->Probe(EIID_IExecutorService));
+    AutoPtr<FinalizableDelegatedExecutorService> p = new FinalizableDelegatedExecutorService(es);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Executors::NewSingleThreadExecutor(
     /* [out] */ IExecutorService** result)
 {
-    // return new FinalizableDelegatedExecutorService
-    //     (new ThreadPoolExecutor(1, 1,
-    //                             0L, TimeUnit.MILLISECONDS,
-    //                             new LinkedBlockingQueue<Runnable>()));
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IBlockingQueue> q;
+    CLinkedBlockingQueue::New((IBlockingQueue**)&q);
+    AutoPtr<IThreadPoolExecutor> tpe;
+    CThreadPoolExecutor::New(1, 1,
+                             0L, TimeUnit::GetMILLISECONDS(),
+                             q, (IThreadPoolExecutor**)&tpe);
+    AutoPtr<IExecutorService> es = (IExecutorService*)(tpe->Probe(EIID_IExecutorService));
+    AutoPtr<FinalizableDelegatedExecutorService> p = new FinalizableDelegatedExecutorService(es);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -440,20 +552,33 @@ ECode Executors::NewSingleThreadExecutor(
     /* [in] */ IThreadFactory* threadFactory,
     /* [out] */ IExecutorService** result)
 {
-    // return new FinalizableDelegatedExecutorService
-    //     (new ThreadPoolExecutor(1, 1,
-    //                             0L, TimeUnit.MILLISECONDS,
-    //                             new LinkedBlockingQueue<Runnable>(),
-    //                             threadFactory));
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IBlockingQueue> q;
+    CLinkedBlockingQueue::New((IBlockingQueue**)&q);
+    AutoPtr<IThreadPoolExecutor> tpe;
+    CThreadPoolExecutor::New(1, 1,
+                             0L, TimeUnit::GetMILLISECONDS(),
+                             q, threadFactory, (IThreadPoolExecutor**)&tpe);
+    AutoPtr<IExecutorService> es = (IExecutorService*)(tpe->Probe(EIID_IExecutorService));
+    AutoPtr<FinalizableDelegatedExecutorService> p = new FinalizableDelegatedExecutorService(es);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Executors::NewCachedThreadPool(
     /* [out] */ IExecutorService** result)
 {
-    // return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-    //                               60L, TimeUnit.SECONDS,
-    //                               new SynchronousQueue<Runnable>());
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<ISynchronousQueue> q; //= new SynchronousQueue();
+    AutoPtr<IThreadPoolExecutor> p;
+    CThreadPoolExecutor::New(0, Elastos::Core::Math::INT32_MAX_VALUE,
+                             60L, TimeUnit::GetSECONDS(),
+                             IBlockingQueue::Probe(q), (IThreadPoolExecutor**)&p);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -461,71 +586,110 @@ ECode Executors::NewCachedThreadPool(
     /* [in] */ IThreadFactory* threadFactory,
     /* [out] */ IExecutorService** result)
 {
-    // return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-    //                               60L, TimeUnit.SECONDS,
-    //                               new SynchronousQueue<Runnable>(),
-    //                               threadFactory);
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<ISynchronousQueue> q; //= new SynchronousQueue();
+    AutoPtr<IThreadPoolExecutor> p;
+    CThreadPoolExecutor::New(0, Elastos::Core::Math::INT32_MAX_VALUE,
+                              60L, TimeUnit::GetSECONDS(),
+                              IBlockingQueue::Probe(q), threadFactory, (IThreadPoolExecutor**)&p);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
-// ECode Executors::NewSingleThreadScheduledExecutor(
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     // return new DelegatedScheduledExecutorService
-//     //     (new ScheduledThreadPoolExecutor(1));
-//     return NOERROR;
-// }
+ECode Executors::NewSingleThreadScheduledExecutor(
+    /* [out] */ IScheduledExecutorService** result)
+{
+    VALIDATE_NOT_NULL(result)
 
-// ECode Executors::NewSingleThreadScheduledExecutor(
-//     /* [in] */ IThreadFactory* threadFactory,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     // return new DelegatedScheduledExecutorService
-//     //     (new ScheduledThreadPoolExecutor(1, threadFactory));
-//     return NOERROR;
-// }
+    assert(0 && "TODO");
+    // AutoPtr<ScheduledThreadPoolExecutor> p = new ScheduledThreadPoolExecutor(1);
+    // AutoPtr<DelegatedScheduledExecutorService> res =
+    //     new DelegatedScheduledExecutorService(IScheduledExecutorService::Probe(p));
+    // *result = IScheduledExecutorService::Probe(res);
+    // REFCOUNT_ADD(*result)
+    return NOERROR;
+}
 
-// ECode Executors::NewScheduledThreadPool(
-//     /* [in] */ Int32 corePoolSize,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-// //    return new ScheduledThreadPoolExecutor(corePoolSize);
-//     return NOERROR;
-// }
+ECode Executors::NewSingleThreadScheduledExecutor(
+    /* [in] */ IThreadFactory* threadFactory,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    VALIDATE_NOT_NULL(result)
 
-// ECode Executors::NewScheduledThreadPool(
-//     /* [in] */ Int32 corePoolSize,
-//     /* [in] */ IThreadFactory* threadFactory,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-// //    return new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
-//     return NOERROR;
-// }
+    assert(0 && "TODO");
+    // AutoPtr<ScheduledThreadPoolExecutor> p = new ScheduledThreadPoolExecutor(1, threadFactory);
+    // AutoPtr<DelegatedScheduledExecutorService> res =
+    //     new DelegatedScheduledExecutorService(IScheduledExecutorService::Probe(p));
+    // *result = IScheduledExecutorService::Probe(res);
+    // REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode Executors::NewScheduledThreadPool(
+    /* [in] */ Int32 corePoolSize,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    assert(0 && "TODO");
+    // AutoPtr<ScheduledThreadPoolExecutor> res = new ScheduledThreadPoolExecutor(corePoolSize);
+    // *result = IScheduledExecutorService::Probe(res);
+    // REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode Executors::NewScheduledThreadPool(
+    /* [in] */ Int32 corePoolSize,
+    /* [in] */ IThreadFactory* threadFactory,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    assert(0 && "TODO");
+    // AutoPtr<ScheduledThreadPoolExecutor> res = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
+    // *result = IScheduledExecutorService::Probe(res);
+    // REFCOUNT_ADD(*result)
+    return NOERROR;
+}
 
 ECode Executors::UnconfigurableExecutorService(
     /* [in] */ IExecutorService* executor,
     /* [out] */ IExecutorService** result)
 {
-    // if (executor == null)
-    //     throw new NullPointerException();
-    // return new DelegatedExecutorService(executor);
+    VALIDATE_NOT_NULL(result)
+
+    if (executor == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<DelegatedExecutorService> p = new DelegatedExecutorService(executor);
+    *result = (IExecutorService*)(p->Probe(EIID_IExecutorService));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
-// ECode Executors::UnconfigurableScheduledExecutorService(
-//     /* [in] */ IScheduledExecutorService* executor,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     // if (executor == null)
-//     //     throw new NullPointerException();
-//     // return new DelegatedScheduledExecutorService(executor);
-//     return NOERROR;
-// }
+ECode Executors::UnconfigurableScheduledExecutorService(
+    /* [in] */ IScheduledExecutorService* executor,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    if (executor == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<DelegatedScheduledExecutorService> p = new DelegatedScheduledExecutorService(executor);
+    *result = IScheduledExecutorService::Probe(p);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
 
 ECode Executors::PrivilegedThreadFactory(
     /* [out] */ IThreadFactory** result)
 {
-//    return new PrivilegedThreadFactory();
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<_PrivilegedThreadFactory> p = new _PrivilegedThreadFactory();
+    *result = IThreadFactory::Probe(p);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -533,9 +697,13 @@ ECode Executors::Callable(
     /* [in] */ IRunnable* task,
     /* [out] */ ICallable** result)
 {
-    // if (task == null)
-    //     throw new NullPointerException();
-    // return new RunnableAdapter<Object>(task, null);
+    VALIDATE_NOT_NULL(result)
+
+    if (task == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<RunnableAdapter> p = new RunnableAdapter(task, NULL);
+    *result = ICallable::Probe(p);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -543,10 +711,13 @@ ECode Executors::Callable(
     /* [in] */ IPrivilegedAction* action,
     /* [out] */ ICallable** result)
 {
-    // if (action == null)
-    //     throw new NullPointerException();
-    // return new Callable<Object>() {
-    //     public Object call() { return action.run(); }};
+    VALIDATE_NOT_NULL(result)
+
+    if (action == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<CallableObject_1> p = new CallableObject_1(action);
+    *result = ICallable::Probe(p);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -554,10 +725,13 @@ ECode Executors::Callable(
     /* [in] */ IPrivilegedExceptionAction* action,
     /* [out] */ ICallable** result)
 {
-    // if (action == null)
-    //     throw new NullPointerException();
-    // return new Callable<Object>() {
-    //     public Object call() throws Exception { return action.run(); }};
+    VALIDATE_NOT_NULL(result)
+
+    if (action == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<CallableObject_2> p = new CallableObject_2(action);
+    *result = ICallable::Probe(p);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -565,9 +739,13 @@ ECode Executors::PrivilegedCallable(
     /* [in] */ ICallable* callable,
     /* [out] */ ICallable** result)
 {
-    // if (callable == null)
-    //     throw new NullPointerException();
-    // return new PrivilegedCallable<T>(callable);
+    VALIDATE_NOT_NULL(result)
+
+    if (callable == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<_PrivilegedCallable> p = new _PrivilegedCallable(callable);
+    *result = (ICallable*)(p->Probe(EIID_ICallable));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -575,9 +753,14 @@ ECode Executors::PrivilegedCallableUsingCurrentClassLoader(
     /* [in] */ ICallable* callable,
     /* [out] */ ICallable** result)
 {
-    // if (callable == null)
-    //     throw new NullPointerException();
-    // return new PrivilegedCallableUsingCurrentClassLoader<T>(callable);
+    VALIDATE_NOT_NULL(result)
+
+    if (callable == NULL)
+        return E_NULL_POINTER_EXCEPTION;
+    AutoPtr<_PrivilegedCallableUsingCurrentClassLoader> res =
+        new _PrivilegedCallableUsingCurrentClassLoader(callable);
+    *result = (ICallable*)(res->Probe(EIID_ICallable));
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
