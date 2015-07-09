@@ -1,10 +1,13 @@
 
 #include "CShell.h"
-#include <elastos/core/StringBuffer.h>
-//#include "CPrintWriter.h"
+#include "StringBuffer.h"
+#include "CPrintWriter.h"
+#include "StringUtils.h"
 
-//using Elastos::IO::CPrintWriter;
+using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuffer;
+using Elastos::IO::CPrintWriter;
+using Elastos::IO::IOutputStream;
 
 namespace Elastos {
 namespace Sql {
@@ -34,12 +37,11 @@ CARAPI CShell::constructor(
     /* [in] */ IPrintStream* ps,
     /* [in] */ IPrintStream* errs)
 {
-    //TODO
-    assert(0);
-    // FAIL_RETURN(CPrintWriter::New(ps,(IPrintWriter **)&mPw));
-    // FAIL_RETURN(CPrintWriter::New(errs,(IPrintWriter **)&mErr));
+    FAIL_RETURN(CPrintWriter::New(IOutputStream::Probe(ps), (IPrintWriter **)&mPw));
+    FAIL_RETURN(CPrintWriter::New(IOutputStream::Probe(errs), (IPrintWriter **)&mErr));
     return NOERROR;
 }
+
 void CShell::Clone(
     /* [out] */ CShell& s)
 {
@@ -252,12 +254,13 @@ String CShell::HtmlQuote(
 }
 
 Boolean CShell::IsNumeric(
-    /* [in] */ const String& str) {
-    // try {
-    //     Double d = Double.valueOf(str);
-    // } catch (java.lang.Exception e) {
-    //     return false;
-    // }
+    /* [in] */ const String& str)
+{
+    Double d;
+    ECode ec = StringUtils::Parse(str, &d);
+    if (FAILED(ec)) {
+        return FALSE;
+    }
     return TRUE;
 }
 

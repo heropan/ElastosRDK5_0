@@ -11,9 +11,9 @@
 #include "CShell.h"
 #include "CDatabaseX.h"
 #include <elastos/utility/etl/HashSet.h>
-#include <elastos/core/StringBuffer.h>
+#include "StringBuffer.h"
 #include <elastos/core/StringUtils.h>
-//#include "CURL.h"
+#include "CURL.h"
 #include "CByteArrayInputStream.h"
 #include "CCharArrayReader.h"
 #include "CSqlDate.h"
@@ -21,7 +21,7 @@
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
-//using Elastos::Net::CURL;
+using Elastos::Net::CURL;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::ICharArrayReader;

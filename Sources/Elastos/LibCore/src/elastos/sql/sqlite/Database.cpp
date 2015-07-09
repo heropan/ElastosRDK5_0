@@ -27,6 +27,11 @@ Database::Database()
 {
 }
 
+Database::~Database()
+{
+    Finalize();
+}
+
 static void Freep(char **strp)
 {
     if (strp && *strp) {

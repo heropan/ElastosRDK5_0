@@ -10,11 +10,11 @@ CAR_INTERFACE_IMPL(CStringEncoderHelper, Object, IStringEncoderHelper);
 CAR_SINGLETON_IMPL(CStringEncoderHelper)
 
 ECode CStringEncoderHelper::Encode(
-    /* [in] */ const ArrayOf<Byte>& a,
+    /* [in] */ ArrayOf<Byte> * a,
     /* [out] */ String * str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = StringEncoder::Encode(const_cast<ArrayOf<Byte>* >(&a));
+    *str = StringEncoder::Encode(a);
     return NOERROR;
 }
 
@@ -23,17 +23,18 @@ ECode CStringEncoderHelper::Decode(
     /* [out, callee] */ ArrayOf<Byte> ** outarray)
 {
     VALIDATE_NOT_NULL(outarray);
-    *outarray = StringEncoder::Decode(s);
+    AutoPtr<ArrayOf<Byte> > result = StringEncoder::Decode(s);
+    *outarray = result;
     REFCOUNT_ADD(*outarray);
     return NOERROR;
 }
 
 ECode CStringEncoderHelper::EncodeX(
-    /* [in] */ const ArrayOf<Byte>& a,
+    /* [in] */ ArrayOf<Byte> * a,
     /* [out] */ String * str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = StringEncoder::EncodeX(const_cast<ArrayOf<Byte>* >(&a));
+    *str = StringEncoder::EncodeX(a);
     return NOERROR;
 }
 

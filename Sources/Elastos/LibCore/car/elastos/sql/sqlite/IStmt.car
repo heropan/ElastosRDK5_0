@@ -268,11 +268,6 @@ module
             [in] Int32 op,
             [in] Boolean flg,
             [out] Int32* value);
-
-        /**
-         * Destructor for object.
-         */
-        Finalize();
     }
 
     } // namespace SQLite

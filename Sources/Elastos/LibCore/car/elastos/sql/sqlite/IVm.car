@@ -46,11 +46,6 @@ module
          * Abort the compiled SQLite VM.
          */
         Stop();
-
-        /**
-         * Destructor for object.
-         */
-        Finalize();
     }
 
     } // namespace SQLite

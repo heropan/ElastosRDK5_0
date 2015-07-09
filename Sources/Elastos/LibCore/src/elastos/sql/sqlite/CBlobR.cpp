@@ -5,8 +5,9 @@ namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-CAR_OBJECT_IMPL(CBlobR);
-CAR_INTERFACE_IMPL(CBlobR, InputStream, IBlobR);
+CAR_OBJECT_IMPL(CBlobR)
+
+CAR_INTERFACE_IMPL(CBlobR, InputStream, IBlobR)
 
 ECode CBlobR::constructor(
     /* [in] */ Elastos::Sql::SQLite::IBlob* blob)
@@ -48,11 +49,11 @@ ECode CBlobR::Read(
 }
 
 ECode CBlobR::ReadBytes(
-    /* [out] */ ArrayOf<Byte> * buffer,
+    /* [in] */ ArrayOf<Byte> * buffer,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
-    *number = 0;
+    *number = -1;
     VALIDATE_NOT_NULL(buffer)
 
     Int32 n;
@@ -66,13 +67,13 @@ ECode CBlobR::ReadBytes(
 }
 
 ECode CBlobR::ReadBytes(
-    /* [out] */ ArrayOf<Byte> * b,
+    /* [in] */ ArrayOf<Byte> * b,
     /* [in] */ Int32 off,
     /* [in] */ Int32 len,
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number)
-    *number = 0;
+    *number = -1;
     VALIDATE_NOT_NULL(b)
 
     if (off + len > b->GetLength()) {

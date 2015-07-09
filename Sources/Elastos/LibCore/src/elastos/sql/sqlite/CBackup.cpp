@@ -1,25 +1,31 @@
 
 #include "CBackup.h"
 #include "AutoLock.h"
+#include "sqlitejni.h"
 
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
 
-CAR_OBJECT_IMPL(CBackup);
+CAR_OBJECT_IMPL(CBackup)
 
-CAR_INTERFACE_IMPL(CBackup, Object, IBackup);
+CAR_INTERFACE_IMPL(CBackup, Object, IBackup)
 
 CBackup::CBackup()
     : mHandle(0)
 {
 }
 
+CBackup::~CBackup()
+{
+    Finalize();
+}
+
 ECode CBackup::Finish()
 {
     ECode ec = NOERROR;
     synchronized(this) {
-        ec = _Finalize();
+        ec = NativeFinalize();
     }
     return ec;
 }
@@ -28,7 +34,7 @@ ECode CBackup::Finalize()
 {
     ECode ec = NOERROR;
     synchronized(this) {
-        ec = _Finalize();
+        ec = NativeFinalize();
     }
     return ec;
 }
@@ -37,9 +43,11 @@ ECode CBackup::Step(
     /* [in] */ Int32 n,
     /* [out] */ Boolean* isCompleted)
 {
+    VALIDATE_NOT_NULL(isCompleted)
+
     ECode ec = NOERROR;
     synchronized(this) {
-        ec = _Step(n, isCompleted);
+        ec = NativeStep(n, isCompleted);
     }
 
     return ec;
@@ -50,7 +58,7 @@ ECode CBackup::Backup()
     ECode ec = NOERROR;
     synchronized(this) {
         Boolean res = FALSE;
-        ec = _Step(-1, &res);
+        ec = NativeStep(-1, &res);
     }
 
     return ec;
@@ -59,8 +67,10 @@ ECode CBackup::Backup()
 ECode CBackup::Remaining(
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+
     synchronized(this) {
-        *number = _Remaining();
+        *number = NativeRemaining();
     }
 
     return NOERROR;
@@ -69,19 +79,21 @@ ECode CBackup::Remaining(
 ECode CBackup::Pagecount(
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
+
     synchronized(this) {
-        *number = _Pagecount();
+        *number = NativePagecount();
     }
 
     return NOERROR;
 }
 
-ECode CBackup::_Finalize()
+ECode CBackup::NativeFinalize()
 {
 #if HAVE_SQLITE3 && HAVE_SQLITE3_BACKUPAPI
     hbk *bk = mHandle;
     Int32 ret = SQLITE_OK;
-    char32 *err = 0;
+    char *err = 0;
 
     if (bk) {
     if (bk->h) {
@@ -102,7 +114,7 @@ ECode CBackup::_Finalize()
     if (bk->bkup) {
         ret = sqlite3_backup_finish(bk->bkup);
         if (ret != SQLITE_OK && bk->h) {
-        err = (char32 *) sqlite3_errmsg((sqlite3 *) bk->h->sqlite);
+        err = (char *) sqlite3_errmsg((sqlite3 *) bk->h->sqlite);
         }
     }
     bk->bkup = 0;
@@ -116,7 +128,7 @@ ECode CBackup::_Finalize()
     return NOERROR;
 }
 
-ECode CBackup::_Step(
+ECode CBackup::NativeStep(
     /* [in] */ Int32 n,
     /* [out] */ Boolean* state)
 {
@@ -152,7 +164,7 @@ ECode CBackup::_Step(
     return NOERROR;
 }
 
-Int32 CBackup::_Remaining()
+Int32 CBackup::NativeRemaining()
 {
     Int32 result = 0;
 #if HAVE_SQLITE3 && HAVE_SQLITE3_BACKUPAPI
@@ -169,7 +181,7 @@ Int32 CBackup::_Remaining()
     return result;
 }
 
-Int32 CBackup::_Pagecount()
+Int32 CBackup::NativePagecount()
 {
     Int32 result = 0;
 #if HAVE_SQLITE3 && HAVE_SQLITE3_BACKUPAPI

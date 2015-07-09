@@ -15,6 +15,11 @@ CStmt::CStmt()
 {
 }
 
+CStmt::~CStmt()
+{
+    Finalize();
+}
+
 ECode CStmt::Prepare(
     /* [out] */ Boolean* value)
 {

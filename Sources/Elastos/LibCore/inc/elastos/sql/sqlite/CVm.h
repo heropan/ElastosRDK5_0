@@ -5,7 +5,6 @@
 #include "_Elastos_Sql_SQLite_CVm.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace Sql {
 namespace SQLite {
@@ -32,15 +31,11 @@ public:
 
     CVm();
 
+    ~CVm();
+
 public:
     Int32 mError_code;
     Int64 mHandle;
-
-private:
-    static CARAPI_(Boolean) Internal_init();
-
-private:
-    static Boolean isinit;
 };
 
 } // namespace SQLite
