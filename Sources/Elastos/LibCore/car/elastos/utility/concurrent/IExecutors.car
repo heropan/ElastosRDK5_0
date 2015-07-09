@@ -7,6 +7,7 @@ module
     interface Elastos.Utility.Concurrent.ICallable;
     interface Elastos.Utility.Concurrent.IExecutorService;
     interface Elastos.Utility.Concurrent.IThreadFactory;
+    interface Elastos.Utility.Concurrent.IScheduledExecutorService;
 
     namespace Elastos {
     namespace Utility {

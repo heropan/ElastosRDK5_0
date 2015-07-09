@@ -71,33 +71,33 @@ ECode CExecutors::NewCachedThreadPool(
     return Executors::NewCachedThreadPool(threadFactory, result);
 }
 
-// ECode CExecutors::NewSingleThreadScheduledExecutor(
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     return Executors::NewSingleThreadScheduledExecutor(result);
-// }
+ECode CExecutors::NewSingleThreadScheduledExecutor(
+    /* [out] */ IScheduledExecutorService** result)
+{
+    return Executors::NewSingleThreadScheduledExecutor(result);
+}
 
-// ECode CExecutors::NewSingleThreadScheduledExecutor(
-//     /* [in] */ IThreadFactory* threadFactory,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     return Executors::NewSingleThreadScheduledExecutor(threadFactory, result);
-// }
+ECode CExecutors::NewSingleThreadScheduledExecutor(
+    /* [in] */ IThreadFactory* threadFactory,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    return Executors::NewSingleThreadScheduledExecutor(threadFactory, result);
+}
 
-// ECode CExecutors::NewScheduledThreadPool(
-//     /* [in] */ Int32 corePoolSize,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     return Executors::NewScheduledThreadPool(corePoolSize, result);
-// }
+ECode CExecutors::NewScheduledThreadPool(
+    /* [in] */ Int32 corePoolSize,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    return Executors::NewScheduledThreadPool(corePoolSize, result);
+}
 
-// ECode CExecutors::NewScheduledThreadPool(
-//     /* [in] */ Int32 corePoolSize,
-//     /* [in] */ IThreadFactory* threadFactory,
-//     /* [out] */ IScheduledExecutorService** result)
-// {
-//     return Executors::NewScheduledThreadPool(corePoolSize, threadFactory, result);
-// }
+ECode CExecutors::NewScheduledThreadPool(
+    /* [in] */ Int32 corePoolSize,
+    /* [in] */ IThreadFactory* threadFactory,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    return Executors::NewScheduledThreadPool(corePoolSize, threadFactory, result);
+}
 
 ECode CExecutors::UnconfigurableExecutorService(
     /* [in] */ IExecutorService* executor,
@@ -106,12 +106,12 @@ ECode CExecutors::UnconfigurableExecutorService(
     return Executors::UnconfigurableExecutorService(executor, result);
 }
 
-// ECode CExecutors::UnconfigurableScheduledExecutorService(
-//     /* [in] */ IScheduledExecutorService* executor,
-//      [out]  IScheduledExecutorService** result)
-// {
-//     return Executors::UnconfigurableScheduledExecutorService(executor, result);
-// }
+ECode CExecutors::UnconfigurableScheduledExecutorService(
+    /* [in] */ IScheduledExecutorService* executor,
+    /* [out] */ IScheduledExecutorService** result)
+{
+    return Executors::UnconfigurableScheduledExecutorService(executor, result);
+}
 
 ECode CExecutors::PrivilegedThreadFactory(
     /* [out] */ IThreadFactory** result)

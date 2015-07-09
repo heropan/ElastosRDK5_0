@@ -55,29 +55,29 @@ public:
         /* [in] */ IThreadFactory* threadFactory,
         /* [out] */ IExecutorService** result);
 
-    // CARAPI NewSingleThreadScheduledExecutor(
-    //     /* [out] */ IScheduledExecutorService** result);
+    CARAPI NewSingleThreadScheduledExecutor(
+        /* [out] */ IScheduledExecutorService** result);
 
-    // CARAPI NewSingleThreadScheduledExecutor(
-    //     /* [in] */ IThreadFactory* threadFactory,
-    //     /* [out] */ IScheduledExecutorService** result);
+    CARAPI NewSingleThreadScheduledExecutor(
+        /* [in] */ IThreadFactory* threadFactory,
+        /* [out] */ IScheduledExecutorService** result);
 
-    // CARAPI NewScheduledThreadPool(
-    //     /* [in] */ Int32 corePoolSize,
-    //     /* [out] */ IScheduledExecutorService** result);
+    CARAPI NewScheduledThreadPool(
+        /* [in] */ Int32 corePoolSize,
+        /* [out] */ IScheduledExecutorService** result);
 
-    // CARAPI NewScheduledThreadPool(
-    //     /* [in] */ Int32 corePoolSize,
-    //     /* [in] */ IThreadFactory* threadFactory,
-    //     /* [out] */ IScheduledExecutorService** result);
+    CARAPI NewScheduledThreadPool(
+        /* [in] */ Int32 corePoolSize,
+        /* [in] */ IThreadFactory* threadFactory,
+        /* [out] */ IScheduledExecutorService** result);
 
     CARAPI UnconfigurableExecutorService(
         /* [in] */ IExecutorService* executor,
         /* [out] */ IExecutorService** result);
 
-    // CARAPI UnconfigurableScheduledExecutorService(
-    //     /* [in] */ IScheduledExecutorService* executor,
-    //     /* [out] */ IScheduledExecutorService** result);
+    CARAPI UnconfigurableScheduledExecutorService(
+        /* [in] */ IScheduledExecutorService* executor,
+        /* [out] */ IScheduledExecutorService** result);
 
     CARAPI PrivilegedThreadFactory(
         /* [out] */ IThreadFactory** result);
