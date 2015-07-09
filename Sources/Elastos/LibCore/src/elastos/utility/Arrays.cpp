@@ -549,13 +549,13 @@ Boolean Arrays::Equals(
 ECode Arrays::Sort(
     /* [in] */ ArrayOf<IInterface *> * array)
 {
-    return ComparableTimSort::Sort(array);
+    return ComparableTimSort<IInterface>::Sort(array);
 }
 
 ECode Arrays::Sort(
     /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array)
 {
-    return ComparableTimSort::Sort(array.Get());
+    return ComparableTimSort<IInterface>::Sort(array.Get());
 }
 
 ECode Arrays::Sort(
@@ -563,7 +563,7 @@ ECode Arrays::Sort(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return ComparableTimSort::Sort(array, start, end);
+    return ComparableTimSort<IInterface>::Sort(array, start, end);
 }
 
 ECode Arrays::Sort(
@@ -571,7 +571,7 @@ ECode Arrays::Sort(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return ComparableTimSort::Sort(array.Get(), start, end);
+    return ComparableTimSort<IInterface>::Sort(array.Get(), start, end);
 }
 
 ECode Arrays::Sort(
@@ -580,7 +580,7 @@ ECode Arrays::Sort(
     /* [in] */ Int32 end,
     /* [in] */ IComparator* comparator)
 {
-    return TimSort::Sort(array, start, end, comparator);
+    return TimSort<IInterface>::Sort(array, start, end, comparator);
 }
 
 ECode Arrays::Sort(
@@ -589,21 +589,21 @@ ECode Arrays::Sort(
     /* [in] */ Int32 end,
     /* [in] */ IComparator* comparator)
 {
-    return TimSort::Sort(array.Get(), start, end, comparator);
+    return TimSort<IInterface>::Sort(array.Get(), start, end, comparator);
 }
 
 ECode Arrays::Sort(
     /* [in] */ ArrayOf<IInterface *> * array,
     /* [in] */ IComparator* comparator)
 {
-    return TimSort::Sort(array, comparator);
+    return TimSort<IInterface>::Sort(array, comparator);
 }
 
 ECode Arrays::Sort(
     /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
     /* [in] */ IComparator* comparator)
 {
-    return TimSort::Sort(array.Get(), comparator);
+    return TimSort<IInterface>::Sort(array.Get(), comparator);
 }
 
 String Arrays::ToString(
