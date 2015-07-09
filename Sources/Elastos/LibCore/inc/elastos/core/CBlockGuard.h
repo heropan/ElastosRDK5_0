@@ -3,16 +3,19 @@
 #define __ELASTOS_CORE_CBLOCKGUARD_H__
 
 #include "_Elastos_Core_CBlockGuard.h"
-#include "BlockGuard.h"
+#include "Singleton.h"
 
 namespace Elastos {
 namespace Core {
 
 CarClass(CBlockGuard)
-    , public BlockGuard
+    , public Singleton
+    , public IBlockGuard
 {
 public:
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Get the current thread's policy.
@@ -22,7 +25,6 @@ public:
      */
     CARAPI GetThreadPolicy(
         /* [out] */ IBlockGuardPolicy** policy);
-
 
     /**
      * Sets the current thread's block guard policy.

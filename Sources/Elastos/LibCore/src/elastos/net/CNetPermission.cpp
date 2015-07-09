@@ -15,6 +15,7 @@ ECode CNetPermission::constructor(
     /* [in] */ const String& name)
 {
     //return BasicPermission::Init(name);
+    return NOERROR;
 }
 
 ECode CNetPermission::constructor(
@@ -22,6 +23,7 @@ ECode CNetPermission::constructor(
     /* [in] */ const String& action)
 {
     //return BasicPermission::Init(name, action);
+    return NOERROR;
 }
 
 } // namespace Net

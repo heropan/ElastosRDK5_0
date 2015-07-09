@@ -20,6 +20,8 @@ public:
 
     PlainSocketImpl();
 
+    ~PlainSocketImpl();
+
     CARAPI constructor(
         /* [in] */ IFileDescriptor* fd);
 
@@ -33,13 +35,6 @@ public:
         /* [in] */ Int32 localport,
         /* [in] */ IInetAddress* addr,
         /* [in] */ Int32 port);
-
-    CARAPI InitLocalPort(
-        /* [in] */ Int32 localPort);
-
-    CARAPI InitRemoteAddressAndPort(
-        /* [in] */ IInetAddress* remoteAddress,
-        /* [in] */ Int32 remotePort);
 
     CARAPI GetOption(
         /* [in] */ Int32 option,
@@ -74,13 +69,23 @@ protected:
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 port);
 
+    CARAPI OnBind(
+        /* [in] */ IInetAddress* address,
+        /* [in] */ Int32 port);
+
     CARAPI Close();
+
+    CARAPI OnClose();
 
     CARAPI Connect(
         /* [in] */ const String& aHost,
         /* [in] */ Int32 aPort);
 
     CARAPI Connect(
+        /* [in] */ IInetAddress* anAddr,
+        /* [in] */ Int32 aPort);
+
+    CARAPI OnConnect(
         /* [in] */ IInetAddress* anAddr,
         /* [in] */ Int32 aPort);
 

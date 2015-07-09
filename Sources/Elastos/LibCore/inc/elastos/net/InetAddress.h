@@ -19,25 +19,26 @@ class InetAddress
     , public ISerializable
 {
 protected:
-    // class _InetAddressThread : public ThreadBase
-    // {
-    // public:
-    //     _InetAddressThread(
-    //         /* [in] */ InetAddress* host,
-    //         /* [in] */ IInetAddress* sourceAddress,
-    //         /* [in] */ Int32 timeout,
-    //         /* [in] */ ICountDownLatch* latch,
-    //         /* [in] */ IAtomicBoolean* isReachable);
+    class InetAddressThread
+        : public Thread
+    {
+    public:
+        InetAddressThread(
+            /* [in] */ InetAddress* host,
+            /* [in] */ IInetAddress* sourceAddress,
+            /* [in] */ Int32 timeout,
+            /* [in] */ ICountDownLatch* latch,
+            /* [in] */ IAtomicBoolean* isReachable);
 
-    //     CARAPI Run();
+        CARAPI Run();
 
-    // private:
-    //     InetAddress* mHost;
-    //     AutoPtr<IInetAddress> mSourceAddress;
-    //     AutoPtr<ICountDownLatch> mLatch;
-    //     AutoPtr<IAtomicBoolean> mIsReachable;
-    //     Int32 mTimeout;
-    // };
+    private:
+        InetAddress* mHost;
+        AutoPtr<IInetAddress> mSourceAddress;
+        AutoPtr<ICountDownLatch> mLatch;
+        AutoPtr<IAtomicBoolean> mIsReachable;
+        Int32 mTimeout;
+    };
 
 public:
     CAR_INTERFACE_DECL()
@@ -63,12 +64,23 @@ public:
         /* [in] */ const String& host,
         /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
 
+    static CARAPI GetAllByNameOnNet(
+        /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
+        /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
+
     static CARAPI GetAllByNameImpl(
         /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
         /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
 
     static CARAPI GetByName(
         /* [in] */ const String& host,
+        /* [out] */ IInetAddress** address);
+
+    static CARAPI GetByNameOnNet(
+        /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
         /* [out] */ IInetAddress** address);
 
     CARAPI GetHostAddress(
@@ -182,6 +194,7 @@ protected:
 private:
     static CARAPI LookupHostByName(
         /* [in] */ const String& host,
+        /* [in] */ Int32 netId,
         /* [out, callee] */ ArrayOf<IInetAddress*>** addresses);
 
     CARAPI_(Boolean) IsReachable(
@@ -222,10 +235,12 @@ public:
 
     static AutoPtr<IInetAddress> UNSPECIFIED;
 
+    /** Using NetID of NETID_UNSET indicates resolution should be done on default network. */
+    static const Int32 NETID_UNSET;// = 0;
+
 private:
     /** Our Java-side DNS cache. */
     static AutoPtr<AddressCache> ADDRESS_CACHE;
-    static AutoPtr<IOs> sOs;
 };
 
 } // namespace Net

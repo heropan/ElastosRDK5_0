@@ -1,10 +1,13 @@
 
 #include "CBlockGuard.h"
+#include "BlockGuard.h"
 
 namespace Elastos {
 namespace Core {
 
 CAR_SINGLETON_IMPL(CBlockGuard)
+
+CAR_INTERFACE_IMPL(CBlockGuard, Singleton, IBlockGuard)
 
 ECode CBlockGuard::GetThreadPolicy(
     /* [out] */ IBlockGuardPolicy** policy)

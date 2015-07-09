@@ -7,11 +7,8 @@ namespace Elastos {
 namespace Core {
 
 class BlockGuard
-    : public Singleton
-    , public IBlockGuard
 {
 public:
-    CAR_INTERFACE_DECL()
 
     /**
      * The default, permissive policy that doesn't prevent any operations.
@@ -34,9 +31,6 @@ public:
         CARAPI GetPolicyMask(
             /* [out] */ Int32* mask);
     };
-
-protected:
-    virtual ~BlockGuard();
 
 public:
     /**
@@ -72,6 +66,9 @@ public:
     static pthread_key_t sTlsKey;
     static Object sLock;
 
+private:
+    BlockGuard();
+    BlockGuard(const BlockGuard&);
 };
 
 } // namespace Core

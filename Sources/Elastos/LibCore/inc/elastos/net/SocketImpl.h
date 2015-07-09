@@ -12,8 +12,6 @@ using Elastos::IO::IFileDescriptor;
 namespace Elastos {
 namespace Net {
 
-extern "C" const InterfaceID EIID_SocketImpl;
-
 class SocketImpl
     : public Object
     , public ISocketImpl

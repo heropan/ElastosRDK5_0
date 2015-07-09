@@ -314,7 +314,7 @@ ECode CURI::ParseAuthority(
 
     String tempHost;
     Int32 tempPort = -1;
-    if (index != -1 && endIndex != -1 && endIndex < index) {
+    if (index != -1 && endIndex < index) {
         // determine port and host
         tempHost = temp.Substring(0, index);
 
@@ -678,29 +678,44 @@ Boolean CURI::EscapedEquals(
     /* [in] */ const String& first,
     /* [in] */ const String& second)
 {
-    if (first.IndexOf('%') != second.IndexOf('%')) {
+    // This length test isn't a micro-optimization. We need it because we sometimes
+    // calculate the number of characters to match based on the length of the second
+    // string. If the second string is shorter than the first, we might attempt to match
+    // 0 chars, and regionMatches is specified to return true in that case.
+    if (first.GetByteLength() != second.GetByteLength()) {
         return first.Equals(second);
     }
 
-    Int32 index, prevIndex = 0;
-    while ((index = first.IndexOf('%', prevIndex)) != -1
-            && second.IndexOf('%', prevIndex) == index) {
-        Boolean match = first.Substring(prevIndex, index).Equals(
-                second.Substring(prevIndex, index));
-        if (!match) {
+    Int32 index, index1, prevIndex = 0;
+    while (TRUE) {
+        index = first.IndexOf('%', prevIndex);
+        index1 = second.IndexOf('%', prevIndex);
+        if (index != index1) {
             return FALSE;
         }
 
-        match = first.Substring(index + 1, index + 3).EqualsIgnoreCase(
-                second.Substring(index + 1, index + 3));
-        if (!match) {
+        // index == index1 from this point on.
+
+        if (index == -1) {
+            // No more escapes, match the remainder of the string
+            // normally.
+           return first.RegionMatches(prevIndex, second, prevIndex,
+                   second.GetLength() - prevIndex);
+        }
+
+        if (!first.RegionMatches(prevIndex, second, prevIndex, (index - prevIndex))) {
+            return FALSE;
+        }
+
+        if (!first.RegionMatchesIgnoreCase(index + 1, second, index + 1, 2)) {
             return FALSE;
         }
 
         index += 3;
         prevIndex = index;
     }
-    return first.Substring(prevIndex).Equals(second.Substring(prevIndex));
+
+    return FALSE;
 }
 
 ECode CURI::GetHashCode(

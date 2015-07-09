@@ -6,10 +6,8 @@
 #include "StringUtils.h"
 #include "AutoLock.h"
 #include "CJarHandler.h"
-// #include "CFileHandler.h"
-// #include "CFtpHandler.h"
-// #include "CHttpHandler.h"
-// #include "CHttpsHandler.h"
+#include "CFileHandler.h"
+#include "CFtpHandler.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_IComparable;
@@ -19,15 +17,12 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
+using Libcore::Net::Url::IJarHandler;
 using Libcore::Net::Url::CJarHandler;
-// using Elastos::Net::Url::IFileHandler;
-// using Elastos::Net::Url::CFileHandler;
-// using Elastos::Net::Url::IFtpHandler;
-// using Elastos::Net::Url::CFtpHandler;
-// using Elastos::Net::Http::IHttpHandler;
-// using Elastos::Net::Http::CHttpHandler;
-// using Elastos::Net::Http::IHttpsHandler;
-// using Elastos::Net::Http::CHttpsHandler;
+using Libcore::Net::Url::IFileHandler;
+using Libcore::Net::Url::CFileHandler;
+using Libcore::Net::Url::IFtpHandler;
+using Libcore::Net::Url::CFtpHandler;
 
 namespace Elastos {
 namespace Net {
@@ -452,14 +447,30 @@ void CURL::SetupStreamHandler()
     mStreamHandler = NULL;
     // Fall back to a built-in stream handler if the user didn't supply one
     if (mProtocol.Equals("file")) {
-        // CFileHandler::New((IFileHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("ftp")) {
-        // CFtpHandler::New((IFtpHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("http")) {
-        // CHttpHandler::New((IHttpHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("https")) {
-        // CHttpsHandler::New((IHttpsHandler**)&mStreamHandler);
-    } else if (mProtocol.Equals("jar")) {
+        CFileHandler::New((IFileHandler**)&mStreamHandler);
+    }
+    else if (mProtocol.Equals("ftp")) {
+        CFtpHandler::New((IFtpHandler**)&mStreamHandler);
+    }
+    else if (mProtocol.Equals("http")) {
+        assert(0);
+        // try {
+        //     String name = "com.android.okhttp.HttpHandler";
+        //     streamHandler = (URLStreamHandler) Class.forName(name).newInstance();
+        // } catch (Exception e) {
+        //     throw new AssertionError(e);
+        // }
+    }
+    else if (mProtocol.Equals("https")) {
+        assert(0);
+        // try {
+        //     String name = "com.android.okhttp.HttpsHandler";
+        //     streamHandler = (URLStreamHandler) Class.forName(name).newInstance();
+        // } catch (Exception e) {
+        //     throw new AssertionError(e);
+        // }
+    }
+    else if (mProtocol.Equals("jar")) {
         CJarHandler::New((IURLStreamHandler**)&mStreamHandler);
     }
 

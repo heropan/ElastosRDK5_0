@@ -88,8 +88,8 @@ ECode CPlainDatagramSocketImpl::Bind(
 }
 
 ECode CPlainDatagramSocketImpl::OnBind(
-        /* [in] */ IInetAddress* inetAddr,
-        /* [in] */ Int32 port)
+    /* [in] */ IInetAddress* inetAddr,
+    /* [in] */ Int32 port)
 {
     mLocalPort = port;
     return NOERROR;

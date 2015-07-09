@@ -1,13 +1,14 @@
 
 #include "HttpURLConnection.h"
 #include "StringUtils.h"
+#include "Math.h"
 
 using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Net {
 
-
+static Int32 DEFAULT_CHUNK_LENGTH = 1024;
 Boolean HttpURLConnection::sFollowRedirects = TRUE;
 
 CAR_INTERFACE_IMPL(HttpURLConnection, URLConnection, IHttpURLConnection)
@@ -19,6 +20,7 @@ HttpURLConnection::HttpURLConnection()
     , mInstanceFollowRedirects(sFollowRedirects)
     , mChunkLength(-1)
     , mFixedContentLength(-1)
+    , mFixedContentLengthInt64(-1)
 {}
 
 ECode HttpURLConnection::constructor(
@@ -174,7 +176,7 @@ ECode HttpURLConnection::GetHeaderFieldDate(
 }
 
 ECode HttpURLConnection::SetFixedLengthStreamingMode(
-    /* [in] */ Int32 contentLength)
+    /* [in] */ Int64 contentLength)
 {
     if (mConnected) {
 //        throw new IllegalStateException("Already connected");
@@ -190,7 +192,16 @@ ECode HttpURLConnection::SetFixedLengthStreamingMode(
     }
     mFixedContentLength = contentLength;
 
+    mFixedContentLength = (Int32) Elastos::Core::Math::Min(
+        (Int32)contentLength, Elastos::Core::Math::INT32_MAX_VALUE);
+    mFixedContentLengthInt64 = contentLength;
     return NOERROR;
+}
+
+ECode HttpURLConnection::SetFixedLengthStreamingMode(
+    /* [in] */ Int32 contentLength)
+{
+    return SetFixedLengthStreamingMode((Int64)contentLength);
 }
 
 ECode HttpURLConnection::SetChunkedStreamingMode(
@@ -208,7 +219,13 @@ ECode HttpURLConnection::SetChunkedStreamingMode(
 //        throw new IllegalArgumentException("contentLength < 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mChunkLength = chunkLength;
+
+    if (chunkLength <= 0) {
+        mChunkLength = DEFAULT_CHUNK_LENGTH;
+    }
+    else {
+        mChunkLength = chunkLength;
+    }
 
     return NOERROR;
 }

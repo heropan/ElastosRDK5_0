@@ -1,49 +1,47 @@
 
 #include "InetAddress.h"
-// #include "CInetAddress.h"
-// #include "CInet4Address.h"
-// #include "CInet6Address.h"
-// #include "CIoBridge.h"
-#include "CBlockGuard.h"
+#include "CInet4Address.h"
+#include "CInet6Address.h"
+#include "CIoBridge.h"
+#include "BlockGuard.h"
 #include "NetworkUtilities.h"
-//#include "CStructAddrinfo.h"
-//#include "CLibcore.h"
+#include "CStructAddrinfo.h"
+#include "CLibcore.h"
 #include "Arrays.h"
-//#include "CCollections.h"
-// #include "CCountDownLatch.h"
-// #include "CAtomicBoolean.h"
+#include "Collections.h"
+//#include "CCountDownLatch.h"
+//#include "CAtomicBoolean.h"
 #include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
 
 using Droid::System::IStructAddrinfo;
-// using Droid::System::CStructAddrinfo;
+using Droid::System::CStructAddrinfo;
 using Elastos::Droid::System::IStructUtsname;
-// using Libcore::IO::ILibcore;
-// using Libcore::IO::CLibcore;
+using Libcore::IO::ILibcore;
+using Libcore::IO::CLibcore;
 using Libcore::IO::IIoBridge;
-// using Libcore::IO::CIoBridge;
+using Libcore::IO::CIoBridge;
 using Elastos::IO::EIID_ISerializable;
-using Elastos::Core::IBlockGuard;
-using Elastos::Core::CBlockGuard;
+using Elastos::Core::BlockGuard;
 using Elastos::Core::IBlockGuardPolicy;
 using Elastos::Core::IThread;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::Arrays;
-// using Elastos::Utility::Arrays;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::ICollections;
-// using Elastos::Utility::CCollections;
-// using Elastos::Utility::Concurrent::CCountDownLatch;
-// using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
+using Elastos::Utility::Collections;
+//using Elastos::Utility::Concurrent::CCountDownLatch;
+//using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 
 namespace Elastos {
 namespace Net {
 
+const Int32 InetAddress::NETID_UNSET = 0;
 AutoPtr<AddressCache> InetAddress::ADDRESS_CACHE = new AddressCache();
-AutoPtr<IOs> InetAddress::sOs;//TODO = CLibcore::sOs;
 AutoPtr<IInetAddress> InetAddress::UNSPECIFIED = new InetAddress(AF_UNSPEC, NULL, String(NULL));
 
 CAR_INTERFACE_IMPL_2(InetAddress, Object, IInetAddress, ISerializable)
@@ -92,11 +90,19 @@ ECode InetAddress::GetAllByName(
     /* [in] */ const String& host,
     /* [out, callee] */ ArrayOf<IInetAddress*>** addresses)
 {
+    return GetAllByNameOnNet(host, NETID_UNSET, addresses);
+}
+
+ECode InetAddress::GetAllByNameOnNet(
+    /* [in] */ const String& host,
+    /* [in] */ Int32 netId,
+    /* [out, callee] */ ArrayOf<IInetAddress*>** addresses)
+{
     VALIDATE_NOT_NULL(addresses)
     *addresses = NULL;
 
     AutoPtr< ArrayOf<IInetAddress*> > addrs;
-    FAIL_RETURN(GetAllByNameImpl(host, (ArrayOf<IInetAddress*>**)&addrs));
+    FAIL_RETURN(GetAllByNameImpl(host, netId, (ArrayOf<IInetAddress*>**)&addrs));
     *addresses = addrs->Clone();
     REFCOUNT_ADD(*addresses);
     return NOERROR;
@@ -104,6 +110,7 @@ ECode InetAddress::GetAllByName(
 
 ECode InetAddress::GetAllByNameImpl(
     /* [in] */ const String& host,
+    /* [in] */ Int32 netId,
     /* [out, callee] */ ArrayOf<IInetAddress*>** addresses)
 {
     VALIDATE_NOT_NULL(addresses)
@@ -128,7 +135,7 @@ ECode InetAddress::GetAllByNameImpl(
     }
 
     AutoPtr< ArrayOf<IInetAddress*> > addrs;
-    FAIL_RETURN(LookupHostByName(host, (ArrayOf<IInetAddress*>**)&addrs));
+    FAIL_RETURN(LookupHostByName(host, netId, (ArrayOf<IInetAddress*>**)&addrs));
     AutoPtr<ArrayOf<IInetAddress*> > res;
     if (addrs != NULL) {
         res = addrs->Clone();
@@ -143,11 +150,19 @@ ECode InetAddress::GetByName(
     /* [in] */ const String& host,
     /* [out] */ IInetAddress** address)
 {
+    return GetByNameOnNet(host, NETID_UNSET, address);
+}
+
+ECode InetAddress::GetByNameOnNet(
+    /* [in] */ const String& host,
+    /* [in] */ Int32 netId,
+    /* [out] */ IInetAddress** address)
+{
     VALIDATE_NOT_NULL(address);
     *address = NULL;
 
     AutoPtr< ArrayOf<IInetAddress*> > addresses;
-    FAIL_RETURN(GetAllByNameImpl(host, (ArrayOf<IInetAddress*>**)&addresses));
+    FAIL_RETURN(GetAllByNameImpl(host, netId, (ArrayOf<IInetAddress*>**)&addresses));
     *address = (*addresses)[0];
     REFCOUNT_ADD(*address);
     return NOERROR;
@@ -156,7 +171,7 @@ ECode InetAddress::GetByName(
 ECode InetAddress::GetHostAddress(
     /* [out] */ String* address)
 {
-    return sOs->Getnameinfo(THIS_PROBE(IInetAddress), NI_NUMERICHOST, address);
+    return CLibcore::sOs->Getnameinfo(THIS_PROBE(IInetAddress), NI_NUMERICHOST, address);
 }
 
 ECode InetAddress::GetHostName(
@@ -216,11 +231,11 @@ ECode InetAddress::GetLocalHost(
     VALIDATE_NOT_NULL(address);
 
     AutoPtr<IStructUtsname> isuname;
-    sOs->Uname((IStructUtsname**)&isuname);
+    CLibcore::sOs->Uname((IStructUtsname**)&isuname);
     String host;
     isuname->GetNodename(&host);
     AutoPtr<ArrayOf<IInetAddress*> > addresses;
-    FAIL_RETURN(LookupHostByName(host, (ArrayOf<IInetAddress*>**)&addresses));
+    FAIL_RETURN(LookupHostByName(host, NETID_UNSET, (ArrayOf<IInetAddress*>**)&addresses));
     *address = (*addresses)[0];
     REFCOUNT_ADD(*address);
     return NOERROR;
@@ -237,9 +252,6 @@ ECode InetAddress::ClearDnsCache()
  *
  * @return the appropriate hashcode value.
  */
-//    @Override
-//    public int hashCode();
-
 ECode InetAddress::IsMulticastAddress(
     /* [out] */ Boolean* isMulticastAddress)
 {
@@ -284,7 +296,7 @@ ECode InetAddress::ParseNumericAddress(
     VALIDATE_NOT_NULL(result);
 
     if (numericAddress.IsNullOrEmpty()) {
-        //TODO *result = CInet6Address::LOOPBACK;
+        *result = CInet6Address::LOOPBACK;
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -303,7 +315,7 @@ ECode InetAddress::GetLoopbackAddress(
 {
     VALIDATE_NOT_NULL(address);
 
-    //TODO *address = CInet6Address::LOOPBACK;
+    *address = CInet6Address::LOOPBACK;
     REFCOUNT_ADD(*address)
     return NOERROR;
 }
@@ -407,61 +419,60 @@ ECode InetAddress::IsReachable(
     VALIDATE_NOT_NULL(isReachable);
     *isReachable = FALSE;
 
-    // if (ttl < 0 || timeout < 0) {
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    if (ttl < 0 || timeout < 0) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    // //The simple case.
-    // if (networkInterface == NULL) {
-    //     *isReachable = IsReachable(this, NULL, timeout);
-    //     return NOERROR;
-    // }
+    //The simple case.
+    if (networkInterface == NULL) {
+        *isReachable = IsReachable(this, NULL, timeout);
+        return NOERROR;
+    }
 
-    // //Try each NetworkInterface in parallel.
-    // //Use a thread pool executor?
-    // AutoPtr<IList> sourceAddresses;
-    // AutoPtr<IIterator> em;
-    // AutoPtr<IEnumeration> outenum;
-    // networkInterface->GetInetAddresses((IEnumeration**)&outenum);
-    // // CCollections::_NewList(outenum, (IList**)&sourceAddresses);
-    // Int32 count;
-    // ICollections::Probe(sourceAddresses)->GetSize(&count);
-    // if (count == 0) {
-    //     *isReachable = FALSE;
-    //     return NOERROR;
-    // }
-    // AutoPtr<ICountDownLatch> latch;
-    // // CCountDownLatch::New(count, (ICountDownLatch**)&latch);
-    // AutoPtr<IAtomicBoolean> _isReachable;
-    // // CAtomicBoolean::New(FALSE, (IAtomicBoolean**)&_isReachable);
-    // IIterable::Probe(sourceAddresses)->GetIterator((IIterator**)&em);
-    // Boolean hasNext = FALSE;
-    // // TODO: find all inetAddress instance to check is the isReachabel should be TRUE;
-    // while (em->HasNext(&hasNext), hasNext) {
-    //     AutoPtr<IInterface> outface;
-    //     em->Next((IInterface**)&outface);
-    //     AutoPtr<IInetAddress> sourceAddress = IInetAddress::Probe(outface);
-    //     // AutoPtr<_InetAddressThread> newthread = new _InetAddressThread(this,
-    //     //                                             sourceAddress, timeout, latch, _isReachable);
-    //     // newthread->Start();
-    // }
-    // // try {
-    // ECode ec = latch->Await();
-    // // } catch (InterruptedException ignored) {
-    // if (ec == E_INTERRUPTED_EXCEPTION) {
-    //    AutoPtr<IThread> onthread = Thread::GetCurrentThread();
-    //    onthread->Interrupt(); // Leave the interrupted bit set.
-    // }
-    // }
-    // return _isReachable->Get(isReachable);
+    //Try each NetworkInterface in parallel.
+    //Use a thread pool executor?
+    AutoPtr<IArrayList> sourceAddresses;
+    AutoPtr<IIterator> em;
+    AutoPtr<IEnumeration> outenum;
+    networkInterface->GetInetAddresses((IEnumeration**)&outenum);
+    Collections::List(outenum, (IArrayList**)&sourceAddresses);
+    Int32 count;
+    sourceAddresses->GetSize(&count);
+    if (count == 0) {
+        *isReachable = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<ICountDownLatch> latch;
+    assert(0);
+    // CCountDownLatch::New(count, (ICountDownLatch**)&latch);
+    AutoPtr<IAtomicBoolean> _isReachable;
+    //CAtomicBoolean::New(FALSE, (IAtomicBoolean**)&_isReachable);
+    sourceAddresses->GetIterator((IIterator**)&em);
+    Boolean hasNext = FALSE;
+    // TODO: find all inetAddress instance to check is the isReachabel should be TRUE;
+    while (em->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> outface;
+        em->GetNext((IInterface**)&outface);
+        AutoPtr<IInetAddress> sourceAddress = IInetAddress::Probe(outface);
+        AutoPtr<InetAddressThread> newthread = new InetAddressThread(
+            this, sourceAddress, timeout, latch, _isReachable);
+        newthread->constructor();
+        newthread->Start();
+    }
+    // try {
+    ECode ec = latch->Await();
+    // } catch (InterruptedException ignored) {
+    if (ec == E_INTERRUPTED_EXCEPTION) {
+       AutoPtr<IThread> onthread = Thread::GetCurrentThread();
+       onthread->Interrupt(); // Leave the interrupted bit set.
+    }
+    return _isReachable->Get(isReachable);
 }
 
 ECode InetAddress::GetByAddress(
     /* [in] */ ArrayOf<Byte>* ipAddress,
     /* [out] */ IInetAddress** address)
 {
-    VALIDATE_NOT_NULL(address);
-
     return GetByAddress(String(NULL), ipAddress, 0, address);
 }
 
@@ -470,8 +481,6 @@ ECode InetAddress::GetByAddress(
     /* [in] */ ArrayOf<Byte>* ipAddress,
     /* [out] */ IInetAddress** address)
 {
-    VALIDATE_NOT_NULL(address);
-
     return GetByAddress(hostname, ipAddress, 0, address);
 }
 
@@ -510,18 +519,16 @@ ECode InetAddress::GetHostByAddrImpl(
 {
     VALIDATE_NOT_NULL(result);
 
-    // AutoPtr<IBlockGuard> helper;
-    // CBlockGuard::AcquireSingleton((IBlockGuard**)&helper);
-    // AutoPtr<IBlockGuardPolicy> policy;
-    // helper->GetThreadPolicy((IBlockGuardPolicy**)&policy);
-    // policy->OnNetwork();
+    AutoPtr<IBlockGuardPolicy> policy;
+    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    policy->OnNetwork();
 
-    // String hostname;
-    // FAIL_RETURN(sOs->Getnameinfo((IInetAddress*) address->Probe(EIID_IInetAddress), NI_NAMEREQD, &hostname));
-    // AutoPtr<ArrayOf<Byte> > addressClone = address->mIpAddress->Clone();
-    // if(FAILED(MakeInetAddress(addressClone, hostname, result))) {
-    //     return E_UNKNOWN_HOST_EXCEPTION;
-    // }
+    String hostname;
+    FAIL_RETURN(CLibcore::sOs->Getnameinfo((IInetAddress*) address->Probe(EIID_IInetAddress), NI_NAMEREQD, &hostname));
+    AutoPtr<ArrayOf<Byte> > addressClone = address->mIpAddress->Clone();
+    if(FAILED(MakeInetAddress(addressClone, hostname, result))) {
+        return E_UNKNOWN_HOST_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -533,28 +540,29 @@ ECode InetAddress::GetByAddress(
 {
     VALIDATE_NOT_NULL(address);
 
-    // if(ipaddress == NULL) {
-    //     return E_UNKNOWN_HOST_EXCEPTION;
-    // }
-    // AutoPtr<ArrayOf<Byte> > addressClone;
-    // if(ipaddress->GetLength() == 4) {
-    //     addressClone = ipaddress->Clone();
-    //     CInet4Address::New(addressClone, hostname, (IInet4Address**)address);
-    //     return NOERROR;
-    // }
-    // else if(ipaddress->GetLength() == 16){
-    //     if(IsIPv4MappedAddress(ipaddress)) {
-    //         IPv4MappedToIPv4(ipaddress, (ArrayOf<Byte>**)&addressClone);
-    //         return CInet4Address::New(addressClone, hostname, (IInet4Address**)address);
-    //     }
-    //     else{
-    //         addressClone = ipaddress->Clone();
-    //         return CInet6Address::New(addressClone, hostname, scopeId, (IInet6Address**)address);
-    //     }
-    // }
-    // else{
-    //     return E_UNKNOWN_HOST_EXCEPTION;
-    // }
+    if(ipaddress == NULL) {
+        return E_UNKNOWN_HOST_EXCEPTION;
+    }
+    AutoPtr<ArrayOf<Byte> > addressClone;
+    if(ipaddress->GetLength() == 4) {
+        addressClone = ipaddress->Clone();
+        CInet4Address::New(addressClone, hostname, (IInet4Address**)address);
+        return NOERROR;
+    }
+    else if(ipaddress->GetLength() == 16){
+        if(IsIPv4MappedAddress(ipaddress)) {
+            IPv4MappedToIPv4(ipaddress, (ArrayOf<Byte>**)&addressClone);
+            return CInet4Address::New(addressClone, hostname, (IInet4Address**)address);
+        }
+        else{
+            addressClone = ipaddress->Clone();
+            return CInet6Address::New(addressClone, hostname, scopeId, (IInet6Address**)address);
+        }
+    }
+    else{
+        return E_UNKNOWN_HOST_EXCEPTION;
+    }
+    return NOERROR;
 }
 
 Int32 InetAddress::BytesToInt32(
@@ -562,61 +570,68 @@ Int32 InetAddress::BytesToInt32(
     /* [in] */ Int32 start)
 {
     return ((bytes[start] & 0xff) << 24) |
-            ((bytes[++start] & 0xff) << 16) |
-            ((bytes[++start] & 0xff) << 8) |
-            ((bytes[++start] & 0xff) << 0) ;
+            ((bytes[start + 1] & 0xff) << 16) |
+            ((bytes[start + 2] & 0xff) << 8) |
+            ((bytes[start + 3] & 0xff) << 0) ;
 }
 
 ECode InetAddress::LookupHostByName(
     /* [in] */ const String& host,
+    /* [in] */ Int32 netId,
     /* [out, callee] */ ArrayOf<IInetAddress*>** addresses)
 {
     VALIDATE_NOT_NULL(addresses);
 
-    // AutoPtr<IBlockGuard> helper;
-    // CBlockGuard::AcquireSingleton((IBlockGuard**)&helper);
-    // AutoPtr<IBlockGuardPolicy> policy;
-    // helper->GetThreadPolicy((IBlockGuardPolicy**)&policy);
-    // policy->OnNetwork();
-    // // Do we have a result cached?
-    // AutoPtr< ArrayOf<IInetAddress*> > cachedResult = ADDRESS_CACHE->Get(host);
-    // if(cachedResult != NULL) {
-    //     if (cachedResult != AddressCache::UNKNOWN_ADDRESS) {
-    //         *addresses = cachedResult;
-    //         REFCOUNT_ADD(*addresses);
-    //         return NOERROR;
-    //     }
-    //     else {
-    //         // A cached negative result.
-    //         // throw new UnknownHostException((String) cachedResult);
-    //         return E_UNKNOWN_HOST_EXCEPTION;
-    //     }
-    // }
-    // AutoPtr<IStructAddrinfo> hints;
-    // FAIL_RETURN(CStructAddrinfo::New((IStructAddrinfo**)&hints));
-    // hints->SetFlags(AI_ADDRCONFIG);
-    // hints->SetFamily(AF_UNSPEC);
-    // // If we don't specify a socket type, every address will appear twice, once
-    // // for SOCK_STREAM and one for SOCK_DGRAM. Since we do not return the family
-    // // anyway, just pick one.
-    // hints->SetSocktype(SOCK_STREAM);
-    // AutoPtr<ArrayOf<IInetAddress*> > structAddresses;
-    // ECode ec = sOs->Getaddrinfo(host, hints, (ArrayOf<IInetAddress*>**)&structAddresses);
-    // if (FAILED(ec)) {
-    //     ADDRESS_CACHE->PutUnknownHost(host, String("Unable to resolve") + host);
-    //     return ec;
-    // }
-    // if (structAddresses != NULL) {
-    //     for (Int32 i = 0; i < structAddresses->GetLength(); i++) {
-    //         InetAddress* inetAddressObj = reinterpret_cast<InetAddress*>((*structAddresses)[i]->Probe(EIID_InetAddress));
-    //         inetAddressObj->mHostname = host;
-    //     }
-    // }
+    AutoPtr<IBlockGuardPolicy> policy;
+    BlockGuard::GetThreadPolicy((IBlockGuardPolicy**)&policy);
+    policy->OnNetwork();
 
-    // ADDRESS_CACHE->Put(host, structAddresses);
-    // *addresses = structAddresses;
-    // REFCOUNT_ADD(*addresses);
+    // Do we have a result cached?
+    AutoPtr<AddressCacheEntry> cachedResult = ADDRESS_CACHE->Get(host, netId);
+    if (cachedResult != NULL) {
+        if (cachedResult->mValue != NULL) {
+            *addresses = cachedResult->mValue;
+            REFCOUNT_ADD(*addresses);
+            return NOERROR;
+        }
+        else {
+            // A cached negative result.
+            // throw new UnknownHostException((String) cachedResult);
+            return E_UNKNOWN_HOST_EXCEPTION;
+        }
+    }
+
+    AutoPtr<ArrayOf<IInetAddress*> > structAddresses;
+    AutoPtr<IStructAddrinfo> hints;
+    ECode ec = CStructAddrinfo::New((IStructAddrinfo**)&hints);
+    FAIL_GOTO(ec, _EXIT_)
+
+    hints->SetFlags(AI_ADDRCONFIG);
+    hints->SetFamily(AF_UNSPEC);
+    // If we don't specify a socket type, every address will appear twice, once
+    // for SOCK_STREAM and one for SOCK_DGRAM. Since we do not return the family
+    // anyway, just pick one.
+    hints->SetSocktype(SOCK_STREAM);
+
+    ec = CLibcore::sOs->Elastos_getaddrinfo(host, hints, netId, (ArrayOf<IInetAddress*>**)&structAddresses);
+    FAIL_GOTO(ec, _EXIT_)
+
+    if (structAddresses != NULL) {
+        // TODO: should getaddrinfo set the hostname of the InetAddresses it returns?
+        for (Int32 i = 0; i < structAddresses->GetLength(); i++) {
+            InetAddress* inetAddressObj = (InetAddress*)(*structAddresses)[i];
+            inetAddressObj->mHostname = host;
+        }
+    }
+
+    ADDRESS_CACHE->Put(host, netId, structAddresses);
+    *addresses = structAddresses;
+    REFCOUNT_ADD(*addresses);
     return NOERROR;
+
+_EXIT_:
+    ADDRESS_CACHE->PutUnknownHost(host, netId, String("Unable to resolve") + host);
+    return ec;
 }
 
 Boolean InetAddress::IsReachable(
@@ -624,20 +639,23 @@ Boolean InetAddress::IsReachable(
     /* [in] */ IInetAddress* source,
     /* [in] */ Int32 timeout)
 {
-    // Int32 fd;
-    // AutoPtr<IIoBridge> ioBridge;
-    // CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    // ioBridge->Socket(TRUE, &fd);
-    // Boolean reached = FALSE;
-    // if(source != NULL) {
-    //     if (FAILED(ioBridge->Bind(fd, source, 0))) {
-    //         return FALSE;
-    //     }
-    // }
+    AutoPtr<IFileDescriptor> fd;
+    AutoPtr<IIoBridge> ioBridge;
+    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+    ioBridge->Socket(TRUE, (IFileDescriptor**)&fd);
+    Boolean reached = FALSE;
+    if(source != NULL) {
+        if (FAILED(ioBridge->Bind(fd, source, 0))) {
+            return FALSE;
+        }
+    }
 
-    // if (FAILED(ioBridge->Connect(fd, (IInetAddress*)destination->Probe(EIID_IInetAddress), 7, timeout, &reached))) {
-    //     return FALSE;
-    // }
+    if (FAILED(ioBridge->Connect(fd, (IInetAddress*)destination->Probe(EIID_IInetAddress), 7, timeout))) {
+        return FALSE;
+    }
+
+    ioBridge->CloseAndSignalBlockedThreads(fd);
+
     return TRUE;
 }
 
@@ -682,16 +700,19 @@ ECode InetAddress::MakeInetAddress(
     /* [out] */ IInetAddress** address)
 {
     VALIDATE_NOT_NULL(address);
+    *address = NULL;
+    VALIDATE_NOT_NULL(bytes)
 
-    // if(bytes->GetLength() == 4) {
-    //     return CInet4Address::New(bytes, hostname, (IInet4Address**)address);
-    // }
-    // else if(bytes->GetLength() == 16) {
-    //     return CInet6Address::New(bytes, hostname, 0, (IInet6Address**)address);
-    // }
-    // else{
-    //     return E_UNKNOWN_HOST_EXCEPTION;
-    // }
+    if (bytes->GetLength() == 4) {
+        return CInet4Address::New(bytes, hostname, (IInet4Address**)address);
+    }
+    else if(bytes->GetLength() == 16) {
+        return CInet6Address::New(bytes, hostname, 0, (IInet6Address**)address);
+    }
+    else{
+        return E_UNKNOWN_HOST_EXCEPTION;
+    }
+    return NOERROR;
 }
 
 AutoPtr<IInetAddress> InetAddress::DisallowDeprecatedFormats(
@@ -706,7 +727,7 @@ AutoPtr<IInetAddress> InetAddress::DisallowDeprecatedFormats(
     // We need to return inet_pton(3)'s result to ensure that numbers assumed to be octal
     // by getaddrinfo(3) are reinterpreted by inet_pton(3) as decimal.
     AutoPtr<IInetAddress> isia;
-    sOs->Inet_pton(AF_INET, address, (IInetAddress**)&isia);
+    CLibcore::sOs->Inet_pton(AF_INET, address, (IInetAddress**)&isia);
     return isia;
 }
 
@@ -718,10 +739,10 @@ AutoPtr<IInetAddress> InetAddress::ParseNumericAddressNoThrow(
        address = address.Substring(1, address.GetLength() - 1);
     }
     AutoPtr<IStructAddrinfo> hints;
-    // CStructAddrinfo::New((IStructAddrinfo**)&hints);
+    CStructAddrinfo::New((IStructAddrinfo**)&hints);
     hints->SetFlags(AI_NUMERICHOST);
     AutoPtr< ArrayOf<IInetAddress*> > info;
-    // sOs->Getaddrinfo(address, hints, (ArrayOf<IInetAddress*>**)&info);
+    CLibcore::sOs->Elastos_getaddrinfo(address, hints, NETID_UNSET, (ArrayOf<IInetAddress*>**)&info);
     if (info == NULL)
         return NULL;
 
@@ -765,8 +786,8 @@ ECode InetAddress::LoopbackAddresses(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr< ArrayOf<IInetAddress*> > addrs = ArrayOf<IInetAddress*>::Alloc(2);
-    // addrs->Set(0, CInet6Address::LOOPBACK);
-    // addrs->Set(1, CInet4Address::LOOPBACK);
+    addrs->Set(0, CInet6Address::LOOPBACK);
+    addrs->Set(1, CInet4Address::LOOPBACK);
     *result = addrs;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -774,39 +795,39 @@ ECode InetAddress::LoopbackAddresses(
 
 
 //==========================================================
-//       InetAddress::_InetAddressThread
+//       InetAddress::InetAddressThread
 //==========================================================
-// InetAddress::_InetAddressThread::_InetAddressThread(
-//     /* [in] */ InetAddress* host,
-//     /* [in] */ IInetAddress* sourceAddress,
-//     /* [in] */ Int32 timeout,
-//     /* [in] */ ICountDownLatch* latch,
-//     /* [in] */ IAtomicBoolean* isReachable)
-//     : mHost(host)
-//     , mSourceAddress(sourceAddress)
-//     , mTimeout(timeout)
-//     , mLatch(latch)
-//     , mIsReachable(isReachable)
-// {
-// }
+InetAddress::InetAddressThread::InetAddressThread(
+    /* [in] */ InetAddress* host,
+    /* [in] */ IInetAddress* sourceAddress,
+    /* [in] */ Int32 timeout,
+    /* [in] */ ICountDownLatch* latch,
+    /* [in] */ IAtomicBoolean* isReachable)
+    : mHost(host)
+    , mSourceAddress(sourceAddress)
+    , mTimeout(timeout)
+    , mLatch(latch)
+    , mIsReachable(isReachable)
+{
+}
 
-// ECode InetAddress::_InetAddressThread::Run()
-// {
-//     // try {
-//     if (mHost->IsReachable(mHost, mSourceAddress, mTimeout)) {
-//          mIsReachable->Set(TRUE);
-//         // Wake the main thread so it can return success without
-//         // waiting for any other threads to time out.
-//         Int64 latchount = 0;
-//         while ((mLatch->GetCount(&latchount), latchount) > 0) {
-//             mLatch->CountDown();
-//         }
-//     }
-//     // } catch (IOException ignored) {
-//     // }
-//     mLatch->CountDown();
-//     return NOERROR;
-// }
+ECode InetAddress::InetAddressThread::Run()
+{
+    // try {
+    if (mHost->IsReachable(mHost, mSourceAddress, mTimeout)) {
+         mIsReachable->Set(TRUE);
+        // Wake the main thread so it can return success without
+        // waiting for any other threads to time out.
+        Int64 latchount = 0;
+        while ((mLatch->GetCount(&latchount), latchount) > 0) {
+            mLatch->CountDown();
+        }
+    }
+    // } catch (IOException ignored) {
+    // }
+    mLatch->CountDown();
+    return NOERROR;
+}
 
 } // namespace Net
 } // namespace Elastos

@@ -217,6 +217,11 @@ ECode CMulticastSocket::CheckJoinOrLeave(
     /* [in] */ IInetAddress* groupAddr)
 {
     FAIL_RETURN(CheckOpen());
+
+    if (groupAddr == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     Boolean isMulticastAddress;
     if (groupAddr->IsMulticastAddress(&isMulticastAddress), !isMulticastAddress) {
         // throw new IOException("Not a multicast group: " + groupAddr);

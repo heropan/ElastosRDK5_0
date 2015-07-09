@@ -36,7 +36,7 @@ public:
     static CARAPI SetFollowRedirects(
         /* [in] */ Boolean followRedirects);
 
-    virtual CARAPI SetRequestMethod(
+    CARAPI SetRequestMethod(
         /* [in] */ const String& method);
 
     virtual CARAPI UsingProxy(
@@ -45,10 +45,10 @@ public:
     CARAPI GetContentEncoding(
         /* [out] */ String* encoding);
 
-    virtual CARAPI GetInstanceFollowRedirects(
+    CARAPI GetInstanceFollowRedirects(
         /* [out] */ Boolean* followRedirects);
 
-    virtual CARAPI SetInstanceFollowRedirects(
+    CARAPI SetInstanceFollowRedirects(
         /* [in] */ Boolean followRedirects);
 
     CARAPI GetHeaderFieldDate(
@@ -56,10 +56,13 @@ public:
         /* [in] */ Int64 defaultValue,
         /* [out] */ Int64* value);
 
-    virtual CARAPI SetFixedLengthStreamingMode(
+    CARAPI SetFixedLengthStreamingMode(
+        /* [in] */ Int64 contentLength);
+
+    CARAPI SetFixedLengthStreamingMode(
         /* [in] */ Int32 contentLength);
 
-    virtual CARAPI SetChunkedStreamingMode(
+    CARAPI SetChunkedStreamingMode(
         /* [in] */ Int32 chunkLength);
 
 protected:
@@ -80,6 +83,7 @@ protected:
     Int32 mChunkLength;
 
     Int32 mFixedContentLength;
+    Int32 mFixedContentLengthInt64;
 
 private:
     static Boolean sFollowRedirects;

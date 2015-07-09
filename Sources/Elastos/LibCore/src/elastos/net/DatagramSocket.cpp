@@ -574,12 +574,15 @@ ECode DatagramSocket::GetLocalSocketAddress(
     /* [out] */ ISocketAddress** address)
 {
     VALIDATE_NOT_NULL(address);
+    *address = NULL;
 
-    Boolean isBound;
-    if (IsBound(&isBound), !isBound) {
-        *address = NULL;
-        return NOERROR;
-    }
+    Boolean bval;
+    IsClosed(&bval);
+    if (bval) return NOERROR;
+
+    IsBound(&bval);
+    if (bval) return NOERROR;
+
     AutoPtr<IInetAddress> addr;
     Int32 port;
     GetLocalAddress((IInetAddress**)&addr);

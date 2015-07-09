@@ -11,8 +11,6 @@ using Elastos::Core::Thread;
 namespace Elastos {
 namespace Core {
 
-CAR_INTERFACE_IMPL(BlockGuard, Singleton, IBlockGuard);
-
 AutoPtr<IBlockGuardPolicy> BlockGuard::sPolicy;
 Object BlockGuard::sLock;
 pthread_key_t BlockGuard::sTlsKey;
@@ -59,10 +57,6 @@ ECode BlockGuard::LAXPOLICY::GetPolicyMask(
 
     *mask = 0;
     return NOERROR;
-}
-
-BlockGuard::~BlockGuard()
-{
 }
 
 AutoPtr<IBlockGuardPolicy> BlockGuard::GetThreadPolicy()

@@ -22,6 +22,7 @@ ECode CInetSocketAddress::constructor()
     mAddr = NULL;
     mHostname = NULL;
     mPort = -1;
+    return NOERROR;
 }
 
 ECode CInetSocketAddress::constructor(
