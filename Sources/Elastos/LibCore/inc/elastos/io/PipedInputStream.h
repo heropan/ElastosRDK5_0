@@ -39,11 +39,6 @@ public:
         /* [in] */ IPipedOutputStream* ipos);
 
     /**
-     * Indicates if this pipe is connected.
-     */
-    Boolean mIsConnected;
-
-    /**
      * Constructs a new unconnected {@code PipedInputStream} with the given
      * buffer size. The resulting stream must be connected to a
      * {@code PipedOutputStream} before data may be read from it.
@@ -169,7 +164,9 @@ public:
 
     CARAPI Done();
 
-protected:
+    CARAPI IsConnected(
+        /* [out] */ Boolean* rev);
+
     /**
      * Receives a byte and stores it in this stream's {@code buffer}. This
      * method is called by {@link PipedOutputStream#write(int)}. The least
@@ -190,6 +187,7 @@ protected:
     CARAPI Receive(
         /* [in] */ Int32 oneByte);
 
+protected:
     /**
      * The circular buffer through which data is passed. Data is read from the
      * range {@code [out, in)} and written to the range {@code [in, out)}.
@@ -224,12 +222,19 @@ protected:
      * The size of the default pipe in bytes.
      */
     static const Int32 PIPE_SIZE;
+
 private:
     AutoPtr<IThread> mLastReader;
 
     AutoPtr<IThread> mLastWriter;
 
     Boolean mIsClosed;
+
+    /**
+     * Indicates if this pipe is connected.
+     */
+    Boolean mIsConnected;
+
 };
 
 } // namespace IO

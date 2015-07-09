@@ -118,6 +118,10 @@ module
             [out] Int32* rev);
 
         Done();
+
+        // Added additionally
+        IsConnected(
+            [out] Boolean* rev);
     }
 
     } // namespace IO

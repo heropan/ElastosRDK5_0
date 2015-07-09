@@ -688,6 +688,11 @@ module
     }
 
     class CPipedOutputStream {
+        constructor();
+
+        constructor(
+            [in] IPipedInputStream* target);
+
         interface IPipedOutputStream;
     }
 

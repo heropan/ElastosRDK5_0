@@ -91,14 +91,14 @@ ECode BufferedInputStream::Fillbuf(
         if (result > 0) {
             mMarkpos = -1;
             mPos = 0;
-            mCount = result == -1 ? 0 : result;
+            mCount = -1 == result ? 0 : result;
         }
         *number = result;
         return NOERROR;
     }
 
     Int32 length = (*localBuf)->GetLength();
-    if (mMarkpos == 0 && mMarklimit > length) {
+    if (0 == mMarkpos && mMarklimit > length) {
         /* Increase buffer size to accommodate the readlimit */
         Int32 newLength = length * 2;
         if (newLength > mMarklimit) {
@@ -168,7 +168,7 @@ ECode BufferedInputStream::Read(
     if (mPos >= mCount) {
         Int32 number;
         FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &number));
-        if (number == -1) {
+        if (-1 == number) {
             *value = -1;
             return NOERROR; /* no, fill buffer */
         }
@@ -220,12 +220,12 @@ ECode BufferedInputStream::Read(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    if (byteCount == 0) {
+    if (0 == byteCount) {
         return NOERROR;
     }
 
     AutoPtr<IInputStream> localIn = mIn;
-    if (localIn == NULL) {
+    if (NULL == localIn) {
         return StreamClosed();
     }
 
@@ -241,7 +241,7 @@ ECode BufferedInputStream::Read(
             return NOERROR;
         }
         FAIL_RETURN(localIn->Available(&available));
-        if (available == 0) {
+        if (0 == available) {
             *number = copylength;
             return NOERROR;
         }
@@ -257,23 +257,23 @@ ECode BufferedInputStream::Read(
          * If we're not marked and the required size is greater than the
          * buffer, simply read the bytes directly bypassing the buffer.
          */
-        if (mMarkpos == -1 && required >= localBuf->GetLength()) {
+        if (-1 == mMarkpos && required >= localBuf->GetLength()) {
             FAIL_RETURN(localIn->Read(buffer, byteOffset, required, &read));
-            if (read == -1) {
+            if (-1 == read) {
                 *number = required == byteCount ? -1 : byteCount - required;
                 return NOERROR;
             }
         } else {
             FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &read));
 
-            if (read == -1) {
+            if (-1 == read) {
                 *number = required == byteCount ? -1 : byteCount - required;
                 return NOERROR;
             }
             // localBuf may have been invalidated by fillbuf
             if (localBuf != mBuf) {
                 localBuf = mBuf;
-                if (localBuf == NULL) {
+                if (NULL == localBuf) {
                     return StreamClosed();
                 }
             }
@@ -285,12 +285,12 @@ ECode BufferedInputStream::Read(
             mPos += read;
         }
         required -= read;
-        if (required == 0) {
+        if (0 == required) {
             *number = byteCount;
             return NOERROR;
         }
         FAIL_RETURN(localIn->Available(&available));
-        if (available == 0) {
+        if (0 == available) {
             *number = byteCount - required;
             return NOERROR;
         }
@@ -307,7 +307,7 @@ ECode BufferedInputStream::Reset()
      * so it is preferable to avoid loading up the whole big set of
      * messages just for these cases.
      */
-    if (mBuf == NULL) {
+    if (NULL == mBuf) {
 //        throw new IOException("Stream is closed");
         return E_IO_EXCEPTION;
     }
@@ -333,14 +333,14 @@ ECode BufferedInputStream::Skip(
     // unsynchronized close()
     AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
     AutoPtr<IInputStream> localIn = mIn;
-    if (localBuf == NULL) {
+    if (NULL == localBuf) {
         return StreamClosed();
     }
     if (byteCount < 1) {
         *number = 0;
         return NOERROR;
     }
-    if (localIn == NULL) {
+    if (NULL == localIn) {
         return StreamClosed();
     }
 
@@ -356,7 +356,7 @@ ECode BufferedInputStream::Skip(
         if (byteCount <= mMarklimit) {
             Int32 fillnum;
             FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &fillnum));
-            if (fillnum == -1) {
+            if (-1 == fillnum) {
                 *number = read;
                 return NOERROR;
             }

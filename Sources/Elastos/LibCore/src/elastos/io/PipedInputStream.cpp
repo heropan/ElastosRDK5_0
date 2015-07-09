@@ -17,6 +17,8 @@ const Int32 PipedInputStream::PIPE_SIZE = 1024;
 ECode PipedInputStream::constructor(
     /* [in] */ IPipedOutputStream* ipos)
 {
+    VALIDATE_NOT_NULL(ipos)
+
     Connect(ipos);
     return NOERROR;
 }
@@ -35,6 +37,8 @@ ECode PipedInputStream::constructor(
     /* [in] */ IPipedOutputStream* ipos,
     /* [in] */ Int32 pipeSize)
 {
+    VALIDATE_NOT_NULL(ipos)
+
     FAIL_RETURN(constructor(pipeSize));
     Connect(ipos);
     return NOERROR;
@@ -43,6 +47,8 @@ ECode PipedInputStream::constructor(
 ECode PipedInputStream::Available(
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+
     synchronized(this) {
         if (NULL == mBuffer || -1 == mIn) {
             *rev = 0;
@@ -65,6 +71,8 @@ ECode PipedInputStream::Close()
 ECode PipedInputStream::Connect(
     /* [in] */ IPipedOutputStream* src)
 {
+    VALIDATE_NOT_NULL(src)
+
     src->Connect((IPipedInputStream*)Probe(EIID_IPipedInputStream));
     return NOERROR;
 }
@@ -87,6 +95,8 @@ ECode PipedInputStream::Connect(
 ECode PipedInputStream::Read(
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+
     synchronized(this) {
         if (!mIsConnected) {
             // throw new IOException("Not connected");
@@ -149,6 +159,8 @@ ECode PipedInputStream::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(bytes)
+
     synchronized(this) {
         Arrays::CheckOffsetAndCount(bytes->GetLength(), byteOffset, byteCount);
         if (0 == byteCount) {
@@ -297,6 +309,13 @@ ECode PipedInputStream::Receive(
         // let blocked readers read the newly available data
         FAIL_RETURN(NotifyAll());
     }
+    return NOERROR;
+}
+
+ECode PipedInputStream::IsConnected(
+    /* [out] */ Boolean* rev)
+{
+    *rev = mIsConnected;
     return NOERROR;
 }
 
