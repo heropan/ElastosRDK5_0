@@ -43,9 +43,10 @@ module
     merge("io/IObjectInputValidation.car");
     merge("io/IObjectOutput.car");
     merge("io/IObjectOutputStream.car");
-    //merge("io/ISerializable.car"); moved to core.car
     merge("io/IObjectStreamClass.car");
     merge("io/IObjectStreamField.car");
+    merge("io/IPipedInputStream.car");
+    merge("io/IPipedOutputStream.car");
     merge("io/IPrintStream.car");
     merge("io/IPrintWriter.car");
     merge("io/IPushbackInputStream.car");
@@ -668,6 +669,28 @@ module
         interface INioUtilsHelper;
     }
 
+    class CPipedInputStream {
+        constructor();
+
+        constructor(
+            [in] IPipedOutputStream* ipos);
+
+        constructor(
+            [in] Int32 pipeSize);
+
+        constructor(
+            [in] IPipedOutputStream* ipos,
+            [in] Int32 pipeSize);
+
+        interface ICloseable;
+        interface IInputStream;
+        interface IPipedInputStream;
+    }
+
+    class CPipedOutputStream {
+        interface IPipedOutputStream;
+    }
+
     namespace Channels {
 
         singleton class CChannels {
@@ -719,6 +742,7 @@ module
         singleton class CStandardCharsets {
             interface IStandardCharsets;
         }
+
 
     } // namespace Charset
 

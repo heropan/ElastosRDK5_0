@@ -27,6 +27,8 @@
 #include "CFileReader.h"
 #include "CFileWriter.h"
 #include "CPrintWriter.h"
+#include "CPipedInputStream.h"
+#include "CPipedOutputStream.h"
 
 
 namespace Elastos {
@@ -87,6 +89,10 @@ CAR_OBJECT_IMPL(CFileReader)
 CAR_OBJECT_IMPL(CFileWriter)
 
 CAR_OBJECT_IMPL(CPrintWriter)
+
+CAR_OBJECT_IMPL(CPipedInputStream)
+
+CAR_OBJECT_IMPL(CPipedOutputStream)
 
 } // namespace IO
 } // namespace Elastos

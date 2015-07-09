@@ -1,0 +1,14 @@
+module
+{
+
+    namespace Elastos {
+    namespace IO {
+
+    interface IPipedOutputStream {
+        Connect(
+            [in] IPipedInputStream* ipis);
+    }
+
+    } // namespace IO
+    } // namespace Elastos
+}

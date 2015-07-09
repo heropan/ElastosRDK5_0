@@ -24,6 +24,8 @@ INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu
 
 SOURCES = io.cpp
+SOURCES += PipedInputStream.cpp
+SOURCES += PipedOutputStream.cpp
 SOURCES += InputStream.cpp
 SOURCES += OutputStream.cpp
 SOURCES += FilterInputStream.cpp
@@ -65,7 +67,6 @@ SOURCES += FileReader.cpp
 SOURCES += FileWriter.cpp
 
 #TODO
-#PipedInputStream
 #PipedOutputStream
 #PipedReader
 #PipedWriter

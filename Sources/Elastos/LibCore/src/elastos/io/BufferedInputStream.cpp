@@ -34,7 +34,7 @@ ECode BufferedInputStream::constructor(
     }
 
     mBuf = ArrayOf<Byte>::Alloc(size);
-    if (mBuf == NULL) return E_OUT_OF_MEMORY_ERROR;
+    if (NULL == mBuf) return E_OUT_OF_MEMORY_ERROR;
     return NOERROR;
 }
 
@@ -47,7 +47,7 @@ ECode BufferedInputStream::Available(
     AutoLock lock(this);
 
     AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
-    if (mBuf == NULL || localIn == NULL) {
+    if (NULL == mBuf || NULL == localIn) {
         return StreamClosed();
     }
     Int32 count;
@@ -160,7 +160,7 @@ ECode BufferedInputStream::Read(
     // unsynchronized close()
     AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
     AutoPtr<IInputStream> localIn = mIn;
-    if (localBuf == NULL || localIn == NULL) {
+    if (NULL == localBuf || NULL == localIn) {
         return StreamClosed();
     }
 
@@ -177,7 +177,7 @@ ECode BufferedInputStream::Read(
     // localBuf may have been invalidated by fillbuf
     if (localBuf != mBuf) {
         localBuf = mBuf;
-        if (localBuf == NULL) {
+        if (NULL == localBuf) {
             return StreamClosed();
         }
     }
@@ -202,7 +202,7 @@ ECode BufferedInputStream::Read(
 
     AutoLock lock(this);
 
-    if (buffer == NULL) {
+    if (NULL == buffer) {
 //      throw new NullPointerException("buffer == null");
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -210,7 +210,7 @@ ECode BufferedInputStream::Read(
     // Use local ref since buf may be invalidated by an unsynchronized
     // close()
     AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
-    if (localBuf == NULL) {
+    if (NULL == localBuf) {
         return StreamClosed();
     }
 
