@@ -1,0 +1,74 @@
+module
+{
+    interface Elastos.Utility.ICalendar;
+    interface Elastos.Core.INumber;
+    interface Elastos.Math.IBigInteger;
+    interface Elastos.Math.IBigDecimal;
+
+    namespace Elastosx {
+    namespace Xml {
+    namespace Namespace {
+
+    /**
+     * @Involve
+     * interface ICloneable;
+     */
+    interface IXMLGregorianCalendar {
+
+        Clear();
+
+        Reset();
+
+        SetYear(
+            [in] IBigInteger* year);
+
+        SetYear(
+            [in] Int32 year);
+
+        SetMonth(
+            [in] Int32 month);
+
+        SetDay(
+            [in] Int32 day);
+
+        SetTimezone(
+            [in] Int32 offset);
+
+        SetTime(
+            [in] Int32 hour,
+            [in] Int32 minute,
+            [in] Int32 second);
+
+        SetHour(
+            [in] Int32 hour);
+
+        SetMinute(
+            [in] Int32 minute);
+
+        SetSecond(
+            [in] Int32 second);
+
+        SetMillisecond(
+            [in] Int32 millisecond);
+
+        SetFractionalSecond(
+            [in] IBigDecimal* year);
+
+        SetTime(
+            [in] Int32 hour,
+            [in] Int32 minute,
+            [in] Int32 second,
+            [in] IBigDecimal* fractional);
+
+        SetTime(
+            [in] Int32 hour,
+            [in] Int32 minute,
+            [in] Int32 second,
+            [in] Int32 millisecond);
+    }
+
+    } // namespace Namespace
+    } // namespace Xml
+    } // namespace Elastosx
+}
+
