@@ -152,7 +152,7 @@ protected:
         /* [in] */ Int32 initialCapacity);
 
 private:
-    const InterfaceID mElementType;
+    InterfaceID mElementType;
 
     AutoPtr< ArrayOf <IInterface*> >  mArray;
 

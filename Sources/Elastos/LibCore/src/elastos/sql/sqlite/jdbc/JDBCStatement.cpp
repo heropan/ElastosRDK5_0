@@ -267,7 +267,7 @@ ECode JDBCStatement::ExecuteQuery(
         return E_SQL_EXCEPTION;
     }
     if (!updonly && tr != NULL) {
-        CJDBCResultSet::New(tr, (IJDBCStatement *)this->Probe(EIID_IJDBCStatement),(IJDBCResultSet **)&rs);
+        CJDBCResultSet::New(tr, THIS_PROBE(IJDBCStatement),(IJDBCResultSet **)&rs);
     }
 
     *resultset = IResultSet::Probe(rs);
@@ -282,7 +282,7 @@ ECode JDBCStatement::ExecuteUpdate(
     VALIDATE_NOT_NULL(value);
     AutoPtr<ArrayOf<String> > args = NULL ;
     AutoPtr<IResultSet> set;
-    ECode ec = ExecuteQuery(sql, *args, TRUE, (IResultSet**)&set);
+    ECode ec = ExecuteQuery(sql, args, TRUE, (IResultSet**)&set);
     *value = updcnt;
     return ec;
 }

@@ -29,6 +29,7 @@ Boolean StandardCharsets::isInit()
     Charset::ForName(String("UTF-16"), (ICharset**)&UTF_16);
     Charset::ForName(String("UTF-16BE"), (ICharset**)&UTF_16BE);
     Charset::ForName(String("UTF-16LE"), (ICharset**)&UTF_16LE);
+    return TRUE;
 }
 
 Boolean StandardCharsets::isinitflag = isInit();

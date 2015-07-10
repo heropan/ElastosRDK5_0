@@ -52,7 +52,7 @@ CTreeMap::Relation CTreeMap::ForOrder(
             return LOWER;
         default:
             // throw new IllegalStateException();
-            return -9999;
+            return ILLEGAL;
     }
 }
 

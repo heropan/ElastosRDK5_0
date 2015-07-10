@@ -12,8 +12,8 @@ CAR_OBJECT_IMPL(CBlob);
 CAR_INTERFACE_IMPL(CBlob, Object, IBlob);
 
 CBlob::CBlob()
-    : mHandle(0)
-    , mSize(0)
+    : mSize(0)
+    , mHandle(0)
 {
 }
 

@@ -318,7 +318,9 @@ ECode File::Delete()
 
 ECode File::DeleteOnExit()
 {
-    // return DeleteOnExit.getInstance().addFile(getAbsolutePath());
+    // AutoPtr<IDeleteOnExit> doe;
+    // DeleteOnExit::GetInstance((IDeleteOnExit**)&doe);
+    // return doe->AddFile(getAbsolutePath());
 }
 
 ECode File::Equals(

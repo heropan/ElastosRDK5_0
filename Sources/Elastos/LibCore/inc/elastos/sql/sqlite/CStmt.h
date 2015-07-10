@@ -127,8 +127,8 @@ public:
     ~CStmt();
 
 public:
-    Int32 mError_code;
     Int64 mHandle;
+    Int32 mError_code;
 };
 
 } // namespace SQLite

@@ -14,8 +14,7 @@ extern "C" const InterfaceID EIID_ByteBufferAsFloatBuffer =
 
 ByteBufferAsFloatBuffer::ByteBufferAsFloatBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
-    : mCap(0)
-    , FloatBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress)
+    : FloatBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress)
 {
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();

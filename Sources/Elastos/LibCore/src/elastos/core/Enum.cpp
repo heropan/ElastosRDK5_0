@@ -84,10 +84,14 @@ ECode Enum::CompareTo(
     return NOERROR;
 }
 
-AutoPtr<IInterface> Enum::ValueOf(
+ECode Enum::ValueOf(
     /* [in] */ InterfaceID enumType,
-    /* [in] */ const String& mName)
+    /* [in] */ const String& mName,
+    /* [out] */ IInterface** obj)
 {
+    VALIDATE_NOT_NULL(obj)
+    *obj = NULL;
+
     // if (enumType == NULL) {
     //     // throw new NullPointerException("enumType == null");
     //     return E_NULL_POINTER_EXCEPTION;
@@ -107,7 +111,9 @@ AutoPtr<IInterface> Enum::ValueOf(
         String str;
         value->Name(&str);
         if (mName.Equals(str)) {
-            return value;
+            *obj = value;
+            REFCOUNT_ADD(*obj)
+            return NOERROR;
         }
     }
     // throw new IllegalArgumentException(mName + " is not a constant in " + enumType.getName());

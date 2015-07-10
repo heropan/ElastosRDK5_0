@@ -238,7 +238,7 @@ ECode CPrintStream::Print(
     FAIL_RETURN(Character::ToChars(
         *charArray, 0, charArray->GetLength(), (ArrayOf<Byte>**)&dst, &dstOffset));
 
-    return Print(String(dst->GetPayload()));
+    return Print(String((const char*)dst->GetPayload()));
 }
 
 ECode CPrintStream::PrintChar(
@@ -246,7 +246,7 @@ ECode CPrintStream::PrintChar(
 {
     AutoPtr<ArrayOf<Byte> > charArray;
     FAIL_RETURN(Character::ToChars(ch, (ArrayOf<Byte>**)&charArray));
-    return Print(String(charArray->GetPayload()));
+    return Print(String((const char*)charArray->GetPayload()));
 }
 
 ECode CPrintStream::Print(
@@ -324,7 +324,7 @@ ECode CPrintStream::Println(
     FAIL_RETURN(Character::ToChars(
         *charArray, 0, charArray->GetLength(), (ArrayOf<Byte>**)&dst, &dstOffset));
 
-    return Println(String(dst->GetPayload()));
+    return Println(String((const char*)dst->GetPayload()));
 }
 
 ECode CPrintStream::PrintCharln(

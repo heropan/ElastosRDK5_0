@@ -98,7 +98,9 @@ ECode CSplitter::FastSplit(
     }
     // Add last part.
     result->Set(separatorCount, input.Substring(begin, lastPartEnd));
-    return result;
+    *array = result;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
 }
 
 ECode CSplitter::Split(

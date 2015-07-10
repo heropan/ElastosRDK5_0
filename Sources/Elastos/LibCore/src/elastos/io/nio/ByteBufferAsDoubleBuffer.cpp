@@ -14,8 +14,7 @@ extern "C" const InterfaceID EIID_ByteBufferAsDoubleBuffer =
 
 ByteBufferAsDoubleBuffer::ByteBufferAsDoubleBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
-    : mCap(0)
-    , DoubleBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::DOUBLE, byteBuffer->mEffectiveDirectAddress)
+    : DoubleBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::DOUBLE, byteBuffer->mEffectiveDirectAddress)
 {
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();

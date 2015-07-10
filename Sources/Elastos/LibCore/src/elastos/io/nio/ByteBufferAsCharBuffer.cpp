@@ -188,7 +188,7 @@ ECode ByteBufferAsCharBuffer::Slice(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     bb->SetOrder(midorder);
-    AutoPtr<ICharBuffer> result = (ICharBuffer*) new ByteBufferAsCharBuffer(bb);
+    AutoPtr<ICharBuffer> result = (ICharBuffer*) new ByteBufferAsCharBuffer((ByteBuffer*)bb.Get());
     mByteBuffer->Clear();
     *buffer = result;
     REFCOUNT_ADD(*buffer)

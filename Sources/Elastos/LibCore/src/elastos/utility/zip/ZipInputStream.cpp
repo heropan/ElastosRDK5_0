@@ -267,6 +267,7 @@ String ZipInputStream::ReadString(
     if (byteLength > mStringCharBuf->GetLength()) {
         mStringCharBuf = ArrayOf<Char32>::Alloc(byteLength);
     }
+    assert(0);
     //TODO upgrade return ModifiedUtf8::Decode(mStringBytesBuf, mStringCharBuf, 0, byteLength);
 }
 

@@ -83,6 +83,7 @@ ECode CBigInteger::constructor(
         SetJavaRepresentation(sign, numberLength, *digits);
     }
     mJavaIsValid = TRUE;
+    return NOERROR;
 }
 
 ECode CBigInteger::constructor(
@@ -118,6 +119,8 @@ ECode CBigInteger::constructor(
             SetBigInt(prime);
         } while ((BitLength(&length), length) != bitLength);
     }
+
+    return NOERROR;
 }
 
 Boolean CBigInteger::IsSmallPrime(
@@ -262,6 +265,7 @@ AutoPtr<BigInt> CBigInteger::GetBigInt()
         SetBigInt(bigInt);
         return bigInt;
     }
+    return NOERROR;
 }
 
 void CBigInteger::SetJavaRepresentation(

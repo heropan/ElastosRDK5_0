@@ -140,10 +140,9 @@ ECode CPropertyResourceBundle::HandleGetObject(
 
 AutoPtr<IEnumeration> CPropertyResourceBundle::GetLocalKeys()
 {
-    AutoPtr<IInterface> outenu;
-
-    mResources->PropertyNames((IInterface**)&outenu);
-    return IEnumeration::Probe(outenu);
+    AutoPtr<IEnumeration> outenu;
+    mResources->PropertyNames((IEnumeration**)&outenu);
+    return outenu;
 }
 
 } // namespace Utility

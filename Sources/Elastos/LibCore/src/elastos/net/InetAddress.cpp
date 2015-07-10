@@ -643,7 +643,6 @@ Boolean InetAddress::IsReachable(
     AutoPtr<IIoBridge> ioBridge;
     CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
     ioBridge->Socket(TRUE, (IFileDescriptor**)&fd);
-    Boolean reached = FALSE;
     if(source != NULL) {
         if (FAILED(ioBridge->Bind(fd, source, 0))) {
             return FALSE;
@@ -805,9 +804,9 @@ InetAddress::InetAddressThread::InetAddressThread(
     /* [in] */ IAtomicBoolean* isReachable)
     : mHost(host)
     , mSourceAddress(sourceAddress)
-    , mTimeout(timeout)
     , mLatch(latch)
     , mIsReachable(isReachable)
+    , mTimeout(timeout)
 {
 }
 

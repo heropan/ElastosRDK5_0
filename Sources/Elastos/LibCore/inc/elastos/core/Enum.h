@@ -109,9 +109,10 @@ public:
      *             if {@code enumType} is not an enumerated type or does not
      *             have a constant value called {@code name}.
      */
-    static CARAPI_(AutoPtr<IInterface>) ValueOf(
+    static CARAPI ValueOf(
         /* [in] */ InterfaceID enumType,
-        /* [in] */ const String& name);
+        /* [in] */ const String& name,
+        /* [out] */ IInterface** obj);
 
     /**
      * Returns a shared, mutable array containing the constants of this enum. It

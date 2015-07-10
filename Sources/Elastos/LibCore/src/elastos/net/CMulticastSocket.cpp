@@ -65,9 +65,8 @@ ECode CMulticastSocket::GetInterface(
                     while(enumerator->HasMoreElements(&hasNext), hasNext) {
                         AutoPtr<IInterface> nextAddress;
                         enumerator->GetNextElement((IInterface**)&nextAddress);
-                        if (nextAddress != NULL &&
-                                IInet6Address::Probe(nextAddress.Get()) != NULL) {
-                            *address = nextAddress;
+                        if (IInet6Address::Probe(nextAddress) != NULL) {
+                            *address = IInetAddress::Probe(nextAddress);
                             REFCOUNT_ADD(*address);
                             return NOERROR;
                         }

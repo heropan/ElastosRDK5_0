@@ -447,6 +447,7 @@ public:
         CREATE,
         CEILING,
         HIGHER,
+        ILLEGAL,
 
         /**
          * Returns a possibly-flipped relation for use in descending views.

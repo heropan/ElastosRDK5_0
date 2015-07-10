@@ -4,7 +4,7 @@
 #include "Math.h"
 #include "CharBuffer.h"
 #include "CByteArrayOutputStream.h"
-//#include "CCharsets.h"
+#include "CCharsets.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
@@ -16,7 +16,7 @@ using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CharBuffer;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::Charset::ICharsets;
-//using Elastos::IO::Charset::CCharsets;
+using Elastos::IO::Charset::CCharsets;
 using Elastos::IO::IOutputStream;
 
 namespace Libcore {
@@ -97,7 +97,7 @@ ECode UriCodec::AppendEncoded(
 
     Int32 escapeStart = -1;
     AutoPtr<ArrayOf<Char32> > char32Array = s.GetChars();
-    for(Int32 i = 0; i < s.GetLength(); i++) {
+    for (Int32 i = 0; i < s.GetLength(); i++) {
         Char32 c = (*char32Array)[i];
         if ((c >= 'a' && c <= 'z')
                 || (c >= 'A' && c <= 'Z')
@@ -230,7 +230,7 @@ AutoPtr<ArrayOf<Byte> > UriCodec::GetBytes(
     String buf(cPtr);
     AutoPtr<ArrayOf<Char32> > char32Array = buf.GetChars();
     AutoPtr<ICharsets> charSets;
-    //CCharsets::AcquireSingleton((ICharsets**)&charSets);
+    CCharsets::AcquireSingleton((ICharsets**)&charSets);
     AutoPtr<ArrayOf<Byte> > byteArray;
     String canonicalCharsetName;
     charSet->GetName(&canonicalCharsetName);

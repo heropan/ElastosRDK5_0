@@ -142,13 +142,17 @@ ECode Socks4Message::GetErrorString(
     VALIDATE_NOT_NULL(str)
     switch (error) {
     case RETURN_FAILURE:
-        return String("Failure to connect to SOCKS server");
+        *str = String("Failure to connect to SOCKS server");
+        return  NOERROR;
     case RETURN_CANNOT_CONNECT_TO_IDENTD:
-        return String("Unable to connect to identd to verify user");
+        *str = String("Unable to connect to identd to verify user");
+        return  NOERROR;
     case RETURN_DIFFERENT_USER_IDS:
-        return String("Failure - user ids do not match");
+        *str = String("Failure - user ids do not match");
+        return  NOERROR;
     default:
-        return String("Success");
+        *str = String("Success");
+        return  NOERROR;
     }
     return NOERROR;
 }

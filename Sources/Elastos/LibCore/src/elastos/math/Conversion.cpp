@@ -126,7 +126,7 @@ String Conversion::BigInteger2String(
         (*result)[--currentChar] = '-';
     }
 
-    char* resultStr = result->GetPayload();
+    const char* resultStr = result->GetPayload();
     return String(resultStr + currentChar, resLengthInChars - currentChar);
 }
 
@@ -257,7 +257,7 @@ String Conversion::ToDecimalScaledString(
         if (negNumber) {
             (*result)[--currentChar] = '-';
         }
-        return String(result->GetPayload() + currentChar, resLengthInChars
+        return String((const char*)result->GetPayload() + currentChar, resLengthInChars
                 - currentChar);
     }
     if ((scale > 0) && (exponent >= -6)) {
@@ -271,7 +271,7 @@ String Conversion::ToDecimalScaledString(
             if (negNumber) {
                 (*result)[--currentChar] = '-';
             }
-            return String(result->GetPayload() + currentChar, resLengthInChars
+            return String((const char*)result->GetPayload() + currentChar, resLengthInChars
                     - currentChar + 1);
         }
 
@@ -284,7 +284,7 @@ String Conversion::ToDecimalScaledString(
         if (negNumber) {
             (*result)[--currentChar] = '-';
         }
-        return String(result->GetPayload() + currentChar, resLengthInChars
+        return String((const char*)result->GetPayload() + currentChar, resLengthInChars
                 - currentChar);
     }
 
@@ -374,7 +374,7 @@ String Conversion::ToDecimalScaledString(
         if (negNumber) {
             (*result)[--currentChar] = '-';
         }
-        return String(result->GetPayload() + currentChar, resLengthInChars - currentChar);
+        return String((const char*)result->GetPayload() + currentChar, resLengthInChars - currentChar);
     }
 
     if (scale > 0 && exponent >= -6) {
@@ -388,7 +388,7 @@ String Conversion::ToDecimalScaledString(
             if (negNumber) {
                 (*result)[--currentChar] = '-';
             }
-            return String(result->GetPayload() + currentChar, resLengthInChars - currentChar + 1);
+            return String((const char*)result->GetPayload() + currentChar, resLengthInChars - currentChar + 1);
         }
 
         // special case 2
@@ -400,7 +400,7 @@ String Conversion::ToDecimalScaledString(
         if (negNumber) {
             (*result)[--currentChar] = '-';
         }
-        return String(result->GetPayload() + currentChar, resLengthInChars - currentChar);
+        return String((const char*)result->GetPayload() + currentChar, resLengthInChars - currentChar);
     }
 
     Int32 startPoint = currentChar + 1;
@@ -412,11 +412,11 @@ String Conversion::ToDecimalScaledString(
     if (endPoint - startPoint >= 1) {
         result1.AppendChar((*result)[currentChar]);
         result1.AppendChar('.');
-        String temp(result->GetPayload() + currentChar+1,resLengthInChars - currentChar-1);
+        String temp((const char*)result->GetPayload() + currentChar+1,resLengthInChars - currentChar-1);
         result1.Append(temp);
     }
     else {
-        String temp(result->GetPayload() + currentChar,resLengthInChars - currentChar);
+        String temp((const char*)result->GetPayload() + currentChar,resLengthInChars - currentChar);
         result1.Append(temp);
     }
 
