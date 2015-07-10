@@ -57,6 +57,8 @@ module
     merge("io/IStringBufferInputStream.car");
     merge("io/IStringReader.car");
     merge("io/IStringWriter.car");
+    merge("io/IPipedReader.car");
+    merge("io/IPipedWriter.car");
 
     merge("io/nio/IByteOrder.car");
     merge("io/nio/IBuffer.car");
@@ -694,6 +696,28 @@ module
             [in] IPipedInputStream* target);
 
         interface IPipedOutputStream;
+    }
+
+    class CPipedReader {
+        constructor();
+
+        constructor(
+            [in] IPipedWriter* ipw);
+
+        constructor(
+            [in] Int32 pipeSize);
+
+        constructor(
+            [in] IPipedWriter* ipw,
+            [in] Int32 pipeSize);
+
+        interface IReadable;
+        interface IReader;
+        interface IPipedReader;
+    }
+
+    class CPipedWriter {
+        interface IPipedWriter;
     }
 
     namespace Channels {

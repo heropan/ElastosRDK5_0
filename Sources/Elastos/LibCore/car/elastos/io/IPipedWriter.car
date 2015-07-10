@@ -1,0 +1,13 @@
+module
+{
+    namespace Elastos {
+    namespace IO {
+
+        interface IPipedWriter {
+            Connect(
+                [in] IPipedReader* reader);
+        }
+
+    } // namespace IO
+    } // namespace Elastos
+}
