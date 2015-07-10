@@ -27,7 +27,9 @@ ECode DeleteOnExit::GetInstance(
     VALIDATE_NOT_NULL(instance)
     AutoLock lock(sLockLock);
     if (NULL == sInstance) {
-        sInstance = new DeleteOnExit();
+        AutoPtr<DeleteOnExit> doe = new DeleteOnExit();
+        doe->constructor();
+        sInstance = doe;
     }
     *instance = sInstance;
     REFCOUNT_ADD(*instance)

@@ -104,7 +104,11 @@ private:
     static CARAPI CheckCharsetName(
         /* [in] */ const String& name);
 
-    static CARAPI IsValidCharsetNameCharacter(
+    static CARAPI IsValidCharsetNameStart(
+        /* [in] */ const Char32& c,
+        /* [out] */ Boolean* result);
+
+    static CARAPI IsValidCharsetNamePart(
         /* [in] */ const Char32& c,
         /* [out] */ Boolean* result);
 
@@ -122,7 +126,7 @@ private:
     static AutoPtr< HashMap<String, AutoPtr<ICharset> > > CACHED_CHARSETS;
         // = new HashMap<String, Charset>();
 
-    static const AutoPtr<ICharset> DEFAULT_CHARSET;
+    static AutoPtr<ICharset> DEFAULT_CHARSET;
         // = GetDefaultCharset();
 
     AutoPtr< HashSet<String> > mAliasesSet;

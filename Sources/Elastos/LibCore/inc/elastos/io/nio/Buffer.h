@@ -225,6 +225,10 @@ public:
 
     CARAPI CheckWritable();
 
+    CARAPI constructor(
+        /* [in] */ Int32 elementSizeShift,
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 protected:
 
     Buffer();

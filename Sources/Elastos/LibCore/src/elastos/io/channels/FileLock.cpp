@@ -74,6 +74,11 @@ ECode FileLock::Overlaps(
     return NOERROR;
 }
 
+ECode FileLock::Close()
+{
+    return ReleaseLock();
+}
+
 ECode FileLock::ToString(
     /* [in] */ String* string)
 {

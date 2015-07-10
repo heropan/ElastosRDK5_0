@@ -807,7 +807,7 @@ ECode Arrays::BinarySearch(
             ALOGE("Arrays::BinarySearch: object at %d does not implement IComparable.", mid);
         }
         assert(comp != NULL);
-        comp->CompareTo(TO_IINERFACE(value), &midValCmp);
+        comp->CompareTo(TO_IINTERFACE(value), &midValCmp);
 
         if (midValCmp < 0) {
             lo = mid + 1;

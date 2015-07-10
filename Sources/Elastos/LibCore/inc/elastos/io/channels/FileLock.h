@@ -89,6 +89,8 @@ public:
 
     virtual CARAPI ReleaseLock() = 0;
 
+    CARAPI Close();
+
     CARAPI ToString(
         /* [out] */ String* string);
 

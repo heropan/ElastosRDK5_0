@@ -158,7 +158,6 @@ Timer::TimerImpl::TimerImpl(
     Thread::constructor();
     Thread::SetName(name);
     Thread::SetDaemon(isDaemon);
-    Thread::Start();
 }
 
 Timer::TimerImpl::~TimerImpl()
@@ -375,6 +374,7 @@ ECode Timer::constructor(
         return E_NULL_POINTER_EXCEPTION;
     }
     mImpl = new TimerImpl(name, isDaemon);
+    mImpl->Start();
     mFinalizer = new FinalizerHelper(mImpl);
     return NOERROR;
 }

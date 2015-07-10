@@ -1,7 +1,7 @@
 #include "Charset.h"
 #include "CharBuffer.h"
 #include "CCodingErrorAction.h"
-// #include "NativeConverter.h"
+#include "NativeConverter.h"
 #include "CStringWrapper.h"
 #include "AutoLock.h"
 #include "CSystem.h"
@@ -9,7 +9,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::CStringWrapper;
-// using Elastos::IO::NativeConverter;
+using Libcore::ICU::NativeConverter;
 
 namespace Elastos {
 namespace IO {
@@ -17,7 +17,7 @@ namespace Charset {
 
 AutoPtr< HashMap<String, AutoPtr<ICharset> > > Charset::CACHED_CHARSETS = new HashMap<String, AutoPtr<ICharset> >();
 
-const AutoPtr<ICharset> Charset::DEFAULT_CHARSET;
+AutoPtr<ICharset> Charset::DEFAULT_CHARSET;
 
 static Object gCachedCharsetsLock;
 
@@ -121,7 +121,6 @@ ECode Charset::ForNameUEE(
     /* [in] */ const String& charsetName,
     /* [out] */ ICharset** charset)
 {
-    VALIDATE_NOT_NULL(charset);
     return Charset::ForName(charsetName, charset);
 }
 
@@ -149,7 +148,7 @@ ECode Charset::Aliases(
     /* [out] */ ISet** aliases)
 {
     assert(0 && "TODO");
-    // return Collections.unmodifiableSet(this.aliasesSet);
+    // return Collections::unmodifiableSet(this.aliasesSet);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -299,12 +298,18 @@ ECode Charset::CheckCharsetName(
         return E_ILLEGAL_CHARSET_NAME_EXCEPTION;
     }
 
-    Boolean result = FALSE;
+    Boolean bval;
+    IsValidCharsetNameStart(name.GetChar(0), &bval);
+    if (!bval) {
+        // throw new IllegalCharsetNameException(name);
+        return E_ILLEGAL_CHARSET_NAME_EXCEPTION;
+    }
+
     AutoPtr<ArrayOf<Char32> > charArray = name.GetChars();
     Int32 length = charArray->GetLength();
     for (Int32 i = 0; i < length; ++i) {
-        IsValidCharsetNameCharacter((*charArray)[i], &result);
-        if (!result) {
+        IsValidCharsetNamePart((*charArray)[i], &bval);
+        if (!bval) {
             return E_ILLEGAL_CHARSET_NAME_EXCEPTION;
         }
     }
@@ -312,7 +317,16 @@ ECode Charset::CheckCharsetName(
     return NOERROR;
 }
 
-ECode Charset::IsValidCharsetNameCharacter(
+ECode Charset::IsValidCharsetNameStart(
+    /* [in] */ const Char32& c,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+    return NOERROR;
+}
+
+ECode Charset::IsValidCharsetNamePart(
     /* [in] */ const Char32& c,
     /* [out] */ Boolean* result)
 {
@@ -372,15 +386,9 @@ ECode Charset::CacheCharset(
 AutoPtr<ICharset> Charset::GetDefaultCharset()
 {
     if (DEFAULT_CHARSET.Get() == NULL) {
-
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+        AutoPtr<Elastos::Core::CSystem> cs;
+        Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
+        AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
         String encoding;
         system->GetProperty(String("file.encoding"), &encoding);

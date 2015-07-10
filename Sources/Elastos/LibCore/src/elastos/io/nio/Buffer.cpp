@@ -14,6 +14,12 @@ extern "C" const InterfaceID EIID_Buffer =
 CAR_INTERFACE_IMPL(Buffer, Object, IBuffer)
 
 Buffer::Buffer()
+    : mCapacity(0)
+    , mLimit(0)
+    , mMark(IBuffer::UNSET_MARK)
+    , mPosition(0)
+    , mElementSizeShift(0)
+    , mEffectiveDirectAddress(0)
 {}
 
 Buffer::Buffer(
@@ -35,6 +41,24 @@ Buffer::Buffer(
 
 Buffer::~Buffer()
 {
+}
+
+ECode Buffer::constructor(
+    /* [in] */ Int32 elementSizeShift,
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+{
+    if (capacity < 0) {
+        // throw new IllegalArgumentException("capacity < 0: " + capacity);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mCapacity = capacity;
+    mLimit = capacity;
+    mEffectiveDirectAddress = effectiveDirectAddress;
+    mElementSizeShift = elementSizeShift;
+
+    return NOERROR;
 }
 
 ECode Buffer::GetCapacity(
@@ -266,6 +290,7 @@ ECode Buffer::Rewind()
 ECode Buffer::GetElementSizeShift(
     /* [out] */ Int32* elementSizeShift)
 {
+    VALIDATE_NOT_NULL(elementSizeShift)
     *elementSizeShift = mElementSizeShift;
     return NOERROR;
 }
@@ -273,6 +298,7 @@ ECode Buffer::GetElementSizeShift(
 ECode Buffer::GetEffectiveDirectAddress(
     /* [out] */ Int32* effectiveDirectAddress)
 {
+    VALIDATE_NOT_NULL(effectiveDirectAddress)
     *effectiveDirectAddress = mEffectiveDirectAddress;
     return NOERROR;
 }

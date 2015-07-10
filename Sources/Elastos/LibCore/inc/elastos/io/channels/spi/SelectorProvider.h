@@ -1,10 +1,8 @@
 #ifndef __ELASTOS_IO_CHANNELS_SPI_SELECTORPROVIDER_H__
 #define __ELASTOS_IO_CHANNELS_SPI_SELECTORPROVIDER_H__
 
-#include <elastos/core/Thread.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
-using Elastos::Core::IRunnable;
 using Elastos::Core::Object;
 
 namespace Elastos {

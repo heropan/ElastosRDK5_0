@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_UTILITY_FUTURETASK_H__
 #define __ELASTOS_UTILITY_FUTURETASK_H__
 
-#include <Thread.h>
+#include "Thread.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;

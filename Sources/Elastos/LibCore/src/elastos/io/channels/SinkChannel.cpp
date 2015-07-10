@@ -5,6 +5,8 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+CAR_INTERFACE_DECL(SinkChannel, AbstractSelectableChannel, IIGatheringByteChannel)
+
 SinkChannel::SinkChannel(
     /* [in] */ ISelectorProvider* provider)
     : AbstractSelectableChannel(provider)

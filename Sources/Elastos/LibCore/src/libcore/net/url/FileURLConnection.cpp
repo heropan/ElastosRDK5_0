@@ -118,7 +118,7 @@ ECode FileURLConnection::Connect()
         // try {
         AutoPtr<IFileInputStream> fs;
         error = CFileInputStream::New(f, (IFileInputStream**)&fs);
-        if (error != (Int32)E_IO_EXCEPTION) {
+        if (error != (ECode)E_IO_EXCEPTION) {
             error = CBufferedInputStream::New(IInputStream::Probe(fs), (IInputStream**)&mIs);
         }
         // } catch (IOException ioe) {

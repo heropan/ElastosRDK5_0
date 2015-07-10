@@ -246,7 +246,7 @@ public:
      * IOException | if another I/O error occurs.
      */
     virtual CARAPI SetPosition(
-        /* [in] */ Int64 offset) = 0;
+        /* [in] */ Int64 newPosition) = 0;
 
     /**
      * Reads bytes from this file channel into the given buffer.

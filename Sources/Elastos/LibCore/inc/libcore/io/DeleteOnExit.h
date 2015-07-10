@@ -2,8 +2,7 @@
 #ifndef __DELETEONEXIT_H__
 #define __DELETEONEXIT_H__
 
-#include <elastos/core/Object.h>
-#include <elastos/core/Thread.h>
+#include "Thread.h"
 #include "utility/CArrayList.h"
 
 using Elastos::Core::Thread;

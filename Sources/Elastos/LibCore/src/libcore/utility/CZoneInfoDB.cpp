@@ -229,31 +229,31 @@ ECode TzData::ReadIndex(
     mByteOffsets = ArrayOf<Int32>::Alloc(entryCount);
 
     for (Int32 i = 0; i < entryCount; i++) {
-    FAIL_RETURN(it->ReadByteArray(idBytes, 0, idBytes->GetLength()))
+        FAIL_RETURN(it->ReadByteArray(idBytes, 0, idBytes->GetLength()))
 
-    Int32 iValue;
-    FAIL_RETURN(it->ReadInt32(&iValue))
-    (*mByteOffsets)[i] = iValue;
-    (*mByteOffsets)[i] += dataOffset; // TODO: change the file format so this is included.
+        Int32 iValue;
+        FAIL_RETURN(it->ReadInt32(&iValue))
+        (*mByteOffsets)[i] = iValue;
+        (*mByteOffsets)[i] += dataOffset; // TODO: change the file format so this is included.
 
-    Int32 length;
-    it->ReadInt32(&length);
-    if (length < 44) {
-        return E_ASSERTION_ERROR;
-      // throw new AssertionError("length in index file < sizeof(tzhead)");
-    }
-    FAIL_RETURN(it->Skip(4)) // Skip the unused 4 bytes that used to be the raw offset.
+        Int32 length;
+        it->ReadInt32(&length);
+        if (length < 44) {
+            return E_ASSERTION_ERROR;
+          // throw new AssertionError("length in index file < sizeof(tzhead)");
+        }
+        FAIL_RETURN(it->Skip(4)) // Skip the unused 4 bytes that used to be the raw offset.
 
-    // Don't include null chars in the String
-    Int32 len = idBytes->GetLength();
-    for (Int32 j = 0; j < len; j++) {
-      if ((*idBytes)[j] == 0) {
-        break;
-      }
-      (*idChars)[idOffset++] = (Char32) ((*idBytes)[j] & 0xFF);
-    }
+        // Don't include null chars in the String
+        Int32 len = idBytes->GetLength();
+        for (Int32 j = 0; j < len; j++) {
+          if ((*idBytes)[j] == 0) {
+            break;
+          }
+          (*idChars)[idOffset++] = (Char32) ((*idBytes)[j] & 0xFF);
+        }
 
-    (*idEnd)[i] = idOffset;
+        (*idEnd)[i] = idOffset;
     }
 
     // We create one string containing all the ids, and then break that into substrings.
@@ -270,7 +270,8 @@ ECode TzData::GetAvailableIDs(
     /* [out, callee] */ ArrayOf<String>** ids)
 {
     VALIDATE_NOT_NULL(ids)
-    *ids = mIds->Clone();
+    AutoPtr<ArrayOf<String> > clone = mIds->Clone();
+    *ids = clone;
     return NOERROR;
 }
 
