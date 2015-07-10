@@ -6,6 +6,8 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/DualPivotQuicksort.h>
+#include <elastos/utility/ComparableTimSort.h>
+#include <elastos/utility/TimSort.h>
 
 using Elastos::Core::IComparator;
 using Elastos::Core::IComparable;
@@ -495,40 +497,48 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ ArrayOf<IInterface *> * array);
+        /* [in] */ ArrayOf<T *> * array);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array);
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ ArrayOf<T *> * array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ ArrayOf<T *> * array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ IComparator* comparator);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ IComparator* comparator);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ ArrayOf<IInterface *> * array,
+        /* [in] */ ArrayOf<T *> * array,
         /* [in] */ IComparator* comparator);
 
+    template<typename T>
     static CARAPI Sort(
-        /* [in] */ const AutoPtr<ArrayOf<IInterface *> > & array,
+        /* [in] */ const AutoPtr<ArrayOf<T *> > & array,
         /* [in] */ IComparator* comparator);
 
     template<typename T>
@@ -1291,6 +1301,74 @@ ECode Arrays::Sort(
     /* [in] */ Int32 end)
 {
     return DualPivotQuicksort::Sort(array.Get(), start, end);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<T *> * array)
+{
+    return ComparableTimSort<T>::Sort(array);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ const AutoPtr<ArrayOf<T *> >& array)
+{
+    return ComparableTimSort<T>::Sort(array.Get());
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    return ComparableTimSort<T>::Sort(array, start, end);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ const AutoPtr<ArrayOf<T *> >& array,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    return ComparableTimSort<T>::Sort(array.Get(), start, end);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ IComparator* comparator)
+{
+    return TimSort<T>::Sort(array, start, end, comparator);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ const AutoPtr<ArrayOf<T *> >& array,
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end,
+    /* [in] */ IComparator* comparator)
+{
+    return TimSort<T>::Sort(array.Get(), start, end, comparator);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ ArrayOf<T *> * array,
+    /* [in] */ IComparator* comparator)
+{
+    return TimSort<T>::Sort(array, comparator);
+}
+
+template<typename T>
+ECode Arrays::Sort(
+    /* [in] */ const AutoPtr<ArrayOf<T *> >& array,
+    /* [in] */ IComparator* comparator)
+{
+    return TimSort<T>::Sort(array.Get(), comparator);
 }
 
 template<typename T>

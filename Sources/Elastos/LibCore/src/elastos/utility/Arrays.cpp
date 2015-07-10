@@ -1,7 +1,5 @@
 
 #include "Arrays.h"
-#include "ComparableTimSort.h"
-#include "TimSort.h"
 #include "CByte.h"
 #include "CChar32.h"
 #include "CInteger16.h"
@@ -544,66 +542,6 @@ Boolean Arrays::Equals(
     }
 
     return TRUE;
-}
-
-ECode Arrays::Sort(
-    /* [in] */ ArrayOf<IInterface *> * array)
-{
-    return ComparableTimSort<IInterface>::Sort(array);
-}
-
-ECode Arrays::Sort(
-    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array)
-{
-    return ComparableTimSort<IInterface>::Sort(array.Get());
-}
-
-ECode Arrays::Sort(
-    /* [in] */ ArrayOf<IInterface *> * array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return ComparableTimSort<IInterface>::Sort(array, start, end);
-}
-
-ECode Arrays::Sort(
-    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return ComparableTimSort<IInterface>::Sort(array.Get(), start, end);
-}
-
-ECode Arrays::Sort(
-    /* [in] */ ArrayOf<IInterface *> * array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ IComparator* comparator)
-{
-    return TimSort<IInterface>::Sort(array, start, end, comparator);
-}
-
-ECode Arrays::Sort(
-    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end,
-    /* [in] */ IComparator* comparator)
-{
-    return TimSort<IInterface>::Sort(array.Get(), start, end, comparator);
-}
-
-ECode Arrays::Sort(
-    /* [in] */ ArrayOf<IInterface *> * array,
-    /* [in] */ IComparator* comparator)
-{
-    return TimSort<IInterface>::Sort(array, comparator);
-}
-
-ECode Arrays::Sort(
-    /* [in] */ const AutoPtr<ArrayOf<IInterface *> >& array,
-    /* [in] */ IComparator* comparator)
-{
-    return TimSort<IInterface>::Sort(array.Get(), comparator);
 }
 
 String Arrays::ToString(
