@@ -12,6 +12,7 @@
 #include "CParsePosition.h"
 #include "CoreUtils.h"
 #include "EmptyArray.h"
+#include "Arrays.h"
 
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
@@ -25,10 +26,11 @@ using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::Arrays;
+using Libcore::Utility::EmptyArray;
 using Elastos::Text::IChoiceFormat;
 using Elastos::Text::EIID_IChoiceFormat;
 using Elastos::Text::CParsePosition;
-using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
 namespace Text {
@@ -186,7 +188,8 @@ ECode ChoiceFormat::Equals(
     cf->GetLimits((ArrayOf<Double>**)&limits);
     AutoPtr<ArrayOf<String> > formats;
     cf->GetFormats((ArrayOf<String>**)&formats);
-    return mChoiceLimits->Equals(limits) && mChoiceFormats->Equals(formats);
+    return Arrays::Equals(mChoiceLimits, limits)
+        && Arrays::Equals(mChoiceFormats, formats);
 }
 
 ECode ChoiceFormat::Format(

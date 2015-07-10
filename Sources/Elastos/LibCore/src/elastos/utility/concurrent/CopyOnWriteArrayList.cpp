@@ -103,9 +103,11 @@ ECode CopyOnWriteArrayList::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
+
     if (ICopyOnWriteArrayList::Probe(object)) {
-        *result = this->Probe(EIID_IInterface) == object
-                || mElements->Equals(((CCopyOnWriteArrayList*)ICopyOnWriteArrayList::Probe(object))->mElements);
+        CopyOnWriteArrayList* o = (CopyOnWriteArrayList*)ICopyOnWriteArrayList::Probe(object);
+        *result = THIS_PROBE(IInterface) == object
+                || Arrays::Equals(mElements, o->mElements);
         return NOERROR;
     }
     else if (IList::Probe(object)) {
@@ -733,7 +735,7 @@ ECode CopyOnWriteArrayList::Slice::CheckPositionIndex(
 ECode CopyOnWriteArrayList::Slice::CheckConcurrentModification(
     /* [in] */ ArrayOf<IInterface*>* snapshot)
 {
-    if (!mExpectedElements->Equals(snapshot)) {
+    if (!Arrays::Equals(mExpectedElements, snapshot)) {
         // throw new ConcurrentModificationException();
         return E_CONCURRENT_MODIFICATION_EXCEPTION;
     }

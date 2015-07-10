@@ -4,9 +4,11 @@
 #include "ZoneInfo.h"
 #include <Math.h>
 #include "CInteger32.h"
+#include "Arrays.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::CInteger32;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::TimeZone;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ICalendar;
@@ -563,7 +565,8 @@ ECode CZoneInfoWallTime::FindTransitionIndex(
     /* [out] */ Int32* result)
 {
     ZoneInfo* zoneInfo = (ZoneInfo*)timeZone;
-    Int32 matchingRawTransition = zoneInfo->mTransitions->BinarySearch(timeSeconds);
+    Int32 matchingRawTransition;
+    Arrays::BinarySearch(zoneInfo->mTransitions, timeSeconds, &matchingRawTransition);
     if (matchingRawTransition < 0) {
         matchingRawTransition = ~matchingRawTransition - 1;
     }

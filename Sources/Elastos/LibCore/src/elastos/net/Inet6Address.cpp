@@ -190,7 +190,7 @@ ECode Inet6Address::IsLoopbackAddress(
     // The last word must be 1
     AutoPtr<ArrayOf<Byte> > loopBackAddress;
     LOOPBACK->GetAddress((ArrayOf<Byte>**)&loopBackAddress);
-    *isLoopbackAddress = mIpAddress->Equals(loopBackAddress);
+    *isLoopbackAddress = Arrays::Equals(mIpAddress, loopBackAddress);
     return NOERROR;
 }
 

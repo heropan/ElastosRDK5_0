@@ -2,8 +2,8 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#ifndef __ELQUINTET_H__
-#define __ELQUINTET_H__
+#ifndef __ELASTOS_RUNTIME_ELQUINTET_H__
+#define __ELASTOS_RUNTIME_ELQUINTET_H__
 
 #include <elrefbase.h>
 #include <elquintettype.h>
@@ -269,7 +269,7 @@ public:
         return ((T*)(m_pBuf))[index];
     }
 
-    const T& operator[](Int32 index) const {   // nothing
+    const T& operator[](Int32 index) const {
         assert(m_pBuf && index >= 0 && index < GetLength());
         return ((T*)(m_pBuf))[index];
     }
@@ -303,63 +303,6 @@ public:
         return -1;
     }
 
-    // Notes: Make sure the array is ordered before searching.
-    Int32 BinarySearch(T const& value) {
-        return BinarySearch(this, value);
-    }
-
-    // Notes: Make sure the array is ordered before searching.
-    static Int32 BinarySearch(const ArrayOf<T> *pArray, T const& value)
-    {
-        assert(pArray && pArray->m_pBuf);
-
-        Int32 low = 0;
-        Int32 high = pArray->GetLength() - 1;
-        Int32 mid;
-
-        while (low <= high) {
-            mid = (low + high) >> 1;
-
-            if (value == (*pArray)[mid]) {
-                return mid;
-            }
-
-            if (value < (*pArray)[mid]) {
-                high = mid - 1;
-            }
-            else {
-                low = mid + 1;
-            }
-        }
-
-        return ~low;
-    }
-
-    Boolean Equals(const ArrayOf<T> *other)
-    {
-        return Equals(this, other);
-    }
-
-    static Boolean Equals(const ArrayOf<T> *a, const ArrayOf<T> *b)
-    {
-        if (a == NULL && b == NULL) {
-            return TRUE;
-        }
-
-        Int32 length = a->GetLength();
-        if (length != b->GetLength()) {
-            return FALSE;
-        }
-
-        for (Int32 i = 0; i < length; ++i) {
-            if ((*a)[i] != (*b)[i]) {
-                return FALSE;
-            }
-        }
-
-        return TRUE;
-    }
-
     ArrayOf(T *pBuf, Int32 capacity) {
         _CarQuintet_Init(this, pBuf, capacity * sizeof(T),
                         capacity * sizeof(T), Type2Flag<T>::Flag());
@@ -368,9 +311,9 @@ public:
 private:
     // prohibit 'new' operator
     void * operator new(size_t cb);
-    ArrayOf() {}
-    ArrayOf& operator = (const ArrayOf& buf) {}
-    ArrayOf(const ArrayOf& buf) {}
+    ArrayOf();
+    ArrayOf& operator = (const ArrayOf& buf);
+    ArrayOf(const ArrayOf& buf);
 };
 /** @} */
 
@@ -724,4 +667,4 @@ inline Int32 QuintetObjectCopyOp::operator()(
 
 _ELASTOS_NAMESPACE_END
 
-#endif // __ELQUINTET_H__
+#endif // __ELASTOS_RUNTIME_ELQUINTET_H__

@@ -3,8 +3,8 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 
-#ifndef __ELSTRING_H__
-#define __ELSTRING_H__
+#ifndef __ELASTOS_RUNTIME_ELSTRING_H__
+#define __ELASTOS_RUNTIME_ELSTRING_H__
 
 #include <elautoptr.h>
 #include <elsharedbuf.h>
@@ -531,4 +531,4 @@ inline String String::operator+(Char32 other) const
 
 _ELASTOS_NAMESPACE_END
 
-#endif // __ELSTRING_H__
+#endif // __ELASTOS_RUNTIME_ELSTRING_H__

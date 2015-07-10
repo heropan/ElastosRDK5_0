@@ -1,6 +1,6 @@
 
-#ifndef __ELAUTOPTR_H__
-#define __ELAUTOPTR_H__
+#ifndef __ELASTOS_RUNTIME_ELAUTOPTR_H__
+#define __ELASTOS_RUNTIME_ELAUTOPTR_H__
 
 #include <eladef.h>
 
@@ -169,4 +169,4 @@ void AutoPtr<T>::Clear()
 
 _ELASTOS_NAMESPACE_END
 
-#endif //__ELAUTOPTR_H__
+#endif //__ELASTOS_RUNTIME_ELAUTOPTR_H__

@@ -328,7 +328,8 @@ ECode ZoneInfo::GetOffset(
     VALIDATE_NOT_NULL(offset);
 
     Int32 ix = (Int32)(when / 1000);
-    Int32 transition = mTransitions->BinarySearch(ix);
+    Int32 transition;
+    FAIL_RETURN(Arrays::BinarySearch(mTransitions, ix, &transition))
     if (transition < 0) {
         transition = ~transition - 1;
         if (transition < 0) {
@@ -355,7 +356,8 @@ ECode ZoneInfo::InDaylightTime(
     time->GetTime(&when);
 
     Int32 ix = (Int32)(when / 1000);
-    Int32 transition = mTransitions->BinarySearch(ix);
+    Int32 transition;
+    FAIL_RETURN(Arrays::BinarySearch(mTransitions, ix, &transition))
     if (transition < 0) {
         transition = ~transition - 1;
         if (transition < 0) {
@@ -431,10 +433,10 @@ ECode ZoneInfo::HasSameRules(
     }
 
     // Arrays.equals returns true if both arrays are null
-    *value = mOffsets->Equals(other->mOffsets)
-            && mIsDsts->Equals(other->mIsDsts)
-            && mTypes->Equals(other->mTypes)
-            && mTransitions->Equals(other->mTransitions);
+    *value = Arrays::Equals(mOffsets, other->mOffsets)
+            && Arrays::Equals(mIsDsts, other->mIsDsts)
+            && Arrays::Equals(mTypes, other->mTypes)
+            && Arrays::Equals(mTransitions, other->mTransitions);
     return NOERROR;
 }
 
