@@ -27,7 +27,8 @@ public:
     Int32Buffer();
 
     Int32Buffer(
-        /* [in] */ Int32 capacity);
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 
     CAR_INTERFACE_DECL()
 
@@ -81,6 +82,9 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 int32Count,
         /* [out] */ IInt32Buffer** buf);
+
+    CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
 
     CARAPI GetArray(
         /* [out, callee] */ ArrayOf<Int32>** array);
@@ -172,7 +176,7 @@ public:
      * @exception BufferUnderflowException
      *                if the position is equal or greater than limit.
      */
-    virtual CARAPI GetInt32(
+    virtual CARAPI Get(
         /* [out] */ Int32* value) = 0;
 
     /**
@@ -184,7 +188,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetInt32(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Int32* value) = 0;
 
@@ -201,7 +205,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt32s(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Int32>* dst);
 
     /**
@@ -223,7 +227,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code intCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt32s(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Int32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int32Count);
@@ -280,7 +284,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt32(
+    virtual CARAPI Put(
         /* [in] */ Int32 d) = 0;
 
     /**
@@ -297,7 +301,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt32(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Int32 d) = 0;
 
@@ -316,8 +320,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    CARAPI PutInt32s(
-        /* [in] */ const ArrayOf<Int32>& src);
+    CARAPI Put(
+        /* [in] */ ArrayOf<Int32>* src);
 
     /**
      * Writes ints from the given int array, starting from the specified offset,
@@ -340,8 +344,8 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt32s(
-        /* [in] */ const ArrayOf<Int32>& src,
+    virtual CARAPI Put(
+        /* [in] */ ArrayOf<Int32>* src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 int32Count);
 
@@ -361,7 +365,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt32Buffer(
+    virtual CARAPI Put(
         /* [in] */ IInt32Buffer* src);
 
     /**

@@ -29,20 +29,20 @@ ECode CCharBufferHelper::Wrap(
     return CharBuffer::Wrap(array, start, charCount, charBuf);
 }
 
-ECode CCharBufferHelper::WrapSequence(
+ECode CCharBufferHelper::Wrap(
     /* [in] */ ICharSequence* charSequence,
     /* [out] */ ICharBuffer**  charBuf)
 {
-    return CharBuffer::WrapSequence(charSequence, charBuf);
+    return CharBuffer::Wrap(charSequence, charBuf);
 }
 
-ECode CCharBufferHelper::WrapSequence(
+ECode CCharBufferHelper::Wrap(
     /* [in] */ ICharSequence* cs,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ ICharBuffer** charBuf)
 {
-    return CharBuffer::WrapSequence(cs, start, end, charBuf);
+    return CharBuffer::Wrap(cs, start, end, charBuf);
 }
 
 } // namespace IO

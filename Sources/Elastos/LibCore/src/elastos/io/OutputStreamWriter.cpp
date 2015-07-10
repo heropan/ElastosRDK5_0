@@ -238,7 +238,7 @@ ECode OutputStreamWriter::Write(
     AutoPtr<ICharSequence> charSeq;
     CStringWrapper::New(String(str), (ICharSequence**)&charSeq);
     AutoPtr<ICharBuffer> chars;
-    CharBuffer::WrapSequence(charSeq, offset, count + offset, (ICharBuffer**)&chars);
+    CharBuffer::Wrap(charSeq, offset, count + offset, (ICharBuffer**)&chars);
     return Convert(chars);
 }
 

@@ -22,6 +22,7 @@ using Elastos::Net::CPlainDatagramSocketImpl;
 using Elastos::Net::IDatagramPacket;
 using Elastos::Net::CDatagramPacket;
 using Elastos::Net::InetAddress;
+using Elastos::IO::Channels::EIID_IDatagramChannel;
 
 namespace Elastos{
 namespace IO {
@@ -35,8 +36,7 @@ DatagramChannelImpl::DatagramSocketAdapter::DatagramSocketAdapter(
     /* [in] */ DatagramChannelImpl* channelimpl)
     : mChannelImpl(channelimpl)
 {
-    assert(0 && "TODO");
-    // DatagramSocket::constructor(socketimpl);
+    DatagramSocket::constructor(socketimpl);
     // Sync state socket state with the channel it is being created from
     if (mChannelImpl->mIsBound) {
         OnBind(mChannelImpl->mLocalAddress, mChannelImpl->mLocalPort);
@@ -283,8 +283,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::GetChannel(
 {
     VALIDATE_NOT_NULL(channel)
 
-    assert(0 && "TODO");
-    // *channel = mChannelImpl->Probe(EIID_IDatagramChannel);
+    *channel = mChannelImpl->Probe(EIID_IDatagramChannel);
     REFCOUNT_ADD(*channel)
     return NOERROR;
 }

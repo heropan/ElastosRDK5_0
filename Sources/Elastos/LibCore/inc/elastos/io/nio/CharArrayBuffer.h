@@ -91,10 +91,16 @@ protected:
     CARAPI ProtectedHasArray(
         /* [out] */ Boolean* result);
 
+private:
+    static CARAPI_(AutoPtr<CharArrayBuffer>) Copy(
+        /* [in] */ CharArrayBuffer* other,
+        /* [in] */ Int32 markOfOther,
+        /* [in] */ Boolean isReadOnly);
+
 public:
     AutoPtr< ArrayOf<Char32> > mBackingArray;
 
-    Int32 mOffset;
+    Int32 mArrayOffset;;
 
     Boolean mIsReadOnly;
 };

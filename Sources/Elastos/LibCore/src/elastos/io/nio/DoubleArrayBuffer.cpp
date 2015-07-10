@@ -22,7 +22,7 @@ DoubleArrayBuffer::DoubleArrayBuffer(
     , mOffset(offset)
 {}
 
-ECode DoubleArrayBuffer::GetDouble(
+ECode DoubleArrayBuffer::Get(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -34,7 +34,7 @@ ECode DoubleArrayBuffer::GetDouble(
     return NOERROR;
 }
 
-ECode DoubleArrayBuffer::GetDouble(
+ECode DoubleArrayBuffer::Get(
     /* [in] */ Int32 index,
     /* [out] */ Double* value)
 {
@@ -75,6 +75,66 @@ ECode DoubleArrayBuffer::GetOrder(
     AutoPtr<IByteOrderHelper> helper;
     ASSERT_SUCCEEDED(CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper))
     return helper->GetNativeOrder(byteOrder);
+}
+
+ECode DoubleArrayBuffer::AsReadOnlyBuffer(
+    /* [out] */ IDoubleBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::Compact()
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::Duplicate(
+    /* [out] */ IDoubleBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::ProtectedArray(
+    /* [out, callee] */ ArrayOf<Double>** array)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::ProtectedArrayOffset(
+    /* [out] */ Int32* offset)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::ProtectedHasArray(
+    /* [out] */ Boolean* hasArray)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::Put(
+    /* [in] */ Double d)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::Put(
+    /* [in] */ Int32 index,
+    /* [in] */ Double d)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::Slice(
+    /* [out] */ IDoubleBuffer** buffer)
+{
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::IsReadOnly(
+    /* [out] */ Boolean* value)
+{
+    return NOERROR;
 }
 
 } // namespace IO

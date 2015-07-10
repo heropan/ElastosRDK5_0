@@ -7,25 +7,21 @@ namespace IO {
 
 Int32ArrayBuffer::Int32ArrayBuffer(
     /* [in] */ ArrayOf<Int32>* array)
-    : Int32Buffer(array->GetLength())
+    : Int32Buffer(array->GetLength(), 0)
     , mBackingArray(array)
     , mOffset(0)
-{}
-
-Int32ArrayBuffer::Int32ArrayBuffer(
-    /* [in] */ Int32 capacity)
-    : Int32Buffer(capacity)
-    , mBackingArray(ArrayOf<Int32>::Alloc(capacity))
-    , mOffset(0)
+    , mIsReadOnly(FALSE)
 {}
 
 Int32ArrayBuffer::Int32ArrayBuffer(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Int32>* backingArray,
-    /* [in] */ Int32 offset)
-    : Int32Buffer(capacity)
+    /* [in] */ Int32 offset,
+    /* [in] */ Boolean isReadOnly)
+    : Int32Buffer(capacity, 0)
     , mBackingArray(backingArray)
     , mOffset(offset)
+    , mIsReadOnly(isReadOnly)
 {}
 
 ECode Int32ArrayBuffer::GetInt32(

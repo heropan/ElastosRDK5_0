@@ -31,10 +31,10 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Boolean isReadOnly);
 
-    CARAPI GetDouble(
+    CARAPI Get(
         /* [out] */ Double* value);
 
-    CARAPI GetDouble(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Double* value);
 
@@ -48,6 +48,36 @@ public:
 
     CARAPI GetOrder(
         /* [out] */ ByteOrder* byteOrder);
+
+    CARAPI AsReadOnlyBuffer(
+        /* [out] */ IDoubleBuffer** buffer);
+
+    CARAPI Compact();
+
+    CARAPI Duplicate(
+        /* [out] */ IDoubleBuffer** buffer);
+
+    CARAPI ProtectedArray(
+        /* [out, callee] */ ArrayOf<Double>** array);
+
+    CARAPI ProtectedArrayOffset(
+        /* [out] */ Int32* offset);
+
+    CARAPI ProtectedHasArray(
+        /* [out] */ Boolean* hasArray);
+
+    CARAPI Put(
+        /* [in] */ Double d);
+
+    CARAPI Put(
+        /* [in] */ Int32 index,
+        /* [in] */ Double d);
+
+    CARAPI Slice(
+        /* [out] */ IDoubleBuffer** buffer);
+
+    CARAPI IsReadOnly(
+        /* [out] */ Boolean* value);
 
 public:
     AutoPtr< ArrayOf<Double> > mBackingArray;

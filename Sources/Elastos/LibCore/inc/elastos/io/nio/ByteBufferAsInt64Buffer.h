@@ -110,6 +110,8 @@ protected:
 
 private:
     AutoPtr<IByteBuffer> mByteBuffer;
+
+    Int32 mCap;
 };
 
 } // namespace IO
