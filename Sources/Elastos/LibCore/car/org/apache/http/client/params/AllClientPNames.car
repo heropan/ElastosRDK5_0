@@ -2,13 +2,6 @@
 module
 {
 
-    interface Org.Apache.Http.Params.ICoreConnectionPNames;
-    interface Org.Apache.Http.Params.ICoreProtocolPNames;
-    interface Org.Apache.Http.Auth.Params.IAuthPNames;
-    interface Org.Apache.Http.Cookie.Params.ICookieSpecPNames;
-    interface Org.Apache.Http.Conn.Params.IConnManagerPNames;
-    interface Org.Apache.Http.Conn.Params.IConnConnectionPNames;
-    interface Org.Apache.Http.Conn.Params.IConnRoutePNames;
 
 
     namespace Org {

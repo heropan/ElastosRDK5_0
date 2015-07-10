@@ -2,7 +2,6 @@
 module
 {
 
-    using interface Elastos.Utility.ICollection;
 
     namespace Org {
     namespace Apache {

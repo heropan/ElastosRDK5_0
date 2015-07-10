@@ -5,7 +5,6 @@ module
     using interface Elastos.Utility.IList;
 
     interface Org.Apache.Http.Cookie.ICookieSpecRegistry;
-    interface Org.Apache.Http.Protocol.IHttpContext;
 
     namespace Org {
     namespace Apache {

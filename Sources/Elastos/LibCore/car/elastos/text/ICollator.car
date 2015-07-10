@@ -1,7 +1,6 @@
 
 module
 {
-    interface Libcore.ICU.IRuleBasedCollatorICU;
     interface Elastos.Utility.ILocale;
     interface Elastos.Text.ICollationKey;
 

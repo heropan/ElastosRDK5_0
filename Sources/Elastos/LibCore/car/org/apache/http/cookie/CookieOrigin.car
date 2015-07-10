@@ -2,7 +2,6 @@
 module
 {
 
-    interface Org.Apache.Http.Cookie.ICookie;
 
     namespace Org {
     namespace Apache {

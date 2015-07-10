@@ -2,7 +2,6 @@
 module
 {
 
-    interface Org.Apache.Http.Conn.Routing.IHttpRoute;
     interface Org.Apache.Http.Params.IHttpParams;
 
     namespace Org {

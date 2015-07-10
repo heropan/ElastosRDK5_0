@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastosx.Crypto.ISecretKey;
 
     namespace Elastosx {
     namespace Crypto {

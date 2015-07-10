@@ -7,7 +7,6 @@
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::EIID_ICloneable;
-using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::IIterator;
@@ -342,11 +341,8 @@ ECode AttributedString::AttributedIterator::GetRunLimit(
     *index = -1;
     VALIDATE_NOT_NULL(attributes);
 
-    IIterable* iterable = IIterable::Probe(attributes);
-    assert(iterable != NULL);
-
     AutoPtr<IIterator> it;
-    iterable->GetIterator((IIterator**)&it);
+    attributes->GetIterator((IIterator**)&it);
 
     Int32 limit = mEnd;
     Int32 newLimit;
@@ -497,6 +493,7 @@ ECode AttributedString::AttributedIterator::SetIndex(
     /* [out] */ Char32* newChar)
 {
     VALIDATE_NOT_NULL(newChar);
+    *newChar = '\0';
 
     if (location < mBegin || location > mEnd) {
         //throw new IllegalArgumentException();

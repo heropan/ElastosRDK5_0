@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Utility.ITimeZone;
 
     namespace Libcore{
     namespace Utility{

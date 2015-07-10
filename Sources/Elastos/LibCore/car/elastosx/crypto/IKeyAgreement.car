@@ -1,11 +1,9 @@
 
 module
 {
-    interface Elastos.Security.IAlgorithmParameters;
     interface Elastos.Security.IKey;
     interface Elastos.Security.IProvider;
     interface Elastos.Security.ISecureRandom;
-    interface Elastos.Security.Spec.IPKCS8EncodedKeySpec;
     interface Elastos.Security.Spec.IAlgorithmParameterSpec;
     interface Elastosx.Crypto.ISecretKey;
 

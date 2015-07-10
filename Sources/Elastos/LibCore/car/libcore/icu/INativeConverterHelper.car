@@ -4,7 +4,6 @@ module
 //    interface Elastos.IO.Charset.ICharsetICU;
     interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.Charset.ICharsetEncoder;
-    interface Elastos.IO.Charset.ICodingErrorAction;
 
     namespace Libcore {
     namespace ICU {

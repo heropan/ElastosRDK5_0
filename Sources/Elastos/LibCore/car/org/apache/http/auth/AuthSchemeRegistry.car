@@ -3,7 +3,6 @@ module
 {
 
     using interface Elastos.Utility.IList;
-    using interface Elastos.Utility.IObjectStringMap;
 
     interface Org.Apache.Http.Auth.IAuthScheme;
 

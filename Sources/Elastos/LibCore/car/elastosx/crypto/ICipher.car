@@ -6,7 +6,6 @@ module
     interface Elastos.Security.IKey;
     interface Elastos.Security.IProvider;
     interface Elastos.Security.ISecureRandom;
-    interface Elastos.Security.ISecurity;
     interface Elastos.Security.Cert.ICertificate;
     interface Elastos.Security.Spec.IAlgorithmParameterSpec;
     interface Elastosx.Crypto.IExemptionMechanism;

@@ -1,7 +1,6 @@
 module
 {
     interface Elastos.Core.IComparator;
-    interface Elastos.Utility.INavigableMap;
     interface Elastos.Utility.INavigableSet;
     interface Elastos.Utility.IIterator;
     interface Elastos.Utility.ISortedSet;

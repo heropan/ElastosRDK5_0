@@ -1,6 +1,5 @@
 module
 {
-
     interface IPipedOutputStream;
 
     namespace Elastos {

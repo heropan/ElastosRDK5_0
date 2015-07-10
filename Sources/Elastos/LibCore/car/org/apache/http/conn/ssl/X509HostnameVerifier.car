@@ -2,8 +2,6 @@
 module
 {
 
-    using interface Elastosx.Net.Ssl.IHostNameVerifier;
-    using interface Elastosx.Net.Ssl.ISSLSession;
     using interface Elastosx.Net.Ssl.ISSLSocket;
     using inrerface Elastos.Security.Cert.IX509Certificate;
 

@@ -5,8 +5,6 @@ module
     using interface Elastos.Net.IInetAddress;
 
     interface Org.Apache.Http.Conn.IOperatedClientConnection;
-    interface Org.Apache.Http.Conn.Scheme.ISchemeRegistry;
-    interface Org.Apache.Http.Conn.Scheme.ISocketFactory;
     interface Org.Apache.Http.Params.IHttpParams;
     interface Org.Apache.Http.Protocol.IHttpContext;
 
