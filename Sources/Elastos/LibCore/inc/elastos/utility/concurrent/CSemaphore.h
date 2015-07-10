@@ -19,10 +19,10 @@ CarClass(CSemaphore)
     , public ISerializable
 {
 public:
-    enum CLSID {
-        CLSID_Sync,
-        CLSID_NonfairSync,
-        CLSID_FairSync,
+    enum SyncID {
+        SyncID_Sync,
+        SyncID_NonfairSync,
+        SyncID_FairSync,
     };
 
     class Sync
@@ -49,6 +49,11 @@ public:
         CARAPI DrainPermits(
             /* [out] */ Int32* out);
 
+        virtual SyncID GetSyncID()
+        {
+            return SyncID_Sync;
+        }
+
     private:
         static const Int64 serialVersionUID = 1192457210091910933L;
     };
@@ -63,6 +68,10 @@ public:
             /* [in] */ Int32 acquires,
             /* [out] */ Int32* out);
 
+        virtual SyncID GetSyncID()
+        {
+            return SyncID_NonfairSync;
+        }
     private:
         static const Int64 serialVersionUID = -2694183684443567898L;
     };
@@ -77,6 +86,10 @@ public:
             /* [in] */ Int32 acquires,
             /* [out] */ Int32* out);
 
+        virtual SyncID GetSyncID()
+        {
+            return SyncID_FairSync;
+        }
     private:
         static const Int64 serialVersionUID = 2014338818796000944L;
     };
@@ -105,7 +118,7 @@ public:
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* value);
 
-    CARAPI ToRelease();
+    CARAPI ReleasePermit();
 
     CARAPI Acquire(
         /* [in] */ Int32 permits);
@@ -123,7 +136,7 @@ public:
         /* [in] */ ITimeUnit* unit,
         /* [out] */ Boolean* value);
 
-    CARAPI ToRelease(
+    CARAPI ReleasePermit(
         /* [in] */ Int32 permits);
 
     CARAPI AvailablePermits(

@@ -179,7 +179,7 @@ ECode CNamespaceSupport::GetPrefixes(
         if (uri.Equals(us)) {
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(prefix, (ICharSequence**)&csq);
-            ICollection::Probe(prefixes)->Add(csq);
+            prefixes->Add(csq);
         }
     }
 
@@ -304,7 +304,7 @@ ECode CNamespaceSupport::Context::DeclarePrefix(
 
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(prefix, (ICharSequence**)&seq);
-    return ICollection::Probe(mDeclarations)->Add(seq);
+    return mDeclarations->Add(seq);
 }
 
 AutoPtr< ArrayOf<String> > CNamespaceSupport::Context::ProcessName (
@@ -446,7 +446,7 @@ AutoPtr<IEnumeration> CNamespaceSupport::Context::GetPrefixes ()
         while (iter != mPrefixTable.End()) {
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(iter->mFirst, (ICharSequence**)&csq);
-            ICollection::Probe(prefixes)->Add(csq);
+            prefixes->Add(csq);
             iter++;
         }
 

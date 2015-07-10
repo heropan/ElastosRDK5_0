@@ -214,7 +214,7 @@ AutoPtr<List<AutoPtr<IHttpCookie> > > CCookieManager::ParseCookie(
     AutoPtr<ISet> outset;
     responseHeaders->GetEntrySet((ISet**)&outset);
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    ICollection::Probe(outset)->ToArray((ArrayOf<IInterface*>**)&outarr);
+    outset->ToArray((ArrayOf<IInterface*>**)&outarr);
     for(Int32 i = 0; i < outarr->GetLength(); ++i) {
         AutoPtr<IMapEntry> entry = IMapEntry::Probe((*outarr)[i]);
         AutoPtr<IInterface> keyface;
@@ -229,7 +229,7 @@ AutoPtr<List<AutoPtr<IHttpCookie> > > CCookieManager::ParseCookie(
             entry->GetValue((IInterface**)&valueface);
             AutoPtr<IList> outlist = IList::Probe(valueface);
             AutoPtr< ArrayOf<IInterface*> > outarr2;
-            ICollection::Probe(outlist)->ToArray((ArrayOf<IInterface*>**)&outarr2);
+            outlist->ToArray((ArrayOf<IInterface*>**)&outarr2);
             ECode ec = NOERROR;
             for (Int32 j = 0; j < outarr2->GetLength(); j++) {
                 // try {
@@ -239,7 +239,7 @@ AutoPtr<List<AutoPtr<IHttpCookie> > > CCookieManager::ParseCookie(
                 ec = CHttpCookie::Parse(cookieStr, (IList**)&listhttp);
                 if (SUCCEEDED(ec)) {
                     AutoPtr<IIterator> it;
-                    IIterable::Probe(listhttp)->GetIterator((IIterator**)&it);
+                    listhttp->GetIterator((IIterator**)&it);
                     Boolean hasNext;
                     while (it->HasNext(&hasNext), hasNext) {
                         AutoPtr<IInterface> obj;

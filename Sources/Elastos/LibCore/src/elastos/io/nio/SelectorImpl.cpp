@@ -70,73 +70,73 @@ ECode SelectorImpl::UnaddableSet::AddAll(
 
 ECode SelectorImpl::UnaddableSet::Clear()
 {
-    return ICollection::Probe(mSet)->Clear();
+    return mSet->Clear();
 }
 
 ECode SelectorImpl::UnaddableSet::Contains(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    return ICollection::Probe(mSet)->Contains(object, result);
+    return mSet->Contains(object, result);
 }
 
 ECode SelectorImpl::UnaddableSet::ContainsAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* value)
 {
-    return ICollection::Probe(mSet)->ContainsAll(c, value);
+    return mSet->ContainsAll(c, value);
 }
 
 ECode SelectorImpl::UnaddableSet::IsEmpty(
     /* [out] */ Boolean* result)
 {
-    return ICollection::Probe(mSet)->IsEmpty(result);
+    return mSet->IsEmpty(result);
 }
 
 ECode SelectorImpl::UnaddableSet::Remove(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* modified)
 {
-    return ICollection::Probe(mSet)->Remove(object, modified);
+    return mSet->Remove(object, modified);
 }
 
 ECode SelectorImpl::UnaddableSet::RemoveAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* value)
 {
-    return ICollection::Probe(mSet)->RemoveAll(c, value);
+    return mSet->RemoveAll(c, value);
 }
 
 ECode SelectorImpl::UnaddableSet::GetSize(
     /* [out] */ Int32* size)
 {
-    return ICollection::Probe(mSet)->GetSize(size);
+    return mSet->GetSize(size);
 }
 
 ECode SelectorImpl::UnaddableSet::GetIterator(
     /* [out] */ IIterator** it)
 {
-    return IIterable::Probe(mSet)->GetIterator(it);
+    return mSet->GetIterator(it);
 }
 
 ECode SelectorImpl::UnaddableSet::RetainAll(
     /* [in] */ ICollection* c,
     /* [out] */ Boolean* value)
 {
-    return ICollection::Probe(mSet)->RetainAll(c,value);
+    return mSet->RetainAll(c,value);
 }
 
 ECode SelectorImpl::UnaddableSet::ToArray(
     /* [out, callee] */ ArrayOf<IInterface*>** outarr)
 {
-    return ICollection::Probe(mSet)->ToArray(outarr);
+    return mSet->ToArray(outarr);
 }
 
 ECode SelectorImpl::UnaddableSet::ToArray(
     /* [in] */ ArrayOf<IInterface*>* inarr,
     /* [out, callee] */ ArrayOf<IInterface*>** outarr)
 {
-    return ICollection::Probe(mSet)->ToArray(inarr, outarr);
+    return mSet->ToArray(inarr, outarr);
 }
 
 //==========================================================
@@ -167,7 +167,7 @@ ECode SelectorImpl::constructor(
     AutoPtr<IStructPollfd> structfd;
     CStructPollfd::New((IStructPollfd**)&structfd);
     Boolean isflag = FALSE;
-    ICollection::Probe(mPollFds)->Add(structfd, &isflag);
+    mPollFds->Add(structfd, &isflag);
     SetPollFd(0, mWakeupIn, OsConstants::_POLLIN, NULL);
     return NOERROR;
 }
@@ -205,7 +205,7 @@ ECode SelectorImpl::ImplCloseSelector()
     DoCancel();
 
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    ICollection::Probe(mMutableKeys)->ToArray((ArrayOf<IInterface*>**)&outarr);
+    mMutableKeys->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {
         AutoPtr<IAbstractSelectionKey> ask = IAbstractSelectionKey::Probe((*outarr)[i]);
         Deregister(ISelectionKey::Probe(ask));
@@ -234,7 +234,7 @@ ECode SelectorImpl::Register(
     AutoLock lock(mLock);
     AutoPtr<SelectionKeyImpl> selectionKey = new SelectionKeyImpl(asc, operations,
             attachment, this);
-    ICollection::Probe(mMutableKeys)->Add(TO_IINTERFACE(selectionKey));
+    mMutableKeys->Add(TO_IINTERFACE(selectionKey));
     EnsurePollFdsCapacity();
     *key = selectionKey;
     REFCOUNT_ADD(*key)
@@ -300,7 +300,7 @@ ECode SelectorImpl::SelectInternal(
         Begin();
     }
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    ICollection::Probe(mPollFds)->ToArray((ArrayOf<IInterface*>**)&outarr);
+    mPollFds->ToArray((ArrayOf<IInterface*>**)&outarr);
     AutoPtr<ArrayOf<IStructPollfd*> > array = ArrayOf<IStructPollfd*>::Alloc(outarr->GetLength());
     for (Int32 i = 0; i < outarr->GetLength(); ++i) {
         AutoPtr<IStructPollfd> it = IStructPollfd::Probe((*outarr)[i]);
@@ -335,7 +335,7 @@ void SelectorImpl::SetPollFd(
 void SelectorImpl::PreparePollFds()
 {
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    ICollection::Probe(mMutableKeys)->ToArray((ArrayOf<IInterface*>**)&outarr);
+    mMutableKeys->ToArray((ArrayOf<IInterface*>**)&outarr);
 
     for (Int32 i = 1; i < outarr->GetLength(); i++) {
         AutoPtr<ISelectionKey> key = ISelectionKey::Probe((*outarr)[i]);
@@ -366,22 +366,22 @@ void SelectorImpl::EnsurePollFdsCapacity()
     // We need one slot for each element of mutableKeys, plus one for the wakeup pipe.
     Int32 fdsvalue = 0;
     Int32 keysvalue = 0;
-    ICollection::Probe(mPollFds)->GetSize(&fdsvalue);
-    ICollection::Probe(mMutableKeys)->GetSize(&keysvalue);
+    mPollFds->GetSize(&fdsvalue);
+    mMutableKeys->GetSize(&keysvalue);
     while (fdsvalue < keysvalue + 1) {
         AutoPtr<IStructPollfd> res;
         CStructPollfd::New((IStructPollfd**)&res);
         Boolean isflag = FALSE;
-        ICollection::Probe(mPollFds)->Add(res, &isflag);
-        ICollection::Probe(mPollFds)->GetSize(&fdsvalue);
-        ICollection::Probe(mMutableKeys)->GetSize(&keysvalue);
+        mPollFds->Add(res, &isflag);
+        mPollFds->GetSize(&fdsvalue);
+        mMutableKeys->GetSize(&keysvalue);
     }
 }
 
 Int32 SelectorImpl::ProcessPollFds()
 {
     AutoPtr< ArrayOf<IInterface*> > outarr;
-    ICollection::Probe(mPollFds)->ToArray((ArrayOf<IInterface*>**)&outarr);
+    mPollFds->ToArray((ArrayOf<IInterface*>**)&outarr);
     Int16 revents = 0;
     if (IStructPollfd::Probe((*outarr)[0]) != NULL) {
         IStructPollfd::Probe((*outarr)[0])->GetRevents(&revents);
@@ -433,7 +433,7 @@ Int32 SelectorImpl::ProcessPollFds()
 
             if (selectedOp != 0) {
                 Boolean wasSelected = 0;
-                ICollection::Probe(mMutableSelectedKeys)->Contains(key, &wasSelected);
+                mMutableSelectedKeys->Contains(key, &wasSelected);
                 Int32 opsvalue = 0;
                 ISelectionKey::Probe(key)->GetReadyOps(&opsvalue);
                 if (wasSelected && opsvalue != selectedOp) {
@@ -442,7 +442,7 @@ Int32 SelectorImpl::ProcessPollFds()
                 }
                 else if (!wasSelected) {
                     ((SelectionKeyImpl*)key.Get())->SetReadyOps(selectedOp);
-                    ICollection::Probe(mMutableSelectedKeys)->Add(key, &isflag);
+                    mMutableSelectedKeys->Add(key, &isflag);
                     ++readyKeyCount;
                 }
             }
@@ -469,20 +469,20 @@ Int32 SelectorImpl::DoCancel()
     AutoPtr<ISet> cancelledKeys;
     CancelledKeys((ISet**)&cancelledKeys);
     Int32 sizelen = 0;
-    ICollection::Probe(cancelledKeys)->GetSize(&sizelen);
+    cancelledKeys->GetSize(&sizelen);
     if (sizelen > 0) {
         AutoPtr< ArrayOf<IInterface*> > outarr;
-        ICollection::Probe(cancelledKeys)->ToArray((ArrayOf<IInterface*>**)&outarr);
+        cancelledKeys->ToArray((ArrayOf<IInterface*>**)&outarr);
         for (Int32 i = 0; i < outarr->GetLength(); i++) {
             AutoPtr<IInterface> currentKey = (*outarr)[i];
             Boolean isflag = FALSE;
-            ICollection::Probe(mMutableKeys)->Remove(currentKey, &isflag);
+            mMutableKeys->Remove(currentKey, &isflag);
             Deregister(ISelectionKey::Probe(currentKey));
-            if (ICollection::Probe(mMutableSelectedKeys)->Remove(currentKey, &isflag), isflag) {
+            if (mMutableSelectedKeys->Remove(currentKey, &isflag), isflag) {
                 deselected++;
             }
         }
-        ICollection::Probe(cancelledKeys)->Clear();
+        cancelledKeys->Clear();
     }
 
     return deselected;

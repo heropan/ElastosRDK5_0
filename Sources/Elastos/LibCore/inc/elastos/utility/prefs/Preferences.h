@@ -88,7 +88,7 @@ public:
      *
      * @return the preference node's absolute path string.
      */
-    virtual CARAPI AbsolutePath(
+    virtual CARAPI GetAbsolutePath(
         /* [out] */ String* path) = 0;
 
     /**
@@ -102,7 +102,7 @@ public:
      * @throws IllegalStateException
      *             if this node has been removed.
      */
-    virtual CARAPI ChildrenNames(
+    virtual CARAPI GetChildrenNames(
         /* [out, callee] */ ArrayOf<String>** outarr) = 0/*throws BackingStoreException*/;
 
     /**

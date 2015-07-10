@@ -114,7 +114,7 @@ ECode AbstractPreferences::GetChild(
         FAIL_RETURN(CheckState());
         AutoPtr<AbstractPreferences> result;
         AutoPtr<ArrayOf<String> > childrenNames;
-        FAIL_RETURN(ChildrenNames((ArrayOf<String>**)&childrenNames));
+        FAIL_RETURN(GetChildrenNames((ArrayOf<String>**)&childrenNames));
         for (Int32 i = 0; i < childrenNames->GetLength(); i++) {
             if ((*childrenNames)[i].Equals(name)) {
                 result = ChildSpi(name);
@@ -135,7 +135,7 @@ Boolean AbstractPreferences::IsRemoved()
     return mIsRemoved;
 }
 
-ECode AbstractPreferences::AbsolutePath(
+ECode AbstractPreferences::GetAbsolutePath(
     /* [out] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
@@ -148,12 +148,12 @@ ECode AbstractPreferences::AbsolutePath(
     }
 
     String tmp;
-    mParentPref->AbsolutePath(&tmp);
+    mParentPref->GetAbsolutePath(&tmp);
     *path = tmp + String("/") + mNodeName;
     return NOERROR;
 }
 
-ECode AbstractPreferences::ChildrenNames(
+ECode AbstractPreferences::GetChildrenNames(
     /* [out, callee] */ ArrayOf<String>** values) /*throws BackingStoreException*/
 {
     VALIDATE_NOT_NULL(values);
@@ -167,7 +167,7 @@ ECode AbstractPreferences::ChildrenNames(
         for (Int32 i = 0; iter != mCachedNode.End(); ++iter, i++) {
             AutoPtr<ICharSequence> name;
             CStringWrapper::New(iter->mFirst, (ICharSequence**)&name);
-            ICollection::Probe(result)->Add(name, &modified);
+            result->Add(name, &modified);
         }
 
         AutoPtr<ArrayOf<String> > names;
@@ -175,15 +175,15 @@ ECode AbstractPreferences::ChildrenNames(
         for (Int32 i = 0; i < names->GetLength(); i++) {
             AutoPtr<ICharSequence> name;
             CStringWrapper::New((*names)[i], (ICharSequence**)&name);
-            ICollection::Probe(result)->Add(name, &modified);
+            result->Add(name, &modified);
         }
 
         Int32 size = 0;
-        ICollection::Probe(result)->GetSize(&size);
+        result->GetSize(&size);
         *values = ArrayOf<String>::Alloc(size);
         String str;
         AutoPtr<IIterator> iter2;
-        IIterable::Probe(result)->GetIterator((IIterator**)&iter2);
+        result->GetIterator((IIterator**)&iter2);
         Boolean has = FALSE;
         Int32 pos = 0;
         while (iter2->HasNext(&has), has) {
@@ -842,7 +842,7 @@ ECode AbstractPreferences::ToString(
     Boolean userNode = FALSE;
     IsUserNode(&userNode);
     String path;
-    AbsolutePath(&path);
+    GetAbsolutePath(&path);
     if (userNode) {
         *value = String("User") + String(" Preference Node: ") + path;
     } else {

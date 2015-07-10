@@ -34,6 +34,7 @@ ECode RuleBasedBreakIterator::GetFollowing(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
+    *position = -1;
     FAIL_RETURN(CheckOffset(offset));
     return mWrapped->GetFollowing(offset, position);
 }
@@ -123,6 +124,7 @@ ECode RuleBasedBreakIterator::IsBoundary(
     /* [out] */ Boolean* isBoundary)
 {
     VALIDATE_NOT_NULL(isBoundary);
+    *isBoundary = FALSE;
     FAIL_RETURN(CheckOffset(offset));
     return mWrapped->IsBoundary(offset,isBoundary);
 }
@@ -138,6 +140,7 @@ ECode RuleBasedBreakIterator::GetPreceding(
     /* [out] */ Int32* position)
 {
     VALIDATE_NOT_NULL(position);
+    *position = -1;
     FAIL_RETURN(CheckOffset(offset));
     return mWrapped->GetPreceding(offset, position);
 }

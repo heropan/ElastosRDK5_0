@@ -214,9 +214,8 @@ ECode CInetSocketAddress::ToString(
 {
     VALIDATE_NOT_NULL(result)
 
-    String str;
-    IObject* o = (IObject*)mAddr->Probe(EIID_IObject);
-    *result = ((mAddr != NULL) ? (o->ToString(&str), str) : mHostname)
+    String str = Object::ToString(mAddr);
+    *result = ((mAddr != NULL) ? str : mHostname)
                 + String(":")
                 + StringUtils::ToString(mPort);
     return NOERROR;
@@ -231,9 +230,8 @@ ECode CInetSocketAddress::GetHashCode(
         *hashCode = mHostname.GetHashCode() + mPort;
         return NOERROR;
     }
-    Int32 addrcode = 0;
-    IObject* o = (IObject*)mAddr->Probe(EIID_IObject);
-    *hashCode = (o->GetHashCode(&addrcode), addrcode) + mPort;
+
+    *hashCode = Object::GetHashCode(mAddr) + mPort;
     return NOERROR;
 }
 

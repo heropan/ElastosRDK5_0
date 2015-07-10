@@ -293,7 +293,7 @@ ECode CManifest::Write(
         AutoPtr<ISet> keyset;
         IMap::Probe(cm->mMainAttributes)->GetKeySet((ISet**)&keyset);
         AutoPtr<IIterator> entries;
-        IIterable::Probe(keyset)->GetIterator((IIterator**)&entries);
+        keyset->GetIterator((IIterator**)&entries);
         Boolean hasNext = FALSE;
         String val;
         Boolean equal;
@@ -315,7 +315,7 @@ ECode CManifest::Write(
     AutoPtr<ISet> keySet;
     entries->GetKeySet((ISet**)&keySet);
     AutoPtr<IIterator> it;
-    IIterable::Probe(keySet)->GetIterator((IIterator**)&it);
+    keySet->GetIterator((IIterator**)&it);
     Boolean hasNext;
     String key;
     String val;
@@ -330,7 +330,7 @@ ECode CManifest::Write(
         AutoPtr<ISet> keySet;
         IMap::Probe(attrib)->GetKeySet((ISet**)&keySet);
         AutoPtr<IIterator> it;
-        IIterable::Probe(keySet)->GetIterator((IIterator**)&it);
+        keySet->GetIterator((IIterator**)&it);
         while(it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> elm, value;
             it->GetNext((IInterface**)&elm);

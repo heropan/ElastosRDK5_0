@@ -728,7 +728,7 @@ String CLocale::MakeLanguageTag()
     AutoPtr<ISet> entrySet;
     mExtensions->GetEntrySet((ISet**)&entrySet);
     AutoPtr<IIterator> it;
-    IIterable::Probe(entrySet)->GetIterator((IIterator**)&it);
+    entrySet->GetIterator((IIterator**)&it);
     Boolean hasNext;
     String str;
     AutoPtr<IMapEntry> extension;
@@ -1244,7 +1244,7 @@ void CLocale::AddUnicodeExtensionToExtensionsMap(
     assert(attributes && keywords && extensions);
 
     Boolean a, b;
-    ICollection::Probe(attributes)->IsEmpty(&a);
+    attributes->IsEmpty(&a);
     keywords->IsEmpty(&b);
     if (a && b) {
         return;
@@ -1258,7 +1258,7 @@ void CLocale::AddUnicodeExtensionToExtensionsMap(
     if (!a) {
         Boolean hasNext;
         AutoPtr<IIterator> attributesIterator;
-        IIterable::Probe(attributes)->GetIterator((IIterator**)&attributesIterator);
+        attributes->GetIterator((IIterator**)&attributesIterator);
         while (TRUE) {
             AutoPtr<IInterface> obj;
             attributesIterator->GetNext((IInterface**)&obj);
@@ -1283,7 +1283,7 @@ void CLocale::AddUnicodeExtensionToExtensionsMap(
         AutoPtr<ISet> entrySet;
         keywords->GetEntrySet((ISet**)&entrySet);
         AutoPtr<IIterator> keywordsIterator;
-        IIterable::Probe(entrySet)->GetIterator((IIterator**)&keywordsIterator);
+        entrySet->GetIterator((IIterator**)&keywordsIterator);
 
         while (TRUE) {
             AutoPtr<IInterface> obj;
@@ -1371,7 +1371,7 @@ String CLocale::JoinBcp47Subtags(
 {
     assert(strings);
     Int32 size;
-    ICollection::Probe(strings)->GetSize(&size);
+    strings->GetSize(&size);
 
     AutoPtr<IInterface> obj;
     strings->Get(0, (IInterface**)&obj);
@@ -1578,7 +1578,7 @@ ECode CLocale::ForLanguageTag(
         CArrayList::New((IList**)&variants);
         ExtractVariantSubtags(subtags, nextSubtag, lastSubtag, variants);
         Int32 size;
-        ICollection::Probe(variants)->GetSize(&size);
+        variants->GetSize(&size);
         nextSubtag += size;
     }
 
@@ -1615,9 +1615,9 @@ ECode CLocale::ForLanguageTag(
     }
 
     String variantCode("");
-    if (variants != NULL && (ICollection::Probe(variants)->IsEmpty(&contains), !contains)) {
+    if (variants != NULL && (variants->IsEmpty(&contains), !contains)) {
         Int32 size;
-        ICollection::Probe(variants)->GetSize(&size);
+        variants->GetSize(&size);
         StringBuilder variantsBuilder(size * 8);
         for (Int32 i = 0; i < size; ++i) {
             if (i != 0) {

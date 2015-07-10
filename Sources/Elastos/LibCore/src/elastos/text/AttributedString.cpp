@@ -553,7 +553,7 @@ ECode AttributedString::constructor(
     }
 
     AutoPtr<IIterator> it;
-    IIterable::Probe(attributes)->GetIterator((IIterator**)&it);
+    attributes->GetIterator((IIterator**)&it);
     Boolean hasNext;
     IAttributedCharacterIteratorAttribute* attr;
     Char32 ch, cv;
@@ -613,7 +613,7 @@ ECode AttributedString::constructor(
     buffer.ToString(&mText);
 
     AutoPtr<IIterator> it;
-    IIterable::Probe(attributes)->GetIterator((IIterator**)&it);
+    attributes->GetIterator((IIterator**)&it);
     Boolean hasNext;
     IAttributedCharacterIteratorAttribute* attr;
     Char32 c, newChar;
@@ -869,7 +869,7 @@ ECode AttributedString::AddAttributes(
     attributes->GetEntrySet((ISet**)&entries);
 
     AutoPtr<IIterator> it;
-    IIterable::Probe(entries)->GetIterator((IIterator**)&it);
+    entries->GetIterator((IIterator**)&it);
     Boolean hasNext;
     IMapEntry* entry;
     while (it->HasNext(&hasNext), hasNext) {

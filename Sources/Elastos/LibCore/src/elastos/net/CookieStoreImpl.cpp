@@ -132,7 +132,7 @@ ECode CookieStoreImpl::Get(
                 }
                 else {
                     Boolean found = FALSE;
-                    ICollection::Probe(outresult)->Contains(cookie, &found);
+                    outresult->Contains(cookie, &found);
                     if (!found) {
                         outresult->Add(cookie, &found);
                     }
@@ -167,9 +167,9 @@ ECode CookieStoreImpl::GetCookies(
                 }
                 else {
                     Boolean found = FALSE;
-                    ICollection::Probe(outresult)->Contains(cookie, &found);
+                    outresult->Contains(cookie, &found);
                     if (!found) {
-                        ICollection::Probe(outresult)->Add(cookie, &found);
+                        outresult->Add(cookie, &found);
                     }
                     ++listIt;
                 }
@@ -196,7 +196,7 @@ ECode CookieStoreImpl::GetURIs(
             AutoPtr<IURI> uri = it->mFirst;
             outresult->Add(uri, &isflag);
         }
-        ICollection::Probe(outresult)->Remove(NULL, &isflag); // sigh
+        outresult->Remove(NULL, &isflag); // sigh
         return Collections::UnmodifiableList(outresult, URIs);
     }
     return NOERROR;

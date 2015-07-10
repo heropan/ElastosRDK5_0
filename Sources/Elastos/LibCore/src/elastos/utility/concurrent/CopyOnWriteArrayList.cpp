@@ -111,7 +111,7 @@ ECode CopyOnWriteArrayList::Equals(
     else if (IList::Probe(object)) {
         AutoPtr< ArrayOf<IInterface*> > snapshot = mElements;
         AutoPtr<IIterator> i;
-        IIterable::Probe(object)->GetIterator((IIterator**)&i);
+        IList::Probe(object)->GetIterator((IIterator**)&i);
         Boolean isflag = FALSE;
         for (Int32 j = 0; j < snapshot->GetLength(); j++) {
             AutoPtr<IInterface> o = (*snapshot)[j];

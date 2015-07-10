@@ -32,7 +32,7 @@ ECode HttpURLConnection::constructor(
 ECode HttpURLConnection::GetErrorStream(
     /* [out] */ IInputStream** stream)
 {
-    assert(stream != NULL);
+    VALIDATE_NOT_NULL(stream)
     *stream = NULL;
 
     return NOERROR;
@@ -57,7 +57,7 @@ ECode HttpURLConnection::GetRequestMethod(
 ECode HttpURLConnection::GetResponseCode(
     /* [out] */ Int32* responseCode)
 {
-    assert(responseCode != NULL);
+    VALIDATE_NOT_NULL(responseCode)
 
     // Call getInputStream() first since getHeaderField() doesn't return
     // exceptions
@@ -90,7 +90,7 @@ ECode HttpURLConnection::GetResponseCode(
 ECode HttpURLConnection::GetResponseMessage(
     /* [out] */ String* message)
 {
-    assert(message != NULL);
+    VALIDATE_NOT_NULL(message)
 
     if (!mResponseMessage.IsNull()) {
         *message = mResponseMessage;
@@ -153,7 +153,7 @@ ECode HttpURLConnection::GetContentEncoding(
 ECode HttpURLConnection::GetInstanceFollowRedirects(
     /* [out] */ Boolean* followRedirects)
 {
-    assert(followRedirects != NULL);
+    VALIDATE_NOT_NULL(followRedirects)
     *followRedirects = mInstanceFollowRedirects;
 
     return NOERROR;

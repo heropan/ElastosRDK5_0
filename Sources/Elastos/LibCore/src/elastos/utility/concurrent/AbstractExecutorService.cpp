@@ -121,7 +121,7 @@ ECode AbstractExecutorService::DoInvokeAny(
         system->GetNanoTime(&lastTime);
     }
     AutoPtr<IIterator> it;
-    IIterable::Probe(tasks)->GetIterator((IIterator**)&it);
+    tasks->GetIterator((IIterator**)&it);
 
     // Start one task for sure; the rest incrementally
     AutoPtr<IInterface> obj;

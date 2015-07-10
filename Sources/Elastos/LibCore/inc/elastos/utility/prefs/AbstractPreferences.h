@@ -120,11 +120,11 @@ public:
      * -----------------------------------------------------------
      */
     // @Override
-    CARAPI AbsolutePath(
+    CARAPI GetAbsolutePath(
         /* [out] */ String* path);
 
     // @Override
-    CARAPI ChildrenNames(
+    CARAPI GetChildrenNames(
         /* [out, callee] */ ArrayOf<String>** names) /*throws BackingStoreException*/;
 
     // @Override

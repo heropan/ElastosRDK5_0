@@ -259,7 +259,7 @@ module
          * Correct usage of a semaphore is established by programming convention
          * in the application.
          */
-        ToRelease();
+        ReleasePermit();
 
         /**
          * Acquires the given number of permits from this semaphore,
@@ -435,7 +435,7 @@ module
          * @param permits the number of permits to release
          * @throws IllegalArgumentException if {@code permits} is negative
          */
-        ToRelease(
+        ReleasePermit(
             [in] Int32 permits);
 
         /**

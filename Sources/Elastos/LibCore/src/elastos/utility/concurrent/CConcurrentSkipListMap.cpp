@@ -2027,7 +2027,7 @@ ECode CConcurrentSkipListMap::_KeySet::GetDescendingIterator(
     VALIDATE_NOT_NULL(outiter);
     AutoPtr<INavigableSet> s;
     GetDescendingSet((INavigableSet**)&s);
-    return IIterable::Probe(s)->GetIterator(outiter);
+    return s->GetIterator(outiter);
 }
 
 ECode CConcurrentSkipListMap::_KeySet::GetSubSet(

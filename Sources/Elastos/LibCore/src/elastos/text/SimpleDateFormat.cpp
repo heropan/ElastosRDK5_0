@@ -244,14 +244,15 @@ ECode SimpleDateFormat::FormatToCharacterIterator(
     if (object == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (object->Probe(EIID_IDate) != NULL) {
-        FormatToCharacterIteratorImpl((IDate*) object, charactorIterator);
+    IDate* date = IDate::Probe(object);
+    if (date != NULL) {
+        FormatToCharacterIteratorImpl(date, charactorIterator);
         return NOERROR;
     }
     if (object->Probe(EIID_INumber) != NULL ) {
         AutoPtr<IDate> pIDate;
         Int64 pValue;
-        AutoPtr<INumber> pINumber = reinterpret_cast<INumber*>(object->Probe(EIID_INumber));
+        AutoPtr<INumber> pINumber = INumber::Probe(object);
         pINumber->Int64Value(&pValue);
         CDate::New(pValue, (IDate**)&pIDate);
         return FormatToCharacterIteratorImpl(pIDate, charactorIterator);

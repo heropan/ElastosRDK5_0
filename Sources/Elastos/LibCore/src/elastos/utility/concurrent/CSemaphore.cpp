@@ -191,7 +191,7 @@ ECode CSemaphore::TryAcquire(
     return mSync->TryAcquireSharedNanos(1, res, value);
 }
 
-ECode CSemaphore::ToRelease()
+ECode CSemaphore::ReleasePermit()
 {
     Boolean b = FALSE;
     return mSync->ReleaseShared(1, &b);
@@ -244,7 +244,7 @@ ECode CSemaphore::TryAcquire(
     return mSync->TryAcquireSharedNanos(permits, res, value);
 }
 
-ECode CSemaphore::ToRelease(
+ECode CSemaphore::ReleasePermit(
     /* [in] */ Int32 permits)
 {
     if (permits < 0) {

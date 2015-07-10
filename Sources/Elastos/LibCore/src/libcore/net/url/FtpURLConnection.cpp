@@ -81,7 +81,7 @@ ECode FtpURLConnection::Connect()
             AutoPtr<IList> obj;
             selector->Select(mUri, (IList**)&obj);
             AutoPtr<IIterator> emu;
-            IIterable::Probe(obj)->GetIterator((IIterator **)&emu);
+            obj->GetIterator((IIterator **)&emu);
             Boolean hasNext = FALSE;
             while(emu->HasNext(&hasNext), hasNext) {
                 AutoPtr<IInterface> itf;

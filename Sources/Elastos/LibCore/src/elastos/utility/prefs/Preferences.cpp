@@ -1,5 +1,6 @@
 
 #include "Preferences.h"
+#include "XMLParser.h"
 
 namespace Elastos {
 namespace Utility {
@@ -57,37 +58,42 @@ ECode Preferences::ImportPreferences(
         return E_MALFORMED_URL_EXCEPTION;
     }
 
-    //TODO
-    assert(0);
-    // return XMLParser::ImportPrefs(istream);
-    return NOERROR;
+    return XMLParser::ImportPrefs(istream);
 }
 
 ECode Preferences::SystemNodeForPackage(
     /* [in] */ IInterface* c,
     /* [out] */ IPreferences** outpre)
 {
-    //TODO
-    assert(0);
-    // return mFactory.systemRoot().node(getNodeName(c));
+    VALIDATE_NOT_NULL(outpre)
+    AutoPtr<IPreferences> pref;
+    mFactory->SystemRoot((IPreferences**)&pref);
+    String path = GetNodeName(c);
+    AutoPtr<IPreferences> result;
+    pref->GetNode(path, (IPreferences**)&result);
+    *outpre = result;
+    REFCOUNT_ADD(*outpre);
     return NOERROR;
 }
 
 ECode Preferences::SystemRoot(
     /* [out] */ IPreferences** outpre)
 {
-    VALIDATE_NOT_NULL(outpre);
-    return mFactory->SystemRoot(outpre);
+   return mFactory->SystemRoot(outpre);
 }
 
 ECode Preferences::UserNodeForPackage(
     /* [in] */ IInterface* c,
     /* [out] */ IPreferences** outpre)
 {
-    VALIDATE_NOT_NULL(outpre);
-    //TODO
-    assert(0);
-    // return mFactory.userRoot().node(getNodeName(c));
+    VALIDATE_NOT_NULL(outpre)
+    AutoPtr<IPreferences> pref;
+    mFactory->UserRoot((IPreferences**)&pref);
+    String path = GetNodeName(c);
+    AutoPtr<IPreferences> result;
+    pref->GetNode(path, (IPreferences**)&result);
+    *outpre = result;
+    REFCOUNT_ADD(*outpre);
     return NOERROR;
 }
 
@@ -107,7 +113,6 @@ String Preferences::GetNodeName(
 ECode Preferences::UserRoot(
     /* [out] */ IPreferences** outpre)
 {
-    VALIDATE_NOT_NULL(outpre);
     return mFactory->UserRoot(outpre);
 }
 

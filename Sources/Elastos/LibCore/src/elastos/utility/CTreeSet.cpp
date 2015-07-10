@@ -53,7 +53,7 @@ ECode CTreeSet::constructor(
     if (IIterable::Probe(set) == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    IIterable::Probe(set)->GetIterator((IIterator**)&it);
+    set->GetIterator((IIterator**)&it);
     Boolean isflag = FALSE;
     while (it->HasNext(&isflag), isflag) {
         AutoPtr<IInterface> outface;
@@ -159,7 +159,7 @@ ECode CTreeSet::GetDescendingIterator(
         *outiter = NULL;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return IIterable::Probe(res)->GetIterator(outiter);
+    return res->GetIterator(outiter);
 }
 
 ECode CTreeSet::Remove(

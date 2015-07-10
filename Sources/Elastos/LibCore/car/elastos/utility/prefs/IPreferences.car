@@ -73,7 +73,7 @@ module
          *
          * @return the preference node's absolute path string.
          */
-        AbsolutePath(
+        GetAbsolutePath(
             [out] String* str);
 
         /**
@@ -87,7 +87,7 @@ module
          * @throws IllegalStateException
          *             if this node has been removed.
          */
-        ChildrenNames(
+        GetChildrenNames(
             [out, callee] ArrayOf<String>* outarr);
 
         /**

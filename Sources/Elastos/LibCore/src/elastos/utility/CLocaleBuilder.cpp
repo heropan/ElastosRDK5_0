@@ -254,8 +254,8 @@ ECode CLocaleBuilder::SetLocale(
     mKeywords->Clear();
     mKeywords->PutAll(IMap::Probe(l->mUnicodeKeywords));
 
-    ICollection::Probe(mAttributes)->Clear();
-    ICollection::Probe(mAttributes)->AddAll(ICollection::Probe(l->mUnicodeAttributes));
+    mAttributes->Clear();
+    mAttributes->AddAll(ICollection::Probe(l->mUnicodeAttributes));
     return NOERROR;
 
 _FAIL_:
@@ -280,7 +280,7 @@ ECode CLocaleBuilder::AddUnicodeLocaleAttribute(
 
     AutoPtr<ICharSequence> csq;
     CStringWrapper::New(lowercaseAttribute, (ICharSequence**)&csq);
-    return ICollection::Probe(mAttributes)->Add(csq->Probe(EIID_IInterface));
+    return mAttributes->Add(csq->Probe(EIID_IInterface));
 }
 
 ECode CLocaleBuilder::RemoveUnicodeLocaleAttribute(
@@ -300,7 +300,7 @@ ECode CLocaleBuilder::RemoveUnicodeLocaleAttribute(
 
     AutoPtr<ICharSequence> csq;
     CStringWrapper::New(lowercaseAttribute, (ICharSequence**)&csq);
-    return ICollection::Probe(mAttributes)->Remove(csq->Probe(EIID_IInterface));
+    return mAttributes->Remove(csq->Probe(EIID_IInterface));
 }
 
 ECode CLocaleBuilder::SetExtension(
@@ -333,11 +333,11 @@ ECode CLocaleBuilder::SetExtension(
     }
 
     // We need to take special action in the case of unicode extensions,
-    // since we claim to understand their keywords and ICollection::Probe(mAttributes)->
+    // since we claim to understand their keywords and mAttributes->
     if (key == ILocale::UNICODE_LOCALE_EXTENSION) {
         // First clear existing attributes and mKeywords->
         mExtensions->Clear();
-        ICollection::Probe(mAttributes)->Clear();
+        mAttributes->Clear();
 
         CLocale::ParseUnicodeExtension(subtags, mKeywords, mAttributes);
     }
@@ -352,7 +352,7 @@ ECode CLocaleBuilder::SetExtension(
 ECode CLocaleBuilder::ClearExtensions()
 {
     mExtensions->Clear();
-    ICollection::Probe(mAttributes)->Clear();
+    mAttributes->Clear();
     mKeywords->Clear();
     return NOERROR;
 }

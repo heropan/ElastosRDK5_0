@@ -377,7 +377,7 @@ ECode ZipFile::GetEntries(
     AutoPtr<ICollection> vals;
     mEntries->GetValues((ICollection**)&vals);
     AutoPtr<IIterator> iterator;
-    IIterable::Probe(vals)->GetIterator((IIterator**)&iterator);
+    vals->GetIterator((IIterator**)&iterator);
     AutoPtr<Enumeration> res = new Enumeration(iterator, this);
     *entries = res.Get();
     REFCOUNT_ADD(*entries);

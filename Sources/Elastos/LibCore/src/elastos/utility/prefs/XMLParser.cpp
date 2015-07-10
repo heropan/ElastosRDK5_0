@@ -151,7 +151,7 @@ ECode XMLParser::ExportPrefs(
 
     AutoPtr<IStringTokenizer> ancestors;
     String path;
-    prefs->AbsolutePath(&path);
+    prefs->GetAbsolutePath(&path);
     CStringTokenizer::New(path, String("/"), (IStringTokenizer**)&ancestors);
     ExportNode(ancestors, prefs, withSubTree, out);
 
@@ -197,7 +197,7 @@ ECode XMLParser::ExportSubTree(
     /* [in] */ IBufferedWriter* out) /*throws BackingStoreException, IOException */
 {
     AutoPtr<ArrayOf<String> > names;
-    FAIL_RETURN(prefs->ChildrenNames((ArrayOf<String>**)&names));
+    FAIL_RETURN(prefs->GetChildrenNames((ArrayOf<String>**)&names));
     if (names->GetLength() > 0) {
         for (Int32 i = 0; i < names->GetLength(); i++) {
             AutoPtr<IPreferences> child;
@@ -538,7 +538,7 @@ AutoPtr<INodeList> XMLParser::SelectNodeList(
     }
 
     AutoPtr<IIterator> iter;
-    IIterable::Probe(input)->GetIterator((IIterator**)&iter);
+    input->GetIterator((IIterator**)&iter);
     result = new NodeSet(iter);
 
     return result;
@@ -638,7 +638,7 @@ ECode XMLParser::WriteXmlPreferences(
 
     IMap::Probe(properties)->GetKeySet((ISet**)&keySet);
     strKeys = ArrayOf<String>::Alloc(size);
-    ICollection::Probe(keySet)->ToArray((ArrayOf<IInterface*>**)&keys);
+    keySet->ToArray((ArrayOf<IInterface*>**)&keys);
     assert(keys->GetLength() >= size);
     for (Int32 i = 0; i < size; i++) {
         IObject::Probe((*keys)[i])->ToString(&value);

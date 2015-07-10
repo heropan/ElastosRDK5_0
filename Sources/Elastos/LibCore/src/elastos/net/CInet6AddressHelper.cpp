@@ -15,7 +15,6 @@ ECode CInet6AddressHelper::GetByAddress(
     /* [in] */ Int32 scope_id,
     /* [out] */ IInet6Address** address)
 {
-    VALIDATE_NOT_NULL(address);
     return CInet6Address::GetByAddress(host, addr, scope_id, address);
 }
 
@@ -25,7 +24,6 @@ ECode CInet6AddressHelper::GetByAddress(
     /* [in] */ INetworkInterface* nif,
     /* [out] */ IInet6Address** address)
 {
-    VALIDATE_NOT_NULL(address);
     return CInet6Address::GetByAddress(host, addr, nif, address);
 }
 

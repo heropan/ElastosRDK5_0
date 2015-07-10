@@ -335,7 +335,7 @@ ECode NetworkInterface::GetByInetAddress(
 
     AutoPtr<IList> em = GetNetworkInterfacesList();
     AutoPtr<IIterator> it;
-    IIterable::Probe(em)->GetIterator((IIterator**)&it);
+    em->GetIterator((IIterator**)&it);
 
     Boolean hasNext, found;
     while(it->HasNext(&hasNext), hasNext) {
@@ -476,7 +476,7 @@ ECode NetworkInterface::ToString(
     sb.AppendChar(']');
 
     AutoPtr<IIterator> outiter;
-    IIterable::Probe(mAddresses)->GetIterator((IIterator**)&outiter);
+    mAddresses->GetIterator((IIterator**)&outiter);
     Boolean hasNext;
     while (outiter->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> address;

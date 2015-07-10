@@ -30,7 +30,7 @@ ECode NodeSet::GetLength(
     /* [out] */ Int32* len)
 {
     VALIDATE_NOT_NULL(len);
-    return ICollection::Probe(mList)->GetSize(len);
+    return mList->GetSize(len);
 }
 
 ECode NodeSet::Item(

@@ -655,7 +655,7 @@ ECode CLinkedBlockingQueue::ContainsAll(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<IIterator> it;
-    IIterable::Probe(collection)->GetIterator((IIterator**)&it);
+    collection->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> e;

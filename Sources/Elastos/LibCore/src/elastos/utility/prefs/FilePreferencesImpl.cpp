@@ -107,7 +107,7 @@ ECode FilePreferencesImpl::FlushSpi() /*throws BackingStoreException*/
     }
     // merge
     AutoPtr<IIterator> it;
-    IIterable::Probe(mRemoved)->GetIterator((IIterator**)&it);
+    mRemoved->GetIterator((IIterator**)&it);
     Boolean has = FALSE;
     while (it->HasNext(&has), has) {
         AutoPtr<IInterface> value;
@@ -117,7 +117,7 @@ ECode FilePreferencesImpl::FlushSpi() /*throws BackingStoreException*/
     IMap::Probe(mRemoved)->Clear();
 
     it = NULL;
-    IIterable::Probe(mUpdated)->GetIterator((IIterator**)&it);
+    mUpdated->GetIterator((IIterator**)&it);
     while (it->HasNext(&has), has) {
         AutoPtr<IInterface> key;
         it->GetNext((IInterface**)&key);
@@ -163,7 +163,7 @@ ECode FilePreferencesImpl::KeysSpi(
     Int32 size = 0;
     IMap::Probe(ks)->GetSize(&size);
     AutoPtr<ArrayOf<IInterface*> > datas = ArrayOf<IInterface*>::Alloc(size);
-    ICollection::Probe(ks)->ToArray((ArrayOf<IInterface*>**)&datas);
+    ks->ToArray((ArrayOf<IInterface*>**)&datas);
     *spi = ArrayOf<String>::Alloc(size);
     for (Int32 i = 0; i < size; i++) {
         String value;
@@ -182,7 +182,7 @@ ECode FilePreferencesImpl::PutSpi(
     mPrefs->SetProperty(name, value, &tmp);
     AutoPtr<ICharSequence> obj;
     CStringWrapper::New(name, (ICharSequence**)&obj);
-    return ICollection::Probe(mUpdated)->Add(obj);
+    return mUpdated->Add(obj);
 }
 
 ECode FilePreferencesImpl::RemoveNodeSpi()
@@ -205,7 +205,7 @@ ECode FilePreferencesImpl::RemoveSpi(
 
     IMap::Probe(mPrefs)->Remove(obj);
     IMap::Probe(mUpdated)->Remove(obj);
-    return ICollection::Probe(mRemoved)->Add(obj);
+    return mRemoved->Add(obj);
 }
 
 ECode FilePreferencesImpl::SyncSpi()

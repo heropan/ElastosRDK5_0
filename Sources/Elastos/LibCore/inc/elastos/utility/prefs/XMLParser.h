@@ -19,7 +19,6 @@ namespace Prefs {
  * Utility class for the Preferences import/export from XML file.
  */
 class XMLParser
-    : public Object
 {
 public:
     /***************************************************************************
