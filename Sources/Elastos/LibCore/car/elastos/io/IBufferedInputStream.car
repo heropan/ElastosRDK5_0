@@ -17,11 +17,11 @@ module
     * @implement Elastos.IO.IFilterInputStream
     */
     /**
-    * @Involved
-    * interface Elastos.IO.ICloseable;
-    * interface IInputStream;
-    * interface IFilterInputStream;
-    */
+     * @Involved
+     * interface ICloseable;
+     * interface IInputStream;
+     * interface IFilterInputStream;
+     */
     interface IBufferedInputStream {
         const Int32 DEFAULT_BUFFER_SIZE = 8192;
     }

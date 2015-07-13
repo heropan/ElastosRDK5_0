@@ -4,6 +4,11 @@ module
     namespace Elastos {
     namespace IO {
 
+    /**
+     * @Involved
+     * interface ICloseable;
+     * interface IOutputStream;
+     */
     interface IPipedOutputStream {
         /**
          * Closes this stream. If this stream is connected to an input stream, the
