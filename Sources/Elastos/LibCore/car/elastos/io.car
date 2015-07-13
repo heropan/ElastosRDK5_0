@@ -717,6 +717,11 @@ module
     }
 
     class CPipedWriter {
+        constructor();
+
+        constructor(
+            [in] IPipedReader* destination);
+
         interface IPipedWriter;
     }
 
