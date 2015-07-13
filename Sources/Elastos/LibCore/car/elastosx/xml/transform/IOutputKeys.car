@@ -40,7 +40,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String VERSION = "version";
+        const String VERSION = "version";
 
     /**
      * encoding = <var>string</var>.
@@ -56,7 +56,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      * section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String ENCODING = "encoding";
+        const String ENCODING = "encoding";
 
     /**
      * omit-xml-declaration = "yes" | "no".
@@ -67,7 +67,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String OMIT_XML_DECLARATION = "omit-xml-declaration";
+        const String OMIT_XML_DECLARATION = "omit-xml-declaration";
 
     /**
      * standalone = "yes" | "no".
@@ -78,7 +78,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String STANDALONE = "standalone";
+        const String STANDALONE = "standalone";
 
     /**
      * doctype-public = <var>string</var>.
@@ -88,7 +88,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String DOCTYPE_PUBLIC = "doctype-public";
+        const String DOCTYPE_PUBLIC = "doctype-public";
 
     /**
      * doctype-system = <var>string</var>.
@@ -119,7 +119,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String DOCTYPE_SYSTEM = "doctype-system";
+        const String DOCTYPE_SYSTEM = "doctype-system";
 
     /**
      * cdata-section-elements = <var>expanded names</var>.
@@ -133,8 +133,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation.</a>
      */
-            const String CDATA_SECTION_ELEMENTS =
-        "cdata-section-elements";
+        const String CDATA_SECTION_ELEMENTS = "cdata-section-elements";
 
     /**
      * indent = "yes" | "no".
@@ -145,7 +144,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String INDENT = "indent";
+        const String INDENT = "indent";
 
     /**
      * media-type = <var>string</var>.
@@ -160,7 +159,7 @@ module
      * @see <a href="http://www.w3.org/TR/xslt#output">
      *  section 16 of the XSL Transformations (XSLT) W3C Recommendation</a>
      */
-            const String MEDIA_TYPE = "media-type";
+        const String MEDIA_TYPE = "media-type";
     }
 
     } // namespace Transform

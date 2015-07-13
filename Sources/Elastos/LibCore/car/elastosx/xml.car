@@ -47,14 +47,14 @@ module
     merge("xml/transform/stream/IStreamResult.car");
     merge("xml/transform/stream/IStreamSource.car");
 
-    merge("xml/xpath/IXPath.car");
     merge("xml/xpath/IXPathConstants.car");
     merge("xml/xpath/IXPathExpression.car");
-    merge("xml/xpath/IXPathFactory.car");
-    merge("xml/xpath/IXPathFactoryFinder.car");
     merge("xml/xpath/IXPathFunction.car");
     merge("xml/xpath/IXPathFunctionResolver.car");
     merge("xml/xpath/IXPathVariableResolver.car");
+    merge("xml/xpath/IXPath.car");
+    merge("xml/xpath/IXPathFactory.car");
+    merge("xml/xpath/IXPathFactoryFinder.car");
 
 //    namespace Elastosx {
 //    namespace Xml {

@@ -52,24 +52,6 @@ module
      */
         GetLexicalHandler(
             [out] ILexicalHandler** handler);
-
-    /**
-     * Method setSystemId Set the systemID that may be used in association
-     * with the {@link org.xml.sax.ContentHandler}.
-     *
-     * @param systemId The system identifier as a URI string.
-     */
-        SetSystemId(
-            [in] String systemId);
-
-    /**
-     * Get the system identifier that was set with setSystemId.
-     *
-     * @return The system identifier that was set with setSystemId, or null
-     * if setSystemId was not called.
-     */
-        GetSystemId(
-            [out] String* systemId);
     }
 
     } // namespace Sax
