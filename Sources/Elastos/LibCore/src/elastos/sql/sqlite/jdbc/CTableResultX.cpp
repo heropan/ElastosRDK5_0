@@ -35,19 +35,20 @@ ECode CTableResultX::constructor(
 ECode CTableResultX::constructor(
     /* [in] */ Elastos::Sql::SQLite::ITableResult* tr)
 {
-    mColumn = ((CTableResult* )tr)->mColumn;
-    mRows = ((CTableResult* )tr)->mRows;
-    mNcolumns = ((CTableResult* )tr)->mNcolumns;
-    mNrows = ((CTableResult* )tr)->mNrows;
-    mTypes = ((CTableResult* )tr)->mTypes;
-    mMaxRows = ((CTableResult* )tr)->mMaxRows;
+    CTableResult* ctr = (CTableResult*)tr;
+    mColumn = ctr->mColumn;
+    mRows = ctr->mRows;
+    mNcolumns = ctr->mNcolumns;
+    mNrows = ctr->mNrows;
+    mTypes = ctr->mTypes;
+    mMaxRows = ctr->mMaxRows;
     sql_type = ArrayOf<Int32>::Alloc(mNcolumns);
     for (Int32 i = 0; i < mNcolumns; i++) {
         (*sql_type)[i] = ITypes::VARCHAR;
     }
-    if (((CTableResult* )tr)->mTypes != NULL) {
-        for (Int32 i = 0; i < ((CTableResult* )tr)->mTypes->GetLength(); i++) {
-            (*sql_type)[i] = CJDBCDatabaseMetaData::MapSqlType((*((CTableResult* )tr)->mTypes)[i]);
+    if (ctr->mTypes != NULL) {
+        for (Int32 i = 0; i < ctr->mTypes->GetLength(); i++) {
+            (*sql_type)[i] = CJDBCDatabaseMetaData::MapSqlType((*ctr->mTypes)[i]);
         }
     }
     return NOERROR;

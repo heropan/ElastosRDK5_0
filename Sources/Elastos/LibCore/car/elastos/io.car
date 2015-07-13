@@ -723,6 +723,10 @@ module
             [in] IPipedReader* destination);
 
         interface IPipedWriter;
+        interface IWriter;
+        interface IAppendable;
+        interface ICloseable;
+        interface IFlushable;
     }
 
     class CStreamTokenizer {

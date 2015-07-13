@@ -1,11 +1,9 @@
 
-#ifndef __CCOLLECTIONUTILS_H__
-#define __CCOLLECTIONUTILS_H__
+#ifndef __LIBCORE_UTILITY_CCOLLECTIONUTILS_H__
+#define __LIBCORE_UTILITY_CCOLLECTIONUTILS_H__
 
-#include "core/Object.h"
-#include "Singleton.h"
 #include "_Libcore_Utility_CCollectionUtils.h"
-
+#include "Singleton.h"
 
 using Elastos::Core::IComparator;
 using Elastos::Utility::IIterable;
@@ -108,4 +106,4 @@ public:
 } // namespace Utility
 } // namespace Libcore
 
-#endif // __CCOLLECTIONUTILS_H__
+#endif // __LIBCORE_UTILITY_CCOLLECTIONUTILS_H__

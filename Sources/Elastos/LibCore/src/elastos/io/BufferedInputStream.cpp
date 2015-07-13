@@ -152,7 +152,7 @@ ECode BufferedInputStream::Read(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = '\0';
+    *value = -1;
 
     AutoLock lock(this);
 
@@ -296,6 +296,8 @@ ECode BufferedInputStream::Read(
         }
         byteOffset += read;
     }
+
+    return NOERROR;
 }
 
 ECode BufferedInputStream::Reset()

@@ -9,9 +9,6 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-extern "C" const InterfaceID EIID_NodeSet =
-        { 0x0a518aeb, 0x50fc, 0x4479, { 0xbe, 0x53, 0x64, 0x6e, 0x35, 0x79, 0x81, 0x6c } };
-
 CAR_INTERFACE_IMPL(NodeSet, Object, INodeList);
 
 NodeSet::NodeSet(
@@ -22,7 +19,7 @@ NodeSet::NodeSet(
     while(nodes->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         nodes->GetNext((IInterface**)&value);
-        IList::Probe(mList)->Add(value);
+        mList->Add(value);
     }
 }
 
@@ -39,7 +36,7 @@ ECode NodeSet::Item(
 {
     VALIDATE_NOT_NULL(node);
     AutoPtr<IInterface> result;
-    ECode ec = IList::Probe(mList)->Get(index, (IInterface**)&result);
+    ECode ec = mList->Get(index, (IInterface**)&result);
     if (FAILED(ec)) {
         *node = NULL;
         return NOERROR;

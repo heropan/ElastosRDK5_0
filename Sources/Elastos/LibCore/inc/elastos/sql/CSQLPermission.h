@@ -24,9 +24,6 @@ public:
 
     CAR_OBJECT_DECL();
 
-    // CARAPI_(PInterface) Probe(
-    //     /* [in] */ REIID riid);
-
     CARAPI constructor(
         /* [in] */ const String& name);
 
