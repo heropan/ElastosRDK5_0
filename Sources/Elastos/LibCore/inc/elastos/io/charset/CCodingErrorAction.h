@@ -5,7 +5,6 @@
 #include "_Elastos_IO_Charset_CCodingErrorAction.h"
 #include "Object.h"
 
-
 namespace Elastos {
 namespace IO {
 namespace Charset {
@@ -21,13 +20,13 @@ public:
 
     CARAPI constructor();
 
-    CARAPI GetIGNORE(
+    static CARAPI GetIGNORE(
         /* [out] */ ICodingErrorAction** ignore);
 
-    CARAPI GetREPLACE(
+    static CARAPI GetREPLACE(
         /* [out] */ ICodingErrorAction** replace);
 
-    CARAPI GetREPORT(
+    static CARAPI GetREPORT(
         /* [out] */ ICodingErrorAction** report);
 
     CARAPI ToString(

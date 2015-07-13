@@ -6,7 +6,7 @@
 #include "CStringWrapper.h"
 #include "CLocaleHelper.h"
 #include "CLocale.h"
-//#include "CFormatter.h"
+#include "CFormatter.h"
 #include "CSystem.h"
 #include "utility/logging/Slogger.h"
 #include "AutoLock.h"
@@ -21,7 +21,7 @@ using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::CBufferedOutputStream;
 using Elastos::Utility::IFormatter;
-//using Elastos::Utility::CFormatter;
+using Elastos::Utility::CFormatter;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::CLocale;
 using Elastos::Utility::ILocaleHelper;
@@ -201,7 +201,7 @@ ECode PrintWriter::Format(
     }
 
     AutoPtr<IFormatter> formatter;
-    // FAIL_RETURN(CFormatter::New((IAppendable*)this->Probe(EIID_IAppendable), l, (IFormatter**)&formatter))
+    FAIL_RETURN(CFormatter::New(THIS_PROBE(IAppendable), l, (IFormatter**)&formatter))
     FAIL_RETURN(formatter->Format(format, args))
     if (mAutoflush) {
         Flush();
@@ -287,14 +287,9 @@ ECode PrintWriter::Println()
 {
     AutoLock lock(mLock);
 
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
     String separator;
     system->GetLineSeparator(&separator);

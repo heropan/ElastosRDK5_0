@@ -78,22 +78,18 @@ public:
         /* [out] */ Float* maxNumber);
 
     CARAPI OnMalformedInput(
-        /* [in] */ ICodingErrorAction* newAction,
-        /* [out] */ ICharsetEncoder** encoder);
+        /* [in] */ ICodingErrorAction* newAction);
 
     CARAPI OnUnmappableCharacter(
-        /* [in] */ ICodingErrorAction* newAction,
-        /* [out] */ ICharsetEncoder** encoder);
+        /* [in] */ ICodingErrorAction* newAction);
 
     CARAPI Replacement(
         /* [out, callee] */ ArrayOf<Byte>** replace);
 
     CARAPI ReplaceWith(
-        /* [in] */ ArrayOf<Byte>* replacement,
-        /* [out] */ ICharsetEncoder** encoder);
+        /* [in] */ ArrayOf<Byte>* replacement);
 
-    CARAPI Reset(
-        /* [out] */ ICharsetEncoder** encoder);
+    CARAPI Reset();
 
     CARAPI UnmappableCharacterAction(
         /* [out] */ ICodingErrorAction** errorAction);

@@ -684,9 +684,9 @@ module
             [in] IPipedOutputStream* ipos,
             [in] Int32 pipeSize);
 
+        interface IPipedInputStream;
         interface ICloseable;
         interface IInputStream;
-        interface IPipedInputStream;
     }
 
     class CPipedOutputStream {
@@ -711,9 +711,9 @@ module
             [in] IPipedWriter* ipw,
             [in] Int32 pipeSize);
 
+        interface IPipedReader;
         interface IReadable;
         interface IReader;
-        interface IPipedReader;
     }
 
     class CPipedWriter {
@@ -732,6 +732,7 @@ module
     class CStreamTokenizer {
         constructor(
             [in] IInputStream* is);
+
         constructor(
             [in] IReader* r);
 

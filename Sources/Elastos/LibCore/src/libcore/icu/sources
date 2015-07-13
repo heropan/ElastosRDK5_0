@@ -16,6 +16,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/etl;
 

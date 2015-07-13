@@ -1,7 +1,9 @@
-#ifndef __OUTPUTSTREAMWRITER_H__
-#define __OUTPUTSTREAMWRITER_H__
+#ifndef __ELASTOS_IO_OUTPUTSTREAMWRITER_H__
+#define __ELASTOS_IO_OUTPUTSTREAMWRITER_H__
 
 #include "Writer.h"
+
+using Elastos::IO::Charset::ICharsetEncoder;
 
 namespace Elastos {
 namespace IO {
@@ -162,10 +164,10 @@ private:
 
     AutoPtr<IOutputStream> mOut;
 
-//    AutoPtr<ICharsetEncoder> mEncoder;
+    AutoPtr<ICharsetEncoder> mEncoder;
 };
 
 } // namespace IO
 } // namespace Elastos
 
-#endif  //__OUTPUTSTREAMWRITER_H__
+#endif  //__ELASTOS_IO_OUTPUTSTREAMWRITER_H__

@@ -1,9 +1,9 @@
 
 #include "SequenceInputStream.h"
-// #include "CVector.h"
+#include "CVector.h"
 
 using Elastos::Utility::IVector;
-// using Elastos::Utility::CVector;
+using Elastos::Utility::CVector;
 
 namespace Elastos {
 namespace IO {
@@ -19,7 +19,7 @@ ECode SequenceInputStream::constructor(
     }
 
     AutoPtr<IVector> inVector;
-    // CVector::New(1, (IVector**)&inVector);
+    CVector::New(1, (IVector**)&inVector);
     inVector->AddElement(s2);
     inVector->GetElements((IEnumeration**)&mEnum);
     mIn = s1;
@@ -96,7 +96,8 @@ ECode SequenceInputStream::Read(
         }
         NextStream();
     }
-    return -1;
+    *value = -1;
+    return NOERROR;
 }
 
 ECode SequenceInputStream::Read(

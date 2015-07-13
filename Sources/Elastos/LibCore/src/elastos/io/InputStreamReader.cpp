@@ -55,17 +55,12 @@ ECode InputStreamReader::constructor(
     AutoPtr<ICharset> charset;
     FAIL_RETURN(Charset::Charset::ForName(enc, (ICharset**)&charset));
     FAIL_RETURN(charset->NewDecoder((ICharsetDecoder**)&mDecoder));
-    AutoPtr<ICodingErrorAction> action;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&action))
 
     AutoPtr<ICodingErrorAction> replace;
-    action->GetREPLACE((ICodingErrorAction **)&replace);
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction **)&replace);
 
-    AutoPtr<ICharsetDecoder> malformDecoder;
-    mDecoder->OnMalformedInput(replace, (ICharsetDecoder **)&malformDecoder);
-
-    AutoPtr<ICharsetDecoder> unMappableDecoder;
-    malformDecoder->OnUnmappableCharacter(replace, (ICharsetDecoder **)&unMappableDecoder);
+    mDecoder->OnMalformedInput(replace);
+    mDecoder->OnUnmappableCharacter(replace);
     return IBuffer::Probe(mBytes)->SetLimit(0);
 }
 
@@ -91,17 +86,11 @@ ECode InputStreamReader::constructor(
 
     mIn = in;
     charset->NewDecoder((ICharsetDecoder**)&mDecoder);
-    AutoPtr<ICodingErrorAction> action;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&action))
-
     AutoPtr<ICodingErrorAction> replace;
-    action->GetREPLACE((ICodingErrorAction **)&replace);
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction **)&replace);
 
-    AutoPtr<ICharsetDecoder> malformDecoder;
-    mDecoder->OnMalformedInput(replace, (ICharsetDecoder **)&malformDecoder);
-
-    AutoPtr<ICharsetDecoder> unMappableDecoder;
-    malformDecoder->OnUnmappableCharacter(replace, (ICharsetDecoder **)&unMappableDecoder);
+    mDecoder->OnMalformedInput(replace);
+    mDecoder->OnUnmappableCharacter(replace);
     return IBuffer::Probe(mBytes)->SetLimit(0);
 }
 

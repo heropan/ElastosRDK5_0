@@ -372,8 +372,7 @@ module
          * IllegalArgumentException | if {newAction} is {null}.
          */
         OnMalformedInput(
-            [in] ICodingErrorAction* newAction,
-            [out] ICharsetDecoder** decode);
+            [in] ICodingErrorAction* newAction);
 
         /**
          * Sets this decoder's action on unmappable character errors.
@@ -392,8 +391,7 @@ module
          *  IllegalArgumentException | if {newAction} is {null}.
          */
         OnUnmappableCharacter(
-            [in] ICodingErrorAction* newAction,
-            [out] ICharsetDecoder** decoder);
+            [in] ICodingErrorAction* newAction);
 
         /**
          * Gets the replacement string, which is never null or empty.

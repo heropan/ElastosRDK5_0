@@ -96,7 +96,11 @@ ECode FileInputStream::Available(
     mFd->GetDescriptor(&fd);
     AutoPtr<CIoBridge> ioBridge;
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
-    // return IoUtils::Libcore2IoECode(ioBridge->Available(fd, avail));
+    ECode ec = ioBridge->Available(fd, avail);
+    if (FAILED(ec)) {
+        return E_IO_EXCEPTION;
+    }
+    return NOERROR;
 }
 
 ECode FileInputStream::Close()

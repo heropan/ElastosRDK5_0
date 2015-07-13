@@ -1,5 +1,7 @@
 
 #include "NativeConverter.h"
+#include "charset/CCodingErrorAction.h"
+
 #include <unicode/utypes.h>
 #include <unicode/ucnv.h>
 #include <unicode/uniset.h>
@@ -11,6 +13,7 @@
 
 
 using Elastos::Utility::Etl::Vector;
+using Elastos::IO::Charset::CCodingErrorAction;
 
 namespace Libcore {
 namespace ICU {
@@ -601,11 +604,11 @@ ECode NativeConverter::TranslateCodingErrorAction(
     /* [out] */ Int32* rev)
 {
     AutoPtr<ICodingErrorAction> report;
-    action->GetREPORT((ICodingErrorAction**)&report);
+    CCodingErrorAction::GetREPORT((ICodingErrorAction**)&report);
     AutoPtr<ICodingErrorAction> ignore;
-    action->GetIGNORE((ICodingErrorAction**)&ignore);
+    CCodingErrorAction::GetIGNORE((ICodingErrorAction**)&ignore);
     AutoPtr<ICodingErrorAction> replace;
-    action->GetREPLACE((ICodingErrorAction**)&replace);
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&replace);
     if (action == report) {
         *rev = 0;
         return NOERROR;

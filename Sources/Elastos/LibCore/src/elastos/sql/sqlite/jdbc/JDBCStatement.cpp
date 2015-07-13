@@ -120,6 +120,8 @@ ECode JDBCStatement::ExecuteBatch(
     /* [out, callee] */ ArrayOf<Int32> ** value)
 {
     VALIDATE_NOT_NULL(*value);
+    *value = NULL;
+
     AutoPtr<ArrayOf<Int32> > ret;
     if (batch.IsEmpty()) {
         *value = ArrayOf<Int32>::Alloc(0);
@@ -131,23 +133,24 @@ ECode JDBCStatement::ExecuteBatch(
         (*ret)[i] = Elastos::Sql::IStatement::EXECUTE_FAILED;
     }
     Int32 errs = 0;
+    ECode ec = NOERROR;
+    Boolean bval = FALSE;
     for (Int32 i = 0; i < ret->GetLength(); i++) {
         // try {
-        Boolean Exflag = FALSE;
-        Execute(batch[i], &Exflag);
-        (*ret)[i] = updcnt;
-        // } catch (SQLException e) {
-        if (!Exflag)
-        {
+        ec = Execute(batch[i], &bval);
+        if (FAILED(ec)) {
             ++errs;
         }
+        else {
+            (*ret)[i] = updcnt;
+        }
+        // } catch (SQLException e) {
+        //    ++errs;
         // }
     }
     if (errs > 0) {
         // throw new BatchUpdateException("batch failed", ret);
-        *value = ArrayOf<Int32>::Alloc(0);
-        REFCOUNT_ADD(*value);
-        return NOERROR;
+        return E_BATCH_UPDATE_EXCEPTION;
     }
 
     *value = ret;

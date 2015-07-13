@@ -5,9 +5,13 @@
 #include "CStringWrapper.h"
 #include "Charset.h"
 #include "AutoLock.h"
+#include "CCodingErrorAction.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::IO::Charset::ICharset;
+using Elastos::IO::Charset::ICodingErrorAction;
+using Elastos::IO::Charset::CCodingErrorAction;
+using Elastos::IO::Charset::ICoderResult;
 
 namespace Elastos {
 namespace IO {
@@ -28,8 +32,7 @@ ECode OutputStreamWriter::constructor(
 {
     AutoPtr<ICharset> cs;
     Charset::Charset::DefaultCharset((ICharset**)&cs);
-    String charsetName;
-    IObject::Probe(cs)->ToString(&charsetName);
+    String charsetName = Object::ToString(cs);
     return constructor(out, charsetName);
 }
 
@@ -39,31 +42,37 @@ ECode OutputStreamWriter::constructor(
 {
     FAIL_RETURN(Writer::constructor(ISynchronize::Probe(out)));
 
-    // if (charsetName null) {
-    //     throw new NullPointerException("charsetName == null");
-    // }
+    if (charsetName.IsNull()) {
+        // throw new NullPointerException("charsetName == null");
+        return E_NULL_POINTER_EXCEPTION;
+    }
     mOut = out;
     // try {
-    //     encoder = Charset.forName(charsetName).newEncoder();
+    AutoPtr<ICharset> cs;
+    Charset::Charset::ForName(charsetName, (ICharset**)&cs);
+    ECode ec = cs->NewEncoder((ICharsetEncoder**)&mEncoder);
+    if (FAILED(ec)) {
+        return E_UNSUPPORTED_ENCODING_EXCEPTION;
+    }
     // } catch (Exception e) {
     //     throw new UnsupportedEncodingException(charsetName);
     // }
-    // encoder.onMalformedInput(CodingErrorAction.REPLACE);
-    // encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+    AutoPtr<ICodingErrorAction> replace;
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&replace);
+    mEncoder->OnMalformedInput(replace);
+    mEncoder->OnUnmappableCharacter(replace);
     return NOERROR;
 }
 
 ECode OutputStreamWriter::Close()
 {
     AutoLock lock(mLock);
-    // if (mEncoder != NULL) {
-    //     mEncoder->Flush(mBuf);
-    if (mOut != NULL) {
-         Flush();
-         IFlushable::Probe(mOut)->Flush();
-         ICloseable::Probe(mOut)->Close();
-    //     mEncoder = NULL;
-         mBytes = NULL;
+    if (mEncoder != NULL) {
+        DrainEncoder();
+        FlushBytes(FALSE);
+        IFlushable::Probe(mOut)->Flush();
+        ICloseable::Probe(mOut)->Close();
+        mBytes = NULL;
     }
 
     return NOERROR;
@@ -102,9 +111,11 @@ ECode OutputStreamWriter::FlushBytes(
 ECode OutputStreamWriter::Convert(
     /* [in] */ ICharBuffer* chars)
 {
+    Boolean bval;
     while (TRUE) {
-//        CoderResult result = encoder.encode(chars, bytes, false);
-        // TODO:
+        AutoPtr<ICoderResult> result;
+        mEncoder->Encode(chars, mBytes, FALSE, (ICoderResult**)&result);
+
         Int32 count;
         chars->GetLength(&count);
         for(Int32 i = 0; i < count; ++i) {
@@ -112,13 +123,14 @@ ECode OutputStreamWriter::Convert(
             chars->Get(&ch);
             mBytes->Put((Byte)ch);
         }
-//        if (result.isOverflow()) {
-//            // Make room and try again.
-        FlushBytes(FALSE);
-//        continue;
-//        } else if (result.isError()) {
-//            result.throwException();
-//        }
+        if (result->IsOverflow(&bval), bval) {
+            // Make room and try again.
+            FlushBytes(FALSE);
+            continue;
+        }
+        else if (result->IsError(&bval), bval) {
+            return result->ThrowException();
+        }
         break;
     }
     return NOERROR;
@@ -127,42 +139,50 @@ ECode OutputStreamWriter::Convert(
 ECode OutputStreamWriter::DrainEncoder()
 {
     assert(0);
-    // // Strictly speaking, I think it's part of the CharsetEncoder contract that you call
-    // // encode with endOfInput true before flushing. Our ICU-based implementations don't
-    // // actually need this, and you'd hope that any reasonable implementation wouldn't either.
-    // // CharsetEncoder.encode doesn't actually pass the boolean through to encodeLoop anyway!
-    // CharBuffer chars = CharBuffer.allocate(0);
-    // while (true) {
-    //     CoderResult result = encoder.encode(chars, bytes, true);
-    //     if (result.isError()) {
-    //         result.throwException();
-    //     } else if (result.isOverflow()) {
-    //         flushBytes(false);
-    //         continue;
-    //     }
-    //     break;
-    // }
+    // Strictly speaking, I think it's part of the CharsetEncoder contract that you call
+    // encode with endOfInput true before flushing. Our ICU-based implementations don't
+    // actually need this, and you'd hope that any reasonable implementation wouldn't either.
+    // CharsetEncoder.encode doesn't actually pass the boolean through to encodeLoop anyway!
+    AutoPtr<ICharBuffer> chars;
+    CharBuffer::Allocate(0, (ICharBuffer**)&chars);
+    Boolean bval;
+    while (TRUE) {
+        AutoPtr<ICoderResult> result;
+        mEncoder->Encode(chars, mBytes, TRUE, (ICoderResult**)&result);
+        if (result->IsError(&bval), bval) {
+            return result->ThrowException();
+        }
+        else if (result->IsOverflow(&bval), bval) {
+            FlushBytes(FALSE);
+            continue;
+        }
+        break;
+    }
 
-    // // Some encoders (such as ISO-2022-JP) have stuff to write out after all the
-    // // characters (such as shifting back into a default state). In our implementation,
-    // // this is actually the first time ICU is told that we've run out of input.
-    // CoderResult result = encoder.flush(bytes);
-    // while (!result.isUnderflow()) {
-    //     if (result.isOverflow()) {
-    //         flushBytes(false);
-    //         result = encoder.flush(bytes);
-    //     } else {
-    //         result.throwException();
-    //     }
-    // }
-    return E_NOT_IMPLEMENTED;
+    // Some encoders (such as ISO-2022-JP) have stuff to write out after all the
+    // characters (such as shifting back into a default state). In our implementation,
+    // this is actually the first time ICU is told that we've run out of input.
+    AutoPtr<ICoderResult> result;
+    mEncoder->Flush(mBytes, (ICoderResult**)&result);
+    while (result->IsUnderflow(&bval), !bval) {
+        if (result->IsOverflow(&bval), bval) {
+            FlushBytes(false);
+            result = NULL;
+            mEncoder->Flush(mBytes, (ICoderResult**)&result);
+        }
+        else {
+            return result->ThrowException();
+        }
+    }
+    return NOERROR;
 }
 
 ECode OutputStreamWriter::CheckStatus()
 {
-//     if (mEncoder == NULL) {
-// //        throw new IOException("OutputStreamWriter is closed");
-//     }
+    if (mEncoder == NULL) {
+        return E_IO_EXCEPTION;
+//        throw new IOException("OutputStreamWriter is closed");
+    }
     return NOERROR;
 }
 
@@ -171,13 +191,14 @@ ECode OutputStreamWriter::GetEncoding(
 {
     VALIDATE_NOT_NULL(encoding);
 
-    *encoding = String("UTF-8");
-    // if (mEncoder == NULL) {
-    //     *encoding = String(NULL);
-    //     return NOERROR;
-    // }
-    // return HistoricalNamesUtil.getHistoricalName(encoder.charset().name());
-    return NOERROR;
+    if (mEncoder == NULL) {
+        *encoding = String(NULL);
+        return NOERROR;
+    }
+
+    AutoPtr<ICharset> cs;
+    mEncoder->GetCharset((ICharset**)&cs);
+    return cs->GetName(encoding);
 }
 
 ECode OutputStreamWriter::Write(

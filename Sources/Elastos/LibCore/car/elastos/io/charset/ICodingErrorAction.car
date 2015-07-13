@@ -5,6 +5,15 @@ module
     namespace Charset {
 
     interface ICodingErrorAction {
+
+    }
+
+    /**
+     * Used to indicate what kind of actions to take in case of encoding/decoding
+     * errors. Currently three actions are defined: {IGNORE}, {REPLACE}
+     * and {REPORT}.
+     */
+    interface ICodingErrorActionHelper {
         /**
          * Denotes the action to ignore any errors.
          */
@@ -25,13 +34,6 @@ module
          */
         GetREPORT(
             [out] ICodingErrorAction** report);
-    }
-    /**
-     * Used to indicate what kind of actions to take in case of encoding/decoding
-     * errors. Currently three actions are defined: {IGNORE}, {REPLACE}
-     * and {REPORT}.
-     */
-    interface ICodingErrorActionHelper {
     }
 
     } // namespace Charset

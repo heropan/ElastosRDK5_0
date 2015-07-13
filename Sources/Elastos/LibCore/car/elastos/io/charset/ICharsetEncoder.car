@@ -393,8 +393,7 @@ module
          * IllegalArgumentException | if the given newAction is null.
          */
         OnMalformedInput(
-            [in] ICodingErrorAction* newAction,
-            [out] ICharsetEncoder** encoder);
+            [in] ICodingErrorAction* newAction);
 
         /**
          * Sets this encoder's action on unmappable character error.
@@ -414,8 +413,7 @@ module
          */
 
         OnUnmappableCharacter(
-            [in] ICodingErrorAction* newAction,
-            [out] ICharsetEncoder** encoder);
+            [in] ICodingErrorAction* newAction);
 
         /**
          * Gets the replacement byte array, which is never null or empty.
@@ -443,8 +441,7 @@ module
          * IllegalArgumentException | if the given replacement cannot satisfy the requirement mentioned above.
          */
         ReplaceWith(
-            [in] ArrayOf<Byte>* replacement,
-            [out] ICharsetEncoder** encoder);
+            [in] ArrayOf<Byte>* replacement);
 
         /**
          * Resets this encoder. This method will reset the internal status and then

@@ -41,10 +41,9 @@ ECode CharsetDecoder::Init(
     mMaxCharsPerByte = maxCharsPerByte;
     mCs = charset;
     mStatus = INIT;
-    AutoPtr<ICodingErrorAction> action;
-    ASSERT_SUCCEEDED(CCodingErrorAction::New((ICodingErrorAction**)&action));
+
     AutoPtr<ICodingErrorAction> report;
-    action->GetREPORT((ICodingErrorAction**)&report);
+    CCodingErrorAction::GetREPORT((ICodingErrorAction**)&report);
     mMalformedInputAction = report;
     mUnmappableCharacterAction = report;
     mReplacementChars = "\ufffd";
@@ -179,10 +178,8 @@ ECode CharsetDecoder::Decode(
             action = mUnmappableCharacterAction;
         }
         // If the action is IGNORE or REPLACE, we should continue decoding.
-        AutoPtr<ICodingErrorAction> codingErrorAction;
-        FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&codingErrorAction));
         AutoPtr<ICodingErrorAction> REPLACE;
-        codingErrorAction->GetREPLACE((ICodingErrorAction**)&REPLACE);
+        CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&REPLACE);
         if (_CObject_Compare(action, REPLACE)) {
             Int32 remaining = 0;
             assert(charBuffer != NULL);
@@ -195,7 +192,7 @@ ECode CharsetDecoder::Decode(
         }
         else {
             AutoPtr<ICodingErrorAction> IGNORE;
-            codingErrorAction->GetIGNORE((ICodingErrorAction**)&IGNORE);
+            CCodingErrorAction::GetIGNORE((ICodingErrorAction**)&IGNORE);
             if (!_CObject_Compare(action, IGNORE)){
                 return NOERROR;
             }
@@ -267,28 +264,20 @@ ECode CharsetDecoder::MaxCharsPerByte(
 }
 
 ECode CharsetDecoder::OnMalformedInput(
-    /* [in] */ ICodingErrorAction* newAction,
-    /* [out] */ ICharsetDecoder** decoder)
+    /* [in] */ ICodingErrorAction* newAction)
 {
     VALIDATE_NOT_NULL(newAction)
-    VALIDATE_NOT_NULL(decoder)
     mMalformedInputAction = newAction;
     ImplOnMalformedInput(newAction);
-    *decoder = (ICharsetDecoder*)this;
-    REFCOUNT_ADD(*decoder)
     return NOERROR;
 }
 
 ECode CharsetDecoder::OnUnmappableCharacter(
-    /* [in] */ ICodingErrorAction* newAction,
-    /* [out] */ ICharsetDecoder** decoder)
+    /* [in] */ ICodingErrorAction* newAction)
 {
     VALIDATE_NOT_NULL(newAction)
-    VALIDATE_NOT_NULL(decoder)
     mUnmappableCharacterAction = newAction;
     ImplOnUnmappableCharacter(newAction);
-    *decoder = (ICharsetDecoder*)this;
-    REFCOUNT_ADD(*decoder)
     return NOERROR;
 }
 
@@ -375,10 +364,8 @@ ECode CharsetDecoder::CheckCoderResult(
 {
     VALIDATE_NOT_NULL(result)
     Boolean ret = FALSE;
-    AutoPtr<ICodingErrorAction> action;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction**)&action))
     AutoPtr<ICodingErrorAction> REPORT;
-    action->GetREPORT((ICodingErrorAction**)&REPORT);
+    CCodingErrorAction::GetREPORT((ICodingErrorAction**)&REPORT);
     if ((result->IsMalformed(&ret), ret) && _CObject_Compare(mMalformedInputAction, REPORT)) {
         // throw new MalformedInputException(result.length());
         return E_MALFORMED_INPUT_EXCEPTION;

@@ -287,8 +287,7 @@ public:
      *             if {@code newAction} is {@code null}.
      */
     CARAPI OnMalformedInput(
-        /* [in] */ ICodingErrorAction* newAction,
-        /* [out] */ ICharsetDecoder** charsetDecoder);
+        /* [in] */ ICodingErrorAction* newAction);
 
     /**
      * Sets this decoder's action on unmappable character errors.
@@ -304,8 +303,7 @@ public:
      *             if {@code newAction} is {@code null}.
      */
     CARAPI OnUnmappableCharacter(
-        /* [in] */ ICodingErrorAction* newAction,
-        /* [out] */ ICharsetDecoder** charsetDecoder);
+        /* [in] */ ICodingErrorAction* newAction);
 
     /**
      * Returns the replacement string, which is never null or empty.

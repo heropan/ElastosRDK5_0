@@ -71,10 +71,8 @@ ECode CharsetEncoder::Init(
     mMaxBytesPerChar = maxBytesPerChar;
     mStatus = INIT;
 
-    AutoPtr<ICodingErrorAction> action;
-    ASSERT_SUCCEEDED(CCodingErrorAction::New((ICodingErrorAction** )&action));
     AutoPtr<ICodingErrorAction> report;
-    action->GetREPORT((ICodingErrorAction **)&report);
+    CCodingErrorAction::GetREPORT((ICodingErrorAction **)&report);
     mMalformedInputAction = report;
     mUnmappableCharacterAction = report;
 
@@ -84,8 +82,7 @@ ECode CharsetEncoder::Init(
         mReplacementBytes = replacement;
     }
     else {
-        AutoPtr<ICharsetEncoder> encoder;
-        FAIL_RETURN(ReplaceWith(replacement, (ICharsetEncoder**)&encoder))
+        FAIL_RETURN(ReplaceWith(replacement))
     }
 
     return NOERROR;
@@ -150,8 +147,8 @@ ECode CharsetEncoder::Encode(
     if (remaining == 0) {
         return ByteBuffer::Allocate(0, byteBuffer);
     }
-    AutoPtr<ICharsetEncoder> encoder;
-    FAIL_RETURN(Reset((ICharsetEncoder**)&encoder));
+
+    FAIL_RETURN(Reset());
 
     FAIL_RETURN(IBuffer::Probe(charBuffer)->GetRemaining(&remaining));
     Int32 length = (Int32) (remaining * mAverageBytesPerChar);
@@ -277,12 +274,10 @@ ECode CharsetEncoder::Encode(
         // If the action is IGNORE or REPLACE, we should continue
         // encoding.
 
-        AutoPtr<ICodingErrorAction> codingErrorAction;
-        ASSERT_SUCCEEDED(CCodingErrorAction::New((ICodingErrorAction** )&codingErrorAction));
         AutoPtr<ICodingErrorAction> REPLACE;
         AutoPtr<ICodingErrorAction> IGNORE;
-        codingErrorAction->GetREPLACE((ICodingErrorAction **)&REPLACE);
-        codingErrorAction->GetIGNORE((ICodingErrorAction **)&IGNORE);
+        CCodingErrorAction::GetREPLACE((ICodingErrorAction **)&REPLACE);
+        CCodingErrorAction::GetIGNORE((ICodingErrorAction **)&IGNORE);
 
         if (_CObject_Compare(action, REPLACE)) {
             Int32 remaining = 0;
@@ -347,15 +342,11 @@ ECode CharsetEncoder::IsLegalReplacement(
     if (mDecoder == NULL) {
         FAIL_RETURN(mCs->NewDecoder((ICharsetDecoder**)&mDecoder));
 
-        AutoPtr<ICodingErrorAction> codingErrorAction;
-        FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&codingErrorAction));
         AutoPtr<ICodingErrorAction> REPORT;
-        AutoPtr<ICharsetDecoder> decoder;
-        codingErrorAction->GetREPORT((ICodingErrorAction **)&REPORT);
+        CCodingErrorAction::GetREPORT((ICodingErrorAction **)&REPORT);
 
-        FAIL_RETURN(mDecoder->OnMalformedInput(REPORT.Get(), (ICharsetDecoder**)&decoder));
-        decoder = NULL;
-        FAIL_RETURN(mDecoder->OnUnmappableCharacter(REPORT.Get(), (ICharsetDecoder**)&decoder));
+        FAIL_RETURN(mDecoder->OnMalformedInput(REPORT.Get()))
+        FAIL_RETURN(mDecoder->OnUnmappableCharacter(REPORT.Get()))
     }
     AutoPtr<IByteBuffer> in;
     FAIL_RETURN(ByteBuffer::Wrap(replacement, (IByteBuffer**)&in));
@@ -391,33 +382,21 @@ ECode CharsetEncoder::MaxBytesPerChar(
 }
 
 ECode CharsetEncoder::OnMalformedInput(
-    /* [in] */ ICodingErrorAction* newAction,
-    /* [out] */ ICharsetEncoder** encoder)
+    /* [in] */ ICodingErrorAction* newAction)
 {
     VALIDATE_NOT_NULL(newAction);
 
     mMalformedInputAction = newAction;
-    ECode ec = ImplOnMalformedInput(newAction);
-    if (SUCCEEDED(ec)) {
-        *encoder = (ICharsetEncoder*)this;
-        REFCOUNT_ADD(*encoder)
-    }
-    return ec;
+    return ImplOnMalformedInput(newAction);
 }
 
 ECode CharsetEncoder::OnUnmappableCharacter(
-    /* [in] */ ICodingErrorAction* newAction,
-    /* [out] */ ICharsetEncoder** encoder)
+    /* [in] */ ICodingErrorAction* newAction)
 {
     VALIDATE_NOT_NULL(newAction);
 
     mUnmappableCharacterAction = newAction;
-    ECode ec = ImplOnUnmappableCharacter(newAction);
-    if (SUCCEEDED(ec)) {
-        *encoder = (ICharsetEncoder*)this;
-        REFCOUNT_ADD(*encoder)
-    }
-    return ec;
+    return ImplOnUnmappableCharacter(newAction);
 }
 
 ECode CharsetEncoder::Replacement(
@@ -430,11 +409,8 @@ ECode CharsetEncoder::Replacement(
 }
 
 ECode CharsetEncoder::ReplaceWith(
-    /* [in] */ ArrayOf<Byte>* replacement,
-    /* [out] */ ICharsetEncoder** encoder)
+    /* [in] */ ArrayOf<Byte>* replacement)
 {
-    VALIDATE_NOT_NULL(encoder);
-    *encoder = NULL;
     VALIDATE_NOT_NULL(replacement);
 
     if (replacement->GetLength() == 0) {
@@ -457,19 +433,13 @@ ECode CharsetEncoder::ReplaceWith(
     // It seems like a bug, but the RI doesn't clone, and we have tests that check we don't.
     mReplacementBytes = replacement;
     FAIL_RETURN(ImplReplaceWith(mReplacementBytes));
-    *encoder = (ICharsetEncoder*)this;
-    REFCOUNT_ADD(*encoder)
     return NOERROR;
 }
 
-ECode CharsetEncoder::Reset(
-    /* [out] */ ICharsetEncoder** encoder)
+ECode CharsetEncoder::Reset()
 {
-    VALIDATE_NOT_NULL(encoder);
     mStatus = INIT;
     FAIL_RETURN(ImplReset());
-    *encoder = (ICharsetEncoder*)this;
-    REFCOUNT_ADD(*encoder)
     return NOERROR;
 }
 
@@ -521,8 +491,9 @@ ECode CharsetEncoder::ImplCanEncode(
     /* [in] */ ICharBuffer* cb,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(cb);
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    VALIDATE_NOT_NULL(cb)
 
     if (mStatus == FLUSH || mStatus == INIT) {
         mStatus = READY;
@@ -533,15 +504,11 @@ ECode CharsetEncoder::ImplCanEncode(
     }
     AutoPtr<ICodingErrorAction> malformBak = mMalformedInputAction;
     AutoPtr<ICodingErrorAction> unmapBak = mUnmappableCharacterAction;
-    AutoPtr<ICodingErrorAction> codingErrorAction;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction**)&codingErrorAction));
     AutoPtr<ICodingErrorAction> REPORT;
-    codingErrorAction->GetREPORT((ICodingErrorAction**)&REPORT);
+    CCodingErrorAction::GetREPORT((ICodingErrorAction**)&REPORT);
 
-    AutoPtr<ICharsetEncoder> encoder;
-    FAIL_RETURN(OnMalformedInput(REPORT.Get(), (ICharsetEncoder**)&encoder));
-    encoder = NULL;
-    FAIL_RETURN(OnUnmappableCharacter(REPORT.Get(), (ICharsetEncoder**)&encoder));
+    FAIL_RETURN(OnMalformedInput(REPORT.Get()))
+    FAIL_RETURN(OnUnmappableCharacter(REPORT.Get()))
     *result = TRUE;
 
     AutoPtr<IByteBuffer> bb;
@@ -549,11 +516,9 @@ ECode CharsetEncoder::ImplCanEncode(
         *result = FALSE;
     }
 
-    encoder = NULL;
-    FAIL_RETURN(OnMalformedInput(malformBak, (ICharsetEncoder**)&encoder));
-    encoder = NULL;
-    FAIL_RETURN(OnUnmappableCharacter(unmapBak, (ICharsetEncoder**)&encoder));
-    FAIL_RETURN(Reset((ICharsetEncoder**)&encoder));
+    FAIL_RETURN(OnMalformedInput(malformBak))
+    FAIL_RETURN(OnUnmappableCharacter(unmapBak))
+    FAIL_RETURN(Reset())
     return NOERROR;
 }
 
@@ -561,10 +526,9 @@ ECode CharsetEncoder::CheckCoderResult(
     /* [in] */ ICoderResult* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoPtr<ICodingErrorAction> codingErrorAction;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&codingErrorAction));
+
     AutoPtr<ICodingErrorAction> REPORT;
-    codingErrorAction->GetREPORT((ICodingErrorAction **)&REPORT);
+    CCodingErrorAction::GetREPORT((ICodingErrorAction **)&REPORT);
     Boolean isEnable = FALSE;
 
     if (_CObject_Compare(mMalformedInputAction, REPORT) && (result->IsMalformed(&isEnable), isEnable)) {

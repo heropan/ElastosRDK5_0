@@ -195,20 +195,12 @@ ECode Charset::Encode(
     AutoPtr<ICharsetEncoder> encoder;
     FAIL_RETURN(NewEncoder((ICharsetEncoder **)&encoder));
 
-    AutoPtr<ICodingErrorAction> action;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction**)&action))
     AutoPtr<ICodingErrorAction> replace;
-    action->GetREPLACE((ICodingErrorAction **)&replace);
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction **)&replace);
 
-    AutoPtr<ICharsetEncoder> malformEncoder;
-    FAIL_RETURN(encoder->OnMalformedInput(replace,
-        (ICharsetEncoder **)&malformEncoder));
-
-    AutoPtr<ICharsetEncoder> unMappableEncoder;
-    FAIL_RETURN(malformEncoder->OnUnmappableCharacter(replace,
-        (ICharsetEncoder **)&unMappableEncoder));
-
-    FAIL_RETURN(unMappableEncoder->Encode(buffer, byteBuffer));
+    FAIL_RETURN(encoder->OnMalformedInput(replace));
+    FAIL_RETURN(encoder->OnUnmappableCharacter(replace));
+    FAIL_RETURN(encoder->Encode(buffer, byteBuffer));
 
     return NOERROR;
 }
@@ -237,19 +229,12 @@ ECode Charset::Decode(
     AutoPtr<ICharsetDecoder> decoder;
     FAIL_RETURN(NewDecoder((ICharsetDecoder **)&decoder));
 
-    AutoPtr<ICodingErrorAction> action;
-    FAIL_RETURN(CCodingErrorAction::New((ICodingErrorAction** )&action))
-
     AutoPtr<ICodingErrorAction> replace;
-    action->GetREPLACE((ICodingErrorAction **)&replace);
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction **)&replace);
 
-    AutoPtr<ICharsetDecoder> malformDecoder;
-    FAIL_RETURN(decoder->OnMalformedInput(replace, (ICharsetDecoder **)&malformDecoder));
-
-    AutoPtr<ICharsetDecoder> unMappableDecoder;
-    FAIL_RETURN(malformDecoder->OnUnmappableCharacter(replace, (ICharsetDecoder **)&unMappableDecoder));
-
-    FAIL_RETURN(unMappableDecoder->Decode(buffer, charBuffer));
+    FAIL_RETURN(decoder->OnMalformedInput(replace))
+    FAIL_RETURN(decoder->OnUnmappableCharacter(replace))
+    FAIL_RETURN(decoder->Decode(buffer, charBuffer))
 
     return NOERROR;
 }

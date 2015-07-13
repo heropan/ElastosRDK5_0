@@ -76,6 +76,7 @@ ECode StreamTokenizer::SetEolIsSignificant(
 ECode StreamTokenizer::GetLineno(
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
     *rev = mLineNumber;
     return NOERROR;
 }
@@ -90,6 +91,8 @@ ECode StreamTokenizer::SetLowerCaseMode(
 ECode StreamTokenizer::GetNextToken(
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+
     if (mPushBackToken) {
         mPushBackToken = FALSE;
         if (mTtype != TT_UNKNOWN) {
@@ -163,7 +166,7 @@ ECode StreamTokenizer::GetNextToken(
             if (currentChar == '.') {
                 haveDecimal = TRUE;
             }
-            digits->Append((char) currentChar);
+            digits->AppendChar(currentChar);
             Read(&currentChar);
             if ((currentChar < '0' || currentChar > '9')
                     && (haveDecimal || currentChar != '.')) {
@@ -192,7 +195,7 @@ ECode StreamTokenizer::GetNextToken(
     if ((currentType & TOKEN_WORD) != 0) {
         AutoPtr<StringBuilder> word = new StringBuilder(20);
         while (TRUE) {
-            word->Append((char) currentChar);
+            word->AppendChar(currentChar);
             Read(&currentChar);
             if (-1 == currentChar
                     || (currentChar < 256 && ((*mTokenTypes)[currentChar] & (TOKEN_WORD | TOKEN_DIGIT)) == 0)) {
@@ -237,7 +240,7 @@ ECode StreamTokenizer::GetNextToken(
                     }
                     if (!readPeek) {
                         // We've consumed one to many
-                        quoteString->Append((char) digitValue);
+                        quoteString->AppendChar( digitValue);
                         peekOne = c1;
                     } else {
                         peekOne = digitValue;
@@ -271,7 +274,7 @@ ECode StreamTokenizer::GetNextToken(
                 }
             }
             if (readPeek) {
-                quoteString->Append((char) peekOne);
+                quoteString->AppendChar( peekOne);
                 Read(&peekOne);
             }
         }
@@ -440,9 +443,9 @@ ECode StreamTokenizer::ToString(
             if (mTtype == TT_UNKNOWN || (*mTokenTypes)[mTtype] == TOKEN_QUOTE) {
                 result->Append(mSval);
             } else {
-                result->Append('\'');
-                result->Append((char) mTtype);
-                result->Append('\'');
+                result->AppendChar('\'');
+                result->AppendChar( mTtype);
+                result->AppendChar('\'');
             }
     }
     result->Append("], line ");
@@ -520,6 +523,9 @@ ECode StreamTokenizer::constructor()
 ECode StreamTokenizer::Read(
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+    *rev = -1;
+
     // Call the read for the appropriate stream
     if (NULL == mInStream) {
         FAIL_RETURN(mInReader->Read(rev));
