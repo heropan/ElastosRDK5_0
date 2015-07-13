@@ -31,7 +31,7 @@
 #include "CPipedOutputStream.h"
 #include "CPipedReader.h"
 #include "CPipedWriter.h"
-
+#include "CStreamTokenizer.h"
 
 namespace Elastos {
 namespace IO {
@@ -99,6 +99,8 @@ CAR_OBJECT_IMPL(CPipedOutputStream)
 CAR_OBJECT_IMPL(CPipedReader)
 
 CAR_OBJECT_IMPL(CPipedWriter)
+
+CAR_OBJECT_IMPL(CStreamTokenizer)
 
 } // namespace IO
 } // namespace Elastos

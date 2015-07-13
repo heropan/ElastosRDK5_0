@@ -725,6 +725,15 @@ module
         interface IPipedWriter;
     }
 
+    class CStreamTokenizer {
+        constructor(
+            [in] IInputStream* is);
+        constructor(
+            [in] IReader* r);
+
+        interface IStreamTokenizer;
+    }
+
     namespace Channels {
 
         singleton class CChannels {

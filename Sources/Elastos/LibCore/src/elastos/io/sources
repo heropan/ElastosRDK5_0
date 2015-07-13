@@ -67,11 +67,7 @@ SOURCES += FileOutputStream.cpp
 SOURCES += CFilePermission.cpp
 SOURCES += FileReader.cpp
 SOURCES += FileWriter.cpp
-
-#TODO
-#PipedReader
-#PipedWriter
-#StreamTokenizer
+SOURCES += StreamTokenizer.cpp
 
 # For Serializable(not surport now)
 # EmulatedFields
