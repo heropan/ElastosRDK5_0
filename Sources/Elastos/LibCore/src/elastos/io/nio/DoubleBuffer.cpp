@@ -2,9 +2,12 @@
 #include "DoubleBuffer.h"
 #include "CoreUtils.h"
 #include "CArrayOf.h"
+#include "DoubleArrayBuffer.h"
+#include "Arrays.h"
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -35,8 +38,8 @@ ECode DoubleBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    assert(0 && "TODO");
-    // *buf = (IDoubleBuffer*) new ReadWriteDoubleArrayBuffer(capacity);
+    AutoPtr< ArrayOf<Double> > res = ArrayOf<Double>::Alloc(capacity);
+    *buf = (IDoubleBuffer*) new DoubleArrayBuffer(res);;
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -56,12 +59,12 @@ ECode DoubleBuffer::Wrap(
 {
     VALIDATE_NOT_NULL(buf);
 
-    assert(0 && "TODO");
-    // Arrays.checkOffsetAndCount(array.length, start, doubleCount);
-    // DoubleBuffer buf = new DoubleArrayBuffer(array);
-    // buf.position = start;
-    // buf.limit = start + doubleCount;
-    // return buf;
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, doubleCount));
+    AutoPtr<DoubleBuffer> buffer = new DoubleArrayBuffer(array);
+    buffer->mPosition = start;
+    buffer->mLimit = start + doubleCount;
+    *buf = buffer;
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 

@@ -29,7 +29,8 @@ public:
     Int16Buffer();
 
     Int16Buffer(
-        /* [in] */ Int32 capacity);
+        /* [in] */ Int32 capacity,
+        /* [in] */ Int64 effectiveDirectAddress);
 
     CAR_INTERFACE_DECL()
 
@@ -83,6 +84,9 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 int16Count,
         /* [out] */ IInt16Buffer** buf);
+
+    CARAPI GetArray(
+        /* [out] */ IArrayOf** array);
 
     CARAPI GetArray(
         /* [out, callee] */ ArrayOf<Int16>** array);
@@ -175,7 +179,7 @@ public:
      * @exception BufferUnderflowException
      *                if the position is equal or greater than limit.
      */
-    virtual CARAPI GetInt16(
+    virtual CARAPI Get(
         /* [out] */ Int16* value) = 0;
 
     /**
@@ -187,7 +191,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if index is invalid.
      */
-    virtual CARAPI GetInt16(
+    virtual CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Int16* value) = 0;
 
@@ -204,7 +208,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code dst.length} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt16s(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Int16>* dst);
 
     /**
@@ -226,7 +230,7 @@ public:
      * @exception BufferUnderflowException
      *                if {@code shortCount} is greater than {@code remaining()}.
      */
-    virtual CARAPI GetInt16s(
+    virtual CARAPI Get(
         /* [out] */ ArrayOf<Int16>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int16Count);
@@ -283,7 +287,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16(
+    virtual CARAPI Put(
         /* [in] */ Int16 d) = 0;
 
     /**
@@ -300,7 +304,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16(
+    virtual CARAPI Put(
         /* [in] */ Int32 index,
         /* [in] */ Int16 d) = 0;
 
@@ -364,7 +368,7 @@ public:
      * @exception ReadOnlyBufferException
      *                if no changes may be made to the contents of this buffer.
      */
-    virtual CARAPI PutInt16Buffer(
+    virtual CARAPI Put(
         /* [in] */ IInt16Buffer* src);
 
     /**

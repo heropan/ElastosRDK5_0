@@ -141,9 +141,6 @@ public:
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 byteCount);
 
-    virtual CARAPI Put(
-        /* [in] */ IByteBuffer* src);
-
     virtual CARAPI PutChar(
         /* [in] */ Char32 value);
 
@@ -256,6 +253,16 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Boolean isReadOnly,
         /* [in] */ FileChannelMapMode mapMode);
+
+private:
+    CARAPI CheckIsAccessible();
+
+    CARAPI CheckNotFreed();
+
+    static CARAPI_(AutoPtr<DirectByteBuffer>) Copy(
+        /* [in] */ DirectByteBuffer* other,
+        /* [in] */ Int32 markOfOther,
+        /* [in] */ Boolean isReadOnly);
 
 protected:
     // This is the offset into {@code Buffer.block} at which this buffer logically starts.

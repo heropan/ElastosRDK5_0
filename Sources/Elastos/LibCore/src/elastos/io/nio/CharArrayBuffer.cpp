@@ -13,18 +13,18 @@ CharArrayBuffer::CharArrayBuffer(
     /* [in] */ ArrayOf<Char32>* array)
     : CharBuffer(array->GetLength(), 0)
     , mBackingArray(array)
-    , mOffset(0)
+    , mArrayOffset(0)
 {}
 
 CharArrayBuffer::CharArrayBuffer(
-    /* [in] */ Int32 capacity,
-    /* [in] */ ArrayOf<Char32>* backingArray,
+    /* [in] */ Int32 mCapacity,
+    /* [in] */ ArrayOf<Char32>* mBackingArray,
     /* [in] */ Int32 offset,
-    /* [in] */ Boolean isReadOnly)
-    : CharBuffer(capacity, 0)
-    , mBackingArray(backingArray)
-    , mOffset(0)
-    , mIsReadOnly(isReadOnly)
+    /* [in] */ Boolean mIsReadOnly)
+    : CharBuffer(mCapacity, 0)
+    , mBackingArray(mBackingArray)
+    , mArrayOffset(0)
+    , mIsReadOnly(mIsReadOnly)
 {}
 
 ECode CharArrayBuffer::Get(
@@ -35,7 +35,7 @@ ECode CharArrayBuffer::Get(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    *value = (*mBackingArray)[mOffset + mPosition++];
+    *value = (*mBackingArray)[mArrayOffset + mPosition++];
     return NOERROR;
 }
 
@@ -45,7 +45,7 @@ ECode CharArrayBuffer::Get(
 {
     VALIDATE_NOT_NULL(value)
     FAIL_RETURN(CheckIndex(index))
-    *value = (*mBackingArray)[mOffset + index];
+    *value = (*mBackingArray)[mArrayOffset + index];
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CharArrayBuffer::Get(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
-    dst->Copy(dstOffset, mBackingArray, mOffset + mPosition, charCount);
+    dst->Copy(dstOffset, mBackingArray, mArrayOffset + mPosition, charCount);
     mPosition += charCount;
     return NOERROR;
 }
@@ -107,9 +107,9 @@ ECode CharArrayBuffer::SubSequence(
 ECode CharArrayBuffer::ToString(
     /* [out] */ String* str)
 {
-    // return String.copyValueOf(backingArray, offset + position, remaining());
+    // return String.copyValueOf(mBackingArray, offset + mPosition, remaining());
     Int32 remaining = 0;
-    Int32 offset = mOffset + mPosition;
+    Int32 offset = mArrayOffset + mPosition;
     StringBuilder sb;
     GetRemaining(&remaining);
     for (Int32 i = 0; i < remaining; ++i) {
@@ -131,23 +131,53 @@ ECode CharArrayBuffer::IsReadOnly(
 ECode CharArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ ICharBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+
+    AutoPtr<CharArrayBuffer> res = Copy(this, mMark, TRUE);
+    *buffer = res;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
 ECode CharArrayBuffer::Compact()
 {
+    if (mIsReadOnly) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+    // System.arraycopy(mBackingArray, mPosition + mArrayOffset, mBackingArray, mArrayOffset, remaining());
+    Int32 lastnum = 0;
+    GetRemaining(&lastnum);
+    mBackingArray->Copy(mArrayOffset, mBackingArray, mPosition + mArrayOffset, lastnum);
+    mPosition = mLimit - mPosition;
+    mLimit = mCapacity;
+    mMark = UNSET_MARK;
     return NOERROR;
 }
 
 ECode CharArrayBuffer::Duplicate(
     /* [out] */ ICharBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+
+    AutoPtr<CharArrayBuffer> res = Copy(this, mMark, mIsReadOnly);
+    *buffer = res;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
 ECode CharArrayBuffer::Put(
     /* [in] */ Char32 c)
 {
+    if (mIsReadOnly) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+    if (mPosition == mLimit) {
+        // throw new BufferOverflowException();
+        return E_BUFFER_OVERFLOW_EXCEPTION;
+    }
+    (*mBackingArray)[mArrayOffset + mPosition++] = c;
     return NOERROR;
 }
 
@@ -155,31 +185,81 @@ ECode CharArrayBuffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Char32 c)
 {
+    if (mIsReadOnly) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+    FAIL_RETURN(CheckIndex(index));
+    (*mBackingArray)[mArrayOffset + index] = c;
     return NOERROR;
 }
 
 ECode CharArrayBuffer::Slice(
     /* [out] */ ICharBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+
+    Int32 remvalue = 0;
+    GetRemaining(&remvalue);
+    AutoPtr<ICharBuffer> res = (ICharBuffer*) new CharArrayBuffer(remvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
+    *buffer = res;
     return NOERROR;
 }
 
 ECode CharArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Char32>** array)
 {
+    VALIDATE_NOT_NULL(array)
+
+    if (mIsReadOnly) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+    *array = mBackingArray;
     return NOERROR;
 }
 
 ECode CharArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
+    VALIDATE_NOT_NULL(offset)
+
+    if (mIsReadOnly) {
+        // throw new ReadOnlyBufferException();
+        return E_READ_ONLY_BUFFER_EXCEPTION;
+    }
+    *offset = mArrayOffset;
     return NOERROR;
 }
 
 ECode CharArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
+    if (mIsReadOnly) {
+        *result = FALSE;
+    }
+    else {
+        *result = TRUE;
+    }
     return NOERROR;
+}
+
+AutoPtr<CharArrayBuffer> CharArrayBuffer::Copy(
+    /* [in] */ CharArrayBuffer* other,
+    /* [in] */ Int32 markOfOther,
+    /* [in] */ Boolean mIsReadOnly)
+{
+    Int32 remvalue = 0;
+    other->GetRemaining(&remvalue);
+    AutoPtr<CharArrayBuffer> buf = new CharArrayBuffer(remvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
+    buf->mLimit = other->mLimit;
+    Int32 posvalue = 0;
+    other->GetPosition(&posvalue);
+    buf->mPosition = posvalue;
+    buf->mMark = markOfOther;
+    return buf;
 }
 
 } // namespace IO

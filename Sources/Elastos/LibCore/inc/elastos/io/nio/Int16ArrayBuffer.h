@@ -26,12 +26,10 @@ public:
         /* [in] */ ArrayOf<Int16>* array);
 
     Int16ArrayBuffer(
-        /* [in] */ Int32 capacity);
-
-    Int16ArrayBuffer(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Int16>* backingArray,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean isReadOnly);
 
     CARAPI GetInt16(
         /* [out] */ Int16* value);
@@ -55,6 +53,8 @@ public:
     AutoPtr< ArrayOf<Int16> > mBackingArray;
 
     Int32 mOffset;
+
+    Boolean mIsReadOnly;
 };
 
 } // namespace IO

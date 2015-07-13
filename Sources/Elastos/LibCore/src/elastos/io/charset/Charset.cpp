@@ -222,7 +222,7 @@ ECode Charset::Encode(
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(s, (ICharSequence**)&cs);
     AutoPtr<ICharBuffer> charBuffer;
-    CharBuffer::WrapSequence(cs.Get(), (ICharBuffer**)&charBuffer);
+    CharBuffer::Wrap(cs.Get(), (ICharBuffer**)&charBuffer);
 
     return Encode(charBuffer, byteBuffer);
 }

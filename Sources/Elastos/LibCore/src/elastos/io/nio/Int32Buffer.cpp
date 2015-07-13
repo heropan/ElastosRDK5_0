@@ -1,5 +1,10 @@
 
 #include "Int32Buffer.h"
+#include "CoreUtils.h"
+#include "CArrayOf.h"
+
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace IO {
@@ -12,8 +17,9 @@ Int32Buffer::Int32Buffer()
 {}
 
 Int32Buffer::Int32Buffer(
-    /* [in] */ Int32 capacity)
-    : Buffer(2, capacity, NULL)
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(2, capacity, effectiveDirectAddress)
 {}
 
 CAR_INTERFACE_IMPL_2(Int32Buffer, Object, IInt32Buffer, IBuffer)
@@ -84,7 +90,7 @@ ECode Int32Buffer::CompareTo(
     IBuffer::Probe(otherBuffer)->GetPosition(&otherPos);
     Int32 thisInt32, otherInt32;
     while (compareRemaining > 0) {
-        GetInt32(thisPos, &thisInt32);
+        Get(thisPos, &thisInt32);
         otherBuffer->Get(otherPos, &otherInt32);
         // checks for Int32 and NaN inequality
         if (thisInt32 != otherInt32) {
@@ -127,7 +133,7 @@ ECode Int32Buffer::Equals(
     Int32 thisValue = 0;
     Int32 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetInt32(myPosition++, &thisValue))
+        FAIL_RETURN(Get(myPosition++, &thisValue))
         FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
@@ -135,13 +141,13 @@ ECode Int32Buffer::Equals(
     return NOERROR;
 }
 
-ECode Int32Buffer::GetInt32s(
+ECode Int32Buffer::Get(
     /* [out] */ ArrayOf<Int32>* dst)
 {
-    return GetInt32s(dst, 0, dst->GetLength());
+    return Get(dst, 0, dst->GetLength());
 }
 
-ECode Int32Buffer::GetInt32s(
+ECode Int32Buffer::Get(
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int32Count)
@@ -161,7 +167,7 @@ ECode Int32Buffer::GetInt32s(
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
     for (Int32 i = dstOffset; i < dstOffset + int32Count; ++i) {
-        GetInt32(&(*dst)[i]);
+        Get(&(*dst)[i]);
     }
 
     return NOERROR;
@@ -173,18 +179,18 @@ ECode Int32Buffer::HasArray(
     return ProtectedHasArray(hasArray);
 }
 
-ECode Int32Buffer::PutInt32s(
-    /* [in] */ const ArrayOf<Int32>& src)
+ECode Int32Buffer::Put(
+    /* [in] */ ArrayOf<Int32>* src)
 {
-    return PutInt32s(src, 0, src.GetLength());
+    return Put(src, 0, src->GetLength());
 }
 
-ECode Int32Buffer::PutInt32s(
-    /* [in] */ const ArrayOf<Int32>& src,
+ECode Int32Buffer::Put(
+    /* [in] */ ArrayOf<Int32>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 int32Count)
 {
-    Int32 arrayLength = src.GetLength();
+    Int32 arrayLength = src->GetLength();
     if ((srcOffset | int32Count) < 0 || srcOffset > arrayLength || arrayLength - srcOffset < int32Count) {
         // throw new ArrayIndexOutOfBoundsException(arrayLength, offset,
         //         count);
@@ -198,12 +204,12 @@ ECode Int32Buffer::PutInt32s(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
     for (Int32 i = srcOffset; i < srcOffset + int32Count; ++i) {
-        PutInt32(src[i]);
+        Put((*src)[i]);
     }
     return NOERROR;
 }
 
-ECode Int32Buffer::PutInt32Buffer(
+ECode Int32Buffer::Put(
     /* [in] */ IInt32Buffer* src)
 {
     if (src == (IInt32Buffer*)this->Probe(EIID_IInt32Buffer)) {
@@ -221,7 +227,24 @@ ECode Int32Buffer::PutInt32Buffer(
 
     AutoPtr< ArrayOf<Int32> > contents = ArrayOf<Int32>::Alloc(srcRemaining);
     FAIL_RETURN(src->Get(contents))
-    return PutInt32s(*contents);
+    return Put(contents);
+}
+
+ECode Int32Buffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Int32> > res;
+    GetArray((ArrayOf<Int32>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (Int32 i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::Convert((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
 }
 
 } // namespace IO

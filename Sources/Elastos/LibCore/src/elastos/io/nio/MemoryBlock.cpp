@@ -339,6 +339,21 @@ Int64 MemoryBlock::GetSize()
     return mSize;
 }
 
+Boolean MemoryBlock::IsFreed()
+{
+    return mFreed;
+}
+
+Boolean MemoryBlock::IsAccessible()
+{
+    return !IsFreed() && mAccessible;
+}
+
+void MemoryBlock::SetAccessible(
+    /* [in] */ Boolean accessible)
+{
+    mAccessible = accessible;
+}
 
 ECode MemoryMappedBlock::Free()
 {

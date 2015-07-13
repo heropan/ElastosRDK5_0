@@ -1,5 +1,10 @@
 
 #include "Int16Buffer.h"
+#include "CoreUtils.h"
+#include "CArrayOf.h"
+
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace IO {
@@ -12,8 +17,9 @@ Int16Buffer::Int16Buffer()
 {}
 
 Int16Buffer::Int16Buffer(
-    /* [in] */ Int32 capacity)
-    : Buffer(1, capacity, NULL)
+    /* [in] */ Int32 capacity,
+    /* [in] */ Int64 effectiveDirectAddress)
+    : Buffer(1, capacity, effectiveDirectAddress)
 {}
 
 CAR_INTERFACE_IMPL_2(Int16Buffer, Object, IInt16Buffer, IBuffer)
@@ -88,7 +94,7 @@ ECode Int16Buffer::CompareTo(
     Int16 thisInt16 = 0;
     Int16 otherInt16 = 0;
     while (compareRemaining > 0) {
-        GetInt16(thisPos, &thisInt16);
+        Get(thisPos, &thisInt16);
         otherBuffer->Get(otherPos, &otherInt16);
         // checks for Int16 and NaN inequality
         if (thisInt16 != otherInt16) {
@@ -131,7 +137,7 @@ ECode Int16Buffer::Equals(
     Int16 thisValue = 0;
     Int16 otherValue = 0;
     while (equalSoFar && (myPosition < mLimit)) {
-        FAIL_RETURN(GetInt16(myPosition++, &thisValue))
+        FAIL_RETURN(Get(myPosition++, &thisValue))
         FAIL_RETURN(otherBuffer->Get(otherPosition++, &otherValue))
         equalSoFar = thisValue == otherValue;
     }
@@ -139,13 +145,13 @@ ECode Int16Buffer::Equals(
     return NOERROR;
 }
 
-ECode Int16Buffer::GetInt16s(
+ECode Int16Buffer::Get(
     /* [out] */ ArrayOf<Int16>* dst)
 {
-    return GetInt16s(dst, 0, dst->GetLength());
+    return Get(dst, 0, dst->GetLength());
 }
 
-ECode Int16Buffer::GetInt16s(
+ECode Int16Buffer::Get(
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 int16Count)
@@ -165,7 +171,7 @@ ECode Int16Buffer::GetInt16s(
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
     for (Int32 i = dstOffset; i < dstOffset + int16Count; ++i) {
-        GetInt16(&(*dst)[i]);
+        Get(&(*dst)[i]);
     }
 
     return NOERROR;
@@ -202,12 +208,12 @@ ECode Int16Buffer::Put(
         return E_BUFFER_OVER_FLOW_EXCEPTION;
     }
     for (Int32 i = srcOffset; i < srcOffset + int16Count; ++i) {
-        PutInt16((*src)[i]);
+        Put((*src)[i]);
     }
     return NOERROR;
 }
 
-ECode Int16Buffer::PutInt16Buffer(
+ECode Int16Buffer::Put(
     /* [in] */ IInt16Buffer* src)
 {
     if (src == (IInt16Buffer*)this->Probe(EIID_IInt16Buffer)) {
@@ -226,6 +232,23 @@ ECode Int16Buffer::PutInt16Buffer(
     AutoPtr< ArrayOf<Int16> > contents = ArrayOf<Int16>::Alloc(srcRemaining);
     FAIL_RETURN(src->GetArray((ArrayOf<Int16>**)&contents))
     return Put(contents);
+}
+
+ECode Int16Buffer::GetArray(
+    /* [out] */ IArrayOf** array)
+{
+    VALIDATE_NOT_NULL(array)
+
+    AutoPtr< ArrayOf<Int16> > res;
+    GetArray((ArrayOf<Int16>**)&res);
+    AutoPtr<IArrayOf> iarr;
+    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    for (Int32 i = 0; i < res->GetLength(); ++i) {
+        iarr->Set(i, CoreUtils::Convert((*res)[i]));
+    }
+    *array = iarr;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
 }
 
 } // namespace IO

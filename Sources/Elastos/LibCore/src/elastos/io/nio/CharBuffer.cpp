@@ -64,20 +64,20 @@ ECode CharBuffer::Wrap(
     return NOERROR;
 }
 
-ECode CharBuffer::WrapSequence(
+ECode CharBuffer::Wrap(
     /* [in] */ ICharSequence* chseq,
     /* [out] */ ICharBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf)
     Int32 len = 0;
     chseq->GetLength(&len);
-    assert(0 && "TODO");
-    // *buf = (ICharBuffer*)new CharSequenceAdapter(len, chseq);
+    AutoPtr<ICharBuffer> res = (ICharBuffer*) new CharSequenceAdapter(len, chseq);
+    *buf = res;
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
-ECode CharBuffer::WrapSequence(
+ECode CharBuffer::Wrap(
     /* [in] */ ICharSequence* chseq,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -90,8 +90,7 @@ ECode CharBuffer::WrapSequence(
         // throw new IndexOutOfBoundsException("cs.length()=" + cs.length() + ", start=" + start + ", end=" + end);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    assert(0 && "TODO");
-    AutoPtr<CharSequenceAdapter> result; // = new CharSequenceAdapter(len, chseq);
+    AutoPtr<CharSequenceAdapter> result = new CharSequenceAdapter(len, chseq);
     result->mPosition = start;
     result->mLimit = end;
     *buf = (ICharBuffer*)result.Get();

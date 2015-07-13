@@ -93,7 +93,7 @@ public:
      *            the char sequence which the new buffer will be based on.
      * @return the created char buffer.
      */
-    static CARAPI WrapSequence(
+    static CARAPI Wrap(
         /* [in] */ ICharSequence* chseq,
         /* [out] */ ICharBuffer** buffer);
 
@@ -116,7 +116,7 @@ public:
      * @exception IndexOutOfBoundsException
      *                if either {@code start} or {@code end} is invalid.
      */
-    static CARAPI WrapSequence(
+    static CARAPI Wrap(
         /* [in] */ ICharSequence* chseq,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,

@@ -8,8 +8,7 @@ using Elastos::IO::Channels::FileChannelMapMode;
 namespace Elastos {
 namespace IO {
 
-class MemoryBlock
-    : public Object
+class MemoryBlock : public Object
 {
 public:
     virtual ~MemoryBlock() {}
@@ -169,6 +168,13 @@ public:
 
     CARAPI_(Int64) GetSize();
 
+    CARAPI_(Boolean) IsFreed();
+
+    CARAPI_(Boolean) IsAccessible();
+
+    CARAPI_(void) SetAccessible(
+        /* [in] */ Boolean accessible);
+
 protected:
     MemoryBlock(
         /* [in] */ Int32 address,
@@ -180,6 +186,10 @@ protected:
 protected:
     Int32 mAddress;
     Int64 mSize;
+
+private:
+    Boolean mAccessible;
+    Boolean mFreed;
 };
 
 /**

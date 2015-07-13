@@ -17,12 +17,9 @@ CharSequenceAdapter::CharSequenceAdapter(
 AutoPtr<CharSequenceAdapter> CharSequenceAdapter::Copy(
     /* [in] */ CharSequenceAdapter* other)
 {
-    VALIDATE_NOT_NULL(other);
-
     Int32 len = 0;
     other->mSequence->GetLength(&len);
-    assert(0 && "TODO");
-    AutoPtr<CharSequenceAdapter> buf; // = new CharSequenceAdapter(len, other->mSequence);
+    AutoPtr<CharSequenceAdapter> buf = new CharSequenceAdapter(len, other->mSequence);
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = other->mMark;
@@ -303,8 +300,7 @@ ECode CharSequenceAdapter::Slice(
     FAIL_RETURN(mSequence->SubSequence(mPosition, mLimit, (ICharSequence**)&seq))
     Int32 len = 0;
     seq->GetLength(&len);
-    assert(0 && "TODO");
-    // *buffer = (ICharBuffer*)new CharSequenceAdapter(len, seq);
+    *buffer = (ICharBuffer*)new CharSequenceAdapter(len, seq);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

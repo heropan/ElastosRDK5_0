@@ -110,7 +110,7 @@ module
          *                if {dst.length} is greater than {remaining()}.
          */
         Get(
-            [in] ArrayOf<Int16> dst);
+            [in] ArrayOf<Int16>* dst);
 
         /**
          * Reads shorts from the current position into the specified short array,
@@ -132,7 +132,7 @@ module
          *                if {@code shortCount} is greater than {@code remaining()}.
          */
         Get(
-            [in] ArrayOf<Int16> dst,
+            [in] ArrayOf<Int16>* dst,
             [in] Int32 dstOffset,
             [in] Int32 int16Count);
 

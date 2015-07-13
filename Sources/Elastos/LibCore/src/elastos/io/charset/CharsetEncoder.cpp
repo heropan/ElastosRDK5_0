@@ -123,7 +123,7 @@ ECode CharsetEncoder::CanEncode(
     if (charBuffer != NULL) {
         ((ICharBuffer*) sequence)->Duplicate((ICharBuffer**)&cb);
     } else {
-        CharBuffer::WrapSequence(sequence, (ICharBuffer**)&cb);
+        CharBuffer::Wrap(sequence, (ICharBuffer**)&cb);
     }
 
     return ImplCanEncode(cb.Get(), result);

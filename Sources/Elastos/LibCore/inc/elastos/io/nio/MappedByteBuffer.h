@@ -69,7 +69,6 @@ private:
 public:
     AutoPtr<MemoryBlock> mBlock;
 
-private:
     FileChannelMapMode mMapMode;
 };
 
