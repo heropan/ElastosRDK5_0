@@ -116,7 +116,7 @@ ECode InputStreamReader::GetEncoding(
         *encoding = String(NULL);
         return NOERROR;
     }
- //   return HistoricalNamesUtil.getHistoricalName(decoder.charset().name());
+
     AutoPtr<ICharset> c = NULL;
     mDecoder->Charset((ICharset**)&c);
     c->GetName(encoding);
@@ -147,9 +147,9 @@ ECode InputStreamReader::Read(
     /* [in] */ Int32 count,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
     *number = 0;
+    VALIDATE_NOT_NULL(buffer);
 
     AutoLock lock(mLock);
 
@@ -241,7 +241,7 @@ ECode InputStreamReader::Read(
         }
     }
 
-    if (_CObject_Compare(result, resultTmp) && mEndOfInput) {
+    if (result != resultTmp && mEndOfInput) {
         result = NULL;
         mDecoder->Decode(mBytes, out, TRUE, (ICoderResult**)&result);
         Boolean isUnderflow = false;

@@ -1,8 +1,11 @@
 
 #include "LineNumberInputStream.h"
 #include "Character.h"
+#include "CStreams.h"
 
 using Elastos::Core::Character;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace IO {
@@ -144,29 +147,12 @@ ECode LineNumberInputStream::SetLineNumber(
 }
 
 ECode LineNumberInputStream::Skip(
-    /* [in] */ Int64 count,
+    /* [in] */ Int64 byteCount,
     /* [out] */ Int64* number)
 {
-    //TODO:
-    //
-    //return Streams.skipByReading(this, byteCount);
-    VALIDATE_NOT_NULL(number)
-
-    if (count <= 0) {
-        *number = 0;
-        return NOERROR;
-    }
-    for (Int32 i = 0; i < count; i++) {
-        Int32 currentChar;
-        FAIL_RETURN(Read(&currentChar));
-        if (currentChar == -1) {
-            *number = i;
-            return NOERROR;
-        }
-    }
-    *number = count;
-
-    return NOERROR;
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    return streams->SkipByReading(THIS_PROBE(IInputStream), byteCount, number);
 }
 
 } // namespace IO

@@ -180,7 +180,7 @@ ECode CharsetDecoder::Decode(
         // If the action is IGNORE or REPLACE, we should continue decoding.
         AutoPtr<ICodingErrorAction> REPLACE;
         CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&REPLACE);
-        if (_CObject_Compare(action, REPLACE)) {
+        if ((action == REPLACE)) {
             Int32 remaining = 0;
             assert(charBuffer != NULL);
             IBuffer::Probe(charBuffer)->GetRemaining(&remaining);
@@ -193,7 +193,7 @@ ECode CharsetDecoder::Decode(
         else {
             AutoPtr<ICodingErrorAction> IGNORE;
             CCodingErrorAction::GetIGNORE((ICodingErrorAction**)&IGNORE);
-            if (!_CObject_Compare(action, IGNORE)){
+            if (!(action == IGNORE)){
                 return NOERROR;
             }
         }
@@ -225,7 +225,7 @@ ECode CharsetDecoder::Flush(
     FAIL_RETURN(ImplFlush(charBuffer, result))
     AutoPtr<ICoderResult> UNDERFLOW;
     CCoderResult::GetUNDERFLOW((ICoderResult**)&UNDERFLOW);
-    if (_CObject_Compare(*result, UNDERFLOW)) {
+    if (*result == UNDERFLOW) {
         mStatus = FLUSH;
     }
     return NOERROR;
@@ -366,11 +366,11 @@ ECode CharsetDecoder::CheckCoderResult(
     Boolean ret = FALSE;
     AutoPtr<ICodingErrorAction> REPORT;
     CCodingErrorAction::GetREPORT((ICodingErrorAction**)&REPORT);
-    if ((result->IsMalformed(&ret), ret) && _CObject_Compare(mMalformedInputAction, REPORT)) {
+    if ((result->IsMalformed(&ret), ret) && (mMalformedInputAction == REPORT)) {
         // throw new MalformedInputException(result.length());
         return E_MALFORMED_INPUT_EXCEPTION;
     }
-    else if ((result->IsUnmappable(&ret), ret) && _CObject_Compare(mUnmappableCharacterAction, REPORT)) {
+    else if ((result->IsUnmappable(&ret), ret) && (mUnmappableCharacterAction == REPORT)) {
         // throw new UnmappableCharacterException(result.length());
         return E_UNMAPPABLE_CHARACTER_EXCEPTION;
     }

@@ -50,7 +50,7 @@ ECode CharsetICU::Contains(
         *result = FALSE;
         return NOERROR;
     }
-    else if (_CObject_Compare((ICharset*)this, charset)) {
+    else if ((ICharset*)this == charset) {
         *result = TRUE;
         return NOERROR;
     }

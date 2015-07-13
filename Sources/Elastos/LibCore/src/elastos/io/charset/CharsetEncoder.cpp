@@ -163,13 +163,11 @@ ECode CharsetEncoder::Encode(
     while (TRUE) {
         result = NULL;
         FAIL_RETURN(Encode(charBuffer, output.Get(), FALSE, (ICoderResult**)&result));
-        if (_CObject_Compare(result.Get(), UNDERFLOW)) {
-            break;
-        } else if (_CObject_Compare(result.Get(), UNDERFLOW)) {
+        if (result.Get() == UNDERFLOW) {
             temp = NULL;
             FAIL_RETURN(AllocateMore(output.Get(), (IByteBuffer**)&temp));
             output = temp;
-            continue;
+            continue;   // No point trying to flush to an already-full buffer.
         }
         FAIL_RETURN(CheckCoderResult(result.Get()));
     }
@@ -181,10 +179,7 @@ ECode CharsetEncoder::Encode(
     while (TRUE) {
         result = NULL;
         FAIL_RETURN(Flush(output.Get(), (ICoderResult**)&result));
-        if (_CObject_Compare(result, UNDERFLOW)) {
-            FAIL_RETURN(IBuffer::Probe(output)->Flip());
-            break;
-        } else if (_CObject_Compare(result, OVERFLOW)) {
+        if ((result == OVERFLOW)) {
             temp = NULL;
             FAIL_RETURN(AllocateMore(output.Get(), (IByteBuffer**)&temp));
             output = temp;
@@ -241,7 +236,7 @@ ECode CharsetEncoder::Encode(
     while (TRUE) {
         res = NULL;
         FAIL_RETURN(EncodeLoop(charBuffer, byteBuffer, (ICoderResult**)&res));
-        if (_CObject_Compare(res, UNDERFLOW)) {
+        if ((res == UNDERFLOW)) {
             mStatus = endOfInput ? END : ONGOING;
             if (endOfInput) {
                 Int32 remaining = 0;
@@ -259,7 +254,7 @@ ECode CharsetEncoder::Encode(
                 REFCOUNT_ADD(*result)
                 return NOERROR;
             }
-        } else if (_CObject_Compare(res, OVERFLOW)) {
+        } else if ((res == OVERFLOW)) {
             mStatus = endOfInput ? END : ONGOING;
             *result = res;
             REFCOUNT_ADD(*result)
@@ -279,7 +274,7 @@ ECode CharsetEncoder::Encode(
         CCodingErrorAction::GetREPLACE((ICodingErrorAction **)&REPLACE);
         CCodingErrorAction::GetIGNORE((ICodingErrorAction **)&IGNORE);
 
-        if (_CObject_Compare(action, REPLACE)) {
+        if ((action == REPLACE)) {
             Int32 remaining = 0;
             FAIL_RETURN(IBuffer::Probe(byteBuffer)->GetRemaining(&remaining));
             if (remaining < mReplacementBytes->GetLength()) {
@@ -322,7 +317,7 @@ ECode CharsetEncoder::Flush(
     AutoPtr<ICoderResult> UNDERFLOW;
     CCoderResult::GetUNDERFLOW((ICoderResult**)&UNDERFLOW);
 
-    if (_CObject_Compare(res, UNDERFLOW)) {
+    if ((res == UNDERFLOW)) {
         mStatus = FLUSH;
     }
 
@@ -531,11 +526,11 @@ ECode CharsetEncoder::CheckCoderResult(
     CCodingErrorAction::GetREPORT((ICodingErrorAction **)&REPORT);
     Boolean isEnable = FALSE;
 
-    if (_CObject_Compare(mMalformedInputAction, REPORT) && (result->IsMalformed(&isEnable), isEnable)) {
+    if ((mMalformedInputAction == REPORT) && (result->IsMalformed(&isEnable), isEnable)) {
         // throw new MalformedInputException(result.length());
         return E_MALFORMED_INPUT_EXCEPTION;
     }
-    else if (_CObject_Compare(mUnmappableCharacterAction, REPORT) && (result->IsUnmappable(&isEnable), isEnable)) {
+    else if ((mUnmappableCharacterAction == REPORT) && (result->IsUnmappable(&isEnable), isEnable)) {
         // throw new UnmappableCharacterException(result.length());
         return E_UNMAPPABLE_CHARACTER_EXCEPTION;
     }
