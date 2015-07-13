@@ -9,10 +9,6 @@ namespace IO {
 namespace Channels {
 namespace Spi {
 
-// {da62f295-36e3-4f0c-b46d-edd00ffa9626}
-extern "C" const InterfaceID EIID_AbstractInterruptibleChannel =
-        { 0xda62f295, 0x36e3, 0x4f0c, { 0xb4, 0x6d, 0xed, 0xd0, 0x0f, 0xfa, 0x96, 0x26 } };
-
 CAR_INTERFACE_IMPL_4(AbstractInterruptibleChannel, Object, IChannel, ICloseable, IInterruptibleChannel, IAbstractInterruptibleChannel)
 
 class ActionRunnable

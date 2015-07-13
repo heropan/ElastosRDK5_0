@@ -16,9 +16,6 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-// {E29E6C90-5668-463D-88B2-4FC508897DCB}
-extern const InterfaceID EIID_AbstractExecutorService =
-        { 0xe29e6c90, 0x5668, 0x463d, { 0x88, 0xb2, 0x4f, 0xc5, 0x8, 0x89, 0x7d, 0xcb } };
 
 CAR_INTERFACE_IMPL(AbstractExecutorService, Object, IAbstractExecutorService)
 

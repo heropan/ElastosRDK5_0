@@ -8,7 +8,7 @@
 #include "CPushbackInputStream.h"
 #include "CStreams.h"
 #include "CInflater.h"
-// #include "ModifiedUtf8.h"
+#include "charset/CModifiedUtf8.h"
 #include "Arrays.h"
 
 using Elastos::Core::Math;
@@ -16,7 +16,8 @@ using Elastos::IO::EIID_IInputStream;
 using Elastos::IO::IPushbackInputStream;
 using Elastos::IO::CPushbackInputStream;
 using Elastos::IO::ByteOrder_LITTLE_ENDIAN;
-// using Elastos::IO::Charset::ModifiedUtf8;
+using Elastos::IO::Charset::IModifiedUtf8;
+using Elastos::IO::Charset::CModifiedUtf8;
 using Libcore::IO::Memory;
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
@@ -267,8 +268,12 @@ String ZipInputStream::ReadString(
     if (byteLength > mStringCharBuf->GetLength()) {
         mStringCharBuf = ArrayOf<Char32>::Alloc(byteLength);
     }
-    assert(0);
-    //TODO upgrade return ModifiedUtf8::Decode(mStringBytesBuf, mStringCharBuf, 0, byteLength);
+
+    AutoPtr<IModifiedUtf8> muhelper;
+    CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&muhelper);
+    String result;
+    muhelper->Decode(mStringBytesBuf, mStringCharBuf, 0, byteLength, &result);
+    return result;
 }
 
 Int32 ZipInputStream::PeekShort(

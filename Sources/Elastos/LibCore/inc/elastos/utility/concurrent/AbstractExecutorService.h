@@ -10,8 +10,6 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-extern const InterfaceID EIID_AbstractExecutorService;
-
 /**
  * Provides default implementations of {@link ExecutorService}
  * execution methods. This class implements the <tt>submit</tt>,

@@ -2,7 +2,7 @@
 #include "CGregorianCalendar.h"
 #include "TimeZone.h"
 #include "ZoneInfo.h"
-#include <Math.h>
+#include "Math.h"
 #include "CInteger32.h"
 #include "Arrays.h"
 
@@ -82,11 +82,14 @@ ECode CZoneInfoWallTime::Mktime(
     /* [in] */ IZoneInfo* zoneInfo,
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
+    *rst = -1;
+
     ZoneInfo* zone = (ZoneInfo*)zoneInfo;
     if (zone == NULL) {
         return NOERROR;
     }
-    *rst = -1;
+
     // Normalize isDst to -1, 0 or 1 to simplify isDst equality checks below.
     mIsDst = mIsDst > 0 ? 1 : mIsDst < 0 ? -1 : 0;
 
@@ -242,6 +245,7 @@ ECode CZoneInfoWallTime::SetGmtOffset(
 ECode CZoneInfoWallTime::GetYear(
     /* [out] */ Int32* year)
 {
+    VALIDATE_NOT_NULL(year)
     *year = mYear;
     return NOERROR;
 }
@@ -249,6 +253,7 @@ ECode CZoneInfoWallTime::GetYear(
 ECode CZoneInfoWallTime::GetMonth(
     /* [out] */ Int32* month)
 {
+    VALIDATE_NOT_NULL(month)
     *month = mMonth;
     return NOERROR;
 }
@@ -256,6 +261,7 @@ ECode CZoneInfoWallTime::GetMonth(
 ECode CZoneInfoWallTime::GetMonthDay(
     /* [out] */ Int32* monthDay)
 {
+    VALIDATE_NOT_NULL(monthDay)
     *monthDay = mMonthDay;
     return NOERROR;
 }
@@ -263,6 +269,7 @@ ECode CZoneInfoWallTime::GetMonthDay(
 ECode CZoneInfoWallTime::GetHour(
     /* [out] */ Int32* hour)
 {
+    VALIDATE_NOT_NULL(hour)
     *hour = mHour;
     return NOERROR;
 }
@@ -270,6 +277,7 @@ ECode CZoneInfoWallTime::GetHour(
 ECode CZoneInfoWallTime::GetMinute(
     /* [out] */ Int32* minute)
 {
+    VALIDATE_NOT_NULL(minute)
     *minute = mMinute;
     return NOERROR;
 }
@@ -277,6 +285,7 @@ ECode CZoneInfoWallTime::GetMinute(
 ECode CZoneInfoWallTime::GetSecond(
     /* [out] */ Int32* second)
 {
+    VALIDATE_NOT_NULL(second)
     *second = mSecond;
     return NOERROR;
 }
@@ -284,6 +293,7 @@ ECode CZoneInfoWallTime::GetSecond(
 ECode CZoneInfoWallTime::GetWeekDay(
     /* [out] */ Int32* weekDay)
 {
+    VALIDATE_NOT_NULL(weekDay)
     *weekDay = mWeekDay;
     return NOERROR;
 }
@@ -291,6 +301,7 @@ ECode CZoneInfoWallTime::GetWeekDay(
 ECode CZoneInfoWallTime::GetYearDay(
     /* [out] */ Int32* yearDay)
 {
+    VALIDATE_NOT_NULL(yearDay)
     *yearDay = mYearDay;
     return NOERROR;
 }
@@ -298,6 +309,7 @@ ECode CZoneInfoWallTime::GetYearDay(
 ECode CZoneInfoWallTime::GetIsDst(
     /* [out] */ Int32* isDst)
 {
+    VALIDATE_NOT_NULL(isDst)
     *isDst = mIsDst;
     return NOERROR;
 }
@@ -305,6 +317,7 @@ ECode CZoneInfoWallTime::GetIsDst(
 ECode CZoneInfoWallTime::GetGmtOffset(
     /* [out] */ Int32* gmtOffsetSeconds)
 {
+    VALIDATE_NOT_NULL(gmtOffsetSeconds)
     *gmtOffsetSeconds = mGmtOffsetSeconds;
     return NOERROR;
 }
@@ -317,10 +330,13 @@ ECode CZoneInfoWallTime::TryOffsetAdjustments(
     /* [in] */ Int32 isDstToFind,
     /* [out] */ IInteger32** result)
 {
-    if (zoneInfo == NULL)
-    {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    if (zoneInfo == NULL){
         return NOERROR;
     }
+
     AutoPtr<ArrayOf<Int32> > offsetsToTry;
     GetOffsetsOfType(zoneInfo, transitionIndex, isDstToFind, (ArrayOf<Int32>**)&offsetsToTry);
     for (Int32 j = 0; j < offsetsToTry->GetLength(); j++) {
@@ -350,7 +366,6 @@ ECode CZoneInfoWallTime::TryOffsetAdjustments(
             return NOERROR;
         }
     }
-    *result = NULL;
     return NOERROR;
 }
 
@@ -361,6 +376,9 @@ ECode CZoneInfoWallTime::DoWallTimeSearch(
     /* [in] */ Boolean mustMatchDst,
     /* [out] */ IInteger32** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     // The loop below starts at the initialTransitionIndex and radiates out from that point
     // up to 24 hours in either direction by applying transitionIndexDelta to inspect
     // adjacent transitions (0, -1, +1, -2, +2). 24 hours is used because we assume that no
@@ -510,6 +528,9 @@ ECode CZoneInfoWallTime::GetOffsetsOfType(
     /* [in] */ Int32 isDst,
     /* [out] */ ArrayOf<Int32>** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     // +1 to account for the synthetic transition we invent before the first recorded one.
     ZoneInfo* zone = (ZoneInfo*)zoneInfo;
     AutoPtr<ArrayOf<Int32> > offsets = ArrayOf<Int32>::Alloc(zone->mOffsets->GetLength() + 1);
@@ -564,6 +585,8 @@ ECode CZoneInfoWallTime::FindTransitionIndex(
     /* [in] */ Int32 timeSeconds,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     ZoneInfo* zoneInfo = (ZoneInfo*)timeZone;
     Int32 matchingRawTransition;
     Arrays::BinarySearch(zoneInfo->mTransitions, timeSeconds, &matchingRawTransition);

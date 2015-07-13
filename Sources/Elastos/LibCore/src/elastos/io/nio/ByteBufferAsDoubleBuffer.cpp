@@ -8,10 +8,6 @@ using Libcore::IO::ISizeOf;
 namespace Elastos {
 namespace IO {
 
-// {b4b1403f-82a0-4b7e-943c-fe094c26c067}
-extern "C" const InterfaceID EIID_ByteBufferAsDoubleBuffer =
-        { 0xb4b1403f, 0x82a0, 0x4b7e, { 0x94, 0x3c, 0xfe, 0x09, 0x4c, 0x26, 0xc0, 0x67 } };
-
 ByteBufferAsDoubleBuffer::ByteBufferAsDoubleBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
     : DoubleBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::DOUBLE, byteBuffer->mEffectiveDirectAddress)

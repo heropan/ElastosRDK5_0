@@ -8,10 +8,6 @@ using Libcore::IO::ISizeOf;
 namespace Elastos {
 namespace IO {
 
-// {37165a91-5ade-4b46-93e6-ab451eeb9817}
-extern "C" const InterfaceID EIID_ByteBufferAsFloatBuffer =
-        { 0x37165a91, 0x5ade, 0x4b46, { 0x93, 0xe6, 0xab, 0x45, 0x1e, 0xeb, 0x98, 0x17 } };
-
 ByteBufferAsFloatBuffer::ByteBufferAsFloatBuffer(
     /* [in] */ ByteBuffer* byteBuffer)
     : FloatBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress)

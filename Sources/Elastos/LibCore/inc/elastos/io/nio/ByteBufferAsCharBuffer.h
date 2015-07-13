@@ -8,8 +8,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_ByteBufferAsCharBuffer;
-
 /**
  * A buffer for bytes.
  * <p>

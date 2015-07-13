@@ -9,8 +9,6 @@ using Elastos::IO::Channels::FileChannelMapMode;
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_MappedByteBuffer;
-
 /**
  * {@code MappedByteBuffer} is a special kind of direct byte buffer which maps a
  * region of file to memory.

@@ -9,10 +9,6 @@ using Elastos::Core::CoreUtils;
 namespace Elastos {
 namespace IO {
 
-//  {AE6AA98E-18B9-4de2-A2DA-C030CEF90746}
-extern "C" const InterfaceID EIID_Int32Buffer =
-     { 0xae6aa98e, 0x18b9, 0x4de2, { 0xa2, 0xda, 0xc0, 0x30, 0xce, 0xf9, 0x7, 0x46 } };
-
 Int32Buffer::Int32Buffer()
 {}
 

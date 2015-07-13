@@ -8,8 +8,6 @@ using Elastos::Core::IArrayOf;
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_Buffer;
-
 /**
  * A buffer is a list of elements of a specific primitive type.
  * <p>

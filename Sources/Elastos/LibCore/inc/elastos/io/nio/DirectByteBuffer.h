@@ -7,8 +7,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_DirectByteBuffer;
-
 /**
  * DirectByteBuffer, ReadWriteDirectByteBuffer and ReadOnlyDirectByteBuffer
  * compose the implementation of platform memory based byte buffers.

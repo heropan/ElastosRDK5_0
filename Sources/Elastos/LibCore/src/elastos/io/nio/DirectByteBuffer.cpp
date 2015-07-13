@@ -17,10 +17,6 @@ using Libcore::IO::Memory;
 namespace Elastos {
 namespace IO {
 
-// {A2A31377-84A4-30B4-30D9-55F3369DD50F}
-extern "C" const InterfaceID EIID_DirectByteBuffer =
-    { 0xa2a31377, 0x84a4, 0x30b4, { 0x30, 0xd9, 0x55, 0xf3, 0x36, 0x9d, 0xd5, 0x0f } };
-
 DirectByteBuffer::DirectByteBuffer(
     /* [in] */ Int64 address,
     /* [in] */ Int32 capacity)

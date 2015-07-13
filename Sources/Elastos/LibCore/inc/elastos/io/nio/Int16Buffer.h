@@ -6,8 +6,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_Int16Buffer;
-
 /**
  * A buffer of shorts.
  * <p>

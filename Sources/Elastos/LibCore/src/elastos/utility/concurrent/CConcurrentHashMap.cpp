@@ -20,41 +20,19 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-// {95812b2e-9779-4d7d-a7ed-40f4f000b5da}
-extern "C" const InterfaceID EIID_TreeBin =
-        { 0x95812b2e, 0x9779, 0x4d7d, { 0xa7, 0xed, 0x40, 0xf4, 0xf0, 0x00, 0xb5, 0xda } };
-
-// {8ea48592-ad69-4a98-a54a-3bc87d889a60}
-extern "C" const InterfaceID EIID_TreeNode =
-        { 0x8ea48592, 0xad69, 0x4a98, { 0xa5, 0x4a, 0x3b, 0xc8, 0x7d, 0x88, 0x9a, 0x60 } };
-
-// {0ed5dc82-1b31-4125-8e41-6d50b3311b01}
-extern "C" const InterfaceID EIID_ForwardingNode =
-        { 0x0ed5dc82, 0x1b31, 0x4125, { 0x8e, 0x41, 0x6d, 0x50, 0xb3, 0x31, 0x1b, 0x01 } };
-
 const Int32 CConcurrentHashMap::MAXIMUM_CAPACITY = 1 << 30;
-
 const Int32 CConcurrentHashMap::DEFAULT_CAPACITY = 16;
-
 const Int32 CConcurrentHashMap::MAX_ARRAY_SIZE = Elastos::Core::Math::INT32_MAX_VALUE - 8;
-
 const Int32 CConcurrentHashMap::DEFAULT_CONCURRENCY_LEVEL = 16;
-
 const Float CConcurrentHashMap::LOAD_FACTOR = 0.75f;
-
 const Int32 CConcurrentHashMap::TREEIFY_THRESHOLD = 8;
-
 const Int32 CConcurrentHashMap::UNTREEIFY_THRESHOLD = 6;
-
 const Int32 CConcurrentHashMap::MIN_TREEIFY_CAPACITY = 64;
-
 const Int32 CConcurrentHashMap::MIN_TRANSFER_STRIDE = 16;
-
 const Int32 CConcurrentHashMap::MOVED     = 0x8fffffff; // (-1) hash for forwarding nodes
 const Int32 CConcurrentHashMap::TREEBIN   = 0x80000000; // hash for roots of trees
 const Int32 CConcurrentHashMap::RESERVED  = 0x80000001; // hash for transient reservations
 const Int32 CConcurrentHashMap::HASH_BITS = 0x7fffffff; // usable bits of normal node hash
-
 const Int32 CConcurrentHashMap::NCPU = 4;// = Runtime.getRuntime().availableProcessors();
 
 //===============================================================================
@@ -147,6 +125,9 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::Node::Find(
     }
     return NULL;
 }
+
+
+CAR_INTERFACE_IMPL(CConcurrentHashMap::ReservationNode, CConcurrentHashMap::Node, IReservationNode)
 
 //===============================================================================
 // CConcurrentHashMap::
@@ -267,10 +248,10 @@ AutoPtr<IInterface> CConcurrentHashMap::PutVal(
                             }
                         }
                     }
-                    else if ((f->Probe(EIID_TreeBin)) != NULL) {
+                    else if (ITreeBin::Probe(f) != NULL) {
                         AutoPtr<Node> p;
                         binCount = 2;
-                        AutoPtr<TreeBin> tb = (TreeBin*)(IMapEntry*)(f->Probe(EIID_TreeBin));
+                        AutoPtr<TreeBin> tb = (TreeBin*)ITreeBin::Probe(f);
                         if ((p = tb->PutTreeVal(hash, key,
                                                        value)) != NULL) {
                             oldVal = p->mVal;
@@ -337,10 +318,9 @@ AutoPtr<IInterface> CConcurrentHashMap::ReplaceNode(
                                 break;
                         }
                     }
-                    else if (f->Probe(EIID_TreeBin) != NULL) {
+                    else if (ITreeBin::Probe(f) != NULL) {
                         validated = TRUE;
-                        assert(0 && "TODO");
-                        // AutoPtr<TreeBin> t = TreeBin::Probe(f);
+                        // AutoPtr<TreeBin> t = (TreeBin*)ITreeBin::Probe(f);
                         // AutoPtr<TreeNode> r, p;
                         // if ((r = t->mRoot) != NULL &&
                         //     (p = r->FindTreeNode(hash, key, NULL)) != NULL) {
@@ -442,6 +422,8 @@ AutoPtr<ISet> CConcurrentHashMap::KeySet(
 //===============================================================================
 // CConcurrentHashMap::ForwardingNode::
 //===============================================================================
+
+CAR_INTERFACE_IMPL(CConcurrentHashMap::ForwardingNode, CConcurrentHashMap::Node, IForwardingNode)
 
 CConcurrentHashMap::ForwardingNode::ForwardingNode(
     /* [in] */ ArrayOf<Node*>* tab) : Node(MOVED, NULL, NULL, NULL)
@@ -776,6 +758,8 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::Untreeify(
 // CConcurrentHashMap::TreeNode::
 //===============================================================================
 
+CAR_INTERFACE_IMPL(CConcurrentHashMap::TreeNode, CConcurrentHashMap::Node, ITreeNode)
+
 CConcurrentHashMap::TreeNode::TreeNode(
     /* [in] */ Int32 hash,
     /* [in] */ IInterface* key,
@@ -829,6 +813,7 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::TreeNode::Find(
 //===============================================================================
 // CConcurrentHashMap::TreeBin::
 //===============================================================================
+CAR_INTERFACE_IMPL(CConcurrentHashMap::TreeBin, CConcurrentHashMap::Node, ITreeBin)
 
 Int32 CConcurrentHashMap::TreeBin::WRITER = 1; // set while holding write lock
 Int32 CConcurrentHashMap::TreeBin::WAITER = 2; // set when waiting for write lock
@@ -1005,7 +990,7 @@ AutoPtr<CConcurrentHashMap::TreeNode> CConcurrentHashMap::TreeBin::PutTreeVal(
 Boolean CConcurrentHashMap::TreeBin::RemoveTreeNode(
     /* [in] */ TreeNode* p)
 {
-    AutoPtr<TreeNode> next = (TreeNode*)(IMapEntry*)(p->mNext->Probe(EIID_TreeNode));
+    AutoPtr<TreeNode> next = (TreeNode*)ITreeNode::Probe(p->mNext);
     AutoPtr<TreeNode> pred = p->mPrev;  // unlink traversal pointers
     AutoPtr<TreeNode> r, rl;
     if (pred == NULL)
@@ -1292,7 +1277,7 @@ Boolean CConcurrentHashMap::TreeBin::CheckInvariants(
     /* [in] */ TreeNode* t)
 {
     AutoPtr<TreeNode> tp = t->mParent, tl = t->mLeft, tr = t->mRight,
-        tb = t->mPrev, tn = (TreeNode*)(IMapEntry*)(t->mNext->Probe(EIID_TreeNode));
+        tb = t->mPrev, tn = (TreeNode*)ITreeNode::Probe(t->mNext);
     if (tb != NULL && tb->mNext.Get() != t)
         return FALSE;
     if (tn != NULL && tn->mPrev.Get() != t)
@@ -1342,15 +1327,18 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::Traverser::Advance()
             (n = t->GetLength()) <= (i = mIndex) || i < 0)
             return mNext = NULL;
         if ((e = TabAt(t, mIndex)) != NULL && e->mHash < 0) {
-            if ((e->Probe(EIID_ForwardingNode)) != NULL) {
-                mTab = ((ForwardingNode*)(IMapEntry*)(e->Probe(EIID_ForwardingNode)))->mNextTable;
+            if (IForwardingNode::Probe(e) != NULL) {
+                mTab = ((ForwardingNode*)IForwardingNode::Probe(e))->mNextTable;
                 e = NULL;
                 continue;
             }
-            else if ((e->Probe(EIID_TreeBin)) != NULL)
-                e = (Node*)(((TreeBin*)(IMapEntry*)(e->Probe(EIID_TreeBin)))->mFirst).Get();
-            else
+            else if (ITreeBin::Probe(e) != NULL) {
+                TreeBin* tb = (TreeBin*)ITreeBin::Probe(e);
+                e = tb->mFirst;
+            }
+            else {
                 e = NULL;
+            }
         }
         if ((mIndex += mBaseSize) >= n)
             mIndex = ++mBaseIndex;    // visit upper slots if present
@@ -2597,9 +2585,9 @@ ECode CConcurrentHashMap::Clear()
         else {
             synchronized (f) {
                 if (TabAt(tab, i) == f) {
+                    TreeBin* tb = (TreeBin*)ITreeBin::Probe(f);
                     AutoPtr<Node> p = (fh >= 0 ? f.Get() :
-                                   (f->Probe(EIID_TreeBin) != NULL) ?
-                                   (Node*)(((TreeBin*)(IMapEntry*)(f->Probe(EIID_TreeBin)))->mFirst).Get() : NULL);
+                                   (tb != NULL) ? (Node*)tb->mFirst.Get() : NULL);
                     while (p != NULL) {
                         --delta;
                         p = p->mNext;
@@ -2968,7 +2956,7 @@ ECode CConcurrentHashMap::ReadObject(
             else {
                 AutoPtr<IInterface> k = p->mKey;
                 if (first->mHash < 0) {
-                    AutoPtr<TreeBin> t = (TreeBin*)(IMapEntry*)(first->Probe(EIID_TreeBin));
+                    AutoPtr<TreeBin> t = (TreeBin*)ITreeBin::Probe(first);
                     if (t->PutTreeVal(h, k, p->mVal) == NULL)
                         ++added;
                     insertAtFront = FALSE;

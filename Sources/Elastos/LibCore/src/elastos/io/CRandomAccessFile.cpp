@@ -1,7 +1,7 @@
 
 #include "CRandomAccessFile.h"
 #include "CFile.h"
-//#include "IoUtils.h"
+#include "IoUtils.h"
 #include "NioUtils.h"
 #include "Math.h"
 #include "Character.h"
@@ -10,13 +10,19 @@
 #include "CIoBridge.h"
 #include "CLibcore.h"
 #include "CFileDescriptor.h"
-//#include "CModifiedUtf8.h"
+#include "CModifiedUtf8.h"
 #include "AutoLock.h"
+#include "Memory.h"
+#include "CCloseGuard.h"
 
 using Elastos::Droid::System::OsConstants;
 using Elastos::Droid::System::IStructStat;
+using Elastos::Core::CCloseGuard;
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
+using Elastos::IO::Channels::IChannel;
+using Elastos::IO::Charset::IModifiedUtf8;
+using Elastos::IO::Charset::CModifiedUtf8;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
 using Libcore::IO::ILibcore;
@@ -24,9 +30,8 @@ using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
-using Elastos::IO::Channels::IChannel;
-using Elastos::IO::Charset::IModifiedUtf8;
-// using Elastos::IO::Charset::CModifiedUtf8;
+using Libcore::IO::IoUtils;
+using Libcore::IO::Memory;
 
 namespace Elastos {
 namespace IO {
@@ -55,33 +60,26 @@ ECode CRandomAccessFile::constructor(
     /* [in] */ IFile* file,
     /* [in] */ const String& mode)
 {
-//     AutoPtr<COsConstants> obj;
-//     FAIL_RETURN(COsConstants::AcquireSingletonByFriend((COsConstants**)&obj));
-//     AutoPtr<IOsConstants> osConstans = (IOsConstants*)obj.Get();
-    Int32 flags;
-//     if (mode.Equals("r")) {
-//         osConstans->GetOsConstant(String("O_RDONLY"), &flags);
-//     }
-//     else if (mode.Equals("rw") || mode.Equals("rws") || mode.Equals("rwd")) {
-//         Int32 flag1, flag2;
-//         osConstans->GetOsConstant(String("O_RDWR"), &flag1);
-//         osConstans->GetOsConstant(String("O_CREAT"), &flag2);
-//         flags = flag1 | flag2;
+    CCloseGuard::New((ICloseGuard**)&mGuard);
 
-//         if (mode.Equals("rws")) {
-//             // Sync file and metadata with every write
-//             mSyncMetadata = TRUE;
-//         }
-//         else if (mode.Equals("rwd")) {
-//             // Sync file, but not necessarily metadata
-//             osConstans->GetOsConstant(String("O_SYNC"), &flag1);
-//             flags |= flag1;
-//         }
-//     }
-//     else {
-// //        throw new IllegalArgumentException("Invalid mode: " + mode);
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
+    Int32 flags;
+    if (mode.Equals("r")) {
+        flags = OsConstants::_O_RDONLY;
+    }
+    else if (mode.Equals("rw") || mode.Equals("rws") || mode.Equals("rwd")) {
+        flags = OsConstants::_O_RDWR | OsConstants::_O_CREAT;
+        if (mode.Equals("rws")) {
+            // Sync file and metadata with every write
+            mSyncMetadata = true;
+        } else if (mode.Equals("rwd")) {
+            // Sync file, but not necessarily metadata
+            flags |= OsConstants::_O_SYNC;
+        }
+    }
+    else {
+//        throw new IllegalArgumentException("Invalid mode: " + mode);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     mMode = flags;
 
@@ -103,7 +101,7 @@ ECode CRandomAccessFile::constructor(
         mFd->Sync();
     }
 
-    return NOERROR;
+    return mGuard->Open(String("close"));
 }
 
 ECode CRandomAccessFile::constructor(
@@ -118,7 +116,7 @@ ECode CRandomAccessFile::constructor(
 
 ECode CRandomAccessFile::Close()
 {
-    // guard.close();
+    mGuard->Close();
     AutoLock lock(this);
 
     Boolean isflag(FALSE);
@@ -138,11 +136,10 @@ ECode CRandomAccessFile::GetChannel(
     VALIDATE_NOT_NULL(channel)
     AutoLock lock(this);
 
-    // BEGIN android-added
-    if(mChannel == NULL) {
+    if (mChannel == NULL) {
         mChannel = NioUtils::NewFileChannel(THIS_PROBE(ICloseable), mFd, mMode);
     }
-    // END android-added
+
     *channel = mChannel;
     REFCOUNT_ADD(*channel)
     return NOERROR;
@@ -169,13 +166,16 @@ ECode CRandomAccessFile::GetFilePointer(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
-    // return IoUtils::Libcore2IoECode(os->Lseek(mFd->mDescriptor, 0ll, OsConstants::_SEEK_CUR, offset));
+    ECode ec = os->Lseek(mFd, 0ll, OsConstants::_SEEK_CUR, offset);
+    if (FAILED(ec)) return E_IO_EXCEPTION;
+    return NOERROR;
 }
 
 ECode CRandomAccessFile::GetLength(
     /* [out] */ Int64* len)
 {
     VALIDATE_NOT_NULL(len);
+    *len = 0;
 
     AutoPtr<ILibcore> libcore;
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
@@ -183,7 +183,8 @@ ECode CRandomAccessFile::GetLength(
     libcore->GetOs((IOs**)&os);
 
     AutoPtr<IStructStat> stat;
-    // FAIL_RETURN(IoUtils::Libcore2IoECode(os->Fstat(mFd->mDescriptor, (IStructStat**)&stat)));
+    ECode ec = os->Fstat(mFd, (IStructStat**)&stat);
+    if (FAILED(ec)) return E_IO_EXCEPTION;
 
     return stat->GetSize(len);
 }
@@ -192,6 +193,7 @@ ECode CRandomAccessFile::Read(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = -1;
 
     Int32 byteCount;
     FAIL_RETURN(Read(mScratch, 0, 1, &byteCount))
@@ -204,8 +206,9 @@ ECode CRandomAccessFile::Read(
     /* [out] */ ArrayOf<Byte>* buffer,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(number);
+    *number = -1;
+    VALIDATE_NOT_NULL(buffer);
 
     return Read(buffer, 0, buffer->GetLength(), number);
 }
@@ -287,6 +290,7 @@ ECode CRandomAccessFile::ReadDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     Int64 i64Value;
     FAIL_RETURN(ReadInt64(&i64Value));
@@ -298,6 +302,7 @@ ECode CRandomAccessFile::ReadFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
 
     Int32 i32Value;
     FAIL_RETURN(ReadInt32(&i32Value));
@@ -349,13 +354,8 @@ ECode CRandomAccessFile::ReadInt32(
 {
     VALIDATE_NOT_NULL(value);
 
-    //TODO
-    //
-    // readFully(scratch, 0, SizeOf.INT);
-    // return Memory.peekInt(scratch, 0, ByteOrder.BIG_ENDIAN);
     FAIL_RETURN(ReadFully(mScratch, 0, sizeof(Int32)));
-    *value = (((*mScratch)[0] & 0xff) << 24) + (((*mScratch)[1] & 0xff) << 16)
-            + (((*mScratch)[2] & 0xff) << 8) + ((*mScratch)[3] & 0xff);
+    *value = Memory::PeekInt32(mScratch, 0, ByteOrder_BIG_ENDIAN);
     return NOERROR;
 }
 
@@ -409,19 +409,8 @@ ECode CRandomAccessFile::ReadInt64(
 {
     VALIDATE_NOT_NULL(value);
 
-    // TODO:
-    //
-    // readFully(scratch, 0, SizeOf.LONG);
-    // return Memory.peekLong(scratch, 0, ByteOrder.BIG_ENDIAN);
-
     FAIL_RETURN(ReadFully(mScratch, 0, sizeof(Int64)));
-
-    *value = ((Int64)((((*mScratch)[0] & 0xff) << 24) + (((*mScratch)[1] & 0xff) << 16)
-            + (((*mScratch)[2] & 0xff) << 8) + ((*mScratch)[3] & 0xff)) << 32)
-            + ((Int64)((*mScratch)[4] & 0xff) << 24)
-            + (((*mScratch)[5] & 0xff) << 16)
-            + (((*mScratch)[6] & 0xff) << 8)
-            + ((*mScratch)[7] & 0xff);
+    *value = Memory::PeekInt64(mScratch, 0, ByteOrder_BIG_ENDIAN);
     return NOERROR;
 }
 
@@ -430,14 +419,8 @@ ECode CRandomAccessFile::ReadInt16(
 {
     VALIDATE_NOT_NULL(value);
 
-    // TODO:
-    //
-    // readFully(scratch, 0, SizeOf.SHORT);
-    // return Memory.peekLong(scratch, 0, ByteOrder.BIG_ENDIAN);
-
     FAIL_RETURN(ReadFully(mScratch, 0, sizeof(Int16)));
-
-    *value = (Int16)((((*mScratch)[0] & 0xff) << 8) + ((*mScratch)[1] & 0xff));
+    *value = Memory::PeekInt16(mScratch, 0, ByteOrder_BIG_ENDIAN);
     return NOERROR;
 }
 
@@ -479,7 +462,7 @@ ECode CRandomAccessFile::ReadUTF(
         return E_EOF_EXCEPTION;
     }
     AutoPtr<IModifiedUtf8> mutf8help;
-    // CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&mutf8help);
+    CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&mutf8help);
     AutoPtr< ArrayOf<Char32> > charbuf = ArrayOf<Char32>::Alloc(utfSize);
     return mutf8help->Decode(buf, charbuf, 0, utfSize, str);
 }
@@ -500,7 +483,9 @@ ECode CRandomAccessFile::Seek(
     libcore->GetOs((IOs**)&os);
 
     Int64 res;
-    // return IoUtils::Libcore2IoECode(os->Lseek(mFd->mDescriptor, offset, OsConstants::_SEEK_SET, &res));
+    ECode ec = os->Lseek(mFd, offset, OsConstants::_SEEK_SET, &res);
+    if (FAILED(ec)) return E_IO_EXCEPTION;
+    return NOERROR;
 }
 
 ECode CRandomAccessFile::SetLength(
@@ -517,7 +502,8 @@ ECode CRandomAccessFile::SetLength(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
 
-    // FAIL_RETURN(IoUtils::Libcore2IoECode(os->Ftruncate(mFd->mDescriptor, newLength)));
+    ECode ec = os->Ftruncate(mFd, newLength);
+    if (FAILED(ec)) return E_IO_EXCEPTION;
 
     Int64 filePointer;
     FAIL_RETURN(GetFilePointer(&filePointer));
@@ -537,6 +523,7 @@ ECode CRandomAccessFile::SkipBytes(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     if (count > 0) {
         Int64 currentPos, eof;
@@ -610,13 +597,11 @@ ECode CRandomAccessFile::WriteBytes(
     if (str.IsNullOrEmpty())
         return NOERROR;
 
-    // byte[] bytes = new byte[str.length()];
-    // for (int index = 0; index < str.length(); index++) {
-    //     bytes[index] = (byte) (str.charAt(index) & 0xFF);
-    // }
-    // write(bytes);
-    AutoPtr<ArrayOf<Char32> > chs = str.GetChars();
-    return Write((ArrayOf<Byte>*)chs.Get());
+    AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(str.GetLength());
+    for (Int32 index = 0; index < str.GetLength(); index++) {
+        bytes->Set(index, (Byte)(str.GetChar(index) & 0xFF));
+    }
+    return Write(bytes);
 }
 
 ECode CRandomAccessFile::WriteChars(
@@ -626,8 +611,8 @@ ECode CRandomAccessFile::WriteChars(
         return NOERROR;
 
     // write(str.getBytes("UTF-16BE"));
-    AutoPtr<ArrayOf<Char32> > chs = str.GetChars();
-    return Write((ArrayOf<Byte>*)chs.Get());
+    AutoPtr<ArrayOf<Byte> > chs = str.GetBytes();
+    return Write(chs);
 }
 
 ECode CRandomAccessFile::WriteDouble(
@@ -645,51 +630,21 @@ ECode CRandomAccessFile::WriteFloat(
 ECode CRandomAccessFile::WriteInt32(
     /* [in] */ Int32 value)
 {
-    //TODO:
-    //
-    // Memory.pokeInt(scratch, 0, val, ByteOrder.BIG_ENDIAN);
-    // write(scratch, 0, SizeOf.INT);
-
-    (*mScratch)[0] = (Byte)(value >> 24);
-    (*mScratch)[1] = (Byte)(value >> 16);
-    (*mScratch)[2] = (Byte)(value >> 8);
-    (*mScratch)[3] = (Byte)value;
-
+    Memory::PokeInt32(mScratch, 0, value, ByteOrder_BIG_ENDIAN);
     return Write(mScratch, 0, sizeof(Int32));
 }
 
 ECode CRandomAccessFile::WriteInt64(
     /* [in] */ Int64 value)
 {
-    //TODO:
-    //
-    // Memory.pokeLong(scratch, 0, val, ByteOrder.BIG_ENDIAN);
-    // write(scratch, 0, SizeOf.LONG);
-
-    Int32 t = (Int32)(value >> 32);
-    (*mScratch)[0] = (Byte)(t >> 24);
-    (*mScratch)[1] = (Byte)(t >> 16);
-    (*mScratch)[2] = (Byte)(t >> 8);
-    (*mScratch)[3] = (Byte)t;
-    (*mScratch)[4] = (Byte)(value >> 24);
-    (*mScratch)[5] = (Byte)(value >> 16);
-    (*mScratch)[6] = (Byte)(value >> 8);
-    (*mScratch)[7] = (Byte)value;
-
+    Memory::PokeInt64(mScratch, 0, value, ByteOrder_BIG_ENDIAN);
     return Write(mScratch, 0, sizeof(Int64));
 }
 
 ECode CRandomAccessFile::WriteInt16(
     /* [in] */ Int32 value)
 {
-    //TODO:
-    //
-    // Memory.pokeShort(scratch, 0, val, ByteOrder.BIG_ENDIAN);
-    // write(scratch, 0, SizeOf.SHORT);
-
-    (*mScratch)[0] = (Byte)(value >> 8);
-    (*mScratch)[1] = (Byte)value;
-
+    Memory::PokeInt16(mScratch, 0, value, ByteOrder_BIG_ENDIAN);
     return Write(mScratch, 0, sizeof(Int32));
 }
 
@@ -697,7 +652,7 @@ ECode CRandomAccessFile::WriteUTF(
     /* [in] */ const String& str)
 {
     AutoPtr<IModifiedUtf8> utf8help;
-    // CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&utf8help);
+    CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&utf8help);
     AutoPtr<ArrayOf<Byte> > bytes;
     utf8help->Encode(&str, (ArrayOf<Byte>**)&bytes);
     return Write(bytes);

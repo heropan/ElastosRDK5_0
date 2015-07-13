@@ -9,9 +9,8 @@ Int64 NIOAccess::GetBasePointer(
     /* [in] */ IBuffer* b)
 {
     VALIDATE_NOT_NULL(b)
-    Buffer* buf = reinterpret_cast<Buffer*>(b->Probe(EIID_Buffer));
-    if (buf == NULL || buf->mEffectiveDirectAddress == 0)
-    {
+    Buffer* buf = (Buffer*)b;
+    if (buf == NULL || buf->mEffectiveDirectAddress == 0) {
         return 0L;
     }
     return buf->mEffectiveDirectAddress + (buf->mPosition << buf->mElementSizeShift);
@@ -20,17 +19,16 @@ Int64 NIOAccess::GetBasePointer(
 AutoPtr<IInterface> NIOAccess::GetBaseArray(
     /* [in] */ IBuffer* b)
 {
+    assert(b);
     Boolean isflag = FALSE;
     b->HasArray(&isflag);
-    AutoPtr<IInterface> outface;
     if (isflag) {
-        assert(0 && "TODO");
-        // b->GetArray((IInterface**)&outface);
+        AutoPtr<IInterface> outface;
+        b->GetArray((IInterface**)&outface);
+        return outface;
     }
-    else {
-        outface = NULL;
-    }
-    return outface;
+
+    return NULL;
 }
 
 Int32 NIOAccess::GetBaseArrayOffset(
@@ -39,12 +37,12 @@ Int32 NIOAccess::GetBaseArrayOffset(
     VALIDATE_NOT_NULL(b)
     Boolean hasArray;
     b->HasArray(&hasArray);
-    Buffer* buf = reinterpret_cast<Buffer*>(b->Probe(EIID_Buffer));
-    if (hasArray && buf != NULL) {
+    if (hasArray) {
         Int32 offset, position;
+        Buffer* buf = (Buffer*)b;
         b->GetArrayOffset(&offset);
         b->GetPosition(&position);
-        return (offset + position)<< buf->mElementSizeShift;
+        return (offset + position) << buf->mElementSizeShift;
     }
     else {
         return 0;

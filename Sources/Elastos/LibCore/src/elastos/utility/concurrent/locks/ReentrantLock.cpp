@@ -299,12 +299,13 @@ ECode ReentrantLock::HasWaiters(
     if (condition == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<AbstractQueuedSynchronizer::ConditionObject> obj =
-        reinterpret_cast<AbstractQueuedSynchronizer::ConditionObject*>(condition->Probe(EIID_ConditionObject));
-    if (obj == NULL) {
+
+    IConditionObject* co = IConditionObject::Probe(condition);
+    if (co == NULL) {
         //throw new IllegalArgumentException("not owner");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AbstractQueuedSynchronizer::ConditionObject* obj = (AbstractQueuedSynchronizer::ConditionObject*)co;
     return mSync->HasWaiters(obj, result);
 }
 
@@ -317,12 +318,12 @@ ECode ReentrantLock::GetWaitQueueLength(
     if (condition == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<AbstractQueuedSynchronizer::ConditionObject> obj =
-        reinterpret_cast<AbstractQueuedSynchronizer::ConditionObject*>(condition->Probe(EIID_ConditionObject));
-    if (obj == NULL) {
+    IConditionObject* co = IConditionObject::Probe(condition);
+    if (co == NULL) {
         //throw new IllegalArgumentException("not owner");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AbstractQueuedSynchronizer::ConditionObject* obj = (AbstractQueuedSynchronizer::ConditionObject*)co;
     return mSync->GetWaitQueueLength(obj, result);
 }
 
@@ -334,12 +335,12 @@ ECode ReentrantLock::GetWaitingThreads(
     if (condition == NULL) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<AbstractQueuedSynchronizer::ConditionObject> obj =
-        reinterpret_cast<AbstractQueuedSynchronizer::ConditionObject*>(condition->Probe(EIID_ConditionObject));
-    if (obj == NULL) {
+    IConditionObject* co = IConditionObject::Probe(condition);
+    if (co == NULL) {
         //throw new IllegalArgumentException("not owner");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AbstractQueuedSynchronizer::ConditionObject* obj = (AbstractQueuedSynchronizer::ConditionObject*)co;
     return mSync->GetWaitingThreads(obj, threads);
 }
 

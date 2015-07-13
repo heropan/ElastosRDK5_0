@@ -19,11 +19,6 @@ namespace Utility {
 namespace Concurrent {
 namespace Locks {
 
-// 51bbb1f3-8f69-4b43-ac06-f79748fe3439
-extern "C" const InterfaceID EIID_ConditionObject =
-    { 0x51bbb1f3, 0x8f69, 0x4b43, { 0xac, 0x06, 0xf7, 0x97, 0x48, 0xfe, 0x34, 0x39 } };
-
-
 //==========================================================
 //       AbstractQueuedSynchronizer::Node
 //==========================================================
@@ -60,7 +55,7 @@ const Int32 AbstractQueuedSynchronizer::ConditionObject::REINTERRUPT =  1;
 
 const Int32 AbstractQueuedSynchronizer::ConditionObject::THROW_IE    = -1;
 
-CAR_INTERFACE_IMPL_2(AbstractQueuedSynchronizer::ConditionObject, Object, ICondition, ISerializable)
+CAR_INTERFACE_IMPL_3(AbstractQueuedSynchronizer::ConditionObject, Object, IConditionObject, ICondition, ISerializable)
 
 AbstractQueuedSynchronizer::ConditionObject::ConditionObject(
     /* [in] */ AbstractQueuedSynchronizer* host)

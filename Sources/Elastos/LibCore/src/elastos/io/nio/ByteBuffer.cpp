@@ -16,10 +16,6 @@ using Libcore::IO::Memory;
 namespace Elastos {
 namespace IO {
 
-// {AAD41A09-77D1-491c-A2A0-0C7DB0B379E6}
-extern "C" const InterfaceID EIID_ByteBuffer =
-    { 0xaad41a09, 0x77d1, 0x491c, { 0xa2, 0xa0, 0xc, 0x7d, 0xb0, 0xb3, 0x79, 0xe6 } };
-
 CAR_INTERFACE_IMPL(ByteBuffer, Buffer, IByteBuffer)
 
 ECode ByteBuffer::Allocate(

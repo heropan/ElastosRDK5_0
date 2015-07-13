@@ -11,8 +11,6 @@ namespace IO {
 namespace Channels {
 namespace Spi {
 
-extern "C" const InterfaceID EIID_AbstractInterruptibleChannel;
-
 /**
  * {@code AbstractInterruptibleChannel} is the root class for interruptible
  * channels.

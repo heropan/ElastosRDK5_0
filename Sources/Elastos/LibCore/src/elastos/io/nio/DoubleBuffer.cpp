@@ -12,10 +12,6 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace IO {
 
-// {6548CB4D-07DE-41e9-9AF8-8625E6DF3F08}
-extern "C" const InterfaceID EIID_DoubleBuffer =
-    { 0x6548cb4d, 0x7de, 0x41e9, { 0x9a, 0xf8, 0x86, 0x25, 0xe6, 0xdf, 0x3f, 0x8 } };
-
 DoubleBuffer::DoubleBuffer()
 {}
 
@@ -122,10 +118,8 @@ ECode DoubleBuffer::Equals(
     *rst = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    assert(0 && "TODO");
-    DoubleBuffer* otherObj; // = (DoubleBuffer*)(other->Probe(EIID_DoubleBuffer));
-
-    if (otherObj == NULL) return NOERROR;
+    if (IDoubleBuffer::Probe(other) == NULL) return NOERROR;
+    DoubleBuffer* otherObj = (DoubleBuffer*)IDoubleBuffer::Probe(other);
 
     Int32 remaining = 0;
     Int32 otherRemaining = 0;

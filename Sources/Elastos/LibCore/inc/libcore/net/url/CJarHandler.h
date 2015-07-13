@@ -14,8 +14,6 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-extern "C"  const InterfaceID EIID_JarHandler;
-
 CarClass(CJarHandler)
     , public URLStreamHandler
     , public IJarHandler

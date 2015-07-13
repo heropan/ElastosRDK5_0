@@ -8,8 +8,6 @@ using Elastos::Core::ICharSequence;
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_CharBuffer;
-
 /**
  * A buffer of chars.
  * <p>

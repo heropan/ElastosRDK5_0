@@ -6,8 +6,6 @@
 namespace Elastos {
 namespace IO {
 
-extern "C" const InterfaceID EIID_FloatBuffer;
-
 /**
  * A buffer of floats.
  * <p>

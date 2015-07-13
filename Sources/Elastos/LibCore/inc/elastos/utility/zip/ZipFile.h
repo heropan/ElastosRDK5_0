@@ -15,8 +15,6 @@ using Elastos::IO::IFile;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::ILinkedHashMap;
 
-extern "C" const InterfaceID EIID_ZipFileRAFStream;
-
 namespace Elastos {
 namespace Utility {
 namespace Zip {
@@ -53,10 +51,10 @@ public:
      */
     class RAFStream
         : public InputStream
+        , public IZipFileRAFStream
     {
     public:
-        IInterface* Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL()
 
         RAFStream(
             /* [in] */ IRandomAccessFile* raf,

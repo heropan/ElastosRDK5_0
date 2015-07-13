@@ -5,6 +5,7 @@
 #include "_Elastos_IO_CRandomAccessFile.h"
 #include "Object.h"
 
+using Elastos::Core::ICloseGuard;
 using Elastos::IO::Channels::IFileChannel;
 
 namespace Elastos {
@@ -181,6 +182,7 @@ private:
 
     Int32 mMode;
 
+    AutoPtr<ICloseGuard> mGuard;
     // CloseGuard guard = CloseGuard.get();
 
     AutoPtr<ArrayOf<Byte> > mScratch;

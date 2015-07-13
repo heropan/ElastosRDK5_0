@@ -22,10 +22,6 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-extern "C" const InterfaceID EIID_TreeBin;
-extern "C" const InterfaceID EIID_TreeNode;
-extern "C" const InterfaceID EIID_ForwardingNode;
-
 CarClass(CConcurrentHashMap)
     , public AbstractMap
     , public IConcurrentHashMap
@@ -115,8 +111,11 @@ public:
      */
     class ForwardingNode
         : public Node
+        , public IForwardingNode
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ForwardingNode(
             /* [in] */ ArrayOf<Node*>* tab);
 
@@ -133,8 +132,11 @@ public:
      */
     class ReservationNode
         : public Node
+        , public IReservationNode
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ReservationNode() : Node(RESERVED, NULL, NULL, NULL) {}
 
         AutoPtr<Node> Find(
@@ -151,8 +153,11 @@ public:
      */
     class TreeNode
         : public Node
+        , public ITreeNode
     {
     public:
+        CAR_INTERFACE_DECL()
+
         TreeNode(
             /* [in] */ Int32 hash,
             /* [in] */ IInterface* key,
@@ -189,8 +194,11 @@ public:
      */
     class TreeBin
         : public Node
+        , public ITreeBin
     {
     public:
+        CAR_INTERFACE_DECL()
+
         /**
          * Creates bin with initial set of nodes headed by b.
          */

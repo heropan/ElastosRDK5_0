@@ -13,7 +13,6 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-
 const Int32 InflaterInputStream::BUF_SIZE;
 
 CAR_INTERFACE_IMPL(InflaterInputStream, FilterInputStream, IInflaterInputStream)
@@ -62,7 +61,7 @@ ECode InflaterInputStream::constructor(
 
     mInf = inflater;
 
-    if (is->Probe(EIID_ZipFileRAFStream)) {
+    if (is->Probe(EIID_IZipFileRAFStream)) {
         mNativeEndBufSize = bsize;
     }
     else {
@@ -159,7 +158,7 @@ ECode InflaterInputStream::Fill()
     FAIL_RETURN(CheckClosed());
 
     if (mNativeEndBufSize > 0) {
-        CZipFile::RAFStream* is = reinterpret_cast<CZipFile::RAFStream*>(mIn->Probe(EIID_ZipFileRAFStream));
+        IZipFileRAFStream* is = IZipFileRAFStream::Probe(mIn);
         is->Fill(mInf, mNativeEndBufSize, &mLen);
     }
     else {

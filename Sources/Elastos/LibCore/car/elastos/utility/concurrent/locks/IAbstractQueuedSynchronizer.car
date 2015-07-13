@@ -9,6 +9,13 @@ module
     namespace Concurrent {
     namespace Locks {
 
+    /**
+     * @Involve
+     * interface ICondition;
+     */
+    interface IConditionObject {
+    }
+
     interface IAbstractQueuedSynchronizer {
         /*
          * Various flavors of acquire, varying in exclusive/shared and

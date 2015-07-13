@@ -12,8 +12,6 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-extern "C" const InterfaceID EIID_ZipEntry;
-
 class ZipEntry
     : public Object
     , public IZipEntry

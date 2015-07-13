@@ -692,7 +692,7 @@ ECode FileChannelImpl::TransferFrom(
 
         ecRet = Write(IByteBuffer::Probe(buffer), position, (Int32*)number);
         assert(0 && "TODO");
-        // NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
+        // NioUtils::FreeDirectBuffer((ByteBuffer*)IByteBuffer::Probe(buffer));
         return ecRet;
     }
 
@@ -782,7 +782,7 @@ ECode FileChannelImpl::TransferTo(
     return NOERROR;
     // } finally {
     assert(0 && "TODO");
-    // NioUtils::FreeDirectBuffer((ByteBuffer*)buffer->Probe(EIID_ByteBuffer));
+    // NioUtils::FreeDirectBuffer((ByteBuffer*)IByteBuffer::Probe(buffer));
     // }
     return NOERROR;
 }

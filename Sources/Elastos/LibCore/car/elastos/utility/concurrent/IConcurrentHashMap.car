@@ -9,6 +9,34 @@ module
 
     /**
      * @Involve
+     * interface IMapEntry;
+     */
+    interface ITreeBin {
+    }
+
+    /**
+     * @Involve
+     * interface IMapEntry;
+     */
+    interface ITreeNode {
+    }
+
+    /**
+     * @Involve
+     * interface IMapEntry;
+     */
+    interface IForwardingNode {
+    }
+
+    /**
+     * @Involve
+     * interface IMapEntry;
+     */
+    interface IReservationNode {
+    }
+
+    /**
+     * @Involve
      * interface IMap;
      * interface IConcurrentMap;
      */

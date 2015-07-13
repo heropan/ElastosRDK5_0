@@ -7,6 +7,8 @@ using Elastos::Core::EIID_ICharSequence;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(CharSequenceAdapter, CharBuffer, ICharSequence)
+
 CharSequenceAdapter::CharSequenceAdapter(
     /* [in] */ Int32 capacity,
     /* [in] */ ICharSequence* chseq)
@@ -24,58 +26,6 @@ AutoPtr<CharSequenceAdapter> CharSequenceAdapter::Copy(
     buf->mPosition = other->mPosition;
     buf->mMark = other->mMark;
     return buf;
-}
-
-PInterface CharSequenceAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ICharBuffer*)this;
-    }
-    else if (riid == EIID_ICharBuffer) {
-        return (ICharBuffer*)this;
-    }
-    else if (riid == EIID_IBuffer) {
-        return (IBuffer*)this;
-    }
-    else if (riid == EIID_ICharSequence) {
-        return (ICharSequence*)this;
-    }
-    else if (riid == EIID_Buffer) {
-        return reinterpret_cast<PInterface>((Buffer*)this);
-    }
-    else if (riid == EIID_CharBuffer) {
-        return reinterpret_cast<PInterface>((CharBuffer*)this);
-    }
-
-    return NULL;
-}
-
-UInt32 CharSequenceAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CharSequenceAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CharSequenceAdapter::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-    if (pObject == (IInterface*)(ICharBuffer*)this) {
-        *pIID = EIID_ICharBuffer;
-    }
-    else if (pObject == (IInterface*)(ICharSequence*)this) {
-        *pIID = EIID_ICharSequence;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
 }
 
 ECode CharSequenceAdapter::GetPrimitiveArray(
@@ -211,6 +161,22 @@ ECode CharSequenceAdapter::Get(
     return NOERROR;
 }
 
+ECode CharSequenceAdapter::IsDirect(
+    /* [out] */ Boolean* isDirect)
+{
+    VALIDATE_NOT_NULL(isDirect);
+    *isDirect = FALSE;
+    return NOERROR;
+}
+
+ECode CharSequenceAdapter::IsReadOnly(
+    /* [out] */ Boolean* isReadOnly)
+{
+    VALIDATE_NOT_NULL(isReadOnly);
+    *isReadOnly = TRUE;
+    return NOERROR;
+}
+
 ECode CharSequenceAdapter::GetOrder(
     /* [out] */ ByteOrder* order)
 {
@@ -305,122 +271,6 @@ ECode CharSequenceAdapter::Slice(
     return NOERROR;
 }
 
-ECode CharSequenceAdapter::Append(
-    /* [in] */ Char32 c)
-{
-    return CharBuffer::Append(c);
-}
-
-ECode CharSequenceAdapter::Append(
-    /* [in] */ ICharSequence* csq)
-{
-    return CharBuffer::Append(csq);
-}
-
-ECode CharSequenceAdapter::Append(
-    /* [in] */ ICharSequence* csq,
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    return CharBuffer::Append(csq, start, end);
-}
-
-ECode CharSequenceAdapter::Read(
-    /* [in] */ ICharBuffer* target,
-    /* [out] */ Int32* number)
-{
-    return CharBuffer::Read(target, number);
-}
-
-ECode CharSequenceAdapter::GetCapacity(
-    /* [out] */ Int32* cap)
-{
-    return CharBuffer::GetCapacity(cap);
-}
-
-ECode CharSequenceAdapter::Clear()
-{
-    return CharBuffer::Clear();
-}
-
-ECode CharSequenceAdapter::Flip()
-{
-    return CharBuffer::Flip();
-}
-
-ECode CharSequenceAdapter::HasArray(
-    /* [out] */ Boolean* hasArray)
-{
-    return CharBuffer::HasArray(hasArray);
-}
-
-ECode CharSequenceAdapter::HasRemaining(
-    /* [out] */ Boolean* hasRemaining)
-{
-    return CharBuffer::HasRemaining(hasRemaining);
-}
-
-ECode CharSequenceAdapter::IsDirect(
-    /* [out] */ Boolean* isDirect)
-{
-    VALIDATE_NOT_NULL(isDirect);
-    *isDirect = FALSE;
-    return NOERROR;
-}
-
-ECode CharSequenceAdapter::IsReadOnly(
-    /* [out] */ Boolean* isReadOnly)
-{
-    VALIDATE_NOT_NULL(isReadOnly);
-    *isReadOnly = TRUE;
-    return NOERROR;
-}
-
-ECode CharSequenceAdapter::GetLimit(
-    /* [out] */ Int32* limit)
-{
-    return CharBuffer::GetLimit(limit);
-}
-
-ECode CharSequenceAdapter::SetLimit(
-    /* [in] */ Int32 newLimit)
-{
-    return CharBuffer::SetLimit(newLimit);
-}
-
-ECode CharSequenceAdapter::Mark()
-{
-    return CharBuffer::Mark();
-}
-
-ECode CharSequenceAdapter::GetPosition(
-    /* [out] */ Int32* pos)
-{
-    return CharBuffer::GetPosition(pos);
-}
-
-ECode CharSequenceAdapter::SetPosition(
-    /* [in] */ Int32 newPosition)
-{
-    return CharBuffer::SetPosition(newPosition);
-}
-
-ECode CharSequenceAdapter::GetRemaining(
-    /* [out] */ Int32* remaining)
-{
-    return CharBuffer::GetRemaining(remaining);
-}
-
-ECode CharSequenceAdapter::Reset()
-{
-    return CharBuffer::Reset();
-}
-
-ECode CharSequenceAdapter::Rewind()
-{
-    return CharBuffer::Rewind();
-}
-
 ECode CharSequenceAdapter::GetLength(
     /* [out] */ Int32* number)
 {
@@ -453,13 +303,6 @@ ECode CharSequenceAdapter::ToString(
     /* [out] */ String* str)
 {
     return CharBuffer::ToString(str);
-}
-
-ECode CharSequenceAdapter::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean* rst)
-{
-    return CharBuffer::Equals(other, rst);
 }
 
 } // namespace IO

@@ -11,8 +11,6 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace Math {
 
-extern "C" const InterfaceID EIID_BigInt;
-
 /*
  * In contrast to BigIntegers this class doesn't fake two's complement representation.
  * Any Bit-Operations, including Shifting, solely regard the unsigned magnitude.

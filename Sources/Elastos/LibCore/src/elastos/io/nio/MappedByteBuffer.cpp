@@ -16,10 +16,6 @@ using Libcore::IO::IOs;
 namespace Elastos {
 namespace IO {
 
-// {E6FFB679-4B6D-E9D8-668A-C93B2E0819A8}
-extern "C" const InterfaceID EIID_MappedByteBuffer =
-    { 0xe6ffb679, 0x4b6d, 0xe9d8, { 0x66, 0x8a, 0xc9, 0x3b, 0x2e, 0x08, 0x19, 0xa8 } };
-
 MappedByteBuffer::MappedByteBuffer()
 {}
 

@@ -11,8 +11,6 @@ namespace Utility {
 namespace Concurrent {
 namespace Locks {
 
-extern "C" const InterfaceID EIID_ConditionObject;
-
 class AbstractQueuedSynchronizer
     : public AbstractOwnableSynchronizer
     , public IAbstractQueuedSynchronizer

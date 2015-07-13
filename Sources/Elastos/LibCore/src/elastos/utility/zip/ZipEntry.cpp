@@ -19,9 +19,6 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-//{2BFF7AA8-6021-6956-0EB4-0AACADF7368B}
-extern "C" const InterfaceID EIID_ZipEntry =
-        { 0x2BFF7AA8, 0x6021, 0x6956, { 0x0E, 0xB4, 0x0A, 0xAC, 0xAD, 0xF7, 0x36, 0x8B } };
 
 CAR_INTERFACE_IMPL_2(ZipEntry, Object, IZipEntry, ICloneable)
 

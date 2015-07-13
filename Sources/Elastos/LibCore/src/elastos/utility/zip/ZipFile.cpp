@@ -40,9 +40,6 @@ namespace Elastos {
 namespace Utility {
 namespace Zip {
 
-extern "C" const InterfaceID EIID_ZipFileRAFStream =
-    { 0x83f2304, 0xfc73, 0x4727, { 0x86, 0x6a, 0x81, 0xd5, 0xeb, 0x82, 0xf3, 0x43 } };
-
 const Int32 ZipFile::GPBF_DATA_DESCRIPTOR_FLAG = 1 << 3;
 const Int32 ZipFile::GPBF_UTF8_FLAG = 1 << 11;
 const Int32 ZipFile::GPBF_UNSUPPORTED_MASK = GPBF_DATA_DESCRIPTOR_FLAG;
@@ -50,6 +47,8 @@ const Int32 ZipFile::GPBF_UNSUPPORTED_MASK = GPBF_DATA_DESCRIPTOR_FLAG;
 //=====================================================
 //ZipFile::RAFStream
 //=====================================================
+CAR_INTERFACE_IMPL(ZipFile::RAFStream, InputStream, IZipFileRAFStream)
+
 ZipFile::RAFStream::RAFStream(
     /* [in] */ IRandomAccessFile* raf,
     /* [in] */ Int64 initialOffset)
@@ -68,16 +67,6 @@ ZipFile::RAFStream::RAFStream(
     , mOffset(initialOffset)
     , mEndOffset(endOffset)
 {
-}
-
-IInterface* ZipFile::RAFStream::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ZipFileRAFStream) {
-        return reinterpret_cast<IInterface*>(this);
-    }
-
-    return InputStream::Probe(riid);
 }
 
 ECode ZipFile::RAFStream::Available(

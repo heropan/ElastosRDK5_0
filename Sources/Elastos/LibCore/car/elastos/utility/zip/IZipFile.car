@@ -4,11 +4,23 @@ module
     interface Elastos.IO.IInputStream;
 
     interface Elastos.Utility.Zip.IZipEntry;
+    interface Elastos.Utility.Zip.IInflater;
     interface Elastos.Utility.IEnumeration;
 
     namespace Elastos {
     namespace Utility {
     namespace Zip {
+
+    /**
+     * @Involve
+     * interface IInputStream;
+     */
+    interface IZipFileRAFStream {
+        Fill(
+            [in] IInflater* inflater,
+            [in] Int32 nativeEndBufSize,
+            [out] Int32* result);
+    }
 
     /**
     * This class provides random read access to a zip file. You pay more to read the

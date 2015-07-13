@@ -15,8 +15,6 @@ namespace Libcore {
 namespace Net {
 namespace Url {
 
-extern "C"  const InterfaceID EIID_FtpURLConnection;
-
 class FtpURLConnection
     : public URLConnection
     , public IFtpURLConnection
