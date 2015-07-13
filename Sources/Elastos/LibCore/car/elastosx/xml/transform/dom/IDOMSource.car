@@ -34,24 +34,6 @@ module
      */
         GetNode(
             [out] INode** node);
-
-    /**
-     * Set the base ID (URL or system ID) from where URLs
-     * will be resolved.
-     *
-     * @param systemID Base URL for this DOM tree.
-     */
-        SetSystemId(
-            [in] String systemID);
-
-    /**
-     * Get the base ID (URL or system ID) from where URLs
-     * will be resolved.
-     *
-     * @return Base URL for this DOM tree.
-     */
-        GetSystemId(
-            [out] String* systemID);
     }
 
     } // namespace Dom
