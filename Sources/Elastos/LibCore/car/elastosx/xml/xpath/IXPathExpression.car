@@ -1,0 +1,15 @@
+
+module
+{
+    namespace Elastosx {
+    namespace Xml {
+    namespace XPath {
+
+    interface IXPathExpression {
+    }
+
+    } // namespace XPath
+    } // namespace Xml
+    } // namespace Elastosx
+}
+

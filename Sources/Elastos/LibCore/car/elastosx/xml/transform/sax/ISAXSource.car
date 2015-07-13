@@ -1,0 +1,87 @@
+
+module
+{
+    interface Org.Xml.Sax.IXMLReader;
+    interface Org.Xml.Sax.IInputSource;
+
+    namespace Elastosx {
+    namespace Xml {
+    namespace Transform {
+    namespace Sax {
+
+    /**
+     * @Involve
+     * interface ISource;
+     */
+    interface ISAXSource {
+    /**
+     * If {@link javax.xml.transform.TransformerFactory#getFeature}
+     * returns true when passed this value as an argument,
+     * the Transformer supports Source input of this type.
+     */
+        const String FEATURE = "http://javax.xml.transform.sax.SAXSource/feature";
+
+    /**
+     * Set the XMLReader to be used for the Source.
+     *
+     * @param reader A valid XMLReader or XMLFilter reference.
+     */
+        SetXMLReader(
+            [in] IXMLReader* reader);
+
+    /**
+     * Get the XMLReader to be used for the Source.
+     *
+     * @return A valid XMLReader or XMLFilter reference, or null.
+     */
+        GetXMLReader(
+            [out] IXMLReader** reader);
+
+    /**
+     * Set the SAX InputSource to be used for the Source.
+     *
+     * @param inputSource A valid InputSource reference.
+     */
+        SetInputSource(
+            [in] IInputSource* inputSource);
+
+    /**
+     * Get the SAX InputSource to be used for the Source.
+     *
+     * @return A valid InputSource reference, or null.
+     */
+        GetInputSource(
+            [out] IInputSource** inputSource);
+
+    /**
+     * Set the system identifier for this Source.  If an input source
+     * has already been set, it will set the system ID or that
+     * input source, otherwise it will create a new input source.
+     *
+     * <p>The system identifier is optional if there is a byte stream
+     * or a character stream, but it is still useful to provide one,
+     * since the application can use it to resolve relative URIs
+     * and can include it in error messages and warnings (the parser
+     * will attempt to open a connection to the URI only if
+     * no byte stream or character stream is specified).</p>
+     *
+     * @param systemId The system identifier as a URI string.
+     */
+        SetSystemId(
+            [in] String systemId);
+
+    /**
+     * <p>Get the base ID (URI or system ID) from where URIs
+     * will be resolved.</p>
+     *
+     * @return Base URL for the <code>Source</code>, or <code>null</code>.
+     */
+        GetSystemId(
+            [out] String* systemId);
+    }
+
+    } // namespace Sax
+    } // namespace Transform
+    } // namespace Xml
+    } // namespace Elastosx
+}
