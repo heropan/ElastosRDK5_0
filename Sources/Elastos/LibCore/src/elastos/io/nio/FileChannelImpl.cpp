@@ -2,20 +2,30 @@
 #include "Math.h"
 #include "MemoryBlock.h"
 #include "NioUtils.h"
-// #include "CLibcore.h"
+#include "CLibcore.h"
 #include "OsConstants.h"
+#include "CStructFlock.h"
+#include "DirectByteBuffer.h"
+#include "Arrays.h"
+#include "CTreeSet.h"
 
 using Libcore::IO::IOs;
 using Libcore::IO::ILibcore;
-// using Libcore::IO::CLibcore;
+using Libcore::IO::CLibcore;
 using Elastos::IO::NioUtils;
+using Elastos::Core::EIID_IComparator;
 using Elastos::Droid::System::OsConstants;
 using Elastos::Droid::System::IStructStat;
+using Elastos::Droid::System::IStructFlock;
+using Elastos::Droid::System::CStructFlock;
 using Elastos::IO::MemoryBlock;
 using Elastos::IO::Channels::EIID_IFileLock;
 using Elastos::IO::Channels::IChannel;
 using Elastos::IO::Channels::EIID_IFileChannel;
-using Elastos::Droid::System::IStructStat;
+using Elastos::IO::Channels::FileChannelMapMode_READ_ONLY;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::ITreeSet;
+using Elastos::Utility::CTreeSet;
 
 namespace Elastos {
 namespace IO {
@@ -32,8 +42,6 @@ FileChannelImpl::FileLockImpl::FileLockImpl(
     , mIsReleased(FALSE)
 {
 }
-
-CAR_INTERFACE_IMPL(FileChannelImpl::FileLockImpl, Object, IFileLock)
 
 ECode FileChannelImpl::FileLockImpl::Channel(
     /* [out] */ IFileChannel** channel)
@@ -117,8 +125,39 @@ ECode FileChannelImpl::FileLockImpl::ReleaseLock()
 }
 
 //==========================================================
+//       FileChannelImpl::FileLockComparator
+//==========================================================
+
+FileChannelImpl::FileLockComparator::FileLockComparator()
+{
+}
+
+FileChannelImpl::FileLockComparator::~FileLockComparator()
+{
+}
+
+CAR_INTERFACE_IMPL(FileChannelImpl::FileLockComparator, Object, IComparator)
+
+ECode FileChannelImpl::FileLockComparator::Compare(
+    /* [in] */ IInterface* lhs,
+    /* [in] */ IInterface* rhs,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    Int64 position1 = 0;
+    IFileLock::Probe(lhs)->GetPosition(&position1);
+    Int64 position2 = 0;
+    IFileLock::Probe(rhs)->GetPosition(&position2);
+    *result = position1 > position2 ? 1 : (position1 < position2 ? -1 : 0);
+    return NOERROR;
+}
+
+//==========================================================
 //       FileChannelImpl
 //==========================================================
+
+AutoPtr<IComparator> FileChannelImpl::LOCK_COMPARATOR = (IComparator*) new FileChannelImpl::FileLockComparator();
 
 CAR_INTERFACE_IMPL(FileChannelImpl, Object, IFileChannelImpl)
 
@@ -132,10 +171,9 @@ FileChannelImpl::FileChannelImpl(
 {
     assert(NULL != stream);
     assert(NULL != fd);
-    assert(0 && "TODO");
-    // AutoPtr<COsConstants> obj;
-    // COsConstants::AcquireSingletonByFriend((COsConstants**)&obj);
-    // mOsConstants = (IOsConstants*)obj.Get();
+    AutoPtr<ITreeSet> res;
+    CTreeSet::New(LOCK_COMPARATOR, (ITreeSet**)&res);
+    mLocks = ISortedSet::Probe(res);
 }
 
 ECode FileChannelImpl::IsOpen(
@@ -188,11 +226,8 @@ ECode FileChannelImpl::CheckOpen()
 
 ECode FileChannelImpl::CheckReadable()
 {
-    Int32 accMode = 0;
-    Int32 wrOnly = 0;
-    assert(0 && "TODO");
-    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &accMode);
-    // mOsConstants->GetOsConstant(String("O_WRONLY"), &wrOnly);
+    Int32 accMode = OsConstants::_O_ACCMODE;
+    Int32 wrOnly = OsConstants::_O_WRONLY;
 
     if ((mMode & accMode) == wrOnly)
     {
@@ -203,13 +238,9 @@ ECode FileChannelImpl::CheckReadable()
 
 ECode FileChannelImpl::CheckWritable()
 {
-    Int32 accMode = 0;
-    Int32 rdOnly = 0;
-    assert(0 && "TODO");
-    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &accMode);
-    // mOsConstants->GetOsConstant(String("O_RDONLY"), &rdOnly);
-    if ((mMode & accMode) == rdOnly)
-    {
+    Int32 accMode = OsConstants::_O_ACCMODE;
+    Int32 rdOnly = OsConstants::_O_RDONLY;
+    if ((mMode & accMode) == rdOnly) {
         return E_NON_WRITABLE_CHANNEL_EXCEPTION;
     }
     return NOERROR;
@@ -228,15 +259,14 @@ ECode FileChannelImpl::BasicLock(
     /* [in] */ Int64 position,
     /* [in] */ Int64 size,
     /* [in] */ Boolean shared,
-    /* [in] */ Boolean wait)
+    /* [in] */ Boolean wait,
+    /* [out] */ IFileLock** outlock)
 {
-    Int32 ACCMOD = 0;
-    Int32 RDONLY = 0;
-    Int32 WRONLY = 0;
-    assert(0 && "TODO");
-    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCMOD);
-    // mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
-    // mOsConstants->GetOsConstant(String("O_WRONLY"), &WRONLY);
+    VALIDATE_NOT_NULL(outlock)
+
+    Int32 ACCMOD = OsConstants::_O_ACCMODE;
+    Int32 RDONLY = OsConstants::_O_RDONLY;
+    Int32 WRONLY = OsConstants::_O_WRONLY;
     Int32 accessMode = mMode & ACCMOD;
     if (RDONLY == accessMode)
     {
@@ -259,27 +289,30 @@ ECode FileChannelImpl::BasicLock(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    assert(0 && "TODO");
-    // FileLock pendingLock = new FileLockImpl(this, position, size, shared);
-    // addLock(pendingLock);
+    AutoPtr<IFileLock> pendingLock = new FileLockImpl(THIS_PROBE(IFileChannel), position, size, shared);
+    AddLock(pendingLock);
 
-    // StructFlock flock = new StructFlock();
-    // flock.l_type = (short) (shared ? F_RDLCK : F_WRLCK);
-    // flock.l_whence = (short) SEEK_SET;
-    // flock.l_start = position;
-    // flock.l_len = translateLockLength(size);
+    AutoPtr<IStructFlock> flock;
+    CStructFlock::New((IStructFlock**)&flock);
+    flock->SetType((Int16) (shared ? OsConstants::_F_RDLCK : OsConstants::_F_WRLCK));
+    flock->SetWhence((Int16) SEEK_SET);
+    flock->SetStart(position);
+    flock->SetLen(TranslateLockLength(size));
 
-    // boolean success = false;
+    Boolean success = FALSE;
+    Int32 outvalue = 0;
     // try {
-    //     success = (Libcore.os.fcntlFlock(fd, wait ? F_SETLKW64 : F_SETLK64, flock) != -1);
+    FAIL_RETURN(CLibcore::sOs->FcntlFlock(mFd, wait ? OsConstants::_F_SETLKW64 : OsConstants::_F_SETLK64, flock, &outvalue));
+    success = outvalue != -1;
     // } catch (ErrnoException errnoException) {
     //     throw errnoException.rethrowAsIOException();
     // } finally {
-    //     if (!success) {
-    //         removeLock(pendingLock);
-    //     }
+    if (!success) {
+        RemoveLock(pendingLock);
+    }
     // }
-    // return success ? pendingLock : null;
+    *outlock = success ? pendingLock : NULL;
+    REFCOUNT_ADD(*outlock)
     return NOERROR;
 }
 
@@ -294,27 +327,29 @@ ECode FileChannelImpl::Lock(
     /* [in] */ Int64 pos,
     /* [in] */ Int64 size,
     /* [in] */ Boolean shared,
-    /* [in] */ IFileLock** lock)
+    /* [out] */ IFileLock** lock)
 {
-    assert(0 && "TODO");
-    // checkOpen();
-    // FileLock resultLock = null;
-    // {
-    //     boolean completed = false;
-    //     try {
-    //         begin();
-    //         resultLock = basicLock(position, size, shared, true);
-    //         completed = true;
-    //     } finally {
-    //         try {
-    //             end(completed);
-    //         } catch (ClosedByInterruptException e) {
-    //             throw new FileLockInterruptionException();
-    //         }
-    //     }
-    // }
-    // return resultLock;
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(lock)
+
+    FAIL_RETURN(CheckOpen());
+    AutoPtr<IFileLock> resultLock = NULL;
+    {
+        Boolean completed = FALSE;
+        // try {
+            Begin();
+            BasicLock(pos, size, shared, TRUE, (IFileLock**)&resultLock);
+            completed = TRUE;
+        // } finally {
+            // try {
+                End(completed);
+            // } catch (ClosedByInterruptException e) {
+            //     throw new FileLockInterruptionException();
+            // }
+        // }
+    }
+    *lock = resultLock;
+    REFCOUNT_ADD(*lock)
+    return NOERROR;
 }
 
 ECode FileChannelImpl::TryLock(
@@ -323,31 +358,36 @@ ECode FileChannelImpl::TryLock(
     /* [in] */ Boolean shared,
     /* [out] */ IFileLock** lock)
 {
-    assert(0 && "TODO");
-    // checkOpen();
-    // return basicLock(position, size, shared, false);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(lock)
+
+    FAIL_RETURN(CheckOpen());
+    return BasicLock(position, size, shared, FALSE, lock);
 }
 
 ECode FileChannelImpl::ReleaseLock(
     /* [in] */ IFileLock* lock)
 {
-    assert(0 && "TODO");
-    // checkOpen();
+    FAIL_RETURN(CheckOpen());
 
-    // StructFlock flock = new StructFlock();
-    // flock.l_type = (short) F_UNLCK;
-    // flock.l_whence = (short) SEEK_SET;
-    // flock.l_start = lock.position();
-    // flock.l_len = translateLockLength(lock.size());
+    AutoPtr<IStructFlock> flock;
+    CStructFlock::New((IStructFlock**)&flock);
+    flock->SetType((Int16) OsConstants::_F_UNLCK);
+    flock->SetWhence((Int16) OsConstants::_SEEK_SET);
+    Int64 pos;
+    lock->GetPosition(&pos);
+    flock->SetStart(pos);
+    Int64 size;
+    lock->GetSize(&size);
+    flock->SetLen(TranslateLockLength(size));
     // try {
-    //     Libcore.os.fcntlFlock(fd, F_SETLKW64, flock);
+    Int32 ouvalue = 0;
+    FAIL_RETURN(CLibcore::sOs->FcntlFlock(mFd, OsConstants::_F_SETLKW64, flock, &ouvalue));
     // } catch (ErrnoException errnoException) {
     //     throw errnoException.rethrowAsIOException();
     // }
 
-    // removeLock(lock);
-    return E_NOT_IMPLEMENTED;
+    RemoveLock(lock);
+    return NOERROR;
 }
 
 ECode FileChannelImpl::Force(
@@ -357,22 +397,14 @@ ECode FileChannelImpl::Force(
     if(NOERROR != ecRet)
        return ecRet;
 
-    Int32 ACCMODE = 0;
-    Int32 RDONLY = 0;
-    assert(0 && "TODO");
-    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCMODE);
-    // mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
+    Int32 ACCMODE = OsConstants::_O_ACCMODE;
+    Int32 RDONLY = OsConstants::_O_RDONLY;
 
     if( (mMode & ACCMODE) != RDONLY)
     {
-        AutoPtr<ILibcore> libcore;
-        assert(0 && "TODO");
-        // CLibcore::AcquireSingleton((ILibcore**)&libcore);
-        AutoPtr<IOs> os;
-        libcore->GetOs((IOs**)&os);
         if (metadata)
         {
-            ecRet = os->Fsync(mFd);
+            ecRet = CLibcore::sOs->Fsync(mFd);
             if (NOERROR != ecRet)
             {
                 return ecRet;
@@ -380,7 +412,7 @@ ECode FileChannelImpl::Force(
         }
         else
         {
-            ecRet = os->Fdatasync(mFd);
+            ecRet = CLibcore::sOs->Fdatasync(mFd);
             if (NOERROR != ecRet)
             {
                 return ecRet;
@@ -408,13 +440,9 @@ ECode FileChannelImpl::Map(
        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 ACCESSMODE = 0;
-    Int32 RDONLY = 0;
-    Int32 WRONLY = 0;
-    assert(0 && "TODO");
-    // mOsConstants->GetOsConstant(String("O_ACCMODE"), &ACCESSMODE);
-    // mOsConstants->GetOsConstant(String("O_RDONLY"), &RDONLY);
-    // mOsConstants->GetOsConstant(String("O_WRONLY"), &WRONLY);
+    Int32 ACCESSMODE = OsConstants::_O_ACCMODE;
+    Int32 RDONLY = OsConstants::_O_RDONLY;
+    Int32 WRONLY = OsConstants::_O_WRONLY;
     Int32 accessMode = (mode & ACCESSMODE);
     if(accessMode == RDONLY)
     {
@@ -426,31 +454,21 @@ ECode FileChannelImpl::Map(
        return E_NON_READABLE_CHANNEL_EXCEPTION;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<CLibcore> obj;
-    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-
     Int64 nSize;
     ecRet = GetSize(&nSize);
 
     if(position + size > nSize)
     {
-        ecRet = os->Ftruncate(mFd, position + size);
+        ecRet = CLibcore::sOs->Ftruncate(mFd, position + size);
         if(NOERROR != ecRet)
            return ecRet;
     }
 
-    Int32 SC_PAGE_SIZE = 0;
+    Int32 SC_PAGE_SIZE = OsConstants::__SC_PAGE_SIZE;
     Int64 nPageSize = 0;
-
-    assert(0 && "TODO");
-    // ecRet = mOsConstants->GetOsConstant(String("_SC_PAGE_SIZE"), &SC_PAGE_SIZE);
     assert(NOERROR == ecRet);
 
-    ecRet = os->Sysconf(SC_PAGE_SIZE, &nPageSize);
+    ecRet = CLibcore::sOs->Sysconf(SC_PAGE_SIZE, &nPageSize);
     assert(NOERROR == ecRet);
 
     Int64 alignment = position - position % nPageSize;
@@ -459,9 +477,9 @@ ECode FileChannelImpl::Map(
     AutoPtr<MemoryBlock> block;
     MemoryBlock::Mmap(mFd.Get(), alignment, size + offset, mode, (MemoryBlock**)&block);
 
-    // AutoPtr<IMappedByteBuffer> mbb = new MappedByteBufferAdapter(block, (Int32)size, offset, mode);
-    // *buffer = mbb;
-    // REFCOUNT_ADD(*buffer);
+    AutoPtr<IMappedByteBuffer> mbb = (IMappedByteBuffer*) new DirectByteBuffer(block, (Int32) size, offset, (mode == FileChannelMapMode_READ_ONLY), mode);
+    *buffer = mbb;
+    REFCOUNT_ADD(*buffer);
 
     return NOERROR;
 }
@@ -469,20 +487,10 @@ ECode FileChannelImpl::Map(
 ECode FileChannelImpl::GetPosition(
     /* [out] */ Int64* position)
 {
-    ECode ecRet = CheckOpen();
-    assert(0 && "TODO");
-    // AutoPtr<CLibcore> obj;
-    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
+    FAIL_RETURN(CheckOpen());
 
-    Int32 seek_cur = 0;
-    assert(0 && "TODO");
-    // ecRet = mOsConstants->GetOsConstant(String("SEEK_CUR"), &seek_cur);
-    assert(NOERROR == ecRet);
-
-    return os->Lseek(mFd, 0L, seek_cur, position);
+    Int32 seek_cur = OsConstants::_SEEK_CUR;
+    return CLibcore::sOs->Lseek(mFd, 0L, seek_cur, position);
 }
 
 ECode FileChannelImpl::SetPosition(
@@ -493,19 +501,10 @@ ECode FileChannelImpl::SetPosition(
     if(newPosition < 0)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    assert(0 && "TODO");
-    // AutoPtr<CLibcore> obj;
-    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-
-    Int32 seek_cur = 0;
+    Int32 seek_cur = OsConstants::_SEEK_CUR;
     Int64 result = 0;
-    assert(0 && "TODO");
-    // ecRet = mOsConstants->GetOsConstant(String("SEEK_CUR"), &seek_cur);
     assert(NOERROR == ecRet);
-    ecRet = os->Lseek(mFd, newPosition, seek_cur, &result);
+    ecRet = CLibcore::sOs->Lseek(mFd, newPosition, seek_cur, &result);
     assert(NOERROR == ecRet);
     return NOERROR;
 }
@@ -533,43 +532,49 @@ ECode FileChannelImpl::ReadImpl(
     /* [in] */ Int64 position,
     /* [out] */ Int32* ret)
 {
-    assert(0 && "TODO");
-    // buffer.checkWritable();
-    // checkOpen();
-    // checkReadable();
-    // if (!buffer.hasRemaining()) {
-    //     return 0;
-    // }
-    // int bytesRead = 0;
-    // boolean completed = false;
+    VALIDATE_NOT_NULL(ret)
+
+    FAIL_RETURN(((Buffer*)IBuffer::Probe(buffer))->CheckWritable());
+    FAIL_RETURN(CheckOpen());
+    FAIL_RETURN(CheckReadable());
+    Boolean isflag = FALSE;
+    if (IBuffer::Probe(buffer)->HasRemaining(&isflag), !isflag) {
+        *ret = 0;
+        return NOERROR;
+    }
+    Int32 bytesRead = 0;
+    Boolean completed = FALSE;
     // try {
-    //     begin();
-    //     try {
-    //         if (position == -1) {
-    //             bytesRead = Libcore.os.read(fd, buffer);
-    //         } else {
-    //             bytesRead = Libcore.os.pread(fd, buffer, position);
-    //         }
-    //         if (bytesRead == 0) {
-    //             bytesRead = -1;
-    //         }
-    //     } catch (ErrnoException errnoException) {
-    //         if (errnoException.errno == EAGAIN) {
-    //             // We don't throw if we try to read from an empty non-blocking pipe.
-    //             bytesRead = 0;
-    //         } else {
-    //             throw errnoException.rethrowAsIOException();
-    //         }
-    //     }
-    //     completed = true;
+        Begin();
+        // try {
+            if (position == -1) {
+                FAIL_RETURN(CLibcore::sOs->Read(mFd, buffer, &bytesRead));
+            }
+            else {
+                FAIL_RETURN(CLibcore::sOs->Pread(mFd, buffer, position, &bytesRead));
+            }
+            if (bytesRead == 0) {
+                bytesRead = -1;
+            }
+        // } catch (ErrnoException errnoException) {
+        //     if (errnoException.errno == EAGAIN) {
+        //         // We don't throw if we try to read from an empty non-blocking pipe.
+        //         bytesRead = 0;
+        //     } else {
+        //         throw errnoException.rethrowAsIOException();
+        //     }
+        // }
+        completed = TRUE;
     // } finally {
-    //     end(completed && bytesRead >= 0);
+        End(completed && bytesRead >= 0);
     // }
-    // if (bytesRead > 0) {
-    //     buffer.position(buffer.position() + bytesRead);
-    // }
-    // return bytesRead;
-    return E_NOT_IMPLEMENTED;
+    if (bytesRead > 0) {
+        Int32 pos = 0;
+        IBuffer::Probe(buffer)->GetPosition(&pos);
+        IBuffer::Probe(buffer)->SetPosition(pos + bytesRead);
+    }
+    *ret = bytesRead;
+    return NOERROR;
 
 }
 
@@ -603,6 +608,7 @@ ECode FileChannelImpl::Read(
     /* [in] */ Int32 length,
     /* [out] */ Int64* number)
 {
+    VALIDATE_NOT_NULL(number)
 
     if ((offset | length) < 0 || offset > buffers->GetLength()
             || buffers->GetLength() - offset < length)
@@ -618,8 +624,11 @@ ECode FileChannelImpl::Read(
     if(NOERROR != ecRet)
         return ecRet;
 
-    // return transferIoVec(new IoVec(buffers, offset, length, IoVec.Direction.READV));
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IoVec> res = new IoVec(buffers, offset, length, IoVec::Direction_READV);
+    Int32 outvalue = 0;
+    TransferIoVec(res, &outvalue);
+    *number = outvalue;
+    return NOERROR;
 }
 
 ECode FileChannelImpl::GetSize(
@@ -631,15 +640,8 @@ ECode FileChannelImpl::GetSize(
     if(NOERROR != ecRet)
        return ecRet;
 
-   assert(0 && "TODO");
-    // AutoPtr<CLibcore> obj;
-    // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-    AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-
     AutoPtr<IStructStat> stat;
-    os->Fstat(mFd, (IStructStat**)&stat);
+    CLibcore::sOs->Fstat(mFd, (IStructStat**)&stat);
     return stat->GetSize(size);
 }
 
@@ -691,8 +693,8 @@ ECode FileChannelImpl::TransferFrom(
             return ecRet;
 
         ecRet = Write(IByteBuffer::Probe(buffer), position, (Int32*)number);
-        assert(0 && "TODO");
-        // NioUtils::FreeDirectBuffer((ByteBuffer*)IByteBuffer::Probe(buffer));
+        NioUtils::FreeDirectBuffer((IByteBuffer*)buffer->Probe(EIID_IByteBuffer));
+
         return ecRet;
     }
 
@@ -752,15 +754,14 @@ ECode FileChannelImpl::TransferTo(
     if (IFileDescriptorChannel::Probe(target)) {
         AutoPtr<IFileDescriptor> outFd;
         IFileDescriptorChannel::Probe(target)->GetFD((IFileDescriptor**)&outFd);
-        Int32 outFdnum = 0;
-        outFd->GetDescriptor(&outFdnum);
         // try {
         Begin();
             // try {
-        assert(0 && "TODO");
-        // FAIL_RETURN(CLibcore::sOs->Sendfile(outFdnum, mFd, &position, count, number));
-        completed = TRUE;
-        return NOERROR;
+        ECode ec = (CLibcore::sOs->Sendfile(outFd, mFd, &position, count, number));
+        if (ec == NOERROR) {
+            completed = TRUE;
+            return NOERROR;
+        }
             // } catch (ErrnoException errnoException) {
             //     // If the OS doesn't support what we asked for, we want to fall through and
             //     // try a different approach. If it does support it, but it failed, we're done.
@@ -781,8 +782,7 @@ ECode FileChannelImpl::TransferTo(
     *number = ouvalue;
     return NOERROR;
     // } finally {
-    assert(0 && "TODO");
-    // NioUtils::FreeDirectBuffer((ByteBuffer*)IByteBuffer::Probe(buffer));
+    NioUtils::FreeDirectBuffer((IByteBuffer*)buffer->Probe(EIID_IByteBuffer));
     // }
     return NOERROR;
 }
@@ -809,14 +809,7 @@ ECode FileChannelImpl::Truncate(
     assert(NOERROR == ecRet);
 
     if (size < nSize) {
-        assert(0 && "TODO");
-        // AutoPtr<CLibcore> obj;
-        // CLibcore::AcquireSingletonByFriend((CLibcore**)&obj);
-        AutoPtr<ILibcore> libcore; // = (ILibcore*)obj.Get();
-        AutoPtr<IOs> os;
-        libcore->GetOs((IOs**)&os);
-
-        ecRet = os->Ftruncate(mFd, nSize);
+        ecRet = CLibcore::sOs->Ftruncate(mFd, nSize);
     }
 
     *channel = (IFileChannel*) this->Probe(EIID_IFileChannel);
@@ -875,12 +868,10 @@ ECode FileChannelImpl::WriteImpl(
     Begin();
     {
         if (-1 == position) {
-            assert(0 && "TODO");
-            // ecRet = CLibcore::sOs->Write(mFd, buffer, &bytesWritten);
+            ecRet = CLibcore::sOs->Write(mFd, buffer, &bytesWritten);
         }
         else {
-            assert(0 && "TODO");
-            // ecRet = CLibcore::sOs->Pwrite(mFd, buffer, position, &bytesWritten);
+            ecRet = CLibcore::sOs->Pwrite(mFd, buffer, position, &bytesWritten);
         }
 
         completed = TRUE;
@@ -907,11 +898,16 @@ ECode FileChannelImpl::Write(
     /* [in] */ Int32 length,
     /* [out] */ Int64* number)
 {
-    // Arrays.checkOffsetAndCount(buffers.length, offset, length);
-    // checkOpen();
-    // checkWritable();
-    // return transferIoVec(new IoVec(buffers, offset, length, IoVec.Direction.WRITEV));
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(number)
+
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffers->GetLength(), offset, length));
+    FAIL_RETURN(CheckOpen());
+    FAIL_RETURN(CheckWritable());
+    AutoPtr<IoVec> res = new IoVec(buffers, offset, length, IoVec::Direction_WRITEV);
+    Int32 ouvalue;
+    TransferIoVec(res, &ouvalue);
+    *number = ouvalue;
+    return NOERROR;
 }
 
 ECode FileChannelImpl::calculateTotalRemaining(
@@ -932,9 +928,7 @@ ECode FileChannelImpl::calculateTotalRemaining(
 
         if(copyingIn)
         {
-            //buffers[i]->CheckWritable();
-            printf("ERROR: IByteBuffer::CheckWritable() Not Public.");
-            printf("%s:%d\n", __FILE__, __LINE__);
+            ((Buffer*)IBuffer::Probe(buffers[i]))->CheckWritable();
         }
     }
 
@@ -955,25 +949,34 @@ ECode FileChannelImpl::GetFD(
 ECode FileChannelImpl::AddLock(
     /* [in] */ IFileLock* lock)
 {
-    // long lockEnd = lock.position() + lock.size();
-    // for (FileLock existingLock : locks) {
-    //     if (existingLock.position() > lockEnd) {
-    //         // This, and all remaining locks, start beyond our end (so
-    //         // cannot overlap).
-    //         break;
-    //     }
-    //     if (existingLock.overlaps(lock.position(), lock.size())) {
-    //         throw new OverlappingFileLockException();
-    //     }
-    // }
-    // locks.add(lock);
-    return E_NOT_IMPLEMENTED;
+    Int64 pos,size;
+    lock->GetPosition(&pos);
+    lock->GetSize(&size);
+    Int64 lockEnd = pos + size;
+    AutoPtr< ArrayOf<IInterface*> > outarr;
+    mLocks->ToArray((ArrayOf<IInterface*>**)&outarr);
+    Boolean isflag = FALSE;
+    for (Int32 i = 0; i < outarr->GetLength(); i++) {
+        AutoPtr<IFileLock> existingLock = IFileLock::Probe((*outarr)[i]);
+        existingLock->GetPosition(&pos);
+        if (pos > lockEnd) {
+            // This, and all remaining locks, start beyond our end (so
+            // cannot overlap).
+            break;
+        }
+        if (existingLock->Overlaps(pos, size, &isflag), isflag) {
+            // throw new OverlappingFileLockException();
+            return E_OVERLAPPING_FILE_LOCK_EXCEPTION;
+        }
+    }
+    return mLocks->Add(lock, &isflag);
 }
 
 void FileChannelImpl::RemoveLock(
     /* [in] */ IFileLock* lock)
 {
-    // locks.remove(lock);
+    Boolean isflag = FALSE;
+    mLocks->Remove(lock, &isflag);
 }
 
 } // namespace IO

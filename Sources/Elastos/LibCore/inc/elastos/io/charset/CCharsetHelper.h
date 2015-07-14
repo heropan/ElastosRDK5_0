@@ -4,6 +4,8 @@
 #include "_Elastos_IO_Charset_CCharsetHelper.h"
 #include "Singleton.h"
 
+using Elastos::Utility::ISortedMap;
+
 namespace Elastos {
 namespace IO {
 namespace Charset {
@@ -17,8 +19,8 @@ public:
 
     CAR_SINGLETON_DECL()
 
-    // TODO:
-    // public static SortedMap<String, Charset> availableCharsets();
+    CARAPI AvailableCharsets(
+        /* [out] */ ISortedMap** outsm);
 
     CARAPI ForName(
         /* [in] */ const String& charsetName,

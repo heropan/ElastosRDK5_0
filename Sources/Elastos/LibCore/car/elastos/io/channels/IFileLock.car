@@ -58,76 +58,85 @@ module
  */
     interface IFileLock {
 
-    /**
-     * Returns the lock's {@link FileChannel}.
-     *
-     * @return the channel.
-     */
-     Channel( [out] IFileChannel** channel );
+        /**
+         * Returns the lock's {@link FileChannel}.
+         *
+         * @return the channel.
+         */
+         Channel(
+            [out] IFileChannel** channel );
 
-     /**
-     * Returns the lock's starting position in the file.
-     *
-     * @return the lock position.
-     */
-     GetPosition( [out] Int64* position);
+         /**
+         * Returns the lock's starting position in the file.
+         *
+         * @return the lock position.
+         */
+         GetPosition(
+            [out] Int64* position);
 
-     /**
-     * Returns the length of the file lock in bytes.
-     *
-     * @return the size of the file lock in bytes.
-     */
-     GetSize( [out] Int64* size);
+         /**
+         * Returns the length of the file lock in bytes.
+         *
+         * @return the size of the file lock in bytes.
+         */
+         GetSize(
+            [out] Int64* size);
 
-     /**
-     * Indicates if the file lock is shared with other processes or if it is
-     * exclusive.
-     *
-     * @return {@code true} if the lock is a shared lock, {@code false} if it is
-     *         exclusive.
-     */
-     IsShared( [out] Boolean* shared);
+         /**
+         * Indicates if the file lock is shared with other processes or if it is
+         * exclusive.
+         *
+         * @return {@code true} if the lock is a shared lock, {@code false} if it is
+         *         exclusive.
+         */
+         IsShared(
+            [out] Boolean* shared);
 
-    /**
-     * Indicates if the receiver's lock region overlaps the region described
-     * in the parameter list.
-     *
-     * @param start
-     *            the starting position for the comparative lock.
-     * @param length
-     *            the length of the comparative lock.
-     * @return {@code true} if there is an overlap, {@code false} otherwise.
-     */
-     Overlaps( [in]Int64 start, [in]Int64 length, [out]Boolean* result);
+        /**
+         * Indicates if the receiver's lock region overlaps the region described
+         * in the parameter list.
+         *
+         * @param start
+         *            the starting position for the comparative lock.
+         * @param length
+         *            the length of the comparative lock.
+         * @return {@code true} if there is an overlap, {@code false} otherwise.
+         */
+         Overlaps(
+            [in] Int64 start,
+            [in] Int64 length,
+            [out] Boolean* result);
 
-    /**
-     * Indicates whether this lock is a valid file lock. The lock is
-     * valid unless the underlying channel has been closed or it has been
-     * explicitly released.
-     *
-     * @return {@code true} if the lock is valid, {@code false} otherwise.
-     */
-     IsValid([out]Boolean* valid);
+        /**
+         * Indicates whether this lock is a valid file lock. The lock is
+         * valid unless the underlying channel has been closed or it has been
+         * explicitly released.
+         *
+         * @return {@code true} if the lock is valid, {@code false} otherwise.
+         */
+         IsValid(
+            [out] Boolean* valid);
 
-    /**
-     * Releases this particular lock on the file. If the lock is invalid then
-     * this method has no effect. Once released, the lock becomes invalid.
-     *
-     * @throws ClosedChannelException
-     *             if the channel is already closed when an attempt to release
-     *             the lock is made.
-     * @throws IOException
-     *             if another I/O error occurs.
-     */
-     ReleaseLock();
+        /**
+         * Releases this particular lock on the file. If the lock is invalid then
+         * this method has no effect. Once released, the lock becomes invalid.
+         *
+         * @throws ClosedChannelException
+         *             if the channel is already closed when an attempt to release
+         *             the lock is made.
+         * @throws IOException
+         *             if another I/O error occurs.
+         */
+         ReleaseLock();
 
-    /**
-     * Returns a string that shows the details of the lock suitable for display
-     * to an end user.
-     *
-     * @return the display string.
-     */
-     ToString([out] String* string);
+        /**
+         * Returns a string that shows the details of the lock suitable for display
+         * to an end user.
+         *
+         * @return the display string.
+         */
+         ToString(
+            [out] String* string);
 
     } // interface IFileLock
     } // namespace Channels

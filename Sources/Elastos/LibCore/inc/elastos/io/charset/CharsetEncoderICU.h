@@ -30,7 +30,7 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI CanEncode(
-        /* [in] */ Int32 codePoint,
+        /* [in] */ ICharSequence* sequence,
         /* [out] */ Boolean* result);
 
 public:

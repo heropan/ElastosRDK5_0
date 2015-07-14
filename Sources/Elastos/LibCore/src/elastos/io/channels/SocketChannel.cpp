@@ -1,4 +1,7 @@
 #include "SocketChannel.h"
+#include "SelectorProvider.h"
+
+using Elastos::IO::Channels::Spi::SelectorProvider;
 
 namespace Elastos {
 namespace IO {
@@ -18,8 +21,11 @@ CAR_INTERFACE_IMPL_3(SocketChannel, Object, IByteChannel, IScatteringByteChannel
 ECode SocketChannel::Open(
     /* [out] */ ISocketChannel** channel)
 {
-    // return SelectorProvider.provider().openSocketChannel();
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(channel)
+
+    AutoPtr<ISelectorProvider> sp;
+    SelectorProvider::GetProvider((ISelectorProvider**)&sp);
+    return sp->OpenSocketChannel(channel);
 }
 
 ECode SocketChannel::Open(

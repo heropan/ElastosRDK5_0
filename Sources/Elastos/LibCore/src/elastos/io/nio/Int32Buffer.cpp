@@ -2,9 +2,12 @@
 #include "Int32Buffer.h"
 #include "CoreUtils.h"
 #include "CArrayOf.h"
+#include "Int32ArrayBuffer.h"
+#include "Arrays.h"
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -26,11 +29,13 @@ ECode Int32Buffer::Allocate(
 {
     VALIDATE_NOT_NULL(buf);
 
-    assert(0 && "TODO");
-    // if (capacity < 0) {
-    //     throw new IllegalArgumentException("capacity < 0: " + capacity);
-    // }
-    // return new IntArrayBuffer(new int[capacity]);
+    if (capacity < 0) {
+        // throw new IllegalArgumentException("capacity < 0: " + capacity);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr< ArrayOf<Int32> > res = ArrayOf<Int32>::Alloc(capacity);
+    *buf = (IInt32Buffer*) new Int32ArrayBuffer(res);
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -45,16 +50,16 @@ ECode Int32Buffer::Wrap(
     /* [in] */ ArrayOf<Int32>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int32Count,
-    /* [out] */ IInt32Buffer** buf)
+    /* [out] */ IInt32Buffer** buffer)
 {
-    VALIDATE_NOT_NULL(buf);
+    VALIDATE_NOT_NULL(buffer);
 
-    assert(0 && "TODO");
-    // Arrays.checkOffsetAndCount(array.length, start, intCount);
-    // IntBuffer buf = new IntArrayBuffer(array);
-    // buf.position = start;
-    // buf.limit = start + intCount;
-    // return buf;
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int32Count));
+    AutoPtr<Int32Buffer> buf = new Int32ArrayBuffer(array);
+    buf->mPosition = start;
+    buf->mLimit = start + int32Count;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

@@ -9,9 +9,10 @@ namespace Elastos {
 namespace IO {
 
 ByteBufferAsInt64Buffer::ByteBufferAsInt64Buffer(
-    /* [in] */ IByteBuffer* byteBuffer)
+    /* [in] */ ByteBuffer* byteBuffer)
+    : mCap(0)
+    , Int64Buffer((byteBuffer->GetCapacity(&mCap), &mCap), byteBuffer->mEffectiveDirectAddress)
 {
-    // super(mByteBuffer->capacity() / ISizeOf::LONG, mByteBuffer->effectiveDirectAddress);
     mByteBuffer = byteBuffer;
     IBuffer::Probe(mByteBuffer)->Clear();
 }
@@ -127,43 +128,37 @@ ECode ByteBufferAsInt64Buffer::Get(
 ECode ByteBufferAsInt64Buffer::IsDirect(
     /* [out] */ Boolean* rst)
 {
-    // return mByteBuffer->isDirect();
-    return NOERROR;
+    return mByteBuffer->IsDirect(rst);
 }
 
 ECode ByteBufferAsInt64Buffer::IsReadOnly(
     /* [out] */ Boolean* rst)
 {
-    // return mByteBuffer->isReadOnly();
-    return NOERROR;
+    return mByteBuffer->IsReadOnly(rst);
 }
 
 ECode ByteBufferAsInt64Buffer::GetOrder(
     /* [out] */ ByteOrder* byteOrder)
 {
-    // return mByteBuffer->order();
-    return NOERROR;
+    return mByteBuffer->GetOrder(byteOrder);
 }
 
 ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int64 c)
 {
-    // if (mPosition == mLimit) {
-    //     throw new BufferOverflowException();
-    // }
-    // mByteBuffer->putLong(mPosition++ * ISizeOf::LONG, c);
-    // return this;
-    return NOERROR;
+    if (mPosition == mLimit) {
+        // throw new BufferOverflowException();
+        return E_BUFFER_UNDERFLOW_EXCEPTION;
+    }
+    return mByteBuffer->PutInt64(mPosition++ * ISizeOf::LONG, c);
 }
 
 ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int32 index,
     /* [in] */ Int64 c)
 {
-    // checkIndex(index);
-    // mByteBuffer->putLong(index * ISizeOf::LONG, c);
-    // return this;
-    return NOERROR;
+    FAIL_RETURN(CheckIndex(index));
+    return mByteBuffer->PutInt64(index * ISizeOf::LONG, c);
 }
 
 ECode ByteBufferAsInt64Buffer::Put(
@@ -171,27 +166,34 @@ ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    // mByteBuffer->mLimit(mLimit * ISizeOf::LONG);
-    // mByteBuffer->mPosition(mPosition * ISizeOf::LONG);
-    // if (byteBuffer instanceof DirectByteBuffer) {
-    //     ((DirectByteBuffer) byteBuffer).put(src, srcOffset, longCount);
-    // } else {
-    //     ((ByteArrayBuffer) byteBuffer).put(src, srcOffset, longCount);
-    // }
-    // this.mPosition += longCount;
-    // return this;
+    mByteBuffer->SetLimit(mLimit * ISizeOf::LONG);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::LONG);
+    AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
+    if (res) {
+        res->PutInt64s(src, srcOffset, charCount);
+    } else {
+        ((ByteArrayBuffer*) mByteBuffer.Get())->PutInt64s(src, srcOffset, charCount);
+    }
+    mPosition += charCount;
     return NOERROR;
 }
 
 ECode ByteBufferAsInt64Buffer::Slice(
     /* [out] */ IInt64Buffer** buffer)
 {
-    // mByteBuffer->mLimit(mLimit * ISizeOf::LONG);
-    // mByteBuffer->mPosition(mPosition * ISizeOf::LONG);
-    // ByteBuffer bb = mByteBuffer->slice().order(mByteBuffer->order());
-    // LongBuffer result = new ByteBufferAsInt64Buffer(bb);
-    // mByteBuffer->clear();
-    // return result;
+    VALIDATE_NOT_NULL(buffer)
+
+    mByteBuffer->SetLimit(mLimit * ISizeOf::LONG);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::LONG);
+    AutoPtr<IByteBuffer> bb;
+    mByteBuffer->Slice((IByteBuffer**)&bb);
+    ByteOrder midorder;
+    mByteBuffer->GetOrder(&midorder);
+    bb->SetOrder(midorder);
+    AutoPtr<IInt64Buffer> result = (IInt64Buffer*) new ByteBufferAsInt64Buffer((ByteBuffer*)bb.Get());
+    mByteBuffer->Clear();
+    *buffer = result;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -199,20 +201,20 @@ ECode ByteBufferAsInt64Buffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int64>** array)
 {
     // throw new UnsupportedOperationException();
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode ByteBufferAsInt64Buffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     // throw new UnsupportedOperationException();
-    return NOERROR;
+    return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode ByteBufferAsInt64Buffer::ProtectedHasArray(
     /* [out] */ Boolean* result)
 {
-    // return false;
+    *result = FALSE;
     return NOERROR;
 }
 

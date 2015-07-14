@@ -30,14 +30,14 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Boolean isReadOnly);
 
-    CARAPI GetFloat(
+    CARAPI Get(
         /* [out] */ Float* value);
 
-    CARAPI GetFloat(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Float* value);
 
-    CARAPI GetFloats(
+    CARAPI Get(
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount);
@@ -48,10 +48,50 @@ public:
     CARAPI GetOrder(
         /* [out] */ ByteOrder* byteOrder);
 
+    CARAPI AsReadOnlyBuffer(
+        /* [out] */ IFloatBuffer** buffer);
+
+    CARAPI Compact();
+
+    CARAPI Duplicate(
+        /* [out] */ IFloatBuffer** buffer);
+
+    CARAPI ProtectedArray(
+        /* [out, callee] */ ArrayOf<Float>** array);
+
+    CARAPI ProtectedArrayOffset(
+        /* [out] */ Int32* offset);
+
+    CARAPI ProtectedHasArray(
+        /* [out] */ Boolean* hasArray);
+
+    CARAPI Put(
+        /* [in] */ Float d);
+
+    CARAPI Put(
+        /* [in] */ Int32 index,
+        /* [in] */ Float d);
+    CARAPI Put(
+        /* [in] */ const ArrayOf<Float>& src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 doubleCount);
+
+    CARAPI Slice(
+        /* [out] */ IFloatBuffer** buffer);
+
+    CARAPI IsReadOnly(
+        /* [out] */ Boolean* value);
+
+private:
+    static CARAPI_(AutoPtr<FloatArrayBuffer>) Copy(
+        /* [in] */ FloatArrayBuffer* other,
+        /* [in] */ Int32 markOfOther,
+        /* [in] */ Boolean isReadOnly);
+
 public:
     AutoPtr< ArrayOf<Float> > mBackingArray;
     Boolean mIsReadOnly;
-    Int32 mOffset;
+    Int32 mArrayOffset;
 };
 } // namespace IO
 } // namespace Elastos

@@ -31,24 +31,24 @@ ECode DatagramChannel::Open(
     return sp->OpenDatagramChannel(channel);
 }
 
-ECode DatagramChannel::ValidOps(
+ECode DatagramChannel::GetValidOps(
     /* [out] */ Int32* value)
 {
     return (SelectionKey::sOP_READ | SelectionKey::sOP_WRITE);
 }
 
-ECode DatagramChannel::ReadByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+ECode DatagramChannel::Read(
+    /* [in] */ ArrayOf<IByteBuffer*>* targets,
     /* [out] */ Int64* nRead)
 {
-    return ReadByteBuffers(targets, 0, targets.GetLength(), nRead);
+    return Read(targets, 0, targets->GetLength(), nRead);
 }
 
-ECode DatagramChannel::WriteByteBuffers(
-    /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+ECode DatagramChannel::Write(
+    /* [in] */ ArrayOf<IByteBuffer*>* targets,
     /* [out] */ Int64* nWrite)
 {
-    return WriteByteBuffers(targets, 0, targets.GetLength(), nWrite);
+    return Write(targets, 0, targets->GetLength(), nWrite);
 }
 
 } // namespace Channels

@@ -27,7 +27,7 @@ class ByteBufferAsInt64Buffer
 {
 private:
     ByteBufferAsInt64Buffer(
-        /* [in] */ IByteBuffer* byteBuffer);
+        /* [in] */ ByteBuffer* byteBuffer);
 
 public:
     static CARAPI_(AutoPtr<IInt64Buffer>) AsInt64Buffer(
@@ -107,7 +107,7 @@ protected:
         /* [out] */ Boolean* result);
 
 private:
-    AutoPtr<IByteBuffer> mByteBuffer;
+    AutoPtr<ByteBuffer> mByteBuffer;
 
     Int32 mCap;
 };

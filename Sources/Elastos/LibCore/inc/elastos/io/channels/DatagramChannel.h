@@ -44,7 +44,7 @@ public:
      * @see java.nio.channels.SelectableChannel#validOps()
      * @return valid operations in bit-set.
      */
-    CARAPI ValidOps(
+    CARAPI GetValidOps(
         /* [out] */ Int32* value);
 
     /**
@@ -211,7 +211,7 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    virtual CARAPI ReadByteBuffer(
+    virtual CARAPI Read(
         /* [in] */ IByteBuffer* target,
         /* [in] */ Int32 nRead) = 0;
 
@@ -253,8 +253,8 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    virtual CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+    virtual CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* targets,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ Int64* nRead) = 0;
@@ -288,8 +288,8 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    CARAPI ReadByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& targets,
+    CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*>* targets,
         /* [out] */ Int64* nRead);
 
     /**
@@ -318,7 +318,7 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    virtual CARAPI WriteByteBuffer(
+    virtual CARAPI Write(
         /* [in] */ IByteBuffer *source,
         /* [out] */ Int32* nWrite) = 0;
 
@@ -360,8 +360,8 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    virtual CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& sources,
+    virtual CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* sources,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [out] */ Int64* nWrite) = 0;
@@ -395,8 +395,8 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    CARAPI WriteByteBuffers(
-        /* [in] */ const ArrayOf<IByteBuffer*>& sources,
+    CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*>* sources,
         /* [out] */ Int64* nWrite);
 protected:
     DatagramChannel(

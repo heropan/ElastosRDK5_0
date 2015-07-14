@@ -2,9 +2,12 @@
 #include "FloatBuffer.h"
 #include "CoreUtils.h"
 #include "CArrayOf.h"
+#include "FloatArrayBuffer.h"
+#include "Arrays.h"
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -26,11 +29,13 @@ ECode FloatBuffer::Allocate(
 {
     VALIDATE_NOT_NULL(buf);
 
-    assert(0 && "TODO");
-    // if (capacity < 0) {
-    //     throw new IllegalArgumentException("capacity < 0: " + capacity);
-    // }
-    // return new FloatArrayBuffer(new float[capacity]);
+    if (capacity < 0) {
+        // throw new IllegalArgumentException("capacity < 0: " + capacity);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr< ArrayOf<Float> > res = ArrayOf<Float>::Alloc(capacity);
+    *buf = (IFloatBuffer*) new FloatArrayBuffer(res);
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -45,15 +50,16 @@ ECode FloatBuffer::Wrap(
     /* [in] */ ArrayOf<Float>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 floatCount,
-    /* [out] */ IFloatBuffer** buf)
+    /* [out] */ IFloatBuffer** buffer)
 {
-    VALIDATE_NOT_NULL(buf);
+    VALIDATE_NOT_NULL(buffer);
 
-    // Arrays.checkOffsetAndCount(array.length, start, floatCount);
-    // FloatBuffer buf = new FloatArrayBuffer(array);
-    // buf.position = start;
-    // buf.limit = start + floatCount;
-    // return buf;
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, floatCount));
+    AutoPtr<FloatBuffer> buf = new FloatArrayBuffer(array);
+    buf->mPosition = start;
+    buf->mLimit = start + floatCount;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

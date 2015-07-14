@@ -1,9 +1,14 @@
 
 #include "AbstractSelector.h"
 #include "AbstractSelectableChannel.h"
-// #include "CHashSet.h"
+#include "CHashSet.h"
+#include "Thread.h"
+#include "CAtomicBoolean.h"
+#include "AutoLock.h"
 
-// using Elastos::Utility::CHashSet;
+using Elastos::Core::Thread;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 
 namespace Elastos {
 namespace IO {
@@ -85,10 +90,9 @@ AbstractSelector::~AbstractSelector()
 ECode AbstractSelector::constructor(
     /* [in] */ ISelectorProvider* provider)
 {
-    mIsOpen = TRUE;
+    CAtomicBoolean::New(TRUE, (IAtomicBoolean**)&mIsOpen);
     mSelectorProvider = provider;
-    assert(0 && "TODO"); // wanguangming
-    // CHashSet::New((ISet**)&mCancelledKeySet);
+    CHashSet::New((ISet**)&mCancelledKeySet);
     mWakeupRunnable = new WakeupRunnable(this);
     assert(NULL != mWakeupRunnable);
     return NOERROR;
@@ -96,10 +100,9 @@ ECode AbstractSelector::constructor(
 
 ECode AbstractSelector::Close()
 {
-    ALOGW("Warning:It should be atomic boolean in AbstractSelector::Close()\n");
-    if (mIsOpen)
-    {
-        mIsOpen = FALSE;
+    Boolean isflag = FALSE;
+    mIsOpen->GetAndSet(FALSE, &isflag);
+    if (isflag) {
         ImplCloseSelector();
     }
     return NOERROR;
@@ -108,10 +111,7 @@ ECode AbstractSelector::Close()
 ECode AbstractSelector::IsOpen(
     /* [out] */ Boolean* isOpen)
 {
-    VALIDATE_NOT_NULL(isOpen)
-    ALOGW("Warning:It should be atomic boolean in AbstractSelector::IsOpen()\n");
-    *isOpen = mIsOpen;
-    return NOERROR;
+    return mIsOpen->Get(isOpen);
 }
 
 ECode AbstractSelector::GetProvider(
@@ -148,23 +148,22 @@ ECode AbstractSelector::CancelledKeys(
 
 ECode AbstractSelector::Begin()
 {
-    // Thread.currentThread().pushInterruptAction$(wakeupRunnable);
-    return E_NOT_IMPLEMENTED;
+    return Thread::GetCurrentThread()->PushInterruptAction(mWakeupRunnable);
 }
 
 ECode AbstractSelector::End()
 {
-    // Thread.currentThread().popInterruptAction$(wakeupRunnable);
-    return E_NOT_IMPLEMENTED;
+    return Thread::GetCurrentThread()->PopInterruptAction(mWakeupRunnable);
 }
 
 ECode AbstractSelector::Cancel(
     /* [in] */ ISelectionKey* key)
 {
-    // synchronized (cancelledKeysSet) {
-    //     cancelledKeysSet.add(key);
-    // }
-    return E_NOT_IMPLEMENTED;
+    synchronized (mCancelledKeySet) {
+        Boolean isflag = FALSE;
+        mCancelledKeySet->Add(key, &isflag);
+    }
+    return NOERROR;
 }
 
 } // namespace Spi

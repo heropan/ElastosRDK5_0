@@ -63,6 +63,7 @@ namespace Channels {
 class FileLock
     : public Object
     , public ICloseable
+    , public IFileLock
 {
 public:
     CAR_INTERFACE_DECL()

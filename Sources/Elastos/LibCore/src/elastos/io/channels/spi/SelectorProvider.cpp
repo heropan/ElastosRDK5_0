@@ -1,5 +1,9 @@
 #include "SelectorProvider.h"
 #include "CSelectorProviderImpl.h"
+#include "ServiceLoader.h"
+
+using Elastos::Utility::ServiceLoader;
+using Elastos::Utility::IServiceLoader;
 
 namespace Elastos {
 namespace IO {
@@ -35,6 +39,7 @@ ECode SelectorProvider::GetProvider(
 ECode SelectorProvider::LoadProviderByJar(
     /* [out] */ ISelectorProvider** provider)
 {
+    assert(0 && "TODO");
     // for (SelectorProvider provider : ServiceLoader.load(SelectorProvider.class)) {
     //     return provider;
     // }
@@ -45,9 +50,11 @@ ECode SelectorProvider::LoadProviderByJar(
 ECode SelectorProvider::InheriteChannel(
     /* [out] */ IChannel** cannel)
 {
+    VALIDATE_NOT_NULL(cannel)
+
     // // Android never has stdin/stdout connected to a socket.
-    // return null;
-    return E_NOT_IMPLEMENTED;
+    *cannel = NULL;
+    return NOERROR;
 }
 
 } // namespace Spi

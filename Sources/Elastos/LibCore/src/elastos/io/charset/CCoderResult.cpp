@@ -70,17 +70,6 @@ ECode CCoderResult::MalformedForLength(
     VALIDATE_NOT_NULL(result);
 
     if (length > 0) {
-    // TODO:
-    //     Integer key = Integer.valueOf(length);
-    //     synchronized (_malformedErrors) {
-    //         CoderResult r = _malformedErrors.get(key);
-    //         if (null == r) {
-    //             r = new CoderResult(TYPE_MALFORMED_INPUT, length);
-    //             _malformedErrors.put(key, r);
-    //         }
-    //         return r;
-    //     }
-        // Temporary achieve
         AutoLock lock(sMalformedMutex);
         AutoPtr<ICoderResult> r;
         HashMap<Int32, AutoPtr<ICoderResult> >::Iterator iter = sMalformedErrors->Find(length);
@@ -106,17 +95,6 @@ ECode CCoderResult::UnmappableForLength(
     VALIDATE_NOT_NULL(result);
 
     if (length > 0) {
-    // TODO:
-    //     Integer key = Integer.valueOf(length);
-    //     synchronized (_unmappableErrors) {
-    //         CoderResult r = _unmappableErrors.get(key);
-    //         if (null == r) {
-    //             r = new CoderResult(TYPE_UNMAPPABLE_CHAR, length);
-    //             _unmappableErrors.put(key, r);
-    //         }
-    //         return r;
-    //     }
-        // Temporary achieve
         AutoLock lock(sUnmappableMutex);
         AutoPtr<ICoderResult> r;
         HashMap<Int32, AutoPtr<ICoderResult> >::Iterator iter = sUnmappableErrors->Find(length);
