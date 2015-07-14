@@ -13,6 +13,7 @@
 #include "CHashSet.h"
 #include "StringUtils.h"
 #include "CStringWrapper.h"
+#include "Collections.h"
 
 #include <unicode/ucat.h>
 #include <unicode/ureslocs.h>

@@ -5,11 +5,14 @@
 #include "CFile.h"
 #include "utility/Collections.h"
 
+// #include "utility/CCollections.h"
+
+
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::Utility::IList;
-using Elastos::Utility::ICollections;
 using Elastos::Utility::Collections;
+
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
 
@@ -58,6 +61,7 @@ DeleteOnExit::DeleteOnExit()
 
 ECode DeleteOnExit::Run()
 {
+    // CCollections::AcquireSingleton((ICollections**)&col);
     AutoPtr<IList> list = IList::Probe(mFiles);
     Collections::Sort(list);
     Int32 size;

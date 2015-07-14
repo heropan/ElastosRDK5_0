@@ -32,10 +32,13 @@ using Elastos::Utility::IIterator;
 using Elastos::Utility::IIterable;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::IEnumeration;
-using Elastos::Utility::ICollections;
 using Elastos::Utility::Collections;
 //using Elastos::Utility::Concurrent::CCountDownLatch;
 //using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
+
+// using Elastos::Utility::CCollections;
+// using Elastos::Utility::Concurrent::CCountDownLatch;
+// using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 
 namespace Elastos {
 namespace Net {

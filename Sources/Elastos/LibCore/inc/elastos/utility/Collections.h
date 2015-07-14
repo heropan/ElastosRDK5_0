@@ -16,7 +16,6 @@ namespace Elastos {
 namespace Utility {
 
 class Collections
-    : public Object
 {
 public:
     class _SynchronizedCollection

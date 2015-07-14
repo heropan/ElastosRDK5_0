@@ -424,7 +424,7 @@ module
      *            the source {@link Enumeration}.
      * @return an {@code ArrayList} from {@code enumeration}.
      */
-    NewList(
+    List(
         [in] IEnumeration* enumeration,
         [out] IArrayList** result);
 
@@ -436,7 +436,7 @@ module
      *            the Collection to wrap in a synchronized collection.
      * @return a synchronized Collection.
      */
-    NewSynchronizedCollection(
+    SynchronizedCollection(
         [in] ICollection* collection,
         [out] ICollection** result);
 
@@ -448,7 +448,7 @@ module
      *            the List to wrap in a synchronized list.
      * @return a synchronized List.
      */
-    NewSynchronizedList(
+    SynchronizedList(
         [in] IList* list,
         [out] IList** result);
 
@@ -460,7 +460,7 @@ module
      *            the map to wrap in a synchronized map.
      * @return a synchronized Map.
      */
-    NewSynchronizedMap(
+    SynchronizedMap(
         [in] IMap* map,
         [out] IMap** result);
 
@@ -472,7 +472,7 @@ module
      *            the set to wrap in a synchronized set.
      * @return a synchronized set.
      */
-    NewSynchronizedSet(
+    SynchronizedSet(
         [in] ISet* set,
         [out] ISet** result);
 
@@ -484,7 +484,7 @@ module
      *            the sorted map to wrap in a synchronized sorted map.
      * @return a synchronized sorted map.
      */
-    NewSynchronizedSortedMap(
+    SynchronizedSortedMap(
         [in] ISortedMap* map,
         [out] ISortedMap** result);
 
@@ -496,7 +496,7 @@ module
      *            the sorted set to wrap in a synchronized sorted set.
      * @return a synchronized sorted set.
      */
-    NewSynchronizedSortedSet(
+    SynchronizedSortedSet(
         [in] ISortedSet* set,
         [out] ISortedSet** result);
 
@@ -509,7 +509,7 @@ module
      *            the collection to wrap in an unmodifiable collection.
      * @return an unmodifiable collection.
      */
-    NewUnmodifiableCollection(
+    UnmodifiableCollection(
         [in] ICollection* collection,
         [out] ICollection** result);
 
@@ -522,7 +522,7 @@ module
      *            the list to wrap in an unmodifiable list.
      * @return an unmodifiable List.
      */
-    NewUnmodifiableList(
+    UnmodifiableList(
         [in] IList* list,
         [out] IList** result);
 
@@ -535,7 +535,7 @@ module
      *            the map to wrap in an unmodifiable map.
      * @return a unmodifiable map.
      */
-    NewUnmodifiableMap(
+    UnmodifiableMap(
         [in] IMap* map,
         [out] IMap** result);
 
@@ -548,7 +548,7 @@ module
      *            the set to wrap in an unmodifiable set.
      * @return a unmodifiable set
      */
-    NewUnmodifiableSet(
+    UnmodifiableSet(
         [in] ISet* set,
         [out] ISet** result);
 
@@ -561,7 +561,7 @@ module
      *            the sorted map to wrap in an unmodifiable sorted map.
      * @return a unmodifiable sorted map
      */
-    NewUnmodifiableSortedMap(
+    UnmodifiableSortedMap(
         [in] ISortedMap* map,
         [out] ISortedMap** result);
 
@@ -574,7 +574,7 @@ module
      *            the sorted set to wrap in an unmodifiable sorted set.
      * @return a unmodifiable sorted set.
      */
-    NewUnmodifiableSortedSet(
+    UnmodifiableSortedSet(
         [in] ISortedSet* set,
         [out] ISortedSet** result);
 
@@ -660,7 +660,7 @@ module
      *            the type of the elements permitted to insert.
      * @return a typesafe collection.
      */
-    NewCheckedCollection(
+    CheckedCollection(
         [in] ICollection* c,
         [in] InterfaceID type,
         [out] ICollection** result);
@@ -679,7 +679,7 @@ module
      *            the type of the values permitted to insert.
      * @return a typesafe map.
      */
-    NewCheckedMap(
+    CheckedMap(
         [in] IMap* m,
         [in] InterfaceID keyType,
         [in] InterfaceID valueType,
@@ -697,7 +697,7 @@ module
      *            the type of the elements permitted to insert.
      * @return a typesafe list.
      */
-    NewCheckedList(
+    CheckedList(
         [in] IList* list,
         [in] InterfaceID type,
         [out] IList** result);
@@ -714,7 +714,7 @@ module
      *            the type of the elements permitted to insert.
      * @return a typesafe set.
      */
-    NewCheckedSet(
+    CheckedSet(
         [in] ISet* s,
         [in] InterfaceID type,
         [out] ISet** result);
@@ -733,7 +733,7 @@ module
      *            the type of the values permitted to insert.
      * @return a typesafe sorted map.
      */
-    NewCheckedSortedMap(
+    CheckedSortedMap(
         [in] ISortedMap* m,
         [in] InterfaceID keyType,
         [in] InterfaceID valueType,
@@ -751,7 +751,7 @@ module
      *            the type of the elements permitted to insert.
      * @return a typesafe sorted set.
      */
-    NewCheckedSortedSet(
+    CheckedSortedSet(
         [in] ISortedSet* s,
         [in] InterfaceID type,
         [out] ISortedSet** result);
@@ -820,7 +820,7 @@ module
      * @throws IllegalArgumentException if the map is not empty
      * @since 1.6
      */
-    NewSetFromMap(
+    SetFromMap(
         [in] IMap* map,
         [out] ISet** result);
 
@@ -829,7 +829,7 @@ module
      *
      * @since 1.6
      */
-    NewAsLifoQueue(
+    AsLifoQueue(
         [in] IDeque* deque,
         [out] IQueue** result);
     }

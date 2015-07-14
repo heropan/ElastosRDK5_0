@@ -6,7 +6,6 @@
 using Elastos::Utility::Collections;
 using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::EIID_IIterable;
-using Elastos::Utility::ICollections;
 
 namespace Libcore {
 namespace Utility {

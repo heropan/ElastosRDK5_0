@@ -703,6 +703,10 @@ module
             interface IList;
         }
 
+        singleton class CCollections {
+            interface ICollections;
+        }
+
         singleton class CEnumSetHelper {
             interface IEnumSetHelper;
         }
