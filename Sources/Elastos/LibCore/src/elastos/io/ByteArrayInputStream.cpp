@@ -1,6 +1,9 @@
 
 #include "ByteArrayInputStream.h"
 #include "AutoLock.h"
+#include "Arrays.h"
+
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -96,45 +99,27 @@ CARAPI ByteArrayInputStream::Read(
     /* [in] */ Int32 byteCount,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(buffer)
     VALIDATE_NOT_NULL(number)
 
-    // BEGIN android-note
-    // changed array notation to be consistent with the rest of harmony
-    // END android-note
-    // BEGIN android-changed
-    if (buffer == NULL) {
-//      throw new NullPointerException("buffer == null");
-        return E_NULL_POINTER_EXCEPTION;
+    synchronized(this) {
+        Arrays::CheckOffsetAndCount(buffer->GetLength(), byteOffset, byteCount);
+
+        // Are there any bytes available?
+        if (mPos >= mCount) {
+            *number = -1;
+            return NOERROR;
+        }
+        if (0 == byteCount) {
+            *number = 0;
+            return NOERROR;
+        }
+
+        Int32 copylen = mCount - mPos < byteCount ? mCount - mPos : byteCount;
+        buffer->Copy(byteOffset, mBuf, mPos, copylen);
+        mPos += copylen;
+        *number = copylen;
     }
-
-    AutoLock lock(this);
-
-    // avoid int overflow
-    // Exception priorities (in case of multiple errors) differ from
-    // RI, but are spec-compliant.
-    // removed redundant check, used (offset | length) < 0 instead of
-    // (offset < 0) || (length < 0) to safe one operation
-    if ((byteOffset | byteCount) < 0 || byteCount > buffer->GetLength() - byteOffset) {
-//      throw new IndexOutOfBoundsException();
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    // END android-changed
-    // Are there any bytes available?
-    if (mPos >= mCount) {
-        *number = -1;
-        return NOERROR;
-    }
-    if (byteCount == 0) {
-        *number = 0;
-        return NOERROR;
-    }
-
-    Int32 copylen = mCount - mPos < byteCount ? mCount - mPos : byteCount;
-    memcpy(buffer->GetPayload() + byteOffset, mBuf->GetPayload() + mPos, copylen);
-
-    mPos += copylen;
-    *number = copylen;
-
     return NOERROR;
 }
 

@@ -44,15 +44,15 @@ ECode BufferedInputStream::Available(
     VALIDATE_NOT_NULL(number)
     *number = 0;
 
-    AutoLock lock(this);
-
-    AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
-    if (NULL == mBuf || NULL == localIn) {
-        return StreamClosed();
+    synchronized(this){
+        AutoPtr<IInputStream> localIn = mIn; // 'in' could be invalidated by close()
+        if (NULL == mBuf || NULL == localIn) {
+            return StreamClosed();
+        }
+        Int32 count;
+        FAIL_RETURN(localIn->Available(&count));
+        *number = mCount - mPos + count;
     }
-    Int32 count;
-    FAIL_RETURN(localIn->Available(&count));
-    *number = mCount - mPos + count;
     return NOERROR;
 }
 
@@ -133,10 +133,10 @@ ECode BufferedInputStream::Fillbuf(
 ECode BufferedInputStream::Mark(
     /* [in] */ Int32 readLimit)
 {
-    AutoLock lock(this);
-
-    mMarklimit = readLimit;
-    mMarkpos = mPos;
+    synchronized(this){
+        mMarklimit = readLimit;
+        mMarkpos = mPos;
+    }
     return NOERROR;
 }
 
@@ -154,40 +154,41 @@ ECode BufferedInputStream::Read(
     VALIDATE_NOT_NULL(value)
     *value = -1;
 
-    AutoLock lock(this);
+    synchronized(this){
 
-    // Use local refs since buf and in may be invalidated by an
-    // unsynchronized close()
-    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
-    AutoPtr<IInputStream> localIn = mIn;
-    if (NULL == localBuf || NULL == localIn) {
-        return StreamClosed();
-    }
-
-    /* Are there buffered bytes available? */
-    if (mPos >= mCount) {
-        Int32 number;
-        FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &number));
-        if (-1 == number) {
-            *value = -1;
-            return NOERROR; /* no, fill buffer */
-        }
-    }
-
-    // localBuf may have been invalidated by fillbuf
-    if (localBuf != mBuf) {
-        localBuf = mBuf;
-        if (NULL == localBuf) {
+        // Use local refs since buf and in may be invalidated by an
+        // unsynchronized close()
+        AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
+        AutoPtr<IInputStream> localIn = mIn;
+        if (NULL == localBuf || NULL == localIn) {
             return StreamClosed();
         }
-    }
 
-    /* Did filling the buffer fail with -1 (EOF)? */
-    if (mCount - mPos > 0) {
-        *value = (*localBuf)[mPos++] & 0xFF;
-        return NOERROR;
+        /* Are there buffered bytes available? */
+        if (mPos >= mCount) {
+            Int32 number;
+            FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &number));
+            if (-1 == number) {
+                *value = -1;
+                return NOERROR; /* no, fill buffer */
+            }
+        }
+
+        // localBuf may have been invalidated by fillbuf
+        if (localBuf != mBuf) {
+            localBuf = mBuf;
+            if (NULL == localBuf) {
+                return StreamClosed();
+            }
+        }
+
+        /* Did filling the buffer fail with -1 (EOF)? */
+        if (mCount - mPos > 0) {
+            *value = (*localBuf)[mPos++] & 0xFF;
+            return NOERROR;
+        }
+        *value = -1;
     }
-    *value = -1;
     return NOERROR;
 }
 
@@ -200,101 +201,101 @@ ECode BufferedInputStream::Read(
     VALIDATE_NOT_NULL(number);
     *number = 0;
 
-    AutoLock lock(this);
+    synchronized(this) {
+        if (NULL == buffer) {
+            // throw new NullPointerException("buffer == null");
+            return E_NULL_POINTER_EXCEPTION;
+        }
 
-    if (NULL == buffer) {
-//      throw new NullPointerException("buffer == null");
-        return E_NULL_POINTER_EXCEPTION;
-    }
+        // Use local ref since buf may be invalidated by an unsynchronized
+        // close()
+        AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
+        if (NULL == localBuf) {
+            return StreamClosed();
+        }
 
-    // Use local ref since buf may be invalidated by an unsynchronized
-    // close()
-    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
-    if (NULL == localBuf) {
-        return StreamClosed();
-    }
+        if ((byteOffset | byteCount) < 0 || byteOffset > buffer->GetLength()
+                || buffer->GetLength() - byteOffset < byteCount) {
+            // throw new IndexOutOfBoundsException();
+            return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        }
 
-    if ((byteOffset | byteCount) < 0 || byteOffset > buffer->GetLength()
-            || buffer->GetLength() - byteOffset < byteCount) {
-//      throw new IndexOutOfBoundsException();
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    if (0 == byteCount) {
-        return NOERROR;
-    }
-
-    AutoPtr<IInputStream> localIn = mIn;
-    if (NULL == localIn) {
-        return StreamClosed();
-    }
-
-    Int32 required, available;
-    if (mPos < mCount) {
-        /* There are bytes available in the buffer. */
-        Int32 copylength = mCount - mPos >= byteCount ? byteCount : mCount - mPos;
-        buffer->Copy(byteOffset, localBuf, mPos, copylength);
-
-        mPos += copylength;
-        if (copylength == byteCount) {
-            *number = copylength;
+        if (0 == byteCount) {
             return NOERROR;
         }
-        FAIL_RETURN(localIn->Available(&available));
-        if (0 == available) {
-            *number = copylength;
-            return NOERROR;
-        }
-        byteOffset += copylength;
-        required = byteCount - copylength;
-    } else {
-        required = byteCount;
-    }
 
-    while (TRUE) {
-        Int32 read;
-        /*
-         * If we're not marked and the required size is greater than the
-         * buffer, simply read the bytes directly bypassing the buffer.
-         */
-        if (-1 == mMarkpos && required >= localBuf->GetLength()) {
-            FAIL_RETURN(localIn->Read(buffer, byteOffset, required, &read));
-            if (-1 == read) {
-                *number = required == byteCount ? -1 : byteCount - required;
+        AutoPtr<IInputStream> localIn = mIn;
+        if (NULL == localIn) {
+            return StreamClosed();
+        }
+
+        Int32 required, available;
+        if (mPos < mCount) {
+            /* There are bytes available in the buffer. */
+            Int32 copylength = mCount - mPos >= byteCount ? byteCount : mCount - mPos;
+            buffer->Copy(byteOffset, localBuf, mPos, copylength);
+
+            mPos += copylength;
+            if (copylength == byteCount) {
+                *number = copylength;
                 return NOERROR;
             }
+            FAIL_RETURN(localIn->Available(&available));
+            if (0 == available) {
+                *number = copylength;
+                return NOERROR;
+            }
+            byteOffset += copylength;
+            required = byteCount - copylength;
         } else {
-            FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &read));
+            required = byteCount;
+        }
 
-            if (-1 == read) {
-                *number = required == byteCount ? -1 : byteCount - required;
+        while (TRUE) {
+            Int32 read;
+            /*
+             * If we're not marked and the required size is greater than the
+             * buffer, simply read the bytes directly bypassing the buffer.
+             */
+            if (-1 == mMarkpos && required >= localBuf->GetLength()) {
+                FAIL_RETURN(localIn->Read(buffer, byteOffset, required, &read));
+                if (-1 == read) {
+                    *number = required == byteCount ? -1 : byteCount - required;
+                    return NOERROR;
+                }
+            } else {
+                FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &read));
+
+                if (-1 == read) {
+                    *number = required == byteCount ? -1 : byteCount - required;
+                    return NOERROR;
+                }
+                // localBuf may have been invalidated by fillbuf
+                if (localBuf != mBuf) {
+                    localBuf = mBuf;
+                    if (NULL == localBuf) {
+                        return StreamClosed();
+                    }
+                }
+
+                read = mCount - mPos >= required ? required : mCount - mPos;
+                for (Int32 i = 0; i < read; i++) {
+                    (*buffer)[byteOffset + i] = (*localBuf)[mPos + i];
+                }
+                mPos += read;
+            }
+            required -= read;
+            if (0 == required) {
+                *number = byteCount;
                 return NOERROR;
             }
-            // localBuf may have been invalidated by fillbuf
-            if (localBuf != mBuf) {
-                localBuf = mBuf;
-                if (NULL == localBuf) {
-                    return StreamClosed();
-                }
+            FAIL_RETURN(localIn->Available(&available));
+            if (0 == available) {
+                *number = byteCount - required;
+                return NOERROR;
             }
-
-            read = mCount - mPos >= required ? required : mCount - mPos;
-            for (Int32 i = 0; i < read; i++) {
-                (*buffer)[byteOffset + i] = (*localBuf)[mPos + i];
-            }
-            mPos += read;
+            byteOffset += read;
         }
-        required -= read;
-        if (0 == required) {
-            *number = byteCount;
-            return NOERROR;
-        }
-        FAIL_RETURN(localIn->Available(&available));
-        if (0 == available) {
-            *number = byteCount - required;
-            return NOERROR;
-        }
-        byteOffset += read;
     }
 
     return NOERROR;
@@ -302,23 +303,24 @@ ECode BufferedInputStream::Read(
 
 ECode BufferedInputStream::Reset()
 {
-    AutoLock lock(this);
-    // BEGIN android-changed
-    /*
-     * These exceptions get thrown in some "normalish" circumstances,
-     * so it is preferable to avoid loading up the whole big set of
-     * messages just for these cases.
-     */
-    if (NULL == mBuf) {
-//        throw new IOException("Stream is closed");
-        return E_IO_EXCEPTION;
+    synchronized(this){
+        // BEGIN android-changed
+        /*
+         * These exceptions get thrown in some "normalish" circumstances,
+         * so it is preferable to avoid loading up the whole big set of
+         * messages just for these cases.
+         */
+        if (NULL == mBuf) {
+    //        throw new IOException("Stream is closed");
+            return E_IO_EXCEPTION;
+        }
+        if (-1 == mMarkpos) {
+    //        throw new IOException("Mark has been invalidated.");
+            return E_IO_EXCEPTION;
+        }
+        // END android-changed
+        mPos = mMarkpos;
     }
-    if (-1 == mMarkpos) {
-//        throw new IOException("Mark has been invalidated.");
-        return E_IO_EXCEPTION;
-    }
-    // END android-changed
-    mPos = mMarkpos;
     return NOERROR;
 }
 
@@ -329,53 +331,53 @@ ECode BufferedInputStream::Skip(
     VALIDATE_NOT_NULL(number)
     *number = 0;
 
-    AutoLock lock(this);
+    synchronized(this){
+        // Use local refs since buf and in may be invalidated by an
+        // unsynchronized close()
+        AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
+        AutoPtr<IInputStream> localIn = mIn;
+        if (NULL == localBuf) {
+            return StreamClosed();
+        }
+        if (byteCount < 1) {
+            *number = 0;
+            return NOERROR;
+        }
+        if (NULL == localIn) {
+            return StreamClosed();
+        }
 
-    // Use local refs since buf and in may be invalidated by an
-    // unsynchronized close()
-    AutoPtr<ArrayOf<Byte> > localBuf = mBuf;
-    AutoPtr<IInputStream> localIn = mIn;
-    if (NULL == localBuf) {
-        return StreamClosed();
-    }
-    if (byteCount < 1) {
-        *number = 0;
-        return NOERROR;
-    }
-    if (NULL == localIn) {
-        return StreamClosed();
-    }
+        if (mCount - mPos >= byteCount) {
+            mPos += byteCount;
+            *number = byteCount;
+            return NOERROR;
+        }
+        Int64 read = mCount - mPos;
+        mPos = mCount;
 
-    if (mCount - mPos >= byteCount) {
-        mPos += byteCount;
-        *number = byteCount;
-        return NOERROR;
-    }
-    Int64 read = mCount - mPos;
-    mPos = mCount;
-
-    if (mMarkpos != -1) {
-        if (byteCount <= mMarklimit) {
-            Int32 fillnum;
-            FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &fillnum));
-            if (-1 == fillnum) {
+        if (mMarkpos != -1) {
+            if (byteCount <= mMarklimit) {
+                Int32 fillnum;
+                FAIL_RETURN(Fillbuf(localIn, (ArrayOf<Byte>**)&localBuf, &fillnum));
+                if (-1 == fillnum) {
+                    *number = read;
+                    return NOERROR;
+                }
+                if (mCount - mPos >= byteCount - read) {
+                    mPos += byteCount - read;
+                    *number = byteCount;
+                    return NOERROR;
+                }
+                // Couldn't get all the bytes, skip what we read
+                read += (mCount - mPos);
+                mPos = mCount;
                 *number = read;
                 return NOERROR;
             }
-            if (mCount - mPos >= byteCount - read) {
-                mPos += byteCount - read;
-                *number = byteCount;
-                return NOERROR;
-            }
-            // Couldn't get all the bytes, skip what we read
-            read += (mCount - mPos);
-            mPos = mCount;
-            *number = read;
-            return NOERROR;
         }
+        FAIL_RETURN(localIn->Skip(byteCount - read, number));
+        *number = read + *number;
     }
-    FAIL_RETURN(localIn->Skip(byteCount - read, number));
-    *number = read + *number;
     return NOERROR;
 }
 

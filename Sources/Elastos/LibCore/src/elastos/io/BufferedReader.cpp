@@ -161,6 +161,7 @@ ECode BufferedReader::Read(
     if(mLastWasCR && '\n' == *value) {
         ReadChar(value);
     }
+    mLastWasCR = FALSE;
     return NOERROR;
 }
 
@@ -305,15 +306,15 @@ ECode BufferedReader::ReadLine(
     }
 
     // Accumulate buffers in a StringBuilder until we've read a whole line.
-    StringBuilder result(mEnd - mPos + 80);
+    AutoPtr<StringBuilder> result = new StringBuilder(mEnd - mPos + 80);
 
-    result.Append(*mBuf, mPos, mEnd - mPos);
+    result->Append(*mBuf, mPos, mEnd - mPos);
     while (TRUE) {
         mPos = mEnd;
         Int32 number;
         if (FillBuf(&number), -1 == number) {
             // If there's no more input, return what we've read so far, if anything.
-            *contents = result.GetLength() > 0 ? result.ToString() : String(NULL);
+            *contents = result->GetLength() > 0 ? result->ToString() : String(NULL);
             return NOERROR;
         }
 
@@ -321,17 +322,18 @@ ECode BufferedReader::ReadLine(
         for (Int32 i = mPos; i < mEnd; ++i) {
             Char32 ch = (*mBuf)[i];
             if ('\n' == ch || '\r' == ch) {
-                result.Append(*mBuf, mPos, i - mPos);
+                result->Append(*mBuf, mPos, i - mPos);
                 mPos = i + 1;
                 mLastWasCR = ('\r' == ch);
-                *contents = result.ToString();
+                *contents = result->ToString();
                 return NOERROR;
             }
         }
 
         // Add this whole buffer to the line-in-progress and try again...
-        result.Append(*mBuf, mPos, mEnd - mPos);
+        result->Append(*mBuf, mPos, mEnd - mPos);
     }
+    return NOERROR;
 }
 
 ECode BufferedReader::IsReady(

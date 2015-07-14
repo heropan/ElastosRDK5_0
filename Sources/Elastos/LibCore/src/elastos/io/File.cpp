@@ -47,13 +47,12 @@ namespace IO {
 
 CAR_INTERFACE_IMPL_3(File, Object, IFile, IComparable, ISerializable)
 
-//static {
-//    // The default protection domain grants access to these properties.
-//    separatorChar = System.getProperty("file.separator", "/").charAt(0);
-//    pathSeparatorChar = System.getProperty("path.separator", ":").charAt(0);
-//    separator = String.valueOf(separatorChar);
-//    pathSeparator = String.valueOf(pathSeparatorChar);
-//}
+// static {
+    // separatorChar = System.getProperty("file.separator", "/").charAt(0);
+    // pathSeparatorChar = System.getProperty("path.separator", ":").charAt(0);
+    // separator = String.valueOf(separatorChar);
+    // pathSeparator = String.valueOf(pathSeparatorChar);
+// }
 
 const Char32 File::sSeparatorChar = '/';
 const Char32 File::sPathSeparatorChar = ':';
@@ -415,8 +414,7 @@ ECode File::GetName(
 {
     VALIDATE_NOT_NULL(name)
     Int32 separatorIndex = mPath.LastIndexOf(sSeparator);
-    *name = (separatorIndex < 0) ?
-            mPath : mPath.Substring(separatorIndex + 1, mPath.GetLength());
+    *name = (separatorIndex < 0) ? mPath : mPath.Substring(separatorIndex + 1, mPath.GetLength());
     return NOERROR;
 }
 
@@ -996,7 +994,6 @@ ECode File::CreateNewFile(
     if (FAILED(ec)) return E_IO_EXCEPTION;
 
     *succeeded = TRUE;
-    return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     if (errnoException.errno == EEXIST) {
     //         // The file already exists.
@@ -1004,8 +1001,9 @@ ECode File::CreateNewFile(
     //     }
     //     throw errnoException.rethrowAsIOException();
     // } finally {
-    //     IoUtils.close(fd); // TODO: should we suppress IOExceptions thrown here?
+    IoUtils::Close(fd); // TODO: should we suppress IOExceptions thrown here?
     // }
+    return NOERROR;
 }
 
 ECode File::CreateTempFile(

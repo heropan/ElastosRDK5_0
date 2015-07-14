@@ -104,6 +104,22 @@ ECode ByteArrayOutputStream::ToString(
 }
 
 ECode ByteArrayOutputStream::ToString(
+    /* [in] */ Int32 hibyte,
+    /* [out] */ String* rev)
+{
+    VALIDATE_NOT_NULL(rev)
+
+    Int32 size;
+    GetSize(&size);
+    AutoPtr<ArrayOf<Char32> > newBuf = ArrayOf<Char32>::Alloc(size);
+    for (Int32 i = 0; i < newBuf->GetLength(); ++i) {
+        (*newBuf)[i] = (Char32) (((hibyte & 0xff) << 8) | ((*mBuf)[i] & 0xff));
+    }
+    *rev = String(*newBuf);
+    return NOERROR;
+}
+
+ECode ByteArrayOutputStream::ToString(
     /* [in] */ const String& enc,
     /* [out] */ String* str)
 {
