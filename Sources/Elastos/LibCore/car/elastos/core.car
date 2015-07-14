@@ -143,6 +143,22 @@ module
         interface IArrayOf;
     }
 
+    class CThrowable {
+        constructor();
+
+        constructor(
+            [in] String detailMessage);
+
+        constructor(
+            [in] String detailMessage,
+            [in] IThrowable * cause);
+
+        constructor(
+            [in] IThrowable * cause);
+
+        interface IThrowable;
+    }
+
     singleton class CBlockGuard {
          interface IBlockGuard;
     }

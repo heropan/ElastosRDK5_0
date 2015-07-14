@@ -17,6 +17,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/regex;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/droid/system;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
+INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 
 SOURCES += Thread.cpp
 SOURCES += NativeThread.cpp
@@ -34,6 +35,7 @@ SOURCES += CInteger64.cpp
 SOURCES += CFloat.cpp
 SOURCES += CDouble.cpp
 SOURCES += CArrayOf.cpp
+SOURCES += CThrowable.cpp
 SOURCES += Init.cpp
 
 SOURCES += ThreadGroup.cpp

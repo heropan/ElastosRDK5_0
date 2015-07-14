@@ -419,6 +419,9 @@ ECode CX509CertImpl::GetSubjectUniqueID(
 ECode CX509CertImpl::GetKeyUsage(
     /* [out, callee] */ ArrayOf<Boolean>** keyUsage)
 {
+    VALIDATE_NOT_NULL(keyUsage)
+    *keyUsage = NULL;
+
     if (mExtensions == NULL) {
         return NOERROR;
     }
@@ -428,6 +431,9 @@ ECode CX509CertImpl::GetKeyUsage(
 ECode CX509CertImpl::GetExtendedKeyUsage(
     /* [out] */ IList** keyUsage)
 {
+    VALIDATE_NOT_NULL(keyUsage)
+    *keyUsage = NULL;
+
     if (mExtensions == NULL) {
         return NOERROR;
     }
@@ -453,6 +459,8 @@ ECode CX509CertImpl::GetSubjectAlternativeNames(
     /* [out] */ ICollection** subjectAlternativeNames)
 {
     VALIDATE_NOT_NULL(subjectAlternativeNames)
+    *subjectAlternativeNames = NULL;
+
     if (mExtensions == NULL) {
         return NOERROR
     }
@@ -467,6 +475,8 @@ ECode CX509CertImpl::GetIssuerAlternativeNames(
     /* [out] */ ICollection** issuerAlternativeNames)
 {
     VALIDATE_NOT_NULL(issuerAlternativeNames)
+    *issuerAlternativeNames = NULL;
+
     if (mExtensions == NULL) {
         return NOERROR
     }
@@ -480,6 +490,9 @@ ECode CX509CertImpl::GetIssuerAlternativeNames(
 ECode CX509CertImpl::GetCriticalExtensionOIDs(
     /* [out] */ ISet** oids)
 {
+    VALIDATE_NOT_NULL(oids)
+    *oids = NULL;
+
     if (mExtensions == NULL) {
             return NOERROR;
     }
@@ -492,6 +505,8 @@ ECode CX509CertImpl::GetExtensionValue(
     /* [out, callee] */ ArrayOf<Byte>** extensionValue)
 {
     VALIDATE_NOT_NULL(extensionValue)
+    *extensionValue = NULL;
+
     if (mExtensions == NULL) {
         return NOERROR;
     }
@@ -507,6 +522,9 @@ ECode CX509CertImpl::GetExtensionValue(
 ECode CX509CertImpl::GetNonCriticalExtensionOIDs(
     /* [out] */ ISet** oids)
 {
+    VALIDATE_NOT_NULL(oids)
+    *oids = NULL;
+
     if (mExtensions == NULL) {
         return NOERROR;
     }
@@ -553,7 +571,7 @@ ECode CX509CertImpl::constructor(
 ECode CX509CertImpl::constructor(
     /* [in] */ ArrayOf<Byte>* encoding)
 {
-    this((Certificate) Certificate.ASN1.decode(encoding));
+    //this((Certificate) Certificate.ASN1.decode(encoding));
     AutoPtr<IInterface> tmp;
     CCertificate::ASN1->Decode(encoding, (IInterface**)&tmp);
     return constructor(ICertificate::Probe(tmp));

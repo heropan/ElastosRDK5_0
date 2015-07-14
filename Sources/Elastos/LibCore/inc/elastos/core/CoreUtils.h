@@ -36,6 +36,9 @@ public:
     static CARAPI_(AutoPtr<ICharSequence>) Convert(
         /* [in] */ const String & value);
 
+    static CARAPI_(AutoPtr<ICharSequence>) Convert(
+        /* [in] */ const char* str);
+
 private:
     CoreUtils();
     ~CoreUtils();

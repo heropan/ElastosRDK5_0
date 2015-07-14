@@ -46,8 +46,7 @@ module
          *
          * @return this {@code Throwable} instance.
          */
-        FillInStackTrace(
-            [out] IThrowable** outhr);
+        FillInStackTrace();
 
         /**
          * Returns the extra information message which was provided when this
@@ -152,8 +151,7 @@ module
          *             if the cause has already been initialized.
          */
         InitCause(
-            [in] IThrowable* throwable,
-            [out] IThrowable** outthr);
+            [in] IThrowable* throwable);
 
         /**
          * Returns the cause of this {@code Throwable}, or {@code null} if there is

@@ -13,19 +13,22 @@ ECode CSSLParameters::GetCipherSuites(
     /* [out, callee] */ ArrayOf<String>** suites)
 {
     VALIDATE_NOT_NULL(suites)
-    if (NULL == mCipherSuites.Get()) {
-        return NOERROR;
+    *suites = NULL;
+    if (mCipherSuites != NULL) {
+        *suites = mCipherSuites->Clone();
+        REFCOUNT_ADD(*suites)
     }
-    *suites = mCipherSuites->Clone();
-    REFCOUNT_ADD(*suites)
+
     return NOERROR;
 }
 
 ECode CSSLParameters::SetCipherSuites(
     /* [in] */ ArrayOf<String>* cipherSuites)
 {
-    mCipherSuites = NULL == cipherSuites ? NULL :
-        cipherSuites->Clone();
+    mCipherSuites = NULL;
+    if (cipherSuites != NULL) {
+        mCipherSuites = cipherSuites->Clone();
+    }
     return NOERROR;
 }
 
@@ -33,11 +36,12 @@ ECode CSSLParameters::GetProtocols(
     /* [out, callee] */ ArrayOf<String>** protocols)
 {
     VALIDATE_NOT_NULL(protocols)
-    if (NULL == protocols) {
-        return NOERROR;
+    *protocols = NULL;
+
+    if (mProtocols != NULL) {
+        *protocols = mProtocols->Clone();
+        REFCOUNT_ADD(*protocols);
     }
-    *protocols = mProtocols->Clone();
-    REFCOUNT_ADD(*protocols);
     return NOERROR;
 }
 

@@ -9,8 +9,8 @@ module
      */
     interface ICloseGuardReporter {
         Report (
-            [in] String message/*,
-            [in] Throwable allocationSite*/);
+            [in] String message,
+            [in] IThrowable* allocationSite);
     }
 
     /**

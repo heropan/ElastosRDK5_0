@@ -1,5 +1,6 @@
 
 #include "CCloseGuard.h"
+#include "CThrowable.h"
 
 namespace Elastos {
 namespace Core {
@@ -12,14 +13,14 @@ static AutoPtr<ICloseGuard> initNOOP()
 {
     AutoPtr<CCloseGuard> cg;
     CCloseGuard::NewByFriend((CCloseGuard**)&cg);
-    return cg;
+    return (ICloseGuard*)cg.Get();
 }
 
 static AutoPtr<ICloseGuardReporter> initREPORTER()
 {
     AutoPtr<ICloseGuardReporter> report;
     report = new CCloseGuard::DefaultReporter();
-    return report;
+    return (ICloseGuardReporter*)report.Get();
 }
 
 Boolean CCloseGuard::ENABLED = TRUE;
@@ -29,10 +30,16 @@ AutoPtr<ICloseGuardReporter> CCloseGuard::REPORTER = initREPORTER();
 CAR_INTERFACE_IMPL(CCloseGuard::DefaultReporter, Object, ICloseGuardReporter)
 
 ECode CCloseGuard::DefaultReporter::Report (
-    /* [in] */ const String& message/*,
-    [in] Throwable allocationSite*/)
+    /* [in] */ const String& message,
+    /* [in] */ IThrowable* allocationSite)
 {
-    //TODO: System.logW(message, allocationSite);
+    String str = Object::ToString(allocationSite);
+    ALOGW(message);
+    ALOGW(str);
+
+    // AutoPtr<ISystem> system;
+    // CSystem::AcquireSingleton((ISystem**)&system);
+    // system->LogW(message, str);
     return NOERROR;
 }
 
@@ -82,19 +89,20 @@ ECode CCloseGuard::Open(
         return NOERROR;
     }
     String message = String("Explicit termination method '") + closer + String("' not called");
-    //TODO: allocationSite = new Throwable(message);
+    mAllocationSite = NULL;
+    CThrowable::New(message, (IThrowable**)&mAllocationSite);
     return NOERROR;
 }
 
 ECode CCloseGuard::Close()
 {
-    //TODO: allocationSite = null;
+    mAllocationSite = NULL;
     return NOERROR;
 }
 
 ECode CCloseGuard::WarnIfOpen()
 {
-    if (/*TODO: allocationSite == null ||*/ !ENABLED) {
+    if (mAllocationSite == NULL || !ENABLED) {
         return NOERROR;
     }
 
@@ -102,7 +110,7 @@ ECode CCloseGuard::WarnIfOpen()
             String("A resource was acquired at attached stack trace but never released. ")
              + String("See java.io.Closeable for information on avoiding resource leaks.");
 
-    REPORTER->Report(message/*TODO: , allocationSite*/);
+    REPORTER->Report(message, mAllocationSite);
     return NOERROR;
 }
 

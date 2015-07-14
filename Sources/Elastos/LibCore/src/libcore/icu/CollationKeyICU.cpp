@@ -112,12 +112,12 @@ ECode CollationKeyICU::ToByteArray(
     /* [out, callee] */ ArrayOf<Byte>** array)
 {
     VALIDATE_NOT_NULL(array);
-    if (mBytes != NULL && mBytes->GetLength() == 0) {
-        *array = NULL;
-        return NOERROR;
+    *array = NULL;
+
+    if (mBytes != NULL && mBytes->GetLength() > 0) {
+        *array = mBytes->Clone();
+        REFCOUNT_ADD(*array);
     }
-    *array = mBytes->Clone();
-    REFCOUNT_ADD(*array);
     return NOERROR;
 }
 

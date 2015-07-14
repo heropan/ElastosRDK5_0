@@ -84,5 +84,13 @@ AutoPtr<ICharSequence> CoreUtils::Convert(
     return (ICharSequence*)obj.Get();
 }
 
+AutoPtr<ICharSequence> CoreUtils::Convert(
+    /* [in] */ const char* str)
+{
+    AutoPtr<CStringWrapper> obj;
+    CStringWrapper::NewByFriend(String(str), (CStringWrapper**)&obj);
+    return (ICharSequence*)obj.Get();
+}
+
 } // namespace Core
 } // namespace Elastos

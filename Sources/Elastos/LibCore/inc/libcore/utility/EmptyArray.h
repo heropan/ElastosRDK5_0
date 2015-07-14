@@ -4,6 +4,7 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IThrowable;
+using Elastos::Core::IStackTraceElement;
 
 namespace Libcore {
 namespace Utility {
@@ -22,6 +23,7 @@ public:
 
     static const AutoPtr<ArrayOf<IInterface*> > OBJECT;
     static const AutoPtr<ArrayOf<IThrowable*> > THROWABLE;
+    static const AutoPtr<ArrayOf<IStackTraceElement*> > STACK_TRACE_ELEMENT;
 
 private:
     EmptyArray();

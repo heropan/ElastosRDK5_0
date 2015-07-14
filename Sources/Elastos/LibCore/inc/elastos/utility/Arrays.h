@@ -69,6 +69,11 @@ private:
 
 public:
     template<typename T>
+    static CARAPI FromList(
+        /* [in] */ IList* inList,
+        /* [out, callee] */ ArrayOf<T*> ** array);
+
+    template<typename T>
     static CARAPI AsList(
         /* [in] */ ArrayOf<T> * array,
         /* [out] */ IList** outList);
@@ -669,6 +674,38 @@ private:
 };
 
 //=========================================================================
+// template methods implementation
+//=========================================================================
+
+template<typename T>
+ECode Arrays::FromList(
+    /* [in] */ IList* list,
+    /* [out, callee] */ ArrayOf<T*> ** array)
+{
+    VALIDATE_NOT_NULL(array)
+    *array = NULL;
+    VALIDATE_NOT_NULL(list)
+
+    Int32 size;
+    list->GetSize(&size);
+    AutoPtr<ArrayOf<T*> > temp = ArrayOf<T*>::Alloc(size);
+    if (size > 0) {
+        AutoPtr<IIterator> it;
+        list->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        Int32 i = 0;
+        while (it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            temp->Set(i++, T::Probe(obj));
+        }
+    }
+
+    *array = temp;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
+}
+
 template<typename T>
 ECode Arrays::AsList(
     /* [in] */ ArrayOf<T> * array,
@@ -1198,7 +1235,6 @@ Boolean Arrays::Equals(
 {
     return Equals(array1.Get(), array2.Get());
 }
-
 
 template<typename T>
 Boolean Arrays::DeepEquals(

@@ -29,8 +29,8 @@ public:
         CAR_INTERFACE_DECL()
 
         CARAPI Report (
-            /* [in] */ const String& message/*,
-            [in] Throwable allocationSite*/);
+            /* [in] */ const String& message,
+            /* [in] */ IThrowable* allocationSite);
     };
 
     /**
@@ -104,7 +104,7 @@ private:
      */
     static /*volatile*/ AutoPtr<ICloseGuardReporter> REPORTER;
 
-    //Throwable allocationSite;
+    AutoPtr<IThrowable> mAllocationSite;
 };
 
 } // namespace Core

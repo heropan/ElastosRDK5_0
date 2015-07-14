@@ -1112,6 +1112,7 @@ EXPORTS
     ;;elastos/core/CoreUtils
     _ZN7Elastos4Core9CoreUtils11ConvertByteEh
     _ZN7Elastos4Core9CoreUtils13ConvertChar32Ej
+    _ZN7Elastos4Core9CoreUtils7ConvertEPKc
     _ZN7Elastos4Core9CoreUtils7ConvertERKNS_6StringE
     _ZN7Elastos4Core9CoreUtils7ConvertEd
     _ZN7Elastos4Core9CoreUtils7ConvertEf
@@ -1212,6 +1213,7 @@ EXPORTS
     ;;_ZN7Elastos7Utility18DualPivotQuicksort6DoSortEPNS_7ArrayOfIxEEii
 
     ;;libcore/utility/EmptyArray
+    _ZN7Libcore7Utility10EmptyArray19STACK_TRACE_ELEMENTE
     _ZN7Libcore7Utility10EmptyArray4BYTEE
     _ZN7Libcore7Utility10EmptyArray5FLOATE
     _ZN7Libcore7Utility10EmptyArray5INT32E
