@@ -90,6 +90,6 @@ LIBRARIES += ../org/kxml2/io/io.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a
-LIBRARIES += -lcutils -licuuc -licui18n -lm -lssl -lcrypto -lsqlite -llog -lselinux -lz -lutils
-//TODO LIBRARIES += -lfdlibm -lziparchive
-
+LIBRARIES += -lcutils -licuuc -licui18n -lm -lssl -lcrypto -lsqlite
+LIBRARIES += -llog -lselinux -lz -lutils -lziparchive
+//LIBRARIES += -lfdlibm
