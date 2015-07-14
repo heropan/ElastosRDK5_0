@@ -1,14 +1,14 @@
 
 #include "CFileDescriptor.h"
 #include "droid/system/OsConstants.h"
-// #include "CLibcore.h"
+#include "CLibcore.h"
 #include "unistd.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 
 using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
-// using Libcore::IO::CLibcore;
+using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 
 namespace Elastos {
@@ -54,11 +54,10 @@ ECode CFileDescriptor::constructor()
 ECode CFileDescriptor::Sync()
 {
     // try {
-    assert(0 && "TODO");
     AutoPtr<ILibcore> libcore;
-    // CLibcore::AcquireSingleton((ILibcore**)&libcore);
+    CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
-    // libcore->GetOs((IOs**)&os);
+    libcore->GetOs((IOs**)&os);
     Boolean isAtty;
     if (os->Isatty(THIS_PROBE(IFileDescriptor), &isAtty), isAtty) {
         return os->Tcdrain(THIS_PROBE(IFileDescriptor));

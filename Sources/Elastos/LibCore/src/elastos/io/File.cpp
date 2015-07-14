@@ -1,8 +1,8 @@
 
 #include "File.h"
-//#include "CFile.h"
-//#include "IoUtils.h"
-//#include "ToStringArray_S.h"
+#include "CFile.h"
+#include "IoUtils.h"
+#include "ToStringArray.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/Vector.h>
 #include "StringBuilder.h"
@@ -10,6 +10,10 @@
 #include "CRandom.h"
 #include "OsConstants.h"
 #include "CLibcore.h"
+#include "DeleteOnExit.h"
+#include "url/UrlUtils.h"
+#include "CURL.h"
+#include "CURI.h"
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -24,13 +28,19 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::CSystem;;
 using Elastos::Core::ISystem;
 using Elastos::Core::EIID_IComparable;
+using Elastos::Net::CURL;
+using Elastos::Net::CURI;
 using Elastos::Droid::System::OsConstants;
-using Libcore::IO::ILibcore;
-using Libcore::IO::CLibcore;
-using Libcore::IO::IOs;
 using Elastos::Droid::System::IStructStat;
 // using Elastos::Droid::System::IStructStatFs;
 using Elastos::Droid::System::IStructStatVfs;
+using Libcore::IO::ILibcore;
+using Libcore::IO::CLibcore;
+using Libcore::IO::IoUtils;
+using Libcore::IO::IOs;
+using Libcore::IO::DeleteOnExit;
+using Libcore::IO::IDeleteOnExit;
+using Libcore::Net::Url::UrlUtils;
 
 namespace Elastos {
 namespace IO {
@@ -209,7 +219,7 @@ ECode File::ListRoots(
 {
     VALIDATE_NOT_NULL(roots)
     AutoPtr<IFile> file;
-    // CFile::New(String("/"), (IFile**)&file);
+    CFile::New(String("/"), (IFile**)&file);
     AutoPtr< ArrayOf<IFile*> > files = ArrayOf<IFile*>::Alloc(1);
     files->Set(0, file);
     *roots = files;
@@ -250,9 +260,9 @@ Boolean File::DoAccess(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     Boolean result;
-    // if (SUCCEEDED(IoUtils::Libcore2IoECode(os->Access(mPath, mode, &result)))) {
-    //     return result;
-    // }
+    if (SUCCEEDED(os->Access(mPath, mode, &result))) {
+        return result;
+    }
     return FALSE;
     // } catch (ErrnoException errnoException) {
     //     return false;
@@ -263,8 +273,9 @@ ECode File::CompareTo(
     /* [in] */ IInterface* obj,
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(obj)
     VALIDATE_NOT_NULL(result)
+    *result = -1;
+    VALIDATE_NOT_NULL(obj)
     String anotherPath;
     if (IFile::Probe(obj) == NULL) return NOERROR;
 
@@ -284,7 +295,6 @@ ECode File::CompareTo(
     String anotherPath;
     if (IFile::Probe(another) == NULL) return E_INVALID_ARGUMENT;
     IFile::Probe(another)->GetPath(&anotherPath);
-    //todo: the result of String.Compare() maybe not correct;
     *result = mPath.Compare(anotherPath);
     return NOERROR;
 }
@@ -299,10 +309,10 @@ ECode File::Delete(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    // if (SUCCEEDED(IoUtils::Libcore2IoECode(os->Remove(mPath)))) {
-    //     *succeeded = TRUE;
-    //     return NOERROR;
-    // }
+    if (SUCCEEDED(os->Remove(mPath))) {
+        *succeeded = TRUE;
+        return NOERROR;
+    }
     *succeeded = FALSE;
     return NOERROR;
     // } catch (ErrnoException errnoException) {
@@ -318,9 +328,11 @@ ECode File::Delete()
 
 ECode File::DeleteOnExit()
 {
-    // AutoPtr<IDeleteOnExit> doe;
-    // DeleteOnExit::GetInstance((IDeleteOnExit**)&doe);
-    // return doe->AddFile(getAbsolutePath());
+    AutoPtr<IDeleteOnExit> doe;
+    DeleteOnExit::GetInstance((IDeleteOnExit**)&doe);
+    String path;
+    GetAbsolutePath(&path);
+    return doe->AddFile(path);
 }
 
 ECode File::Equals(
@@ -375,7 +387,7 @@ ECode File::GetAbsoluteFile(
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
-    // return CFile::New(absolutePath, file);
+    return CFile::New(absolutePath, file);
 }
 
 ECode File::GetCanonicalPath(
@@ -385,7 +397,7 @@ ECode File::GetCanonicalPath(
 
     String absolutePath;
     GetAbsolutePath(&absolutePath);
-    // *path = UrlUtils::CanonicalizePath(absolutePath, TRUE);
+    *path = UrlUtils::CanonicalizePath(absolutePath, TRUE);
     return NOERROR;
 }
 
@@ -395,7 +407,7 @@ ECode File::GetCanonicalFile(
     VALIDATE_NOT_NULL(file)
     String path;
     GetCanonicalPath(&path);
-    // return CFile::New(path, file);
+    return CFile::New(path, file);
 }
 
 ECode File::GetName(
@@ -443,7 +455,7 @@ ECode File::GetParentFile(
         *file = NULL;
         return NOERROR;
     }
-    // return CFile::New(tempParent, file);
+    return CFile::New(tempParent, file);
 }
 
 ECode File::GetPath(
@@ -458,8 +470,7 @@ ECode File::GetHashCode(
     /* [out] */ Int32* code)
 {
     VALIDATE_NOT_NULL(code)
-////  return getPath().hashCode() ^ 1234321;
-    *code = mPath.GetHashCode();
+    *code = mPath.GetHashCode() ^ 1234321;
     return NOERROR;
 }
 
@@ -481,14 +492,15 @@ ECode File::IsDirectory(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    // AutoPtr<IStructStat> stat;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-    //     *isDirectory = FALSE;
-    //     return NOERROR;
-    // }
-    // Int32 mode;
-    // stat->GetMode(&mode);
-    // return OsConstants::_S_ISDIR(mode, isDirectory);
+    AutoPtr<IStructStat> stat;
+    if (FAILED(os->Stat(mPath, (IStructStat**)&stat))) {
+        *isDirectory = FALSE;
+        return NOERROR;
+    }
+    Int32 mode;
+    stat->GetMode(&mode);
+    *isDirectory = OsConstants::S_IsDIR(mode);
+    return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     // The RI returns false on error. (Even for errors like EACCES or ELOOP.)
     //     return false;
@@ -504,14 +516,15 @@ ECode File::IsFile(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    // AutoPtr<IStructStat> stat;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-    //     *isFile = FALSE;
-    //     return NOERROR;
-    // }
-    // Int32 mode;
-    // stat->GetMode(&mode);
-    // return OsConstants::_S_ISREG(mode, isFile);
+    AutoPtr<IStructStat> stat;
+    if (FAILED(os->Stat(mPath, (IStructStat**)&stat))) {
+        *isFile = FALSE;
+        return NOERROR;
+    }
+    Int32 mode;
+    stat->GetMode(&mode);
+    *isFile = OsConstants::S_IsREG(mode);
+    return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     // The RI returns false on error. (Even for errors like EACCES or ELOOP.)
     //     return false;
@@ -542,10 +555,10 @@ ECode File::GetLastModified(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStat> stat;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-    //     *time = 0;
-    //     return NOERROR;
-    // }
+    if (FAILED(os->Stat(mPath, (IStructStat**)&stat))) {
+        *time = 0;
+        return NOERROR;
+    }
     Int64 mtime;
     stat->GetMtime(&mtime);
     *time = mtime * 1000LL;
@@ -604,11 +617,10 @@ ECode File::SetExecutable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    // Int32 mdS_IXUSR, mdS_IXGRP, mdS_IXOTH;
-    // IOsConstants->GetOsConstant(String("S_IXUSR"), &mdS_IXUSR);
-    // IOsConstants->GetOsConstant(String("S_IXGRP"), &mdS_IXGRP);
-    // IOsConstants->GetOsConstant(String("S_IXOTH"), &mdS_IXOTH);
-    // *succeeded = DoChmod(ownerOnly ? mdS_IXUSR : (mdS_IXUSR | mdS_IXGRP | mdS_IXOTH), executable);
+    *succeeded = DoChmod(
+        ownerOnly ? OsConstants::_S_IXUSR
+            : (OsConstants::_S_IXUSR | OsConstants::_S_IXGRP | OsConstants::_S_IXOTH)
+            , executable);
     return NOERROR;
 }
 
@@ -616,8 +628,6 @@ ECode File::SetExecutable(
     /* [in] */ Boolean executable,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
-
     return SetExecutable(executable, TRUE, succeeded);
 }
 
@@ -627,11 +637,9 @@ ECode File::SetReadable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    Int32 mdS_IRUSR, mdS_IRGRP, mdS_IROTH;
-    // IOsConstants->GetOsConstant(String("S_IRUSR"), &mdS_IRUSR);
-    // IOsConstants->GetOsConstant(String("S_IRGRP"), &mdS_IRGRP);
-    // IOsConstants->GetOsConstant(String("S_IROTH"), &mdS_IROTH);
-    *succeeded = DoChmod(ownerOnly ? mdS_IRUSR : (mdS_IRUSR | mdS_IRGRP | mdS_IROTH), readable);
+    *succeeded = DoChmod(ownerOnly ? OsConstants::_S_IRUSR
+        : (OsConstants::_S_IRUSR | OsConstants::_S_IRGRP | OsConstants::_S_IROTH)
+        , readable);
     return NOERROR;
 }
 
@@ -639,8 +647,6 @@ ECode File::SetReadable(
     /* [in] */ Boolean readable,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
-
     return SetReadable(readable, TRUE, succeeded);
 }
 
@@ -650,11 +656,9 @@ ECode File::SetWritable(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
-    Int32 mdS_IWUSR, mdS_IWGRP, mdS_IWOTH;
-    // osConstans->GetOsConstant(String("S_IWUSR"), &mdS_IWUSR);
-    // osConstans->GetOsConstant(String("S_IWGRP"), &mdS_IWGRP);
-    // osConstans->GetOsConstant(String("S_IWOTH"), &mdS_IWOTH);
-    *succeeded = DoChmod(ownerOnly ? mdS_IWUSR : (mdS_IWUSR | mdS_IWGRP | mdS_IWOTH), writable);
+    *succeeded = DoChmod(ownerOnly ? OsConstants::_S_IWUSR
+        : (OsConstants::_S_IWUSR | OsConstants::_S_IWGRP | OsConstants::_S_IWOTH)
+        , writable);
     return NOERROR;
 }
 
@@ -662,8 +666,6 @@ ECode File::SetWritable(
     /* [in] */ Boolean writable,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded)
-
     return SetWritable(writable, TRUE, succeeded);
 }
 
@@ -676,16 +678,16 @@ Boolean File::DoChmod(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    // AutoPtr<IStructStat> stat;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-    //     return FALSE;
-    // }
-    // Int32 mode;
-    // stat->GetMode(&mode);
-    // Int32 newMode = set ? (mode | mask) : (mode & ~mask);
-    // if (FAILED(IoUtils::Libcore2IoECode(os->Chmod(mPath, newMode)))) {
-    //     return FALSE;
-    // }
+    AutoPtr<IStructStat> stat;
+    if (FAILED(os->Stat(mPath, (IStructStat**)&stat))) {
+        return FALSE;
+    }
+    Int32 mode;
+    stat->GetMode(&mode);
+    Int32 newMode = set ? (mode | mask) : (mode & ~mask);
+    if (FAILED(os->Chmod(mPath, newMode))) {
+        return FALSE;
+    }
     return TRUE;
     // } catch (ErrnoException errnoException) {
     //     return false;
@@ -702,10 +704,10 @@ ECode File::GetLength(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStat> stat;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->Stat(mPath, (IStructStat**)&stat)))) {
-    //     *length = 0;
-    //     return NOERROR;
-    // }
+    if (FAILED(os->Stat(mPath, (IStructStat**)&stat))) {
+        *length = 0;
+        return NOERROR;
+    }
     Int64 size;
     stat->GetSize(&size);
     *length = size;
@@ -804,7 +806,7 @@ AutoPtr< ArrayOf<String> > File::ListImpl(
         return NULL;
     }
     // Translate the intermediate form into a Java String[].
-    // return Elastos::IO::ToStringArray(entries);
+    return Libcore::IO::ToStringArray(entries);
 }
 
 ECode File::List(
@@ -913,8 +915,8 @@ AutoPtr< ArrayOf<IFile*> > File::FilenamesToFiles(
     AutoPtr< ArrayOf<IFile*> > result = ArrayOf<IFile*>::Alloc(count);
     for (Int32 i = 0; i < count; ++i) {
         AutoPtr<IFile> file;
-        // CFile::New((IFile*)this->Probe(EIID_IFile),
-        //         (*filenames)[i], (IFile**)&file);
+        CFile::New((IFile*)this->Probe(EIID_IFile),
+                (*filenames)[i], (IFile**)&file);
         result->Set(i, file);
     }
     return result;
@@ -934,16 +936,12 @@ ECode File::Mkdir(
 
 ECode File::MkdirErrno()
 {
-    // On Android, we don't want default permissions to allow global access.
-    // AutoPtr<IOsConstants> osConstans;
-    // COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    // Int32 mode;
-    // osConstans->GetOsConstant(String("S_IRWXU"), &mode);
-    // AutoPtr<ILibcore> libcore;
-    // CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    // AutoPtr<IOs> os;
-    // libcore->GetOs((IOs**)&os);
-    // return IoUtils::Libcore2IoECode(os->Mkdir(mPath, mode));
+    //On Android, we don't want default permissions to allow global access.
+    AutoPtr<ILibcore> libcore;
+    CLibcore::AcquireSingleton((ILibcore**)&libcore);
+    AutoPtr<IOs> os;
+    libcore->GetOs((IOs**)&os);
+    return os->Mkdir(mPath, OsConstants::_S_IRWXU);
 }
 
 ECode File::Mkdirs(
@@ -979,24 +977,25 @@ ECode File::CreateNewFile(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded)
+    *succeeded = FALSE;
+
     // try {
     // On Android, we don't want default permissions to allow global access.
-    // AutoPtr<IOsConstants> osConstans;
-    // COsConstants::AcquireSingleton((IOsConstants**)&osConstans);
-    // Int32 mdO_RDWR, mdO_CREAT, mdO_EXCL;
-    // osConstans->GetOsConstant(String("O_RDWR"), &mdO_RDWR);
-    // osConstans->GetOsConstant(String("O_CREAT"), &mdO_CREAT);
-    // osConstans->GetOsConstant(String("O_EXCL"), &mdO_EXCL);
-    // AutoPtr<ILibcore> libcore;
-    // CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    // AutoPtr<IOs> os;
-    // libcore->GetOs((IOs**)&os);
-    // Int32 fd;
-    // ECode ec = IoUtils::Libcore2IoECode(os->Open(mPath, mdO_RDWR | mdO_CREAT | mdO_EXCL, 0600, &fd));
-    // if (fd != -1) {
-    //     IoUtils::Libcore2IoECode(os->Close(fd));
-    // }
-    // *succeeded = SUCCEEDED(ec) ? TRUE : FALSE;
+
+    AutoPtr<ILibcore> libcore;
+    CLibcore::AcquireSingleton((ILibcore**)&libcore);
+    AutoPtr<IOs> os;
+    libcore->GetOs((IOs**)&os);
+    AutoPtr<IFileDescriptor> fd;
+    ECode ec = os->Open(mPath,
+        OsConstants::_O_RDWR | OsConstants::_O_CREAT | OsConstants::_O_EXCL
+        , 0600, (IFileDescriptor**)&fd);
+    if (fd != NULL)
+        os->Close(fd);
+
+    if (FAILED(ec)) return E_IO_EXCEPTION;
+
+    *succeeded = TRUE;
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     if (errnoException.errno == EEXIST) {
@@ -1040,7 +1039,7 @@ ECode File::CreateTempFile(
 
         String tmpDir;
         system->GetProperty(String("elastos.io.tmpdir"), String("."), &tmpDir);
-        // CFile::New(tmpDir, (IFile**)&tmpDirFile);
+        CFile::New(tmpDir, (IFile**)&tmpDirFile);
     }
     AutoPtr<IFile> result;
     Boolean succeeded;
@@ -1052,7 +1051,7 @@ ECode File::CreateTempFile(
         sb += randomInt32;
         sb += _suffix;
         result = NULL;
-        // CFile::New(tmpDirFile, sb.ToString(), (IFile**)&result);
+        CFile::New(tmpDirFile, sb.ToString(), (IFile**)&result);
     } while (result->CreateNewFile(&succeeded), !succeeded);
     *file = result;
     REFCOUNT_ADD(*file);
@@ -1074,7 +1073,7 @@ ECode File::RenameTo(
     CLibcore::AcquireSingleton((ILibcore**)&libcore);
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
-    // *succeeded = SUCCEEDED(IoUtils::Libcore2IoECode(os->Rename(mPath, path))) ? TRUE : FALSE;
+    *succeeded = SUCCEEDED(os->Rename(mPath, path)) ? TRUE : FALSE;
     return NOERROR;
     // } catch (ErrnoException errnoException) {
     //     return false;
@@ -1090,46 +1089,84 @@ ECode File::ToString(
 }
 
 ECode File::ToURI(
-    /* [out] */ IURI** uri){
-//     String name = getAbsoluteName();
-//     try {
-//         if (!name.startsWith("/")) {
-//             // start with sep.
-//             return new URI("file", null, "/" + name, null, null);
-//         } else if (name.startsWith("//")) {
-//             return new URI("file", "", name, null); // UNC path
-//         }
-//         return new URI("file", null, name, null, null);
-//     } catch (URISyntaxException e) {
-//         // this should never happen
-//         return null;
-//     }
+    /* [out] */ IURI** result)
+{
+    String name = GetAbsoluteName();
+    // try {
+    String nullStr;
+    if (!name.StartWith("/")) {
+        // start with sep.
+        AutoPtr<IURI> uri;
+        CURI::New(String("file"), nullStr, String("/") + name, nullStr, nullStr, (IURI**)&uri);
+        *result = uri;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
+    else if (name.StartWith("//")) {
+        AutoPtr<IURI> uri;
+        CURI::New(String("file"), String(""),  name, nullStr, nullStr, (IURI**)&uri);// UNC path
+        *result = uri;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
+
+    AutoPtr<IURI> uri;
+    CURI::New(String("file"), String(NULL),  name, nullStr, nullStr, (IURI**)&uri);// UNC path
+    *result = uri;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+    // } catch (URISyntaxException e) {
+    //     // this should never happen
+    //     return null;
+    // }
 }
 
 ECode File::ToURL(
-    /* [out] */ IURL** uri) {
-//     String name = getAbsoluteName();
-//     if (!name.startsWith("/")) {
-//         // start with sep.
-//         return new URL("file", "", -1, "/" + name, null);
-//     } else if (name.startsWith("//")) {
-//         return new URL("file:" + name); // UNC path
-//     }
-//     return new URL("file", "", -1, name, null);
-// }
+    /* [out] */ IURL** result)
+{
+    VALIDATE_NOT_NULL(result)
 
-// // TODO: is this really necessary, or can it be replaced with getAbsolutePath?
-// private String getAbsoluteName() {
-//     File f = getAbsoluteFile();
-//     String name = f.getPath();
-//     if (f.isDirectory() && name.charAt(name.length() - 1) != separatorChar) {
-//         // Directories must end with a slash
-//         name = name + "/";
-//     }
-//     if (separatorChar != '/') { // Must convert slashes.
-//         name = name.replace(separatorChar, '/');
-//     }
-//     return name;
+    String name = GetAbsoluteName();
+    if (!name.StartWith("/")) {
+        // start with sep.
+        AutoPtr<IURL> url;
+        CURL::New(String("file"), String(""), -1, String("/") + name, NULL, (IURL**)&url);
+        *result = url;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
+    else if (name.StartWith("//")) {
+        AutoPtr<IURL> url;
+        CURL::New(String("file:") + name, (IURL**)&url);// UNC path
+        *result = url;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
+
+    AutoPtr<IURL> url;
+    CURL::New(String("file"), String(""), -1, name, NULL, (IURL**)&url);
+    *result = url;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+// TODO: is this really necessary, or can it be replaced with getAbsolutePath?
+String File::GetAbsoluteName()
+{
+    AutoPtr<IFile> f;
+    GetAbsoluteFile((IFile**)&f);
+    String name;
+    f->GetPath(&name);
+    Boolean isDir;
+    f->IsDirectory(&isDir);
+    if (isDir && name.GetChar(name.GetLength() - 1) != sSeparatorChar) {
+        // Directories must end with a slash
+        name = name + "/";
+    }
+    if (sSeparatorChar != '/') { // Must convert slashes.
+        name = name.Replace(sSeparatorChar, '/');
+    }
+    return name;
 }
 
 // private void writeObject(ObjectOutputStream stream) throws IOException {
@@ -1153,10 +1190,10 @@ ECode File::GetTotalSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
-    //     *space = 0;
-    //     return NOERROR;
-    // }
+    if (FAILED(os->StatVfs(mPath, (IStructStatVfs**)&sb))) {
+        *space = 0;
+        return NOERROR;
+    }
     Int64 blocks, bsize;
     sb->GetBlocks(&blocks);
     sb->GetBsize(&bsize);

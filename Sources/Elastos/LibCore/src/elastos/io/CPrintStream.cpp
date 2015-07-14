@@ -4,7 +4,7 @@
 #include "CCharsetHelper.h"
 #include "CFileOutputStream.h"
 #include "CLocale.h"
-//#include "CFormatter.h"
+#include "CFormatter.h"
 #include "Character.h"
 #include "StringUtils.h"
 #include "AutoLock.h"
@@ -13,7 +13,7 @@ using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::Utility::IFormatter;
-//using Elastos::Utility::CFormatter;
+using Elastos::Utility::CFormatter;
 using Elastos::Utility::CLocale;
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::CCharsetHelper;
@@ -201,7 +201,7 @@ ECode CPrintStream::Format(
         return E_EOF_EXCEPTION;
     }
     AutoPtr<IFormatter> res;
-    // FAIL_RETURN(CFormatter::New(THIS_PROBE(IAppendable), l, (IFormatter**)&res));
+    FAIL_RETURN(CFormatter::New(THIS_PROBE(IAppendable), l, (IFormatter**)&res));
     res->Format(format, args);
     *pw = THIS_PROBE(IPrintStream);
     REFCOUNT_ADD(*pw)

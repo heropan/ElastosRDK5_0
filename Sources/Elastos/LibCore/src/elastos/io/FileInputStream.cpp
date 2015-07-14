@@ -1,20 +1,25 @@
 
 #include "FileInputStream.h"
 #include "CFile.h"
-//#include "IoUtils.h"
+#include "IoUtils.h"
 #include "OsConstants.h"
 #include "CLibcore.h"
 #include "CIoBridge.h"
 #include "NioUtils.h"
 #include "CFileDescriptor.h"
 #include "AutoLock.h"
+#include "CStreams.h"
+#include "CCloseGuard.h"
 
+using Elastos::Core::CCloseGuard;
 using Elastos::Droid::System::OsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace IO {
@@ -23,18 +28,31 @@ CAR_INTERFACE_IMPL(FileInputStream, InputStream, IFileInputStream)
 
 FileInputStream::FileInputStream()
     : mShouldClose(FALSE)
-{}
+{
+    CCloseGuard::New((ICloseGuard**)&mGuard);
+}
 
 FileInputStream::~FileInputStream()
 {
     // try {
-    // TODO: can't call GetSelfLock() in destruct function
-    //
-    // try {
-    //     if (guard != null) {
-    //         guard.warnIfOpen();
-    //     }
-    //     close();
+    if (mGuard != NULL) {
+        mGuard->WarnIfOpen();
+    }
+
+    if (mChannel != NULL) {
+        ICloseable::Probe(mChannel)->Close();
+    }
+    if (mShouldClose) {
+        AutoPtr<CIoBridge> ioBridge;
+        CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
+        ioBridge->CloseAndSignalBlockedThreads(mFd);
+    }
+    else {
+        // An owned fd has been invalidated by IoUtils.close, but
+        // we need to explicitly stop using an unowned fd (http://b/4361076).
+        mFd = NULL;
+        CFileDescriptor::New((IFileDescriptor**)&mFd);
+    }
     // } finally {
     //     try {
     //         super.finalize();
@@ -92,11 +110,9 @@ ECode FileInputStream::Available(
 {
     VALIDATE_NOT_NULL(avail)
 
-    Int32 fd;
-    mFd->GetDescriptor(&fd);
     AutoPtr<CIoBridge> ioBridge;
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
-    ECode ec = ioBridge->Available(fd, avail);
+    ECode ec = ioBridge->Available(mFd, avail);
     if (FAILED(ec)) {
         return E_IO_EXCEPTION;
     }
@@ -105,19 +121,24 @@ ECode FileInputStream::Available(
 
 ECode FileInputStream::Close()
 {
-    // guard.close();
-    // synchronized (this) {
-    //     if (channel != null) {
-    //         channel.close();
-    //     }
-    //     if (shouldClose) {
-    //         IoBridge.closeAndSignalBlockedThreads(fd);
-    //     } else {
-    //         // An owned fd has been invalidated by IoUtils.close, but
-    //         // we need to explicitly stop using an unowned fd (http://b/4361076).
-    //         fd = new FileDescriptor();
-    //     }
-    // }
+    mGuard->Close();
+    synchronized (this) {
+        if (mChannel != NULL) {
+            ICloseable::Probe(mChannel)->Close();
+        }
+        if (mShouldClose) {
+            AutoPtr<CIoBridge> ioBridge;
+            CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
+            ioBridge->CloseAndSignalBlockedThreads(mFd);
+        }
+        else {
+            // An owned fd has been invalidated by IoUtils.close, but
+            // we need to explicitly stop using an unowned fd (http://b/4361076).
+            mFd = NULL;
+            CFileDescriptor::New((IFileDescriptor**)&mFd);
+        }
+    }
+    return NOERROR;
 }
 
 ECode FileInputStream::GetChannel(
@@ -128,7 +149,7 @@ ECode FileInputStream::GetChannel(
     AutoLock lock(this);
 
     if (mChannel == NULL) {
-        // mChannel = NioUtils::NewFileChannel(THIS_PROBE(IObject), mFd, OsConstants::sO_RDONLY);
+        mChannel = NioUtils::NewFileChannel(THIS_PROBE(ICloseable), mFd, OsConstants::_O_RDONLY);
     }
     *channel = mChannel;
     REFCOUNT_ADD(*channel)
@@ -148,10 +169,9 @@ ECode FileInputStream::GetFD(
 ECode FileInputStream::Read(
     /* [out] */ Int32* value)
 {
-    VALIDATE_NOT_NULL(value)
-
-    // return Streams.readSingleByte(this);
-    return NOERROR;;
+    AutoPtr<IStreams> streams;
+    CStreams::AcquireSingleton((IStreams**)&streams);
+    return streams->ReadSingleByte(THIS_PROBE(IInputStream), value);
 }
 
 ECode FileInputStream::Read(
@@ -164,12 +184,9 @@ ECode FileInputStream::Read(
     *number = -1;
     VALIDATE_NOT_NULL(buffer);
 
-    Int32 fd;
-    mFd->GetDescriptor(&fd);
     AutoPtr<IIoBridge> ioBridge;
     CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    // return IoUtils::Libcore2IoECode(ioBridge->Read(fd,
-    //         buffer, byteOffset, byteCount, number));
+    return ioBridge->Read(mFd, buffer, byteOffset, byteCount, number);
 }
 
 ECode FileInputStream::Skip(
@@ -186,12 +203,11 @@ ECode FileInputStream::Skip(
     // try {
         // Try lseek(2). That returns the new offset, but we'll throw an
         // exception if it couldn't perform exactly the seek we asked for.
-        Int32 fd;
         AutoPtr<ILibcore> libcore;
         CLibcore::AcquireSingleton((ILibcore**)&libcore);
         AutoPtr<IOs> os;
         libcore->GetOs((IOs**)&os);
-        // FAIL_RETURN(IoUtils::Libcore2IoECode(os->Lseek(fd, byteCount, OsConstants::_SEEK_CUR, number)));
+        os->Lseek(mFd, byteCount, OsConstants::_SEEK_CUR, number);
         *number = byteCount;
         return NOERROR;
     // } catch (ErrnoException errnoException) {

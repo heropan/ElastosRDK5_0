@@ -3,9 +3,12 @@
 #include "CPushbackInputStream.h"
 #include "Math.h"
 #include "StringBuilder.h"
+#include "CModifiedUtf8.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
+using Elastos::IO::Charset::IModifiedUtf8;
+using Elastos::IO::Charset::CModifiedUtf8;
 
 namespace Elastos {
 namespace IO {
@@ -364,13 +367,15 @@ String DataInputStream::DecodeUTF(
     assert(in);
 
     AutoPtr< ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(utfSize);
-    AutoPtr< ArrayOf<Char32> > charbuf = ArrayOf<Char32>::Alloc(utfSize);
     in->ReadFully(buf, 0, utfSize);
-    for (Int32 i = 0; i < utfSize; ++i) {
-        (*charbuf)[i] = (*buf)[i];
-    }
-    return String(*charbuf);
-    // return ModifiedUtf8.decode(buf, new char[utfSize], 0, utfSize);
+
+
+    AutoPtr<IModifiedUtf8> mu;
+    CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&mu);
+    AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(utfSize);
+    String result;
+    mu->Decode(buf, chars, 0, utfSize, &result);
+    return result;
 }
 
 } // namespace IO

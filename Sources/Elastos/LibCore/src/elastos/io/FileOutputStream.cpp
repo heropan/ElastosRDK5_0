@@ -1,7 +1,8 @@
 
 #include "FileOutputStream.h"
 #include "CFile.h"
-// #include "IoUtils.h"
+#include "IoUtils.h"
+#include "NioUtils.h"
 #include "OsConstants.h"
 #include "CLibcore.h"
 #include "CIoBridge.h"
@@ -9,13 +10,13 @@
 #include "AutoLock.h"
 
 using Elastos::Droid::System::OsConstants;
+using Elastos::IO::NioUtils;
 using Libcore::IO::ILibcore;
 using Libcore::IO::CLibcore;
 using Libcore::IO::IOs;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
-
-
+using Libcore::IO::IoUtils;
 namespace Elastos {
 namespace IO {
 
@@ -53,23 +54,19 @@ ECode FileOutputStream::constructor(
         // throw new NullPointerException("file == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    // AutoPtr<COsConstants> osConstans;
-    // COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
-    // Int32 m1, m2, m3, m4;
-    // osConstans->GetOsConstant(String("O_WRONLY"), &m1);
-    // osConstans->GetOsConstant(String("O_CREAT"), &m2);
-    // osConstans->GetOsConstant(String("O_APPEND"), &m3);
-    // osConstans->GetOsConstant(String("O_TRUNC"), &m4);
-    // mMode = m1 | m2 | (append ? m3 : m4);
-    // String path;
-    // file->GetPath(&path);
-    // CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
-    // AutoPtr<CIoBridge> ioBridge;
-    // CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
-    // Int32 fd;
-    // // FAIL_RETURN(IoUtils::Libcore2IoECode(ioBridge->Open(path, mMode, &fd)));
-    // mFd->SetDescriptor(fd);
-    // mShouldClose = TRUE;
+
+    mMode = OsConstants::_O_WRONLY
+        | OsConstants::_O_CREAT
+        | (append ? OsConstants::_O_APPEND : OsConstants::_O_TRUNC);
+    String path;
+    file->GetPath(&path);
+    CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
+    AutoPtr<CIoBridge> ioBridge;
+    CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
+    AutoPtr<IFileDescriptor> fd;
+    FAIL_RETURN(ioBridge->Open(path, mMode, (IFileDescriptor**)&fd))
+    mFd->SetDescriptor(fd);
+    mShouldClose = TRUE;
     return NOERROR;
 }
 
@@ -82,10 +79,8 @@ ECode FileOutputStream::constructor(
     }
     mFd = fd;
     mShouldClose = FALSE;
-    // AutoPtr<COsConstants> osConstans;
-    // COsConstants::AcquireSingletonByFriend((COsConstants**)&osConstans);
-    // osConstans->GetOsConstant(String("O_WRONLY"), &mMode);
-    // this.channel = NioUtils.newFileChannel(this, fd, mode);
+    mMode = OsConstants::_O_WRONLY;
+    mChannel = NioUtils::NewFileChannel(THIS_PROBE(ICloseable), fd, mMode);
     return NOERROR;
 }
 
@@ -116,9 +111,9 @@ ECode FileOutputStream::GetChannel(
 
     AutoLock lock(this);
 
-    // if (channel == null) {
-    //     channel = NioUtils.newFileChannel(this, fd, mode);
-    // }
+    if (mChannel == NULL) {
+        mChannel = NioUtils::NewFileChannel(THIS_PROBE(ICloseable), mFd, mMode);
+    }
     *channel = mChannel;
     REFCOUNT_ADD(*channel);
     return NOERROR;
@@ -147,13 +142,9 @@ ECode FileOutputStream::Write(
     /* [in] */ Int32 byteOffset,
     /* [in] */ Int32 byteCount)
 {
-    Int32 fd;
-    mFd->GetDescriptor(&fd);
     AutoPtr<IIoBridge> ioBridge;
     CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
-    // return IoUtils::Libcore2IoECode(ioBridge->Write(fd,
-    //         buffer, byteOffset, byteCount));
-    return NOERROR;
+    return ioBridge->Write(mFd, buffer, byteOffset, byteCount);
 }
 
 ECode FileOutputStream::CloseInner()
@@ -168,9 +159,11 @@ ECode FileOutputStream::CloseInner()
     else {
         // An owned fd has been invalidated by IoUtils.close, but
         // we need to explicitly stop using an unowned fd (http://b/4361076).
-        mFd = NULL;
-        return CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
+        AutoPtr<CFileDescriptor> cfd;
+        CFileDescriptor::NewByFriend((CFileDescriptor**)&cfd);
+        mFd = (IFileDescriptor*)cfd.Get();
     }
+    return NOERROR;
 }
 
 } // namespace IO

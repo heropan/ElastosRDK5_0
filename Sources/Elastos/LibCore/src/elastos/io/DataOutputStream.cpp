@@ -208,34 +208,27 @@ Int32 DataOutputStream::CountUTFBytes(
     Int32 bytesToWrite;
 
     // Figure out how many bytes the result will require.
-    if (srcChar < 0x00000080)
-    {
+    if (srcChar < 0x00000080) {
         bytesToWrite = 1;
     }
-    else if (srcChar < 0x00000800)
-    {
+    else if (srcChar < 0x00000800) {
         bytesToWrite = 2;
     }
-    else if (srcChar < 0x00010000)
-    {
+    else if (srcChar < 0x00010000) {
         if ((srcChar < Character::MIN_HIGH_SURROGATE)
-         || (srcChar > Character::MAX_LOW_SURROGATE))
-        {
+            || (srcChar > Character::MAX_LOW_SURROGATE)) {
             bytesToWrite = 3;
         }
-        else
-        {
+        else {
             // Surrogates are invalid UTF-32 characters.
             return 0;
         }
     }
     // Max code point for Unicode is 0x0010FFFF.
-    else if (srcChar <= Character::MAX_CODE_POINT)
-    {
+    else if (srcChar <= Character::MAX_CODE_POINT) {
         bytesToWrite = 4;
     }
-    else
-    {
+    else {
         // Invalid UTF-32 character.
         return 0;
     }

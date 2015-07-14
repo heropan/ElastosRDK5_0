@@ -4,6 +4,7 @@
 
 #include "InputStream.h"
 
+using Elastos::Core::ICloseGuard;
 using Elastos::IO::Channels::IFileChannel;
 
 namespace Elastos {
@@ -194,6 +195,8 @@ private:
 
     /** The unique file channel. Lazily initialized because it's rarely needed. */
     AutoPtr<IFileChannel> mChannel;
+
+    AutoPtr<ICloseGuard> mGuard;
 };
 
 } // namespace IO
