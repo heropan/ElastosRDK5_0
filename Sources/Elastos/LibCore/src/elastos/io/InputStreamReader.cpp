@@ -8,6 +8,7 @@
 #include "Math.h"
 #include "Character.h"
 #include "AutoLock.h"
+#include "Arrays.h"
 
 using Elastos::Core::Character;
 using Elastos::IO::Charset::CCoderResult;
@@ -16,6 +17,7 @@ using Elastos::IO::Charset::Charset;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICoderResult;
 using Elastos::IO::Charset::ICodingErrorAction;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -155,22 +157,11 @@ ECode InputStreamReader::Read(
 
     if (!IsOpen()) {
         return E_IO_EXCEPTION;
-//        throw new IOException("InputStreamReader is closed");
+        // throw new IOException("InputStreamReader is closed");
     }
-    // RI exception compatibility so we can run more tests.
-    if (offset < 0) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new IndexOutOfBoundsException();
-    }
-    if (buffer == NULL) {
-        return E_NULL_POINTER_EXCEPTION;
-//        throw new NullPointerException("buffer == null");
-    }
-    if (count < 0 || offset > buffer->GetLength() - count) {
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-//        throw new IndexOutOfBoundsException();
-    }
+    Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, count);
     if (count == 0) {
+        *number = 0;
         return NOERROR;
     }
 
@@ -179,14 +170,12 @@ ECode InputStreamReader::Read(
     AutoPtr<ICoderResult> result, resultTmp;
     CCoderResult::GetUNDERFLOW((ICoderResult**)&result);
     resultTmp = result;
+
     // bytes.remaining() indicates number of bytes in buffer
     // when 1-st time entered, it'll be equal to zero
     Boolean hasRemaining;
     IBuffer::Probe(mBytes)->HasRemaining(&hasRemaining);
     Boolean needInput = !hasRemaining;
-
-    Int32 size;
-    Int32 was_red;
 
     while(IBuffer::Probe(out)->HasRemaining(&hasRemaining), hasRemaining) {
         // fill the buffer if needed
@@ -203,19 +192,20 @@ ECode InputStreamReader::Read(
             IBuffer::Probe(mBytes)->GetCapacity(&capacity);
             IBuffer::Probe(mBytes)->GetLimit(&limit);
             IBuffer::Probe(mBytes)->GetArrayOffset(&arrayOffset);
-            Int32 to_read = capacity - limit;
+            Int32 desiredByteCount = capacity - limit;
             Int32 off = arrayOffset + limit;
             AutoPtr<ArrayOf<Byte> > buf;
             mBytes->GetArray((ArrayOf<Byte>**)&buf);
-            mIn->Read(buf, off, to_read, &was_red);
-            if (was_red == -1) {
+            Int32 actualByteCount;
+            mIn->Read(buf, off, desiredByteCount, &actualByteCount);
+            if (actualByteCount == -1) {
                 mEndOfInput = TRUE;
                 break;
             }
-            else if (was_red == 0) {
+            else if (actualByteCount == 0) {
                 break;
             }
-            IBuffer::Probe(mBytes)->SetLimit(limit + was_red);
+            IBuffer::Probe(mBytes)->SetLimit(limit + actualByteCount);
             needInput = FALSE;
         }
 
@@ -224,6 +214,7 @@ ECode InputStreamReader::Read(
         mDecoder->Decode(mBytes, out, FALSE, (ICoderResult**)&result);
         Boolean isUnderflow;
         if (result->IsUnderflow(&isUnderflow), isUnderflow) {
+            // compact the buffer if no space left
             Int32 capacity, limit, pos;
             IBuffer::Probe(mBytes)->GetLimit(&limit);
             IBuffer::Probe(mBytes)->GetCapacity(&capacity);
@@ -241,7 +232,7 @@ ECode InputStreamReader::Read(
         }
     }
 
-    if (result != resultTmp && mEndOfInput) {
+    if (result == resultTmp && mEndOfInput) {
         result = NULL;
         mDecoder->Decode(mBytes, out, TRUE, (ICoderResult**)&result);
         Boolean isUnderflow = false;

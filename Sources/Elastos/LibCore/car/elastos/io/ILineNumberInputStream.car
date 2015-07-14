@@ -15,6 +15,7 @@ module
      *
      * @implement Elastos.IO.IFilterInputStream
      */
+     // @Deprecated
      /**
      * @Involve
      * interface Elastos.IO.ICloseable;

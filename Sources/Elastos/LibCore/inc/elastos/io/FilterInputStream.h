@@ -95,25 +95,7 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    /**
-     * Reads at most {@code count} bytes from this stream and stores them in the
-     * byte array {@code buffer} starting at {@code offset}. Returns the number
-     * of bytes actually read or -1 if no bytes have been read and the end of
-     * this stream has been reached. This implementation reads bytes from the
-     * filtered stream.
-     *
-     * @param buffer
-     *            the byte array in which to store the bytes read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the bytes
-     *            read from this stream.
-     * @param count
-     *            the maximum number of bytes to store in {@code buffer}.
-     * @return the number of bytes actually read or -1 if the end of the
-     *         filtered stream has been reached while reading.
-     * @throws IOException
-     *             if this stream is closed or another I/O error occurs.
-     */
+    // @Override
     CARAPI Read(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 byteOffset,

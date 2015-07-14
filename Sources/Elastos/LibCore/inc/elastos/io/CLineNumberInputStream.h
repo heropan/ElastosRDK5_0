@@ -8,10 +8,12 @@
 namespace Elastos {
 namespace IO {
 
-CarClass(CLineNumberInputStream), public LineNumberInputStream
+CarClass(CLineNumberInputStream)
+    , public LineNumberInputStream
 {
 public:
     CAR_OBJECT_DECL()
+
 };
 
 } // namespace IO

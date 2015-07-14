@@ -120,22 +120,13 @@ public:
         /* [out] */ Int32* number);
 
     /**
-     * Reads at most {@code length} bytes from this stream and stores them in
-     * the byte array {@code b} starting at {@code offset}.
+     * Reads up to {@code byteCount} bytes from this stream and stores them in
+     * the byte array {@code buffer} starting at {@code byteOffset}.
+     * Returns the number of bytes actually read or -1 if the end of the stream
+     * has been reached.
      *
-     * @param buffer
-     *            the byte array in which to store the bytes read.
-     * @param offset
-     *            the initial position in {@code buffer} to store the bytes read
-     *            from this stream.
-     * @param length
-     *            the maximum number of bytes to store in {@code b}.
-     * @return the number of bytes actually read or -1 if the end of the stream
-     *         has been reached.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code length < 0}, or if
-     *             {@code offset + length} is greater than the length of
-     *             {@code b}.
+     *   if {@code byteOffset < 0 || byteCount < 0 || byteOffset + byteCount > buffer.length}.
      * @throws IOException
      *             if the stream is closed or another IOException occurs.
      */
