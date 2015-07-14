@@ -49,7 +49,7 @@ ECode CStructGroupReq::ToString(
     IObject* obj = IObject::Probe(mGr_group);
     obj->ToString(&outstr);
     *str = String("StructGroupReq[gr_interface=")
-            // + StringUtils::Int32ToString(mGr_interface)
+            + StringUtils::ToString(mGr_interface)
             + String(",gr_group=")
             + outstr
             + String("]");

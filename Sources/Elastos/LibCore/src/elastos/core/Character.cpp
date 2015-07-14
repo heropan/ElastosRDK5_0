@@ -555,6 +555,7 @@ ECode Character::GetCharBefore(
     /* [out] */ Char32* c)
 {
     VALIDATE_NOT_NULL(c);
+    *c = '\0';
 
     if (seq.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -587,6 +588,7 @@ ECode Character::ToChars(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     if (!IsValidCodePoint(c)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -607,6 +609,7 @@ ECode Character::ToChars(
     /*[out, callee] */ ArrayOf<Byte>** seq)
 {
     VALIDATE_NOT_NULL(seq);
+    *seq = NULL;
 
     if (!IsValidCodePoint(c)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -626,8 +629,9 @@ ECode Character::ToChars(
     /* [out, callee] */ ArrayOf<Byte>** dst,
     /* [out] */ Int32* number)
 {
-    VALIDATE_NOT_NULL(dst);
     VALIDATE_NOT_NULL(number);
+    *number = NULL;
+    VALIDATE_NOT_NULL(dst);
 
     if (offset < 0 || count < 0 || offset > src.GetLength() - count)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -678,6 +682,7 @@ ECode Character::GetCharCount(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     Int32 len = seq.GetLength();
     Int32 endIndex = offset + count;
@@ -702,6 +707,7 @@ ECode Character::GetCharCount(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
+    *number = 0;
 
     if (seq.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -777,6 +783,7 @@ ECode Character::GetOffsetByChars(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset);
+    *offset = 0;
 
     Int32 end = start + count;
     if (start < 0 || count < 0 || end > seq.GetLength() || index < start

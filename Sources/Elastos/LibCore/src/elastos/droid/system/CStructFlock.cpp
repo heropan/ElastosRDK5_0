@@ -3,6 +3,7 @@
 namespace Elastos {
 namespace Droid {
 namespace System {
+
 CAR_INTERFACE_IMPL(CStructFlock, Object, IStructFlock)
 
 CAR_OBJECT_IMPL(CStructFlock)
@@ -26,6 +27,7 @@ ECode CStructFlock::SetType(
 ECode CStructFlock::GetWhence(
     /* [out] */ Int16* whence)
 {
+    VALIDATE_NOT_NULL(whence)
     *whence = mWhence;
     return NOERROR;
 }
@@ -41,6 +43,7 @@ ECode CStructFlock::SetWhence(
 ECode CStructFlock::GetStart(
     /* [out] */ Int64* start)
 {
+    VALIDATE_NOT_NULL(start)
     *start = mStart;
     return NOERROR;
 }
@@ -56,6 +59,7 @@ ECode CStructFlock::SetStart(
 ECode CStructFlock::GetLen(
     /* [out] */ Int64* len)
 {
+    VALIDATE_NOT_NULL(len)
     *len = mLen;
     return NOERROR;
 }
@@ -71,6 +75,7 @@ ECode CStructFlock::SetLen(
 ECode CStructFlock::GetPid(
     /* [out] */ Int32* pid)
 {
+    VALIDATE_NOT_NULL(pid)
     *pid = mPid;
     return NOERROR;
 }

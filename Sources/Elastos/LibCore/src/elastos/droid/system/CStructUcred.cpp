@@ -21,6 +21,7 @@ ECode CStructUcred::constructor(
 ECode CStructUcred::GetPid(
     /* [out] */ Int32* pid)
 {
+    VALIDATE_NOT_NULL(pid)
     *pid = mPid;
     return NOERROR;
 }
@@ -28,6 +29,7 @@ ECode CStructUcred::GetPid(
 ECode CStructUcred::GetUid(
     /* [out] */ Int32* uid)
 {
+    VALIDATE_NOT_NULL(uid)
     *uid = mUid;
     return NOERROR;
 }
@@ -35,6 +37,7 @@ ECode CStructUcred::GetUid(
 ECode CStructUcred::GetGid(
     /* [out] */ Int32* gid)
 {
+    VALIDATE_NOT_NULL(gid)
     *gid = mGid;
     return NOERROR;
 }

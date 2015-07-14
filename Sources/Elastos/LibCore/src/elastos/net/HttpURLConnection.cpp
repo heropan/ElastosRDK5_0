@@ -48,6 +48,7 @@ Boolean HttpURLConnection::GetFollowRedirects()
 ECode HttpURLConnection::GetRequestMethod(
     /* [out] */ String* method)
 {
+    VALIDATE_NOT_NULL(method)
     assert(method != NULL);
     *method = mMethod;
 

@@ -79,9 +79,8 @@ ECode CStringWrapper::Equals(
     *result = FALSE;
     VALIDATE_NOT_NULL(obj)
 
-    assert(IObject::Probe(obj) != NULL);
-    String str;
-    IObject::Probe(obj)->ToString(&str);
+    assert(ICharSequence::Probe(obj) != NULL);
+    String str = Object::ToString(obj);
     *result = mString.Equals(str);
     return NOERROR;
 }

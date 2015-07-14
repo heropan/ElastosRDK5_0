@@ -283,7 +283,7 @@ ECode CSystem::InitSystemProperties()
 {
     // VMRuntime runtime = VMRuntime.getRuntime();
     AutoPtr<IProperties> p;
-    //CProperties::New((IProperties**)&p);
+    CProperties::New((IProperties**)&p);
 
     String projectUrl("http://www.android.com/");
     String projectName("The Android Project");
@@ -345,9 +345,10 @@ ECode CSystem::InitSystemProperties()
         p->SetProperty(String("os.version"), String(info.release), NULL);
     }
 
-    String icuVersion;/* = ICUUtil::GetIcuVersion(); */
-    String unicodeVersion;/* = ICUUtil::GetUnicodeVersion(); */
-    String cldrVersion;/* = ICUUtil::GetCldrVersion(); */
+    String icuVersion = ICUUtil::GetIcuVersion();
+    String unicodeVersion = ICUUtil::GetUnicodeVersion();
+    String cldrVersion;
+    ICUUtil::GetCldrVersion(&cldrVersion);
     // Undocumented Android-only properties.
     p->SetProperty(String("android.icu.library.version"), icuVersion, NULL);
     p->SetProperty(String("android.icu.unicode.version"), unicodeVersion, NULL);

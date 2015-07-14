@@ -131,8 +131,7 @@ String CaseMapper::ToLowerCase(
     String languageCode;
     locale->GetLanguage(&languageCode);
     if (languageCode.Equals("tr") || languageCode.Equals("az") || languageCode.Equals("lt")) {
-        assert(0);
-        // return ICUUtil::ToLowerCase(s, locale);
+        return ICUUtil::ToLowerCase(s, locale);
     }
 
     AutoPtr<ArrayOf<Char32> > newValue;
@@ -143,8 +142,7 @@ String CaseMapper::ToLowerCase(
         Char32 newCh;
         if (ch == LATIN_CAPITAL_I_WITH_DOT || Character::IsHighSurrogate(ch)) {
             // Punt these hard cases.
-            assert(0);
-            // return ICUUtil::ToLowerCase(s, locale);
+            return ICUUtil::ToLowerCase(s, locale);
         }
         else if (ch == GREEK_CAPITAL_SIGMA && IsFinalSigma(value, offset, count, i)) {
             newCh = GREEK_SMALL_FINAL_SIGMA;
@@ -180,8 +178,7 @@ String CaseMapper::ToUpperCase(
     String languageCode;
     locale->GetLanguage(&languageCode);
     if (languageCode.Equals("tr") || languageCode.Equals("az") || languageCode.Equals("lt")) {
-        assert(0);
-        //return ICUUtil::ToUpperCase(s, locale);
+        return ICUUtil::ToUpperCase(s, locale);
     }
     if (languageCode.Equals("el")) {
         AutoPtr<ITransliterator> tl = GetEL_UPPER();
@@ -196,8 +193,7 @@ String CaseMapper::ToUpperCase(
     for (Int32 o = offset, end = offset + count; o < end; o++) {
         ch = (*value)[o];
         if (Character::IsHighSurrogate(ch)) {
-            assert(0);
-            //return ICUUtil::ToUpperCase(s, locale);
+            return ICUUtil::ToUpperCase(s, locale);
         }
 
         Int32 index = UpperIndex(ch);

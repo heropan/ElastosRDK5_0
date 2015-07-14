@@ -89,7 +89,7 @@ ECode CInteger32::CompareTo(
     *result = -1;
     VALIDATE_NOT_NULL(_other);
 
-    IInteger32* other = (IInteger32*)_other->Probe(EIID_IInteger32);
+    IInteger32* other = IInteger32::Probe(_other);
     if (other == NULL) {
         return NOERROR;
     }
@@ -127,7 +127,7 @@ ECode CInteger32::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    //*result = IntegralToString::ToString(mValue);
+    *result = IntegralToString::ToString(mValue);
 
     return NOERROR;
 }

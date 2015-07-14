@@ -1,8 +1,8 @@
 
 #include <CStructAddrinfo.h>
 
-// using Elastos::Net::EIID_IInet4Address;
-// using Elastos::Net::EIID_IInet6Address;
+using Elastos::Net::EIID_IInet4Address;
+using Elastos::Net::EIID_IInet6Address;
 
 namespace Elastos {
 namespace Droid {
@@ -86,16 +86,16 @@ ECode CStructAddrinfo::SetProtocol(
 ECode CStructAddrinfo::GetAddrlen(
     /* [out] */ Int32* addrlen)
 {
-    // VALIDATE_NOT_NULL(addrlen);
-    // if(ai_addr->Probe(EIID_IInet4Address))
-    // {
-    //     *addrlen = 4;
-    // }else if(ai_addr->Probe(EIID_IInet6Address))
-    // {
-    //     *addrlen = 16;
-    // }else{
-    //     *addrlen = 0;
-    // }
+    VALIDATE_NOT_NULL(addrlen);
+    if(ai_addr->Probe(EIID_IInet4Address)) {
+        *addrlen = 4;
+    }
+    else if(ai_addr->Probe(EIID_IInet6Address)) {
+        *addrlen = 16;
+    }
+    else{
+        *addrlen = 0;
+    }
     return NOERROR;
 }
 

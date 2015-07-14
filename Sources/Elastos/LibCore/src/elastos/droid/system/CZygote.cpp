@@ -2,6 +2,7 @@
 #include "CZygote.h"
 #include "core/Thread.h"
 #include "logging/Logger.h"
+#include "CFile.h"
 #include <Elastos.CoreLibrary.h>
 #ifdef HAVE_SELINUX
 #include <selinux/android.h>
@@ -20,7 +21,7 @@
 
 using Elastos::Core::Thread;
 using Elastos::IO::IFile;
-// using Elastos::IO::CFile;
+using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -46,7 +47,7 @@ void CZygote::PreFork()
 void CZygote::WaitUntilAllThreadsStopped()
 {
     AutoPtr<IFile> tasks;
-    // CFile::New(String("/proc/self/task"), (IFile**)&tasks);
+    CFile::New(String("/proc/self/task"), (IFile**)&tasks);
     AutoPtr< ArrayOf<String> > files;
     tasks->List((ArrayOf<String>**)&files);
     while (files != NULL && files->GetLength() > 1) {
