@@ -749,13 +749,15 @@ public:
         if (mIsBad) {
             return NULL;
         }
-        dirent* result = NULL;
-        int rc = readdir_r(mDirStream, &mEntry, &result);
-        if (rc != 0) {
-            mIsBad = true;
-            return NULL;
+        errno = 0;
+        dirent* result = readdir(mDirStream);
+        if (result != 0) {
+            return result->d_name;
         }
-        return (result != NULL) ? result->d_name : NULL;
+        if (errno != 0) {
+            mIsBad = true;
+        }
+        return NULL;
     }
 
     // Has an error occurred on this stream?
@@ -766,7 +768,6 @@ public:
 
 private:
     DIR* mDirStream;
-    dirent mEntry;
     Boolean mIsBad;
 
     // Disallow copy and assignment.

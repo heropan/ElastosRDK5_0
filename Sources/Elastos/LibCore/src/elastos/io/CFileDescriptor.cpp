@@ -109,9 +109,12 @@ ECode CFileDescriptor::ToString(
 ECode CFileDescriptor::IsSocket(
     /* [out] */ Boolean* isSocket)
 {
-  int error;
-  socklen_t error_length = sizeof(error);
-  return TEMP_FAILURE_RETRY(getsockopt(mDescriptor, SOL_SOCKET, SO_ERROR, &error, &error_length));
+    VALIDATE_NOT_NULL(isSocket)
+
+    int error;
+    socklen_t error_length = sizeof(error);
+    *isSocket = TEMP_FAILURE_RETRY(getsockopt(mDescriptor, SOL_SOCKET, SO_ERROR, &error, &error_length));
+    return NOERROR;
 }
 
 } // namespace IO

@@ -33,6 +33,9 @@ module
         SetDescriptor(
             [in] Int32 fd);
 
+        /**
+         * @hide internal use only
+         */
         IsSocket(
             [out] Boolean* isSocket);
     }

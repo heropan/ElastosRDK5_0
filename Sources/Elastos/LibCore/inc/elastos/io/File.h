@@ -776,6 +776,7 @@ public:
      * @deprecated Use {@link #toURI} and {@link java.net.URI#toURL} to get
      * correct escape illegal characters.
      */
+    // @Deprecated
     CARAPI ToURL(
        /* [out] */ IURL** uri);
 

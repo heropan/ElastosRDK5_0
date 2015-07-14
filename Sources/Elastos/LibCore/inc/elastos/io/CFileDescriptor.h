@@ -45,6 +45,9 @@ public:
     CARAPI SetDescriptor(
         /* [in] */ Int32 fd);
 
+    /**
+     * @hide internal use only
+     */
     CARAPI IsSocket(
         /* [out] */ Boolean* isSocket);
 

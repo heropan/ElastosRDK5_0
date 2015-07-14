@@ -217,8 +217,6 @@ module
 
         /**
          * Returns the path of this file.
-         *
-         * @return this file's path.
          */
         GetPath(
             [out] String* path);
@@ -595,17 +593,12 @@ module
          * systems.
          *
          * @return a URL for this file.
-         * @return ECode = NOERROR(0) if success, else as follows:
-         * Value | Meaning |
-         * :-|:------------|
-         * java.net.MalformedURLException | if the path cannot be transformed into a URL.
-         * @deprecated use #toURI and java.net.URI#toURL to get
-         * correct escaping of illegal characters.
-         *
-         * @sa #toURI
-         * @sa java.net.URI#toURL
-         *
+         * @throws java.net.MalformedURLException
+         *             if the path cannot be transformed into a URL.
+         * @deprecated Use {@link #toURI} and {@link java.net.URI#toURL} to get
+         * correct escape illegal characters.
          */
+        // @Deprecated
         ToURL(
             [out] IURL** uri);
 
