@@ -394,14 +394,12 @@ ECode CStrictJarFile::NativeOpenJarFile(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    assert(0);
-    //TODO LIBRARIES += -lziparchive
     ZipArchiveHandle handle;
-    // int32_t error = OpenArchive(fileName.string(), &handle);
-    // if (error) {
-    //     //throwIoException(env, error);
-    //     return E_IO_EXCEPTION;
-    // }
+    int32_t error = OpenArchive(fileName.string(), &handle);
+    if (error) {
+        //throwIoException(env, error);
+        return E_IO_EXCEPTION;
+    }
 
     *result = reinterpret_cast<Int64>(handle);
     return NOERROR;
@@ -415,17 +413,15 @@ ECode CStrictJarFile::NativeStartIteration(
     VALIDATE_NOT_NULL(result)
     *result = -1;
 
-    assert(0);
-    //TODO LIBRARIES += -lziparchive
     IterationHandle* handle = new IterationHandle(prefix.string());
     int32_t error = 0;
-    // if (prefix.GetLength() == 0) {
-    //     error = StartIteration(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
-    //                 handle->CookieAddress(), NULL);
-    // } else {
-    //     error = StartIteration(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
-    //                 handle->CookieAddress(), handle->Prefix());
-    // }
+    if (prefix.GetLength() == 0) {
+        error = StartIteration(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
+                    handle->CookieAddress(), NULL);
+    } else {
+        error = StartIteration(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
+                    handle->CookieAddress(), handle->Prefix());
+    }
 
     if (error) {
         //throwIoException(env, error);
@@ -475,18 +471,15 @@ ECode CStrictJarFile::NativeNextEntry(
     VALIDATE_NOT_NULL(ze)
     *ze = NULL;
 
-    assert(0);
-    //TODO LIBRARIES += -lziparchive
-
     ZipEntry data;
     ZipEntryName entryName;
 
     IterationHandle* handle = reinterpret_cast<IterationHandle*>(iterationHandle);
-    // const int32_t error = Next(*handle->CookieAddress(), &data, &entryName);
-    // if (error) {
-    //     delete handle;
-    //     return NOERROR;
-    // }
+    const int32_t error = Next(*handle->CookieAddress(), &data, &entryName);
+    if (error) {
+        delete handle;
+        return NOERROR;
+    }
 
     UniquePtr<char[]> entryNameCString(new char[entryName.name_length + 1]);
     memcpy(entryNameCString.get(), entryName.name, entryName.name_length);
@@ -504,15 +497,12 @@ ECode CStrictJarFile::NativeFindEntry(
     VALIDATE_NOT_NULL(ze)
     *ze = NULL;
 
-    assert(0);
-    //TODO LIBRARIES += -lziparchive
-
     ZipEntry data;
-    // const int32_t error = ::FindEntry(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
-    //                         entryName.string(), &data);
-    // if (error) {
-    //     return NOERROR;
-    // }
+    const int32_t error = ::FindEntry(reinterpret_cast<ZipArchiveHandle>(nativeHandle),
+                            entryName.string(), &data);
+    if (error) {
+        return NOERROR;
+    }
 
     return NewZipEntry(data, entryName, entryName.GetLength(), ze);
 }
@@ -520,9 +510,7 @@ ECode CStrictJarFile::NativeFindEntry(
 ECode CStrictJarFile::NativeClose(
     /* [in] */ Int64 nativeHandle)
 {
-    assert(0);
-    //TODO LIBRARIES += -lziparchive
-    //CloseArchive(reinterpret_cast<ZipArchiveHandle>(nativeHandle));
+    CloseArchive(reinterpret_cast<ZipArchiveHandle>(nativeHandle));
     return NOERROR;
 }
 

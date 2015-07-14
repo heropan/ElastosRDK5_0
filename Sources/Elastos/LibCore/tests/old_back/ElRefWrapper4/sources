@@ -1,0 +1,11 @@
+
+TARGET_NAME = testRefBase4
+TARGET_TYPE = ecx
+
+IMPORTS = Elastos.CoreLibrary.eco
+
+SOURCES = test.cpp
+
+LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
+LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+LIBRARIES += -lstdc++ -lcutils
