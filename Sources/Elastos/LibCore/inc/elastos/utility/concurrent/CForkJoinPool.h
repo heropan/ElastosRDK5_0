@@ -4,7 +4,9 @@
 
 #include "_Elastos_Utility_Concurrent_CForkJoinPool.h"
 #include "AbstractExecutorService.h"
+#include "ForkJoinTask.h"
 
+using Elastos::Core::IThread;
 using Elastos::Core::IThreadUncaughtExceptionHandler;
 using Elastos::Core::IThrowable;
 using Elastos::Utility::IRandom;
@@ -21,13 +23,14 @@ CarClass(CForkJoinPool)
     , public IForkJoinPool
 {
 public:
+    // Nested classes
     /**
      * Default ForkJoinWorkerThreadFactory implementation; creates a
      * new ForkJoinWorkerThread.
      */
     class DefaultForkJoinWorkerThreadFactory
-        : public IForkJoinPoolForkJoinWorkerThreadFactory
-        , public Object
+        : public Object
+        , public IForkJoinPoolForkJoinWorkerThreadFactory
     {
     public:
         CAR_INTERFACE_DECL()
@@ -36,20 +39,303 @@ public:
             /* [in] */ IForkJoinPool* pool);
     };
 
-    class _InvokeAll
-//        : public RecursiveAction
+    /**
+     * Class for artificial tasks that are used to replace the target
+     * of local joins if they are removed from an interior queue slot
+     * in WorkQueue.tryRemoveAndExec. We don't need the proxy to
+     * actually do anything beyond having a unique identity.
+     */
+    class EmptyTask
+        : public ForkJoinTask
     {
     public:
-        _InvokeAll(
-            /* [in] */ CForkJoinPool* owner,
-            /* [in] */ IArrayList* tasks);
+        EmptyTask();
 
-        void Compute();
+        CARAPI SetRawResult(
+            /* [in] */ IInterface* value);
+
+        CARAPI Exec(
+            /* [out] */ Boolean* res);
+
+        CARAPI GetRawResult(
+            /* [out] */ IInterface** outface);
+
+    private:
+//        static long serialVersionUID = -7721805057305804111L;
+    };
+
+    /**
+     * Queues supporting work-stealing as well as external task
+     * submission. See above for main rationale and algorithms.
+     * Implementation relies heavily on "Unsafe" intrinsics
+     * and selective use of "volatile":
+     *
+     * Field "base" is the index (mod array.length) of the least valid
+     * queue slot, which is always the next position to steal (poll)
+     * from if nonempty. Reads and writes require volatile orderings
+     * but not CAS, because updates are only performed after slot
+     * CASes.
+     *
+     * Field "top" is the index (mod array.length) of the next queue
+     * slot to push to or pop from. It is written only by owner thread
+     * for push, or under lock for external/shared push, and accessed
+     * by other threads only after reading (volatile) base.  Both top
+     * and base are allowed to wrap around on overflow, but (top -
+     * base) (or more commonly -(base - top) to force volatile read of
+     * base before top) still estimates size. The lock ("qlock") is
+     * forced to -1 on termination, causing all further lock attempts
+     * to fail. (Note: we don't need CAS for termination state because
+     * upon pool shutdown, all shared-queues will stop being used
+     * anyway.)  Nearly all lock bodies are set up so that exceptions
+     * within lock bodies are "impossible" (modulo JVM errors that
+     * would cause failure anyway.)
+     *
+     * The array slots are read and written using the emulation of
+     * volatiles/atomics provided by Unsafe. Insertions must in
+     * general use putOrderedObject as a form of releasing store to
+     * ensure that all writes to the task object are ordered before
+     * its publication in the queue.  All removals entail a CAS to
+     * null.  The array is always a power of two. To ensure safety of
+     * Unsafe array operations, all accesses perform explicit null
+     * checks and implicit bounds checks via power-of-two masking.
+     *
+     * In addition to basic queuing support, this class contains
+     * fields described elsewhere to control execution. It turns out
+     * to work better memory-layout-wise to include them in this class
+     * rather than a separate class.
+     *
+     * Performance on most platforms is very sensitive to placement of
+     * instances of both WorkQueues and their arrays -- we absolutely
+     * do not want multiple WorkQueue instances or multiple queue
+     * arrays sharing cache lines. (It would be best for queue objects
+     * and their arrays to share, but there is nothing available to
+     * help arrange that). The @Contended annotation alerts JVMs to
+     * try to keep instances apart.
+     */
+    class WorkQueue
+        : public Object
+    {
+    public:
+        WorkQueue(
+            /* [in] */ IForkJoinPool* pool,
+            /* [in] */ IForkJoinWorkerThread* owner,
+            /* [in] */ Int32 mode,
+            /* [in] */ Int32 seed);
+
+        /**
+         * Returns the approximate number of tasks in the queue.
+         */
+        Int32 QueueSize();
+
+        /**
+         * Provides a more accurate estimate of whether this queue has
+         * any tasks than does queueSize, by checking whether a
+         * near-empty queue has at least one unclaimed task.
+         */
+        Boolean IsEmpty();
+
+        /**
+         * Pushes a task. Call only by owner in unshared queues.  (The
+         * shared-queue version is embedded in method externalPush.)
+         *
+         * @param task the task. Caller must ensure non-null.
+         * @throws RejectedExecutionException if array cannot be resized
+         */
+        void Push(
+            /* [in] */ IForkJoinTask* task);
+
+        /**
+         * Initializes or doubles the capacity of array. Call either
+         * by owner or with lock held -- it is OK for base, but not
+         * top, to move while resizings are in progress.
+         */
+        AutoPtr<ArrayOf<IForkJoinTask*> > GrowArray();
+
+        /**
+         * Takes next task, if one exists, in LIFO order.  Call only
+         * by owner in unshared queues.
+         */
+        AutoPtr<IForkJoinTask> Pop();
+
+        /**
+         * Takes a task in FIFO order if b is base of queue and a task
+         * can be claimed without contention. Specialized versions
+         * appear in ForkJoinPool methods scan and tryHelpStealer.
+         */
+        AutoPtr<IForkJoinTask> PollAt(
+            /* [in] */ Int32 b);
+
+        /**
+         * Takes next task, if one exists, in FIFO order.
+         */
+        AutoPtr<IForkJoinTask> Poll();
+
+        /**
+         * Takes next task, if one exists, in order specified by mode.
+         */
+        AutoPtr<IForkJoinTask> NextLocalTask();
+
+        /**
+         * Returns next task, if one exists, in order specified by mode.
+         */
+        AutoPtr<IForkJoinTask> Peek();
+
+        /**
+         * Pops the given task only if it is at the current top.
+         * (A shared version is available only via FJP.tryExternalUnpush)
+         */
+        Boolean TryUnpush(
+            /* [in] */ IForkJoinTask* t);
+
+        /**
+         * Removes and cancels all known tasks, ignoring any exceptions.
+         */
+        void CancelAll();
+
+        // Specialized execution methods
+
+        /**
+         * Polls and runs tasks until empty.
+         */
+        void PollAndExecAll();
+
+        /**
+         * Executes a top-level task and any local tasks remaining
+         * after execution.
+         */
+        void RunTask(
+            /* [in] */ IForkJoinTask* task);
+
+        /**
+         * If present, removes from queue and executes the given task,
+         * or any other cancelled task. Returns (true) on any CAS
+         * or consistency check failure so caller can retry.
+         *
+         * @return false if no progress can be made, else true
+         */
+        Boolean TryRemoveAndExec(
+            /* [in] */ IForkJoinTask* task);
+
+        /**
+         * Tries to poll for and execute the given task or any other
+         * task in its CountedCompleter computation.
+         */
+        // Boolean PollAndExecCC(
+        //     /* [in] */ ICountedCompleter* root);
+
+        /**
+         * Tries to pop and execute the given task or any other task
+         * in its CountedCompleter computation.
+         */
+        // Boolean ExternalPopAndExecCC(
+        //     /* [in] */ ICountedCompleter* root);
+
+        /**
+         * Internal version
+         */
+        // Boolean InternalPopAndExecCC(
+        //     /* [in] */ ICountedCompleter* root);
+
+        /**
+         * Returns true if owned and not known to be blocked.
+         */
+        Boolean IsApparentlyUnblocked();
 
     public:
-//        private static final long serialVersionUID = -7914297376763021607L;
-        AutoPtr<IArrayList> mTasks;
-        CForkJoinPool* mOwner;
+        /**
+         * Capacity of work-stealing queue array upon initialization.
+         * Must be a power of two; at least 4, but should be larger to
+         * reduce or eliminate cacheline sharing among queues.
+         * Currently, it is much larger, as a partial workaround for
+         * the fact that JVMs often place arrays in locations that
+         * share GC bookkeeping (especially cardmarks) such that
+         * per-write accesses encounter serious memory contention.
+         */
+        static Int32 INITIAL_QUEUE_CAPACITY;
+
+        /**
+         * Maximum size for queue arrays. Must be a power of two less
+         * than or equal to 1 << (31 - width of array entry) to ensure
+         * lack of wraparound of index calculations, but defined to a
+         * value a bit less than this to help users trap runaway
+         * programs before saturating systems.
+         */
+        static Int32 MAXIMUM_QUEUE_CAPACITY;
+
+        // Heuristic padding to ameliorate unfortunate memory placements
+        volatile Int64 mPad00, mPad01, mPad02, mPad03, mPad04, mPad05, mPad06;
+
+        volatile Int32 mEventCount;   // encoded inactivation count; < 0 if inactive
+        Int32 mNextWait;              // encoded record of next event waiter
+        Int32 mNsteals;               // number of steals
+        Int32 mHint;                  // steal index hint
+        Int16 mPoolIndex;           // index of this queue in pool
+        Int16 mMode;          // 0: lifo, > 0: fifo, < 0: shared
+        volatile Int32 mQlock;        // 1: locked, -1: terminate; else 0
+        volatile Int32 mBase;         // index of next slot for poll
+        Int32 mTop;                   // index of next slot for push
+        AutoPtr<ArrayOf<IForkJoinTask*> > mArray;   // the elements (initially unallocated)
+        AutoPtr<IForkJoinPool> mPool;   // the containing pool (may be null)
+        AutoPtr<IForkJoinWorkerThread> mOwner; // owning thread or null if shared
+        volatile AutoPtr<IThread> mParker;    // == owner during call to park; else null
+        volatile AutoPtr<IForkJoinTask> mCurrentJoin;  // task being joined in awaitJoin
+        AutoPtr<IForkJoinTask> mCurrentSteal; // current non-local task being executed
+
+        volatile AutoPtr<IInterface> mPad10, mPad11, mPad12, mPad13, mPad14, mPad15, mPad16, mPad17;
+        volatile AutoPtr<IInterface> mPad18, mPad19, mPad1a, mPad1b, mPad1c, mPad1d;
+
+        // // Unsafe mechanics
+        // private static final sun.misc.Unsafe U;
+        // private static final Int64 QBASE;
+        // private static final Int64 QLOCK;
+        // private static final Int32 ABASE;
+        // private static final Int32 ASHIFT;
+        // static {
+        //     try {
+        //         U = sun.misc.Unsafe.getUnsafe();
+        //         Class<?> k = WorkQueue.class;
+        //         Class<?> ak = ForkJoinTask[].class;
+        //         QBASE = U.objectFieldOffset
+        //             (k.getDeclaredField("base"));
+        //         QLOCK = U.objectFieldOffset
+        //             (k.getDeclaredField("qlock"));
+        //         ABASE = U.arrayBaseOffset(ak);
+        //         Int32 scale = U.arrayIndexScale(ak);
+        //         if ((scale & (scale - 1)) != 0)
+        //             throw new Error("data type scale not a power of two");
+        //         ASHIFT = 31 - Integer.numberOfLeadingZeros(scale);
+        //     } catch (Exception e) {
+        //         throw new Error(e);
+        //     }
+        // }
+    };
+
+    /**
+     * Per-thread records for threads that submit to pools. Currently
+     * holds only pseudo-random seed / index that is used to choose
+     * submission queues in method externalPush. In the future, this may
+     * also incorporate a means to implement different task rejection
+     * and resubmission policies.
+     *
+     * Seeds for submitters and workers/workQueues work in basically
+     * the same way but are initialized and updated using slightly
+     * different mechanics. Both are initialized using the same
+     * approach as in class ThreadLocal, where successive values are
+     * unlikely to collide with previous values. Seeds are then
+     * randomly modified upon collisions using xorshifts, which
+     * requires a non-zero seed.
+     */
+    class Submitter
+        : public Object
+    {
+    public:
+        Submitter(
+            /* [in] */ Int32 s) {
+            mSeed = s;
+        }
+
+    public:
+        Int32 mSeed;
     };
 
 public:
@@ -107,6 +393,13 @@ public:
         /* [in] */ IForkJoinPoolForkJoinWorkerThreadFactory* factory,
         /* [in] */ IThreadUncaughtExceptionHandler* handler,
         /* [in] */ const Boolean& asyncMode);
+
+    CARAPI constructor(
+        /* [in] */ Int32 parallelism,
+        /* [in] */ IForkJoinPoolForkJoinWorkerThreadFactory* factory,
+        /* [in] */ IThreadUncaughtExceptionHandler* handler,
+        /* [in] */ Int32 mode,
+        /* [in] */ String workerNamePrefix);
 
     // Execution methods
 
@@ -200,9 +493,6 @@ public:
     CARAPI IsTerminating(
         /* [out] */ Boolean* value);
 
-    CARAPI IsAtLeastTerminating(
-        /* [out] */ Boolean* value);
-
     CARAPI IsShutdown(
         /* [out] */ Boolean* result);
 
@@ -214,6 +504,106 @@ public:
     CARAPI InvokeAll(
         /* [in] */ ICollection* tasks,
         /* [out] */ IList** futures);
+
+    CARAPI AwaitQuiescence(
+        /* [in] */ Int64 timeout,
+        /* [in] */ ITimeUnit* unit,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns the targeted parallelism level of the common pool.
+     *
+     * @return the targeted parallelism level of the common pool
+     * @since 1.8
+     * @hide
+     */
+    static Int32 GetCommonPoolParallelism();
+
+    /**
+     * Removes all available unexecuted submitted and forked tasks
+     * from scheduling queues and adds them to the given collection,
+     * without altering their execution status. These may include
+     * artificially generated or wrapped tasks. This method is
+     * designed to be invoked only when the pool is known to be
+     * quiescent. Invocations at other times may not remove all
+     * tasks. A failure encountered while attempting to add elements
+     * to collection {@code c} may result in elements being in
+     * neither, either or both collections when the associated
+     * exception is thrown.  The behavior of this operation is
+     * undefined if the specified collection is modified while the
+     * operation is in progress.
+     *
+     * @param c the collection to transfer elements into
+     * @return the number of elements transferred
+     */
+    Int32 DrainTasksTo(
+        /* [in] */ ICollection* c);
+
+    /**
+     * Removes and returns the next unexecuted submission if one is
+     * available.  This method may be useful in extensions to this
+     * class that re-assign work in systems with multiple pools.
+     *
+     * @return the next submission, or {@code null} if none
+     */
+    AutoPtr<IForkJoinTask> PollSubmission();
+
+    AutoPtr<IRunnableFuture> NewTaskFor(
+        /* [in] */ IRunnable* runnable,
+        /* [in] */ IInterface* value);
+
+    AutoPtr<IRunnableFuture> NewTaskFor(
+        /* [in] */ ICallable* callable);
+
+    /**
+     * Callback from ForkJoinWorkerThread constructor to
+     * determine its poolIndex and record in workers array.
+     *
+     * @param w the worker
+     * @return the worker's pool index
+     */
+    AutoPtr<WorkQueue> RegisterWorker(
+        /* [in] */ IForkJoinWorkerThread* wt);
+
+    /**
+     * Final callback from terminating worker.  Removes record of
+     * worker from array, and adjusts counts. If pool is shutting
+     * down, tries to complete termination.
+     *
+     * @param w the worker
+     */
+    CARAPI_(void) DeregisterWorker(
+        /* [in] */ IForkJoinWorkerThread* w,
+        /* [in] */ IThrowable* ex);
+
+    /**
+     * Unless shutting down, adds the given task to a submission queue
+     * at submitter's current queue index (modulo submission
+     * range). Only the most common path is directly handled in this
+     * method. All others are relayed to fullExternalPush.
+     *
+     * @param task the task. Caller must ensure non-null.
+     */
+    void ExternalPush(
+        /* [in] */ IForkJoinTask* task);
+
+    /**
+     * Increments active count; mainly called upon return from blocking.
+     */
+    void IncrementActiveCount();
+
+    /**
+     * Wakes up or creates a worker.
+     */
+    void SignalWork(
+        /* [in] */ ArrayOf<WorkQueue*>* ws,
+        /* [in] */ WorkQueue* q);
+
+    /**
+     * Top-level runloop for workers, called by ForkJoinWorkerThread.run.
+     */
+    void RunWorker(
+        /* [in] */ WorkQueue* w);
 
     /**
      * Blocks in accord with the given blocker.  If the current thread
@@ -235,137 +625,99 @@ public:
      * @param blocker the blocker
      * @throws InterruptedException if blocker.block did so
      */
-    static CARAPI_(void) ManagedBlock(
+    static void ManagedBlock(
         /* [in] */ IForkJoinPoolManagedBlocker* blocker);
 
     /**
-     * Top-level loop for worker threads: On each step: if the
-     * previous step swept through all queues and found no tasks, or
-     * there are excess threads, then possibly blocks. Otherwise,
-     * scans for and, if found, executes a task. Returns when pool
-     * and/or worker terminate.
+     * Waits and/or attempts to assist performing tasks indefinitely
+     * until the {@code commonPool()} {@link #isQuiescent}.
+     */
+    static void QuiesceCommonPool();
+
+    /**
+     * Tries to decrement active count (sometimes implicitly) and
+     * possibly release or create a compensating worker in preparation
+     * for blocking. Fails on contention or termination. Otherwise,
+     * adds a new thread if no idle workers are available and pool
+     * may become starved.
      *
-     * @param w the worker
+     * @param c the assumed ctl value
      */
-    CARAPI_(void) Work(
-        /* [in] */ IForkJoinWorkerThread* w);
-
-    // Signalling
+    Boolean TryCompensate(
+        /* [in] */ Int64 c);
 
     /**
-     * Wakes up or creates a worker.
-     */
-    CARAPI_(void) SignalWork();
-
-    // Scanning for tasks
-
-    /**
-     * Possibly blocks waiting for the given task to complete, or
-     * cancels the task if terminating.  Fails to wait if contended.
+     * Helps and/or blocks until the given task is done.
      *
-     * @param joinMe the task
+     * @param joiner the joining worker
+     * @param task the task
+     * @return task status on exit
      */
-    CARAPI_(void) TryAwaitJoin(
-        /* [in] */ IForkJoinTask* joinMe);
-
-    CARAPI TimedAwaitJoin(
-        /* [in] */ IForkJoinTask* joinMe,
-        /* [in] */ Int64 nanos);
+    Int32 AwaitJoin(
+        /* [in] */ WorkQueue* joiner,
+        /* [in] */ IForkJoinTask* task);
 
     /**
-     * Callback from ForkJoinWorkerThread constructor to assign a
-     * public name
-     */
-    CARAPI_(String) NextWorkerName();
-
-    /**
-     * Callback from ForkJoinWorkerThread constructor to
-     * determine its poolIndex and record in workers array.
+     * Stripped-down variant of awaitJoin used by timed joins. Tries
+     * to help join only while there is continuous progress. (Caller
+     * will then enter a timed wait.)
      *
-     * @param w the worker
-     * @return the worker's pool index
+     * @param joiner the joining worker
+     * @param task the task
      */
-    CARAPI_(Int32) RegisterWorker(
-        /* [in] */ IForkJoinWorkerThread* w);
+    void HelpJoinOnce(
+        /* [in] */ WorkQueue* joiner,
+        /* [in] */ ForkJoinTask* task);
 
     /**
-     * Final callback from terminating worker.  Removes record of
-     * worker from array, and adjusts counts. If pool is shutting
-     * down, tries to complete termination.
+     * Runs tasks until {@code isQuiescent()}. We piggyback on
+     * active count ctl maintenance, but rather than blocking
+     * when tasks cannot be found, we rescan until all others cannot
+     * find tasks either.
+     */
+    void HelpQuiescePool(
+        /* [in] */ WorkQueue* w);
+
+    /**
+     * Gets and removes a local or stolen task for the given worker.
      *
-     * @param w the worker
+     * @return a task, if available
      */
-    CARAPI_(void) DeregisterWorker(
-        /* [in] */ IForkJoinWorkerThread* w,
-        /* [in] */ IThrowable* ex);
+    AutoPtr<IForkJoinTask> NextTaskFor(
+        /* [in] */ WorkQueue* w);
 
-    // misc ForkJoinWorkerThread support
+    static Int32 GetSurplusQueuedTaskCount();
 
     /**
-     * Increments or decrements quiescerCount. Needed only to prevent
-     * triggering shutdown if a worker is transiently inactive while
-     * checking quiescence.
+     * Returns common pool queue for a thread that has submitted at
+     * least one task.
+     */
+    static AutoPtr<WorkQueue> CommonSubmitterQueue();
+
+    /**
+     * Tries to pop the given task from submitter's queue in common pool.
+     */
+    Boolean TryExternalUnpush(
+        /* [in] */ IForkJoinTask* task);
+
+    // Int32 ExternalHelpComplete(
+    //     /* [in] */ ICountedCompleter* task);
+
+    /**
+     * Returns the common pool instance. This pool is statically
+     * constructed; its run state is unaffected by attempts to {@link
+     * #shutdown} or {@link #shutdownNow}. However this pool and any
+     * ongoing processing are automatically terminated upon program
+     * {@link System#exit}.  Any program that relies on asynchronous
+     * task processing to complete before program termination should
+     * invoke {@code commonPool().}{@link #awaitQuiescence awaitQuiescence},
+     * before exit.
      *
-     * @param delta 1 for increment, -1 for decrement
+     * @return the common pool instance
+     * @since 1.8
+     * @hide
      */
-    CARAPI_(void) AddQuiescerCount(
-        /* [in] */ const Int32& delta);
-
-    /**
-     * Directly increments or decrements active count without queuing.
-     * This method is used to transiently assert inactivation while
-     * checking quiescence.
-     *
-     * @param delta 1 for increment, -1 for decrement
-     */
-    CARAPI_(void) AddActiveCount(
-        /* [in] */ const Int32& delta);
-
-    /**
-     * Returns the approximate (non-atomic) number of idle threads per
-     * active thread.
-     */
-    CARAPI_(Int32) IdlePerActive();
-
-    /**
-     * Removes and returns the next unexecuted submission if one is
-     * available.  This method may be useful in extensions to this
-     * class that re-assign work in systems with multiple pools.
-     *
-     * @return the next submission, or {@code null} if none
-     */
-    CARAPI_(AutoPtr<IForkJoinTask>) PollSubmission();
-
-    /**
-     * Removes all available unexecuted submitted and forked tasks
-     * from scheduling queues and adds them to the given collection,
-     * without altering their execution status. These may include
-     * artificially generated or wrapped tasks. This method is
-     * designed to be invoked only when the pool is known to be
-     * quiescent. Invocations at other times may not remove all
-     * tasks. A failure encountered while attempting to add elements
-     * to collection {@code c} may result in elements being in
-     * neither, either or both collections when the associated
-     * exception is thrown.  The behavior of this operation is
-     * undefined if the specified collection is modified while the
-     * operation is in progress.
-     *
-     * @param c the collection to transfer elements into
-     * @return the number of elements transferred
-     */
-    CARAPI_(Int32) DrainTasksTo(
-        /* [in] */ ICollection* c);
-
-    // AbstractExecutorService overrides.  These rely on undocumented
-    // fact that ForkJoinTask.adapt returns ForkJoinTasks that also
-    // implement RunnableFuture.
-
-    CARAPI_(AutoPtr<IRunnableFuture>) NewTaskFor(
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ IInterface* value);
-
-    CARAPI_(AutoPtr<IRunnableFuture>) NewTaskFor(
-        /* [in] */ ICallable* callable);
+    static AutoPtr<IForkJoinPool> CommonPool();
 
 private:
     /**
@@ -375,173 +727,199 @@ private:
     static CARAPI_(void) CheckPermission();
 
     /**
-     * Variant of signalWork to help release waiters on rescans.
-     * Tries once to release a waiter if active count < 0.
+     * Returns the next sequence number. We don't expect this to
+     * ever contend, so use simple builtin sync.
+     */
+    static Int32 NextPoolId();
+
+    /**
+     * Acquires the plock lock to protect worker array and related
+     * updates. This method is called only if an initial CAS on plock
+     * fails. This acts as a spinlock for normal cases, but falls back
+     * to builtin monitor to block when (rarely) needed. This would be
+     * a terrible idea for a highly contended lock, but works fine as
+     * a more conservative alternative to a pure spinlock.
+     */
+    Int32 AcquirePlock();
+
+    /**
+     * Unlocks and signals any thread waiting for plock. Called only
+     * when CAS of seq value for unlock fails.
+     */
+    void ReleasePlock(
+        /* [in] */ Int32 ps);
+
+    /**
+     * Tries to create and start one worker if fewer than target
+     * parallelism level exist. Adjusts counts etc on failure.
+     */
+    void TryAddWorker();
+
+    /**
+     * Full version of externalPush. This method is called, among
+     * other times, upon the first submission of the first task to the
+     * pool, so must perform secondary initialization.  It also
+     * detects first submission by an external thread by looking up
+     * its ThreadLocal, and creates a new shared queue if the one at
+     * index if empty or contended. The plock lock body must be
+     * exception-free (so no try/finally) so we optimistically
+     * allocate new queues outside the lock and throw them away if
+     * (very rarely) not needed.
      *
-     * @return false if failed due to contention, else true
+     * Secondary initialization occurs when plock is zero, to create
+     * workQueue array and set plock to a valid value.  This lock body
+     * must also be exception-free. Because the plock seq value can
+     * eventually wrap around zero, this method harmlessly fails to
+     * reinitialize if workQueues exists, while still advancing plock.
      */
-    CARAPI_(Boolean) TryReleaseWaiter();
-
-    // Scanning for tasks
-
-    /**
-     * Scans for and, if found, executes one task. Scans start at a
-     * random index of workers array, and randomly select the first
-     * (2*#workers)-1 probes, and then, if all empty, resort to 2
-     * circular sweeps, which is necessary to check quiescence. and
-     * taking a submission only if no stealable tasks were found.  The
-     * steal code inside the loop is a specialized form of
-     * ForkJoinWorkerThread.deqTask, followed bookkeeping to support
-     * helpJoinTask and signal propagation. The code for submission
-     * queues is almost identical. On each steal, the worker completes
-     * not only the task, but also all local tasks that this task may
-     * have generated. On detecting staleness or contention when
-     * trying to take a task, this method returns without finishing
-     * sweep, which allows global state rechecks before retry.
-     *
-     * @param w the worker
-     * @param a the number of active workers
-     * @return true if swept all queues without finding a task
-     */
-    CARAPI_(Boolean) Scan(
-        /* [in] */ IForkJoinWorkerThread* w,
-        /* [in] */ const Int32& a);
-
-    /**
-     * Tries to enqueue worker w in wait queue and await change in
-     * worker's eventCount.  If the pool is quiescent and there is
-     * more than one worker, possibly terminates worker upon exit.
-     * Otherwise, before blocking, rescans queues to avoid missed
-     * signals.  Upon finding work, releases at least one worker
-     * (which may be the current worker). Rescans restart upon
-     * detected staleness or failure to release due to
-     * contention. Note the unusual conventions about Thread.interrupt
-     * here and elsewhere: Because interrupts are used solely to alert
-     * threads to check termination, which is checked here anyway, we
-     * clear status (using Thread.interrupted) before any call to
-     * park, so that park does not immediately return due to status
-     * being set via some other unrelated call to interrupt in user
-     * code.
-     *
-     * @param w the calling worker
-     * @param c the ctl value on entry
-     * @return true if waited or another thread was released upon enq
-     */
-    CARAPI_(Boolean) TryAwaitWork(
-        /* [in] */ IForkJoinWorkerThread* w,
-        /* [in] */ const Int64& c);
-
-    /**
-     * If inactivating worker w has caused pool to become
-     * quiescent, check for pool termination, and wait for event
-     * for up to SHRINK_RATE nanosecs (rescans are unnecessary in
-     * this case because quiescence reflects consensus about lack
-     * of work). On timeout, if ctl has not changed, terminate the
-     * worker. Upon its termination (see deregisterWorker), it may
-     * wake up another worker to possibly repeat this process.
-     *
-     * @param w the calling worker
-     * @param currentCtl the ctl value after enqueuing w
-     * @param prevCtl the ctl value if w terminated
-     * @param v the eventCount w awaits change
-     */
-    CARAPI_(void) IdleAwaitWork(
-        /* [in] */ IForkJoinWorkerThread* w,
-        /* [in] */ const Int64& currentCtl,
-        /* [in] */ const Int64& prevCtl,
-        /* [in] */ const Int32& v);
-
-    // Submissions
-
-    /**
-     * Enqueues the given task in the submissionQueue.  Same idea as
-     * ForkJoinWorkerThread.pushTask except for use of submissionLock.
-     *
-     * @param t the task
-     */
-    CARAPI_(void) AddSubmission(
-        /* [in] */ IForkJoinTask* t);
-
-    //  (pollSubmission is defined below with exported methods)
-
-    /**
-     * Creates or doubles submissionQueue array.
-     * Basically identical to ForkJoinWorkerThread version.
-     */
-    CARAPI GrowSubmissionQueue();
-
-    // Blocking support
-
-    /**
-     * Tries to increment blockedCount, decrement active count
-     * (sometimes implicitly) and possibly release or create a
-     * compensating worker in preparation for blocking. Fails
-     * on contention or termination.
-     *
-     * @return true if the caller can block, else should recheck and retry
-     */
-    CARAPI_(Boolean) TryPreBlock();
-
-    /**
-     * Decrements blockedCount and increments active count.
-     */
-    CARAPI_(void) PostBlock();
-
-    /**
-     * If necessary, compensates for blocker, and blocks.
-     */
-    CARAPI_(void) AwaitBlocker(
-        /* [in] */ IForkJoinPoolManagedBlocker* blocker);
-
-    // Creating, registering and deregistring workers
-
-    /**
-     * Tries to create and start a worker; minimally rolls back counts
-     * on failure.
-     */
-    CARAPI_(void) AddWorker();
-
-    // Shutdown and termination
-
-    /**
-     * Possibly initiates and/or completes termination.
-     *
-     * @param now if true, unconditionally terminate, else only
-     * if shutdown and empty queue and no active workers
-     * @return true if now terminating or terminated
-     */
-    CARAPI_(Boolean) TryTerminate(
-        /* [in] */ const Boolean& now);
-
-    /**
-     * Runs up to three passes through workers: (0) Setting
-     * termination status for each worker, followed by wakeups up to
-     * queued workers; (1) helping cancel tasks; (2) interrupting
-     * lagging threads (likely in external tasks, but possibly also
-     * blocked in joins).  Each pass repeats previous steps because of
-     * potential lagging thread creation.
-     */
-    CARAPI_(void) StartTerminating();
-
-    /**
-     * Polls and cancels all submissions. Called only during termination.
-     */
-    CARAPI_(void) CancelSubmissions();
-
-    /**
-     * Tries to set the termination status of waiting workers, and
-     * then wakes them up (after which they will terminate).
-     */
-    CARAPI_(void) TerminateWaiters();
-
-    /**
-     * Unless terminating, forks task if within an ongoing FJ
-     * computation in the current pool, else submits as external task.
-     */
-    CARAPI_(void) ForkOrSubmit(
+    void FullExternalPush(
         /* [in] */ IForkJoinTask* task);
 
+    /**
+     * Scans for and, if found, runs one task, else possibly
+     * inactivates the worker. This method operates on single reads of
+     * volatile state and is designed to be re-invoked continuously,
+     * in part because it returns upon detecting inconsistencies,
+     * contention, or state changes that indicate possible success on
+     * re-invocation.
+     *
+     * The scan searches for tasks across queues starting at a random
+     * index, checking each at least twice.  The scan terminates upon
+     * either finding a non-empty queue, or completing the sweep. If
+     * the worker is not inactivated, it takes and runs a task from
+     * this queue. Otherwise, if not activated, it tries to activate
+     * itself or some other worker by signalling. On failure to find a
+     * task, returns (for retry) if pool state may have changed during
+     * an empty scan, or tries to inactivate if active, else possibly
+     * blocks or terminates via method awaitWork.
+     *
+     * @param w the worker (via its WorkQueue)
+     * @param r a random seed
+     * @return worker qlock status if would have waited, else 0
+     */
+    Int32 Scan(
+        /* [in] */ WorkQueue* w,
+        /* [in] */ Int32 r);
+
+    /**
+     * A continuation of scan(), possibly blocking or terminating
+     * worker w. Returns without blocking if pool state has apparently
+     * changed since last invocation.  Also, if inactivating w has
+     * caused the pool to become quiescent, checks for pool
+     * termination, and, so long as this is not the only worker, waits
+     * for event for up to a given duration.  On timeout, if ctl has
+     * not changed, terminates the worker, which will in turn wake up
+     * another worker to possibly repeat this process.
+     *
+     * @param w the calling worker
+     * @param c the ctl value on entry to scan
+     * @param ec the worker's eventCount on entry to scan
+     */
+    Int32 AwaitWork(
+        /* [in] */ WorkQueue* w,
+        /* [in] */ Int64 c,
+        /* [in] */ Int32 ec);
+
+    /**
+     * Possibly releases (signals) a worker. Called only from scan()
+     * when a worker with apparently inactive status finds a non-empty
+     * queue. This requires revalidating all of the associated state
+     * from caller.
+     */
+    void HelpRelease(
+        /* [in] */ Int64 c,
+        /* [in] */ ArrayOf<WorkQueue*>* ws,
+        /* [in] */ WorkQueue* w,
+        /* [in] */ WorkQueue* q,
+        /* [in] */ Int32 b);
+
+    /**
+     * Tries to locate and execute tasks for a stealer of the given
+     * task, or in turn one of its stealers, Traces currentSteal ->
+     * currentJoin links looking for a thread working on a descendant
+     * of the given task and with a non-empty queue to steal back and
+     * execute tasks from. The first call to this method upon a
+     * waiting join will often entail scanning/search, (which is OK
+     * because the joiner has nothing better to do), but this method
+     * leaves hints in workers to speed up subsequent calls. The
+     * implementation is very branchy to cope with potential
+     * inconsistencies or loops encountering chains that are stale,
+     * unknown, or so long that they are likely cyclic.
+     *
+     * @param joiner the joining worker
+     * @param task the task to join
+     * @return 0 if no progress can be made, negative if task
+     * known complete, else positive
+     */
+    Int32 TryHelpStealer(
+        /* [in] */ WorkQueue* joiner,
+        /* [in] */ IForkJoinTask* task);
+
+    /**
+     * Analog of tryHelpStealer for CountedCompleters. Tries to steal
+     * and run tasks within the target's computation.
+     *
+     * @param task the task to join
+     */
+    // Int32 HelpComplete(
+    //     /* [in] */ WorkQueue* joiner,
+    //     /* [in] */ ICountedCompleter* task);
+
+    /**
+     * Returns a (probably) non-empty steal queue, if one is found
+     * during a scan, else null.  This method must be retried by
+     * caller if, by the time it tries to use the queue, it is empty.
+     */
+    AutoPtr<WorkQueue> FindNonEmptyStealQueue();
+
+    /**
+     * Possibly initiates and/or completes termination.  The caller
+     * triggering termination runs three passes through workQueues:
+     * (0) Setting termination status, followed by wakeups of queued
+     * workers; (1) cancelling all tasks; (2) interrupting lagging
+     * threads (likely in external tasks, but possibly also blocked in
+     * joins).  Each pass repeats previous steps because of potential
+     * lagging thread creation.
+     *
+     * @param now if true, unconditionally terminate, else only
+     * if no work and no active workers
+     * @param enable if true, enable shutdown when next possible
+     * @return true if now terminating or terminated
+     */
+    Boolean TryTerminate(
+        /* [in] */ Boolean now,
+        /* [in] */ Boolean enable);
+
+    static Int32 CheckParallelism(
+        /* [in] */ Int32 parallelism);
+
+    static AutoPtr<IForkJoinPoolForkJoinWorkerThreadFactory> CheckFactory(
+        /* [in] */ IForkJoinPoolForkJoinWorkerThreadFactory* factory);
+
+    /**
+     * Creates a {@code ForkJoinPool} with the given parameters, without
+     * any security checks or parameter validation.  Invoked directly by
+     * makeCommonPool.
+     */
+    ForkJoinPool(
+        /* [in] */ Int32 parallelism,
+        /* [in] */ IForkJoinPoolForkJoinWorkerThreadFactory* factory,
+        /* [in] */ IThreadUncaughtExceptionHandler* handler,
+        /* [in] */ Int32 mode,
+        /* [in] */ String workerNamePrefix);
+
+    static AutoPtr<IForkJoinPool> MakeCommonPool();
+
 public:
+    /**
+     * Per-thread submission bookkeeping. Shared across all pools
+     * to reduce ThreadLocal pollution and because random motion
+     * to avoid contention in one pool is likely to hold for others.
+     * Lazily initialized on first submission (but null-checked
+     * in other contexts to avoid unnecessary initialization).
+     */
+//    static AutoPtr<IThreadLocal> mSubmitters;
+
     /**
      * Creates a new ForkJoinWorkerThread. This factory is used unless
      * overridden in ForkJoinPool constructors.
@@ -553,121 +931,75 @@ public:
      * Permission required for callers of methods that may start or
      * kill threads.
      */
-//    static AutoPtr<IRuntimePermission> modifyThreadPermission;
+//    static AutoPtr<IRuntimePermission> mModifyThreadPermission;
 
     /**
-     * Generator for assigning sequence numbers as pool names.
+     * Common (static) pool. Non-null for public use unless a static
+     * construction exception, but internal usages null-check on use
+     * to paranoically avoid potential initialization circularities
+     * as well as to simplify generated code.
      */
-    static AutoPtr<IAtomicInteger32> mPoolNumberGenerator;
+    static AutoPtr<IForkJoinPool> mCommon;
 
     /**
-     * Generator for initial random seeds for worker victim
-     * selection. This is used only to create initial seeds. Random
-     * steals use a cheaper xorshift generator per steal attempt. We
-     * don't expect much contention on seedGenerator, so just use a
-     * plain Random.
+     * Common pool parallelism. To allow simpler use and management
+     * when common pool threads are disabled, we allow the underlying
+     * common.parallelism field to be zero, but in that case still report
+     * parallelism as 1 to reflect resulting caller-runs mechanics.
      */
-    static AutoPtr<IRandom> mWorkerSeedGenerator;
+    static Int32 mCommonParallelism;
 
-    /**
-     * Array holding all worker threads in the pool.  Initialized upon
-     * construction. Array size must be a power of two.  Updates and
-     * replacements are protected by scanGuard, but the array is
-     * always kept in a consistent enough state to be randomly
-     * accessed without locking by workers performing work-stealing,
-     * as well as other traversal-based methods in this class, so long
-     * as reads memory-acquire by first reading ctl. All readers must
-     * tolerate that some array slots may be null.
-     */
-    AutoPtr<ArrayOf<IForkJoinWorkerThread*> > mWorkers;
-
-    /**
-     * Initial size for submission queue array. Must be a power of
-     * two.  In many applications, these always stay small so we use a
-     * small initial cap.
-     */
-    static Int32 INITIAL_QUEUE_CAPACITY;
-
-    /**
-     * Maximum size for submission queue array. Must be a power of two
-     * less than or equal to 1 << (31 - width of array entry) to
-     * ensure lack of index wraparound, but is capped at a lower
-     * value to help users trap runaway computations.
-     */
-    static Int32 MAXIMUM_QUEUE_CAPACITY; // 16M
-
-    /**
-     * Array serving as submission queue. Initialized upon construction.
-     */
-    AutoPtr<ArrayOf<IForkJoinTask*> > mSubmissionQueue;
-
-    /**
-     * Lock protecting submissions array for addSubmission
-     */
-    AutoPtr<IReentrantLock> mSubmissionLock;
-
-    /**
-     * Condition for awaitTermination, using submissionLock for
-     * convenience.
-     */
-    AutoPtr<ICondition> mTermination;
-
-    /**
-     * Creation factory for worker threads.
-     */
-    AutoPtr<IForkJoinPoolForkJoinWorkerThreadFactory> mFactory;
-
-    /**
-     * The uncaught exception handler used when any worker abruptly
-     * terminates.
-     */
-    AutoPtr<IThreadUncaughtExceptionHandler> mUeh;
-
-    /**
-     * Prefix for assigning names to worker threads
-     */
-    String mWorkerNamePrefix;
-
-    /**
-     * Sum of per-thread steal counts, updated only when threads are
-     * idle or terminating.
-     */
-    volatile Int64 mStealCount;
-
-    /**
-     * Main pool control -- a long packed with:
+    /*
+     * Bits and masks for control variables
+     *
+     * Field ctl is a long packed with:
      * AC: Number of active running workers minus target parallelism (16 bits)
      * TC: Number of total workers minus target parallelism (16 bits)
      * ST: true if pool is terminating (1 bit)
      * EC: the wait count of top waiting thread (15 bits)
-     * ID: ~poolIndex of top of Treiber stack of waiting threads (16 bits)
+     * ID: poolIndex of top of Treiber stack of waiters (16 bits)
      *
      * When convenient, we can extract the upper 32 bits of counts and
-     * the lower 32 bits of queue state, u = (int)(ctl >>> 32) and e =
+     * the lower 32 bits of queue state, u = (Int32)(ctl >>> 32) and e =
      * (int)ctl.  The ec field is never accessed alone, but always
      * together with id and st. The offsets of counts by the target
      * parallelism and the positionings of fields makes it possible to
      * perform the most common checks via sign tests of fields: When
      * ac is negative, there are not enough active workers, when tc is
-     * negative, there are not enough total workers, when id is
-     * negative, there is at least one waiting worker, and when e is
+     * negative, there are not enough total workers, and when e is
      * negative, the pool is terminating.  To deal with these possibly
      * negative fields, we use casts in and out of "short" and/or
      * signed shifts to maintain signedness.
+     *
+     * When a thread is queued (inactivated), its eventCount field is
+     * set negative, which is the only way to tell if a worker is
+     * prevented from executing tasks, even though it must continue to
+     * scan for them to avoid queuing races. Note however that
+     * eventCount updates lag releases so usage requires care.
+     *
+     * Field plock is an int packed with:
+     * SHUTDOWN: true if shutdown is enabled (1 bit)
+     * SEQ:  a sequence lock, with PL_LOCK bit set if locked (30 bits)
+     * SIGNAL: set when threads may be waiting on the lock (1 bit)
+     *
+     * The sequence number enables simple consistency checks:
+     * Staleness of read-only operations on the workQueues array can
+     * be checked by comparing plock before vs after the reads.
      */
-    volatile Int64 mCtl;
 
     // bit positions/shifts for fields
-    static Int32  AC_SHIFT;
-    static Int32  TC_SHIFT;
-    static Int32  ST_SHIFT;
-    static Int32  EC_SHIFT;
+    static Int32 AC_SHIFT;
+    static Int32 TC_SHIFT;
+    static Int32 ST_SHIFT;
+    static Int32 EC_SHIFT;
 
     // bounds
-    static Int32  MAX_ID;  // max poolIndex
-    static Int32  SMASK;  // mask short bits
-    static Int32  SHORT_SIGN;
-    static Int32  INT_SIGN;
+    static Int32 SMASK;  // short bits
+    static Int32 MAX_CAP;  // max #workers - 1
+    static Int32 EVENMASK;  // even short bits
+    static Int32 SQMASK;  // max 64 (even) slots
+    static Int32 SHORT_SIGN;
+    static Int32 INT_SIGN;
 
     // masks
     static Int64 STOP_BIT;
@@ -679,141 +1011,148 @@ public:
     static Int64 AC_UNIT;
 
     // masks and units for dealing with u = (int)(ctl >>> 32)
-    static Int32  UAC_SHIFT;
-    static Int32  UTC_SHIFT;
-    static Int32  UAC_MASK;
-    static Int32  UTC_MASK;
-    static Int32  UAC_UNIT;
-    static Int32  UTC_UNIT;
+    static Int32 UAC_SHIFT;
+    static Int32 UTC_SHIFT;
+    static Int32 UAC_MASK;
+    static Int32 UTC_MASK;
+    static Int32 UAC_UNIT;
+    static Int32 UTC_UNIT;
 
     // masks and units for dealing with e = (int)ctl
-    static Int32  E_MASK; // no STOP_BIT
-    static Int32  EC_UNIT;
+    static Int32 E_MASK; // no STOP_BIT
+    static Int32 E_SEQ;
+
+    // access mode for WorkQueue
+    static Int32 LIFO_QUEUE;
+    static Int32 FIFO_QUEUE;
+    static Int32 SHARED_QUEUE;
+
+    // plock bits
+    static Int32 SHUTDOWN;
+    static Int32 PL_LOCK;
+    static Int32 PL_SIGNAL;
+    static Int32 PL_SPINS;
+
+    // Heuristic padding to ameliorate unfortunate memory placements
+    volatile Int64 mPad00, mPad01, mPad02, mPad03, mPad04, mPad05, mPad06;
+
+    // Instance fields
+    volatile Int64 mStealCount;                  // collects worker counts
+    volatile Int64 mCtl;                         // main pool control
+    volatile Int32 mPlock;                        // shutdown status and seqLock
+    volatile Int32 mIndexSeed;                    // worker/submitter index seed
+    Int16 mParallelism;                   // parallelism level
+    Int16 mMode;                          // LIFO/FIFO
+    AutoPtr<ArrayOf<WorkQueue*> > mWorkQueues;                    // main registry
+    AutoPtr<IForkJoinPoolForkJoinWorkerThreadFactory> mFactory;
+    AutoPtr<IThreadUncaughtExceptionHandler> mUeh;        // per-worker UEH
+    String mWorkerNamePrefix;             // to create worker name string
+
+    volatile AutoPtr<IInterface> mPad10, mPad11, mPad12, mPad13, mPad14, mPad15, mPad16, mPad17;
+    volatile AutoPtr<IInterface> mPad18, mPad19, mPad1a, mPad1b;
+
+private:
+    /**
+     * Initial timeout value (in nanoseconds) for the thread
+     * triggering quiescence to park waiting for new work. On timeout,
+     * the thread will instead try to shrink the number of
+     * workers. The value should be large enough to avoid overly
+     * aggressive shrinkage during most transient stalls (long GCs
+     * etc).
+     */
+    static Int64 IDLE_TIMEOUT;
 
     /**
-     * The target parallelism level.
+     * Timeout value when there are more threads than parallelism level
      */
-    Int32 mParallelism;
+    static Int64 FAST_IDLE_TIMEOUT;
 
     /**
-     * Index (mod submission queue length) of next element to take
-     * from submission queue. Usage is identical to that for
-     * per-worker queues -- see ForkJoinWorkerThread internal
-     * documentation.
+     * Tolerance for idle timeouts, to cope with timer undershoots
      */
-    volatile Int32 mQueueBase;
+    static Int64 TIMEOUT_SLOP;
 
     /**
-     * Index (mod submission queue length) of next element to add
-     * in submission queue. Usage is identical to that for
-     * per-worker queues -- see ForkJoinWorkerThread internal
-     * documentation.
+     * The maximum stolen->joining link depth allowed in method
+     * tryHelpStealer.  Must be a power of two.  Depths for legitimate
+     * chains are unbounded, but we use a fixed constant to avoid
+     * (otherwise unchecked) cycles and to bound staleness of
+     * traversal parameters at the expense of sometimes blocking when
+     * we could be helping.
      */
-    Int32 mQueueTop;
+    static Int32 MAX_HELP;
 
     /**
-     * True when shutdown() has been called.
+     * Increment for seed generators. See class ThreadLocal for
+     * explanation.
      */
-    volatile Boolean mShutdown;
+    static Int32 SEED_INCREMENT;
 
     /**
-     * True if use local fifo, not default lifo, for local polling.
-     * Read by, and replicated by ForkJoinWorkerThreads.
+     * Sequence number for creating workerNamePrefix.
      */
-    Boolean mLocallyFifo;
-
-    /**
-     * The number of threads in ForkJoinWorkerThreads.helpQuiescePool.
-     * When non-zero, suppresses automatic shutdown when active
-     * counts become zero.
-     */
-    volatile Int32 mQuiescerCount;
-
-    /**
-     * The number of threads blocked in join.
-     */
-    volatile Int32 mBlockedCount;
-
-    /**
-     * Counter for worker Thread names (unrelated to their poolIndex)
-     */
-    volatile Int32 mNextWorkerNumber;
-
-    /**
-     * The index for the next created worker. Accessed under scanGuard.
-     */
-    Int32 mNextWorkerIndex;
-
-    /**
-     * SeqLock and index masking for updates to workers array.  Locked
-     * when SG_UNIT is set. Unlocking clears bit by adding
-     * SG_UNIT. Staleness of read-only operations can be checked by
-     * comparing scanGuard to value before the reads. The low 16 bits
-     * (i.e, anding with SMASK) hold (the smallest power of two
-     * covering all worker indices, minus one, and is used to avoid
-     * dealing with large numbers of null slots when the workers array
-     * is overallocated.
-     */
-    volatile Int32 mScanGuard;
-
-    static Int32 SG_UNIT;
-
-    /**
-     * The wakeup interval (in nanoseconds) for a worker waiting for a
-     * task when the pool is quiescent to instead try to shrink the
-     * number of workers.  The exact value does not matter too
-     * much. It must be short enough to release resources during
-     * sustained periods of idleness, but not so short that threads
-     * are continually re-created.
-     */
-    static Int64 SHRINK_RATE; // 4 seconds
+    static Int32 mPoolNumberSequence;
 
     // // Unsafe mechanics
-    // private static final sun.misc.Unsafe UNSAFE;
-    // private static final long ctlOffset;
-    // private static final long stealCountOffset;
-    // private static final long blockedCountOffset;
-    // private static final long quiescerCountOffset;
-    // private static final long scanGuardOffset;
-    // private static final long nextWorkerNumberOffset;
-    // private static final long ABASE;
+    // private static final sun.misc.Unsafe U;
+    // private static final long CTL;
+    // private static final long PARKBLOCKER;
+    // private static final int ABASE;
     // private static final int ASHIFT;
+    // private static final long STEALCOUNT;
+    // private static final long PLOCK;
+    // private static final long INDEXSEED;
+    // private static final long QBASE;
+    // private static final long QLOCK;
 
     // static {
-    //     poolNumberGenerator = new AtomicInteger();
-    //     workerSeedGenerator = new Random();
-    //     modifyThreadPermission = new RuntimePermission("modifyThread");
-    //     defaultForkJoinWorkerThreadFactory =
-    //         new DefaultForkJoinWorkerThreadFactory();
+    //     // initialize field offsets for CAS etc
     //     try {
-    //         UNSAFE = sun.misc.Unsafe.getUnsafe();
+    //         U = sun.misc.Unsafe.getUnsafe();
     //         Class<?> k = ForkJoinPool.class;
-    //         ctlOffset = UNSAFE.objectFieldOffset
+    //         CTL = U.objectFieldOffset
     //             (k.getDeclaredField("ctl"));
-    //         stealCountOffset = UNSAFE.objectFieldOffset
+    //         STEALCOUNT = U.objectFieldOffset
     //             (k.getDeclaredField("stealCount"));
-    //         blockedCountOffset = UNSAFE.objectFieldOffset
-    //             (k.getDeclaredField("blockedCount"));
-    //         quiescerCountOffset = UNSAFE.objectFieldOffset
-    //             (k.getDeclaredField("quiescerCount"));
-    //         scanGuardOffset = UNSAFE.objectFieldOffset
-    //             (k.getDeclaredField("scanGuard"));
-    //         nextWorkerNumberOffset = UNSAFE.objectFieldOffset
-    //             (k.getDeclaredField("nextWorkerNumber"));
+    //         PLOCK = U.objectFieldOffset
+    //             (k.getDeclaredField("plock"));
+    //         INDEXSEED = U.objectFieldOffset
+    //             (k.getDeclaredField("indexSeed"));
+    //         Class<?> tk = Thread.class;
+    //         PARKBLOCKER = U.objectFieldOffset
+    //             (tk.getDeclaredField("parkBlocker"));
+    //         Class<?> wk = WorkQueue.class;
+    //         QBASE = U.objectFieldOffset
+    //             (wk.getDeclaredField("base"));
+    //         QLOCK = U.objectFieldOffset
+    //             (wk.getDeclaredField("qlock"));
+    //         Class<?> ak = ForkJoinTask[].class;
+    //         ABASE = U.arrayBaseOffset(ak);
+    //         int scale = U.arrayIndexScale(ak);
+    //         if ((scale & (scale - 1)) != 0)
+    //             throw new Error("data type scale not a power of two");
+    //         ASHIFT = 31 - Integer.numberOfLeadingZeros(scale);
     //     } catch (Exception e) {
     //         throw new Error(e);
     //     }
-    //     Class<?> a = ForkJoinTask[].class;
-    //     ABASE = UNSAFE.arrayBaseOffset(a);
-    //     int s = UNSAFE.arrayIndexScale(a);
-    //     if ((s & (s-1)) != 0)
-    //         throw new Error("data type scale not a power of two");
-    //     ASHIFT = 31 - Integer.numberOfLeadingZeros(s);
+
+    //     submitters = new ThreadLocal<Submitter>();
+    //     defaultForkJoinWorkerThreadFactory =
+    //         new DefaultForkJoinWorkerThreadFactory();
+    //     modifyThreadPermission = new RuntimePermission("modifyThread");
+
+    //     common = java.security.AccessController.doPrivileged
+    //         (new java.security.PrivilegedAction<ForkJoinPool>() {
+    //             public ForkJoinPool run() { return makeCommonPool(); }});
+    //     int par = common.parallelism; // report 1 even if threads disabled
+    //     commonParallelism = par > 0 ? par : 1;
     // }
 };
 
 } // namespace Concurrent
 } // namespace Utility
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::CForkJoinPool::WorkQueue, IInterface)
 
 #endif //__ELASTOS_UTILITY_CFORKJOINPOOL_H__

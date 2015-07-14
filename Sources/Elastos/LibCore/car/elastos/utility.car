@@ -1980,15 +1980,6 @@ module
         interface IExchanger;
     }
 
-    class CForkJoinWorkerThread {
-        constructor(
-            [in] IForkJoinPool* pool);
-
-        interface IForkJoinWorkerThread;
-        interface IThread;
-        interface ISynchronize;
-    }
-
     class CForkJoinPool {
         constructor();
 
@@ -2000,6 +1991,13 @@ module
             [in] IForkJoinPoolForkJoinWorkerThreadFactory* factory,
             [in] IThreadUncaughtExceptionHandler* handler,
             [in] Boolean asyncMode);
+
+        constructor(
+            [in] Int32 parallelism,
+            [in] IForkJoinPoolForkJoinWorkerThreadFactory* factory,
+            [in] IThreadUncaughtExceptionHandler* handler,
+            [in] Int32 mode,
+            [in] String workerNamePrefix);
 
         interface IForkJoinPool;
         interface IAbstractExecutorService;

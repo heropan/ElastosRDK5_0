@@ -1,7 +1,7 @@
 
 #include "ForkJoinTask.h"
 #include <Thread.h>
-//#include "CForkJoinWorkerThread.h"
+#include "ForkJoinWorkerThread.h"
 #include "CSystem.h"
 #include "AutoLock.h"
 
@@ -9,7 +9,7 @@ using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::ISystem;
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
-//using Elastos::Utility::Concurrent::CForkJoinWorkerThread;
+using Elastos::Utility::Concurrent::ForkJoinWorkerThread;
 using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
@@ -19,10 +19,12 @@ namespace Concurrent {
 //====================================================================
 // ForkJoinTask::
 //====================================================================
-Int32 ForkJoinTask::NORMAL      = -1;
-Int32 ForkJoinTask::CANCELLED   = -2;
-Int32 ForkJoinTask::EXCEPTIONAL = -3;
-Int32 ForkJoinTask::SIGNAL      =  1;
+Int32 ForkJoinTask::DONE_MASK   = 0xf0000000;
+Int32 ForkJoinTask::NORMAL      = 0xf0000000;
+Int32 ForkJoinTask::CANCELLED   = 0xc0000000;
+Int32 ForkJoinTask::EXCEPTIONAL = 0x80000000;
+Int32 ForkJoinTask::SIGNAL      = 0x00010000;
+Int32 ForkJoinTask::SMASK       = 0x0000ffff;
 
 CAR_INTERFACE_IMPL_3(ForkJoinTask, Object, IForkJoinTask, IFuture, ISerializable)
 
@@ -33,154 +35,129 @@ Int32 ForkJoinTask::SetCompletion(
         if ((s = mStatus) < 0)
             return s;
         assert(0 && "TODO");
-        // if (UNSAFE.compareAndSwapInt(this, statusOffset, s, completion)) {
-        //     if (s != 0)
-        //         synchronized (this) { NotifyAll(); }
+        // if (U.compareAndSwapInt(this, STATUS, s, s | completion)) {
+        //     if ((s >>> 16) != 0)
+        //         synchronized (this) { notifyAll(); }
         //     return completion;
         // }
     }
 }
 
-ECode ForkJoinTask::TryAwaitDone(
-    /* [in] */ Int64 millis)
+ECode ForkJoinTask::DoExec(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    Int32 s; Boolean completed;
+    if ((s = mStatus) >= 0) {
+//        try {
+            Exec(&completed);
+        // } catch (Throwable rex) {
+        //     return setExceptionalCompletion(rex);
+        // }
+        if (completed)
+            s = SetCompletion(NORMAL);
+    }
+    *result = s;
+    return NOERROR;
+}
+
+Boolean ForkJoinTask::TrySetSignal()
 {
     assert(0 && "TODO");
-    // Int32 s;
-    // if (((s = mStatus) > 0 ||
-    //      (s == 0 &&
-    //       UNSAFE.compareAndSwapInt(this, statusOffset, 0, SIGNAL))) &&
-    //     mStatus > 0) {
-    //     synchronized (this) {
-    //         if (mStatus > 0)
-    //             Wait(millis);
-    //     }
-    // }
-    return NOERROR;
+    return FALSE;
+    // Int32 s = mStatus;
+    // return s >= 0 && U.compareAndSwapInt(this, STATUS, s, s | SIGNAL);
 }
 
 Int32 ForkJoinTask::ExternalAwaitDone()
 {
-    Int32 s;
-    if ((s = mStatus) >= 0) {
-        Boolean interrupted = FALSE;
-        {
-            AutoLock lock(this);
-            while ((s = mStatus) >= 0) {
-                if (s == 0) {
-                    assert(0 && "TODO");
-                //     UNSAFE.compareAndSwapInt(this, statusOffset,
-                //                              0, SIGNAL);
-                }
-                else {
-                    // ECode ec = Wait();
-                    // if (ec != NOERROR) {
-                    //     interrupted = TRUE;
-                    // }
-                }
-            }
-        }
-        if (interrupted)
-            Thread::GetCurrentThread()->Interrupt();
-    }
-    return s;
+    assert(0 && "TODO");
+    return 0;
+    // Int32 s;
+    // AutoPtr<IForkJoinPool> cp = ForkJoinPool::mCommon;
+    // if ((s = mStatus) >= 0) {
+    //     if (cp != NULL) {
+    //         // if (this instanceof CountedCompleter)
+    //         //     s = cp.externalHelpComplete((CountedCompleter<?>)this);
+    //         // else if (cp.tryExternalUnpush(this))
+    //         //     s = doExec();
+    //     }
+    //     if (s >= 0 && (s = mStatus) >= 0) {
+    //         Boolean interrupted = FALSE;
+    //         do {
+    //             // if (U.compareAndSwapInt(this, STATUS, s, s | SIGNAL)) {
+    //             //     synchronized (this) {
+    //             //         if (mStatus >= 0) {
+    //             //             try {
+    //             //                 Wait();
+    //             //             } catch (InterruptedException ie) {
+    //             //                 interrupted = TRUE;
+    //             //             }
+    //             //         }
+    //             //         else
+    //             //             NotifyAll();
+    //             //     }
+    //             // }
+    //         } while ((s = mStatus) >= 0);
+    //         if (interrupted)
+    //             Thread::GetCurrentThread()->Interrupt();
+    //     }
+    // }
+    // return s;
 }
 
-Int32 ForkJoinTask::ExternalInterruptibleAwaitDone(
-    /* [in] */ const Int64& millis)
+Int32 ForkJoinTask::ExternalInterruptibleAwaitDone()
 {
-    Int32 s = 0;
-    if (Thread::Interrupted())
-        return s;
-//        throw new InterruptedException();
-    if ((s = mStatus) >= 0) {
-        AutoLock lock(this);
-        while ((s = mStatus) >= 0) {
-            if (s == 0) {
-                assert(0 && "TODO");
-                // UNSAFE.compareAndSwapInt(this, statusOffset,
-                //                          0, SIGNAL);
-            }
-            else {
-                // Wait(millis);
-                // if (millis > 0L)
-                //     break;
-            }
-        }
-    }
-    return s;
-}
-
-ECode ForkJoinTask::DoExec()
-{
-    if (mStatus >= 0) {
-        Boolean completed = FALSE;
-//        try {
-            ECode ec = Exec(&completed);
-        // } catch (Throwable rex) {
-        //     setExceptionalCompletion(rex);
-            if (ec != NOERROR) {
-                return ec;
-            }
-//        }
-        if (completed)
-            SetCompletion(NORMAL); // must be outside try block
-    }
-    return NOERROR;
+    assert(0 && "TODO");
+    return 0;
+    // int s;
+    // ForkJoinPool cp = ForkJoinPool.common;
+    // if (Thread.interrupted())
+    //     throw new InterruptedException();
+    // if ((s = status) >= 0 && cp != null) {
+    //     if (this instanceof CountedCompleter)
+    //         cp.externalHelpComplete((CountedCompleter<?>)this);
+    //     else if (cp.tryExternalUnpush(this))
+    //         doExec();
+    // }
+    // while ((s = status) >= 0) {
+    //     if (U.compareAndSwapInt(this, STATUS, s, s | SIGNAL)) {
+    //         synchronized (this) {
+    //             if (status >= 0)
+    //                 wait();
+    //             else
+    //                 notifyAll();
+    //         }
+    //     }
+    // }
+    // return s;
 }
 
 Int32 ForkJoinTask::DoJoin()
 {
-    AutoPtr<IThread> t;
-    AutoPtr<IForkJoinWorkerThread> w;
-    Int32 s;
-    Boolean completed = FALSE;
-    t = Thread::GetCurrentThread();
-    if (t->Probe(EIID_IForkJoinWorkerThread) != NULL ) {
-        if ((s = mStatus) < 0)
-            return s;
-        w = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-        Boolean b = FALSE;
-        if ((w->UnpushTask(this, &b), b)) {
-//            try {
-                ECode ec = Exec(&completed);
-                if (FAILED(ec)) {
-                    return 0;
-                }
-//            } catch (Throwable rex) {
-//                return setExceptionalCompletion(rex);
-//            }
-            if (completed)
-                return SetCompletion(NORMAL);
-        }
-        Int32 num = 0;
-        w->JoinTask(this, &num);
-        return num;
-    }
-    else
-        return ExternalAwaitDone();
+    Int32 s; AutoPtr<IThread> t;
+    AutoPtr<ForkJoinWorkerThread> wt;
+    AutoPtr<CForkJoinPool::WorkQueue> w;
+    return (s = mStatus) < 0 ? s :
+        ((t = Thread::GetCurrentThread())->Probe(EIID_IForkJoinWorkerThread) != NULL) ?
+        (w = (wt = (ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mWorkQueue)->
+        TryUnpush(this) && (DoExec(&s), s) < 0 ? s :
+        ((CForkJoinPool*)(wt->mPool.Get()))->AwaitJoin(w, this) :
+        ExternalAwaitDone();
 }
 
 Int32 ForkJoinTask::DoInvoke()
 {
-    Int32 s;
-    Boolean completed;
-    if ((s = mStatus) < 0)
-        return s;
-//    try {
-        ECode ec = Exec(&completed);
-        if (FAILED(ec)) {
-            return 0;
-        }
-    // } catch (Throwable rex) {
-    //     return SetExceptionalCompletion(rex);
-    // }
-    if (completed)
-        return SetCompletion(NORMAL);
-    else
-        return DoJoin();
+
+    Int32 s; AutoPtr<IThread> t; AutoPtr<ForkJoinWorkerThread> wt;
+    return (DoExec(&s), s) < 0 ? s :
+        ((t = Thread::GetCurrentThread())->Probe(EIID_IForkJoinWorkerThread) != NULL) ?
+        ((CForkJoinPool*)((wt = ((ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t))))->mPool.Get()))->AwaitJoin(wt->mWorkQueue, this) :
+        ExternalAwaitDone();
 }
 
-//AutoPtr<ArrayOf<ForkJoinTask::ExceptionNode*> > ForkJoinTask::sExceptionTable;
+AutoPtr<ArrayOf<ForkJoinTask::ExceptionNode*> > ForkJoinTask::sExceptionTable;
 AutoPtr<IReentrantLock> ForkJoinTask::sExceptionTableLock;
 //AutoPtr<ReferenceQueue> ForkJoinTask::sExceptionTableRefQueue;
 
@@ -203,29 +180,61 @@ ForkJoinTask::ExceptionNode::ExceptionNode(
 //====================================================================
 // ForkJoinTask::
 //====================================================================
+Int32 ForkJoinTask::RecordExceptionalCompletion(
+    /* [in] */ IThrowable* ex)
+{
+    Int32 s;
+    if ((s = mStatus) >= 0) {
+        AutoPtr<ISystem> system;
+        Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+        Int32 h;
+        system->IdentityHashCode(THIS_PROBE(IInterface), &h);
+        AutoPtr<IReentrantLock> lock = sExceptionTableLock;
+        ILock::Probe(lock)->Lock();
+//        try {
+            ExpungeStaleExceptions();
+            AutoPtr<ArrayOf<ExceptionNode*> > t = sExceptionTable;
+            Int32 i = h & (t->GetLength() - 1);
+            for (AutoPtr<ExceptionNode> e = (*t)[i]; ; e = e->mNext) {
+                if (e == NULL) {
+                    (*t)[i] = new ExceptionNode(this, ex, (*t)[i]);
+                    break;
+                }
+                if (Object::Equals(e->Probe(EIID_IInterface), THIS_PROBE(IInterface))) // already present
+                    break;
+            }
+//        } finally {
+            ILock::Probe(lock)->UnLock();
+//        }
+        s = SetCompletion(EXCEPTIONAL);
+    }
+    return s;
+}
 
 Int32 ForkJoinTask::SetExceptionalCompletion(
     /* [in] */ IThrowable* ex)
 {
-    AutoPtr<ISystem> sys;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&sys);
-    Int32 h;
-    sys->IdentityHashCode(THIS_PROBE(IInterface), &h);
-    AutoPtr<IReentrantLock> lock = sExceptionTableLock;
-    (ILock::Probe(lock))->Lock();
-    ExpungeStaleExceptions();
-    // AutoPtr<ArrayOf<ExceptionNode*> > t = sExceptionTable;
-    // Int32 i = h & (t->GetLength() - 1);
-    // for (AutoPtr<ExceptionNode> e = (*t)[i]; ; e = e->mNext) {
-    //     if (e == NULL) {
-    //         (*t)[i] = new ExceptionNode(this, ex, (*t)[i]);
-    //         break;
-    //     }
-    //     if (e->Get() == this) // already present
-    //         break;
-    // }
-    (ILock::Probe(lock))->UnLock();
-    return SetCompletion(EXCEPTIONAL);
+    Int32 s = RecordExceptionalCompletion(ex);
+    if ((s & DONE_MASK) == EXCEPTIONAL)
+        InternalPropagateException(ex);
+    return s;
+}
+
+void ForkJoinTask::InternalPropagateException(
+    /* [in] */ IThrowable* ex)
+{
+}
+
+void ForkJoinTask::CancelIgnoringExceptions(
+    /* [in] */ ForkJoinTask* t)
+{
+    if (t != NULL && t->mStatus >= 0) {
+//        try {
+            Boolean bRes;
+            t->Cancel(FALSE, &bRes);
+        // } catch (Throwable ignore) {
+        // }
+    }
 }
 
 void ForkJoinTask::ClearExceptionalCompletion()
@@ -259,13 +268,14 @@ void ForkJoinTask::ClearExceptionalCompletion()
 
 AutoPtr<IThrowable> ForkJoinTask::GetThrowableException()
 {
-    if (mStatus != EXCEPTIONAL)
+    if ((mStatus & DONE_MASK) != EXCEPTIONAL)
         return NULL;
     AutoPtr<ISystem> sys;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&sys);
     Int32 h;
     sys->IdentityHashCode(THIS_PROBE(IInterface), &h);
     assert(0 && "TODO");
+    return NULL;
     // AutoPtr<ExceptionNode> e;
     // AutoPtr<IReentrantLock> lock = sExceptionTableLock;
     // lock->Lock();
@@ -280,7 +290,7 @@ AutoPtr<IThrowable> ForkJoinTask::GetThrowableException()
     //     return NULL;
     // Int64 id = 0;
     // Thread::GetCurrentThread()->GetId(&id);
-    // if (e->mThrower != id) {
+    // if (false && e->mThrower != id) {
     //     Class<? extends Throwable> ec = ex->GetClass();
     //     try {
     //         Constructor<?> noArgCtor = null;
@@ -340,242 +350,77 @@ void ForkJoinTask::HelpExpungeStaleExceptions()
     }
 }
 
-AutoPtr<IInterface> ForkJoinTask::ReportResult()
+void ForkJoinTask::Rethrow(
+    /* [in] */ IThrowable* ex)
 {
-    Int32 s; AutoPtr<IThrowable> ex;
-    if ((s = mStatus) == CANCELLED)
-        return NULL;
-//        return E_CANCELLATION_EXCEPTION;
-    // if (s == EXCEPTIONAL && (ex = GetThrowableException()) != NULL)
-    //     SneakyThrow::SneakyThrow(ex); // android-changed
-    AutoPtr<IInterface> p;
-    GetRawResult((IInterface**)&p);
-    return p;
+    if (ex != NULL)
+        ForkJoinTask::UncheckedThrow(ex);
+}
+
+void ForkJoinTask::UncheckedThrow(
+    /* [in] */ IThrowable* t)
+{
+//    throw t; // rely on vacuous cast
+}
+
+void ForkJoinTask::ReportException(
+    /* [in] */ Int32 s)
+{
+    if (s == CANCELLED)
+        return;
+//        throw new CancellationException();
+    if (s == EXCEPTIONAL)
+        Rethrow(GetThrowableException());
 }
 
 ECode ForkJoinTask::Fork(
     /* [out] */ IForkJoinTask** outtask)
 {
-    VALIDATE_NOT_NULL(outtask);
+    VALIDATE_NOT_NULL(outtask)
+
     AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    AutoPtr<IForkJoinTask> p = (IForkJoinTask*)this->Probe(EIID_IForkJoinTask);
-    ft->PushTask(this);
-    *outtask = this;
-    REFCOUNT_ADD(*outtask);
+    if (t->Probe(EIID_IForkJoinWorkerThread) != NULL)
+        ((ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mWorkQueue->Push(this);
+    else
+        ((CForkJoinPool*)CForkJoinPool::mCommon.Get())->ExternalPush(this);
+    *outtask = IForkJoinTask::Probe(this);
+    REFCOUNT_ADD(*outtask)
     return NOERROR;
 }
 
 ECode ForkJoinTask::Join(
     /* [out] */ IInterface** outface)
 {
-    VALIDATE_NOT_NULL(outface);
-    if (DoJoin() != NORMAL) {
-        AutoPtr<IInterface> p = ReportResult();
-        *outface = p;
-        REFCOUNT_ADD(*outface);
-        return NOERROR;
-    }
-    else
-        return GetRawResult(outface);
+    VALIDATE_NOT_NULL(outface)
+
+    Int32 s;
+    if ((s = DoJoin() & DONE_MASK) != NORMAL)
+        ReportException(s);
+    return GetRawResult(outface);
 }
 
 ECode ForkJoinTask::Invoke(
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
-    if (DoInvoke() != NORMAL) {
-        AutoPtr<IInterface> p = ReportResult();
-        *outface = p;
-        REFCOUNT_ADD(*outface);
-        return NOERROR;
-    }
-    else
-        return GetRawResult(outface);
-}
 
-ECode ForkJoinTask::Cancel(
-    /* [in] */ Boolean mayInterruptIfRunning,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = SetCompletion(CANCELLED) == CANCELLED;
-    return NOERROR;
-}
-
-ECode ForkJoinTask::CancelIgnoringExceptions()
-{
-    Boolean b = FALSE;
-    return Cancel(FALSE, &b);
-}
-
-ECode ForkJoinTask::IsDone(
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = mStatus < 0;
-    return NOERROR;
-}
-
-ECode ForkJoinTask::IsCancelled(
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = mStatus == CANCELLED;
-    return NOERROR;
-}
-
-ECode ForkJoinTask::IsCompletedAbnormally(
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = mStatus < NORMAL;
-    return NOERROR;
-}
-
-ECode ForkJoinTask::IsCompletedNormally(
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = mStatus == NORMAL;
-    return NOERROR;
-}
-
-ECode ForkJoinTask::GetException(
-    /* [out] */ IThrowable** res)
-{
-    VALIDATE_NOT_NULL(res);
-    Int32 s = mStatus;
-    assert(0 && "TODO");
-    // *res = ((s >= NORMAL)    ? NULL :
-    //         (s == CANCELLED) ? new CancellationException() :
-    //         getThrowableException());
-    return NOERROR;
-}
-
-ECode ForkJoinTask::CompleteExceptionally(
-    /* [in] */ IThrowable* ex)
-{
-    assert(0 && "TODO");
-    // SetExceptionalCompletion((ex instanceof RuntimeException) ||
-    //                          (ex instanceof Error) ? ex :
-    //                          new RuntimeException(ex));
-    return NOERROR;
-}
-
-ECode ForkJoinTask::Complete(
-    /* [in] */ IInterface* value)
-{
-//    try {
-        SetRawResult(value);
-    // } catch (Throwable rex) {
-    //     SetExceptionalCompletion(rex);
-    //     return;
-    // }
-    SetCompletion(NORMAL);
-    return NOERROR;
-}
-
-ECode ForkJoinTask::Get(
-    /* [out] */ IInterface** res)
-{
-    VALIDATE_NOT_NULL(res);
-    AutoPtr<IThread> t = Thread::GetCurrentThread();
-    Int32 s = ( t->Probe(EIID_IForkJoinWorkerThread) != NULL ) ?
-        DoJoin() : ExternalInterruptibleAwaitDone(0L);
-    AutoPtr<IThrowable> ex;
-    if (s == CANCELLED)
-        return E_CANCELLATION_EXCEPTION;
-    if (s == EXCEPTIONAL && (ex = GetThrowableException()) != NULL)
-        return E_EXECUTION_EXCEPTION;
-    return GetRawResult(res);
-}
-
-ECode ForkJoinTask::Get(
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IInterface** res)
-{
-    VALIDATE_NOT_NULL(res);
-    AutoPtr<IThread> t = Thread::GetCurrentThread();
-    if (t->Probe(EIID_IForkJoinWorkerThread) != NULL) {
-        AutoPtr<IForkJoinWorkerThread> w = (IForkJoinWorkerThread*) t->Probe(EIID_IForkJoinWorkerThread);
-        Int64 nanos;
-        unit->ToNanos(timeout, &nanos);
-        if (mStatus >= 0) {
-            Boolean completed = FALSE, b = FALSE;
-            if ((w->UnpushTask(this, &b), b)) {
-//                try {
-                    Exec(&completed);
-                // } catch (Throwable rex) {
-                //     SetExceptionalCompletion(rex);
-                // }
-            }
-            if (completed)
-                SetCompletion(NORMAL);
-            else if (mStatus >= 0 && nanos > 0) {
-                // AutoPtr<CForkJoinWorkerThread> cw = (CForkJoinWorkerThread*)w.Get();
-                // cw->mPool->TimedAwaitJoin(this, nanos);
-            }
-        }
-    }
-    else {
-        Int64 millis;// = unit.toMillis(timeout);
-        if (millis > 0)
-            ExternalInterruptibleAwaitDone(millis);
-    }
-    Int32 s = mStatus;
-    if (s != NORMAL) {
-        AutoPtr<IThrowable> ex;
-        if (s == CANCELLED)
-            return E_CANCELLATION_EXCEPTION;
-        if (s != EXCEPTIONAL)
-            return E_TIMEOUT_EXCEPTION;
-        if ((ex = GetThrowableException()) != NULL)
-            return E_EXECUTION_EXCEPTION;
-    }
-    return GetRawResult(res);
-}
-
-ECode ForkJoinTask::QuietlyJoin()
-{
-    DoJoin();
-    return NOERROR;
-}
-
-ECode ForkJoinTask::QuietlyInvoke()
-{
-    DoInvoke();
-    return NOERROR;
-}
-
-ECode ForkJoinTask::Reinitialize()
-{
-    if (mStatus == EXCEPTIONAL)
-        ClearExceptionalCompletion();
-    else
-        mStatus = 0;
-    return NOERROR;
-}
-
-ECode ForkJoinTask::TryUnfork(
-    /* [out] */ Boolean* value)
-{
-    VALIDATE_NOT_NULL(value);
-    AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    return ft->UnpushTask(this, value);
+    Int32 s;
+    if ((s = DoInvoke() & DONE_MASK) != NORMAL)
+        ReportException(s);
+    return GetRawResult(outface);
 }
 
 void ForkJoinTask::InvokeAll(
     /* [in] */ IForkJoinTask* t1,
     /* [in] */ IForkJoinTask* t2)
 {
+    Int32 s1, s2;
     AutoPtr<IForkJoinTask> p;
     t2->Fork((IForkJoinTask**)&p);
-    AutoPtr<IInterface> p2, p3;
-    t1->Invoke((IInterface**)&p2);
-    t2->Join((IInterface**)&p3);
+    if ((s1 = ((ForkJoinTask*)t1)->DoInvoke() & DONE_MASK) != NORMAL)
+        ((ForkJoinTask*)t1)->ReportException(s1);
+    if ((s2 = ((ForkJoinTask*)t2)->DoJoin() & DONE_MASK) != NORMAL)
+        ((ForkJoinTask*)t2)->ReportException(s2);
 }
 
 void ForkJoinTask::InvokeAll(
@@ -610,7 +455,7 @@ void ForkJoinTask::InvokeAll(
         }
     }
     // if (ex != NULL)
-    //     SneakyThrow.sneakyThrow(ex); // android-changed
+    //     rethrow(ex); // android-changed
 }
 
 AutoPtr<ICollection> ForkJoinTask::InvokeAll(
@@ -661,15 +506,223 @@ AutoPtr<ICollection> ForkJoinTask::InvokeAll(
         }
     }
     // if (ex != NULL)
-    //     SneakyThrow.sneakyThrow(ex); // android-changed
+    //     rethrow(ex); // android-changed
     return tasks;
+}
+
+ECode ForkJoinTask::Cancel(
+    /* [in] */ Boolean mayInterruptIfRunning,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = (SetCompletion(CANCELLED) & DONE_MASK) == CANCELLED;
+    return NOERROR;
+}
+
+ECode ForkJoinTask::IsDone(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = mStatus < 0;
+    return NOERROR;
+}
+
+ECode ForkJoinTask::IsCancelled(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res);
+    *res = (mStatus & DONE_MASK) == CANCELLED;
+    return NOERROR;
+}
+
+ECode ForkJoinTask::IsCompletedAbnormally(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value);
+    *value = (mStatus & DONE_MASK) < NORMAL;
+    return NOERROR;
+}
+
+ECode ForkJoinTask::IsCompletedNormally(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value);
+    *value = (mStatus & DONE_MASK) == NORMAL;
+    return NOERROR;
+}
+
+ECode ForkJoinTask::GetException(
+    /* [out] */ IThrowable** res)
+{
+    VALIDATE_NOT_NULL(res);
+    Int32 s = mStatus & DONE_MASK;
+    assert(0 && "TODO");
+    // *res = ((s >= NORMAL)    ? NULL :
+    //         (s == CANCELLED) ? new CancellationException() :
+    //         getThrowableException());
+    return NOERROR;
+}
+
+ECode ForkJoinTask::CompleteExceptionally(
+    /* [in] */ IThrowable* ex)
+{
+    assert(0 && "TODO");
+    // SetExceptionalCompletion((ex instanceof RuntimeException) ||
+    //                          (ex instanceof Error) ? ex :
+    //                          new RuntimeException(ex));
+    return NOERROR;
+}
+
+ECode ForkJoinTask::Complete(
+    /* [in] */ IInterface* value)
+{
+//    try {
+        SetRawResult(value);
+    // } catch (Throwable rex) {
+    //     SetExceptionalCompletion(rex);
+    //     return;
+    // }
+    SetCompletion(NORMAL);
+    return NOERROR;
+}
+
+ECode ForkJoinTask::QuietlyComplete()
+{
+    SetCompletion(NORMAL);
+    return NOERROR;
+}
+
+ECode ForkJoinTask::Get(
+    /* [out] */ IInterface** res)
+{
+    VALIDATE_NOT_NULL(res);
+    AutoPtr<IThread> t = Thread::GetCurrentThread();
+    Int32 s = ( t->Probe(EIID_IForkJoinWorkerThread) != NULL ) ?
+        DoJoin() : ExternalInterruptibleAwaitDone();
+    AutoPtr<IThrowable> ex;
+    if ((s &= DONE_MASK) == CANCELLED)
+        return E_CANCELLATION_EXCEPTION;
+    if (s == EXCEPTIONAL && (ex = GetThrowableException()) != NULL)
+        return E_EXECUTION_EXCEPTION;
+    return GetRawResult(res);
+}
+
+ECode ForkJoinTask::Get(
+    /* [in] */ Int64 timeout,
+    /* [in] */ ITimeUnit* unit,
+    /* [out] */ IInterface** res)
+{
+    VALIDATE_NOT_NULL(res);
+
+    if (Thread::Interrupted())
+        return E_INTERRUPTED_EXCEPTION;
+    // Messy in part because we measure in nanosecs, but wait in millisecs
+    Int32 s; Int64 ms;
+    Int64 ns;
+    unit->ToNanos(timeout, &ns);
+    AutoPtr<IForkJoinPool> cp;
+    if ((s = mStatus) >= 0 && ns > 0L) {
+        AutoPtr<ISystem> system;
+        Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+        Int64 nas;
+        system->GetNanoTime(&nas);
+        Int64 deadline = nas + ns;
+        AutoPtr<IForkJoinPool> p;
+        AutoPtr<CForkJoinPool::WorkQueue> w;
+        AutoPtr<IThread> t = Thread::GetCurrentThread();
+        if (t->Probe(EIID_IForkJoinWorkerThread) != NULL) {
+            AutoPtr<ForkJoinWorkerThread> wt = (ForkJoinWorkerThread*)IForkJoinWorkerThread::Probe(t);
+            p = wt->mPool;
+            w = wt->mWorkQueue;
+            ((CForkJoinPool*)p.Get())->HelpJoinOnce(w, this); // no retries on failure
+        }
+        else if ((cp = CForkJoinPool::mCommon) != NULL) {
+            // if (this instanceof CountedCompleter)
+            //     cp.externalHelpComplete((CountedCompleter<?>)this);
+            // else if (cp.tryExternalUnpush(this))
+            //     doExec();
+        }
+        Boolean canBlock = FALSE;
+        Boolean interrupted = FALSE;
+//        try {
+            while ((s = mStatus) >= 0) {
+                if (w != NULL && w->mQlock < 0)
+                    CancelIgnoringExceptions(this);
+                else if (!canBlock) {
+                    AutoPtr<CForkJoinPool> cp = (CForkJoinPool*)p.Get();
+                    if (p == NULL || cp->TryCompensate(cp->mCtl))
+                        canBlock = TRUE;
+                }
+                else {
+                    // if ((ms = TimeUnit.NANOSECONDS.toMillis(ns)) > 0L &&
+                    //     U.compareAndSwapInt(this, STATUS, s, s | SIGNAL)) {
+                    //     synchronized (this) {
+                    //         if (status >= 0) {
+                    //             try {
+                    //                 wait(ms);
+                    //             } catch (InterruptedException ie) {
+                    //                 if (p == NULL)
+                    //                     interrupted = TRUE;
+                    //             }
+                    //         }
+                    //         else
+                    //             notifyAll();
+                    //     }
+                    // }
+                    // if ((s = status) < 0 || interrupted ||
+                    //     (ns = deadline - System.nanoTime()) <= 0L)
+                    //     break;
+                }
+            }
+//        } finally {
+            if (p != NULL && canBlock)
+                ((CForkJoinPool*)p.Get())->IncrementActiveCount();
+//        }
+        if (interrupted)
+            return E_INTERRUPTED_EXCEPTION;
+    }
+    if ((s &= DONE_MASK) != NORMAL) {
+        AutoPtr<IThrowable> ex;
+        if (s == CANCELLED)
+            return E_CANCELLATION_EXCEPTION;
+        if (s != EXCEPTIONAL)
+            return E_TIMEOUT_EXCEPTION;
+        if ((ex = GetThrowableException()) != NULL)
+            return E_EXECUTION_EXCEPTION;
+    }
+    return GetRawResult(res);
+}
+
+ECode ForkJoinTask::QuietlyJoin()
+{
+    DoJoin();
+    return NOERROR;
+}
+
+ECode ForkJoinTask::QuietlyInvoke()
+{
+    DoInvoke();
+    return NOERROR;
 }
 
 void ForkJoinTask::HelpQuiesce()
 {
     AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    ft->HelpQuiescePool();
+    if (t->Probe(EIID_IForkJoinWorkerThread) != NULL) {
+        AutoPtr<ForkJoinWorkerThread> wt = (ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t));
+        ((CForkJoinPool*)(wt->mPool.Get()))->HelpQuiescePool(wt->mWorkQueue);
+    }
+    else
+        CForkJoinPool::QuiesceCommonPool();
+}
+
+ECode ForkJoinTask::Reinitialize()
+{
+    if ((mStatus & DONE_MASK) == EXCEPTIONAL)
+        ClearExceptionalCompletion();
+    else
+        mStatus = 0;
+    return NOERROR;
 }
 
 AutoPtr<IForkJoinPool> ForkJoinTask::GetPool()
@@ -693,34 +746,95 @@ Boolean ForkJoinTask::InForkJoinPool()
     return ft == NULL ? FALSE : TRUE;
 }
 
+ECode ForkJoinTask::TryUnfork(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+
+    AutoPtr<IThread> t = Thread::GetCurrentThread();
+    return ((t->Probe(EIID_IForkJoinWorkerThread) != NULL) ?
+            ((ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mWorkQueue->TryUnpush(this) :
+            ((CForkJoinPool*)(CForkJoinPool::mCommon.Get()))->TryExternalUnpush(this));
+}
+
 Int32 ForkJoinTask::GetQueuedTaskCount()
 {
     AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    if (ft != NULL) {
-        Int32 s = 0;
-        ft->GetQueueSize(&s);
-        return s;
-    }
-    return -1;
+    AutoPtr<CForkJoinPool::WorkQueue> q;
+    if (t->Probe(EIID_IForkJoinWorkerThread) != NULL)
+        q = ((ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mWorkQueue;
+    else
+        q = CForkJoinPool::CommonSubmitterQueue();
+    return (q == NULL) ? 0 : q->QueueSize();
 }
 
 Int32 ForkJoinTask::GetSurplusQueuedTaskCount()
 {
+    return CForkJoinPool::GetSurplusQueuedTaskCount();
+}
+
+AutoPtr<IForkJoinTask> ForkJoinTask::PeekNextLocalTask()
+{
     AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    if (ft != NULL) {
-        Int32 s = 0;
-        ft->GetEstimatedSurplusTaskCount(&s);
-        return s;
+    AutoPtr<CForkJoinPool::WorkQueue> q;
+    if (t->Probe(EIID_IForkJoinWorkerThread) != NULL)
+        q = ((ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mWorkQueue;
+    else
+        q = CForkJoinPool::CommonSubmitterQueue();
+    return (q == NULL) ? NULL : q->Peek();
+}
+
+AutoPtr<IForkJoinTask> ForkJoinTask::PollNextLocalTask()
+{
+    AutoPtr<IThread> t = Thread::GetCurrentThread();
+    return (t->Probe(EIID_IForkJoinWorkerThread) != NULL) ?
+        ((ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mWorkQueue->NextLocalTask() :
+        NULL;
+}
+
+AutoPtr<IForkJoinTask> ForkJoinTask::PollTask()
+{
+    AutoPtr<IThread> t = Thread::GetCurrentThread();
+    AutoPtr<ForkJoinWorkerThread> wt;
+    return (t->Probe(EIID_IForkJoinWorkerThread) != NULL) ?
+        ((CForkJoinPool*)((wt = (ForkJoinWorkerThread*)(IForkJoinWorkerThread::Probe(t)))->mPool.Get()))->NextTaskFor(wt->mWorkQueue) :
+        NULL;
+}
+
+Int16 ForkJoinTask::GetForkJoinTaskTag()
+{
+    return (Int16)mStatus;
+}
+
+Int16 ForkJoinTask::SetForkJoinTaskTag(
+    /* [in] */ Int16 tag)
+{
+    assert(0 && "TODO");
+    return 0;
+    // for (Int32 s;;) {
+    //     if (U.compareAndSwapInt(this, STATUS, s = status,
+    //                             (s & ~SMASK) | (tag & SMASK)))
+    //         return (short)s;
+    // }
+}
+
+Boolean ForkJoinTask::CompareAndSetForkJoinTaskTag(
+    /* [in] */ Int16 e,
+    /* [in] */ Int16 tag)
+{
+    for (Int32 s;;) {
+        if ((Int16)(s = mStatus) != e)
+            return FALSE;
+        // if (U.compareAndSwapInt(this, STATUS, s,
+        //                         (s & ~SMASK) | (tag & SMASK)))
+        //     return true;
     }
-    return -1;
 }
 
 AutoPtr<IForkJoinTask> ForkJoinTask::Adapt(
     /* [in] */ IRunnable* runnable)
 {
-    AutoPtr<AdaptedRunnable> p = new AdaptedRunnable(runnable, NULL);
+    AutoPtr<AdaptedRunnableAction> p = new AdaptedRunnableAction(runnable);
     AutoPtr<IForkJoinTask> res = (IForkJoinTask*)p->Probe(EIID_IForkJoinTask);
     return res;
 }
@@ -742,42 +856,6 @@ AutoPtr<IForkJoinTask> ForkJoinTask::Adapt(
     return res;
 }
 
-AutoPtr<IForkJoinTask> ForkJoinTask::PeekNextLocalTask()
-{
-    AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    if (ft != NULL) {
-        AutoPtr<IForkJoinTask> res;
-        ft->PeekTask((IForkJoinTask**)&res);
-        return res;
-    }
-    return NULL;
-}
-
-AutoPtr<IForkJoinTask> ForkJoinTask::PollNextLocalTask()
-{
-    AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    if (ft != NULL) {
-        AutoPtr<IForkJoinTask> res;
-        ft->PollLocalTask((IForkJoinTask**)&res);
-        return res;
-    }
-    return NULL;
-}
-
-AutoPtr<IForkJoinTask> ForkJoinTask::PollTask()
-{
-    AutoPtr<IThread> t = Thread::GetCurrentThread();
-    AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
-    if (ft != NULL) {
-        AutoPtr<IForkJoinTask> res;
-        ft->PollTask((IForkJoinTask**)&res);
-        return res;
-    }
-    return NULL;
-}
-
 void ForkJoinTask::WriteObject(
     /* [in] */ IObjectOutputStream* s)
 {
@@ -797,18 +875,22 @@ void ForkJoinTask::ReadObject(
 //====================================================================
 // AdaptedRunnable::
 //====================================================================
+CAR_INTERFACE_IMPL(AdaptedRunnable, ForkJoinTask, IRunnableFuture)
+
 AdaptedRunnable::AdaptedRunnable(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* result)
 {
     if (runnable == NULL) return;// throw new NullPointerException();
     mRunnable = runnable;
-    mResultOnCompletion = result;
+    mResult = result;
 }
 
 ECode AdaptedRunnable::GetRawResult(
     /* [out] */ IInterface** outface)
 {
+    VALIDATE_NOT_NULL(outface)
+
     *outface = mResult;
     REFCOUNT_ADD(*outface);
     return NOERROR;
@@ -825,7 +907,6 @@ ECode AdaptedRunnable::Exec(
     /* [out] */ Boolean* res)
 {
     mRunnable->Run();
-    mResult = mResultOnCompletion;
     *res = TRUE;
     return NOERROR;
 }
@@ -834,6 +915,86 @@ void AdaptedRunnable::Run()
 {
     AutoPtr<IInterface> p;
     Invoke((IInterface**)&p);
+}
+
+//====================================================================
+// AdaptedRunnableAction::
+//====================================================================
+CAR_INTERFACE_IMPL(AdaptedRunnableAction, ForkJoinTask, IRunnableFuture)
+
+AdaptedRunnableAction::AdaptedRunnableAction(
+    /* [in] */ IRunnable* runnable)
+{
+    if (runnable == NULL) return;// E_NULL_POINTER_EXCEPTION;
+    mRunnable = runnable;
+}
+
+ECode AdaptedRunnableAction::GetRawResult(
+    /* [out] */ IInterface** outface)
+{
+    VALIDATE_NOT_NULL(outface)
+    *outface = NULL;
+    return NOERROR;
+}
+
+ECode AdaptedRunnableAction::SetRawResult(
+    /* [in] */ IInterface* v)
+{
+    return NOERROR;
+}
+
+ECode AdaptedRunnableAction::Exec(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    mRunnable->Run();
+    *res = TRUE;
+    return NOERROR;
+}
+
+void AdaptedRunnableAction::Run()
+{
+    AutoPtr<IInterface> p;
+    Invoke((IInterface**)&p);
+}
+
+//====================================================================
+// RunnableExecuteAction::
+//====================================================================
+RunnableExecuteAction::RunnableExecuteAction(
+    /* [in] */ IRunnable* runnable)
+{
+    if (runnable == NULL) return;// E_NULL_POINTER_EXCEPTION;
+    mRunnable = runnable;
+}
+
+ECode RunnableExecuteAction::GetRawResult(
+    /* [out] */ IInterface** outface)
+{
+    VALIDATE_NOT_NULL(outface)
+    *outface = NULL;
+    return NOERROR;
+}
+
+ECode RunnableExecuteAction::SetRawResult(
+    /* [in] */ IInterface* v)
+{
+    return NOERROR;
+}
+
+ECode RunnableExecuteAction::Exec(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    mRunnable->Run();
+    *res = TRUE;
+    return NOERROR;
+}
+
+void RunnableExecuteAction::InternalPropagateException(
+    /* [in] */ IThrowable* ex)
+{
+    Rethrow(ex); // rethrow outside exec() catches.
 }
 
 //====================================================================
@@ -850,7 +1011,7 @@ ECode AdaptedCallable::GetRawResult(
     /* [out] */ IInterface** outface)
 {
     *outface = mResult;
-    REFCOUNT_ADD(*outface);
+    REFCOUNT_ADD(*outface)
     return NOERROR;
 }
 

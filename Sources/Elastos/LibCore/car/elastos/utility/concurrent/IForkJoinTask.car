@@ -174,21 +174,12 @@ module
             [out] Boolean* res);
 
         /**
-         * Tries to block a worker thread until completed or timed out.
-         * Uses Object.wait time argument conventions.
-         * May fail on contention or interrupt.
-         *
-         * @param millis if > 0, wait time.
-         */
-        TryAwaitDone(
-            [in] Int64 millis);
-
-        /**
          * Primary execution method for stolen tasks. Unless done, calls
          * exec and records status if completed, but doesn't wait for
          * completion otherwise.
          */
-        DoExec();
+        DoExec(
+            [out] Int32* result);
 
         // public methods
 
@@ -237,14 +228,6 @@ module
          */
         Invoke(
             [out] IInterface** outface);
-
-        /**
-         * Cancels, ignoring any exceptions thrown by cancel. Used during
-         * worker and pool shutdown. Cancel is spec'ed not to throw any
-         * exceptions, but if it does anyway, we have no recourse during
-         * shutdown, so guard against this case.
-         */
-        CancelIgnoringExceptions();
 
         /**
          * Returns {@code true} if this task threw an exception or was cancelled.
@@ -372,6 +355,17 @@ module
          */
         GetRawResult(
             [out] IInterface** outface);
+
+        /**
+         * Completes this task normally without setting a value. The most
+         * recent value established by {@link #setRawResult} (or {@code
+         * null} by default) will be returned as the result of subsequent
+         * invocations of {@code join} and related operations.
+         *
+         * @since 1.8
+         * @hide
+         */
+        QuietlyComplete();
 
     }
 

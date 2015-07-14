@@ -45,7 +45,7 @@ public:
 
     public:
         AutoPtr<IThrowable> mEx;
-//        AutoPtr<ExceptionNode> mNext;
+        AutoPtr<ExceptionNode> mNext;
         Int64 mThrower;  // use id not ref to avoid weak cycles
     };
 
@@ -61,10 +61,8 @@ public:
     virtual CARAPI GetRawResult(
         /* [out] */ IInterface** outface) = 0;
 
-    virtual CARAPI DoExec();
-
-    virtual CARAPI TryAwaitDone(
-        /* [in] */ Int64 millis);
+    virtual CARAPI DoExec(
+        /* [out] */ Int32* result);
 
     // public methods
 
@@ -80,8 +78,6 @@ public:
     virtual CARAPI Cancel(
         /* [in] */ Boolean mayInterruptIfRunning,
         /* [out] */ Boolean* res);
-
-    virtual CARAPI CancelIgnoringExceptions();
 
     virtual CARAPI IsDone(
         /* [out] */ Boolean* res);
@@ -120,6 +116,8 @@ public:
 
     virtual CARAPI TryUnfork(
         /* [out] */ Boolean* value);
+
+    virtual CARAPI QuietlyComplete();
 
     static CARAPI_(void) InvokeAll(
         /* [in] */ IForkJoinTask* t1,
@@ -213,6 +211,93 @@ public:
      */
     static CARAPI_(AutoPtr<IForkJoinTask>) PollTask();
 
+    /**
+     * Tries to set SIGNAL status unless already completed. Used by
+     * ForkJoinPool. Other variants are directly incorporated into
+     * externalAwaitDone etc.
+     *
+     * @return true if successful
+     */
+    Boolean TrySetSignal();
+
+    /**
+     * Records exception and sets status.
+     *
+     * @return status on exit
+     */
+    Int32 RecordExceptionalCompletion(
+        /* [in] */ IThrowable* ex);
+
+    /**
+     * Hook for exception propagation support for tasks with completers.
+     */
+    void InternalPropagateException(
+        /* [in] */ IThrowable* ex);
+
+    /**
+     * Cancels, ignoring any exceptions thrown by cancel. Used during
+     * worker and pool shutdown. Cancel is spec'ed not to throw any
+     * exceptions, but if it does anyway, we have no recourse during
+     * shutdown, so guard against this case.
+     */
+    static void CancelIgnoringExceptions(
+        /* [in] */ ForkJoinTask* t);
+
+    /**
+     * A version of "sneaky throw" to relay exceptions
+     */
+    static void Rethrow(
+        /* [in] */ IThrowable* ex);
+
+    /**
+     * The sneaky part of sneaky throw, relying on generics
+     * limitations to evade compiler complaints about rethrowing
+     * unchecked exceptions
+     */
+    static void UncheckedThrow(
+        /* [in] */ IThrowable* t);
+
+    // tag operations
+
+    /**
+     * Returns the tag for this task.
+     *
+     * @return the tag for this task
+     * @since 1.8
+     * @hide
+     */
+    Int16 GetForkJoinTaskTag();
+
+    /**
+     * Atomically sets the tag value for this task.
+     *
+     * @param tag the tag value
+     * @return the previous value of the tag
+     * @since 1.8
+     * @hide
+     */
+    Int16 SetForkJoinTaskTag(
+        /* [in] */ Int16 tag);
+
+    /**
+     * Atomically conditionally sets the tag value for this task.
+     * Among other applications, tags can be used as visit markers
+     * in tasks operating on graphs, as in methods that check: {@code
+     * if (task.compareAndSetForkJoinTaskTag((short)0, (short)1))}
+     * before processing, otherwise exiting because the node has
+     * already been visited.
+     *
+     * @param e the expected tag value
+     * @param tag the new tag value
+     * @return {@code true} if successful; i.e., the current value was
+     * equal to e and is now tag.
+     * @since 1.8
+     * @hide
+     */
+    Boolean CompareAndSetForkJoinTaskTag(
+        /* [in] */ Int16 e,
+        /* [in] */ Int16 tag);
+
 private:
     /**
      * Marks completion and wakes up threads waiting to join this task,
@@ -233,8 +318,7 @@ private:
     /**
      * Blocks a non-worker-thread until completion or interruption or timeout.
      */
-    CARAPI_(Int32) ExternalInterruptibleAwaitDone(
-        /* [in] */ const Int64& millis);
+    CARAPI_(Int32) ExternalInterruptibleAwaitDone();
 
     /**
      * Primary mechanics for join, get, quietlyJoin.
@@ -289,6 +373,12 @@ private:
     CARAPI_(AutoPtr<IInterface>) ReportResult();
 
     /**
+     * Throws exception, if any, associated with the given status.
+     */
+    void ReportException(
+        /* [in] */ Int32 s);
+
+    /**
      * Saves the state to a stream (that is, serializes it).
      *
      * @serialData the current run status and the exception thrown
@@ -310,11 +400,13 @@ public:
     /** The run status of this task */
     volatile Int32 mStatus; // accessed directly by pool and workers
 
-private:
+public:
+    static Int32 DONE_MASK;
     static Int32 NORMAL;
     static Int32 CANCELLED;
     static Int32 EXCEPTIONAL;
     static Int32 SIGNAL;
+    static Int32 SMASK;
 
     // Exception table support
 
@@ -327,7 +419,7 @@ private:
      *
      * Note: These statics are initialized below in static block.
      */
-//    static AutoPtr<ArrayOf<ExceptionNode*> > sExceptionTable;
+    static AutoPtr<ArrayOf<ExceptionNode*> > sExceptionTable;
     static AutoPtr<IReentrantLock> sExceptionTableLock;
 //    static AutoPtr<IReferenceQueue> sExceptionTableRefQueue;
 
@@ -341,16 +433,18 @@ private:
     static Int64 sSerialVersionUID;
 
     // // Unsafe mechanics
-    // private static final sun.misc.Unsafe UNSAFE;
-    // private static final long statusOffset;
+    // private static final sun.misc.Unsafe U;
+    // private static final long STATUS;
+
     // static {
     //     exceptionTableLock = new ReentrantLock();
     //     exceptionTableRefQueue = new ReferenceQueue<Object>();
     //     exceptionTable = new ExceptionNode[EXCEPTION_MAP_CAPACITY];
     //     try {
-    //         UNSAFE = sun.misc.Unsafe.getUnsafe();
-    //         statusOffset = UNSAFE.objectFieldOffset
-    //             (ForkJoinTask.class.getDeclaredField("status"));
+    //         U = sun.misc.Unsafe.getUnsafe();
+    //         Class<?> k = ForkJoinTask.class;
+    //         STATUS = U.objectFieldOffset
+    //             (k.getDeclaredField("status"));
     //     } catch (Exception e) {
     //         throw new Error(e);
     //     }
@@ -364,8 +458,11 @@ private:
  */
 class AdaptedRunnable
     : public ForkJoinTask
+    , public IRunnableFuture
 {
 public:
+    CAR_INTERFACE_DECL()
+
     AdaptedRunnable(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* result);
@@ -383,9 +480,64 @@ public:
 
 public:
     AutoPtr<IRunnable> mRunnable;
-    AutoPtr<IInterface> mResultOnCompletion;
     AutoPtr<IInterface> mResult;
 //        static Int64 serialVersionUID = 5232453952276885070L;
+};
+
+/**
+ * Adaptor for Runnables without results
+ */
+class AdaptedRunnableAction
+    : public ForkJoinTask
+    , public IRunnableFuture
+{
+public:
+    CAR_INTERFACE_DECL()
+
+    AdaptedRunnableAction(
+        /* [in] */ IRunnable* runnable);
+
+    CARAPI GetRawResult(
+        /* [out] */ IInterface** outface);
+
+    CARAPI SetRawResult(
+        /* [in] */ IInterface* v);
+
+    CARAPI Exec(
+        /* [out] */ Boolean* res);
+
+    void Run();
+
+public:
+    AutoPtr<IRunnable> mRunnable;
+//    private static final long serialVersionUID = 5232453952276885070L;
+};
+
+/**
+ * Adaptor for Runnables in which failure forces worker exception
+ */
+class RunnableExecuteAction
+    : public ForkJoinTask
+{
+public:
+    RunnableExecuteAction(
+        /* [in] */ IRunnable* runnable);
+
+    CARAPI GetRawResult(
+        /* [out] */ IInterface** outface);
+
+    CARAPI SetRawResult(
+        /* [in] */ IInterface* v);
+
+    CARAPI Exec(
+        /* [out] */ Boolean* res);
+
+    void InternalPropagateException(
+        /* [in] */ IThrowable* ex);
+
+public:
+    AutoPtr<IRunnable> mRunnable;
+//    private static final long serialVersionUID = 5232453952276885070L;
 };
 
 /**
@@ -418,5 +570,7 @@ public:
 } // namespace Concurrent
 } // namespace Utility
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::ForkJoinTask::ExceptionNode, IInterface)
 
 #endif //__ELASTOS_UTILITY_FORKJOINTASK_H__

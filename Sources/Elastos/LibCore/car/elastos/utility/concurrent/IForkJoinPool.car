@@ -600,21 +600,20 @@ module
             [out] Boolean* value);
 
         /**
-         * Returns true if terminating or terminated. Used by ForkJoinWorkerThread.
-         */
-        IsAtLeastTerminating(
-            [out] Boolean* value);
-
-        /**
-         * Possibly blocks the given worker waiting for joinMe to
-         * complete or timeout.
+         * If called by a ForkJoinTask operating in this pool, equivalent
+         * in effect to {@link ForkJoinTask#helpQuiesce}. Otherwise,
+         * waits and/or attempts to assist performing tasks until this
+         * pool {@link #isQuiescent} or the indicated timeout elapses.
          *
-         * @param joinMe the task
-         * @param nanos the wait time for underlying Object.wait
+         * @param timeout the maximum time to wait
+         * @param unit the time unit of the timeout argument
+         * @return {@code true} if quiescent; {@code false} if the
+         * timeout elapsed.
          */
-        TimedAwaitJoin(
-            [in] IForkJoinTask* joinMe,
-            [in] Int64 nanos);
+        AwaitQuiescence(
+            [in] Int64 timeout,
+            [in] ITimeUnit* unit,
+            [out] Boolean* result);
     }
 
     /**

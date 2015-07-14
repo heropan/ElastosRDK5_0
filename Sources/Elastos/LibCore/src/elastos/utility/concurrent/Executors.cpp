@@ -346,7 +346,7 @@ Executors::FinalizableDelegatedExecutorService::FinalizableDelegatedExecutorServ
 
 void Executors::FinalizableDelegatedExecutorService::Finalize()
 {
-//    super.shutdown();
+    DelegatedExecutorService::Shutdown();
 }
 
 //==============================================
