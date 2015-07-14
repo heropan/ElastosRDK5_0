@@ -450,8 +450,7 @@ module
          *
          * @return this encoder.
          */
-        Reset(
-            [out] ICharsetEncoder** encoder);
+        Reset();
 
         /**
          * Gets this encoder's <code>CodingErrorAction</code> when unmappable

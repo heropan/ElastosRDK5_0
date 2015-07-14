@@ -10,7 +10,7 @@ namespace IO {
 ServerSocketChannelImpl::ServerSocketAdapter::ServerSocketAdapter(
     /* [in] */ ServerSocketChannelImpl* aChannelImpl)
 {
-    // this.channelImpl = aChannelImpl;
+    mChannelImpl = aChannelImpl;
 }
 
 CAR_INTERFACE_IMPL(ServerSocketChannelImpl, Object, IFileDescriptorChannel)
@@ -18,15 +18,20 @@ CAR_INTERFACE_IMPL(ServerSocketChannelImpl, Object, IFileDescriptorChannel)
 ECode ServerSocketChannelImpl::ServerSocketAdapter::Accept(
     /* [out] */ ISocket** socket)
 {
-    // if (!isBound()) {
-    //     throw new IllegalBlockingModeException();
+    VALIDATE_NOT_NULL(socket)
+
+    // Boolean isflag = FALSE;
+    // if (!mChannelImpl->IsBound(&isflag), isflag) {
+    //     // throw new IllegalBlockingModeException();
+    //     return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     // }
-    // SocketChannel sc = channelImpl.accept();
-    // if (sc == null) {
-    //     throw new IllegalBlockingModeException();
+    // AutoPtr<ISocketChannel> sc;
+    // mChannelImpl->Accept((ISocketChannel**)&sc);
+    // if (sc == NULL) {
+    //     // throw new IllegalBlockingModeException();
+    //     return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     // }
-    // return sc.socket();
-    return NOERROR;
+    // return sc->Socket(socket);
 }
 
 ECode ServerSocketChannelImpl::ServerSocketAdapter::ImplAccept(
@@ -58,16 +63,16 @@ ECode ServerSocketChannelImpl::ServerSocketAdapter::ImplAccept(
 ECode ServerSocketChannelImpl::ServerSocketAdapter::GetChannel(
     /* [out] */ IServerSocketChannel** channel)
 {
-    // return channelImpl;
+    // return mChannelImpl;
     return NOERROR;
 }
 
 ECode ServerSocketChannelImpl::ServerSocketAdapter::Close()
 {
-    // synchronized (channelImpl) {
+    // synchronized (mChannelImpl) {
     //     super.close();
-    //     if (channelImpl.isOpen()) {
-    //         channelImpl.close();
+    //     if (mChannelImpl.isOpen()) {
+    //         mChannelImpl.close();
     //     }
     // }
     return NOERROR;

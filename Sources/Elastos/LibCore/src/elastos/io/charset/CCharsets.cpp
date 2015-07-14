@@ -18,7 +18,6 @@ AutoPtr<ICharset> CreateCharSet(
     /* [in] */ const String& name)
 {
     AutoPtr<ICharset> charset;
-    // ASSERT_SUCCEEDED(Charset::ForName(name, (ICharset **)&charset));
     Charset::ForName(name, (ICharset **)&charset);
     return charset;
 }

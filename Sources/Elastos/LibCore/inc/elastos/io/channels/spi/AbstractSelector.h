@@ -5,6 +5,7 @@
 
 using Elastos::Core::IRunnable;
 using Elastos::IO::Channels::Selector;
+using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 
 namespace Elastos {
 namespace IO {
@@ -66,7 +67,7 @@ protected:
         /* [in] */ ISelectionKey* key);
 
 private:
-    Boolean mIsOpen;
+    AutoPtr<IAtomicBoolean> mIsOpen;
     AutoPtr<ISelectorProvider> mSelectorProvider;
     AutoPtr<ISet> mCancelledKeySet;
     AutoPtr<IRunnable> mWakeupRunnable;

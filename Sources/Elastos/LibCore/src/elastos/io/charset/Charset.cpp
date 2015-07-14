@@ -5,10 +5,16 @@
 #include "CStringWrapper.h"
 #include "AutoLock.h"
 #include "CSystem.h"
+#include "CTreeMap.h"
+#include "CoreUtils.h"
+#include "Collections.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::CStringWrapper;
+using Elastos::Utility::ITreeMap;
+using Elastos::Utility::CTreeMap;
+using Elastos::Utility::Collections;
 using Libcore::ICU::NativeConverter;
 
 namespace Elastos {
@@ -50,29 +56,39 @@ ECode Charset::Init(
     return NOERROR;
 }
 
-// TODO:
-// public static SortedMap<String, Charset> availableCharsets() {
-//     // Start with a copy of the built-in charsets...
-//     TreeMap<String, Charset> charsets = new TreeMap<String, Charset>(String.CASE_INSENSITIVE_ORDER);
-//     for (String charsetName : NativeConverter.getAvailableCharsetNames()) {
-//         Charset charset = NativeConverter.charsetForName(charsetName);
-//         charsets.put(charset.name(), charset);
-//     }
+ECode Charset::AvailableCharsets(
+    /* [out] */ ISortedMap** outsm)
+{
+    // Start with a copy of the built-in charsets...
+    AutoPtr<ITreeMap> charsets;
+    CTreeMap::New(/* String.CASE_INSENSITIVE_ORDER */ (ITreeMap**)&charsets);
+    AutoPtr< ArrayOf<String> > outstring;
+    NativeConverter::GetAvailableCharsetNames((ArrayOf<String>**)&outstring);
+    for (Int32 i = 0; i < outstring->GetLength(); i++) {
+        AutoPtr<ICharset> charset;
+        assert(0 && "TODO");
+        // NativeConverter::CharsetForName((*outstring)[i], (ICharset**)&Charset);
+        String name;
+        charset->GetName(&name);
+        AutoPtr<IInterface> outface;
+        charsets->Put(CoreUtils::Convert(name), charset, (IInterface**)&outface);
+    }
 
-//     // Add all charsets provided by all charset providers...
-//     for (CharsetProvider charsetProvider : ServiceLoader.load(CharsetProvider.class, null)) {
-//         Iterator<Charset> it = charsetProvider.charsets();
-//         while (it.hasNext()) {
-//             Charset cs = it.next();
-//             // A CharsetProvider can't override a built-in Charset.
-//             if (!charsets.containsKey(cs.name())) {
-//                 charsets.put(cs.name(), cs);
-//             }
-//         }
-//     }
+    // Add all charsets provided by all charset providers...
+    assert(0 && "TODO");
+    // for (CharsetProvider charsetProvider : ServiceLoader.load(CharsetProvider.class, null)) {
+    //     Iterator<Charset> it = charsetProvider.charsets();
+    //     while (it.hasNext()) {
+    //         Charset cs = it.next();
+    //         // A CharsetProvider can't override a built-in Charset.
+    //         if (!charsets.containsKey(cs.name())) {
+    //             charsets.put(cs.name(), cs);
+    //         }
+    //     }
+    // }
 
-//     return Collections.unmodifiableSortedMap(charsets);
-// }
+    return Collections::UnmodifiableSortedMap(ISortedMap::Probe(charsets), outsm);
+}
 
 ECode Charset::ForName(
     /* [in] */ const String& charsetName,
@@ -106,7 +122,7 @@ ECode Charset::ForName(
     }
 
     // Does a configured CharsetProvider have this charset?
-    // TODO:
+    assert(0 && "TODO");
     // for (CharsetProvider charsetProvider : ServiceLoader.load(CharsetProvider.class, null)) {
     //     cs = charsetProvider.charsetForName(charsetName);
     //     if (cs != null) {
@@ -148,8 +164,8 @@ ECode Charset::Aliases(
     /* [out] */ ISet** aliases)
 {
     assert(0 && "TODO");
-    // return Collections::unmodifiableSet(this.aliasesSet);
-    return E_NOT_IMPLEMENTED;
+    // return Collections::UnmodifiableSet(mAliasesSet, aliases);
+    return NOERROR;
 }
 
 ECode Charset::DisplayName(

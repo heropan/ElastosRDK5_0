@@ -11,11 +11,10 @@ namespace IO {
 ECode NioUtils::FreeDirectBuffer(
     /* [in] */ IByteBuffer* buffer)
 {
-    assert(0 && "TODO");
-    // if (buffer == null) {
-    //     return;
-    // }
-    // ((DirectByteBuffer) buffer).free();
+    if (buffer == NULL) {
+        return NOERROR;
+    }
+    return ((DirectByteBuffer*) buffer)->Free();
 }
 
 AutoPtr<IFileDescriptor> NioUtils::GetFD(

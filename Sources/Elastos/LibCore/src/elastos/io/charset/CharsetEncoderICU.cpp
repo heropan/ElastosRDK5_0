@@ -1,8 +1,11 @@
 
 #include "CCoderResult.h"
 #include "CharsetEncoderICU.h"
-//#include "NativeConverter.h"
+#include "NativeConverter.h"
+#include "CharBuffer.h"
 #include <unicode/utypes.h>
+
+using Libcore::ICU::NativeConverter;
 
 namespace Elastos {
 namespace IO {
@@ -43,7 +46,7 @@ CharsetEncoderICU::CharsetEncoderICU()
 
 CharsetEncoderICU::~CharsetEncoderICU()
 {
-    // NativeConverter::CloseConverter(mConverterHandle);
+    NativeConverter::CloseConverter(mConverterHandle);
     mConverterHandle=0;
 }
 
@@ -64,15 +67,47 @@ ECode CharsetEncoderICU::CanEncode(
     /* [in] */ Char32 c,
     /* [out] */ Boolean* result)
 {
-    return CanEncode((Int32)c, result);
+    AutoPtr< ArrayOf<Char32> > chararr = ArrayOf<Char32>::Alloc(1);
+    (*chararr)[0] = c;
+    AutoPtr<ICharBuffer> outsq;
+    CharBuffer::Wrap(chararr, (ICharBuffer**)&outsq);
+    return CanEncode(ICharSequence::Probe(outsq), result);
 }
 
 ECode CharsetEncoderICU::CanEncode(
-    /* [in] */ Int32 codePoint,
+    /* [in] */ ICharSequence* sequence,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    // *result = NativeConverter::CanEncode(mConverterHandle, codePoint);
+    assert(0 && "TODO");
+    // CharBuffer cb;
+    // if (sequence instanceof CharBuffer) {
+    //     cb = ((CharBuffer) sequence).duplicate();
+    // } else {
+    //     cb = CharBuffer.wrap(sequence);
+    // }
+
+    // if (state == FLUSHED) {
+    //     reset();
+    // }
+    // if (state != RESET) {
+    //     throw illegalStateException();
+    // }
+
+    // CodingErrorAction originalMalformedInputAction = malformedInputAction;
+    // CodingErrorAction originalUnmappableCharacterAction = unmappableCharacterAction;
+    // onMalformedInput(CodingErrorAction.REPORT);
+    // onUnmappableCharacter(CodingErrorAction.REPORT);
+    // try {
+    //     encode(cb);
+    //     return true;
+    // } catch (CharacterCodingException e) {
+    //     return false;
+    // } finally {
+    //     onMalformedInput(originalMalformedInputAction);
+    //     onUnmappableCharacter(originalUnmappableCharacterAction);
+    //     reset();
+    // }
     return NOERROR;
 }
 
@@ -88,29 +123,31 @@ ECode CharsetEncoderICU::NewInstance(
     ECode ecode = NOERROR;
     //try {
     {
-        // ecode = NativeConverter::OpenConverter(icuCanonicalName, &address);
-        // if(FAILED(ecode)) goto EXIT;
+        ecode = NativeConverter::OpenConverter(icuCanonicalName, &address);
+        if(FAILED(ecode)) goto EXIT;
 
-        // Float averageBytesPerChar = NativeConverter::GetAveBytesPerChar(address);
-        // Float maxBytesPerChar = NativeConverter::GetMaxBytesPerChar(address);
-        // AutoPtr< ArrayOf<Byte> > replacement;
-        // MakeReplacement(icuCanonicalName, address, (ArrayOf<Byte>**)&replacement);
-        // AutoPtr<CharsetEncoderICU> result = new CharsetEncoderICU();
-        // result->Init(cs, averageBytesPerChar, maxBytesPerChar, (*replacement), address);
+        Float averageBytesPerChar = 0;
+        NativeConverter::GetAveBytesPerChar(address, &averageBytesPerChar);
+        Int32 maxBytesPerChar = 0;
+        NativeConverter::GetMaxBytesPerChar(address, &maxBytesPerChar);
+        AutoPtr< ArrayOf<Byte> > replacement;
+        MakeReplacement(icuCanonicalName, address, (ArrayOf<Byte>**)&replacement);
+        AutoPtr<CharsetEncoderICU> result = new CharsetEncoderICU();
+        result->Init(cs, averageBytesPerChar, maxBytesPerChar, replacement, address);
 
-        // *encoderICU = result;
-        // REFCOUNT_ADD(*encoderICU);
+        *encoderICU = result;
+        REFCOUNT_ADD(*encoderICU);
 
-        // address = 0; // CharsetEncoderICU has taken ownership; its finalizer will do the free.
+        address = 0; // CharsetEncoderICU has taken ownership; its finalizer will do the free.
         // } finally {
-        //     if (address != 0) {
-        //         NativeConverter.closeConverter(address);
-        //     }
+        if (address != 0) {
+            NativeConverter::CloseConverter(address);
+        }
         // }
     }
 EXIT:
     if (address != 0) {
-        // NativeConverter::CloseConverter(address);
+        NativeConverter::CloseConverter(address);
     }
 
     return ecode;
@@ -136,7 +173,7 @@ ECode CharsetEncoderICU::ImplOnUnmappableCharacter(
 
 ECode CharsetEncoderICU::ImplReset()
 {
-    // NativeConverter::ResetCharToByte(mConverterHandle);
+    NativeConverter::ResetCharToByte(mConverterHandle);
     (*mData)[INPUT_OFFSET] = 0;
     (*mData)[OUTPUT_OFFSET] = 0;
     (*mData)[INVALID_CHARS] = 0;
@@ -165,8 +202,7 @@ ECode CharsetEncoderICU::ImplFlush(
     (*mData)[INVALID_CHARS] = 0; // Make sure we don't see earlier errors.
 
     Int32 error;
-    assert(0 && "TODO");
-    // NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
+    NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, TRUE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {
             CCoderResult::GetOVERFLOW(result);
@@ -209,7 +245,7 @@ ECode CharsetEncoderICU::EncodeLoop(
     //try {
     Int32 error;
     ECode ecode = NOERROR;
-    // NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, FALSE, &error);
+    NativeConverter::Encode(mConverterHandle, mInput, mInEnd, mOutput, mOutEnd, mData, FALSE, &error);
     if (U_FAILURE(UErrorCode(error))) {
         if (error == U_BUFFER_OVERFLOW_ERROR) {
             CCoderResult::GetOVERFLOW(result);
@@ -264,7 +300,7 @@ ECode CharsetEncoderICU::MakeReplacement(
 
 ECode CharsetEncoderICU::UpdateCallback()
 {
-    // NativeConverter::SetCallbackEncode(mConverterHandle, this);
+    NativeConverter::SetCallbackEncode(mConverterHandle, this);
     return NOERROR;
 }
 

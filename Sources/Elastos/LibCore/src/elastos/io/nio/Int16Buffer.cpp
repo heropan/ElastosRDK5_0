@@ -2,9 +2,12 @@
 #include "Int16Buffer.h"
 #include "CoreUtils.h"
 #include "CArrayOf.h"
+#include "Int16ArrayBuffer.h"
+#include "Arrays.h"
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -31,8 +34,8 @@ ECode Int16Buffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    assert(0 && "TODO");
-    // *buf = (IInt16Buffer*) new ReadWriteInt16ArrayBuffer(capacity);
+    AutoPtr< ArrayOf<Int16> > res = ArrayOf<Int16>::Alloc(capacity);
+    *buf = (IInt16Buffer*) new Int16ArrayBuffer(res);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -48,16 +51,16 @@ ECode Int16Buffer::Wrap(
     /* [in] */ ArrayOf<Int16>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int16Count,
-    /* [out] */ IInt16Buffer** buf)
+    /* [out] */ IInt16Buffer** buffer)
 {
-    VALIDATE_NOT_NULL(buf);
+    VALIDATE_NOT_NULL(buffer);
 
-    assert(0 && "TODO");
-    // Arrays.checkOffsetAndCount(array.length, start, shortCount);
-    // ShortBuffer buf = new ShortArrayBuffer(array);
-    // buf.position = start;
-    // buf.limit = start + shortCount;
-    // return buf;
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int16Count));
+    AutoPtr<Int16Buffer> buf = new Int16ArrayBuffer(array);
+    buf->mPosition = start;
+    buf->mLimit = start + int16Count;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 

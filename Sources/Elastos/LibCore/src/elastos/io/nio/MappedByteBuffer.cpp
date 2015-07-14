@@ -1,17 +1,14 @@
 
 #include "MappedByteBuffer.h"
-//#include "ReadOnlyDirectByteBuffer.h"
-//#include "ReadWriteDirectByteBuffer.h"
-// #include "CLibcore.h"
-// #include "COsConstants.h"
+#include "CLibcore.h"
+#include "OsConstants.h"
 
 using Elastos::IO::Channels::FileChannelMapMode_READ_ONLY;
 using Elastos::IO::Channels::FileChannelMapMode_READ_WRITE;
-// using Libcore::IO::CLibcore;
-// using Libcore::IO::COsConstants;
+using Libcore::IO::CLibcore;
 using Libcore::IO::ILibcore;
 using Libcore::IO::IOs;
-// using Elastos::Droid::System::IOsConstants;
+using Elastos::Droid::System::OsConstants;
 
 namespace Elastos {
 namespace IO {
@@ -45,25 +42,14 @@ ECode MappedByteBuffer::IsLoaded(
     *isLoaded = FALSE;
     Int32 pageSize = 0;
     Int64 tmpSize = 0;
-    AutoPtr<ILibcore> libcore;
-    AutoPtr<IOs> os;
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore));
-    libcore->GetOs((IOs**)&os);
-    // AutoPtr<IOsConstants> osConstans;
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(COsConstants::AcquireSingleton((IOsConstants**)&osConstans))
-    Int32 SC_PAGE_SIZE = 0;
-    assert(0 && "TODO");
-    // FAIL_RETURN(osConstans->GetOsConstant(String("_SC_PAGE_SIZE"), &SC_PAGE_SIZE))
-    FAIL_RETURN(os->Sysconf(SC_PAGE_SIZE, &tmpSize))
+    FAIL_RETURN(CLibcore::sOs->Sysconf(OsConstants::__SC_PAGE_SIZE, &tmpSize))
     pageSize = (Int32) tmpSize;
     Int32 pageOffset = (Int32) (address % pageSize);
     address -= pageOffset;
     size += pageOffset;
     Int32 pageCount = (Int32) ((size + pageSize - 1) / pageSize);
     AutoPtr< ArrayOf<Byte> > vector = ArrayOf<Byte>::Alloc(pageCount);
-    FAIL_RETURN(os->Mincore(address, size, vector))
+    FAIL_RETURN(CLibcore::sOs->Mincore(address, size, vector))
     for (Int32 i = 0; i < vector->GetLength(); ++i) {
         if (((*vector)[i] & 1) != 1) {
             *isLoaded = FALSE;
@@ -80,13 +66,8 @@ ECode MappedByteBuffer::IsLoaded(
 ECode MappedByteBuffer::Load()
 {
     // try {
-    AutoPtr<ILibcore> libcore;
-    AutoPtr<IOs> os;
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
-    libcore->GetOs((IOs**)&os);
-    ASSERT_SUCCEEDED(os->Mlock(mBlock->ToInt64(), mBlock->GetSize()))
-    ASSERT_SUCCEEDED(os->Munlock(mBlock->ToInt64(), mBlock->GetSize()))
+    ASSERT_SUCCEEDED(CLibcore::sOs->Mlock(mBlock->ToInt64(), mBlock->GetSize()))
+    ASSERT_SUCCEEDED(CLibcore::sOs->Munlock(mBlock->ToInt64(), mBlock->GetSize()))
     // } catch (ErrnoException ignored) {
     // }
     return NOERROR;
@@ -96,18 +77,8 @@ ECode MappedByteBuffer::Force()
 {
     if (mMapMode == FileChannelMapMode_READ_WRITE) {
     //     try {
-        AutoPtr<ILibcore> libcore;
-        AutoPtr<IOs> os;
-        assert(0 && "TODO");
-        // ASSERT_SUCCEEDED(CLibcore::AcquireSingleton((ILibcore**)&libcore))
-        libcore->GetOs((IOs**)&os);
-        // AutoPtr<IOsConstants> osConstans;
-        assert(0 && "TODO");
-        // ASSERT_SUCCEEDED(COsConstants::AcquireSingleton((IOsConstants**)&osConstans))
-        Int32 MS_SYNC = 0;
-        assert(0 && "TODO");
-        // FAIL_RETURN(osConstans->GetOsConstant(String("MS_SYNC"), &MS_SYNC))
-        FAIL_RETURN(os->Msync(mBlock->ToInt64(), mBlock->GetSize(), MS_SYNC))
+        Int32 MS_SYNC = OsConstants::_MS_SYNC;
+        FAIL_RETURN(CLibcore::sOs->Msync(mBlock->ToInt64(), mBlock->GetSize(), MS_SYNC))
     //     } catch (ErrnoException errnoException) {
     //         // The RI doesn't throw, presumably on the assumption that you can't get into
     //         // a state where msync(2) could return an error.

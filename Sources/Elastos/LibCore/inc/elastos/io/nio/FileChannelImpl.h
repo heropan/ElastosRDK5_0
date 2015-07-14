@@ -6,7 +6,6 @@
 #include "IoVec.h"
 
 using Elastos::Core::IComparator;
-// using Elastos::Droid::System::IOsConstants;
 using Elastos::IO::Channels::FileChannel;
 using Elastos::IO::Channels::IFileChannel;
 using Elastos::IO::Channels::IFileLock;
@@ -14,6 +13,7 @@ using Elastos::IO::Channels::FileLock;
 using Elastos::IO::Channels::IReadableByteChannel;
 using Elastos::IO::Channels::IWritableByteChannel;
 using Elastos::IO::Channels::FileChannelMapMode;
+using Elastos::Utility::ISortedSet;
 
 namespace Elastos {
 namespace IO {
@@ -23,9 +23,7 @@ class FileChannelImpl
     , public IFileChannelImpl
 {
 private:
-    class FileLockImpl
-        : public FileLock
-        , public IFileLock
+    class FileLockImpl : public FileLock
     {
     public:
         FileLockImpl(
@@ -33,8 +31,6 @@ private:
             /* [in] */ Int64 position,
             /* [in] */ Int64 size,
             /* [in] */ Boolean shared);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Channel(
             /* [out] */ IFileChannel** channel);
@@ -63,6 +59,23 @@ private:
 
     private:
         Boolean mIsReleased;
+    };
+
+    class FileLockComparator
+        : public Object
+        , public IComparator
+    {
+    public:
+        FileLockComparator();
+
+        ~FileLockComparator();
+
+        CAR_INTERFACE_DECL();
+
+        CARAPI Compare(
+            /* [in] */ IInterface* lhs,
+            /* [in] */ IInterface* rhs,
+            /* [out] */ Int32* result);
     };
 
 public:
@@ -195,7 +208,8 @@ private:
         /* [in] */ Int64 position,
         /* [in] */ Int64 size,
         /* [in] */ Boolean shared,
-        /* [in] */ Boolean wait);
+        /* [in] */ Boolean wait,
+        /* [out] */ IFileLock** outlock);
 
     CARAPI_(Int64) TranslateLockLength(
         /* [in] */ Int64 byteCount);
@@ -224,8 +238,8 @@ private:
     AutoPtr<ICloseable> mStream;
     AutoPtr<IFileDescriptor> mFd;
     Int32 mMode;
-//    Set<IFileLock*> mLocks;
-    // AutoPtr<IOsConstants> mOsConstants;
+    AutoPtr<ISortedSet> mLocks;
+    static AutoPtr<IComparator> LOCK_COMPARATOR;
 };
 
 } // namespace IO

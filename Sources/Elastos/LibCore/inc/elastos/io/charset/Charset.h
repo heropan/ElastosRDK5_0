@@ -11,7 +11,7 @@ using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::Set;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ISet;
-
+using Elastos::Utility::ISortedMap;
 
 namespace Elastos {
 namespace IO {
@@ -32,9 +32,8 @@ public:
         /* [in] */ const String& canonicalName,
         /* [in] */ ArrayOf<String>* aliases);
 
-    // TODO:
-    // static CARAPI availableCharsets(
-    //  /* [out] */ SortedMap<String, Charset>** charsets);
+    static CARAPI AvailableCharsets(
+        /* [out] */ ISortedMap** charsets);
 
     static CARAPI ForName(
         /* [in] */ const String& charsetName,

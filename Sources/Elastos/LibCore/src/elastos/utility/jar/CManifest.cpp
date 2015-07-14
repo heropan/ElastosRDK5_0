@@ -357,8 +357,7 @@ ECode CManifest::WriteEntry(
     FAIL_RETURN(os->Write(bytes))
     FAIL_RETURN(os->Write(VALUE_SEPARATOR))
 
-    AutoPtr<ICharsetEncoder> ec;
-    FAIL_RETURN(encoder->Reset((ICharsetEncoder**)&ec))
+    FAIL_RETURN(encoder->Reset())
     IBuffer::Probe(bBuf)->Clear();
     IBuffer::Probe(bBuf)->SetLimit(LINE_LENGTH_LIMIT - nameString.GetLength() - 2);
 

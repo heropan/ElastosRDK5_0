@@ -15,6 +15,12 @@ CAR_INTERFACE_IMPL(CCharsetHelper, Singleton, ICharsetHelper)
 
 CAR_SINGLETON_IMPL(CCharsetHelper)
 
+ECode CCharsetHelper::AvailableCharsets(
+    /* [out] */ ISortedMap** outsm)
+{
+    return Charset::AvailableCharsets(outsm);
+}
+
 ECode CCharsetHelper::ForName(
     /* [in] */ const String& charsetName,
     /* [out] */ ICharset** charset)

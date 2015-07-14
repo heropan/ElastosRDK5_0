@@ -6,6 +6,7 @@ module
     interface Elastos.IO.ICharBuffer;
     interface Elastos.IO.IByteBuffer;
     interface Elastos.Utility.ILocale;
+    interface Elastos.Utility.ISortedMap;
 
     namespace Elastos {
     namespace IO {
@@ -316,8 +317,8 @@ module
          * @sa #forName
          * @return an immutable case-insensitive map from canonical names to {Charset} instances
          */
-        // TODO:
-        // public static SortedMap<String, Charset> availableCharsets();
+        AvailableCharsets(
+            [out] ISortedMap** outsm);
 
         /**
          * Returns a {Charset} instance for the named charset.

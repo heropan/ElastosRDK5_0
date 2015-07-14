@@ -118,13 +118,13 @@ ECode DoubleBuffer::Equals(
     *rst = FALSE;
     VALIDATE_NOT_NULL(other);
 
-    if (IDoubleBuffer::Probe(other) == NULL) return NOERROR;
-    DoubleBuffer* otherObj = (DoubleBuffer*)IDoubleBuffer::Probe(other);
+    AutoPtr<IDoubleBuffer> otherObj = (IDoubleBuffer*)(other->Probe(EIID_IDoubleBuffer));
+    if (otherObj == NULL) return NOERROR;
 
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
     GetRemaining(&remaining);
-    otherObj->GetRemaining(&otherRemaining);
+    IBuffer::Probe(otherObj)->GetRemaining(&otherRemaining);
     if (remaining != otherRemaining) {
         *rst = FALSE;
         return NOERROR;
@@ -132,7 +132,7 @@ ECode DoubleBuffer::Equals(
 
     Int32 otherPosition = 0;
     Int32 myPosition = mPosition;
-    otherObj->GetPosition(&otherPosition);
+    IBuffer::Probe(otherObj)->GetPosition(&otherPosition);
     Boolean equalSoFar = TRUE;
     Double thisValue = 0.0;
     Double otherValue = 0.0;

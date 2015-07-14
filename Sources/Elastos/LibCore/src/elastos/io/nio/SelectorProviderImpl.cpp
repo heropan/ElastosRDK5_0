@@ -1,55 +1,77 @@
 
 #include "SelectorProviderImpl.h"
+#include "DatagramChannelImpl.h"
+#include "PipeImpl.h"
+#include "CSelectorImpl.h"
+#include "ServerSocketChannelImpl.h"
+#include "SocketChannelImpl.h"
+
+using Elastos::IO::Channels::Spi::EIID_ISelectorProvider;
 
 namespace Elastos {
 namespace IO {
 
 ECode SelectorProviderImpl::OpenDatagramChannel(
-    /* [out] */ Elastos::IO::Channels::IDatagramChannel** ppChannel)
+    /* [out] */ IDatagramChannel** ppChannel)
 {
-    // return new DatagramChannelImpl(this);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(ppChannel)
+
+    assert(0 && "TODO");
+    // *ppChannel = (IDatagramChannel*) new DatagramChannelImpl(this);
+    // REFCOUNT_ADD(*ppChannel)
+    return NOERROR;
 }
 
 ECode SelectorProviderImpl::OpenPipe(
-    /* [out] */ Elastos::IO::Channels::IPipe** ppPipe)
+    /* [out] */ IPipe** ppPipe)
 {
-    // return new PipeImpl(this);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(ppPipe)
+
+    *ppPipe = (IPipe*) new PipeImpl(this);
+    REFCOUNT_ADD(*ppPipe)
+    return NOERROR;
 }
 
 ECode SelectorProviderImpl::OpenSelector(
-    /* [out] */ Elastos::IO::Channels::Spi::IAbstractSelector** ppSelector)
+    /* [out] */ IAbstractSelector** ppSelector)
 {
-    // return new SelectorImpl(this);
-    return E_NOT_IMPLEMENTED;
+    return CSelectorImpl::New(THIS_PROBE(ISelectorProvider), ppSelector);
 }
 
 ECode SelectorProviderImpl::OpenServerSocketChannel(
-    /* [out] */ Elastos::IO::Channels::IServerSocketChannel** ppChannel)
+    /* [out] */ IServerSocketChannel** ppChannel)
 {
-    // return new ServerSocketChannelImpl(this);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(ppChannel)
+
+    assert(0 && "TODO");
+    // *ppChannel = (IServerSocketChannel*) new ServerSocketChannelImpl(this);
+    // REFCOUNT_ADD(*ppChannel)
+    return NOERROR;
 }
 
 ECode SelectorProviderImpl::OpenSocketChannel(
-    /* [out] */ Elastos::IO::Channels::ISocketChannel** ppSocketChannel)
+    /* [out] */ ISocketChannel** ppSocketChannel)
 {
-    // return new SocketChannelImpl(this);
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(ppSocketChannel)
+
+    *ppSocketChannel = (ISocketChannel*) new SocketChannelImpl(this);
+    REFCOUNT_ADD(*ppSocketChannel)
+    return NOERROR;
 }
 
 ECode SelectorProviderImpl::InheritedChannel(
-    /* [out] */ Elastos::IO::Channels::IChannel** ppChanel)
+    /* [out] */ IChannel** ppChanel)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(ppChanel)
+
+    *ppChanel = NULL;
+    return NOERROR;
 }
 
 ECode SelectorProviderImpl::constructor()
 {
     // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 } // namespace IO

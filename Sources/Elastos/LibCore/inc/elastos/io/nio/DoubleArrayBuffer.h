@@ -38,7 +38,7 @@ public:
         /* [in] */ Int32 index,
         /* [out] */ Double* value);
 
-    CARAPI GetDoubles(
+    CARAPI Get(
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount);
@@ -73,16 +73,29 @@ public:
         /* [in] */ Int32 index,
         /* [in] */ Double d);
 
+    CARAPI Put(
+        /* [in] */ const ArrayOf<Double>& src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 doubleCount);
+
     CARAPI Slice(
         /* [out] */ IDoubleBuffer** buffer);
 
     CARAPI IsReadOnly(
         /* [out] */ Boolean* value);
 
+private:
+    static CARAPI_(AutoPtr<DoubleArrayBuffer>) Copy(
+        /* [in] */ DoubleArrayBuffer* other,
+        /* [in] */ Int32 markOfOther,
+        /* [in] */ Boolean isReadOnly);
+
 public:
     AutoPtr< ArrayOf<Double> > mBackingArray;
 
-    Int32 mOffset;
+    Int32 mArrayOffset;
+
+    Boolean mIsReadOnly;
 };
 
 } // namespace IO

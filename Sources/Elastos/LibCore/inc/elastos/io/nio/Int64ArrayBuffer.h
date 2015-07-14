@@ -31,14 +31,14 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ Boolean isReadOnly);
 
-    CARAPI GetInt64(
+    CARAPI Get(
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64(
+    CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Int64* value);
 
-    CARAPI GetInt64s(
+    CARAPI Get(
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count);
@@ -49,10 +49,51 @@ public:
     CARAPI GetOrder(
        /* [out] */ ByteOrder* byteOrder);
 
+    CARAPI AsReadOnlyBuffer(
+        /* [out] */ IInt64Buffer** buffer);
+
+    CARAPI Compact();
+
+    CARAPI Duplicate(
+        /* [out] */ IInt64Buffer** buffer);
+
+    CARAPI ProtectedArray(
+        /* [out, callee] */ ArrayOf<Int64>** array);
+
+    CARAPI ProtectedArrayOffset(
+        /* [out] */ Int32* offset);
+
+    CARAPI ProtectedHasArray(
+        /* [out] */ Boolean* hasArray);
+
+    CARAPI Put(
+        /* [in] */ Int64 d);
+
+    CARAPI Put(
+        /* [in] */ Int32 index,
+        /* [in] */ Int64 d);
+
+    CARAPI Put(
+        /* [in] */ const ArrayOf<Int64>& src,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int32 doubleCount);
+
+    CARAPI Slice(
+        /* [out] */ IInt64Buffer** buffer);
+
+    CARAPI IsReadOnly(
+        /* [out] */ Boolean* value);
+
+private:
+    static CARAPI_(AutoPtr<Int64ArrayBuffer>) Copy(
+        /* [in] */ Int64ArrayBuffer* other,
+        /* [in] */ Int32 markOfOther,
+        /* [in] */ Boolean isReadOnly);
+
 public:
     AutoPtr< ArrayOf<Int64> > mBackingArray;
 
-    Int32 mOffset;
+    Int32 mArrayOffset;
 
     Boolean mIsReadOnly;
 };

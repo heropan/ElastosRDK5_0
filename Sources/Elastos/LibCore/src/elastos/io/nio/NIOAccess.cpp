@@ -23,8 +23,8 @@ AutoPtr<IInterface> NIOAccess::GetBaseArray(
     Boolean isflag = FALSE;
     b->HasArray(&isflag);
     if (isflag) {
-        AutoPtr<IInterface> outface;
-        b->GetArray((IInterface**)&outface);
+        AutoPtr<IArrayOf> outface;
+        b->GetArray((IArrayOf**)&outface);
         return outface;
     }
 

@@ -2,9 +2,12 @@
 #include "Int64Buffer.h"
 #include "CArrayOf.h"
 #include "CoreUtils.h"
+#include "Int64ArrayBuffer.h"
+#include "Arrays.h"
 
-using Elastos::Core::CoreUtils;
 using Elastos::Core::CArrayOf;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -26,11 +29,13 @@ ECode Int64Buffer::Allocate(
 {
     VALIDATE_NOT_NULL(buf);
 
-    assert(0 && "TODO");
-    // if (capacity < 0) {
-    //     throw new IllegalArgumentException("capacity < 0: " + capacity);
-    // }
-    // return new LongArrayBuffer(new long[capacity]);
+    if (capacity < 0) {
+        // throw new IllegalArgumentException("capacity < 0: " + capacity);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr< ArrayOf<Int64> > res = ArrayOf<Int64>::Alloc(capacity);
+    *buf = (IInt64Buffer*) new Int64ArrayBuffer(res);
+    REFCOUNT_ADD(*buf)
     return NOERROR;
 }
 
@@ -45,16 +50,16 @@ ECode Int64Buffer::Wrap(
     /* [in] */ ArrayOf<Int64>* array,
     /* [in] */ Int32 start,
     /* [in] */ Int32 int64Count,
-    /* [out] */ IInt64Buffer** buf)
+    /* [out] */ IInt64Buffer** buffer)
 {
-    VALIDATE_NOT_NULL(buf);
+    VALIDATE_NOT_NULL(buffer);
 
-    assert(0 && "TODO");
-    // Arrays.checkOffsetAndCount(array.length, start, longCount);
-    // LongBuffer buf = new LongArrayBuffer(array);
-    // buf.position = start;
-    // buf.limit = start + longCount;
-    // return buf;
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int64Count));
+    AutoPtr<Int64Buffer> buf = new Int64ArrayBuffer(array);
+    buf->mPosition = start;
+    buf->mLimit = start + int64Count;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
