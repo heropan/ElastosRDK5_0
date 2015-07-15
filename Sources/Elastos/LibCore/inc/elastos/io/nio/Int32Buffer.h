@@ -25,7 +25,7 @@ class Int32Buffer
 public:
     Int32Buffer();
 
-    Int32Buffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Int64 effectiveDirectAddress);
 

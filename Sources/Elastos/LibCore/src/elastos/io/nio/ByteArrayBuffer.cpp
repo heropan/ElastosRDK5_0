@@ -7,6 +7,7 @@
 #include "ByteBufferAsInt32Buffer.h"
 #include "ByteBufferAsInt64Buffer.h"
 #include "CByteOrderHelper.h"
+#include "Math.h"
 
 using Libcore::IO::ISizeOf;
 using Libcore::IO::Memory;
@@ -14,60 +15,68 @@ using Libcore::IO::Memory;
 namespace Elastos {
 namespace IO {
 
-ByteArrayBuffer::ByteArrayBuffer(
-    /* [in] */ ArrayOf<Byte>* backingArray)
-    : ByteBuffer(backingArray->GetLength(), 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(0)
+
+ByteArrayBuffer::ByteArrayBuffer()
+    : mArrayOffset(0)
     , mIsReadOnly(FALSE)
+{}
+
+ECode ByteArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Byte>* backingArray)
 {
+    FAIL_RETURN(ByteBuffer::constructor(backingArray->GetLength(), 0))
+
     if (mArrayOffset + mBackingArray->GetLength() > mBackingArray->GetLength()) {
         // throw new IndexOutOfBoundsException("mBackingArray.length=" + mBackingArray.length +
                                               // ", capacity=" + capacity + ", mArrayOffset=" + mArrayOffset);
-        assert(0);
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
+
+    mBackingArray = backingArray;
+    return NOERROR;
 }
 
-ByteArrayBuffer::ByteArrayBuffer(
+ECode ByteArrayBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Byte>* backingArray,
-    /* [in] */ Int32 mArrayOffset,
-    /* [in] */ Boolean mIsReadOnly)
-    : ByteBuffer(capacity, 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(0)
-    , mIsReadOnly(FALSE)
+    /* [in] */ Int32 arrayOffset,
+    /* [in] */ Boolean isReadOnly)
 {
+    FAIL_RETURN(ByteBuffer::constructor(capacity, 0))
+
     if (mArrayOffset + capacity > mBackingArray->GetLength()) {
         // throw new IndexOutOfBoundsException("mBackingArray.length=" + mBackingArray.length +
                                               // ", capacity=" + capacity + ", mArrayOffset=" + mArrayOffset);
-        assert(0);
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
+    mBackingArray = backingArray;
+    mArrayOffset = arrayOffset;
+    mIsReadOnly = isReadOnly;
+    return NOERROR;
 }
 
-AutoPtr<ByteArrayBuffer> ByteArrayBuffer::Copy(
+ECode ByteArrayBuffer::Copy(
     /* [in] */ ByteArrayBuffer* other,
     /* [in] */ Int32 markOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ IByteBuffer** bab)
 {
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<ByteArrayBuffer> buf = new ByteArrayBuffer(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
+    AutoPtr<ByteArrayBuffer> buf = new ByteArrayBuffer();
+    FAIL_RETURN(buf->constructor(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
     buf->mLimit = other->mLimit;
     buf->mPosition = capvalue;
     buf->mMark = markOfOther;
-    return buf;
+    *bab = IByteBuffer::Probe(buf);
+    REFCOUNT_ADD(*bab)
+    return NOERROR;
 }
 
 ECode ByteArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ IByteBuffer** buffer)
 {
-    VALIDATE_NOT_NULL(buffer)
-
-    AutoPtr<ByteArrayBuffer> res = Copy(this, mMark, TRUE);
-    *buffer = res;
-    REFCOUNT_ADD(*buffer)
-    return NOERROR;
+    return Copy(this, mMark, TRUE, buffer);
 }
 
 
@@ -90,26 +99,20 @@ ECode ByteArrayBuffer::Compact()
 ECode ByteArrayBuffer::Duplicate(
     /* [out] */ IByteBuffer** buffer)
 {
-    VALIDATE_NOT_NULL(buffer)
-
-    AutoPtr<ByteArrayBuffer> res = Copy(this, mMark, mIsReadOnly);
-    *buffer = (IByteBuffer*) res->Probe(EIID_IByteBuffer);
-    REFCOUNT_ADD(*buffer)
-    return NOERROR;
+    return Copy(this, mMark, mIsReadOnly, buffer);
 }
 
 ECode ByteArrayBuffer::Slice(
     /* [out] */ IByteBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    AutoPtr<IByteBuffer> res = (IByteBuffer*) new ByteArrayBuffer(remainvalue,
-                                                                  mBackingArray,
-                                                                  mArrayOffset + mPosition,
-                                                                  mIsReadOnly);
-    *buffer = res;
+    AutoPtr<ByteArrayBuffer> res = new ByteArrayBuffer();
+    FAIL_RETURN(res->constructor(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = IByteBuffer::Probe(res);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -127,6 +130,7 @@ ECode ByteArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Byte>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -141,6 +145,7 @@ ECode ByteArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -154,13 +159,12 @@ ECode ByteArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* hasArray)
 {
     VALIDATE_NOT_NULL(hasArray)
+    *hasArray = TRUE;
 
     if (mIsReadOnly) {
         *hasArray = FALSE;
     }
-    else {
-        *hasArray = TRUE;
-    }
+
     return NOERROR;
 }
 
@@ -168,6 +172,7 @@ ECode ByteArrayBuffer::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
 
     if (mPosition == mLimit) {
         // throw new BufferUnderflowException();
@@ -182,6 +187,7 @@ ECode ByteArrayBuffer::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
 
     FAIL_RETURN(CheckIndex(index));
     *value = (*mBackingArray)[mArrayOffset + index];
@@ -205,6 +211,7 @@ ECode ByteArrayBuffer::GetChar(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
 
     Int32 newPosition = mPosition + ISizeOf::CHAR;
     if (newPosition > mLimit) {
@@ -222,6 +229,7 @@ ECode ByteArrayBuffer::GetChar(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
 
     FAIL_RETURN(CheckIndex(index, ISizeOf::CHAR));
     *value = (Char32) Memory::PeekInt16(mBackingArray, mArrayOffset + index, mOrder);
@@ -232,9 +240,9 @@ ECode ByteArrayBuffer::GetDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value)
-
-    assert(0 && "TODO");
-    // return Double.longBitsToDouble(getLong());
+    Int64 l;
+    GetInt64(&l);
+    *value = Elastos::Core::Math::Int64BitsToDouble(l);
     return NOERROR;
 }
 
@@ -244,8 +252,9 @@ ECode ByteArrayBuffer::GetDouble(
 {
     VALIDATE_NOT_NULL(value)
 
-    assert(0 && "TODO");
-    // return Double.longBitsToDouble(getLong(index));
+    Int64 l;
+    GetInt64(index, &l);
+    *value = Elastos::Core::Math::Int64BitsToDouble(l);
     return NOERROR;
 }
 
@@ -253,9 +262,9 @@ ECode ByteArrayBuffer::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value)
-
-    assert(0 && "TODO");
-    // return Float.intBitsToFloat(getInt());
+    Int32 i;
+    GetInt32(&i);
+    *value = Elastos::Core::Math::Int32BitsToFloat(i);
     return NOERROR;
 }
 
@@ -264,9 +273,9 @@ ECode ByteArrayBuffer::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value)
-
-    assert(0 && "TODO");
-    // return Float.intBitsToFloat(getInt(index));
+    Int32 i;
+    GetInt32(index, &i);
+    *value = Elastos::Core::Math::Int32BitsToFloat(i);
     return NOERROR;
 }
 
@@ -438,35 +447,31 @@ ECode ByteArrayBuffer::PutChar(
 ECode ByteArrayBuffer::PutDouble(
     /* [in] */ Double value)
 {
-    assert(0 && "TODO");
-    // return putLong(Double.doubleToRawLongBits(value));
-    return NOERROR;
+    Int64 l = Elastos::Core::Math::DoubleToRawInt64Bits(value);
+    return PutInt64(l);
 }
 
 ECode ByteArrayBuffer::PutDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
-    assert(0 && "TODO");
-    // return putLong(index, Double.doubleToRawLongBits(value));
-    return NOERROR;
+    Int64 l = Elastos::Core::Math::DoubleToRawInt64Bits(value);
+    return PutInt64(index, l);
 }
 
 ECode ByteArrayBuffer::PutFloat(
     /* [in] */ Float value)
 {
-    assert(0 && "TODO");
-    // return putInt(Float.floatToRawIntBits(value));
-    return NOERROR;
+    Int32 l = Elastos::Core::Math::FloatToRawInt32Bits(value);
+    return PutInt32(l);
 }
 
 ECode ByteArrayBuffer::PutFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
-    assert(0 && "TODO");
-    // return putInt(index, Float.floatToRawIntBits(value));
-    return NOERROR;
+    Int32 l = Elastos::Core::Math::FloatToRawInt32Bits(value);
+    return PutInt32(index, l);
 }
 
 ECode ByteArrayBuffer::PutInt16(

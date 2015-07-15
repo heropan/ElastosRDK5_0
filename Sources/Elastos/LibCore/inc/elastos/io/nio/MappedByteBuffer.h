@@ -29,7 +29,7 @@ class MappedByteBuffer
 public:
     MappedByteBuffer();
 
-    MappedByteBuffer(
+    CARAPI constructor(
         /* [in] */ MemoryBlock* block,
         /* [in] */ Int32 capacity,
         /* [in] */ FileChannelMapMode mapMode,

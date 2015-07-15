@@ -477,7 +477,9 @@ ECode FileChannelImpl::Map(
     AutoPtr<MemoryBlock> block;
     MemoryBlock::Mmap(mFd.Get(), alignment, size + offset, mode, (MemoryBlock**)&block);
 
-    AutoPtr<IMappedByteBuffer> mbb = (IMappedByteBuffer*) new DirectByteBuffer(block, (Int32) size, offset, (mode == FileChannelMapMode_READ_ONLY), mode);
+    AutoPtr<DirectByteBuffer> db = new DirectByteBuffer();
+    FAIL_RETURN(db->constructor(block, (Int32) size, offset, (mode == FileChannelMapMode_READ_ONLY), mode))
+    AutoPtr<IMappedByteBuffer> mbb = IMappedByteBuffer::Probe(db);
     *buffer = mbb;
     REFCOUNT_ADD(*buffer);
 

@@ -411,7 +411,7 @@ protected:
      * @param capacity
      *            the capacity of the buffer.
      */
-    DoubleBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Int64 effectiveDirectAddress);
 };

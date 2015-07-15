@@ -5,22 +5,32 @@
 namespace Elastos {
 namespace IO {
 
-DoubleArrayBuffer::DoubleArrayBuffer(
-    /* [in] */ ArrayOf<Double>* array)
-    : DoubleBuffer(array->GetLength(), 0)
-    , mBackingArray(array)
-    , mArrayOffset(0)
-{}
+DoubleArrayBuffer::DoubleArrayBuffer()
+    : mArrayOffset(0)
+    , mIsReadOnly(FALSE)
+{
+}
 
-DoubleArrayBuffer::DoubleArrayBuffer(
-    /* [in] */ Int32 mCapacity,
+ECode DoubleArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Double>* array)
+{
+    FAIL_RETURN(DoubleBuffer::constructor(array->GetLength(), 0))
+    mBackingArray = array;
+    return NOERROR;
+}
+
+ECode DoubleArrayBuffer::constructor(
+    /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Double>* backingArray,
     /* [in] */ Int32 offset,
-    /* [in] */ Boolean mIsReadOnly)
-    : DoubleBuffer(mCapacity, 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(offset)
-{}
+    /* [in] */ Boolean isReadOnly)
+{
+    FAIL_RETURN(DoubleBuffer::constructor(capacity, 0))
+    mArrayOffset = offset;
+    mIsReadOnly = isReadOnly;
+    mBackingArray = backingArray;
+    return NOERROR;
+}
 
 ECode DoubleArrayBuffer::Get(
     /* [out] */ Double* value)
@@ -83,7 +93,9 @@ ECode DoubleArrayBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IDoubleBuffer*) Copy(this, mMark, TRUE);
+    AutoPtr<DoubleArrayBuffer> dab;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (DoubleArrayBuffer**)&dab))
+    *buffer = IDoubleBuffer::Probe(dab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -109,7 +121,9 @@ ECode DoubleArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IDoubleBuffer*) Copy(this, mMark, mIsReadOnly);
+    AutoPtr<DoubleArrayBuffer> dab;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (DoubleArrayBuffer**)&dab))
+    *buffer = IDoubleBuffer::Probe(dab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -118,6 +132,7 @@ ECode DoubleArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Double>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -131,6 +146,7 @@ ECode DoubleArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -144,12 +160,10 @@ ECode DoubleArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* hasArray)
 {
     VALIDATE_NOT_NULL(hasArray)
+    *hasArray = TRUE;
 
     if (mIsReadOnly) {
         *hasArray = FALSE;
-    }
-    else {
-        *hasArray = TRUE;
     }
     return NOERROR;
 }
@@ -210,7 +224,9 @@ ECode DoubleArrayBuffer::Slice(
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    *buffer = (IDoubleBuffer*) new DoubleArrayBuffer(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
+    AutoPtr<DoubleArrayBuffer> dab = new DoubleArrayBuffer();
+    FAIL_RETURN(dab->constructor(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = IDoubleBuffer::Probe(dab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -224,18 +240,22 @@ ECode DoubleArrayBuffer::IsReadOnly(
     return NOERROR;
 }
 
-AutoPtr<DoubleArrayBuffer> DoubleArrayBuffer::Copy(
+ECode DoubleArrayBuffer::Copy(
     /* [in] */ DoubleArrayBuffer* other,
     /* [in] */ Int32 mMarkOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ DoubleArrayBuffer** buffer)
 {
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<DoubleArrayBuffer> buf = new DoubleArrayBuffer(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
-    buf->mLimit = other->mLimit;
-    other->GetPosition(&buf->mPosition);
-    buf->mMark = mMarkOfOther;
-    return buf;
+    AutoPtr<DoubleArrayBuffer> dab = new DoubleArrayBuffer();
+    FAIL_RETURN(dab->constructor(capvalue, other->mBackingArray, other->mArrayOffset + other->mPosition, other->mIsReadOnly))
+    dab->mLimit = other->mLimit;
+    other->GetPosition(&dab->mPosition);
+    dab->mMark = mMarkOfOther;
+    *buffer = dab;
+    REFCOUNT_ADD(*buffer)
+    return NOERROR;
 }
 
 } // namespace IO

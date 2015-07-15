@@ -12,16 +12,17 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(Int64Buffer, Object, IInt64Buffer, IBuffer)
+
 Int64Buffer::Int64Buffer()
 {}
 
-Int64Buffer::Int64Buffer(
+ECode Int64Buffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(3, capacity, effectiveDirectAddress)
-{}
-
-CAR_INTERFACE_IMPL_2(Int64Buffer, Object, IInt64Buffer, IBuffer)
+{
+    return Buffer::constructor(3, capacity, effectiveDirectAddress);
+}
 
 ECode Int64Buffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -34,7 +35,9 @@ ECode Int64Buffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr< ArrayOf<Int64> > res = ArrayOf<Int64>::Alloc(capacity);
-    *buf = (IInt64Buffer*) new Int64ArrayBuffer(res);
+    AutoPtr<Int64ArrayBuffer> iab = new Int64ArrayBuffer();
+    FAIL_RETURN(iab->constructor(res))
+    *buf = IInt64Buffer::Probe(iab);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -55,10 +58,11 @@ ECode Int64Buffer::Wrap(
     VALIDATE_NOT_NULL(buffer);
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int64Count));
-    AutoPtr<Int64Buffer> buf = new Int64ArrayBuffer(array);
-    buf->mPosition = start;
-    buf->mLimit = start + int64Count;
-    *buffer = buf;
+    AutoPtr<Int64ArrayBuffer> iab = new Int64ArrayBuffer();
+    FAIL_RETURN(iab->constructor(array))
+    iab->mPosition = start;
+    iab->mLimit = start + int64Count;
+    *buffer = IInt64Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

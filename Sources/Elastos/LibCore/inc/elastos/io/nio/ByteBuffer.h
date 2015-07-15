@@ -4,6 +4,8 @@
 
 #include "Buffer.h"
 
+using Elastos::Core::IComparable;
+
 namespace Elastos {
 namespace IO {
 
@@ -24,6 +26,7 @@ namespace IO {
 class ByteBuffer
     : public Buffer
     , public IByteBuffer
+    , public IComparable
 {
 public:
     CAR_INTERFACE_DECL()
@@ -276,6 +279,10 @@ public:
      */
     virtual CARAPI CompareTo(
         /* [in] */ IByteBuffer* otherBuffer,
+        /* [out] */ Int32* result);
+
+    CARAPI CompareTo(
+        /* [in] */ IInterface* otherBuffer,
         /* [out] */ Int32* result);
 
     /**
@@ -986,7 +993,7 @@ protected:
      * @param capacity
      *            the capacity of the buffer.
      */
-    ByteBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Int64 effectiveDirectAddress);
 

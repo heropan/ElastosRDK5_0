@@ -22,10 +22,12 @@ class Int64ArrayBuffer
     : public Int64Buffer
 {
 public:
-    Int64ArrayBuffer(
+    Int64ArrayBuffer();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Int64>* array);
 
-    Int64ArrayBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Int64>* backingArray,
         /* [in] */ Int32 offset,
@@ -85,10 +87,11 @@ public:
         /* [out] */ Boolean* value);
 
 private:
-    static CARAPI_(AutoPtr<Int64ArrayBuffer>) Copy(
+    static CARAPI Copy(
         /* [in] */ Int64ArrayBuffer* other,
         /* [in] */ Int32 markOfOther,
-        /* [in] */ Boolean isReadOnly);
+        /* [in] */ Boolean isReadOnly,
+        /* [out] */ Int64ArrayBuffer** buffer);
 
 public:
     AutoPtr< ArrayOf<Int64> > mBackingArray;

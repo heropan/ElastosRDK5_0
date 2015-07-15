@@ -18,23 +18,6 @@ Buffer::Buffer()
     , mEffectiveDirectAddress(0)
 {}
 
-Buffer::Buffer(
-    /* [in] */ Int32 elementSizeShift,
-    /* [in] */ Int32 capacity,
-    /* [in] */ Int64 effectiveDirectAddress)
-    : mCapacity(capacity)
-    , mLimit(capacity)
-    , mMark(IBuffer::UNSET_MARK)
-    , mPosition(0)
-    , mElementSizeShift(elementSizeShift)
-    , mEffectiveDirectAddress(effectiveDirectAddress)
-{
-    if (capacity < 0) {
-        // throw new IllegalArgumentException("capacity < 0: " + capacity);
-        assert(0);
-    }
-}
-
 Buffer::~Buffer()
 {
 }

@@ -9,23 +9,36 @@ namespace IO {
 
 CAR_INTERFACE_IMPL(CharSequenceAdapter, CharBuffer, ICharSequence)
 
-CharSequenceAdapter::CharSequenceAdapter(
+CharSequenceAdapter::CharSequenceAdapter()
+{
+}
+
+ECode CharSequenceAdapter::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ ICharSequence* chseq)
-    : CharBuffer(capacity, 0)
-    , mSequence(chseq)
-{}
-
-AutoPtr<CharSequenceAdapter> CharSequenceAdapter::Copy(
-    /* [in] */ CharSequenceAdapter* other)
 {
+    FAIL_RETURN(CharBuffer::constructor(capacity, 0))
+    mSequence = chseq;
+    return NOERROR;
+}
+
+ECode CharSequenceAdapter::Copy(
+    /* [in] */ CharSequenceAdapter* other,
+    /* [out] */ CharSequenceAdapter** buffer)
+{
+    VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
+
     Int32 len = 0;
     other->mSequence->GetLength(&len);
-    AutoPtr<CharSequenceAdapter> buf = new CharSequenceAdapter(len, other->mSequence);
+    AutoPtr<CharSequenceAdapter> buf = new CharSequenceAdapter();
+    FAIL_RETURN(buf->constructor(len, other->mSequence))
     buf->mLimit = other->mLimit;
     buf->mPosition = other->mPosition;
     buf->mMark = other->mMark;
-    return buf;
+    *buffer = buf;
+    REFCOUNT_ADD(*buffer)
+    return NOERROR;
 }
 
 ECode CharSequenceAdapter::GetPrimitiveArray(
@@ -89,10 +102,9 @@ ECode CharSequenceAdapter::CompareTo(
 ECode CharSequenceAdapter::Duplicate(
     /* [out] */ ICharBuffer** buffer)
 {
-    VALIDATE_NOT_NULL(buffer);
-    AutoPtr<CharSequenceAdapter> buf = Copy(this);
-    *buffer = (ICharBuffer*)buf.Get();
-    REFCOUNT_ADD(*buffer)
+    AutoPtr<CharSequenceAdapter> csa;
+    FAIL_RETURN(Copy(this, (CharSequenceAdapter**)&csa))
+    *buffer = ICharBuffer::Probe(csa);
     return NOERROR;
 }
 
@@ -266,7 +278,9 @@ ECode CharSequenceAdapter::Slice(
     FAIL_RETURN(mSequence->SubSequence(mPosition, mLimit, (ICharSequence**)&seq))
     Int32 len = 0;
     seq->GetLength(&len);
-    *buffer = (ICharBuffer*)new CharSequenceAdapter(len, seq);
+    AutoPtr<CharSequenceAdapter> csa = new CharSequenceAdapter();
+    FAIL_RETURN(csa->constructor(len, seq))
+    *buffer = ICharBuffer::Probe(csa);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -291,10 +305,11 @@ ECode CharSequenceAdapter::SubSequence(
 {
     VALIDATE_NOT_NULL(csq);
     FAIL_RETURN(CheckStartEndRemaining(start, end))
-    AutoPtr<CharSequenceAdapter> result = Copy(this);
+    AutoPtr<CharSequenceAdapter> result;
+    FAIL_RETURN(Copy(this, (CharSequenceAdapter**)&result))
     result->mPosition = mPosition + start;
     result->mLimit = mPosition + end;
-    *csq = (ICharSequence*)result.Get();
+    *csq = ICharSequence::Probe(result);
     REFCOUNT_ADD(*csq)
     return NOERROR;
 }

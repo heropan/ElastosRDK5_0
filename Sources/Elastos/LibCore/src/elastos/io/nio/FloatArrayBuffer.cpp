@@ -5,24 +5,32 @@
 namespace Elastos {
 namespace IO {
 
-FloatArrayBuffer::FloatArrayBuffer(
-    /* [in] */ ArrayOf<Float>* array)
-    : FloatBuffer(array->GetLength(), 0)
-    , mBackingArray(array)
-    , mArrayOffset(0)
+FloatArrayBuffer::FloatArrayBuffer()
+    : mArrayOffset(0)
     , mIsReadOnly(FALSE)
-{}
+{
+}
 
-FloatArrayBuffer::FloatArrayBuffer(
+ECode FloatArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Float>* array)
+{
+    FAIL_RETURN(FloatBuffer::constructor(array->GetLength(), 0))
+    mBackingArray = array;
+    return NOERROR;
+}
+
+ECode FloatArrayBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Float>* backingArray,
     /* [in] */ Int32 offset,
     /* [in] */ Boolean isReadOnly)
-    : FloatBuffer(capacity, 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(offset)
-    , mIsReadOnly(isReadOnly)
-{}
+{
+    FAIL_RETURN(FloatBuffer::constructor(capacity, 0))
+    mArrayOffset = offset;
+    mIsReadOnly = isReadOnly;
+    mBackingArray = backingArray;
+    return NOERROR;
+}
 
 ECode FloatArrayBuffer::Get(
     /* [out] */ Float* value)
@@ -85,7 +93,9 @@ ECode FloatArrayBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IFloatBuffer*) Copy(this, mMark, TRUE);
+    AutoPtr<FloatArrayBuffer> fab;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (FloatArrayBuffer**)&fab))
+    *buffer = IFloatBuffer::Probe(fab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -111,7 +121,9 @@ ECode FloatArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IFloatBuffer*) Copy(this, mMark, mIsReadOnly);
+    AutoPtr<FloatArrayBuffer> fab;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (FloatArrayBuffer**)&fab))
+    *buffer = IFloatBuffer::Probe(fab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -212,7 +224,9 @@ ECode FloatArrayBuffer::Slice(
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    *buffer = (IFloatBuffer*) new FloatArrayBuffer(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
+    AutoPtr<FloatArrayBuffer> fab = new FloatArrayBuffer();
+    FAIL_RETURN(fab->constructor(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = IFloatBuffer::Probe(fab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -226,18 +240,25 @@ ECode FloatArrayBuffer::IsReadOnly(
     return NOERROR;
 }
 
-AutoPtr<FloatArrayBuffer> FloatArrayBuffer::Copy(
+ECode FloatArrayBuffer::Copy(
     /* [in] */ FloatArrayBuffer* other,
     /* [in] */ Int32 mMarkOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ FloatArrayBuffer** fab)
 {
+    VALIDATE_NOT_NULL(fab)
+    *fab = NULL;
+
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<FloatArrayBuffer> buf = new FloatArrayBuffer(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
+    AutoPtr<FloatArrayBuffer> buf = new FloatArrayBuffer();
+    FAIL_RETURN(buf->constructor(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
     buf->mLimit = other->mLimit;
     other->GetPosition(&buf->mPosition);
     buf->mMark = mMarkOfOther;
-    return buf;
+    *fab = buf;
+    REFCOUNT_ADD(*fab)
+    return NOERROR;
 }
 
 } // namespace IO

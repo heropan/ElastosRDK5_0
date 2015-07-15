@@ -8,13 +8,18 @@ using Libcore::IO::ISizeOf;
 namespace Elastos {
 namespace IO {
 
-ByteBufferAsInt16Buffer::ByteBufferAsInt16Buffer(
-    /* [in] */ ByteBuffer* byteBuffer)
+ByteBufferAsInt16Buffer::ByteBufferAsInt16Buffer()
     : mCap(0)
-    , Int16Buffer((byteBuffer->GetCapacity(&mCap), &mCap), byteBuffer->mEffectiveDirectAddress)
+{}
+
+ECode ByteBufferAsInt16Buffer::constructor(
+    /* [in] */ ByteBuffer* byteBuffer)
 {
+    byteBuffer->GetCapacity(&mCap);
+    FAIL_RETURN(Int16Buffer::constructor(mCap, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();
+    return NOERROR;
 }
 
 AutoPtr<IInt16Buffer> ByteBufferAsInt16Buffer::AsInt16Buffer(
@@ -25,8 +30,9 @@ AutoPtr<IInt16Buffer> ByteBufferAsInt16Buffer::AsInt16Buffer(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     slice->SetOrder(midorder);
-    AutoPtr<IInt16Buffer> res = (IInt16Buffer*) new ByteBufferAsInt16Buffer((ByteBuffer*)slice.Get());
-    return res;
+    AutoPtr<ByteBufferAsInt16Buffer> bbaib = new ByteBufferAsInt16Buffer();
+    bbaib->constructor((ByteBuffer*)slice.Get());
+    return IInt16Buffer::Probe(bbaib);
 }
 
 ECode ByteBufferAsInt16Buffer::AsReadOnlyBuffer(
@@ -36,12 +42,15 @@ ECode ByteBufferAsInt16Buffer::AsReadOnlyBuffer(
 
     AutoPtr<IByteBuffer> resbb;
     mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&resbb);
-    AutoPtr<ByteBufferAsInt16Buffer> buf = new ByteBufferAsInt16Buffer((ByteBuffer*)resbb.Get());
+
+    AutoPtr<ByteBufferAsInt16Buffer> buf = new ByteBufferAsInt16Buffer();
+    buf->constructor((ByteBuffer*)resbb.Get());
+
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     buf->mByteBuffer->mOrder = mByteBuffer->mOrder;
-    *buffer = buf;
+    *buffer = IInt16Buffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -71,11 +80,12 @@ ECode ByteBufferAsInt16Buffer::Duplicate(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     bb->SetOrder(midorder);
-    AutoPtr<ByteBufferAsInt16Buffer> buf = new ByteBufferAsInt16Buffer((ByteBuffer*)bb.Get());
+    AutoPtr<ByteBufferAsInt16Buffer> buf = new ByteBufferAsInt16Buffer();
+    FAIL_RETURN(buf->constructor((ByteBuffer*)bb.Get()))
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    *buffer = buf;
+    *buffer = IInt16Buffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -181,9 +191,10 @@ ECode ByteBufferAsInt16Buffer::Slice(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     bb->SetOrder(midorder);
-    AutoPtr<IInt16Buffer> result = (IInt16Buffer*) new ByteBufferAsInt16Buffer((ByteBuffer*)bb.Get());
+    AutoPtr<ByteBufferAsInt16Buffer> result = new ByteBufferAsInt16Buffer();
+    FAIL_RETURN(result->constructor((ByteBuffer*)bb.Get()))
     mByteBuffer->Clear();
-    *buffer = result;
+    *buffer = IInt16Buffer::Probe(result);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -191,6 +202,7 @@ ECode ByteBufferAsInt16Buffer::Slice(
 ECode ByteBufferAsInt16Buffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int16>** array)
 {
+    assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -198,6 +210,7 @@ ECode ByteBufferAsInt16Buffer::ProtectedArray(
 ECode ByteBufferAsInt16Buffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
+    assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }

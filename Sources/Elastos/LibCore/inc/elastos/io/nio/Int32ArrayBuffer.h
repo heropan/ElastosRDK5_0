@@ -22,10 +22,12 @@ class Int32ArrayBuffer
     : public Int32Buffer
 {
 public:
-    Int32ArrayBuffer(
+    Int32ArrayBuffer();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Int32>* array);
 
-    Int32ArrayBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Int32>* backingArray,
         /* [in] */ Int32 offset,
@@ -85,10 +87,11 @@ public:
         /* [out] */ Boolean* value);
 
 private:
-    static CARAPI_(AutoPtr<Int32ArrayBuffer>) Copy(
+    static CARAPI Copy(
         /* [in] */ Int32ArrayBuffer* other,
         /* [in] */ Int32 markOfOther,
-        /* [in] */ Boolean isReadOnly);
+        /* [in] */ Boolean isReadOnly,
+        /* [out] */ Int32ArrayBuffer** buffer);
 
 public:
     AutoPtr< ArrayOf<Int32> > mBackingArray;

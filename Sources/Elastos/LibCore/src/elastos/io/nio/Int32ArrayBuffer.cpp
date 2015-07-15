@@ -5,24 +5,32 @@
 namespace Elastos {
 namespace IO {
 
-Int32ArrayBuffer::Int32ArrayBuffer(
-    /* [in] */ ArrayOf<Int32>* array)
-    : Int32Buffer(array->GetLength(), 0)
-    , mBackingArray(array)
-    , mArrayOffset(0)
+Int32ArrayBuffer::Int32ArrayBuffer()
+    : mArrayOffset(0)
     , mIsReadOnly(FALSE)
-{}
+{
+}
 
-Int32ArrayBuffer::Int32ArrayBuffer(
+ECode Int32ArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Int32>* array)
+{
+    FAIL_RETURN(Int32Buffer::constructor(array->GetLength(), 0))
+    mBackingArray = array;
+    return NOERROR;
+}
+
+ECode Int32ArrayBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Int32>* backingArray,
     /* [in] */ Int32 offset,
     /* [in] */ Boolean isReadOnly)
-    : Int32Buffer(capacity, 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(offset)
-    , mIsReadOnly(isReadOnly)
-{}
+{
+    FAIL_RETURN(Int32Buffer::constructor(capacity, 0))
+    mArrayOffset = offset;
+    mIsReadOnly = isReadOnly;
+    mBackingArray = backingArray;
+    return NOERROR;
+}
 
 ECode Int32ArrayBuffer::Get(
     /* [out] */ Int32* value)
@@ -87,7 +95,9 @@ ECode Int32ArrayBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IInt32Buffer*) Copy(this, mMark, TRUE);
+    AutoPtr<Int32ArrayBuffer> iab;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (Int32ArrayBuffer**)&iab))
+    *buffer = IInt32Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -113,7 +123,9 @@ ECode Int32ArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IInt32Buffer*) Copy(this, mMark, mIsReadOnly);
+    AutoPtr<Int32ArrayBuffer> iab;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (Int32ArrayBuffer**)&iab))
+    *buffer = IInt32Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -122,6 +134,7 @@ ECode Int32ArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int32>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -135,6 +148,7 @@ ECode Int32ArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -148,13 +162,11 @@ ECode Int32ArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* hasArray)
 {
     VALIDATE_NOT_NULL(hasArray)
-
+    *hasArray = TRUE;
     if (mIsReadOnly) {
         *hasArray = FALSE;
     }
-    else {
-        *hasArray = TRUE;
-    }
+
     return NOERROR;
 }
 
@@ -214,7 +226,9 @@ ECode Int32ArrayBuffer::Slice(
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    *buffer = (IInt32Buffer*) new Int32ArrayBuffer(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
+    AutoPtr<Int32ArrayBuffer> iab = new Int32ArrayBuffer();
+    FAIL_RETURN(iab->constructor(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = IInt32Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -228,18 +242,23 @@ ECode Int32ArrayBuffer::IsReadOnly(
     return NOERROR;
 }
 
-AutoPtr<Int32ArrayBuffer> Int32ArrayBuffer::Copy(
+ECode Int32ArrayBuffer::Copy(
     /* [in] */ Int32ArrayBuffer* other,
     /* [in] */ Int32 mMarkOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ Int32ArrayBuffer** buffer)
 {
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<Int32ArrayBuffer> buf = new Int32ArrayBuffer(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
-    buf->mLimit = other->mLimit;
-    other->GetPosition(&buf->mPosition);
-    buf->mMark = mMarkOfOther;
-    return buf;
+    AutoPtr<Int32ArrayBuffer> iab = new Int32ArrayBuffer();
+    FAIL_RETURN(iab->constructor(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
+
+    iab->mLimit = other->mLimit;
+    other->GetPosition(&iab->mPosition);
+    iab->mMark = mMarkOfOther;
+    *buffer = iab;
+    REFCOUNT_ADD(*buffer)
+    return NOERROR;
 }
 
 } // namespace IO

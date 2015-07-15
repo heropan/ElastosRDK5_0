@@ -21,10 +21,12 @@ class FloatArrayBuffer
     : public FloatBuffer
 {
 public:
-    FloatArrayBuffer(
+    FloatArrayBuffer();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Float>* array);
 
-    FloatArrayBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Float>* backingArray,
         /* [in] */ Int32 offset,
@@ -83,15 +85,16 @@ public:
         /* [out] */ Boolean* value);
 
 private:
-    static CARAPI_(AutoPtr<FloatArrayBuffer>) Copy(
+    static CARAPI Copy(
         /* [in] */ FloatArrayBuffer* other,
         /* [in] */ Int32 markOfOther,
-        /* [in] */ Boolean isReadOnly);
+        /* [in] */ Boolean isReadOnly,
+        /* [out] */ FloatArrayBuffer** fab);
 
 public:
     AutoPtr< ArrayOf<Float> > mBackingArray;
-    Boolean mIsReadOnly;
     Int32 mArrayOffset;
+    Boolean mIsReadOnly;
 };
 } // namespace IO
 } // namespace Elastos

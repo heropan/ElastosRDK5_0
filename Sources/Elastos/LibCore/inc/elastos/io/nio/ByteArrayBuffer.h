@@ -7,13 +7,16 @@
 namespace Elastos {
 namespace IO {
 
-class ByteArrayBuffer : public ByteBuffer
+class ByteArrayBuffer
+    : public ByteBuffer
 {
 public:
-    ByteArrayBuffer(
+    ByteArrayBuffer();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Byte>* backingArray);
 
-    ByteArrayBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Byte>* backingArray,
         /* [in] */ Int32 arrayOffset,
@@ -237,11 +240,13 @@ public:
     AutoPtr<ArrayOf<Byte> > mBackingArray;
 
     Int32 mArrayOffset;
+
 private:
-    static AutoPtr<ByteArrayBuffer> Copy(
+    static CARAPI Copy(
         /* [in] */ ByteArrayBuffer* other,
         /* [in] */ Int32 markOfOther,
-        /* [in] */ Boolean isReadOnly);
+        /* [in] */ Boolean isReadOnly,
+        /* [out] */ IByteBuffer** bab);
 
     Boolean mIsReadOnly;
 };

@@ -12,29 +12,32 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(Int32Buffer, Object, IInt32Buffer, IBuffer)
+
 Int32Buffer::Int32Buffer()
 {}
 
-Int32Buffer::Int32Buffer(
+ECode Int32Buffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(2, capacity, effectiveDirectAddress)
-{}
-
-CAR_INTERFACE_IMPL_2(Int32Buffer, Object, IInt32Buffer, IBuffer)
+{
+    return Buffer::constructor(2, capacity, effectiveDirectAddress);
+}
 
 ECode Int32Buffer::Allocate(
     /* [in] */ Int32 capacity,
     /* [out] */ IInt32Buffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-
+    *buf = NULL;
     if (capacity < 0) {
         // throw new IllegalArgumentException("capacity < 0: " + capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr< ArrayOf<Int32> > res = ArrayOf<Int32>::Alloc(capacity);
-    *buf = (IInt32Buffer*) new Int32ArrayBuffer(res);
+    AutoPtr<Int32ArrayBuffer> iab = new Int32ArrayBuffer();
+    FAIL_RETURN(iab->constructor(res))
+    *buf = IInt32Buffer::Probe(iab);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -53,12 +56,14 @@ ECode Int32Buffer::Wrap(
     /* [out] */ IInt32Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
-
+    *buffer = NULL;
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int32Count));
-    AutoPtr<Int32Buffer> buf = new Int32ArrayBuffer(array);
-    buf->mPosition = start;
-    buf->mLimit = start + int32Count;
-    *buffer = buf;
+
+    AutoPtr<Int32ArrayBuffer> iab = new Int32ArrayBuffer();
+    FAIL_RETURN(iab->constructor(array))
+    iab->mPosition = start;
+    iab->mLimit = start + int32Count;
+    *buffer = IInt32Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

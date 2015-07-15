@@ -8,13 +8,18 @@ using Libcore::IO::ISizeOf;
 namespace Elastos {
 namespace IO {
 
-ByteBufferAsInt64Buffer::ByteBufferAsInt64Buffer(
-    /* [in] */ ByteBuffer* byteBuffer)
+ByteBufferAsInt64Buffer::ByteBufferAsInt64Buffer()
     : mCap(0)
-    , Int64Buffer((byteBuffer->GetCapacity(&mCap), &mCap), byteBuffer->mEffectiveDirectAddress)
+{}
+
+ECode ByteBufferAsInt64Buffer::constructor(
+    /* [in] */ ByteBuffer* byteBuffer)
 {
+    byteBuffer->GetCapacity(&mCap);
+    FAIL_RETURN(Int64Buffer::constructor(mCap, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     IBuffer::Probe(mByteBuffer)->Clear();
+    return NOERROR;
 }
 
 AutoPtr<IInt64Buffer> ByteBufferAsInt64Buffer::AsInt64Buffer(
@@ -26,8 +31,10 @@ AutoPtr<IInt64Buffer> ByteBufferAsInt64Buffer::AsInt64Buffer(
     ByteOrder outorder;
     byteBuffer->GetOrder(&outorder);
     slice->SetOrder(outorder);
-    AutoPtr<IInt64Buffer> res = (IInt64Buffer*) new ByteBufferAsInt64Buffer(slice);
-    return res;
+
+    AutoPtr<ByteBufferAsInt64Buffer> bbaib = new ByteBufferAsInt64Buffer();
+    bbaib->constructor((ByteBuffer*)slice.Get());
+    return IInt64Buffer::Probe(bbaib);
 }
 
 ECode ByteBufferAsInt64Buffer::AsReadOnlyBuffer(
@@ -37,12 +44,15 @@ ECode ByteBufferAsInt64Buffer::AsReadOnlyBuffer(
 
     AutoPtr<IByteBuffer> res;
     mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&res);
-    AutoPtr<ByteBufferAsInt64Buffer> buf = new ByteBufferAsInt64Buffer(res);
+
+    AutoPtr<ByteBufferAsInt64Buffer> buf = new ByteBufferAsInt64Buffer();
+    buf->constructor((ByteBuffer*)res.Get());
+
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     buf->mByteBuffer->SetOrder(((ByteBuffer*)mByteBuffer.Get())->mOrder);
-    *buffer = (IInt64Buffer*) buf->Probe(EIID_IInt64Buffer);
+    *buffer = IInt64Buffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -74,11 +84,12 @@ ECode ByteBufferAsInt64Buffer::Duplicate(
     AutoPtr<IByteBuffer> bb;
     mByteBuffer->Duplicate((IByteBuffer**)&bb);
     bb->SetOrder(outorder);
-    AutoPtr<ByteBufferAsInt64Buffer> buf = new ByteBufferAsInt64Buffer(bb);
+    AutoPtr<ByteBufferAsInt64Buffer> buf = new ByteBufferAsInt64Buffer();
+    FAIL_RETURN(buf->constructor((ByteBuffer*)bb.Get()))
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    *buffer = (IInt64Buffer*) buf->Probe(EIID_IInt64Buffer);
+    *buffer = IInt64Buffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -190,9 +201,10 @@ ECode ByteBufferAsInt64Buffer::Slice(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     bb->SetOrder(midorder);
-    AutoPtr<IInt64Buffer> result = (IInt64Buffer*) new ByteBufferAsInt64Buffer((ByteBuffer*)bb.Get());
+    AutoPtr<ByteBufferAsInt64Buffer> result = new ByteBufferAsInt64Buffer();
+    FAIL_RETURN(result->constructor((ByteBuffer*)bb.Get()))
     mByteBuffer->Clear();
-    *buffer = result;
+    *buffer = IInt64Buffer::Probe(result);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -200,6 +212,8 @@ ECode ByteBufferAsInt64Buffer::Slice(
 ECode ByteBufferAsInt64Buffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int64>** array)
 {
+    VALIDATE_NOT_NULL(array)
+    assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -207,6 +221,8 @@ ECode ByteBufferAsInt64Buffer::ProtectedArray(
 ECode ByteBufferAsInt64Buffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
+    VALIDATE_NOT_NULL(offset)
+    assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -214,6 +230,7 @@ ECode ByteBufferAsInt64Buffer::ProtectedArrayOffset(
 ECode ByteBufferAsInt64Buffer::ProtectedHasArray(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }

@@ -27,7 +27,9 @@ class ByteBufferAsDoubleBuffer
     : public DoubleBuffer
 {
 private:
-    ByteBufferAsDoubleBuffer(
+    ByteBufferAsDoubleBuffer();
+
+    CARAPI constructor(
         /* [in] */ ByteBuffer* byteBuffer);
 
 public:

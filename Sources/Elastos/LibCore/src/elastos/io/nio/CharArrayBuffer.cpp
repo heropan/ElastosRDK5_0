@@ -9,23 +9,32 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace IO {
 
-CharArrayBuffer::CharArrayBuffer(
-    /* [in] */ ArrayOf<Char32>* array)
-    : CharBuffer(array->GetLength(), 0)
-    , mBackingArray(array)
-    , mArrayOffset(0)
-{}
+CharArrayBuffer::CharArrayBuffer()
+    : mArrayOffset(0)
+    , mIsReadOnly(FALSE)
+{
+}
 
-CharArrayBuffer::CharArrayBuffer(
-    /* [in] */ Int32 mCapacity,
-    /* [in] */ ArrayOf<Char32>* mBackingArray,
+ECode CharArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Char32>* array)
+{
+    FAIL_RETURN(CharBuffer::constructor(array->GetLength(), 0))
+    mBackingArray = array;
+    return NOERROR;
+}
+
+ECode CharArrayBuffer::constructor(
+    /* [in] */ Int32 capacity,
+    /* [in] */ ArrayOf<Char32>* backingArray,
     /* [in] */ Int32 offset,
-    /* [in] */ Boolean mIsReadOnly)
-    : CharBuffer(mCapacity, 0)
-    , mBackingArray(mBackingArray)
-    , mArrayOffset(0)
-    , mIsReadOnly(mIsReadOnly)
-{}
+    /* [in] */ Boolean isReadOnly)
+{
+    FAIL_RETURN(CharBuffer::constructor(capacity, 0))
+    mBackingArray = backingArray;
+    mArrayOffset = offset;
+    mIsReadOnly = mIsReadOnly;
+    return NOERROR;
+}
 
 ECode CharArrayBuffer::Get(
     /* [out] */ Char32* value)
@@ -133,7 +142,8 @@ ECode CharArrayBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    AutoPtr<CharArrayBuffer> res = Copy(this, mMark, TRUE);
+    AutoPtr<CharArrayBuffer> res;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (CharArrayBuffer**)&res))
     *buffer = res;
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -160,7 +170,8 @@ ECode CharArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    AutoPtr<CharArrayBuffer> res = Copy(this, mMark, mIsReadOnly);
+    AutoPtr<CharArrayBuffer> res;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (CharArrayBuffer**)&res))
     *buffer = res;
     REFCOUNT_ADD(*buffer)
     return NOERROR;
@@ -198,11 +209,14 @@ ECode CharArrayBuffer::Slice(
     /* [out] */ ICharBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     Int32 remvalue = 0;
     GetRemaining(&remvalue);
-    AutoPtr<ICharBuffer> res = (ICharBuffer*) new CharArrayBuffer(remvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
-    *buffer = res;
+    AutoPtr<CharArrayBuffer> cab = new CharArrayBuffer();
+    FAIL_RETURN(cab->constructor(remvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = ICharBuffer::Probe(cab);
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -210,12 +224,14 @@ ECode CharArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Char32>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     *array = mBackingArray;
+    REFCOUNT_ADD(*array)
     return NOERROR;
 }
 
@@ -223,6 +239,7 @@ ECode CharArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -236,30 +253,36 @@ ECode CharArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+        *result = TRUE;
 
     if (mIsReadOnly) {
         *result = FALSE;
     }
-    else {
-        *result = TRUE;
-    }
+
     return NOERROR;
 }
 
-AutoPtr<CharArrayBuffer> CharArrayBuffer::Copy(
+ECode CharArrayBuffer::Copy(
     /* [in] */ CharArrayBuffer* other,
     /* [in] */ Int32 markOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ CharArrayBuffer** cab)
 {
+    VALIDATE_NOT_NULL(cab)
+    *cab = NULL;
+
     Int32 remvalue = 0;
     other->GetRemaining(&remvalue);
-    AutoPtr<CharArrayBuffer> buf = new CharArrayBuffer(remvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
+    AutoPtr<CharArrayBuffer> buf = new CharArrayBuffer();
+    FAIL_RETURN(buf->constructor(remvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
     buf->mLimit = other->mLimit;
     Int32 posvalue = 0;
     other->GetPosition(&posvalue);
     buf->mPosition = posvalue;
     buf->mMark = markOfOther;
-    return buf;
+    *cab = buf;
+    REFCOUNT_ADD(*cab)
+    return NOERROR;
 }
 
 } // namespace IO

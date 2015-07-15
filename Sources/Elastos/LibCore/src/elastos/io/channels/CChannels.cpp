@@ -95,7 +95,7 @@ ECode CChannels::ChannelOutputStream::Write(
 {
     AutoPtr< ArrayOf<Byte> > wrappedByte = ArrayOf<Byte>::Alloc(1);
     (*wrappedByte)[0] = (Byte) oneByte;
-    return Write(wrappedByte);
+    return Write(wrappedByte, 0, wrappedByte->GetLength());
 }
 
 ECode CChannels::ChannelOutputStream::Write(

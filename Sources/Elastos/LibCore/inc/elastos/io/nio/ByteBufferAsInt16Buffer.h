@@ -27,7 +27,9 @@ class ByteBufferAsInt16Buffer
     : public Int16Buffer
 {
 private:
-    ByteBufferAsInt16Buffer(
+    ByteBufferAsInt16Buffer();
+
+    CARAPI constructor(
         /* [in] */ ByteBuffer* byteBuffer);
 
 public:

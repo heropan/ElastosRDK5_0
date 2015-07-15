@@ -50,10 +50,24 @@ CRandomAccessFile::CRandomAccessFile()
 CRandomAccessFile::~CRandomAccessFile()
 {
     mScratch = NULL;
-    // if (guard != null) {
-    //     guard.warnIfOpen();
-    // }
-    Close();
+    if (mGuard != NULL) {
+        mGuard->WarnIfOpen();
+        mGuard->Close();
+    }
+
+    // can not call virtual method Close() on destructor.
+    //
+    AutoLock lock(this);
+
+    Boolean isflag(FALSE);
+    if (mChannel != NULL && (IChannel::Probe(mChannel)->IsOpen(&isflag) , isflag)) {
+        ICloseable::Probe(mChannel)->Close();
+        mChannel = NULL;
+    }
+
+    AutoPtr<IIoBridge> ioBridge;
+    CIoBridge::AcquireSingleton((IIoBridge**)&ioBridge);
+    ioBridge->CloseAndSignalBlockedThreads(mFd);
 }
 
 ECode CRandomAccessFile::constructor(
@@ -117,6 +131,7 @@ ECode CRandomAccessFile::constructor(
 ECode CRandomAccessFile::Close()
 {
     mGuard->Close();
+
     AutoLock lock(this);
 
     Boolean isflag(FALSE);

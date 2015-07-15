@@ -12,16 +12,17 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(DoubleBuffer, Object, IDoubleBuffer, IBuffer)
+
 DoubleBuffer::DoubleBuffer()
 {}
 
-DoubleBuffer::DoubleBuffer(
+ECode DoubleBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(3, capacity, effectiveDirectAddress)
-{}
-
-CAR_INTERFACE_IMPL_2(DoubleBuffer, Object, IDoubleBuffer, IBuffer)
+{
+    return Buffer::constructor(3, capacity, effectiveDirectAddress);
+}
 
 ECode DoubleBuffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -35,7 +36,9 @@ ECode DoubleBuffer::Allocate(
     }
 
     AutoPtr< ArrayOf<Double> > res = ArrayOf<Double>::Alloc(capacity);
-    *buf = (IDoubleBuffer*) new DoubleArrayBuffer(res);;
+    AutoPtr<DoubleArrayBuffer> dab = new DoubleArrayBuffer();
+    FAIL_RETURN(dab->constructor(res))
+    *buf = IDoubleBuffer::Probe(dab);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -56,10 +59,11 @@ ECode DoubleBuffer::Wrap(
     VALIDATE_NOT_NULL(buf);
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, doubleCount));
-    AutoPtr<DoubleBuffer> buffer = new DoubleArrayBuffer(array);
-    buffer->mPosition = start;
-    buffer->mLimit = start + doubleCount;
-    *buf = buffer;
+    AutoPtr<DoubleArrayBuffer> dab = new DoubleArrayBuffer();
+    FAIL_RETURN(dab->constructor(array))
+    dab->mPosition = start;
+    dab->mLimit = start + doubleCount;
+    *buf = IDoubleBuffer::Probe(dab);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }

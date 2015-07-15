@@ -564,7 +564,7 @@ protected:
      * @param capacity
      *            the capacity of the buffer.
      */
-    CharBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Int64 effectiveDirectAddress);
 

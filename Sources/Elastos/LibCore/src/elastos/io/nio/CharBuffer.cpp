@@ -29,8 +29,9 @@ ECode CharBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr< ArrayOf<Char32> > outchar = ArrayOf<Char32>::Alloc(capacity);
-    AutoPtr<CharArrayBuffer> res = new CharArrayBuffer(outchar);
-    *buf = (ICharBuffer*) res->Probe(EIID_ICharBuffer);
+    AutoPtr<CharArrayBuffer> res = new CharArrayBuffer();
+    FAIL_RETURN(res->constructor(outchar))
+    *buf = ICharBuffer::Probe(res);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -52,10 +53,11 @@ ECode CharBuffer::Wrap(
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, charCount));
 
-    AutoPtr<CharArrayBuffer> buffer = new CharArrayBuffer(array);
+    AutoPtr<CharArrayBuffer> buffer = new CharArrayBuffer();
+    FAIL_RETURN(buffer->constructor(array))
     buffer->mPosition = start;
     buffer->mLimit = start + charCount;
-    *buf = (ICharBuffer*)buffer->Probe(EIID_ICharBuffer);
+    *buf = ICharBuffer::Probe(buffer);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -67,8 +69,9 @@ ECode CharBuffer::Wrap(
     VALIDATE_NOT_NULL(buf)
     Int32 len = 0;
     chseq->GetLength(&len);
-    AutoPtr<ICharBuffer> res = (ICharBuffer*) new CharSequenceAdapter(len, chseq);
-    *buf = res;
+    AutoPtr<CharSequenceAdapter> csa = new CharSequenceAdapter();
+    FAIL_RETURN(csa->constructor(len, chseq))
+    *buf = ICharBuffer::Probe(csa);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -86,10 +89,12 @@ ECode CharBuffer::Wrap(
         // throw new IndexOutOfBoundsException("cs.length()=" + cs.length() + ", start=" + start + ", end=" + end);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
-    AutoPtr<CharSequenceAdapter> result = new CharSequenceAdapter(len, chseq);
-    result->mPosition = start;
-    result->mLimit = end;
-    *buf = (ICharBuffer*)result.Get();
+
+    AutoPtr<CharSequenceAdapter> csa = new CharSequenceAdapter();
+    FAIL_RETURN(csa->constructor(len, chseq))
+    csa->mPosition = start;
+    csa->mLimit = end;
+    *buf = ICharBuffer::Probe(csa);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -97,11 +102,12 @@ ECode CharBuffer::Wrap(
 CharBuffer::CharBuffer()
 {}
 
-CharBuffer::CharBuffer(
+ECode CharBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(1, capacity, effectiveDirectAddress)
-{}
+{
+    return Buffer::constructor(1, capacity, effectiveDirectAddress);
+}
 
 ECode CharBuffer::GetArray(
     /* [out] */ IArrayOf** array)

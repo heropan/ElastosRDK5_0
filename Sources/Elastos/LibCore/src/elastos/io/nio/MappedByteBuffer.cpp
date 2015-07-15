@@ -3,6 +3,7 @@
 #include "CLibcore.h"
 #include "OsConstants.h"
 
+using Elastos::IO::Channels::FileChannelMapMode_NONE;
 using Elastos::IO::Channels::FileChannelMapMode_READ_ONLY;
 using Elastos::IO::Channels::FileChannelMapMode_READ_WRITE;
 using Libcore::IO::CLibcore;
@@ -16,15 +17,16 @@ namespace IO {
 MappedByteBuffer::MappedByteBuffer()
 {}
 
-MappedByteBuffer::MappedByteBuffer(
+ECode MappedByteBuffer::constructor(
     /* [in] */ MemoryBlock* block,
     /* [in] */ Int32 capacity,
     /* [in] */ FileChannelMapMode mapMode,
     /* [in] */ Int64 effectiveDirectAddress)
-    : ByteBuffer(capacity, effectiveDirectAddress)
-    , mBlock(block)
-    , mMapMode(mapMode)
 {
+    FAIL_RETURN(ByteBuffer::constructor(capacity, effectiveDirectAddress))
+    mBlock = block;
+    mMapMode = mapMode;
+    return NOERROR;
 }
 
 ECode MappedByteBuffer::IsLoaded(
@@ -90,7 +92,7 @@ ECode MappedByteBuffer::Force()
 
 ECode MappedByteBuffer::CheckIsMapped()
 {
-    if (mMapMode == NULL) {
+    if (mMapMode == FileChannelMapMode_NONE) {
         // throw new UnsupportedOperationException();
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
     }

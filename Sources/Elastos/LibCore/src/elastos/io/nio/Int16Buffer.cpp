@@ -15,11 +15,12 @@ namespace IO {
 Int16Buffer::Int16Buffer()
 {}
 
-Int16Buffer::Int16Buffer(
+ECode Int16Buffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(1, capacity, effectiveDirectAddress)
-{}
+{
+    return Buffer::constructor(1, capacity, effectiveDirectAddress);
+}
 
 CAR_INTERFACE_IMPL_2(Int16Buffer, Object, IInt16Buffer, IBuffer)
 
@@ -35,7 +36,9 @@ ECode Int16Buffer::Allocate(
     }
 
     AutoPtr< ArrayOf<Int16> > res = ArrayOf<Int16>::Alloc(capacity);
-    *buf = (IInt16Buffer*) new Int16ArrayBuffer(res);
+    AutoPtr<Int16ArrayBuffer> iab = new Int16ArrayBuffer();
+    FAIL_RETURN(iab->constructor(res))
+    *buf = IInt16Buffer::Probe(iab);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -56,10 +59,11 @@ ECode Int16Buffer::Wrap(
     VALIDATE_NOT_NULL(buffer);
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int16Count));
-    AutoPtr<Int16Buffer> buf = new Int16ArrayBuffer(array);
-    buf->mPosition = start;
-    buf->mLimit = start + int16Count;
-    *buffer = buf;
+    AutoPtr<Int16ArrayBuffer> iab = new Int16ArrayBuffer();
+    FAIL_RETURN(iab->constructor(array))
+    iab->mPosition = start;
+    iab->mLimit = start + int16Count;
+    *buffer = IInt16Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

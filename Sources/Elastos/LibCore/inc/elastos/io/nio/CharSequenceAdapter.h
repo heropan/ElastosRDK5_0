@@ -23,12 +23,15 @@ class CharSequenceAdapter
 public:
     CAR_INTERFACE_DECL()
 
-    CharSequenceAdapter(
+    CharSequenceAdapter();
+
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ ICharSequence* chseq);
 
-    static CARAPI_(AutoPtr<CharSequenceAdapter>) Copy(
-        /* [in] */ CharSequenceAdapter* other);
+    static CARAPI Copy(
+        /* [in] */ CharSequenceAdapter* other,
+        /* [out] */ CharSequenceAdapter** buffer);
 
     CARAPI GetPrimitiveArray(
         /* [out] */ Handle32* arrayHandle);

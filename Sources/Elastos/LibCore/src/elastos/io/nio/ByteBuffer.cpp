@@ -8,15 +8,17 @@
 #include "Arrays.h"
 #include "Memory.h"
 
+using Elastos::Core::IComparable;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
 using Elastos::Utility::Arrays;
+using Elastos::IO::Channels::FileChannelMapMode_NONE;
 using Libcore::IO::Memory;
 
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(ByteBuffer, Buffer, IByteBuffer)
+CAR_INTERFACE_IMPL_2(ByteBuffer, Buffer, IByteBuffer, IComparable)
 
 ECode ByteBuffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -31,8 +33,9 @@ ECode ByteBuffer::Allocate(
     }
 
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(capacity);
-    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer(bytes);
-    *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);
+    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer();
+    FAIL_RETURN(bb->constructor(bytes))
+    *buf = IByteBuffer::Probe(bb);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -42,6 +45,8 @@ ECode ByteBuffer::AllocateDirect(
     /* [out] */ IByteBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
+    *buf = NULL;
+
     if (capacity < 0) {
         // throw new IllegalArgumentException("capacity < 0: " + capacity);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -50,8 +55,9 @@ ECode ByteBuffer::AllocateDirect(
     AutoPtr<MemoryBlock> memoryBlock = MemoryBlock::Allocate(capacity + 7);
     Int64 address = memoryBlock->ToInt64();
     Int64 alignedAddress = (address + 7) & ~(Int64)7;
-    AutoPtr<DirectByteBuffer> bufObj = new DirectByteBuffer(memoryBlock, capacity, (Int32)(alignedAddress - address), FALSE, NULL);
-    *buf = (IByteBuffer*) bufObj->Probe(EIID_IByteBuffer);
+    AutoPtr<DirectByteBuffer> bufObj = new DirectByteBuffer();
+    FAIL_RETURN(bufObj->constructor(memoryBlock, capacity, (Int32)(alignedAddress - address), FALSE, FileChannelMapMode_NONE))
+    *buf = IByteBuffer::Probe(bufObj);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -61,8 +67,11 @@ ECode ByteBuffer::Wrap(
     /* [out] */ IByteBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
-    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer(array);
-    *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);
+    *buf = NULL;
+
+    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer();
+    FAIL_RETURN(bb->constructor(array))
+    *buf = IByteBuffer::Probe(bb);
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -74,13 +83,15 @@ ECode ByteBuffer::Wrap(
     /* [out] */ IByteBuffer** buf)
 {
     VALIDATE_NOT_NULL(buf)
+    *buf = NULL;
     VALIDATE_NOT_NULL(array)
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, byteCount))
-    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer(array);
+    AutoPtr<ByteArrayBuffer> bb = new ByteArrayBuffer();
+    FAIL_RETURN(bb->constructor(array))
     bb->mPosition = start;
     bb->mLimit = start + byteCount;
-    *buf = (IByteBuffer*) bb->Probe(EIID_IByteBuffer);;
+    *buf = IByteBuffer::Probe(bb);;
     REFCOUNT_ADD(*buf);
     return NOERROR;
 }
@@ -89,12 +100,12 @@ ByteBuffer::ByteBuffer()
     : mOrder(ByteOrder_BIG_ENDIAN)
 {}
 
-ByteBuffer::ByteBuffer(
+ECode ByteBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(0, capacity, effectiveDirectAddress)
-    , mOrder(ByteOrder_BIG_ENDIAN)
-{}
+{
+    return Buffer::constructor(0, capacity, effectiveDirectAddress);
+}
 
 ECode ByteBuffer::GetArray(
     /* [out] */ IArrayOf** array)
@@ -130,6 +141,7 @@ ECode ByteBuffer::CompareTo(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = -1;
     VALIDATE_NOT_NULL(other)
 
     Int32 thisRemaining = 0;
@@ -157,6 +169,13 @@ ECode ByteBuffer::CompareTo(
     IBuffer::Probe(other)->GetRemaining(&otherRemaining);
     *result = thisRemaining - otherRemaining;
     return NOERROR;
+}
+
+ECode ByteBuffer::CompareTo(
+    /* [in] */ IInterface* other,
+    /* [out] */ Int32* result)
+{
+    return CompareTo(IByteBuffer::Probe(other), result);
 }
 
 ECode ByteBuffer::Equals(

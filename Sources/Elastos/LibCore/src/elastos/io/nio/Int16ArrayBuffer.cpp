@@ -5,24 +5,32 @@
 namespace Elastos {
 namespace IO {
 
-Int16ArrayBuffer::Int16ArrayBuffer(
-    /* [in] */ ArrayOf<Int16>* array)
-    : Int16Buffer(array->GetLength(), 0)
-    , mBackingArray(array)
-    , mArrayOffset(0)
+Int16ArrayBuffer::Int16ArrayBuffer()
+    : mArrayOffset(0)
     , mIsReadOnly(FALSE)
-{}
+{
+}
 
-Int16ArrayBuffer::Int16ArrayBuffer(
+ECode Int16ArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Int16>* array)
+{
+    FAIL_RETURN(Int16Buffer::constructor(array->GetLength(), 0))
+    mBackingArray = array;
+    return NOERROR;
+}
+
+ECode Int16ArrayBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Int16>* backingArray,
     /* [in] */ Int32 offset,
     /* [in] */ Boolean isReadOnly)
-    : Int16Buffer(capacity, 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(offset)
-    , mIsReadOnly(isReadOnly)
-{}
+{
+    FAIL_RETURN(Int16Buffer::constructor(capacity, 0))
+    mBackingArray = backingArray;
+    mArrayOffset = offset;
+    mIsReadOnly = isReadOnly;
+    return NOERROR;
+}
 
 ECode Int16ArrayBuffer::Get(
     /* [out] */ Int16* value)
@@ -86,7 +94,9 @@ ECode Int16ArrayBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IInt16Buffer*) Copy(this, mMark, TRUE);
+    AutoPtr<Int16ArrayBuffer> iab;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (Int16ArrayBuffer**)&iab))
+    *buffer = IInt16Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -112,7 +122,9 @@ ECode Int16ArrayBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = (IInt16Buffer*) Copy(this, mMark, mIsReadOnly);
+    AutoPtr<Int16ArrayBuffer> iab;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (Int16ArrayBuffer**)&iab))
+    *buffer = IInt16Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -213,7 +225,9 @@ ECode Int16ArrayBuffer::Slice(
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    *buffer = (IInt16Buffer*) new Int16ArrayBuffer(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
+    AutoPtr<Int16ArrayBuffer> iab = new Int16ArrayBuffer();
+    FAIL_RETURN(iab->constructor(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = IInt16Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -227,18 +241,22 @@ ECode Int16ArrayBuffer::IsReadOnly(
     return NOERROR;
 }
 
-AutoPtr<Int16ArrayBuffer> Int16ArrayBuffer::Copy(
+ECode Int16ArrayBuffer::Copy(
     /* [in] */ Int16ArrayBuffer* other,
     /* [in] */ Int32 mMarkOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ Int16ArrayBuffer** buffer)
 {
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<Int16ArrayBuffer> buf = new Int16ArrayBuffer(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
-    buf->mLimit = other->mLimit;
-    other->GetPosition(&buf->mPosition);
-    buf->mMark = mMarkOfOther;
-    return buf;
+    AutoPtr<Int16ArrayBuffer> iab = new Int16ArrayBuffer();
+    FAIL_RETURN(iab->constructor(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
+    iab->mLimit = other->mLimit;
+    other->GetPosition(&iab->mPosition);
+    iab->mMark = mMarkOfOther;
+    *buffer = iab;
+    REFCOUNT_ADD(*buffer)
+    return NOERROR;
 }
 
 } // namespace IO

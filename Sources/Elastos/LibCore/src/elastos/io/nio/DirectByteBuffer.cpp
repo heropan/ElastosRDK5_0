@@ -11,39 +11,49 @@
 #include "Memory.h"
 
 using Elastos::Core::Math;
+using Elastos::IO::Channels::FileChannelMapMode_NONE;
 using Libcore::IO::ISizeOf;
 using Libcore::IO::Memory;
 
 namespace Elastos {
 namespace IO {
 
-DirectByteBuffer::DirectByteBuffer(
+DirectByteBuffer::DirectByteBuffer()
+    : mOffset(0)
+    , mIsReadOnly(FALSE)
+{
+}
+
+ECode DirectByteBuffer::constructor(
     /* [in] */ Int64 address,
     /* [in] */ Int32 capacity)
-    : MappedByteBuffer(MemoryBlock::WrapFromNative(address, capacity), capacity, NULL, MemoryBlock::WrapFromNative(address, capacity)->ToInt64())
 {
-    Int64 baseSize = MemoryBlock::WrapFromNative(address, capacity)->GetSize();
+    AutoPtr<MemoryBlock> mb = MemoryBlock::WrapFromNative(address, capacity);
+    FAIL_RETURN(MappedByteBuffer::constructor(mb, capacity, FileChannelMapMode_NONE, mb->ToInt64()))
+    Int64 baseSize = mb->GetSize();
     Int32 offset = 0;
     // We're throwing this exception after we passed a bogus value
     // to the superclass constructor, but it doesn't make any
     // difference in this case.
     if (baseSize >= 0 && (capacity + offset) > baseSize) {
-        assert(0);
         // throw new IllegalArgumentException("capacity + offset > baseSize");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mOffset = offset;
     mIsReadOnly = FALSE;
+    return NOERROR;
 }
 
-DirectByteBuffer::DirectByteBuffer(
+ECode DirectByteBuffer::constructor(
     /* [in] */ MemoryBlock* block,
     /* [in] */ Int32 capacity,
     /* [in] */ Int32 offset,
-    /* [in] */ Boolean mIsReadOnly,
+    /* [in] */ Boolean isReadOnly,
     /* [in] */ FileChannelMapMode mapMode)
-    : MappedByteBuffer(block, capacity, mapMode, block->ToInt64() + offset)
 {
+    FAIL_RETURN(MappedByteBuffer::constructor(block, capacity, mapMode, block->ToInt64()))
+
     Int64 baseSize = block->GetSize();
     // We're throwing this exception after we passed a bogus value
     // to the superclass constructor, but it doesn't make any
@@ -54,7 +64,8 @@ DirectByteBuffer::DirectByteBuffer(
     }
 
     mOffset = offset;
-    mIsReadOnly = mIsReadOnly;
+    mIsReadOnly = isReadOnly;
+    return NOERROR;
 }
 
 ECode DirectByteBuffer::Get(
@@ -634,8 +645,9 @@ ECode DirectByteBuffer::Slice(
     FAIL_RETURN(CheckNotFreed());
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    AutoPtr<IByteBuffer> res = (IByteBuffer*) new DirectByteBuffer(mBlock, remainvalue, mOffset + mPosition, mIsReadOnly, mMapMode);
-    *buffer = res;
+    AutoPtr<DirectByteBuffer> db = new DirectByteBuffer();
+    FAIL_RETURN(db->constructor(mBlock, remainvalue, mOffset + mPosition, mIsReadOnly, mMapMode))
+    *buffer = IByteBuffer::Probe(db);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -711,7 +723,9 @@ ECode DirectByteBuffer::AsReadOnlyBuffer(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = Copy(this, mMark, TRUE);
+    AutoPtr<DirectByteBuffer> db;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (DirectByteBuffer**)&db))
+    *buffer = IByteBuffer::Probe(db);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -725,8 +739,8 @@ ECode DirectByteBuffer::Compact()
     }
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    assert(0 && "TODO");
-    // Memory::Memmove(this, 0, this, mPosition, remainvalue);
+
+    //Memory::Memmove(this, 0, this, mPosition, remainvalue);
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = UNSET_MARK;
@@ -738,7 +752,9 @@ ECode DirectByteBuffer::Duplicate(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    *buffer = Copy(this, mMark, mIsReadOnly);
+    AutoPtr<DirectByteBuffer> db;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (DirectByteBuffer**)&db))
+    *buffer = db;
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -746,6 +762,7 @@ ECode DirectByteBuffer::Duplicate(
 ECode DirectByteBuffer::IsReadOnly(
     /* [out] */ Boolean* value)
 {
+    VALIDATE_NOT_NULL(value)
     *value = mIsReadOnly;
     return NOERROR;
 }
@@ -847,19 +864,26 @@ ECode DirectByteBuffer::CheckNotFreed()
     return NOERROR;
 }
 
-AutoPtr<DirectByteBuffer> DirectByteBuffer::Copy(
+ECode DirectByteBuffer::Copy(
     /* [in] */ DirectByteBuffer* other,
     /* [in] */ Int32 markOfOther,
-    /* [in] */ Boolean isReadOnly)
+    /* [in] */ Boolean isReadOnly,
+    /* [out] */ DirectByteBuffer** db)
 {
-    FAIL_RETURN_NULL(other->CheckNotFreed());
+    VALIDATE_NOT_NULL(db)
+    *db = NULL;
+
+    FAIL_RETURN(other->CheckNotFreed());
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<DirectByteBuffer> buf = new DirectByteBuffer(other->mBlock, capvalue, other->mOffset, isReadOnly, other->mMapMode);
+    AutoPtr<DirectByteBuffer> buf = new DirectByteBuffer();
+    FAIL_RETURN(buf->constructor(other->mBlock, capvalue, other->mOffset, isReadOnly, other->mMapMode))
     buf->mLimit = other->mLimit;
     other->GetPosition(&buf->mPosition);
     buf->mMark = markOfOther;
-    return buf;
+    *db = buf;
+    REFCOUNT_ADD(*db)
+    return NOERROR;
 }
 
 } // namespace IO

@@ -26,7 +26,9 @@ class ByteBufferAsInt64Buffer
     : public Int64Buffer
 {
 private:
-    ByteBufferAsInt64Buffer(
+    ByteBufferAsInt64Buffer();
+
+    CARAPI constructor(
         /* [in] */ ByteBuffer* byteBuffer);
 
 public:

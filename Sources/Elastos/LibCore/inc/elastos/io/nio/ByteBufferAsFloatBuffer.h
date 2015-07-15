@@ -26,7 +26,9 @@ class ByteBufferAsFloatBuffer
     : public FloatBuffer
 {
 private:
-    ByteBufferAsFloatBuffer(
+    ByteBufferAsFloatBuffer();
+
+    CARAPI constructor(
         /* [in] */ ByteBuffer* byteBuffer);
 
 public:

@@ -22,10 +22,12 @@ class DoubleArrayBuffer
     : public DoubleBuffer
 {
 public:
-    DoubleArrayBuffer(
+    DoubleArrayBuffer();
+
+    CARAPI constructor(
         /* [in] */ ArrayOf<Double>* array);
 
-    DoubleArrayBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ ArrayOf<Double>* backingArray,
         /* [in] */ Int32 offset,
@@ -85,10 +87,11 @@ public:
         /* [out] */ Boolean* value);
 
 private:
-    static CARAPI_(AutoPtr<DoubleArrayBuffer>) Copy(
+    static CARAPI Copy(
         /* [in] */ DoubleArrayBuffer* other,
         /* [in] */ Int32 markOfOther,
-        /* [in] */ Boolean isReadOnly);
+        /* [in] */ Boolean isReadOnly,
+        /* [out] */ DoubleArrayBuffer** buffer);
 
 public:
     AutoPtr< ArrayOf<Double> > mBackingArray;

@@ -12,16 +12,17 @@ using Elastos::Utility::Arrays;
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL_2(FloatBuffer, Object, IFloatBuffer, IBuffer)
+
 FloatBuffer::FloatBuffer()
 {}
 
-FloatBuffer::FloatBuffer(
+ECode FloatBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Int64 effectiveDirectAddress)
-    : Buffer(2, capacity, effectiveDirectAddress)
-{}
-
-CAR_INTERFACE_IMPL_2(FloatBuffer, Object, IFloatBuffer, IBuffer)
+{
+    return Buffer::constructor(2, capacity, effectiveDirectAddress);
+}
 
 ECode FloatBuffer::Allocate(
     /* [in] */ Int32 capacity,
@@ -34,7 +35,9 @@ ECode FloatBuffer::Allocate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr< ArrayOf<Float> > res = ArrayOf<Float>::Alloc(capacity);
-    *buf = (IFloatBuffer*) new FloatArrayBuffer(res);
+    AutoPtr<FloatArrayBuffer> fab = new FloatArrayBuffer();
+    FAIL_RETURN(fab->constructor(res))
+    *buf = IFloatBuffer::Probe(fab);
     REFCOUNT_ADD(*buf)
     return NOERROR;
 }
@@ -55,10 +58,11 @@ ECode FloatBuffer::Wrap(
     VALIDATE_NOT_NULL(buffer);
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, floatCount));
-    AutoPtr<FloatBuffer> buf = new FloatArrayBuffer(array);
-    buf->mPosition = start;
-    buf->mLimit = start + floatCount;
-    *buffer = buf;
+    AutoPtr<FloatArrayBuffer> fab = new FloatArrayBuffer();
+    FAIL_RETURN(fab->constructor(array))
+    fab->mPosition = start;
+    fab->mLimit = start + floatCount;
+    *buffer = IFloatBuffer::Probe(fab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }

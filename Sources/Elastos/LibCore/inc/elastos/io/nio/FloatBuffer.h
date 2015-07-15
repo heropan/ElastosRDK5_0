@@ -24,13 +24,13 @@ class FloatBuffer
     , public IFloatBuffer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     FloatBuffer();
 
-    FloatBuffer(
+    CARAPI constructor(
         /* [in] */ Int32 capacity,
         /* [in] */ Int64 effectiveDirectAddress);
-
-    CAR_INTERFACE_DECL()
 
     /**
      * Creates a float buffer based on a newly allocated float array.

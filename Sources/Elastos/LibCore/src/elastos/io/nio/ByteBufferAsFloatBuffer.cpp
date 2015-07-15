@@ -8,12 +8,18 @@ using Libcore::IO::ISizeOf;
 namespace Elastos {
 namespace IO {
 
-ByteBufferAsFloatBuffer::ByteBufferAsFloatBuffer(
+ByteBufferAsFloatBuffer::ByteBufferAsFloatBuffer()
+    : mCap(0)
+{}
+
+ECode ByteBufferAsFloatBuffer::constructor(
     /* [in] */ ByteBuffer* byteBuffer)
-    : FloatBuffer((byteBuffer->GetCapacity(&mCap), (Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress)
 {
+    byteBuffer->GetCapacity(&mCap);
+    FAIL_RETURN(FloatBuffer::constructor(((Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();
+    return NOERROR;
 }
 
 AutoPtr<IFloatBuffer> ByteBufferAsFloatBuffer::AsFloatBuffer(
@@ -24,8 +30,9 @@ AutoPtr<IFloatBuffer> ByteBufferAsFloatBuffer::AsFloatBuffer(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     slice->SetOrder(midorder);
-    AutoPtr<IFloatBuffer> res = (IFloatBuffer*) new ByteBufferAsFloatBuffer((ByteBuffer*)slice.Get());
-    return res;
+    AutoPtr<ByteBufferAsFloatBuffer> res = new ByteBufferAsFloatBuffer();
+    res->constructor((ByteBuffer*)slice.Get());
+    return IFloatBuffer::Probe(res);
 }
 
 ECode ByteBufferAsFloatBuffer::AsReadOnlyBuffer(
@@ -35,12 +42,15 @@ ECode ByteBufferAsFloatBuffer::AsReadOnlyBuffer(
 
     AutoPtr<IByteBuffer> resbb;
     mByteBuffer->AsReadOnlyBuffer((IByteBuffer**)&resbb);
-    AutoPtr<ByteBufferAsFloatBuffer> buf = new ByteBufferAsFloatBuffer((ByteBuffer*)resbb.Get());
+
+    AutoPtr<ByteBufferAsFloatBuffer> buf = new ByteBufferAsFloatBuffer();
+    buf->constructor((ByteBuffer*)resbb.Get());
+
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
     buf->mByteBuffer->mOrder = mByteBuffer->mOrder;
-    *buffer = buf;
+    *buffer = IFloatBuffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -70,11 +80,14 @@ ECode ByteBufferAsFloatBuffer::Duplicate(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     bb->SetOrder(midorder);
-    AutoPtr<ByteBufferAsFloatBuffer> buf = new ByteBufferAsFloatBuffer((ByteBuffer*)bb.Get());
+
+    AutoPtr<ByteBufferAsFloatBuffer> buf = new ByteBufferAsFloatBuffer();
+    buf->constructor((ByteBuffer*)bb.Get());
+
     buf->mLimit = mLimit;
     buf->mPosition = mPosition;
     buf->mMark = mMark;
-    *buffer = buf;
+    *buffer = IFloatBuffer::Probe(buf);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -180,9 +193,12 @@ ECode ByteBufferAsFloatBuffer::Slice(
     ByteOrder midorder;
     mByteBuffer->GetOrder(&midorder);
     bb->SetOrder(midorder);
-    AutoPtr<IFloatBuffer> result = (IFloatBuffer*) new ByteBufferAsFloatBuffer((ByteBuffer*)bb.Get());
+
+    AutoPtr<ByteBufferAsFloatBuffer> result = new ByteBufferAsFloatBuffer();
+    result->constructor((ByteBuffer*)bb.Get());
+
     mByteBuffer->Clear();
-    *buffer = result;
+    *buffer = IFloatBuffer::Probe(result);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -190,6 +206,7 @@ ECode ByteBufferAsFloatBuffer::Slice(
 ECode ByteBufferAsFloatBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Float>** array)
 {
+    assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -197,6 +214,7 @@ ECode ByteBufferAsFloatBuffer::ProtectedArray(
 ECode ByteBufferAsFloatBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
+    assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
@@ -204,6 +222,7 @@ ECode ByteBufferAsFloatBuffer::ProtectedArrayOffset(
 ECode ByteBufferAsFloatBuffer::ProtectedHasArray(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     *result = FALSE;
     return NOERROR;
 }

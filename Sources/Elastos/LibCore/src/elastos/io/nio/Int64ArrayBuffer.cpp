@@ -5,24 +5,33 @@
 namespace Elastos {
 namespace IO {
 
-Int64ArrayBuffer::Int64ArrayBuffer(
-    /* [in] */ ArrayOf<Int64>* array)
-    : Int64Buffer(array->GetLength(), 0)
-    , mBackingArray(array)
-    , mArrayOffset(0)
-    , mIsReadOnly(FALSE)
-{}
 
-Int64ArrayBuffer::Int64ArrayBuffer(
+Int64ArrayBuffer::Int64ArrayBuffer()
+    : mArrayOffset(0)
+    , mIsReadOnly(FALSE)
+{
+}
+
+ECode Int64ArrayBuffer::constructor(
+    /* [in] */ ArrayOf<Int64>* array)
+{
+    FAIL_RETURN(Int64Buffer::constructor(array->GetLength(), 0))
+    mBackingArray = array;
+    return NOERROR;
+}
+
+ECode Int64ArrayBuffer::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ ArrayOf<Int64>* backingArray,
     /* [in] */ Int32 offset,
     /* [in] */ Boolean isReadOnly)
-    : Int64Buffer(capacity, 0)
-    , mBackingArray(backingArray)
-    , mArrayOffset(offset)
-    , mIsReadOnly(isReadOnly)
-{}
+{
+    FAIL_RETURN(Int64Buffer::constructor(capacity, 0))
+    mArrayOffset = offset;
+    mIsReadOnly = isReadOnly;
+    mBackingArray = backingArray;
+    return NOERROR;
+}
 
 ECode Int64ArrayBuffer::Get(
     /* [out] */ Int64* value)
@@ -85,8 +94,11 @@ ECode Int64ArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ IInt64Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
-    *buffer = (IInt64Buffer*) Copy(this, mMark, TRUE);
+    AutoPtr<Int64ArrayBuffer> iab;
+    FAIL_RETURN(Copy(this, mMark, TRUE, (Int64ArrayBuffer**)&iab))
+    *buffer = IInt64Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -111,8 +123,11 @@ ECode Int64ArrayBuffer::Duplicate(
     /* [out] */ IInt64Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
-    *buffer = (IInt64Buffer*) Copy(this, mMark, mIsReadOnly);
+    AutoPtr<Int64ArrayBuffer> iab;
+    FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (Int64ArrayBuffer**)&iab))
+    *buffer = IInt64Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -213,7 +228,9 @@ ECode Int64ArrayBuffer::Slice(
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
-    *buffer = (IInt64Buffer*) new Int64ArrayBuffer(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly);
+    AutoPtr<Int64ArrayBuffer> iab = new Int64ArrayBuffer();
+    FAIL_RETURN(iab->constructor(remainvalue, mBackingArray, mArrayOffset + mPosition, mIsReadOnly))
+    *buffer = IInt64Buffer::Probe(iab);
     REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
@@ -222,23 +239,27 @@ ECode Int64ArrayBuffer::IsReadOnly(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
-
     *value = mIsReadOnly;
     return NOERROR;
 }
 
-AutoPtr<Int64ArrayBuffer> Int64ArrayBuffer::Copy(
+ECode Int64ArrayBuffer::Copy(
     /* [in] */ Int64ArrayBuffer* other,
     /* [in] */ Int32 mMarkOfOther,
-    /* [in] */ Boolean mIsReadOnly)
+    /* [in] */ Boolean mIsReadOnly,
+    /* [out] */ Int64ArrayBuffer** buffer)
 {
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
-    AutoPtr<Int64ArrayBuffer> buf = new Int64ArrayBuffer(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly);
-    buf->mLimit = other->mLimit;
-    other->GetPosition(&buf->mPosition);
-    buf->mMark = mMarkOfOther;
-    return buf;
+    AutoPtr<Int64ArrayBuffer> iab = new Int64ArrayBuffer();
+    FAIL_RETURN(iab->constructor(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
+
+    iab->mLimit = other->mLimit;
+    other->GetPosition(&iab->mPosition);
+    iab->mMark = mMarkOfOther;
+    *buffer = iab;
+    REFCOUNT_ADD(*buffer)
+    return NOERROR;
 }
 
 } // namespace IO

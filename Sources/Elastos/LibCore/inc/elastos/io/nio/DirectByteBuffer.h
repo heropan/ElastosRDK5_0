@@ -241,11 +241,13 @@ public:
         /* [in] */ Int32 shortCount);
 
 public:
-    DirectByteBuffer(
+    DirectByteBuffer();
+
+    CARAPI constructor(
         /* [in] */ Int64 address,
         /* [in] */ Int32 capacity);
 
-    DirectByteBuffer(
+    CARAPI constructor(
         /* [in] */ MemoryBlock* block,
         /* [in] */ Int32 capacity,
         /* [in] */ Int32 offset,
@@ -257,10 +259,11 @@ private:
 
     CARAPI CheckNotFreed();
 
-    static CARAPI_(AutoPtr<DirectByteBuffer>) Copy(
+    static CARAPI Copy(
         /* [in] */ DirectByteBuffer* other,
         /* [in] */ Int32 markOfOther,
-        /* [in] */ Boolean isReadOnly);
+        /* [in] */ Boolean isReadOnly,
+        /* [out] */ DirectByteBuffer** db);
 
 protected:
     // This is the offset into {@code Buffer.block} at which this buffer logically starts.
