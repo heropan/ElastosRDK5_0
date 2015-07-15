@@ -72,12 +72,13 @@ ECode Transliterator::Transliterate(
     /* [in] */ const String& s,
     /* [out] */ String* rev)
 {
+    VALIDATE_NOT_NULL(rev)
     *rev = Transliterate(mPeer, s);
     return NOERROR;
 }
 
 Int64 Transliterator::Create(
-    const String& id)
+    /* [in] */ const String& id)
 {
     if (id.IsNull()) {
         return 0;
@@ -91,14 +92,14 @@ Int64 Transliterator::Create(
 }
 
 void Transliterator::Destroy(
-    Int64 peer)
+    /* [in] */ Int64 peer)
 {
     delete fromPeer(peer);
 }
 
 String Transliterator::Transliterate(
-    Int64 peer,
-    const String& s)
+    /* [in] */ Int64 peer,
+    /* [in] */ const String& s)
 {
     NATIVE(Transliterator)* t = fromPeer(peer);
     if(s.IsNull()) {
