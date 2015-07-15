@@ -238,9 +238,10 @@ AutoPtr<IInterface> CLinkedTransferQueue::AwaitMatch(
 {
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    Int64 lastTime = 0ll;
+    Int64 deadline = 0ll;
     if (timed) {
-        system->GetNanoTime(&lastTime);
+        system->GetNanoTime(&deadline);
+        deadline += nanos;
     }
     AutoPtr<IThread> w = Thread::GetCurrentThread();
     Int32 spins = -1; // initialized after first item and cancel checks
@@ -278,9 +279,9 @@ AutoPtr<IInterface> CLinkedTransferQueue::AwaitMatch(
         else if (timed) {
             Int64 now = 0;
             system->GetNanoTime(&now);
-             if ((nanos -= now - lastTime) > 0)
+            nanos = deadline - now;
+             if (nanos > 0)
                 LockSupport::ParkNanos(THIS_PROBE(IInterface), nanos);
-            lastTime = now;
         }
         else {
             LockSupport::Park(THIS_PROBE(IInterface));

@@ -11,6 +11,8 @@ using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::Thread;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
+using Elastos::Utility::Concurrent::Locks::IReentrantLock;
+using Elastos::Utility::Concurrent::Locks::ILock;
 
 namespace Elastos {
 namespace Utility {
@@ -40,9 +42,22 @@ CThreadPoolExecutor::Worker::Worker(
     : mFirstTask(firstTask)
     , mOwner(owner)
 {
+    SetState(-1); // inhibit interrupts until runWorker
     AutoPtr<IThreadFactory> factory;
     mOwner->GetThreadFactory((IThreadFactory**)&factory);
     factory->NewThread((IRunnable*)this, (IThread**)&mThread);
+}
+
+void CThreadPoolExecutor::Worker::InterruptIfStarted()
+{
+    AutoPtr<IThread> t;
+    Boolean b = FALSE;
+    if (GetState() >= 0 && (t = mThread) != NULL && !(t->IsInterrupted(&b),b)) {
+//      try {
+            t->Interrupt();
+        // } catch (SecurityException ignore) {
+        // }
+    }
 }
 
 Boolean CThreadPoolExecutor::Worker::TryAcquire(
@@ -291,7 +306,7 @@ void CThreadPoolExecutor::InterruptWorkers()
     // HashSet< AutoPtr<Worker>, HashWorker >::Iterator it;
     // for (it = mWorkers.Begin(); it != mWorkers.End(); ++it) {
     //     AutoPtr<Worker> w = *it;
-    //     w->mThread->Interrupt();
+    //     w->InterruptIfStarted();
     // }
 }
 
@@ -316,17 +331,6 @@ void CThreadPoolExecutor::InterruptIdleWorkers(
 void CThreadPoolExecutor::InterruptIdleWorkers()
 {
     InterruptIdleWorkers(FALSE);
-}
-
-void CThreadPoolExecutor::ClearInterruptsForTaskRun()
-{
-    Int32 value;
-    mCtl->Get(&value);
-    if (RunStateLessThan(value, STOP) &&
-            Thread::Interrupted() &&
-            RunStateAtLeast(value, STOP)) {
-        Thread::GetCurrentThread()->Interrupt();
-    }
 }
 
 void CThreadPoolExecutor::Reject(
@@ -378,75 +382,80 @@ RETRY:
         mCtl->Get(&c);
         Int32 rs = RunStateOf(c);
 
+        Boolean bIsEmp = TRUE;
         // Check if queue empty only if necessary.
-        Boolean isEmpty;
         if (rs >= SHUTDOWN &&
             ! (rs == SHUTDOWN &&
                firstTask == NULL &&
-               ((ICollection::Probe(mWorkQueue))->IsEmpty(&isEmpty), !isEmpty))) {
+               ! (IQueue::Probe(mWorkQueue)->IsEmpty(&bIsEmp), bIsEmp)))
             return FALSE;
-        }
 
         for (;;) {
             Int32 wc = WorkerCountOf(c);
             if (wc >= CAPACITY ||
-                wc >= (core ? mCorePoolSize : mMaximumPoolSize)) {
+                wc >= (core ? mCorePoolSize : mMaximumPoolSize))
                 return FALSE;
-            }
-            if (CompareAndIncrementWorkerCount(c)) {
+            if (CompareAndIncrementWorkerCount(c))
                 goto NEXT;
-            }
             mCtl->Get(&c);  // Re-read ctl
-            if (RunStateOf(c) != rs) {
+            if (RunStateOf(c) != rs)
                 goto RETRY;
-            }
             // else CAS failed due to workerCount change; retry inner loop
         }
     }
+
 NEXT:
-    AutoPtr<Worker> w = new Worker(firstTask, this);
-    AutoPtr<IThread> t = w->mThread;
+    Boolean workerStarted = FALSE;
+    Boolean workerAdded = FALSE;
+    AutoPtr<Worker> w;
+//    try {
+        w = new Worker(firstTask, this);
+        AutoPtr<IThread> t = w->mThread;
+        if (t != NULL) {
+            {
+                AutoLock lock(mMainLock);
 
-    Int32 c;
-    {
-        AutoLock lock(mMainLock);
+                // Recheck while holding lock.
+                // Back out on ThreadFactory failure or if
+                // shut down before lock acquired.
+                Int32 n;
+                mCtl->Get(&n);
+                Int32 rs = RunStateOf(n);
 
-        // Recheck while holding lock.
-        // Back out on ThreadFactory failure or if
-        // shut down before lock acquired.
-        mCtl->Get(&c);
-        Int32 rs = RunStateOf(c);
-
-        if (t == NULL ||
-            (rs >= SHUTDOWN &&
-             ! (rs == SHUTDOWN &&
-                firstTask == NULL))) {
-            DecrementWorkerCount();
-            TryTerminate();
-            return FALSE;
+                if (rs < SHUTDOWN ||
+                    (rs == SHUTDOWN && firstTask == NULL)) {
+                    Boolean bIsAli = FALSE;
+                    if ((t->IsAlive(&bIsAli), bIsAli)) // precheck that t is startable
+                        return FALSE;
+                    //    throw new IllegalThreadStateException();
+//                    workers->Add(w);
+                    Int32 s;// = workers->Size();
+                    if (s > mLargestPoolSize)
+                        mLargestPoolSize = s;
+                    workerAdded = TRUE;
+                }
+            }
+            if (workerAdded) {
+                t->Start();
+                workerStarted = TRUE;
+            }
         }
+//    } finally {
+        if (! workerStarted)
+            AddWorkerFailed(w);
+//    }
+    return workerStarted;
+}
 
-//        mWorkers.Insert(w);
+void CThreadPoolExecutor::AddWorkerFailed(
+    /* [in] */ Worker* w)
+{
+    AutoLock lock(mMainLock);
 
-        Int32 s;// = mWorkers.GetSize();
-        if (s > mLargestPoolSize) {
-            mLargestPoolSize = s;
-        }
-    }
-
-    t->Start();
-    // It is possible (but unlikely) for a thread to have been
-    // added to workers, but not yet started, during transition to
-    // STOP, which could result in a rare missed interrupt,
-    // because Thread.interrupt is not guaranteed to have any effect
-    // on a non-yet-started Thread (see Thread#interrupt).
-    mCtl->Get(&c);
-    Boolean isInterrupted;
-    if (RunStateOf(c) == STOP && (t->IsInterrupted(&isInterrupted), !isInterrupted)) {
-        t->Interrupt();
-    }
-
-    return TRUE;
+    // if (w != NULL)
+    //     mWorkers->Remove(w);
+    DecrementWorkerCount();
+    TryTerminate();
 }
 
 void CThreadPoolExecutor::ProcessWorkerExit(
@@ -487,7 +496,6 @@ AutoPtr<IRunnable> CThreadPoolExecutor::GetTask()
 {
     Boolean timedOut = FALSE; // Did the last poll() time out?
 
-RETRY:
     for (;;) {
         Int32 c;
         mCtl->Get(&c);
@@ -500,26 +508,18 @@ RETRY:
             return NULL;
         }
 
-        Boolean timed;      // Are workers subject to culling?
+        Int32 wc = WorkerCountOf(c);
 
-        for (;;) {
-            Int32 wc = WorkerCountOf(c);
-            timed = mAllowCoreThreadTimeOut || wc > mCorePoolSize;
-
-            if (wc <= mMaximumPoolSize && ! (timedOut && timed)) {
-                break;
-            }
-            if (CompareAndDecrementWorkerCount(c)) {
+        // Are workers subject to culling?
+        Boolean timed = mAllowCoreThreadTimeOut || wc > mCorePoolSize;
+        Boolean bIsEmp = FALSE;
+        if ((wc > mMaximumPoolSize || (timed && timedOut))
+            && (wc > 1 || (IQueue::Probe(mWorkQueue)->IsEmpty(&bIsEmp), bIsEmp))) {
+            if (CompareAndDecrementWorkerCount(c))
                 return NULL;
-            }
-            mCtl->Get(&c);  // Re-read ctl
-            if (RunStateOf(c) != rs) {
-                goto RETRY;
-            }
-            // else CAS failed due to workerCount change; retry inner loop
+            continue;
         }
 
-        // try {
         ECode ec = NOERROR;
         AutoPtr<IInterface> obj;
         if (timed) {
@@ -543,38 +543,54 @@ RETRY:
 ECode CThreadPoolExecutor::RunWorker(
     /* [in] */ Worker* w)
 {
+    AutoPtr<IThread> wt = Thread::GetCurrentThread();
     AutoPtr<IRunnable> task = w->mFirstTask;
     w->mFirstTask = NULL;
+    w->Unlock(); // allow interrupts
     Boolean completedAbruptly = TRUE;
     ECode ec = NOERROR;
-    while (task != NULL || (task = GetTask()) != NULL) {
-        w->Lock();
-        ClearInterruptsForTaskRun();
-        // try {
-        BeforeExecute(w->mThread, task);
-            // try {
-        ec = task->Run();
-        AfterExecute(task, ec);
-            // } catch (RuntimeException x) {
-            //     thrown = x; throw x;
-            // } catch (Error x) {
-            //     thrown = x; throw x;
-            // } catch (Throwable x) {
-            //     thrown = x; throw new Error(x);
-            // } finally {
-            //     afterExecute(task, thrown);
-            // }
-        // } finally {
-        task = NULL;
-        w->mCompletedTasks++;
-        w->Unlock();
-        if (FAILED(ec)) goto EXIT2;
-        // }
-    }
-    completedAbruptly = FALSE;
+//    try {
+        while (task != NULL || (task = GetTask()) != NULL) {
+            w->Lock();
+            // If pool is stopping, ensure thread is interrupted;
+            // if not, ensure thread is not interrupted.  This
+            // requires a recheck in second case to deal with
+            // shutdownNow race while clearing interrupt
+            Int32 n;
+            mCtl->Get(&n);
+            Boolean bIsInter = FALSE;
+            if ((RunStateAtLeast(n, STOP) ||
+                 (Thread::Interrupted() &&
+                  RunStateAtLeast(n, STOP))) &&
+                !(wt->IsInterrupted(&bIsInter), bIsInter))
+                wt->Interrupt();
+//            try {
+                BeforeExecute(wt, task);
+                AutoPtr<IThrowable> thrown;
+//                try {
+                    ec = task->Run();
+                // } catch (RuntimeException x) {
+                //     thrown = x; throw x;
+                // } catch (Error x) {
+                //     thrown = x; throw x;
+                // } catch (Throwable x) {
+                //     thrown = x; throw new Error(x);
+                // } finally {
+                    AfterExecute(task, thrown);
+//                }
+//            } finally {
+                task = NULL;
+                w->mCompletedTasks++;
+                w->Unlock();
+                if (FAILED(ec)) goto EXIT2;
+//            }
+        }
+        completedAbruptly = FALSE;
+//    } finally {
 EXIT2:
-    ProcessWorkerExit(w, completedAbruptly);
-    return ec;
+        ProcessWorkerExit(w, completedAbruptly);
+//    }
+    return NOERROR;
 }
 
 ECode CThreadPoolExecutor::Execute(

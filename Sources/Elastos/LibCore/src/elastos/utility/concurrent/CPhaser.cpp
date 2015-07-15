@@ -1,8 +1,8 @@
 
 #include "CPhaser.h"
 #include "LockSupport.h"
-#include <StringBuilder.h>
-#include <Math.h>
+#include "StringBuilder.h"
+#include "Math.h"
 #include "CSystem.h"
 #include "Thread.h"
 #include "CAtomicReference.h"
@@ -635,9 +635,10 @@ CPhaser::QNode::QNode(
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    mLastTime = 0ll;
+    mDeadLine = 0ll;
     if (timed) {
-        system->GetNanoTime(&mLastTime);
+        system->GetNanoTime(&mDeadLine);
+        mDeadLine += nanos;
     }
 
     mThread = Thread::GetCurrentThread();
@@ -670,8 +671,7 @@ ECode CPhaser::QNode::IsReleasable(
             Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
             Int64 now = 0ll;
             system->GetNanoTime(&now);
-            mNanos -= now - mLastTime;
-            mLastTime = now;
+            mNanos = mDeadLine - now;
         }
         if (mNanos <= 0L) {
             mThread = NULL;

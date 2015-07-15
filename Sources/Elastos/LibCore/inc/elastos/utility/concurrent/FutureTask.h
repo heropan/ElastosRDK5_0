@@ -237,6 +237,26 @@ private:
     AutoPtr<IThread> mRunner;
     /** Treiber stack of waiting threads */
     AutoPtr<WaitNode> mWaiters;
+
+    // Unsafe mechanics
+//    static sun.misc.Unsafe UNSAFE;
+    static const Int64 mStateOffset;
+    static const Int64 mRunnerOffset;
+    static const Int64 mWaitersOffset;
+    // static {
+    //     try {
+    //         UNSAFE = sun.misc.Unsafe.getUnsafe();
+    //         Class<?> k = FutureTask.class;
+    //         stateOffset = UNSAFE.objectFieldOffset
+    //             (k.getDeclaredField("state"));
+    //         runnerOffset = UNSAFE.objectFieldOffset
+    //             (k.getDeclaredField("runner"));
+    //         waitersOffset = UNSAFE.objectFieldOffset
+    //             (k.getDeclaredField("waiters"));
+    //     } catch (Exception e) {
+    //         throw new Error(e);
+    //     }
+    // }
 };
 
 } // namespace Concurrent

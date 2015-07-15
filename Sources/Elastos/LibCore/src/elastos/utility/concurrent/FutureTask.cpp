@@ -32,6 +32,10 @@ const Int32 FutureTask::CANCELLED    = 4;
 const Int32 FutureTask::INTERRUPTING = 5;
 const Int32 FutureTask::INTERRUPTED  = 6;
 
+const Int64 FutureTask::mStateOffset;
+const Int64 FutureTask::mRunnerOffset;
+const Int64 FutureTask::mWaitersOffset;
+
 FutureTask::FutureTask()
 {}
 
@@ -76,6 +80,8 @@ ECode FutureTask::Report(
     /* [in] */ Int32 s,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<IInterface> x = mOutcome;
     if (s == NORMAL) {
         *result = x;
@@ -89,6 +95,8 @@ ECode FutureTask::Report(
 ECode FutureTask::IsCancelled(
     /* [out] */ Boolean* isCancelled)
 {
+    VALIDATE_NOT_NULL(isCancelled)
+
     *isCancelled = mState >= CANCELLED;
     return NOERROR;
 }
@@ -96,6 +104,8 @@ ECode FutureTask::IsCancelled(
 ECode FutureTask::IsDone(
     /* [out] */ Boolean* isDone)
 {
+    VALIDATE_NOT_NULL(isDone)
+
     *isDone = mState != NEW;
     return NOERROR;
 }
@@ -129,26 +139,27 @@ ECode FutureTask::Cancel(
     /* [in] */ Boolean mayInterruptIfRunning,
     /* [out] */ Boolean* result)
 {
-    if (mState != NEW) {
+    VALIDATE_NOT_NULL(result)
+
+    if (!(mState == NEW &&
+          CompareAndSwapInt32((volatile int32_t*)&mStateOffset, NEW,
+              mayInterruptIfRunning ? INTERRUPTING : CANCELLED))) {
         *result = FALSE;
         return NOERROR;
     }
-    if (mayInterruptIfRunning) {
-        if (!CompareAndSwapInt32((volatile int32_t*)&mState, NEW, INTERRUPTING)) {
-            *result = FALSE;
-            return NOERROR;
+//    try {    // in case call to interrupt throws exception
+        if (mayInterruptIfRunning) {
+//            try {
+                AutoPtr<IThread> t = mRunner;
+                if (t != NULL)
+                    t->Interrupt();
+//            } finally { // final state
+                PutOrderedInt32((volatile int32_t*)&mStateOffset, INTERRUPTED);
+//            }
         }
-        AutoPtr<IThread> t = mRunner;
-        if (t != NULL) {
-            t->Interrupt();
-        }
-        PutOrderedInt32((volatile int32_t*)&mState, INTERRUPTED); // final state
-    }
-    else if (!CompareAndSwapInt32((volatile int32_t*)&mState, NEW, CANCELLED)) {
-        *result = FALSE;
-        return NOERROR;
-    }
-    FinishCompletion();
+//    } finally {
+        FinishCompletion();
+//    }
     *result = TRUE;
     return NOERROR;
 }
@@ -156,6 +167,8 @@ ECode FutureTask::Cancel(
 ECode FutureTask::Get(
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 s = mState;
     if (s <= COMPLETING) {
         AwaitDone(FALSE, 0ll, &s);
@@ -168,6 +181,8 @@ ECode FutureTask::Get(
     /* [in] */ ITimeUnit* unit,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (unit == NULL) return E_NULL_POINTER_EXCEPTION;
     Int32 s = mState;
     if (s <= COMPLETING) {
@@ -346,6 +361,8 @@ ECode FutureTask::AwaitDone(
     /* [in] */ Int64 nanos,
     /* [out] */ Int32* state)
 {
+    VALIDATE_NOT_NULL(state)
+
     AutoPtr<ISystem> system;
 #ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
@@ -355,9 +372,10 @@ ECode FutureTask::AwaitDone(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 #endif
 
-    Int64 last = 0ll;
+    Int64 deadline = 0ll;
     if (timed) {
-        system->GetNanoTime(&last);
+        system->GetNanoTime(&deadline);
+        deadline += nanos;
     }
     AutoPtr<WaitNode> q;
     Boolean queued = FALSE;
@@ -374,6 +392,9 @@ ECode FutureTask::AwaitDone(
             }
             return s;
         }
+        else if (s == COMPLETING) { // cannot time out yet
+            Thread::Yield();
+        }
         else if (q == NULL) {
             q = new WaitNode();
         }
@@ -384,12 +405,12 @@ ECode FutureTask::AwaitDone(
         else if (timed) {
             Int64 now;
             system->GetNanoTime(&now);
-            if ((nanos -= (now - last)) <= 0ll) {
+            nanos = deadline - now;
+            if (nanos <= 0ll) {
                 RemoveWaiter(q);
                 *state = mState;
                 return NOERROR;
             }
-            last = now;
 #ifdef ELASTOS_UTILITY_CONCURRENT
             LockSupport::ParkNanos((IRunnableFuture*)THIS_PROBE(IRunnableFuture), nanos);
 #else

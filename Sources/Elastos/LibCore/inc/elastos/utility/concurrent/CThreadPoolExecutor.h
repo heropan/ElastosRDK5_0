@@ -8,6 +8,7 @@
 #include <HashSet.h>
 //#include <Condition.h>
 
+using Elastos::Core::IThrowable;
 using Elastos::Core::IRunnable;
 //using Elastos::Core::Condition;
 //using Elastos::Utility::Etl::HashSet;
@@ -177,13 +178,15 @@ private:
 
         CARAPI_(Boolean) IsLocked() { return IsHeldExclusively(); }
 
+        CARAPI_(void) InterruptIfStarted();
+
     protected:
         // Lock methods
         //
         // The value 0 represents the unlocked state.
         // The value 1 represents the locked state.
         CARAPI_(Boolean) IsHeldExclusively()
-        { return GetState() == 1; }
+        { return GetState() != 0; }
 
         CARAPI_(Boolean) TryAcquire(
             /* [in] */ Int32 unused);
@@ -849,7 +852,7 @@ protected:
      */
     CARAPI_(void) AfterExecute(
         /* [in] */ IRunnable* r,
-        /* [in] */ ECode ec)
+        /* [in] */ IThrowable* t)
     {}
 
     /**
@@ -978,14 +981,6 @@ private:
     CARAPI_(void) InterruptIdleWorkers();
 
     /**
-     * Ensures that unless the pool is stopping, the current thread
-     * does not have its interrupt set. This requires a double-check
-     * of state in case the interrupt was cleared concurrently with a
-     * shutdownNow -- if so, the interrupt is re-enabled.
-     */
-    CARAPI_(void) ClearInterruptsForTaskRun();
-
-    /**
      * Drains the task queue into a new list, normally using
      * drainTo. But if the queue is a DelayQueue or any other kind of
      * queue for which poll or drainTo may fail to remove some
@@ -1060,6 +1055,16 @@ private:
      *         workerCount is decremented
      */
     CARAPI_(AutoPtr<IRunnable>) GetTask();
+
+    /**
+     * Rolls back the worker thread creation.
+     * - removes worker from workers, if present
+     * - decrements worker count
+     * - rechecks for termination, in case the existence of this
+     *   worker was holding up termination
+     */
+    CARAPI_(void) AddWorkerFailed(
+        /* [in] */ Worker* w);
 
 private:
     struct HashWorker

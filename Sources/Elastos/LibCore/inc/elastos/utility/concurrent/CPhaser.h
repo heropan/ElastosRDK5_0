@@ -47,7 +47,7 @@ public:
         Boolean mTimed;
         Boolean mWasInterrupted;
         Int64 mNanos;
-        Int64 mLastTime;
+        Int64 mDeadLine;
         volatile AutoPtr<IThread> mThread; // nulled to cancel wait
         AutoPtr<QNode> mNext;
     };
