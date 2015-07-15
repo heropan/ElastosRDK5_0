@@ -2,5 +2,5 @@
 #DIRS = crypto
 DIRS += net
 #DIRS += security
-#DIRS += sql
+DIRS += sql
 #DIRS += xml
