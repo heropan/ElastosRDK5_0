@@ -5,6 +5,6 @@ module
     merge("crypto.car");
     merge("net.car");
     //merge("security.car");
-    //merge("sql");
+    merge("sql.car");
     merge("xml.car");
 }
