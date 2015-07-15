@@ -113,9 +113,6 @@ ECode SequenceInputStream::Read(
         *number = -1;
         return NOERROR;
     }
-    if (buffer == NULL) {
-        return E_NULL_POINTER_EXCEPTION;
-    }
     if ((byteOffset | byteCount) < 0 || byteOffset > buffer->GetLength() - byteCount) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }

@@ -33,7 +33,7 @@ public:
      * writer.
      *
      * @param initialSize
-     *            the intial size of the target string buffer.
+     *            the initial size of the target string buffer.
      */
     CARAPI constructor(
         /* [in] */ Int32 initialSize);

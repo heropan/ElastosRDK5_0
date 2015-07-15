@@ -162,7 +162,7 @@ ECode PipedInputStream::Read(
     VALIDATE_NOT_NULL(bytes)
 
     synchronized(this) {
-        Arrays::CheckOffsetAndCount(bytes->GetLength(), byteOffset, byteCount);
+        FAIL_RETURN(Arrays::CheckOffsetAndCount(bytes->GetLength(), byteOffset, byteCount));
         if (0 == byteCount) {
             *rev = 0;
             return NOERROR;

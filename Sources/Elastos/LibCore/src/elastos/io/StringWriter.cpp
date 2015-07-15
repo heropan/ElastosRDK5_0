@@ -32,7 +32,7 @@ ECode StringWriter::constructor(
     /* [in] */ Int32 initialSize)
 {
     if (initialSize < 0) {
-//      throw new IllegalArgumentException();
+        // throw new IllegalArgumentException("initialSize < 0: " + initialSize);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mBuf = new StringBuffer(initialSize);

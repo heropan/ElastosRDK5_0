@@ -103,7 +103,7 @@ CARAPI ByteArrayInputStream::Read(
     VALIDATE_NOT_NULL(number)
 
     synchronized(this) {
-        Arrays::CheckOffsetAndCount(buffer->GetLength(), byteOffset, byteCount);
+        FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), byteOffset, byteCount));
 
         // Are there any bytes available?
         if (mPos >= mCount) {

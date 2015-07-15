@@ -159,7 +159,7 @@ ECode InputStreamReader::Read(
         return E_IO_EXCEPTION;
         // throw new IOException("InputStreamReader is closed");
     }
-    Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, count);
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, count));
     if (count == 0) {
         *number = 0;
         return NOERROR;

@@ -1,6 +1,9 @@
 
 #include "StringBufferInputStream.h"
 #include "AutoLock.h"
+#include "Arrays.h"
+
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -59,39 +62,24 @@ ECode StringBufferInputStream::Read(
     *number = -1;
     VALIDATE_NOT_NULL(buffer)
 
-    // BEGIN android-note
-    // changed array notation to be consistent with the rest of harmony
-    // END android-note
-    // According to 22.7.6 should return -1 before checking other
-    // parameters.
     AutoLock lock(this);
 
-    if (buffer == NULL) {
+    if (NULL == buffer) {
 //      throw new NullPointerException("buffer == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    // avoid int overflow
-    if (byteOffset < 0 || byteOffset > buffer->GetLength()) {
-//      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-    if (byteCount < 0 || byteCount > buffer->GetLength() - byteOffset) {
-//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + length);
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    if (byteCount == 0) {
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), byteOffset, byteCount));
+    if (0 == byteCount) {
         *number = 0;
         return NOERROR;
     }
 
-    // TODO: convert Char32 to byte? is it right?
     Int32 copylen = mCount - mPos < byteCount ? mCount - mPos : byteCount;
     for (Int32 i = 0; i < copylen; ++i) {
         (*buffer)[byteOffset + i] = (Byte)mBuffer.GetChar(mPos + i);
     }
     mPos += copylen;
-    *number = mPos <= mCount ? copylen : -1;
+    *number = copylen;
     return NOERROR;
 }
 

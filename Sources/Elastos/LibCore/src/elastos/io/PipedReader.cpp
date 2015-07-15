@@ -27,6 +27,8 @@ ECode PipedReader::Close()
 ECode PipedReader::Connect(
     /* [in] */ IPipedWriter* src)
 {
+    VALIDATE_NOT_NULL(src)
+
     src->Connect(this);
     return NOERROR;
 }
@@ -53,6 +55,8 @@ ECode PipedReader::EstablishConnection()
 ECode PipedReader::Read(
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+
     AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(1);
     Int32 result;
     FAIL_RETURN(Read(chars, 0, 1, &result));
@@ -66,6 +70,9 @@ ECode PipedReader::Read(
     /* [in] */ Int32 count,
     /* [out] */ Int32* rev)
  {
+    VALIDATE_NOT_NULL(buffer)
+    VALIDATE_NOT_NULL(rev)
+
     synchronized(this) {
         if (!mIsConnected) {
             // throw new IOException("Pipe not connected");
@@ -75,7 +82,7 @@ ECode PipedReader::Read(
             // throw new IOException("Pipe is closed");
             return E_IO_EXCEPTION;
         }
-        Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, count);
+        FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, count));
         if (0 == count) {
             *rev = 0;
             return NOERROR;
@@ -152,6 +159,8 @@ ECode PipedReader::Read(
 ECode PipedReader::Ready(
     /* [out] */ Boolean* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+
     synchronized(this) {
         if (!mIsConnected) {
             // throw new IOException("Pipe not connected");
@@ -219,8 +228,10 @@ ECode PipedReader::Receive(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
 {
+    VALIDATE_NOT_NULL(chars)
+
     synchronized(this) {
-        Arrays::CheckOffsetAndCount(chars->GetLength(), offset, count);
+        FAIL_RETURN(Arrays::CheckOffsetAndCount(chars->GetLength(), offset, count));
         if (NULL == mBuffer) {
             // throw new IOException("Pipe is closed");
             return E_IO_EXCEPTION;
@@ -303,6 +314,8 @@ ECode PipedReader::constructor()
 ECode PipedReader::constructor(
     /* [in] */ IPipedWriter* out)
 {
+    VALIDATE_NOT_NULL(out)
+
     FAIL_RETURN(Connect(out));
     return NOERROR;
 }
@@ -322,6 +335,8 @@ ECode PipedReader::constructor(
     /* [in] */ IPipedWriter* out,
     /* [in] */ Int32 pipeSize)
 {
+    VALIDATE_NOT_NULL(out)
+
     FAIL_RETURN(constructor(pipeSize));
     FAIL_RETURN(Connect(out));
     return NOERROR;
@@ -330,6 +345,8 @@ ECode PipedReader::constructor(
 ECode PipedReader::IsClosed(
     /* [out] */ Boolean* isClosed)
 {
+    VALIDATE_NOT_NULL(isClosed)
+
     *isClosed = mIsClosed;
     return NOERROR;
 }
@@ -338,6 +355,8 @@ ECode PipedReader::IsClosed(
 ECode PipedReader::IsConnected(
     /* [out] */ Boolean* isConnected)
 {
+    VALIDATE_NOT_NULL(isConnected)
+
     *isConnected = mIsConnected;
     return NOERROR;
 }

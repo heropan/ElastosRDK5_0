@@ -2,8 +2,10 @@
 #include "StringReader.h"
 #include "Character.h"
 #include "AutoLock.h"
+#include "Arrays.h"
 
 using Elastos::Core::Character;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace IO {
@@ -113,35 +115,27 @@ ECode StringReader::Read(
     VALIDATE_NOT_NULL(buffer)
     assert(mLock != NULL);
 
-    AutoLock lock(mLock);
+    synchronized(mLock){
+        FAIL_RETURN(CheckNotClosed());
+        FAIL_RETURN(Arrays::CheckOffsetAndCount(buffer->GetLength(), offset, count));
+        if (0 == count) {
+            *number = 0;
+            return NOERROR;
+        }
 
-    if (offset < 0 || offset > buffer->GetLength()) {
-//      throw new ArrayIndexOutOfBoundsException("Offset out of bounds: " + offset);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+        if (mPos == mCount) {
+            *number = -1;
+            return NOERROR;
+        }
+
+        Int32 end = mPos + count > mCount ? mCount : mPos + count;
+
+        FAIL_RETURN(Character::ToChar32s(mStr, mPos, end - mPos, buffer, offset));
+
+        Int32 read = end - mPos;
+        mPos = end;
+        *number = read;
     }
-
-    if (count < 0 || count > buffer->GetLength() - offset) {
-//      throw new ArrayIndexOutOfBoundsException("Length out of bounds: " + len);
-        return E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    if (count == 0) {
-        *number = 0;
-        return NOERROR;
-    }
-
-    if (mPos == mCount) {
-        *number = -1;
-        return NOERROR;
-    }
-
-    Int32 end = mPos + count > mCount ? mCount : mPos + count;
-
-    FAIL_RETURN(Character::ToChar32s(mStr, mPos, end - mPos, buffer, offset));
-
-    Int32 read = end - mPos;
-    mPos = end;
-    *number = read;
     return NOERROR;
 }
 

@@ -12,6 +12,7 @@ CarClass(CStringWriter)
 {
 public:
     CAR_OBJECT_DECL()
+
 };
 
 } // namespace IO
