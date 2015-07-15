@@ -49,7 +49,7 @@ public:
      * threads work correctly even before this thread starts
      * processing tasks.
      */
-    void OnStart();
+    CARAPI_(void) OnStart();
 
     /**
      * Performs cleanup associated with termination of this worker
@@ -59,7 +59,7 @@ public:
      * @param exception the exception causing this thread to abort due
      * to an unrecoverable error, or {@code null} if completed normally
      */
-    void OnTermination(
+    CARAPI_(void) OnTermination(
         /* [in] */ IThrowable* exception);
 
 public:

@@ -218,20 +218,20 @@ public:
      *
      * @return true if successful
      */
-    Boolean TrySetSignal();
+    CARAPI_(Boolean) TrySetSignal();
 
     /**
      * Records exception and sets status.
      *
      * @return status on exit
      */
-    Int32 RecordExceptionalCompletion(
+    CARAPI_(Int32) RecordExceptionalCompletion(
         /* [in] */ IThrowable* ex);
 
     /**
      * Hook for exception propagation support for tasks with completers.
      */
-    void InternalPropagateException(
+    CARAPI_(void) InternalPropagateException(
         /* [in] */ IThrowable* ex);
 
     /**
@@ -240,13 +240,13 @@ public:
      * exceptions, but if it does anyway, we have no recourse during
      * shutdown, so guard against this case.
      */
-    static void CancelIgnoringExceptions(
+    static CARAPI_(void) CancelIgnoringExceptions(
         /* [in] */ ForkJoinTask* t);
 
     /**
      * A version of "sneaky throw" to relay exceptions
      */
-    static void Rethrow(
+    static CARAPI_(void) Rethrow(
         /* [in] */ IThrowable* ex);
 
     /**
@@ -254,7 +254,7 @@ public:
      * limitations to evade compiler complaints about rethrowing
      * unchecked exceptions
      */
-    static void UncheckedThrow(
+    static CARAPI_(void) UncheckedThrow(
         /* [in] */ IThrowable* t);
 
     // tag operations
@@ -266,7 +266,7 @@ public:
      * @since 1.8
      * @hide
      */
-    Int16 GetForkJoinTaskTag();
+    CARAPI_(Int16) GetForkJoinTaskTag();
 
     /**
      * Atomically sets the tag value for this task.
@@ -276,7 +276,7 @@ public:
      * @since 1.8
      * @hide
      */
-    Int16 SetForkJoinTaskTag(
+    CARAPI_(Int16) SetForkJoinTaskTag(
         /* [in] */ Int16 tag);
 
     /**
@@ -294,7 +294,7 @@ public:
      * @since 1.8
      * @hide
      */
-    Boolean CompareAndSetForkJoinTaskTag(
+    CARAPI_(Boolean) CompareAndSetForkJoinTaskTag(
         /* [in] */ Int16 e,
         /* [in] */ Int16 tag);
 
@@ -375,7 +375,7 @@ private:
     /**
      * Throws exception, if any, associated with the given status.
      */
-    void ReportException(
+    CARAPI_(void) ReportException(
         /* [in] */ Int32 s);
 
     /**
@@ -476,7 +476,7 @@ public:
     CARAPI Exec(
         /* [out] */ Boolean* res);
 
-    void Run();
+    CARAPI_(void) Run();
 
 public:
     AutoPtr<IRunnable> mRunnable;
@@ -506,7 +506,7 @@ public:
     CARAPI Exec(
         /* [out] */ Boolean* res);
 
-    void Run();
+    CARAPI_(void) Run();
 
 public:
     AutoPtr<IRunnable> mRunnable;

@@ -35,7 +35,7 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
-        AutoPtr<IForkJoinWorkerThread> NewThread(
+        CARAPI_(AutoPtr<IForkJoinWorkerThread>) NewThread(
             /* [in] */ IForkJoinPool* pool);
     };
 
@@ -125,14 +125,14 @@ public:
         /**
          * Returns the approximate number of tasks in the queue.
          */
-        Int32 QueueSize();
+        CARAPI_(Int32) QueueSize();
 
         /**
          * Provides a more accurate estimate of whether this queue has
          * any tasks than does queueSize, by checking whether a
          * near-empty queue has at least one unclaimed task.
          */
-        Boolean IsEmpty();
+        CARAPI_(Boolean) IsEmpty();
 
         /**
          * Pushes a task. Call only by owner in unshared queues.  (The
@@ -141,7 +141,7 @@ public:
          * @param task the task. Caller must ensure non-null.
          * @throws RejectedExecutionException if array cannot be resized
          */
-        void Push(
+        CARAPI_(void) Push(
             /* [in] */ IForkJoinTask* task);
 
         /**
@@ -149,61 +149,61 @@ public:
          * by owner or with lock held -- it is OK for base, but not
          * top, to move while resizings are in progress.
          */
-        AutoPtr<ArrayOf<IForkJoinTask*> > GrowArray();
+        CARAPI_(AutoPtr<ArrayOf<IForkJoinTask*> >) GrowArray();
 
         /**
          * Takes next task, if one exists, in LIFO order.  Call only
          * by owner in unshared queues.
          */
-        AutoPtr<IForkJoinTask> Pop();
+        CARAPI_(AutoPtr<IForkJoinTask>) Pop();
 
         /**
          * Takes a task in FIFO order if b is base of queue and a task
          * can be claimed without contention. Specialized versions
          * appear in ForkJoinPool methods scan and tryHelpStealer.
          */
-        AutoPtr<IForkJoinTask> PollAt(
+        CARAPI_(AutoPtr<IForkJoinTask>) PollAt(
             /* [in] */ Int32 b);
 
         /**
          * Takes next task, if one exists, in FIFO order.
          */
-        AutoPtr<IForkJoinTask> Poll();
+        CARAPI_(AutoPtr<IForkJoinTask>) Poll();
 
         /**
          * Takes next task, if one exists, in order specified by mode.
          */
-        AutoPtr<IForkJoinTask> NextLocalTask();
+        CARAPI_(AutoPtr<IForkJoinTask>) NextLocalTask();
 
         /**
          * Returns next task, if one exists, in order specified by mode.
          */
-        AutoPtr<IForkJoinTask> Peek();
+        CARAPI_(AutoPtr<IForkJoinTask>) Peek();
 
         /**
          * Pops the given task only if it is at the current top.
          * (A shared version is available only via FJP.tryExternalUnpush)
          */
-        Boolean TryUnpush(
+        CARAPI_(Boolean) TryUnpush(
             /* [in] */ IForkJoinTask* t);
 
         /**
          * Removes and cancels all known tasks, ignoring any exceptions.
          */
-        void CancelAll();
+        CARAPI_(void) CancelAll();
 
         // Specialized execution methods
 
         /**
          * Polls and runs tasks until empty.
          */
-        void PollAndExecAll();
+        CARAPI_(void) PollAndExecAll();
 
         /**
          * Executes a top-level task and any local tasks remaining
          * after execution.
          */
-        void RunTask(
+        CARAPI_(void) RunTask(
             /* [in] */ IForkJoinTask* task);
 
         /**
@@ -213,7 +213,7 @@ public:
          *
          * @return false if no progress can be made, else true
          */
-        Boolean TryRemoveAndExec(
+        CARAPI_(Boolean) TryRemoveAndExec(
             /* [in] */ IForkJoinTask* task);
 
         /**
@@ -239,7 +239,7 @@ public:
         /**
          * Returns true if owned and not known to be blocked.
          */
-        Boolean IsApparentlyUnblocked();
+        CARAPI_(Boolean) IsApparentlyUnblocked();
 
     public:
         /**
@@ -517,7 +517,7 @@ public:
      * @since 1.8
      * @hide
      */
-    static Int32 GetCommonPoolParallelism();
+    static CARAPI_(Int32) GetCommonPoolParallelism();
 
     /**
      * Removes all available unexecuted submitted and forked tasks
@@ -536,7 +536,7 @@ public:
      * @param c the collection to transfer elements into
      * @return the number of elements transferred
      */
-    Int32 DrainTasksTo(
+    CARAPI_(Int32) DrainTasksTo(
         /* [in] */ ICollection* c);
 
     /**
@@ -546,13 +546,13 @@ public:
      *
      * @return the next submission, or {@code null} if none
      */
-    AutoPtr<IForkJoinTask> PollSubmission();
+    CARAPI_(AutoPtr<IForkJoinTask>) PollSubmission();
 
-    AutoPtr<IRunnableFuture> NewTaskFor(
+    CARAPI_(AutoPtr<IRunnableFuture>) NewTaskFor(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* value);
 
-    AutoPtr<IRunnableFuture> NewTaskFor(
+    CARAPI_(AutoPtr<IRunnableFuture>) NewTaskFor(
         /* [in] */ ICallable* callable);
 
     /**
@@ -562,7 +562,7 @@ public:
      * @param w the worker
      * @return the worker's pool index
      */
-    AutoPtr<WorkQueue> RegisterWorker(
+    CARAPI_(AutoPtr<WorkQueue>) RegisterWorker(
         /* [in] */ IForkJoinWorkerThread* wt);
 
     /**
@@ -584,25 +584,25 @@ public:
      *
      * @param task the task. Caller must ensure non-null.
      */
-    void ExternalPush(
+    CARAPI_(void) ExternalPush(
         /* [in] */ IForkJoinTask* task);
 
     /**
      * Increments active count; mainly called upon return from blocking.
      */
-    void IncrementActiveCount();
+    CARAPI_(void) IncrementActiveCount();
 
     /**
      * Wakes up or creates a worker.
      */
-    void SignalWork(
+    CARAPI_(void) SignalWork(
         /* [in] */ ArrayOf<WorkQueue*>* ws,
         /* [in] */ WorkQueue* q);
 
     /**
      * Top-level runloop for workers, called by ForkJoinWorkerThread.run.
      */
-    void RunWorker(
+    CARAPI_(void) RunWorker(
         /* [in] */ WorkQueue* w);
 
     /**
@@ -625,14 +625,14 @@ public:
      * @param blocker the blocker
      * @throws InterruptedException if blocker.block did so
      */
-    static void ManagedBlock(
+    static CARAPI_(void) ManagedBlock(
         /* [in] */ IForkJoinPoolManagedBlocker* blocker);
 
     /**
      * Waits and/or attempts to assist performing tasks indefinitely
      * until the {@code commonPool()} {@link #isQuiescent}.
      */
-    static void QuiesceCommonPool();
+    static CARAPI_(void) QuiesceCommonPool();
 
     /**
      * Tries to decrement active count (sometimes implicitly) and
@@ -643,7 +643,7 @@ public:
      *
      * @param c the assumed ctl value
      */
-    Boolean TryCompensate(
+    CARAPI_(Boolean) TryCompensate(
         /* [in] */ Int64 c);
 
     /**
@@ -653,7 +653,7 @@ public:
      * @param task the task
      * @return task status on exit
      */
-    Int32 AwaitJoin(
+    CARAPI_(Int32) AwaitJoin(
         /* [in] */ WorkQueue* joiner,
         /* [in] */ IForkJoinTask* task);
 
@@ -665,7 +665,7 @@ public:
      * @param joiner the joining worker
      * @param task the task
      */
-    void HelpJoinOnce(
+    CARAPI_(void) HelpJoinOnce(
         /* [in] */ WorkQueue* joiner,
         /* [in] */ ForkJoinTask* task);
 
@@ -675,7 +675,7 @@ public:
      * when tasks cannot be found, we rescan until all others cannot
      * find tasks either.
      */
-    void HelpQuiescePool(
+    CARAPI_(void) HelpQuiescePool(
         /* [in] */ WorkQueue* w);
 
     /**
@@ -683,21 +683,21 @@ public:
      *
      * @return a task, if available
      */
-    AutoPtr<IForkJoinTask> NextTaskFor(
+    CARAPI_(AutoPtr<IForkJoinTask>) NextTaskFor(
         /* [in] */ WorkQueue* w);
 
-    static Int32 GetSurplusQueuedTaskCount();
+    static CARAPI_(Int32) GetSurplusQueuedTaskCount();
 
     /**
      * Returns common pool queue for a thread that has submitted at
      * least one task.
      */
-    static AutoPtr<WorkQueue> CommonSubmitterQueue();
+    static CARAPI_(AutoPtr<WorkQueue>) CommonSubmitterQueue();
 
     /**
      * Tries to pop the given task from submitter's queue in common pool.
      */
-    Boolean TryExternalUnpush(
+    CARAPI_(Boolean) TryExternalUnpush(
         /* [in] */ IForkJoinTask* task);
 
     // Int32 ExternalHelpComplete(
@@ -717,7 +717,7 @@ public:
      * @since 1.8
      * @hide
      */
-    static AutoPtr<IForkJoinPool> CommonPool();
+    static CARAPI_(AutoPtr<IForkJoinPool>) CommonPool();
 
 private:
     /**
@@ -730,7 +730,7 @@ private:
      * Returns the next sequence number. We don't expect this to
      * ever contend, so use simple builtin sync.
      */
-    static Int32 NextPoolId();
+    static CARAPI_(Int32) NextPoolId();
 
     /**
      * Acquires the plock lock to protect worker array and related
@@ -740,20 +740,20 @@ private:
      * a terrible idea for a highly contended lock, but works fine as
      * a more conservative alternative to a pure spinlock.
      */
-    Int32 AcquirePlock();
+    CARAPI_(Int32) AcquirePlock();
 
     /**
      * Unlocks and signals any thread waiting for plock. Called only
      * when CAS of seq value for unlock fails.
      */
-    void ReleasePlock(
+    CARAPI_(void) ReleasePlock(
         /* [in] */ Int32 ps);
 
     /**
      * Tries to create and start one worker if fewer than target
      * parallelism level exist. Adjusts counts etc on failure.
      */
-    void TryAddWorker();
+    CARAPI_(void) TryAddWorker();
 
     /**
      * Full version of externalPush. This method is called, among
@@ -772,7 +772,7 @@ private:
      * eventually wrap around zero, this method harmlessly fails to
      * reinitialize if workQueues exists, while still advancing plock.
      */
-    void FullExternalPush(
+    CARAPI_(void) FullExternalPush(
         /* [in] */ IForkJoinTask* task);
 
     /**
@@ -797,7 +797,7 @@ private:
      * @param r a random seed
      * @return worker qlock status if would have waited, else 0
      */
-    Int32 Scan(
+    CARAPI_(Int32) Scan(
         /* [in] */ WorkQueue* w,
         /* [in] */ Int32 r);
 
@@ -815,7 +815,7 @@ private:
      * @param c the ctl value on entry to scan
      * @param ec the worker's eventCount on entry to scan
      */
-    Int32 AwaitWork(
+    CARAPI_(Int32) AwaitWork(
         /* [in] */ WorkQueue* w,
         /* [in] */ Int64 c,
         /* [in] */ Int32 ec);
@@ -826,7 +826,7 @@ private:
      * queue. This requires revalidating all of the associated state
      * from caller.
      */
-    void HelpRelease(
+    CARAPI_(void) HelpRelease(
         /* [in] */ Int64 c,
         /* [in] */ ArrayOf<WorkQueue*>* ws,
         /* [in] */ WorkQueue* w,
@@ -851,7 +851,7 @@ private:
      * @return 0 if no progress can be made, negative if task
      * known complete, else positive
      */
-    Int32 TryHelpStealer(
+    CARAPI_(Int32) TryHelpStealer(
         /* [in] */ WorkQueue* joiner,
         /* [in] */ IForkJoinTask* task);
 
@@ -870,7 +870,7 @@ private:
      * during a scan, else null.  This method must be retried by
      * caller if, by the time it tries to use the queue, it is empty.
      */
-    AutoPtr<WorkQueue> FindNonEmptyStealQueue();
+    CARAPI_(AutoPtr<WorkQueue>) FindNonEmptyStealQueue();
 
     /**
      * Possibly initiates and/or completes termination.  The caller
@@ -886,14 +886,14 @@ private:
      * @param enable if true, enable shutdown when next possible
      * @return true if now terminating or terminated
      */
-    Boolean TryTerminate(
+    CARAPI_(Boolean) TryTerminate(
         /* [in] */ Boolean now,
         /* [in] */ Boolean enable);
 
-    static Int32 CheckParallelism(
+    static CARAPI_(Int32) CheckParallelism(
         /* [in] */ Int32 parallelism);
 
-    static AutoPtr<IForkJoinPoolForkJoinWorkerThreadFactory> CheckFactory(
+    static CARAPI_(AutoPtr<IForkJoinPoolForkJoinWorkerThreadFactory>) CheckFactory(
         /* [in] */ IForkJoinPoolForkJoinWorkerThreadFactory* factory);
 
     /**
@@ -908,7 +908,7 @@ private:
         /* [in] */ Int32 mode,
         /* [in] */ String workerNamePrefix);
 
-    static AutoPtr<IForkJoinPool> MakeCommonPool();
+    static CARAPI_(AutoPtr<IForkJoinPool>) MakeCommonPool();
 
 public:
     /**
