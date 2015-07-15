@@ -4,10 +4,11 @@ module
     interface Elastos.Core.INumber;
     interface Elastos.Math.IBigInteger;
     interface Elastos.Math.IBigDecimal;
+    interface Elastosx.Xml.Namespace.IQName;
 
     namespace Elastosx {
     namespace Xml {
-    namespace Namespace {
+    namespace Datatype {
 
     /**
      * @Involve
@@ -67,7 +68,7 @@ module
             [in] Int32 millisecond);
     }
 
-    } // namespace Namespace
+    } // namespace Datatype
     } // namespace Xml
     } // namespace Elastosx
 }
