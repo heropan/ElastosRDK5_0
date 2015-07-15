@@ -49,10 +49,10 @@ $(MAKEDIR)/R.cpp: $(MAKEDIR)/AndroidManifest.xml $(MAKEDIR)/res $(DEPEND_LIST) $
 ifndef RES_NAMESPACE
 	@cd $(MAKEDIR); \
 	sed -n 's/    namespace \(.*\) [\{]/\1/p' $(MAKEDIR)/$(TARGET_NAME).car | tr -s "\n" "\." | sed -n 's/\(.*\)\./\1/p' >temp; \
-	aapt package -f -m -J gen -S res --cpp `cat $(MAKEDIR)/temp` -I $(EMULATOR_PATH)/platforms/android-17/android.jar -M $(MAKEDIR)/AndroidManifest.xml
+	aapt package -f -m -J gen -S res --cpp `cat $(MAKEDIR)/temp` -I $(EMULATOR_PATH)/platforms/android-21/android.jar -M $(MAKEDIR)/AndroidManifest.xml
 else
 	@cd $(MAKEDIR); \
-	aapt package -f -m -J gen -S res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-17/android.jar -M $(MAKEDIR)/AndroidManifest.xml
+	aapt package -f -m -J gen -S res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-21/android.jar -M $(MAKEDIR)/AndroidManifest.xml
 endif
 	mv -f $(MAKEDIR)/gen/$(TARGET_NAME)/R.cpp $(MAKEDIR)/gen/$(TARGET_NAME)/R.h $(MAKEDIR)
 	rm -rf $(MAKEDIR)/temp
@@ -660,15 +660,15 @@ endif
 	$(RMDIR) `find $(XDK_TARGETS)/$(TARGET_NAME) -name *.svn`
 	if [ -d $(XDK_TARGETS)/$(TARGET_NAME)/assets ]; then \
 	    if [ -d $(XDK_TARGETS)/$(TARGET_NAME)/res ]; then \
-			aapt package -f $(AAPT_FLAGS) -S $(XDK_TARGETS)/$(TARGET_NAME)/res -A $(XDK_TARGETS)/$(TARGET_NAME)/assets -I $(EMULATOR_PATH)/platforms/android-17/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 17 --target-sdk-version 17 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
+			aapt package -f $(AAPT_FLAGS) -S $(XDK_TARGETS)/$(TARGET_NAME)/res -A $(XDK_TARGETS)/$(TARGET_NAME)/assets -I $(EMULATOR_PATH)/platforms/android-21/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 21 --target-sdk-version 21 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
 		else \
-			aapt package -f $(AAPT_FLAGS) -A $(XDK_TARGETS)/$(TARGET_NAME)/assets -I $(EMULATOR_PATH)/platforms/android-17/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 17 --target-sdk-version 17 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
+			aapt package -f $(AAPT_FLAGS) -A $(XDK_TARGETS)/$(TARGET_NAME)/assets -I $(EMULATOR_PATH)/platforms/android-21/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 21 --target-sdk-version 21 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
 		fi \
 	else \
 	    if [ -d $(XDK_TARGETS)/$(TARGET_NAME)/res ]; then \
-			aapt package -f $(AAPT_FLAGS) -S $(XDK_TARGETS)/$(TARGET_NAME)/res -I $(EMULATOR_PATH)/platforms/android-17/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 17 --target-sdk-version 17 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
+			aapt package -f $(AAPT_FLAGS) -S $(XDK_TARGETS)/$(TARGET_NAME)/res -I $(EMULATOR_PATH)/platforms/android-21/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 21 --target-sdk-version 21 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
 		else \
-			aapt package -f $(AAPT_FLAGS) -I $(EMULATOR_PATH)/platforms/android-17/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 17 --target-sdk-version 17 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
+			aapt package -f $(AAPT_FLAGS) -I $(EMULATOR_PATH)/platforms/android-21/android.jar -M $(MAKEDIR)/AndroidManifest.xml --min-sdk-version 21 --target-sdk-version 21 -F $(XDK_TARGETS)/$(TARGET_NAME).epk; \
 		fi \
 	fi
 	cd $(XDK_TARGETS)/$(TARGET_NAME);zip -r9D $(XDK_TARGETS)/$(TARGET_NAME).epk $@ $(BLACKHOLE)
