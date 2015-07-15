@@ -62,6 +62,7 @@ SOURCES += CSemaphore.cpp
 SOURCES += CThreadPoolExecutor.cpp
 SOURCES += CTimeUnitHelper.cpp
 SOURCES += CopyOnWriteArrayList.cpp
+SOURCES += CountedCompleter.cpp
 SOURCES += Executors.cpp
 SOURCES += ForkJoinTask.cpp
 SOURCES += FutureTask.cpp
