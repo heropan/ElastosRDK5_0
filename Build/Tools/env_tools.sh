@@ -453,7 +453,7 @@ emu_arm_android_linux ()
         done
 
         if [ ! `android list avd | sed -n "s/^\s*Name: $QEMU_NAME$/1/p"` ]; then
-            echo no|$ANDROID_SH create avd -f -c 1024M -t android-17 -n $QEMU_NAME -s WXGA800 1>/dev/null 2>/dev/null
+            echo no|$ANDROID_SH create avd -f -c 1024M -t android-21 -n $QEMU_NAME -s WXGA800 1>/dev/null 2>/dev/null
         fi
 
         if [ -f "$QEMU_LOCK" ]; then

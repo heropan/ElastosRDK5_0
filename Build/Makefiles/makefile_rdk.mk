@@ -177,7 +177,7 @@ ifneq "$(XDK_TARGET_PRODUCT)" "anyka"
 INCLUDES = .; $(XDK_USER_INC); $(XDK_INC_PATH); \
           $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
           $(MAKEDIR);
-else 
+else
 INCLUDES = .; $(PREBUILD_INC); $(XDK_USER_INC); $(XDK_INC_PATH); \
           $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
           $(MAKEDIR);
