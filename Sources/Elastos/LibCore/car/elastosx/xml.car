@@ -56,29 +56,40 @@ module
     merge("xml/xpath/IXPathFactory.car");
     merge("xml/xpath/IXPathFactoryFinder.car");
 
-//    namespace Elastosx {
-//    namespace Xml {
-//    namespace Namespace {
+    namespace Elastosx {
+    namespace Xml {
+    namespace Namespace {
 
-//    class CQName {
-//        constructor(
-//            [in] String namespaceURI,
-//            [in] String localPart);
-//        constructor(
-//            [in] String namespaceURI,
-//            [in] String localPart,
-//            [in] String prefix);
-//        constructor(
-//            [in] String localPart);
+    class CQName {
+        constructor(
+            [in] String namespaceURI,
+            [in] String localPart);
 
-//        interface IQName;
-//    }
+        constructor(
+            [in] String namespaceURI,
+            [in] String localPart,
+            [in] String prefix);
 
-//    singleton class CQNameHelper {
-//        interface IQNameHelper;
-//    }
+        constructor(
+            [in] String localPart);
 
-//    } // namespace Namespace
-//    } // namespace Xml
-//    } // namespace Elastosx
+        interface IQName;
+    }
+
+    singleton class CQNameHelper {
+        interface IQNameHelper;
+    }
+
+    } // namespace Namespace
+
+    namespace Datatype {
+
+    singleton class CDatatypeConstants {
+        interface IDatatypeConstants;
+    }
+
+    } // namespace Datatype
+
+    } // namespace Xml
+    } // namespace Elastosx
 }

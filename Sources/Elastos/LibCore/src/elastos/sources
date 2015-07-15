@@ -35,6 +35,9 @@ INCLUDES += $(MAKEDIR)/../../inc/elastosx/net
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/net/ssl
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/sql
+INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/namespace
+INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/datatype
+
 INCLUDES += $(MAKEDIR)/../../inc/libcore/io
 INCLUDES += $(MAKEDIR)/../../inc/libcore/icu
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net
@@ -88,6 +91,8 @@ LIBRARIES += ../org/w3c/dom/dom.lib
 LIBRARIES += ../org/xml/sax/sax.lib
 LIBRARIES += ../org/xmlpull/v1/v1.lib
 LIBRARIES += ../org/kxml2/io/io.lib
+LIBRARIES += ../elastosx/xml/namespace/namespace.lib
+LIBRARIES += ../elastosx/xml/datatype/datatype.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

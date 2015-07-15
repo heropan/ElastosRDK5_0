@@ -1,9 +1,14 @@
 
 #include "CQNameHelper.h"
+#include "CQName.h"
 
 namespace Elastosx {
 namespace Xml {
 namespace Namespace {
+
+CAR_INTERFACE_IMPL(CQNameHelper, Singleton, IQNameHelper)
+
+CAR_SINGLETON_IMPL(CQNameHelper)
 
 
 ECode CQNameHelper::ValueOf(
@@ -11,7 +16,7 @@ ECode CQNameHelper::ValueOf(
     /* [out] */ Elastosx::Xml::Namespace::IQName ** ppName)
 {
     // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    return CQName::ValueOf(qNameAsString, ppName);
 }
 
 }

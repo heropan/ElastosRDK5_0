@@ -4,10 +4,11 @@ module
     interface Elastos.Utility.IGregorianCalendar;
     interface Elastos.Math.IBigDecimal;
     interface Elastos.Math.IBigInteger;
+    interface Elastosx.Xml.Namespace.IQName;
 
     namespace Elastosx {
     namespace Xml {
-    namespace Namespace {
+    namespace Datatype {
 
     interface IDatatypeFactory {
 
@@ -162,7 +163,7 @@ module
             [out] IDatatypeFactory** instaces);
     }
 
-    } // namespace Namespace
+    } // namespace Datatype
     } // namespace Xml
     } // namespace Elastosx
 }

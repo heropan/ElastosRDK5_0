@@ -1,8 +1,10 @@
 module
 {
+    interface Elastosx.Xml.Namespace.IQName;
+
     namespace Elastosx {
     namespace Xml {
-    namespace Namespace {
+    namespace Datatype {
 
     interface IDatatypeConstantsField {
         GetId(
@@ -157,7 +159,7 @@ module
 
     }
 
-    } // namespace Namespace
+    } // namespace Datatype
     } // namespace Xml
     } // namespace Elastosx
 }
