@@ -35,101 +35,100 @@ Int64 StrictMath::Abs(
 Double StrictMath::Acos(
     /* [in] */ Double d)
 {
-    //TODO LIBRARIES += -lfdlibm
-    //return ieee_acos(d);
+    return ieee_acos(d);
 }
 
 Double StrictMath::Asin(
     /* [in] */ Double d)
 {
-    //return ieee_asin(d);
+    return ieee_asin(d);
 }
 
 Double StrictMath::Atan(
     /* [in] */ Double d)
 {
-    //return ieee_atan(d);
+    return ieee_atan(d);
 }
 
 Double StrictMath::Atan2(
     /* [in] */ Double y,
     /* [in] */ Double x)
 {
-    //return ieee_atan2(y, x);
+    return ieee_atan2(y, x);
 }
 
 Double StrictMath::Cbrt(
     /* [in] */ Double d)
 {
-    //return ieee_cbrt(d);
+    return ieee_cbrt(d);
 }
 
 Double StrictMath::Ceil(
     /* [in] */ Double d)
 {
-    //return ieee_ceil(d);
+    return ieee_ceil(d);
 }
 
 Double StrictMath::Cos(
     /* [in] */ Double d)
 {
-    //return ieee_cos(d);
+    return ieee_cos(d);
 }
 
 Double StrictMath::Cosh(
     /* [in] */ Double d)
 {
-    //return ieee_cosh(d);
+    return ieee_cosh(d);
 }
 
 Double StrictMath::Exp(
     /* [in] */ Double d)
 {
-    //return ieee_exp(d);
+    return ieee_exp(d);
 }
 
 Double StrictMath::Expm1(
     /* [in] */ Double d)
 {
-    //return ieee_expm1(d);
+    return ieee_expm1(d);
 }
 
 Double StrictMath::Floor(
     /* [in] */ Double d)
 {
-    //return ieee_floor(d);
+    return ieee_floor(d);
 }
 
 Double StrictMath::Hypot(
     /* [in] */ Double a,
      /* [in] */ Double b)
 {
-    //return ieee_hypot(a, b);
+    return ieee_hypot(a, b);
 }
 
 Double StrictMath::IEEEremainder(
     /* [in] */ Double x,
      /* [in] */ Double y)
 {
-    //return ieee_remainder(x, y);
+    return ieee_remainder(x, y);
 }
 
 Double StrictMath::Log(
     /* [in] */ Double d)
 {
-    //return ieee_log(d);
+    return ieee_log(d);
 }
 
 Double StrictMath::Log10(
     /* [in] */ Double d)
 {
-    //return ieee_log10(d);
+    return ieee_log10(d);
 }
 
 Double StrictMath::Log1p(
     /* [in] */ Double d)
 {
-    //return ieee_log1p(d);
+    return ieee_log1p(d);
 }
 
 Double StrictMath::Max(
@@ -245,7 +244,7 @@ Double StrictMath::Pow(
     /* [in] */ Double x,
     /* [in] */ Double y)
 {
-    //return ieee_pow(x, y);
+    return ieee_pow(x, y);
 }
 
 Double StrictMath::Random()
@@ -256,7 +255,7 @@ Double StrictMath::Random()
 Double StrictMath::Rint(
     /* [in] */ Double d)
 {
-    //return ieee_rint(d);
+    return ieee_rint(d);
 }
 
 Int64 StrictMath::Round(
@@ -286,31 +285,31 @@ Float StrictMath::Signum(
 Double StrictMath::Sin(
     /* [in] */ Double d)
 {
-    //return ieee_sin(d);
+    return ieee_sin(d);
 }
 
 Double StrictMath::Sinh(
     /* [in] */ Double d)
 {
-    //return ieee_sinh(d);
+    return ieee_sinh(d);
 }
 
 Double StrictMath::Sqrt(
     /* [in] */ Double d)
 {
-    //return ieee_sqrt(d);
+    return ieee_sqrt(d);
 }
 
 Double StrictMath::Tan(
     /* [in] */ Double d)
 {
-    //return ieee_tan(d);
+    return ieee_tan(d);
 }
 
 Double StrictMath::Tanh(
     /* [in] */ Double d)
 {
-    //return ieee_tanh(d);
+    return ieee_tanh(d);
 }
 
 Double StrictMath::ToRadians(
@@ -342,7 +341,7 @@ Double StrictMath::NativeNextAfter(
     /* [in] */ Double x,
     /* [in] */ Double y)
 {
-    //return ieee_nextafter(x, y);
+    return ieee_nextafter(x, y);
 }
 
 Float StrictMath::Ulp(
