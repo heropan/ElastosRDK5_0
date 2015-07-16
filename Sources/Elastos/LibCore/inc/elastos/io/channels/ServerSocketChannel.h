@@ -20,7 +20,7 @@ class ServerSocketChannel
 public:
     ServerSocketChannel();
 
-    ServerSocketChannel(
+    CARAPI constructor(
         /* [in] */ ISelectorProvider* provider);
 
     static CARAPI Open(

@@ -10,10 +10,10 @@ namespace Channels {
 SocketChannel::SocketChannel()
 {}
 
-SocketChannel::SocketChannel(
+ECode SocketChannel::constructor(
     /* [in] */ ISelectorProvider* provider)
-    : AbstractSelectableChannel(provider)
 {
+    return AbstractSelectableChannel::constructor(provider);
 }
 
 CAR_INTERFACE_IMPL_3(SocketChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)

@@ -26,17 +26,18 @@ public:
         , public IGatheringByteChannel
     {
     protected:
+        CAR_INTERFACE_DECL()
+
+        SinkChannel();
+
         /**
          * Constructs a new {@code SinkChannel}.
          *
          * @param provider
          *            the provider of the channel.
          */
-        SinkChannel(
+        CARAPI constructor(
             /* [in] */ ISelectorProvider* provider);
-
-    public:
-        CAR_INTERFACE_DECL()
 
         /**
          * Indicates that this channel only supports writing.
@@ -56,17 +57,18 @@ public:
         , public IScatteringByteChannel
     {
     protected:
+        CAR_INTERFACE_DECL()
+
+        SourceChannel();
+
         /**
          * Constructs a new {@code SourceChannel}.
          *
          * @param provider
          *            the provider of the channel.
          */
-        SourceChannel(
+        constructor(
             /* [in] */ ISelectorProvider* provider);
-
-    public:
-        CAR_INTERFACE_DECL()
 
         /**
          * Indicates that this channel only supports reading.

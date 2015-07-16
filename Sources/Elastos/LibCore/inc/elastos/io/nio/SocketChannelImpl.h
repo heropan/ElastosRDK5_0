@@ -5,11 +5,9 @@
 #include "CFileDescriptor.h"
 #include "FilterOutputStream.h"
 #include "FilterInputStream.h"
-// #include "CInetSocketAddress.h"
 // #include "Socket.h"
 
 using Elastos::IO::Channels::SocketChannel;
-// using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::IPlainSocketImpl;
@@ -208,7 +206,6 @@ public:
         /* [in] */ IInetSocketAddress* remoteAddress,
         /* [in] */ Boolean updateSocketState);
 
-protected:
     /**
      * Initialise the isBound, localAddress and localPort state from the file descriptor. Used when
      * some or all of the bound state has been left to the OS to decide, or when the Socket handled

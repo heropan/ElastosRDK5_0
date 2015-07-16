@@ -349,7 +349,7 @@ public:
 protected:
     SocketChannel();
 
-    SocketChannel(
+    CARAPI constructor(
         /* [in] */ ISelectorProvider* provider);
 };
 

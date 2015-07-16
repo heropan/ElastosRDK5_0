@@ -20,7 +20,9 @@ private:
         , public IFileDescriptorChannel
     {
     public:
-        PipeSourceChannel(
+        PipeSourceChannel();
+
+        CARAPI constructor(
             /* [in] */ ISelectorProvider* provider,
             /* [in] */ IFileDescriptor* fd);
 
@@ -59,7 +61,9 @@ private:
         , public IFileDescriptorChannel
     {
     public:
-        PipeSinkChannel(
+        PipeSinkChannel();
+
+        CARAPI constructor(
             /* [in] */ ISelectorProvider* provider,
             /* [in] */ IFileDescriptor* fd);
 

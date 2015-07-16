@@ -11,10 +11,13 @@ namespace Channels {
 
 CAR_INTERFACE_IMPL_3(DatagramChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)
 
-DatagramChannel::DatagramChannel(
+DatagramChannel::DatagramChannel()
+{}
+
+ECode DatagramChannel::constructor(
     /* [in] */ ISelectorProvider* provider)
-    : AbstractSelectableChannel(provider)
 {
+    return AbstractSelectableChannel::constructor(provider);
 }
 
 DatagramChannel::~DatagramChannel()

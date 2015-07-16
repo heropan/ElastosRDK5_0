@@ -8,13 +8,14 @@
 #include "CDatagramPacket.h"
 #include "InetAddress.h"
 #include "AutoLock.h"
+#include "SocketChannelImpl.h"
+#include "EmptyArray.h"
+#include "Arrays.h"
+#include "FileChannelImpl.h"
+#include "Math.h"
+#include "IoUtils.h"
 
 using Elastos::Core::AutoLock;
-using Libcore::IO::IIoBridge;
-using Libcore::IO::CIoBridge;
-using Libcore::IO::ILibcore;
-using Libcore::IO::CLibcore;
-using Libcore::IO::IOs;
 using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::EIID_IDatagramSocket;
 using Elastos::Net::IPlainDatagramSocketImpl;
@@ -22,7 +23,15 @@ using Elastos::Net::CPlainDatagramSocketImpl;
 using Elastos::Net::IDatagramPacket;
 using Elastos::Net::CDatagramPacket;
 using Elastos::Net::InetAddress;
+using Elastos::Utility::Arrays;
 using Elastos::IO::Channels::EIID_IDatagramChannel;
+using Libcore::IO::IIoBridge;
+using Libcore::IO::CIoBridge;
+using Libcore::IO::ILibcore;
+using Libcore::IO::CLibcore;
+using Libcore::IO::IOs;
+using Libcore::IO::IoUtils;
+using Libcore::Utility::EmptyArray;
 
 namespace Elastos{
 namespace IO {
@@ -83,8 +92,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Bind(
     }
 
     FAIL_RETURN(DatagramSocket::Bind(localAddr))
-    assert(0);
-    // mChannelImpl->OnBind(FALSE /* updateSocketState */);
+    mChannelImpl->OnBind(FALSE /* updateSocketState */);
     return NOERROR;
 }
 
@@ -100,16 +108,14 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Connect(
 
     FAIL_RETURN(DatagramSocket::Connect(peer))
     // Connect may have performed an implicit bind(). Sync up here.
-    assert(0);
-    // mChannelImpl->OnBind(FALSE /* updateSocketState */);
+    mChannelImpl->OnBind(FALSE /* updateSocketState */);
 
     IInetSocketAddress* inetSocketAddress = IInetSocketAddress::Probe(peer);
     AutoPtr<IInetAddress> address;
     inetSocketAddress->GetAddress((IInetAddress**)&address);
     Int32 port;
     inetSocketAddress->GetPort(&port);
-    assert(0);
-    // return mChannelImpl->OnConnect(address, port, FALSE /* updateSocketState */);
+    return mChannelImpl->OnConnect(address, port, FALSE /* updateSocketState */);
 }
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Connect(
@@ -143,8 +149,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Receive(
     if (!wasBound) {
         // DatagramSocket.receive() will implicitly bind if it hasn't been done explicitly.
         // Sync the channel state with the socket.
-        assert(0);
-        // mChannelImpl->OnBind(FALSE /* updateSocketState */);
+        mChannelImpl->OnBind(FALSE /* updateSocketState */);
     }
     return NOERROR;
 }
@@ -167,8 +172,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Send(
     if (!wasBound) {
         // DatagramSocket.send() will implicitly bind if it hasn't been done explicitly.
         // Sync the channel state with the socket.
-        assert(0);
-        //mChannelImpl->OnBind(FALSE /* updateSocketState */);
+        mChannelImpl->OnBind(FALSE /* updateSocketState */);
     }
     return NOERROR;
 }
@@ -194,8 +198,7 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Close()
 ECode DatagramChannelImpl::DatagramSocketAdapter::Disconnect()
 {
     FAIL_RETURN(DatagramSocket::Disconnect())
-    assert(0);
-    //return mChannelImpl->OnDisconnect(FALSE /* updateSocketState */);
+    return mChannelImpl->OnDisconnect(FALSE /* updateSocketState */);
 }
 
 //==========================================================
@@ -203,29 +206,26 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Disconnect()
 //==========================================================
 CAR_INTERFACE_IMPL(DatagramChannelImpl, DatagramChannel, IFileDescriptorChannel)
 
-DatagramChannelImpl::DatagramChannelImpl(
-    /* [in] */ ISelectorProvider* provider)
-    : DatagramChannel(provider)
-{
-    CIoBridge::_Socket(FALSE, (IFileDescriptor**)&mFd);
-}
-
 DatagramChannelImpl::DatagramChannelImpl()
-    : DatagramChannel((SelectorProvider::GetProvider((ISelectorProvider**)&mSelprovider), mSelprovider))
+    : mConnected(FALSE)
+    , mIsBound(FALSE)
+    , mLocalPort(0)
 {
     CFileDescriptor::New((IFileDescriptor**)&mFd);
     CInetSocketAddress::New(0, (IInetSocketAddress**)&mConnectAddress);
 }
 
-ECode DatagramChannelImpl::IsOpen(
-    /* [out] */ Boolean* value)
+ECode DatagramChannelImpl::constructor()
 {
-    return AbstractSelectableChannel::IsOpen(value);
+    SelectorProvider::GetProvider((ISelectorProvider**)&mSelprovider);
+    return DatagramChannel::constructor(mSelprovider);
 }
 
-ECode DatagramChannelImpl::Close()
+ECode DatagramChannelImpl::constructor(
+    /* [in] */ ISelectorProvider* provider)
 {
-    return AbstractInterruptibleChannel::Close();
+    FAIL_RETURN(DatagramChannel::constructor(provider))
+    return CIoBridge::_Socket(FALSE, (IFileDescriptor**)&mFd);
 }
 
 ECode DatagramChannelImpl::GetSocket(
@@ -234,7 +234,7 @@ ECode DatagramChannelImpl::GetSocket(
     VALIDATE_NOT_NULL(socket)
     *socket = NULL;
 
-    if(NULL == mSocket) {
+    if (NULL == mSocket) {
         AutoPtr<IPlainDatagramSocketImpl> res;
         FAIL_RETURN(CPlainDatagramSocketImpl::New(mFd, mLocalPort, (IPlainDatagramSocketImpl**)&res));
         AutoPtr<DatagramSocketAdapter> dsa = new DatagramSocketAdapter();
@@ -247,10 +247,24 @@ ECode DatagramChannelImpl::GetSocket(
     return NOERROR;
 }
 
-ECode DatagramChannelImpl::GetLocalAddress(
-    /* [out] */ IInetAddress** addr)
+ECode DatagramChannelImpl::OnBind(
+    /* [in] */ Boolean updateSocketState)
 {
-    return CIoBridge::_GetSocketLocalAddress(mFd, addr);
+    AutoPtr<ISocketAddress> sa;
+    // try {
+    FAIL_RETURN(CLibcore::sOs->Getsockname(mFd, (ISocketAddress**)&sa))
+    // } catch (ErrnoException errnoException) {
+    //     throw new AssertionError(errnoException);
+    // }
+    mIsBound = true;
+    AutoPtr<IInetSocketAddress> localSocketAddress = IInetSocketAddress::Probe(sa);
+    mLocalAddress = NULL;
+    localSocketAddress->GetAddress((IInetAddress**)&mLocalAddress);
+    localSocketAddress->GetPort(&mLocalPort);
+    if (updateSocketState && mSocket != NULL) {
+        mSocket->OnBind(mLocalAddress, mLocalPort);
+    }
+    return NOERROR;
 }
 
 Boolean DatagramChannelImpl::IsConnected()
@@ -263,32 +277,84 @@ ECode DatagramChannelImpl::Connect(
     /* [out] */ IDatagramChannel** channel)
 {
     VALIDATE_NOT_NULL(channel)
+
+    // must be open
+    FAIL_RETURN(CheckOpen())
+    // status must be un-connected.
     if (mConnected) {
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    return E_NOT_IMPLEMENTED;
+    // check the address
+    AutoPtr<IInetSocketAddress> inetSocketAddress;
+    SocketChannelImpl::ValidateAddress(address, (IInetSocketAddress**)&inetSocketAddress);
+    AutoPtr<IInetAddress> remoteAddress;
+    inetSocketAddress->GetAddress((IInetAddress**)&remoteAddress);
+    Int32 remotePort;
+    inetSocketAddress->GetPort(&remotePort);
+    //try {
+        Begin();
+        CIoBridge::_Connect(mFd, remoteAddress, remotePort);
+    //} catch (ConnectException e) {
+        // ConnectException means connect fail, not exception
+    //} finally {
+        End(TRUE);
+    //}
+
+    // connect() performs a bind() if an explicit bind() was not performed. Keep the local
+    // address state held by the channel and the socket up to date.
+    if (!mIsBound) {
+        OnBind(TRUE /* updateSocketState */);
+    }
+
+    // Keep the connected state held by the channel and the socket up to date.
+    return OnConnect(remoteAddress, remotePort, TRUE /* updateSocketState */);
+}
+
+ECode DatagramChannelImpl::OnConnect(
+    /* [in] */ IInetAddress* remoteAddress,
+    /* [in] */ Int32 remotePort,
+    /* [in] */ Boolean updateSocketState)
+{
+    mConnected = true;
+    mConnectAddress = NULL;
+    CInetSocketAddress::New(remoteAddress, remotePort, (IInetSocketAddress**)&mConnectAddress);
+    if (updateSocketState && mSocket != NULL) {
+        mSocket->OnConnect(remoteAddress, remotePort);
+    }
+    return NOERROR;
 }
 
 ECode DatagramChannelImpl::Disconnect()
 {
     Boolean bConnected, bOpen;
     bConnected = IsConnected();
-    AbstractInterruptibleChannel::IsOpen(&bOpen);
+    IsOpen(&bOpen);
 
     if (!bOpen || !bConnected) {
         return NOERROR;
     }
 
-    mConnected = FALSE;
-    mConnectAddress = NULL;
+    // Keep the disconnected state held by the channel and the socket up to date.
+    OnDisconnect(TRUE /* updateSocketState */);
+
     // try {
     FAIL_RETURN(CLibcore::sOs->Connect(mFd, InetAddress::UNSPECIFIED, 0));
     // } catch (ErrnoException errnoException) {
         // throw errnoException.rethrowAsIOException();
     // }
-    if (mSocket != NULL) {
-        mSocket->Disconnect();
+
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::OnDisconnect(
+    /* [in] */ Boolean updateSocketState)
+{
+    mConnected = false;
+    mConnectAddress = NULL;
+    Boolean bval;
+    if (updateSocketState && mSocket != NULL && (mSocket->IsConnected(&bval), bval)) {
+        mSocket->OnDisconnect();
     }
     return NOERROR;
 }
@@ -298,48 +364,39 @@ ECode DatagramChannelImpl::Receive(
     /* [out] */ ISocketAddress** address)
 {
     VALIDATE_NOT_NULL(address)
+    *address = NULL;
 
-    Boolean bRet;
-    IBuffer::Probe(target)->IsReadOnly(&bRet);
-    if(bRet)
-    {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    FAIL_RETURN(((Buffer*)target)->CheckWritable())
+    FAIL_RETURN(CheckOpen())
+
+    if (!mIsBound) {
+        return NOERROR;
     }
 
-    ECode ecRet;
-    if(NOERROR != ecRet)
-        return ecRet;
-
-    if(!mIsBound)
-    {
-        return E_NULL_POINTER_EXCEPTION;
-    }
-
+    AutoPtr<ISocketAddress> retAddr;
+    // try {
+    Boolean bval, loop;
     Begin();
 
-    mReadLock.Lock();
-    Boolean loop;
-    IsBlocking(&loop);
-
-    Boolean bDirect;
-    IBuffer::Probe(target)->IsDirect(&bDirect);
-    if(!target)
-    {
-        ecRet = ReceiveImpl(target, loop, address);
-    }
-
-    do
-    {
-        if (NOERROR != ecRet)
-        {
-            break;
+    // receive real data packet, (not peek)
+    synchronized (mReadLock) {
+        IsBlocking(&loop);
+        if (IBuffer::Probe(target)->IsDirect(&bval), !bval) {
+            ReceiveImpl(target, loop, (ISocketAddress**)&retAddr);
         }
-
-        REFCOUNT_ADD(*address);
-    } while (0);
-
-    End((*address) != NULL);
-    return ecRet;
+        else {
+            ReceiveDirectImpl(target, loop, (ISocketAddress**)&retAddr);
+        }
+    }
+    // } catch (InterruptedIOException e) {
+        // this line used in Linux
+        // return NULL;
+    // } finally {
+        End(retAddr != NULL);
+    // }
+    *address = retAddr;
+    REFCOUNT_ADD(*address)
+    return NOERROR;
 }
 
 ECode DatagramChannelImpl::ReceiveImpl(
@@ -354,38 +411,39 @@ ECode DatagramChannelImpl::ReceiveImpl(
     AutoPtr<IDatagramPacket> receivePacket;
     Int32 oldPosition;
     IBuffer::Probe(target)->GetPosition(&oldPosition);
-    Int32 received = 0;
-
+    Int32 received;
+    Boolean bval;
     // TODO: disallow mapped buffers and lose this conditional?
-    Boolean isflag = FALSE;
-    if (IBuffer::Probe(target)->HasArray(&isflag), isflag) {
+    if (IBuffer::Probe(target)->HasArray(&bval), bval) {
         AutoPtr< ArrayOf<Byte> > bytearr;
         target->GetArray((ArrayOf<Byte>**)&bytearr);
         Int32 offset = 0;
         Int32 remain = 0;
         IBuffer::Probe(target)->GetArrayOffset(&offset);
         IBuffer::Probe(target)->GetRemaining(&remain);
-        FAIL_RETURN(CDatagramPacket::New(bytearr, oldPosition + offset, remain, (IDatagramPacket**)&receivePacket));
+        FAIL_RETURN(CDatagramPacket::New(bytearr, oldPosition + offset, remain,
+            (IDatagramPacket**)&receivePacket));
     }
     else {
         Int32 remain = 0;
         IBuffer::Probe(target)->GetRemaining(&remain);
         AutoPtr< ArrayOf<Byte> > bytearr = ArrayOf<Byte>::Alloc(remain);
-        FAIL_RETURN(CDatagramPacket::New(bytearr, remain, (IDatagramPacket**)&receivePacket));
+        FAIL_RETURN(CDatagramPacket::New(bytearr, remain,
+            (IDatagramPacket**)&receivePacket));
     }
+
     do {
         AutoPtr< ArrayOf<Byte> > bytearr;
         receivePacket->GetData((ArrayOf<Byte>**)&bytearr);
-        Int32 offset = 0;
+        Int32 offset, length;
         receivePacket->GetOffset(&offset);
-        Int32 length = 0;
         receivePacket->GetLength(&length);
         FAIL_RETURN(CIoBridge::_Recvfrom(FALSE, mFd, bytearr, offset, length, 0, receivePacket, IsConnected(), &received));
         AutoPtr<IInetAddress> outnet;
         receivePacket->GetAddress((IInetAddress**)&outnet);
-        if (receivePacket != NULL && outnet != NULL) {
+        if (outnet != NULL) {
             if (received > 0) {
-                if (IBuffer::Probe(target)->HasArray(&isflag), isflag) {
+                if (IBuffer::Probe(target)->HasArray(&bval), bval) {
                     IBuffer::Probe(target)->SetPosition(oldPosition + received);
                 }
                 else {
@@ -397,10 +455,358 @@ ECode DatagramChannelImpl::ReceiveImpl(
             break;
         }
     } while (loop);
+
     *addr = retAddr;
     REFCOUNT_ADD(*addr)
     return NOERROR;
 }
+
+ECode DatagramChannelImpl::ReceiveDirectImpl(
+    /* [in] */ IByteBuffer* target,
+    /* [in] */ Boolean loop,
+    /* [out] */ ISocketAddress** addr)
+{
+    VALIDATE_NOT_NULL(addr)
+    *addr = NULL;
+
+    AutoPtr<ISocketAddress> retAddr;
+    AutoPtr<IDatagramPacket> receivePacket;
+    CDatagramPacket::New(EmptyArray::BYTE, 0, (IDatagramPacket**)&receivePacket);
+    Int32 oldposition;
+    IBuffer::Probe(target)->GetPosition(&oldposition);
+    Int32 received;
+    do {
+        CIoBridge::_Recvfrom(FALSE, mFd, target, 0, receivePacket, IsConnected(), &received);
+        AutoPtr<IInetAddress> address;
+        receivePacket->GetAddress((IInetAddress**)&address);
+        if (address != NULL) {
+            // copy the data of received packet
+            if (received > 0) {
+                IBuffer::Probe(target)->SetPosition(oldposition + received);
+            }
+            retAddr = NULL;
+            receivePacket->GetSocketAddress((ISocketAddress**)&retAddr);
+            break;
+        }
+    } while (loop);
+
+    *addr = retAddr;
+    REFCOUNT_ADD(*addr)
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::Send(
+    /* [in] */ IByteBuffer* source,
+    /* [in] */ ISocketAddress* socketAddress,
+    /* [out] */ Int32 * count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
+    FAIL_RETURN(CheckNotNull(source))
+    FAIL_RETURN(CheckOpen())
+
+    AutoPtr<IInetSocketAddress> isa = IInetSocketAddress::Probe(socketAddress);
+    AutoPtr<IInetAddress> ia;
+    isa->GetAddress((IInetAddress**)&ia);
+    if (ia == NULL) {
+        // throw new IOException();
+        return E_IO_EXCEPTION;
+    }
+
+    if (IsConnected() && !Object::Equals(mConnectAddress, isa)) {
+        // throw new IllegalArgumentException("Connected to " + connectAddress +
+        //                                    ", not " + socketAddress);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    synchronized (mWriteLock) {
+        Int32 sendCount = 0;
+        // try {
+            Begin();
+            Int32 oldPosition;
+            IBuffer::Probe(source)->GetPosition(&oldPosition);
+            Int32 port;
+            isa->GetPort(&port);
+            CIoBridge::_Sendto(mFd, source, 0, ia, port, &sendCount);
+            if (sendCount > 0) {
+                IBuffer::Probe(source)->SetPosition(oldPosition + sendCount);
+            }
+            if (!mIsBound) {
+                OnBind(TRUE /* updateSocketState */);
+            }
+        // } finally {
+            End(sendCount >= 0);
+        // }
+        *count = sendCount;
+    }
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::Read(
+    /* [in] */ IByteBuffer* target,
+    /* [out] */ Int32 * count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
+    FAIL_RETURN(((Buffer*)target)->CheckWritable())
+    FAIL_RETURN(CheckOpenConnected())
+
+    Boolean bval;
+    IBuffer::Probe(target)->HasRemaining(&bval);
+    if (!bval) {
+        return NOERROR;
+    }
+
+    Int32 readCount;
+    IBuffer::Probe(target)->IsDirect(&bval);
+    Boolean hasArray;
+    IBuffer::Probe(target)->HasArray(&hasArray);
+    if (bval || hasArray) {
+        FAIL_RETURN(ReadImpl(target, &readCount))
+        if (readCount > 0) {
+            Int32 position;
+            IBuffer::Probe(target)->GetPosition(&position);
+            IBuffer::Probe(target)->SetPosition(position + readCount);
+        }
+    }
+    else {
+        Int32 remaining;
+        IBuffer::Probe(target)->GetRemaining(&remaining);
+        AutoPtr<ArrayOf<Byte> > readArray = ArrayOf<Byte>::Alloc(remaining);
+        AutoPtr<IByteBuffer> readBuffer;
+        ByteBuffer::Wrap(readArray, (IByteBuffer**)&readBuffer);
+        FAIL_RETURN(ReadImpl(readBuffer, &readCount))
+        if (readCount > 0) {
+            target->Put(readArray, 0, readCount);
+        }
+    }
+    *count = readCount;
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::Read(
+    /* [in] */ ArrayOf<IByteBuffer*> * targets,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [out] */ Int64* count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(targets->GetLength(), offset, length))
+
+    // status must be open and connected
+    FAIL_RETURN(CheckOpenConnected())
+    Int32 totalCount;
+    FAIL_RETURN(FileChannelImpl::CalculateTotalRemaining(
+        targets, offset, length, TRUE, &totalCount))
+    if (totalCount == 0) {
+        return NOERROR;
+    }
+
+    // read data to readBuffer, and then transfer data from readBuffer to
+    // targets.
+    AutoPtr<IByteBuffer> readBuffer;
+    ByteBuffer::Allocate(totalCount, (IByteBuffer**)&readBuffer);
+    Int32 readCount;
+    FAIL_RETURN(ReadImpl(readBuffer, &readCount))
+    Int32 left = readCount;
+    Int32 index = offset;
+    // transfer data from readBuffer to targets
+
+    AutoPtr<ArrayOf<Byte> > readArray;
+    readBuffer->GetArray((ArrayOf<Byte>**)&readArray);
+    while (left > 0) {
+        IByteBuffer* bb = (*targets)[index];
+        Int32 remaining;
+        IBuffer::Probe(bb)->GetRemaining(&remaining);
+        Int32 putLength = Elastos::Core::Math::Min(remaining, left);
+        bb->Put(readArray, readCount - left, putLength);
+        index++;
+        left -= putLength;
+    }
+    *count = readCount;
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::ReadImpl(
+    /* [in] */ IByteBuffer* dst,
+    /* [out] */ Int32 * count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
+    synchronized (mReadLock) {
+        Int32 readCount = 0;
+        // try {
+            Begin();
+            CIoBridge::_Recvfrom(FALSE, mFd, dst, 0, NULL, IsConnected(), &readCount);
+        // } catch (InterruptedIOException e) {
+        //     // InterruptedIOException will be thrown when timeout.
+        //     return 0;
+        // } finally {
+            End(readCount > 0);
+        // }
+        *count = readCount;
+    }
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::Write(
+    /* [in] */ IByteBuffer* src,
+    /* [out] */ Int32 * count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
+    FAIL_RETURN(CheckNotNull(src))
+    FAIL_RETURN(CheckOpenConnected())
+
+    Boolean bval;
+    IBuffer::Probe(src)->HasRemaining(&bval);
+    if (!bval) {
+        return NOERROR;
+    }
+
+    Int32 writeCount;
+    FAIL_RETURN(WriteImpl(src, &writeCount))
+    if (writeCount > 0) {
+        Int32 position;
+        IBuffer::Probe(src)->GetPosition(&position);
+        IBuffer::Probe(src)->SetPosition(position + writeCount);
+    }
+    *count = writeCount;
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::Write(
+    /* [in] */ ArrayOf<IByteBuffer*> * sources,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 length,
+    /* [out] */ Int64* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    *ret = 0;
+
+    FAIL_RETURN(Arrays::CheckOffsetAndCount(sources->GetLength(), offset, length))
+
+    // status must be open and connected
+    FAIL_RETURN(CheckOpenConnected())
+    Int32 count;
+    FileChannelImpl::CalculateTotalRemaining(sources, offset, length, FALSE, &count);
+    if (count == 0) {
+        return NOERROR;
+    }
+
+    AutoPtr<IByteBuffer> writeBuf;
+    ByteBuffer::Allocate(count, (IByteBuffer**)&writeBuf);
+    for (Int32 val = offset; val < length + offset; val++) {
+        IByteBuffer* source = (*sources)[val];
+        Int32 oldPosition;
+        IBuffer::Probe(source)->GetPosition(&oldPosition);
+        writeBuf->Put(source);
+        IBuffer::Probe(source)->SetPosition(oldPosition);
+    }
+    IBuffer::Probe(writeBuf)->Flip();
+    Int32 result;
+    FAIL_RETURN(WriteImpl(writeBuf, &result))
+    Int32 val = offset;
+    Int32 written = result;
+    while (result > 0) {
+        IByteBuffer* source = (*sources)[val];
+        Int32 remaining;
+        IBuffer::Probe(source)->GetRemaining(&remaining);
+        Int32 gap = Elastos::Core::Math::Min(result, remaining);
+        Int32 oldPosition;
+        IBuffer::Probe(source)->GetPosition(&oldPosition);
+        IBuffer::Probe(source)->SetPosition(oldPosition + gap);
+        val++;
+        result -= gap;
+    }
+    *ret = written;
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::WriteImpl(
+    /* [in] */ IByteBuffer* buf,
+    /* [out] */ Int32 * count)
+{
+    VALIDATE_NOT_NULL(count)
+    *count = 0;
+
+    synchronized (mWriteLock) {
+        Int32 result = 0;
+        // try {
+            Begin();
+            CIoBridge::_Sendto(mFd, buf, 0, NULL, 0, &result);
+        // } finally {
+            End(result > 0);
+        // }
+        return result;
+    }
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::ImplCloseSelectableChannel()
+{
+    // A closed channel is not connected.
+    OnDisconnect(TRUE /* updateSocketState */);
+    CIoBridge::_CloseAndSignalBlockedThreads(mFd);
+
+    Boolean bval;
+    if (mSocket != NULL && (mSocket->IsClosed(&bval), !bval)) {
+        mSocket->OnClose();
+    }
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::ImplConfigureBlocking(
+    /* [in] */ Boolean blocking)
+{
+    return IoUtils::SetBlocking(mFd, blocking);
+}
+
+ECode DatagramChannelImpl::GetFD(
+    /* [out] */ IFileDescriptor** fd)
+{
+    VALIDATE_NOT_NULL(fd)
+    *fd = mFd;
+    REFCOUNT_ADD(*fd)
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::CheckOpen()
+{
+    Boolean bval;
+    if (IsOpen(&bval), !bval) {
+        // throw new ClosedChannelException();
+        return E_CLOSED_CHANNEL_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::CheckOpenConnected()
+{
+    FAIL_RETURN(CheckOpen())
+    if (!IsConnected()) {
+        // throw new NotYetConnectedException();
+        return E_NOT_YET_CONNECTED_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::CheckNotNull(
+    /* [in] */ IByteBuffer* source)
+{
+    if (source == NULL) {
+        // throw new NullPointerException("source == NULL");
+        return E_NULL_POINTER_EXCEPTION;
+    }
+    return NOERROR;
+}
+
 
 } // namespace IO
 } // namespace Elastos

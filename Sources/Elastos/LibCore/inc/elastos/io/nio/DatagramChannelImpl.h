@@ -63,10 +63,15 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
-    CARAPI IsOpen(
-        /* [out] */ Boolean* value);
+    DatagramChannelImpl();
 
-    CARAPI Close();
+    CARAPI constructor();
+
+    /*
+     * Constructor
+     */
+    CARAPI constructor(
+        /* [in] */ ISelectorProvider* provider);
 
     /*
      * Getting the internal DatagramSocket If we have not the socket, we create
@@ -74,6 +79,18 @@ public:
      */
      CARAPI GetSocket(
         /* [out] */ IDatagramSocket** socket);
+
+    /**
+     * Initialise the isBound, localAddress and localPort state from the file descriptor. Used when
+     * some or all of the bound state has been left to the OS to decide, or when the Socket handled
+     * bind() or connect().
+     *
+     * @param updateSocketState
+     *        if the associated socket (if present) needs to be updated
+     * @hide used to sync state, non-private to avoid synthetic method
+     */
+    CARAPI OnBind(
+        /* [in] */ Boolean updateSocketState);
 
      /**
       * @see java.nio.channels.DatagramChannel#isConnected()
@@ -87,21 +104,76 @@ public:
         /* [in] */ ISocketAddress* address,
         /* [out] */ IDatagramChannel** channel);
 
+    /**
+     * Initialize the state associated with being connected, optionally syncing the socket if there
+     * is one.
+     * @hide used to sync state, non-private to avoid synthetic method
+     */
+    CARAPI OnConnect(
+        /* [in] */ IInetAddress* remoteAddress,
+        /* [in] */ Int32 remotePort,
+        /* [in] */ Boolean updateSocketState);
+
      /**
        * @see java.nio.channels.DatagramChannel#disconnect()
        */
      CARAPI Disconnect();
 
-     virtual CARAPI Receive(
-        /* [in] */ IByteBuffer* target,
-        /* [out] */ ISocketAddress** address);
-
-protected:
-    /*
-     * Constructor
+    /**
+     * Initialize the state associated with being disconnected, optionally syncing the socket if
+     * there is one.
+     * @hide used to sync state, non-private to avoid synthetic method
      */
-    DatagramChannelImpl(
-        /* [in] */ ISelectorProvider* provider);
+    CARAPI OnDisconnect(
+        /* [in] */ Boolean updateSocketState);
+
+    virtual CARAPI Receive(
+        /* [in] */ IByteBuffer* target,
+        /* [in] */ ISocketAddress** address);
+
+    CARAPI Send(
+        /* [in] */ IByteBuffer* target,
+        /* [in] */ ISocketAddress* address,
+        /* [out] */ Int32 * count);
+
+    CARAPI Read(
+        /* [in] */ IByteBuffer* target,
+        /* [out] */ Int32 * count);
+
+    CARAPI Read(
+        /* [in] */ ArrayOf<IByteBuffer*> * targets,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length,
+        /* [out] */ Int64* count);
+
+    /*
+     * read from channel, and store the result in the target.
+     */
+    CARAPI ReadImpl(
+        /* [in] */ IByteBuffer* target,
+        /* [out] */ Int32 * count);
+
+    CARAPI Write(
+        /* [in] */ IByteBuffer* src,
+        /* [out] */ Int32 * count);
+
+    CARAPI Write(
+        /* [in] */ ArrayOf<IByteBuffer*> * sources,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length,
+        /* [out] */ Int64* count);
+
+    CARAPI WriteImpl(
+        /* [in] */ IByteBuffer* src,
+        /* [out] */ Int32 * count);
+
+    CARAPI ImplCloseSelectableChannel();
+
+    CARAPI ImplConfigureBlocking(
+        /* [in] */ Boolean blocking);
+
+    CARAPI GetFD(
+        /* [out] */ IFileDescriptor** fd);
 
     /**
      * Returns the local address to which the socket is bound.
@@ -110,12 +182,32 @@ protected:
         /* [out] */ IInetAddress** addr);
 
 private:
-    DatagramChannelImpl();
 
     CARAPI ReceiveImpl(
         /* [in] */ IByteBuffer* target,
         /* [in] */ Boolean loop,
         /* [out] */ ISocketAddress** addr);
+
+    CARAPI ReceiveDirectImpl(
+        /* [in] */ IByteBuffer* target,
+        /* [in] */ Boolean loop,
+        /* [out] */ ISocketAddress** addr);
+
+    /*
+     * Status check, must be open.
+     */
+    CARAPI CheckOpen();
+
+    /*
+     * Status check, must be open and connected, for read and write.
+     */
+    CARAPI CheckOpenConnected();
+
+    /*
+     * Buffer check, must not null
+     */
+    CARAPI CheckNotNull(
+        /* [in] */ IByteBuffer* buffer);
 
 protected:
     // The address to be connected.
