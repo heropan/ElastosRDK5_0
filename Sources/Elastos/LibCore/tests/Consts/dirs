@@ -1,3 +1,0 @@
-
-DIRS = server
-DIRS += client
