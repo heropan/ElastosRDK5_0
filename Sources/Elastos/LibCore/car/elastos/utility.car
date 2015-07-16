@@ -252,6 +252,7 @@ module
     interface Elastos.Utility.INavigableMap;
     interface Elastos.Utility.ISortedSet;
     interface Elastos.Utility.INavigableSet;
+    interface Elastos.Utility.IRandom;
     interface Elastos.Utility.Zip.IZipEntry;
     interface Elastos.Utility.Zip.IZipInputStream;
     interface Elastos.Utility.Zip.IZipOutputStream;
@@ -1978,6 +1979,13 @@ module
         constructor();
 
         interface IExchanger;
+    }
+
+    class CThreadLocalRandom {
+        constructor();
+
+        interface IThreadLocalRandom;
+        interface IRandom;
     }
 
     class CForkJoinPool {
