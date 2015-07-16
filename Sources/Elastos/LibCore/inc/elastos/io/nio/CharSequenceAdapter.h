@@ -33,29 +33,10 @@ public:
         /* [in] */ CharSequenceAdapter* other,
         /* [out] */ CharSequenceAdapter** buffer);
 
-    CARAPI GetPrimitiveArray(
-        /* [out] */ Handle32* arrayHandle);
-
-    CARAPI GetArray(
-        /* [out, callee] */ ArrayOf<Char32>** array);
-
-    CARAPI GetElementSizeShift(
-        /* [out] */ Int32* elementSizeShift);
-
-    CARAPI GetEffectiveDirectAddress(
-        /* [out] */ Int32* effectiveDirectAddress);
-
-    CARAPI GetArrayOffset(
-        /* [out] */ Int32* offset);
-
     CARAPI AsReadOnlyBuffer(
         /* [out] */ ICharBuffer** buffer);
 
     CARAPI Compact();
-
-    CARAPI CompareTo(
-        /* [in] */ ICharBuffer* otherBuffer,
-        /* [out] */ Int32* result);
 
     CARAPI Duplicate(
         /* [out] */ ICharBuffer** buffer);

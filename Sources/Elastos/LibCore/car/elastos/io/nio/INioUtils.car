@@ -10,7 +10,7 @@ module
      * @hide internal use only
      */
 
-    interface INioUtilsHelper {
+    interface INioUtils {
 
         FreeDirectBuffer(
             [in] IByteBuffer* buffer);

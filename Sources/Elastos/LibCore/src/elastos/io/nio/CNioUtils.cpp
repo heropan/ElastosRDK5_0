@@ -1,21 +1,21 @@
 
-#include "CNioUtilsHelper.h"
+#include "CNioUtils.h"
 #include "NioUtils.h"
 
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL(CNioUtilsHelper, Singleton, INioUtilsHelper)
+CAR_INTERFACE_IMPL(CNioUtils, Singleton, INioUtils)
 
-CAR_SINGLETON_IMPL(CNioUtilsHelper)
+CAR_SINGLETON_IMPL(CNioUtils)
 
-ECode CNioUtilsHelper::FreeDirectBuffer(
+ECode CNioUtils::FreeDirectBuffer(
     /* [in] */ IByteBuffer* buffer)
 {
     return NioUtils::FreeDirectBuffer(buffer);
 }
 
-ECode CNioUtilsHelper::GetFD(
+ECode CNioUtils::GetFD(
     /* [in] */ IFileChannel* fc,
     /* [out] */ IFileDescriptor** outfd)
 {
@@ -26,7 +26,7 @@ ECode CNioUtilsHelper::GetFD(
     return NOERROR;
 }
 
-ECode CNioUtilsHelper::NewFileChannel(
+ECode CNioUtils::NewFileChannel(
     /* [in] */ ICloseable* ioObject,
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int32 mode,
@@ -40,7 +40,7 @@ ECode CNioUtilsHelper::NewFileChannel(
     return NOERROR;
 }
 
-ECode CNioUtilsHelper::GetUnsafeArray(
+ECode CNioUtils::GetUnsafeArray(
     /* [in] */ IByteBuffer* b,
     /* [out, callee] */ ArrayOf<Byte>** outbyte)
 {
@@ -52,7 +52,7 @@ ECode CNioUtilsHelper::GetUnsafeArray(
     return NOERROR;
 }
 
-ECode CNioUtilsHelper::GetUnsafeArrayOffset(
+ECode CNioUtils::GetUnsafeArrayOffset(
     /* [in] */ IByteBuffer* b,
     /* [out] */ Int32* value)
 {

@@ -41,45 +41,6 @@ ECode CharSequenceAdapter::Copy(
     return NOERROR;
 }
 
-ECode CharSequenceAdapter::GetPrimitiveArray(
-    /* [out] */ Handle32* arrayHandle)
-{
-    mArrayTemp = NULL;
-    GetArray((ArrayOf<Char32>**)&mArrayTemp);
-    if (mArrayTemp == NULL)
-    {
-        *arrayHandle = 0;
-        return NOERROR;
-    }
-    Char32* primitiveArray = mArrayTemp->GetPayload();
-    *arrayHandle = reinterpret_cast<Handle32>(primitiveArray);
-    return NOERROR;
-}
-
-ECode CharSequenceAdapter::GetArray(
-    /* [out, callee] */ ArrayOf<Char32>** array)
-{
-    return CharBuffer::GetArray(array);
-}
-
-ECode CharSequenceAdapter::GetElementSizeShift(
-    /* [out] */ Int32* elementSizeShift)
-{
-    return Buffer::GetElementSizeShift(elementSizeShift);
-}
-
-ECode CharSequenceAdapter::GetEffectiveDirectAddress(
-    /* [out] */ Int32* effectiveDirectAddress)
-{
-    return Buffer::GetEffectiveDirectAddress(effectiveDirectAddress);
-}
-
-ECode CharSequenceAdapter::GetArrayOffset(
-    /* [out] */ Int32* offset)
-{
-    return CharBuffer::GetArrayOffset(offset);
-}
-
 ECode CharSequenceAdapter::AsReadOnlyBuffer(
     /* [out] */ ICharBuffer** buffer)
 {
@@ -90,13 +51,6 @@ ECode CharSequenceAdapter::Compact()
 {
     // throw new ReadOnlyBufferException();
     return E_READ_ONLY_BUFFER_EXCEPTION;
-}
-
-ECode CharSequenceAdapter::CompareTo(
-    /* [in] */ ICharBuffer* otherBuffer,
-    /* [out] */ Int32* result)
-{
-    return CharBuffer::CompareTo(otherBuffer, result);
 }
 
 ECode CharSequenceAdapter::Duplicate(
@@ -123,6 +77,8 @@ ECode CharSequenceAdapter::Get(
     /* [in] */ Int32 index,
     /* [out] */ Char32* value)
 {
+    VALIDATE_NOT_NULL(value)
+    *value = '\0';
     FAIL_RETURN(CheckIndex(index))
     return mSequence->GetCharAt(index, value);
 }

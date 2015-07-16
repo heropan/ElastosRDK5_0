@@ -100,6 +100,15 @@ ECode DatagramSocket::constructor(
     return SetBroadcast(TRUE);
 }
 
+ECode DatagramSocket::constructor(
+    /* [in] */ IDatagramSocketImpl* socketImpl)
+{
+    VALIDATE_NOT_NULL(socketImpl)
+
+    mImpl = socketImpl;
+    return NOERROR;
+}
+
 ECode DatagramSocket::CheckPort(
     /* [in] */ Int32 aPort)
 {

@@ -103,6 +103,7 @@ ECode CharArrayBuffer::SubSequence(
     /* [out] */ ICharSequence** csq)
 {
     VALIDATE_NOT_NULL(csq)
+    *csq = NULL;
     FAIL_RETURN(CheckStartEndRemaining(start, end))
     AutoPtr<ICharBuffer> result;
     Duplicate((ICharBuffer**)&result);
@@ -116,6 +117,7 @@ ECode CharArrayBuffer::SubSequence(
 ECode CharArrayBuffer::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     // return String.copyValueOf(mBackingArray, offset + mPosition, remaining());
     Int32 remaining = 0;
     Int32 offset = mArrayOffset + mPosition;
@@ -141,7 +143,7 @@ ECode CharArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ ICharBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-
+    *buffer = NULL;
     AutoPtr<CharArrayBuffer> res;
     FAIL_RETURN(Copy(this, mMark, TRUE, (CharArrayBuffer**)&res))
     *buffer = res;
@@ -169,7 +171,7 @@ ECode CharArrayBuffer::Duplicate(
     /* [out] */ ICharBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-
+    *buffer = NULL;
     AutoPtr<CharArrayBuffer> res;
     FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (CharArrayBuffer**)&res))
     *buffer = res;

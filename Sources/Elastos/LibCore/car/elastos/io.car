@@ -667,8 +667,8 @@ module
         interface IOutputStreamWriter;
     }
 
-    singleton class CNioUtilsHelper {
-        interface INioUtilsHelper;
+    singleton class CNioUtils {
+        interface INioUtils;
     }
 
     class CPipedInputStream {

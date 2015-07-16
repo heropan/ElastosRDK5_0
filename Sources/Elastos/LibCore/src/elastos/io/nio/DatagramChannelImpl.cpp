@@ -31,12 +31,17 @@ namespace IO {
 //       DatagramChannelImpl::DatagramSocketAdapter
 //==========================================================
 
-DatagramChannelImpl::DatagramSocketAdapter::DatagramSocketAdapter(
+DatagramChannelImpl::DatagramSocketAdapter::DatagramSocketAdapter()
+{}
+
+ECode DatagramChannelImpl::DatagramSocketAdapter::constructor(
     /* [in] */ IDatagramSocketImpl* socketimpl,
     /* [in] */ DatagramChannelImpl* channelimpl)
-    : mChannelImpl(channelimpl)
 {
-    DatagramSocket::constructor(socketimpl);
+    FAIL_RETURN(DatagramSocket::constructor(socketimpl))
+
+    mChannelImpl = channelimpl;
+
     // Sync state socket state with the channel it is being created from
     if (mChannelImpl->mIsBound) {
         OnBind(mChannelImpl->mLocalAddress, mChannelImpl->mLocalPort);
@@ -51,101 +56,76 @@ DatagramChannelImpl::DatagramSocketAdapter::DatagramSocketAdapter(
     else {
         OnDisconnect();
     }
+
     Boolean isflag = FALSE;
     if (mChannelImpl->IsOpen(&isflag), !isflag) {
         OnClose();
     }
+    return NOERROR;
 }
 
-ECode DatagramChannelImpl::DatagramSocketAdapter::Close()
+ECode DatagramChannelImpl::DatagramSocketAdapter::GetChannel(
+    /* [out] */ IDatagramChannel** channel)
 {
-    AutoLock lock(GetSelfLock());
-    Boolean isflag = FALSE;
-    if (mChannelImpl->IsOpen(&isflag), isflag) {
-        // try {
-        mChannelImpl->Close();
-        // } catch (IOException e) {
-            // Ignore
-        // }
+    VALIDATE_NOT_NULL(channel)
+
+    *channel = IDatagramChannel::Probe(mChannelImpl);
+    REFCOUNT_ADD(*channel)
+    return NOERROR;
+}
+
+ECode DatagramChannelImpl::DatagramSocketAdapter::Bind(
+    /* [in] */ ISocketAddress* localAddr)
+{
+    if (mChannelImpl->IsConnected()) {
+        // throw new AlreadyConnectedException();
+        return E_ALREADY_CONNECTED_EXCEPTION;
     }
-    return DatagramSocket::Close();
+
+    FAIL_RETURN(DatagramSocket::Bind(localAddr))
+    assert(0);
+    // mChannelImpl->OnBind(FALSE /* updateSocketState */);
+    return NOERROR;
 }
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Connect(
     /* [in] */ ISocketAddress* peer)
 {
-    return DatagramSocket::Connect(peer);
+    Boolean bval;
+    if (IsConnected(&bval), bval) {
+        // RI compatibility: If the socket is already connected this fails.
+        // throw new IllegalStateException("Socket is already connected.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    FAIL_RETURN(DatagramSocket::Connect(peer))
+    // Connect may have performed an implicit bind(). Sync up here.
+    assert(0);
+    // mChannelImpl->OnBind(FALSE /* updateSocketState */);
+
+    IInetSocketAddress* inetSocketAddress = IInetSocketAddress::Probe(peer);
+    AutoPtr<IInetAddress> address;
+    inetSocketAddress->GetAddress((IInetAddress**)&address);
+    Int32 port;
+    inetSocketAddress->GetPort(&port);
+    assert(0);
+    // return mChannelImpl->OnConnect(address, port, FALSE /* updateSocketState */);
 }
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Connect(
     /* [in] */ IInetAddress* address,
-    /* [in] */ Int32 aPort)
+    /* [in] */ Int32 port)
 {
-    return DatagramSocket::Connect(address, aPort);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::Disconnect()
-{
+    // To avoid implementing connect() twice call this.connect(SocketAddress) in preference
+    // to super.connect().
     // try {
-    mChannelImpl->Disconnect();
-    // } catch (IOException e) {
-    //     // Ignore
+    AutoPtr<ISocketAddress> isa;
+    CInetSocketAddress::New(address, port, (ISocketAddress**)&isa);
+    Connect(isa);
+    // } catch (SocketException e) {
+    //     // Ignored - there is nothing we can report here.
     // }
-    return DatagramSocket::Disconnect();
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetInetAddress(
-    /* [out] */ IInetAddress** address)
-{
-    VALIDATE_NOT_NULL(address)
-    *address = NULL;
-
-    if (mChannelImpl->mConnectAddress == NULL) {
-        return NOERROR;
-    }
-    return mChannelImpl->mConnectAddress->GetAddress(address);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetLocalAddress(
-    /* [out] */ IInetAddress** address)
-{
-    return mChannelImpl->GetLocalAddress(address);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetLocalPort(
-    /* [out] */ Int32* port)
-{
-    return DatagramSocket::GetLocalPort(port);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetPort(
-    /* [out] */ Int32* port)
-{
-    VALIDATE_NOT_NULL(port)
-
-    if (mChannelImpl->mConnectAddress == NULL) {
-        *port = -1;
-        return NOERROR;
-    }
-    return mChannelImpl->mConnectAddress->GetPort(port);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetReceiveBufferSize(
-    /* [out] */ Int32* size)
-{
-    return DatagramSocket::GetReceiveBufferSize(size);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetSendBufferSize(
-    /* [out] */ Int32* size)
-{
-    return DatagramSocket::GetSendBufferSize(size);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetSoTimeout(
-    /* [out] */ Int32* timeout)
-{
-    return DatagramSocket::GetSoTimeout(timeout);
+    return NOERROR;
 }
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Receive(
@@ -156,7 +136,17 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Receive(
         // throw new IllegalBlockingModeException();
         return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     }
-    return DatagramSocket::Receive(pack);
+
+    Boolean wasBound;
+    IsBound(&wasBound);
+    FAIL_RETURN(DatagramSocket::Receive(pack))
+    if (!wasBound) {
+        // DatagramSocket.receive() will implicitly bind if it hasn't been done explicitly.
+        // Sync the channel state with the socket.
+        assert(0);
+        // mChannelImpl->OnBind(FALSE /* updateSocketState */);
+    }
+    return NOERROR;
 }
 
 ECode DatagramChannelImpl::DatagramSocketAdapter::Send(
@@ -168,135 +158,44 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::Send(
         return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     }
     return DatagramSocket::Send(pack);
-}
 
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetNetworkInterface(
-    /* [in] */ INetworkInterface* netInterface)
-{
-    return DatagramSocket::SetNetworkInterface(netInterface);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetSendBufferSize(
-    /* [in] */ Int32 size)
-{
-    return DatagramSocket::SetSendBufferSize(size);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetReceiveBufferSize(
-    /* [in] */ Int32 size)
-{
-    return DatagramSocket::SetReceiveBufferSize(size);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetSoTimeout(
-    /* [in] */ Int32 timeout)
-{
-    return DatagramSocket::SetSoTimeout(timeout);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::Bind(
-    /* [in] */ ISocketAddress* localAddr)
-{
-    if (mChannelImpl->IsConnected()) {
-        // throw new AlreadyConnectedException();
-        return E_ALREADY_CONNECTED_EXCEPTION;
+    // DatagramSocket.send() will implicitly bind if it hasn't been done explicitly. Force
+    // bind() here so that the channel state stays in sync with the socket.
+    Boolean wasBound;
+    IsBound(&wasBound);
+    FAIL_RETURN(DatagramSocket::Send(pack))
+    if (!wasBound) {
+        // DatagramSocket.send() will implicitly bind if it hasn't been done explicitly.
+        // Sync the channel state with the socket.
+        assert(0);
+        //mChannelImpl->OnBind(FALSE /* updateSocketState */);
     }
-    DatagramSocket::Bind(localAddr);
-    mChannelImpl->mIsBound = TRUE;
     return NOERROR;
 }
 
-ECode DatagramChannelImpl::DatagramSocketAdapter::IsBound(
-    /* [out] */ Boolean* isBound)
+ECode DatagramChannelImpl::DatagramSocketAdapter::Close()
 {
-    VALIDATE_NOT_NULL(isBound)
+    synchronized(mChannelImpl) {
+        FAIL_RETURN(DatagramSocket::Close())
 
-    *isBound = mChannelImpl->mIsBound;
+        Boolean isflag = FALSE;
+        if (mChannelImpl->IsOpen(&isflag), isflag) {
+            // try {
+            return mChannelImpl->Close();
+            // } catch (IOException e) {
+                // Ignore
+            // }
+        }
+    }
+
     return NOERROR;
 }
 
-ECode DatagramChannelImpl::DatagramSocketAdapter::IsConnected(
-    /* [out] */ Boolean* isConnected)
+ECode DatagramChannelImpl::DatagramSocketAdapter::Disconnect()
 {
-    VALIDATE_NOT_NULL(isConnected)
-
-    *isConnected = mChannelImpl->IsConnected();
-    return NOERROR;
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetRemoteSocketAddress(
-    /* [out] */ ISocketAddress** address)
-{
-    return DatagramSocket::GetRemoteSocketAddress(address);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetLocalSocketAddress(
-    /* [out] */ ISocketAddress** address)
-{
-    return DatagramSocket::GetLocalSocketAddress(address);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetReuseAddress(
-    /* [in] */ Boolean reuse)
-{
-    return DatagramSocket::SetReuseAddress(reuse);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetReuseAddress(
-    /* [out] */ Boolean* reuse)
-{
-    return DatagramSocket::GetReuseAddress(reuse);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetBroadcast(
-    /* [in] */ Boolean broadcast)
-{
-    return DatagramSocket::SetBroadcast(broadcast);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetBroadcast(
-    /* [out] */ Boolean* broadcast)
-{
-    return DatagramSocket::GetBroadcast(broadcast);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::SetTrafficClass(
-    /* [in] */ Int32 value)
-{
-    return DatagramSocket::SetTrafficClass(value);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetTrafficClass(
-    /* [out] */ Int32* value)
-{
-    return DatagramSocket::GetTrafficClass(value);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::IsClosed(
-    /* [out] */ Boolean* isClosed)
-{
-    return DatagramSocket::IsClosed(isClosed);
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetChannel(
-    /* [out] */ IDatagramChannel** channel)
-{
-    VALIDATE_NOT_NULL(channel)
-
-    *channel = mChannelImpl->Probe(EIID_IDatagramChannel);
-    REFCOUNT_ADD(*channel)
-    return NOERROR;
-}
-
-ECode DatagramChannelImpl::DatagramSocketAdapter::GetFileDescriptor(
-    /* [out] */ IFileDescriptor** fd)
-{
-    return DatagramSocket::GetFileDescriptor(fd);
-}
-
-Object* DatagramChannelImpl::DatagramSocketAdapter::GetSelfLock()
-{
-    return &mMlock;
+    FAIL_RETURN(DatagramSocket::Disconnect())
+    assert(0);
+    //return mChannelImpl->OnDisconnect(FALSE /* updateSocketState */);
 }
 
 //==========================================================
@@ -338,10 +237,12 @@ ECode DatagramChannelImpl::GetSocket(
     if(NULL == mSocket) {
         AutoPtr<IPlainDatagramSocketImpl> res;
         FAIL_RETURN(CPlainDatagramSocketImpl::New(mFd, mLocalPort, (IPlainDatagramSocketImpl**)&res));
-        mSocket = (IDatagramSocket*) new DatagramSocketAdapter(IDatagramSocketImpl::Probe(res), this);
+        AutoPtr<DatagramSocketAdapter> dsa = new DatagramSocketAdapter();
+        FAIL_RETURN(dsa->constructor(IDatagramSocketImpl::Probe(res), this))
+        mSocket = IDatagramSocket::Probe(dsa);
     }
 
-    (*socket) = mSocket;
+    *socket = mSocket;
     REFCOUNT_ADD(*socket);
     return NOERROR;
 }
@@ -361,8 +262,8 @@ ECode DatagramChannelImpl::Connect(
     /* [in] */ ISocketAddress* address,
     /* [out] */ IDatagramChannel** channel)
 {
-    if(mConnected)
-    {
+    VALIDATE_NOT_NULL(channel)
+    if (mConnected) {
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 

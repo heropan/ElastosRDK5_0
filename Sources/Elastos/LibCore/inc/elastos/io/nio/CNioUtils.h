@@ -1,7 +1,7 @@
-#ifndef __ELASTOS_IO_CBYTENIOUTILSHELPER_H__
-#define __ELASTOS_IO_CBYTENIOUTILSHELPER_H__
+#ifndef __ELASTOS_IO_CNIOUTILSHELPER_H__
+#define __ELASTOS_IO_CNIOUTILSHELPER_H__
 
-#include "_Elastos_IO_CNioUtilsHelper.h"
+#include "_Elastos_IO_CNioUtils.h"
 #include "Singleton.h"
 
 using Elastos::IO::Channels::IFileChannel;
@@ -9,9 +9,9 @@ using Elastos::IO::Channels::IFileChannel;
 namespace Elastos {
 namespace IO {
 
-CarClass(CNioUtilsHelper)
+CarClass(CNioUtils)
     , public Singleton
-    , public INioUtilsHelper
+    , public INioUtils
 {
 public:
     CAR_INTERFACE_DECL()
@@ -57,4 +57,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CBYTENIOUTILSHELPER_H__
+#endif // __ELASTOS_IO_CNIOUTILSHELPER_H__

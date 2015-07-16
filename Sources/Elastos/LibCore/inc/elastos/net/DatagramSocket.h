@@ -15,6 +15,14 @@ using Elastos::Net::IDatagramSocket;
 namespace Elastos {
 namespace Net {
 
+/**
+ * This class implements a UDP socket for sending and receiving {@code
+ * DatagramPacket}. A {@code DatagramSocket} object can be used for both
+ * endpoints of a connection for a packet delivery service.
+ *
+ * @see DatagramPacket
+ * @see DatagramSocketImplFactory
+ */
 class DatagramSocket
     : public Object
     , public IDatagramSocket
@@ -36,6 +44,9 @@ public:
 
     CARAPI constructor(
         /* [in] */ ISocketAddress* localAddr);
+
+    CARAPI constructor(
+        /* [in] */ IDatagramSocketImpl* socketImpl);
 
     CARAPI Close();
 
@@ -172,7 +183,7 @@ public:
 
     Boolean mIsBound;
 
-private:
+protected:
     Boolean mIsConnected;
 
     ECode mPendingConnectException;
