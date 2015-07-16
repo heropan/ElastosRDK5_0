@@ -1,0 +1,37 @@
+
+module
+{
+    merge("security/auth/callback/Exceptions.car");
+    merge("security/auth/callback/IPasswordCallback.car");
+    merge("security/auth/login/Exceptions.car");
+    merge("security/auth/Exceptions.car");
+    merge("security/auth/IPrivateCredentialPermission.car");
+    merge("security/auth/ISubject.car");
+    merge("security/auth/ISubjectDomainCombiner.car");
+    merge("security/cert/ICertificate.car");
+    merge("security/cert/IX509Certificate.car");
+    merge("security/auth/x500/IX500Principal.car");
+    merge("security/auth/callback/ICallback.car");
+    merge("security/auth/callback/ICallbackHandler.car");
+    merge("security/auth/IDestroyable.car");
+
+    namespace Elastosx {
+    namespace Security {
+    namespace Auth {
+    namespace Callback {
+
+    class CPasswordCallback {
+        constructor(
+            [in] String prompt,
+            [in] Boolean echoOn);
+
+        interface ICallback;
+        interface IPasswordCallback;
+    }
+
+    } // namespace Callback
+    } // namespace Auth
+    } // namespace Security
+    } // namespace Elastosx
+
+}

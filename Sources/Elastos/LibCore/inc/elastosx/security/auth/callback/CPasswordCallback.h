@@ -2,7 +2,8 @@
 #ifndef __CPASSWORDCALLBACK_H__
 #define __CPASSWORDCALLBACK_H__
 
-#include "_CPasswordCallback.h"
+#include "_Elastosx_Security_Auth_Callback_CPasswordCallback.h"
+#include "Object.h"
 
 namespace Elastosx {
 namespace Security {
@@ -10,8 +11,15 @@ namespace Auth {
 namespace Callback {
 
 CarClass(CPasswordCallback)
+    , public Object
+    , public IPasswordCallback
+    , public ICallback
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CPasswordCallback();
 
     CARAPI GetPrompt(
@@ -21,7 +29,7 @@ public:
         /* [out] */ Boolean *echoOn);
 
     CARAPI SetPassword(
-        /* [in] */ const ArrayOf<Char32>& password);
+        /* [in] */ ArrayOf<Char32>* password);
 
     CARAPI GetPassword(
         /* [out, callee] */ ArrayOf<Char32>** password);
@@ -42,14 +50,14 @@ public:
 private:
     static const Int64 serialVersionUID;
 
-    const String mPrompt;
+    String mPrompt;
 
     AutoPtr<ArrayOf<Char32> > mInputPassword;
 };
 
-}
-}
-}
-}
+} // namespace Callback
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 
 #endif // __CPASSWORDCALLBACK_H__

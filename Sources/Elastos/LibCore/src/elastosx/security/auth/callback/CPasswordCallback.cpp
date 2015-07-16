@@ -6,6 +6,10 @@ namespace Security {
 namespace Auth {
 namespace Callback {
 
+CAR_OBJECT_IMPL(CPasswordCallback)
+
+CAR_INTERFACE_IMPL_2(CPasswordCallback, Object, IPasswordCallback, ICallback)
+
 const Int64 CPasswordCallback::serialVersionUID = 2267422647454909926L;
 
 CPasswordCallback::CPasswordCallback()
@@ -29,14 +33,14 @@ ECode CPasswordCallback::IsEchoOn(
 }
 
 ECode CPasswordCallback::SetPassword(
-    /* [in] */ const ArrayOf<Char32>& password)
+    /* [in] */ ArrayOf<Char32>* password)
 {
-    if (password.GetLength() == 0) {
+    if (password->GetLength() == 0) {
         mInputPassword = password;
     }
     else {
-        mInputPassword = ArrayOf<Char32>::Alloc(password.GetLength());
-        mInputPassword->Copy(0, &password, 0, mInputPassword->GetLength());
+        mInputPassword = ArrayOf<Char32>::Alloc(password->GetLength());
+        mInputPassword->Copy(0, password, 0, mInputPassword->GetLength());
     }
     return NOERROR;
 }
@@ -78,12 +82,13 @@ ECode CPasswordCallback::SetPrompt(
     if (prompt.IsNull() || prompt.GetLength() == 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+
     mPrompt = prompt;
     return NOERROR;
 }
 
-}
-}
-}
-}
+} // namespace Callback
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 

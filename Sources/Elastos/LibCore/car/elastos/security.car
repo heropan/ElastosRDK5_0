@@ -131,18 +131,4 @@ module
     merge("security/ISignedObject.car");
     merge("security/ISigner.car");
     merge("security/IUnresolvedPermission.car");
-
-    merge("../elastosx/security/auth/callback/Exceptions.car");
-    merge("../elastosx/security/auth/callback/IPasswordCallback.car");
-    merge("../elastosx/security/auth/login/Exceptions.car");
-    merge("../elastosx/security/auth/Exceptions.car");
-    merge("../elastosx/security/auth/IPrivateCredentialPermission.car");
-    merge("../elastosx/security/auth/ISubject.car");
-    merge("../elastosx/security/auth/ISubjectDomainCombiner.car");
-    merge("../elastosx/security/cert/ICertificate.car");
-    merge("../elastosx/security/cert/IX509Certificate.car");
-    merge("../elastosx/security/auth/x500/IX500Principal.car");
-    merge("../elastosx/security/auth/callback/ICallback.car");
-    merge("../elastosx/security/auth/callback/ICallbackHandler.car");
-    merge("../elastosx/security/auth/IDestroyable.car");
 }

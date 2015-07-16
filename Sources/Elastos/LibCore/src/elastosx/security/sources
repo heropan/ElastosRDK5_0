@@ -1,0 +1,16 @@
+TARGET_NAME= security
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../sources.inc
+
+INCLUDES += ../../elastos
+INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth
+INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/callback
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core
+
+VPATH := $(MAKEDIR)/auth/callback
+
+SOURCES = security.cpp
+SOURCES += CPasswordCallback.cpp

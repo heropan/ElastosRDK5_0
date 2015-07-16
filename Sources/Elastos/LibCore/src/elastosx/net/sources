@@ -7,9 +7,9 @@ include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += ../../elastos
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/net
+INCLUDES += $(MAKEDIR)/../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core/
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/net
-INCLUDES += $(MAKEDIR)/../../../inc/src/elastos
-INCLUDES += $(MAKEDIR)/../../../../LibCore/inc/elastos/core/
 
 SOURCES =  SocketFactory.cpp
 SOURCES += CSocketFactoryHelper.cpp
