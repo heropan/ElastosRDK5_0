@@ -41,6 +41,10 @@ module
             [in] ICalendar* startInstant,
             [out] Int64* time);
 
+        GetTimeInMillis(
+            [in] IDate* startInstant,
+            [out] Int64* time);
+
         GetField(
             [in] IDatatypeConstantsField* filed,
             [out] INumber** rst);

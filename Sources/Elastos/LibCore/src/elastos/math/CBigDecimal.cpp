@@ -2850,6 +2850,14 @@ void CBigDecimal::SetUnscaledValue(
     }
 }
 
+ECode CBigDecimal::GetUnscaledValue(
+    /**/ IBigInteger** value)
+{
+    *value = GetUnscaledValue();
+    REFCOUNT_ADD(*value)
+    return NOERROR;
+}
+
 AutoPtr<IBigInteger> CBigDecimal::GetUnscaledValue()
 {
     if (mIntVal.Get() == NULL) {

@@ -8,9 +8,13 @@ include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/math;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/datatype
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/namespace
 
 SOURCES = CDatatypeConstants.cpp
-#SOURCES += CQNameHelper.cpp
+SOURCES += Duration.cpp
+SOURCES += XMLGregorianCalendar.cpp

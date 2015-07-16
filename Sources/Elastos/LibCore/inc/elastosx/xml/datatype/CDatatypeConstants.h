@@ -117,9 +117,8 @@ public:
     static const AutoPtr<IDatatypeConstantsField> SECONDS;
 };
 
-
-}
-}
-}
+} // namespace Datatype
+} // namespace Xml
+} // namespace Elastosx
 
 #endif // __ELASTOSX_XML_DATATYPE_CQNAMEHELPER_H__

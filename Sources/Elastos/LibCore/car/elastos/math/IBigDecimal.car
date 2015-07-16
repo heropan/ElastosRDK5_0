@@ -579,6 +579,14 @@ module
             [out] Int32* precision);
 
         /**
+         * Returns the unscaled value (mantissa) of this {@code BigDecimal} instance
+         * as a {@code BigInteger}. The unscaled value can be computed as
+         * {@code this * 10<sup>scale</sup>}.
+         */
+        GetUnscaledValue(
+            [out] IBigInteger** value);
+
+        /**
          * Returns a new {BigDecimal} whose value is {this}, rounded
          * according to the passed context {mc}.
          * <p>
