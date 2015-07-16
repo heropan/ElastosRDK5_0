@@ -3,7 +3,9 @@
 #define __ORG_APACHE_HTTP_ENTITY_HTTPENTITYWRAPPER_H__
 
 #include <Org.Apache.Http_server.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Org::Apache::Http::Entity::IHeader;

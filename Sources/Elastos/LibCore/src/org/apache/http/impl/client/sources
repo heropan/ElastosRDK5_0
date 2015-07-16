@@ -1,0 +1,32 @@
+
+TARGET_NAME= client
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/client
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/auth
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/cookie
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/conn
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/entity
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/message
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/protocol
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/params
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/util
+
+SOURCES = AbstractAuthenticationHandler.cpp
+SOURCES += AbstractHttpClient.cpp
+SOURCES += BasicCookieStore.cpp
+SOURCES += BasicCredentialsProvider.cpp
+SOURCES += BasicResponseHandler.cpp
+SOURCES += ClientParamsStack.cpp
+SOURCES += DefaultConnectionKeepAliveStrategy.cpp
+SOURCES += DefaultHttpClient.cpp
+SOURCES += DefaultHttpRequestRetryHandler.cpp
+SOURCES += DefaultProxyAuthenticationHandler.cpp
+SOURCES += DefaultRedirectHandler.cpp
+SOURCES += DefaultRequestDirector.cpp
+SOURCES += DefaultTargetAuthenticationHandler.cpp
+SOURCES += RequestWrapper.cpp
+SOURCES += EntityEnclosingRequestWrapper.cpp
+SOURCES += RedirectLocations.cpp
+SOURCES += RoutedRequest.cpp

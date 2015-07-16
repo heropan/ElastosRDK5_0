@@ -67,5 +67,8 @@ LIBRARIES += conn/util/util.lib
 LIBRARIES += cookie/cookie.lib
 LIBRARIES += cookie/params/params.lib
 LIBRARIES += entity/entity.lib
+LIBRARIES += impl/impl.lib
+LIBRARIES += impl/auth/auth.lib
+LIBRARIES += impl/client/client.lib
 
 LIBRARIES += -lcutils

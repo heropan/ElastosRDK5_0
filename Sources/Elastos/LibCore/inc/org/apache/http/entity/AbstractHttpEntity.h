@@ -3,7 +3,9 @@
 #define __ORG_APACHE_HTTP_ENTITY_ABSTRACTHTTPENTITY_H__
 
 #include <Org.Apache.Http_server.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Org::Apache::Http::Entity::IHeader;
 
 namespace Org {

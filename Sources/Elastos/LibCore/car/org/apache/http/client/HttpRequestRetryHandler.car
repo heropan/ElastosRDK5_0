@@ -36,7 +36,7 @@ module
          * otherwise
          */
         RetryRequest(
-            /*IOException exception,*/
+            [in] ECode exception,
             [in] Int32 executionCount,
             [in] IHttpContext* context
             [out] Boolean* retried);

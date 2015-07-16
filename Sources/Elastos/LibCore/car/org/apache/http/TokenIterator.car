@@ -39,7 +39,7 @@ module
          *
          * @return  the next header element in this iteration
          */
-        NextElement(
+        NextToken(
             [out] String* element);
 
     }

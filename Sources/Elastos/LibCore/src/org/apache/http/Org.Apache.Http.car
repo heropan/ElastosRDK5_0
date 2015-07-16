@@ -138,6 +138,8 @@ module
     merge("../../../../car/org/apache/http/entity/ContentLengthStrategy.car");
     merge("../../../../car/org/apache/http/entity/ContentProducer.car");
 
+     merge("../../../../car/org/apache/http/impl/auth/NTLMEngine.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");

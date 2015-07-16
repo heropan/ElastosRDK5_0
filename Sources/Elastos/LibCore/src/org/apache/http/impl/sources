@@ -1,0 +1,20 @@
+
+TARGET_NAME= impl
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/impl
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/params
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/message
+
+SOURCES = AbstractHttpClientConnection.cpp
+SOURCES += AbstractHttpServerConnection.cpp
+SOURCES += SocketHttpClientConnection.cpp
+SOURCES += SocketHttpServerConnection.cpp
+SOURCES += DefaultHttpServerConnection.cpp
+SOURCES += DefaultHttpClientConnection.cpp
+SOURCES += DefaultHttpRequestFactory.cpp
+SOURCES += DefaultHttpResponseFactory.cpp
+SOURCES += DefaultConnectionReuseStrategy.cpp
+SOURCES += EnglishReasonPhraseCatalog.cpp
+SOURCES += NoConnectionReuseStrategy.cpp
+SOURCES += HttpConnectionMetricsImpl.cpp

@@ -27,15 +27,15 @@ module
 
         GetAttribute(
             [in] String id,
-            [out] IObject** attr);
+            [out] Interface** attr);
 
         SetAttribute(
             [in] String id,
-            [in] IObject* obj);
+            [in] IInterface* obj);
 
         RemoveAttribute(
             [in] String id,
-            [out] IObject** attrs);
+            [out] IInterface** attrs);
 
     }
 

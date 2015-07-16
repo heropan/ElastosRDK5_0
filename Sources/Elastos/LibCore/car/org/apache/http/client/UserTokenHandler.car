@@ -37,7 +37,7 @@ module
          */
         GetUserToken(
             [in] IHttpContext* context,
-            [out] IObject** token);
+            [out] IInterface** token);
 
     }
 
