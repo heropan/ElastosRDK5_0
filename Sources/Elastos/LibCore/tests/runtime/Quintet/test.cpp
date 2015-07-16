@@ -1,27 +1,20 @@
-#include <cmdef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <elastos.h>
-#include <elautoptr.h>
-#include <eltypes.h>
-#include <stdio.h>
-#include <Elastos.CoreLibrary.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/HashMap.h>
-#include <elastos/StringUtils.h>
 
-using Elastos::Utility::HashMap;
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;
 using namespace Elastos::Math;
+using Elastos::Utility::Etl::HashMap;
 
-using Elastos::Core::CObjectContainer;
-
-
-class Base {
+class Base
+    : public Object
+{
 public:
-    Base(Int32 foo = 0):mFoo(foo)
+    Base(
+        /* [in] */ Int32 foo = 0)
+        : mFoo(foo)
     {
         printf(" >>> Create: Base %p", this);
     }
@@ -35,11 +28,14 @@ public:
     Int32 mFoo;
 };
 
-class Drived : public Base, public ElRefBase
+class Drived
+    : public Base
 {
 public:
-    Drived(Int32 foo = 0, Int32 bar = 1)
-    :Base(foo), mBar(bar)
+    Drived(
+        /* [in] */ Int32 foo = 0,
+        /* [in] */ Int32 bar = 1)
+        : Base(foo), mBar(bar)
     {
         printf(", Drived %p: foo %d, bar %d\n", this, mFoo, mBar);
     }
@@ -57,6 +53,12 @@ public:
 public:
     Int32 mBar;
 };
+
+
+DEFINE_CONVERSION_FOR(Base, IInterface)
+
+DEFINE_CONVERSION_FOR(Drived, IInterface)
+
 
 //=============================================================================
 
@@ -124,86 +126,6 @@ void doTestArrayOfFreeRelease()
     }
 
     printf("==== return from doTestArrayOfFreeRelease ====\n");
-}
-
-void doTestBufferOfFreeRelease()
-{
-    printf("\n==== enter doTestBufferOfFreeRelease ====\n");
-
-    // Notes
-    // Alloc: Create a new object with ref count zero.
-    //
-    {
-        printf(" == Alloc\\Free ==\n");
-        BufferOf<Int32> * v1 = BufferOf<Int32>::Alloc(10);  // new obj with rc=0
-        BufferOf<Int32>::Free(v1);                          // free
-    }
-
-    {
-        printf(" == Alloc\\Release ==\n");
-        BufferOf<Int32> * v1 = BufferOf<Int32>::Alloc(10);  // new obj with rc=0
-        v1->Release();                                      // free
-    }
-
-    // Notes
-    // AutoPtr<T>: increment ref count by one.
-    //
-    {
-        printf(" == Alloc\\AutoPtr ==\n");
-        AutoPtr<BufferOf<Int32> > v1 = BufferOf<Int32>::Alloc(10); // rc=1
-        // v1 AutoPtr -> rc=0 -> free
-    }
-
-    // Notes
-    // Clone: Clone a new object with ref count zero.
-    //
-    {
-        printf(" == Alloc\\Clone\\Free ==\n");
-        AutoPtr<BufferOf<Int32> > v1 = BufferOf<Int32>::Alloc(10);  // v1 rc=1
-        BufferOf<Int32>* v2 = v1->Clone();       // v2 new obj wih rc=0
-        BufferOf<Int32>::Free(v2);               // v2 free
-        // v1 AutoPtr -> rc=0 -> free
-    }
-
-    {
-        printf(" == Alloc\\Clone\\Release ==\n");
-        AutoPtr<BufferOf<Int32> > v1 = BufferOf<Int32>::Alloc(10);  // v1 rc=1
-        BufferOf<Int32>* v2 = v1->Clone();  // v2 new obj wih rc=0
-        v2->Release();                      // v2 free
-        // v1 AutoPtr -> rc=0 -> free
-    }
-
-    {
-        printf(" == Alloc\\Clone\\AutoPtr ==\n");
-        AutoPtr<BufferOf<Int32> > v1 = BufferOf<Int32>::Alloc(10);  // v1 rc=1
-        AutoPtr<BufferOf<Int32> > v2 = v1->Clone();                 // v2 rc=1
-        // v1 AutoPtr -> rc=0 -> free
-        // v2 AutoPtr -> rc=0 -> free
-    }
-
-    {
-        printf(" == Alloc\\Free ==\n");
-        BufferOf<Int32> * v1 = BufferOf<Int32>::Alloc(10);  // new obj with rc=0
-        BufferOf<Int32>::Free(v1);                          // free
-
-        //v1->Release();                                    // crash!!!
-    }
-
-    printf("==== return from doTestBufferOfFreeRelease ====\n");
-}
-
-void doTestAssignOnStack()
-{
-    printf("\n==== enter doTestAssignOnStack ====\n");
-
-    {
-        ArrayOf_<String, 10> v1;
-        v1[0] = String("Stack string 1");
-        v1[1] = String("Stack string 2");
-        v1[2] = String("Stack string 3");
-        v1[3] = v1[2];
-    }
-    printf("==== return from doTestAssignOnStack ====\n");
 }
 
 void doTestSelfAssign()
@@ -711,53 +633,6 @@ void doTestElRefBase()
     printf("==== call doTestElRefBase end ====\n");
 }
 
-template <typename T>
-AutoPtr<IObjectContainer> ArrayOfToObjectContainer(
-    /* [in] */ ArrayOf<T>* array)
-{
-    assert(SUPERSUBCLASS_EX(IInterface*, T) && "Error: element type must extends IInterface.");
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
-    for (Int32 i = 0; i < array->GetLength(); ++i) {
-        container->Add((*array)[i]->Probe(EIID_IInterface));
-    }
-    return container;
-}
-
-template <typename T>
-AutoPtr<IObjectContainer> ArrayOfToObjectContainer(
-    /* [in] */ AutoPtr<ArrayOf<T> >& array)
-{
-    return ArrayOfToObjectContainer(array.Get());
-}
-
-void ConvertArrayOfToObjectContainer()
-{
-    AutoPtr<IBigInteger> i1, i2, i3;
-    CBigInteger::New(1, 1, (IBigInteger**)&i1);
-    CBigInteger::New(1, 2, (IBigInteger**)&i2);
-    CBigInteger::New(1, 3, (IBigInteger**)&i3);
-
-    AutoPtr< ArrayOf<IBigInteger*> > array = ArrayOf<IBigInteger*>::Alloc(3);
-    array->Set(0, i1);
-    array->Set(1, i2);
-    array->Set(2, i3);
-
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
-
-    for (Int32 i = 0; i < array->GetLength(); ++i) {
-        if ((*array)[i] != NULL) {
-            container->Add((*array)[i]);
-        }
-    }
-
-    AutoPtr<IObjectContainer> container2 = ArrayOfToObjectContainer(array);
-    Int32 count;
-    container2->GetObjectCount(&count);
-    printf(" container2 length %d", count);
-}
-
 void GetArrayOf(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {
@@ -885,21 +760,6 @@ void testArray2()
     }
 }
 
-void testStringBuf()
-{
-    StringBuf_<11> buf;
-    StringBuf * strBuf = buf.Clone();
-    Int32 len = strBuf->GetLength();
-    Int32 ncap = strBuf->GetCapacity();
-    if (len != 0 || ncap != 11 || strcmp((char *)(*strBuf), "")) {
-        printf("strBuf = %s, len = %d, ncap = %d\n", (char *)strBuf, len, ncap);
-        goto Exit;
-    }
-
-Exit:
-    StringBuf::Free(strBuf);
-}
-
 void PrintArrayOfString(
     const ArrayOf<String>& array)
 {
@@ -955,7 +815,7 @@ void testSelfCopy()
     printf("\n====================Self Copy String After======================\n");
     AutoPtr<ArrayOf<String> > stringArray = ArrayOf<String>::Alloc(ARRAY_LENGTH);
     for (Int32 i = 0; i < array->GetLength(); ++i) {
-        String str =  StringUtils::Int32ToString(i);
+        String str =  StringUtils::ToString(i);
         stringArray->Set(i, str);
     }
 
@@ -966,7 +826,7 @@ void testSelfCopy()
 
     printf("\n====================Self Copy String Before======================\n");
     for (Int32 i = 0; i < array->GetLength(); ++i) {
-        String str =  StringUtils::Int32ToString(i);
+        String str =  StringUtils::ToString(i);
         stringArray->Set(i, str);
     }
 
@@ -979,7 +839,7 @@ void testSelfCopy()
     printf("\n====================Self Copy IInterface After======================\n");
     AutoPtr<ArrayOf<ICharSequence* > > objArray = ArrayOf<ICharSequence*>::Alloc(ARRAY_LENGTH);
     for (Int32 i = 0; i < objArray->GetLength(); ++i) {
-        String str =  StringUtils::Int32ToString(i);
+        String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(str, (ICharSequence**)&seq);
         objArray->Set(i, seq);
@@ -994,7 +854,7 @@ void testSelfCopy()
 
     printf("\n====================Self Copy IInterface Before======================\n");
     for (Int32 i = 0; i < array->GetLength(); ++i) {
-        String str =  StringUtils::Int32ToString(i);
+        String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(str, (ICharSequence**)&seq);
         objArray->Set(i, seq);
@@ -1010,7 +870,7 @@ void testSelfCopy()
     printf("\n====================Self Copy AutoPtr After======================\n");
     AutoPtr<ArrayOf<AutoPtr<ICharSequence> > > autoPtrArray = ArrayOf<AutoPtr<ICharSequence> >::Alloc(ARRAY_LENGTH);
     for (Int32 i = 0; i < autoPtrArray->GetLength(); ++i) {
-        String str =  StringUtils::Int32ToString(i);
+        String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(str, (ICharSequence**)&seq);
         autoPtrArray->Set(i, seq);
@@ -1024,7 +884,7 @@ void testSelfCopy()
 
     printf("\n====================Self Copy AutoPtr Before======================\n");
     for (Int32 i = 0; i < array->GetLength(); ++i) {
-        String str =  StringUtils::Int32ToString(i);
+        String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(str, (ICharSequence**)&seq);
         autoPtrArray->Set(i, seq);
@@ -1041,7 +901,6 @@ void testSelfCopy()
 void testQuintet()
 {
     // doTestArrayOfFreeRelease();
-    // doTestBufferOfFreeRelease();
     // doTestAssignOnStack();
     // doTestSelfAssign();
     // doTestBasicType();
@@ -1050,10 +909,7 @@ void testQuintet()
     // doTestElRefBase();
     // doTestBasicUsages();
 
-    // ConvertArrayOfToObjectContainer();
-
     // testArray2();
-    // testStringBuf();
 
     // testArrayOfString();
     testSelfCopy();

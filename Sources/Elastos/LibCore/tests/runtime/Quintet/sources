@@ -2,12 +2,15 @@
 TARGET_NAME = testQuintet
 TARGET_TYPE = ecx
 
-IMPORTS = Elastos.CoreLibrary.eco
+CAR_FLAGS += -n -u
+LUBE_FLAGS += -n -u
 
-SOURCES = test.cpp
-SOURCES += Elastos.Core.cpp
+IMPORTS = Elastos.CoreLibrary.eco
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += -lstdc++ -licuuc -licui18n -lm -lcutils
+
+SOURCES = Elastos.CoreLibrary.cpp
+SOURCES += test.cpp
