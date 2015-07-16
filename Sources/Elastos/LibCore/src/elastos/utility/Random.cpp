@@ -1,5 +1,5 @@
 
-#include "CRandom.h"
+#include "Random.h"
 #include "CSystem.h"
 #include "Math.h"
 #include "AutoLock.h"
@@ -10,20 +10,18 @@ using Elastos::IO::EIID_ISerializable;
 namespace Elastos {
 namespace Utility {
 
-CAR_INTERFACE_IMPL_2(CRandom, Object, IRandom, ISerializable)
+CAR_INTERFACE_IMPL_2(Random, Object, IRandom, ISerializable)
 
-CAR_OBJECT_IMPL(CRandom)
+const Int64 Random::sMultiplier = 0x5deece66dLL;
+volatile Int64 Random::mSeedBase = 0;
 
-const Int64 CRandom::sMultiplier = 0x5deece66dLL;
-volatile Int64 CRandom::mSeedBase = 0;
-
-CRandom::CRandom()
+Random::Random()
     : mHaveNextNextGaussian(FALSE)
     , mSeed(0)
     , mNextNextGaussian(0)
 {}
 
-ECode CRandom::constructor()
+ECode Random::constructor()
 {
     // Note: Don't use identityHashCode(this) since that causes the monitor to
     // get inflated when we synchronize.
@@ -35,13 +33,13 @@ ECode CRandom::constructor()
     return SetSeed(tm + (mSeedBase++));
 }
 
-ECode CRandom::constructor(
+ECode Random::constructor(
     /* [in] */ Int64 seed)
 {
     return SetSeed(seed);
 }
 
-Int32 CRandom::Next(
+Int32 Random::Next(
     /* [in] */ Int32 bits)
 {
     AutoLock lock(this);
@@ -53,7 +51,7 @@ Int32 CRandom::Next(
 /**
  * Returns a pseudo-random uniformly distributed {@code boolean}.
  */
-ECode CRandom::NextBoolean(
+ECode Random::NextBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -64,7 +62,7 @@ ECode CRandom::NextBoolean(
 /**
  * Fills {@code buf} with random bytes.
  */
-ECode CRandom::NextBytes(
+ECode Random::NextBytes(
     /* [out] */ ArrayOf<Byte>* buf)
 {
     VALIDATE_NOT_NULL(buf);
@@ -87,7 +85,7 @@ ECode CRandom::NextBytes(
  * Returns a pseudo-random uniformly distributed {@code double}
  * in the half-open range [0.0, 1.0).
  */
-ECode CRandom::NextDouble(
+ECode Random::NextDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -99,7 +97,7 @@ ECode CRandom::NextDouble(
  * Returns a pseudo-random uniformly distributed {@code float}
  * in the half-open range [0.0, 1.0).
  */
-ECode CRandom::NextFloat(
+ECode Random::NextFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -115,7 +113,7 @@ ECode CRandom::NextFloat(
  * Art of Computer Programming, Volume 2: Seminumerical Algorithms</i>,
  * section 3.4.1, subsection C, algorithm P.
  */
-ECode CRandom::NextGaussian(
+ECode Random::NextGaussian(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -148,7 +146,7 @@ ECode CRandom::NextGaussian(
 /**
  * Returns a pseudo-random uniformly distributed {@code int}.
  */
-ECode CRandom::NextInt32(
+ECode Random::NextInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -160,7 +158,7 @@ ECode CRandom::NextInt32(
  * Returns a pseudo-random uniformly distributed {@code int}
  * in the half-open range [0, n).
  */
-ECode CRandom::NextInt32(
+ECode Random::NextInt32(
     /* [in] */ Int32 n,
     /* [out] */ Int32* value)
 {
@@ -187,7 +185,7 @@ ECode CRandom::NextInt32(
 /**
  * Returns a pseudo-random uniformly distributed {@code long}.
  */
-ECode CRandom::NextInt64(
+ECode Random::NextInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -199,7 +197,7 @@ ECode CRandom::NextInt64(
  * Modifies the seed using a linear congruential formula presented in <i>The
  * Art of Computer Programming, Volume 2</i>, Section 3.2.1.
  */
-ECode CRandom::SetSeed(
+ECode Random::SetSeed(
     /* [in] */ Int64 seed)
 {
     AutoLock lock(this);
