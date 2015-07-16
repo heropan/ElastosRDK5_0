@@ -49,9 +49,6 @@ public:
         /* [out] */ Char32* value);
 
     CARAPI Get(
-        /* [out] */ ArrayOf<Char32>* dst);
-
-    CARAPI Get(
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount);
@@ -82,18 +79,9 @@ public:
         /* [in] */ Char32 c);
 
     CARAPI Put(
-        /* [in] */ ArrayOf<Char32>* src);
-
-    CARAPI Put(
         /* [in] */ ArrayOf<Char32>* src,
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int32 charCount);
-
-    CARAPI Put(
-        /* [in] */ ICharBuffer* src);
-
-    CARAPI Put(
-        /* [in] */ const String& str);
 
     CARAPI Put(
         /* [in] */ const String& str,

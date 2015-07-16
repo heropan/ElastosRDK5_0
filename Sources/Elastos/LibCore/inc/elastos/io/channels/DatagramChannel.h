@@ -105,8 +105,7 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    virtual CARAPI Disconnect(
-        /* [out] */ DatagramChannel** channel) = 0;
+    virtual CARAPI Disconnect() = 0;
 
     /**
      * Gets a datagram from this channel.
@@ -213,7 +212,7 @@ public:
      */
     virtual CARAPI Read(
         /* [in] */ IByteBuffer* target,
-        /* [in] */ Int32 nRead) = 0;
+        /* [out] */ Int32* nRead) = 0;
 
     /**
      * Reads a datagram from this channel into an array of byte buffers.
@@ -398,8 +397,11 @@ public:
     CARAPI Write(
         /* [in] */ ArrayOf<IByteBuffer*>* sources,
         /* [out] */ Int64* nWrite);
+
 protected:
-    DatagramChannel(
+    DatagramChannel();
+
+    CARAPI constructor(
         /* [in] */ ISelectorProvider* selectorProvider);
 
     ~DatagramChannel();

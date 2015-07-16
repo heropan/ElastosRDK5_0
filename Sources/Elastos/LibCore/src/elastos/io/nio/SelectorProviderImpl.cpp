@@ -16,9 +16,11 @@ ECode SelectorProviderImpl::OpenDatagramChannel(
 {
     VALIDATE_NOT_NULL(ppChannel)
 
-    assert(0 && "TODO");
-    // *ppChannel = (IDatagramChannel*) new DatagramChannelImpl(this);
-    // REFCOUNT_ADD(*ppChannel)
+    AutoPtr<DatagramChannelImpl> dci = new DatagramChannelImpl();
+    dci->constructor(THIS_PROBE(ISelectorProvider));
+
+    *ppChannel = IDatagramChannel::Probe(dci);
+    REFCOUNT_ADD(*ppChannel)
     return NOERROR;
 }
 

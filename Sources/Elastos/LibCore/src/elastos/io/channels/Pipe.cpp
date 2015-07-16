@@ -10,10 +10,13 @@ namespace Channels{
 //==========================================================
 //       Pipe::SinkChannel
 //==========================================================
-Pipe::SinkChannel::SinkChannel(
+Pipe::SinkChannel::SinkChannel()
+{}
+
+ECode Pipe::SinkChannel::constructor(
     /* [in] */ ISelectorProvider* provider)
-    : AbstractSelectableChannel(provider)
 {
+    return AbstractSelectableChannel::constructor(provider);
 }
 
 CAR_INTERFACE_IMPL_2(Pipe::SinkChannel, Object, IWritableByteChannel, IGatheringByteChannel)
@@ -30,10 +33,13 @@ ECode Pipe::SinkChannel::GetValidOps(
 //==========================================================
 //       Pipe::SourceChannel
 //==========================================================
-Pipe::SourceChannel::SourceChannel(
+Pipe::SourceChannel::SourceChannel()
+{}
+
+Pipe::SourceChannel::constructor(
     /* [in] */ ISelectorProvider* provider)
-    : AbstractSelectableChannel(provider)
 {
+    return AbstractSelectableChannel::constructor(provider);
 }
 
 CAR_INTERFACE_IMPL_2(Pipe::SourceChannel, Object, IReadableByteChannel, IScatteringByteChannel)

@@ -8,11 +8,10 @@ namespace Channels {
 ServerSocketChannel::ServerSocketChannel()
 {}
 
-ServerSocketChannel::ServerSocketChannel(
+ECode ServerSocketChannel::constructor(
     /* [in] */ ISelectorProvider* provider)
-    : AbstractSelectableChannel(provider)
 {
-    assert(0 != provider);
+    return AbstractSelectableChannel::constructor(provider);
 }
 
 ECode ServerSocketChannel::Open(

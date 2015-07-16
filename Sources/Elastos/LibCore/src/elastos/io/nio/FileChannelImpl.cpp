@@ -912,25 +912,24 @@ ECode FileChannelImpl::Write(
     return NOERROR;
 }
 
-ECode FileChannelImpl::calculateTotalRemaining(
-    /* [in] */ ArrayOf<IByteBuffer*> buffers,
+ECode FileChannelImpl::CalculateTotalRemaining(
+    /* [in] */ ArrayOf<IByteBuffer*> * buffers,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
     /* [in] */ Boolean copyingIn,
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret)
+    *ret = 0;
 
     Int32 count, i, remaining;
     Int32 LEN = offset + length;
-    for(i=offset; i<LEN; ++i)
-    {
-        IBuffer::Probe(buffers[i])->GetRemaining(&remaining);
+    for (i = offset; i < LEN; ++i) {
+        IBuffer::Probe((*buffers)[i])->GetRemaining(&remaining);
         count += remaining;
 
-        if(copyingIn)
-        {
-            ((Buffer*)IBuffer::Probe(buffers[i]))->CheckWritable();
+        if (copyingIn) {
+            FAIL_RETURN(((Buffer*)IBuffer::Probe((*buffers)[i]))->CheckWritable())
         }
     }
 

@@ -13,13 +13,14 @@ namespace Spi {
 CAR_INTERFACE_IMPL(AbstractSelectableChannel, SelectableChannel, IAbstractSelectableChannel)
 
 AbstractSelectableChannel::AbstractSelectableChannel()
+    : mIsBlocking(FALSE)
 {}
 
-AbstractSelectableChannel::AbstractSelectableChannel(
+ECode AbstractSelectableChannel::constructor(
     /* [in] */ ISelectorProvider* provider)
-    : mProvider(provider)
-    , mIsBlocking(FALSE)
 {
+    mProvider = provider;
+    return NOERROR;
 }
 
 AbstractSelectableChannel::~AbstractSelectableChannel()

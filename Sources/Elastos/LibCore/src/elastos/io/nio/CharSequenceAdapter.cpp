@@ -84,12 +84,6 @@ ECode CharSequenceAdapter::Get(
 }
 
 ECode CharSequenceAdapter::Get(
-    /* [out] */ ArrayOf<Char32>* dst)
-{
-    return CharBuffer::Get(dst);
-}
-
-ECode CharSequenceAdapter::Get(
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
@@ -191,30 +185,12 @@ ECode CharSequenceAdapter::Put(
 }
 
 ECode CharSequenceAdapter::Put(
-    /* [in] */ ArrayOf<Char32>* src)
-{
-    return CharBuffer::Put(src);
-}
-
-ECode CharSequenceAdapter::Put(
     /* [in] */ ArrayOf<Char32>* src,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
     // throw new ReadOnlyBufferException();
     return E_READ_ONLY_BUFFER_EXCEPTION;
-}
-
-ECode CharSequenceAdapter::Put(
-    /* [in] */ ICharBuffer* src)
-{
-    return CharBuffer::Put(src);
-}
-
-ECode CharSequenceAdapter::Put(
-    /* [in] */ const String& str)
-{
-    return CharBuffer::Put(str);
 }
 
 ECode CharSequenceAdapter::Put(

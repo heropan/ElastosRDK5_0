@@ -30,7 +30,7 @@ public:
 
     AbstractSelectableChannel();
 
-    AbstractSelectableChannel(
+    CARAPI constructor(
         /* [in] */ ISelectorProvider* provider);
 
     virtual ~AbstractSelectableChannel();

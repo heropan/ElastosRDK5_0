@@ -187,8 +187,8 @@ public:
     CARAPI GetFD(
         /* [out] */ IFileDescriptor** descriptor);
 
-    CARAPI calculateTotalRemaining(
-        /* [in] */ ArrayOf<IByteBuffer*> buffers,
+    static CARAPI CalculateTotalRemaining(
+        /* [in] */ ArrayOf<IByteBuffer*> * buffers,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
         /* [in] */ Boolean copyingIn,

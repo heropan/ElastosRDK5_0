@@ -20,13 +20,17 @@ namespace IO{
 //==========================================================
 CAR_INTERFACE_IMPL(PipeImpl::PipeSourceChannel, Object, IFileDescriptorChannel)
 
-PipeImpl::PipeSourceChannel::PipeSourceChannel(
+PipeImpl::PipeSourceChannel::PipeSourceChannel()
+{}
+
+CARAPI PipeImpl::PipeSourceChannel::constructor(
     /* [in] */ ISelectorProvider* provider,
     /* [in] */ IFileDescriptor* fd)
-    : SourceChannel(provider)
-    , mFd(fd)
 {
+    FAIL_RETURN(SourceChannel::constructor(provider))
+    mFd = fd;
     mChannel = (ISocketChannel*) new SocketChannelImpl(provider, fd);
+    return NOERROR;
 }
 
 ECode PipeImpl::PipeSourceChannel::ImplCloseSelectableChannel()
@@ -80,13 +84,17 @@ ECode PipeImpl::PipeSourceChannel::GetFD(
 //==========================================================
 CAR_INTERFACE_IMPL(PipeImpl::PipeSinkChannel, Object, IFileDescriptorChannel)
 
-PipeImpl::PipeSinkChannel::PipeSinkChannel(
+PipeImpl::PipeSinkChannel::PipeSinkChannel()
+{}
+
+CARAPI PipeImpl::PipeSinkChannel::constructor(
     /* [in] */ ISelectorProvider* provider,
     /* [in] */ IFileDescriptor* fd)
-    : SinkChannel(provider)
-    , mFd(fd)
 {
+    FAIL_RETURN(SinkChannel::constructor(provider))
+    mFd = fd;
     mChannel = (ISocketChannel*) new SocketChannelImpl(provider, fd);
+    return NOERROR;
 }
 
 ECode PipeImpl::PipeSinkChannel::ImplCloseSelectableChannel()
@@ -150,8 +158,10 @@ PipeImpl::PipeImpl(
 
     // It doesn't matter which file descriptor we use for which end;
     // they're guaranteed to be indistinguishable.
-    mSink = new PipeSinkChannel(selectorProvider, fd1);
-    mSource = new PipeSourceChannel(selectorProvider, fd2);
+    mSink = new PipeSinkChannel();
+    mSink->constructor(selectorProvider, fd1);
+    mSource = new PipeSourceChannel();
+    mSource->constructor(selectorProvider, fd2);
     // } catch (ErrnoException errnoException) {
     //     throw errnoException.rethrowAsIOException();
     // }
