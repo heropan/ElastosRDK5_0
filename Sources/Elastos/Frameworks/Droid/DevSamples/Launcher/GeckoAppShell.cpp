@@ -17,7 +17,7 @@
 //#include <elastos/ElPixelFormat.h>
 
 //#include <elastos/ByteBuffer.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "ElastosGeckoWrapper.h"
 #include "wrapper.h"
 #include <os/Build.h>
@@ -2496,7 +2496,7 @@ ECode GeckoAppShell::GetSystemColors(
     }
 
     *colors = result;
-    INTERFACE_ADDREF(*colors);
+    REFCOUNT_ADD(*colors);
     return NOERROR;
 }
 

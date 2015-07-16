@@ -1,7 +1,7 @@
 
 #include "usb/UsbSettingsManager.h"
 #include "os/UserHandle.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -137,7 +137,7 @@ ECode UsbSettingsManager::DeviceFilter::Read(
     }
 
     *filter = new DeviceFilter(vendorId, productId, deviceClass, deviceSubclass, deviceProtocol);
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -360,7 +360,7 @@ ECode UsbSettingsManager::AccessoryFilter::Read(
     }
 
     *filter = new AccessoryFilter(manufacturer, model, version);
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 

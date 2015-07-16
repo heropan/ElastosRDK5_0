@@ -481,7 +481,7 @@ ECode ActivityChooserModel::GetIntent(
 {
     Mutex::Autolock lock(mInstanceLock);
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -501,7 +501,7 @@ ECode ActivityChooserModel::GetActivity(
     Mutex::Autolock lock(mInstanceLock);
     EnsureConsistentState();
     *activity = mActivities[index]->mResolveInfo;
-    INTERFACE_ADDREF(*activity);
+    REFCOUNT_ADD(*activity);
     return NOERROR;
 }
 
@@ -572,7 +572,7 @@ ECode ActivityChooserModel::ChooseActivity(
         new HistoricalRecord(chosenName, millis, DEFAULT_HISTORICAL_RECORD_WEIGHT);
     AddHisoricalRecord(historicalRecord);
     *intent = choiceIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -591,7 +591,7 @@ ECode ActivityChooserModel::GetDefaultActivity(
     EnsureConsistentState();
     if (!mActivities.IsEmpty()) {
         *rInfo = mActivities[0]->mResolveInfo;
-        INTERFACE_ADDREF(*rInfo);
+        REFCOUNT_ADD(*rInfo);
         return NOERROR;
     }
     *rInfo = NULL;

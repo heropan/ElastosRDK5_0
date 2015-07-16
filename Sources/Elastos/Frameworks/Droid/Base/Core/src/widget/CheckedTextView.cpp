@@ -317,7 +317,7 @@ ECode CheckedTextView::OnCreateDrawableState(
         MergeDrawableStates(ds, CHECKED_STATE_SET);
     }
     *drawableState = ds;
-    INTERFACE_ADDREF(*drawableState);
+    REFCOUNT_ADD(*drawableState);
     return NOERROR;
 }
 

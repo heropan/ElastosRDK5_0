@@ -14,7 +14,7 @@ ECode CTextViewHelper::GetTextColors(
     VALIDATE_NOT_NULL(color);
     AutoPtr<IColorStateList> list = TextView::GetTextColors(context, attrs);
     *color = list;
-    INTERFACE_ADDREF(*color);
+    REFCOUNT_ADD(*color);
     return NOERROR;
 }
 

@@ -73,7 +73,7 @@ ECode CRadioButton::GetButtonDrawable(
     VALIDATE_NOT_NULL(d);
     AutoPtr<IDrawable> dTemp = RadioButton::GetButtonDrawable();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 
 }

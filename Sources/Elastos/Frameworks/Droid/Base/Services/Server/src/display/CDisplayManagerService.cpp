@@ -480,7 +480,7 @@ ECode CDisplayManagerService::GetDisplayInfo(
         AutoPtr<LogicalDisplay> display = find->mSecond;
         AutoPtr<IDisplayInfo> temInfo = display->GetDisplayInfoLocked();
         *displayInfo = temInfo;
-        INTERFACE_ADDREF(*displayInfo);
+        REFCOUNT_ADD(*displayInfo);
     }
 
     return NOERROR;
@@ -501,7 +501,7 @@ ECode CDisplayManagerService::GetDisplayIds(
     if (*displayIds == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*displayIds);
+    REFCOUNT_ADD(*displayIds);
     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator iter
         = mLogicalDisplays.Begin();
     for (Int32 i = 0; i < count; ++iter, i++) {
@@ -680,7 +680,7 @@ ECode CDisplayManagerService::GetWifiDisplayStatus(
         if (mWifiDisplayAdapter != NULL) {
             AutoPtr<IWifiDisplayStatus> s = mWifiDisplayAdapter->GetWifiDisplayStatusLocked();
             *status = s;
-            INTERFACE_ADDREF(*status);
+            REFCOUNT_ADD(*status);
         }
         else {
             CWifiDisplayStatus::New(status);

@@ -1995,7 +1995,7 @@ ECode CNetworkPolicyManagerService::GetNetworkPolicies(
         Mutex::Autolock lock(mRulesLock);
 
         *policies = ArrayOf<INetworkPolicy*>::Alloc(mNetworkPolicy.GetSize());
-        INTERFACE_ADDREF(*policies);
+        REFCOUNT_ADD(*policies);
         Int32 index = 0;
         HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it;
         for (it = mNetworkPolicy.Begin(); it != mNetworkPolicy.End(); ++it, ++index) {
@@ -2130,7 +2130,7 @@ ECode CNetworkPolicyManagerService::GetNetworkQuotaInfo(
     //try {
     AutoPtr<INetworkQuotaInfo> _info = GetNetworkQuotaInfoUnchecked(state);
     *info = _info;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     //} finally {
     Binder::RestoreCallingIdentity(token);
     //}

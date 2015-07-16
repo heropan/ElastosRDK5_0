@@ -2050,7 +2050,7 @@ ECode CWebViewCore::GetSettings(
 {
     VALIDATE_NOT_NULL(settings);
     *settings = (IWebSettingsClassic*)mSettings;
-    INTERFACE_ADDREF(*settings);
+    REFCOUNT_ADD(*settings);
     return NOERROR;
 }
 

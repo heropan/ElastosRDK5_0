@@ -983,7 +983,7 @@ ECode CSettingsBackupAgent::ExtractRelevantValues(
         pos = WriteBytes(temp, pos, (*values)[i]);
     }
     *result = temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

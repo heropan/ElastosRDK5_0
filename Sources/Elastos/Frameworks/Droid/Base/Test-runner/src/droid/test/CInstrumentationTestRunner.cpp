@@ -3,7 +3,7 @@
 #include "droid/test/ClassPathPackageInfoSource.h"
 #include "droid/test/TestPrinter.h"
 #include "droid/test/TestFilePrinter.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Thread.h>
 #include <elastos/utility/logging/Logger.h>
@@ -709,7 +709,7 @@ ECode CInstrumentationTestRunner::GetBundle(
 {
     VALIDATE_NOT_NULL(bundle);
     *bundle = mArguments;
-    INTERFACE_ADDREF(*bundle);
+    REFCOUNT_ADD(*bundle);
     return NOERROR;
 }
 

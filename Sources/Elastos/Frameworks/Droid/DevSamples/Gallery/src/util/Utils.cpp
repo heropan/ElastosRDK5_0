@@ -1,6 +1,6 @@
 #include "Utils.h"
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Widget::CToastHelper;

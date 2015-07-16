@@ -40,7 +40,7 @@ ECode CWebViewFragment::GetWebView(
 {
     VALIDATE_NOT_NULL(webView);
     *webView = WebViewFragment::GetWebView();
-    INTERFACE_ADDREF(*webView);
+    REFCOUNT_ADD(*webView);
     return NOERROR;
 }
 

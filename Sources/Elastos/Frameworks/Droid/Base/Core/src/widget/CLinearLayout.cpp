@@ -70,7 +70,7 @@ ECode CLinearLayout::GetDividerDrawable(
     VALIDATE_NOT_NULL(divider);
     AutoPtr<IDrawable> d = LinearLayout::GetDividerDrawable();
     *divider = d;
-    INTERFACE_ADDREF(*divider);
+    REFCOUNT_ADD(*divider);
     return NOERROR;
 }
 

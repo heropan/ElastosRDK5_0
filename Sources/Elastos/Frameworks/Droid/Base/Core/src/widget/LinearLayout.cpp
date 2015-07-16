@@ -1787,7 +1787,7 @@ ECode LinearLayout::GenerateLayoutParams(
     AutoPtr<ILinearLayoutLayoutParams> lp;
     FAIL_RETURN(CLinearLayoutLayoutParams::New(GetContext(), attrs, (ILinearLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

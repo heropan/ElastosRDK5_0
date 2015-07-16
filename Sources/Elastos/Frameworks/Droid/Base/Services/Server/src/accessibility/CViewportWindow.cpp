@@ -186,7 +186,7 @@ ECode CViewportWindow::GetBounds(
 {
     VALIDATE_NOT_NULL(bounds);
     *bounds = mBounds;
-    INTERFACE_ADDREF(*bounds);
+    REFCOUNT_ADD(*bounds);
     return NOERROR;
 }
 

@@ -93,7 +93,7 @@ ECode ActivityInstrumentationTestCase2::GetActivity(
         SetActivity(a);
     }
     *activity = a;
-    INTERFACE_ADDREF(*activity);
+    REFCOUNT_ADD(*activity);
     return NOERROR;
 }
 

@@ -11,7 +11,7 @@ ECode CNumberPickerHelper::GetTwoDigitFormatter(
     VALIDATE_NOT_NULL(format);
     AutoPtr<INumberPickerFormatter> formatter = NumberPicker::GetTwoDigitFormatter();
     *format = formatter;
-    INTERFACE_ADDREF(*format);
+    REFCOUNT_ADD(*format);
     return NOERROR;
 }
 

@@ -759,7 +759,7 @@ ECode CWallpaperManagerService::GetWallpaperInfo(
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(userId);
     if (wallpaper->mConnection != NULL) {
         *result = wallpaper->mConnection->mInfo;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -792,7 +792,7 @@ ECode CWallpaperManagerService::SetWallpaper(
             wallpaper->mImageWallpaperPending = TRUE;
         }
         *result = pfd;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     // } finally {
         Binder::RestoreCallingIdentity(ident);
     // }

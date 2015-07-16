@@ -1,7 +1,7 @@
 
 #include "wm/Watermark.h"
 #include "wm/CWindowManagerService.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Utility::ITypedValue;

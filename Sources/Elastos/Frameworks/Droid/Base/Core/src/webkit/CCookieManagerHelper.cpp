@@ -12,7 +12,7 @@ ECode CCookieManagerHelper::GetInstance(
     VALIDATE_NOT_NULL(cookieManager);
     AutoPtr<ICookieManager> _cookieManager = CookieManager::GetInstance();
     *cookieManager = _cookieManager.Get();
-    INTERFACE_ADDREF(*cookieManager);
+    REFCOUNT_ADD(*cookieManager);
     return NOERROR;
 }
 

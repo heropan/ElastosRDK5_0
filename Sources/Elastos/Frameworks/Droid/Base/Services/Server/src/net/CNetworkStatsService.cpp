@@ -700,7 +700,7 @@ ECode CNetworkStatsService::OpenSession(
     AutoPtr<INetworkStatsSession> session;
     CNetworkStatsSession::New((Handle32)this, (INetworkStatsSession**)&session);
     *comple = session;
-    INTERFACE_ADDREF(*comple)
+    REFCOUNT_ADD(*comple)
     return NOERROR;
 }
 
@@ -801,7 +801,7 @@ ECode CNetworkStatsService::GetDataLayerSnapshotForUid(
         dataLayer->CombineValues(entry);
     }
     *datalayerOut = dataLayer;
-    INTERFACE_ADDREF(*datalayerOut)
+    REFCOUNT_ADD(*datalayerOut)
     return NOERROR;
 }
 
@@ -1388,7 +1388,7 @@ ECode CNetworkStatsService::GetNetworkStatsUidDetail(
     uidSnapshot->CombineAllValues(mUidOperations);
 
     *stats = uidSnapshot;
-    INTERFACE_ADDREF(*stats)
+    REFCOUNT_ADD(*stats)
     return NOERROR;
 }
 
@@ -1417,7 +1417,7 @@ ECode CNetworkStatsService::GetNetworkStatsTethering(
         return ec;
     }
     *stats = temp;
-    INTERFACE_ADDREF(*stats)
+    REFCOUNT_ADD(*stats)
     return NOERROR;
     //} catch (IllegalStateException e) {
     //    Log.wtf(TAG, "problem reading network stats", e);

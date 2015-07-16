@@ -62,7 +62,7 @@ ECode CTimePicker::GetCurrentHour(
     VALIDATE_NOT_NULL(hour);
     AutoPtr<IInteger32> current = TimePicker::GetCurrentHour();
     *hour = current;
-    INTERFACE_ADDREF(*hour);
+    REFCOUNT_ADD(*hour);
     return NOERROR;
 }
 
@@ -92,7 +92,7 @@ ECode CTimePicker::GetCurrentMinute(
     VALIDATE_NOT_NULL(currentMinute);
     AutoPtr<IInteger32> current = TimePicker::GetCurrentMinute();
     *currentMinute = current;
-    INTERFACE_ADDREF(*currentMinute);
+    REFCOUNT_ADD(*currentMinute);
     return NOERROR;
 }
 

@@ -230,7 +230,7 @@ ECode FrameLayout::GenerateDefaultLayoutParams(
         IViewGroupLayoutParams::MATCH_PARENT,
         (IFrameLayoutLayoutParams**)&temp);
     *params = IViewGroupLayoutParams::Probe(temp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -591,7 +591,7 @@ ECode FrameLayout::GenerateLayoutParams(
     AutoPtr<IFrameLayoutLayoutParams> lp;
     FAIL_RETURN(CFrameLayoutLayoutParams::New(GetContext(), attrs, (IFrameLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

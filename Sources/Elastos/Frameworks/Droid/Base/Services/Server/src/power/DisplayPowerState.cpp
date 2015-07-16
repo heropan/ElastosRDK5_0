@@ -61,7 +61,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::Get(
     AutoPtr<IFloat> rstTmp;
     CFloat::New(level, (IFloat**)&rstTmp);
     *rst = rstTmp;
-    INTERFACE_ADDREF(*rst)
+    REFCOUNT_ADD(*rst)
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::Get(
     AutoPtr<IInteger32> rstTmp;
     CInteger32::New(level, (IInteger32**)&rstTmp);
     *rst = rstTmp;
-    INTERFACE_ADDREF(*rst)
+    REFCOUNT_ADD(*rst)
     return NOERROR;
 }
 

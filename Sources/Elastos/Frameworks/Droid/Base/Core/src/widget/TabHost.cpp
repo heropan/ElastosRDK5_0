@@ -166,7 +166,7 @@ ECode TabHost::LabelIndicatorStrategy::CreateIndicatorView(
     }
 
     *view = tabIndicator;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -237,7 +237,7 @@ ECode TabHost::LabelAndIconIndicatorStrategy::CreateIndicatorView(
     }
 
     *view = tabIndicator;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode TabHost::ViewIndicatorStrategy::CreateIndicatorView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     return NOERROR;
 }
@@ -294,7 +294,7 @@ ECode TabHost::ViewIdContentStrategy::GetContentView(
 {
     mView->SetVisibility(IView::VISIBLE);
     *view = mView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -325,7 +325,7 @@ ECode TabHost::FactoryContentStrategy::GetContentView(
     }
     mTabContent->SetVisibility(IView::VISIBLE);
     *view = mTabContent;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     return NOERROR;
 }
@@ -391,7 +391,7 @@ ECode TabHost::IntentContentStrategy::GetContentView(
     }
 
     *view = mLaunchedView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

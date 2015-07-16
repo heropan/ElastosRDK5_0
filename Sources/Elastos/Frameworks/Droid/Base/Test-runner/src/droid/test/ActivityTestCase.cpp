@@ -10,7 +10,7 @@ ECode ActivityTestCase::GetActivity(
 {
     assert(activity != NULL);
     *activity = mActivity;
-    INTERFACE_ADDREF(*activity);
+    REFCOUNT_ADD(*activity);
     return NOERROR;
 }
 

@@ -51,7 +51,7 @@ ECode Filter::FilterResults::GetValues(
 {
     VALIDATE_NOT_NULL(values);
     *values = mValues;
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
     return NOERROR;
 }
 

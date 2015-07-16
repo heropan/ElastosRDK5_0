@@ -6,7 +6,7 @@
 #include "usb/UsbDeviceManager.h"
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <fcntl.h>
 #include <linux/ioctl.h>
@@ -1230,7 +1230,7 @@ ECode UsbDeviceManager::OpenAccessory(
 
     AutoPtr<IParcelFileDescriptor> tmp = NativeOpenAccessory();
     *pfd = tmp;
-    INTERFACE_ADDREF(*pfd);
+    REFCOUNT_ADD(*pfd);
     return NOERROR;
 }
 

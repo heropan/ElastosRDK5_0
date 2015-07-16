@@ -5,7 +5,7 @@
 #include "src/util/Utils.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 #include "os/SomeArgs.h"

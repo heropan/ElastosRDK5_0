@@ -444,7 +444,7 @@ ECode AwContents::InnerCallable::Call(
 {
     VALIDATE_NOT_NULL(pic);
     *pic = mOwner->CapturePicture();
-    INTERFACE_ADDREF(*pic);
+    REFCOUNT_ADD(*pic);
     return NOERROR;
 }
 

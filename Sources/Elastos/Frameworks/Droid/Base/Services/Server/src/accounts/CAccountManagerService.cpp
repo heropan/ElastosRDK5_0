@@ -831,7 +831,7 @@ ECode CAccountManagerService::GetAuthenticatorTypes(
     }
 
     *_types = types;
-    INTERFACE_ADDREF(*_types);
+    REFCOUNT_ADD(*_types);
     Binder::RestoreCallingIdentity(identityToken);
     return NOERROR;
 }
@@ -2037,7 +2037,7 @@ ECode CAccountManagerService::GetAccounts(
         AutoPtr< ArrayOf<IAccount*> > accounts = GetAccountsFromCacheLocked(
                 userAccounts, String(NULL));
         *_accounts = accounts;
-        INTERFACE_ADDREF(*_accounts);
+        REFCOUNT_ADD(*_accounts);
     }
     Binder::RestoreCallingIdentity(identityToken);
     return NOERROR;
@@ -2110,7 +2110,7 @@ ECode CAccountManagerService::GetAccounts(
         }
     }
     *accounts = runningAccounts;
-    INTERFACE_ADDREF(*accounts);
+    REFCOUNT_ADD(*accounts);
     return NOERROR;
 }
 
@@ -2143,7 +2143,7 @@ ECode CAccountManagerService::GetAccountsAsUser(
         AutoPtr< ArrayOf<IAccount*> > accounts = GetAccountsFromCacheLocked(
                 userAccounts, accountType);
         *_accounts = accounts;
-        INTERFACE_ADDREF(*_accounts);
+        REFCOUNT_ADD(*_accounts);
     }
     // } finally {
     Binder::RestoreCallingIdentity(identityToken);

@@ -313,7 +313,7 @@ ECode UsbHostManager::OpenDevice(
     FAIL_RETURN(GetCurrentSettings()->CheckPermission(it->mSecond));
     AutoPtr<IParcelFileDescriptor> tmp = NativeOpenDevice(deviceName);
     *pfd = tmp;
-    INTERFACE_ADDREF(*pfd);
+    REFCOUNT_ADD(*pfd);
     return NOERROR;
 }
 

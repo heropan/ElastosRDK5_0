@@ -242,7 +242,7 @@ ECode MultiAutoCompleteTextView::CommaTokenizer::TerminateToken(
     if (i > 0 && c == ',') {
         *res = text;
         // is right?
-        INTERFACE_ADDREF(*res);
+        REFCOUNT_ADD(*res);
     } else {
         if (ISpanned::Probe(text)) {
             String str;
@@ -255,14 +255,14 @@ ECode MultiAutoCompleteTextView::CommaTokenizer::TerminateToken(
             text->GetLength(&len);
             TextUtils::CopySpansFrom(ISpanned::Probe(text), 0, len, EIID_IInterface, sp, 0);
             *res = ICharSequence::Probe(sp.Get());
-            INTERFACE_ADDREF(*res);
+            REFCOUNT_ADD(*res);
         } else {
             String str;
             text->ToString(&str);
             AutoPtr<ICharSequence> csq;
             CStringWrapper::New(str + String(","), (ICharSequence**)&csq);
             *res = csq;
-            INTERFACE_ADDREF(*res);
+            REFCOUNT_ADD(*res);
         }
     }
     return NOERROR;

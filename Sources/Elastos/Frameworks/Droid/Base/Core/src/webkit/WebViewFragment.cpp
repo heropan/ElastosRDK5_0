@@ -44,7 +44,7 @@ ECode WebViewFragment::OnCreateView(
     CWebView::New(activity, (IWebView**)&mWebView);
     mIsWebViewAvailable = TRUE;
     *view = (IView*)mWebView.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

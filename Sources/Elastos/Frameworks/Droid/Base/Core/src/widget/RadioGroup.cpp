@@ -344,7 +344,7 @@ ECode RadioGroup::GenerateLayoutParams(
     AutoPtr<IRadioGroupLayoutParams> lp;
     FAIL_RETURN(CRadioGroupLayoutParams::New(GetContext(), attrs, (IRadioGroupLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -368,7 +368,7 @@ ECode RadioGroup::GenerateDefaultLayoutParams(
         (IRadioGroupLayoutParams**)&p);
 
     *params = ILinearLayoutLayoutParams::Probe(p.Get());
-    INTERFACE_ADDREF(*params)
+    REFCOUNT_ADD(*params)
     return NOERROR;
 }
 

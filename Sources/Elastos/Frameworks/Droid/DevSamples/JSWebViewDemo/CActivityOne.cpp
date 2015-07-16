@@ -282,7 +282,7 @@ ECode CActivityOne::CreateInstance(
     }
 
     *object = testObject;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

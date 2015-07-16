@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <os/SystemClock.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ICharSequence;

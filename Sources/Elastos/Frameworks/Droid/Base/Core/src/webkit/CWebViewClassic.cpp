@@ -825,7 +825,7 @@ ECode CWebViewClassicWebViewInputConnection::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -939,7 +939,7 @@ ECode CWebViewClassic::PastePopupWindow::GetBackground(
     VALIDATE_NOT_NULL(background);
     AutoPtr<IDrawable> bk = PopupWindow::GetBackground();
     *background = bk.Get();
-    INTERFACE_ADDREF(*background);
+    REFCOUNT_ADD(*background);
     return NOERROR;
 }
 
@@ -974,7 +974,7 @@ ECode CWebViewClassic::PastePopupWindow::GetContentView(
     VALIDATE_NOT_NULL(contentView);
     AutoPtr<IView> cv = PopupWindow::GetContentView();
     *contentView = cv.Get();
-    INTERFACE_ADDREF(*contentView);
+    REFCOUNT_ADD(*contentView);
     return NOERROR;
 }
 
@@ -1432,7 +1432,7 @@ ECode CWebViewClassic::Factory::GetStatics(
 {
     VALIDATE_NOT_NULL(statics);
     *statics = this;
-    INTERFACE_ADDREF(*statics);
+    REFCOUNT_ADD(*statics);
     return NOERROR;
 }
 
@@ -1451,7 +1451,7 @@ ECode CWebViewClassic::Factory::GetGeolocationPermissions(
     VALIDATE_NOT_NULL(gp);
     AutoPtr<IGeolocationPermissions> instance = GeolocationPermissionsClassic::GetInstance().Get();
     *gp = instance;
-    INTERFACE_ADDREF(*gp);
+    REFCOUNT_ADD(*gp);
     return NOERROR;
 }
 
@@ -1461,7 +1461,7 @@ ECode CWebViewClassic::Factory::GetCookieManager(
     VALIDATE_NOT_NULL(cm);
     AutoPtr<ICookieManager> instance = CookieManagerClassic::GetInstance().Get();
     *cm = instance;
-    INTERFACE_ADDREF(*cm);
+    REFCOUNT_ADD(*cm);
     return NOERROR;
 }
 
@@ -1471,7 +1471,7 @@ ECode CWebViewClassic::Factory::GetWebIconDatabase(
     VALIDATE_NOT_NULL(database);
     AutoPtr<IWebIconDatabase> instance = WebIconDatabaseClassic::GetInstance().Get();
     *database = instance;
-    INTERFACE_ADDREF(*database);
+    REFCOUNT_ADD(*database);
     return NOERROR;
 }
 
@@ -1481,7 +1481,7 @@ ECode CWebViewClassic::Factory::GetWebStorage(
     VALIDATE_NOT_NULL(webStorage);
     AutoPtr<IWebStorage> ws = WebStorageClassic::GetInstance().Get();
     *webStorage = ws;
-    INTERFACE_ADDREF(*webStorage);
+    REFCOUNT_ADD(*webStorage);
     return NOERROR;
 }
 
@@ -1492,7 +1492,7 @@ ECode CWebViewClassic::Factory::GetWebViewDatabase(
     VALIDATE_NOT_NULL(database);
     AutoPtr<IWebViewDatabase> db = WebViewDatabaseClassic::GetInstance(context).Get();
     *database = db;
-    INTERFACE_ADDREF(*database);
+    REFCOUNT_ADD(*database);
     return NOERROR;
 }
 
@@ -2294,7 +2294,7 @@ ECode CWebViewClassic::PrivateHandler::GetContext(
 {
     AutoPtr<IContext> c = mHost->GetContext();
     *context = c;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -2543,11 +2543,11 @@ ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::GetView(
             layout->AddView(dividerBottom);
         }
         *view = layout;
-        INTERFACE_ADDREF(*view);
+        REFCOUNT_ADD(*view);
         return NOERROR;
     }
     *view = convertView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -2635,7 +2635,7 @@ ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> obj = ArrayAdapter::GetItem(position);
     *item = obj;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -2728,7 +2728,7 @@ ECode CWebViewClassic::InvokeListBox::MyArrayListAdapter::GetContext(
     VALIDATE_NOT_NULL(context);
     AutoPtr<IContext> c = ArrayAdapter::GetContext();
     *context = c;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -3749,7 +3749,7 @@ ECode CWebViewClassic::GetWebView(
 {
     VALIDATE_NOT_NULL(webView);
     *webView = mWebView;
-    INTERFACE_ADDREF(*webView);
+    REFCOUNT_ADD(*webView);
     return NOERROR;
 }
 
@@ -3758,7 +3758,7 @@ ECode CWebViewClassic::GetViewDelegate(
 {
     VALIDATE_NOT_NULL(delegate);
     *delegate = this;
-    INTERFACE_ADDREF(*delegate);
+    REFCOUNT_ADD(*delegate);
     return NOERROR;
 }
 
@@ -3767,7 +3767,7 @@ ECode CWebViewClassic::GetScrollDelegate(
 {
     VALIDATE_NOT_NULL(delegate);
     *delegate = this;
-    INTERFACE_ADDREF(*delegate);
+    REFCOUNT_ADD(*delegate);
     return NOERROR;
 }
 
@@ -4412,7 +4412,7 @@ ECode CWebViewClassic::GetCertificate(
 {
     VALIDATE_NOT_NULL(cer);
     *cer = mCertificate;
-    INTERFACE_ADDREF(*cer);
+    REFCOUNT_ADD(*cer);
     return NOERROR;
 }
 
@@ -4739,7 +4739,7 @@ ECode CWebViewClassic::SaveState(
     outState->PutBoolean(String("privateBrowsingEnabled"), enabled);
     mZoomManager->SaveZoomState(outState);
     *wbfl = list;
-    INTERFACE_ADDREF(*wbfl);
+    REFCOUNT_ADD(*wbfl);
     return NOERROR;
 }
 
@@ -5024,7 +5024,7 @@ ECode CWebViewClassic::RestoreState(
         mWebViewCore->SendMessage(CWebViewCore::EventHub::RESTORE_STATE, index);
     }
     *wbfl = (IWebBackForwardList*)returnList.Get();
-    INTERFACE_ADDREF(*wbfl);
+    REFCOUNT_ADD(*wbfl);
     return NOERROR;
 }
 
@@ -5500,7 +5500,7 @@ ECode CWebViewClassic::GetHitTestResult(
 {
     VALIDATE_NOT_NULL(result);
     *result = mInitialHitTestResult;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -6392,7 +6392,7 @@ ECode CWebViewClassic::CopyBackForwardList(
     VALIDATE_NOT_NULL(wbfl);
     AutoPtr<WebBackForwardListClassic> list = mCallbackProxy->GetBackForwardList()->Clone();
     *wbfl = (IWebBackForwardList*)list.Get();
-    INTERFACE_ADDREF(*wbfl);
+    REFCOUNT_ADD(*wbfl);
     return NOERROR;
 }
 
@@ -6938,7 +6938,7 @@ ECode CWebViewClassic::GetWebViewClient(
     VALIDATE_NOT_NULL(wvc);
     AutoPtr<IWebViewClient> client = mCallbackProxy->GetWebViewClient();
     *wvc = client;
-    INTERFACE_ADDREF(*wvc);
+    REFCOUNT_ADD(*wvc);
     return NOERROR;
 }
 
@@ -6974,7 +6974,7 @@ ECode CWebViewClassic::GetWebChromeClient(
     VALIDATE_NOT_NULL(wcc);
     AutoPtr<IWebChromeClient> client = mCallbackProxy->GetWebChromeClient();
     *wcc = client;
-    INTERFACE_ADDREF(*wcc);
+    REFCOUNT_ADD(*wcc);
     return NOERROR;
 }
 
@@ -7000,7 +7000,7 @@ ECode CWebViewClassic::GetWebBackForwardListClient(
     VALIDATE_NOT_NULL(wflc);
     AutoPtr<IWebBackForwardListClient> client = mCallbackProxy->GetWebBackForwardListClient();
     *wflc = client;
-    INTERFACE_ADDREF(*wflc);
+    REFCOUNT_ADD(*wflc);
     return NOERROR;
 }
 
@@ -7086,7 +7086,7 @@ ECode CWebViewClassic::GetSettings(
         AutoPtr<IWebSettingsClassic> classic;
         mWebViewCore->GetSettings((IWebSettingsClassic**)&classic);
         *settings = (IWebSettings*)classic.Get();
-        INTERFACE_ADDREF(*settings);
+        REFCOUNT_ADD(*settings);
         return NOERROR;
     }
     else {
@@ -7787,7 +7787,7 @@ ECode CWebViewClassic::OnCreateInputConnection(
     }
     mInputConnection->SetupEditorInfo(outAttrs);
     *ic = (IInputConnection*)mInputConnection.Get();
-    INTERFACE_ADDREF(*ic);
+    REFCOUNT_ADD(*ic);
     return NOERROR;
 }
 
@@ -10330,7 +10330,7 @@ ECode CWebViewClassic::GetZoomControls(
     }
     AutoPtr<IView> v = mZoomManager->GetExternalZoomPicker();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -10744,7 +10744,7 @@ ECode CWebViewClassic::GetWebViewCore(
     Mutex::Autolock lock(mLock);
     VALIDATE_NOT_NULL(wvc);
     *wvc = mWebViewCore;
-    INTERFACE_ADDREF(*wvc);
+    REFCOUNT_ADD(*wvc);
     return NOERROR;
 }
 
@@ -11623,7 +11623,7 @@ ECode CWebViewClassic::FindHierarchyView(
     }
     AutoPtr<PictureWrapperView> pv = new PictureWrapperView(GetContext(), pic, mWebView);
     *view = (IView*)pv.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

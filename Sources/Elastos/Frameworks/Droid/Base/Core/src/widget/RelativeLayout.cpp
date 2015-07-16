@@ -99,7 +99,7 @@ ECode Node::NodePoolableManager::NewInstance(
     if (*element == NULL) {
         return E_OUT_OF_MEMORY_ERROR;
     }
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
     return NOERROR;
 }
 
@@ -181,7 +181,7 @@ ECode Node::GetNextPoolable(
 {
     VALIDATE_NOT_NULL(element);
     *element = mNext;
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
     return NOERROR;
 }
 
@@ -1586,7 +1586,7 @@ ECode RelativeLayout::GenerateLayoutParams(
     AutoPtr<IRelativeLayoutLayoutParams> lp;
     FAIL_RETURN(CRelativeLayoutLayoutParams::New(GetContext(), attrs, (IRelativeLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

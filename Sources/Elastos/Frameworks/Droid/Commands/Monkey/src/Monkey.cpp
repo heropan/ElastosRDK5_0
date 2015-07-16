@@ -7,7 +7,7 @@
 #include "MonkeyUtils.h"
 #include <elastos/core/Math.h>
 #include "os/SystemClock.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::IO::IWriter;
 using Elastos::IO::CFile;

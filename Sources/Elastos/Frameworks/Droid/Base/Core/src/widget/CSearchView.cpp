@@ -131,7 +131,7 @@ ECode CSearchView::GetQuery(
     VALIDATE_NOT_NULL(str);
     AutoPtr<ICharSequence> csq = SearchView::GetQuery();
     *str = csq;
-    INTERFACE_ADDREF(*str);
+    REFCOUNT_ADD(*str);
     return NOERROR;
 }
 
@@ -154,7 +154,7 @@ ECode CSearchView::GetQueryHint(
     VALIDATE_NOT_NULL(hint);
     AutoPtr<ICharSequence> csq = SearchView::GetQueryHint();
     *hint = csq;
-    INTERFACE_ADDREF(*hint);
+    REFCOUNT_ADD(*hint);
     return NOERROR;
 }
 
@@ -226,7 +226,7 @@ ECode CSearchView::GetSuggestionsAdapter(
     VALIDATE_NOT_NULL(adapter);
     AutoPtr<ICursorAdapter> a = SearchView::GetSuggestionsAdapter();
     *adapter = a;
-    INTERFACE_ADDREF(*adapter);
+    REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
 

@@ -161,7 +161,7 @@ ECode CTextServicesManager::NewSpellCheckerSession(
     //}
 
     *session = _session;
-    INTERFACE_ADDREF(*session);
+    REFCOUNT_ADD(*session);
     return NOERROR;
 }
 

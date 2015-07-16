@@ -1381,7 +1381,7 @@ ECode NumberPicker::InputTextFilter::Filter(
             AutoPtr<ICharSequence> seq;
             CStringWrapper::New(subString, (ICharSequence**)&seq);
             *sou = seq;
-            INTERFACE_ADDREF(*sou);
+            REFCOUNT_ADD(*sou);
             return NOERROR;
         }
 
@@ -1390,11 +1390,11 @@ ECode NumberPicker::InputTextFilter::Filter(
             AutoPtr<ICharSequence> seq;
             CStringWrapper::New(String(""), (ICharSequence**)&seq);
             *sou = seq;
-            INTERFACE_ADDREF(*sou);
+            REFCOUNT_ADD(*sou);
             return NOERROR;
         } else {
             *sou = filtered;
-            INTERFACE_ADDREF(*sou);
+            REFCOUNT_ADD(*sou);
             return NOERROR;
         }
 
@@ -1405,7 +1405,7 @@ ECode NumberPicker::InputTextFilter::Filter(
             AutoPtr<ICharSequence> seq;
             CStringWrapper::New(String(""), (ICharSequence**)&seq);
             *sou = seq;
-            INTERFACE_ADDREF(*sou);
+            REFCOUNT_ADD(*sou);
             return NOERROR;
         }
         AutoPtr<ICharSequence> res;
@@ -1432,14 +1432,14 @@ ECode NumberPicker::InputTextFilter::Filter(
                 AutoPtr<ICharSequence> charsequence;
                 seq->SubSequence(dstart, valLowerCase.GetLength(), (ICharSequence**)&charsequence);
                 *sou = charsequence;
-                INTERFACE_ADDREF(*sou);
+                REFCOUNT_ADD(*sou);
                 return NOERROR;
             }
         }
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(String(""), (ICharSequence**)&seq);
         *sou = seq;
-        INTERFACE_ADDREF(*sou);
+        REFCOUNT_ADD(*sou);
         return NOERROR;
     }
 }
@@ -1716,7 +1716,7 @@ ECode NumberPicker::AccessibilityNodeProviderImpl::CreateAccessibilityNodeInfo(
             AutoPtr<IAccessibilityNodeInfo> nodeInfo = CreateAccessibilityNodeInfoForNumberPicker(mHost->mScrollX, mHost->mScrollY,
                 mHost->mScrollX + (mHost->mRight - mHost->mLeft), mHost->mScrollY + (mHost->mBottom - mHost->mTop));
             *info = nodeInfo.Get();
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
         }
             return NOERROR;
         case VIRTUAL_VIEW_ID_DECREMENT:
@@ -1725,14 +1725,14 @@ ECode NumberPicker::AccessibilityNodeProviderImpl::CreateAccessibilityNodeInfo(
                 mHost->mScrollX, mHost->mScrollY, mHost->mScrollX + (mHost->mRight - mHost->mLeft),
                 mHost->mTopSelectionDividerTop + mHost->mSelectionDividerHeight);
             *info = nodeInfo.Get();
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
         }
             return NOERROR;
         case VIRTUAL_VIEW_ID_INPUT:
         {
             AutoPtr<IAccessibilityNodeInfo> nodeInfo = CreateAccessibiltyNodeInfoForInputText();
             *info = nodeInfo.Get();
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
         }
             return NOERROR;
         case VIRTUAL_VIEW_ID_INCREMENT:
@@ -1741,7 +1741,7 @@ ECode NumberPicker::AccessibilityNodeProviderImpl::CreateAccessibilityNodeInfo(
                 mHost->mScrollX, mHost->mBottomSelectionDividerBottom - mHost->mSelectionDividerHeight,
                 mHost->mScrollX + (mHost->mRight - mHost->mLeft), mHost->mScrollY + (mHost->mBottom - mHost->mTop));
             *info = nodeInfo.Get();
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
         }
             return NOERROR;
     }
@@ -1769,14 +1769,14 @@ ECode NumberPicker::AccessibilityNodeProviderImpl::FindAccessibilityNodeInfosByT
             FindAccessibilityNodeInfosByTextInChild(searchedLowerCase, VIRTUAL_VIEW_ID_INPUT, result);
             FindAccessibilityNodeInfosByTextInChild(searchedLowerCase, VIRTUAL_VIEW_ID_INCREMENT, result);
             *object = result.Get();
-            INTERFACE_ADDREF(*object);
+            REFCOUNT_ADD(*object);
             return NOERROR;
         case VIRTUAL_VIEW_ID_DECREMENT:
         case VIRTUAL_VIEW_ID_INCREMENT:
         case VIRTUAL_VIEW_ID_INPUT:
             FindAccessibilityNodeInfosByTextInChild(searchedLowerCase, virtualViewId, result);
             *object = result.Get();
-            INTERFACE_ADDREF(*object);
+            REFCOUNT_ADD(*object);
             return NOERROR;
     }
     AccessibilityNodeProvider::FindAccessibilityNodeInfosByText(unConstsearched, virtualViewId, object);

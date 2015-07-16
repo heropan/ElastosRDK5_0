@@ -108,7 +108,7 @@ ECode CIconMenuPresenter::CreateItemView(
 {
     AutoPtr<IMenuItemView> v = IconMenuPresenter::CreateItemView(parent);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -120,7 +120,7 @@ ECode CIconMenuPresenter::GetItemView(
 {
     AutoPtr<IView> vTemp =  IconMenuPresenter::GetItemView(item, convertView, parent);
     *v = vTemp;
-    INTERFACE_ADDREF(*v);
+    REFCOUNT_ADD(*v);
     return NOERROR;
 }
 

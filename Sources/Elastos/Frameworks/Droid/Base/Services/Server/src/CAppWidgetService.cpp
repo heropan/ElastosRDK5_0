@@ -264,7 +264,7 @@ ECode CAppWidgetService::GetAppWidgetIdsForHost(
     VALIDATE_NOT_NULL(ids);
     AutoPtr<ArrayOf<Int32> > tmpIds = GetImplForUser(GetCallingOrCurrentUserId())->GetAppWidgetIdsForHost(hostId);
     *ids = tmpIds;
-    INTERFACE_ADDREF(*ids);
+    REFCOUNT_ADD(*ids);
     return NOERROR;
 }
 
@@ -479,7 +479,7 @@ ECode CAppWidgetService::GetAppWidgetInfo(
     VALIDATE_NOT_NULL(info);
     AutoPtr<IAppWidgetProviderInfo> _info = GetImplForUser(GetCallingOrCurrentUserId())->GetAppWidgetInfo(appWidgetId);
     *info = _info.Get();
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -490,7 +490,7 @@ ECode CAppWidgetService::GetAppWidgetViews(
     VALIDATE_NOT_NULL(views);
     AutoPtr<IRemoteViews> _views = GetImplForUser(GetCallingOrCurrentUserId())->GetAppWidgetViews(appWidgetId);
     *views = IParcelable::Probe(_views);
-    INTERFACE_ADDREF(*views);
+    REFCOUNT_ADD(*views);
     return NOERROR;
 }
 
@@ -508,7 +508,7 @@ ECode CAppWidgetService::GetAppWidgetOptions(
     VALIDATE_NOT_NULL(options);
     AutoPtr<IBundle> _options = GetImplForUser(GetCallingOrCurrentUserId())->GetAppWidgetOptions(appWidgetId);
     *options = _options.Get();
-    INTERFACE_ADDREF(*options);
+    REFCOUNT_ADD(*options);
     return NOERROR;
 }
 
@@ -519,7 +519,7 @@ ECode CAppWidgetService::GetInstalledProviders(
     VALIDATE_NOT_NULL(providers);
     AutoPtr<IObjectContainer> _providers = GetImplForUser(GetCallingOrCurrentUserId())->GetInstalledProviders(categoryFilter);
     *providers = _providers.Get();
-    INTERFACE_ADDREF(*providers);
+    REFCOUNT_ADD(*providers);
     return NOERROR;
 }
 

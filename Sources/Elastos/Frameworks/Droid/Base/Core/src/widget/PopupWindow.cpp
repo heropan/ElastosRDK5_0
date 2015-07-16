@@ -46,13 +46,13 @@ ECode PopupWindow::_PopupViewContainer::OnCreateDrawableState(
         FAIL_RETURN(FrameLayout::OnCreateDrawableState(extraSpace + 1, (ArrayOf<Int32>**)&ds));
         View::MergeDrawableStates(ds, ABOVE_ANCHOR_STATE_SET);
         *drawableState = ds;
-        INTERFACE_ADDREF(*drawableState);
+        REFCOUNT_ADD(*drawableState);
         return NOERROR;
     }
     else {
         FAIL_RETURN(FrameLayout::OnCreateDrawableState(extraSpace, (ArrayOf<Int32>**)&ds));
         *drawableState = ds;
-        INTERFACE_ADDREF(*drawableState);
+        REFCOUNT_ADD(*drawableState);
         return NOERROR;
     }
 }
@@ -228,7 +228,7 @@ ECode PopupWindow::PopupViewContainer::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -258,7 +258,7 @@ ECode PopupWindow::PopupViewContainer::GetForeground(
     VALIDATE_NOT_NULL(foreground);
     AutoPtr<IDrawable> d = FrameLayout::GetForeground();
     *foreground = d.Get();
-    INTERFACE_ADDREF(*foreground);
+    REFCOUNT_ADD(*foreground);
 
     return NOERROR;
 }

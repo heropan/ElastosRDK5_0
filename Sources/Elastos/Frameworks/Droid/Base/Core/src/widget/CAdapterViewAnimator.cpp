@@ -79,7 +79,7 @@ ECode CAdapterViewAnimator::GetCurrentView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = AdapterViewAnimator::GetCurrentView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CAdapterViewAnimator::GetInAnimation(
     VALIDATE_NOT_NULL(animator);
     AutoPtr<IObjectAnimator> oa = AdapterViewAnimator::GetInAnimation();
     *animator = oa;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 
@@ -105,7 +105,7 @@ ECode CAdapterViewAnimator::GetOutAnimation(
     VALIDATE_NOT_NULL(animator);
     AutoPtr<IObjectAnimator> oa = AdapterViewAnimator::GetOutAnimation();
     *animator = oa;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 

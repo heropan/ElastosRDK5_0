@@ -18,7 +18,7 @@
 #include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <dirent.h>
 
 using Elastos::Core::CRandom;
@@ -363,7 +363,7 @@ ECode CMusicService::OnBind(
 {
     VALIDATE_NOT_NULL(binder);
     *binder = THIS_PROBE(IBinder);
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
 
     Logger::D("CMusicService", "OnBind() %d", *binder);
     return NOERROR;

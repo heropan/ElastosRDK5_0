@@ -215,11 +215,11 @@ ECode ActivityStack::ThumbnailRetriever::GetThumbnail(
     AutoPtr<ActivityRecord> resumed = mHost->mResumedActivity;
     if (resumed != NULL && resumed->mThumbHolder == sub->mHolder) {
         *thumbnail =  resumed->mStack->ScreenshotActivities(resumed);
-        INTERFACE_ADDREF(*thumbnail);
+        REFCOUNT_ADD(*thumbnail);
         return NOERROR;
     }
     *thumbnail = sub->mHolder->mLastThumbnail;
-    INTERFACE_ADDREF(*thumbnail);
+    REFCOUNT_ADD(*thumbnail);
     return NOERROR;
 }
 
@@ -4689,7 +4689,7 @@ ECode ActivityStack::FinishCurrentActivityLocked(
             mService->UpdateOomAdjLocked();
         }
         *fr = r;
-        INTERFACE_ADDREF(*fr);
+        REFCOUNT_ADD(*fr);
         return NOERROR;
     }
 
@@ -4714,7 +4714,7 @@ ECode ActivityStack::FinishCurrentActivityLocked(
             ResumeTopActivityLocked(NULL);
         }
         *fr = activityRemoved ? NULL : r;
-        INTERFACE_ADDREF(*fr);
+        REFCOUNT_ADD(*fr);
         return NOERROR;
     }
     else {
@@ -4729,7 +4729,7 @@ ECode ActivityStack::FinishCurrentActivityLocked(
         ResumeTopActivityLocked(NULL);
     }
     *fr = r;
-    INTERFACE_ADDREF(*fr);
+    REFCOUNT_ADD(*fr);
     return NOERROR;
 }
 

@@ -98,7 +98,7 @@ ECode CSlidingDrawer::GetHandle(
 {
     AutoPtr<IView> temp = SlidingDrawer::GetHandle();
     *handle = temp;
-    INTERFACE_ADDREF(*handle);
+    REFCOUNT_ADD(*handle);
     return NOERROR;
 }
 
@@ -107,7 +107,7 @@ ECode CSlidingDrawer::GetContent(
 {
     AutoPtr<IView> temp = SlidingDrawer::GetContent();
     *content = temp;
-    INTERFACE_ADDREF(*content);
+    REFCOUNT_ADD(*content);
     return NOERROR;
 }
 

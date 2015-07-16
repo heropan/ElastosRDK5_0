@@ -62,7 +62,7 @@ ECode CRelativeLayoutLayoutParams::AddRule(
      AutoPtr<ArrayOf<Int32> > r = RelativeLayoutLayoutParams::GetRules();
      if (r != NULL) {
          *rules = r;
-         INTERFACE_ADDREF(*rules);
+         REFCOUNT_ADD(*rules);
      }
      return NOERROR;
  }
@@ -75,7 +75,7 @@ ECode CRelativeLayoutLayoutParams::GetRules(
     AutoPtr<ArrayOf<Int32> > r = RelativeLayoutLayoutParams::GetRules(layoutDirection);
     if (r != NULL) {
         *rules = r;
-        INTERFACE_ADDREF(*rules);
+        REFCOUNT_ADD(*rules);
     }
     return NOERROR;
 }

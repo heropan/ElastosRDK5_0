@@ -107,7 +107,7 @@ ECode CPppoeService::GetDeviceNameList(
 {
     VALIDATE_NOT_NULL(list);
     *list = (ScanPppoeDevice() > 0) ? DevName : NULL;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -235,7 +235,7 @@ ECode CPppoeService::GetSavedPppoeConfig(
         localInfo->SetNetMask(netMask);
         localInfo->SetRouteAddr(routeAddr);
         *info = localInfo;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
     }
     else {
         *info = NULL;

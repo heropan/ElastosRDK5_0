@@ -249,7 +249,7 @@ ECode ActivityRecord::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -394,7 +394,7 @@ ECode ActivityRecord::ForToken(
     if (at != NULL) {
         AutoPtr<ActivityRecord> ar = ((CActivityRecordToken*)at)->GetActivityRecord();
         *activityRecord = ar;
-        INTERFACE_ADDREF(*activityRecord);
+        REFCOUNT_ADD(*activityRecord);
     }
     return NOERROR;
     // } catch (ClassCastException e) {

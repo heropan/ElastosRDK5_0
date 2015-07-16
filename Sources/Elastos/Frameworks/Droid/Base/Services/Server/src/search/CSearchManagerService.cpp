@@ -229,7 +229,7 @@ ECode CSearchManagerService::GetSearchables(
         (*rst)->BuildSearchableList();
         mSearchables[userId] = (*rst);
     }
-    INTERFACE_ADDREF(*rst);
+    REFCOUNT_ADD(*rst);
 
     return NOERROR;
 }

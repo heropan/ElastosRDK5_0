@@ -541,7 +541,7 @@ ECode CAm::MakeIntent(
     }
 
     *returnedIntent = intent;
-    INTERFACE_ADDREF(*returnedIntent);
+    REFCOUNT_ADD(*returnedIntent);
     return NOERROR;
 }
 

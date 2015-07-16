@@ -42,7 +42,7 @@ ECode CursorFilter::PerformFiltering(
     }
 
     *filterResults = results;
-    INTERFACE_ADDREF(*filterResults);
+    REFCOUNT_ADD(*filterResults);
 
     return NOERROR;
 }

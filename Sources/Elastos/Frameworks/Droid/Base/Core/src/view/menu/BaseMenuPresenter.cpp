@@ -56,7 +56,7 @@ ECode BaseMenuPresenter::GetMenuView(
     }
 
     *view = mMenuView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

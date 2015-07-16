@@ -116,7 +116,7 @@ ECode IconMenuItemView::GetIcon(
     /* [out] */ IDrawable** icon)
 {
     *icon = mIcon;
-    INTERFACE_ADDREF(*icon);
+    REFCOUNT_ADD(*icon);
     return NOERROR;
 }
 

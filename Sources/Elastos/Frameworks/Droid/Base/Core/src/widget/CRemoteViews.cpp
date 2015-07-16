@@ -54,7 +54,7 @@ ECode CRemoteViews::Clone(
     AutoPtr<IRemoteViews> remote;
     remote = RemoteViews::Clone();
     *views = remote;
-    INTERFACE_ADDREF(*views);
+    REFCOUNT_ADD(*views);
     return NOERROR;
 }
 
@@ -415,7 +415,7 @@ ECode CRemoteViews::Apply(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = RemoteViews::Apply(context, parent);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -429,7 +429,7 @@ ECode CRemoteViews::Apply(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = RemoteViews::Apply(context, parent, handler);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

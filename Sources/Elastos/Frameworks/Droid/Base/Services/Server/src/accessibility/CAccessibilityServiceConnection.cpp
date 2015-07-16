@@ -231,7 +231,7 @@ ECode CAccessibilityServiceConnection::GetServiceInfo(
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
     Mutex::Autolock lock(service->mLock);
     *serviceInfo = mAccessibilityServiceInfo;
-    INTERFACE_ADDREF(*serviceInfo);
+    REFCOUNT_ADD(*serviceInfo);
     return NOERROR;
 }
 

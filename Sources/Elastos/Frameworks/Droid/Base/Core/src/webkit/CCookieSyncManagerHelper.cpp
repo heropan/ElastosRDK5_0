@@ -14,7 +14,7 @@ ECode CCookieSyncManagerHelper::GetInstance(
     VALIDATE_NOT_NULL(instance);
     CheckInstanceIsCreated();
     *instance = sRef;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 
@@ -30,7 +30,7 @@ ECode CCookieSyncManagerHelper::CreateInstance(
         sRef = new CookieSyncManager(context);
     }
     *instance = sRef;
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
 
     return NOERROR;
 }

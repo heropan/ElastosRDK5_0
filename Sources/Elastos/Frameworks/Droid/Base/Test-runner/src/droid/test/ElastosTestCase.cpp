@@ -70,7 +70,7 @@ ECode ElastosTestCase::GetContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode ElastosTestCase::GetTestContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mTestContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 

@@ -225,7 +225,7 @@ ECode CActivityOne::ImageAdapter::GetView(
     i->SetLayoutParams(lp.Get());
 
     *view = i;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     return NOERROR;
 }

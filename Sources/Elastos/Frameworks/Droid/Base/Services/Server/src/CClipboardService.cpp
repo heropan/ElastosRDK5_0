@@ -148,7 +148,7 @@ ECode CClipboardService::GetPrimaryClip(
     Mutex::Autolock Lock(_m_syncLock);
     FAIL_RETURN(AddActiveOwnerLocked(Binder::GetCallingUid(), pkg));
     *clip = GetClipboard()->mPrimaryClip;
-    INTERFACE_ADDREF(*clip)
+    REFCOUNT_ADD(*clip)
 
     return NOERROR;
 }
@@ -165,7 +165,7 @@ ECode CClipboardService::GetPrimaryClipDescription(
         AutoPtr<IClipDescription> des;
         FAIL_RETURN(clipboard->mPrimaryClip->GetDescription((IClipDescription**)&des));
         *description = des;
-        INTERFACE_ADDREF(*description)
+        REFCOUNT_ADD(*description)
     }
 
     return NOERROR;

@@ -63,7 +63,7 @@ ECode CMagnificationController::MagnificationSpecTypeEvaluator::Evaluate(
         * fraction);
 
     *result =  temp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -148,7 +148,7 @@ ECode CMagnificationController::GetMagnifiedRegionBounds(
 
     mTempRect->Scale(1.0f / scale);
     *rect = mTempRect;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
     return NOERROR;
 }
 
@@ -263,7 +263,7 @@ ECode CMagnificationController::GetAccessibilityTransformation(
 {
     VALIDATE_NOT_NULL(spec);
     *spec = mSentMagnificationSpec;
-    INTERFACE_ADDREF(*spec);
+    REFCOUNT_ADD(*spec);
     return NOERROR;
 }
 

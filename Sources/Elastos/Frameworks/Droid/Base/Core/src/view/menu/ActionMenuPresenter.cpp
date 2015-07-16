@@ -134,7 +134,7 @@ ECode ActionMenuPresenter::OverflowMenuButton::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -202,7 +202,7 @@ ECode ActionMenuPresenter::OverflowMenuButton::GetDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> dTemp = _OverflowMenuButton::GetDrawable();
     *drawable = dTemp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -263,7 +263,7 @@ ECode ActionMenuPresenter::OverflowMenuButton::GetImageMatrix(
     VALIDATE_NOT_NULL(matrix);
     AutoPtr<IMatrix> mTemp = _OverflowMenuButton::GetImageMatrix();
     *matrix = mTemp;
-    INTERFACE_ADDREF(*matrix);
+    REFCOUNT_ADD(*matrix);
     return NOERROR;
 }
 
@@ -331,7 +331,7 @@ ECode ActionMenuPresenter::OverflowMenuButton::GetColorFilter(
     VALIDATE_NOT_NULL(filter);
     AutoPtr<IColorFilter> fTemp = _OverflowMenuButton::GetColorFilter();
     *filter = fTemp;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -378,7 +378,7 @@ ECode ActionMenuPresenter::OverflowPopup::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -642,7 +642,7 @@ ECode ActionMenuPresenter::ActionButtonSubmenu::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -1082,7 +1082,7 @@ ECode ActionMenuPresenter::GetItemView(
     }
 
     *view = actionView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     return NOERROR;
 }
@@ -1497,7 +1497,7 @@ ECode ActionMenuPresenter::OnSaveInstanceState(
     CActionMenuPresenterSavedState::New((IActionMenuPresenterSavedState**)&state);
     state->SetOpenSubMenuId(mOpenSubMenuId);
     *parcel = IParcelable::Probe(state);
-    INTERFACE_ADDREF(*parcel);
+    REFCOUNT_ADD(*parcel);
     return NOERROR;
 }
 

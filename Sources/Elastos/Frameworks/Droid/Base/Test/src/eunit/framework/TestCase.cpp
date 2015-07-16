@@ -126,7 +126,7 @@ ECode TestCase::Run(
     AutoPtr<ITestResult> r = CreateResult();
     Run(result);
     *result = r;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

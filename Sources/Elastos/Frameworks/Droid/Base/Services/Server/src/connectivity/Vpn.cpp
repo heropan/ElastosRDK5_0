@@ -804,7 +804,7 @@ NEXT:
     // TODO: ensure that contract class eventually marks as connected
     UpdateState(NetworkInfoDetailedState_AUTHENTICATING, String("establish"));
     *fd = tun;
-    INTERFACE_ADDREF(*fd);
+    REFCOUNT_ADD(*fd);
     return NOERROR;
 }
 
@@ -1482,7 +1482,7 @@ ECode Vpn::GetLegacyVpnConfig(
 
     if (mLegacyVpnRunner != NULL) {
         *mConfig = mLegacyVpnRunner->mConfig;
-        INTERFACE_ADDREF(*mConfig);
+        REFCOUNT_ADD(*mConfig);
     }
 
     return NOERROR;

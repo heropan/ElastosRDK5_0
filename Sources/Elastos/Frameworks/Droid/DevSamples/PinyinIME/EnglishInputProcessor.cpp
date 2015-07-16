@@ -1,6 +1,6 @@
 
 #include "EnglishInputProcessor.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;

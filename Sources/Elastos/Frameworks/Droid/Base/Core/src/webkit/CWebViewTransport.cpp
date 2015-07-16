@@ -20,7 +20,7 @@ ECode CWebViewTransport::GetWebView(
     assert(0);
 //    AutoPtr<IWebView> _webView = WebView::WebViewTransport::GetWebView();
 //    *webview = _webView.Get();
-//    INTERFACE_ADDREF(*webview);
+//    REFCOUNT_ADD(*webview);
 
     return NOERROR;
 }

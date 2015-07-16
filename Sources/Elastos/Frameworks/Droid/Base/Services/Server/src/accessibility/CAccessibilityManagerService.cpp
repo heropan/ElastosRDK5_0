@@ -989,7 +989,7 @@ ECode CAccessibilityManagerService::GetInstalledAccessibilityServiceList(
     }
 
     *result = services;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1027,7 +1027,7 @@ ECode CAccessibilityManagerService::GetEnabledAccessibilityServiceList(
     }
 
     *_services = result;
-    INTERFACE_ADDREF(*_services);
+    REFCOUNT_ADD(*_services);
     return NOERROR;
 }
 

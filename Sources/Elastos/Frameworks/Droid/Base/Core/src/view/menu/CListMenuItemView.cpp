@@ -57,7 +57,7 @@ ECode CListMenuItemView::GetItemData(
 
     AutoPtr<IMenuItemImpl> item = ListMenuItemView::GetItemData();
     *itemData = item.Get();
-    INTERFACE_ADDREF(*itemData);
+    REFCOUNT_ADD(*itemData);
     return NOERROR;
 }
 
@@ -214,7 +214,7 @@ ECode CListMenuItemView::GetDividerDrawable(
     assert(divider != NULL);
     AutoPtr<IDrawable> temp = ListMenuItemView::GetDividerDrawable();
     *divider = temp;
-    INTERFACE_ADDREF(*divider);
+    REFCOUNT_ADD(*divider);
 
     return NOERROR;
 }

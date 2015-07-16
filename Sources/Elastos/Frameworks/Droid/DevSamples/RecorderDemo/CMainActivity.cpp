@@ -1,7 +1,7 @@
 #include "CMainActivity.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::IO::CFile;
 using Elastos::Core::CStringWrapper;

@@ -137,7 +137,7 @@ ECode CNumberPicker::GetDisplayedValues(
     AutoPtr< ArrayOf<String> > array = NumberPicker::GetDisplayedValues();
     if (array != NULL) {
         *displayedValues = array->Clone();
-        INTERFACE_ADDREF(*displayedValues);
+        REFCOUNT_ADD(*displayedValues);
     }
     return NOERROR;
 }

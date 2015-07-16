@@ -99,7 +99,7 @@ ECode CSentenceSuggestionsInfo::GetSuggestionsInfoAt(
 
     if (i >= 0 && i < mSuggestionsInfos->GetLength()) {
         *info = mSuggestionsInfos[i];
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 

@@ -67,7 +67,7 @@ ECode CLockPatternViewSavedState::GetSuperState(
 {
     VALIDATE_NOT_NULL(superState);
     *superState = LockPatternViewSavedState::GetSuperState();
-    INTERFACE_ADDREF(*superState);
+    REFCOUNT_ADD(*superState);
     return NOERROR;
 }
 

@@ -156,7 +156,7 @@ ECode WebHistoryItemClassic::GetFavicon(
         mFavicon = NativeGetFavicon(mNativeBridge);
     }
     *bitmap = mFavicon;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 

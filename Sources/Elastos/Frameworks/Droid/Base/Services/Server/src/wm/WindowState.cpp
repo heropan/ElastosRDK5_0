@@ -514,7 +514,7 @@ ECode WindowState::GetFrameLw(
 {
     VALIDATE_NOT_NULL(frame);
     *frame = mFrame;
-    INTERFACE_ADDREF(*frame);
+    REFCOUNT_ADD(*frame);
     return NOERROR;
 }
 
@@ -523,7 +523,7 @@ ECode WindowState::GetShownFrameLw(
 {
     VALIDATE_NOT_NULL(shownFrame);
     *shownFrame = mShownFrame;
-    INTERFACE_ADDREF(*shownFrame);
+    REFCOUNT_ADD(*shownFrame);
     return NOERROR;
 }
 
@@ -532,7 +532,7 @@ ECode WindowState::GetDisplayFrameLw(
 {
     VALIDATE_NOT_NULL(displayFrame);
     *displayFrame = mDisplayFrame;
-    INTERFACE_ADDREF(*displayFrame);
+    REFCOUNT_ADD(*displayFrame);
     return NOERROR;
 }
 
@@ -541,7 +541,7 @@ ECode WindowState::GetContentFrameLw(
 {
     VALIDATE_NOT_NULL(contentFrame);
     *contentFrame = mContentFrame;
-    INTERFACE_ADDREF(*contentFrame);
+    REFCOUNT_ADD(*contentFrame);
     return NOERROR;
 }
 
@@ -550,7 +550,7 @@ ECode WindowState::GetVisibleFrameLw(
 {
     VALIDATE_NOT_NULL(visibleFrame);
     *visibleFrame = mVisibleFrame;
-    INTERFACE_ADDREF(*visibleFrame);
+    REFCOUNT_ADD(*visibleFrame);
     return NOERROR;
 }
 
@@ -567,7 +567,7 @@ ECode WindowState::GetGivenContentInsetsLw(
 {
     VALIDATE_NOT_NULL(insetsRect);
     *insetsRect = mGivenContentInsets;
-    INTERFACE_ADDREF(*insetsRect);
+    REFCOUNT_ADD(*insetsRect);
     return NOERROR;
 }
 
@@ -576,7 +576,7 @@ ECode WindowState::GetGivenVisibleInsetsLw(
 {
     VALIDATE_NOT_NULL(visibleArea);
     *visibleArea = mGivenVisibleInsets;
-    INTERFACE_ADDREF(*visibleArea);
+    REFCOUNT_ADD(*visibleArea);
     return NOERROR;
 }
 
@@ -585,7 +585,7 @@ ECode WindowState::GetAttrs(
 {
     VALIDATE_NOT_NULL(attrs);
     *attrs = mAttrs;
-    INTERFACE_ADDREF(*attrs);
+    REFCOUNT_ADD(*attrs);
     return NOERROR;
 }
 
@@ -653,7 +653,7 @@ ECode WindowState::GetAppToken(
 {
     VALIDATE_NOT_NULL(token);
     *token = mAppToken != NULL ? mAppToken->mAppToken : NULL;
-    INTERFACE_ADDREF(*token);
+    REFCOUNT_ADD(*token);
     return NOERROR;
 }
 

@@ -33,7 +33,7 @@ ECode CProgressBarSavedState::GetSuperState(
     AutoPtr<IParcelable> temp;
     temp = ProgressBarSavedState::GetSuperState();
     *superState = temp;
-    INTERFACE_ADDREF(*superState);
+    REFCOUNT_ADD(*superState);
     return NOERROR;
 
 }

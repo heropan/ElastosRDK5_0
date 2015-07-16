@@ -131,7 +131,7 @@ ECode CDreamManagerService::GetDreamComponents(
     const Int64 ident = Binder::ClearCallingIdentity();
 //     try {
         *result = GetDreamComponentsForUser(userId);
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
 //     } finally {
         Binder::RestoreCallingIdentity(ident);
 //     }

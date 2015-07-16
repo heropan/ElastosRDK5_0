@@ -1,6 +1,6 @@
 
 #include "CTestCaseOne.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 #include <cutils/log.h>
 

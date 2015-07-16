@@ -729,7 +729,7 @@ ECode CBluetoothManagerService::RegisterAdapter(
     {
         Mutex::Autolock lock(mConnectionLock);
         *result = mBluetooth;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
     }
     return NOERROR;
 }

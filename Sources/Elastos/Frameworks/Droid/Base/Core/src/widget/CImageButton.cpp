@@ -149,7 +149,7 @@ ECode CImageButton::GetImageMatrix(
     VALIDATE_NOT_NULL(matrix);
     AutoPtr<IMatrix> temp = ImageButton::GetImageMatrix();
     *matrix = temp;
-    INTERFACE_ADDREF(*matrix);
+    REFCOUNT_ADD(*matrix);
     return NOERROR;
 }
 

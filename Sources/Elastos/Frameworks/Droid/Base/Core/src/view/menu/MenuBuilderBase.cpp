@@ -367,7 +367,7 @@ ECode MenuBuilderBase::GetCallback(
 {
     assert(callback != NULL);
     *callback = mCallback;
-    INTERFACE_ADDREF(*callback);
+    REFCOUNT_ADD(*callback);
     return NOERROR;
 }
 

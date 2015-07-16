@@ -48,7 +48,7 @@ ECode CSimpleCursorAdapter::GetFilter(
     VALIDATE_NOT_NULL(filter)
     AutoPtr<IFilter> f = SimpleCursorAdapter::GetFilter();
     *filter = f;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -59,7 +59,7 @@ ECode CSimpleCursorAdapter::ConvertToString(
     VALIDATE_NOT_NULL(result)
     AutoPtr<ICharSequence> seq = SimpleCursorAdapter::ConvertToString(cursor);
     *result = seq;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -70,7 +70,7 @@ ECode CSimpleCursorAdapter::RunQueryOnBackgroundThread(
     VALIDATE_NOT_NULL(cursor)
     AutoPtr<ICursor> c = SimpleCursorAdapter::RunQueryOnBackgroundThread(constraint);
     *cursor = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -80,7 +80,7 @@ ECode CSimpleCursorAdapter::GetCursor(
     VALIDATE_NOT_NULL(cursor)
     AutoPtr<ICursor> c = SimpleCursorAdapter::GetCursor();
     *cursor = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 

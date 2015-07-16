@@ -96,7 +96,7 @@ ECode CAutoCompleteTextView::GetCompletionHint(
     AutoPtr<ICharSequence> temp;
     temp = AutoCompleteTextView::GetCompletionHint();
     *hint = temp;
-    INTERFACE_ADDREF(*hint);
+    REFCOUNT_ADD(*hint);
     return NOERROR;
 }
 
@@ -144,7 +144,7 @@ ECode CAutoCompleteTextView::GetDropDownBackground(
 {
     AutoPtr<IDrawable> temp = AutoCompleteTextView::GetDropDownBackground();
     (*drawable) = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode CAutoCompleteTextView::GetOnItemClickListener(
 {
     AutoPtr<IAdapterViewOnItemClickListener> temp;
     *l = temp;
-    INTERFACE_ADDREF(*l)
+    REFCOUNT_ADD(*l)
     return NOERROR;
 }
 
@@ -265,7 +265,7 @@ ECode CAutoCompleteTextView::GetOnItemSelectedListener(
     AutoPtr<IAdapterViewOnItemSelectedListener> temp;
     temp = AutoCompleteTextView::GetOnItemSelectedListener();
     (*l) = temp;
-    INTERFACE_ADDREF(*l)
+    REFCOUNT_ADD(*l)
     return NOERROR;
 }
 
@@ -275,7 +275,7 @@ ECode CAutoCompleteTextView::GetItemClickListener(
     AutoPtr<IAdapterViewOnItemClickListener> temp;
     temp = AutoCompleteTextView::GetOnItemClickListener();
     *l = temp;
-    INTERFACE_ADDREF(*l)
+    REFCOUNT_ADD(*l)
     return NOERROR;
 }
 
@@ -285,7 +285,7 @@ ECode CAutoCompleteTextView::GetItemSelectedListener(
     AutoPtr<IAdapterViewOnItemSelectedListener> temp;
     temp = AutoCompleteTextView::GetOnItemSelectedListener();
     (*l) = temp;
-    INTERFACE_ADDREF(*l)
+    REFCOUNT_ADD(*l)
     return NOERROR;
 }
 
@@ -301,7 +301,7 @@ ECode CAutoCompleteTextView::GetAdapter(
     AutoPtr<IListAdapter> temp;
     temp = AutoCompleteTextView::GetAdapter();
     *adapter = temp;
-    INTERFACE_ADDREF(*adapter);
+    REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
 
@@ -402,7 +402,7 @@ ECode CAutoCompleteTextView::GetValidator(
     VALIDATE_NOT_NULL(validator);
     AutoPtr<IValidator> temp = AutoCompleteTextView::GetValidator();
     *validator = temp;
-    INTERFACE_ADDREF(*validator);
+    REFCOUNT_ADD(*validator);
     return NOERROR;
 }
 

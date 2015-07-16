@@ -33,7 +33,7 @@ ECode CNetworkStatsSession::GetSummaryForNetwork(
     VALIDATE_NOT_NULL(result)
     AutoPtr<INetworkStats> stats = mHost->InternalGetSummaryForNetwork(templ, start, end);
     *result = stats;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -45,7 +45,7 @@ ECode CNetworkStatsSession::GetHistoryForNetwork(
     VALIDATE_NOT_NULL(result)
     AutoPtr<INetworkStatsHistory> history = mHost->InternalGetHistoryForNetwork(templ, fields);
     *result = history;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -63,7 +63,7 @@ ECode CNetworkStatsSession::GetSummaryForAllUid(
         stats->CombineAllValues(tagStats);
     }
     *result = stats;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -84,7 +84,7 @@ ECode CNetworkStatsSession::GetHistoryForUid(
         history = GetUidTagComplete()->GetHistory(templ, uid, set, tag, fields);
     }
     *result = history;
-    INTERFACE_ADDREF(*result)
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

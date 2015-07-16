@@ -347,7 +347,7 @@ ECode IconMenuPresenter::OnSaveInstanceState(
     }
 
     *parcel = IParcelable::Probe(state);
-    INTERFACE_ADDREF(*parcel);
+    REFCOUNT_ADD(*parcel);
 
     return NOERROR;
 }

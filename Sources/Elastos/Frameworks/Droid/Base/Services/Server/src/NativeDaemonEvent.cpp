@@ -163,7 +163,7 @@ ECode NativeDaemonEvent::ParseRawEvent(
     String message = rawEvent.Substring(skiplength);
 
     *event = new NativeDaemonEvent(cmdNumber, code, message, rawEvent);
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 

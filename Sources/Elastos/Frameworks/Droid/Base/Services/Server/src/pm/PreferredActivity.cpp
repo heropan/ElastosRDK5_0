@@ -133,7 +133,7 @@ ECode PreferredActivity::GetActions(
 
     AutoPtr< ArrayOf<String> > acts = IntentFilter::GetActions();
     *actions = acts;
-    INTERFACE_ADDREF(*actions);
+    REFCOUNT_ADD(*actions);
     return NOERROR;
 }
 
@@ -179,7 +179,7 @@ ECode PreferredActivity::GetTypes(
 
     AutoPtr< ArrayOf<String> > typs = IntentFilter::GetTypes();
     *types = typs;
-    INTERFACE_ADDREF(*types);
+    REFCOUNT_ADD(*types);
     return NOERROR;
 }
 
@@ -225,7 +225,7 @@ ECode PreferredActivity::GetSchemes(
 
     AutoPtr< ArrayOf<String> > schs = IntentFilter::GetSchemes();
     *schemes = schs;
-    INTERFACE_ADDREF(*schemes);
+    REFCOUNT_ADD(*schemes);
     return NOERROR;
 }
 
@@ -253,7 +253,7 @@ ECode PreferredActivity::GetDataAuthority(
 
     AutoPtr<IIntentFilterAuthorityEntry> tmp = IntentFilter::GetDataAuthority(index);
     *authority = tmp.Get();
-    INTERFACE_ADDREF(*authority);
+    REFCOUNT_ADD(*authority);
     return NOERROR;
 }
 
@@ -274,7 +274,7 @@ ECode PreferredActivity::GetAuthorities(
 
     AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > auths = IntentFilter::GetAuthorities();
     *authorities = auths;
-    INTERFACE_ADDREF(*authorities);
+    REFCOUNT_ADD(*authorities);
     return NOERROR;
 }
 
@@ -302,7 +302,7 @@ ECode PreferredActivity::GetDataPath(
 
     AutoPtr<IPatternMatcher> tmp = IntentFilter::GetDataPath(index);
     *path = tmp;
-    INTERFACE_ADDREF(*path);
+    REFCOUNT_ADD(*path);
     return NOERROR;
 }
 
@@ -323,7 +323,7 @@ ECode PreferredActivity::GetPaths(
 
     AutoPtr< ArrayOf<IPatternMatcher*> > pas = IntentFilter::GetPaths();
     *paths = pas;
-    INTERFACE_ADDREF(*paths);
+    REFCOUNT_ADD(*paths);
     return NOERROR;
 }
 
@@ -391,7 +391,7 @@ ECode PreferredActivity::GetCategories(
 
     AutoPtr< ArrayOf<String> > cats = IntentFilter::GetCategories();
     *categories = cats;
-    INTERFACE_ADDREF(*categories);
+    REFCOUNT_ADD(*categories);
     return NOERROR;
 }
 

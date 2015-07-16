@@ -4087,13 +4087,13 @@ ECode CPackageManagerService::GetPackageInfo(
     if (p != NULL) {
         AutoPtr<IPackageInfo> pi = GeneratePackageInfo(p, flags, userId);
         *pkgInfo = pi;
-        INTERFACE_ADDREF(*pkgInfo);
+        REFCOUNT_ADD(*pkgInfo);
         return NOERROR;
     }
     if((flags & IPackageManager::GET_UNINSTALLED_PACKAGES) != 0) {
         AutoPtr<IPackageInfo> pi = GeneratePackageInfoFromSettingsLPw(packageName, flags, userId);
         *pkgInfo = pi;
-        INTERFACE_ADDREF(*pkgInfo);
+        REFCOUNT_ADD(*pkgInfo);
         return NOERROR;
     }
 
@@ -4121,7 +4121,7 @@ ECode CPackageManagerService::CurrentToCanonicalPackageNames(
         }
     }
     *result = out;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -4146,7 +4146,7 @@ ECode CPackageManagerService::CanonicalToCurrentPackageNames(
         }
     }
     *result = out;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -4230,13 +4230,13 @@ ECode CPackageManagerService::GetPackageGids(
             }
 
             *gids = _gids;
-            INTERFACE_ADDREF(*gids);
+            REFCOUNT_ADD(*gids);
             return NOERROR;
         }
     }
     // stupid thing to indicate an error.
     *gids = ArrayOf<Int32>::Alloc(0);
-    INTERFACE_ADDREF(*gids);
+    REFCOUNT_ADD(*gids);
     return NOERROR;
 }
 
@@ -4277,7 +4277,7 @@ ECode CPackageManagerService::GetPermissionInfo(
     if (p != NULL) {
         AutoPtr<IPermissionInfo> pi = GeneratePermissionInfo(p, flags);
         *info = pi;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
     *info = NULL;
@@ -4318,11 +4318,11 @@ ECode CPackageManagerService::QueryPermissionsByGroup(
     Int32 count;
     if (out->GetObjectCount(&count), count > 0) {
         *infos = out;
-        INTERFACE_ADDREF(*infos);
+        REFCOUNT_ADD(*infos);
         return NOERROR;
     }
     *infos = mPermissionGroups.Find(group) != mPermissionGroups.End() ? out : NULL;
-    INTERFACE_ADDREF(*infos);
+    REFCOUNT_ADD(*infos);
     return NOERROR;
 }
 
@@ -4350,7 +4350,7 @@ ECode CPackageManagerService::GetPermissionGroupInfo(
     AutoPtr<IPermissionGroupInfo> pgi =
             PackageParser::GeneratePermissionGroupInfo(pg, flags);
     *info = pgi;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -4373,7 +4373,7 @@ ECode CPackageManagerService::GetAllPermissionGroups(
         out->Add(pgi);
     }
     *infos = out.Get();
-    INTERFACE_ADDREF(*infos);
+    REFCOUNT_ADD(*infos);
     return NOERROR;
 }
 
@@ -4483,19 +4483,19 @@ ECode CPackageManagerService::GetApplicationInfo(
         AutoPtr<IApplicationInfo> info = PackageParser::GenerateApplicationInfo(
                 p, flags, ps->ReadUserState(userId), userId);
         *appInfo = info;
-        INTERFACE_ADDREF(*appInfo);
+        REFCOUNT_ADD(*appInfo);
         return NOERROR;
     }
 
     if (packageName.Equals("android") || packageName.Equals("system")) {
         *appInfo = mElastosApplication;
-        INTERFACE_ADDREF(*appInfo);
+        REFCOUNT_ADD(*appInfo);
         return NOERROR;
     }
     if((flags & IPackageManager::GET_UNINSTALLED_PACKAGES) != 0) {
         AutoPtr<IApplicationInfo> info = GenerateApplicationInfoFromSettingsLPw(packageName, flags, userId);
         *appInfo = info;
-        INTERFACE_ADDREF(*appInfo);
+        REFCOUNT_ADD(*appInfo);
         return NOERROR;
     }
 
@@ -4565,13 +4565,13 @@ ECode CPackageManagerService::GetActivityInfo(
         AutoPtr<IActivityInfo> ai = PackageParser::GenerateActivityInfo(a, flags,
                 ps->ReadUserState(userId), userId);
         *info = ai;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
     Boolean isEqual = FALSE;
     if (mResolveComponentName->Equals(component, &isEqual), isEqual) {
         *info = mResolveActivity;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 
@@ -4617,7 +4617,7 @@ ECode CPackageManagerService::GetReceiverInfo(
         AutoPtr<IActivityInfo> ai = PackageParser::GenerateActivityInfo(a, flags,
                 ps->ReadUserState(userId), userId);
         *info = ai;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 
@@ -4664,7 +4664,7 @@ ECode CPackageManagerService::GetServiceInfo(
         AutoPtr<IServiceInfo> si = PackageParser::GenerateServiceInfo(s, flags,
                 ps->ReadUserState(userId), userId);
         *info = si;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 
@@ -4710,7 +4710,7 @@ ECode CPackageManagerService::GetProviderInfo(
         AutoPtr<IProviderInfo> pi = PackageParser::GenerateProviderInfo(p, flags,
                 ps->ReadUserState(userId), userId);
         *info = pi;
-        INTERFACE_ADDREF(*info);
+        REFCOUNT_ADD(*info);
         return NOERROR;
     }
 
@@ -4733,7 +4733,7 @@ ECode CPackageManagerService::GetSystemSharedLibraryNames(
             (*libs)[i] = it->mFirst;
         }
         *names = libs;
-        INTERFACE_ADDREF(*names);
+        REFCOUNT_ADD(*names);
         return NOERROR;
     }
     *names = NULL;
@@ -4764,7 +4764,7 @@ ECode CPackageManagerService::GetSystemAvailableFeatures(
         fi->SetReqGlEsVersion(value);
         feats->Set(size, fi);
         *infos = feats;
-        INTERFACE_ADDREF(*infos);
+        REFCOUNT_ADD(*infos);
         return NOERROR;
     }
     *infos = NULL;
@@ -4945,7 +4945,7 @@ ECode CPackageManagerService::CheckPermissionTreeLP(
         if (bp != NULL) {
              if (bp->mUid == UserHandle::GetAppId(Binder::GetCallingUid())) {
                 *permission = bp;
-                INTERFACE_ADDREF(*permission);
+                REFCOUNT_ADD(*permission);
                 return NOERROR;
             }
             // throw new SecurityException("Calling uid "
@@ -5413,7 +5413,7 @@ ECode CPackageManagerService::GetPackagesForUid(
             (*res)[i] = (*it)->mName;
         }
         *packages = res;
-        INTERFACE_ADDREF(*packages);
+        REFCOUNT_ADD(*packages);
         return NOERROR;
     }
     else if (obj && obj->Probe(EIID_PackageSetting) != NULL) {
@@ -5421,7 +5421,7 @@ ECode CPackageManagerService::GetPackagesForUid(
         AutoPtr< ArrayOf<String> > res = ArrayOf<String>::Alloc(1);
         (*res)[0] = ps->mName;
         *packages = res;
-        INTERFACE_ADDREF(*packages);
+        REFCOUNT_ADD(*packages);
         return NOERROR;
     }
     *packages = NULL;
@@ -5540,7 +5540,7 @@ ECode CPackageManagerService::ChooseBestActivity(
                     || (r0->GetPreferredOrder(&r0Value), r1->GetPreferredOrder(&r1Value), r0Value != r1Value)
                     || (r0->GetIsDefault(&r0Result), r1->GetIsDefault(&r1Result), r0Result != r1Result)) {
                 *resolveInfo = r0;
-                INTERFACE_ADDREF(*resolveInfo);
+                REFCOUNT_ADD(*resolveInfo);
                 return NOERROR;
             }
             // If we have saved a preference for a preferred activity for
@@ -5550,7 +5550,7 @@ ECode CPackageManagerService::ChooseBestActivity(
                     flags, query, r0Value, userId);
             if (ri != NULL) {
                 *resolveInfo = ri;
-                INTERFACE_ADDREF(*resolveInfo);
+                REFCOUNT_ADD(*resolveInfo);
                 return NOERROR;
             }
             if (userId != 0) {
@@ -5567,11 +5567,11 @@ ECode CPackageManagerService::ChooseBestActivity(
                 appinfo2->GetUid(&uid);
                 appinfo2->SetUid(UserHandle::GetUid(userId, UserHandle::GetAppId(uid)));
                 *resolveInfo = ri;
-                INTERFACE_ADDREF(*resolveInfo);
+                REFCOUNT_ADD(*resolveInfo);
                 return NOERROR;
             }
             *resolveInfo = mResolveInfo;
-            INTERFACE_ADDREF(*resolveInfo);
+            REFCOUNT_ADD(*resolveInfo);
             return NOERROR;
         }
     }
@@ -5747,7 +5747,7 @@ ECode CPackageManagerService::QueryIntentActivities(
             list->Add(ri);
         }
         *infos = list.Get();
-        INTERFACE_ADDREF(*infos);
+        REFCOUNT_ADD(*infos);
         return NOERROR;
     }
 
@@ -5765,7 +5765,7 @@ ECode CPackageManagerService::QueryIntentActivities(
         }
         items = NULL;
         *infos = list.Get();
-        INTERFACE_ADDREF(*infos);
+        REFCOUNT_ADD(*infos);
         return NOERROR;
     }
     AutoPtr<PackageParser::Package> pkg;
@@ -5782,11 +5782,11 @@ ECode CPackageManagerService::QueryIntentActivities(
         }
 
         *infos = list.Get();
-        INTERFACE_ADDREF(*infos);
+        REFCOUNT_ADD(*infos);
         return NOERROR;
     }
     *infos = list.Get();
-    INTERFACE_ADDREF(*infos);
+    REFCOUNT_ADD(*infos);
     return NOERROR;
 }
 
@@ -6027,7 +6027,7 @@ ECode CPackageManagerService::QueryIntentActivityOptions(
         container->Add(*riit);
     }
     *infos = container.Get();
-    INTERFACE_ADDREF(*infos);
+    REFCOUNT_ADD(*infos);
     return NOERROR;
 }
 
@@ -6512,7 +6512,7 @@ ECode CPackageManagerService::ResolveContentProvider(
             AutoPtr<IProviderInfo> pi = PackageParser::GenerateProviderInfo(
                     provider, flags, ps->ReadUserState(userId), userId);
             *info = pi;
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
             return NOERROR;
         }
     }
@@ -6636,7 +6636,7 @@ ECode CPackageManagerService::GetInstrumentationInfo(
     AutoPtr<IInstrumentationInfo> info =
             PackageParser::GenerateInstrumentationInfo(i, flags);
     *instInfo = info;
-    INTERFACE_ADDREF(*instInfo);
+    REFCOUNT_ADD(*instInfo);
     return NOERROR;
 }
 
@@ -9145,7 +9145,7 @@ ECode CPackageManagerService::NextPackageToClean(
     }
     if (pkgs.Begin() != pkgs.End()) {
         *nextPackage = *pkgs.Begin();
-        INTERFACE_ADDREF(*nextPackage);
+        REFCOUNT_ADD(*nextPackage);
         return NOERROR;
     }
 
@@ -12944,7 +12944,7 @@ ECode CPackageManagerService::GetVerifierDeviceIdentity(
     Mutex::Autolock lock(mPackagesLock);
     AutoPtr<IVerifierDeviceIdentity> id = mSettings->GetVerifierDeviceIdentityLPw();
     *identity = id;
-    INTERFACE_ADDREF(*identity);
+    REFCOUNT_ADD(*identity);
     return NOERROR;
 }
 

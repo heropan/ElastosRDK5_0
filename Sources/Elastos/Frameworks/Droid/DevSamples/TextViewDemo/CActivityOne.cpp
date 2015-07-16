@@ -4,7 +4,7 @@
 #include <R.h>
 #include <stdio.h>
 #include <utils/SystemClock.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <unistd.h>
 

@@ -41,7 +41,7 @@ ECode CShareActionProvider::OnCreateActionView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = ShareActionProvider::OnCreateActionView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -52,7 +52,7 @@ ECode CShareActionProvider::OnCreateActionView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = ShareActionProvider::OnCreateActionView(forItem);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

@@ -442,13 +442,13 @@ void CConfigUpdateInstallReceiver::StringToByteArray(
     /* [out] */ ArrayOf<Byte>** byteArray)
 {
     *byteArray = ArrayOf<Byte>::Alloc(content.GetLength());
-    INTERFACE_ADDREF(*byteArray);
+    REFCOUNT_ADD(*byteArray);
 
     for(Int32 i = 0; i < content.GetLength(); i++) {
         (*byteArray)[i] = (Byte) content[i];
     }
 
-    INTERFACE_ADDREF(*byteArray);
+    REFCOUNT_ADD(*byteArray);
 }
 
 //namespace Updates

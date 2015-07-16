@@ -257,7 +257,7 @@ ECode ListMenuPresenter::GetMenuView(
     }
 
     *view = IMenuView::Probe(mMenuView);
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 
     return NOERROR;
 }

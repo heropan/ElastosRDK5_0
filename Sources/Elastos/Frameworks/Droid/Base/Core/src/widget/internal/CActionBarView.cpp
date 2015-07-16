@@ -111,7 +111,7 @@ ECode CActionBarView::GetTitle(
     VALIDATE_NOT_NULL(title);
     AutoPtr<ICharSequence> temp = ActionBarView::GetTitle();
     *title = temp;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
     return NOERROR;
 }
 
@@ -133,7 +133,7 @@ ECode CActionBarView::GetSubtitle(
     VALIDATE_NOT_NULL(subTitle);
     AutoPtr<ICharSequence> temp = ActionBarView::GetSubtitle();
     *subTitle = temp;
-    INTERFACE_ADDREF(*subTitle);
+    REFCOUNT_ADD(*subTitle);
     return NOERROR;
 }
 
@@ -197,7 +197,7 @@ ECode CActionBarView::GetDropdownAdapter(
     VALIDATE_NOT_NULL(adapter);
     AutoPtr<ISpinnerAdapter> temp = ActionBarView::GetDropdownAdapter();
     *adapter = temp;
-    INTERFACE_ADDREF(*adapter);
+    REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
 

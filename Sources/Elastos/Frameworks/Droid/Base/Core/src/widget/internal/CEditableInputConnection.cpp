@@ -30,7 +30,7 @@ ECode CEditableInputConnection::GetTextBeforeCursor(
     VALIDATE_NOT_NULL(text);
     AutoPtr<ICharSequence> cs = EditableInputConnection::GetTextBeforeCursor(n, flags);
     *text = cs.Get();
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -43,7 +43,7 @@ ECode CEditableInputConnection::GetTextAfterCursor(
     VALIDATE_NOT_NULL(text);
     AutoPtr<ICharSequence> cs = EditableInputConnection::GetTextAfterCursor(n, flags);
     *text = cs.Get();
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -54,7 +54,7 @@ ECode CEditableInputConnection::GetSelectedText(
     VALIDATE_NOT_NULL(text);
     AutoPtr<ICharSequence> cs = EditableInputConnection::GetSelectedText(flags);
     *text = cs.Get();
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -74,7 +74,7 @@ ECode CEditableInputConnection::GetExtractedText(
     VALIDATE_NOT_NULL(extractedText);
     AutoPtr<IExtractedText> et = EditableInputConnection::GetExtractedText(request, flags);
     *extractedText = et.Get();
-    INTERFACE_ADDREF(*extractedText);
+    REFCOUNT_ADD(*extractedText);
     return NOERROR;
 }
 

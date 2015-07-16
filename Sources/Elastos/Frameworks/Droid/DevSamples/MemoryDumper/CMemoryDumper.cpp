@@ -1,7 +1,7 @@
 
 #include <unistd.h>
 #include "CMemoryDumper.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

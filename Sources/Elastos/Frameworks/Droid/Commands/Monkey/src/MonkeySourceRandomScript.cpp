@@ -93,7 +93,7 @@ CARAPI MonkeySourceRandomScript::GetNextEvent(
         }
 
         *event = nextEvent;
-        INTERFACE_ADDREF(*event);
+        REFCOUNT_ADD(*event);
         return NOERROR;
     }
 

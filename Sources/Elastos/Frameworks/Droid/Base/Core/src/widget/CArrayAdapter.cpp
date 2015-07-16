@@ -72,7 +72,7 @@ ECode CArrayAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> temp = ArrayAdapter::GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -102,7 +102,7 @@ ECode CArrayAdapter::GetView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = ArrayAdapter::GetView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -194,7 +194,7 @@ ECode CArrayAdapter::GetContext(
     VALIDATE_NOT_NULL(context);
     AutoPtr<IContext> temp = ArrayAdapter::GetContext();
     *context = temp;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -222,7 +222,7 @@ ECode CArrayAdapter::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = ArrayAdapter::GetDropDownView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -250,7 +250,7 @@ ECode CArrayAdapter::GetFilter(
     AutoPtr<IFilter> temp;
     temp = ArrayAdapter::GetFilter();
     *filter = temp;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 

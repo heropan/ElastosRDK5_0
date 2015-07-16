@@ -56,7 +56,7 @@ ECode CHeaderViewListAdapter::GetFilter(
     VALIDATE_NOT_NULL(filter);
     AutoPtr<IFilter> fTemp = HeaderViewListAdapter::GetFilter();
     *filter = fTemp;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -66,7 +66,7 @@ ECode CHeaderViewListAdapter::GetWrappedAdapter(
     VALIDATE_NOT_NULL(adapter);
     AutoPtr<IListAdapter> aTemp = HeaderViewListAdapter::GetWrappedAdapter();
     *adapter = aTemp;
-    INTERFACE_ADDREF(*adapter);
+    REFCOUNT_ADD(*adapter);
     return NOERROR;
 }
 

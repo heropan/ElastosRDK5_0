@@ -125,7 +125,7 @@ ECode Toast::GetView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mNextView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

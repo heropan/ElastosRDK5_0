@@ -601,12 +601,12 @@ ECode ImageView::OnCreateDrawableState(
     if (mState == NULL) {
         FAIL_RETURN(View::OnCreateDrawableState(extraSpace, (ArrayOf<Int32>**)&ds));
         *drawableState = ds;
-        INTERFACE_ADDREF(*drawableState);
+        REFCOUNT_ADD(*drawableState);
         return NOERROR;
     }
     else if (!mMergeState) {
         *drawableState = mState;
-        INTERFACE_ADDREF(*drawableState);
+        REFCOUNT_ADD(*drawableState);
         return NOERROR;
     }
     else {
@@ -614,7 +614,7 @@ ECode ImageView::OnCreateDrawableState(
                 (ArrayOf<Int32>**)&ds));
         MergeDrawableStates(ds, mState);
         *drawableState = ds;
-        INTERFACE_ADDREF(*drawableState);
+        REFCOUNT_ADD(*drawableState);
         return NOERROR;
     }
 }

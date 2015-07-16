@@ -65,7 +65,7 @@ ECode ListView::FixedViewInfo::GetView(
 {
     VALIDATE_NOT_NULL(view);
     *view = mView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -81,7 +81,7 @@ ECode ListView::FixedViewInfo::GetData(
 {
     VALIDATE_NOT_NULL(data);
     *data = mData;
-    INTERFACE_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

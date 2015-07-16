@@ -648,7 +648,7 @@ ECode ActionMenuView::GenerateDefaultLayoutParams(
         IViewGroupLayoutParams::WRAP_CONTENT, (IActionMenuViewLayoutParams**)&amvlp);
     amvlp->SetGravity(IGravity::CENTER_VERTICAL);
     *lp = amvlp.Get();
-    INTERFACE_ADDREF(*lp);
+    REFCOUNT_ADD(*lp);
     return NOERROR;
 }
 
@@ -662,7 +662,7 @@ ECode ActionMenuView::GenerateLayoutParams(
             IViewGroupLayoutParams::WRAP_CONTENT, (IActionMenuViewLayoutParams**)&lp));
 
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

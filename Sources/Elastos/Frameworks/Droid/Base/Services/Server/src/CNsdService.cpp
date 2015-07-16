@@ -138,7 +138,7 @@ ECode CNsdService::Create(
     CNsdService::NewByFriend(context, (CNsdService**)&service);
     service->mNativeDaemonConnected->Await();
     *nsdService = service.Get();
-    INTERFACE_ADDREF(*nsdService);
+    REFCOUNT_ADD(*nsdService);
     return NOERROR;
 }
 

@@ -544,7 +544,7 @@ int CTest::testExternalEntity(int argc, char* argv[])
                 AutoPtr<IInputSource> res;
                 CInputSource::New(sreader, (IInputSource**)&res);
                 *src = res;
-                INTERFACE_ADDREF(*src)
+                REFCOUNT_ADD(*src)
                 return NOERROR;
             }
             else if (publicId.Equals("publicB") && systemId.Equals("systemB")) {
@@ -565,7 +565,7 @@ int CTest::testExternalEntity(int argc, char* argv[])
                 CInputSource::New(bais, (IInputSource**)&inputSource);
                 inputSource->SetEncoding(String("utf-8"));
                 *src = inputSource;
-                INTERFACE_ADDREF(*src)
+                REFCOUNT_ADD(*src)
                 return NOERROR;
             }
 

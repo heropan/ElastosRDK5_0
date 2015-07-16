@@ -188,7 +188,7 @@ ECode CWebChromeClient::GetDefaultVideoPoster(
     VALIDATE_NOT_NULL(bitmap);
     AutoPtr<IBitmap> _bitmap = WebChromeClient::GetDefaultVideoPoster();
     *bitmap = _bitmap.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CWebChromeClient::GetVideoLoadingProgressView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> _view = WebChromeClient::GetVideoLoadingProgressView();
     *view = _view.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

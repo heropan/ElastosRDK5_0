@@ -50,7 +50,7 @@ ECode CTabHost::NewTabSpec(
     VALIDATE_NOT_NULL(tabspec);
     AutoPtr<ITabSpec> ts = TabHost::NewTabSpec(tag);
     *tabspec = ts;
-    INTERFACE_ADDREF(*tabspec);
+    REFCOUNT_ADD(*tabspec);
     return NOERROR;
 }
 
@@ -82,7 +82,7 @@ ECode CTabHost::GetTabWidget(
     VALIDATE_NOT_NULL(tabWidget);
     AutoPtr<ITabWidget> tw = TabHost::GetTabWidget();
     *tabWidget = tw.Get();
-    INTERFACE_ADDREF(*tabWidget);
+    REFCOUNT_ADD(*tabWidget);
     return NOERROR;
 }
 
@@ -108,7 +108,7 @@ ECode CTabHost::GetCurrentTabView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> tw = TabHost::GetCurrentTabView();
     *view = tw.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -118,7 +118,7 @@ ECode CTabHost::GetCurrentView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> tw = TabHost::GetCurrentView();
     *view = tw.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode CTabHost::GetTabContentView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IFrameLayout> tw = TabHost::GetTabContentView();
     *view = tw.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

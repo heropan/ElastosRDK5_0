@@ -2281,7 +2281,7 @@ ECode CInputMethodManagerService::GetInputContext(
 {
     VALIDATE_NOT_NULL(context);
     *context = mCurInputContext;
-    INTERFACE_ADDREF(*context);
+    REFCOUNT_ADD(*context);
     return NOERROR;
 }
 
@@ -2553,7 +2553,7 @@ ECode CInputMethodManagerService::StartInputLocked(
     // If no method is currently selected, do nothing.
     if (mCurMethodId.IsNull()) {
         *result = mNoBinding;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -2600,7 +2600,7 @@ ECode CInputMethodManagerService::StartInputUncheckedLocked(
     // If no method is currently selected, do nothing.
     if (mCurMethodId.IsNull()) {
         *result = mNoBinding;
-        INTERFACE_ADDREF(*result)
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
 
@@ -2689,7 +2689,7 @@ ECode CInputMethodManagerService::StartInputInnerLocked(
 
     if (mCurMethodId.IsNull()) {
         *result = mNoBinding;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -4982,7 +4982,7 @@ ECode CInputMethodManagerService::GetCurrentInputMethodSubtype(
 
     AutoPtr<IInputMethodSubtype> s = GetCurrentInputMethodSubtypeLocked();
     *subtype = s;
-    INTERFACE_ADDREF(*subtype);
+    REFCOUNT_ADD(*subtype);
     return NOERROR;
 }
 

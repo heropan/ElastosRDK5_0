@@ -186,7 +186,7 @@ ECode CRemoteViewsAdapterServiceConnection::GetRemoteViewsFactory(
 {
     Mutex::Autolock lock(mLock);
     *factory = mRemoteViewsFactory;
-    INTERFACE_ADDREF(*factory);
+    REFCOUNT_ADD(*factory);
     return NOERROR;
 }
 

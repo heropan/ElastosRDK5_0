@@ -54,7 +54,7 @@ ECode Searchables::GetSearchableInfo(
         if(it != mSearchablesMap->End() && it->mSecond != NULL)
         {
             *info = it->mSecond;
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
             return NOERROR;
         }
     }
@@ -119,7 +119,7 @@ ECode Searchables::GetSearchableInfo(
             if(it != mSearchablesMap->End() && it->mSecond != NULL)
             {
                 *info = it->mSecond;
-                INTERFACE_ADDREF(*info);
+                REFCOUNT_ADD(*info);
                 (*mSearchablesMap)[activity] = *info;
                 return NOERROR;
             }
@@ -236,7 +236,7 @@ ECode Searchables::GetSearchablesList(
 {
     VALIDATE_NOT_NULL(list);
     *list = mSearchablesList;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -245,7 +245,7 @@ ECode Searchables::GetSearchablesInGlobalSearchList(
 {
     VALIDATE_NOT_NULL(list);
     *list = mSearchablesInGlobalSearchList;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -254,7 +254,7 @@ ECode Searchables::GetGlobalSearchActivities(
 {
     VALIDATE_NOT_NULL(list);
     *list = mGlobalSearchActivities;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -263,7 +263,7 @@ ECode Searchables::GetGlobalSearchActivity(
 {
     VALIDATE_NOT_NULL(cName);
     *cName = mCurrentGlobalSearchActivity;
-    INTERFACE_ADDREF(*cName);
+    REFCOUNT_ADD(*cName);
     return NOERROR;
 }
 
@@ -272,7 +272,7 @@ ECode Searchables::GetWebSearchActivity(
 {
     VALIDATE_NOT_NULL(cName);
     *cName = mWebSearchActivity;
-    INTERFACE_ADDREF(*cName);
+    REFCOUNT_ADD(*cName);
     return NOERROR;
 }
 
@@ -295,7 +295,7 @@ ECode Searchables::FindGlobalSearchActivities(
         activities = TransfromList(listTemp.Get());
     }
     *container = activities;
-    INTERFACE_ADDREF(*container);
+    REFCOUNT_ADD(*container);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode Searchables::FindGlobalSearchActivity(
         Boolean isInstalled;
         if (globalSearchComponent != NULL && (IsInstalled(globalSearchComponent, &isInstalled),isInstalled)) {
             *cName = globalSearchComponent;
-            INTERFACE_ADDREF(*cName);
+            REFCOUNT_ADD(*cName);
         }
     }
 

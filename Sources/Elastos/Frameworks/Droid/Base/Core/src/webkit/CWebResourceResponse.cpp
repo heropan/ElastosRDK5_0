@@ -60,7 +60,7 @@ ECode CWebResourceResponse::GetData(
     VALIDATE_NOT_NULL(inputStream);
     AutoPtr<IInputStream> _inputStream = WebResourceResponse::GetData();
     *inputStream = _inputStream.Get();
-    INTERFACE_ADDREF(*inputStream);
+    REFCOUNT_ADD(*inputStream);
     return NOERROR;
 }
 

@@ -1485,7 +1485,7 @@ ECode ScreenMagnifier::Viewport::ViewportTypeEvaluator::Evaluate(
     temp->SetBottom((Int32)(fromBottom + (toBottom - fromBottom) * fraction));
 
     *result = (IInterface*)temp.Get();
-    INTERFACE_ADDREF(temp);
+    REFCOUNT_ADD(temp);
     return NOERROR;
 }
 

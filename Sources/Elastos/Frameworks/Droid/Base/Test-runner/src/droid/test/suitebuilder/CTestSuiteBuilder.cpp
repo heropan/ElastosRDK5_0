@@ -174,7 +174,7 @@ ECode CTestSuiteBuilder::Build(
     // }
     // return rootSuite;
     *suite = mRootSuite;
-    INTERFACE_ADDREF(*suite);
+    REFCOUNT_ADD(*suite);
     return NOERROR;
 }
 

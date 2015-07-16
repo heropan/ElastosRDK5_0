@@ -455,7 +455,7 @@ ECode TableRow::GenerateLayoutParams(
     AutoPtr<ITableRowLayoutParams> lp;
     FAIL_RETURN(CTableRowLayoutParams::New(GetContext(), attrs, (ITableRowLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

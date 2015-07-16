@@ -3,7 +3,7 @@
 #include "R.h"
 #include <stdio.h>
 #include <utils/SystemClock.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ICharSequence;

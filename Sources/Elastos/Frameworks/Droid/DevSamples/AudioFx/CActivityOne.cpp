@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Slogger;
 

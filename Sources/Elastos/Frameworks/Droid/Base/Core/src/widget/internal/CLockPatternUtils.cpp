@@ -18,7 +18,7 @@ ECode CLockPatternUtils::GetDevicePolicyManager(
     VALIDATE_NOT_NULL(manager);
     AutoPtr<IDevicePolicyManager> dm = LockPatternUtils::GetDevicePolicyManager();
     *manager = dm;
-    INTERFACE_ADDREF(*manager);
+    REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 

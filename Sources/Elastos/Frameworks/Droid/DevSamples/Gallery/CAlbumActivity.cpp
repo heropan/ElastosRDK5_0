@@ -5,7 +5,7 @@
 #include "src/data/AsyncImageLoader.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include "os/SomeArgs.h"
 

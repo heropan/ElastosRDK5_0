@@ -1,6 +1,6 @@
 #include "MediaDetails.h"
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;

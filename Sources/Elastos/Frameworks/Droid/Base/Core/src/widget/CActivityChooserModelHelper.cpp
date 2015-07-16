@@ -18,7 +18,7 @@ ECode CActivityChooserModelHelper::Get(
     AutoPtr<IActivityChooserModel> activity =
         ActivityChooserModel::Get(context, historyFileName);
     *result = activity;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

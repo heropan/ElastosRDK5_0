@@ -178,7 +178,7 @@ ECode CConnectivityService::DefaultNetworkFactory::CreateTracker(
             String name;
             config->GetName(&name);
             *tracker = new WifiStateTracker(targetNetworkType, name);
-            INTERFACE_ADDREF(*tracker);
+            REFCOUNT_ADD(*tracker);
             return NOERROR;
         }
         case IConnectivityManager::TYPE_MOBILE: {
@@ -190,7 +190,7 @@ ECode CConnectivityService::DefaultNetworkFactory::CreateTracker(
             String name;
             config->GetName(&name);
             *tracker = new DummyDataStateTracker(targetNetworkType, name);
-            INTERFACE_ADDREF(*tracker);
+            REFCOUNT_ADD(*tracker);
             return NOERROR;
         }
         case IConnectivityManager::TYPE_BLUETOOTH: {
@@ -201,13 +201,13 @@ ECode CConnectivityService::DefaultNetworkFactory::CreateTracker(
         case IConnectivityManager::TYPE_WIMAX: {
             AutoPtr<INetworkStateTracker> t = MakeWimaxStateTracker(mContext, mTrackerHandler);
             *tracker = t;
-            INTERFACE_ADDREF(*tracker);
+            REFCOUNT_ADD(*tracker);
             return NOERROR;
         }
         case IConnectivityManager::TYPE_ETHERNET: {
             AutoPtr<INetworkStateTracker> t = EthernetDataTracker::GetInstance();
             *tracker = t;
-            INTERFACE_ADDREF(*tracker);
+            REFCOUNT_ADD(*tracker);
             return NOERROR;
         }
         default:
@@ -1286,12 +1286,12 @@ ECode CConnectivityService::GetActiveNetworkInfo(
                 info->IsAvailable(&available);
                 notTrueWifi->SetIsAvailable(available);
                 *result = notTrueWifi;
-                INTERFACE_ADDREF(*result);
+                REFCOUNT_ADD(*result);
                 return NOERROR;
             }
         }
         *result = info;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         //Cheat ethernet to wifi --End--
         return NOERROR;
     }
@@ -1370,7 +1370,7 @@ ECode CConnectivityService::GetNetworkInfo(
             }
         }
         *result = info;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         //Cheat ethernet to wifi --End--
         return NOERROR;
     }
@@ -1395,7 +1395,7 @@ ECode CConnectivityService::GetNetworkInfo(
         if (tracker != NULL) {
             AutoPtr<INetworkInfo> i = GetFilteredNetworkInfo(tracker, uid);
             *info = i;
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
         }
     }
     return NOERROR;
@@ -4264,7 +4264,7 @@ ECode CConnectivityService::GetProxy(
     VALIDATE_NOT_NULL(proxyProperties);
     Mutex::Autolock lock(mDefaultProxyLock);
     *proxyProperties = mDefaultProxyDisabled ? NULL : mDefaultProxy;
-    INTERFACE_ADDREF(*proxyProperties);
+    REFCOUNT_ADD(*proxyProperties);
     return NOERROR;
 }
 
@@ -4354,7 +4354,7 @@ ECode CConnectivityService::GetGlobalProxy(
     {
         Mutex::Autolock lock(mGlobalProxyLock);
         *proxyProperties = mGlobalProxy;
-        INTERFACE_ADDREF(*proxyProperties);
+        REFCOUNT_ADD(*proxyProperties);
     }
     return NOERROR;
 }

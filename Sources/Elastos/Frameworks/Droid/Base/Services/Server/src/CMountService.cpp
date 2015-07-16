@@ -695,7 +695,7 @@ ECode CMountService::ObbAction::GetObbInfo(
         // throw new IOException("Couldn't read OBB file: " + mObbState.ownerPath);
     }
     *info = obbInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -2438,7 +2438,7 @@ ECode CMountService::GetStorageUsers(
             (ArrayOf<NativeDaemonEvent*>**)&events))) {
         Slogger::E(TAG, "Failed to retrieve storage users list");
         *pids = ArrayOf<Int32>::Alloc(0);
-        INTERFACE_ADDREF(*pids);
+        REFCOUNT_ADD(*pids);
         return NOERROR;
     }
     AutoPtr< ArrayOf<String> > r = NativeDaemonEvent::FilterMessageList(*events, VoldResponseCode::StorageUsersListResult);
@@ -2457,7 +2457,7 @@ ECode CMountService::GetStorageUsers(
         // }
     }
     *pids = data;
-    INTERFACE_ADDREF(*pids);
+    REFCOUNT_ADD(*pids);
     // } catch (NativeDaemonConnectorException e) {
     //     Slog.e(TAG, "Failed to retrieve storage users list", e);
     //     return new int[0];
@@ -2497,12 +2497,12 @@ ECode CMountService::GetSecureContainerList(
     if (FAILED(mConnector->ExecuteForList(String("asec"), args,
             (ArrayOf<NativeDaemonEvent*>**)&events))) {
         *pids = ArrayOf<String>::Alloc(0);
-        INTERFACE_ADDREF(*pids);
+        REFCOUNT_ADD(*pids);
         return NOERROR;
     }
     AutoPtr< ArrayOf<String> > ids = NativeDaemonEvent::FilterMessageList(*events, VoldResponseCode::AsecListResult);
     *pids = ids;
-    INTERFACE_ADDREF(*pids);
+    REFCOUNT_ADD(*pids);
     // } catch (NativeDaemonConnectorException e) {
     //     return new String[0];
     // }
@@ -3448,7 +3448,7 @@ ECode CMountService::GetVolumeList(
     }
 
     *volList = array;
-    INTERFACE_ADDREF(*volList);
+    REFCOUNT_ADD(*volList);
     return NOERROR;
 }
 

@@ -59,7 +59,7 @@ ECode CTestMethod::GetEnclosingClass(
 {
     VALIDATE_NOT_NULL(clazz);
     *clazz = mEnclosingClass;
-    INTERFACE_ADDREF(*clazz);
+    REFCOUNT_ADD(*clazz);
     return NOERROR;
 }
 
@@ -98,7 +98,7 @@ ECode CTestMethod::InstantiateTest(
                 assert(testCase != NULL);
                 testCase->SetName(testName);
                 *test = testCase;
-                INTERFACE_ADDREF(*test);
+                REFCOUNT_ADD(*test);
                 return NOERROR;
             }
             else if (SingleStringConstructor(params)) {
@@ -110,7 +110,7 @@ ECode CTestMethod::InstantiateTest(
                 AutoPtr<ITestCase> testCase =  ITestCase::Probe(obj);
                 assert(testCase != NULL);
                 *test = testCase;
-                INTERFACE_ADDREF(*test);
+                REFCOUNT_ADD(*test);
                 return NOERROR;
             }
             for (Int32 j = 0; j < count; j++) {

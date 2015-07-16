@@ -4,7 +4,7 @@
 #include "CInputModeSwitcher.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 #include "R.h"
 #include <R.h>
@@ -1265,7 +1265,7 @@ ECode CPinyinIME::OnCreateCandidatesView(
 
     InputMethodService::SetCandidatesViewShown(TRUE);
     *retView = mCandidatesContainer;
-    INTERFACE_ADDREF(*retView);
+    REFCOUNT_ADD(*retView);
     return NOERROR;
 }
 
@@ -1438,7 +1438,7 @@ ECode CPinyinIME::OnCreateInputView(
     mSkbContainer->SetInputModeSwitcher(mInputModeSwitcher);
     mSkbContainer->SetGestureDetector(mGestureDetectorSkb);
     *view = mSkbContainer;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -1623,7 +1623,7 @@ ECode CPinyinIME::GetCandidatesContainer(
 {
     VALIDATE_NOT_NULL(container);
     *container = mCandidatesContainer;
-    INTERFACE_ADDREF(*container);
+    REFCOUNT_ADD(*container);
     return NOERROR;
 }
 

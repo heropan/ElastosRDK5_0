@@ -23,7 +23,7 @@ ECode CPopupMenu::GetMenu(
     VALIDATE_NOT_NULL(menu);
     AutoPtr<IMenu> m = PopupMenu::GetMenu();
     *menu = m;
-    INTERFACE_ADDREF(*menu);
+    REFCOUNT_ADD(*menu);
     return NOERROR;
 }
 
@@ -33,7 +33,7 @@ ECode CPopupMenu::GetMenuInflater(
     VALIDATE_NOT_NULL(flater);
     AutoPtr<IMenuInflater> mf = PopupMenu::GetMenuInflater();
     *flater = mf;
-    INTERFACE_ADDREF(*flater);
+    REFCOUNT_ADD(*flater);
     return NOERROR;
 }
 

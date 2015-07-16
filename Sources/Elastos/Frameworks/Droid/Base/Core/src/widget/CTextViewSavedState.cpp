@@ -24,7 +24,7 @@ ECode CTextViewSavedState::GetSuperState(
     VALIDATE_NOT_NULL(superState);
     AutoPtr<IParcelable> temp = TextViewSavedState::GetSuperState();
     *superState = temp;
-    INTERFACE_ADDREF(*superState);
+    REFCOUNT_ADD(*superState);
     return NOERROR;
 }
 

@@ -174,7 +174,7 @@ ECode CAndroidTestRunner::NewSingleTestMethod(
     *testCase = ITestCase::Probe(object);
     assert(*testCase != NULL);
     (*testCase)->SetName(testMethodName);
-    INTERFACE_ADDREF(*testCase)
+    REFCOUNT_ADD(*testCase)
     return NOERROR;
 }
 
@@ -200,7 +200,7 @@ ECode CAndroidTestRunner::NewSingleTestMethod(
     *testCase = ITestCase::Probe(object);
     assert(*testCase != NULL);
     (*testCase)->SetName(testMethodName);
-    INTERFACE_ADDREF(*testCase)
+    REFCOUNT_ADD(*testCase)
     return NOERROR;
 }
 
@@ -251,7 +251,7 @@ ECode CAndroidTestRunner::GetTest(
         AutoPtr<ITestSuite> suite;
         testSuiteProvider->GetTestSuite((ITestSuite**)&suite);
         *test = ITest::Probe(suite);
-        INTERFACE_ADDREF(*test);
+        REFCOUNT_ADD(*test);
         return NOERROR;
     }
     AutoPtr<IMethodInfo> suiteMethod;
@@ -262,7 +262,7 @@ ECode CAndroidTestRunner::GetTest(
         AutoPtr<ITestSuite> suite;
         CTestSuite::New(clazz, (ITestSuite**)&suite);
         *test = ITest::Probe(suite);
-        INTERFACE_ADDREF(*test);
+        REFCOUNT_ADD(*test);
         return NOERROR;
     }
     assert(0);
@@ -312,7 +312,7 @@ ECode CAndroidTestRunner::GetTestCases(
 {
     VALIDATE_NOT_NULL(testCases);
     *testCases = mTestCases;
-    INTERFACE_ADDREF(*testCases);
+    REFCOUNT_ADD(*testCases);
     return NOERROR;
 }
 
@@ -329,7 +329,7 @@ ECode CAndroidTestRunner::GetTestResult(
 {
     VALIDATE_NOT_NULL(result);
     *result = mTestResult;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

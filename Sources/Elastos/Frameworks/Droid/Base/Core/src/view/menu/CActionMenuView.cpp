@@ -79,7 +79,7 @@ ECode CActionMenuView::GenerateOverflowButtonLayoutParams(
 {
     AutoPtr<IViewGroupLayoutParams> pmTemp = ActionMenuView::GenerateOverflowButtonLayoutParams();
     *pm = pmTemp;
-    INTERFACE_ADDREF(*pm);
+    REFCOUNT_ADD(*pm);
     return NOERROR;
 }
 
@@ -122,7 +122,7 @@ ECode CActionMenuView::GetDividerDrawable(
     VALIDATE_NOT_NULL(divider);
     AutoPtr<IDrawable> d = ActionMenuView::GetDividerDrawable();
     *divider = d;
-    INTERFACE_ADDREF(*divider);
+    REFCOUNT_ADD(*divider);
     return NOERROR;
 }
 

@@ -162,7 +162,7 @@ ECode URLUtil::Decode(
     }
     *urlList = ArrayOf<Byte>::Alloc(tempCount);
     (*urlList)->Copy(tempData, tempCount);
-    INTERFACE_ADDREF(*urlList);
+    REFCOUNT_ADD(*urlList);
     return NOERROR;
 }
 

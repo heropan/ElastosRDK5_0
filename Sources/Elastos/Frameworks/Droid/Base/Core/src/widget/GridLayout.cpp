@@ -366,7 +366,7 @@ ECode GridLayout::GenerateLayoutParams(
     AutoPtr<IGridLayoutLayoutParams> lp;
     FAIL_RETURN(CGridLayoutLayoutParams::New(GetContext(), attrs, (IGridLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

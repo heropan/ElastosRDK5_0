@@ -71,7 +71,7 @@ ECode CDialerFilter::GetLetters(
     VALIDATE_NOT_NULL(letters);
     AutoPtr<ICharSequence> temp = DialerFilter::GetLetters();
     *letters = temp;
-    INTERFACE_ADDREF(*letters);
+    REFCOUNT_ADD(*letters);
     return NOERROR;
 }
 
@@ -81,7 +81,7 @@ ECode CDialerFilter::GetDigits(
     VALIDATE_NOT_NULL(digits);
     AutoPtr<ICharSequence> temp = DialerFilter::GetDigits();
     *digits = temp;
-    INTERFACE_ADDREF(*digits);
+    REFCOUNT_ADD(*digits);
     return NOERROR;
 }
 
@@ -91,7 +91,7 @@ ECode CDialerFilter::GetFilterText(
     VALIDATE_NOT_NULL(filterText);
     AutoPtr<ICharSequence> temp = DialerFilter::GetFilterText();
     *filterText = temp;
-    INTERFACE_ADDREF(*filterText);
+    REFCOUNT_ADD(*filterText);
     return NOERROR;
 }
 

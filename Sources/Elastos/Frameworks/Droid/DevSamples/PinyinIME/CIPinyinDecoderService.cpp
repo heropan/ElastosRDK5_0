@@ -91,7 +91,7 @@ ECode CIPinyinDecoderService::ImGetSplStart(
     VALIDATE_NOT_NULL(values);
     AutoPtr<ArrayOf<Int32> > data = CPinyinDecoderService::nativeImGetSplStart();
     *values = data.Get();
-    INTERFACE_ADDREF(*values);
+    REFCOUNT_ADD(*values);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode CIPinyinDecoderService::ImGetChoiceList(
         choiceList->Set(i - choicesStart, retStr);
     }
     *strList = choiceList;
-    INTERFACE_ADDREF(*strList);
+    REFCOUNT_ADD(*strList);
     return NOERROR;
 }
 
@@ -206,7 +206,7 @@ ECode CIPinyinDecoderService::ImGetPredictList(
         predictList->Set(i - predictsStart, CPinyinDecoderService::nativeImGetPredictItem(i));
     }
     *strList = predictList;
-    INTERFACE_ADDREF(*strList);
+    REFCOUNT_ADD(*strList);
     return NOERROR;
 }
 

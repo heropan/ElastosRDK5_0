@@ -386,7 +386,7 @@ ECode GpsLocationProvider::GetProperties(
 {
     VALIDATE_NOT_NULL(properties);
     *properties = PROPERTIES;
-    INTERFACE_ADDREF(*properties);
+    REFCOUNT_ADD(*properties);
     return NOERROR;
 }
 

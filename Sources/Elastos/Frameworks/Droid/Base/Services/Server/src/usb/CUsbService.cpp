@@ -132,7 +132,7 @@ ECode CUsbService::GetDeviceList(
     if (mHostManager != NULL) {
         AutoPtr<IBundle> temp = mHostManager->GetDeviceList();
         *devices = temp;
-        INTERFACE_ADDREF(*devices);
+        REFCOUNT_ADD(*devices);
     }
     else {
         CBundle::New(devices);
@@ -163,7 +163,7 @@ ECode CUsbService::GetCurrentAccessory(
     else {
         *accessory = NULL;
     }
-    INTERFACE_ADDREF(*accessory);
+    REFCOUNT_ADD(*accessory);
     return NOERROR;
 }
 

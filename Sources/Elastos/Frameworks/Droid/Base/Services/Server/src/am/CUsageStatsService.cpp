@@ -1052,7 +1052,7 @@ ECode CUsageStatsService::GetAllPkgUsageStats(
         i++;
     }
     *stats = retArr;
-    INTERFACE_ADDREF(*stats);
+    REFCOUNT_ADD(*stats);
     return NOERROR;
 }
 

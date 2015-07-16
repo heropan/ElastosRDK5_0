@@ -78,7 +78,7 @@ ECode CEdgeEffect::GetBounds(
      VALIDATE_NOT_NULL(rect);
      AutoPtr<IRect> temp = EdgeEffect::GetBounds(reverse);;
      *rect = temp;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
      return NOERROR;
  }
 

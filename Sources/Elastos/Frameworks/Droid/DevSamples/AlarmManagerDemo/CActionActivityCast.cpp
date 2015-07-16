@@ -2,7 +2,7 @@
 #include "CActionActivityCast.h"
 #include "os/ServiceManager.h"
 #include <elastos/System.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elautoptr.h>
 #include <stdio.h>
 #include "R.h"

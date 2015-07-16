@@ -496,7 +496,7 @@ ECode AppWindowAnimator::DummyAnimation::GetInterpolator(
     VALIDATE_NOT_NULL(interpolator);
     AutoPtr<IInterpolator> temp = Animation::GetInterpolator();
     *interpolator = temp;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
     return NOERROR;
 }
 
@@ -653,7 +653,7 @@ ECode AppWindowAnimator::DummyAnimation::Clone(
     VALIDATE_NOT_NULL(animation);
     AutoPtr<IAnimation> temp = Animation::Clone();
     *animation = temp;
-    INTERFACE_ADDREF(*animation);
+    REFCOUNT_ADD(*animation);
     return NOERROR;
 }
 

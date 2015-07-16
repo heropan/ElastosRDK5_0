@@ -121,7 +121,7 @@ ECode SimpleAdapter::SimpleFilter::PerformFiltering(
     }
 
     *filterResults = (IFilterResults*)results.Get();
-    INTERFACE_ADDREF(*filterResults);
+    REFCOUNT_ADD(*filterResults);
 
     return NOERROR;
 }

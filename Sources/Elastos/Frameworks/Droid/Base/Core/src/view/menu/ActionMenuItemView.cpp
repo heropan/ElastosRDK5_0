@@ -92,7 +92,7 @@ ECode ActionMenuItemView::GetItemData(
 {
     assert(itemData != NULL);
     *itemData = mItemData;
-    INTERFACE_ADDREF(*itemData);
+    REFCOUNT_ADD(*itemData);
 
     return NOERROR;
 }

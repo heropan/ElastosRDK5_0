@@ -2,7 +2,7 @@
 #include "wm/WindowAnimator.h"
 #include "os/SystemClock.h"
 #include "os/Handler.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

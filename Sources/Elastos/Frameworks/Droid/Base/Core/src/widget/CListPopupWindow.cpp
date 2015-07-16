@@ -121,7 +121,7 @@ ECode CListPopupWindow::GetBackground(
     VALIDATE_NOT_NULL(d);
     AutoPtr<IDrawable> drawable = ListPopupWindow::GetBackground();
     *d = drawable;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -151,7 +151,7 @@ ECode CListPopupWindow::GetAnchorView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = ListPopupWindow::GetAnchorView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode CListPopupWindow::GetSelectedItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> temp = ListPopupWindow::GetSelectedItem();
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -344,7 +344,7 @@ ECode CListPopupWindow::GetSelectedView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = ListPopupWindow::GetSelectedView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -354,7 +354,7 @@ ECode CListPopupWindow::GetListView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IListView> v = ListPopupWindow::GetListView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

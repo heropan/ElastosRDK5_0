@@ -59,7 +59,7 @@ ECode CRatingBar::GetOnRatingBarChangeListener(
 {
     AutoPtr<IOnRatingBarChangeListener> lTemp = RatingBar::GetOnRatingBarChangeListener();
     *listener = lTemp;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -126,7 +126,7 @@ ECode CRatingBar::GetThumb(
 {
     AutoPtr<IDrawable> temp = RatingBar::GetThumb();
     *thumb = temp;
-    INTERFACE_ADDREF(*thumb);
+    REFCOUNT_ADD(*thumb);
     return NOERROR;
 }
 
@@ -174,7 +174,7 @@ ECode CRatingBar::GetIndeterminateDrawable(
 {
     AutoPtr<IDrawable> temp = RatingBar::GetIndeterminateDrawable();
     *d = temp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -189,7 +189,7 @@ ECode CRatingBar::GetProgressDrawable(
 {
     AutoPtr<IDrawable> temp = RatingBar::GetProgressDrawable();
     *d = temp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -269,7 +269,7 @@ ECode CRatingBar::GetInterpolator(
 {
     AutoPtr<IInterpolator> temp = RatingBar::GetInterpolator();
     *interpolator = temp;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
     return NOERROR;
 }
 

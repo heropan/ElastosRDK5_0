@@ -73,7 +73,7 @@ ECode InstrumentationTestCase::GetInstrumentation(
 {
     VALIDATE_NOT_NULL(instrumentation);
     *instrumentation = mInstrumentation;
-    INTERFACE_ADDREF(*instrumentation);
+    REFCOUNT_ADD(*instrumentation);
     return NOERROR;
 }
 

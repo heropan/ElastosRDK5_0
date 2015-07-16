@@ -68,7 +68,7 @@ ECode CTextView::GetText(
     VALIDATE_NOT_NULL(text);
     AutoPtr<ICharSequence> c = TextView::GetText();
     *text = c;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode CTextView::GetEditableText(
     VALIDATE_NOT_NULL(editable);
     AutoPtr<IEditable> obj = TextView::GetEditableText();
     *editable = obj;
-    INTERFACE_ADDREF(*editable);
+    REFCOUNT_ADD(*editable);
     return NOERROR;
 }
 
@@ -104,7 +104,7 @@ ECode CTextView::GetLayout(
     VALIDATE_NOT_NULL(layout);
     AutoPtr<ILayout> obj = TextView::GetLayout();
     *layout = obj;
-    INTERFACE_ADDREF(*layout);
+    REFCOUNT_ADD(*layout);
     return NOERROR;
 }
 
@@ -114,7 +114,7 @@ ECode CTextView::GetKeyListener(
     VALIDATE_NOT_NULL(listener);
     AutoPtr<IKeyListener> obj = TextView::GetKeyListener();
     *listener = obj;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -137,7 +137,7 @@ ECode CTextView::GetMovementMethod(
     VALIDATE_NOT_NULL(movement);
     AutoPtr<IMovementMethod> obj = TextView::GetMovementMethod();
     *movement = obj;
-    INTERFACE_ADDREF(*movement);
+    REFCOUNT_ADD(*movement);
     return NOERROR;
 }
 
@@ -153,7 +153,7 @@ ECode CTextView::GetTransformationMethod(
     VALIDATE_NOT_NULL(method);
     AutoPtr<ITransformationMethod> obj = TextView::GetTransformationMethod();
     *method = obj;
-    INTERFACE_ADDREF(*method);
+    REFCOUNT_ADD(*method);
     return NOERROR;
 }
 
@@ -335,7 +335,7 @@ ECode CTextView::GetCompoundDrawables(
     VALIDATE_NOT_NULL(drawables);
     AutoPtr<ArrayOf<IDrawable*> > obj = TextView::GetCompoundDrawables();
     *drawables = obj;
-    INTERFACE_ADDREF(*drawables);
+    REFCOUNT_ADD(*drawables);
     return NOERROR;
 }
 
@@ -345,7 +345,7 @@ ECode CTextView::GetCompoundDrawablesRelative(
     VALIDATE_NOT_NULL(drawables);
     AutoPtr<ArrayOf<IDrawable*> > obj = TextView::GetCompoundDrawablesRelative();
     *drawables = obj;
-    INTERFACE_ADDREF(*drawables);
+    REFCOUNT_ADD(*drawables);
     return NOERROR;
 }
 
@@ -384,7 +384,7 @@ ECode CTextView::GetTextLocale(
     VALIDATE_NOT_NULL(locale);
     AutoPtr<ILocale> obj = TextView::GetTextLocale();
     *locale = obj;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -441,7 +441,7 @@ ECode CTextView::GetTypeface(
     VALIDATE_NOT_NULL(face);
     AutoPtr<ITypeface> obj = TextView::GetTypeface();
     *face = obj;
-    INTERFACE_ADDREF(*face);
+    REFCOUNT_ADD(*face);
     return NOERROR;
 }
 
@@ -463,7 +463,7 @@ ECode CTextView::GetTextColors(
     VALIDATE_NOT_NULL(colors);
     AutoPtr<IColorStateList> obj = TextView::GetTextColors();
     *colors = obj;
-    INTERFACE_ADDREF(*colors);
+    REFCOUNT_ADD(*colors);
     return NOERROR;
 }
 
@@ -550,7 +550,7 @@ ECode CTextView::GetPaint(
     VALIDATE_NOT_NULL(paint);
     AutoPtr<ITextPaint> obj = TextView::GetPaint();
     *paint = obj;
-    INTERFACE_ADDREF(*paint);
+    REFCOUNT_ADD(*paint);
     return NOERROR;
 }
 
@@ -580,7 +580,7 @@ ECode CTextView::GetUrls(
     VALIDATE_NOT_NULL(urls);
     AutoPtr<ArrayOf<IURLSpan*> > obj = TextView::GetUrls();
     *urls = obj;
-    INTERFACE_ADDREF(*urls);
+    REFCOUNT_ADD(*urls);
     return NOERROR;
 }
 
@@ -602,7 +602,7 @@ ECode CTextView::GetHintTextColors(
     VALIDATE_NOT_NULL(colors);
     AutoPtr<IColorStateList> obj = TextView::GetHintTextColors();
     *colors = obj;
-    INTERFACE_ADDREF(*colors);
+    REFCOUNT_ADD(*colors);
     return NOERROR;
 }
 
@@ -632,7 +632,7 @@ ECode CTextView::GetLinkTextColors(
     VALIDATE_NOT_NULL(colors);
     AutoPtr<IColorStateList> obj = TextView::GetLinkTextColors();
     *colors = obj;
-    INTERFACE_ADDREF(*colors);
+    REFCOUNT_ADD(*colors);
     return NOERROR;
 }
 
@@ -934,7 +934,7 @@ ECode CTextView::GetHint(
     VALIDATE_NOT_NULL(hint);
     AutoPtr<ICharSequence> obj = TextView::GetHint();
     *hint = obj;
-    INTERFACE_ADDREF(*hint);
+    REFCOUNT_ADD(*hint);
     return NOERROR;
 }
 
@@ -985,7 +985,7 @@ ECode CTextView::GetImeActionLabel(
     VALIDATE_NOT_NULL(label);
     AutoPtr<ICharSequence> obj = TextView::GetImeActionLabel();
     *label = obj;
-    INTERFACE_ADDREF(*label);
+    REFCOUNT_ADD(*label);
     return NOERROR;
 }
 
@@ -1036,7 +1036,7 @@ ECode CTextView::GetInputExtras(
     VALIDATE_NOT_NULL(bundle);
     AutoPtr<IBundle> obj = TextView::GetInputExtras(create);
     *bundle = obj;
-    INTERFACE_ADDREF(*bundle);
+    REFCOUNT_ADD(*bundle);
     return NOERROR;
 }
 
@@ -1046,7 +1046,7 @@ ECode CTextView::GetError(
     VALIDATE_NOT_NULL(error);
     AutoPtr<ICharSequence> obj = TextView::GetError();
     *error = obj;
-    INTERFACE_ADDREF(*error);
+    REFCOUNT_ADD(*error);
     return NOERROR;
 }
 
@@ -1075,7 +1075,7 @@ ECode CTextView::GetFilters(
     VALIDATE_NOT_NULL(filters);
     AutoPtr<ArrayOf<IInputFilter*> > obj = TextView::GetFilters();
     *filters = obj;
-    INTERFACE_ADDREF(*filters);
+    REFCOUNT_ADD(*filters);
     return NOERROR;
 }
 
@@ -1351,7 +1351,7 @@ ECode CTextView::GetTextServicesLocale(
     VALIDATE_NOT_NULL(locale);
     AutoPtr<ILocale> obj = TextView::GetTextServicesLocale();
     *locale = obj;
-    INTERFACE_ADDREF(*locale);
+    REFCOUNT_ADD(*locale);
     return NOERROR;
 }
 
@@ -1361,7 +1361,7 @@ ECode CTextView::GetWordIterator(
     VALIDATE_NOT_NULL(iterator);
     AutoPtr<IWordIterator> obj = TextView::GetWordIterator();
     *iterator = obj;
-    INTERFACE_ADDREF(*iterator);
+    REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
@@ -1371,7 +1371,7 @@ ECode CTextView::GetTextForAccessibility(
     VALIDATE_NOT_NULL(text);
     AutoPtr<ICharSequence> obj = TextView::GetTextForAccessibility();
     *text = obj;
-    INTERFACE_ADDREF(*text);
+    REFCOUNT_ADD(*text);
     return NOERROR;
 }
 
@@ -1403,7 +1403,7 @@ ECode CTextView::GetCustomSelectionActionModeCallback(
     VALIDATE_NOT_NULL(actionModeCallback);
     AutoPtr<IActionModeCallback> obj = TextView::GetCustomSelectionActionModeCallback();
     *actionModeCallback = obj;
-    INTERFACE_ADDREF(*actionModeCallback);
+    REFCOUNT_ADD(*actionModeCallback);
     return NOERROR;
 }
 

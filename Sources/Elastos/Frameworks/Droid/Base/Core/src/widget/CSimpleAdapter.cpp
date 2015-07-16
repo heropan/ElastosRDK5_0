@@ -28,7 +28,7 @@ ECode CSimpleAdapter::GetViewBinder(
     VALIDATE_NOT_NULL(viewBinder);
     AutoPtr<ISimpleAdapterViewBinder> temp = SimpleAdapter::GetViewBinder();
     *viewBinder = temp;
-    INTERFACE_ADDREF(*viewBinder);
+    REFCOUNT_ADD(*viewBinder);
     return NOERROR;
 }
 
@@ -86,7 +86,7 @@ ECode CSimpleAdapter::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> temp = SimpleAdapter::GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -116,7 +116,7 @@ ECode CSimpleAdapter::GetView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = SimpleAdapter::GetView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -164,7 +164,7 @@ ECode CSimpleAdapter::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = SimpleAdapter::GetDropDownView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -192,7 +192,7 @@ ECode CSimpleAdapter::GetFilter(
     AutoPtr<IFilter> temp;
     temp = SimpleAdapter::GetFilter();
     *filter = temp;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 

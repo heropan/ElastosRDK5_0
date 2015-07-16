@@ -129,7 +129,7 @@ ECode CCompoundButton::GetButtonDrawable(
 {
     AutoPtr<IDrawable> dTemp = CompoundButton::GetButtonDrawable();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 

@@ -3336,7 +3336,7 @@ _Exit_:
             // throw e;
         // }
         *outInfo = info;
-        INTERFACE_ADDREF(*outInfo);
+        REFCOUNT_ADD(*outInfo);
     }
     return NOERROR;
 }
@@ -5583,7 +5583,7 @@ ECode CBackupManagerService::ListAllTransports(
     }
 
     *transports = ArrayOf<String>::Alloc(count);
-    INTERFACE_ADDREF(*transports);
+    REFCOUNT_ADD(*transports);
     for (entry = mTransports.Begin(); entry != mTransports.End(); ++entry) {
         if (entry->mSecond != NULL) {
             (**transports)[index] = entry->mFirst;
@@ -5649,7 +5649,7 @@ ECode CBackupManagerService::GetConfigurationIntent(
                 Slogger::D(TAG, "getConfigurationIntent() returning config intent %s", str.string());
             }
             *result = intent;
-            INTERFACE_ADDREF(*result);
+            REFCOUNT_ADD(*result);
             return NOERROR;
             // } catch (RemoteException e) {
                 /* fall through to return null */
@@ -5760,7 +5760,7 @@ ECode CBackupManagerService::BeginRestoreSession(
     }
 
     *session = mActiveRestoreSession;
-    INTERFACE_ADDREF(*session);
+    REFCOUNT_ADD(*session);
 
     return NOERROR;
 }
@@ -6194,7 +6194,7 @@ ECode CBackupManagerService::HexToByteArray(
     }
 
     *out = ArrayOf<Byte>::Alloc(bytes);
-    INTERFACE_ADDREF(*out);
+    REFCOUNT_ADD(*out);
     for (Int32 i = 0; i < digits.GetLength(); i += 2) {
         Int32 num;
         StringUtils::ParseInt32(digits.Substring(i, i+2), 16, &num);

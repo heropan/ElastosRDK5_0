@@ -135,7 +135,7 @@ ECode CZoomButtonsController::GetContainer(
     VALIDATE_NOT_NULL(container);
     AutoPtr<IViewGroup> vTemp = ZoomButtonsController::GetContainer();
     *container = vTemp;
-    INTERFACE_ADDREF(*container)
+    REFCOUNT_ADD(*container)
     return NOERROR;
 }
 
@@ -150,7 +150,7 @@ ECode CZoomButtonsController::GetZoomControls(
     VALIDATE_NOT_NULL(controls);
     AutoPtr<IView> vTemp = ZoomButtonsController::GetZoomControls();
     *controls = vTemp;
-    INTERFACE_ADDREF(*controls)
+    REFCOUNT_ADD(*controls)
     return NOERROR;
 }
 

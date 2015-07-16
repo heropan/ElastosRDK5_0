@@ -25,7 +25,7 @@ ECode CTransportControlViewSavedState::GetSuperState(
     VALIDATE_NOT_NULL(superState);
     AutoPtr<IParcelable> temp = TransportControlViewSavedState::GetSuperState();
     *superState = temp;
-    INTERFACE_ADDREF(*superState);
+    REFCOUNT_ADD(*superState);
     return NOERROR;
 }
 

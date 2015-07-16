@@ -75,7 +75,7 @@ ECode CFrameLayout::GetForeground(
     VALIDATE_NOT_NULL(foreground);
     AutoPtr<IDrawable> g = FrameLayout::GetForeground();
     *foreground = g;
-    INTERFACE_ADDREF(*foreground);
+    REFCOUNT_ADD(*foreground);
     return NOERROR;
 }
 

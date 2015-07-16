@@ -58,7 +58,7 @@ ECode CRemoteViewsAdapter::GetRemoteViewsServiceIntent(
 {
     AutoPtr<IIntent> temp = RemoteViewsAdapter::GetRemoteViewsServiceIntent();
     *intent = temp;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 

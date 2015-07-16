@@ -69,7 +69,7 @@ CARAPI CContextMenuBuilder::Show(
     VALIDATE_NOT_NULL(res);
     AutoPtr<IMenuDialogHelper> temp = ContextMenuBuilderBase::Show(originalView, token);
     *res = temp;
-    INTERFACE_ADDREF(*res);
+    REFCOUNT_ADD(*res);
     return NOERROR;
 }
 

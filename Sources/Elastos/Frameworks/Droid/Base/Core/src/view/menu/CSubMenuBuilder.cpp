@@ -88,7 +88,7 @@ ECode CSubMenuBuilder::GetItem(
 
     AutoPtr<IMenuItem> _menuItem = SubMenuBuilderBase::GetItem();
     *menuItem = _menuItem;
-    INTERFACE_ADDREF(*menuItem);
+    REFCOUNT_ADD(*menuItem);
     return NOERROR;
 }
 
@@ -99,7 +99,7 @@ ECode CSubMenuBuilder::GetParentMenu(
 
     AutoPtr<IMenu> _menu = SubMenuBuilderBase::GetParentMenu();
     *menu = _menu;
-    INTERFACE_ADDREF(*menu);
+    REFCOUNT_ADD(*menu);
     return NOERROR;
 }
 

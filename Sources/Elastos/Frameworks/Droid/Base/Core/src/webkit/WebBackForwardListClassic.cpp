@@ -120,7 +120,7 @@ ECode WebBackForwardListClassic::GetItemAtIndex(
     VALIDATE_NOT_NULL(item);
     AutoPtr<WebHistoryItemClassic> h = mArray[index];
     *item = h.Get();
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -294,7 +294,7 @@ ECode WebBackForwardListClassic::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 

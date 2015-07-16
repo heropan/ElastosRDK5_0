@@ -141,7 +141,7 @@ ECode LocationBasedCountryDetector::DetectCountry(
     }
 
     *country = mDetectedCountry;
-    INTERFACE_ADDREF(*country);
+    REFCOUNT_ADD(*country);
     return NOERROR;
 }
 

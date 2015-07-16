@@ -64,7 +64,7 @@ ECode CSeekBar::GetIndeterminateDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> _drawable = SeekBar::GetIndeterminateDrawable();
     *drawable = _drawable;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
 
     return NOERROR;
 }
@@ -81,7 +81,7 @@ ECode CSeekBar::GetProgressDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> _drawable = SeekBar::GetProgressDrawable();
     *drawable = _drawable;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
 
     return NOERROR;
 }
@@ -168,7 +168,7 @@ ECode CSeekBar::GetInterpolator(
     VALIDATE_NOT_NULL(interpolator);
     AutoPtr<IInterpolator> _interpolator = SeekBar::GetInterpolator();
     *interpolator = _interpolator;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
 
     return NOERROR;
 }
@@ -185,7 +185,7 @@ ECode CSeekBar::GetThumb(
     VALIDATE_NOT_NULL(thumb);
     AutoPtr<IDrawable> drawable = SeekBar::GetThumb();
     *thumb = drawable;
-    INTERFACE_ADDREF(*thumb);
+    REFCOUNT_ADD(*thumb);
     return NOERROR;
 }
 

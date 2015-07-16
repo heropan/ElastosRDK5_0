@@ -55,7 +55,7 @@ ECode CSizeAdaptiveLayout::GetTransitionAnimation(
     VALIDATE_NOT_NULL(animator);
     AutoPtr<IAnimator> tmp = SizeAdaptiveLayout::GetTransitionAnimation();
     *animator = tmp;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 
@@ -65,7 +65,7 @@ ECode CSizeAdaptiveLayout::GetModestyPanel(
     VALIDATE_NOT_NULL(panel);
     AutoPtr<IView> tmp = SizeAdaptiveLayout::GetModestyPanel();
     *panel = tmp;
-    INTERFACE_ADDREF(*panel);
+    REFCOUNT_ADD(*panel);
     return NOERROR;
 }
 

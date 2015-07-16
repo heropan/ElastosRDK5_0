@@ -132,7 +132,7 @@ ECode CCacheManager::CacheResult::GetInputStream(
 {
     VALIDATE_NOT_NULL(inStream);
     *inStream = mInStream;
-    INTERFACE_ADDREF(*inStream);
+    REFCOUNT_ADD(*inStream);
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode CCacheManager::CacheResult::GetOutputStream(
 {
     VALIDATE_NOT_NULL(outStream);
     *outStream = mOutStream;
-    INTERFACE_ADDREF(*outStream);
+    REFCOUNT_ADD(*outStream);
     return NOERROR;
 }
 
@@ -240,7 +240,7 @@ ECode CCacheManager::GetCacheFileBaseDir(
 {
     VALIDATE_NOT_NULL(dir);
     *dir = sBaseDir;
-    INTERFACE_ADDREF(*dir);
+    REFCOUNT_ADD(*dir);
     return NOERROR;
 }
 
@@ -298,7 +298,7 @@ ECode CCacheManager::GetCacheFile(
     VALIDATE_NOT_NULL(cacheResult);
     AutoPtr<ICacheManagerCacheResult> _cacheResult = GetCacheFile(url, headers);
     *cacheResult = _cacheResult.Get();
-    INTERFACE_ADDREF(*cacheResult);
+    REFCOUNT_ADD(*cacheResult);
     return NOERROR;
 }
 

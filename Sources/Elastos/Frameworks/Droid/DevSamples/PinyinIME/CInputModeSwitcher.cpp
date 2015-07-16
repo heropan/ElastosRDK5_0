@@ -125,7 +125,7 @@ ECode CInputModeSwitcher::GetToggleStates(
 {
     VALIDATE_NOT_NULL(states);
     *states = mToggleStates;
-    INTERFACE_ADDREF(*states);
+    REFCOUNT_ADD(*states);
     return NOERROR;
 }
 

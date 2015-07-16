@@ -99,7 +99,7 @@ ECode CProgressBar::GetIndeterminateDrawable(
     AutoPtr<IDrawable> temp;
     temp = ProgressBar::GetIndeterminateDrawable();
     *d = temp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -133,7 +133,7 @@ ECode CProgressBar::GetProgressDrawable(
     AutoPtr<IDrawable> temp;
     temp = ProgressBar::GetProgressDrawable();
     *d = temp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -318,7 +318,7 @@ ECode CProgressBar::GetInterpolator(
 {
     AutoPtr<IInterpolator> temp = ProgressBar::GetInterpolator();
     *interpolator = temp;
-    INTERFACE_ADDREF(*interpolator);
+    REFCOUNT_ADD(*interpolator);
     return NOERROR;
 }
 

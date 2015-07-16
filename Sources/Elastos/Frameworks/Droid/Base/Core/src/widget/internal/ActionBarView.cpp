@@ -1389,7 +1389,7 @@ ECode ActionBarView::GenerateLayoutParams(
     AutoPtr<IActionBarLayoutParams> lp;
     FAIL_RETURN(CActionBarLayoutParams::New(GetContext(), attrs, (IActionBarLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -1516,7 +1516,7 @@ ECode ActionBarView::ExpandedActionViewMenuPresenter::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 

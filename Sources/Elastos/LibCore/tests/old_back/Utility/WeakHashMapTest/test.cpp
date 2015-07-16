@@ -17,7 +17,7 @@ using Elastos::Utility::Arrays;
 // {
 //     VALIDATE_NOT_NULL(*entries)
 //     *entries = NULL;
-//     INTERFACE_ADDREF(*entries)
+//     REFCOUNT_ADD(*entries)
 //     return NOERROR;
 // }
 

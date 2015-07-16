@@ -1130,7 +1130,7 @@ ECode CWifiService::GetWifiApConfiguration(
     FAIL_RETURN(EnforceAccessPermission());
     AutoPtr<IWifiConfiguration> config = mWifiStateMachine->SyncGetWifiApConfiguration();
     *result = config;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1175,7 +1175,7 @@ ECode CWifiService::GetConfiguredNetworks(
         AutoPtr<IObjectContainer> networks =
                 mWifiStateMachine->SyncGetConfiguredNetworks(mWifiStateMachineChannel);
         *result = networks;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
     else {
@@ -1271,7 +1271,7 @@ ECode CWifiService::GetConnectionInfo(
      */
     AutoPtr<IWifiInfo> winfo = mWifiStateMachine->SyncRequestConnectionInfo();
     *result = winfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1377,7 +1377,7 @@ ECode CWifiService::GetDhcpInfo(
     FAIL_RETURN(EnforceAccessPermission());
     AutoPtr<IDhcpInfo> dinfo = mWifiStateMachine->SyncGetDhcpInfo();
     *result = dinfo;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1447,7 +1447,7 @@ ECode CWifiService::GetWifiStateMachineMessenger(
     FAIL_RETURN(EnforceChangePermission());
     AutoPtr<IMessenger> mgr = mWifiStateMachine->GetMessenger();
     *result = mgr;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

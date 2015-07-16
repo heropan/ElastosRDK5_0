@@ -288,7 +288,7 @@ ECode CUserManagerService::GetUserInfo(
 
         AutoPtr<IUserInfo> user = GetUserInfoLocked(userId);
         *userInfo = user;
-        INTERFACE_ADDREF(*userInfo);
+        REFCOUNT_ADD(*userInfo);
         return NOERROR;
     }
 }
@@ -1034,7 +1034,7 @@ ECode CUserManagerService::CreateUser(
     Binder::RestoreCallingIdentity(ident);
     // }
     *uInfo = userInfo;
-    INTERFACE_ADDREF(*uInfo);
+    REFCOUNT_ADD(*uInfo);
     return NOERROR;
 }
 

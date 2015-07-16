@@ -2,7 +2,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
 #include <unistd.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CThread;

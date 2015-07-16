@@ -817,7 +817,7 @@ ECode MonkeySourceScript::GetNextEvent(
     }
 
     *event = IMonkeyEvent::Probe(ev);
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 

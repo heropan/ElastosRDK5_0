@@ -143,7 +143,7 @@ ECode AbsoluteLayout::GenerateLayoutParams(
     AutoPtr<IAbsoluteLayoutLayoutParams> lp;
     FAIL_RETURN(CAbsoluteLayoutLayoutParams::New(GetContext(), attrs, (IAbsoluteLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

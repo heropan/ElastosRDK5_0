@@ -1,5 +1,5 @@
 #include "droid/test/TestFilePrinter.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 

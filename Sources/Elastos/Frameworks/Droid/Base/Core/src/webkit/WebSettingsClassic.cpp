@@ -2108,7 +2108,7 @@ ECode WebSettingsClassic::GetAutoFillProfile(
     VALIDATE_NOT_NULL(profile);
     Mutex::Autolock lock(mLock);
     *profile = mAutoFillProfile;
-    INTERFACE_ADDREF(*profile);
+    REFCOUNT_ADD(*profile);
     return NOERROR;
 }
 

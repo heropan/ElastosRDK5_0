@@ -47,7 +47,7 @@ ECode AccountAuthenticatorCache::MySerializer::CreateFromXml(
     AutoPtr<IAuthenticatorDescription> desc;
     FAIL_RETURN(helper->NewKey(s, (IAuthenticatorDescription**)&desc));
     *obj = (IInterface*)desc.Get();
-    INTERFACE_ADDREF(*obj);
+    REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
@@ -148,7 +148,7 @@ ECode AccountAuthenticatorCache::ParseServiceAttributes(
     ec = CAuthenticatorDescription::New(accountType, packageName, labelId, iconId,
             smallIconId, prefId, customTokens, (IAuthenticatorDescription**)&desc);
     *attributes = desc;
-    INTERFACE_ADDREF(*attributes);
+    REFCOUNT_ADD(*attributes);
     sa->Recycle();
     return ec;
     // } finally {

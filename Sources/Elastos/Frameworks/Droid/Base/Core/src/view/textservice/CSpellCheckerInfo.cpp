@@ -215,7 +215,7 @@ ECode CSpellCheckerInfo::GetServiceInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = ((CResolveInfo*)(mService.Get()))->serviceInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -258,7 +258,7 @@ ECode CSpellCheckerInfo::GetSubtypeAt(
 {
     VALIDATE_NOT_NULL(subtype);
     *subtype = mSubtypes[index];
-    INTERFACE_ADDREF(*subtype);
+    REFCOUNT_ADD(*subtype);
     return NOERROR;
 }
 

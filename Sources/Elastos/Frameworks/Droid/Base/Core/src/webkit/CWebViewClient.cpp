@@ -48,7 +48,7 @@ ECode CWebViewClient::ShouldInterceptRequest(
     VALIDATE_NOT_NULL(wrr);
 //    AutoPtr<IWebResourceResponse> _wrr = WebViewClient::ShouldInterceptRequest(view, url);
 //    *wrr = _wrr.Get();
-//    INTERFACE_ADDREF(*wrr);
+//    REFCOUNT_ADD(*wrr);
 
     return NOERROR;
 }

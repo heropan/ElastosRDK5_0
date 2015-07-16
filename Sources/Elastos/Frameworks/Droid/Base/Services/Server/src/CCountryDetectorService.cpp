@@ -54,7 +54,7 @@ ECode CCountryDetectorService::Receiver::GetListener(
 {
     VALIDATE_NOT_NULL(listener);
     *listener = mListener;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
 
     return NOERROR;
 }

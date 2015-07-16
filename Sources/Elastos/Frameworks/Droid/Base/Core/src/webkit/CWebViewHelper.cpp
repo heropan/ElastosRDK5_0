@@ -34,7 +34,7 @@ ECode CWebViewHelper::GetPluginList(
     VALIDATE_NOT_NULL(pluginList);
     AutoPtr<IPluginList> _pluginList = WebView::GetPluginList();
     *pluginList = _pluginList.Get();
-    INTERFACE_ADDREF(*pluginList);
+    REFCOUNT_ADD(*pluginList);
 
     return NOERROR;
 }

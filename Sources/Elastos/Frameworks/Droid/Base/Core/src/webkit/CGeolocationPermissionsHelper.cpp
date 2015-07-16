@@ -12,7 +12,7 @@ ECode CGeolocationPermissionsHelper::GetInstance(
     VALIDATE_NOT_NULL(instance);
     AutoPtr<IGeolocationPermissions> _instance = GeolocationPermissions::GetInstance();
     *instance = _instance.Get();
-    INTERFACE_ADDREF(*instance);
+    REFCOUNT_ADD(*instance);
     return NOERROR;
 }
 

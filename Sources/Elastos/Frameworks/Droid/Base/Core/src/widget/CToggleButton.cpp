@@ -78,7 +78,7 @@ ECode CToggleButton::GetTextOn(
     VALIDATE_NOT_NULL(on);
     AutoPtr<ICharSequence> csq = ToggleButton::GetTextOn();
     *on = csq;
-    INTERFACE_ADDREF(*on);
+    REFCOUNT_ADD(*on);
     return NOERROR;
 }
 
@@ -104,7 +104,7 @@ ECode CToggleButton::GetTextOff(
     VALIDATE_NOT_NULL(on);
     AutoPtr<ICharSequence> csq = ToggleButton::GetTextOff();
     *on = csq;
-    INTERFACE_ADDREF(*on);
+    REFCOUNT_ADD(*on);
     return NOERROR;
 }
 
@@ -124,7 +124,7 @@ ECode CToggleButton::GetButtonDrawable(
 {
     AutoPtr<IDrawable> dTemp = ToggleButton::GetButtonDrawable();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 

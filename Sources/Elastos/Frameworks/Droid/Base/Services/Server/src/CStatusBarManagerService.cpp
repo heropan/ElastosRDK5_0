@@ -592,7 +592,7 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     CParcelableObjectContainer::New(notifications);
     CParcelableObjectContainer::New(binders);
     *switches = ArrayOf<Int32>::Alloc(7);
-    INTERFACE_ADDREF(*switches);
+    REFCOUNT_ADD(*switches);
     CStatusBarIconList::New(iconList);
 
     FAIL_RETURN(EnforceStatusBarService());
@@ -707,7 +707,7 @@ ECode CStatusBarManagerService::AddNotification(
         mBar->AddNotification(key, notification);
     }
     *binder = key;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 

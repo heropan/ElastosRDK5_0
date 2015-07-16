@@ -623,7 +623,7 @@ ECode CGeckoSurfaceView::GetSoftwareDrawBitmap(
 
     mDrawMode = DRAW_2D;
     *bitmap = mSoftwareBitmap;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     DBG_LOG("\t - CGeckoSurfaceView::GetSoftwareDrawBitmap(**bitmap)");
     return NOERROR;
 }
@@ -669,7 +669,7 @@ ECode CGeckoSurfaceView::GetSoftwareDrawBuffer(
 
     mDrawMode = DRAW_2D;
     *ppBuffer = mSoftwareBuffer;
-    INTERFACE_ADDREF(*ppBuffer);
+    REFCOUNT_ADD(*ppBuffer);
     DBG_LOG("\t - CGeckoSurfaceView::GetSoftwareDrawBuffer(ppBuffer)");
     return NOERROR;
 }

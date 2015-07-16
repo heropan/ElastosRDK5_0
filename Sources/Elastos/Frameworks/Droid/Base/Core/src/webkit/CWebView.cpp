@@ -100,7 +100,7 @@ ECode CWebView::GetCertificate(
     VALIDATE_NOT_NULL(cer);
     AutoPtr<ISslCertificate> c = WebView::GetCertificate();
     *cer = c;
-    INTERFACE_ADDREF(*cer);
+    REFCOUNT_ADD(*cer);
     return NOERROR;
 }
 
@@ -135,7 +135,7 @@ ECode CWebView::GetHttpAuthUsernamePassword(
     VALIDATE_NOT_NULL(up);
     AutoPtr< ArrayOf<String> > _up = WebView::GetHttpAuthUsernamePassword(host, realm);
     *up = _up.Get();
-    INTERFACE_ADDREF(*up);
+    REFCOUNT_ADD(*up);
     return NOERROR;
 }
 
@@ -157,7 +157,7 @@ ECode CWebView::SaveState(
     VALIDATE_NOT_NULL(wfl);
     AutoPtr<IWebBackForwardList> _wfl = WebView::SaveState(outState);
     *wfl = _wfl.Get();
-    INTERFACE_ADDREF(*wfl);
+    REFCOUNT_ADD(*wfl);
     return NOERROR;
 }
 
@@ -188,7 +188,7 @@ ECode CWebView::RestoreState(
     VALIDATE_NOT_NULL(wfl);
     AutoPtr<IWebBackForwardList> _wfl = WebView::RestoreState(inState);
     *wfl = _wfl.Get();
-    INTERFACE_ADDREF(*wfl);
+    REFCOUNT_ADD(*wfl);
     return NOERROR;
 }
 
@@ -334,7 +334,7 @@ ECode CWebView::CapturePicture(
     VALIDATE_NOT_NULL(pic);
     AutoPtr<IPicture> p = WebView::CapturePicture();
     *pic = p.Get();
-    INTERFACE_ADDREF(*pic);
+    REFCOUNT_ADD(*pic);
     return NOERROR;
 }
 
@@ -363,7 +363,7 @@ ECode CWebView::GetHitTestResult(
     VALIDATE_NOT_NULL(tr);
     AutoPtr<IWebViewHitTestResult> _tr = WebView::GetHitTestResult();
     *tr = _tr.Get();
-    INTERFACE_ADDREF(*tr);
+    REFCOUNT_ADD(*tr);
     return NOERROR;
 }
 
@@ -409,7 +409,7 @@ ECode CWebView::GetFavicon(
     VALIDATE_NOT_NULL(bitmap);
     AutoPtr<IBitmap> _bitmap = WebView::GetFavicon();
     *bitmap = _bitmap.Get();
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -505,7 +505,7 @@ ECode CWebView::CopyBackForwardList(
     VALIDATE_NOT_NULL(wfl);
     AutoPtr<IWebBackForwardList> _wfl = WebView::CopyBackForwardList();
     *wfl = _wfl.Get();
-    INTERFACE_ADDREF(*wfl);
+    REFCOUNT_ADD(*wfl);
     return NOERROR;
 }
 
@@ -601,7 +601,7 @@ ECode CWebView::GetSettings(
     VALIDATE_NOT_NULL(webSetting);
     AutoPtr<IWebSettings> _webSetting = WebView::GetSettings();
     *webSetting = _webSetting.Get();
-    INTERFACE_ADDREF(*webSetting);
+    REFCOUNT_ADD(*webSetting);
     return NOERROR;
 }
 
@@ -635,7 +635,7 @@ ECode CWebView::GetZoomControls(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> _view = WebView::GetZoomControls();
     *view = _view.Get();
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -682,7 +682,7 @@ ECode CWebView::GetWebViewProvider(
     VALIDATE_NOT_NULL(provider);
     AutoPtr<IWebViewProvider> _provider = WebView::GetWebViewProvider();
     *provider = _provider.Get();
-    INTERFACE_ADDREF(*provider);
+    REFCOUNT_ADD(*provider);
     return NOERROR;
 }
 

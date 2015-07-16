@@ -25,7 +25,7 @@ ECode MonkeyEventQueue::GetFirst(
 {
     VALIDATE_NOT_NULL(monkeyEvent)
     *monkeyEvent = mList.GetFront();
-    INTERFACE_ADDREF(*monkeyEvent)
+    REFCOUNT_ADD(*monkeyEvent)
     return NOERROR;
 }
 

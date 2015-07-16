@@ -28,7 +28,7 @@ ECode CTestFailure::FailedTest(
     AutoPtr<ITest> t;
     mFailedTest->Resolve(EIID_ITest, (IInterface**)&t);
     *test = t;
-    INTERFACE_ADDREF(*test);
+    REFCOUNT_ADD(*test);
     return NOERROR;
 }
 

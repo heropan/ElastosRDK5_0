@@ -62,7 +62,7 @@ ECode CSimpleExpandableListAdapter::NewChildView(
 {
     AutoPtr<IView> v = SimpleExpandableListAdapter::NewChildView(isLastChild, parent);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -144,7 +144,7 @@ ECode CSimpleExpandableListAdapter::GetGroup(
     VALIDATE_NOT_NULL(child);
     AutoPtr<IInterface> temp = SimpleExpandableListAdapter::GetGroup(groupPosition);
     *child = temp;
-    INTERFACE_ADDREF(*child);
+    REFCOUNT_ADD(*child);
     return NOERROR;
 }
 
@@ -156,7 +156,7 @@ ECode CSimpleExpandableListAdapter::GetChild(
     VALIDATE_NOT_NULL(child);
     AutoPtr<IInterface> temp = SimpleExpandableListAdapter::GetChild(groupPosition, childPosition);
     *child = temp;
-    INTERFACE_ADDREF(*child);
+    REFCOUNT_ADD(*child);
     return NOERROR;
 }
 
@@ -197,7 +197,7 @@ ECode CSimpleExpandableListAdapter::GetGroupView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = SimpleExpandableListAdapter::GetGroupView(groupPosition, isExpanded, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -212,7 +212,7 @@ ECode CSimpleExpandableListAdapter::GetChildView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> temp = SimpleExpandableListAdapter::GetChildView(groupPosition, childPosition, isLastChild, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

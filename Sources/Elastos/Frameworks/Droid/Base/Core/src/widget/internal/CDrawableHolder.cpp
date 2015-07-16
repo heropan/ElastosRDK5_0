@@ -36,7 +36,7 @@ ECode CDrawableHolder::AddAnimTo(
     AutoPtr<IObjectAnimator> temp;
     temp= DrawableHolder::AddAnimTo(duration, delay, property, toValue, replace);
     *animator = temp;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 
@@ -134,7 +134,7 @@ ECode CDrawableHolder::GetDrawable(
     AutoPtr<IBitmapDrawable> temp;
     temp = DrawableHolder::GetDrawable();
     *d = temp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 

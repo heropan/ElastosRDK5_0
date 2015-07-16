@@ -90,7 +90,7 @@ ECode CDatePicker::GetCalendarView (
     VALIDATE_NOT_NULL(view);
     AutoPtr<ICalendarView> calendarView = DatePicker::GetCalendarView();
     *view = calendarView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -181,7 +181,7 @@ ECode CDatePicker::GetForeground(
     VALIDATE_NOT_NULL(foreground);
     AutoPtr<IDrawable> g = DatePicker::GetForeground();
     *foreground = g;
-    INTERFACE_ADDREF(*foreground);
+    REFCOUNT_ADD(*foreground);
     return NOERROR;
 }
 

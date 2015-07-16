@@ -810,7 +810,7 @@ ECode TableLayout::GenerateLayoutParams(
     AutoPtr<ITableLayoutLayoutParams> lp;
     FAIL_RETURN(CTableLayoutLayoutParams::New(GetContext(), attrs, (ITableLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

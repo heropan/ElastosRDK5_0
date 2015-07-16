@@ -118,20 +118,20 @@ ECode MonkeySourceNetwork::FlipCommand::TranslateCommand(
             CMonkeyFlipEvent::New(TRUE, (IMonkeyFlipEvent**)&e);
             queue->EnqueueEvent(IMonkeyEvent::Probe(e));
             *ret = OK;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
         else if(direction.Equals("close")) {
             CMonkeyFlipEvent::New(FALSE, (IMonkeyFlipEvent**)&e);
             queue->EnqueueEvent((IMonkeyEvent*)e.Get());
             *ret = OK;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
     }
 
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -164,7 +164,7 @@ ECode MonkeySourceNetwork::TouchCommand::TranslateCommand(
 
         if (-1 == action) {
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
@@ -173,12 +173,12 @@ ECode MonkeySourceNetwork::TouchCommand::TranslateCommand(
         e->AddPointer(0, x, y);
         queue->EnqueueEvent((IMonkeyEvent*)e.Get());
         *ret = OK;
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         return NOERROR;
     }
 
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -201,13 +201,13 @@ ECode MonkeySourceNetwork::TrackballCommand::TranslateCommand(
         CMonkeyTrackballEvent::New(IMotionEvent::ACTION_MOVE, (IMonkeyTrackballEvent**)&e);
         e->AddPointer(0, dx, dy);
         queue->EnqueueEvent(IMonkeyEvent::Probe(e));
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         *ret = OK;
         return NOERROR;
     }
 
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -225,7 +225,7 @@ ECode MonkeySourceNetwork::KeyCommand::TranslateCommand(
         if (keyCode < 0) {
             //Ok, you gave us something bad.
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
@@ -239,7 +239,7 @@ ECode MonkeySourceNetwork::KeyCommand::TranslateCommand(
 
         if (-1 == action) {
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
@@ -247,12 +247,12 @@ ECode MonkeySourceNetwork::KeyCommand::TranslateCommand(
         CMonkeyKeyEvent::New(action, keyCode, (IMonkeyKeyEvent**)&e);
         queue->EnqueueEvent((IMonkeyEvent*)e.Get());
         *ret = OK;
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         return NOERROR;
     }
 
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -300,7 +300,7 @@ ECode MonkeySourceNetwork::SleepCommand::TranslateCommand(
         ECode err = StringUtils::ParseInt32(sleepStr, &sleep);
         if (FAILED(err)) {
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
@@ -308,11 +308,11 @@ ECode MonkeySourceNetwork::SleepCommand::TranslateCommand(
         CMonkeyThrottleEvent::New(sleep, (IMonkeyThrottleEvent**)&e);
         queue->EnqueueEvent(IMonkeyEvent::Probe(e));
         *ret = OK;
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         return NOERROR;
     }
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -345,11 +345,11 @@ ECode MonkeySourceNetwork::TypeCommand::TranslateCommand(
         }
 
         *ret = OK;
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         return NOERROR;
     }
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -364,12 +364,12 @@ ECode MonkeySourceNetwork::WakeCommand::TranslateCommand(
 
     if (!Wake()) {
         *ret = EARG;
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         return NOERROR;
     }
 
     *ret = OK;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -388,14 +388,14 @@ ECode MonkeySourceNetwork::TapCommand::TranslateCommand(
         ECode err = StringUtils::ParseInt32((*command)[1], &x);
         if (FAILED(err)) {
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
         err = StringUtils::ParseInt32((*command)[2], &y);
         if(FAILED(err)) {
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
@@ -426,7 +426,7 @@ ECode MonkeySourceNetwork::PressCommand::TranslateCommand(
             //Ok, you gave us something bad.
             Logger::E(TAG, "Can't find keyname: %s", (*command)[1].string());
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
         AutoPtr<IMonkeyKeyEvent> e;
@@ -436,11 +436,11 @@ ECode MonkeySourceNetwork::PressCommand::TranslateCommand(
         CMonkeyKeyEvent::New(IKeyEvent::ACTION_UP, keyCode, (IMonkeyKeyEvent**)&e);
         queue->EnqueueEvent(IMonkeyEvent::Probe(e));
         *ret = OK;
-        INTERFACE_ADDREF(*ret)
+        REFCOUNT_ADD(*ret)
         return NOERROR;
     }
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -462,7 +462,7 @@ ECode MonkeySourceNetwork::DeferReturnCommand::TranslateCommand(
         }
         else {
             *ret = EARG;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
 
@@ -476,12 +476,12 @@ ECode MonkeySourceNetwork::DeferReturnCommand::TranslateCommand(
             deferredCommand->TranslateCommand(parts, queue, (IMonkeyCommandReturn**)&cmdRet);
             sDeferredReturn = new DeferredReturn(eventId, cmdRet, timeout);
             *ret = OK;
-            INTERFACE_ADDREF(*ret)
+            REFCOUNT_ADD(*ret)
             return NOERROR;
         }
     }
     *ret = EARG;
-    INTERFACE_ADDREF(*ret)
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -512,7 +512,7 @@ ECode MonkeySourceNetwork::CommandQueueImpl::GetNextQueuedEvent(
 {
     VALIDATE_NOT_NULL(event)
     *event = queueEvents->GetFront();
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     queueEvents->PopFront();
     return NOERROR;
 }
@@ -540,7 +540,7 @@ MonkeySourceNetwork::DeferredReturn::WaitForEvent(
     }
 
     *mcr = mDeferredReturn;
-    INTERFACE_ADDREF(*mcr)
+    REFCOUNT_ADD(*mcr)
     return NOERROR;
 }
 
@@ -725,7 +725,7 @@ ECode MonkeySourceNetwork::GetNextEvent(
         if (queuedEvent != NULL) {
             // dispatch the event
             *monkeyEvent = queuedEvent;
-            INTERFACE_ADDREF(*monkeyEvent);
+            REFCOUNT_ADD(*monkeyEvent);
             return NOERROR;
         }
 
@@ -762,7 +762,7 @@ ECode MonkeySourceNetwork::GetNextEvent(
             AutoPtr<IMonkeyNoopEvent> event;
             CMonkeyNoopEvent::New((IMonkeyNoopEvent**)&event);
             *monkeyEvent = event;
-            INTERFACE_ADDREF(*monkeyEvent)
+            REFCOUNT_ADD(*monkeyEvent)
             return NOERROR;
         }
 

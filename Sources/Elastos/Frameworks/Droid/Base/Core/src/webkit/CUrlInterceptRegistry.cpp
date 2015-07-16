@@ -49,7 +49,7 @@ ECode CUrlInterceptRegistry::GetSurrogate(
     VALIDATE_NOT_NULL(cacheResult);
     AutoPtr<ICacheManagerCacheResult> result = UrlInterceptRegistry::GetSurrogate(url, headers);
     *cacheResult = result;
-    INTERFACE_ADDREF(*cacheResult);
+    REFCOUNT_ADD(*cacheResult);
     return NOERROR;
 }
 
@@ -61,7 +61,7 @@ ECode CUrlInterceptRegistry::GetPluginData(
     VALIDATE_NOT_NULL(headers);
     AutoPtr<IPluginData> pd = UrlInterceptRegistry::GetPluginData(url, headers);
     *pluginData = pd;
-    INTERFACE_ADDREF(*pluginData);
+    REFCOUNT_ADD(*pluginData);
     return NOERROR;
 }
 

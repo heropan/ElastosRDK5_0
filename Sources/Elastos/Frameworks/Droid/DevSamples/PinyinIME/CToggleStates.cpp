@@ -88,7 +88,7 @@ ECode CToggleStates::GetKeyStates(
 {
     VALIDATE_NOT_NULL(keyStates);
     *keyStates = mKeyStates;
-    INTERFACE_ADDREF(*keyStates);
+    REFCOUNT_ADD(*keyStates);
     return NOERROR;
 }
 

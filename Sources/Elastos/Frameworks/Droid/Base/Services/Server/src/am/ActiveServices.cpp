@@ -330,7 +330,7 @@ ECode ActiveServices::StartServiceLocked(
        return CComponentName::New(String("!!"), error, name);
    }
    *name = r->mName;
-   INTERFACE_ADDREF(*name);
+   REFCOUNT_ADD(*name);
    return NOERROR;
 }
 
@@ -422,7 +422,7 @@ ECode ActiveServices::PeekServiceLocked(
    }
 
    *token = ret;
-   INTERFACE_ADDREF(*token);
+   REFCOUNT_ADD(*token);
    return NOERROR;
 }
 
@@ -2247,7 +2247,7 @@ ECode ActiveServices::GetRunningServiceControlPanelLocked(
             for (cit = conn->Begin(); cit != conn->End(); ++cit) {
                 if ((*cit)->mClientIntent != NULL) {
                     *intent = (*cit)->mClientIntent;
-                    INTERFACE_ADDREF(*intent);
+                    REFCOUNT_ADD(*intent);
                     return NOERROR;
                 }
             }

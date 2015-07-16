@@ -1601,7 +1601,7 @@ ECode CNotificationManagerService::EnqueueNotificationInternal(
     }
 
     *idOut = ArrayOf<Int32>::Alloc(1);
-    INTERFACE_ADDREF(*idOut);
+    REFCOUNT_ADD(*idOut);
     (**idOut)[0] = id;
     return NOERROR;
 }

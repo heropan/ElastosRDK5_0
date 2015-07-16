@@ -158,7 +158,7 @@ ECode CCalendarView::GetSelectedDateVerticalBar(
 {
     AutoPtr<IDrawable> temp = CalendarView::GetSelectedDateVerticalBar();
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

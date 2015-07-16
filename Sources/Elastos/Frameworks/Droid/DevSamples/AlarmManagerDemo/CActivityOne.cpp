@@ -3,7 +3,7 @@
 #include "os/ServiceManager.h"
 #include "os/SystemProperties.h"
 #include <elastos/System.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elautoptr.h>
 #include <stdio.h>

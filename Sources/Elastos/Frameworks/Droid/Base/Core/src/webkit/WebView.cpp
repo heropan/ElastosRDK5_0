@@ -29,7 +29,7 @@ ECode WebView::WebViewTransport::GetWebView(
 {
     Mutex::Autolock lock(mLock);
     *webView = mWebview;
-    INTERFACE_ADDREF(*webView);
+    REFCOUNT_ADD(*webView);
     return NOERROR;
 }
 

@@ -5,7 +5,7 @@
 #include "os/Binder.h"
 #include "os/ServiceManager.h"
 #include <elastos/core/StringUtils.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -356,7 +356,7 @@ ECode CSession::PrepareDrag(
     AutoPtr<IBinder> b = mService->PrepareDragSurface(window, mSurfaceSession, flags,
             width, height, *outSurface);
     *binder = b;
-    INTERFACE_ADDREF(*binder);
+    REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -585,7 +585,7 @@ ECode CSession::SendWallpaperCommand(
     AutoPtr<IBundle> bundle = mService->SendWindowWallpaperCommandLocked(
             win, action, x, y, z, extras, sync);
     *result = bundle;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     // } finally {
     Binder::RestoreCallingIdentity(ident);
     // }

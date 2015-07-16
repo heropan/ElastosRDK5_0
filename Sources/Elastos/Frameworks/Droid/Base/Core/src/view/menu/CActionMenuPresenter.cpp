@@ -117,7 +117,7 @@ ECode CActionMenuPresenter::CreateItemView(
 {
     AutoPtr<IMenuItemView> temp = ActionMenuPresenter::CreateItemView(parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

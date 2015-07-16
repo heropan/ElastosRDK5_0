@@ -67,7 +67,7 @@ ECode CTabWidget::GetChildTabViewAt(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = TabWidget::GetChildTabViewAt(index);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

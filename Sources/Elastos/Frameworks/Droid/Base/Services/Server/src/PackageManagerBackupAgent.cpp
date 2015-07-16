@@ -407,7 +407,7 @@ ECode PackageManagerBackupAgent::ReadSignatureArray(
         _sigs->Set(i, sig);
     }
     *sigs = _sigs;
-    INTERFACE_ADDREF(*sigs);
+    REFCOUNT_ADD(*sigs);
     return NOERROR;
     // } catch (IOException e) {
     //     Slog.e(TAG, "Unable to read signatures");

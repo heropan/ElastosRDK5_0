@@ -152,7 +152,7 @@ ECode DisplayViewport::GetLogicalFrame(
 {
     VALIDATE_NOT_NULL(frame);
     *frame = mLogicalFrame;
-    INTERFACE_ADDREF(*frame);
+    REFCOUNT_ADD(*frame);
     return NOERROR;
 }
 
@@ -168,7 +168,7 @@ ECode DisplayViewport::GetPhysicalFrame(
 {
     VALIDATE_NOT_NULL(frame);
     *frame = mPhysicalFrame;
-    INTERFACE_ADDREF(*frame);
+    REFCOUNT_ADD(*frame);
     return NOERROR;
 }
 

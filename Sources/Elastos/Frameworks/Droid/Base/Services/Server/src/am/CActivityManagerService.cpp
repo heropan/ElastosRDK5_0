@@ -1623,7 +1623,7 @@ ECode CActivityManagerService::GetSystemContext(
         FAIL_RETURN(CContextImpl::New((IContextImpl**)&sSystemContext));
     }
     *ctx = sSystemContext;
-    INTERFACE_ADDREF(*ctx);
+    REFCOUNT_ADD(*ctx);
     return NOERROR;
 }
 
@@ -4631,7 +4631,7 @@ ECode CActivityManagerService::GetProcessMemoryInfo(
         dbg->GetMemoryInfo((*pids)[i], (*infos)[i]);
     }
     *info = infos;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -4650,7 +4650,7 @@ ECode CActivityManagerService::GetProcessPss(
         dbg->GetPss((*pids)[i], &(*pss)[i]);
     }
     *processPss = pss;
-    INTERFACE_ADDREF(*processPss);
+    REFCOUNT_ADD(*processPss);
     return NOERROR;
 }
 
@@ -5959,7 +5959,7 @@ ECode CActivityManagerService::GetIntentSenderLocked(
                 }
             }
             *sender = rec;
-            INTERFACE_ADDREF(*sender);
+            REFCOUNT_ADD(*sender);
             return NOERROR;
         }
         rec->mCanceled = TRUE;
@@ -5967,7 +5967,7 @@ ECode CActivityManagerService::GetIntentSenderLocked(
     }
     if (noCreate) {
         *sender = rec;
-        INTERFACE_ADDREF(*sender);
+        REFCOUNT_ADD(*sender);
         return NOERROR;
     }
 
@@ -5984,7 +5984,7 @@ ECode CActivityManagerService::GetIntentSenderLocked(
         activity->mPendingResults->Insert(wr);
     }
     *sender = rec;
-    INTERFACE_ADDREF(*sender);
+    REFCOUNT_ADD(*sender);
     return NOERROR;
 }
 
@@ -7097,7 +7097,7 @@ ECode CActivityManagerService::NewUriPermissionOwner(
     Object::Autolock lock(mLock);
     AutoPtr<UriPermissionOwner> owner = new UriPermissionOwner(this, (Handle32)&name);
     *token = owner->GetExternalTokenLocked();
-    INTERFACE_ADDREF(*token);
+    REFCOUNT_ADD(*token);
 
     return NOERROR;
 }
@@ -7366,7 +7366,7 @@ ECode CActivityManagerService::GetTasks(
     }
 
     *tasks = listContainer;
-    INTERFACE_ADDREF(*tasks);
+    REFCOUNT_ADD(*tasks);
     return NOERROR;
 }
 
@@ -7482,7 +7482,7 @@ ECode CActivityManagerService::GetTaskThumbnails(
         if (tr != NULL) {
             AutoPtr<IActivityManagerTaskThumbnails> temp = mMainStack->GetTaskThumbnailsLocked(tr);
             *thumbnails = temp;
-            INTERFACE_ADDREF(*thumbnails);
+            REFCOUNT_ADD(*thumbnails);
             return NOERROR;
         }
     }
@@ -7502,7 +7502,7 @@ ECode CActivityManagerService::GetTaskTopThumbnail(
         SLOGGERD(TAG, "CActivityManagerService::GetTaskTopThumbnail 20");
         AutoPtr<IBitmap> bitmap = mMainStack->GetTaskTopThumbnailLocked(tr);
         *task = bitmap;
-        INTERFACE_ADDREF(*task);
+        REFCOUNT_ADD(*task);
         return NOERROR;
     }
     *task = NULL;
@@ -8269,7 +8269,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
                 // to make its own.
                 holder->SetContentProvider(NULL);
                 *providerHolder = holder;
-                INTERFACE_ADDREF(*providerHolder);
+                REFCOUNT_ADD(*providerHolder);
                 return NOERROR;
             }
 
@@ -8408,7 +8408,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
                 // process, or can run as root (so can be in any process).
                 AutoPtr<IContentProviderHolder> holder = cpr->NewHolder(NULL);
                 *providerHolder = holder.Get();
-                INTERFACE_ADDREF(*providerHolder);
+                REFCOUNT_ADD(*providerHolder);
                 return NOERROR;
             }
 
@@ -8511,7 +8511,7 @@ ECode CActivityManagerService::GetContentProviderImpl(
     }
     AutoPtr<IContentProviderHolder> holder = cpr != NULL ? cpr->NewHolder(conn) : NULL;
     *providerHolder = holder.Get();
-    INTERFACE_ADDREF(*providerHolder);
+    REFCOUNT_ADD(*providerHolder);
     return NOERROR;
 }
 
@@ -9140,7 +9140,7 @@ ECode CActivityManagerService::OpenContentUri(
         Slogger::D(TAG, "Failed to get provider for authority '%s'", name.string());
     }
     *result = pfd;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -11249,7 +11249,7 @@ ECode CActivityManagerService::GetProcessesInErrorState(
         }
     }
     *procs = listContainer;
-    INTERFACE_ADDREF(*procs);
+    REFCOUNT_ADD(*procs);
     return NOERROR;
 }
 
@@ -11383,7 +11383,7 @@ ECode CActivityManagerService::GetRunningAppProcesses(
         }
     }
     *appProcs = runList;
-    INTERFACE_ADDREF(*appProcs);
+    REFCOUNT_ADD(*appProcs);
     return NOERROR;
 }
 
@@ -11434,7 +11434,7 @@ ECode CActivityManagerService::GetRunningExternalApplications(
         }
     }
     *apps = retList;
-    INTERFACE_ADDREF(*apps);
+    REFCOUNT_ADD(*apps);
     return NOERROR;
 }
 
@@ -13716,7 +13716,7 @@ ECode CActivityManagerService::GetServices(
         for (; it != infoList->End(); ++it) {
             IInterface* obj = (IInterface*)((*it).Get());
             (*services)->Add(obj);
-            INTERFACE_ADDREF(obj);
+            REFCOUNT_ADD(obj);
         }
 
         infoList = NULL;
@@ -13799,7 +13799,7 @@ ECode CActivityManagerService::StartServiceInPackage(
     Binder::RestoreCallingIdentity(origId);
 
     *componentName = name;
-    INTERFACE_ADDREF(*componentName);
+    REFCOUNT_ADD(*componentName);
     return ec;
 }
 
@@ -14446,7 +14446,7 @@ ECode CActivityManagerService::RegisterReceiver(
 
     if (receiver == NULL) {
         *intent = sticky;
-        INTERFACE_ADDREF(*intent);
+        REFCOUNT_ADD(*intent);
         return NOERROR;
     }
 
@@ -14466,7 +14466,7 @@ ECode CActivityManagerService::RegisterReceiver(
             assert(proxy != NULL);
             if (FAILED(proxy->LinkToDeath(rl.Get(), 0))) {
                 *intent = sticky;
-                INTERFACE_ADDREF(*intent);
+                REFCOUNT_ADD(*intent);
                 return NOERROR;
             }
             rl->mLinkedToDeath = TRUE;
@@ -14523,7 +14523,7 @@ ECode CActivityManagerService::RegisterReceiver(
     }
 
     *intent = sticky;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -15236,7 +15236,7 @@ ECode CActivityManagerService::VerifyBroadcastLocked(
 
     if (*newIntent == NULL) {
         *newIntent = intent;
-        INTERFACE_ADDREF(*newIntent);
+        REFCOUNT_ADD(*newIntent);
     }
     return NOERROR;
 }
@@ -18456,7 +18456,7 @@ ECode CActivityManagerService::GetRunningUserIds(
 
     Object::Autolock lock(mLock);
     *userIds = mStartedUserArray;
-    INTERFACE_ADDREF(*userIds);
+    REFCOUNT_ADD(*userIds);
     return NOERROR;
 }
 

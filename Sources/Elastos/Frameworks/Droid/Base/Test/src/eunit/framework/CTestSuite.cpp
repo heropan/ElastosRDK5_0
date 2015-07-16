@@ -1,6 +1,6 @@
 
 #include "eunit/framework/CTestSuite.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::StringBuilder;
@@ -124,12 +124,12 @@ ECode CTestSuite::GetTestConstructor(
 
     if (ctor1 != NULL) {
         *constructor = ctor1;
-        INTERFACE_ADDREF(*constructor);
+        REFCOUNT_ADD(*constructor);
         return NOERROR;
     }
     if (ctor0 != NULL) {
         *constructor = ctor0;
-        INTERFACE_ADDREF(*constructor);
+        REFCOUNT_ADD(*constructor);
         return NOERROR;
     }
     return E_NO_SUCH_METHOD_EXCEPTION;
@@ -448,7 +448,7 @@ ECode CTestSuite::TestAt(
     AutoPtr<IInterface> elem;
     mTests->Get(index, (IInterface**)&elem);
     *test = ITest::Probe(elem);
-    INTERFACE_ADDREF(*test);
+    REFCOUNT_ADD(*test);
     return NOERROR;
 }
 

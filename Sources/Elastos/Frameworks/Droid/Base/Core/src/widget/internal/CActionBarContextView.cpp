@@ -74,7 +74,7 @@ ECode CActionBarContextView::GetTitle(
     assert(title != NULL);
     AutoPtr<ICharSequence> t = ActionBarContextView::GetTitle();
     *title = t;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
 
     return NOERROR;
 }
@@ -85,7 +85,7 @@ ECode CActionBarContextView::GetSubtitle(
     assert(subTitle != NULL);
     AutoPtr<ICharSequence> t = ActionBarContextView::GetSubtitle();
     *subTitle = t;
-    INTERFACE_ADDREF(*subTitle);
+    REFCOUNT_ADD(*subTitle);
 
     return NOERROR;
 }

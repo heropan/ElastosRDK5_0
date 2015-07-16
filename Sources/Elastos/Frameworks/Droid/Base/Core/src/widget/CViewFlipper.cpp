@@ -107,7 +107,7 @@ ECode CViewFlipper::GetForeground(
     VALIDATE_NOT_NULL(foreground);
     AutoPtr<IDrawable> d = ViewFlipper::GetForeground();
     *foreground = d;
-    INTERFACE_ADDREF(*foreground);
+    REFCOUNT_ADD(*foreground);
     return NOERROR;
 }
 

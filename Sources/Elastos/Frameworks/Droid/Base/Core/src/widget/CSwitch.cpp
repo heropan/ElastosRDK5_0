@@ -126,7 +126,7 @@ ECode CSwitch::GetTrackDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> d = Switch::GetTrackDrawable();
     *drawable = d;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -148,7 +148,7 @@ ECode CSwitch::GetThumbDrawable(
     VALIDATE_NOT_NULL(drawable);
     AutoPtr<IDrawable> d = Switch::GetThumbDrawable();
     *drawable = d;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 
@@ -158,7 +158,7 @@ ECode CSwitch::GetTextOn(
     VALIDATE_NOT_NULL(c);
     AutoPtr<ICharSequence> chars = Switch::GetTextOn();
     *c = chars;
-    INTERFACE_ADDREF(*c);
+    REFCOUNT_ADD(*c);
     return NOERROR;
 }
 
@@ -174,7 +174,7 @@ ECode CSwitch::GetTextOff(
     VALIDATE_NOT_NULL(c);
     AutoPtr<ICharSequence> chars = Switch::GetTextOff();
     *c = chars;
-    INTERFACE_ADDREF(*c);
+    REFCOUNT_ADD(*c);
     return NOERROR;
 }
 
@@ -198,7 +198,7 @@ ECode CSwitch::GetButtonDrawable(
 {
     AutoPtr<IDrawable> dTemp = Switch::GetButtonDrawable();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 

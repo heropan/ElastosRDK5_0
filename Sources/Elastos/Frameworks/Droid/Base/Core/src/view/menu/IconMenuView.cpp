@@ -433,7 +433,7 @@ ECode IconMenuView::GenerateLayoutParams(
     AutoPtr<IIconMenuViewLayoutParams> lp;
     FAIL_RETURN(CIconMenuViewLayoutParams::New(GetContext(), attrs, (IIconMenuViewLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -473,7 +473,7 @@ ECode IconMenuView::GetLayout(
 {
     VALIDATE_NOT_NULL(layout);
     *layout = mLayout;
-    INTERFACE_ADDREF(*layout);
+    REFCOUNT_ADD(*layout);
     return NOERROR;
 }
 

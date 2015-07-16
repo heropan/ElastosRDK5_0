@@ -33,7 +33,7 @@ ECode CAlphabetIndexer::GetSections(
     VALIDATE_NOT_NULL(ppSections);
     AutoPtr<ArrayOf<IInterface*> > temp = AlphabetIndexer::GetSections();
     *ppSections = temp;
-    INTERFACE_ADDREF(*ppSections);
+    REFCOUNT_ADD(*ppSections);
     return NOERROR;
 }
 

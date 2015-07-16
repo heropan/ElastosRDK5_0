@@ -49,7 +49,7 @@ ECode AdapterView::AdapterContextMenuInfo::GetTargetView(
 {
     VALIDATE_NOT_NULL(targetView);
     *targetView = mTargetView;
-    INTERFACE_ADDREF(*targetView);
+    REFCOUNT_ADD(*targetView);
     return NOERROR;
 }
 

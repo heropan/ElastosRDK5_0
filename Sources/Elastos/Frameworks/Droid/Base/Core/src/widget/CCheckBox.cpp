@@ -62,7 +62,7 @@ ECode CCheckBox::GetButtonDrawable(
 {
     AutoPtr<IDrawable> dTemp = CheckBox::GetButtonDrawable();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 

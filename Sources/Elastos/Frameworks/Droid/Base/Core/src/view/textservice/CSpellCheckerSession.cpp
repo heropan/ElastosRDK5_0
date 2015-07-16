@@ -111,7 +111,7 @@ ECode CSpellCheckerSession::GetTextServicesSessionListener(
     VALIDATE_NOT_NULL(listener);
     AutoPtr<ITextServicesSessionListener> temp = SpellCheckerSession::GetTextServicesSessionListener();
     *listener = temp;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 
@@ -124,7 +124,7 @@ ECode CSpellCheckerSession::GetSpellCheckerSessionListener(
     VALIDATE_NOT_NULL(listener);
     AutoPtr<ISpellCheckerSessionListener> temp = SpellCheckerSession::GetSpellCheckerSessionListener();
     *listener = temp;
-    INTERFACE_ADDREF(*listener);
+    REFCOUNT_ADD(*listener);
     return NOERROR;
 }
 

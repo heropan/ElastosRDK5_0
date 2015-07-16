@@ -1,44 +1,22 @@
 
-#include <elastos.h>
-#include <elaatomics.h>
-#include <elautoptr.h>
-#include <elrefbase.h>
+#include <elastos/core/Object.h>
 #include <stdio.h>
 
-using Elastos::AutoPtr;
-using Elastos::ArrayOf;
-using Elastos::Int32;
+using namespace Elastos;
+using namespace Elastos::Core;
 
-class C1 : public ElRefBase
+class C1
+    : public Object
 {
 public:
-    C1():mRef(0)
+    C1()
     {
-        printf(" == Create %08x...\n", this);
+        printf(" == Create %p...\n", this);
     }
 
     ~C1()
     {
-        printf(" == Delete %08x...\n", this);
-    }
-
-    UInt32 AddRef()
-    {
-        printf(" > AddRef %08x...\n", this);
-        atomic_inc(&mRef);
-        return mRef;
-    }
-
-    UInt32 Release()
-    {
-        printf(" > Release %08x...\n", this);
-
-        atomic_dec(&mRef);
-        if (0 == mRef) {
-            delete this;
-            return 0;
-        }
-        return mRef;
+        printf(" == Delete %p...\n", this);
     }
 
     void Print(const char* msg = NULL)
@@ -50,10 +28,9 @@ public:
             printf(" print object\n");
         }
     }
-
-private:
-    Int32 mRef;
 };
+
+DEFINE_CONVERSION_FOR(C1, IInterface)
 
 void f1()
 {
@@ -124,21 +101,11 @@ void testAutoPtr()
     printf("==== call f4 end ====\n");
 }
 
-void testArrayOfAutoPtr()
+void testArrayOf()
 {
     {
         printf("==== ArrayOf<C1> ====\n");
         ArrayOf<C1*>* arr = ArrayOf<C1*>::Alloc(2);
-        for (Int32 i = 0; i < arr->GetLength(); ++i) {
-            arr->Set(i, new C1());
-        }
-
-        arr->Release();
-    }
-
-    {
-        printf("==== ArrayOf<AutoPtr<C1> > ====\n");
-        ArrayOf<AutoPtr<C1> >* arr = ArrayOf<AutoPtr<C1> >::Alloc(2);
         for (Int32 i = 0; i < arr->GetLength(); ++i) {
             arr->Set(i, new C1());
         }
@@ -153,26 +120,6 @@ void testArrayOfAutoPtr()
             arr->Set(i, new C1());
         }
     }
-
-    {
-        printf("\n==== AutoPtr<ArrayOf<AutoPtr<C1> > > ====\n");
-        AutoPtr<ArrayOf<AutoPtr<C1> > > arr = ArrayOf<AutoPtr<C1> >::Alloc(2);
-        for (Int32 i = 0; i < arr->GetLength(); ++i) {
-            arr->Set(i, new C1());
-        }
-    }
-
-    {
-        printf("\n==== AutoPtr<ArrayOf<AutoPtr<C1> > > Copy ====\n");
-        AutoPtr<ArrayOf<AutoPtr<C1> > > arr1 = ArrayOf<AutoPtr<C1> >::Alloc(2);
-        for (Int32 i = 0; i < arr1->GetLength(); ++i) {
-            arr1->Set(i, new C1());
-        }
-
-        AutoPtr<ArrayOf<AutoPtr<C1> > > arr2 = ArrayOf<AutoPtr<C1> >::Alloc(2);
-        arr2->Copy(&*arr1);
-        arr2->Copy(&*arr1);
-    }
 }
 
 int main(int argc, char *argv[])
@@ -181,9 +128,9 @@ int main(int argc, char *argv[])
     testAutoPtr();
     printf("==== call testAutoPtr end ====\n");
 
-    printf("==== call testArrayOfAutoPtr ====\n");
-    testArrayOfAutoPtr();
-    printf("==== call testArrayOfAutoPtr end ====\n");
+    printf("==== call testArrayOf ====\n");
+    testArrayOf();
+    printf("==== call testArrayOf end ====\n");
 
     return 0;
 }

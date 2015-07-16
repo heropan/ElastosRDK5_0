@@ -405,7 +405,7 @@ ECode CTextServicesManagerService::SpellCheckerBindGroup::AddListener(
         // }
         CleanLocked();
         *recipient = localRecipient;
-        INTERFACE_ADDREF(*recipient);
+        REFCOUNT_ADD(*recipient);
     }
     return NOERROR;
 }
@@ -588,7 +588,7 @@ ECode CTextServicesManagerService::GetCurrentSpellChecker(
         ManagedISpellCheckerInfoMapIt it = mSpellCheckerMap.Find(curSpellCheckerId);
         if (it != mSpellCheckerMap.End()) {
             *info = it->mSecond;
-            INTERFACE_ADDREF(*info);
+            REFCOUNT_ADD(*info);
         }
     }
     return NOERROR;
@@ -678,7 +678,7 @@ ECode CTextServicesManagerService::GetCurrentSpellCheckerSubtype(
                 scs->GetLocale(&scsLocale);
                 if (candidateLocale.Equals(scsLocale)) {
                     *subtype = scs;
-                    INTERFACE_ADDREF(*subtype);
+                    REFCOUNT_ADD(*subtype);
                     return NOERROR;
                 }
                 else if (candidate == NULL) {
@@ -696,7 +696,7 @@ ECode CTextServicesManagerService::GetCurrentSpellCheckerSubtype(
                 }
                 // 3. Use the user specified spell check language
                 *subtype = scs;
-                INTERFACE_ADDREF(*subtype);
+                REFCOUNT_ADD(*subtype);
                 return NOERROR;
             }
         }
@@ -704,7 +704,7 @@ ECode CTextServicesManagerService::GetCurrentSpellCheckerSubtype(
         // 5. Simply just return it even if it's null which means we could find no suitable
         // spell check languages
         *subtype = candidate;
-        INTERFACE_ADDREF(*subtype);
+        REFCOUNT_ADD(*subtype);
         return NOERROR;
     }
 }
@@ -1069,7 +1069,7 @@ ECode CTextServicesManagerService::FindAvailSpellCheckerLocked(
                     Slogger::D(TAG, "findAvailSpellCheckerLocked: %s", packageName.string());
                 }
                 *info = sci;
-                INTERFACE_ADDREF(*info);
+                REFCOUNT_ADD(*info);
                 return NOERROR;
             }
         }
@@ -1078,7 +1078,7 @@ ECode CTextServicesManagerService::FindAvailSpellCheckerLocked(
         Slogger::W(TAG, "more than one spell checker service found, picking first");
     }
     *info = mSpellCheckerList[0];
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 

@@ -20,7 +20,7 @@ ECode CMimeTypeMapHelper::GetSingleton(
 {
 	VALIDATE_NOT_NULL(mimeTypeMap);
 	*mimeTypeMap = MimeTypeMap::sMimeTypeMap;
-	INTERFACE_ADDREF(*mimeTypeMap);
+	REFCOUNT_ADD(*mimeTypeMap);
 	return NOERROR;
 }
 

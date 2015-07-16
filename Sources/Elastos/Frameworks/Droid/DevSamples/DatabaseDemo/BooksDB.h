@@ -5,7 +5,7 @@
 #include <elautoptr.h>
 #include "Elastos.Droid.Core.h"
 #include "Elastos.Core.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <database/sqlite/SQLiteOpenHelper.h>
 #include <stdio.h>
 

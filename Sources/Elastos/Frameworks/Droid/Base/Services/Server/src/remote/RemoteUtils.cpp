@@ -1,7 +1,7 @@
 
 #include "remote/RemoteUtils.h"
 #include "remote/ResultMsg.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 

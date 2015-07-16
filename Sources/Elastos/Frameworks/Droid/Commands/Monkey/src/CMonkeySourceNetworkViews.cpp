@@ -1,7 +1,7 @@
 #include "CMonkeySourceNetworkViews.h"
 #include "MonkeySourceNetwork.h"
 #include <elastos/core/StringBuffer.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include "CMonkeyCommandReturn.h"
 #include <elastos/core/StringUtils.h>
 #include "CMonkeySourceNetworkViews.h"
@@ -205,7 +205,7 @@ ECode CMonkeySourceNetworkViews::QueryViewCommand::TranslateCommand(
         else
         {
             *ret = MonkeySourceNetwork::EARG;
-            INTERFACE_ADDREF(*ret);
+            REFCOUNT_ADD(*ret);
             return NOERROR;
         }
 
@@ -223,12 +223,12 @@ ECode CMonkeySourceNetworkViews::QueryViewCommand::TranslateCommand(
         else
         {
             *ret = MonkeySourceNetwork::EARG;
-            INTERFACE_ADDREF(*ret);
+            REFCOUNT_ADD(*ret);
             return NOERROR;
         }
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -299,7 +299,7 @@ ECode CMonkeySourceNetworkViews::GetViewsWithTextCommand::TranslateCommand(
             if(!suc)
             {
                 *ret = result;
-                INTERFACE_ADDREF(*ret);
+                REFCOUNT_ADD(*ret);
                 return NOERROR;
             }
             String tmp;
@@ -314,7 +314,7 @@ ECode CMonkeySourceNetworkViews::GetViewsWithTextCommand::TranslateCommand(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -348,7 +348,7 @@ ECode CMonkeySourceNetworkViews::GetLocation::Query(
         return NOERROR;
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -383,7 +383,7 @@ ECode CMonkeySourceNetworkViews::GetText::Query(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -404,7 +404,7 @@ ECode CMonkeySourceNetworkViews::GetClass::Query(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -423,7 +423,7 @@ ECode CMonkeySourceNetworkViews::GetChecked::Query(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -442,7 +442,7 @@ ECode CMonkeySourceNetworkViews::GetEnabled::Query(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -461,7 +461,7 @@ ECode CMonkeySourceNetworkViews::GetSelected::Query(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -486,7 +486,7 @@ ECode CMonkeySourceNetworkViews::SetSelected::Query(
         return NOERROR;
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -505,7 +505,7 @@ ECode CMonkeySourceNetworkViews::GetFocused::Query(
     }
 
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -530,7 +530,7 @@ ECode CMonkeySourceNetworkViews::SetFocused::Query(
         return NOERROR;
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -556,7 +556,7 @@ ECode CMonkeySourceNetworkViews::GetAccessibilityIds::Query(
         return NOERROR;
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -583,7 +583,7 @@ ECode CMonkeySourceNetworkViews::GetParent::Query(
         return NOERROR;
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -611,7 +611,7 @@ ECode CMonkeySourceNetworkViews::GetChildren::Query(
             if(!wasSuccessful)
             {
                 *ret = result;
-                INTERFACE_ADDREF(*ret);
+                REFCOUNT_ADD(*ret);
                 return NOERROR;
             }
             else
@@ -628,7 +628,7 @@ ECode CMonkeySourceNetworkViews::GetChildren::Query(
         return NOERROR;
     }
     *ret = MonkeySourceNetwork::EARG;
-    INTERFACE_ADDREF(*ret);
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -683,7 +683,7 @@ ECode CInputManagerService::MonitorInput(
     FAIL_RETURN(NativeRegisterInputChannel(inputChannel0, NULL, TRUE));
     FAIL_RETURN(inputChannel0->Dispose()); // don't need to retain the Java object reference
     *inputChannel = inputChannel1;
-    INTERFACE_ADDREF(*inputChannel);
+    REFCOUNT_ADD(*inputChannel);
 
     return NOERROR;
 }
@@ -808,7 +808,7 @@ ECode CInputManagerService::GetInputDevice(
         device->GetId(&id);
         if (id == deviceId) {
             *inputDevice = device;
-            INTERFACE_ADDREF(*inputDevice);
+            REFCOUNT_ADD(*inputDevice);
 
             return NOERROR;
         }
@@ -828,7 +828,7 @@ ECode CInputManagerService::GetInputDeviceIds(
     *deviceIds = ArrayOf<Int32>::Alloc(count);
     if (*deviceIds == NULL) return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*deviceIds);
+    REFCOUNT_ADD(*deviceIds);
     for (Int32 i = 0; i < count; i++) {
         Int32 id;
         (*mInputDevices)[i]->GetId(&id);
@@ -1072,7 +1072,7 @@ ECode CInputManagerService::GetKeyboardLayouts(
     if (*layouts == NULL)
         return E_OUT_OF_MEMORY_ERROR;
 
-    INTERFACE_ADDREF(*layouts);
+    REFCOUNT_ADD(*layouts);
 
     List<AutoPtr<IKeyboardLayout> >::Iterator iter = list.Begin();
     for (Int32 i = 0; iter != list.End(); ++iter, ++i) {
@@ -1338,7 +1338,7 @@ ECode CInputManagerService::GetKeyboardLayoutsForInputDevice(
     Mutex::Autolock lock(&mDataStoreLock);
     AutoPtr<ArrayOf<String> > temp = mDataStore->GetKeyboardLayouts(inputDeviceDescriptor);
     *keyboardLayoutDescriptors = temp;
-    INTERFACE_ADDREF(*keyboardLayoutDescriptors);
+    REFCOUNT_ADD(*keyboardLayoutDescriptors);
 
     return NOERROR;
 }

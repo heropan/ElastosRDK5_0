@@ -1,7 +1,7 @@
 
 #include "eunit/framework/Assert.h"
 #include <elastos/core/Math.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <Elastos.CoreLibrary.h>
 #include <utils/CallStack.h>
 

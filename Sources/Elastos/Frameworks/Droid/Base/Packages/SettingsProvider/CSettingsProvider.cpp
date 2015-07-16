@@ -70,7 +70,7 @@ ECode CSettingsProvider::SqlArguments::CreateSqlArguments(
     ECode ec = arguments->Init(url, where, args);
     if (SUCCEEDED(ec)) {
         *sqlArguments = arguments;
-        INTERFACE_ADDREF(*sqlArguments);
+        REFCOUNT_ADD(*sqlArguments);
         return NOERROR;
     }
     else {
@@ -87,7 +87,7 @@ ECode CSettingsProvider::SqlArguments::CreateSqlArguments(
     ECode ec = arguments->Init(url);
     if (SUCCEEDED(ec)) {
         *sqlArguments = arguments;
-        INTERFACE_ADDREF(*sqlArguments);
+        REFCOUNT_ADD(*sqlArguments);
         return NOERROR;
     }
     else {
@@ -937,7 +937,7 @@ ECode CSettingsProvider::Call(
         cache = sSystemCaches[callingUser];// GetOrEstablishDatabase ensure sSystemCaches containing the key of callingUser
         AutoPtr<IBundle> b = LookupValue(dbHelper, TABLE_SYSTEM, cache, request);
         *bundle = b;
-        INTERFACE_ADDREF(*bundle)
+        REFCOUNT_ADD(*bundle)
         return NOERROR;
     }
     if (ISettings::CALL_METHOD_GET_SECURE.Equals(method)) {
@@ -946,7 +946,7 @@ ECode CSettingsProvider::Call(
         cache = sSecureCaches[callingUser];
         AutoPtr<IBundle> b = LookupValue(dbHelper, TABLE_SECURE, cache, request);
         *bundle = b;
-        INTERFACE_ADDREF(*bundle)
+        REFCOUNT_ADD(*bundle)
         return NOERROR;
     }
     if (ISettings::CALL_METHOD_GET_GLOBAL.Equals(method)) {
@@ -956,7 +956,7 @@ ECode CSettingsProvider::Call(
         AutoPtr<DatabaseHelper> dbHelper1 = GetOrEstablishDatabase(IUserHandle::USER_OWNER);
         AutoPtr<IBundle> b = LookupValue(dbHelper1, TABLE_GLOBAL, sGlobalCache, request);
         *bundle = b;
-        INTERFACE_ADDREF(*bundle)
+        REFCOUNT_ADD(*bundle)
         return NOERROR;
     }
 
@@ -1174,7 +1174,7 @@ ECode CSettingsProvider::QueryForUser(
     //     throw e;
     // }
     *cursor = ret;
-    INTERFACE_ADDREF(*cursor)
+    REFCOUNT_ADD(*cursor)
     return NOERROR;
 }
 
@@ -1457,7 +1457,7 @@ ECode CSettingsProvider::InsertForUser(
     FAIL_RETURN(GetUriFor(url, initialValues, rowId, (IUri**)&temp))
     SendNotify(temp, desiredUserHandle);
     *outUri = url;
-    INTERFACE_ADDREF(*outUri)
+    REFCOUNT_ADD(*outUri)
     return NOERROR;
 }
 
@@ -1681,7 +1681,7 @@ ECode CSettingsProvider::OpenAssetFile(
                 return res->OpenRawResourceFd(Elastos::Droid::R::raw::fallbackring, fileDescriptor);
             }
             *fileDescriptor = temp;
-            INTERFACE_ADDREF(*fileDescriptor)
+            REFCOUNT_ADD(*fileDescriptor)
             return NOERROR;
             // } catch (FileNotFoundException ex) {
             //     // Since a non-null Uri was specified, but couldn't be opened,

@@ -98,7 +98,7 @@ ECode CSpinner::GetPopupBackground(
     VALIDATE_NOT_NULL(d);
     AutoPtr<IDrawable> dTemp = Spinner::GetPopupBackground();
     *d = dTemp;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -182,7 +182,7 @@ ECode CSpinner::GetPrompt(
     VALIDATE_NOT_NULL(prompt);
     AutoPtr<ICharSequence> cTemp = Spinner::GetPrompt();
     *prompt = cTemp;
-    INTERFACE_ADDREF(*prompt);
+    REFCOUNT_ADD(*prompt);
     return NOERROR;
 }
 

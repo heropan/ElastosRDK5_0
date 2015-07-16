@@ -152,7 +152,7 @@ ECode LocationProviderProxy::GetProperties(
     VALIDATE_NOT_NULL(properties)
     Mutex::Autolock lock(mLock);
     *properties = mProperties;
-    INTERFACE_ADDREF(*properties);
+    REFCOUNT_ADD(*properties);
     return NOERROR;
 }
 

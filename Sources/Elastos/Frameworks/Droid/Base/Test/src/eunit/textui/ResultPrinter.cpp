@@ -1,6 +1,6 @@
 
 #include "eunit/textui/ResultPrinter.h"
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringBuilder;
@@ -179,7 +179,7 @@ ECode ResultPrinter::GetWriter(
 {
     VALIDATE_NOT_NULL(writer);
     *writer = mWriter;
-    INTERFACE_ADDREF(*writer);
+    REFCOUNT_ADD(*writer);
     return NOERROR;
 }
 

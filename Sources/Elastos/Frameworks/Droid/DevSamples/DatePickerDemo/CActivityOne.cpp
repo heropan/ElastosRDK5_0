@@ -264,7 +264,7 @@ ECode CActivityOne::Switcher::MakeView(
     CImageView::New(mContext, (IImageView**)&v);
     v->SetBackgroundColor(IColor::WHITE);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
 }
 
 PInterface CActivityOne::Switcher::Probe(

@@ -4060,7 +4060,7 @@ ECode CZigbeeService::GetGroupDevices(
     if (DBG) Slogger::D(TAG, "GetGroupDevices(): group name: ", groupName.string());
     AutoPtr<ArrayOf<String> > temp = StringListToStringArray(mGroups[groupName]->GetAllDevices());
     *list = temp;
-    INTERFACE_ADDREF(*list);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -5615,7 +5615,7 @@ ECode CZigbeeService::GetDoorHistoryTime(
         AutoPtr<ZigbeeDoorSensor> doorSensor = (ZigbeeDoorSensor*)mDevices[deviceName].Get();
         AutoPtr<ArrayOf<String> > temp = StringListToStringArray(doorSensor->GetHistoryTime());
         *time = temp;
-        INTERFACE_ADDREF(*time);
+        REFCOUNT_ADD(*time);
         if (DBG) Slogger::D(TAG, "GetDoorHistoryTime(): device \"%s\": door history time: %p", deviceName.string(), *time);
     }
     else {

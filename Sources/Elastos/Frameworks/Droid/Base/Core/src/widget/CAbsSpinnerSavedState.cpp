@@ -33,7 +33,7 @@ ECode CAbsSpinnerSavedState::GetSuperState(
     AutoPtr<IParcelable> temp;
     temp = AbsSpinnerSavedState::GetSuperState();
     *superState = temp;
-    INTERFACE_ADDREF(*superState);
+    REFCOUNT_ADD(*superState);
     return NOERROR;
 
 }

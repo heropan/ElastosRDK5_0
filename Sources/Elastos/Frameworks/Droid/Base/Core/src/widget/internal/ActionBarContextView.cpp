@@ -402,7 +402,7 @@ ECode ActionBarContextView::GenerateLayoutParams(
     AutoPtr<IViewGroupMarginLayoutParams> lp;
     FAIL_RETURN(CViewGroupMarginLayoutParams::New(GetContext(), attrs, (IViewGroupMarginLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

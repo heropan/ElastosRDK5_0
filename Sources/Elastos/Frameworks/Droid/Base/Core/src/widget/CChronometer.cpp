@@ -73,7 +73,7 @@ ECode CChronometer::GetOnChronometerTickListener(
     AutoPtr<IOnChronometerTickListener> temp;
     temp = Chronometer::GetOnChronometerTickListener();
     *ppListener = temp;
-    INTERFACE_ADDREF(*ppListener);
+    REFCOUNT_ADD(*ppListener);
     return NOERROR;
 }
 

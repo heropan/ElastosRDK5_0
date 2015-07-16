@@ -171,7 +171,7 @@ ECode BroadcastFilter::GetActions(
     VALIDATE_NOT_NULL(actions)
     AutoPtr< ArrayOf<String> > acts = IntentFilter::GetActions();
     *actions = acts;
-    INTERFACE_ADDREF(*actions);
+    REFCOUNT_ADD(*actions);
     return NOERROR;
 }
 
@@ -213,7 +213,7 @@ ECode BroadcastFilter::GetTypes(
     VALIDATE_NOT_NULL(types)
     AutoPtr< ArrayOf<String> > typs = IntentFilter::GetTypes();
     *types = typs;
-    INTERFACE_ADDREF(*types);
+    REFCOUNT_ADD(*types);
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode BroadcastFilter::GetSchemes(
     VALIDATE_NOT_NULL(schemes)
     AutoPtr< ArrayOf<String> > schs = IntentFilter::GetSchemes();
     *schemes = schs;
-    INTERFACE_ADDREF(*schemes);
+    REFCOUNT_ADD(*schemes);
     return NOERROR;
 }
 
@@ -281,7 +281,7 @@ ECode BroadcastFilter::GetDataAuthority(
     VALIDATE_NOT_NULL(authority)
     AutoPtr<IIntentFilterAuthorityEntry> tmp = IntentFilter::GetDataAuthority(index);
     *authority = tmp.Get();
-    INTERFACE_ADDREF(*authority)
+    REFCOUNT_ADD(*authority)
     return NOERROR;
 }
 
@@ -300,7 +300,7 @@ ECode BroadcastFilter::GetAuthorities(
     VALIDATE_NOT_NULL(authorities)
     AutoPtr< ArrayOf<IIntentFilterAuthorityEntry*> > auths = IntentFilter::GetAuthorities();
     *authorities = auths;
-    INTERFACE_ADDREF(*authorities)
+    REFCOUNT_ADD(*authorities)
     return NOERROR;
 }
 
@@ -326,7 +326,7 @@ ECode BroadcastFilter::GetDataPath(
     VALIDATE_NOT_NULL(path)
     AutoPtr<IPatternMatcher> tmp = IntentFilter::GetDataPath(index);
     *path = tmp;
-    INTERFACE_ADDREF(*path)
+    REFCOUNT_ADD(*path)
     return NOERROR;
 }
 
@@ -345,7 +345,7 @@ ECode BroadcastFilter::GetPaths(
     VALIDATE_NOT_NULL(paths)
     AutoPtr< ArrayOf<IPatternMatcher*> > pas = IntentFilter::GetPaths();
     *paths = pas;
-    INTERFACE_ADDREF(*paths)
+    REFCOUNT_ADD(*paths)
     return NOERROR;
 }
 
@@ -407,7 +407,7 @@ ECode BroadcastFilter::GetCategories(
     VALIDATE_NOT_NULL(categories)
     AutoPtr< ArrayOf<String> > cats = IntentFilter::GetCategories();
     *categories = cats;
-    INTERFACE_ADDREF(*categories);
+    REFCOUNT_ADD(*categories);
     return NOERROR;
 }
 

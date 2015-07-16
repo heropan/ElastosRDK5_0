@@ -2437,7 +2437,7 @@ Int32 CWindowManagerService::AddWindow(
     Binder::RestoreCallingIdentity(origId);
 
     *outContentInsets = inContentInsets;
-    INTERFACE_ADDREF(*outContentInsets);
+    REFCOUNT_ADD(*outContentInsets);
     return res;
 }
 
@@ -3320,15 +3320,15 @@ Int32 CWindowManagerService::RelayoutWindow(
     Binder::RestoreCallingIdentity(origId);
 
     *outFrame = inFrame;
-    INTERFACE_ADDREF(*outFrame);
+    REFCOUNT_ADD(*outFrame);
     *outContentInsets = inContentInsets;
-    INTERFACE_ADDREF(*outContentInsets);
+    REFCOUNT_ADD(*outContentInsets);
     *outVisibleInsets = inVisibleInsets;
-    INTERFACE_ADDREF(*outVisibleInsets);
+    REFCOUNT_ADD(*outVisibleInsets);
     *outConfig = inConfig;
-    INTERFACE_ADDREF(*outConfig);
+    REFCOUNT_ADD(*outConfig);
     *outSurface = inSurface;
-    INTERFACE_ADDREF(*outSurface);
+    REFCOUNT_ADD(*outSurface);
 
     return (inTouchMode ? IWindowManagerGlobal::RELAYOUT_RES_IN_TOUCH_MODE : 0)
             | (toBeDisplayed ? IWindowManagerGlobal::RELAYOUT_RES_FIRST_TIME : 0)
@@ -3444,7 +3444,7 @@ ECode CWindowManagerService::GetWindowInfo(
         winInfo = GetWindowInfoForWindowStateLocked(window);
     }
     *info = winInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
@@ -3484,7 +3484,7 @@ ECode CWindowManagerService::GetVisibleWindowsForDisplay(
         }
     }
     *outInfos = infos;
-    INTERFACE_ADDREF(*outInfos);
+    REFCOUNT_ADD(*outInfos);
 
     return NOERROR;
 }
@@ -4495,7 +4495,7 @@ ECode CWindowManagerService::UpdateOrientationFromAppTokens(
 
     Binder::RestoreCallingIdentity(ident);
     *config = temp;
-    INTERFACE_ADDREF(*config);
+    REFCOUNT_ADD(*config);
     return NOERROR;
 }
 
@@ -6356,7 +6356,7 @@ ECode CWindowManagerService::GetAnimationScales(
     (*temp)[1] = mTransitionAnimationScale;
     (*temp)[2] = mAnimatorDurationScale;
     *scales = temp;
-    INTERFACE_ADDREF(*scales);
+    REFCOUNT_ADD(*scales);
     return NOERROR;
 }
 
@@ -7006,7 +7006,7 @@ ECode CWindowManagerService::ScreenshotApplications(
 
     rawss->Recycle();
     *bitmap = bm;
-    INTERFACE_ADDREF(*bitmap);
+    REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
 
@@ -8570,7 +8570,7 @@ ECode CWindowManagerService::GetFocusedWindowToken(
     if (windowState != NULL) {
         AutoPtr<IBinder> b = IBinder::Probe(windowState->mClient.Get());
         *token = b;
-        INTERFACE_ADDREF(*token);
+        REFCOUNT_ADD(*token);
     }
     *token = NULL;
    return NOERROR;
@@ -9433,7 +9433,7 @@ ECode CWindowManagerService::OpenSession(
     CSession::NewByFriend(
         (Handle32)this, client, inputContext, (CSession**)&csession);
     *session = csession;
-    INTERFACE_ADDREF(*session);
+    REFCOUNT_ADD(*session);
     return NOERROR;
 }
 
@@ -9776,7 +9776,7 @@ ECode CWindowManagerService::WindowForClientLocked(
     }
 
     *w = win;
-    INTERFACE_ADDREF(*w);
+    REFCOUNT_ADD(*w);
     return NOERROR;
 }
 
@@ -12347,7 +12347,7 @@ ECode CWindowManagerService::AddFakeWindow(
     mFakeWindows.Insert(it, fw);
     mInputMonitor->UpdateInputWindowsLw(TRUE);
     *fakeWindow = (IFakeWindow*)fw;
-    INTERFACE_ADDREF(*fakeWindow);
+    REFCOUNT_ADD(*fakeWindow);
 
     return NOERROR;
 }

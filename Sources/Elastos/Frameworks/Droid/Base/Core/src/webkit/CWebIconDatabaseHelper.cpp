@@ -12,7 +12,7 @@ ECode CWebIconDatabaseHelper::GetInstance(
     VALIDATE_NOT_NULL(database);
     AutoPtr<IWebIconDatabase> temp = WebIconDatabase::GetInstance();
     *database = temp;
-    INTERFACE_ADDREF(*database);
+    REFCOUNT_ADD(*database);
     return NOERROR;
 }
 

@@ -247,7 +247,7 @@ ECode ViewAnimator::GetCurrentView(
 {
     AutoPtr<IView> temp = GetChildAt(mWhichChild);
     *curView = temp;
-    INTERFACE_ADDREF(*curView);
+    REFCOUNT_ADD(*curView);
     return NOERROR;
 }
 
@@ -255,7 +255,7 @@ ECode ViewAnimator::GetInAnimation(
     /* [out] */ IAnimation** anim)
 {
     *anim = mInAnimation;
-    INTERFACE_ADDREF(*anim);
+    REFCOUNT_ADD(*anim);
     return NOERROR;
 }
 
@@ -270,7 +270,7 @@ ECode ViewAnimator::GetOutAnimation(
     /* [out] */ IAnimation** anim)
 {
     *anim = mOutAnimation;
-    INTERFACE_ADDREF(*anim);
+    REFCOUNT_ADD(*anim);
     return NOERROR;
 }
 

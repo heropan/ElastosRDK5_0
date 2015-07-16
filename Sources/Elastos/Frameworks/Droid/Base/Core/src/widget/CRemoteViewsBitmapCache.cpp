@@ -92,7 +92,7 @@ ECode CRemoteViewsBitmapCache::GetBitmapForId(
 
     if (id >= 0 && id < mBitmaps.GetSize()) {
         *bitmap = mBitmaps[id];
-        INTERFACE_ADDREF(*bitmap);
+        REFCOUNT_ADD(*bitmap);
     }
     return NOERROR;
 }

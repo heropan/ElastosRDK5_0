@@ -338,7 +338,7 @@ ECode CTestObject::Test_Interface(
     ALOGD("==== File: %s, Function: %s ====", __FILE__, __FUNCTION__);
     assert(outObject != NULL);
     *outObject = inObject;
-    INTERFACE_ADDREF(*outObject);
+    REFCOUNT_ADD(*outObject);
     return NOERROR;
 }
 
@@ -374,7 +374,7 @@ ECode CTestObject::Test_CreateInstance(
     }
 
     *object = testObject;
-    INTERFACE_ADDREF(*object);
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 

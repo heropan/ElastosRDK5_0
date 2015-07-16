@@ -2247,7 +2247,7 @@ ECode AbsListView::GetCheckedItemIds(
     VALIDATE_NOT_NULL(result);
     if (mChoiceMode == IAbsListView::CHOICE_MODE_NONE || mCheckedIdStates == NULL || mAdapter == NULL) {
         *result = ArrayOf<Int64>::Alloc(0);
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 
@@ -2260,7 +2260,7 @@ ECode AbsListView::GetCheckedItemIds(
     }
 
     *result = tmp;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -4052,7 +4052,7 @@ ECode AbsListView::OnCreateDrawableState(
         // Common case
         FAIL_RETURN(AdapterView::OnCreateDrawableState(extraSpace, (ArrayOf<Int32>**)&state));
         *drawableState = state;
-        INTERFACE_ADDREF(*drawableState);
+        REFCOUNT_ADD(*drawableState);
         return NOERROR;
     }
 
@@ -4085,7 +4085,7 @@ ECode AbsListView::OnCreateDrawableState(
     }
 
     *drawableState = state;
-    INTERFACE_ADDREF(*drawableState);
+    REFCOUNT_ADD(*drawableState);
     return NOERROR;
 }
 
@@ -6880,7 +6880,7 @@ ECode AbsListView::GenerateDefaultLayoutParams(
     AutoPtr<IAbsListViewLayoutParams> temp;
     CAbsListViewLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT, (IAbsListViewLayoutParams**)&temp);
     *result = temp.Get();
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -6903,7 +6903,7 @@ ECode AbsListView::GenerateLayoutParams(
     AutoPtr<IAbsListViewLayoutParams> lp;
     FAIL_RETURN(CAbsListViewLayoutParams::New(GetContext(), attrs, (IAbsListViewLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

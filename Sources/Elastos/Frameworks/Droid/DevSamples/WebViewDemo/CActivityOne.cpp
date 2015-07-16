@@ -264,7 +264,7 @@ ECode CActivityOne::Init()
     //         VALIDATE_NOT_NULL(wrr);
     //         AutoPtr<IWebResourceResponse> _wrr = WebViewClient::ShouldInterceptRequest(view, url);
     //         *wrr = _wrr.Get();
-    //         INTERFACE_ADDREF(*wrr);
+    //         REFCOUNT_ADD(*wrr);
 
     //         return NOERROR;
     //     }
@@ -571,7 +571,7 @@ ECode CActivityOne::Init()
             VALIDATE_NOT_NULL(bitmap);
             AutoPtr<IBitmap> bm = WebChromeClient::GetDefaultVideoPoster();
             *bitmap = bm.Get();
-            INTERFACE_ADDREF(*bitmap);
+            REFCOUNT_ADD(*bitmap);
 
             return NOERROR;
         }
@@ -582,7 +582,7 @@ ECode CActivityOne::Init()
             VALIDATE_NOT_NULL(view);
             AutoPtr<IView> _view = WebChromeClient::GetVideoLoadingProgressView();
             *view = _view.Get();
-            INTERFACE_ADDREF(*view);
+            REFCOUNT_ADD(*view);
 
             return NOERROR;
         }

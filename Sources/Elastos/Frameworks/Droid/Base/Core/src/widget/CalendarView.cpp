@@ -388,7 +388,7 @@ ECode CalendarView::WeeksAdapter::GetDropDownView(
 {
     AutoPtr<IView> temp =  _WeeksAdapter::GetDropDownView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -417,7 +417,7 @@ ECode CalendarView::WeeksAdapter::GetItem(
 {
     AutoPtr<IInterface> temp = _WeeksAdapter::GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -444,7 +444,7 @@ ECode CalendarView::WeeksAdapter::GetView(
 {
     AutoPtr<IView> temp = _WeeksAdapter::GetView(position, convertView, parent);
     *view = temp;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -901,7 +901,7 @@ ECode CalendarView::WeekView::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 /*............................WeekView End................................*/

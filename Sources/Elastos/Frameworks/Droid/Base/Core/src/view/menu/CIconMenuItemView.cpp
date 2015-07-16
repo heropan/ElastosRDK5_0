@@ -81,7 +81,7 @@ ECode CIconMenuItemView::GetItemData(
 
     AutoPtr<IMenuItemImpl> item = IconMenuItemView::GetItemData();
     *itemData = item;
-    INTERFACE_ADDREF(*itemData);
+    REFCOUNT_ADD(*itemData);
     return NOERROR;
 }
 

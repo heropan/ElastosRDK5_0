@@ -274,7 +274,7 @@ ECode NativeDaemonConnector::GetWeakReference(
 {
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    INTERFACE_ADDREF(*weakReference)
+    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -608,7 +608,7 @@ ECode NativeDaemonConnector::Execute(
     }
 
     *event = (*events)[0];
-    INTERFACE_ADDREF(*event);
+    REFCOUNT_ADD(*event);
     return NOERROR;
 }
 
@@ -698,7 +698,7 @@ ECode NativeDaemonConnector::Execute(
 
         if (mOutputStream == NULL) {
             *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(0);
-            INTERFACE_ADDREF(*eventsArray);
+            REFCOUNT_ADD(*eventsArray);
             Slogger::E(TAG, "missing output stream");
             return E_NATIVE_DAEMON_CONNECTOR_EXCEPTION;
         }
@@ -706,7 +706,7 @@ ECode NativeDaemonConnector::Execute(
             ECode ec = mOutputStream->WriteBytes(ArrayOf<Byte>((Byte*)(sentCmd.string()), sentCmd.GetByteLength() + 1));
             if (FAILED(ec)) {
                 *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(0);
-                INTERFACE_ADDREF(*eventsArray);
+                REFCOUNT_ADD(*eventsArray);
                 Slogger::E(TAG, "problem sending command, ec=%08x", ec);
                 return E_NATIVE_DAEMON_CONNECTOR_EXCEPTION;
             }
@@ -718,7 +718,7 @@ ECode NativeDaemonConnector::Execute(
         event = mResponseQueue->Remove(sequenceNumber, timeout, sentCmd);
         if (event == NULL) {
             *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(0);
-            INTERFACE_ADDREF(*eventsArray);
+            REFCOUNT_ADD(*eventsArray);
             Slogger::E(TAG, "timed-out waiting for response to %s.", logCmd.string());
             return E_NATIVE_DAEMON_CONNECTOR_EXCEPTION;
         }
@@ -750,7 +750,7 @@ ECode NativeDaemonConnector::Execute(
     }
 
     *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(events.GetSize());
-    INTERFACE_ADDREF(*eventsArray);
+    REFCOUNT_ADD(*eventsArray);
     List< AutoPtr<NativeDaemonEvent> >::Iterator it;
     Int32 i;
     for (it = events.Begin(), i = 0; it != events.End(); ++it, ++i) {
@@ -815,7 +815,7 @@ ECode NativeDaemonConnector::DoListCommand(
     }
 
     *responses = ArrayOf<String>::Alloc(list.GetSize());
-    INTERFACE_ADDREF(*responses);
+    REFCOUNT_ADD(*responses);
     List<String>::Iterator it;
     Int32 i;
     for (it = list.Begin(), i = 0; it != list.End(); ++it, ++i) {

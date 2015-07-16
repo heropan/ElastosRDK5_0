@@ -387,7 +387,7 @@ ECode CLocationManagerService::Receiver::GetListener(
 
     if (mListener != NULL) {
         *l = mListener;
-        INTERFACE_ADDREF(*l);
+        REFCOUNT_ADD(*l);
         return NOERROR;
     }
     return E_ILLEGAL_STATE_EXCEPTION;
@@ -1596,13 +1596,13 @@ ECode CLocationManagerService::CheckListenerOrIntent(
         FAIL_RETURN(CheckPendingIntent(intent));
         AutoPtr<Receiver> r = GetReceiver(intent, pid, uid, packageName);
         *receiver = r;
-        INTERFACE_ADDREF(*receiver);
+        REFCOUNT_ADD(*receiver);
         return NOERROR;
     }
     else {
         AutoPtr<Receiver> r = GetReceiver(listener, pid, uid, packageName);
         *receiver = r;
-        INTERFACE_ADDREF(*receiver);
+        REFCOUNT_ADD(*receiver);
         return NOERROR;
     }
 }

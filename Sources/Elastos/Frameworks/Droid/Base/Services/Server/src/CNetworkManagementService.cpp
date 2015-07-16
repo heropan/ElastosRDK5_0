@@ -424,7 +424,7 @@ ECode CNetworkManagementService::ListInterfaces(
     AutoPtr< ArrayOf<String> > resArray = NativeDaemonEvent::FilterMessageList(
             *events, NetdResponseCode::InterfaceListResult);
     *result = resArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
      // } catch (NativeDaemonConnectorException e) {
      //     throw e.rethrowAsParcelableException();
      // }
@@ -489,7 +489,7 @@ ECode CNetworkManagementService::GetInterfaceConfig(
     //     throw new IllegalStateException("Invalid response from daemon: " + event);
     // }
     *result = cfg;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -792,7 +792,7 @@ ECode CNetworkManagementService::ReadRouteList(
         br->ReadLine(&s);
     }
     *result = strList;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -897,7 +897,7 @@ ECode CNetworkManagementService::GetRoutes(
         resArray->Set(i++, *iter2);
     }
     *result = resArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1133,7 +1133,7 @@ ECode CNetworkManagementService::ListTetheredInterfaces(
     mConnector->ExecuteForList(String("tether"), args, (ArrayOf<NativeDaemonEvent*>**)&events);
     AutoPtr< ArrayOf<String> > resArray = NativeDaemonEvent::FilterMessageList(*events, NetdResponseCode::TetherInterfaceListResult);
     *result = resArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     // } catch (NativeDaemonConnectorException e) {
     //     throw e.rethrowAsParcelableException();
     // }
@@ -1189,7 +1189,7 @@ ECode CNetworkManagementService::GetDnsForwarders(
     mConnector->ExecuteForList(String("tether"), args, (ArrayOf<NativeDaemonEvent*>**)&events);
     AutoPtr< ArrayOf<String> > resArray = NativeDaemonEvent::FilterMessageList(*events, NetdResponseCode::TetherDnsFwdTgtListResult);
     *result = resArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     // } catch (NativeDaemonConnectorException e) {
     //     throw e.rethrowAsParcelableException();
     // }
@@ -1291,7 +1291,7 @@ ECode CNetworkManagementService::ListTtys(
     mConnector->ExecuteForList(cmd, (ArrayOf<NativeDaemonEvent*>**)&events);
     AutoPtr< ArrayOf<String> > resArray = NativeDaemonEvent::FilterMessageList(*events, NetdResponseCode::TtyListResult);
     *result = resArray;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1902,7 +1902,7 @@ ECode CNetworkManagementService::GetNetworkStatsTethering(
         }
     }
     *result = stats;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -1948,7 +1948,7 @@ ECode CNetworkManagementService::GetNetworkStatsTethering(
     entry->SetTxBytes(StringUtils::ParseInt64((*values)[index++]));
     entry->SetTxPackets(StringUtils::ParseInt64((*values)[index++]));
     *result = entry;
-    INTERFACE_ADDREF(*result);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

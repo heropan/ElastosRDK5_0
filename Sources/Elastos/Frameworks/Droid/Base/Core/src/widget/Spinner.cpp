@@ -822,7 +822,7 @@ ECode Spinner::DialogPopup::GetHintText(
 {
     VALIDATE_NOT_NULL(csq);
     *csq = mPrompt;
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 
@@ -1213,7 +1213,7 @@ ECode Spinner::DropdownPopup::GetBackground(
     VALIDATE_NOT_NULL(d);
     AutoPtr<IDrawable> drawable = _DropdownPopup::GetBackground();
     *d = drawable;
-    INTERFACE_ADDREF(*d);
+    REFCOUNT_ADD(*d);
     return NOERROR;
 }
 
@@ -1243,7 +1243,7 @@ ECode Spinner::DropdownPopup::GetAnchorView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = _DropdownPopup::GetAnchorView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -1410,7 +1410,7 @@ ECode Spinner::DropdownPopup::GetSelectedItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> i = _DropdownPopup::GetSelectedItem();
     *item = i;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -1436,7 +1436,7 @@ ECode Spinner::DropdownPopup::GetSelectedView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = _DropdownPopup::GetSelectedView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -1446,7 +1446,7 @@ ECode Spinner::DropdownPopup::GetListView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IListView> v = _DropdownPopup::GetListView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -1497,7 +1497,7 @@ ECode Spinner::DropdownPopup::GetHintText(
 {
     AutoPtr<ICharSequence> temp = _DropdownPopup::GetHintText();
     *csq = temp;
-    INTERFACE_ADDREF(*csq);
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 

@@ -620,7 +620,7 @@ ECode CharWrapper::SubSequence(
         sb.AppendChars(*mChars, mStart + start, end - start);
         AutoPtr<ICharSequence> seq = sb.ToCharSequence();
         *csq = seq;
-        INTERFACE_ADDREF(*csq);
+        REFCOUNT_ADD(*csq);
         return NOERROR;
     }
     *csq = NULL;
@@ -701,7 +701,7 @@ ECode CharWrapper::GetTextWidths(
     }
 
     *widths = ArrayOf<Float>::Alloc(end - start);
-    INTERFACE_ADDREF(*widths);
+    REFCOUNT_ADD(*widths);
     return p->GetTextWidths(*mChars, start + mStart, end - start, *widths, count);
 }
 
@@ -5409,7 +5409,7 @@ ECode TextView::OnCreateDrawableState(
 
     assert(states != NULL);
     *drawableState = states;
-    INTERFACE_ADDREF(*drawableState);
+    REFCOUNT_ADD(*drawableState);
 
     if (IsTextSelectable()) {
         // Disable pressed state, which was introduced when TextView was made clickable.
@@ -5425,7 +5425,7 @@ ECode TextView::OnCreateDrawableState(
 
                 (*drawableState)->Release();
                 *drawableState = nonPressedState;
-                INTERFACE_ADDREF(*drawableState);
+                REFCOUNT_ADD(*drawableState);
                 return NOERROR;
             }
         }

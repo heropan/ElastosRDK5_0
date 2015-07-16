@@ -1611,7 +1611,7 @@ ECode CDevicePolicyManagerService::SetGlobalProxy(
             // Another admin already sets the global proxy
             // Return it to the caller.
             *component = tmpComponent;
-            INTERFACE_ADDREF(*component);
+            REFCOUNT_ADD(*component);
             return NOERROR;
         }
     }
@@ -1996,7 +1996,7 @@ ECode CDevicePolicyManagerService::GetActiveAdmins(
         res->Add(comp);
     }
     *admins = res;
-    INTERFACE_ADDREF(*admins);
+    REFCOUNT_ADD(*admins);
     return NOERROR;
 }
 
@@ -2318,7 +2318,7 @@ ECode CDevicePolicyManagerService::GetActiveAdminForCallerLocked(
             return E_SECURITY_EXCEPTION;
         }
         *admin = tmpAdmin;
-        INTERFACE_ADDREF(*admin);
+        REFCOUNT_ADD(*admin);
         return NOERROR;
     } else {
         List< AutoPtr<ActiveAdmin> >::Iterator iter = policy->mAdminList.Begin();
@@ -2329,7 +2329,7 @@ ECode CDevicePolicyManagerService::GetActiveAdminForCallerLocked(
 
             if (uid == callingUid && policyResult) {
                 *admin = *iter;
-                INTERFACE_ADDREF(*admin);
+                REFCOUNT_ADD(*admin);
                 return NOERROR;
             }
         }

@@ -239,7 +239,7 @@ ECode MenuItemImpl::GetIntent(
 {
     VALIDATE_NOT_NULL(intent);
     *intent = mIntent;
-    INTERFACE_ADDREF(*intent);
+    REFCOUNT_ADD(*intent);
     return NOERROR;
 }
 
@@ -391,7 +391,7 @@ ECode MenuItemImpl::GetSubMenu(
 
     AutoPtr<ISubMenu> sub = ISubMenu::Probe(mSubMenu);
     *subMenu = sub;
-    INTERFACE_ADDREF(*subMenu);
+    REFCOUNT_ADD(*subMenu);
 
     return NOERROR;
 }
@@ -421,7 +421,7 @@ ECode MenuItemImpl::GetTitle(
 {
     VALIDATE_NOT_NULL(title);
     *title = mTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
 
     return NOERROR;
 }
@@ -481,7 +481,7 @@ ECode MenuItemImpl::GetTitleCondensed(
     VALIDATE_NOT_NULL(title);
 
     *title = mTitleCondensed != NULL ? mTitleCondensed : mTitle;
-    INTERFACE_ADDREF(*title);
+    REFCOUNT_ADD(*title);
 
     return NOERROR;
 }
@@ -508,7 +508,7 @@ ECode MenuItemImpl::GetIcon(
 
     if (mIconDrawable != NULL) {
         *retDrawable = mIconDrawable;
-        INTERFACE_ADDREF(*retDrawable);
+        REFCOUNT_ADD(*retDrawable);
         return NOERROR;
     }
 
@@ -522,7 +522,7 @@ ECode MenuItemImpl::GetIcon(
         mIconDrawable = icon;
 
         *retDrawable = icon;
-        INTERFACE_ADDREF(*retDrawable);
+        REFCOUNT_ADD(*retDrawable);
         return NOERROR;
     }
 
@@ -698,7 +698,7 @@ ECode MenuItemImpl::GetMenuInfo(
     VALIDATE_NOT_NULL(menuInfo);
 
     *menuInfo = mMenuInfo;
-    INTERFACE_ADDREF(*menuInfo);
+    REFCOUNT_ADD(*menuInfo);
 
     return NOERROR;
 }
@@ -824,13 +824,13 @@ ECode MenuItemImpl::GetActionView(
     *view = NULL;
     if (mActionView != NULL) {
         *view = mActionView;
-        INTERFACE_ADDREF(*view);
+        REFCOUNT_ADD(*view);
         return NOERROR;
     }
     else if (mActionProvider != NULL) {
         mActionProvider->OnCreateActionView((IMenuItem*)this->Probe(EIID_IMenuItem), (IView**)&mActionView);
         *view = mActionView;
-        INTERFACE_ADDREF(*view);
+        REFCOUNT_ADD(*view);
         return NOERROR;
     }
     else {
@@ -844,7 +844,7 @@ ECode MenuItemImpl::GetActionProvider(
 {
     assert(provider != NULL);
     *provider = mActionProvider;
-    INTERFACE_ADDREF(*provider);
+    REFCOUNT_ADD(*provider);
 
     return NOERROR;
 }

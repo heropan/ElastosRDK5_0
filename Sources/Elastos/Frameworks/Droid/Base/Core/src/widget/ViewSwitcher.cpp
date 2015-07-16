@@ -76,7 +76,7 @@ ECode ViewSwitcher::GetNextView(
     Int32 which = mWhichChild == 0 ? 1 : 0;
     AutoPtr<IView> temp = GetChildAt(which);
     *v = temp;
-    INTERFACE_ADDREF(*v);
+    REFCOUNT_ADD(*v);
     return NOERROR;
 }
 
@@ -136,7 +136,7 @@ ECode ViewSwitcher::ObtainView(
     }
     AddView(child, lp);
     *v = child;
-    INTERFACE_ADDREF(*v);
+    REFCOUNT_ADD(*v);
     return NOERROR;
 }
 

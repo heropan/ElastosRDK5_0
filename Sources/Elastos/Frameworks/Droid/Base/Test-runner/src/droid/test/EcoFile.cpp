@@ -90,7 +90,7 @@ ECode EcoFile::EFEnum::NextElement(
 {
     VALIDATE_NOT_NULL(element);
     *element = (*mClassInfoList)[mIndex++];
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
     return NOERROR;
 }
 
@@ -116,7 +116,7 @@ ECode EcoFile::NewEcoFile(
         return ec;
     }
     *ecoFile = eco;
-    INTERFACE_ADDREF(*ecoFile);
+    REFCOUNT_ADD(*ecoFile);
     return NOERROR;
 }
 
@@ -180,7 +180,7 @@ ECode EcoFile::OpenEcoFile(
         return E_RUNTIME_EXCEPTION;
     }
     *ecoModule = moduleInfo;
-    INTERFACE_ADDREF(*ecoModule);
+    REFCOUNT_ADD(*ecoModule);
     return NOERROR;
 }
 

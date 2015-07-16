@@ -839,7 +839,7 @@ ECode DatePicker::DatePickerSavedState::GetSuperState(
     VALIDATE_NOT_NULL(state);
     AutoPtr<IParcelable> parcelable = ViewBaseSavedState::GetSuperState();
     *state = parcelable;
-    INTERFACE_ADDREF(*state);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 

@@ -343,7 +343,7 @@ ECode Gallery::GenerateLayoutParams(
     AutoPtr<IGalleryLayoutParams> lp;
     FAIL_RETURN(CGalleryLayoutParams::New(GetContext(), attrs, (IGalleryLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
-    INTERFACE_ADDREF(*params);
+    REFCOUNT_ADD(*params);
     return NOERROR;
 }
 

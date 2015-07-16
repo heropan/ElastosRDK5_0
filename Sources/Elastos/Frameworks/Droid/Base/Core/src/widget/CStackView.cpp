@@ -79,7 +79,7 @@ ECode CStackView::GetCurrentView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = StackView::GetCurrentView();
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -89,7 +89,7 @@ ECode CStackView::GetInAnimation(
     VALIDATE_NOT_NULL(animator);
     AutoPtr<IObjectAnimator> oa = StackView::GetInAnimation();
     *animator = oa;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 
@@ -105,7 +105,7 @@ ECode CStackView::GetOutAnimation(
     VALIDATE_NOT_NULL(animator);
     AutoPtr<IObjectAnimator> oa = StackView::GetOutAnimation();
     *animator = oa;
-    INTERFACE_ADDREF(*animator);
+    REFCOUNT_ADD(*animator);
     return NOERROR;
 }
 

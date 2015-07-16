@@ -52,7 +52,7 @@ ECode CTableRow::GetVirtualChildAt(
     VALIDATE_NOT_NULL(child);
     AutoPtr<IView> view = TableRow::GetVirtualChildAt(index);
     *child = view;
-    INTERFACE_ADDREF(*child);
+    REFCOUNT_ADD(*child);
     return NOERROR;
 }
 

@@ -24,7 +24,7 @@ ECode CPluginData::GetInputStream(
 {
     VALIDATE_NOT_NULL(stream);
     *stream = mStream;
-    INTERFACE_ADDREF(*stream);
+    REFCOUNT_ADD(*stream);
     return NOERROR;
 }
 
@@ -41,7 +41,7 @@ ECode CPluginData::GetHeaders(
 {
     VALIDATE_NOT_NULL(headers);
     *headers = mHeaders;
-    INTERFACE_ADDREF(*headers);
+    REFCOUNT_ADD(*headers);
     return NOERROR;
 }
 

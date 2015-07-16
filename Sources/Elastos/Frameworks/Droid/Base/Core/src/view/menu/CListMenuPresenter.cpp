@@ -45,7 +45,7 @@ ECode CListMenuPresenter::GetAdapter(
 {
     AutoPtr<IListAdapter> adapter = ListMenuPresenter::GetAdapter();
     *apt = adapter;
-    INTERFACE_ADDREF(*apt);
+    REFCOUNT_ADD(*apt);
 
     return NOERROR;
 }

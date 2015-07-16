@@ -346,7 +346,7 @@ ECode CListView::GetDivider(
     VALIDATE_NOT_NULL(divider);
     AutoPtr<IDrawable> temp = ListView::GetDivider();
     *divider = temp;
-    INTERFACE_ADDREF(*divider)
+    REFCOUNT_ADD(*divider)
     return NOERROR;
 }
 
@@ -434,7 +434,7 @@ ECode CListView::GetOverscrollHeader(
     VALIDATE_NOT_NULL(overScrollHeader);
     AutoPtr<IDrawable> temp = ListView::GetOverscrollHeader();
     *overScrollHeader = temp;
-    INTERFACE_ADDREF(*overScrollHeader)
+    REFCOUNT_ADD(*overScrollHeader)
     return NOERROR;
 }
 
@@ -460,7 +460,7 @@ ECode CListView::GetOverscrollFooter(
     VALIDATE_NOT_NULL(overScrollFooter);
     AutoPtr<IDrawable> temp = ListView::GetOverscrollFooter();
     *overScrollFooter = temp;
-    INTERFACE_ADDREF(*overScrollFooter)
+    REFCOUNT_ADD(*overScrollFooter)
     return NOERROR;
 }
 

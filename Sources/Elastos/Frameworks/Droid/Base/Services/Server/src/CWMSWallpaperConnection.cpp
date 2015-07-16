@@ -100,7 +100,7 @@ ECode CWMSWallpaperConnection::SetWallpaper(
         AutoPtr<IParcelFileDescriptor> temp =
             mOwner->UpdateWallpaperBitmapLocked(name, mWallpaper);
         *result = temp;
-        INTERFACE_ADDREF(*result);
+        REFCOUNT_ADD(*result);
         return NOERROR;
     }
 

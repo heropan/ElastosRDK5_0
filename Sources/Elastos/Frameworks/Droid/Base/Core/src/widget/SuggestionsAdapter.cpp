@@ -894,7 +894,7 @@ ECode SuggestionsAdapter::GetFilter(
 {
     AutoPtr<IFilter> f = _SuggestionsAdapter::GetFilter();
     (*filter) = f;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 
@@ -904,7 +904,7 @@ ECode SuggestionsAdapter::ConvertToString(
 {
     AutoPtr<ICharSequence> cs = _SuggestionsAdapter::ConvertToString(cursor);
     (*charSequence) = cs;
-    INTERFACE_ADDREF(*charSequence);
+    REFCOUNT_ADD(*charSequence);
     return NOERROR;
 }
 
@@ -914,7 +914,7 @@ ECode SuggestionsAdapter::RunQueryOnBackgroundThread(
 {
     AutoPtr<ICursor> c = _SuggestionsAdapter::RunQueryOnBackgroundThread(constraint);
     (*cursor) = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 
@@ -923,7 +923,7 @@ ECode SuggestionsAdapter::GetCursor(
 {
     AutoPtr<ICursor> c = _SuggestionsAdapter::GetCursor();
     (*cursor) = c;
-    INTERFACE_ADDREF(*cursor);
+    REFCOUNT_ADD(*cursor);
     return NOERROR;
 }
 

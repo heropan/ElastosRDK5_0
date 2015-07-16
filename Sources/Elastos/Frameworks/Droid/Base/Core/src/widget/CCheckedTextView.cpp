@@ -63,7 +63,7 @@ ECode CCheckedTextView::GetCheckMarkDrawable(
 {
     AutoPtr<IDrawable> temp = CheckedTextView::GetCheckMarkDrawable();
     *drawable = temp;
-    INTERFACE_ADDREF(*drawable);
+    REFCOUNT_ADD(*drawable);
     return NOERROR;
 }
 

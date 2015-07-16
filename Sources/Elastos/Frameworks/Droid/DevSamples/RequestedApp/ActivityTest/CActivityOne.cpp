@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <elautoptr.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;

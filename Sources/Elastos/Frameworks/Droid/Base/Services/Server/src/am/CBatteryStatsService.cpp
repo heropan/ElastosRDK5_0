@@ -122,7 +122,7 @@ ECode CBatteryStatsService::GetStatistics(
     AutoPtr< ArrayOf<Byte> > data;
     out->Marshall((ArrayOf<Byte>**)&data);
     *statistics = data;
-    INTERFACE_ADDREF(*statistics);
+    REFCOUNT_ADD(*statistics);
     return NOERROR;
 }
 

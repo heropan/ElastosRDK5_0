@@ -340,7 +340,7 @@ private:
             AutoPtr<IDomainCombiner> tmpdc;
             ECode ec = mAcc->GetDomainCombiner((IDomainCombiner**)&tmpdc);
             *dc = tmpdc.Get();
-            INTERFACE_ADDREF(*dc)
+            REFCOUNT_ADD(*dc)
             return ec;
         }
     protected:
@@ -364,7 +364,7 @@ private:
             AutoPtr<IAccessControlContext> acc;
             CAccessControlContext::New(mAcc, mCombiner, (IAccessControlContext**)&acc);
             *dc = acc.Get();
-            INTERFACE_ADDREF(*dc)
+            REFCOUNT_ADD(*dc)
             return NOERROR;
         }
     private:

@@ -1,7 +1,7 @@
 ﻿#include "CSearchActivity.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Logger;
 // using Elastos::Utility::IObjectStringMap;
@@ -209,7 +209,7 @@ ECode CSearchActivity::ContentAdapter::GetView(
     }
 
     *view = conertView;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 

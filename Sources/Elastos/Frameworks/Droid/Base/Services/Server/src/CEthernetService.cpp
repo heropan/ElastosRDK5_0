@@ -114,7 +114,7 @@ ECode CEthernetService::GetSavedConfig(
         infoTemp->SetGateWay(str);
 
         *info = infoTemp;
-        INTERFACE_ADDREF(*info)
+        REFCOUNT_ADD(*info)
         return NOERROR;
     }
 

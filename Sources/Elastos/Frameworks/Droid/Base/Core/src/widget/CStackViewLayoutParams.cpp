@@ -33,7 +33,7 @@ ECode CStackViewLayoutParams::GetInvalidateRect(
     VALIDATE_NOT_NULL(rect);
     AutoPtr<IRect> r = StackViewLayoutParams::GetInvalidateRect();
     *rect = r;
-    INTERFACE_ADDREF(*rect);
+    REFCOUNT_ADD(*rect);
     return NOERROR;
 }
 

@@ -113,7 +113,7 @@ ECode CExpandableListConnector::GetItem(
     VALIDATE_NOT_NULL(item);
     AutoPtr<IInterface> temp = ExpandableListConnector::GetItem(position);
     *item = temp;
-    INTERFACE_ADDREF(*item);
+    REFCOUNT_ADD(*item);
     return NOERROR;
 }
 
@@ -206,7 +206,7 @@ ECode CExpandableListConnector::GetDropDownView(
     VALIDATE_NOT_NULL(view);
     AutoPtr<IView> v = ExpandableListConnector::GetDropDownView(position, convertView, parent);
     *view = v;
-    INTERFACE_ADDREF(*view);
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -216,7 +216,7 @@ ECode CExpandableListConnector::GetFilter(
     VALIDATE_NOT_NULL(filter);
     AutoPtr<IFilter> f = ExpandableListConnector::GetFilter();
     *filter = f;
-    INTERFACE_ADDREF(*filter);
+    REFCOUNT_ADD(*filter);
     return NOERROR;
 }
 

@@ -149,7 +149,7 @@ ECode ProgressBar::RefreshData::GetNextPoolable(
     VALIDATE_NOT_NULL(element);
 
     *element = mNext;
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
 
      return NOERROR;
 }
@@ -193,7 +193,7 @@ ECode ProgressBar::RefreshData::RefreshDataPoolableManager::NewInstance(
     if (*element == NULL) {
         return E_OUT_OF_MEMORY_ERROR;
     }
-    INTERFACE_ADDREF(*element);
+    REFCOUNT_ADD(*element);
 
     return NOERROR;
 }

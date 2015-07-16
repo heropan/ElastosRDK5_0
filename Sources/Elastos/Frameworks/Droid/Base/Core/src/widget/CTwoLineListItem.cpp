@@ -55,7 +55,7 @@ ECode CTwoLineListItem::GetText1(
     VALIDATE_NOT_NULL(tv);
     AutoPtr<ITextView> view = TwoLineListItem::GetText1();
     *tv = view;
-    INTERFACE_ADDREF(*tv);
+    REFCOUNT_ADD(*tv);
     return NOERROR;
 }
 
@@ -65,7 +65,7 @@ ECode CTwoLineListItem::GetText2(
     VALIDATE_NOT_NULL(tv);
     AutoPtr<ITextView> view = TwoLineListItem::GetText2();
     *tv = view;
-    INTERFACE_ADDREF(*tv);
+    REFCOUNT_ADD(*tv);
     return NOERROR;
 }
 
