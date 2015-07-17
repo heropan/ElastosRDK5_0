@@ -37,6 +37,7 @@ ECode Int64ArrayBuffer::Get(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     if (mPosition == mLimit) {
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
@@ -50,6 +51,7 @@ ECode Int64ArrayBuffer::Get(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index))
     *value = (*mBackingArray)[mArrayOffset + index];
     return NOERROR;
@@ -136,6 +138,7 @@ ECode Int64ArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int64>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -149,6 +152,7 @@ ECode Int64ArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -162,13 +166,12 @@ ECode Int64ArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* hasArray)
 {
     VALIDATE_NOT_NULL(hasArray)
+    *hasArray = TRUE;
 
     if (mIsReadOnly) {
         *hasArray = FALSE;
     }
-    else {
-        *hasArray = TRUE;
-    }
+
     return NOERROR;
 }
 
@@ -225,6 +228,7 @@ ECode Int64ArrayBuffer::Slice(
     /* [out] */ IInt64Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
@@ -249,6 +253,9 @@ ECode Int64ArrayBuffer::Copy(
     /* [in] */ Boolean mIsReadOnly,
     /* [out] */ Int64ArrayBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
+
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
     AutoPtr<Int64ArrayBuffer> iab = new Int64ArrayBuffer();

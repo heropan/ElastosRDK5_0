@@ -56,6 +56,7 @@ ECode Int64Buffer::Wrap(
     /* [out] */ IInt64Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
+    *buffer = NULL;
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int64Count));
     AutoPtr<Int64ArrayBuffer> iab = new Int64ArrayBuffer();
@@ -71,6 +72,7 @@ ECode Int64Buffer::GetArray(
     /* [out] */ IArrayOf** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     AutoPtr< ArrayOf<Int64> > res;
     GetArray((ArrayOf<Int64>**)&res);
@@ -101,6 +103,7 @@ ECode Int64Buffer::CompareTo(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = -1;
 
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
@@ -133,9 +136,9 @@ ECode Int64Buffer::Equals(
     /* [out] */ Boolean* rst)
 {
     VALIDATE_NOT_NULL(rst)
+    *rst = FALSE;
 
     if (IInt64Buffer::Probe(other) == NULL) {
-        *rst = FALSE;
         return NOERROR;
     }
 

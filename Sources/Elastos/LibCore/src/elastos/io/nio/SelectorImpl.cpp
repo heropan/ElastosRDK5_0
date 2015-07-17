@@ -178,23 +178,6 @@ ECode SelectorImpl::Cancel(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode SelectorImpl::Close()
-{
-    return AbstractSelector::Close();
-}
-
-ECode SelectorImpl::IsOpen(
-    /* [out] */ Boolean* isOpen)
-{
-    return AbstractSelector::IsOpen(isOpen);
-}
-
-ECode SelectorImpl::GetProvider(
-    /* [out] */ ISelectorProvider** provider)
-{
-    return AbstractSelector::GetProvider(provider);
-}
-
 ECode SelectorImpl::ImplCloseSelector()
 {
     Wakeup();
@@ -456,6 +439,7 @@ ECode SelectorImpl::SelectedKeys(
     /* [out] */ ISet** keySet)
 {
     VALIDATE_NOT_NULL(keySet)
+    *keySet = NULL;
 
     FAIL_RETURN(CheckClosed());
     *keySet = mSelectedKeys;

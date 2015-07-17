@@ -37,6 +37,7 @@ ECode SelectorProviderImpl::OpenPipe(
 ECode SelectorProviderImpl::OpenSelector(
     /* [out] */ IAbstractSelector** ppSelector)
 {
+    VALIDATE_NOT_NULL(ppSelector)
     return CSelectorImpl::New(THIS_PROBE(ISelectorProvider), ppSelector);
 }
 

@@ -36,6 +36,8 @@ ECode Int32ArrayBuffer::Get(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
     if (mPosition == mLimit) {
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
@@ -49,6 +51,7 @@ ECode Int32ArrayBuffer::Get(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index))
     *value = (*mBackingArray)[mArrayOffset + index];
     return NOERROR;
@@ -94,6 +97,7 @@ ECode Int32ArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ IInt32Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = 0;
 
     AutoPtr<Int32ArrayBuffer> iab;
     FAIL_RETURN(Copy(this, mMark, TRUE, (Int32ArrayBuffer**)&iab))
@@ -122,6 +126,7 @@ ECode Int32ArrayBuffer::Duplicate(
     /* [out] */ IInt32Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = 0;
 
     AutoPtr<Int32ArrayBuffer> iab;
     FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (Int32ArrayBuffer**)&iab))
@@ -223,6 +228,7 @@ ECode Int32ArrayBuffer::Slice(
     /* [out] */ IInt32Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = 0;
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
@@ -237,7 +243,6 @@ ECode Int32ArrayBuffer::IsReadOnly(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
-
     *value = mIsReadOnly;
     return NOERROR;
 }
@@ -248,6 +253,9 @@ ECode Int32ArrayBuffer::Copy(
     /* [in] */ Boolean mIsReadOnly,
     /* [out] */ Int32ArrayBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
+
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
     AutoPtr<Int32ArrayBuffer> iab = new Int32ArrayBuffer();

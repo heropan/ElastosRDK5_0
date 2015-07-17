@@ -46,10 +46,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     ServerSocketChannelImpl(
         /* [in] */ ISelectorProvider* sp);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetSocket(
         /* [out] */ IServerSocket** outsock);

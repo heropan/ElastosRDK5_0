@@ -352,14 +352,29 @@ ECode Memory::Memmove(
     return NOERROR;
 }
 
+ECode Memory::Memmove(
+    /* [in] */ MappedByteBuffer* dstObj,
+    /* [in] */ Int32 dstOffset,
+    /* [in] */ MappedByteBuffer* srcObj,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int64 byteCount)
+{
+    VALIDATE_NOT_NULL(srcObj)
+    VALIDATE_NOT_NULL(dstObj)
+
+    memmove(dstObj->mBlock->GetRawAddress() + dstOffset,
+        dstObj->mBlock->GetRawAddress() + srcOffset, byteCount);
+    return NOERROR;
+}
+
 Byte Memory::PeekByte(
-    /* [in] */ Int32 address)
+    /* [in] */ Int64 address)
 {
     return *cast<const Byte*>(address);
 }
 
 Int32 Memory::PeekInt32(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Boolean swap)
 {
     Int32 result = *cast<const Int32*>(address);
@@ -370,7 +385,7 @@ Int32 Memory::PeekInt32(
 }
 
 Int64 Memory::PeekInt64(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Boolean swap)
 {
     Int64 result;
@@ -387,7 +402,7 @@ Int64 Memory::PeekInt64(
 }
 
 Int16 Memory::PeekInt16(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Boolean swap)
 {
     Int16 result = *cast<const Int16*>(address);
@@ -419,7 +434,7 @@ Int16 Memory::PeekInt16(
 }
 
 ECode Memory::PeekByteArray(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count)
@@ -432,7 +447,7 @@ ECode Memory::PeekByteArray(
 }
 
 ECode Memory::PeekCharArray(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Char32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count,
@@ -442,7 +457,7 @@ ECode Memory::PeekCharArray(
 }
 
 ECode Memory::PeekDoubleArray(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Double>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count,
@@ -452,7 +467,7 @@ ECode Memory::PeekDoubleArray(
 }
 
 ECode Memory::PeekFloatArray(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Float>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count,
@@ -462,7 +477,7 @@ ECode Memory::PeekFloatArray(
 }
 
 ECode Memory::PeekInt32Array(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Int32>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count,
@@ -472,7 +487,7 @@ ECode Memory::PeekInt32Array(
 }
 
 ECode Memory::PeekInt64Array(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Int64>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count,
@@ -482,7 +497,7 @@ ECode Memory::PeekInt64Array(
 }
 
 ECode Memory::PeekInt16Array(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [out] */ ArrayOf<Int16>* dst,
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 count,
@@ -492,7 +507,7 @@ ECode Memory::PeekInt16Array(
 }
 
 ECode Memory::PokeByte(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [in] */ Byte value)
 {
     *cast<Byte*>(dstAddress) = value;
@@ -500,7 +515,7 @@ ECode Memory::PokeByte(
 }
 
 ECode Memory::PokeInt32(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [in] */ Int32 value,
     /* [in] */ Boolean swap)
 {
@@ -512,7 +527,7 @@ ECode Memory::PokeInt32(
 }
 
 ECode Memory::PokeInt64(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [in] */ Int64 value,
     /* [in] */ Boolean swap)
 {
@@ -530,7 +545,7 @@ ECode Memory::PokeInt64(
 }
 
 ECode Memory::PokeInt16(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [in] */ Int16 value,
     /* [in] */ Boolean swap)
 {
@@ -542,7 +557,7 @@ ECode Memory::PokeInt16(
 }
 
 ECode Memory::PokeByteArray(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Byte>* src,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 count)
@@ -576,7 +591,7 @@ ECode Memory::PokeByteArray(
 }
 
 ECode Memory::PokeCharArray(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Char32>* srcArray,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 count,
@@ -586,7 +601,7 @@ ECode Memory::PokeCharArray(
 }
 
 ECode Memory::PokeDoubleArray(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Double>* srcArray,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 count,
@@ -596,7 +611,7 @@ ECode Memory::PokeDoubleArray(
 }
 
 ECode Memory::PokeFloatArray(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Float>* srcArray,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 count,
@@ -606,7 +621,7 @@ ECode Memory::PokeFloatArray(
 }
 
 ECode Memory::PokeInt32Array(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Int32>* srcArray,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 count,
@@ -616,7 +631,7 @@ ECode Memory::PokeInt32Array(
 }
 
 ECode Memory::PokeInt64Array(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Int64>* srcArray,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 count,
@@ -626,7 +641,7 @@ ECode Memory::PokeInt64Array(
 }
 
 ECode Memory::PokeInt16Array(
-    /* [in] */ Int32 dstAddress,
+    /* [in] */ Int64 dstAddress,
     /* [out] */ ArrayOf<Int16>* srcArray,
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 count,

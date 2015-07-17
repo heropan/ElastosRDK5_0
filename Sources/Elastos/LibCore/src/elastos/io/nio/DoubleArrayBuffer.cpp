@@ -92,6 +92,7 @@ ECode DoubleArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ IDoubleBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     AutoPtr<DoubleArrayBuffer> dab;
     FAIL_RETURN(Copy(this, mMark, TRUE, (DoubleArrayBuffer**)&dab))
@@ -120,6 +121,7 @@ ECode DoubleArrayBuffer::Duplicate(
     /* [out] */ IDoubleBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     AutoPtr<DoubleArrayBuffer> dab;
     FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (DoubleArrayBuffer**)&dab))

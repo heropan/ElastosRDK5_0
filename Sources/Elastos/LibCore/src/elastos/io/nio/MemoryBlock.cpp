@@ -73,7 +73,7 @@ AutoPtr<MemoryBlock> MemoryBlock::Allocate(
 }
 
 AutoPtr<MemoryBlock> MemoryBlock::WrapFromNative(
-    /* [in] */ Int32 address,
+    /* [in] */ Int64 address,
     /* [in] */ Int64 byteCount)
 {
     return new UnmanagedBlock(address, byteCount);

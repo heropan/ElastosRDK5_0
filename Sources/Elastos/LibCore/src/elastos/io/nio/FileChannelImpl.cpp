@@ -43,57 +43,19 @@ FileChannelImpl::FileLockImpl::FileLockImpl(
 {
 }
 
-ECode FileChannelImpl::FileLockImpl::Channel(
-    /* [out] */ IFileChannel** channel)
-{
-    return FileLock::Channel(channel);
-}
-
-ECode FileChannelImpl::FileLockImpl::GetPosition(
-    /* [out] */ Int64* position)
-{
-    return FileLock::GetPosition(position);
-}
-
-ECode FileChannelImpl::FileLockImpl::GetSize(
-    /* [out] */ Int64* size)
-{
-    return FileLock::GetSize(size);
-}
-
-ECode FileChannelImpl::FileLockImpl::IsShared(
-    /* [out] */ Boolean* shared)
-{
-    return FileLock::IsShared(shared);
-}
-
-ECode FileChannelImpl::FileLockImpl::Overlaps(
-    /* [in] */ Int64 start,
-    /* [in] */ Int64 length,
-    /* [out] */ Boolean* result)
-{
-    return FileLock::Overlaps(start, length, result);
-}
-
-ECode FileChannelImpl::FileLockImpl::ToString(
-    /* [out] */ String* string)
-{
-    return FileLock::ToString(string);
-}
-
 ECode FileChannelImpl::FileLockImpl::IsValid(
     /* [out] */ Boolean* ret)
 {
-    ECode ecRet;
+    VALIDATE_NOT_NULL(ret)
+    *ret = FALSE;
+
     AutoPtr<IFileChannel> channel;
-    ecRet = Channel((IFileChannel**)&channel);
-    if (NOERROR != ecRet)
-        return ecRet;
+    ECode ec = Channel((IFileChannel**)&channel);
+    FAIL_RETURN(ec)
 
     Boolean isOpen;
-    ecRet = IChannel::Probe(channel)->IsOpen(&isOpen);
-    if (NOERROR != ecRet)
-        return ecRet;
+    ec = IChannel::Probe(channel)->IsOpen(&isOpen);
+    FAIL_RETURN(ec)
 
     *ret = mIsReleased && isOpen;
     return NOERROR;
@@ -101,16 +63,13 @@ ECode FileChannelImpl::FileLockImpl::IsValid(
 
 ECode FileChannelImpl::FileLockImpl::ReleaseLock()
 {
-    ECode ecRet;
     AutoPtr<IFileChannel> channel;
-    ecRet = Channel((IFileChannel**)&channel);
-    if (NOERROR != ecRet)
-        return ecRet;
+    ECode ec = Channel((IFileChannel**)&channel);
+    FAIL_RETURN(ec)
 
     Boolean isOpen;
-    ecRet = IChannel::Probe(channel)->IsOpen(&isOpen);
-    if (NOERROR != ecRet)
-        return ecRet;
+    ec = IChannel::Probe(channel)->IsOpen(&isOpen);
+    FAIL_RETURN(ec)
 
     if (!isOpen) {
         return E_CLOSED_CHANNEL_EXCEPTION;

@@ -3,8 +3,10 @@
 #define __LIBCORE_IO_MEMORY_H__
 
 #include "Elastos.CoreLibrary_server.h"
+#include "nio/MappedByteBuffer.h"
 
 using Elastos::IO::ByteOrder;
+using Elastos::IO::MappedByteBuffer;
 
 namespace Libcore {
 namespace IO {
@@ -88,131 +90,138 @@ public:
         /* [in] */ Int32 srcOffset,
         /* [in] */ Int64 byteCount);
 
+    static CARAPI Memmove(
+        /* [in] */ MappedByteBuffer* dstObject,
+        /* [in] */ Int32 dstOffset,
+        /* [in] */ MappedByteBuffer* srcObject,
+        /* [in] */ Int32 srcOffset,
+        /* [in] */ Int64 byteCount);
+
     static CARAPI_(Byte) PeekByte(
-        /* [in] */ Int32 address);
+        /* [in] */ Int64 address);
 
     static CARAPI_(Int32) PeekInt32(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Boolean swap);
 
     static CARAPI_(Int64) PeekInt64(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Boolean swap);
 
     static CARAPI_(Int16) PeekInt16(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Boolean swap);
 
     static CARAPI PeekByteArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 byteCount);
 
     static CARAPI PeekCharArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Char32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 charCount,
         /* [in] */ Boolean swap);
 
     static CARAPI PeekDoubleArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Double>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 doubleCount,
         /* [in] */ Boolean swap);
 
     static CARAPI PeekFloatArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Float>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 floatCount,
         /* [in] */ Boolean swap);
 
     static CARAPI PeekInt32Array(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Int32>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int32Count,
         /* [in] */ Boolean swap);
 
     static CARAPI PeekInt64Array(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Int64>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int64Count,
         /* [in] */ Boolean swap);
 
     static CARAPI PeekInt16Array(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Int16>* dst,
         /* [in] */ Int32 dstOffset,
         /* [in] */ Int32 int16Count,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeByte(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Byte value);
 
     static CARAPI PokeInt32(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int32 value,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeInt64(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int64 value,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeInt16(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int16 value,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeByteArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Byte>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
     static CARAPI PokeCharArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Char32>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeDoubleArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Double>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeFloatArray(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Float>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeInt32Array(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Int32>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeInt64Array(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Int64>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ Boolean swap);
 
     static CARAPI PokeInt16Array(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [out] */ ArrayOf<Int16>* src,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,

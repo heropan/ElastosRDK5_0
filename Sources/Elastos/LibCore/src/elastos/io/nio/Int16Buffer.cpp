@@ -29,6 +29,7 @@ ECode Int16Buffer::Allocate(
     /* [out] */ IInt16Buffer** buf)
 {
     VALIDATE_NOT_NULL(buf);
+    *buf = NULL;
 
     if (capacity < 0) {
         // throw new IllegalArgumentException("capacity < 0: " + capacity);
@@ -57,6 +58,7 @@ ECode Int16Buffer::Wrap(
     /* [out] */ IInt16Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
+    *buffer = NULL;
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, int16Count));
     AutoPtr<Int16ArrayBuffer> iab = new Int16ArrayBuffer();
@@ -85,6 +87,7 @@ ECode Int16Buffer::CompareTo(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = -1;
 
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
@@ -117,9 +120,9 @@ ECode Int16Buffer::Equals(
     /* [out] */ Boolean* rst)
 {
     VALIDATE_NOT_NULL(rst)
+    *rst = FALSE;
 
     if (IInt16Buffer::Probe(other) == NULL) {
-        *rst = FALSE;
         return NOERROR;
     }
 
@@ -241,6 +244,7 @@ ECode Int16Buffer::GetArray(
     /* [out] */ IArrayOf** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     AutoPtr< ArrayOf<Int16> > res;
     GetArray((ArrayOf<Int16>**)&res);

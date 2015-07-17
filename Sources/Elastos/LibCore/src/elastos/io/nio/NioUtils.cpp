@@ -11,10 +11,11 @@ namespace IO {
 ECode NioUtils::FreeDirectBuffer(
     /* [in] */ IByteBuffer* buffer)
 {
-    if (buffer == NULL) {
+    IDirectByteBuffer* dbb = IDirectByteBuffer::Probe(buffer);
+    if (dbb == NULL) {
         return NOERROR;
     }
-    return ((DirectByteBuffer*) buffer)->Free();
+    return ((DirectByteBuffer*) dbb)->Free();
 }
 
 AutoPtr<IFileDescriptor> NioUtils::GetFD(
@@ -37,13 +38,15 @@ AutoPtr<IFileChannel> NioUtils::NewFileChannel(
 AutoPtr<ArrayOf<Byte> > NioUtils::GetUnsafeArray(
     /* [in] */ IByteBuffer* b)
 {
-    return ((ByteArrayBuffer*)b)->mBackingArray;
+    IByteArrayBuffer* bab = IByteArrayBuffer::Probe(b);
+    return ((ByteArrayBuffer*)bab)->mBackingArray;
 }
 
 Int32 NioUtils::GetUnsafeArrayOffset(
     /* [in] */ IByteBuffer* b)
 {
-    return ((ByteArrayBuffer*)b)->mArrayOffset;
+    IByteArrayBuffer* bab = IByteArrayBuffer::Probe(b);
+    return ((ByteArrayBuffer*)bab)->mArrayOffset;
 }
 
 } // namespace IO

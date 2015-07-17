@@ -3,7 +3,9 @@
 #include "NioUtils.h"
 #include "CLibcore.h"
 #include "CInteger32.h"
+#include "CoreUtils.h"
 
+using Elastos::Core::CoreUtils;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Libcore::IO::CLibcore;
@@ -47,8 +49,7 @@ ECode IoVec::Init(
         }
         else {
             Int32 safevalue = NioUtils::GetUnsafeArrayOffset((ByteBuffer*)b.Get());
-            AutoPtr<IInteger32> int32;
-            CInteger32::New(safevalue, (IInteger32**)&int32);
+            AutoPtr<IInteger32> int32 = CoreUtils::Convert(safevalue);
             mIoBuffers->Set(i, int32);
             Int32 pos = 0;
             IBuffer::Probe(b)->GetPosition(&pos);

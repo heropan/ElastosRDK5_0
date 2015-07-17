@@ -44,9 +44,8 @@ Int32 NIOAccess::GetBaseArrayOffset(
         b->GetPosition(&position);
         return (offset + position) << buf->mElementSizeShift;
     }
-    else {
-        return 0;
-    }
+
+    return 0;
 }
 
 } // namespace IO

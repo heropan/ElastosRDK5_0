@@ -7,6 +7,7 @@
 #include "AutoLock.h"
 
 using Elastos::Core::Thread;
+using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::CHashSet;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 
@@ -18,54 +19,20 @@ namespace Spi {
 //==================================================================
 //　WakeupRunnable
 //==================================================================
-class WakeupRunnable
-    : public ElRefBase
-    , public IRunnable
+
+CAR_INTERFACE_IMPL(AbstractSelector::WakeupRunnable, Object, IRunnable)
+
+AbstractSelector::WakeupRunnable::WakeupRunnable(
+    /* [in] */ AbstractSelector* selector)
+    : mSelector(selector)
 {
-public:
-    WakeupRunnable(
-        /* [in] */ AbstractSelector* selector)
-    {
-        this->mSelector = selector;
-    }
+}
 
-    ~WakeupRunnable()
-    {
-
-    }
-
-    ECode Run()
-    {
-        mSelector->Wakeup();
-        return NOERROR;
-    }
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid)
-    {
-        return NULL;
-    }
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID)
-    {
-        return E_NOT_IMPLEMENTED;
-    }
-
-    CARAPI_(UInt32) AddRef()
-    {
-        return ElRefBase::AddRef();
-    }
-
-    CARAPI_(UInt32) Release()
-    {
-        return ElRefBase::Release();
-    }
-
-private:
-    AbstractSelector *mSelector;
-};
+ECode AbstractSelector::WakeupRunnable::Run()
+{
+    mSelector->Wakeup();
+    return NOERROR;
+}
 
 //==================================================================
 //　AbstractSelector

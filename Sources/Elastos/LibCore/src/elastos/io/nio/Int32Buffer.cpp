@@ -85,6 +85,7 @@ ECode Int32Buffer::CompareTo(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = -1;
 
     Int32 remaining = 0;
     Int32 otherRemaining = 0;
@@ -116,9 +117,9 @@ ECode Int32Buffer::Equals(
     /* [out] */ Boolean* rst)
 {
     VALIDATE_NOT_NULL(rst)
+    *rst = FALSE;
 
     if (IInt32Buffer::Probe(other) == NULL) {
-        *rst = FALSE;
         return NOERROR;
     }
 

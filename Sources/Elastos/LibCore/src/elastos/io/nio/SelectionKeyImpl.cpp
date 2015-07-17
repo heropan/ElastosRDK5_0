@@ -24,9 +24,10 @@ SelectionKeyImpl::SelectionKeyImpl(
 }
 
 ECode SelectionKeyImpl::GetChannel(
-    /* [in] */ ISelectableChannel** channel)
+    /* [out] */ ISelectableChannel** channel)
 {
-    *channel = (ISelectableChannel*) mChannel->Probe(EIID_ISelectableChannel);
+    VALIDATE_NOT_NULL(channel)
+    *channel = ISelectableChannel::Probe(mChannel);
     REFCOUNT_ADD(*channel);
     return NOERROR;
 }
@@ -35,6 +36,7 @@ ECode SelectionKeyImpl::GetInterestOps(
     /* [out] */ Int32* opts)
 {
     VALIDATE_NOT_NULL(opts)
+    *opts = 0;
 
     FAIL_RETURN(CheckValid())
     AutoLock lock(((SelectorImpl*)mSelector.Get())->mKeysLock);
@@ -53,6 +55,7 @@ ECode SelectionKeyImpl::GetInterestOps(
     /* [out] */ ISelectionKey** key)
 {
     VALIDATE_NOT_NULL(key)
+    *key = NULL;
 
     FAIL_RETURN(CheckValid());
     Int32 ops;
@@ -100,8 +103,7 @@ ECode SelectionKeyImpl::CheckValid()
 {
     Boolean isValid;
     IsValid(&isValid);
-    if (FALSE == isValid)
-    {
+    if (FALSE == isValid) {
         return E_CANCELLED_KEY_EXCEPTION;
     }
     return NOERROR;;
@@ -111,8 +113,9 @@ ECode SelectionKeyImpl::IsConnected(
     /* [out] */ Boolean* isConnected)
 {
     VALIDATE_NOT_NULL(isConnected)
-    if (ISocketChannel::Probe(mChannel) == NULL)
-    {
+    *isConnected = FALSE;
+
+    if (ISocketChannel::Probe(mChannel) == NULL) {
         *isConnected = TRUE;
         return NOERROR;
     }

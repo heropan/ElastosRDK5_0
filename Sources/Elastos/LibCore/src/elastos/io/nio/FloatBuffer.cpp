@@ -56,6 +56,7 @@ ECode FloatBuffer::Wrap(
     /* [out] */ IFloatBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer);
+    *buffer = NULL;
 
     FAIL_RETURN(Arrays::CheckOffsetAndCount(array->GetLength(), start, floatCount));
     AutoPtr<FloatArrayBuffer> fab = new FloatArrayBuffer();

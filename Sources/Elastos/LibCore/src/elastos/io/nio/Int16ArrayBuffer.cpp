@@ -36,6 +36,8 @@ ECode Int16ArrayBuffer::Get(
     /* [out] */ Int16* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
     if (mPosition == mLimit) {
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
@@ -49,6 +51,8 @@ ECode Int16ArrayBuffer::Get(
     /* [out] */ Int16* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
+
     FAIL_RETURN(CheckIndex(index))
     *value = (*mBackingArray)[mArrayOffset + index];
     return NOERROR;
@@ -93,6 +97,7 @@ ECode Int16ArrayBuffer::AsReadOnlyBuffer(
     /* [out] */ IInt16Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     AutoPtr<Int16ArrayBuffer> iab;
     FAIL_RETURN(Copy(this, mMark, TRUE, (Int16ArrayBuffer**)&iab))
@@ -121,6 +126,7 @@ ECode Int16ArrayBuffer::Duplicate(
     /* [out] */ IInt16Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     AutoPtr<Int16ArrayBuffer> iab;
     FAIL_RETURN(Copy(this, mMark, mIsReadOnly, (Int16ArrayBuffer**)&iab))
@@ -133,6 +139,7 @@ ECode Int16ArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int16>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -146,6 +153,7 @@ ECode Int16ArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -159,13 +167,12 @@ ECode Int16ArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* hasArray)
 {
     VALIDATE_NOT_NULL(hasArray)
+    *hasArray = TRUE;
 
     if (mIsReadOnly) {
         *hasArray = FALSE;
     }
-    else {
-        *hasArray = TRUE;
-    }
+
     return NOERROR;
 }
 
@@ -222,6 +229,7 @@ ECode Int16ArrayBuffer::Slice(
     /* [out] */ IInt16Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
@@ -247,6 +255,9 @@ ECode Int16ArrayBuffer::Copy(
     /* [in] */ Boolean mIsReadOnly,
     /* [out] */ Int16ArrayBuffer** buffer)
 {
+    VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
+
     Int32 capvalue = 0;
     other->GetCapacity(&capvalue);
     AutoPtr<Int16ArrayBuffer> iab = new Int16ArrayBuffer();

@@ -172,7 +172,7 @@ ECode PipeImpl::Sink(
 {
     VALIDATE_NOT_NULL(channel)
 
-    *channel = (ISinkChannel*) mSink->Probe(EIID_ISinkChannel);
+    *channel = ISinkChannel::Probe(mSink);
     REFCOUNT_ADD(*channel)
     return NOERROR;
 }
@@ -182,7 +182,7 @@ ECode PipeImpl::Source(
 {
     VALIDATE_NOT_NULL(channel)
 
-    *channel = (ISourceChannel*) mSource->Probe(EIID_ISourceChannel);
+    *channel = ISourceChannel::Probe(mSource);
     REFCOUNT_ADD(*channel)
     return NOERROR;
 }

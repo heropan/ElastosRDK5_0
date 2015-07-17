@@ -63,6 +63,7 @@ module
     merge("io/nio/IByteOrder.car");
     merge("io/nio/IBuffer.car");
     merge("io/nio/IByteBuffer.car");
+    merge("io/nio/IByteArrayBuffer.car");
     merge("io/nio/ICharBuffer.car");
     merge("io/nio/IDoubleBuffer.car");
     merge("io/nio/IFloatBuffer.car");
@@ -70,6 +71,7 @@ module
     merge("io/nio/IInt32Buffer.car");
     merge("io/nio/IInt64Buffer.car");
     merge("io/nio/IMappedByteBuffer.car");
+    merge("io/nio/IDirectByteBuffer.car");
     merge("io/nio/INIOAccess.car");
     merge("io/nio/IFileDescriptorChannel.car");
     merge("io/nio/IFileChannelImpl.car");

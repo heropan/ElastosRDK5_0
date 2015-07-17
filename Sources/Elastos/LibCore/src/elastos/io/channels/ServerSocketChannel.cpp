@@ -23,6 +23,7 @@ ECode ServerSocketChannel::Open(
 ECode ServerSocketChannel::GetValidOps(
     /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = ISelectionKey::OP_ACCEPT;
     return NOERROR;
 }

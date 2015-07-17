@@ -59,8 +59,8 @@ ECode DirectByteBuffer::constructor(
     // to the superclass constructor, but it doesn't make any
     // difference in this case.
     if (baseSize >= 0 && (capacity + offset) > baseSize) {
-        assert(0);
         // throw new IllegalArgumentException("capacity + offset > baseSize");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mOffset = offset;
@@ -187,6 +187,7 @@ ECode DirectByteBuffer::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = '\0';
     if (mPosition == mLimit) {
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
     }
@@ -199,6 +200,7 @@ ECode DirectByteBuffer::Get(
     /* [out] */ Byte* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = '\0';
     FAIL_RETURN(CheckIndex(index))
     *value = mBlock->PeekByte(mOffset + index);
     return NOERROR;
@@ -208,6 +210,7 @@ ECode DirectByteBuffer::GetChar(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
     Int32 newPosition = mPosition + sizeof(Char32);
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
@@ -223,6 +226,7 @@ ECode DirectByteBuffer::GetChar(
     /* [out] */ Char32* value)
 {
     VALIDATE_NOT_NULL(value)
+    *value = '\0';
     FAIL_RETURN(CheckIndex(index, sizeof(Char32)))
     *value = (Char32) mBlock->PeekInt32(mOffset + index, mOrder);
     return NOERROR;
@@ -232,6 +236,7 @@ ECode DirectByteBuffer::GetDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     Int32 newPosition = mPosition + sizeof(Double);
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
@@ -247,6 +252,7 @@ ECode DirectByteBuffer::GetDouble(
     /* [out] */ Double* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index, sizeof(Double)))
     *value = Elastos::Core::Math::Int64BitsToDouble(mBlock->PeekInt64(mOffset + index, mOrder));
     return NOERROR;
@@ -256,6 +262,7 @@ ECode DirectByteBuffer::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     Int32 newPosition = mPosition + sizeof(Float);
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
@@ -271,6 +278,7 @@ ECode DirectByteBuffer::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index, sizeof(Float)))
     *value = Elastos::Core::Math::Int32BitsToFloat(mBlock->PeekInt32(mOffset + index, mOrder));
     return NOERROR;
@@ -280,6 +288,7 @@ ECode DirectByteBuffer::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     Int32 newPosition = mPosition + sizeof(Int32);
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
@@ -295,6 +304,7 @@ ECode DirectByteBuffer::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index, sizeof(Int32)))
     *value = mBlock->PeekInt32(mOffset + index, mOrder);
     return NOERROR;
@@ -304,6 +314,7 @@ ECode DirectByteBuffer::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     Int32 newPosition = mPosition + ISizeOf::LONG;
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
@@ -319,6 +330,7 @@ ECode DirectByteBuffer::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index, ISizeOf::LONG))
     *value = mBlock->PeekInt64(mOffset + index, mOrder);
     return NOERROR;
@@ -328,6 +340,7 @@ ECode DirectByteBuffer::GetInt16(
     /* [out] */ Int16* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     Int32 newPosition = mPosition + sizeof(Int16);
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
@@ -343,6 +356,7 @@ ECode DirectByteBuffer::GetInt16(
     /* [out] */ Int16* value)
 {
     VALIDATE_NOT_NULL(value);
+    *value = 0;
     FAIL_RETURN(CheckIndex(index, sizeof(Int16)))
     *value = mBlock->PeekInt16(mOffset + index, mOrder);
     return NOERROR;
@@ -366,6 +380,8 @@ ECode DirectByteBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Byte>** array)
 {
     VALIDATE_NOT_NULL(array);
+    *array = NULL;
+
     AutoPtr< ArrayOf<Byte> > arr = mBlock->GetArray();
     if (arr == NULL) {
         // throw new UnsupportedOperationException();
@@ -380,6 +396,8 @@ ECode DirectByteBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset);
+    *offset = 0;
+
     AutoPtr< ArrayOf<Byte> > array;
     FAIL_RETURN(ProtectedArray((ArrayOf<Byte>**)&array)); // Throw if we don't have an array.
     *offset = mOffset;
@@ -486,8 +504,10 @@ ECode DirectByteBuffer::PutDouble(
         // throw new BufferOverflowException();
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
-    assert(0 && "TODO");
-    // mBlock->PokeInt64(mOffset + mPosition, Double.doubleToRawLongBits(value), mOrder);
+
+    using Elastos::Core::Math;
+    Int64 bit = Math::DoubleToRawInt64Bits(value);
+    mBlock->PokeInt64(mOffset + mPosition, bit, mOrder);
     mPosition = newPosition;
     return NOERROR;
 }
@@ -502,8 +522,9 @@ ECode DirectByteBuffer::PutDouble(
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, ISizeOf::DOUBLE));
-    assert(0 && "TODO");
-    // mBlock->PokeInt64(mOffset + index, Double.doubleToRawLongBits(value), mOrder);
+    using Elastos::Core::Math;
+    Int64 bit = Math::DoubleToRawInt64Bits(value);
+    mBlock->PokeInt64(mOffset + index, bit, mOrder);
     return NOERROR;
 }
 
@@ -520,8 +541,9 @@ ECode DirectByteBuffer::PutFloat(
         // throw new BufferOverflowException();
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
-    assert(0 && "TODO");
-    // mBlock->PokeInt32(mOffset + mPosition, Float.floatToRawIntBits(value), mOrder);
+    using Elastos::Core::Math;
+    Int64 bit = Math::FloatToRawInt32Bits(value);
+    mBlock->PokeInt32(mOffset + mPosition, bit, mOrder);
     mPosition = newPosition;
     return NOERROR;
 }
@@ -536,8 +558,9 @@ ECode DirectByteBuffer::PutFloat(
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, ISizeOf::FLOAT));
-    assert(0 && "TODO");
-    // mBlock->PokeInt32(mOffset + index, Float.floatToRawIntBits(value), mOrder);
+    using Elastos::Core::Math;
+    Int64 bit = Math::FloatToRawInt32Bits(value);
+    mBlock->PokeInt32(mOffset + index, bit, mOrder);
     return NOERROR;
 }
 
@@ -656,6 +679,7 @@ ECode DirectByteBuffer::AsCharBuffer(
     /* [out] */ ICharBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     FAIL_RETURN(CheckNotFreed());
     *buffer = ByteBufferAsCharBuffer::AsCharBuffer(this);
@@ -667,6 +691,7 @@ ECode DirectByteBuffer::AsDoubleBuffer(
     /* [out] */ IDoubleBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     FAIL_RETURN(CheckNotFreed());
     *buffer = ByteBufferAsDoubleBuffer::AsDoubleBuffer(this);
@@ -678,6 +703,7 @@ ECode DirectByteBuffer::AsFloatBuffer(
     /* [out] */ IFloatBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     FAIL_RETURN(CheckNotFreed());
     *buffer = ByteBufferAsFloatBuffer::AsFloatBuffer(this);
@@ -689,6 +715,7 @@ ECode DirectByteBuffer::AsInt16Buffer(
     /* [out] */ IInt16Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     FAIL_RETURN(CheckNotFreed());
     *buffer = ByteBufferAsInt16Buffer::AsInt16Buffer(this);
@@ -700,6 +727,7 @@ ECode DirectByteBuffer::AsInt32Buffer(
     /* [out] */ IInt32Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     FAIL_RETURN(CheckNotFreed());
     *buffer = ByteBufferAsInt32Buffer::AsInt32Buffer(this);
@@ -711,6 +739,7 @@ ECode DirectByteBuffer::AsInt64Buffer(
     /* [out] */ IInt64Buffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     FAIL_RETURN(CheckNotFreed());
     *buffer = ByteBufferAsInt64Buffer::AsInt64Buffer(this);
@@ -722,6 +751,7 @@ ECode DirectByteBuffer::AsReadOnlyBuffer(
     /* [out] */ IByteBuffer** buffer)
 {
     VALIDATE_NOT_NULL(buffer)
+    *buffer = NULL;
 
     AutoPtr<DirectByteBuffer> db;
     FAIL_RETURN(Copy(this, mMark, TRUE, (DirectByteBuffer**)&db))
@@ -740,7 +770,7 @@ ECode DirectByteBuffer::Compact()
     Int32 remainvalue = 0;
     GetRemaining(&remainvalue);
 
-    //Memory::Memmove(this, 0, this, mPosition, remainvalue);
+    Memory::Memmove(this, 0, this, mPosition, remainvalue);
     mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     mMark = UNSET_MARK;

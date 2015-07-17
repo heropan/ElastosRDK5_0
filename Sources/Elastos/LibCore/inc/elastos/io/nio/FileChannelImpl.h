@@ -23,7 +23,8 @@ class FileChannelImpl
     , public IFileChannelImpl
 {
 private:
-    class FileLockImpl : public FileLock
+    class FileLockImpl
+        : public FileLock
     {
     public:
         FileLockImpl(
@@ -31,26 +32,6 @@ private:
             /* [in] */ Int64 position,
             /* [in] */ Int64 size,
             /* [in] */ Boolean shared);
-
-        CARAPI Channel(
-            /* [out] */ IFileChannel** channel);
-
-        CARAPI GetPosition(
-            /* [out] */ Int64* position);
-
-        CARAPI GetSize(
-            /* [out] */ Int64* size);
-
-        CARAPI IsShared(
-            /* [out] */ Boolean* shared);
-
-        CARAPI Overlaps(
-            /* [in] */ Int64 start,
-            /* [in] */ Int64 length,
-            /* [out] */ Boolean* result);
-
-        CARAPI ToString(
-            /* [out] */ String* string);
 
         CARAPI IsValid(
             /* [out] */ Boolean* ret);
@@ -80,6 +61,11 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
+
+    FileChannelImpl(
+        /* [in] */ ICloseable* stream,
+        /* [in] */ IFileDescriptor* desc,
+        /* [in] */ Int32 mode);
 
     CARAPI IsOpen(
         /* [out] */ Boolean* rst);
@@ -176,11 +162,6 @@ public:
         /* [in] */ Int32 length,
         /* [out] */ Int64* number);
 
-    FileChannelImpl(
-        /* [in] */ ICloseable* stream,
-        /* [in] */ IFileDescriptor* desc,
-        /* [in] */ Int32 mode);
-
     CARAPI ReleaseLock(
         /* [in] */ IFileLock* lock);
 
@@ -213,6 +194,7 @@ private:
 
     CARAPI_(Int64) TranslateLockLength(
         /* [in] */ Int64 byteCount);
+
     CARAPI ReadImpl(
         /* [in] */ IByteBuffer* buffer,
         /* [in] */ Int64 position,

@@ -24,7 +24,7 @@ public:
         /* [in] */ Int32 byteCount);
 
     static CARAPI_(AutoPtr<MemoryBlock>) WrapFromNative(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int64 byteCount);
 
     // Used to support array/arrayOffset/hasArray for direct buffers
@@ -175,16 +175,20 @@ public:
     CARAPI_(void) SetAccessible(
         /* [in] */ Boolean accessible);
 
+    CARAPI_(Byte *) GetRawAddress()
+    {
+        return reinterpret_cast<Byte *>(mAddress);
+    }
 protected:
     MemoryBlock(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int64 size)
         : mAddress(address)
         , mSize(size)
     {}
 
 protected:
-    Int32 mAddress;
+    Int64 mAddress;
     Int64 mSize;
 
 private:
@@ -210,7 +214,7 @@ protected:
 
 private:
     MemoryMappedBlock(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int64 byteCount)
         : MemoryBlock(address, byteCount)
     {}
@@ -228,7 +232,7 @@ public:
 private:
     NonMovableHeapBlock(
         /* [in] */ ArrayOf<Byte>* array,
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int64 byteCount)
         : MemoryBlock(address, byteCount)
         , mArray(array)
@@ -248,7 +252,7 @@ class UnmanagedBlock : public MemoryBlock
 
 private:
     UnmanagedBlock(
-        /* [in] */ Int32 address,
+        /* [in] */ Int64 address,
         /* [in] */ Int64 byteCount)
         : MemoryBlock(address, byteCount)
     {}

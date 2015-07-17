@@ -132,6 +132,7 @@ ECode FloatArrayBuffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Float>** array)
 {
     VALIDATE_NOT_NULL(array)
+    *array = NULL;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -145,6 +146,7 @@ ECode FloatArrayBuffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
+    *offset = 0;
 
     if (mIsReadOnly) {
         // throw new ReadOnlyBufferException();
@@ -158,13 +160,12 @@ ECode FloatArrayBuffer::ProtectedHasArray(
     /* [out] */ Boolean* hasArray)
 {
     VALIDATE_NOT_NULL(hasArray)
+    *hasArray = TRUE;
 
     if (mIsReadOnly) {
         *hasArray = FALSE;
     }
-    else {
-        *hasArray = TRUE;
-    }
+
     return NOERROR;
 }
 

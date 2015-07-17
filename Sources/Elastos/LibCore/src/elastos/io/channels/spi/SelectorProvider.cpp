@@ -26,6 +26,7 @@ SelectorProvider::~SelectorProvider()
 ECode SelectorProvider::GetProvider(
     /* [out] */ ISelectorProvider** provider)
 {
+    VALIDATE_NOT_NULL(provider)
     if (NULL == sProvider) {
         AutoPtr<CSelectorProviderImpl> impl;
         ASSERT_SUCCEEDED(CSelectorProviderImpl::NewByFriend((CSelectorProviderImpl**)&impl));

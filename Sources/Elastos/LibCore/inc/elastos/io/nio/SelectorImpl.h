@@ -18,7 +18,8 @@ using Elastos::IO::Channels::ISelector;
 namespace Elastos {
 namespace IO {
 
-class SelectorImpl : public AbstractSelector
+class SelectorImpl
+    : public AbstractSelector
 {
 private:
     class UnaddableSet
@@ -106,31 +107,6 @@ public:
         /* [out] */ ISelectionKey** returnKey);
 
      /**
-     * Closes this selector. Ongoing calls to the {@code select} methods of this
-     * selector will get interrupted. This interruption behaves as if the
-     * {@link #wakeup()} method of this selector is called. After this, all keys
-     * that are still valid are invalidated and their channels are unregistered.
-     * All resources held by this selector are released.
-     * <p>
-     * Any further attempt of using this selector after this method has been
-     * called (except calling {@link #close()} or {@link #wakeup()}) results in
-     * a {@link ClosedSelectorException} being thrown.
-     *
-     * @throws IOException
-     *             if an I/O error occurs.
-     */
-    CARAPI Close();
-
-    /**
-     * Indicates whether this selector is open.
-     *
-     * @return {@code true} if this selector is not closed, {@code false}
-     *         otherwise.
-     */
-    CARAPI IsOpen(
-        /* [out] */ Boolean* isOpen);
-
-     /**
      * Gets the set of registered keys. The set is immutable and is not thread-
      * safe.
      *
@@ -138,14 +114,6 @@ public:
      */
     CARAPI GetKeys(
         /* [out] */ ISet** keySet);
-
-     /**
-     * Gets the provider of this selector.
-     *
-     * @return the provider of this selector.
-     */
-    CARAPI GetProvider(
-        /* [out] */ ISelectorProvider** provider);
 
      /**
      * Detects if any of the registered channels is ready for I/O operations
