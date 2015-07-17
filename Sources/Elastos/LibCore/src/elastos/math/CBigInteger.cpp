@@ -369,6 +369,9 @@ ECode CBigInteger::NewFromBigInt(
     /* [in] */ BigInt* bigInt,
     /* [out] */ IBigInteger** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+
     AutoPtr<CBigInteger> obj;
     CBigInteger::NewByFriend((CBigInteger**)&obj);
     obj->SetBigInt(bigInt);

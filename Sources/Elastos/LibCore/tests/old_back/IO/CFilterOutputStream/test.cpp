@@ -15,7 +15,7 @@ void testConstructor()
 void testWrite()
 {
     Int32 oneByte = 97;
-    String fp = String("/data/data/com.elastos.runtime/elastos/fostest.txt");
+    String fp = String("/data/data/com.elastos.runtime/elastos/iotest.txt");
     AutoPtr<IFileOutputStream> fos;
     CFileOutputStream::New(fp, (IFileOutputStream**)&fos);
 	AutoPtr<IFilterOutputStream> ftos;
@@ -35,7 +35,7 @@ void testWriteBuffer()
 	bytes[5] = 102;
 	bytes[6] = 103;
 	bytes[7] = 104;
-    String fp = String("/data/data/com.elastos.runtime/elastos/fostest.txt");
+    String fp = String("/data/data/com.elastos.runtime/elastos/iotest.txt");
     AutoPtr<IFileOutputStream> fos;
     CFileOutputStream::New(fp, (IFileOutputStream**)&fos);
 	AutoPtr<IFilterOutputStream> ftos;

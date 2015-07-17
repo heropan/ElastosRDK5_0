@@ -1,8 +1,5 @@
 
-#include <elastos.h>
-#include <stdio.h>
-#include <elautoptr.h>
-#include "Elastos.CoreLibrary.h"
+#include <elastos/core/Object.h>
 
 using namespace Elastos;
 using Elastos::IO::IFile;
@@ -54,7 +51,7 @@ void testListFile(const String& rootPath)
 
 int main(int argc, char *argv[])
 {
-    testCreateFile()
+    testCreateFile();
     testListFile(String("/sdcard/Images/"));
     return 0;
 }

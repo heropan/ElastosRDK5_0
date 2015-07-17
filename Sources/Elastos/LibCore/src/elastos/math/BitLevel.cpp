@@ -99,9 +99,10 @@ ECode BitLevel::ShiftLeftOneBit(
     /* [in] */ CBigInteger* source,
     /* [out] */ IBigInteger** result)
 {
-    assert(NULL != source);
-    assert(NULL != result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
+
+    assert(NULL != source);
 
     source->PrepareJavaRepresentation();
     Int32 srcLen = source->mNumberLength;
@@ -117,9 +118,10 @@ ECode BitLevel::ShiftRight(
     /* [in] */ Int32 count,
     /* [out] */ IBigInteger** result)
 {
-    assert(NULL != source);
-    assert(NULL != result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
+
+    assert(NULL != source);
 
     source->PrepareJavaRepresentation();
     Int32 intCount = count >> 5; // count of integers
@@ -208,9 +210,10 @@ ECode BitLevel::FlipBit(
     /* [in] */ Int32 n,
     /* [out] */ IBigInteger** result)
 {
-    assert(NULL != val);
-    assert(NULL != result);
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
+
+    assert(NULL != val);
 
     val->PrepareJavaRepresentation();
     Int32 resSign = (val->mSign == 0) ? 1 : val->mSign;

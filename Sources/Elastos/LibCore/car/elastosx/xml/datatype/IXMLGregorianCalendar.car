@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Utility.ICalendar;
-    interface Elastos.Core.INumber;
     interface Elastos.Math.IBigInteger;
     interface Elastos.Math.IBigDecimal;
     interface Elastosx.Xml.Namespace.IQName;

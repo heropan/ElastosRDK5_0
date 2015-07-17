@@ -1,69 +1,76 @@
-#include <cmdef.h>
-#include <elastos.h>
-#include <elautoptr.h>
-#include <eltypes.h>
-#include <stdio.h>
 #include <Elastos.CoreLibrary.h>
-#include <elastos/StringBuilder.h>
+#include <elastos/core/StringBuilder.h>
 
-#include <elastos/Pair.h>
-#include <elastos/HashMap.h>
-#include <elastos/HashSet.h>
-#include <elastos/List.h>
-#include <elastos/Vector.h>
-#include <elastos/Stack.h>
+#include <elastos/utility/etl/Pair.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/Vector.h>
+#include <elastos/utility/etl/Stack.h>
 
 using namespace Elastos;
 using namespace Elastos::Core;
 using namespace Elastos::Math;
-using Elastos::Utility::MakePair;
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
-using Elastos::Utility::HashSet;
-using Elastos::Utility::Pair;
-using Elastos::Utility::Vector;
-using Elastos::Utility::Stack;
-using Elastos::Core::CObjectContainer;
+using Elastos::Utility::Etl::MakePair;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::Pair;
+using Elastos::Utility::Etl::Vector;
+using Elastos::Utility::Etl::Stack;
 
 
-void ConvertArrayOfToObjectContainer()
-{
-    AutoPtr<IBigInteger> i1, i2, i3;
-    CBigInteger::New(1, 1, (IBigInteger**)&i1);
-    CBigInteger::New(1, 2, (IBigInteger**)&i2);
-    CBigInteger::New(1, 3, (IBigInteger**)&i3);
+#ifndef DEFINE_HASH_FUNC_FOR
+#define DEFINE_HASH_FUNC_FOR(TypeName)                                                  \
+_ETL_NAMESPACE_BEGIN                                 \
+template<> struct Hash<TypeName *>                                                        \
+{                                                                                       \
+    size_t operator()(TypeName * s) const                                               \
+    {                                                                                   \
+        return (size_t)Object::GetHashCode(s);                                          \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct Hash<AutoPtr<TypeName> >                                              \
+{                                                                                       \
+    size_t operator()(const AutoPtr<TypeName> & s) const                                \
+    {                                                                                   \
+        return (size_t)Object::GetHashCode(s.Get());                                    \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct EqualTo<TypeName *>                                                   \
+{                                                                                       \
+    size_t operator()(TypeName * x, TypeName * y) const                                 \
+    {                                                                                   \
+        return (size_t)Object::Equals(x, y);                                            \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+template<> struct EqualTo<AutoPtr<TypeName> >                                           \
+{                                                                                       \
+    size_t operator()(const AutoPtr<TypeName> & x, const AutoPtr<TypeName> & y) const   \
+    {                                                                                   \
+        return (size_t)Object::Equals(x, y);                                            \
+    }                                                                                   \
+};                                                                                      \
+                                                                                        \
+_ETL_NAMESPACE_END
+#endif // DEFINE_HASH_FUNC_FOR
 
-    AutoPtr< ArrayOf<IBigInteger*> > array = ArrayOf<IBigInteger*>::Alloc(3);
-    array->Set(0, i1);
-    array->Set(1, i2);
-    array->Set(2, i3);
-
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
-
-    for (Int32 i = 0; i < array->GetLength(); ++i) {
-        if ((*array)[i] != NULL) {
-            (*array)[i]->AddRef();
-            container->Add((*array)[i]);
-        }
-    }
-
-    Int32 count;
-    container->GetObjectCount(&count);
-    printf(" >> container count: %d\n", count);
-}
+DEFINE_HASH_FUNC_FOR(IBigInteger)
 
 _ETL_NAMESPACE_BEGIN
 
-template<> struct Hash<IBigInteger*>
-{
-    size_t operator()(const IBigInteger* s) const { return (size_t)s; }
-};
+// template<> struct Hash<IBigInteger*>
+// {
+//     size_t operator()(const IBigInteger* s) const { return (size_t)s; }
+// };
 
-template<> struct Hash<AutoPtr<IBigInteger> >
-{
-    size_t operator()(const AutoPtr<IBigInteger> s) const { return (size_t)s.Get(); }
-};
+// template<> struct Hash<AutoPtr<IBigInteger> >
+// {
+//     size_t operator()(const AutoPtr<IBigInteger> s) const { return (size_t)s.Get(); }
+// };
 
 // Hash functor for Pair<Int32, String>
 template<> struct Hash< Pair<Int32, String> >
@@ -502,7 +509,6 @@ void testStack()
 int main(int argc, char *argv[])
 {
     printf("==== call testETL ====\n");
-    ConvertArrayOfToObjectContainer();
 
 //    testHashMapWithPair();
 

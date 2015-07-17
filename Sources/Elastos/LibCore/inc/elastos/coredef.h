@@ -101,8 +101,8 @@
 
 #ifndef DEFINE_OBJECT_HASH_FUNC_FOR
 #define DEFINE_OBJECT_HASH_FUNC_FOR(TypeName)                                           \
-namespace Elastos { namespace Utility { namespace Etl {                                 \
-template<> struct Hash<TypeName>                                                        \
+_ETL_NAMESPACE_BEGIN                                                                    \
+template<> struct Hash<TypeName *>                                                      \
 {                                                                                       \
     size_t operator()(TypeName * s) const                                               \
     {                                                                                   \
@@ -134,7 +134,7 @@ template<> struct EqualTo<AutoPtr<TypeName> >                                   
     }                                                                                   \
 };                                                                                      \
                                                                                         \
-} } } // Elastos::Utility::Etl
+_ETL_NAMESPACE_END
 #endif // DEFINE_OBJECT_HASH_FUNC_FOR
 
 

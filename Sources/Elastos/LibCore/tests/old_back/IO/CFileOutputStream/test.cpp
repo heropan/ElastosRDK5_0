@@ -9,7 +9,7 @@ using namespace Elastos;
 int main(int argc, char *argv[])
 {
     printf("==== File: %s, Line: %d ====\n", __FILE__, __LINE__);
-    String fp = String("/data/data/com.elastos.runtime/elastos/fostest.txt");
+    String fp = String("/data/data/com.elastos.runtime/elastos/iotest.txt");
     AutoPtr<IFileOutputStream> fos;
     CFileOutputStream::New(fp, (IFileOutputStream**)&fos);
     printf("==== File: %s, Line: %d ====\n", __FILE__, __LINE__);

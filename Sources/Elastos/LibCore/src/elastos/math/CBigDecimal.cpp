@@ -468,6 +468,7 @@ ECode CBigDecimal::ValueOf(
     /* [out] */ IBigDecimal** result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
 
     using Elastos::Core::Math;
     if (Math::IsInfinite(val) || Math::IsNaN(val)) {
@@ -918,6 +919,7 @@ ECode CBigDecimal::DivideBigIntegers(
     /* [in] */ RoundingMode roundingMode,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
 
     AutoPtr<ArrayOf<IBigInteger*> > quotAndRem;
@@ -1007,7 +1009,9 @@ ECode CBigDecimal::DividePrimitiveLongs(
     /* [in] */ RoundingMode roundingMode,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result);
     *result = NULL;
+
     using Elastos::Core::Math;
 
     Int64 quotient = scaledDividend / scaledDivisor;
