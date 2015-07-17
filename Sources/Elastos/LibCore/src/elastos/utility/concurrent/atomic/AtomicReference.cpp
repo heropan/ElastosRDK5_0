@@ -95,8 +95,9 @@ ECode AtomicReference::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    assert(0 && "TODO");
-    // return String.valueOf(get());
+    AutoPtr<IInterface> obj;
+    Get((IInterface**)&obj);
+    *str = Object::ToString(obj);
     return NOERROR;
 }
 

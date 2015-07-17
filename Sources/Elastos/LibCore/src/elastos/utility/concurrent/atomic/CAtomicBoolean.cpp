@@ -2,7 +2,9 @@
 #include "CAtomicBoolean.h"
 #include <cutils/atomic.h>
 #include <cutils/atomic-inline.h>
+#include "StringUtils.h"
 
+using Elastos::Core::StringUtils;
 using Elastos::IO::EIID_ISerializable;
 
 namespace Elastos {
@@ -90,10 +92,9 @@ ECode CAtomicBoolean::GetAndSet(
 {
     VALIDATE_NOT_NULL(value);
 
+    Boolean current, result;
     for (;;) {
-        Boolean current;
         Get(&current);
-        Boolean result;
         if (CompareAndSet(current, newValue, &result), result) {
             *value = current;
             return NOERROR;
@@ -115,6 +116,7 @@ ECode CAtomicBoolean::CompareAndSet(
     /* [in] */ Boolean update,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     volatile int32_t* address = (volatile int32_t*)&mValue;
     int e = expect ? 1 : 0;
     int u = update ? 1 : 0;
@@ -130,23 +132,12 @@ ECode CAtomicBoolean::CompareAndSet(
     // return unsafe.compareAndSwapInt(this, valueOffset, e, u);
 }
 
-/**
- * Atomically sets the value to the given updated value
- * if the current value {@code ==} the expected value.
- *
- * <p>May <a href="package-summary.html#Spurious">fail spuriously</a>
- * and does not provide ordering guarantees, so is only rarely an
- * appropriate alternative to {@code compareAndSet}.
- *
- * @param expect the expected value
- * @param update the new value
- * @return true if successful.
- */
 ECode CAtomicBoolean::WeakCompareAndSet(
     /* [in] */ Boolean expect,
     /* [in] */ Boolean update,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     volatile int32_t* address = (volatile int32_t*)&mValue;
     int e = expect ? 1 : 0;
     int u = update ? 1 : 0;
@@ -167,8 +158,9 @@ ECode CAtomicBoolean::ToString(
 {
     VALIDATE_NOT_NULL(str)
 
-    assert(0 && "TODO");
-    // return String.valueOf(get());
+    Boolean value;
+    Get(&value);
+    *str = StringUtils::BooleanToString(value);
     return NOERROR;
 }
 

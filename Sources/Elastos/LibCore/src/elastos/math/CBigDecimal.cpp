@@ -359,8 +359,8 @@ ECode CBigDecimal::constructor(
     /* [in] */ Int32 scale,
     /* [in] */ IMathContext* mc)
 {
-    VALIDATE_NOT_NULL(val);
     VALIDATE_NOT_NULL(mc);
+    VALIDATE_NOT_NULL(val);
 
     ECode ec = constructor(val, scale);
     if (FAILED(ec)) return ec;
@@ -484,8 +484,9 @@ ECode CBigDecimal::Add(
     /* [in] */ IBigDecimal* iaugend,
     /* [out] */ IBigDecimal** result)
 {
-    VALIDATE_NOT_NULL(iaugend);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(iaugend);
 
     CBigDecimal* augend = (CBigDecimal*)iaugend;
 
@@ -538,6 +539,8 @@ ECode CBigDecimal::AddAndMult10(
     /* [in] */ Int32 diffScale,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
     assert(thisValue && augend);
 
     using Elastos::Core::Math;
@@ -568,9 +571,10 @@ ECode CBigDecimal::Add(
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
     VALIDATE_NOT_NULL(iaugend);
     VALIDATE_NOT_NULL(mc);
-    VALIDATE_NOT_NULL(result);
 
     CBigDecimal* augend = (CBigDecimal*)iaugend;
 
@@ -645,8 +649,9 @@ ECode CBigDecimal::Subtract(
     /* [in] */ IBigDecimal* isubtrahend,
     /* [out] */ IBigDecimal** result)
 {
-    VALIDATE_NOT_NULL(isubtrahend);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(isubtrahend);
 
     CBigDecimal* subtrahend = (CBigDecimal*)isubtrahend;
 
@@ -721,9 +726,10 @@ ECode CBigDecimal::Subtract(
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
     VALIDATE_NOT_NULL(isubtrahend);
     VALIDATE_NOT_NULL(mc);
-    VALIDATE_NOT_NULL(result);
 
     CBigDecimal* subtrahend = (CBigDecimal*)isubtrahend;
 
@@ -783,10 +789,9 @@ ECode CBigDecimal::Multiply(
     /* [in] */ IBigDecimal* imultiplicand,
     /* [out] */ IBigDecimal** result)
 {
-    VALIDATE_NOT_NULL(imultiplicand);
     VALIDATE_NOT_NULL(result);
-
     *result = NULL;
+    VALIDATE_NOT_NULL(imultiplicand);
 
     CBigDecimal* multiplicand = (CBigDecimal*)imultiplicand;
     Int64 newScale = (Int64)mScale + multiplicand->mScale;
@@ -819,9 +824,10 @@ ECode CBigDecimal::Multiply(
     /* [in] */ IMathContext* mc,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
     VALIDATE_NOT_NULL(multiplicand);
     VALIDATE_NOT_NULL(mc);
-    VALIDATE_NOT_NULL(result);
 
     Multiply(multiplicand, result);
 
@@ -835,9 +841,9 @@ ECode CBigDecimal::Divide(
     /* [in] */ RoundingMode roundingMode,
     /* [out] */ IBigDecimal** result)
 {
-    VALIDATE_NOT_NULL(idivisor);
     VALIDATE_NOT_NULL(result);
     *result = NULL;
+    VALIDATE_NOT_NULL(idivisor);
 
     CBigDecimal* divisor = (CBigDecimal*)idivisor;
 
@@ -2853,7 +2859,9 @@ void CBigDecimal::SetUnscaledValue(
 ECode CBigDecimal::GetUnscaledValue(
     /**/ IBigInteger** value)
 {
-    *value = GetUnscaledValue();
+    VALIDATE_NOT_NULL(value)
+    AutoPtr<IBigInteger> bi = GetUnscaledValue();
+    *value = bi;
     REFCOUNT_ADD(*value)
     return NOERROR;
 }
@@ -2878,6 +2886,7 @@ ECode CBigDecimal::SafeLongToInt(
     /* [in] */ Int64 longValue,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     using Elastos::Core::Math;
     if (longValue < Math::INT32_MIN_VALUE || longValue > Math::INT32_MAX_VALUE) {
         return E_ARITHMETIC_EXCEPTION;
@@ -2891,6 +2900,7 @@ ECode CBigDecimal::ZeroScaledByScale(
     /* [in] */ Int64 longScale,
     /* [out] */ IBigDecimal** result)
 {
+    VALIDATE_NOT_NULL(result)
     if (longScale == (Int32)longScale) {
         return ValueOf(0, (Int32)longScale, result);
     }
@@ -3045,6 +3055,7 @@ ECode CBigDecimal::RoundingBehavior(
     /* [in] */ RoundingMode roundingMode,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     *result = 0; // the carry after rounding
 
     using Elastos::Core::Math;
