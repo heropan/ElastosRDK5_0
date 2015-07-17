@@ -15,6 +15,10 @@ module
     merge("security/auth/callback/ICallbackHandler.car");
     merge("security/auth/IDestroyable.car");
 
+    interface Elastos.Security.IPrincipal;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.Utility.IMap;
+
     namespace Elastosx {
     namespace Security {
     namespace Auth {
@@ -30,6 +34,30 @@ module
     }
 
     } // namespace Callback
+
+    namespace X500 {
+
+    [deprecated]
+    class CX500Principal {
+        constructor(
+            [in] ArrayOf<Byte>* name1);
+
+        constructor(
+            [in] IInputStream *is);
+
+        constructor(
+            [in] String name2);
+
+        constructor(
+            [in] String name,
+            [in] IMap *keywordMap);
+
+        interface IPrincipal;
+        interface IX500Principal;
+    }
+
+    } // namespace X500
+
     } // namespace Auth
     } // namespace Security
     } // namespace Elastosx
