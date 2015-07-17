@@ -8,9 +8,11 @@ include $(MAKEDIR)/../../sources.inc
 INCLUDES += ../../elastos
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/callback
+INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/x500
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core
 
-VPATH := $(MAKEDIR)/auth/callback
+VPATH := $(MAKEDIR)/auth/callback:$(MAKEDIR)/auth/x500
 
 SOURCES = security.cpp
 SOURCES += CPasswordCallback.cpp
+SOURCES += CX500Principal.cpp

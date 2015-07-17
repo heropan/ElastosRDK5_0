@@ -1,6 +1,6 @@
 
-#ifndef __CPASSWORDCALLBACK_H__
-#define __CPASSWORDCALLBACK_H__
+#ifndef __ELASTOSX_SECURITY_AUTH_CALLBACK_CPASSWORDCALLBACK_H__
+#define __ELASTOSX_SECURITY_AUTH_CALLBACK_CPASSWORDCALLBACK_H__
 
 #include "_Elastosx_Security_Auth_Callback_CPasswordCallback.h"
 #include "Object.h"
@@ -60,4 +60,4 @@ private:
 } // namespace Security
 } // namespace Elastosx
 
-#endif // __CPASSWORDCALLBACK_H__
+#endif // __ELASTOSX_SECURITY_AUTH_CALLBACK_CPASSWORDCALLBACK_H__

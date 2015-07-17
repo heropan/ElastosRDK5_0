@@ -1,14 +1,16 @@
 
-#ifndef __CX500PRINCIPAL_H__
-#define __CX500PRINCIPAL_H__
+#ifndef __ELASTOSX_SECURITY_AUTH_X500_CX500PRINCIPAL_H__
+#define __ELASTOSX_SECURITY_AUTH_X500_CX500PRINCIPAL_H__
 
-#include "_CX500Principal.h"
-#include "elastos/Object.h"
+#include "_Elastosx_Security_Auth_X500_CX500Principal.h"
+#include "Object.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IObjectOutputStream;
 using Elastos::IO::IObjectInputStream;
 using Elastos::Utility::IMap;
+using Elastos::Security::IPrincipal;
+// using Org::Apache::Harmony::Security::X501::IName;
 
 namespace Elastosx {
 namespace Security {
@@ -16,8 +18,15 @@ namespace Auth {
 namespace X500 {
 
 CarClass(CX500Principal)
+    , public Object
+    , public IX500Principal
+    , public IPrincipal
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Returns an ASN.1 DER-encoded representation of the distinguished name
      * contained in this X.500 principal.
@@ -55,6 +64,7 @@ public:
         /* [in] */ IMap *oidMap,
         /* [out] */ String *name);
 
+    // @Override
     CARAPI Equals(
         /* [in] */ IInterface *obj,
         /* [out] */ Boolean *result);
@@ -123,32 +133,27 @@ private:
     CARAPI GetCanonicalName(
         /* [out] */ String *name);
 
-    CARAPI ReadObject(
-        /* [in] */ IObjectInputStream *in);
-
-    CARAPI WriteObject(
-        /* [in] */ IObjectOutputStream *out);
-
     CARAPI SubstituteNameFromMap(
         /* [in] */ const String& name,
         /* [in] */ IMap *keywordMap,
         /* [out] */ String *nm);
 
 private:
-    static const Int64 serialVersionUID;
+    static const Int64 mSerialVersionUID;
 
-    //Apache...Todo later
     //Distinguished Name
-    //Name dn;
+    // transient
+    // TODO: Waiting for IName
+    // AutoPtr<IName> mDn;
 
     String mCanonicalName;
 
     Object mLock;
 };
 
-}
-}
-}
-}
+} // namespace Callback
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 
-#endif // __CX500PRINCIPAL_H__
+#endif // __ELASTOSX_SECURITY_AUTH_X500_CX500PRINCIPAL_H__
