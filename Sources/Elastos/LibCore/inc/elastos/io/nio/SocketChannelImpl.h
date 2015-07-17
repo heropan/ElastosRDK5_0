@@ -5,12 +5,13 @@
 #include "CFileDescriptor.h"
 #include "FilterOutputStream.h"
 #include "FilterInputStream.h"
-// #include "Socket.h"
+#include "Socket.h"
 
 using Elastos::IO::Channels::SocketChannel;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::IPlainSocketImpl;
+using Elastos::Net::Socket;
 
 namespace Elastos {
 namespace IO {
@@ -27,7 +28,7 @@ private:
     /*
      * Adapter classes for internal socket.
      */
-    class SocketAdapter // : public Socket
+    class SocketAdapter : public Socket
     {
     public:
         SocketAdapter(
@@ -56,7 +57,7 @@ private:
 
     private:
         AutoPtr<SocketChannelImpl> mChannel;
-        // PlainSocketImpl* mSocketImpl;
+        AutoPtr<IPlainSocketImpl> mSocketImpl;
     };
 
 
@@ -190,12 +191,6 @@ public:
         /* [out] */ Int64* ret);
 
     /*
-     * Get local address.
-     */
-    CARAPI GetLocalAddress(
-        /* [out] */ IInetAddress** addr);
-
-    /*
      * Get the fd.
      */
     CARAPI GetFD(
@@ -230,13 +225,6 @@ public:
         /* [in] */ Int32 status,
         /* [in] */ Boolean updateSocketState);
 
-    CARAPI_(void) SetConnected();
-
-    CARAPI_(void) SetBound(
-        /* [in] */ Boolean flag);
-
-    CARAPI_(void) FinishAccept();
-
     /*
      * Shared by this class and DatagramChannelImpl, to do the address transfer
      * and check.
@@ -256,8 +244,6 @@ public:
 private:
     CARAPI_(Boolean) IsEINPROGRESS(
         /* [in] */ ECode e);
-
-    CARAPI InitLocalAddressAndPort();
 
     CARAPI ReadImpl(
         /* [in] */ IByteBuffer* dst,
@@ -292,15 +278,15 @@ private:
     // Status closed.
     const static Int32 SOCKET_STATUS_CLOSED;
 
-    CFileDescriptor* mFileDescriptor;
+    AutoPtr<IFileDescriptor> mFd;
 
     // Our internal Socket.
-    SocketAdapter* mSocket;
+    AutoPtr<SocketAdapter> mSocket;
 
     // The address to be connected.
     AutoPtr<IInetSocketAddress> mConnectAddress;
 
-    IInetAddress* mLocalAddress;
+    AutoPtr<IInetAddress> mLocalAddress;
 
     Int32 mLocalPort;
 

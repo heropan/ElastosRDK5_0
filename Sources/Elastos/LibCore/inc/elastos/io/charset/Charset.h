@@ -12,6 +12,8 @@ using Elastos::Utility::Etl::Set;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ISet;
 using Elastos::Utility::ISortedMap;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace IO {
@@ -118,17 +120,19 @@ private:
 
     static AutoPtr<ICharset> GetDefaultCharset();
 
+    static CARAPI_(Boolean) IsInitflag();
+
 public:
     String mCanonicalName;
 
 private:
-    static AutoPtr< HashMap<String, AutoPtr<ICharset> > > CACHED_CHARSETS;
-        // = new HashMap<String, Charset>();
+    static AutoPtr<IHashMap> CACHED_CHARSETS;
 
     static AutoPtr<ICharset> DEFAULT_CHARSET;
-        // = GetDefaultCharset();
 
-    AutoPtr< HashSet<String> > mAliasesSet;
+    AutoPtr<IHashSet> mAliasesSet;
+
+    static Boolean mIsflag;
 };
 
 } // namespace CharSet

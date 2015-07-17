@@ -1,13 +1,11 @@
 
 module
 {
-    interface Elastos.IO.Channels.IFileLock;         //todo: IFileLock
+    interface Elastos.IO.Channels.IFileLock;
     interface Elastos.IO.IMappedByteBuffer;
     interface Elastos.IO.IByteBuffer;
     interface Elastos.IO.Channels.IReadableByteChannel;
     interface Elastos.IO.Channels.IWritableByteChannel;
-
- //   interface Elastos.IO.Channels.IFileLock {}
 
     namespace Elastos {
     namespace IO {

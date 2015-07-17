@@ -61,6 +61,12 @@ private:
     };
 
 public:
+    /*
+     * Constructor
+     */
+    DatagramChannelImpl(
+        /* [in] */ ISelectorProvider* provider);
+
     CAR_INTERFACE_DECL()
 
     DatagramChannelImpl();
@@ -77,30 +83,19 @@ public:
      * Getting the internal DatagramSocket If we have not the socket, we create
      * a new one.
      */
-     CARAPI GetSocket(
+    CARAPI GetSocket(
         /* [out] */ IDatagramSocket** socket);
-
-    /**
-     * Initialise the isBound, localAddress and localPort state from the file descriptor. Used when
-     * some or all of the bound state has been left to the OS to decide, or when the Socket handled
-     * bind() or connect().
-     *
-     * @param updateSocketState
-     *        if the associated socket (if present) needs to be updated
-     * @hide used to sync state, non-private to avoid synthetic method
-     */
-    CARAPI OnBind(
-        /* [in] */ Boolean updateSocketState);
 
      /**
       * @see java.nio.channels.DatagramChannel#isConnected()
       */
-     Boolean IsConnected();
+    CARAPI IsConnected(
+        /* [out] */ Boolean* value);
 
-     /**
-       * @see java.nio.channels.DatagramChannel#connect(java.net.SocketAddress)
-       */
-     CARAPI Connect(
+    /**
+    * @see java.nio.channels.DatagramChannel#connect(java.net.SocketAddress)
+    */
+    CARAPI Connect(
         /* [in] */ ISocketAddress* address,
         /* [out] */ IDatagramChannel** channel);
 
@@ -114,18 +109,10 @@ public:
         /* [in] */ Int32 remotePort,
         /* [in] */ Boolean updateSocketState);
 
-     /**
-       * @see java.nio.channels.DatagramChannel#disconnect()
-       */
-     CARAPI Disconnect();
-
     /**
-     * Initialize the state associated with being disconnected, optionally syncing the socket if
-     * there is one.
-     * @hide used to sync state, non-private to avoid synthetic method
-     */
-    CARAPI OnDisconnect(
-        /* [in] */ Boolean updateSocketState);
+    * @see java.nio.channels.DatagramChannel#disconnect()
+    */
+    CARAPI Disconnect();
 
     virtual CARAPI Receive(
         /* [in] */ IByteBuffer* target,
@@ -167,19 +154,40 @@ public:
         /* [in] */ IByteBuffer* src,
         /* [out] */ Int32 * count);
 
-    CARAPI ImplCloseSelectableChannel();
-
-    CARAPI ImplConfigureBlocking(
-        /* [in] */ Boolean blocking);
-
     CARAPI GetFD(
-        /* [out] */ IFileDescriptor** fd);
+        /* [out] */ IFileDescriptor** outfd);
 
+protected:
     /**
      * Returns the local address to which the socket is bound.
      */
     CARAPI GetLocalAddress(
         /* [out] */ IInetAddress** addr);
+
+    /**
+     * Initialize the state associated with being disconnected, optionally syncing the socket if
+     * there is one.
+     * @hide used to sync state, non-private to avoid synthetic method
+     */
+    CARAPI OnDisconnect(
+        /* [in] */ Boolean updateSocketState);
+
+    CARAPI ImplCloseSelectableChannel();
+
+    CARAPI ImplConfigureBlocking(
+        /* [in] */ Boolean blocking);
+
+    /**
+     * Initialise the isBound, localAddress and localPort state from the file descriptor. Used when
+     * some or all of the bound state has been left to the OS to decide, or when the Socket handled
+     * bind() or connect().
+     *
+     * @param updateSocketState
+     *        if the associated socket (if present) needs to be updated
+     * @hide used to sync state, non-private to avoid synthetic method
+     */
+    CARAPI OnBind(
+        /* [in] */ Boolean updateSocketState);
 
 private:
 
@@ -193,9 +201,6 @@ private:
         /* [in] */ Boolean loop,
         /* [out] */ ISocketAddress** addr);
 
-    /*
-     * Status check, must be open.
-     */
     CARAPI CheckOpen();
 
     /*

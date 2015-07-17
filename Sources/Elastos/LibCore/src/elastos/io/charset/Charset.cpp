@@ -8,28 +8,46 @@
 #include "CTreeMap.h"
 #include "CoreUtils.h"
 #include "Collections.h"
+#include "ServiceLoader.h"
+#include "CHashMap.h"
+#include "CHashSet.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::CStringWrapper;
+using Elastos::Utility::ServiceLoader;
+using Elastos::Utility::IServiceLoader;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::ITreeMap;
 using Elastos::Utility::CTreeMap;
 using Elastos::Utility::Collections;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CHashSet;
+using Elastos::IO::Charset::Spi::ICharsetProvider;
+using Elastos::IO::Charset::Spi::EIID_ICharsetProvider;
 using Libcore::ICU::NativeConverter;
 
 namespace Elastos {
 namespace IO {
 namespace Charset {
 
-AutoPtr< HashMap<String, AutoPtr<ICharset> > > Charset::CACHED_CHARSETS = new HashMap<String, AutoPtr<ICharset> >();
+AutoPtr<IHashMap> Charset::CACHED_CHARSETS;
 
 AutoPtr<ICharset> Charset::DEFAULT_CHARSET;
 
-static Object gCachedCharsetsLock;
+Boolean Charset::IsInitflag()
+{
+    CHashMap::New((IHashMap**)&CACHED_CHARSETS);
+    DEFAULT_CHARSET = GetDefaultCharset();
+    return TRUE;
+}
+
+Boolean Charset::mIsflag = IsInitflag();
 
 Charset::Charset()
-    : mAliasesSet(new HashSet<String>())
-{}
+{
+    CHashSet::New((IHashSet**)&mAliasesSet);
+}
 
 Charset::~Charset()
 {
@@ -47,9 +65,10 @@ ECode Charset::Init(
     // check each alias and put into a set
     if (mAliasesSet != NULL) {
         Int32 size = aliases->GetLength();
+        Boolean outflag = FALSE;
         for (Int32 i = 0; i < size; i++) {
             ASSERT_SUCCEEDED(CheckCharsetName((*aliases)[i]));
-            mAliasesSet->Insert((*aliases)[i]);
+            mAliasesSet->Add(CoreUtils::Convert((*aliases)[i]), &outflag);
         }
     }
 
@@ -75,17 +94,29 @@ ECode Charset::AvailableCharsets(
     }
 
     // Add all charsets provided by all charset providers...
-    assert(0 && "TODO");
-    // for (CharsetProvider charsetProvider : ServiceLoader.load(CharsetProvider.class, null)) {
-    //     Iterator<Charset> it = charsetProvider.charsets();
-    //     while (it.hasNext()) {
-    //         Charset cs = it.next();
-    //         // A CharsetProvider can't override a built-in Charset.
-    //         if (!charsets.containsKey(cs.name())) {
-    //             charsets.put(cs.name(), cs);
-    //         }
-    //     }
-    // }
+    AutoPtr<IServiceLoader> sl = ServiceLoader::Load(EIID_ICharsetProvider, NULL);
+    if (sl) {
+        AutoPtr<IIterator> iter;
+        ((ServiceLoader*)sl.Get())->GetIterator((IIterator**)&iter);
+        Boolean isflag = FALSE;
+        while(iter->HasNext(&isflag), isflag) {
+            AutoPtr<IInterface> outface;
+            iter->GetNext((IInterface**)&outface);
+            AutoPtr<ICharsetProvider> charsetProvider = ICharsetProvider::Probe(outface);
+            AutoPtr<IIterator> it;
+            charsetProvider->Charsets((IIterator**)&it);
+            while(it->HasNext(&isflag), isflag) {
+                it->GetNext((IInterface**)&outface);
+                AutoPtr<ICharset> cs = ICharset::Probe(outface);
+                // A CharsetProvider can't override a built-in Charset.
+                String name;
+                cs->GetName(&name);
+                if (charsets->ContainsKey(CoreUtils::Convert(name), &isflag), !isflag) {
+                    charsets->Put(CoreUtils::Convert(name), cs, (IInterface**)&outface);
+                }
+            }
+        }
+    }
 
     return Collections::UnmodifiableSortedMap(ISortedMap::Probe(charsets), outsm);
 }
@@ -95,13 +126,15 @@ ECode Charset::ForName(
     /* [out] */ ICharset** charset)
 {
     VALIDATE_NOT_NULL(charset);
+
     // Is this charset in our cache?
     AutoPtr<ICharset> cs;
-    {
-        AutoLock lock(gCachedCharsetsLock);
-        HashMap<String, AutoPtr<ICharset> >::Iterator it = CACHED_CHARSETS->Find(charsetName);
-        if (it != CACHED_CHARSETS->End()) {
-            *charset = it->mSecond;
+    synchronized (CACHED_CHARSETS) {
+        AutoPtr<IInterface> outface;
+        CACHED_CHARSETS->Get(CoreUtils::Convert(charsetName), (IInterface**)&outface);
+        cs = ICharset::Probe(outface);
+        if (cs != NULL) {
+            *charset = cs;
             REFCOUNT_ADD(*charset)
             return NOERROR;
         }
@@ -113,6 +146,7 @@ ECode Charset::ForName(
     }
 
     FAIL_RETURN(CheckCharsetName(charsetName));
+    assert(0 && "TODO");
     // NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
 
     if (cs.Get() != NULL) {
@@ -122,13 +156,23 @@ ECode Charset::ForName(
     }
 
     // Does a configured CharsetProvider have this charset?
-    assert(0 && "TODO");
-    // for (CharsetProvider charsetProvider : ServiceLoader.load(CharsetProvider.class, null)) {
-    //     cs = charsetProvider.charsetForName(charsetName);
-    //     if (cs != null) {
-    //         return cacheCharset(charsetName, cs);
-    //     }
-    // }
+    AutoPtr<IServiceLoader> sl = ServiceLoader::Load(EIID_ICharsetProvider, NULL);
+    if (sl) {
+        AutoPtr<IIterator> iter;
+        ((ServiceLoader*)sl.Get())->GetIterator((IIterator**)&iter);
+        Boolean isflag = FALSE;
+        while(iter->HasNext(&isflag), isflag) {
+            AutoPtr<IInterface> outface;
+            iter->GetNext((IInterface**)&outface);
+            AutoPtr<ICharsetProvider> charsetProvider = ICharsetProvider::Probe(outface);
+            assert(0 && "TODO");
+            // NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
+            if (cs != NULL) {
+                return CacheCharset(charsetName, cs, charset);
+            }
+
+        }
+    }
 
     return E_UNSUPPORTED_CHARSET_EXCEPTION;
 }
@@ -163,9 +207,7 @@ ECode Charset::Name(
 ECode Charset::Aliases(
     /* [out] */ ISet** aliases)
 {
-    assert(0 && "TODO");
-    // return Collections::UnmodifiableSet(mAliasesSet, aliases);
-    return NOERROR;
+    return Collections::UnmodifiableSet(ISet::Probe(mAliasesSet), aliases);
 }
 
 ECode Charset::DisplayName(
@@ -347,40 +389,40 @@ ECode Charset::CacheCharset(
     *charset = NULL;
     VALIDATE_NOT_NULL(cs);
 
-    AutoLock lock(gCachedCharsetsLock);
+    synchronized (CACHED_CHARSETS) {
+        // Get the canonical name for this charset, and the canonical instance from the table.
+        String canonicalName;
+        cs->GetName(&canonicalName);
+        AutoPtr<ICharset> canonicalCharset;
 
-    // Get the canonical name for this charset, and the canonical instance from the table.
-    String canonicalName;
-    cs->GetName(&canonicalName);
-    AutoPtr<ICharset> canonicalCharset;
+        AutoPtr<IInterface> outface;
+        CACHED_CHARSETS->Get(CoreUtils::Convert(canonicalName), (IInterface**)&outface);
+        canonicalCharset = ICharset::Probe(outface);
+        if (canonicalCharset == NULL) {
+            canonicalCharset = cs;
+        }
 
-    HashMap<String, AutoPtr<ICharset> >::Iterator it = CACHED_CHARSETS->Find(canonicalName);
-    if (it == CACHED_CHARSETS->End()) {
-        canonicalCharset = cs;
+        // Cache the charset by its canonical name...
+        CACHED_CHARSETS->Put(CoreUtils::Convert(canonicalName), canonicalCharset, (IInterface**)&outface);
+
+        // And the name the user used... (Section 1.4 of http://unicode.org/reports/tr22/ means
+        // that many non-alias, non-canonical names are valid. For example, "utf8" isn't an
+        // alias of the canonical name "UTF-8", but we shouldn't penalize consistent users of
+        // such names unduly.)
+        CACHED_CHARSETS->Put(CoreUtils::Convert(charsetName), canonicalCharset, (IInterface**)&outface);
+
+        // And all its aliases...
+        AutoPtr<ISet> outset;
+        cs->Aliases((ISet**)&outset);
+        AutoPtr< ArrayOf<IInterface*> > outarr;
+        outset->ToArray((ArrayOf<IInterface*>**)&outarr);
+        for (Int32 i = 0; i < outarr->GetLength(); i++) {
+            CACHED_CHARSETS->Put((*outarr)[i], canonicalCharset, (IInterface**)&outface);
+        }
+
+        *charset = canonicalCharset;
+        REFCOUNT_ADD(*charset)
     }
-    else
-    {
-        canonicalCharset = it->mSecond;
-    }
-
-    // Cache the charset by its canonical name...
-    (*CACHED_CHARSETS)[canonicalName] = canonicalCharset;
-
-    // And the name the user used... (Section 1.4 of http://unicode.org/reports/tr22/ means
-    // that many non-alias, non-canonical names are valid. For example, "utf8" isn't an
-    // alias of the canonical name "UTF-8", but we shouldn't penalize consistent users of
-    // such names unduly.)
-    (*CACHED_CHARSETS)[charsetName] = canonicalCharset;
-
-    // And all its aliases...
-    HashSet<String>::Iterator itr;
-    for (itr = ((Charset*)cs)->mAliasesSet->Begin(); itr != ((Charset*)cs)->mAliasesSet->End(); itr++) {
-        String alias = *itr;
-        (*CACHED_CHARSETS)[alias] = canonicalCharset;
-    }
-
-    *charset = canonicalCharset;
-    REFCOUNT_ADD(*charset)
     return NOERROR;
 }
 

@@ -196,7 +196,7 @@ module
           GetSelector(
                [out] ISelector** selector);
 
-     } // interface end
+    } // interface end
 
     } // namespace Channels
     } // namespace IO

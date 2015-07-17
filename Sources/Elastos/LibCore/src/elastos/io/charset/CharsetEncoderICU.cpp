@@ -63,54 +63,6 @@ ECode CharsetEncoderICU::Init(
     return UpdateCallback();
 }
 
-ECode CharsetEncoderICU::CanEncode(
-    /* [in] */ Char32 c,
-    /* [out] */ Boolean* result)
-{
-    AutoPtr< ArrayOf<Char32> > chararr = ArrayOf<Char32>::Alloc(1);
-    (*chararr)[0] = c;
-    AutoPtr<ICharBuffer> outsq;
-    CharBuffer::Wrap(chararr, (ICharBuffer**)&outsq);
-    return CanEncode(ICharSequence::Probe(outsq), result);
-}
-
-ECode CharsetEncoderICU::CanEncode(
-    /* [in] */ ICharSequence* sequence,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    assert(0 && "TODO");
-    // CharBuffer cb;
-    // if (sequence instanceof CharBuffer) {
-    //     cb = ((CharBuffer) sequence).duplicate();
-    // } else {
-    //     cb = CharBuffer.wrap(sequence);
-    // }
-
-    // if (state == FLUSHED) {
-    //     reset();
-    // }
-    // if (state != RESET) {
-    //     throw illegalStateException();
-    // }
-
-    // CodingErrorAction originalMalformedInputAction = malformedInputAction;
-    // CodingErrorAction originalUnmappableCharacterAction = unmappableCharacterAction;
-    // onMalformedInput(CodingErrorAction.REPORT);
-    // onUnmappableCharacter(CodingErrorAction.REPORT);
-    // try {
-    //     encode(cb);
-    //     return true;
-    // } catch (CharacterCodingException e) {
-    //     return false;
-    // } finally {
-    //     onMalformedInput(originalMalformedInputAction);
-    //     onUnmappableCharacter(originalUnmappableCharacterAction);
-    //     reset();
-    // }
-    return NOERROR;
-}
-
 ECode CharsetEncoderICU::NewInstance(
     /* [in] */ ICharset* cs,
     /* [in] */ const String& icuCanonicalName,
@@ -265,8 +217,8 @@ ECode CharsetEncoderICU::EncodeLoop(
     // Decoding succeeded: give us more data.
     CCoderResult::GetUNDERFLOW(result);
     // } finally {
-    //     setPosition(in);
-    //     setPosition(out);
+        // SetPosition(charBuffer);
+        // SetPosition(byteBuffer);
     // }
 EXIT:
     SetPosition(charBuffer);

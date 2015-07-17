@@ -4,6 +4,7 @@
 
 using Elastos::Utility::ServiceLoader;
 using Elastos::Utility::IServiceLoader;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace IO {
@@ -39,12 +40,24 @@ ECode SelectorProvider::GetProvider(
 ECode SelectorProvider::LoadProviderByJar(
     /* [out] */ ISelectorProvider** provider)
 {
-    assert(0 && "TODO");
-    // for (SelectorProvider provider : ServiceLoader.load(SelectorProvider.class)) {
-    //     return provider;
-    // }
-    // return null;
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(provider)
+
+    AutoPtr<IServiceLoader> sl = ServiceLoader::Load(EIID_ISelectorProvider);
+    if (sl) {
+        AutoPtr<IIterator> it;
+        ((ServiceLoader*)sl.Get())->GetIterator((IIterator**)&it);
+        Boolean isflag = FALSE;
+        while(it->HasNext(&isflag), isflag) {
+            AutoPtr<IInterface> outface;
+            it->GetNext((IInterface**)&outface);
+            *provider = ISelectorProvider::Probe(outface);
+            REFCOUNT_ADD(*provider)
+            return NOERROR;
+        }
+    }
+
+    *provider = NULL;
+    return NOERROR;
 }
 
 ECode SelectorProvider::InheriteChannel(

@@ -50,7 +50,6 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::constructor(
     FAIL_RETURN(DatagramSocket::constructor(socketimpl))
 
     mChannelImpl = channelimpl;
-
     // Sync state socket state with the channel it is being created from
     if (mChannelImpl->mIsBound) {
         OnBind(mChannelImpl->mLocalAddress, mChannelImpl->mLocalPort);
@@ -86,7 +85,8 @@ ECode DatagramChannelImpl::DatagramSocketAdapter::GetChannel(
 ECode DatagramChannelImpl::DatagramSocketAdapter::Bind(
     /* [in] */ ISocketAddress* localAddr)
 {
-    if (mChannelImpl->IsConnected()) {
+    Boolean isflag = FALSE;
+    if (mChannelImpl->IsConnected(&isflag), isflag) {
         // throw new AlreadyConnectedException();
         return E_ALREADY_CONNECTED_EXCEPTION;
     }
@@ -267,9 +267,13 @@ ECode DatagramChannelImpl::OnBind(
     return NOERROR;
 }
 
-Boolean DatagramChannelImpl::IsConnected()
+ECode DatagramChannelImpl::IsConnected(
+    /* [out] */ Boolean* value)
 {
-    return mConnected;
+    VALIDATE_NOT_NULL(value)
+
+    *value = mConnected;
+    return NOERROR;
 }
 
 ECode DatagramChannelImpl::Connect(
@@ -322,13 +326,14 @@ ECode DatagramChannelImpl::OnConnect(
     if (updateSocketState && mSocket != NULL) {
         mSocket->OnConnect(remoteAddress, remotePort);
     }
+
     return NOERROR;
 }
 
 ECode DatagramChannelImpl::Disconnect()
 {
     Boolean bConnected, bOpen;
-    bConnected = IsConnected();
+    IsConnected(&bConnected);
     IsOpen(&bOpen);
 
     if (!bOpen || !bConnected) {
@@ -438,7 +443,9 @@ ECode DatagramChannelImpl::ReceiveImpl(
         Int32 offset, length;
         receivePacket->GetOffset(&offset);
         receivePacket->GetLength(&length);
-        FAIL_RETURN(CIoBridge::_Recvfrom(FALSE, mFd, bytearr, offset, length, 0, receivePacket, IsConnected(), &received));
+        Boolean isflag = FALSE;
+        IsConnected(&isflag);
+        FAIL_RETURN(CIoBridge::_Recvfrom(FALSE, mFd, bytearr, offset, length, 0, receivePacket, isflag, &received));
         AutoPtr<IInetAddress> outnet;
         receivePacket->GetAddress((IInetAddress**)&outnet);
         if (outnet != NULL) {
@@ -476,7 +483,9 @@ ECode DatagramChannelImpl::ReceiveDirectImpl(
     IBuffer::Probe(target)->GetPosition(&oldposition);
     Int32 received;
     do {
-        CIoBridge::_Recvfrom(FALSE, mFd, target, 0, receivePacket, IsConnected(), &received);
+        Boolean isflag = FALSE;
+        IsConnected(&isflag);
+        CIoBridge::_Recvfrom(FALSE, mFd, target, 0, receivePacket, isflag, &received);
         AutoPtr<IInetAddress> address;
         receivePacket->GetAddress((IInetAddress**)&address);
         if (address != NULL) {
@@ -514,9 +523,12 @@ ECode DatagramChannelImpl::Send(
         return E_IO_EXCEPTION;
     }
 
-    if (IsConnected() && !Object::Equals(mConnectAddress, isa)) {
+    Boolean isflag = FALSE;
+    IsConnected(&isflag);
+    if (isflag && !Object::Equals(mConnectAddress, isa)) {
         // throw new IllegalArgumentException("Connected to " + connectAddress +
         //                                    ", not " + socketAddress);
+
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -642,7 +654,9 @@ ECode DatagramChannelImpl::ReadImpl(
         Int32 readCount = 0;
         // try {
             Begin();
-            CIoBridge::_Recvfrom(FALSE, mFd, dst, 0, NULL, IsConnected(), &readCount);
+            Boolean isflag = FALSE;
+            IsConnected(&isflag);
+            CIoBridge::_Recvfrom(FALSE, mFd, dst, 0, NULL, isflag, &readCount);
         // } catch (InterruptedIOException e) {
         //     // InterruptedIOException will be thrown when timeout.
         //     return 0;
@@ -790,7 +804,9 @@ ECode DatagramChannelImpl::CheckOpen()
 ECode DatagramChannelImpl::CheckOpenConnected()
 {
     FAIL_RETURN(CheckOpen())
-    if (!IsConnected()) {
+    Boolean isflag = FALSE;
+    IsConnected(&isflag);
+    if (!isflag) {
         // throw new NotYetConnectedException();
         return E_NOT_YET_CONNECTED_EXCEPTION;
     }
@@ -806,7 +822,6 @@ ECode DatagramChannelImpl::CheckNotNull(
     }
     return NOERROR;
 }
-
 
 } // namespace IO
 } // namespace Elastos

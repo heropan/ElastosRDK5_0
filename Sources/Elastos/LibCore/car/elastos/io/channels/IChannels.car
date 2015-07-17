@@ -16,10 +16,6 @@ module
     /**
      * Predeclared interfaces
     */
-    //interface IReadableByteChannel;
-    //interface IWritableByteChannel;
-    //interface ICharsetDecoder;
-    //interface ICharsetEncoder;
 
     /**
      * This interface provides several utilities to get I/O streams from channels.
