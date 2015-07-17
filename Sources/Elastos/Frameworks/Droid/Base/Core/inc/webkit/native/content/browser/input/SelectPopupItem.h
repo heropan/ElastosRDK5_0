@@ -1,0 +1,53 @@
+
+#ifndef __SELECTPOPUPITEM_H__
+#define __SELECTPOPUPITEM_H__
+
+// import org.chromium.ui.DropdownItem;
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Content {
+namespace Browser {
+namespace Input {
+
+/**
+ * Select popup item containing the label, the type and the enabled state
+ * of an item belonging to a select popup dialog.
+ */
+class SelectPopupItem
+    : public Object,
+    , public DropdownItem
+{
+public:
+    SelectPopupItem(
+        /* [in] */ String label,
+        /* [in] */ Int32 type);
+
+    //@Override
+    CARAPI_(String) GetLabel();
+
+    //@Override
+    CARAPI_(String) GetSublabel();
+
+    //@Override
+    CARAPI_(Boolean) IsEnabled();
+
+    //@Override
+    CARAPI_(Boolean) IsGroupHeader();
+
+    CARAPI_(Int32) GetType();
+
+private:
+    const String mLabel;
+    const Int32 mType;
+};
+
+} // namespace Input
+} // namespace Browser
+} // namespace Content
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+#endif//__SELECTPOPUPITEM_H__
