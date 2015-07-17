@@ -15,5 +15,5 @@ module
     const E_ILLEGAL_BLOCK_SIZE_EXCEPTION                            = 0xB0040000;
     const E_NO_SUCH_PADDING_EXCEPTION                               = 0xB0050000;
     const E_SHORT_BUFFER_EXCEPTION                                  = 0xB0060000;
-
+    const E_DATATYPE_CONFIGURATION_EXCEPTION                        = 0xB0070000;
 }

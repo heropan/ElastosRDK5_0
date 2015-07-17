@@ -30,8 +30,13 @@ ECode CPathClassLoader::LoadClass(
         return E_INVALID_ARGUMENT;
     }
 
-    String sname("C");
-    sname += className.Substring(className.LastIndexOf('.') + 1);
+    String sname;
+    String name = className.Substring(className.LastIndexOf('.') + 1);
+    if (name.GetChar(0) == 'C' && name.GetChar(1) <= 'Z') {
+        sname = name;
+    } else {
+        sname = String("C") + name;
+    }
     // ALOGD("CPathClassLoader::LoadClass: %s, className: %s mPath : %s\n",
     //     sname.string(), className.string(), mPath.string());
     AutoPtr<IModuleInfo> moduleInfo;

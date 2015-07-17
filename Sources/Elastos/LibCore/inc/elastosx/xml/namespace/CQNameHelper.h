@@ -25,8 +25,8 @@ public:
         /* [out] */ Elastosx::Xml::Namespace::IQName ** ppName);
 };
 
-}
-}
-}
+} // namespace Namespace
+} // namespace Xml
+} // namespace Elastosx
 
 #endif // __CQNAMEHELPER_H__
