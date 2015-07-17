@@ -32,6 +32,7 @@ module
     merge("xml/transform/ITransformer.car");
     merge("xml/transform/ITemplates.car");
     merge("xml/transform/ITransformerFactory.car");
+    merge("xml/transform/IErrorListener.car");
 
     merge("xml/transform/dom/IDOMLocator.car");
     merge("xml/transform/dom/IDOMResult.car");
@@ -55,6 +56,13 @@ module
     merge("xml/xpath/IXPath.car");
     merge("xml/xpath/IXPathFactory.car");
     merge("xml/xpath/IXPathFactoryFinder.car");
+
+    interface Elastosx.Xml.Transform.ISource;
+    interface Elastosx.Xml.Transform.IResult;
+    interface Org.W3c.Dom.INode;
+    interface Org.Xml.Sax.IContentHandler;
+    interface Org.Xml.Sax.IXMLReader;
+    interface Org.Xml.Sax.IInputSource;
 
     namespace Elastosx {
     namespace Xml {
@@ -89,6 +97,72 @@ module
     }
 
     } // namespace Datatype
+
+    namespace Transform {
+    namespace Dom {
+
+        class CDOMSource {
+            constructor();
+
+            constructor(
+                [in] INode* n);
+
+            constructor(
+                [in] INode* node,
+                [in] String systemID);
+
+            interface IDOMSource;
+            interface ISource;
+        }
+
+        class CDOMResult {
+            constructor();
+
+            constructor(
+                [in] INode* node);
+
+            constructor(
+                [in] INode* node,
+                [in] String systemId);
+
+            constructor(
+                [in] INode* node,
+                [in] INode* nextSibling);
+
+            constructor(
+                [in] INode* node,
+                [in] INode* nextSibling,
+                [in] String systemId);
+
+            interface IDOMResult;
+            interface IResult;
+        }
+
+    } // namespace Dom
+
+    namespace Sax {
+        class CSAXResult {
+            constructor(
+                [in] IContentHandler* handler);
+
+            interface ISAXResult;
+            interface IResult;
+        }
+
+        class CSAXSource {
+            constructor(
+                [in] IXMLReader* reader,
+                [in] IInputSource* inputSource);
+
+            constructor(
+                [in] IInputSource* inputSource);
+
+            interface ISAXSource;
+            interface ISource;
+        }
+    } // namespace Sax
+
+    } // namespace Transform
 
     } // namespace Xml
     } // namespace Elastosx

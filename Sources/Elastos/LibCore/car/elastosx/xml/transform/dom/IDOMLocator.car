@@ -13,12 +13,11 @@ module
      * interface ISourceLocator;
      */
     interface IDOMLocator {
-
-    /**
-     * Return the node where the event occurred.
-     *
-     * @return The node that is the location for the event.
-     */
+        /**
+         * Return the node where the event occurred.
+         *
+         * @return The node that is the location for the event.
+         */
         GetOriginatingNode(
             [out] INode** node);
     }

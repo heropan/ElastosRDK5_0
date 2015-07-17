@@ -10,28 +10,28 @@ module
 
     /**
      * @Involve
-     * interface IResult;
+     * interface ISource;
      */
     interface IDOMSource {
-
-    /** If {@link javax.xml.transform.TransformerFactory#getFeature}
-     * returns true when passed this value as an argument,
-     * the Transformer supports Source input of this type.
-     */
+        /** If {@link javax.xml.transform.TransformerFactory#getFeature}
+         * returns true when passed this value as an argument,
+         * the Transformer supports Source input of this type.
+         */
         const String FEATURE = "http://javax.xml.transform.dom.DOMSource/feature";
-    /**
-     * Set the node that will represents a Source DOM tree.
-     *
-     * @param node The node that is to be transformed.
-     */
+
+        /**
+         * Set the node that will represents a Source DOM tree.
+         *
+         * @param node The node that is to be transformed.
+         */
         SetNode(
             [in] INode* node);
 
-    /**
-     * Get the node that represents a Source DOM tree.
-     *
-     * @return The node that is to be transformed.
-     */
+        /**
+         * Get the node that represents a Source DOM tree.
+         *
+         * @return The node that is to be transformed.
+         */
         GetNode(
             [out] INode** node);
     }
