@@ -1,5 +1,15 @@
 
 #include "ServerSocketChannelImpl.h"
+#include "CInetSocketAddress.h"
+#include "AutoLock.h"
+#include "SocketImpl.h"
+#include "SocketChannelImpl.h"
+#include "IoUtils.h"
+
+using Libcore::IO::IoUtils;
+using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::ISocketImpl;
+using Elastos::Net::SocketImpl;
 
 namespace Elastos {
 namespace IO {
@@ -20,68 +30,82 @@ ECode ServerSocketChannelImpl::ServerSocketAdapter::Accept(
 {
     VALIDATE_NOT_NULL(socket)
 
-    // Boolean isflag = FALSE;
-    // if (!mChannelImpl->IsBound(&isflag), isflag) {
-    //     // throw new IllegalBlockingModeException();
-    //     return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
-    // }
-    // AutoPtr<ISocketChannel> sc;
-    // mChannelImpl->Accept((ISocketChannel**)&sc);
-    // if (sc == NULL) {
-    //     // throw new IllegalBlockingModeException();
-    //     return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
-    // }
-    // return sc->Socket(socket);
+    Boolean isflag = FALSE;
+    if (IsBound(&isflag), !isflag) {
+        // throw new IllegalBlockingModeException();
+        return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
+    }
+    AutoPtr<ISocketChannel> sc;
+    mChannelImpl->Accept((ISocketChannel**)&sc);
+    if (sc == NULL) {
+        // throw new IllegalBlockingModeException();
+        return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
+    }
+    return sc->GetSocket(socket);
 }
 
 ECode ServerSocketChannelImpl::ServerSocketAdapter::ImplAccept(
     /* [in] */ SocketChannelImpl* clientSocketChannel,
     /* [out] */ ISocket** aSocket)
 {
-    // Socket clientSocket = clientSocketChannel.socket();
-    // boolean connectOK = false;
-    // try {
-    //     synchronized (this) {
-    //         super.implAccept(clientSocket);
+    VALIDATE_NOT_NULL(aSocket)
 
-    //         // Sync the client socket's associated channel state with the Socket and OS.
-    //         InetSocketAddress remoteAddress =
-    //                 new InetSocketAddress(
-    //                         clientSocket.getInetAddress(), clientSocket.getPort());
-    //         clientSocketChannel.onAccept(remoteAddress, false /* updateSocketState */);
-    //     }
-    //     connectOK = true;
+    AutoPtr<ISocket> clientSocket;
+    clientSocketChannel->GetSocket((ISocket**)&clientSocket);
+    Boolean connectOK = FALSE;
+    // try {
+    synchronized (this) {
+        ServerSocket::ImplAccept(clientSocket);
+
+        // Sync the client socket's associated channel state with the Socket and OS.
+        AutoPtr<IInetSocketAddress> remoteAddress;
+        AutoPtr<IInetAddress> addres;
+        clientSocket->GetInetAddress((IInetAddress**)&addres);
+        Int32 portnum = 0;
+        clientSocket->GetPort(&portnum);
+        FAIL_RETURN(CInetSocketAddress::New(addres, portnum, (IInetSocketAddress**)&remoteAddress));
+        clientSocketChannel->OnAccept(remoteAddress, FALSE /* updateSocketState */);
+    }
+    connectOK = TRUE;
     // } finally {
-    //     if (!connectOK) {
-    //         clientSocket.close();
-    //     }
+    if (!connectOK) {
+        clientSocket->Close();
+    }
     // }
-    // return clientSocket;
+    *aSocket = clientSocket;
+    REFCOUNT_ADD(*aSocket)
     return NOERROR;
 }
 
 ECode ServerSocketChannelImpl::ServerSocketAdapter::GetChannel(
     /* [out] */ IServerSocketChannel** channel)
 {
-    // return mChannelImpl;
+    VALIDATE_NOT_NULL(channel)
+
+    *channel = IServerSocketChannel::Probe(mChannelImpl);
+    REFCOUNT_ADD(*channel)
     return NOERROR;
 }
 
 ECode ServerSocketChannelImpl::ServerSocketAdapter::Close()
 {
-    // synchronized (mChannelImpl) {
-    //     super.close();
-    //     if (mChannelImpl.isOpen()) {
-    //         mChannelImpl.close();
-    //     }
-    // }
+    synchronized (mChannelImpl) {
+        ServerSocket::Close();
+        Boolean isflag = FALSE;
+        if (mChannelImpl->IsOpen(&isflag), isflag) {
+            mChannelImpl->Close();
+        }
+    }
     return NOERROR;
 }
 
 AutoPtr<IFileDescriptor> ServerSocketChannelImpl::ServerSocketAdapter::GetFD()
 {
-    // return super.getImpl$().getFD$();
-    return NOERROR;
+    AutoPtr<ISocketImpl> si;
+    ServerSocket::GetImpl((ISocketImpl**)&si);
+    AutoPtr<IFileDescriptor> fd;
+    ((SocketImpl*)si.Get())->GetFD((IFileDescriptor**)&fd);
+    return fd;
 }
 
 //==========================================================
@@ -89,86 +113,103 @@ AutoPtr<IFileDescriptor> ServerSocketChannelImpl::ServerSocketAdapter::GetFD()
 //==========================================================
 
 ServerSocketChannelImpl::ServerSocketChannelImpl(
-    /* [in] */ SelectorProvider* sp)
+    /* [in] */ ISelectorProvider* sp)
 {
-    // super(sp);
-    // this.socket = new ServerSocketAdapter(this);
+    ServerSocketChannel::constructor(sp);
+    mSocket = new ServerSocketAdapter(this);
 }
 
-ECode ServerSocketChannelImpl::Socket(
+ECode ServerSocketChannelImpl::GetSocket(
     /* [out] */ IServerSocket** outsock)
 {
-    // return socket;
+    VALIDATE_NOT_NULL(outsock)
+
+    *outsock = mSocket;
+    REFCOUNT_ADD(*outsock)
     return NOERROR;
 }
 
 ECode ServerSocketChannelImpl::Accept(
-    /* [in] */ ISocketChannel** channel)
+    /* [out] */ ISocketChannel** channel)
 {
-    // if (!isOpen()) {
-    //     throw new ClosedChannelException();
-    // }
-    // if (!socket.isBound()) {
-    //     throw new NotYetBoundException();
-    // }
+    VALIDATE_NOT_NULL(channel)
 
-    // // Create an empty socket channel. This will be populated by ServerSocketAdapter.implAccept.
-    // SocketChannelImpl result = new SocketChannelImpl(provider(), false);
+    Boolean isflag = FALSE;
+    if (IsOpen(&isflag), !isflag) {
+        // throw new ClosedChannelException();
+        return E_CLOSED_CHANNEL_EXCEPTION;
+    }
+    if (mSocket->IsBound(&isflag), isflag) {
+        // throw new NotYetBoundException();
+        return E_NOT_YET_BOUND_EXCEPTION;
+    }
+
+    // Create an empty socket channel. This will be populated by ServerSocketAdapter.implAccept.
+    AutoPtr<ISelectorProvider> spro;
+    GetProvider((ISelectorProvider**)&spro);
+    AutoPtr<SocketChannelImpl> result = new SocketChannelImpl(spro, FALSE);
     // try {
-    //     begin();
-    //     synchronized (acceptLock) {
-    //         try {
-    //             socket.implAccept(result);
-    //         } catch (SocketTimeoutException e) {
-    //             if (shouldThrowSocketTimeoutExceptionFromAccept(e)) {
-    //                 throw e;
-    //             }
-    //             // Otherwise, this is a non-blocking socket and there's nothing ready, so we'll
-    //             // fall through and return null.
-    //         }
-    //     }
+        Begin();
+        synchronized (mAcceptLock) {
+            // try {
+            AutoPtr<ISocket> outsoc;
+            FAIL_RETURN(mSocket->ImplAccept(result, (ISocket**)&outsoc));
+            // } catch (SocketTimeoutException e) {
+            //     if (shouldThrowSocketTimeoutExceptionFromAccept(e)) {
+            //         throw e;
+            //     }
+            //     // Otherwise, this is a non-blocking socket and there's nothing ready, so we'll
+            //     // fall through and return null.
+            // }
+        }
     // } finally {
-    //     end(result.isConnected());
+        result->IsConnected(&isflag);
+        End(isflag);
     // }
-    // return result.isConnected() ? result : null;
+    *channel = isflag ? ISocketChannel::Probe(result) : NULL;
+    REFCOUNT_ADD(*channel)
     return NOERROR;
 }
 
 ECode ServerSocketChannelImpl::GetFD(
     /* [out] */ IFileDescriptor** outfd)
 {
-    // return socket.getFD$();
+    VALIDATE_NOT_NULL(outfd)
+
+    *outfd = mSocket->GetFD();
+    REFCOUNT_ADD(*outfd)
     return NOERROR;
 }
 
 Boolean ServerSocketChannelImpl::ShouldThrowSocketTimeoutExceptionFromAccept(
     /* [in] */ ECode e)
 {
-    // if (isBlocking()) {
-    //     return true;
-    // }
+    Boolean isflag = FALSE;
+    if (IsBlocking(&isflag), isflag) {
+        return TRUE;
+    }
+    assert(0 && "TODO");
     // Throwable cause = e.getCause();
     // if (cause instanceof ErrnoException) {
     //     if (((ErrnoException) cause).errno == EAGAIN) {
     //         return false;
     //     }
     // }
-    // return true;
-    return FALSE;
+    return TRUE;
 }
 
 ECode ServerSocketChannelImpl::ImplConfigureBlocking(
     /* [in] */ Boolean blocking)
 {
-    // IoUtils.setBlocking(socket.getFD$(), blocking);
-    return NOERROR;
+    return IoUtils::SetBlocking(mSocket->GetFD(), blocking);
 }
 
 ECode ServerSocketChannelImpl::ImplCloseSelectableChannel()
 {
-    // if (!socket.isClosed()) {
-    //     socket.close();
-    // }
+    Boolean isflag = FALSE;
+    if (mSocket->IsClosed(&isflag), isflag) {
+        mSocket->Close();
+    }
     return NOERROR;
 }
 

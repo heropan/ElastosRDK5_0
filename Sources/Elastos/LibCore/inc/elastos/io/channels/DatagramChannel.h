@@ -9,6 +9,8 @@
 using Elastos::IO::Channels::IByteChannel;
 using Elastos::IO::Channels::Spi::SelectorProvider;
 using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
+using Elastos::Net::IDatagramSocket;
+using Elastos::Net::ISocketAddress;
 
 namespace Elastos {
 namespace IO {
@@ -16,6 +18,7 @@ namespace Channels {
 
 class DatagramChannel
     : public AbstractSelectableChannel
+    , public IDatagramChannel
     , public IByteChannel
     , public IScatteringByteChannel
     , public IGatheringByteChannel
@@ -55,14 +58,17 @@ public:
      * @return the related DatagramSocket instance.
      */
     // remove it temporily
-    //virtual DatagramSocket* Socket() = 0;
+    virtual CARAPI GetSocket(
+        /* [out] */ IDatagramSocket** socket) = 0;
+
     /**
      * Returns whether this channel's socket is connected or not.
      *
      * @return <code>true</code> if this channel's socket is connected;
      *         <code>false</code> otherwise.
      */
-    virtual Boolean IsConnected() = 0;
+    virtual CARAPI IsConnected(
+        /* [out] */ Boolean* isConnected) = 0;
 
     /**
      * Connects the socket of this channel to a remote address, which is the
@@ -92,7 +98,9 @@ public:
      * @throws IOException
      *             if some other I/O error occurs.
      */
-    // virtual CARAPI Connect(SocketAddress* address, DatagramChannel** channel) = 0;
+    virtual CARAPI Connect(
+        /* [in] */ ISocketAddress* address,
+        /* [out] */ IDatagramChannel** channel) = 0;
     /**
      * Disconnects the socket of this channel, which has been connected before
      * in order to send and receive datagrams.
@@ -143,7 +151,10 @@ public:
      */
 
     // remove it temporarily
-    //virtual CARAPI Receive(ByteBuffer* target, SocketAddress** address) = 0;
+    virtual CARAPI Receive(
+        /* [in] */ IByteBuffer* target,
+        /* [out] */ ISocketAddress** address) = 0;
+
     /**
      * Sends a datagram through this channel. The datagram consists of the
      * remaining bytes in {@code source}.
@@ -180,7 +191,10 @@ public:
      * @throws IOException
      *             some other I/O error occurs.
      */
-    // virtual CARAPI Send(ByteBuffer* source, SocketAddress* address, Int32* nSend) = 0;
+    virtual CARAPI Send(
+        /* [in] */ IByteBuffer* source,
+        /* [in] */ ISocketAddress* address,
+        /* [out] */ Int32* number) = 0;
     /**
      * Reads a datagram from this channel into the byte buffer.
      * <p>
@@ -411,4 +425,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_IO_DATAGRAMCHANNEL_H__

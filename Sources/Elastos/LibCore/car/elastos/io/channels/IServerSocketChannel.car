@@ -1,7 +1,7 @@
 
 module
 {
-  //  interface Elastos.Net.IServerSocket;
+    interface Elastos.Net.IServerSocket;
 
     namespace Elastos {
     namespace IO {
@@ -30,8 +30,8 @@ module
          *
          * @return the server-socket assigned to this channel.
          */
- //       GetSocket(
- //           [out] IServerSocket** serverSocket);
+        GetSocket(
+            [out] IServerSocket** serverSocket);
 
         /**
          * Accepts a connection to this server-socket channel.
@@ -77,8 +77,8 @@ module
          * :-|:------------|
          * IOException | if an I/O error occurs.
          */
-//        Open(
-//            [out] IServerSocketChannel** socketChannel);
+        Open(
+            [out] IServerSocketChannel** socketChannel);
     }
 
     } // namespace Channels

@@ -1,8 +1,8 @@
 
 module
 {
-//    interface Elastos.Net.ISocket;
-//    interface Elastos.Net.ISocketAddress;
+    interface Elastos.Net.ISocket;
+    interface Elastos.Net.ISocketAddress;
     interface Elastos.IO.IByteBuffer;
 
     namespace Elastos {
@@ -44,14 +44,14 @@ module
     */
     [deprecated]
     interface ISocketChannel {
-       /**
+        /**
         * Returns the socket assigned to this channel, which does not declare any public
         * methods that are not declared in {Socket}.
         *
         * @return the socket assigned to this channel.
         */
-//      GetSocket(
-//            [out] ISocket** serverSocket);
+        GetSocket(
+            [out] ISocket** serverSocket);
 
         /**
          * Indicates whether this channel's socket is connected.
@@ -105,9 +105,9 @@ module
          * UnsupportedAddressTypeException | if the address type is not supported.
          * IOException | if an I/O error occurs.
          */
-//        Connect(
-//            [in] ISocketAddress* address,
-//            [out] Boolean* result);
+        Connect(
+            [in] ISocketAddress* address,
+            [out] Boolean* result);
 
         /**
          * Completes the connection process initiated by a call of {
@@ -352,9 +352,9 @@ module
          * UnsupportedAddressTypeException | if the address type is not supported.
          * IOException | if an I/O error occurs.
          */
-//        Open(
-//            [in] ISocketAddress* address,
-//            [out] ISocketChannel** socketChannel);
+        Open(
+            [in] ISocketAddress* address,
+            [out] ISocketChannel** socketChannel);
     }
 
     } // namespace Channels

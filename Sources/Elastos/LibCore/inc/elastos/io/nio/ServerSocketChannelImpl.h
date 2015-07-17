@@ -4,13 +4,14 @@
 #include "ServerSocketChannel.h"
 #include "SocketChannelImpl.h"
 #include "SelectorProvider.h"
-// #include "ServerSocket.h"
+#include "ServerSocket.h"
 
 using Elastos::IO::Channels::IServerSocketChannel;
 using Elastos::IO::Channels::ServerSocketChannel;
 using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::Spi::SelectorProvider;
 using Elastos::Net::ISocket;
+using Elastos::Net::ServerSocket;
 
 namespace Elastos {
 namespace IO {
@@ -20,10 +21,9 @@ class ServerSocketChannelImpl
     , public IFileDescriptorChannel
 {
 private:
-    // extends ServerSocket
-    class ServerSocketAdapter : public Object
+    class ServerSocketAdapter : public ServerSocket
     {
-    protected:
+    public:
         ServerSocketAdapter(
             /* [in] */ ServerSocketChannelImpl* aChannelImpl);
 
@@ -39,7 +39,6 @@ private:
 
         CARAPI Close();
 
-    private:
         AutoPtr<IFileDescriptor> GetFD();
 
     private:
@@ -48,15 +47,15 @@ private:
 
 public:
     ServerSocketChannelImpl(
-        /* [in] */ SelectorProvider* sp);
+        /* [in] */ ISelectorProvider* sp);
 
     CAR_INTERFACE_DECL()
 
-    CARAPI Socket(
+    CARAPI GetSocket(
         /* [out] */ IServerSocket** outsock);
 
     CARAPI Accept(
-        /* [in] */ ISocketChannel** channel);
+        /* [out] */ ISocketChannel** channel);
 
     CARAPI GetFD(
         /* [out] */ IFileDescriptor** outfd);
@@ -72,7 +71,7 @@ protected:
     CARAPI ImplCloseSelectableChannel();
 
 private:
-    AutoPtr<ServerSocketAdapter> socket;
+    AutoPtr<ServerSocketAdapter> mSocket;
     Object mAcceptLock;
 };
 

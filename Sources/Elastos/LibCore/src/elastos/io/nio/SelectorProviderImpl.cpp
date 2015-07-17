@@ -45,9 +45,8 @@ ECode SelectorProviderImpl::OpenServerSocketChannel(
 {
     VALIDATE_NOT_NULL(ppChannel)
 
-    assert(0 && "TODO");
-    // *ppChannel = (IServerSocketChannel*) new ServerSocketChannelImpl(this);
-    // REFCOUNT_ADD(*ppChannel)
+    *ppChannel = (IServerSocketChannel*) new ServerSocketChannelImpl(this);
+    REFCOUNT_ADD(*ppChannel)
     return NOERROR;
 }
 

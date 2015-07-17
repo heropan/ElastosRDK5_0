@@ -26,7 +26,7 @@ public:
     static CARAPI Open(
         /* [in] */ IServerSocketChannel** channel);
 
-    CARAPI ValidOps(
+    CARAPI GetValidOps(
         /* [out] */ Int32* ret);
 
     virtual CARAPI GetSocket(

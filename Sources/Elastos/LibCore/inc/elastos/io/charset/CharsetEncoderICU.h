@@ -25,14 +25,6 @@ public:
         /* [in] */ ArrayOf<Byte>* replacement,
         /* [in] */ Int64 address);
 
-    CARAPI CanEncode(
-        /* [in] */ Char32 c,
-        /* [out] */ Boolean* result);
-
-    CARAPI CanEncode(
-        /* [in] */ ICharSequence* sequence,
-        /* [out] */ Boolean* result);
-
 public:
     static CARAPI NewInstance(
         /* [in] */ ICharset* cs,

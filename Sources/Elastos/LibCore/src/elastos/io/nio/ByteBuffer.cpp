@@ -271,9 +271,6 @@ ECode ByteBuffer::SetOrder(
 ECode ByteBuffer::SetOrderImpl(
     /* [in] */ ByteOrder byteOrder)
 {
-    // if (byteOrder == null) {
-    //     byteOrder = ByteOrder.LITTLE_ENDIAN;
-    // }
     if (byteOrder != ByteOrder_BIG_ENDIAN && byteOrder != ByteOrder_LITTLE_ENDIAN) {
         byteOrder = ByteOrder_LITTLE_ENDIAN;
     }

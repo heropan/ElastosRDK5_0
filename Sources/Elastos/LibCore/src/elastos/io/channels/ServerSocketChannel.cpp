@@ -20,7 +20,7 @@ ECode ServerSocketChannel::Open(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode ServerSocketChannel::ValidOps(
+ECode ServerSocketChannel::GetValidOps(
     /* [out] */ Int32* ret)
 {
     *ret = ISelectionKey::OP_ACCEPT;

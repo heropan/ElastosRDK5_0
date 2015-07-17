@@ -57,7 +57,8 @@ module
             [in] IByteBuffer* buffer,
             [out] Int32* number);
     }
-    }
-    }
-    }
+
+    } // namespace Channels
+    } // namespace IO
+    } // namespace Elastos
 }
