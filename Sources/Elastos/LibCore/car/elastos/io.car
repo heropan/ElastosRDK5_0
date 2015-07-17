@@ -121,6 +121,7 @@ module
     interface Elastos.IO.IDataInput;
     interface Elastos.IO.IDataOutput;
     interface Elastos.IO.IByteOrderHelper;
+    interface Elastos.IO.Charset.ICharsetEncoder;
     interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.Channels.Spi.ISelectorProvider;
     interface Elastos.IO.Channels.Spi.IAbstractSelector;
@@ -478,6 +479,10 @@ module
         constructor(
             [in] IOutputStream *os,
             [in] String enc);
+
+        constructor(
+            [in] IOutputStream *os,
+            [in] ICharsetEncoder* charsetEncoder);
 
         interface IOutputStreamWriter;
         interface IAppendable;

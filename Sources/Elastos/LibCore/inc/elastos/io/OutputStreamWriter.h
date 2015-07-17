@@ -46,6 +46,10 @@ public:
         /* [in] */ IOutputStream *os,
         /* [in] */ const String &enc);
 
+    CARAPI constructor(
+        /* [in] */ IOutputStream *os,
+        /* [in] */ ICharsetEncoder* charsetEncoder);
+
     /**
      * Closes this writer. This implementation flushes the buffer but <strong>does not</strong>
      * flush the target stream. The target stream is then closed and the resources for the

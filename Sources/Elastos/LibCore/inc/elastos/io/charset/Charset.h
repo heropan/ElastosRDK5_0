@@ -30,7 +30,7 @@ public:
 
     CAR_INTERFACE_DECL()
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& canonicalName,
         /* [in] */ ArrayOf<String>* aliases);
 

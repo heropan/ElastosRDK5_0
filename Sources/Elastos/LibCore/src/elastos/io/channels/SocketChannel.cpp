@@ -7,6 +7,8 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
+CAR_INTERFACE_IMPL_3(SocketChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)
+
 SocketChannel::SocketChannel()
 {}
 
@@ -15,8 +17,6 @@ ECode SocketChannel::constructor(
 {
     return AbstractSelectableChannel::constructor(provider);
 }
-
-CAR_INTERFACE_IMPL_3(SocketChannel, Object, IByteChannel, IScatteringByteChannel, IGatheringByteChannel)
 
 ECode SocketChannel::Open(
     /* [out] */ ISocketChannel** channel)
@@ -32,14 +32,13 @@ ECode SocketChannel::Open(
     /* [in] */ ISocketAddress* addr,
     /* [out] */ ISocketChannel** channel)
 {
-    ECode ecRet = SocketChannel::Open(channel);
-    if(NOERROR != ecRet)
-    {
+    VALIDATE_NOT_NULL(channel)
+    ECode ec = SocketChannel::Open(channel);
+    if(NOERROR != ec) {
         Boolean bRet;
-        // (*channel)->Connect(addr, &bRet);
-        assert(0 && "TOOD");
+        return (*channel)->Connect(addr, &bRet);
     }
-    return ecRet;
+    return ec;
 }
 
 ECode SocketChannel::GetValidOps(

@@ -27,7 +27,10 @@ ECode SelectionKey::Attach(
     /* [in] */ IObject* anObject,
     /* [out] */ IObject** oldObject)
 {
+    VALIDATE_NOT_NULL(oldObject)
     *oldObject = mAttachment;
+    REFCOUNT_ADD(*oldObject)
+
     mAttachment = anObject;
     return NOERROR;
 }
@@ -35,50 +38,57 @@ ECode SelectionKey::Attach(
 ECode SelectionKey::Attachment(
     /* [out] */ IObject** obj)
 {
+    VALIDATE_NOT_NULL(obj)
     *obj = mAttachment;
+    REFCOUNT_ADD(*obj)
     return NOERROR;
 }
 
 ECode SelectionKey::IsAcceptable(
     /* [out] */ Boolean* acceptable)
 {
+    VALIDATE_NOT_NULL(acceptable)
+    *acceptable = FALSE;
+
     Int32 ops;
-    ECode ecRet = GetReadyOps(&ops);
+    ECode ec = GetReadyOps(&ops);
     if ((ops & sOP_ACCEPT) == sOP_ACCEPT)
         *acceptable = TRUE;
-    else
-        *acceptable = FALSE;
-    return ecRet;
+
+    return ec;
 }
 
 ECode SelectionKey::IsConnectable(
     /* [out] */ Boolean* connectable)
 {
+    VALIDATE_NOT_NULL(connectable)
     Int32 ops;
-    ECode ecRet = GetReadyOps(&ops);
+    ECode ec = GetReadyOps(&ops);
     *connectable = (ops & sOP_CONNECT) == sOP_CONNECT;
-    return ecRet;
+    return ec;
 }
 
 ECode SelectionKey::IsReadable(
     /* [out] */ Boolean* readable)
 {
+    VALIDATE_NOT_NULL(readable)
+    *readable = FALSE;
+
     Int32 ops;
-    ECode ecRet = GetReadyOps(&ops);
+    ECode ec = GetReadyOps(&ops);
     if ((ops & sOP_READ) == sOP_READ)
         *readable = TRUE;
-    else
-        *readable = FALSE;
-    return ecRet;
+    return ec;
 }
 
 ECode SelectionKey::IsWritable(
     /* [out] */ Boolean* writable)
 {
+    VALIDATE_NOT_NULL(writable)
     Int32 ops;
-    ECode ecRet = GetReadyOps(&ops);
+    ECode ec = GetReadyOps(&ops);
     *writable = (ops & sOP_WRITE) == sOP_WRITE;
-    return ecRet;
+    return ec;
 }
 
 } // namespace Channels

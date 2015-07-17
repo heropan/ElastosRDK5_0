@@ -11,6 +11,7 @@
 
 using Elastos::IO::InputStream;
 using Elastos::IO::OutputStream;
+using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::Charset::Charset;
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
@@ -386,8 +387,7 @@ ECode CChannels::_NewWriter(
 
     AutoPtr<IOutputStream> res = (IOutputStream*) new ChannelOutputStream(channel);
     AutoPtr<IOutputStreamWriter> os;
-    assert(0 && "TODO");
-    // COutputStreamWriter::New(res, encoder, (IOutputStreamWriter**)&os);
+    COutputStreamWriter::New(res, encoder, (IOutputStreamWriter**)&os);
     *ppWriter = IWriter::Probe(os);
     REFCOUNT_ADD(*ppWriter)
     return NOERROR;

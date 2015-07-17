@@ -69,6 +69,8 @@ ECode CharsetEncoderICU::NewInstance(
     /* [out] */ CharsetEncoderICU** encoderICU)
 {
     VALIDATE_NOT_NULL(encoderICU)
+    *encoderICU = NULL;
+
     // This complexity is necessary to ensure that even if the constructor, superclass
     // constructor, or call to updateCallback throw, we still free the native peer.
     Int64 address = 0;
@@ -143,6 +145,8 @@ ECode CharsetEncoderICU::ImplFlush(
     /* [out] */  ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     // try {
     // ICU needs to see an empty input.
     mInput = ArrayOf<Char32>::Alloc(0);// EmptyArray.CHAR;
@@ -179,6 +183,7 @@ ECode CharsetEncoderICU::EncodeLoop(
     /* [out] */ ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     VALIDATE_NOT_NULL(charBuffer)
     Boolean ret = FALSE;
 
@@ -233,6 +238,7 @@ ECode CharsetEncoderICU::MakeReplacement(
     /* [out, callee] */ ArrayOf<Byte>** resultArray)
 {
     VALIDATE_NOT_NULL(resultArray)
+    *resultArray = NULL;
     // We have our own map of RI-compatible default replacements (where ICU disagrees)...
     AutoPtr< ArrayOf<Byte> > replacement;
     HashMap<String, AutoPtr<ArrayOf<Byte> > >::Iterator iter = DEFAULT_REPLACEMENTS->Find(icuCanonicalName);
@@ -245,9 +251,7 @@ ECode CharsetEncoderICU::MakeReplacement(
         return NOERROR;
     }
     // ...but fall back to asking ICU.
-    // *resultArray = NativeConverter::GetSubstitutionBytes(address);
-    REFCOUNT_ADD(*resultArray);
-    return NOERROR;
+    return NativeConverter::GetSubstitutionBytes(address, resultArray);
 }
 
 ECode CharsetEncoderICU::UpdateCallback()

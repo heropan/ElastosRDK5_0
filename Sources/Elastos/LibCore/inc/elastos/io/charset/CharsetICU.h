@@ -13,7 +13,7 @@ class CharsetICU
 public:
     CharsetICU();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& canonicalName,
         /* [in] */ const String& icuCanonName,
         /* [in] */ ArrayOf<String>* aliases);

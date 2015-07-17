@@ -6,6 +6,7 @@
 #include "_Libcore_ICU_CNativeConverterHelper.h"
 
 using Elastos::Core::Singleton;
+using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetDecoder;
 using Elastos::IO::Charset::ICharsetEncoder;
 
@@ -16,9 +17,9 @@ CarClass(CNativeConverterHelper)
     , public Singleton
     , public INativeConverterHelper
 {
+public:
     CAR_SINGLETON_DECL()
 
-public:
     CAR_INTERFACE_DECL()
 
     CARAPI Decode(
@@ -83,8 +84,8 @@ public:
         /* [out, callee] */ ArrayOf<String> ** outarray);
 
     CARAPI CharsetForName(
-        /* [in] */ const String& charsetName//,
-        /* [out] */ /* ICharsetICU** outset*/);
+        /* [in] */ const String& charsetName,
+        /* [out] */ ICharset** outset);
 
     CARAPI SetCallbackDecode(
         /* [in] */ Int64 converterHandle,

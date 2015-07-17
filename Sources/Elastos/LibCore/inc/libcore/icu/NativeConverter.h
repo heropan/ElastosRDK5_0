@@ -4,6 +4,7 @@
 
 #include "Object.h"
 
+using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetDecoder;
 using Elastos::IO::Charset::ICharsetEncoder;
 using Elastos::IO::Charset::ICodingErrorAction;
@@ -79,8 +80,8 @@ public:
         /* [out, callee] */ ArrayOf<String> ** outarray);
 
     static CARAPI CharsetForName(
-        /* [in] */ const String& charsetName//,
-        /* [out] */ /* ICharsetICU** outset */);
+        /* [in] */ const String& charsetName,
+        /* [out] */ ICharset** outset );
 
     static CARAPI SetCallbackDecode(
         /* [in] */ Int64 converterHandle,

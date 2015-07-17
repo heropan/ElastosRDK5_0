@@ -1,12 +1,6 @@
 #include "CCharsetHelper.h"
 #include "Charset.h"
 
-// TODO:
-// ECode CCharsetHelper::availableCharsets(
-//  SortedMap<String, Charset> charsets)
-// {
-//  return Charset::availableCharsets(charsets);
-// }
 namespace Elastos {
 namespace IO {
 namespace Charset {

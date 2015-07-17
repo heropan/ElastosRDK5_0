@@ -70,7 +70,8 @@ Boolean CCharsets::NativeUnsafeByteSequence::Resize(Int32 newSize) {
     return TRUE;
 }
 
-AutoPtr<ArrayOf<Byte> > CCharsets::NativeUnsafeByteSequence::ToByteArray() {
+AutoPtr<ArrayOf<Byte> > CCharsets::NativeUnsafeByteSequence::ToByteArray()
+{
     // Trim any unused space, if necessary.
     Boolean okay = Resize(mOffset);
     return okay ? mRawArray : NULL;
@@ -117,7 +118,6 @@ ECode CCharsets::ToAsciiBytes(
     /* [in] */ Int32 length,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
-    VALIDATE_NOT_NULL(bytes);
     return CCharsets::CharsToBytes(chars, offset, length, 0x7f, bytes);
 }
 
@@ -127,7 +127,6 @@ ECode CCharsets::ToIsoLatin1Bytes(
     /* [in] */ Int32 length,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
-    VALIDATE_NOT_NULL(bytes);
     return CCharsets::CharsToBytes(chars, offset, length, 0xff, bytes);
 }
 
@@ -138,6 +137,8 @@ ECode CCharsets::ToUtf8Bytes(
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
     VALIDATE_NOT_NULL(bytes);
+    *bytes = NULL;
+
     if (length <= 0) return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     ECode result = NOERROR;

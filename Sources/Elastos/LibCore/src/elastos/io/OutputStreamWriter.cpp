@@ -64,6 +64,18 @@ ECode OutputStreamWriter::constructor(
     return NOERROR;
 }
 
+ECode OutputStreamWriter::constructor(
+    /* [in] */ IOutputStream *out,
+    /* [in] */ ICharsetEncoder* charsetEncoder)
+{
+    FAIL_RETURN(Writer::constructor(ISynchronize::Probe(out)));
+    AutoPtr<ICharset> charset;
+    charsetEncoder->GetCharset((ICharset**)&charset);
+    mOut = out;
+    mEncoder = charsetEncoder;
+    return NOERROR;
+}
+
 ECode OutputStreamWriter::Close()
 {
     AutoLock lock(mLock);

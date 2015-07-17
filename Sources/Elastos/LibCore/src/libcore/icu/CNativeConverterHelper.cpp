@@ -110,10 +110,10 @@ ECode CNativeConverterHelper::GetAvailableCharsetNames(
 }
 
 ECode CNativeConverterHelper::CharsetForName(
-    /* [in] */ const String& charsetName//,
-    /* [out] */ /* ICharsetICU** outset */)
+    /* [in] */ const String& charsetName,
+    /* [out] */ ICharset** outset)
 {
-    return NativeConverter::CharsetForName(charsetName/* , outset */);
+    return NativeConverter::CharsetForName(charsetName, outset);
 }
 
 ECode CNativeConverterHelper::SetCallbackDecode(

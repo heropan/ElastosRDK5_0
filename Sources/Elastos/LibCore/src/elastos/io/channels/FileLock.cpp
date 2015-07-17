@@ -24,6 +24,7 @@ FileLock::FileLock(
 ECode FileLock::Channel(
     /* [out] */ IFileChannel** channel )
 {
+    VALIDATE_NOT_NULL(channel)
     *channel = mChannel;
     REFCOUNT_ADD(*channel);
     return NOERROR;
@@ -61,6 +62,7 @@ ECode FileLock::Overlaps(
     /* [in] */ Int64 length,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     const Int64 end = mPosition + mSize - 1;
     const Int64 newEnd = start + length - 1;
     if(end < start || mPosition > newEnd)

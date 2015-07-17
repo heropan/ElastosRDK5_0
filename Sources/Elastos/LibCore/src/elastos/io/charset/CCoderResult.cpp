@@ -68,6 +68,7 @@ ECode CCoderResult::MalformedForLength(
     /* [out] */ ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
 
     if (length > 0) {
         AutoLock lock(sMalformedMutex);
@@ -93,6 +94,7 @@ ECode CCoderResult::UnmappableForLength(
     /* [out] */ ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
 
     if (length > 0) {
         AutoLock lock(sUnmappableMutex);

@@ -17,9 +17,10 @@ ECode CModifiedUtf8::Decode(
     /* [in] */ Int32 utfSize,
     /* [out] */ String* string)
 {
+    VALIDATE_NOT_NULL(string);
+    *string = String(NULL);
     VALIDATE_NOT_NULL(inBytes);
     VALIDATE_NOT_NULL(outChars);
-    VALIDATE_NOT_NULL(string);
     if (utfSize <= 0)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
@@ -70,8 +71,9 @@ ECode CModifiedUtf8::CountBytes(
     /* [in] */  Boolean shortLength,
     /* [out] */ Int64* num)
 {
-    VALIDATE_NOT_NULL(s);
     VALIDATE_NOT_NULL(num);
+    *num = 0;
+    VALIDATE_NOT_NULL(s);
     *num = s->GetByteLength();
     return NOERROR;
 }
@@ -81,8 +83,9 @@ ECode CModifiedUtf8::Encode(
     /* [in] */ Int32 offset,
     /* [in] */ String* s)
 {
-    VALIDATE_NOT_NULL(dst);
     VALIDATE_NOT_NULL(s);
+    *s = String(NULL);
+    VALIDATE_NOT_NULL(dst);
 
     Int32 dstLen = dst->GetLength();
     Int32 srcLen = s->GetByteLength();
@@ -105,8 +108,9 @@ ECode CModifiedUtf8::Encode(
     /* [in] */ String* s,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
-    VALIDATE_NOT_NULL(s);
     VALIDATE_NOT_NULL(bytes);
+    *bytes = NULL;
+    VALIDATE_NOT_NULL(s);
 
     Int32 size = s->GetByteLength();
     AutoPtr<ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(sizeof(Int16) + size);

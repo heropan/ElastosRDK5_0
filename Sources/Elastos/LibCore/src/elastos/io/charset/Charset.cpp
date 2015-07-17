@@ -55,7 +55,7 @@ Charset::~Charset()
 
 CAR_INTERFACE_IMPL(Charset, Object, ICharset)
 
-ECode Charset::Init(
+ECode Charset::constructor(
     /* [in] */ const String& canonicalName,
     /* [in] */ ArrayOf<String>* aliases)
 {
@@ -85,8 +85,7 @@ ECode Charset::AvailableCharsets(
     NativeConverter::GetAvailableCharsetNames((ArrayOf<String>**)&outstring);
     for (Int32 i = 0; i < outstring->GetLength(); i++) {
         AutoPtr<ICharset> charset;
-        assert(0 && "TODO");
-        // NativeConverter::CharsetForName((*outstring)[i], (ICharset**)&Charset);
+        NativeConverter::CharsetForName((*outstring)[i], (ICharset**)&charset);
         String name;
         charset->GetName(&name);
         AutoPtr<IInterface> outface;
@@ -126,6 +125,7 @@ ECode Charset::ForName(
     /* [out] */ ICharset** charset)
 {
     VALIDATE_NOT_NULL(charset);
+    *charset = NULL;
 
     // Is this charset in our cache?
     AutoPtr<ICharset> cs;
@@ -146,8 +146,7 @@ ECode Charset::ForName(
     }
 
     FAIL_RETURN(CheckCharsetName(charsetName));
-    assert(0 && "TODO");
-    // NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
+    NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
 
     if (cs.Get() != NULL) {
         AutoPtr<ICharset> result;
@@ -165,8 +164,7 @@ ECode Charset::ForName(
             AutoPtr<IInterface> outface;
             iter->GetNext((IInterface**)&outface);
             AutoPtr<ICharsetProvider> charsetProvider = ICharsetProvider::Probe(outface);
-            assert(0 && "TODO");
-            // NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
+            NativeConverter::CharsetForName(charsetName, (ICharset**)&cs);
             if (cs != NULL) {
                 return CacheCharset(charsetName, cs, charset);
             }
@@ -247,8 +245,9 @@ ECode Charset::Encode(
     /* [in] */ ICharBuffer* buffer,
     /* [out] */ IByteBuffer** byteBuffer)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(byteBuffer);
+    *byteBuffer = NULL;
+    VALIDATE_NOT_NULL(buffer);
 
     AutoPtr<ICharsetEncoder> encoder;
     FAIL_RETURN(NewEncoder((ICharsetEncoder **)&encoder));
@@ -281,8 +280,9 @@ ECode Charset::Decode(
     /* [in] */ IByteBuffer* buffer,
     /* [out] */ ICharBuffer** charBuffer)
 {
-    VALIDATE_NOT_NULL(buffer);
     VALIDATE_NOT_NULL(charBuffer);
+    *charBuffer = NULL;
+    VALIDATE_NOT_NULL(buffer);
 
     AutoPtr<ICharsetDecoder> decoder;
     FAIL_RETURN(NewDecoder((ICharsetDecoder **)&decoder));

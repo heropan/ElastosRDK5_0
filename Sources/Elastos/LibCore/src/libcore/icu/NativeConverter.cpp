@@ -7,13 +7,16 @@
 #include <unicode/uniset.h>
 #include <unicode/ucnv_cb.h>
 #include <unicode/ustring.h>
-// #include <ustrenum.h>
+#include "CharsetICU.h"
 #include <elastos/utility/etl/Vector.h>
 #include <utils/UniquePtr.h>
+
+//#include <ustrenum.h>
 
 
 using Elastos::Utility::Etl::Vector;
 using Elastos::IO::Charset::CCodingErrorAction;
+using Elastos::IO::Charset::CharsetICU;
 
 namespace Libcore {
 namespace ICU {
@@ -55,9 +58,14 @@ static UConverter* toUConverter(Int64 address)
 
 extern ECode maybeThrowIcuException(UErrorCode errorCode);
 
-static ECode collectStandardNames(const char* canonicalName, const char* standard, Vector<String>& result, bool& rev)
+static ECode collectStandardNames(
+    const char* canonicalName,
+    const char* standard,
+    Vector<String>& result,
+    bool& rev)
 {
     UErrorCode status = U_ZERO_ERROR;
+    assert(0);
 #if 0 // TODO: Waiting for external .h
     UStringEnumeration e(ucnv_openStandardNames(canonicalName, standard, &status));
     if (!U_SUCCESS(status)) {
@@ -488,19 +496,19 @@ static UConverterFromUCallback getFromUCallback(int32_t mode) {
 }
 
 ECode NativeConverter::CharsetForName(
-    /* [in] */ const String& charsetName//,
-    /* [out] */ /* ICharsetICU** outset */)
+    /* [in] */ const String& charsetName,
+    /* [out] */ICharset** outset)
 {
-#if 0 // TODO: Waiting for ICharsetICU
+    VALIDATE_NOT_NULL(outset)
+    *outset = NULL;
+
     if (charsetName.IsNull()) {
-        *outset = NULL;
         return NOERROR;
     }
 
     // Get ICU's canonical name for this charset.
     const char* icuCanonicalName = getICUCanonicalName(charsetName.string());
     if (icuCanonicalName == NULL) {
-        *outset = NULL;
         return NOERROR;
     }
 
@@ -513,7 +521,6 @@ ECode NativeConverter::CharsetForName(
         UErrorCode error = U_ZERO_ERROR;
         LocalUConverterPointer cnv(ucnv_open(icuCanonicalName, &error));
         if (!U_SUCCESS(error)) {
-            *outset = NULL;
             return NOERROR;
         }
     }
@@ -523,22 +530,18 @@ ECode NativeConverter::CharsetForName(
     bool rev;
     collectStandardNames(icuCanonicalName, "IANA", aliases, rev);
     if (!rev) {
-        *outset = NULL;
         return NOERROR;
     }
     collectStandardNames(icuCanonicalName, "MIME", aliases, rev);
     if (!rev) {
-        *outset = NULL;
         return NOERROR;
     }
     collectStandardNames(icuCanonicalName, "JAVA", aliases, rev);
     if (!rev) {
-        *outset = NULL;
         return NOERROR;
     }
     collectStandardNames(icuCanonicalName, "WINDOWS", aliases, rev);
     if (!rev) {
-        *outset = NULL;
         return NOERROR;
     }
     size_t size = aliases.GetSize();
@@ -546,13 +549,11 @@ ECode NativeConverter::CharsetForName(
     for (size_t i = 0; i < size; ++i) {
         (*aliases_array)[i] = aliases[i];
     }
-    *outset = ICharsetICU::New(javaCanonicalName, icuCanonicalName, aliases_array);
+    AutoPtr<CharsetICU> icu = new CharsetICU();
+    icu->constructor(javaCannoicalName, String(icuCanonicalName), aliases_array);
+    *outset = icu.Get();
     REFCOUNT_ADD(*outset);
     return NOERROR;
-#else
-    assert(0);
-    return NOERROR;
-#endif
 }
 
 ECode NativeConverter::SetCallbackDecode(
@@ -561,12 +562,9 @@ ECode NativeConverter::SetCallbackDecode(
 {
     AutoPtr<ICodingErrorAction> cm;
     AutoPtr<ICodingErrorAction> cu;
-#if 0 // TODO: Waiting for ICharsetDecoder
-    decoder->MalformedInnputAction((ICodingErrorAction**)&cm);
+    decoder->MalformedInputAction((ICodingErrorAction**)&cm);
     decoder->UnmappableCharacterAction((ICodingErrorAction**)&cu);
-#else
-    assert(0);
-#endif
+
     Int32 im, iu;
     TranslateCodingErrorAction(cm, &im);
     TranslateCodingErrorAction(cu, &iu);
@@ -581,21 +579,16 @@ ECode NativeConverter::SetCallbackEncode(
 {
     AutoPtr<ICodingErrorAction> cm;
     AutoPtr<ICodingErrorAction> cu;
-#if 0 // TODO: Waiting for ICharsetEncoder
-    encoder->MalformedInnputAction((ICodingErrorAction**)&cm);
-    encoder->UnmappableCharacterAction((ICodingErrorAction**)&cu);
-#else
-    assert(0);
-#endif
+    ICharsetDecoder::Probe(encoder)->MalformedInputAction((ICodingErrorAction**)&cm);
+    ICharsetDecoder::Probe(encoder)->UnmappableCharacterAction((ICodingErrorAction**)&cu);
+
     Int32 im, iu;
     TranslateCodingErrorAction(cm, &im);
     TranslateCodingErrorAction(cu, &iu);
-    AutoPtr<ArrayOf<Byte> > bytes;
-#if 0 // TODO: Waiting for ICharsetEncoder
-    encoder->Replacement(&bytes);
-#else
-    assert(0);
-#endif
+    String str;
+    ICharsetDecoder::Probe(encoder)->Replacement(&str);
+
+    AutoPtr<ArrayOf<Byte> > bytes = str.GetBytes();
     return SetCallbackEncode(converterHandle, im, iu, bytes);
 }
 
@@ -603,6 +596,9 @@ ECode NativeConverter::TranslateCodingErrorAction(
     /* [in] */ ICodingErrorAction* action,
     /* [out] */ Int32* rev)
 {
+    VALIDATE_NOT_NULL(rev)
+    *rev = -1;
+
     AutoPtr<ICodingErrorAction> report;
     CCodingErrorAction::GetREPORT((ICodingErrorAction**)&report);
     AutoPtr<ICodingErrorAction> ignore;

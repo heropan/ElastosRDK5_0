@@ -12,19 +12,21 @@ namespace Charset {
 CharsetICU::CharsetICU()
 {}
 
-ECode CharsetICU::Init(
+ECode CharsetICU::constructor(
     /* [in] */ const String& canonicalName,
     /* [in] */ const String& icuCanonName,
     /* [in] */ ArrayOf<String>* aliases)
 {
     mIcuCanonicalName = icuCanonName;
-    return Charset::Init(canonicalName, aliases);
+    return Charset::constructor(canonicalName, aliases);
 }
 
 ECode CharsetICU::NewEncoder(
     /* [out] */ ICharsetEncoder** charsetEncoder)
 {
     VALIDATE_NOT_NULL(charsetEncoder);
+    *charsetEncoder = NULL;
+
     AutoPtr<CharsetEncoderICU> encoderICU;
     FAIL_RETURN(CharsetEncoderICU::NewInstance((ICharset*)this, mIcuCanonicalName, (CharsetEncoderICU**)&encoderICU));
     *charsetEncoder = ICharsetEncoder::Probe(encoderICU.Get());
@@ -36,6 +38,8 @@ ECode CharsetICU::NewDecoder(
     /* [out] */ ICharsetDecoder** charsetDecoder)
 {
     VALIDATE_NOT_NULL(charsetDecoder);
+    *charsetDecoder = NULL;
+
     AutoPtr<CharsetDecoderICU> decoderICU;
     FAIL_RETURN(CharsetDecoderICU::NewInstance((ICharset*)this, mIcuCanonicalName, (CharsetDecoderICU**)&decoderICU));
     *charsetDecoder = ICharsetDecoder::Probe(decoderICU.Get());

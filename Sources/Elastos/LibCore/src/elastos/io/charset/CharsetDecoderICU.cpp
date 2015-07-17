@@ -148,7 +148,9 @@ ECode CharsetDecoderICU::DecodeLoop(
 {
     ECode ec = NOERROR;
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     VALIDATE_NOT_NULL(byteBuffer)
+
     Boolean ret = FALSE;
     if (!(IBuffer::Probe(byteBuffer)->HasRemaining(&ret), ret)) {
         CCoderResult::GetUNDERFLOW(result);
@@ -200,7 +202,9 @@ ECode CharsetDecoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     VALIDATE_NOT_NULL(outBuffer)
+
     Boolean has = FALSE;
     if ((IBuffer::Probe(outBuffer)->HasArray(&has), has)) {
         mOutput = NULL;
@@ -232,7 +236,9 @@ ECode CharsetDecoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     VALIDATE_NOT_NULL(inBuffer)
+
     Boolean has = FALSE;
     if ((IBuffer::Probe(inBuffer)->HasArray(&has), has)) {
         mInput = NULL;

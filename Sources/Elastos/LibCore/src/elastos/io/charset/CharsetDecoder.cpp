@@ -74,6 +74,8 @@ ECode CharsetDecoder::Decode(
     /* [out] */ ICharBuffer** charBuffer)
 {
     VALIDATE_NOT_NULL(charBuffer)
+    *charBuffer = NULL;
+
     Reset();
     Int32 remaining = 0;
     assert(byteBuffer != NULL);
@@ -131,6 +133,7 @@ ECode CharsetDecoder::Decode(
     /* [out] */ ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     /*
      * status check
      */
@@ -138,8 +141,6 @@ ECode CharsetDecoder::Decode(
         // throw new IllegalStateException();
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-
-    *result = NULL;
 
     // begin to decode
     while (TRUE) {
@@ -218,6 +219,8 @@ ECode CharsetDecoder::Flush(
     /* [out] */ ICoderResult** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     if (mStatus != END && mStatus != INIT) {
         // throw new IllegalStateException();
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -327,9 +330,7 @@ ECode CharsetDecoder::ImplFlush(
     /* [in] */ ICharBuffer* outInput,
     /* [out] */ ICoderResult** result)
 {
-    VALIDATE_NOT_NULL(result)
-    CCoderResult::GetUNDERFLOW(result);
-    return NOERROR;
+    return CCoderResult::GetUNDERFLOW(result);
 }
 
 ECode CharsetDecoder::ImplOnMalformedInput(
@@ -363,6 +364,7 @@ ECode CharsetDecoder::CheckCoderResult(
     /* [in] */ ICoderResult* result)
 {
     VALIDATE_NOT_NULL(result)
+
     Boolean ret = FALSE;
     AutoPtr<ICodingErrorAction> REPORT;
     CCodingErrorAction::GetREPORT((ICodingErrorAction**)&REPORT);
@@ -382,6 +384,8 @@ ECode CharsetDecoder::AllocateMore(
     /* [out] */ ICharBuffer** newOutput)
 {
     VALIDATE_NOT_NULL(newOutput)
+    *newOutput = NULL;
+
     Int32 capacity = 0;
     IBuffer::Probe(output)->GetCapacity(&capacity);
     if (capacity == 0) {

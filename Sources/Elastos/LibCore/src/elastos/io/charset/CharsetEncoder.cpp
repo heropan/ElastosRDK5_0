@@ -112,14 +112,16 @@ ECode CharsetEncoder::CanEncode(
     /* [in] */ ICharSequence* sequence,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(sequence);
     VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    VALIDATE_NOT_NULL(sequence);
 
     AutoPtr<ICharBuffer> cb;
     AutoPtr<ICharBuffer> charBuffer = (ICharBuffer*)sequence->Probe(EIID_ICharBuffer);
     if (charBuffer != NULL) {
         ((ICharBuffer*) sequence)->Duplicate((ICharBuffer**)&cb);
-    } else {
+    }
+    else {
         CharBuffer::Wrap(sequence, (ICharBuffer**)&cb);
     }
 
@@ -139,8 +141,9 @@ ECode CharsetEncoder::Encode(
     /* [in] */ ICharBuffer* charBuffer,
     /* [out] */ IByteBuffer** byteBuffer)
 {
-    VALIDATE_NOT_NULL(charBuffer);
     VALIDATE_NOT_NULL(byteBuffer);
+    *byteBuffer = NULL;
+    VALIDATE_NOT_NULL(charBuffer);
 
     Int32 remaining = 0;
     FAIL_RETURN(IBuffer::Probe(charBuffer)->GetRemaining(&remaining));
@@ -213,9 +216,10 @@ ECode CharsetEncoder::Encode(
     /* [in] */ Boolean endOfInput,
     /* [out] */ ICoderResult** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
     VALIDATE_NOT_NULL(charBuffer);
     VALIDATE_NOT_NULL(byteBuffer);
-    VALIDATE_NOT_NULL(result);
 
     // If the previous step is encode(CharBuffer), then no more input is needed
     // thus endOfInput should not be false
@@ -304,8 +308,9 @@ ECode CharsetEncoder::Flush(
     /* [in, out] */ IByteBuffer* byteBuffer,
     /* [out] */ ICoderResult** result)
 {
-    VALIDATE_NOT_NULL(byteBuffer);
     VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    VALIDATE_NOT_NULL(byteBuffer);
 
     if (mStatus != END && mStatus != READY) {
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -451,7 +456,6 @@ ECode CharsetEncoder::ImplFlush(
     /* [in] */ IByteBuffer* outBuffer,
     /* [out] */  ICoderResult** result)
 {
-    VALIDATE_NOT_NULL(result);
     CCoderResult::GetUNDERFLOW(result);
     return NOERROR;
 }
@@ -541,8 +545,9 @@ ECode CharsetEncoder::AllocateMore(
     /* [in, out] */ IByteBuffer* output,
     /* [out] */ IByteBuffer** byteBuffer)
 {
-    VALIDATE_NOT_NULL(output);
     VALIDATE_NOT_NULL(byteBuffer);
+    *byteBuffer = NULL;
+    VALIDATE_NOT_NULL(output);
 
     Int32 cap = 0;
     FAIL_RETURN(IBuffer::Probe(output)->GetCapacity(&cap));

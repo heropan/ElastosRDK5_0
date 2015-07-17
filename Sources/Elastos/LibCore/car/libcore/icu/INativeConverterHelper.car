@@ -1,7 +1,7 @@
 module
 {
 
-//    interface Elastos.IO.Charset.ICharsetICU;
+    interface Elastos.IO.Charset.ICharset;
     interface Elastos.IO.Charset.ICharsetDecoder;
     interface Elastos.IO.Charset.ICharsetEncoder;
 
@@ -73,8 +73,8 @@ module
             [out, callee] ArrayOf<String>* outarray);
 
         CharsetForName(
-            [in] String charsetName/*,
-            [out] ICharsetICU** outset*/);
+            [in] String charsetName,
+            [out] ICharset** outset);
 
         SetCallbackDecode(
             [in] Int64 converterHandle,
