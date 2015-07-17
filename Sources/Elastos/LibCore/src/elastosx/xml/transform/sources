@@ -1,0 +1,27 @@
+TARGET_NAME= transform
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+include $(MAKEDIR)/../../../sources.inc
+
+INCLUDES += ../../../elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform
+INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/dom
+INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/sax
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core
+
+VPATH := $(MAKEDIR)/dom:$(MAKEDIR)/sax
+
+#transform
+SOURCES += TransformerFactory.cpp
+SOURCES += SAXTransformerFactory.cpp
+
+#transform/dom
+SOURCES += CDOMResult.cpp
+SOURCES += CDOMSource.cpp
+
+#transform/sax
+SOURCES += CSAXResult.cpp
+SOURCES += CSAXSource.cpp
