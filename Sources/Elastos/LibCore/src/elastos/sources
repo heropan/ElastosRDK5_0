@@ -40,6 +40,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/datatype
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/transform
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/transform/dom
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/transform/sax
+INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/transform/stream
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/security
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/security/auth/
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/security/auth/callback

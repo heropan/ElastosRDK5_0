@@ -57,6 +57,11 @@ module
     merge("xml/xpath/IXPathFactory.car");
     merge("xml/xpath/IXPathFactoryFinder.car");
 
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IWriter;
+    interface Elastos.IO.IReader;
+    interface Elastos.IO.IFile;
     interface Elastosx.Xml.Transform.ISource;
     interface Elastosx.Xml.Transform.IResult;
     interface Org.W3c.Dom.INode;
@@ -161,6 +166,54 @@ module
             interface ISource;
         }
     } // namespace Sax
+
+    namespace Stream {
+        class CStreamResult {
+            constructor();
+
+            constructor(
+                [in] IOutputStream* outputStream);
+
+            constructor(
+                [in] IWriter* writer);
+
+            constructor(
+                [in] String systemId);
+
+            constructor(
+                [in] IFile* f);
+
+            interface IStreamResult;
+            interface IResult;
+        }
+
+        class CStreamSource {
+            constructor();
+
+            constructor(
+                [in] IInputStream* inputStream);
+
+            constructor(
+                [in] IInputStream* inputStream,
+                [in] String systemId);
+
+            constructor(
+                [in] IReader* reader);
+
+            constructor(
+                [in] IReader* reader,
+                [in] String systemId);
+
+            constructor(
+                [in] String systemId);
+
+            constructor(
+                [in] IFile* f);
+
+            interface IStreamSource;
+            interface ISource;
+        }
+    } // namespace Stream
 
     } // namespace Transform
 
