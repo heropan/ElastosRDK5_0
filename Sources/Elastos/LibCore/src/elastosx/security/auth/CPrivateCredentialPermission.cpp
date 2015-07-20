@@ -5,30 +5,19 @@ namespace Elastosx {
 namespace Security {
 namespace Auth {
 
+CAR_OBJECT_IMPL(CPrivateCredentialPermission)
 
-ECode CPrivateCredentialPermission::CheckGuard(
-    /* [in] */ IInterface *object)
-{
-    return Permission::CheckGuard(object);
-}
-
-ECode CPrivateCredentialPermission::GetName(
-    /* [out] */ String *name)
-{
-    return Permission::GetName(name);
-}
-
-ECode CPrivateCredentialPermission::NewPermissionCollection(
-    /* [out] */ IPermissionCollection **permissions)
-{
-    return Permission::NewPermissionCollection(permissions);
-}
+#if 0 // TODO: Waiting for Permission
+CAR_INTERFACE_IMPL(CPrivateCredentialPermission, Permission, IPrivateCredentialPermission)
+#else
+CAR_INTERFACE_IMPL(CPrivateCredentialPermission, Object, IPrivateCredentialPermission)
+#endif
 
 ECode CPrivateCredentialPermission::GetActions(
     /* [out] */ String *actions)
 {
     VALIDATE_NOT_NULL(actions)
-    *actions = String();
+    *actions = String(NULL);
     return NOERROR;
 }
 
@@ -38,12 +27,17 @@ ECode CPrivateCredentialPermission::Implies(
 {
     VALIDATE_NOT_NULL(result)
     *result = TRUE;
+    VALIDATE_NOT_NULL(permission)
+
     return NOERROR;
 }
 
 ECode CPrivateCredentialPermission::GetPrincipals(
-    /* [out, callee] */ ArrayOf<IObjectContainer*> **principals)
+    /* [out, callee] */ ArrayOf<IArrayOf*> **principals)
 {
+    VALIDATE_NOT_NULL(*principals)
+    *principals = NULL;
+
     return NOERROR;
 }
 
@@ -51,7 +45,7 @@ ECode CPrivateCredentialPermission::GetCredentialClass(
     /* [out] */ String *credential)
 {
     VALIDATE_NOT_NULL(credential)
-    *credential = String();
+    *credential = String(NULL);
     return NOERROR;
 }
 
@@ -59,10 +53,15 @@ ECode CPrivateCredentialPermission::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& action)
 {
-    return Permission::Init(String(""));
+#if 0 // TODO: Waiting for Permission
+    return Permission::constructor(String(""));
+#else
+    assert(0);
+    return NOERROR;
+#endif
 }
 
-}
-}
-}
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 

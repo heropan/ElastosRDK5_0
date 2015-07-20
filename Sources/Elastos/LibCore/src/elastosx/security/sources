@@ -18,3 +18,4 @@ SOURCES = security.cpp
 SOURCES += CPasswordCallback.cpp
 SOURCES += CX500Principal.cpp
 SOURCES += CAuthPermission.cpp
+SOURCES += CPrivateCredentialPermission.cpp

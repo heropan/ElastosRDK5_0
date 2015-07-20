@@ -1,32 +1,42 @@
 
-#ifndef __CPRIVATECREDENTIALPERMISSION_H__
-#define __CPRIVATECREDENTIALPERMISSION_H__
+#ifndef __ELASTOSX_SECURITY_AUTH_CPRIVATECREDENTIALPERMISSION_H__
+#define __ELASTOSX_SECURITY_AUTH_CPRIVATECREDENTIALPERMISSION_H__
 
-#include "_CPrivateCredentialPermission.h"
+#include "_Elastosx_Security_Auth_CPrivateCredentialPermission.h"
+#if 0 // TODO: Waiting for Permission
 #include "Permission.h"
+#else
+#include "Object.h"
+#endif
 
 using Elastos::Security::IPermissionCollection;
 using Elastos::Security::IPermission;
+#if 0 // TODO: Waiting for Permission
 using Elastos::Security::Permission;
+#else
+using Elastos::Core::Object;
+#endif
+using Elastos::Core::IArrayOf;
 
 namespace Elastosx {
 namespace Security {
 namespace Auth {
 
-CarClass(CPrivateCredentialPermission), public Permission
+CarClass(CPrivateCredentialPermission)
+#if 0 // TODO: Waiting for Permission
+    , public Permission
+#else
+    , public Object
+#endif
+    , public IPrivateCredentialPermission
 {
 public:
-    CARAPI CheckGuard(
-        /* [in] */ IInterface *object);
+    CAR_OBJECT_DECL()
 
-    CARAPI GetName(
-        /* [out] */ String *name);
-
-    CARAPI NewPermissionCollection(
-        /* [out] */ IPermissionCollection **permissions);
+    CAR_INTERFACE_DECL()
 
     CARAPI GetPrincipals(
-        /* [out, callee] */ ArrayOf<IObjectContainer*> **principals);
+        /* [out, callee] */ ArrayOf<IArrayOf*> **principals);
 
     CARAPI GetCredentialClass(
         /* [out] */ String *credential);
@@ -43,8 +53,8 @@ public:
         /* [in] */ const String& action);
 };
 
-}
-}
-}
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 
-#endif // __CPRIVATECREDENTIALPERMISSION_H__
+#endif // __ELASTOSX_SECURITY_AUTH_CPRIVATECREDENTIALPERMISSION_H__

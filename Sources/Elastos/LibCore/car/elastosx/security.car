@@ -70,9 +70,21 @@ module
             [in] String actions);
 
         interface IAuthPermission;
+        // interface IBasicPermission; // TODO: Waiting for IBasicPermission
         interface IPermission;
         interface IGuard;
     }
+
+    class CPrivateCredentialPermission {
+        constructor(
+            [in] String name,
+            [in] String action);
+
+        interface IGuard;
+        interface IPermission;
+        interface IPrivateCredentialPermission;
+    }
+
     } // namespace Auth
     } // namespace Security
     } // namespace Elastosx
