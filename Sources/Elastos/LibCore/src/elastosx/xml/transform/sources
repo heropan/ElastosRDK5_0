@@ -19,6 +19,7 @@ VPATH := $(MAKEDIR)/dom:$(MAKEDIR)/sax:$(MAKEDIR)/stream
 #transform
 SOURCES += TransformerFactory.cpp
 SOURCES += SAXTransformerFactory.cpp
+SOURCES += Transformer.cpp
 
 #transform/dom
 SOURCES += CDOMResult.cpp
