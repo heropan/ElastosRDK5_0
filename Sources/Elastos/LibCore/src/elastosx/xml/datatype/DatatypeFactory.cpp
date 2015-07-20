@@ -19,6 +19,8 @@ namespace Elastosx {
 namespace Xml {
 namespace Datatype {
 
+CAR_INTERFACE_IMPL(DatatypeFactory, Object, IDatatypeFactory)
+
 ECode DatatypeFactory::NewInstance(
     /* [out] */ IDatatypeFactory** factory)
 {

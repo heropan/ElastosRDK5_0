@@ -1,3 +1,5 @@
 DIRS += namespace
 DIRS += datatype
 DIRS += transform
+DIRS += parsers
+
