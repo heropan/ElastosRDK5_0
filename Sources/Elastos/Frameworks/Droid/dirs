@@ -6,8 +6,6 @@ DIRS += DroidRuntime
 DIRS += Base/Core/
 
 #DIRS = ServiceManager
-#DIRS += DroidRuntime
-#DIRS += Base/Core/
 #DIRS += Base/Services/Server/src
 #DIRS += Base/Test
 #DIRS += Base/Test-runner
@@ -17,5 +15,4 @@ DIRS += Base/Core/
 #DIRS += Base/Packages/
 #DIRS += DevSamples
 #DIRS += Commands
-#DIRS += DCARServer
-#DIRS += DCARServiceManager
+

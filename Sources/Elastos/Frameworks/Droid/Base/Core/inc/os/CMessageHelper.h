@@ -1,8 +1,9 @@
 
-#ifndef __CMESSAGEHELPER_H__
-#define __CMESSAGEHELPER_H__
+#ifndef __ELASTOS_DROID_OS_CMESSAGEHELPER_H__
+#define __ELASTOS_DROID_OS_CMESSAGEHELPER_H__
 
-#include "_CMessageHelper.h"
+#include "_Elastos_Droid_Os_CMessageHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::IRunnable;
 
@@ -11,8 +12,14 @@ namespace Droid {
 namespace Os {
 
 CarClass(CMessageHelper)
+    , public Singleton
+    , public IMessageHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Obtain(
         /* [out] */ IMessage** msg);
 

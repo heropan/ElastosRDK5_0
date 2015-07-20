@@ -1,8 +1,8 @@
-#ifndef __CMESSAGEQUEUE_H__
-#define __CMESSAGEQUEUE_H__
+#ifndef __ELASTOS_DROID_OS_CMESSAGEQUEUE_H__
+#define __ELASTOS_DROID_OS_CMESSAGEQUEUE_H__
 
-#include "_CMessageQueue.h"
-#include "ext/frameworkext.h"
+#include "_Elastos_Droid_Os_CMessageQueue.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
@@ -13,8 +13,14 @@ namespace Droid {
 namespace Os {
 
 CarClass(CMessageQueue)
+    , public Object
+    , public IMessageQueue
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CMessageQueue();
 
     ~CMessageQueue();
@@ -48,7 +54,8 @@ public:
     CARAPI GetNext(
         /* [out] */ IMessage** msg);
 
-    CARAPI Quit();
+    CARAPI Quit(
+        /* [in] */ Boolean safe);
 
     CARAPI EnqueueMessage(
         /* [in] */ IMessage* msg,
@@ -65,6 +72,9 @@ public:
         /* [in] */ IHandler* h,
         /* [in] */ IRunnable* r,
         /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsIdling(
         /* [out] */ Boolean* result);
 
     CARAPI RemoveMessages(
@@ -133,4 +143,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMESSAGEQUEUE_H__
+#endif //__ELASTOS_DROID_OS_CMESSAGEQUEUE_H__

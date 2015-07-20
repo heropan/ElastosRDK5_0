@@ -1,9 +1,11 @@
 
 #include "ext/frameworkdef.h"
 #include "os/CMessage.h"
-#include "os/CBundle.h"
+//#include "os/CBundle.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -13,10 +15,14 @@ namespace Os {
 const Int32 CMessage::FLAG_IN_USE;
 const Int32 CMessage::FLAG_ASYNCHRONOUS;
 const Int32 CMessage::FLAGS_TO_CLEAR_ON_COPY_FROM;
-Mutex CMessage::sPoolSync;
+Object CMessage::sPoolSync;
 AutoPtr<CMessage> CMessage::sPool;
 Int32 CMessage::sPoolSize = 0;
 const Int32 CMessage::MAX_POOL_SIZE;
+
+CAR_INTERFACE_IMPL_2(CMessage, Object, IMessage, IParcelable)
+
+CAR_OBJECT_IMPL(CMessage)
 
 CMessage::CMessage()
     : mWhat(0)
@@ -157,6 +163,18 @@ AutoPtr<IMessage> CMessage::Obtain(
     return m;
 }
 
+ECode CMessage::SetSendingUid(
+    /* [in] */ Int32 uid)
+{
+    return NOERROR;
+}
+
+ECode CMessage::GetSendingUid(
+    /* [out] */ Int32* uid)
+{
+    return NOERROR;
+}
+
 ECode CMessage::GetNext(
     /* [out] */ IMessage** next)
 {
@@ -202,7 +220,9 @@ ECode CMessage::CopyFrom(
 
     mData = NULL;
     if (m->mData != NULL) {
-        m->mData->Clone((IBundle**)&mData);
+        AutoPtr<IInterface> obj;
+        ICloneable::Probe(m->mData)->Clone((IInterface**)&obj);
+        mData = IBundle::Probe(obj);
     }
     return NOERROR;
 }
@@ -285,8 +305,19 @@ ECode CMessage::GetData(
 {
     VALIDATE_NOT_NULL(data);
     if (mData == NULL) {
-        CBundle::New((IBundle**)&mData);
+        assert(0);
+        //CBundle::New((IBundle**)&mData);
     }
+
+    *data = mData;
+    REFCOUNT_ADD(*data);
+    return NOERROR;
+}
+
+ECode CMessage::PeekData(
+    /* [in] */ IBundle** data)
+{
+    VALIDATE_NOT_NULL(data);
 
     *data = mData;
     REFCOUNT_ADD(*data);

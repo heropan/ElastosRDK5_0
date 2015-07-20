@@ -1,5 +1,16 @@
 module
 {
+    merge("os/Binder.car");
+    merge("os/Looper.car");
+    merge("os/Message.car");
+    merge("os/Messenger.car");
+    merge("os/IMessenger.car");
+    merge("os/MessageQueue.car");
+    merge("os/Handler.car");
+    merge("os/IdleHandler.car");
+    // merge("os/HandlerThread.car");
+    // merge("os/HandlerCaller.car");
+
     // merge("os/storage/ExternalStorageFormatter.car");
     // merge("os/storage/IMountService.car");
     // merge("os/storage/IMountServiceListener.car");
@@ -9,26 +20,18 @@ module
     // merge("os/storage/StorageEventListener.car");
     // merge("os/storage/StorageManager.car");
     // merge("os/storage/StorageVolume.car");
+
     // merge("os/BatteryManager.car");
     // merge("os/BatteryStats.car");
-    merge("os/Binder.car");
     //merge("os/Bundle.car");
-    // merge("os/MessageQueue.car");
     // merge("os/FileObserver.car");
-    // merge("os/Handler.car");
-    // merge("os/HandlerThread.car");
-    // merge("os/IdleHandler.car");
-    // merge("os/HandlerCaller.car");
+
     // merge("os/IHardwareService.car");
     // merge("os/INetworkManagementService.car");
     // merge("os/IRemoteCallback.car");
     // merge("os/IUpdateLock.car");
     // merge("os/IUserManager.car");
     // merge("os/IVibrator.car");
-    //merge("os/Looper.car");
-    //merge("os/Message.car");
-    //merge("os/Messenger.car");
-    //merge("os/IMessenger.car");
     // merge("os/ParcelFileDescriptor.car");
     // merge("os/ParcelStringList.car");
     // merge("os/PatternMatcher.car");
@@ -141,9 +144,13 @@ module
         interface IBinder;
     }
 
-    // singleton class CBinderHelper {
-    //     interface IBinderHelper;
-    // }
+    singleton class CBinderHelper {
+        interface IBinderHelper;
+    }
+
+    singleton class CLooperHelper {
+        interface ILooperHelper;
+    }
 
     // [local]
     // class CBundle {
@@ -167,37 +174,37 @@ module
     //     interface IBundleHelper;
     // }
 
-    // class CHandler {
-    //     constructor();
+    class CHandler {
+        constructor();
 
-    //     constructor(
-    //         [in] Boolean async);
+        constructor(
+            [in] Boolean async);
 
-    //     constructor(
-    //         [in] ILooper* looper);
+        constructor(
+            [in] ILooper* looper);
 
-    //     constructor(
-    //         [in] IHandlerCallback* cb,
-    //         [in] Boolean takeStrongRefOfCallback);
+        constructor(
+            [in] IHandlerCallback* cb,
+            [in] Boolean takeStrongRefOfCallback);
 
-    //     constructor(
-    //         [in] ILooper* looper,
-    //         [in] IHandlerCallback* cb,
-    //         [in] Boolean takeStrongRefOfCallback);
+        constructor(
+            [in] ILooper* looper,
+            [in] IHandlerCallback* cb,
+            [in] Boolean takeStrongRefOfCallback);
 
-    //     constructor(
-    //         [in] IHandlerCallback* cb,
-    //         [in] Boolean takeStrongRefOfCallback,
-    //         [in] Boolean async);
+        constructor(
+            [in] IHandlerCallback* cb,
+            [in] Boolean takeStrongRefOfCallback,
+            [in] Boolean async);
 
-    //     constructor(
-    //         [in] ILooper* looper,
-    //         [in] IHandlerCallback* cb,
-    //         [in] Boolean takeStrongRefOfCallback,
-    //         [in] Boolean async);
+        constructor(
+            [in] ILooper* looper,
+            [in] IHandlerCallback* cb,
+            [in] Boolean takeStrongRefOfCallback,
+            [in] Boolean async);
 
-    //     interface IHandler;
-    // }
+        interface IHandler;
+    }
 
     // class CHandlerThread {
     //     constructor(
@@ -216,43 +223,43 @@ module
     //     interface IHandlerThread;
     // }
 
-    // class CMessageQueue {
-    //     constructor(
-    //         [in] Boolean quitAllowed);
+    class CMessageQueue {
+         constructor(
+             [in] Boolean quitAllowed);
 
-    //     interface IMessageQueue;
-    // }
+         interface IMessageQueue;
+    }
 
-    // class CMessage {
-    //     constructor();
+    class CMessage {
+        constructor();
 
-    //     interface IMessage;
-    //     interface IParcelable;
-    // }
+        interface IMessage;
+        interface IParcelable;
+    }
 
-    // class CMessenger {
-    //     constructor();
+    class CMessenger {
+        constructor();
 
-    //     constructor(
-    //         [in] IHandler* handler);
+        constructor(
+            [in] IHandler* handler);
 
-    //     constructor(
-    //         [in] IIMessenger* target);
+        constructor(
+            [in] IIMessenger* target);
 
-    //     interface IMessenger;
-    //     interface IParcelable;
-    // }
+        interface IMessenger;
+        interface IParcelable;
+    }
 
-    // class CMessengerImpl {
-    //     constructor(
-    //         [in] IHandler* handler);
+    class CMessengerImpl {
+        constructor(
+            [in] IHandler* handler);
 
-    //     interface IIMessenger;
-    // }
+        interface IIMessenger;
+    }
 
-    // singleton class CMessageHelper {
-    //     interface IMessageHelper;
-    // }
+    singleton class CMessageHelper {
+        interface IMessageHelper;
+    }
 
     // singleton class CServiceManager {
     //     interface IServiceManager;
@@ -281,10 +288,6 @@ module
 
     //     interface IPatternMatcher;
     //     interface IParcelable;
-    // }
-
-    // singleton class CLooperHelper {
-    //     interface ILooperHelper;
     // }
 
     // class CParcel {

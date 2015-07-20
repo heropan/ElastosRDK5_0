@@ -2,6 +2,9 @@
 #include "os/Binder.h"
 #include <binder/IPCThreadState.h>
 #include <binder/ProcessState.h>
+//#include "os/CUserHandle.h"
+
+// using Elastos::Droid::Os::CUserHandle;
 
 namespace Elastos {
 namespace Droid {
@@ -23,6 +26,12 @@ ECode Binder::constructor()
     return NOERROR;
 }
 
+ECode Binder::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
+}
+
 Int32 Binder::GetCallingPid()
 {
     return android::IPCThreadState::self()->getCallingPid();
@@ -36,6 +45,15 @@ Int32 Binder::GetCallingUid()
 Int64 Binder::ClearCallingIdentity()
 {
     return android::IPCThreadState::self()->clearCallingIdentity();
+}
+
+AutoPtr<IUserHandle> Binder::GetCallingUserHandle()
+{
+    assert(0);
+    // Int32 userId = CUserHandle::GetUserId(GetCallingUid());
+    AutoPtr<IUserHandle> userHandle;
+    // CUserHandle::New(userId, (IUserHandle**)&userHandle);
+    return userHandle;
 }
 
 ECode Binder::RestoreCallingIdentity(

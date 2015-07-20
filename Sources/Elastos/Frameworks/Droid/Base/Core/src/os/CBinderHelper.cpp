@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CBinderHelper, Singleton, IBinderHelper)
+
+CAR_SINGLETON_IMPL(CBinderHelper)
+
 ECode CBinderHelper::GetCallingPid(
     /* [out] */ Int32* pid)
 {

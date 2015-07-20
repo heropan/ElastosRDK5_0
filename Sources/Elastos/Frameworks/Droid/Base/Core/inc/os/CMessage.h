@@ -1,8 +1,9 @@
 
-#ifndef __CMESSAGE_H__
-#define __CMESSAGE_H__
+#ifndef __ELASTOS_DROID_OS_CMESSAGE_H__
+#define __ELASTOS_DROID_OS_CMESSAGE_H__
 
-#include "_CMessage.h"
+#include "_Elastos_Droid_Os_CMessage.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
 
@@ -11,8 +12,15 @@ namespace Droid {
 namespace Os {
 
 CarClass(CMessage)
+    , public Object
+    , public IMessage
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CMessage();
 
     CARAPI constructor();
@@ -109,6 +117,12 @@ public:
         /* [in] */ Int32 arg2,
         /* [in] */ IInterface* obj);
 
+    CARAPI SetSendingUid(
+        /* [in] */ Int32 uid);
+
+    CARAPI GetSendingUid(
+        /* [out] */ Int32* uid);
+
     CARAPI GetNext(
         /* [out] */ IMessage** next);
 
@@ -169,6 +183,9 @@ public:
         /* [in] */ IBundle* data);
 
     CARAPI GetData(
+        /* [in] */ IBundle** data);
+
+    CARAPI PeekData(
         /* [in] */ IBundle** data);
 
     CARAPI SetWhat(
@@ -296,4 +313,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMESSAGE_H__
+#endif //__ELASTOS_DROID_OS_CMESSAGE_H__

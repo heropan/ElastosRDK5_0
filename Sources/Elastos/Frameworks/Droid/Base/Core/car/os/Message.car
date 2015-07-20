@@ -10,28 +10,52 @@ module
     namespace Droid {
     namespace Os {
 
+    /**
+     * Involve
+     * interface IParcelable;
+     */
     [deprecated]
     interface IMessage {
-        GetNext(
-            [out] IMessage** next);
+        SetWhat(
+            [in] Int32 val);
 
-        SetNext(
-            [in] IMessage* next);
+        GetWhat(
+            [out] Int32* val);
+
+        SetArg1(
+            [in] Int32 arg1);
+
+        GetArg1(
+            [out] Int32* arg1);
+
+        SetArg2(
+            [in] Int32 arg2);
+
+        GetArg2(
+            [out] Int32* arg2);
+
+        SetObj(
+            [in] IInterface* obj);
+
+        GetObj(
+            [out] IInterface** obj);
+
+        SetReplyTo(
+            [in] IMessenger* replyTo);
+
+        GetReplyTo(
+            [out] IMessenger** replyTo);
 
         /**
-         * Return a Message instance to the global pool.  You MUST NOT touch
-         * the Message after calling this function -- it has effectively been
-         * freed.
+         * Optional field indicating the uid that sent the message.  This is
+         * only valid for messages posted by a {@link Messenger}; otherwise,
+         * it will be -1.
          */
-        Recycle();
+        SetSendingUid(
+            [in] Int32 uid);
 
-        /**
-         * Make this message like o.  Performs a shallow copy of the data field.
-         * Does not copy the linked list fields, nor the timestamp or
-         * target/callback of the original message.
-         */
-        CopyFrom(
-            [in] IMessage* o);
+        GetSendingUid(
+            [out] Int32* uid);
 
         /**
          * Return the targeted delivery time of this message, in milliseconds.
@@ -56,11 +80,11 @@ module
         GetTarget(
             [out] IHandler** target);
 
-        /**
-         * Sends this Message to the Handler specified by {@link #getTarget}.
-         * Throws a null pointer exception if this field has not been set.
-         */
-        SendToTarget();
+        GetNext(
+            [out] IMessage** next);
+
+        SetNext(
+            [in] IMessage* next);
 
         SetData(
             [in] IBundle* data);
@@ -68,35 +92,8 @@ module
         GetData(
             [out] IBundle** data);
 
-        SetWhat(
-            [in] Int32 val);
-
-        GetWhat(
-            [out] Int32* val);
-
-        SetReplyTo(
-            [in] IMessenger* replyTo);
-
-        GetReplyTo(
-            [out] IMessenger** replyTo);
-
-        SetArg1(
-            [in] Int32 arg1);
-
-        GetArg1(
-            [out] Int32* arg1);
-
-        SetArg2(
-            [in] Int32 arg2);
-
-        GetArg2(
-            [out] Int32* arg2);
-
-        SetObj(
-            [in] IInterface* obj);
-
-        GetObj(
-            [out] IInterface** obj);
+        PeekData(
+            [out] IBundle** data);
 
         SetCallback(
             [in] IRunnable* cb);
@@ -109,6 +106,27 @@ module
 
         SetAsynchronous(
             [in] Boolean async);
+
+        /**
+         * Return a Message instance to the global pool.  You MUST NOT touch
+         * the Message after calling this function -- it has effectively been
+         * freed.
+         */
+        Recycle();
+
+        /**
+         * Make this message like o.  Performs a shallow copy of the data field.
+         * Does not copy the linked list fields, nor the timestamp or
+         * target/callback of the original message.
+         */
+        CopyFrom(
+            [in] IMessage* o);
+
+        /**
+         * Sends this Message to the Handler specified by {@link #getTarget}.
+         * Throws a null pointer exception if this field has not been set.
+         */
+        SendToTarget();
 
         IsInUse(
             [out] Boolean* use);

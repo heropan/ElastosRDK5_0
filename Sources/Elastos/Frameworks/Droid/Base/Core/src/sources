@@ -97,7 +97,7 @@ INCLUDES += $(MAKEDIR)/../inc/os
 SOURCES = Elastos.Droid.Core.car
 // SOURCES += R.cpp
 // SOURCES += Manifest.cpp
-// SOURCES += frameworkext.cpp
+SOURCES += frameworkext.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 // SOURCES += Elastos.Droid.System.cpp
 

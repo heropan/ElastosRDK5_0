@@ -77,6 +77,16 @@ public:
     static CARAPI_(Int64) ClearCallingIdentity();
 
     /**
+     * Return the UserHandle assigned to the process that sent you the
+     * current transaction that is being processed.  This is the user
+     * of the caller.  It is distinct from {@link #getCallingUid()} in that a
+     * particular user will have multiple distinct apps running under it each
+     * with their own uid.  If the current thread is not currently executing an
+     * incoming transaction, then its own UserHandle is returned.
+     */
+    static CARAPI_(AutoPtr<IUserHandle>) GetCallingUserHandle();
+
+    /**
      * Restore the identity of the incoming IPC on the current thread
      * back to a previously identity that was returned by {@link
      * #clearCallingIdentity}.
@@ -128,6 +138,9 @@ public:
      * not return until the current process is exiting.
      */
     static CARAPI JoinThreadPool();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     CARAPI_(void) Destroy();

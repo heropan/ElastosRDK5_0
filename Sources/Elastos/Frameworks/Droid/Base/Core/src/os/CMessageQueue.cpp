@@ -5,6 +5,7 @@
 #include "os/NativeMessageQueue.h"
 #include "os/Binder.h"
 #include "os/SystemClock.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -16,6 +17,10 @@ namespace Os {
 
 const String CMessageQueue::TAG("CMessageQueue");
 const Boolean CMessageQueue::DBG = TRUE;
+
+CAR_INTERFACE_IMPL(CMessageQueue, Object, IMessageQueue)
+
+CAR_OBJECT_IMPL(CMessageQueue)
 
 ECode CMessageQueue::DebugMessage(
     /* [in] */ IMessage* msg,
@@ -206,7 +211,8 @@ ECode CMessageQueue::GetNext(
     return NOERROR;
 }
 
-ECode CMessageQueue::Quit()
+ECode CMessageQueue::Quit(
+    /* [in] */ Boolean safe)
 {
     if (!mQuitAllowed) {
         Slogger::W(TAG, "Main thread not allowed to quit.");
@@ -221,9 +227,18 @@ ECode CMessageQueue::Quit()
             return NOERROR;
         }
         mQuiting = TRUE;
+
+        // if (safe) {
+        //     RemoveAllFutureMessagesLocked();
+        // }
+        // else {
+        //     RemoveAllMessagesLocked();
+        // }
+
+        // We can assume mPtr != 0 because mQuitting was previously false.
+        NativeWake();
     }
 
-    NativeWake();
     return NOERROR;
 }
 
@@ -478,6 +493,19 @@ ECode CMessageQueue::RemoveMessages(
         }
         p = next;
     }
+
+    return NOERROR;
+}
+
+ECode CMessageQueue::IsIdling(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoLock lock(mLock);
+    *result = FALSE;
+
+     //return isIdlingLocked();
 
     return NOERROR;
 }

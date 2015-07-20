@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL_2(CMessenger, Object, IMessenger, IParcelable)
+
+CAR_OBJECT_IMPL(CMessenger)
+
 ECode CMessenger::constructor()
 {
     return NOERROR;
@@ -47,6 +51,15 @@ ECode CMessenger::GetIMessenger(
 {
     VALIDATE_NOT_NULL(mgr);
     *mgr = mTarget;
+    REFCOUNT_ADD(*mgr);
+    return NOERROR;
+}
+
+ECode CMessenger::GetBinder(
+    /* [in] */ IBinder** mgr)
+{
+    VALIDATE_NOT_NULL(mgr);
+    *mgr = IBinder::Probe(mTarget);
     REFCOUNT_ADD(*mgr);
     return NOERROR;
 }

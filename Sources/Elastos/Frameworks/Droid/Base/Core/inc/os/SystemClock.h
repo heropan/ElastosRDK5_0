@@ -53,6 +53,35 @@ public:
      * @return elapsed nanoseconds since boot.
      */
     static CARAPI_(Int64) GetElapsedRealtimeNanos();
+
+    /**
+     * Returns milliseconds running in the current thread.
+     *
+     * @return elapsed milliseconds in the thread
+     */
+    static CARAPI_(Int64) GetCurrentThreadTimeMillis();
+
+    /**
+     * Returns microseconds running in the current thread.
+     *
+     * @return elapsed microseconds in the thread
+     *
+     * @hide
+     */
+    static CARAPI_(Int64) GetCurrentThreadTimeMicro();
+
+    /**
+     * Returns current wall time in  microseconds.
+     *
+     * @return elapsed microseconds in wall time
+     *
+     * @hide
+     */
+    static CARAPI_(Int64) GetCurrentTimeMicro();
+
+private:
+    SystemClock();
+    SystemClock(const SystemClock&);
 };
 
 } // namespace Os

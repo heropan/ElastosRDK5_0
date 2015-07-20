@@ -9,6 +9,7 @@
 
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
@@ -22,96 +23,13 @@ namespace Os {
 //===========================================================================
 // Handler::BlockingRunnable
 //===========================================================================
+CAR_INTERFACE_IMPL(Handler::BlockingRunnable, Object, IRunnable)
+
 Handler::BlockingRunnable::BlockingRunnable(
     /* [in] */ IRunnable* task)
     : mTask(task)
     , mDone(FALSE)
 {}
-
-PInterface Handler::BlockingRunnable::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IRunnable*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    else if (riid == EIID_ISynchronize) {
-        return (ISynchronize*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Handler::BlockingRunnable::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Handler::BlockingRunnable::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Handler::BlockingRunnable::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(IRunnable*)this) {
-        *pIID = EIID_IRunnable;
-    }
-    else if (pObject == (IInterface*)(ISynchronize*)this) {
-        *pIID = EIID_ISynchronize;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
-ECode Handler::BlockingRunnable::Lock()
-{
-    return Object::Lock();
-}
-
-ECode Handler::BlockingRunnable::Unlock()
-{
-    return Object::Unlock();
-}
-
-ECode Handler::BlockingRunnable::Notify()
-{
-    return Object::Notify();
-}
-
-ECode Handler::BlockingRunnable::NotifyAll()
-{
-    return Object::NotifyAll();
-}
-
-ECode Handler::BlockingRunnable::Wait()
-{
-    return Object::Wait();
-}
-
-ECode Handler::BlockingRunnable::Wait(
-    /* [in] */ Int64 millis)
-{
-    return Object::Wait(millis);
-}
-
-ECode Handler::BlockingRunnable::Wait(
-    /* [in] */ Int64 millis,
-    /* [in] */ Int32 nanos)
-{
-    return Object::Wait(millis, nanos);
-}
 
 ECode Handler::BlockingRunnable::Run()
 {
@@ -173,17 +91,21 @@ Boolean Handler::BlockingRunnable::PostAndWait(
 //===========================================================================
 // Handler
 //===========================================================================
+CAR_INTERFACE_IMPL(Handler, Object, IHandler)
+
 Handler::Handler()
     : mTakeStrongRefOfCallback(TRUE)
     , mAsynchronous(FALSE)
-{}
+{
+    // sub class must call constructor() implicitly.
+}
 
 Handler::Handler(
     /* [in] */ Boolean async)
     : mTakeStrongRefOfCallback(TRUE)
     , mAsynchronous(async)
 {
-    Init(async);
+    constructor(async);
 }
 
 Handler::Handler(
@@ -193,7 +115,7 @@ Handler::Handler(
     : mTakeStrongRefOfCallback(takeStrongRefOfCallback)
     , mAsynchronous(async)
 {
-    Init(callback, takeStrongRefOfCallback, async);
+    constructor(callback, takeStrongRefOfCallback, async);
 }
 
 Handler::Handler(
@@ -202,7 +124,7 @@ Handler::Handler(
     : mTakeStrongRefOfCallback(TRUE)
     , mAsynchronous(async)
 {
-    Init(looper, async);
+    constructor(looper, async);
 }
 
 Handler::Handler(
@@ -213,7 +135,90 @@ Handler::Handler(
     : mTakeStrongRefOfCallback(takeStrongRefOfCallback)
     , mAsynchronous(async)
 {
-    Init(looper, callback, takeStrongRefOfCallback, async);
+    constructor(looper, callback, takeStrongRefOfCallback, async);
+}
+
+
+ECode Handler::constructor(
+    /* [in] */ Boolean async)
+{
+    return constructor(NULL, TRUE, async);
+}
+
+ECode Handler::constructor(
+    /* [in] */ ILooper* looper,
+    /* [in] */ Boolean async)
+{
+    assert(looper != NULL);
+    mLooper = looper;
+    mLooper->GetQueue((IMessageQueue**)&mQueue);
+    mTakeStrongRefOfCallback = TRUE;
+    mAsynchronous = async;
+    return NOERROR;
+}
+
+ECode Handler::constructor(
+    /* [in] */ IHandlerCallback* callback,
+    /* [in] */ Boolean takeStrongRefOfCallback,
+    /* [in] */ Boolean async)
+{
+    AutoPtr<ILooperHelper> helper;
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
+    helper->GetMyLooper((ILooper**)&mLooper);
+    if (mLooper == NULL) {
+        Logger::E("Handler", "Can't create handler inside thread that has not called Looper.prepare()");
+        assert(0);
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    mLooper->GetQueue((IMessageQueue**)&mQueue);
+    mTakeStrongRefOfCallback = takeStrongRefOfCallback;
+    mAsynchronous = async;
+
+    if (callback) {
+        if (mTakeStrongRefOfCallback) {
+            mCallback = callback;
+        }
+        else {
+            AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)callback->Probe(EIID_IWeakReferenceSource);
+            if (wrs) {
+                wrs->GetWeakReference((IWeakReference**)&mWeakCallback);
+            }
+            else {
+                assert(0 && "IWeakReferenceSource was not impelemented!");
+            }
+        }
+    }
+    return NOERROR;
+}
+
+ECode Handler::constructor(
+    /* [in] */ ILooper* looper,
+    /* [in] */ IHandlerCallback* callback,
+    /* [in] */ Boolean takeStrongRefOfCallback,
+    /* [in] */ Boolean async)
+{
+    assert(looper != NULL);
+    mLooper = looper;
+    mLooper->GetQueue((IMessageQueue**)&mQueue);
+    mTakeStrongRefOfCallback = takeStrongRefOfCallback;
+    mAsynchronous = async;
+
+    if (callback) {
+        if (mTakeStrongRefOfCallback) {
+            mCallback = callback;
+        }
+        else {
+            AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)callback->Probe(EIID_IWeakReferenceSource);
+            if (wrs) {
+                wrs->GetWeakReference((IWeakReference**)&mWeakCallback);
+            }
+            else {
+                assert(0 && "IWeakReferenceSource was not impelemented!");
+            }
+        }
+    }
+    return NOERROR;
 }
 
 ECode Handler::RunWithScissors(
@@ -236,7 +241,7 @@ ECode Handler::RunWithScissors(
     AutoPtr<ILooperHelper> helper;
     CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
     AutoPtr<ILooper> myLooper;
-    helper->MyLooper((ILooper**)&myLooper);
+    helper->GetMyLooper((ILooper**)&myLooper);
     if (myLooper == mLooper) {
         ECode ec = r->Run();
         *result = TRUE;
@@ -246,6 +251,12 @@ ECode Handler::RunWithScissors(
     AutoPtr<BlockingRunnable> br = new BlockingRunnable(r);
     *result = br->PostAndWait(this, timeout);
     return NOERROR;
+}
+
+ECode Handler::ObtainMessage(
+    /* [out] */ IMessage** msg)
+{
+    return ObtainMessage(0);
 }
 
 ECode Handler::ObtainMessage(
@@ -604,14 +615,14 @@ String Handler::GetMessageNameImpl(
     if (callback != NULL) {
         // return message.callback.getClass().getName();
         String name("Runable:0x");
-        name += StringUtils::Int32ToHexString((Int32)callback.Get());
+        name += StringUtils::ToHexString((Int32)callback.Get());
         return name;
     }
 
     Int32 what = 0;
     msg->GetWhat(&what);
     String name("Message:0x");
-    name += StringUtils::Int32ToHexString(what);
+    name += StringUtils::ToHexString(what);
     return name;
 }
 
@@ -656,85 +667,21 @@ ECode Handler::DispatchMessage(
     }
 }
 
-ECode Handler::Init(
-    /* [in] */ Boolean async)
+ECode Handler::GetLooper(
+    /* [out] */ ILooper** looper)
 {
-    return Init(NULL, TRUE, async);
-}
-
-ECode Handler::Init(
-    /* [in] */ ILooper* looper,
-    /* [in] */ Boolean async)
-{
-    assert(looper != NULL);
-    mLooper = looper;
-    mLooper->GetQueue((IMessageQueue**)&mQueue);
-    mTakeStrongRefOfCallback = TRUE;
-    mAsynchronous = async;
+    VALIDATE_NOT_NULL(looper)
+    *looper = mLooper;
+    REFCOUNT_ADD(*looper);
     return NOERROR;
 }
 
-ECode Handler::Init(
-    /* [in] */ IHandlerCallback* callback,
-    /* [in] */ Boolean takeStrongRefOfCallback,
-    /* [in] */ Boolean async)
+ECode Handler::GetMessageQueue(
+    /* [out] */ IMessageQueue** cq)
 {
-    AutoPtr<ILooperHelper> helper;
-    CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
-    helper->MyLooper((ILooper**)&mLooper);
-    if (mLooper == NULL) {
-        Logger::E("Handler", "Can't create handler inside thread that has not called Looper.prepare()");
-        assert(0);
-        return E_RUNTIME_EXCEPTION;
-    }
-
-    mLooper->GetQueue((IMessageQueue**)&mQueue);
-    mTakeStrongRefOfCallback = takeStrongRefOfCallback;
-    mAsynchronous = async;
-
-    if (callback) {
-        if (mTakeStrongRefOfCallback) {
-            mCallback = callback;
-        }
-        else {
-            AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)callback->Probe(EIID_IWeakReferenceSource);
-            if (wrs) {
-                wrs->GetWeakReference((IWeakReference**)&mWeakCallback);
-            }
-            else {
-                assert(0 && "IWeakReferenceSource was not impelemented!");
-            }
-        }
-    }
-    return NOERROR;
-}
-
-ECode Handler::Init(
-    /* [in] */ ILooper* looper,
-    /* [in] */ IHandlerCallback* callback,
-    /* [in] */ Boolean takeStrongRefOfCallback,
-    /* [in] */ Boolean async)
-{
-    assert(looper != NULL);
-    mLooper = looper;
-    mLooper->GetQueue((IMessageQueue**)&mQueue);
-    mTakeStrongRefOfCallback = takeStrongRefOfCallback;
-    mAsynchronous = async;
-
-    if (callback) {
-        if (mTakeStrongRefOfCallback) {
-            mCallback = callback;
-        }
-        else {
-            AutoPtr<IWeakReferenceSource> wrs = (IWeakReferenceSource*)callback->Probe(EIID_IWeakReferenceSource);
-            if (wrs) {
-                wrs->GetWeakReference((IWeakReference**)&mWeakCallback);
-            }
-            else {
-                assert(0 && "IWeakReferenceSource was not impelemented!");
-            }
-        }
-    }
+    VALIDATE_NOT_NULL(cq)
+    *cq = mQueue;
+    REFCOUNT_ADD(*cq)
     return NOERROR;
 }
 

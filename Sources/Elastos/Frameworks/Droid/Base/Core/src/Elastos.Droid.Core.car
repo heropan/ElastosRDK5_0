@@ -4,7 +4,7 @@ module
     importlib("Elastos.CoreLibrary.eco");
 
     merge("../car/Exceptions.car");
-    //merge("../car/fake_interfaces.car");
+    merge("../car/fake_interfaces.car");
     //merge("../car/util.car");
     merge("../car/os.car");
     //merge("../car/animation.car");

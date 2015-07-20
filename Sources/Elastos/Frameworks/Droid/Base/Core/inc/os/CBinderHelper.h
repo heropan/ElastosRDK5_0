@@ -1,15 +1,21 @@
-#ifndef __CBINDERHELPER_H__
-#define __CBINDERHELPER_H__
+#ifndef __ELASTOS_DROID_OS_CBINDERHELPER_H__
+#define __ELASTOS_DROID_OS_CBINDERHELPER_H__
 
-#include "_CBinderHelper.h"
+#include "_Elastos_Droid_Os_CBinderHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CBinderHelper)
+    , public Singleton
+    , public IBinderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * Return the ID of the process that sent you the current transaction
@@ -121,4 +127,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBINDERHELPER_H__
+#endif //__ELASTOS_DROID_OS_CBINDERHELPER_H__
