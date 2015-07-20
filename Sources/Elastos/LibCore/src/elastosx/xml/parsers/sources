@@ -8,11 +8,18 @@ include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../elastos
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/math;
+INCLUDES += $(MAKEDIR)/../../../../inc
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/math
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/datatype
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/namespace
+INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/parsers
+INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax
 
 SOURCES = FilePathToURI.cpp
+SOURCES += DocumentBuilder.cpp
+SOURCES += DocumentBuilderFactory.cpp
+SOURCES += SAXParser.cpp
+SOURCES += SAXParserFactory.cpp

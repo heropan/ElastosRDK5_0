@@ -17,6 +17,8 @@ class DatatypeFactory
     , public IDatatypeFactory
 {
 public:
+    CAR_INTERFACE_DECL()
+
     static CARAPI NewInstance(
         /* [out] */ IDatatypeFactory** factory);
 
