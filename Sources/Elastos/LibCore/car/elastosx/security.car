@@ -14,10 +14,13 @@ module
     merge("security/auth/callback/ICallback.car");
     merge("security/auth/callback/ICallbackHandler.car");
     merge("security/auth/IDestroyable.car");
+    merge("security/auth/IAuthPermission.car");
 
     interface Elastos.Security.IPrincipal;
     interface Elastos.IO.IInputStream;
     interface Elastos.Utility.IMap;
+    interface Elastos.Security.IPermission;
+    interface Elastos.Security.IGuard;
 
     namespace Elastosx {
     namespace Security {
@@ -58,6 +61,18 @@ module
 
     } // namespace X500
 
+    class CAuthPermission {
+        constructor(
+            [in] String name);
+
+        constructor(
+            [in] String name,
+            [in] String actions);
+
+        interface IAuthPermission;
+        interface IPermission;
+        interface IGuard;
+    }
     } // namespace Auth
     } // namespace Security
     } // namespace Elastosx

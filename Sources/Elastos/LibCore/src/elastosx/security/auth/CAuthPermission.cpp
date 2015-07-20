@@ -8,53 +8,53 @@ namespace Elastosx {
 namespace Security {
 namespace Auth {
 
-ECode CAuthPermission::CheckGuard(
-    /* [in] */ IInterface *object)
-{
-    return NOERROR;
-}
+CAR_OBJECT_IMPL(CAuthPermission)
 
-ECode CAuthPermission::GetName(
-    /* [out] */ String *name)
-{
-    VALIDATE_NOT_NULL(name)
-    *name = String();
-    return NOERROR;
-}
-
-ECode CAuthPermission::NewPermissionCollection(
-    /* [out] */ IPermissionCollection **permissions)
-{
-    VALIDATE_NOT_NULL(permissions)
-    *permissions = new AllPermissionCollection();
-    REFCOUNT_ADD(*permissions)
-    return NOERROR;
-}
+#if 0 // TODO: Waiting for BasicPermission
+CAR_INTERFACE_IMPL(CAuthPermission, BasicPermission, IAuthPermission)
+#else
+CAR_INTERFACE_IMPL(CAuthPermission, Object, IAuthPermission)
+#endif
 
 ECode CAuthPermission::GetActions(
     /* [out] */ String *actions)
 {
-    return BasicPermission::GetActions(actions);
+    VALIDATE_NOT_NULL(actions)
+    *actions = String(NULL);
+
+    return NOERROR;
 }
 
 ECode CAuthPermission::Implies(
     /* [in] */ IPermission *permission,
     /* [out] */ Boolean *result)
 {
-    return BasicPermission::Implies(permission, result);
+    VALIDATE_NOT_NULL(result)
+    *result = TRUE;
+    VALIDATE_NOT_NULL(permission)
+
+    return NOERROR;
 }
 
 ECode CAuthPermission::constructor(
     /* [in] */ const String& name)
 {
-    return BasicPermission::Init(String(""));
+#if 0 // TODO: Waiting for BasicPermission
+    return BasicPermission::constructor(String(""));
+#else
+    return NOERROR;
+#endif
 }
 
 ECode CAuthPermission::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& actions)
 {
-    return BasicPermission::Init(String(""), String(""));
+#if 0 // TODO: Waiting for BasicPermission
+    return BasicPermission::constructor(String(""), String(""));
+#else
+    return NOERROR;
+#endif
 }
 
 }

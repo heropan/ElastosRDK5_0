@@ -1,33 +1,44 @@
 
-#ifndef __CAUTHPERMISSION_H__
-#define __CAUTHPERMISSION_H__
+#ifndef __ELASTOSX_SECURITY_AUTH_CAUTHPERMISSION_H__
+#define __ELASTOSX_SECURITY_AUTH_CAUTHPERMISSION_H__
 
-#include "_CAuthPermission.h"
+#include "_Elastosx_Security_Auth_CAuthPermission.h"
+#if 0 // TODO: Waiting for BasicPermission
 #include "BasicPermission.h"
+#else
+#include "Object.h"
+#endif
 
 using Elastos::Security::IPermissionCollection;
 using Elastos::Security::IPermission;
+#if 0 // TODO: Waiting for BasicPermission
 using Elastos::Security::BasicPermission;
+#else
+using Elastos::Core::Object;
+#endif
 
 namespace Elastosx {
 namespace Security {
 namespace Auth {
 
-CarClass(CAuthPermission), public BasicPermission
+CarClass(CAuthPermission)
+#if 0 // TODO: Waiting for BasicPermission
+    , public BasicPermission
+#else
+    , public Object
+#endif
+    , public IAuthPermission
 {
 public:
-    CARAPI CheckGuard(
-        /* [in] */ IInterface *object);
+    CAR_OBJECT_DECL()
 
-    CARAPI GetName(
-        /* [out] */ String *name);
+    CAR_INTERFACE_DECL()
 
-    CARAPI NewPermissionCollection(
-        /* [out] */ IPermissionCollection **permissions);
-
+    // @Override
     CARAPI GetActions(
         /* [out] */ String *actions);
 
+    // @Override
     CARAPI Implies(
         /* [in] */ IPermission *permission,
         /* [out] */ Boolean *result);
@@ -44,4 +55,4 @@ public:
 }
 }
 
-#endif // __CAUTHPERMISSION_H__
+#endif // __ELASTOSX_SECURITY_AUTH_CAUTHPERMISSION_H__
