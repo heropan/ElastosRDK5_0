@@ -12,6 +12,12 @@ module
     namespace Droid {
     namespace Os {
 
+    /**
+     * Involve
+     * interface IBaseBundle
+     * interface ICloneable
+     * interface IParcelable
+     */
     [deprecated, local, parcelable]
     interface IBundle {
 

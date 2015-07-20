@@ -3,15 +3,18 @@
 #include "os/Looper.h"
 #include "os/Binder.h"
 #include "os/SystemClock.h"
-#include <elastos/core/Thread.h>
-#include <elastos/utility/logging/Slogger.h>
 #ifdef DROID_CORE
-#include "os/CMessageQueue.h"
+// #include "os/CMessageQueue.h"
 #endif
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Thread.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::IRunnable;
 using Elastos::Core::Thread;
+using Elastos::Core::StringBuilder;
 
 extern "C" pthread_key_t sLooperKey;
 extern "C" Boolean sLooperKeyInited;
@@ -20,46 +23,18 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(Looper, Object, ILooper)
+
+const String Looper::TAG("Looper");
 AutoPtr<ILooper> Looper::sMainLooper;
-Mutex Looper::sClassLock;
+Object Looper::sClassLock;
 
 Looper::Looper(
     /* [in] */ Boolean quitAllowed)
 {
-    CMessageQueue::New(quitAllowed, (IMessageQueue**)&mQueue);
-    mRun = TRUE;
-    mThread = Thread::GetCurrentThread();
-}
-
-PInterface Looper::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ILooper*)this;
-    }
-    else if (riid == EIID_ILooper) {
-        return (ILooper*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Looper::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Looper::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Looper::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
     assert(0);
-    return E_NOT_IMPLEMENTED;
+    // CMessageQueue::New(quitAllowed, (IMessageQueue**)&mQueue);
+    mThread = Thread::GetCurrentThread();
 }
 
 static void LooperDestructor(void* st)
@@ -88,7 +63,7 @@ ECode Looper::Prepare(
 {
     InitTLS();
     if (pthread_getspecific(sLooperKey) != NULL) {
-        // throw new RuntimeException("Only one Looper may be created per thread");
+        Slogger::E(TAG, "Only one Looper may be created per thread");
         return E_RUNTIME_EXCEPTION;
     }
 
@@ -100,15 +75,15 @@ ECode Looper::Prepare(
 
 ECode Looper::PrepareMainLooper()
 {
-    FAIL_RETURN(Prepare(FALSE));
+    FAIL_RETURN(Prepare(FALSE))
+
     {
         AutoLock lock(sClassLock);
-
         if (sMainLooper != NULL) {
-            // throw new IllegalStateException("The main Looper has already been prepared.");
+            Slogger::E(TAG, "The main Looper has already been prepared.");
             return E_ILLEGAL_STATE_EXCEPTION;
         }
-        sMainLooper = MyLooper();
+        sMainLooper = GetMyLooper();
     }
     return NOERROR;
 }
@@ -122,9 +97,9 @@ AutoPtr<ILooper> Looper::GetMainLooper()
 
 ECode Looper::Loop()
 {
-    AutoPtr<Looper> me = (Looper*)MyLooper().Get();
+    AutoPtr<Looper> me = (Looper*)GetMyLooper().Get();
     if (me == NULL) {
-        Slogger::E("Looper", "No Looper; Looper.prepare() wasn't called on this thread.");
+        Slogger::E(TAG, "No Looper; Looper.prepare() wasn't called on this thread.");
         return E_RUNTIME_EXCEPTION;
     }
 
@@ -182,29 +157,46 @@ ECode Looper::Loop()
     }
 }
 
-AutoPtr<ILooper> Looper::MyLooper()
+AutoPtr<ILooper> Looper::GetMyLooper()
 {
     AutoPtr<ILooper> l = (Looper*)pthread_getspecific(sLooperKey);
     return l;
 }
 
-ECode Looper::SetCallbackLogging(
+ECode Looper::SetMessageLogging(
     /* [in] */ IPrinter* printer)
 {
     mLogging = printer;
     return NOERROR;
 }
 
-AutoPtr<IMessageQueue> Looper::MyQueue()
+AutoPtr<IMessageQueue> Looper::GetMyQueue()
 {
-    AutoPtr<ILooper> looper = MyLooper();
+    AutoPtr<ILooper> looper = GetMyLooper();
     return ((Looper*)looper.Get())->mQueue;
+}
+
+Boolean Looper::IsCurrentThread()
+{
+    return Thread::GetCurrentThread() == mThread;
+}
+
+ECode Looper::IsCurrentThread(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = Thread::GetCurrentThread() == mThread;
+    return NOERROR;
 }
 
 ECode Looper::Quit()
 {
-    mQueue->Quit();
-    return NOERROR;
+    return mQueue->Quit(FALSE);
+}
+
+ECode Looper::QuitSafely()
+{
+    return mQueue->Quit(TRUE);
 }
 
 ECode Looper::PostSyncBarrier(
@@ -230,9 +222,27 @@ ECode Looper::GetThread(
     return NOERROR;
 }
 
+AutoPtr<IThread> Looper::GetThread()
+{
+    return mThread;
+}
+
 AutoPtr<IMessageQueue> Looper::GetQueue()
 {
     return mQueue;
+}
+
+Boolean Looper::IsIdling()
+{
+    Boolean bval;
+    mQueue->IsIdling(&bval);
+    return bval;
+}
+
+ECode Looper::IsIdling(
+    /* [out] */ Boolean* result)
+{
+    return mQueue->IsIdling(result);
 }
 
 ECode Looper::GetQueue(
@@ -241,6 +251,23 @@ ECode Looper::GetQueue(
     VALIDATE_NOT_NULL(queue);
     *queue = mQueue;
     REFCOUNT_ADD(*queue);
+    return NOERROR;
+}
+
+ECode Looper::ToString(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    String name;
+    mThread->GetName(&name);
+    Int64 id;
+    mThread->GetId(&id);
+
+    StringBuilder sb("Looper (");
+    sb.Append(name);
+    sb.Append(id);
+    sb.Append(")");
     return NOERROR;
 }
 

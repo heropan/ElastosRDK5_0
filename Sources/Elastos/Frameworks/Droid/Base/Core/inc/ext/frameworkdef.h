@@ -1,5 +1,5 @@
-#ifndef __DROIDFRAMEWORKDEF_H__
-#define __DROIDFRAMEWORKDEF_H__
+#ifndef __ELASTOS_DROID_FRAMEWORKDEF_H__
+#define __ELASTOS_DROID_FRAMEWORKDEF_H__
 
 #ifndef __ELASTOS_CORE_DEF_H__
 #include <elastos/coredef.h>
@@ -44,4 +44,4 @@
 #endif
 
 
-#endif //__DROIDFRAMEWORKDEF_H__
+#endif //__ELASTOS_DROID_FRAMEWORKDEF_H__

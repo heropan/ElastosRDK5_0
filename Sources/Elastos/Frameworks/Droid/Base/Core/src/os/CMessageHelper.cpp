@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CMessageHelper, Singleton, IMessageHelper)
+
+CAR_SINGLETON_IMPL(CMessageHelper)
+
 ECode CMessageHelper::Obtain(
     /* [out] */ IMessage** msg)
 {

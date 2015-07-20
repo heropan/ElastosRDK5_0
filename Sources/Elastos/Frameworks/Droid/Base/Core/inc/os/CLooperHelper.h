@@ -1,22 +1,31 @@
 
-#ifndef __CLOOPERHELPER_H__
-#define __CLOOPERHELPER_H__
+#ifndef __ELASTOS_DROID_OS_CLOOPERHELPER_H__
+#define __ELASTOS_DROID_OS_CLOOPERHELPER_H__
 
-#include "_CLooperHelper.h"
+#include "_Elastos_Droid_Os_CLooperHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CLooperHelper)
+    , public Singleton
+    , public ILooperHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Prepare();
 
-    CARAPI MyLooper(
+    CARAPI PrepareMainLooper();
+
+    CARAPI GetMyLooper(
         /* [out] */ ILooper** looper);
 
-    CARAPI MyQueue(
+    CARAPI GetMyQueue(
         /* [out] */ IMessageQueue** queue);
 
     CARAPI GetMainLooper(
@@ -29,4 +38,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CLOOPERHELPER_H__
+#endif //__ELASTOS_DROID_OS_CLOOPERHELPER_H__

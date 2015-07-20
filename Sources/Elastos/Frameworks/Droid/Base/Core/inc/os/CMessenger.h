@@ -1,8 +1,9 @@
 
-#ifndef __CMESSENGER_H__
-#define __CMESSENGER_H__
+#ifndef __ELASTOS_DROID_OS_CMESSENGER_H__
+#define __ELASTOS_DROID_OS_CMESSENGER_H__
 
-#include "_CMessenger.h"
+#include "_Elastos_Droid_Os_CMessenger.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IIMessenger;
 
@@ -11,8 +12,15 @@ namespace Droid {
 namespace Os {
 
 CarClass(CMessenger)
+    , public Object
+    , public IMessenger
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -29,6 +37,9 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
+
+    CARAPI GetBinder(
+        /* [out] */ IBinder** mgr);
 
     CARAPI GetIMessenger(
         /* [out] */ IIMessenger** mgr);
@@ -52,4 +63,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMESSENGER_H__
+#endif //__ELASTOS_DROID_OS_CMESSENGER_H__

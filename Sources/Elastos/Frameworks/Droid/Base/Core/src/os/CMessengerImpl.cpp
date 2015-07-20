@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CMessengerImpl, Object, IIMessenger)
+
+CAR_OBJECT_IMPL(CMessengerImpl)
+
 ECode CMessengerImpl::constructor(
     /* [in] */ IHandler* handler)
 {

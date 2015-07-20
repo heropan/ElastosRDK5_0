@@ -7,6 +7,7 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include <pthread.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IThread;
 using Elastos::Droid::Utility::IPrinter;
@@ -17,20 +18,11 @@ namespace Droid {
 namespace Os {
 
 class Looper
-    : public ElRefBase
+    : public Object
     , public ILooper
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* pObject,
-        /* [in] */ InterfaceID* pIID);
+    CAR_INTERFACE_DECL()
 
     /** Initialize the current thread as a looper.
       * This gives you a chance to create handlers that then reference
@@ -62,7 +54,7 @@ public:
      * Return the Looper object associated with the current thread.  Returns
      * null if the calling thread is not associated with a Looper.
      */
-    static CARAPI_(AutoPtr<ILooper>) MyLooper();
+    static CARAPI_(AutoPtr<ILooper>) GetMyLooper();
 
     /**
      * Control logging of messages as they are processed by this Looper.  If
@@ -73,7 +65,7 @@ public:
      * @param printer A Printer object that will receive log messages, or
      * null to disable message logging.
      */
-    CARAPI SetCallbackLogging(
+    CARAPI SetMessageLogging(
         /* [in] */ IPrinter* printer);
 
     /**
@@ -81,14 +73,44 @@ public:
      * thread.  This must be called from a thread running a Looper, or a
      * NullPointerException will be thrown.
      */
-    static CARAPI_(AutoPtr<IMessageQueue>) MyQueue();
+    static CARAPI_(AutoPtr<IMessageQueue>) GetMyQueue();
+
+    CARAPI_(Boolean) IsCurrentThread();
+
+    CARAPI IsCurrentThread(
+        /* [out] */ Boolean* result);
 
     /**
      * Quits the looper.
+     * <p>
+     * Causes the {@link #loop} method to terminate without processing any
+     * more messages in the message queue.
+     * </p><p>
+     * Any attempt to post messages to the queue after the looper is asked to quit will fail.
+     * For example, the {@link Handler#sendMessage(Message)} method will return false.
+     * </p><p class="note">
+     * Using this method may be unsafe because some messages may not be delivered
+     * before the looper terminates.  Consider using {@link #quitSafely} instead to ensure
+     * that all pending work is completed in an orderly manner.
+     * </p>
      *
-     * Causes the {@link #loop} method to terminate as soon as possible.
+     * @see #quitSafely
      */
     CARAPI Quit();
+
+    /**
+     * Quits the looper safely.
+     * <p>
+     * Causes the {@link #loop} method to terminate as soon as all remaining messages
+     * in the message queue that are already due to be delivered have been handled.
+     * However pending delayed messages with due times in the future will not be
+     * delivered before the loop terminates.
+     * </p><p>
+     * Any attempt to post messages to the queue after the looper is asked to quit will fail.
+     * For example, the {@link Handler#sendMessage(Message)} method will return false.
+     * </p>
+     */
+    CARAPI QuitSafely();
 
     /**
      * Posts a synchronization barrier to the Looper's message queue.
@@ -135,11 +157,27 @@ public:
     CARAPI GetThread(
         /* [out] */ IThread** thread);
 
+    CARAPI_(AutoPtr<IThread>) GetThread();
+
     /** @hide */
     CARAPI_(AutoPtr<IMessageQueue>) GetQueue();
 
     CARAPI GetQueue(
         /* [out] */ IMessageQueue** queue);
+
+    /**
+     * Return whether this looper's thread is currently idle, waiting for new work
+     * to do.  This is intrinsically racy, since its state can change before you get
+     * the result back.
+     * @hide
+     */
+    CARAPI_(Boolean) IsIdling();
+
+    CARAPI IsIdling(
+    /* [out] */ Boolean* result);
+
+    CARAPI ToString(
+        /* [out] */ String* string);
 
 private:
     Looper(
@@ -153,9 +191,10 @@ private:
 public:
     AutoPtr<IMessageQueue> mQueue;
     AutoPtr<IThread> mThread;
-    Boolean mRun;
 
 private:
+    static const String TAG;
+
     static AutoPtr<ILooper> sMainLooper;  // guarded by Looper.class
 
     AutoPtr<IPrinter> mLogging;

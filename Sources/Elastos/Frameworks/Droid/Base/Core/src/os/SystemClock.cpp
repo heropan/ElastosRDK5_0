@@ -36,47 +36,83 @@ void SystemClock::Sleep(
     }
 }
 
-/**
- * Sets the current wall time, in milliseconds.  Requires the calling
- * process to have appropriate permissions.
- *
- * @return if the clock was successfully set to the specified time.
- */
 Boolean SystemClock::SetCurrentTimeMillis(Int64 millis)
 {
+    assert(0);
+    // TODO
+    // IBinder b = ServiceManager.getService(Context.ALARM_SERVICE);
+    // IAlarmManager mgr = IAlarmManager.Stub.asInterface(b);
+    // if (mgr == null) {
+    //     return false;
+    // }
+
+    // try {
+    //     return mgr.setTime(millis);
+    // } catch (RemoteException e) {
+    //     Slog.e(TAG, "Unable to set RTC", e);
+    // } catch (SecurityException e) {
+    //     Slog.e(TAG, "Unable to set RTC", e);
+    // }
+
+    // return false;
+
     return (android::setCurrentTimeMillis(millis) == 0);
 }
 
-/**
- * Returns milliseconds since boot, not counting time spent in deep sleep.
- * <b>Note:</b> This value may get reset occasionally (before it would
- * otherwise wrap around).
- *
- * @return milliseconds of non-sleep uptime since boot.
- */
+
 Int64 SystemClock::GetUptimeMillis()
 {
     return (Int64)android::uptimeMillis();
 }
 
-/**
- * Returns milliseconds since boot, including time spent in sleep.
- *
- * @return elapsed milliseconds since boot.
- */
 Int64 SystemClock::GetElapsedRealtime()
 {
     return (Int64)android::elapsedRealtime();
 }
 
-/**
- * Returns nanoseconds since boot, including time spent in sleep.
- *
- * @return elapsed nanoseconds since boot.
- */
 Int64 SystemClock::GetElapsedRealtimeNanos()
 {
     return (Int64)android::elapsedRealtimeNano();
+}
+
+Int64 SystemClock::GetCurrentThreadTimeMillis()
+{
+#if defined(HAVE_POSIX_CLOCKS)
+    struct timespec tm;
+
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tm);
+
+    return tm.tv_sec * 1000LL + tm.tv_nsec / 1000000;
+#else
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000LL + tv.tv_usec / 1000;
+#endif
+}
+
+Int64 SystemClock::GetCurrentThreadTimeMicro()
+{
+#if defined(HAVE_POSIX_CLOCKS)
+    struct timespec tm;
+
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &tm);
+
+    return tm.tv_sec * 1000000LL + tm.tv_nsec / 1000;
+#else
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_nsec / 1000;
+#endif
+}
+
+Int64 SystemClock::GetCurrentTimeMicro()
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000LL + tv.tv_usec;
 }
 
 } // namespace Os

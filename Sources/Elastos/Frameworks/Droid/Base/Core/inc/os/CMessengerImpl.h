@@ -1,16 +1,23 @@
 
-#ifndef __CMESSENGERIMPL_H__
-#define __CMESSENGERIMPL_H__
+#ifndef __ELASTOS_DROID_OS_CMESSENGERIMPL_H__
+#define __ELASTOS_DROID_OS_CMESSENGERIMPL_H__
 
-#include "_CMessengerImpl.h"
+#include "_Elastos_Droid_Os_CMessengerImpl.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CMessengerImpl)
+    , public Object
+    , public IIMessenger
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IHandler* handler);
 
@@ -25,4 +32,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMESSENGERIMPL_H__
+#endif //__ELASTOS_DROID_OS_CMESSENGERIMPL_H__

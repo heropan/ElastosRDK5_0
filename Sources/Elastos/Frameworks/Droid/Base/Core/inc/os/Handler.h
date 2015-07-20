@@ -2,11 +2,9 @@
 #define __ELASTOS_DROID_OS_HANDLER_H__
 
 #include <ext/frameworkext.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::ISynchronize;
-using Elastos::Core::Object;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessageQueue;
@@ -18,45 +16,19 @@ namespace Droid {
 namespace Os {
 
 class Handler
+    : public Object
+    , public IHandler
 {
 private:
     class BlockingRunnable
-        : public ElRefBase
-        , public Object
+        : public Object
         , public IRunnable
-        , public ISynchronize
     {
     public:
+        CAR_INTERFACE_DECL()
+
         BlockingRunnable(
             /* [in] */ IRunnable* task);
-
-        CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI Lock();
-
-        CARAPI Unlock();
-
-        CARAPI Notify();
-
-        CARAPI NotifyAll();
-
-        CARAPI Wait();
-
-        CARAPI Wait(
-            /* [in] */ Int64 millis);
-
-        CARAPI Wait(
-            /* [in] */ Int64 millis,
-            /* [in] */ Int32 nanos);
 
         CARAPI Run();
 
@@ -70,6 +42,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     Handler();
 
     Handler(
@@ -90,13 +64,13 @@ public:
         /* [in] */ Boolean takeStrongRefOfCallback,
         /* [in] */ Boolean async = FALSE);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
     CARAPI RunWithScissors(
         /* [in] */ IRunnable* r,
         /* [in] */ Int64 timeout,
         /* [out] */ Boolean* result);
+
+    CARAPI ObtainMessage(
+        /* [out] */ IMessage** msg);
 
     CARAPI ObtainMessage(
         /* [in] */ Int32 what,
@@ -248,20 +222,25 @@ public:
     virtual CARAPI HandleMessage(
         /* [in] */ IMessage* msg);
 
-protected:
-    CARAPI Init(
+    CARAPI GetLooper(
+        /* [out] */ ILooper** looper);
+
+    CARAPI GetMessageQueue(
+        /* [out] */ IMessageQueue** cq);
+
+    CARAPI constructor(
         /* [in] */ Boolean async = FALSE);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IHandlerCallback* callback,
         /* [in] */ Boolean takeStrongRefOfCallback,
         /* [in] */ Boolean async = FALSE);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ILooper* looper,
         /* [in] */ Boolean async = FALSE);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ILooper* looper,
         /* [in] */ IHandlerCallback* callback,
         /* [in] */ Boolean takeStrongRefOfCallback,
