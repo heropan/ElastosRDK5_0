@@ -163,6 +163,7 @@ module
     merge("utility/concurrent/ITimeUnit.car");
     merge("utility/concurrent/IArrayBlockingQueue.car");
     merge("utility/concurrent/IBlockingDeque.car");
+    merge("utility/concurrent/IPriorityBlockingQueue.car");
     merge("utility/concurrent/IConcurrentLinkedQueue.car");
     merge("utility/concurrent/ICopyOnWriteArrayList.car");
     merge("utility/concurrent/ICyclicBarrier.car");
@@ -2187,6 +2188,101 @@ module
         interface IConcurrentHashMap;
         interface IConcurrentMap;
         interface IMap;
+        interface ISerializable;
+    }
+
+    class CCyclicBarrier {
+        /**
+         * Creates a new {@code CyclicBarrier} that will trip when the
+         * given number of parties (threads) are waiting upon it, and which
+         * will execute the given barrier action when the barrier is tripped,
+         * performed by the last thread entering the barrier.
+         *
+         * @param parties the number of threads that must invoke {@link #await}
+         *        before the barrier is tripped
+         * @param barrierAction the command to execute when the barrier is
+         *        tripped, or {@code null} if there is no action
+         * @throws IllegalArgumentException if {@code parties} is less than 1
+         */
+        constructor(
+            [in] Int32 parties,
+            [in] IRunnable* barrierAction);
+
+        /**
+         * Creates a new {@code CyclicBarrier} that will trip when the
+         * given number of parties (threads) are waiting upon it, and
+         * does not perform a predefined action when the barrier is tripped.
+         *
+         * @param parties the number of threads that must invoke {@link #await}
+         *        before the barrier is tripped
+         * @throws IllegalArgumentException if {@code parties} is less than 1
+         */
+        constructor(
+            [in] Int32 parties);
+
+        interface ICyclicBarrier;
+    }
+
+    class CPriorityBlockingQueue {
+        /**
+         * Creates a {@code PriorityBlockingQueue} with the default
+         * initial capacity (11) that orders its elements according to
+         * their {@linkplain Comparable natural ordering}.
+         */
+        constructor();
+
+        /**
+         * Creates a {@code PriorityBlockingQueue} with the specified
+         * initial capacity that orders its elements according to their
+         * {@linkplain Comparable natural ordering}.
+         *
+         * @param initialCapacity the initial capacity for this priority queue
+         * @throws IllegalArgumentException if {@code initialCapacity} is less
+         *         than 1
+         */
+        constructor(
+            [in] Int32 initialCapacity);
+
+        /**
+         * Creates a {@code PriorityBlockingQueue} with the specified initial
+         * capacity that orders its elements according to the specified
+         * comparator.
+         *
+         * @param initialCapacity the initial capacity for this priority queue
+         * @param  comparator the comparator that will be used to order this
+         *         priority queue.  If {@code null}, the {@linkplain Comparable
+         *         natural ordering} of the elements will be used.
+         * @throws IllegalArgumentException if {@code initialCapacity} is less
+         *         than 1
+         */
+        constructor(
+            [in] Int32 initialCapacity,
+            [in] IComparator* comparator);
+
+        /**
+         * Creates a {@code PriorityBlockingQueue} containing the elements
+         * in the specified collection.  If the specified collection is a
+         * {@link SortedSet} or a {@link PriorityQueue},  this
+         * priority queue will be ordered according to the same ordering.
+         * Otherwise, this priority queue will be ordered according to the
+         * {@linkplain Comparable natural ordering} of its elements.
+         *
+         * @param  c the collection whose elements are to be placed
+         *         into this priority queue
+         * @throws ClassCastException if elements of the specified collection
+         *         cannot be compared to one another according to the priority
+         *         queue's ordering
+         * @throws NullPointerException if the specified collection or any
+         *         of its elements are null
+         */
+        constructor(
+            [in] ICollection* c);
+
+        interface IPriorityBlockingQueue;
+        interface IBlockingQueue;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
         interface ISerializable;
     }
 
