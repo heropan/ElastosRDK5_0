@@ -8,11 +8,13 @@ INCLUDES += ../../../elastos
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/dom
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/sax
+INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/stream
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io
 
-VPATH := $(MAKEDIR)/dom:$(MAKEDIR)/sax
+VPATH := $(MAKEDIR)/dom:$(MAKEDIR)/sax:$(MAKEDIR)/stream
 
 #transform
 SOURCES += TransformerFactory.cpp
@@ -25,3 +27,8 @@ SOURCES += CDOMSource.cpp
 #transform/sax
 SOURCES += CSAXResult.cpp
 SOURCES += CSAXSource.cpp
+
+#transform/stream
+SOURCES += FilePathToURI.cpp
+SOURCES += CStreamSource.cpp
+SOURCES += CStreamResult.cpp
