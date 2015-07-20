@@ -32,9 +32,30 @@ module
     merge("crypto/spec/IRC5ParameterSpec.car");
     merge("crypto/spec/ISecretKeySpec.car");
 
-//    namespace Elastosx {
-//    namespace Crypto {
+    using interface Elastos.Security.IProvider;
 
-//    } // namespace Xml
-//    } // namespace Elastosx
+   namespace Elastosx {
+   namespace Crypto {
+
+    [deprecated]
+    class CCipher {                        // 声明 CAR 类
+        constructor(
+            [in] ICipherSpi* cipherSpi,
+            [in] IProvider* provider,
+            [in] String transformation);
+
+        constructor(
+            [in] String transformation,
+            [in] ArrayOf<String> * transformParts,
+            [in] IProvider* provider);
+
+        interface ICipher;              // 接口声明
+    }
+
+    singleton class CCipherHelper {     // 声明单例 CAR 类
+        interface ICipherHelper;        // 接口声明
+    }
+
+   } // namespace Crypto
+   } // namespace Elastosx
 }

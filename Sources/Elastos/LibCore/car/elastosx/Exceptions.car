@@ -17,4 +17,5 @@ module
     const E_SHORT_BUFFER_EXCEPTION                                  = 0xB0060000;
     const E_DATATYPE_CONFIGURATION_EXCEPTION                        = 0xB0070000;
     const E_FACTORY_CONFIGURATION_EXCEPTION                         = 0xB0080000;
+    const E_INVALID_TRANSFORMATION                                  = 0xB0090000;
 }

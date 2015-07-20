@@ -6,12 +6,20 @@ module
     interface Elastos.Security.IKey;
     interface Elastos.Security.IProvider;
     interface Elastos.Security.ISecureRandom;
+    interface Elastos.Security.ISecurity;
     interface Elastos.Security.Cert.ICertificate;
     interface Elastos.Security.Spec.IAlgorithmParameterSpec;
     interface Elastosx.Crypto.IExemptionMechanism;
 
     namespace Elastosx {
     namespace Crypto {
+
+    enum NeedToSet {
+        NeedToSet_NONE,
+        NeedToSet_MODE,
+        NeedToSet_PADDING,
+        NeedToSet_BOTH
+    }
 
     /**
      * This class provides access to implementations of cryptographic ciphers for
@@ -114,6 +122,7 @@ module
          *             if this cipher instance is in an invalid state.
          */
         GetOutputSize(
+            [in] Int32 inputLen,
             [out] Int32 * value);
 
         /**

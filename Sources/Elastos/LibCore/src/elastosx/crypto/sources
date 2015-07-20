@@ -1,0 +1,17 @@
+TARGET_NAME= crypto
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../sources.inc
+
+INCLUDES += ../../elastos
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
+INCLUDES += $(MAKEDIR)/../../../inc/elastosx/crypto
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/crypto
+INCLUDES += $(MAKEDIR)/../../../inc/src/elastos
+INCLUDES += $(MAKEDIR)/../../../../LibCore/inc/elastos/core/
+#INCLUDES += $(MAKEDIR)/../../../inc/Org/Apache/Harmony/Security/Fortress
+
+SOURCES =  CCipher.cpp
+SOURCES += CCipherHelper.cpp

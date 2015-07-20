@@ -330,6 +330,49 @@ module
             [out] Int32* number);
 
         /**
+         * Continues a multi-part transformation (encryption or decryption) with
+         * Authenticated Additional Data (AAD). AAD may only be added after the
+         * {@code Cipher} is initialized and before any data is passed to the
+         * instance.
+         * <p>
+         * This is only usable with cipher modes that support Authenticated
+         * Encryption with Additional Data (AEAD) such as Galois/Counter Mode (GCM).
+         *
+         * @param input bytes of AAD to use with the cipher
+         * @param inputOffset offset within bytes of additional data to add to cipher
+         * @param inputLen length of bytes of additional data to add to cipher
+         * @throws IllegalStateException
+         *             if this cipher instance is not initialized for encryption or
+         *             decryption.
+         * @throws IllegalArgumentException
+         *             if {@code input} is {@code null}, or if {@code inputOffset} and
+         *             {@code inputLen} do not specify a valid chunk in the input
+         *             buffer.
+         * @throws UnsupportedOperationException if the cipher does not support AEAD
+         * @since 1.7
+         */
+        EngineUpdateAAD(
+            [in] ArrayOf<Byte> * input,
+            [in] Int32 inputOffset,
+            [in] Int32 inputLen);
+
+        /**
+         * Continues a multi-part transformation (encryption or decryption). The
+         * {@code input.remaining()} bytes starting at {@code input.position()} are
+         * used for the Additional Authenticated Data (AAD). AAD may only be added
+         * after the {@code Cipher} is initialized and before any data is passed to
+         * the instance.
+         * <p>
+         * This is only usable with cipher modes that support Authenticated
+         * Encryption with Additional Data (AEAD) such as Galois/Counter Mode (GCM).
+         *
+         * @param input the input buffer to transform.
+         * @since 1.7
+         */
+        EngineUpdateAAD(
+            [in] IByteBuffer* input);
+
+        /**
          * Finishes a multi-part transformation (encryption or decryption).
          * <p>
          * Processes the {@code inputLen} bytes in {@code input} buffer at {@code
