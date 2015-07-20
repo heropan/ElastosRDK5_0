@@ -33,7 +33,7 @@ CPppoeMonitor::MyMonitorThread::MyMonitorThread(
     /* [in] */ CPppoeMonitor* owner)
     : mOwner(owner)
 {
-    Thread::Init(String("CPppoeMonitor"));
+    Thread::constructor(String("CPppoeMonitor"));
 }
 
 ECode CPppoeMonitor::MyMonitorThread::Run()

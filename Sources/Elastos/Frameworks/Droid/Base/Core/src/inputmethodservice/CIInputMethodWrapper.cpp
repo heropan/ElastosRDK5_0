@@ -241,7 +241,7 @@ ECode CIInputMethodWrapper::AttachToken(
     /* [in] */ IBinder* token)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_ATTACH_TOKEN, token, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_ATTACH_TOKEN, token, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -255,7 +255,7 @@ ECode CIInputMethodWrapper::BindInput(
     FAIL_RETURN(CInputBinding::New(ic, binding, (IInputBinding**)&nu));
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_SET_INPUT_CONTEXT, nu, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_SET_INPUT_CONTEXT, nu, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -271,7 +271,7 @@ ECode CIInputMethodWrapper::StartInput(
     /* [in] */ IEditorInfo* attribute)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageOO(DO_START_INPUT, inputContext, attribute, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_START_INPUT, inputContext, attribute, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -280,7 +280,7 @@ ECode CIInputMethodWrapper::RestartInput(
     /* [in] */ IEditorInfo* attribute)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageOO(DO_RESTART_INPUT, inputContext, attribute, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_RESTART_INPUT, inputContext, attribute, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -288,7 +288,7 @@ ECode CIInputMethodWrapper::CreateSession(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_CREATE_SESSION, callback, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_CREATE_SESSION, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -301,7 +301,7 @@ ECode CIInputMethodWrapper::SetSessionEnabled(
             session)->GetInternalInputMethodSession();
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIO(DO_SET_SESSION_ENABLED, enabled ? 1 : 0, ls, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_SET_SESSION_ENABLED, enabled ? 1 : 0, ls, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -313,7 +313,7 @@ ECode CIInputMethodWrapper::RevokeSession(
             session)->GetInternalInputMethodSession();
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_REVOKE_SESSION, ls, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_REVOKE_SESSION, ls, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -322,7 +322,7 @@ ECode CIInputMethodWrapper::ShowSoftInput(
     /* [in] */ IResultReceiver* resultReceiver)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIO(DO_SHOW_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_SHOW_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -331,7 +331,7 @@ ECode CIInputMethodWrapper::HideSoftInput(
     /* [in] */ IResultReceiver* resultReceiver)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIO(DO_HIDE_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_HIDE_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -339,7 +339,7 @@ ECode CIInputMethodWrapper::ChangeInputMethodSubtype(
     /* [in] */ IInputMethodSubtype* subtype)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_CHANGE_INPUTMETHOD_SUBTYPE, subtype, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_CHANGE_INPUTMETHOD_SUBTYPE, subtype, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 

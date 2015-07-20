@@ -140,14 +140,14 @@ ECode CellInfo::ToString(
     StringBuilder sb;
     String timeStampType;
 
-    sb.AppendCStr(" mRegistered=");
-    sb.AppendCStr(mRegistered ? "YES" : "NO");
+    sb.Append(" mRegistered=");
+    sb.Append(mRegistered ? "YES" : "NO");
     timeStampType = TimeStampTypeToString(mTimeStampType);
-    sb.AppendCStr(" mTimeStampType=");
-    sb.AppendString(timeStampType);
-    sb.AppendCStr(" mTimeStamp=");
-    sb.AppendInt64(mTimeStamp);
-    sb.AppendCStr("ns");
+    sb.Append(" mTimeStampType=");
+    sb.Append(timeStampType);
+    sb.Append(" mTimeStamp=");
+    sb.Append(mTimeStamp);
+    sb.Append("ns");
     *str = sb.ToString();
     return NOERROR;
 }

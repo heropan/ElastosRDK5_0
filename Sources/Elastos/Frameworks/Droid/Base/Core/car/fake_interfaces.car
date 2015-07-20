@@ -23,11 +23,26 @@ module
         interface IBundle {
         }
 
-        interface IUserHandle {
-
+        interface IPersistableBundle {
         }
+
+        interface IUserHandle {
+        }
+
 
     }}} // Elastos.Droid.Os
 
+
+    //
+    // Elastos.Droid.Content
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+
+        interface IContext {
+        }
+
+    }}} // Elastos.Droid.Content
 
 }

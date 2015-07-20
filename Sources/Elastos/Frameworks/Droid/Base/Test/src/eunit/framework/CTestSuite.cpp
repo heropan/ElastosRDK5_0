@@ -45,8 +45,8 @@ AutoPtr<ITest> CTestSuite::CreateTest(
         StringBuilder sb("Class ");
         StringBuf_<512> nameBuf;
         theClass->GetName(&nameBuf);
-        sb.AppendCStr((const char*)nameBuf);
-        sb.AppendCStr(" has no public constructor TestCase(String name) or TestCase()");
+        sb.Append((const char*)nameBuf);
+        sb.Append(" has no public constructor TestCase(String name) or TestCase()");
         return Warning(sb.ToString());
     }
     // } catch (NoSuchMethodException e) {
@@ -60,7 +60,7 @@ AutoPtr<ITest> CTestSuite::CreateTest(
         ECode ec = constructor->CreateObject(NULL, (IInterface**)&test);
         if (FAILED(ec)) {
             StringBuilder sb("Cannot instantiate test case: ");
-            sb.AppendString(name);
+            sb.Append(name);
             return Warning(sb.ToString());
         }
         if (ITestCase::Probe(test) != NULL) {
@@ -74,7 +74,7 @@ AutoPtr<ITest> CTestSuite::CreateTest(
         ECode ec = constructor->CreateObject(args, (IInterface**)&test);
         if (FAILED(ec)) {
             StringBuilder sb("Cannot instantiate test case: ");
-            sb.AppendString(name);
+            sb.Append(name);
             return Warning(sb.ToString());
         }
     }
@@ -176,8 +176,8 @@ void CTestSuite::AddTestsFromTestCase(
     ECode ec = GetTestConstructor(theClass, (IConstructorInfo**)&constructor); // Avoid generating multiple error messages
     if (FAILED(ec)) {
         StringBuilder sb("Class ");
-        sb.AppendString(mName);
-        sb.AppendCStr(" has no public constructor TestCase(String name) or TestCase()");
+        sb.Append(mName);
+        sb.Append(" has no public constructor TestCase(String name) or TestCase()");
         AutoPtr<ITest> test = Warning(sb.ToString());
         AddTest(test);
         return;

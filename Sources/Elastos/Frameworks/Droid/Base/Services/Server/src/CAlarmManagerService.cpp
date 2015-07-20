@@ -229,7 +229,7 @@ CAlarmManagerService::AlarmThread::AlarmThread(
     /* [in] */ CAlarmManagerService* host)
     : mHost(host)
 {
-    Thread::Init(String("AlarmManager"));
+    Thread::constructor(String("AlarmManager"));
 }
 
 ECode CAlarmManagerService::AlarmThread::Run()

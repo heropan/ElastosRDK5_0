@@ -17,20 +17,20 @@ String BackupRecord::ToString()
         return mStringName;
     }
     StringBuilder sb(128);
-    sb.AppendCStr("BackupRecord{");
-    sb.AppendInt32((Int32)this);  // (Integer.toHexString(System.identityHashCode(this)))
+    sb.Append("BackupRecord{");
+    sb.Append((Int32)this);  // (Integer.toHexString(System.identityHashCode(this)))
     sb.AppendChar(' ');
     String pkgName;
     mAppInfo->GetPackageName(&pkgName);
-    sb.AppendString(pkgName);
+    sb.Append(pkgName);
     sb.AppendChar(' ');
     String name;
     mAppInfo->GetName(&name);
-    sb.AppendString(name);
+    sb.Append(name);
     sb.AppendChar(' ');
     String bName;
     mAppInfo->GetBackupAgentName(&bName);
-    sb.AppendString(bName);
+    sb.Append(bName);
     sb.AppendChar('}');
     return mStringName = sb.ToString();
 }

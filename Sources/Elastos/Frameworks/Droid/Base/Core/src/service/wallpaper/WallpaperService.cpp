@@ -404,7 +404,7 @@ void WallpaperService::Engine::DispatchPointer(
         }
 
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageO(WallpaperService::MSG_TOUCH_EVENT, event, (IMessage**)&msg);
+        mCaller->ObtainMessage(WallpaperService::MSG_TOUCH_EVENT, event, (IMessage**)&msg);
         mCaller->SendMessage(msg);
     }
     else {

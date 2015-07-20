@@ -35,7 +35,7 @@ WebViewDatabaseClassic::MyThread::MyThread(
     : mOwner(owner)
     , mContext(context)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode WebViewDatabaseClassic::MyThread::Run()
@@ -255,24 +255,24 @@ void WebViewDatabaseClassic::UpgradeDatabaseToV10()
         sDatabase->ExecSQL(String("DROP TABLE IF EXISTS ")
                 + mTableNames[TABLE_HTTPAUTH_ID]);
 
-        sb.AppendCStr("CREATE TABLE ");
-        sb.AppendString(mTableNames[TABLE_HTTPAUTH_ID]);
-        sb.AppendCStr(" INTEGER PRIMARY KEY, ");
-        sb.AppendCStr(" (");
-        sb.AppendString(ID_COL);
-        sb.AppendString(HTTPAUTH_HOST_COL);
-        sb.AppendCStr(" TEXT, ");
-        sb.AppendString(HTTPAUTH_REALM_COL);
-        sb.AppendCStr(" TEXT, ");
-        sb.AppendString(HTTPAUTH_USERNAME_COL);
-        sb.AppendCStr(" TEXT, ");
-        sb.AppendString(HTTPAUTH_PASSWORD_COL);
-        sb.AppendCStr(" TEXT,");
-        sb.AppendCStr(" UNIQUE (");
-        sb.AppendString(HTTPAUTH_HOST_COL);
-        sb.AppendCStr(", ");
-        sb.AppendString(HTTPAUTH_REALM_COL);
-        sb.AppendCStr(") ON CONFLICT REPLACE);");
+        sb.Append("CREATE TABLE ");
+        sb.Append(mTableNames[TABLE_HTTPAUTH_ID]);
+        sb.Append(" INTEGER PRIMARY KEY, ");
+        sb.Append(" (");
+        sb.Append(ID_COL);
+        sb.Append(HTTPAUTH_HOST_COL);
+        sb.Append(" TEXT, ");
+        sb.Append(HTTPAUTH_REALM_COL);
+        sb.Append(" TEXT, ");
+        sb.Append(HTTPAUTH_USERNAME_COL);
+        sb.Append(" TEXT, ");
+        sb.Append(HTTPAUTH_PASSWORD_COL);
+        sb.Append(" TEXT,");
+        sb.Append(" UNIQUE (");
+        sb.Append(HTTPAUTH_HOST_COL);
+        sb.Append(", ");
+        sb.Append(HTTPAUTH_REALM_COL);
+        sb.Append(") ON CONFLICT REPLACE);");
         sDatabase->ExecSQL(sb.ToString());
         return;
     }
@@ -288,79 +288,79 @@ void WebViewDatabaseClassic::UpgradeDatabaseToV10()
     sDatabase->ExecSQL(String("DROP TABLE IF EXISTS ")
             + mTableNames[TABLE_PASSWORD_ID]);
 
-    sb.AppendCStr("CREATE TABLE ");
-    sb.AppendString(mTableNames[TABLE_FORMURL_ID]);
-    sb.AppendCStr(" (");
-    sb.AppendString(ID_COL);
-    sb.AppendCStr(" INTEGER PRIMARY KEY, ");
-    sb.AppendString(FORMURL_URL_COL);
-    sb.AppendCStr(" TEXT");
-    sb.AppendCStr(");");
+    sb.Append("CREATE TABLE ");
+    sb.Append(mTableNames[TABLE_FORMURL_ID]);
+    sb.Append(" (");
+    sb.Append(ID_COL);
+    sb.Append(" INTEGER PRIMARY KEY, ");
+    sb.Append(FORMURL_URL_COL);
+    sb.Append(" TEXT");
+    sb.Append(");");
     // formurl
     sDatabase->ExecSQL(sb.ToString());
 
     sb.Reset();
-    sb.AppendCStr("CREATE TABLE ");
-    sb.AppendString(mTableNames[TABLE_FORMDATA_ID]);
-    sb.AppendCStr(" (");
-    sb.AppendString(ID_COL);
-    sb.AppendCStr(" INTEGER PRIMARY KEY, ");
-    sb.AppendString(FORMDATA_URLID_COL);
-    sb.AppendCStr(" INTEGER, ");
-    sb.AppendString(FORMDATA_NAME_COL);
-    sb.AppendCStr(" TEXT, ");
-    sb.AppendString(FORMDATA_VALUE_COL);
-    sb.AppendCStr(" TEXT,");
-    sb.AppendCStr(" UNIQUE (");
-    sb.AppendString(FORMDATA_URLID_COL);
-    sb.AppendCStr(", ");
-    sb.AppendString(FORMDATA_NAME_COL);
-    sb.AppendCStr(", ");
-    sb.AppendString(FORMDATA_VALUE_COL);
-    sb.AppendCStr(") ON CONFLICT IGNORE);");
+    sb.Append("CREATE TABLE ");
+    sb.Append(mTableNames[TABLE_FORMDATA_ID]);
+    sb.Append(" (");
+    sb.Append(ID_COL);
+    sb.Append(" INTEGER PRIMARY KEY, ");
+    sb.Append(FORMDATA_URLID_COL);
+    sb.Append(" INTEGER, ");
+    sb.Append(FORMDATA_NAME_COL);
+    sb.Append(" TEXT, ");
+    sb.Append(FORMDATA_VALUE_COL);
+    sb.Append(" TEXT,");
+    sb.Append(" UNIQUE (");
+    sb.Append(FORMDATA_URLID_COL);
+    sb.Append(", ");
+    sb.Append(FORMDATA_NAME_COL);
+    sb.Append(", ");
+    sb.Append(FORMDATA_VALUE_COL);
+    sb.Append(") ON CONFLICT IGNORE);");
     // formdata
     sDatabase->ExecSQL(sb.ToString());
 
 
     sb.Reset();
-    sb.AppendCStr("CREATE TABLE ");
-    sb.AppendString(mTableNames[TABLE_HTTPAUTH_ID]);
-    sb.AppendCStr(" (");
-    sb.AppendString(ID_COL);
-    sb.AppendCStr(" INTEGER PRIMARY KEY, ");
-    sb.AppendString(HTTPAUTH_HOST_COL);
-    sb.AppendCStr(" TEXT, ");
-    sb.AppendString(HTTPAUTH_REALM_COL);
-    sb.AppendCStr(" TEXT, ");
-    sb.AppendString(HTTPAUTH_USERNAME_COL);
-    sb.AppendCStr(" TEXT, ");
-    sb.AppendString(HTTPAUTH_PASSWORD_COL);
-    sb.AppendCStr(" TEXT,");
-    sb.AppendCStr(" UNIQUE (");
-    sb.AppendString(HTTPAUTH_HOST_COL);
-    sb.AppendCStr(", ");
-    sb.AppendString(HTTPAUTH_REALM_COL);
-    sb.AppendCStr(") ON CONFLICT REPLACE);");
+    sb.Append("CREATE TABLE ");
+    sb.Append(mTableNames[TABLE_HTTPAUTH_ID]);
+    sb.Append(" (");
+    sb.Append(ID_COL);
+    sb.Append(" INTEGER PRIMARY KEY, ");
+    sb.Append(HTTPAUTH_HOST_COL);
+    sb.Append(" TEXT, ");
+    sb.Append(HTTPAUTH_REALM_COL);
+    sb.Append(" TEXT, ");
+    sb.Append(HTTPAUTH_USERNAME_COL);
+    sb.Append(" TEXT, ");
+    sb.Append(HTTPAUTH_PASSWORD_COL);
+    sb.Append(" TEXT,");
+    sb.Append(" UNIQUE (");
+    sb.Append(HTTPAUTH_HOST_COL);
+    sb.Append(", ");
+    sb.Append(HTTPAUTH_REALM_COL);
+    sb.Append(") ON CONFLICT REPLACE);");
     // httpauth
     sDatabase->ExecSQL(sb.ToString());
 
     sb.Reset();
-    sb.AppendCStr("CREATE TABLE ");
-    sb.AppendString(mTableNames[TABLE_PASSWORD_ID]);
-    sb.AppendCStr(" (");
-    sb.AppendString(ID_COL);
-    sb.AppendCStr(" INTEGER PRIMARY KEY, ");
-    sb.AppendString(PASSWORD_HOST_COL);
-    sb.AppendCStr(" TEXT, ");
-    sb.AppendString(PASSWORD_USERNAME_COL);
-    sb.AppendCStr(" TEXT, ");
-    sb.AppendString(PASSWORD_PASSWORD_COL);
-    sb.AppendCStr(" TEXT,");
-    sb.AppendCStr(" UNIQUE (");
-    sb.AppendString(PASSWORD_HOST_COL);
-    sb.AppendCStr(", ");
-    sb.AppendString(PASSWORD_USERNAME_COL);
-    sb.AppendCStr(") ON CONFLICT REPLACE);");
+    sb.Append("CREATE TABLE ");
+    sb.Append(mTableNames[TABLE_PASSWORD_ID]);
+    sb.Append(" (");
+    sb.Append(ID_COL);
+    sb.Append(" INTEGER PRIMARY KEY, ");
+    sb.Append(PASSWORD_HOST_COL);
+    sb.Append(" TEXT, ");
+    sb.Append(PASSWORD_USERNAME_COL);
+    sb.Append(" TEXT, ");
+    sb.Append(PASSWORD_PASSWORD_COL);
+    sb.Append(" TEXT,");
+    sb.Append(" UNIQUE (");
+    sb.Append(PASSWORD_HOST_COL);
+    sb.Append(", ");
+    sb.Append(PASSWORD_USERNAME_COL);
+    sb.Append(") ON CONFLICT REPLACE);");
     // passwords
     sDatabase->ExecSQL(sb.ToString());
 }
@@ -467,9 +467,9 @@ AutoPtr< ArrayOf<String> > WebViewDatabaseClassic::GetUsernamePassword(
     (*columns)[1] = PASSWORD_PASSWORD_COL;
 
     StringBuilder sb;
-    sb.AppendCStr("(");
-    sb.AppendString(PASSWORD_HOST_COL);
-    sb.AppendCStr(" == ?)");
+    sb.Append("(");
+    sb.Append(PASSWORD_HOST_COL);
+    sb.Append(" == ?)");
     String selection = sb.ToString();
     {
         AutoLock lock(mPasswordLock);
@@ -598,11 +598,11 @@ AutoPtr< ArrayOf<String> > WebViewDatabaseClassic::GetHttpAuthUsernamePassword(
     (*columns)[0] = HTTPAUTH_USERNAME_COL;
     (*columns)[1] = HTTPAUTH_PASSWORD_COL;
     StringBuilder sb;
-    sb.AppendCStr("(");
-    sb.AppendString(HTTPAUTH_HOST_COL);
-    sb.AppendCStr(" == ?) AND (");
-    sb.AppendString(HTTPAUTH_REALM_COL);
-    sb.AppendCStr(" == ?)");
+    sb.Append("(");
+    sb.Append(HTTPAUTH_HOST_COL);
+    sb.Append(" == ?) AND (");
+    sb.Append(HTTPAUTH_REALM_COL);
+    sb.Append(" == ?)");
     String selection = sb.ToString();
     {
         AutoLock lock(mHttpAuthLock);
@@ -685,9 +685,9 @@ void WebViewDatabaseClassic::SetFormData(
     }
 
     StringBuilder sb;
-    sb.AppendCStr("(");
-    sb.AppendString(FORMURL_URL_COL);
-    sb.AppendCStr(" == ?)");
+    sb.Append("(");
+    sb.Append(FORMURL_URL_COL);
+    sb.Append(" == ?)");
     String selection = sb.ToString();
     {
         AutoLock lock(mFormLock);
@@ -764,15 +764,15 @@ AutoPtr<IArrayList> WebViewDatabaseClassic::GetFormData(
     }
 
     StringBuilder sb;
-    sb.AppendCStr("(");
-    sb.AppendString(FORMURL_URL_COL);
-    sb.AppendCStr(" == ?)");
+    sb.Append("(");
+    sb.Append(FORMURL_URL_COL);
+    sb.Append(" == ?)");
     String urlSelection = sb.ToString();
     sb.Reset();
-    sb.AppendCStr("(");
-    sb.AppendString(FORMDATA_URLID_COL);
-    sb.AppendCStr(" == ?) AND (");
-    sb.AppendString(FORMDATA_NAME_COL);
+    sb.Append("(");
+    sb.Append(FORMDATA_URLID_COL);
+    sb.Append(" == ?) AND (");
+    sb.Append(FORMDATA_NAME_COL);
     String dataSelection = sb.ToString();
     {
         AutoLock lock(mFormLock);

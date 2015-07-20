@@ -126,14 +126,14 @@ ECode CObbInfo::ToString(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     system->IdentityHashCode(Probe(EIID_IInterface), &hash);
     StringBuilder sb;
-    sb.AppendCStr("ObbInfo{");
-    sb.AppendString(StringUtils::Int32ToHexString(hash));
-    sb.AppendCStr(" packageName=");
-    sb.AppendString(mPackageName);
-    sb.AppendCStr(",version=");
-    sb.AppendInt32(mVersion);
-    sb.AppendCStr(",flags=");
-    sb.AppendInt32(mFlags);
+    sb.Append("ObbInfo{");
+    sb.Append(StringUtils::Int32ToHexString(hash));
+    sb.Append(" packageName=");
+    sb.Append(mPackageName);
+    sb.Append(",version=");
+    sb.Append(mVersion);
+    sb.Append(",flags=");
+    sb.Append(mFlags);
     sb.AppendChar('}');
     return sb.ToString(str);
 }

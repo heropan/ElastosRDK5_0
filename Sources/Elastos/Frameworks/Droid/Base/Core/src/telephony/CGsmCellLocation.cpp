@@ -150,10 +150,10 @@ ECode CGsmCellLocation::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("["); sb.AppendInt32(mLac);
-    sb.AppendCStr(","); sb.AppendInt32(mCid);
-    sb.AppendCStr(","); sb.AppendInt32(mPsc);
-    sb.AppendCStr("]");
+    sb.Append("["); sb.Append(mLac);
+    sb.Append(","); sb.Append(mCid);
+    sb.Append(","); sb.Append(mPsc);
+    sb.Append("]");
     *str = sb.ToString();
     return NOERROR;
 }

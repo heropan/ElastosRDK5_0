@@ -66,7 +66,9 @@ const Int32 Process::PROC_OUT_LONG;
 const Int32 Process::PROC_OUT_FLOAT;
 const String Process::ZYGOTE_SOCKET_ELASTOS("elzygote");
 const String Process::ZYGOTE_SOCKET_JAVA("zygote");
-Mutex Process::sLock;
+Object Process::sLock;
+
+CAR_INTERFACE_IMPL(Process, Object, IProcess)
 
 ECode Process::Start(
     /* [in] */ const String& processClass,
@@ -443,14 +445,14 @@ ECode Process::StartViaZygote(
         // --setgroups is a comma-separated list
         if (gids != NULL && gids->GetLength() > 0) {
             StringBuilder sb;
-            sb.AppendCStr("--setgroups=");
+            sb.Append("--setgroups=");
 
             Int32 sz = gids->GetLength();
             for (Int32 i = 0; i < sz; i++) {
                 if (i != 0) {
                     sb.AppendChar(',');
                 }
-                sb.AppendInt32((*gids)[i]);
+                sb.Append((*gids)[i]);
             }
             String temp;
             Logger::I("permissionRelated", "processClass:%s niceName:%s groups:%s", processClass.string(), niceName.string(), (sb.ToString(&temp), temp.string()));

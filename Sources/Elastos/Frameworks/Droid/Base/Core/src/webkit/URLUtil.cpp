@@ -84,9 +84,9 @@ String URLUtil::GuessUrl(
     // Check host
 //    if (webAddress->GetHost().IndexOf('.') == -1) {
 //        StringBuilder sb;
-//        sb.AppendCStr("www.");
-//        sb.AppendString(webAddress->GetHost());
-//        sb.AppendCStr(".com");
+//        sb.Append("www.");
+//        sb.Append(webAddress->GetHost());
+//        sb.Append(".com");
         // no dot: user probably entered a bare domain.  try .com
 //        webAddress->SetHost(sb.ToString());
 //    }

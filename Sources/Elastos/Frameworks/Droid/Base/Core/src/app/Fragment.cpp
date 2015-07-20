@@ -895,7 +895,7 @@ ECode Fragment::ToString(
 //     DebugUtils.buildShortClassTag(this, sb);
     if (mIndex >= 0) {
         sb.AppendChar(Char32(" #"));
-        sb.AppendInt32(mIndex);
+        sb.Append(mIndex);
     }
     if (mFragmentId != 0) {
         sb.AppendChar(Char32(" id=0x"));
@@ -903,7 +903,7 @@ ECode Fragment::ToString(
     }
     if (mTag != NULL) {
         sb.AppendChar(Char32(" "));
-        sb.AppendString(mTag);
+        sb.Append(mTag);
     }
     sb.AppendChar(Char32("}"));
     *string = sb.ToString();

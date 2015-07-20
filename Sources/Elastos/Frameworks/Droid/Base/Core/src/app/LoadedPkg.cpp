@@ -1103,16 +1103,16 @@ ECode LoadedPkg::MakeApplication(
         mApplicationInfo->GetPackageName(&packageName);
         StringBuilder sb;
         if (appSourceDir.EndWith(".epk")) {
-            sb.AppendCStr("/data/elastos/");
-            sb.AppendString(packageName);
-            sb.AppendCStr(".eco");
+            sb.Append("/data/elastos/");
+            sb.Append(packageName);
+            sb.Append(".eco");
         }
         else {
-            sb.AppendCStr("/data/data/com.elastos.runtime/elastos/");
-            sb.AppendString(packageName);
-            sb.AppendCStr("/");
-            sb.AppendString(packageName);
-            sb.AppendCStr(".eco");
+            sb.Append("/data/data/com.elastos.runtime/elastos/");
+            sb.Append(packageName);
+            sb.Append("/");
+            sb.Append(packageName);
+            sb.Append(".eco");
         }
         String path = sb.ToString();
         AutoPtr<IModuleInfo> moduleInfo;

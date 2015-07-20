@@ -66,16 +66,16 @@ ECode CApplicationErrorReportRunningServiceInfo::Dump(
     VALIDATE_NOT_NULL(pw);
 
     StringBuilder sb(128);
-    sb.AppendString(prefix);
-    sb.AppendCStr("durationMillis:");
-    sb.AppendInt64(mDurationMillis);
+    sb.Append(prefix);
+    sb.Append("durationMillis:");
+    sb.Append(mDurationMillis);
     String str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("serviceDetails:");
-    sb.AppendString(mServiceDetails);
+    sb.Append(prefix);
+    sb.Append("serviceDetails:");
+    sb.Append(mServiceDetails);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 

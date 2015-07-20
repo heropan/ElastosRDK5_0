@@ -163,41 +163,41 @@ private:
     CARAPI_(AutoPtr<IMessage>) ObtainMessage(
         /* [in] */ Int32 what);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageII(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageO(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageISC(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessageSC(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 seq,
         /* [in] */ IInputContextCallback* callback);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageIISC(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessageSC(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [in] */ Int32 seq,
         /* [in] */ IInputContextCallback* callback);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageIOSC(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessageSC(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ Int32 seq,
         /* [in] */ IInputContextCallback* callback);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageIO(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ IInterface* arg2);
 
-    CARAPI_(AutoPtr<IMessage>) ObtainMessageOO(
+    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ const String& arg1,
         /* [in] */ IInterface* arg2);

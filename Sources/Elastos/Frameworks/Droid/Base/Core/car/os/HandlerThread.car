@@ -4,11 +4,18 @@ module
     namespace Droid {
     namespace Os {
 
-    interface IHandlerThread extends Elastos.Core.IThread {
+    /**
+     * @Involve
+     * interface Elastos.Core.IThread
+     */
+    interface IHandlerThread {
         GetLooper(
             [out] ILooper** looper);
 
         Quit(
+            [out] Boolean* result);
+
+        QuitSafely(
             [out] Boolean* result);
 
         GetThreadId(

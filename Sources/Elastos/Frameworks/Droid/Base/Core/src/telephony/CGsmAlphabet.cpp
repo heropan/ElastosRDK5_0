@@ -416,14 +416,14 @@ ECode CGsmAlphabet::TextEncodingDetails::ToString(
     VALIDATE_NOT_NULL(res);
     StringBuilder sb;
 
-    sb.AppendCStr("TextEncodingDetails");
-    sb.AppendCStr("{ msgCount="); sb.AppendInt32(mMsgCount);
-    sb.AppendCStr(", codeUnitCount="); sb.AppendInt32(mCodeUnitCount);
-    sb.AppendCStr(", codeUnitsRemaining="); sb.AppendInt32(mCodeUnitsRemaining);
-    sb.AppendCStr(", codeUnitSize="); sb.AppendInt32(mCodeUnitSize);
-    sb.AppendCStr(", languageTable="); sb.AppendInt32(mLanguageTable);
-    sb.AppendCStr(", languageShiftTable="); sb.AppendInt32(mLanguageShiftTable);
-    sb.AppendCStr(" }");
+    sb.Append("TextEncodingDetails");
+    sb.Append("{ msgCount="); sb.Append(mMsgCount);
+    sb.Append(", codeUnitCount="); sb.Append(mCodeUnitCount);
+    sb.Append(", codeUnitsRemaining="); sb.Append(mCodeUnitsRemaining);
+    sb.Append(", codeUnitSize="); sb.Append(mCodeUnitSize);
+    sb.Append(", languageTable="); sb.Append(mLanguageTable);
+    sb.Append(", languageShiftTable="); sb.Append(mLanguageShiftTable);
+    sb.Append(" }");
     *res = sb.ToString();
     return NOERROR;
 }

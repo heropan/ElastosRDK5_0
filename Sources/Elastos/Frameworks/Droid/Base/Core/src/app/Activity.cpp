@@ -561,10 +561,10 @@ ECode Activity::OnCreate(
 {
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onCreate ");
-        sb.AppendString(ToString());
+        sb.Append(ToString());
         String temp;
         savedInstanceState->ToString(&temp);
-        sb.AppendString(temp);
+        sb.Append(temp);
         Slogger::V(TAG, sb.ToString());
     }
 
@@ -680,7 +680,7 @@ String Activity::SavedDialogKeyFor(
     /* [in] */ Int32 key)
 {
     StringBuilder sb(SAVED_DIALOG_KEY_PREFIX);
-    sb.AppendInt32(key);
+    sb.Append(key);
     return sb.ToString();
 }
 
@@ -688,7 +688,7 @@ String Activity::SavedDialogArgsKeyFor(
         /* [in] */ Int32 key)
 {
     StringBuilder sb(SAVED_DIALOG_ARGS_KEY_PREFIX);
-    sb.AppendInt32(key);
+    sb.Append(key);
     return sb.ToString();
 }
 
@@ -713,7 +713,7 @@ ECode Activity::OnStart()
 {
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onStart ");
-        sb.AppendString(ToString());
+        sb.Append(ToString());
         Slogger::V(TAG, sb.ToString());
     }
     mCalled = TRUE;
@@ -743,7 +743,7 @@ ECode Activity::OnResume()
 {
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onResume ");
-        sb.AppendString(ToString());
+        sb.Append(ToString());
         Slogger::V(TAG, sb.ToString());
     }
     AutoPtr<IApplication> app = GetApplication();
@@ -778,11 +778,11 @@ ECode Activity::PerformSaveInstanceState(
     FAIL_RETURN(SaveManagedDialogs(outState));
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onSaveInstanceState ");
-        sb.AppendString(ToString());
-        sb.AppendCStr(": ");
+        sb.Append(ToString());
+        sb.Append(": ");
         String temp;
         outState->ToString(&temp);
-        sb.AppendString(temp);
+        sb.Append(temp);
         Slogger::V(TAG, sb.ToString());
     }
     return NOERROR;
@@ -839,7 +839,7 @@ ECode Activity::OnPause()
 {
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onPause ");
-        sb.AppendString(ToString());
+        sb.Append(ToString());
         Slogger::V(TAG, sb.ToString());
     }
     AutoPtr<IApplication> app = GetApplication();
@@ -875,7 +875,7 @@ ECode Activity::OnStop()
 {
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onStop ");
-        sb.AppendString(ToString());
+        sb.Append(ToString());
         Slogger::V(TAG, sb.ToString());
     }
     if (mActionBar != NULL) {
@@ -891,7 +891,7 @@ ECode Activity::OnDestroy()
 {
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onDestroy ");
-        sb.AppendString(ToString());
+        sb.Append(ToString());
         Slogger::V(TAG, sb.ToString());
     }
     mCalled = TRUE;

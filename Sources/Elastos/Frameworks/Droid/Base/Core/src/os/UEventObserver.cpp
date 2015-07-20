@@ -70,7 +70,7 @@ String UEventObserver::UEvent::ToString()
 //===============================================================
 UEventObserver::UEventThread::UEventThread()
 {
-    Thread::Init(String("UEventObserver"));
+    Thread::constructor(String("UEventObserver"));
 }
 
 ECode UEventObserver::UEventThread::Run()

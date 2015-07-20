@@ -10,7 +10,7 @@ namespace Os {
 HandlerThread::HandlerThread(
     /* [in] */ const String& name)
 {
-    Thread::Init(name);
+    Thread::constructor(name);
     mPriority = IProcess::THREAD_PRIORITY_DEFAULT;
 }
 
@@ -18,7 +18,7 @@ HandlerThread::HandlerThread(
     /* [in] */ const String& name,
     /* [in] */ Int32 priority)
 {
-    Thread::Init(name);
+    Thread::constructor(name);
     mPriority = priority;
 }
 

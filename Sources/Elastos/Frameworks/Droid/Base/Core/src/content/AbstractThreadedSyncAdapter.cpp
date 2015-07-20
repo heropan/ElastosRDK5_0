@@ -150,7 +150,7 @@ AbstractThreadedSyncAdapter::SyncThread::SyncThread(
     , mThreadsKey(NULL)
     , mAdapterContext(context)
 {
-    ASSERT_SUCCEEDED(Thread::Init(name))
+    ASSERT_SUCCEEDED(Thread::constructor(name))
     mSyncContext = syncContext;
     mAuthority = authority;
     mAccount = account;

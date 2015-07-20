@@ -234,7 +234,7 @@ CSettingsProvider::CachePrefetchThread::CachePrefetchThread(
     : mUserHandle(userHandle)
     , mHost(host)
 {
-    Thread::Init(String("populate-settings-caches"));
+    Thread::constructor(String("populate-settings-caches"));
 }
 
 ECode CSettingsProvider::CachePrefetchThread::Run()

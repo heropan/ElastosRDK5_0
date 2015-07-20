@@ -142,17 +142,17 @@ ECode MonkeyPowerEvent::WriteLogEvents()
         (*events)[i]->GetAsInt64(String("date"), &tmp);
         //Todo
         //tmpString = MonkeyUtils.toCalendarTime(tmp);
-        sb.AppendString(tmpString);
+        sb.Append(tmpString);
         (*events)[i]->GetAsString(String("tag"), &tmpString);
-        sb.AppendString(tmpString);
+        sb.Append(tmpString);
         Boolean ret = FALSE;
         (*events)[i]->ContainsKey(String("value"), &ret);
         if(ret){
             (*events)[i]->GetAsString(String("value"), &tmpString);
-            sb.AppendString(String(" "));
-            sb.AppendString(tmpString.Replace('\n', '/'));
+            sb.Append(String(" "));
+            sb.Append(tmpString.Replace('\n', '/'));
         }
-        sb.AppendString(String("\n"));
+        sb.Append(String("\n"));
     }
 
     AutoPtr<IFileWriter> ifw;

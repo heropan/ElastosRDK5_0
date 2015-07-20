@@ -697,7 +697,7 @@ String DateUtils::FormatElapsedTime(
         localeDate->GetZeroDigit(&zeroDigit);
 
         StringBuilder sb;
-        sb.AppendString(recycle);
+        sb.Append(recycle);
         Append(&sb, hours, FALSE, zeroDigit);
         sb.AppendChar(TIME_SEPARATOR);
         Append(&sb, minutes, TRUE, zeroDigit);
@@ -734,7 +734,7 @@ String DateUtils::FormatElapsedTime(
         localeDate->GetZeroDigit(&zeroDigit);
 
         StringBuilder sb;
-        sb.AppendString(recycle);
+        sb.Append(recycle);
         Append(&sb, minutes, FALSE, zeroDigit);
         sb.AppendChar(TIME_SEPARATOR);
         Append(&sb, seconds, TRUE, zeroDigit);
@@ -870,10 +870,10 @@ String DateUtils::WriteDateTime(
     StringBuilder sb;
     sb.EnsureCapacity(16);
     if (zulu) {
-        sb.AppendCStr("               Z");    //Java:    sb.setLength(16);    sb.setCharAt(15, 'Z');
+        sb.Append("               Z");    //Java:    sb.setLength(16);    sb.setCharAt(15, 'Z');
     }
     else {
-        sb.AppendCStr("               ");//Java:    sb.setLength(15);
+        sb.Append("               ");//Java:    sb.setLength(15);
     }
     String strTemp = sb.ToString();
     return WriteDateTime(cal, &strTemp);

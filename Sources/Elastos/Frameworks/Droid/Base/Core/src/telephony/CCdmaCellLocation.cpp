@@ -186,17 +186,17 @@ ECode CCdmaCellLocation::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("[");
-    sb.AppendInt32(this->mBaseStationId);
-    sb.AppendCStr(",");
-    sb.AppendInt32(this->mBaseStationLatitude);
-    sb.AppendCStr(",");
-    sb.AppendInt32(this->mBaseStationLongitude);
-    sb.AppendCStr(",");
-    sb.AppendInt32(this->mSystemId);
-    sb.AppendCStr(",");
-    sb.AppendInt32(this->mNetworkId);
-    sb.AppendCStr("]");
+    sb.Append("[");
+    sb.Append(this->mBaseStationId);
+    sb.Append(",");
+    sb.Append(this->mBaseStationLatitude);
+    sb.Append(",");
+    sb.Append(this->mBaseStationLongitude);
+    sb.Append(",");
+    sb.Append(this->mSystemId);
+    sb.Append(",");
+    sb.Append(this->mNetworkId);
+    sb.Append("]");
     *str = sb.ToString();
     return NOERROR;
 }

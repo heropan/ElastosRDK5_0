@@ -300,43 +300,43 @@ ECode CApplicationErrorReport::Dump(
     VALIDATE_NOT_NULL(pw);
 
     StringBuilder sb(64);
-    sb.AppendString(prefix);
-    sb.AppendCStr("type:");
-    sb.AppendInt32(mType);
+    sb.Append(prefix);
+    sb.Append("type:");
+    sb.Append(mType);
     String str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("packageName:");
-    sb.AppendString(mPackageName);
+    sb.Append(prefix);
+    sb.Append("packageName:");
+    sb.Append(mPackageName);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("installerPackageName:");
-    sb.AppendString(mInstallerPackageName);
+    sb.Append(prefix);
+    sb.Append("installerPackageName:");
+    sb.Append(mInstallerPackageName);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("processName:");
-    sb.AppendString(mProcessName);
+    sb.Append(prefix);
+    sb.Append("processName:");
+    sb.Append(mProcessName);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("time:");
-    sb.AppendInt64(mTime);
+    sb.Append(prefix);
+    sb.Append("time:");
+    sb.Append(mTime);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("systemApp:");
+    sb.Append(prefix);
+    sb.Append("systemApp:");
     sb.AppendBoolean(mSystemApp);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));

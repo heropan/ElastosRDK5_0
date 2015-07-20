@@ -785,20 +785,20 @@ ECode CSignalStrength::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("SignalStrength:");
-    sb.AppendCStr(" ");sb.AppendInt32(mGsmSignalStrength);
-    sb.AppendCStr(" ");sb.AppendInt32(mGsmBitErrorRate);
-    sb.AppendCStr(" ");sb.AppendInt32(mCdmaDbm);
-    sb.AppendCStr(" ");sb.AppendInt32(mCdmaEcio);
-    sb.AppendCStr(" ");sb.AppendInt32(mEvdoDbm);
-    sb.AppendCStr(" ");sb.AppendInt32(mEvdoEcio);
-    sb.AppendCStr(" ");sb.AppendInt32(mEvdoSnr);
-    sb.AppendCStr(" ");sb.AppendInt32(mLteSignalStrength);
-    sb.AppendCStr(" ");sb.AppendInt32(mLteRsrp);
-    sb.AppendCStr(" ");sb.AppendInt32(mLteRsrq);
-    sb.AppendCStr(" ");sb.AppendInt32(mLteRssnr);
-    sb.AppendCStr(" ");sb.AppendInt32(mLteCqi);
-    sb.AppendCStr(" ");sb.AppendCStr((mIsGsm ? "gsm|lte" : "cdma"));
+    sb.Append("SignalStrength:");
+    sb.Append(" ");sb.Append(mGsmSignalStrength);
+    sb.Append(" ");sb.Append(mGsmBitErrorRate);
+    sb.Append(" ");sb.Append(mCdmaDbm);
+    sb.Append(" ");sb.Append(mCdmaEcio);
+    sb.Append(" ");sb.Append(mEvdoDbm);
+    sb.Append(" ");sb.Append(mEvdoEcio);
+    sb.Append(" ");sb.Append(mEvdoSnr);
+    sb.Append(" ");sb.Append(mLteSignalStrength);
+    sb.Append(" ");sb.Append(mLteRsrp);
+    sb.Append(" ");sb.Append(mLteRsrq);
+    sb.Append(" ");sb.Append(mLteRssnr);
+    sb.Append(" ");sb.Append(mLteCqi);
+    sb.Append(" ");sb.Append((mIsGsm ? "gsm|lte" : "cdma"));
     *str = sb.ToString();
     return NOERROR;
 }

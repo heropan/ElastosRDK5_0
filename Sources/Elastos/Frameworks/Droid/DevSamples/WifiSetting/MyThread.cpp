@@ -54,33 +54,33 @@ MyThread::MyThread()
     : mHost(NULL)
     , mScanResult(NULL)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 MyThread::MyThread(
     /* [in] */ IRunnable* runnable)
 {
-    Thread::Init(runnable);
+    Thread::constructor(runnable);
 }
 
 MyThread::MyThread(
     /* [in] */ IRunnable* runnable,
     /* [in] */ const String& threadName)
 {
-    Thread::Init(runnable, threadName);
+    Thread::constructor(runnable, threadName);
 }
 
 MyThread::MyThread(
     /* [in] */ const String& threadName)
 {
-    Thread::Init(threadName);
+    Thread::constructor(threadName);
 }
 
 MyThread::MyThread(
     /* [in] */ IThreadGroup* group,
     /* [in] */ IRunnable* runnable)
 {
-    Thread::Init(group, runnable);
+    Thread::constructor(group, runnable);
 }
 
 MyThread::MyThread(
@@ -88,14 +88,14 @@ MyThread::MyThread(
     /* [in] */ IRunnable* runnable,
     /* [in] */ const String& threadName)
 {
-    Thread::Init(group, runnable, threadName);
+    Thread::constructor(group, runnable, threadName);
 }
 
 MyThread::MyThread(
     /* [in] */ IThreadGroup* group,
     /* [in] */ const String& threadName)
 {
-    Thread::Init(group, threadName);
+    Thread::constructor(group, threadName);
 }
 
 MyThread::MyThread(
@@ -104,7 +104,7 @@ MyThread::MyThread(
     /* [in] */ const String& threadName,
     /* [in] */ Int64 stackSize)
 {
-    Thread::Init(group, runnable, threadName, stackSize);
+    Thread::constructor(group, runnable, threadName, stackSize);
 }
 
 MyThread::MyThread(
@@ -115,7 +115,7 @@ MyThread::MyThread(
     , mScanResult(res)
     , mPassword(password)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode MyThread::CheckAccess()

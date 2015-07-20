@@ -193,51 +193,51 @@ ECode CApplicationErrorReportCrashInfo::Dump(
     VALIDATE_NOT_NULL(pw);
 
     StringBuilder sb(128);
-    sb.AppendString(prefix);
-    sb.AppendCStr("exceptionClassName:");
-    sb.AppendString(mExceptionClassName);
+    sb.Append(prefix);
+    sb.Append("exceptionClassName:");
+    sb.Append(mExceptionClassName);
     String str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("exceptionMessage:");
-    sb.AppendString(mExceptionMessage);
+    sb.Append(prefix);
+    sb.Append("exceptionMessage:");
+    sb.Append(mExceptionMessage);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("throwFileName:");
-    sb.AppendString(mThrowFileName);
+    sb.Append(prefix);
+    sb.Append("throwFileName:");
+    sb.Append(mThrowFileName);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("throwClassName:");
-    sb.AppendString(mThrowClassName);
+    sb.Append(prefix);
+    sb.Append("throwClassName:");
+    sb.Append(mThrowClassName);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("throwMethodName:");
-    sb.AppendString(mThrowMethodName);
+    sb.Append(prefix);
+    sb.Append("throwMethodName:");
+    sb.Append(mThrowMethodName);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("throwLineNumber:");
-    sb.AppendInt32(mThrowLineNumber);
+    sb.Append(prefix);
+    sb.Append("throwLineNumber:");
+    sb.Append(mThrowLineNumber);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("stackTrace:");
-    sb.AppendString(mStackTrace);
+    sb.Append(prefix);
+    sb.Append("stackTrace:");
+    sb.Append(mStackTrace);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 

@@ -8,8 +8,9 @@ module
     merge("os/MessageQueue.car");
     merge("os/Handler.car");
     merge("os/IdleHandler.car");
-    // merge("os/HandlerThread.car");
-    // merge("os/HandlerCaller.car");
+    merge("os/HandlerThread.car");
+    merge("os/HandlerCaller.car");
+    merge("os/BaseBundle.car");
 
     // merge("os/storage/ExternalStorageFormatter.car");
     // merge("os/storage/IMountService.car");

@@ -264,7 +264,7 @@ CDropBoxManagerService::_Receiver::_Thread::_Thread(
     /* [in] */ CDropBoxManagerService* owner)
     : mOwner(owner)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CDropBoxManagerService::_Receiver::_Thread::Run()

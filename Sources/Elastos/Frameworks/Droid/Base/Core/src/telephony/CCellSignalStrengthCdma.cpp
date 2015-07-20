@@ -373,17 +373,17 @@ ECode CCellSignalStrengthCdma::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("CellSignalStrengthCdma:");
-    sb.AppendCStr(" cdmaDbm=:");
-    sb.AppendInt32(mCdmaDbm);
-    sb.AppendCStr(" cdmaEcio=:");
-    sb.AppendInt32(mCdmaEcio);
-    sb.AppendCStr(" evdoDbm=:");
-    sb.AppendInt32(mEvdoDbm);
-    sb.AppendCStr(" evdoEcio=:");
-    sb.AppendInt32(mEvdoEcio);
-    sb.AppendCStr(" evdoSnr=:");
-    sb.AppendInt32(mEvdoSnr);
+    sb.Append("CellSignalStrengthCdma:");
+    sb.Append(" cdmaDbm=:");
+    sb.Append(mCdmaDbm);
+    sb.Append(" cdmaEcio=:");
+    sb.Append(mCdmaEcio);
+    sb.Append(" evdoDbm=:");
+    sb.Append(mEvdoDbm);
+    sb.Append(" evdoEcio=:");
+    sb.Append(mEvdoEcio);
+    sb.Append(" evdoSnr=:");
+    sb.Append(mEvdoSnr);
     *str = sb.ToString();
     return NOERROR;
 }

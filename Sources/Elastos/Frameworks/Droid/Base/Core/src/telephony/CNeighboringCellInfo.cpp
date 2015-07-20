@@ -141,18 +141,18 @@ ECode CNeighboringCellInfo::ToString(
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
 
-    sb.AppendCStr("[");
+    sb.Append("[");
     if (mPsc != INeighboringCellInfo::UNKNOWN_CID) {
-        sb.AppendString(StringUtils::Int32ToHexString(mPsc));
-        sb.AppendCStr("@");
-        sb.AppendString(((mRssi == INeighboringCellInfo::UNKNOWN_RSSI)? String("-") : StringUtils::Int32ToString(mRssi)));
+        sb.Append(StringUtils::Int32ToHexString(mPsc));
+        sb.Append("@");
+        sb.Append(((mRssi == INeighboringCellInfo::UNKNOWN_RSSI)? String("-") : StringUtils::Int32ToString(mRssi)));
     } else if(mLac != INeighboringCellInfo::UNKNOWN_CID && mCid != INeighboringCellInfo::UNKNOWN_CID) {
-        sb.AppendString(StringUtils::Int32ToHexString(mLac));
-        sb.AppendString(StringUtils::Int32ToHexString(mCid));
-        sb.AppendCStr("@");
-        sb.AppendString(((mRssi == INeighboringCellInfo::UNKNOWN_RSSI)? String("-") : StringUtils::Int32ToString(mRssi)));
+        sb.Append(StringUtils::Int32ToHexString(mLac));
+        sb.Append(StringUtils::Int32ToHexString(mCid));
+        sb.Append("@");
+        sb.Append(((mRssi == INeighboringCellInfo::UNKNOWN_RSSI)? String("-") : StringUtils::Int32ToString(mRssi)));
     }
-    sb.AppendCStr("]");
+    sb.Append("]");
     *str = sb.ToString();
     return NOERROR;
 }

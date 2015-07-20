@@ -41,7 +41,7 @@ SessionCmdTask::SessionCmdTask(
     StringUtils::Split(mCmdFromRemote, RemoteUtils::SPLITER, (ArrayOf<String>**)&parts);
     mFactoryName = (*parts)[0];
     StringBuilder sb(mFactoryName);
-    sb.AppendString(RemoteUtils::SPLITER);
+    sb.Append(RemoteUtils::SPLITER);
     String result;
     StringUtils::ReplaceFirst(mCmdFromRemote, sb.ToString(), String(""), &result);
     mCmdFromRemote = result;

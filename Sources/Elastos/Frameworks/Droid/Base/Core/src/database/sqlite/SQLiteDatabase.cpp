@@ -1086,8 +1086,8 @@ ECode SQLiteDatabase::Delete(
     // try {
     AutoPtr<ISQLiteStatement> statement;
     StringBuilder sb("DELETE FROM ");
-    sb.AppendString(table);
-    sb.AppendString(!TextUtils::IsEmpty(whereClause) ? String(" WHERE ") + whereClause : String(""));
+    sb.Append(table);
+    sb.Append(!TextUtils::IsEmpty(whereClause) ? String(" WHERE ") + whereClause : String(""));
 
     AutoPtr< ArrayOf<IInterface*> > bindArgs;
     if (whereArgs != NULL && whereArgs->GetLength() > 0) {
@@ -1623,8 +1623,8 @@ ECode SQLiteDatabase::IsDatabaseIntegrityOk(
         AutoPtr<ISQLiteStatement> prog;
         // try {
         StringBuilder sb("PRAGMA ");
-        sb.AppendString((*keys)[i]);
-        sb.AppendCStr(".integrity_check(1);");
+        sb.Append((*keys)[i]);
+        sb.Append(".integrity_check(1);");
         if (FAILED(CompileStatement(sb.ToString(), (ISQLiteStatement**)&prog))) {
             if (prog != NULL) prog->Close();
             continue;

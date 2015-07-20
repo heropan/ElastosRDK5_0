@@ -114,12 +114,12 @@ ECode CCellSignalStrengthLte::GetLevel(
 
     if (DBG) {
         StringBuilder sb;
-        sb.AppendCStr("Lte rsrp level: ");
-        sb.AppendInt32(levelRsrp);
-        sb.AppendCStr(" snr level:");
-        sb.AppendInt32(levelRssnr);
-        sb.AppendCStr(" level: ");
-        sb.AppendInt32(*level);
+        sb.Append("Lte rsrp level: ");
+        sb.Append(levelRsrp);
+        sb.Append(" snr level:");
+        sb.Append(levelRssnr);
+        sb.Append(" level: ");
+        sb.Append(*level);
 
         Log(sb.ToString());
     }
@@ -254,13 +254,13 @@ ECode CCellSignalStrengthLte::ToString(
     /* [out] */ String* str)
 {
     StringBuilder sb;
-    sb.AppendCStr("CellSignalStrengthLte:");
-    sb.AppendCStr(" ss="); sb.AppendInt32(mSignalStrength);
-    sb.AppendCStr(" rsrp="); sb.AppendInt32(mRsrp);
-    sb.AppendCStr(" rsrq="); sb.AppendInt32(mRsrq);
-    sb.AppendCStr(" rssnr="); sb.AppendInt32(mRssnr);
-    sb.AppendCStr(" cqi="); sb.AppendInt32(mCqi);
-    sb.AppendCStr(" ta="); sb.AppendInt32(mTimingAdvance);
+    sb.Append("CellSignalStrengthLte:");
+    sb.Append(" ss="); sb.Append(mSignalStrength);
+    sb.Append(" rsrp="); sb.Append(mRsrp);
+    sb.Append(" rsrq="); sb.Append(mRsrq);
+    sb.Append(" rssnr="); sb.Append(mRssnr);
+    sb.Append(" cqi="); sb.Append(mCqi);
+    sb.Append(" ta="); sb.Append(mTimingAdvance);
     *str = sb.ToString();
     return NOERROR;
 }

@@ -26,7 +26,7 @@ ConnectionThread::ConnectionThread(
     , mConnectionManager(connectionManager)
     , mRequestFeeder(requestFeeder)
 {
-    Thread::Init();
+    Thread::constructor();
     SetName(String("http") + StringUtils::Int32ToString(id));
 }
 
@@ -122,7 +122,7 @@ ConnectionThread::ConnectionThread()
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ConnectionThread::ConnectionThread(
@@ -133,7 +133,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(runnable);
+    Thread::constructor(runnable);
 }
 
 ConnectionThread::ConnectionThread(
@@ -145,7 +145,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(runnable, threadName);
+    Thread::constructor(runnable, threadName);
 }
 
 ConnectionThread::ConnectionThread(
@@ -156,7 +156,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(threadName);
+    Thread::constructor(threadName);
 }
 
 ConnectionThread::ConnectionThread(
@@ -168,7 +168,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(group, runnable);
+    Thread::constructor(group, runnable);
 }
 
 ConnectionThread::ConnectionThread(
@@ -181,7 +181,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(group, runnable, threadName);
+    Thread::constructor(group, runnable, threadName);
 }
 
 ConnectionThread::ConnectionThread(
@@ -193,7 +193,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(group, threadName);
+    Thread::constructor(group, threadName);
 }
 
 ConnectionThread::ConnectionThread(
@@ -207,7 +207,7 @@ ConnectionThread::ConnectionThread(
     , mRunning(TRUE)
     , mId(0)
 {
-    Thread::Init(group, runnable, threadName, stackSize);
+    Thread::constructor(group, runnable, threadName, stackSize);
 }
 
 }

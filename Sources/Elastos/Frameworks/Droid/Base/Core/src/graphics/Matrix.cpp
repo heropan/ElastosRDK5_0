@@ -729,7 +729,7 @@ ECode Matrix::ToString(
     /* [out] */ String* str)
 {
     StringBuilder sb(64);
-    sb.AppendString(String("Matrix{"));
+    sb.Append(String("Matrix{"));
     ToShortString((IStringBuilder*)&sb);
     sb.AppendChar('}');
     sb.ToString(str);

@@ -175,7 +175,7 @@ ServerSocketTimer::ServerSocketTimer(
     /* [in] */ IContext* context)
     : mSocketPort(0)
 {
-    Thread::Init();
+    Thread::constructor();
 
     mContext = context;
 

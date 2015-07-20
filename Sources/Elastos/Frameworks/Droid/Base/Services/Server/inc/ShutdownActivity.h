@@ -26,7 +26,7 @@ private:
             /* [in] */ const String& name)
             : mHost(host)
         {
-            Thread::Init(name);
+            Thread::constructor(name);
         }
 
         CARAPI Run();

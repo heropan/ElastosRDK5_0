@@ -135,12 +135,12 @@ ECode CRouteCategory::ToString(
     mName->ToString(&tempText);
 
     StringBuilder sb("RouteCategory{ name=");
-    sb.AppendString(tempText);
-    sb.AppendCStr(" types=");
-    sb.AppendString(CMediaRouter::TypesToString(mTypes));
-    sb.AppendCStr(" groupable=");
-    sb.AppendInt32(mGroupable);
-    sb.AppendCStr("}");
+    sb.Append(tempText);
+    sb.Append(" types=");
+    sb.Append(CMediaRouter::TypesToString(mTypes));
+    sb.Append(" groupable=");
+    sb.Append(mGroupable);
+    sb.Append("}");
     *result = sb.ToString();
     return NOERROR;
 }

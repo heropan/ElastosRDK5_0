@@ -82,7 +82,7 @@ Instrumentation::InstrumentationThread::InstrumentationThread(
     /* [in] */ Instrumentation* host)
     : mHost(host)
 {
-    Thread::Init(name);
+    Thread::constructor(name);
 }
 
 ECode Instrumentation::InstrumentationThread::Run()

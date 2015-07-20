@@ -172,17 +172,17 @@ ECode CCellIdentityGsm::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("super.toString()");
-    sb.AppendCStr(" mMcc=");
-    sb.AppendInt32(mMcc);
-    sb.AppendCStr(" mMnc=");
-    sb.AppendInt32(mMcc);
-    sb.AppendCStr(" mLac=");
-    sb.AppendInt32(mLac);
-    sb.AppendCStr(" mCid=");
-    sb.AppendInt32(mCid);
-    sb.AppendCStr(" mPsc=");
-    sb.AppendInt32(mPsc);
+    sb.Append("super.toString()");
+    sb.Append(" mMcc=");
+    sb.Append(mMcc);
+    sb.Append(" mMnc=");
+    sb.Append(mMcc);
+    sb.Append(" mLac=");
+    sb.Append(mLac);
+    sb.Append(" mCid=");
+    sb.Append(mCid);
+    sb.Append(" mPsc=");
+    sb.Append(mPsc);
     *str = sb.ToString();
     return NOERROR;
 }

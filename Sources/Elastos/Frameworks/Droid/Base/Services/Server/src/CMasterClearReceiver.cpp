@@ -10,7 +10,7 @@ namespace Server {
 
 CMasterClearReceiver::RebootThread::RebootThread()
 {
-    Thread::Init(String("Reboot"));
+    Thread::constructor(String("Reboot"));
 }
 
 ECode CMasterClearReceiver::RebootThread::Run()

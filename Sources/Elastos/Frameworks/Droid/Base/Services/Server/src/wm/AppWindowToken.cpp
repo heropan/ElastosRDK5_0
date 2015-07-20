@@ -180,15 +180,15 @@ String AppWindowToken::ToString()
 {
     if (mStringName.IsNull()) {
         StringBuilder sb;
-        sb.AppendCStr("AppWindowToken{");
-        sb.AppendInt32((Int32)this);
-        sb.AppendCStr(" token=");
+        sb.Append("AppWindowToken{");
+        sb.Append((Int32)this);
+        sb.Append(" token=");
         String info;
         mToken->ToString(&info);
-        sb.AppendString(info);
+        sb.Append(info);
         if (mStartingWindow != NULL) {
-            sb.AppendCStr(" startingWindow=");
-            sb.AppendString(mStartingWindow->ToString());
+            sb.Append(" startingWindow=");
+            sb.Append(mStartingWindow->ToString());
         }
         sb.AppendChar('}');
         sb.ToString(&mStringName);

@@ -120,18 +120,18 @@ ECode CCellInfoLte::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("CellInfoLte:");
+    sb.Append("CellInfoLte:");
     String strSuper;
     CellInfo::ToString(&strSuper);
-    sb.AppendString(strSuper);
-    sb.AppendCStr(", ");
+    sb.Append(strSuper);
+    sb.Append(", ");
     String strclte;
     mCellIdentityLte->ToString(&strclte);
-    sb.AppendString(strclte);
+    sb.Append(strclte);
     String strcsslte;
     mCellSignalStrengthLte->ToString(&strcsslte);
-    sb.AppendCStr(", ");
-    sb.AppendString(strcsslte);
+    sb.Append(", ");
+    sb.Append(strcsslte);
     *str = sb.ToString();
     return NOERROR;
 }

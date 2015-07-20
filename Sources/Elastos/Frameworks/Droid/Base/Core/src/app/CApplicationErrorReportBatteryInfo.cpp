@@ -104,30 +104,30 @@ ECode CApplicationErrorReportBatteryInfo::Dump(
     VALIDATE_NOT_NULL(pw);
 
     StringBuilder sb(30);
-    sb.AppendString(prefix);
-    sb.AppendCStr("usagePercent:");
-    sb.AppendInt32(mUsagePercent);
+    sb.Append(prefix);
+    sb.Append("usagePercent:");
+    sb.Append(mUsagePercent);
     String str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("durationMicros:");
-    sb.AppendInt64(mDurationMicros);
+    sb.Append(prefix);
+    sb.Append("durationMicros:");
+    sb.Append(mDurationMicros);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("usageDetails:");
-    sb.AppendString(mUsageDetails);
+    sb.Append(prefix);
+    sb.Append("usageDetails:");
+    sb.Append(mUsageDetails);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("checkinDetails:");
-    sb.AppendString(mCheckinDetails);
+    sb.Append(prefix);
+    sb.Append("checkinDetails:");
+    sb.Append(mCheckinDetails);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 

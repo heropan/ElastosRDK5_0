@@ -1206,9 +1206,9 @@ String LockPatternUtils::CombineStrings(
     StringBuilder sb(strLength);
 
     for (Int32 i = 0; i < listLength; i++) {
-        sb.AppendInt32((*list)[i]);
+        sb.Append((*list)[i]);
         if (i < listLength - 1) {
-            sb.AppendString(separator);
+            sb.Append(separator);
         }
     }
     String result;

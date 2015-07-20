@@ -994,12 +994,12 @@ ECode CAm::RemoveWallOption()
         String replacee("-Xprofile:wallclock");
         Int32 startIndex = 0, endIndex = props.IndexOf(replacee);
         while(endIndex != -1) {
-            sb.AppendString(props.Substring(startIndex, endIndex));
+            sb.Append(props.Substring(startIndex, endIndex));
             startIndex = endIndex + replacee.GetLength();
             endIndex = props.IndexOf(replacee, startIndex);
         }
 
-        sb.AppendString(props.Substring(startIndex, props.GetLength()));
+        sb.Append(props.Substring(startIndex, props.GetLength()));
         sb.ToString(&props);
         props = props.Trim();
         sysProp->Set(String("dalvik.vm.extra-opts"), props);

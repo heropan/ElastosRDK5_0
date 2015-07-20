@@ -117,7 +117,7 @@ ShutdownThread::ShutdownRadiosThread::ShutdownRadiosThread(
     /* [in] */ Int64 endTime)
     : mEndTime(endTime)
 {
-    Thread::Init();
+    Thread::constructor();
     mDone = done->Clone();
 }
 
@@ -268,7 +268,7 @@ AutoPtr<IAlertDialog> ShutdownThread::sConfirmDialog;
 ShutdownThread::ShutdownThread()
     : mActionDone(FALSE)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ShutdownThread::~ShutdownThread()

@@ -167,26 +167,26 @@ ECode CScanResult::ToString(
     StringBuffer sb;
     String none("<none>");
 
-    sb.AppendCStr("SSID: ");
+    sb.Append("SSID: ");
     if (mWifiSsid == NULL) {
-        sb.AppendString(IWifiSsid::NONE);
+        sb.Append(IWifiSsid::NONE);
     }
     else {
         String temp;
         mWifiSsid->ToString(&temp);
-        sb.AppendString(temp);
+        sb.Append(temp);
     }
 
-    sb.AppendCStr(", BSSID: ");
-    sb.AppendString(mBSSID.IsNull() ? none : mBSSID);
-    sb.AppendCStr(", capabilities: ");
-    sb.AppendString(mCapabilities.IsNull() ? none : mCapabilities);
-    sb.AppendCStr(", level: ");
-    sb.AppendInt32(mLevel);
-    sb.AppendCStr(", frequency: ");
-    sb.AppendInt32(mFrequency);
-    sb.AppendCStr(", timestamp: ");
-    sb.AppendInt64(mTimestamp);
+    sb.Append(", BSSID: ");
+    sb.Append(mBSSID.IsNull() ? none : mBSSID);
+    sb.Append(", capabilities: ");
+    sb.Append(mCapabilities.IsNull() ? none : mCapabilities);
+    sb.Append(", level: ");
+    sb.Append(mLevel);
+    sb.Append(", frequency: ");
+    sb.Append(mFrequency);
+    sb.Append(", timestamp: ");
+    sb.Append(mTimestamp);
     *value = sb.ToString();
     return NOERROR;
 }

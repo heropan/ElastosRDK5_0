@@ -280,7 +280,7 @@ ECode CSearchManagerService::Init(
 CSearchManagerService::BootCompletedReceiver::MyThread::MyThread(
     /* [in] */ BootCompletedReceiver* host) : mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CSearchManagerService::BootCompletedReceiver::MyThread::Run()

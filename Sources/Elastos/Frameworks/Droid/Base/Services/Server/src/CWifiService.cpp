@@ -551,13 +551,13 @@ ECode CWifiService::WifiLock::ProxyDied()
 String CWifiService::WifiLock::ToString()
 {
     StringBuilder sb(128);
-    sb.AppendCStr("WifiLock{");
-    sb.AppendString(mTag);
-    sb.AppendCStr(" type=");
-    sb.AppendInt32(mMode);
-    sb.AppendCStr(" binder=");
+    sb.Append("WifiLock{");
+    sb.Append(mTag);
+    sb.Append(" type=");
+    sb.Append(mMode);
+    sb.Append(" binder=");
     sb.AppendObject(mBinder);
-    sb.AppendCStr("}");
+    sb.Append("}");
     return sb.ToString();
 }
 

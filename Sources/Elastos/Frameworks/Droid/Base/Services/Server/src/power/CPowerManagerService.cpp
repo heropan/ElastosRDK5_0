@@ -2495,7 +2495,7 @@ ECode CPowerManagerService::Crash(
 CPowerManagerService::CrashThread::CrashThread(
     /* [in] */ const String& s)
 {
-    Thread::Init(s);
+    Thread::constructor(s);
 }
 
 ECode CPowerManagerService::CrashThread::Run()

@@ -177,7 +177,7 @@ public:
 ServerThread::ServerThread()
     : mDeviceHasYpbpr(FALSE)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 #include <unistd.h>

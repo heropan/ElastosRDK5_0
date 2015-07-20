@@ -152,11 +152,11 @@ ECode CActivityController::AppCrashed(
     Int32 searchStart = 0;
     Int32 matchStart = 0;
     while((matchStart = stackTrace.IndexOf("\n", searchStart)) != -1) {
-        sb.AppendString(stackTrace.Substring(searchStart, matchStart));
-        sb.AppendCStr("\n// ");
+        sb.Append(stackTrace.Substring(searchStart, matchStart));
+        sb.Append("\n// ");
         searchStart = matchStart + String("\n// ").GetLength();
     }
-    sb.AppendString(stackTrace.Substring(searchStart));
+    sb.Append(stackTrace.Substring(searchStart));
     sb.ToString(&str);
     str = String("// ") + str;
     ps->PrintStringln(str);

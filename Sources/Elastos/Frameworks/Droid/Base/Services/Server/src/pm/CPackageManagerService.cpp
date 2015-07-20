@@ -2068,10 +2068,10 @@ String CPackageManagerService::FileInstallArgs::GetResourcePathFromCodePath()
 
         String path;
         mHost->mAppInstallDir->GetPath(&path);
-        sb.AppendString(path);
+        sb.Append(path);
         sb.AppendChar('/');
-        sb.AppendString(GetApkName(codePath));
-        sb.AppendCStr(".zip");
+        sb.Append(GetApkName(codePath));
+        sb.Append(".zip");
 
         /*
          * If our APK is a temporary file, mark the resource as a
@@ -2079,7 +2079,7 @@ String CPackageManagerService::FileInstallArgs::GetResourcePathFromCodePath()
          * catastrophic failure.
          */
         if (codePath.EndWith(".tmp")) {
-            sb.AppendCStr(".tmp");
+            sb.Append(".tmp");
         }
 
         return sb.ToString();
@@ -5441,9 +5441,9 @@ ECode CPackageManagerService::GetNameForUid(
     if (obj->Probe(EIID_SharedUserSetting) != NULL) {
         SharedUserSetting* sus = reinterpret_cast<SharedUserSetting*>(obj->Probe(EIID_SharedUserSetting));
         StringBuilder sb;
-        sb.AppendString(sus->mName);
-        sb.AppendCStr(":");
-        sb.AppendInt32(sus->mUserId);
+        sb.Append(sus->mName);
+        sb.Append(":");
+        sb.Append(sus->mUserId);
         *name = sb.ToString();
         return NOERROR;
     }
@@ -7840,10 +7840,10 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
                 }
                 if (!recovered) {
                     StringBuilder sb;
-                    sb.AppendCStr("/mismatched_uid/settings_");
-                    sb.AppendInt32(pkgAppUid);
-                    sb.AppendCStr("/fs_");
-                    sb.AppendInt32(currentUid);
+                    sb.Append("/mismatched_uid/settings_");
+                    sb.Append(pkgAppUid);
+                    sb.Append("/fs_");
+                    sb.Append(currentUid);
                     pkg->mApplicationInfo->SetDataDir(sb.ToString());
                     pkg->mApplicationInfo->SetNativeLibraryDir(sb.ToString());
                     StringBuilder msg;

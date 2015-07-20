@@ -102,9 +102,9 @@ ECode CComponentName::FlattenToString(
 {
     VALIDATE_NOT_NULL(name)
     StringBuilder sb;
-    sb.AppendString(mPackage);
+    sb.Append(mPackage);
     sb.AppendChar('/');
-    sb.AppendString(mClass);
+    sb.Append(mClass);
     return sb.ToString(name);
 }
 
@@ -113,11 +113,11 @@ ECode CComponentName::FlattenToShortString(
 {
     VALIDATE_NOT_NULL(name)
     StringBuilder sb;
-    sb.AppendString(mPackage);
+    sb.Append(mPackage);
     sb.AppendChar('/');
     String tmp;
     GetShortClassName(&tmp);
-    sb.AppendString(tmp);
+    sb.Append(tmp);
     return sb.ToString(name);
 }
 
@@ -145,9 +145,9 @@ ECode CComponentName::ToShortString(
     VALIDATE_NOT_NULL(name)
     StringBuilder sb;
     sb.AppendChar('{');
-    sb.AppendString(mPackage);
+    sb.Append(mPackage);
     sb.AppendChar('/');
-    sb.AppendString(mClass);
+    sb.Append(mClass);
     sb.AppendChar('}');
     return sb.ToString(name);
 }
@@ -157,10 +157,10 @@ ECode CComponentName::ToString(
 {
     VALIDATE_NOT_NULL(str)
     StringBuilder sb;
-    sb.AppendString(String("ComponentInfo{"));
-    sb.AppendString(mPackage);
+    sb.Append(String("ComponentInfo{"));
+    sb.Append(mPackage);
     sb.AppendChar('/');
-    sb.AppendString(mClass);
+    sb.Append(mClass);
     sb.AppendChar('}');
     sb.ToString(str);
     return NOERROR;
