@@ -1,7 +1,7 @@
-#ifndef __BINDER_H__
-#define __BINDER_H__
+#ifndef __ELASTOS_DROID_OS_BINDER_H__
+#define __ELASTOS_DROID_OS_BINDER_H__
 
-#include <elastos.h>
+#include <elastos/core/Object.h>
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
 #else
@@ -11,8 +11,6 @@
 namespace Elastos {
 namespace Droid {
 namespace Os {
-
-extern const InterfaceID EIID_Binder;
 
 /**
  * Base class for a remotable object, the core part of a lightweight
@@ -30,11 +28,17 @@ extern const InterfaceID EIID_Binder;
  * @see IBinder
  */
 class Binder
+    : public Object
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Binder();
 
-    ~Binder();
+    virtual ~Binder();
+
+    CARAPI constructor();
 
     /**
      * Return the ID of the process that sent you the current transaction
@@ -136,4 +140,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BINDER_H__
+#endif //__ELASTOS_DROID_OS_BINDER_H__

@@ -1,4 +1,10 @@
 
+
+DIRS = DCARServer
+DIRS += DCARServiceManager
+DIRS += DroidRuntime
+DIRS += Base/Core/
+
 #DIRS = ServiceManager
 #DIRS += DroidRuntime
 #DIRS += Base/Core/

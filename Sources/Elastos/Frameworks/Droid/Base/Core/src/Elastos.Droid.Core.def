@@ -5,6 +5,6 @@
 LIBRARY Elastos.Droid.Core.eco
 
 EXPORTS
-    sLooperKey
-    sLooperKeyInited
-    sCurRuntime
+    ;;sLooperKey
+    ;;sLooperKeyInited
+    ;;sCurRuntime

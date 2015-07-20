@@ -3,7 +3,7 @@ TARGET_TYPE= eco
 
 EXPORT_ALL_SYMBOLS=1
 
-IMPORTS += Elastos.Core.eco
+IMPORTS += Elastos.CoreLibrary.eco
 IMPORTS += Elastos.Droid.System.eco
 
 #VPATH := $(MAKEDIR)/../core/os:$(MAKEDIR)/../core/ext:$(MAKEDIR)/../core/view:$(MAKEDIR)/../core/view/animation:$(MAKEDIR)/../core/location:$(MAKEDIR)/../core/net:$(MAKEDIR)/../core/content:$(MAKEDIR)/../core/content/cm:$(MAKEDIR)/../core/app:$(MAKEDIR)/../core/capsule:$(MAKEDIR)/../core/utils:$(MAKEDIR)/../core/location:$(MAKEDIR)/../core/text:$(MAKEDIR)/../core/provider:$(MAKEDIR)/../core/graphics

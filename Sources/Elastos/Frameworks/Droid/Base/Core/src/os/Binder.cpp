@@ -7,9 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-// {C565CD41-ACB7-4CCC-ADE5-5E7DF763DACF}
-extern const InterfaceID EIID_Binder =
-    { 0xc565cd41, 0xacb7, 0x4ccc, { 0xad, 0xe5, 0x5e, 0x7d, 0xf7, 0x63, 0xda, 0xcf } };
+CAR_INTERFACE_IMPL(Binder, Object, IBinder)
 
 Binder::Binder()
     : mObject(0)
@@ -18,6 +16,11 @@ Binder::Binder()
 Binder::~Binder()
 {
     // Destroy();
+}
+
+ECode Binder::constructor()
+{
+    return NOERROR;
 }
 
 Int32 Binder::GetCallingPid()

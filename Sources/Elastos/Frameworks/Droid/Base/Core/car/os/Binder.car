@@ -1,7 +1,8 @@
 module
 {
     using interface Elastos.IO.IFileDescriptor;
-    interface Elastos.Droid.Os.IUserHandle;
+
+    //interface Elastos.Droid.Os.IUserHandle;
 
     namespace Elastos {
     namespace Droid {
@@ -116,8 +117,8 @@ module
          * with their own uid.  If the current thread is not currently executing an
          * incoming transaction, then its own UserHandle is returned.
          */
-        GetCallingUserHandle(
-            [out] IUserHandle** h);
+        //GetCallingUserHandle(
+        //    [out] IUserHandle** h);
 
         /**
          * Reset the identity of the incoming IPC on the current thread.  This can

@@ -4,7 +4,7 @@ TARGET_TYPE = eco
 include $(MAKEDIR)/../../sources.inc
 
 IMPORTS = Elastos.Droid.Core.eco
-IMPORTS += Elastos.Core.eco
+IMPORTS += Elastos.CoreLibrary.eco
 
 SOURCES  = OpenglEarthDemo.car
 SOURCES += Triangle.cpp

@@ -2397,6 +2397,7 @@ void TextView::SetKeyListenerOnly(
             SetText(mText);
         }
 
+        editable = IEditable::Probe(mText);
         SetFilters(editable, mFilters);
     }
 }

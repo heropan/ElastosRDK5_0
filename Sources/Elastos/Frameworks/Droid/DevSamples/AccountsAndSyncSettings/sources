@@ -6,7 +6,7 @@ EXPORT_ALL_SYMBOLS = 1
 include $(MAKEDIR)/../../sources.inc
 
 IMPORTS = Elastos.Droid.Core.eco
-#IMPORTS += Elastos.Core.eco
+#IMPORTS += Elastos.CoreLibrary.eco
 
 #VPATH := $(MAKEDIR)/../../Base/Core/src/app:$(MAKEDIR)/../../Base/Core/src/view:$(MAKEDIR)/../../Base/Core/src/accounts
 
