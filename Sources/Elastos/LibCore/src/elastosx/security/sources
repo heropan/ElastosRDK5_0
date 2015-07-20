@@ -10,9 +10,11 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/callback
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/x500
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
 
-VPATH := $(MAKEDIR)/auth/callback:$(MAKEDIR)/auth/x500
+VPATH := $(MAKEDIR)/auth/callback:$(MAKEDIR)/auth/x500:$(MAKEDIR)/auth
 
 SOURCES = security.cpp
 SOURCES += CPasswordCallback.cpp
 SOURCES += CX500Principal.cpp
+SOURCES += CAuthPermission.cpp
